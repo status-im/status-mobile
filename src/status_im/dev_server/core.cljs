@@ -10,8 +10,9 @@
                        "Status iOS"
                        "Status Android"))
 
-(defn respond! [status-code data]
+(defn respond! [request-id status-code data]
   (.respond react/http-bridge
+            request-id
             status-code
             "application/json"
             (types/clj->json data)))
@@ -22,12 +23,12 @@
           server-name
           (fn [req]
             (try
-              (let [{:keys [url type postData]} (js->clj req :keywordize-keys true)
+              (let [{:keys [requestId url type postData]} (js->clj req :keywordize-keys true)
                     data (if (string? postData)
                            (-> (.parse js/JSON postData)
                                (js->clj :keywordize-keys true))
                            postData)]
-                (re-frame/dispatch [:process-http-request url type data]))
+                (re-frame/dispatch [:process-http-request requestId url type data]))
               (catch js/Error e
                 (log/debug "Error: " e))))))
 

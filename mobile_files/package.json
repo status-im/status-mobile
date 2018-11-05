@@ -42,7 +42,7 @@
     "react-native-fetch-polyfill": "1.1.2",
     "react-native-firebase": "https://github.com/status-im/react-native-firebase#5.0.0-rc1",
     "react-native-fs": "2.11.15",
-    "react-native-http-bridge": "https://github.com/status-im/react-native-http-bridge.git#0.5.2-1",
+    "react-native-http-bridge": "0.6.1",
     "react-native-i18n": "2.0.15",
     "react-native-image-crop-picker": "0.18.1",
     "react-native-image-resizer": "https://github.com/status-im/react-native-image-resizer.git#1.0.0-1",

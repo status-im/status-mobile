@@ -19,19 +19,20 @@
 
 (re-frame/reg-fx
  :dev-server/respond
- (fn [[status-code data]]
-   (dev-server.core/respond! status-code data)))
+ (fn [[request-id status-code data]]
+   (dev-server.core/respond! request-id status-code data)))
 
 ;; Handlers
 
 (handlers/register-handler-fx
  :process-http-request
  [(re-frame/inject-cofx :random-id-generator)]
- (fn [cofx [_ url type data]]
+ (fn [cofx [_ request-id url type data]]
    (try
-     (models.dev-server/process-request! {:cofx cofx
-                                          :url  (rest (string/split url "/"))
-                                          :type (keyword type)
-                                          :data data})
+     (models.dev-server/process-request! {:cofx       cofx
+                                          :request-id request-id
+                                          :url        (rest (string/split url "/"))
+                                          :type       (keyword type)
+                                          :data       data})
      (catch js/Error e
-       {:dev-server/respond [400 {:message (str "Unsupported operation: " e)}]}))))
+       {:dev-server/respond [request-id 400 {:message (str "Unsupported operation: " e)}]}))))
