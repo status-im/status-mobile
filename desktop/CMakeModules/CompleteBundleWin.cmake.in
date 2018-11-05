@@ -1,6 +1,12 @@
 # windeployqt should be used here, but since we get the `Not implemented` error from it, we're trying to manually copy artifacts to output directory
 set(TARGET_DIR "${@APP_NAME@_BINARY_DIR}")
 
+##########################################################################################################
+#
+# NOTE: Remember to reflect any changes on the setup generation procedure in /deployment/windows/nsis/setup.nsi
+#
+##########################################################################################################
+
 set(qtmodules Core Quick QuickTemplates2 QuickControls2 WebSockets Widgets Gui Network Svg Qml Concurrent)
 if(USE_QTWEBKIT)
   set(qtmodules ${qtmodules} Multimedia WebKit WebKitWidgets WebChannel)

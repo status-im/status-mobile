@@ -65,8 +65,8 @@ def bundleWindows(type = 'nightly') {
 
   sh './scripts/build-desktop.sh bundle'
   dir(packageFolder) {
-    pkg = common.pkgFilename(type, 'zip')
-    sh "mv ../Status-Windows-x86_64.zip ${pkg}"
+    pkg = common.pkgFilename(type, 'exe')
+    sh "mv ../Status-x86_64-setup.exe ${pkg}"
   }
   return "${packageFolder}/${pkg}".drop(2)
 }

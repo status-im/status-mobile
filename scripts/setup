@@ -28,6 +28,7 @@ install_wget
 install_java8
 install_clojure_cli
 install_leiningen
+install_nsis
 install_node
 install_watchman
 install_react_native_cli
