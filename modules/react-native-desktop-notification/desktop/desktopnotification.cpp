@@ -22,6 +22,8 @@
 #include <QGuiApplication>
 #include <QDebug>
 
+Q_LOGGING_CATEGORY(NOTIFICATION, "RCTNotification")
+
 #ifdef Q_OS_LINUX
 namespace SnorePlugin {}
 
@@ -72,14 +74,14 @@ DesktopNotification::DesktopNotification(QObject *parent)
     Snore::SnoreCore::instance().loadPlugins(Snore::SnorePlugin::Backend);
   }
 
-  qDebug() << "DesktopNotification::DesktopNotification List of all loaded Snore plugins: "
-           << Snore::SnoreCore::instance().pluginNames();
+  qCDebug(NOTIFICATION) << "DesktopNotification::DesktopNotification List of all loaded Snore plugins:"
+                        << Snore::SnoreCore::instance().pluginNames();
 
   Snore::SnoreCore::instance().registerApplication(d_ptr->snoreApp);
   Snore::SnoreCore::instance().setDefaultApplication(d_ptr->snoreApp);
 
-  qDebug() << "DesktopNotification::DesktopNotification Current notification backend: "
-           << Snore::SnoreCore::instance().primaryNotificationBackend();
+  qCDebug(NOTIFICATION) << "DesktopNotification::DesktopNotification Current notification backend:"
+                        << Snore::SnoreCore::instance().primaryNotificationBackend();
 }
 
 DesktopNotification::~DesktopNotification() {
@@ -101,10 +103,10 @@ QVariantMap DesktopNotification::constantsToExport() { return QVariantMap(); }
 
 void DesktopNotification::sendNotification(QString text) {
   Q_D(DesktopNotification);
-  qDebug() << "call of DesktopNotification::sendNotification";
+  qCDebug(NOTIFICATION) << "::sendNotification";
 
   if (m_appHasFocus) {
-      qDebug() << "Don't send notification since some application window is active";
+      qCDebug(NOTIFICATION) << "Not sending notification since an application window is active";
       return;
   }
 

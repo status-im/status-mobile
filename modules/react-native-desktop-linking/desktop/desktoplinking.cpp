@@ -8,6 +8,8 @@
 #include <QUrl>
 #include <QFileOpenEvent>
 
+Q_LOGGING_CATEGORY(LINKING, "RCTLinking")
+
 namespace {
 struct RegisterQMLMetaType {
   RegisterQMLMetaType() { qRegisterMetaType<DesktopLinking *>(); }
@@ -44,7 +46,7 @@ QVariantMap DesktopLinking::constantsToExport() { return QVariantMap(); }
 
 void DesktopLinking::handleURL(const QString url) {
     Q_D(DesktopLinking);
-    qDebug() << "call of DesktopLinking::handleURL with param path: " << url;
+    qCDebug(LINKING) << "::handleURL - path:" << url;
     d->bridge->eventDispatcher()->sendDeviceEvent("urlOpened", QVariantMap{{"url", url}});
 }
 

@@ -13,7 +13,10 @@
 
 #include "moduleinterface.h"
 
+#include <QLoggingCategory>
 #include <QVariantMap>
+
+Q_DECLARE_LOGGING_CATEGORY(RCTSTATUS)
 
 class RCTStatusPrivate;
 class RCTStatus : public QObject, public ModuleInterface {
@@ -67,7 +70,7 @@ private Q_SLOTS:
     void onStatusGoEvent(QString event);
 
 private:
-    QString statusGoResultError(const char *result);
+    void logStatusGoResult(const char* methodName, const char* result);
 
     QScopedPointer<RCTStatusPrivate> d_ptr;
 };

@@ -3,7 +3,10 @@
 
 #include "moduleinterface.h"
 
+#include <QLoggingCategory>
 #include <QVariantMap>
+
+Q_DECLARE_LOGGING_CATEGORY(LINKING)
 
 class DesktopLinkingPrivate;
 class DesktopLinking : public QObject, public ModuleInterface {

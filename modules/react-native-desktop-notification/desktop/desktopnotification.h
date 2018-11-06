@@ -13,7 +13,10 @@
 
 #include "moduleinterface.h"
 
+#include <QLoggingCategory>
 #include <QVariantMap>
+
+Q_DECLARE_LOGGING_CATEGORY(NOTIFICATION)
 
 class DesktopNotificationPrivate;
 class DesktopNotification : public QObject, public ModuleInterface {
