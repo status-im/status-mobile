@@ -414,6 +414,10 @@
                     :name     "Livepeer Token"
                     :address  "0x58b6a8a3302369daec383334672404ee733ab239"
                     :decimals 18}
+                   {:symbol   :ST
+                    :name     "Simple Token"
+                    :address  "0x2c4e8f2d746113d0696ce89b35f0d8bf88e0aeca"
+                    :decimals 18}
                    ;; NOTE(goranjovic) : the following three tokens are removed from the Manage Assets list
                    ;; and automatically removed from user's selection by a migration. However, we still need
                    ;; them listed here in order to correctly display any previous transactions the user had
