@@ -4,7 +4,7 @@ pipeline {
   options {
     disableConcurrentBuilds()
     /* Prevent Jenkins jobs from running forever */
-    timeout(time: 35, unit: 'MINUTES')
+    timeout(time: 45, unit: 'MINUTES')
     /* Limit builds retained */
     buildDiscarder(logRotator(
       numToKeepStr: '10',
@@ -38,6 +38,11 @@ pipeline {
         steps { script {
           nix = cmn.buildBranch('status-react/combined/desktop-linux')
         } } }
+        stage('Windows') {
+        when { expression { btype != 'release' } }
+        steps { script {
+          win = cmn.buildBranch('status-react/combined/desktop-windows')
+        } } }
         stage('iOS') { steps { script {
           ios = cmn.buildBranch('status-react/combined/mobile-ios')
         } } }
@@ -56,6 +61,7 @@ pipeline {
         if (btype != 'release') {
           cmn.copyArts('status-react/combined/desktop-macos', osx.number)
           cmn.copyArts('status-react/combined/desktop-linux', nix.number)
+          cmn.copyArts('status-react/combined/desktop-windows', win.number)
         }
         cmn.copyArts('status-react/combined/mobile-ios', ios.number)
         cmn.copyArts('status-react/combined/mobile-android', dro.number)
@@ -72,20 +78,22 @@ pipeline {
         if (btype != 'release') {
           dmgUrl = cmn.uploadArtifact(cmn.pkgFind('dmg'))
           appUrl = cmn.uploadArtifact(cmn.pkgFind('AppImage'))
+          zipUrl = cmn.uploadArtifact(cmn.pkgFind('zip'))
         } else {
           dmgUrl = null
           appUrl = null
+          zipUrl = null
         }
         /* special case for iOS Diawi links */
         ipaUrl = ios.getBuildVariables().get('DIAWI_URL')
         /* add URLs to the build description */
         cmn.setBuildDesc(
-          Apk: apkUrl, e2e: e2eUrl, iOS: ipaUrl, App: appUrl, Mac: dmgUrl,
+          Apk: apkUrl, e2e: e2eUrl, iOS: ipaUrl, App: appUrl, Mac: dmgUrl, Win: zipUrl,
         )
         /* Create latest.json with newest nightly URLs */
         if (btype == 'nightly') {
           cmn.updateLatestNightlies(
-            APK: apkUrl, IOS: ipaUrl, APP: appUrl, MAC: dmgUrl
+            APK: apkUrl, IOS: ipaUrl, APP: appUrl, MAC: dmgUrl, Win: zipUrl
           )
         }
       } }
@@ -94,7 +102,7 @@ pipeline {
       steps { script {
         if (env.CHANGE_ID != null) {
           cmn.githubNotify(
-            apkUrl, e2eUrl, ipaUrl, dmgUrl, appUrl,
+            apkUrl, e2eUrl, ipaUrl, dmgUrl, appUrl, zipUrl,
             env.CHANGE_ID
           )
         }

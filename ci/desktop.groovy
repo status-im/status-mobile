@@ -60,6 +60,17 @@ def compile() {
   sh './scripts/build-desktop.sh compile'
 }
 
+def bundleWindows(type = 'nightly') {
+  def pkg
+
+  sh './scripts/build-desktop.sh bundle'
+  dir(packageFolder) {
+    pkg = common.pkgFilename(type, 'zip')
+    sh "mv ../Status-Windows-x86_64.zip ${pkg}"
+  }
+  return "${packageFolder}/${pkg}".drop(2)
+}
+
 def bundleLinux(type = 'nightly') {
   def pkg
 

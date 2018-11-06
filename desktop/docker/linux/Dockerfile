@@ -29,11 +29,11 @@ COPY --from=qt_build /opt/qt-all/${QT_VERSION}/gcc_64 /opt/qt
 RUN ln -s /opt/qt/mkspecs /usr/local/mkspecs && \
     ln -s /opt/qt/plugins /usr/local/plugins
 
-ENV LANG en_US.UTF-8 \
-    LC_ALL en_US.UTF-8 \
-    LANGUAGE en_US.UTF-8 \
-    LEIN_HOME /var/tmp/lein \
-    NPM_CONFIG_CACHE /var/tmp/npm
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
+ENV LEIN_HOME /var/tmp/lein
+ENV NPM_CONFIG_CACHE /var/tmp/npm
 
 # We have to do this because Jenkins doesn't let us
 # https://issues.jenkins-ci.org/browse/JENKINS-49076

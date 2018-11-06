@@ -1,0 +1,87 @@
+pipeline {
+  agent {
+    /* privileged mode is necessary for fuse */
+    docker {
+      label 'linux-new'
+      image 'statusteam/windows-desktop-ubuntu:1.0.0'
+      args (
+        "--privileged "+
+        "-v /dev/fuse:/dev/fuse "+
+        "-v /var/tmp/lein:/var/tmp/lein:rw "+
+        "-v /var/tmp/npm:/var/tmp/npm:rw "+
+        "-v /opt/StatusIm-Windows-base-image.zip:/opt/StatusIm-Windows-base-image.zip:ro"
+      )
+    }
+  }
+
+  options {
+    /* Prevent Jenkins jobs from running forever */
+    timeout(time: 45, unit: 'MINUTES')
+    /* Limit builds retained */
+    buildDiscarder(logRotator(
+      numToKeepStr: '60',
+      daysToKeepStr: '30',
+      artifactNumToKeepStr: '60',
+    ))
+  }
+
+  /**
+   * WARNING: Jenkins ignores PATH changes in Docker
+   * https://issues.jenkins-ci.org/browse/JENKINS-49076
+   **/
+  environment {
+    BUILD_PLATFORM = 'linux'
+    LANG = 'en_US.UTF-8'
+    LANGUAGE = 'en_US.UTF-8'
+    LC_ALL = 'en_US.UTF-8'
+    NPM_CONFIG_CACHE = '/var/tmp/npm'
+    LEIN_HOME = '/var/tmp/lein'
+    TARGET_SYSTEM_NAME = 'Windows'
+    CONAN_PRINT_RUN_COMMANDS = '1'
+    CONAN_SYSREQUIRES_MODE = 'disabled'
+    CONAN_SYSREQUIRES_SUDO = '0'
+    STATUSIM_WINDOWS_BASEIMAGE_ZIP = '/opt/StatusIm-Windows-base-image.zip'
+  }
+
+  stages {
+    stage('Prep') {
+      steps {
+        script {
+          /* Necessary to load methods */
+          desktop = load 'ci/desktop.groovy'
+          cmn     = load 'ci/common.groovy'
+          sh 'env'
+          desktop.prepDeps()
+        }
+      }
+    }
+    stage('Lint') {
+      steps {
+        script { cmn.runLint() }
+      }
+    }
+    stage('Tests') {
+      steps {
+        script { cmn.runTests() }
+      }
+    }
+    stage('Build') {
+      steps {
+        script { desktop.buildClojureScript() }
+      }
+    }
+    stage('Compile') {
+      steps {
+        script { desktop.compile() }
+      }
+    }
+    stage('Bundle') {
+      steps {
+        script { app = desktop.bundleWindows(cmn.getBuildType()) }
+      }
+    }
+    stage('Archive') {
+      steps { archiveArtifacts app }
+    }
+  }
+}
