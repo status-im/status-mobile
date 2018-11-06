@@ -1,6 +1,7 @@
 (ns status-im.init.core
   (:require [re-frame.core :as re-frame]
             [status-im.chat.models.loading :as chat-loading]
+            [status-im.accounts.core :as accounts.core]
             [status-im.accounts.login.core :as accounts.login]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.constants :as constants]
@@ -191,7 +192,8 @@
             (universal-links/process-stored-event)
             (notifications/process-stored-event address)
             (when platform/desktop?
-              (chat-model/update-dock-badge-label))))
+              (chat-model/update-dock-badge-label))
+            (accounts.core/show-desktop-alpha-release-warning)))
 
 (defn dev-mode? [cofx]
   (get-in cofx [:db :account/account :dev-mode?]))

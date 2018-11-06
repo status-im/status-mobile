@@ -108,3 +108,6 @@
                                (assoc :mailserver wnode)))
             updated      (serialize new-settings)]
         (aset account "settings" updated)))))
+
+(defn v15 [old-realm new-realm]
+  (log/debug "migrating base database v15: " old-realm new-realm))

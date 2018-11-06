@@ -55,7 +55,7 @@
     "querystring-es3": "0.2.1",
     "react": "16.4.1",
     "react-dom": "16.4.2",
-    "react-native": "git+https://github.com/status-im/react-native-desktop.git#master",
+    "react-native": "git+https://github.com/status-im/react-native-desktop.git#v0.56.1",
     "react-native-background-timer": "2.0.0",
     "react-native-camera": "0.10.0",
     "react-native-config": "git+https://github.com/status-im/react-native-config.git",

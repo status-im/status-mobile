@@ -1,6 +1,7 @@
 (ns status-im.accounts.create.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.accounts.core :as accounts.core]
             [status-im.accounts.login.core :as accounts.login]
             [status-im.accounts.statuses :as statuses]
             [status-im.accounts.update.core :as accounts.update]
@@ -93,7 +94,8 @@
             {:db                                  (assoc db :accounts/create {:show-welcome? true})
              :notifications/request-notifications-permissions nil
              :dispatch                            [:navigate-to :home]}
-            (accounts.update/account-update {:name (:name create)} {})))
+            (accounts.update/account-update {:name (:name create)} {})
+            (accounts.core/show-desktop-alpha-release-warning)))
 
 (fx/defn next-step
   [{:keys [db] :as cofx} step password password-confirm]

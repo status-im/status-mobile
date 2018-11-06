@@ -199,6 +199,7 @@
     "browsing-site-blocked-go-back": "Go back",
     "wallet-add-asset": "Add asset",
     "mainnet-is-default-alert-title": "Hello",
+    "desktop-alpha-release-warning": "Thanks for trying Status Desktop! This is an early alpha release focused on chat, and is missing several features found in the mobile client and may contain bugs and other issues. Please note that this is an alpha release and we advise you that using this app should be done for testing purposes only and you assume the full responsibility for all risks concerning your data and funds. Status makes no claims of security or integrity of funds in these builds.",
     "delete-message": "Delete message",
     "browser": "Browser",
     "sign-message": "Sign Message",

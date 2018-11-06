@@ -207,3 +207,7 @@
 (def v13 (assoc-in v12
                    [:properties :desktop-notifications?]
                    {:type :bool :default false}))
+
+(def v14 (assoc-in v13
+                   [:properties :desktop-alpha-release-warning-shown?]
+                   {:type :bool :default false}))

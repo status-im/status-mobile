@@ -122,6 +122,11 @@
    (accounts.update/account-update cofx {:mainnet-warning-shown? true} {})))
 
 (handlers/register-handler-fx
+ :accounts.ui/desktop-alpha-release-warning-shown
+ (fn [cofx _]
+   (accounts.update/account-update cofx {:desktop-alpha-release-warning-shown? true} {})))
+
+(handlers/register-handler-fx
  :accounts.ui/dev-mode-switched
  (fn [cofx [_ dev-mode?]]
    (accounts/switch-dev-mode cofx dev-mode?)))
