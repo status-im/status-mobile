@@ -136,6 +136,7 @@
     "twelve-words-in-correct-order": "12 words in correct order",
     "permissions": "Permissions",
     "save-password-unavailable": "Set device passcode to save password",
+    "save-password-unavailable-android": "Save password is unavailable: your device may be rooted or lacks necessary security features.",
     "currency-display-name-inr": "India Rupee",
     "transaction-moved-title": "Transaction moved",
     "counter-9-plus": "9+",

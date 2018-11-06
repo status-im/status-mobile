@@ -5936,10 +5936,9 @@ react-native-invertible-scroll-view@1.1.0:
     react-clone-referenced-element "^1.0.1"
     react-native-scrollable-mixin "^1.0.1"
 
-react-native-keychain@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-3.0.0.tgz#29da1dfa43c2581f76bf9420914fd38a1558cf18"
-  integrity sha512-0incABt1+aXsZvG34mDV57KKanSB+iMHmxvWv+N6lgpNLaSoqrCxazjbZdeqD4qJ7Z+Etp5CLf/4v1aI+sNLBw==
+"react-native-keychain@https://github.com/status-im/react-native-keychain#v.3.0.0-status":
+  version "3.0.0-rc.3"
+  resolved "https://github.com/status-im/react-native-keychain#43e5512cabb8ee064fd9e503be943dcf2c7d7669"
 
 react-native-level-fs@3.0.1:
   version "3.0.1"

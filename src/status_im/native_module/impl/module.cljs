@@ -8,7 +8,8 @@
             [status-im.utils.platform :as p]
             [status-im.utils.async :as async-util]
             [status-im.react-native.js-dependencies :as rn-dependencies]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [status-im.utils.platform :as platform]))
 
 ;; if StatusModule is not initialized better to store
 ;; calls and make them only when StatusModule is ready
@@ -171,3 +172,24 @@
 (defn update-mailservers [enodes on-result]
   (when status
     (call-module #(.updateMailservers status enodes on-result))))
+
+(defn rooted-device? [callback]
+  (cond
+    ;; we assume that iOS is safe by default
+    platform/ios?
+    (callback false)
+
+    ;; we assume that Desktop is unsafe by default
+    ;; (theoretically, Desktop is always "rooted", by design
+    platform/desktop?
+    (callback true)
+
+    ;; we check root on android
+    platform/android?
+    (if status
+      (call-module #(.isDeviceRooted status callback))
+      ;; if module isn't initialized we return true to avoid degrading security
+      (callback true))
+
+    ;; in unknown scenarios we also consider the device rooted to avoid degrading security
+    :else (callback true)))
