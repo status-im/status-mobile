@@ -14,8 +14,7 @@
  (fn [[browsers dapps]]
    (reduce (fn [acc [k {:keys [dapp? name] :as browser}]]
              (cond-> (update acc k assoc
-                             :url     (browser/get-current-url browser)
-                             :secure? (browser/secure? browser))
+                             :url (browser/get-current-url browser))
                dapp? (assoc-in [k :dapp] (get dapps name))))
            browsers
            browsers)))
@@ -25,4 +24,5 @@
  :<- [:get :browser/options]
  :<- [:browser/browsers]
  (fn [[options browsers]]
-   (get browsers (:browser-id options))))
+   (let [browser (get browsers (:browser-id options))]
+     (assoc browser :secure? (browser/secure? browser options)))))

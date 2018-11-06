@@ -5,6 +5,7 @@
 (spec/def :browser/browser-id (spec/nilable string?))
 (spec/def :browser/timestamp (spec/nilable int?))
 (spec/def :browser/name (spec/nilable string?))
+(spec/def :browser/url (spec/nilable string?))
 (spec/def :browser/dapp? (spec/nilable boolean?))
 (spec/def :browser/error? (spec/nilable boolean?))
 (spec/def :browser/history (spec/nilable vector?))
@@ -15,6 +16,7 @@
 (spec/def :browser/url-editing? (spec/nilable boolean?))
 (spec/def :browser/show-tooltip (spec/nilable keyword?))
 (spec/def :browser/show-permission (spec/nilable map?))
+(spec/def :browser/resolved-ens (spec/nilable map?))
 (spec/def :browser/pending-permissions (spec/nilable list?))
 (spec/def :browser/yielding-control? (spec/nilable boolean?))
 
@@ -22,6 +24,7 @@
   (spec/nilable
    (allowed-keys
     :opt-un [:browser/browser-id
+             :browser/url
              :browser/loading?
              :browser/resolving?
              :browser/url-editing?
@@ -29,6 +32,7 @@
              :browser/show-permission
              :browser/pending-permissions
              :browser/yielding-control?
+             :browser/resolved-ens
              :browser/error?])))
 
 (spec/def :browser/browser

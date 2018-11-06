@@ -36,8 +36,7 @@
                                        "resolver(bytes32)"
                                        (namehash ens-name))
                  (fn [_ address] (let [address (ethereum/hex->address address)]
-                                   (when (and address (not= address default-address))
-                                     (cb address))))))
+                                   (cb (if (and address (not= address default-address)) address ""))))))
 
 (defn owner [web3 registry ens-name cb]
   (ethereum/call web3
@@ -90,6 +89,7 @@
 
 (defn is-valid-eth-name? [ens-name]
   (and ens-name
+       (string? ens-name)
        (string/ends-with? ens-name ".eth")))
 
 (defn pubkey [web3 resolver ens-name cb]

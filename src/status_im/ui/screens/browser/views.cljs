@@ -28,7 +28,7 @@
 (def browser-config
   (edn/read-string (slurp "./src/status_im/utils/browser_config.edn")))
 
-(defn toolbar-content [url {:keys [secure?] :as browser} url-editing?]
+(defn toolbar-content [url url-original {:keys [secure?]} url-editing?]
   (let [url-text (atom url)]
     [react/view
      [react/view (styles/toolbar-content false)
@@ -48,20 +48,20 @@
                            :ellipsize         :end
                            :style             styles/url-input}]
         [react/touchable-highlight {:style {:flex 1} :on-press #(re-frame/dispatch [:browser.ui/url-input-pressed])}
-         [react/text {:style styles/url-text} (http/url-host url)]])]]))
+         [react/text {:style styles/url-text} (http/url-host url-original)]])]]))
 
 (defn- on-options [name browser-id]
   (list-selection/show {:title   name
                         :options (wallet.actions/actions browser-id)}))
 
-(defn toolbar [error? url browser browser-id url-editing?]
+(defn toolbar [error? url url-original browser browser-id url-editing?]
   [toolbar.view/toolbar {}
    [toolbar.view/nav-button-with-count
     (actions/close (fn []
                      (re-frame/dispatch [:navigate-to :home])
                      (when error?
                        (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
-   [toolbar-content url browser url-editing?]
+   [toolbar-content url url-original browser url-editing?]
    [toolbar.view/actions [{:icon      :icons/options
                            :icon-opts {:color               :black
                                        :accessibility-label :chat-menu-button}
@@ -107,14 +107,14 @@
 ;; that's why it can't be used in `browser`, because `url` comes from subs
 (views/defview browser-component
   [{:keys [webview error? url browser browser-id unsafe? can-go-back?
-           can-go-forward? url-editing? resolving? network-id address
+           can-go-forward? url-editing? resolving? network-id address url-original
            show-permission show-tooltip opt-in? loading? dapp? rpc-url name]}]
   {:should-component-update (fn [_ _ args]
                               (let [[_ props] args]
                                 (not (nil? (:url props)))))}
   [react/view styles/browser
    [status-bar/status-bar]
-   [toolbar error? url browser browser-id url-editing?]
+   [toolbar error? url url-original browser browser-id url-editing?]
    [react/view components.styles/flex
     (if unsafe?
       [site-blocked.views/view {:can-go-back? can-go-back?
@@ -125,7 +125,7 @@
         :ref                                   #(do
                                                   (reset! webview %)
                                                   (re-frame/dispatch [:set :webview-bridge %]))
-        :source                                (when-not resolving? {:uri url})
+        :source                                (when (and url (not resolving?)) {:uri url})
         :java-script-enabled                   true
         :bounces                               false
         :local-storage-enabled                 true
@@ -159,17 +159,18 @@
   (views/letsubs [webview    (atom nil)
                   {:keys [address settings]} [:get-current-account]
                   {:keys [browser-id dapp? name unsafe?] :as browser} [:get-current-browser]
-                  {:keys [error? loading? url-editing? show-tooltip show-permission resolving?]} [:get :browser/options]
+                  {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:get :browser/options]
                   rpc-url    [:get :rpc-url]
                   network-id [:get-network-id]]
     (let [can-go-back?    (browser/can-go-back? browser)
           can-go-forward? (browser/can-go-forward? browser)
-          url             (browser/get-current-url browser)
+          url-original    (browser/get-current-url browser)
           opt-in?         (:web3-opt-in? settings)]
       [browser-component {:webview         webview
                           :dapp?           dapp?
                           :error?          error?
                           :url             url
+                          :url-original    url-original
                           :browser         browser
                           :browser-id      browser-id
                           :unsafe?         unsafe?
