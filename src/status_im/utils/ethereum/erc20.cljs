@@ -145,6 +145,9 @@
        (error-fn error)
        (add-block-info web3 current-block-number chain direction result success-fn)))))
 
+;; we want to query over a limited number of blocks in order to avoid having timeouts
+(def block-query-limit 100000)
+
 ;;
 ;; Here we are querying event logs for Transfer events.
 ;;
@@ -155,7 +158,6 @@
 ;; - topics[1] - address of token sender with leading zeroes padding up to 32 bytes
 ;; - topics[2] - address of token sender with leading zeroes padding up to 32 bytes
 ;;
-
 (defn get-token-transfer-logs
   ;; NOTE(goranjovic): here we use direct JSON-RPC calls to get event logs because of web3 event issues with infura
   ;; we still use web3 to get other data, such as block info
@@ -163,11 +165,14 @@
   (let [[from to] (if (= :inbound direction)
                     [nil (ethereum/normalized-address address)]
                     [(ethereum/normalized-address address) nil])
+        from-block (if (= :mainnet chain)
+                     (-> current-block-number (- block-query-limit) ethereum/int->hex)
+                     "0x0")
         args {:jsonrpc "2.0"
               :id      2
               :method  constants/web3-get-logs
               :params  [{:address   (map string/lower-case contracts)
-                         :fromBlock "0x0"
+                         :fromBlock from-block
                          :topics    [constants/event-transfer-hash
                                      (add-padding from)
                                      (add-padding to)]}]}
