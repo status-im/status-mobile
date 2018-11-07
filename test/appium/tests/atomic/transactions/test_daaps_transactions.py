@@ -110,38 +110,27 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(5355)
     @marks.critical
-    def test_onboarding_screen_is_shown_for_account_when_requesting_tokens(self):
+    def test_onboarding_screen_when_requesting_tokens_for_new_account(self):
         signin_view = SignInView(self.driver)
         home_view = signin_view.create_user()
         status_test_dapp = home_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.assets_button.click()
         send_transaction_view = status_test_dapp.request_stt_button.click()
-
-        onboarding_screen_error_msg = 'It seems onborading screen is not shown.'
-
         if not send_transaction_view.onboarding_message.is_element_displayed():
-            self.driver.fail(onboarding_screen_error_msg)
+            self.driver.fail('It seems onboarding screen is not shown.')
 
-        send_transaction_view.click_system_back_button()
-        if not status_test_dapp.assets_button.is_element_displayed():
-            self.driver.fail('Could not back to status test dapp screen.')
-
-        status_test_dapp.click_system_back_button()
-        profile = home_view.profile_button.click()
-        signin_view = profile.logout()
-
-        sender = transaction_senders['U']
-        passphrase = sender['passphrase']
-
-        home_view = signin_view.recover_access(passphrase=passphrase)
+    @marks.testrail_id(5677)
+    @marks.high
+    def test_onboarding_screen_when_requesting_tokens_for_recovered_account(self):
+        signin_view = SignInView(self.driver)
+        home_view = signin_view.recover_access(passphrase=transaction_senders['U']['passphrase'])
         status_test_dapp = home_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.assets_button.click()
         send_transaction_view = status_test_dapp.request_stt_button.click()
-
         if not send_transaction_view.onboarding_message.is_element_displayed():
-            self.driver.fail(onboarding_screen_error_msg)
+            self.driver.fail('It seems onboarding screen is not shown.')
 
     @marks.testrail_id(5380)
     @marks.high

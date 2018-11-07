@@ -325,7 +325,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.mail_server_by_name(server_name).click()
         profile_1.mail_server_connect_button.click()
         profile_1.confirm_button.click()
-        sign_in_1.sign_in()
+        profile_1.get_back_to_home_view()
+        profile_1.home_button.click()
 
         chat_1 = home_1.add_contact(public_key)
         message = 'test message'

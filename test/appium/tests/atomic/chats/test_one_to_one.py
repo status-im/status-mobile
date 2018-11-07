@@ -201,9 +201,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2.element_starts_with_text(url_message, 'button').click()
         web_view = chat_2.open_in_status_button.click()
         try:
-            web_view.find_full_text('Status, the Ethereum discovery tool.')
+            web_view.find_full_text('Access a Better Web, Anywhere')
         except TimeoutException:
-            self.errors.append('URL was not opened from 1-1 chat')
+            self.errors.append('Device 2: URL was not opened from 1-1 chat')
         web_view.back_to_home_button.click()
         chat_2.get_back_to_home_view()
 
@@ -215,9 +215,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1.element_starts_with_text(url_message, 'button').click()
         web_view = chat_1.open_in_status_button.click()
         try:
-            web_view.find_full_text('Status, the Ethereum discovery tool.')
+            web_view.find_full_text('Access a Better Web, Anywhere')
         except TimeoutException:
-            self.errors.append('URL was not opened from 1-1 chat')
+            self.errors.append('Device 1: URL was not opened from 1-1 chat')
         self.verify_no_errors()
 
     @marks.testrail_id(5326)
