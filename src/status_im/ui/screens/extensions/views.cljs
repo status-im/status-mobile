@@ -14,15 +14,20 @@
   [react/view (styles/mailserver-icon true)
    [vector-icons/icon :icons/mailserver {:color :white}]])
 
-(defn- render-extension [{:keys [id name url active?]}]
-  [list/list-item-with-checkbox
-   {:checked?        active?
-    :on-value-change #(re-frame/dispatch [:extensions.ui/activation-checkbox-pressed id %])}
-   [list/item
-    mailserver-icon
-    [list/item-content
-     [list/item-primary name]
-     [list/item-secondary url]]]])
+(defn- render-extension [{:keys [name url active?]}]
+  [list/deletable-list-item {:type      :extensions
+                             :id        url
+                             :on-delete #(do
+                                           (re-frame/dispatch [:set-swipe-position :extensions url false])
+                                           (re-frame/dispatch [:extensions.ui/uninstall-extension-pressed url]))}
+   [list/list-item-with-checkbox
+    {:checked?        active?
+     :on-value-change #(re-frame/dispatch [:extensions.ui/activation-checkbox-pressed url %])}
+    [list/item
+     mailserver-icon
+     [list/item-content
+      [list/item-primary name]
+      [list/item-secondary url]]]]])
 
 (views/defview extensions-settings []
   (views/letsubs [extensions [:extensions/all-extensions]]
@@ -38,6 +43,8 @@
                        :default-separator?      false
                        :key-fn                  :id
                        :render-fn               render-extension
-                       :content-container-style (merge (when (zero? (count extensions)) {:flex-grow 1}) {:justify-content :center})
+                       :content-container-style (merge (when (zero? (count extensions))
+                                                         {:flex-grow 1})
+                                                       {:justify-content :center})
                        :empty-component         [react/text {:style styles/empty-list}
                                                  (i18n/label :t/no-extension)]}]]]))

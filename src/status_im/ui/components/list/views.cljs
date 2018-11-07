@@ -18,13 +18,16 @@
 
   [section-list {:sections [{:title \"\" :key :unik :render-fn render :data {:title  \"\" :subtitle \"\"}}]}]
   "
+  (:require-macros [status-im.utils.views :as views])
   (:require [reagent.core :as reagent]
+            [status-im.ui.components.animation :as animation]
             [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.styles :as styles]
             [status-im.ui.components.react :as react]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.ui.screens.home.animations.responder :as responder]))
 
 (def flat-list-class (react/get-class "FlatList"))
 (def section-list-class (react/get-class "SectionList"))
@@ -219,3 +222,16 @@
    [react/text {:style styles/label}
     label]
    list])
+
+(views/defview deletable-list-item [{:keys [type id on-delete]} body]
+  (views/letsubs [swiped? [:delete-swipe-position type id]]
+    (let [offset-x            (animation/create-value (if swiped? styles/delete-button-width 0))
+          swipe-pan-responder (responder/swipe-pan-responder offset-x styles/delete-button-width id swiped?)
+          swipe-pan-handler   (responder/pan-handlers swipe-pan-responder)]
+      [react/view swipe-pan-handler
+       [react/animated-view {:style {:flex 1 :right offset-x}}
+        body
+        [react/touchable-highlight {:style    styles/delete-icon-highlight
+                                    :on-press on-delete}
+         [react/view {:style styles/delete-icon-container}
+          [vector-icons/icon :icons/delete {:color colors/red}]]]]])))

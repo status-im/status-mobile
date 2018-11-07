@@ -1,18 +1,15 @@
 (ns status-im.extensions.core
   (:refer-clojure :exclude [list])
   (:require [clojure.string :as string]
-            [pluto.reader :as reader]
-            [pluto.registry :as registry]
             [pluto.storages :as storages]
+            [pluto.reader :as reader]
             [re-frame.core :as re-frame]
-            [status-im.accounts.update.core :as accounts.update]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.impl.transactions :as transactions]
             [status-im.ui.components.button.view :as button]
             [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.handlers :as handlers]
@@ -324,64 +321,11 @@
   [{:keys [db]} input-key value]
   {:db (update db :extensions/manage assoc input-key {:value value})})
 
-(fx/defn fetch [cofx id]
-  (get-in cofx [:db :account/account :extensions id]))
+(fx/defn fetch [cofx ext-key]
+  (get-in cofx [:db :account/account :extensions ext-key]))
 
 (fx/defn edit
-  [cofx id]
-  (let [{:keys [url]} (fetch cofx id)]
+  [cofx extension-key]
+  (let [{:keys [url]} (fetch cofx extension-key)]
     (fx/merge (set-input cofx :url (str url))
               (navigation/navigate-to-cofx :edit-extension nil))))
-
-(fx/defn add
-  [cofx extension-data active?]
-  (let [extension-key  "extension"
-        extension-data (assoc-in extension-data ['meta :name] extension-key)]
-    (fx/merge cofx
-              #(registry/deactivate extension-key %)
-              #(registry/add extension-data %)
-              (when active?
-                #(registry/activate extension-key %)))))
-
-(fx/defn install
-  [{{:extensions/keys [manage] :account/keys [account] :as db} :db
-    random-id-generator :random-id-generator :as cofx}
-   extension-data]
-  (let [extension-key  (get-in extension-data ['meta :name])
-        {:keys [url id]} manage
-        extension      {:id      (or (:value id) "extension")
-                        :name    (str extension-key)
-                        :url     (:value url)
-                        :active? true}
-        new-extensions (assoc (:extensions account) (:id extension) extension)]
-    (fx/merge cofx
-              {:ui/show-confirmation {:title     (i18n/label :t/success)
-                                      :content   (i18n/label :t/extension-installed)
-                                      :on-accept #(re-frame/dispatch [:navigate-to-clean :my-profile])
-                                      :on-cancel nil}}
-              (accounts.update/account-update {:extensions new-extensions} {})
-              (add extension-data true))))
-
-(fx/defn toggle-activation
-  [cofx id state]
-  (let [toggle-fn      (get {true  registry/activate
-                             false registry/deactivate}
-                            state)
-        extensions     (get-in cofx [:db :account/account :extensions])
-        new-extensions (assoc-in extensions [id :active?] state)]
-    (fx/merge cofx
-              (accounts.update/account-update {:extensions new-extensions} {:success-event nil})
-              #(toggle-fn id %))))
-
-(fx/defn load
-  [_ url]
-  {:extensions/load {:extensions [{:url     (string/trim url)
-                                   :active? true}]
-                     :follow-up  :extensions/stage}})
-
-(fx/defn activate-extensions
-  [{{:account/keys [account]} :db}]
-  (let [{:keys [extensions dev-mode?]} account]
-    (when dev-mode?
-      {:extensions/load {:extensions (vals extensions)
-                         :follow-up  :extensions/add}})))

@@ -20,7 +20,7 @@
     (let [updated-value (get-updated-value gesture end-offset-x swiped?)
           should-open?  (> updated-value (/ end-offset-x 2))
           to-value      (if should-open? end-offset-x 0)]
-      (re-frame/dispatch [:set-swipe-position chat-id should-open?])
+      (re-frame/dispatch [:set-swipe-position :chats chat-id should-open?])
       (animation/start (animation/spring animated-offset-x {:toValue to-value})))))
 
 (defn swipe-pan-responder [animated-offset-x end-offset-x chat-id swiped?]

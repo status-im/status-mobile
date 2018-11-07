@@ -5,7 +5,7 @@
             [re-frame.core :as re-frame]
             [status-im.accounts.db :as accounts.db]
             [status-im.chat.models :as chat]
-            [status-im.extensions.core :as extensions]
+            [status-im.extensions.registry :as extensions.registry]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
@@ -72,7 +72,7 @@
 
 (fx/defn handle-extension [cofx url]
   (log/info "universal-links: handling url profile" url)
-  (extensions/load cofx url))
+  (extensions.registry/load cofx url))
 
 (defn handle-not-found [full-url]
   (log/info "universal-links: no handler for " full-url))

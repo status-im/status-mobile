@@ -7,7 +7,7 @@
             [status-im.constants :as constants]
             [status-im.data-store.core :as data-store]
             [status-im.data-store.realm.core :as realm]
-            [status-im.extensions.core :as extensions]
+            [status-im.extensions.registry :as extensions.registry]
             [status-im.i18n :as i18n]
             [status-im.browser.core :as browser]
             [status-im.contact.core :as contact]
@@ -218,7 +218,7 @@
             (chat-loading/initialize-pending-messages)
             (browser/initialize-browsers)
             (browser/initialize-dapp-permissions)
-            (extensions/activate-extensions)
+            (extensions.registry/initialize)
             #(when-not platform/desktop?
                (initialize-wallet %))
             (accounts.update/update-sign-in-time)

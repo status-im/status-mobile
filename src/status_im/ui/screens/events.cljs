@@ -141,8 +141,8 @@
 
 (handlers/register-handler-fx
  :set-swipe-position
- (fn [{:keys [db]} [_ item-id value]]
-   {:db (assoc-in db [:chat-animations item-id :delete-swiped] value)}))
+ (fn [{:keys [db]} [_ type item-id value]]
+   {:db (assoc-in db [:animations type item-id :delete-swiped] value)}))
 
 (handlers/register-handler-fx
  :show-tab-bar

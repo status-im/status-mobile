@@ -4,7 +4,6 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.dimensions :as dimensions]
             [status-im.fleet.core :as fleet]
-            pluto.registry
             status-im.transport.db
             status-im.accounts.db
             status-im.contact.db
@@ -274,7 +273,7 @@
                                    :chat/chat-id
                                    :chat/new-chat
                                    :chat/new-chat-name
-                                   :chat/chat-animations
+                                   :chat/animations
                                    :chat/chat-ui-props
                                    :chat/chat-list-ui-props
                                    :chat/layout-height

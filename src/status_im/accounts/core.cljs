@@ -63,10 +63,10 @@
   (let [extensions (-> account :extensions vals)]
     (if dev-mode?
       {:extensions/load {:extensions extensions
-                         :follow-up  :extensions/add}}
-      {:dispatch [:extensions/deactivate-all (filter :active? extensions)]})))
+                         :follow-up  :extensions/add-to-registry}}
+      {:dispatch [:extensions/update-hooks extensions]})))
 
-(fx/defn switch-dev-mode [{{:account/keys [account]} :db :as cofx} dev-mode?]
+(fx/defn switch-dev-mode [cofx dev-mode?]
   (fx/merge cofx
             (update-dev-server-state dev-mode?)
             (update-extensions-state dev-mode?)

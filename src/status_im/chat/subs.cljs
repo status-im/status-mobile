@@ -370,7 +370,7 @@
  :chat-animations
  (fn [db [_ key type]]
    (let [chat-id (subscribe [:get-current-chat-id])]
-     (get-in db [:chat-animations @chat-id key type]))))
+     (get-in db [:animations :chats @chat-id key type]))))
 
 (reg-sub
  :get-chats-unread-messages-number

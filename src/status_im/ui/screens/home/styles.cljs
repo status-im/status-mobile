@@ -2,8 +2,6 @@
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.colors :as colors]))
 
-(def delete-button-width 100)
-
 (defn toolbar []
   {:background-color colors/white})
 
@@ -171,20 +169,6 @@
   {:size      42
    :icon-size 17
    :shadow?   false})
-
-(def delete-icon-highlight
-  {:position         :absolute
-   :top              0
-   :bottom           0
-   :right            -800
-   :width            800
-   :background-color colors/red-light})
-
-(def delete-icon-container
-  {:flex            1
-   :width           delete-button-width
-   :justify-content :center
-   :align-items     :center})
 
 (def action-button-container
   {:position :absolute
