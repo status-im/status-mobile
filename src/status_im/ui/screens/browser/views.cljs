@@ -135,13 +135,13 @@
         :on-load                               #(re-frame/dispatch [:browser/loading-started])
         :on-error                              #(re-frame/dispatch [:browser/error-occured])
         :injected-on-start-loading-java-script (str (not opt-in?) js-res/web3
-                                                    (get-inject-js url)
                                                     (if opt-in?
                                                       (js-res/web3-opt-in-init (str network-id))
                                                       (js-res/web3-init
                                                        rpc-url
                                                        (ethereum/normalized-address address)
-                                                       (str network-id))))
+                                                       (str network-id)))
+                                                    (get-inject-js url))
         :injected-java-script                  js-res/webview-js}])
     (when (or loading? resolving?)
       [react/view styles/web-view-loading
