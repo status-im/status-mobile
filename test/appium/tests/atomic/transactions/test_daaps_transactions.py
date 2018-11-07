@@ -2,7 +2,7 @@ import pytest
 
 from tests import marks, unique_password
 from tests.base_test_case import SingleDeviceTestCase
-from tests.users import transaction_senders
+from tests.users import transaction_senders, transaction_recipients
 from views.sign_in_view import SignInView
 
 
@@ -142,3 +142,26 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
         if not send_transaction_view.onboarding_message.is_element_displayed():
             self.driver.fail(onboarding_screen_error_msg)
+
+    @marks.testrail_id(5380)
+    @marks.high
+    def test_user_can_complete_tx_to_dapp_when_onboarding_via_dapp_completed(self):
+        user = transaction_recipients['G']
+        signin_view = SignInView(self.driver)
+        home_view = signin_view.recover_access(passphrase=user['passphrase'])
+        status_test_dapp = home_view.open_status_test_dapp()
+        status_test_dapp.wait_for_d_aap_to_load()
+        status_test_dapp.assets_button.click()
+
+        send_transaction_view = status_test_dapp.request_stt_button.click()
+        if not send_transaction_view.onboarding_message.is_element_displayed():
+            self.driver.fail('It seems onborading screen is not shown.')
+        send_transaction_view.complete_onboarding()
+
+        if not send_transaction_view.sign_transaction_button.is_element_displayed():
+            self.driver.fail('It seems transaction sign screen is not shown.')
+
+        send_transaction_view.sign_transaction()
+
+        if not status_test_dapp.assets_button.is_element_displayed():
+            self.driver.fail('It seems users was not redirected to Status DAPP screen.')

@@ -177,6 +177,13 @@ class SendTransactionView(BaseView):
 
         self.onboarding_message = OnboardingMessage(self.driver)
 
+    def complete_onboarding(self):
+        if self.onboarding_message.is_element_displayed():
+            from views.wallet_view import WalletView
+            wallet_view = WalletView(self.driver)
+            wallet_view.done_button.click()
+            self.yes_button.click()
+
     def sign_transaction(self, sender_password: str = common_password):
         self.sign_transaction_button.click_until_presence_of_element(self.enter_password_input)
         self.enter_password_input.send_keys(sender_password)

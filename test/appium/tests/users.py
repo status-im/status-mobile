@@ -230,3 +230,9 @@ transaction_recipients['F']['username'] = "Exhausted Yellowgreen Polecat"
 transaction_recipients['F']['address'] = "81e0b035fe73f4f1aefeb5c75537c7d9b423149f"
 transaction_recipients['F']['public_key'] = "0x04bf7da995d4e35a9fec3eec00f1b628d8c47fe931014111236cae617bd1dbd4743a49" \
                                             "684d083b4552d86a37380c8b0d49688e2026e2c801b4b503a9a8383c533d"
+transaction_recipients['G'] = dict()
+transaction_recipients['G']['passphrase'] = "spray tired dentist case please list occur envelope they across picture spatial"
+transaction_recipients['G']['username'] = "Amused Dazzling Badger"
+transaction_recipients['G']['address'] = "b1f8b0db0f12e45d7712625bc53535235d245a9f"
+transaction_recipients['G']['public_key'] = "0x04f08a05551c3704284ca03ea2ff7fe613a00e52be86d6b433f7e38fa31fd0741eebf" \
+                                            "4344ad8d1652896440dada4017665e9b16ae328cb829b9e647b65c7024df7"

@@ -81,3 +81,6 @@ class StatusTestDAppView(BaseWebView):
 
         self.status_api_button = StatusAPIButton(self.driver)
         self.request_contact_code_button = StatusAPIButton.RequestContactCodeButton(self.driver)
+
+    def wait_for_d_aap_to_load(self, wait_time=10):
+        self.assets_button.wait_for_visibility_of_element(seconds=wait_time)
