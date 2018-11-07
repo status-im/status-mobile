@@ -48,7 +48,8 @@ RUN apt-get update && apt-get -q -y --no-install-recommends install curl softwar
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive \
       apt-get -q -y --no-install-recommends install \
-      wget git unzip golang-go nodejs yarn file python \
+      wget git unzip golang-go nodejs yarn file \
+      python python3-pip python3-setuptools python3-wheel \
       apt-transport-https locales openjdk-8-jdk-headless \
       extra-cmake-modules build-essential gcc g++ fuse \
       libx11-xcb1 libxss1 libasound2 libgl-dev libsm6 libxrandr2 python-dev \
