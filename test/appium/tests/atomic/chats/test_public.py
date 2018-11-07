@@ -110,7 +110,6 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 @marks.chat
 class TestPublicChatSingleDevice(SingleDeviceTestCase):
 
-    @marks.skip
     @marks.testrail_id(5392)
     @marks.high
     def test_send_korean_characters(self):
