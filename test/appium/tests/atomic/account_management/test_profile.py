@@ -201,6 +201,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5382)
     @marks.high
+    @marks.battery_consumption
     def test_contact_profile_view(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()

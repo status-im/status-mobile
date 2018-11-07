@@ -2,6 +2,7 @@ import asyncio
 import logging
 from datetime import datetime
 
+from support.appium_container import AppiumContainer
 from support.test_data import TestSuiteData
 
 
@@ -24,6 +25,7 @@ def debug(text: str):
 
 
 test_suite_data = TestSuiteData()
+appium_container = AppiumContainer()
 
 common_password = 'qwerty'
 unique_password = 'unique' + get_current_time()

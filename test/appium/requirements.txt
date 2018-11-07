@@ -47,3 +47,5 @@ toolz==0.9.0
 urllib3==1.22
 yarl==0.12.0
 zbarlight==1.2
+docker
+influxdb

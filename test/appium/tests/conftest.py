@@ -2,8 +2,10 @@ import requests
 import pytest
 import re
 from _pytest.runner import runtestprotocol
+
+from support.device_stats_db import DeviceStatsDB
 from support.test_rerun import should_rerun_test
-from tests import test_suite_data
+from tests import test_suite_data, appium_container
 from datetime import datetime
 from os import environ
 from io import BytesIO
@@ -35,6 +37,10 @@ def pytest_addoption(parser):
                      action='store',
                      default='sauce',
                      help='Specify environment: local/sauce/api')
+    parser.addoption('--platform_version',
+                     action='store',
+                     default='7.1',
+                     help='Android device platform version')
     parser.addoption('--log',
                      action='store',
                      default=False,
@@ -89,6 +95,45 @@ def pytest_addoption(parser):
                      action='store',
                      default=600,
                      help='Running time in seconds')
+
+    # running tests using appium docker instance
+
+    parser.addoption('--docker',
+                     action='store',
+                     default=False,
+                     help='Are you using the appium docker container to run the tests?')
+    parser.addoption('--docker_shared_volume',
+                     action='store',
+                     default=None,
+                     help='Path to a directory with .apk that will be shared with docker instance. Test reports will be also saved there')
+    parser.addoption('--device_ip',
+                     action='store',
+                     default=None,
+                     help='Android device IP address used for battery tests')
+    parser.addoption('--bugreport',
+                     action='store',
+                     default=False,
+                     help='Should generate bugreport for each test?')
+    parser.addoption('--stats_db_host',
+                     action='store',
+                     default=None,
+                     help='Host address for device stats database')
+    parser.addoption('--stats_db_port',
+                     action='store',
+                     default=8086,
+                     help='Port for device stats db')
+    parser.addoption('--stats_db_username',
+                     action='store',
+                     default=None,
+                     help='Username for device stats db')
+    parser.addoption('--stats_db_password',
+                     action='store',
+                     default=None,
+                     help='Password for device stats db')
+    parser.addoption('--stats_db_database',
+                     action='store',
+                     default='example9',
+                     help='Database name for device stats db')
 
 
 def is_master(config):
@@ -160,6 +205,26 @@ def pytest_runtest_makereport(item, call):
             current_test.testruns[-1].error = error
         if is_sauce_env:
             update_sauce_jobs(current_test.name, current_test.testruns[-1].jobs, report.passed)
+        if pytest.config.getoption('docker'):
+            device_stats = appium_container.get_device_stats()
+            if pytest.config.getoption('bugreport'):
+                appium_container.generate_bugreport(item.name)
+
+            build_name = pytest.config.getoption('apk')
+            # Find type of tests that are run on the device
+            if 'battery_consumption' in item.keywords._markers:
+                test_group = 'battery_consumption'
+            else:
+                test_group = None
+
+            device_stats_db = DeviceStatsDB(
+                item.config.getoption('stats_db_host'),
+                item.config.getoption('stats_db_port'),
+                item.config.getoption('stats_db_username'),
+                item.config.getoption('stats_db_password'),
+                item.config.getoption('stats_db_database'),
+            )
+            device_stats_db.save_stats(build_name, item.name, test_group, not report.failed, device_stats)
 
 
 def update_sauce_jobs(test_name, job_ids, passed):

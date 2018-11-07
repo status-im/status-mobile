@@ -1,20 +1,21 @@
+import asyncio
 import logging
-import pytest
-import sys
 import re
 import subprocess
-import asyncio
-
-from support.message_reliability_report import create_one_to_one_chat_report, create_public_chat_report
-from support.api.network_api import NetworkApi
-from os import environ
-from appium import webdriver
+import sys
 from abc import ABCMeta, abstractmethod
-from selenium.common.exceptions import WebDriverException
-from tests import test_suite_data, start_threads
+from os import environ
+
+import pytest
+from appium import webdriver
 from appium.webdriver.common.mobileby import MobileBy
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import WebDriverException
+
+from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
+from support.message_reliability_report import create_one_to_one_chat_report, create_public_chat_report
+from tests import test_suite_data, start_threads, appium_container
 
 
 class AbstractTestCase:
@@ -81,11 +82,16 @@ class AbstractTestCase:
     @property
     def capabilities_local(self):
         desired_caps = dict()
-        desired_caps['app'] = pytest.config.getoption('apk')
+        if pytest.config.getoption('docker'):
+            # apk is in shared volume directory
+            apk = '/root/shared_volume/%s' % pytest.config.getoption('apk')
+        else:
+            apk = pytest.config.getoption('apk')
+        desired_caps['app'] = apk
         desired_caps['deviceName'] = 'nexus_5'
         desired_caps['platformName'] = 'Android'
         desired_caps['appiumVersion'] = '1.7.2'
-        desired_caps['platformVersion'] = '7.1'
+        desired_caps['platformVersion'] = pytest.config.getoption('platform_version')
         desired_caps['newCommandTimeout'] = 600
         desired_caps['fullReset'] = False
         desired_caps['unicodeKeyboard'] = True
@@ -152,14 +158,19 @@ class Driver(webdriver.Remote):
 class SingleDeviceTestCase(AbstractTestCase):
 
     def setup_method(self, method, max_duration=1800):
+        if pytest.config.getoption('docker'):
+            appium_container.start_appium_container(pytest.config.getoption('docker_shared_volume'))
+            appium_container.connect_device(pytest.config.getoption('device_ip'))
 
         (executor, capabilities) = (self.executor_sauce_lab, self.capabilities_sauce_lab) if \
             self.environment == 'sauce' else (self.executor_local, self.capabilities_local)
         capabilities['maxDuration'] = max_duration
         self.driver = Driver(executor, capabilities)
-
         test_suite_data.current_test.testruns[-1].jobs[self.driver.session_id] = 1
         self.driver.implicitly_wait(self.implicitly_wait)
+
+        if pytest.config.getoption('docker'):
+            appium_container.reset_battery_stats()
 
     def teardown_method(self, method):
         if self.environment == 'sauce':
@@ -167,6 +178,8 @@ class SingleDeviceTestCase(AbstractTestCase):
         try:
             self.add_alert_text_to_report(self.driver)
             self.driver.quit()
+            if pytest.config.getoption('docker'):
+                appium_container.stop_container()
         except (WebDriverException, AttributeError):
             pass
         finally:

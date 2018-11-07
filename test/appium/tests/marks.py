@@ -21,3 +21,5 @@ wallet_modal = pytest.mark.wallet_modal
 sign_in = pytest.mark.sign_in
 skip = pytest.mark.skip
 logcat = pytest.mark.logcat
+
+battery_consumption = pytest.mark.battery_consumption
