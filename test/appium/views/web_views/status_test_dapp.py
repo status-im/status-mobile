@@ -10,7 +10,7 @@ class AssetsButton(BaseButton):
     class RequestETHButton(BaseButton):
         def __init__(self, driver):
             super(AssetsButton.RequestETHButton, self).__init__(driver)
-            self.locator = self.Locator.webview_selector('Ropsten ETH')
+            self.locator = self.Locator.webview_selector('Request Ropsten ETH')
 
     class RequestSTTButton(BaseButton):
         def __init__(self, driver):
