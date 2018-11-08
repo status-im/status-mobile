@@ -47,6 +47,7 @@
             [status-im.ui.screens.fleet-settings.views :refer [fleet-settings]]
             [status-im.ui.screens.offline-messaging-settings.views :refer [offline-messaging-settings]]
             [status-im.ui.screens.offline-messaging-settings.edit-mailserver.views :refer [edit-mailserver]]
+            [status-im.ui.screens.mailserver-logs.views :refer [mailserver-logs]]
             [status-im.ui.screens.extensions.add.views :refer [edit-extension show-extension]]
             [status-im.ui.screens.bootnodes-settings.views :refer [bootnodes-settings]]
             [status-im.ui.screens.pairing.views :refer [installations]]
@@ -273,6 +274,7 @@
                    :bootnodes-settings               bootnodes-settings
                    :installations                    installations
                    :edit-bootnode                    edit-bootnode
+                   :mailserver-logs                  mailserver-logs
                    :offline-messaging-settings       offline-messaging-settings
                    :edit-mailserver                  edit-mailserver
                    :help-center                      help-center

@@ -164,6 +164,10 @@
     {:label-kw            :t/offline-messaging
      :action-fn           #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
      :accessibility-label :offline-messages-settings-button}]
+   [profile.components/settings-item
+    {:item-text            "Mailserver logs"
+     :action-fn           #(re-frame/dispatch [:navigate-to :mailserver-logs])
+     :accessibility-label :mailserver-logs-button}]
    [profile.components/settings-item-separator]
    [profile.components/settings-item
     {:label-kw            :t/log-level

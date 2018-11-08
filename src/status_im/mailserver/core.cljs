@@ -14,7 +14,8 @@
             [status-im.data-store.mailservers :as data-store.mailservers]
             [status-im.i18n :as i18n]
             [status-im.accounts.update.core :as accounts.update]
-            [status-im.ui.screens.navigation :as navigation]))
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.datetime :as datetime]))
 
 ;; How do mailserver work ?
 ;;
@@ -28,6 +29,37 @@
 ;; the history of a topic after joining a chat, the request will be done
 ;; as soon as the mailserver becomes available
 
+(declare parse-json)
+
+(defonce logs (atom []))
+(defonce enode (atom nil))
+(defn reset-enode [enode-id]
+  (reset! enode enode-id))
+
+(defn get-enode []
+  (let [args    {:jsonrpc "2.0"
+                 :id      2
+                 :method  "admin_nodeInfo"
+                 :params  []}
+        payload (.stringify js/JSON (clj->js args))]
+    (status/call-private-rpc payload
+                             (comp reset-enode :enode :result parse-json))))
+
+(defn log-event [data]
+  (when-not @enode (get-enode))
+  (swap! logs conj {:timestamp (datetime/timestamp)
+                    :event     data}))
+
+(defn print-logs []
+  (string/join
+   "\n"
+   (map (fn [{:keys [timestamp event]}]
+          (let [[event-name event-body] event]
+            (string/join " "
+                         [(datetime/timestamp->long-date timestamp)
+                          (str event-name)
+                          (print-str (.stringify js/JSON (clj->js event-body)))])))
+        @logs)))
 
 (def one-day (* 24 3600))
 (def seven-days (* 7 one-day))
@@ -249,17 +281,22 @@
             " topics " topics
             " from " from
             " to   " to)
-  (.requestMessages (transport.utils/shh web3)
-                    (clj->js {:topics         topics
-                              :mailServerPeer address
-                              :symKeyID       sym-key-id
-                              :timeout        request-timeout
-                              :from           from
-                              :to             to})
-                    (fn [error request-id]
-                      (if-not error
-                        (log/info "mailserver: messages request success for topic " topics "from" from "to" to)
-                        (log/error "mailserver: messages request error for topic " topics ": " error)))))
+  (let [params {:topics         topics
+                :mailServerPeer address
+                :symKeyID       sym-key-id
+                :timeout        request-timeout
+                :from           from
+                :to             to}]
+    (.requestMessages (transport.utils/shh web3)
+                      (clj->js params)
+                      (fn [error request-id]
+                        (if-not error
+                          (do (log/info "mailserver: messages request success for topic " topics "from" from "to" to)
+                              (log-event [:mailserver.request.successful (assoc params
+                                                                                :requestID request-id)]))
+                          (do (log/error "mailserver: messages request error for topic " topics ": " error)
+                              (log-event [:mailserver.request.failure (assoc params
+                                                                             :requestID request-id)])))))))
 
 (re-frame/reg-fx
  :mailserver/request-messages
@@ -280,27 +317,26 @@
   of 24 hours, so we split requests per 24h spans if the last request was
   done more than 24h ago"
   [now-in-s [last-request topics]]
-  (let [days        (conj
-                     (into [] (range (max last-request
-                                          (- now-in-s one-day))
-                                     now-in-s
-                                     one-day))
-                     now-in-s)
-        day-ranges  (map vector days (rest days))]
+  (let [days       (conj
+                    (into [] (range (max last-request
+                                         (- now-in-s one-day))
+                                    now-in-s
+                                    one-day))
+                    now-in-s)
+        day-ranges (map vector days (rest days))]
     (for [[from to] day-ranges]
       {:topics topics
-       :from  from
-       :to    to})))
+       :from   from
+       :to     to})))
 
 (defn prepare-messages-requests
-  [{:keys [db now] :as cofx} request-to]
-  (let [web3     (:web3 db)]
-    (remove nil?
-            (mapcat (partial split-request-per-day request-to)
-                    (reduce (fn [acc [topic {:keys [last-request]}]]
-                              (update acc last-request conj topic))
-                            {}
-                            (:mailserver/topics db))))))
+  [{:keys [db]} request-to]
+  (remove nil?
+          (mapcat (partial split-request-per-day request-to)
+                  (reduce (fn [acc [topic {:keys [last-request]}]]
+                            (update acc last-request conj topic))
+                          {}
+                          (:mailserver/topics db)))))
 
 (fx/defn process-next-messages-request
   [{:keys [db now] :as cofx}]
@@ -428,12 +464,12 @@
                   {:db (dissoc db :mailserver/current-request)}
                   (process-next-messages-request))
         (fx/merge cofx
-                  {:db (-> db
-                           (dissoc :mailserver/current-request)
-                           (update :mailserver/topics merge mailserver-topics))
+                  {:db            (-> db
+                                      (dissoc :mailserver/current-request)
+                                      (update :mailserver/topics merge mailserver-topics))
                    :data-store/tx (mapv (fn [[topic mailserver-topic]]
                                           (data-store.mailservers/save-mailserver-topic-tx
-                                           {:topic topic
+                                           {:topic            topic
                                             :mailserver-topic mailserver-topic}))
                                         mailserver-topics)}
                   (process-next-messages-request))))))
@@ -507,9 +543,9 @@
         input-key
         {:value value
          :error (case input-key
-                  :id   false
+                  :id false
                   :name (string/blank? value)
-                  :url  (not (valid-enode-url? value)))})})
+                  :url (not (valid-enode-url? value)))})})
 
 (defn- address->mailserver [address]
   (let [[enode password url :as response] (extract-url-components address)]
@@ -530,8 +566,8 @@
   (let [{:keys [id
                 address
                 password
-                name]}   (fetch cofx id)
-        url              (when address (build-url address password))]
+                name]} (fetch cofx id)
+        url (when address (build-url address password))]
     (fx/merge cofx
               (set-input :id id)
               (set-input :url (str url))
