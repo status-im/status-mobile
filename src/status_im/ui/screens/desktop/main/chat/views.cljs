@@ -60,9 +60,11 @@
 
 (views/defview message-author-name [{:keys [from]}]
   (views/letsubs [incoming-name   [:contacts/contact-name-by-identity from]]
-    (let [name (chat-utils/format-author from incoming-name)]
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-contact-dialog from name (boolean incoming-name)])}
-       [react/text {:style styles/author :font :medium} name]])))
+    [react/view {:flex-direction :row}
+     (when incoming-name
+       [react/text {:style styles/author} incoming-name])
+     [react/text {:style styles/author-generated}
+      (str (when incoming-name " • ") (gfycat/generate-gfy from))]]))
 
 (views/defview member-photo [from]
   (views/letsubs [current-public-key [:account/public-key]

@@ -8,7 +8,7 @@
             [status-im.utils.http :as http]))
 
 (defn format-author [from username]
-  (str (when username (str username " :: "))
+  (str (when username (str username " • "))
        (gfycat/generate-gfy from))) ; TODO: We defensively generate the name for now, to be revisited when new protocol is defined
 
 (defn format-reply-author [from username current-public-key]
