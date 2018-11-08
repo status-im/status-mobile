@@ -90,30 +90,6 @@ pipeline {
     }
     stage('Notify') {
       steps { script {
-        def dmgLink = "<${dmgUrl}|MacOS>"
-        def appLink = "<${appUrl}|AppImage>"
-        def message = (
-          (env.CHANGE_ID != null ?
-            "Build PR #${BRANCH_NAME}(${CHANGE_BRANCH}) success! " :
-            "Build ${btype} success! "
-          )+
-          "<${currentBuild.absoluteUrl}|${currentBuild.displayName}> "+
-          "(${currentBuild.durationString})\n"+
-          "Packages: <${apkUrl}|Android>, (<${e2eUrl}|e2e>), <${ipaUrl}|iOS>"
-        )
-
-        if (dmgUrl != null) {
-          message = message + ", <${dmgUrl}|MacOS>"
-        }
-
-        if (appUrl != null) {
-          message = message + ", <${appUrl}|AppImage>"
-        }
-
-        slackSend(
-          message: message,
-          color: 'good'
-        )
         if (env.CHANGE_ID != null) {
           cmn.githubNotify(
             apkUrl, e2eUrl, ipaUrl, dmgUrl, appUrl,
