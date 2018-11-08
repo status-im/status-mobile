@@ -8,11 +8,11 @@
    (get-in db [:ui/search :filter] "")))
 
 (defn filter-chats
-  [[chats search-filter]]
+  [chats search-filter]
   (if (empty? search-filter)
     chats
     (let [search-filter (string/lower-case search-filter)]
-      (keep #(let [{:keys [name random-name tags]} (val %)]
+      (keep #(let [{:keys [name random-name tags]} %]
                (when (some (fn [s]
                              (when s
                                (string/includes? (string/lower-case s)
@@ -23,12 +23,13 @@
 
 (re-frame/reg-sub
  :search/filtered-active-chats
- :<- [:get-active-chats]
+ :<- [:chats/active-chats]
  :<- [:search/filter]
- filter-chats)
+ (fn [[chats search-filter]]
+   (filter-chats (vals chats) search-filter)))
 
 (re-frame/reg-sub
  :search/filtered-home-items
  :<- [:search/filtered-active-chats]
  (fn [active-chats]
-   (sort-by #(-> % second :timestamp) > active-chats)))
+   (sort-by :timestamp > active-chats)))

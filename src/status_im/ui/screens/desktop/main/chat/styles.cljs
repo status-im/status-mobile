@@ -38,6 +38,7 @@
 
 (def author
   {:color         colors/black
+   :font-weight   :bold
    :font-size     14})
 
 (defn chat-box [height]
@@ -165,6 +166,7 @@
 
 (def chat-view
   {:flex             1
+   :flex-direction   :column
    :background-color :white})
 
 (defn contact-card-text [color]

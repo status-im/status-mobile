@@ -28,7 +28,8 @@
                   {:name "name"
                    :profile-image "image"
                    :address "address"
-                   :fcm-token "token"}
+                   :fcm-token "token"
+                   :tags #{}}
                   {})
           contact (get-in actual [:db :contacts/contacts public-key])]
       (testing "it stores the contact in the database"
@@ -40,7 +41,9 @@
                  :last-updated     1000
                  :pending?         true
                  :fcm-token        "token"
-                 :address          "address"} contact)))))
+                 :address          "address"
+                 :tags #{}}
+                contact)))))
   (testing "the contact is already in contacts"
     (testing "timestamp is greather than last-updated"
       (let [actual (model/handle-contact-update
@@ -57,7 +60,8 @@
                                        :last-updated     0
                                        :pending?         false
                                        :fcm-token        "old-token"
-                                       :address          "old-address"}}}})
+                                       :address          "old-address"
+                                       :tags #{}}}}})
             contact (get-in actual [:db :contacts/contacts public-key])]
         (testing "it stores the contact in the database"
           (is (:data-store/tx actual)))
@@ -68,7 +72,9 @@
                    :last-updated     1000
                    :pending?         false
                    :fcm-token        "new-token"
-                   :address          "new-address"} contact)))))
+                   :address          "new-address"
+                   :tags #{}}
+                  contact)))))
     (testing "timestamp is equal than last-updated"
       (let [actual (model/handle-contact-update
                     public-key
@@ -84,7 +90,8 @@
                                        :last-updated     1000
                                        :pending?         false
                                        :fcm-token        "old-token"
-                                       :address          "old-address"}}}})
+                                       :address          "old-address"
+                                       :tags #{}}}}})
             contact (get-in actual [:db :contacts/contacts public-key])]
         (testing "it does nothing"
           (is (nil? actual)))))
@@ -103,7 +110,8 @@
                                        :last-updated     1000
                                        :pending?         false
                                        :fcm-token        "old-token"
-                                       :address          "old-address"}}}})
+                                       :address          "old-address"
+                                       :tags #{}}}}})
             contact (get-in actual [:db :contacts/contacts public-key])]
         (testing "it does nothing"
           (is (nil? actual))))))
@@ -118,7 +126,8 @@
                                      :photo-path       "old-image"
                                      :name             "old-name"
                                      :last-updated     0
-                                     :pending?         false}}}})
+                                     :pending?         false
+                                     :tags #{}}}}})
           contact (get-in actual [:db :contacts/contacts public-key])]
       (testing "it stores the contact in the database"
         (is (:data-store/tx actual)))
@@ -128,7 +137,9 @@
                  :name             "new-name"
                  :last-updated     1000
                  :pending?         false
-                 :address          address} contact)))))
+                 :address          address
+                 :tags #{}}
+                contact)))))
   (testing "the message is coming from us"
     (testing "it does not update contacts"
       (is (nil? (model/handle-contact-update "me" 1 {} {:db {:account/account {:public-key "me"}}}))))))

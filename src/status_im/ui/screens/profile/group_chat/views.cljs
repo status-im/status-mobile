@@ -58,37 +58,42 @@
    {:action #(re-frame/dispatch [:group-chats.ui/remove-member-pressed chat-id (:public-key member)])
     :label  (i18n/label :t/remove-from-chat)}])
 
-(defn render-member [chat-id {:keys [name public-key] :as member} admin? current-user-identity]
+(defn render-member
+  [chat-id {:keys [name public-key current-account?] :as member}
+   admin? current-user-identity]
   [react/view
    [contact/contact-view
     {:contact             member
      :extend-options      (member-actions chat-id member)
      :extend-title        name
-     :extended?           (and admin?
-                               (not= public-key current-user-identity))
+     :extended?           (and admin? (not current-account?))
      :accessibility-label :member-item
      :inner-props         {:accessibility-label :member-name-text}
-     :on-press            (when (not= public-key current-user-identity)
-                            #(re-frame/dispatch [(if platform/desktop? :show-profile-desktop :chat.ui/show-profile) public-key]))}]])
+     :on-press            (when current-account?
+                            #(re-frame/dispatch [(if platform/desktop?
+                                                   :show-profile-desktop
+                                                   :chat.ui/show-profile)
+                                                 public-key]))}]])
 
-(defview chat-group-members-view [chat-id admin? current-user-identity]
-  (letsubs [members [:get-current-chat-contacts]]
-    (when (seq members)
-      [react/view
-       [list/flat-list {:data      members
-                        :separator list/default-separator
-                        :key-fn    :address
-                        :render-fn #(render-member chat-id % admin? current-user-identity)}]])))
+(defn chat-group-members-view
+  [chat-id members admin? current-public-key]
+  (when (seq members)
+    [react/view
+     [list/flat-list {:data      members
+                      :separator list/default-separator
+                      :key-fn    :address
+                      :render-fn #(render-member chat-id % admin? current-public-key)}]]))
 
-(defn members-list [chat-id admin? current-user-identity]
+(defn members-list [chat-id members admin? current-public-key]
   [react/view
    [profile.components/settings-title (i18n/label :t/members-title)]
-   [chat-group-members-view chat-id admin? current-user-identity]])
+   [chat-group-members-view chat-id members admin? current-public-key]])
 
 (defview group-chat-profile []
-  (letsubs [{:keys [admins chat-id] :as current-chat} [:get-current-chat]
+  (letsubs [{:keys [admins chat-id] :as current-chat} [:chats/current]
             editing?     [:get :group-chat-profile/editing?]
             changed-chat [:get :group-chat-profile/profile]
+            members [:contacts/current-chat-contacts]
             current-pk   [:account/public-key]]
     (let [shown-chat (merge current-chat changed-chat)
           admin?     (admins current-pk)]
@@ -110,4 +115,4 @@
            :action-label-style     styles/action-label
            :action-separator-style styles/action-separator
            :icon-opts              styles/action-icon-opts}]
-         [members-list chat-id admin? (first admins) current-pk]]]])))
+         [members-list chat-id members admin? current-pk]]]])))

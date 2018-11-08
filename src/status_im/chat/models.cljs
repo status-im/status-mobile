@@ -98,8 +98,7 @@
                                      deleted-at-clock-value
                                      (utils.clocks/send 0))]
     {:db            (update-in db [:chats chat-id] merge
-                               {:messages           empty-message-map
-                                :message-groups         {}
+                               {:messages               empty-message-map
                                 :unviewed-messages      #{}
                                 :not-loaded-message-ids #{}
                                 :deleted-at-clock-value last-message-clock-value})

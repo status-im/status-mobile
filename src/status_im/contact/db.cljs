@@ -1,9 +1,9 @@
 (ns status-im.contact.db
   (:require [cljs.spec.alpha :as spec]
             [status-im.js-dependencies :as js-dependencies]
-            [status-im.utils.identicon :as identicon]
-            [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.identicon :as identicon]
             status-im.utils.db))
 
 ;;;; DB
@@ -82,10 +82,18 @@
 (spec/def :contact/new-tag string?)
 (spec/def :ui/contact (spec/keys :opt [:contact/new-tag]))
 
-(defn public-key->new-contact [public-key]
+(defn public-key->new-contact
+  [public-key]
   {:name       (gfycat/generate-gfy public-key)
    :photo-path (identicon/identicon public-key)
-   :public-key public-key})
+   :public-key public-key
+   :tags       #{}})
+
+(defn public-key->contact
+  [contacts public-key]
+  (when public-key
+    (get contacts public-key
+         (public-key->new-contact public-key))))
 
 (defn public-key->address [public-key]
   (let [length (count public-key)
@@ -95,45 +103,12 @@
                          128 public-key
                          nil)]
     (when normalized-key
-      (subs (.sha3 js-dependencies/Web3.prototype normalized-key #js {:encoding "hex"}) 26))))
+      (subs (.sha3 js-dependencies/Web3.prototype normalized-key (clj->js {:encoding "hex"})) 26))))
 
 (defn- contact-by-address [[_ contact] address]
   (when (ethereum/address= (:address contact) address)
     contact))
 
-(defn find-contact-by-address [contacts address]
+(defn address->contact
+  [contacts address]
   (some #(contact-by-address % address) contacts))
-
-(defn sort-contacts
-  [contacts]
-  (sort (fn [c1 c2]
-          (let [name1 (or (:name c1) (:address c1) (:public-key c1))
-                name2 (or (:name c2) (:address c2) (:public-key c2))]
-            (compare (clojure.string/lower-case name1)
-                     (clojure.string/lower-case name2))))
-        (vals contacts)))
-
-(defn filter-dapps
-  [v dev-mode?]
-  (remove #(when-not dev-mode? (true? (:developer? %))) v))
-
-(defn filter-group-contacts
-  [group-contacts contacts]
-  (let [group-contacts' (into #{} group-contacts)]
-    (filter #(group-contacts' (:public-key %)) contacts)))
-
-(defn query-chat-contacts
-  [{:keys [contacts]} all-contacts query-fn]
-  (let [participant-set (into #{} (filter identity) contacts)]
-    (query-fn (comp participant-set :public-key) (vals all-contacts))))
-
-(defn get-all-contacts-in-group-chat
-  [members contacts current-account]
-  (let [current-account-contact (-> current-account
-                                    (select-keys [:name :photo-path :public-key]))
-        all-contacts            (assoc contacts (:public-key current-account-contact) current-account-contact)]
-    (->> members
-         (map #(or (get all-contacts %)
-                   (public-key->new-contact %)))
-         (remove :dapp?)
-         (sort-by (comp clojure.string/lower-case :name)))))

@@ -17,7 +17,7 @@
      description]]])
 
 (defview suggestions-view []
-  (letsubs [available-commands [:get-available-commands]]
+  (letsubs [available-commands [:chat/available-commands]]
     [expandable/expandable-view {:key :suggestions}
      [react/view
       [react/scroll-view {:keyboard-should-persist-taps :always

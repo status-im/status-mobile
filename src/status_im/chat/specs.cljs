@@ -9,12 +9,11 @@
 (s/def :chat/animations (s/nilable map?))                         ; {id (string) props (map)}
 (s/def :chat/chat-ui-props (s/nilable map?))                      ; {id (string) props (map)}
 (s/def :chat/chat-list-ui-props (s/nilable map?))
-(s/def :chat/layout-height (s/nilable number?))                   ; height of chat's view layout 
+(s/def :chat/layout-height (s/nilable number?))                   ; height of chat's view layout
 (s/def :chat/selected-participants (s/nilable set?))
 (s/def :chat/public-group-topic (s/nilable string?))
 (s/def :chat/public-group-topic-error (s/nilable string?))
 (s/def :chat/messages (s/nilable map?))                           ; messages indexed by message-id
-(s/def :chat/message-groups (s/nilable map?))                     ; grouped/sorted messages
 (s/def :chat/message-statuses (s/nilable map?))                   ; message/user statuses indexed by two level index
 (s/def :chat/not-loaded-message-ids (s/nilable set?))             ; set of message-ids not yet fully loaded from persisted state
 (s/def :chat/referenced-messages (s/nilable map?))                ; map of messages indexed by message-id which are not displayed directly, but referenced by other messages

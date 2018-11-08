@@ -1,6 +1,10 @@
 (ns status-im.contact.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.accounts.db :as accounts.db]
+  (:require [status-im.accounts.db :as accounts.db]
+            [status-im.data-store.contacts :as contacts-store]
+            [status-im.transport.message.protocol :as protocol]
+            [status-im.transport.message.contact :as message.contact]
+            [status-im.utils.fx :as fx]
+            [re-frame.core :as re-frame]
             [status-im.chat.models :as chat.models]
             [status-im.contact.db :as contact.db]
             [status-im.data-store.contacts :as contacts-store]
@@ -9,8 +13,10 @@
             [status-im.transport.message.protocol :as protocol]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
             [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.js-resources :as js-res]
+            [status-im.utils.utils :as utils]
             [status-im.utils.fx :as fx]
-            [status-im.utils.utils :as utils]))
+            [status-im.contact.db :as contact.db]))
 
 (fx/defn load-contacts
   [{:keys [db all-contacts]}]
@@ -26,8 +32,7 @@
 
 (defn build-contact [{{:keys [chats] :account/keys [account]
                        :contacts/keys [contacts]} :db} public-key]
-  (cond-> (assoc (or (get contacts public-key)
-                     (contact.db/public-key->new-contact public-key))
+  (cond-> (assoc (contact.db/public-key->contact contacts public-key)
                  :address (contact.db/public-key->address public-key))
 
     (= public-key (:public-key account)) (assoc :name (:name account))))
@@ -98,21 +103,22 @@
         current-public-key (accounts.db/current-public-key cofx)]
     (when (and (not= current-public-key public-key)
                (< prev-last-updated timestamp-ms))
-      (let [contact          (get contacts public-key)
+      (let [{:keys [tags] :as contact} (get contacts public-key)
 
             ;; Backward compatibility with <= 0.9.21, as they don't send
             ;; fcm-token & address in contact updates
-            contact-props    (cond->
-                              {:public-key   public-key
-                               :photo-path   profile-image
-                               :name         name
-                               :address      (or address
-                                                 (:address contact)
-                                                 (contact.db/public-key->address public-key))
-                               :last-updated timestamp-ms
-                                  ;;NOTE (yenda) in case of concurrent contact request
-                               :pending?     (get contact :pending? true)}
-                               fcm-token (assoc :fcm-token fcm-token))]
+            contact-props (cond->
+                           {:public-key   public-key
+                            :photo-path   profile-image
+                            :name         name
+                            :address      (or address
+                                              (:address contact)
+                                              (contact.db/public-key->address public-key))
+                            :last-updated timestamp-ms
+                               ;;NOTE (yenda) in case of concurrent contact request
+                            :pending?     (get contact :pending? true)}
+                            fcm-token (assoc :fcm-token fcm-token)
+                            (not tags) (assoc :tags #{}))]
         ;;NOTE (yenda) only update if there is changes to the contact
         (when-not (= contact-props
                      (select-keys contact [:public-key :address :photo-path

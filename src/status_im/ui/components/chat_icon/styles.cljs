@@ -22,18 +22,6 @@
           :height        size
           :border-radius (/ size 2)}))
 
-(defn default-chat-icon-view-action [color]
-  (merge (default-chat-icon color)
-         {:width         36
-          :height        36
-          :border-radius 18}))
-
-(defn default-chat-icon-message-status [color]
-  (merge (default-chat-icon color)
-         {:width         64
-          :height        64
-          :border-radius 32}))
-
 (def default-chat-icon-text
   {:color       colors/white
    :font-size   20
@@ -80,11 +68,6 @@
           :height        36
           :border-radius 18
           :margin        0}))
-
-(def chat-icon-message-status
-  {:border-radius 32
-   :width         64
-   :height        64})
 
 (def online-view-wrapper
   {:position         :absolute

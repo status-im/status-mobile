@@ -17,7 +17,7 @@
      {:db (assoc-in db [:wallet :send-transaction :camera-flashlight] toggled-state)})))
 
 (defn- find-address-name [db address]
-  (:name (contact.db/find-contact-by-address (:contacts/contacts db) address)))
+  (:name (contact.db/address->contact (:contacts/contacts db) address)))
 
 (defn- fill-request-details [db {:keys [address name value symbol gas gasPrice public-key from-chat?]}]
   {:pre [(not (nil? address))]}

@@ -30,7 +30,7 @@
   as arguments and returns new fx. Always clear all validation messages."
   [{{:keys [current-chat-id] :as db} :db} new-input]
   {:db (-> (chat/set-chat-ui-props db {:validation-messages nil})
-           (assoc-in [:chats current-chat-id :input-text] (text->emoji new-input)))})
+           (assoc-in [:chats.ui/input-text current-chat-id] (text->emoji new-input)))})
 
 (defn- start-cooldown [{:keys [db]} cooldowns]
   {:dispatch-later        [{:dispatch [:chat/disable-cooldown]
@@ -137,7 +137,7 @@
 (fx/defn send-current-message
   "Sends message from current chat input"
   [{{:keys [current-chat-id id->command access-scope->command-id] :as db} :db :as cofx}]
-  (let [input-text   (get-in db [:chats current-chat-id :input-text])
+  (let [input-text   (get-in db [:chats.ui/input-text current-chat-id])
         command      (commands.input/selected-chat-command
                       input-text nil (commands/chat-commands id->command
                                                              access-scope->command-id

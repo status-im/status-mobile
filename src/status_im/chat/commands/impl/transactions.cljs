@@ -107,7 +107,7 @@
     :placeholder (i18n/label :t/send-request-amount)}])
 
 (defview choose-nft-token [selected-event-creator]
-  (letsubs [{:keys [input-params]} [:selected-chat-command]
+  (letsubs [{:keys [input-params]} [:chat/selected-command]
             collectibles           [:collectibles]]
     (let [collectible-tokens (get collectibles (keyword (:symbol input-params)))]
       [react/view {:flex-direction   :row
@@ -190,8 +190,8 @@
 ;; `/send` command
 
 (defview send-status [tx-hash outgoing]
-  (letsubs [confirmed? [:transaction-confirmed? tx-hash]
-            tx-exists? [:wallet-transaction-exists? tx-hash]]
+  (letsubs [confirmed? [:chats/transaction-confirmed? tx-hash]
+            tx-exists? [:chats/wallet-transaction-exists? tx-hash]]
     [react/touchable-highlight {:on-press #(when tx-exists?
                                              (re-frame/dispatch [:show-transaction-details tx-hash]))}
      [react/view transactions-styles/command-send-status-container
@@ -394,7 +394,7 @@
 
 (defview request-preview
   [{:keys [message-id content outgoing timestamp timestamp-str group-chat]}]
-  (letsubs [id->command         [:get-id->command]
+  (letsubs [id->command         [:chat/id->command]
             status-initialized? [:get :status-module-initialized?]
             network             [:network-name]
             prices              [:prices]]

@@ -19,10 +19,11 @@
 
 (def unknown-gfy "Unknown")
 
-(defn generate-gfy
-  ([public-key]
-   (case public-key
-     nil unknown-gfy
-     "0" unknown-gfy
-     (build-gfy public-key)))
-  ([] (generate-gfy (datetime/timestamp))))
+(defn- generate-gfy*
+  [public-key]
+  (case public-key
+    nil unknown-gfy
+    "0" unknown-gfy
+    (build-gfy public-key)))
+
+(def generate-gfy (memoize generate-gfy*))

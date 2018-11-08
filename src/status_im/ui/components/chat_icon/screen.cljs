@@ -27,19 +27,18 @@
        [react/view pending-outer-circle
         [react/view pending-inner-circle]]])))
 
-(defview chat-icon-view [chat-id _group-chat name _online styles & [hide-dapp?]]
-  (letsubs [photo-path [:get-chat-photo chat-id]
-            dapp?      [:get-in [:contacts/contacts chat-id :dapp?]]]
-    [react/view (:container styles)
-     (if-not (string/blank? photo-path)
-       [photos/photo photo-path styles]
-       [default-chat-icon name styles])
-     (when (and dapp? (not hide-dapp?))
-       [dapp-badge styles])
-     [pending-contact-badge chat-id styles]]))
+(defn chat-icon-view
+  [{:keys [chat-id name photo-path dapp?]} styles & [hide-dapp?]]
+  [react/view (:container styles)
+   (if-not (string/blank? photo-path)
+     [photos/photo photo-path styles]
+     [default-chat-icon name styles])
+   (when (and dapp? (not hide-dapp?))
+     [dapp-badge styles])
+   [pending-contact-badge chat-id styles]])
 
-(defn chat-icon-view-toolbar [chat-id group-chat name color online]
-  [chat-icon-view chat-id group-chat name online
+(defn chat-icon-view-toolbar [{:keys [color] :as chat}]
+  [chat-icon-view chat
    {:container              styles/container-chat-list
     :online-view-wrapper    styles/online-view-wrapper
     :online-view            styles/online-view
@@ -53,8 +52,8 @@
     :default-chat-icon      (styles/default-chat-icon-chat-list color)
     :default-chat-icon-text styles/default-chat-icon-text}])
 
-(defn chat-icon-view-chat-list [chat-id group-chat name color online & [hide-dapp?]]
-  [chat-icon-view chat-id group-chat name online
+(defn chat-icon-view-chat-list [{:keys [color] :as chat} & [hide-dapp?]]
+  [chat-icon-view chat
    {:container              styles/container-chat-list
     :online-view-wrapper    styles/online-view-wrapper
     :online-view            styles/online-view
@@ -69,60 +68,15 @@
     :default-chat-icon-text styles/default-chat-icon-text}
    hide-dapp?])
 
-(defn chat-icon-view-action [chat-id group-chat name online]
-  ^{:key chat-id}
-  [chat-icon-view chat-id group-chat name online
-   {:container              styles/container-chat-list
-    :online-view-wrapper    styles/online-view-wrapper
-    :online-view            styles/online-view
-    :online-dot-left        styles/online-dot-left
-    :online-dot-right       styles/online-dot-right
-    :size                   40
-    :chat-icon              styles/chat-icon-chat-list
-    :default-chat-icon      (styles/default-chat-icon-chat-list colors/default-chat-color)
-    :default-chat-icon-text styles/default-chat-icon-text}])
-
-(defn chat-icon-view-menu-item [chat-id group-chat name color online]
-  ^{:key chat-id}
-  [chat-icon-view chat-id group-chat name online
-   {:container              styles/container-menu-item
-    :online-view-wrapper    styles/online-view-menu-wrapper
-    :online-view            styles/online-view-menu-item
-    :online-dot-left        styles/online-dot-left-menu-item
-    :online-dot-right       styles/online-dot-right-menu-item
-    :pending-wrapper        styles/pending-view-menu-wrapper
-    :pending-outer-circle   styles/pending-outer-circle
-    :pending-inner-circle   styles/pending-inner-circle
-    :size                   24
-    :chat-icon              styles/chat-icon-menu-item
-    :default-chat-icon      (styles/default-chat-icon-view-action color)
-    :default-chat-icon-text styles/default-chat-icon-text}
-   true])
-
-(defn chat-icon-message-status [chat-id group-chat name color online]
-  ^{:key chat-id}
-  [chat-icon-view chat-id group-chat name online
-   {:container              styles/container-message-status
-    :online-view-wrapper    styles/online-view-wrapper
-    :online-view            styles/online-view
-    :online-dot-left        styles/online-dot-left
-    :online-dot-right       styles/online-dot-right
-    :pending-wrapper        styles/pending-wrapper
-    :pending-outer-circle   styles/pending-outer-circle
-    :pending-inner-circle   styles/pending-inner-circle
-    :size                   64
-    :chat-icon              styles/chat-icon-message-status
-    :default-chat-icon      (styles/default-chat-icon-message-status color)
-    :default-chat-icon-text styles/message-status-icon-text}])
-
-(defn contact-icon-view [{:keys [photo-path name dapp?]} {:keys [container] :as styles}]
-  (let [photo-path photo-path]
-    [react/view container
-     (if-not (string/blank? photo-path)
-       [photos/photo photo-path styles]
-       [default-chat-icon name styles])
-     (when dapp?
-       [dapp-badge styles])]))
+(defn contact-icon-view
+  [{:keys [photo-path name dapp?]}
+   {:keys [container] :as styles}]
+  [react/view container
+   (if-not (string/blank? photo-path)
+     [photos/photo photo-path styles]
+     [default-chat-icon name styles])
+   (when dapp?
+     [dapp-badge styles])])
 
 (defn contact-icon-contacts-tab [contact]
   [contact-icon-view contact

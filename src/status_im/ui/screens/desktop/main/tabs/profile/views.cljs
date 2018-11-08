@@ -154,7 +154,7 @@
             [react/text {:style (styles/profile-row-text colors/black)
                          :font  (if backup-recovery-phrase-open? :medium :default)}
              (i18n/label :wallet-backup-recovery-title)]
-            [components.common/counter {:size 22} 1]]])
+            [components.common/counter {:size 22} 1 false]]])
         [react/view {:style (styles/profile-row false)}
          [react/touchable-highlight {:on-press #(re-frame/dispatch [:accounts.logout.ui/logout-confirmed])}
           [react/text {:style (styles/profile-row-text colors/red)} (i18n/label :t/logout)]]

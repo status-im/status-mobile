@@ -85,15 +85,16 @@
      label]]])
 
 (defn counter
-  ([value] (counter nil value))
-  ([{:keys [size accessibility-label] :or {size 18}} value]
-   (let [more-than-9 (> value 9)]
-     [react/view {:style (styles/counter-container size more-than-9)}
-      [react/text (cond-> {:style (styles/counter-label size)
-                           :font  :toolbar-title}
-                    accessibility-label
-                    (assoc :accessibility-label accessibility-label))
-       (if more-than-9 (i18n/label :t/counter-9-plus) value)]])))
+  ([count] (let [large? (< 9 count)]
+             (counter nil (if large? (i18n/label :t/counter-9-plus) count) large?)))
+  ([label large?] (counter nil label large?))
+  ([{:keys [size accessibility-label] :or {size 18}} label large?]
+   [react/view {:style (styles/counter-container size large?)}
+    [react/text (cond-> {:style (styles/counter-label size)
+                         :font  :toolbar-title}
+                  accessibility-label
+                  (assoc :accessibility-label accessibility-label))
+     label]]))
 
 (defview image-contain [{:keys [container-style style]} {:keys [image width height]}]
   (letsubs [content-width (reagent/atom 0)

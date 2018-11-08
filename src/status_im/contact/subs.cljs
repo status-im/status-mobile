@@ -1,73 +1,62 @@
 (ns status-im.contact.subs
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.identicon :as identicon]
             [status-im.contact.db :as contact.db]))
 
-(re-frame/reg-sub :get-current-contact-identity :contacts/identity)
-
-(re-frame/reg-sub :get-contacts :contacts/contacts)
-
-(re-frame/reg-sub :get-dapps
-                  (fn [db]
-                    (:contacts/dapps db)))
+(re-frame/reg-sub ::public-key :contacts/identity)
 
 (re-frame/reg-sub
- :get-current-contact
- :<- [:get-contacts]
- :<- [:get-current-contact-identity]
- (fn [[contacts identity]]
-   (contacts identity)))
+ ::contacts
+ (fn [db]
+   (get db :contacts/contacts)))
 
 (re-frame/reg-sub
- :get-current-chat-contact
- :<- [:get-contacts]
- :<- [:get-current-chat-id]
- (fn [[contacts chat-id]]
-   (get contacts chat-id)))
+ ::dapps
+ (fn [db]
+   (:contacts/dapps db)))
 
 (re-frame/reg-sub
- :all-added-contacts
- :<- [:get-contacts]
+ :contacts/contacts
+ :<- [::contacts]
  (fn [contacts]
-   (->> contacts
-        (remove (fn [[_ {:keys [pending? hide-contact?]}]]
-                  (or pending? hide-contact?)))
-        (contact.db/sort-contacts))))
+   contacts))
+
+(defn sort-contacts [contacts]
+  (sort (fn [c1 c2]
+          (let [name1 (or (:name c1) (:address c1) (:public-key c1))
+                name2 (or (:name c2) (:address c2) (:public-key c2))]
+            (compare (clojure.string/lower-case name1)
+                     (clojure.string/lower-case name2))))
+        contacts))
 
 (re-frame/reg-sub
- :all-added-people-contacts
- :<- [:all-added-contacts]
+ :contacts/added
+ :<- [:contacts/contacts]
  (fn [contacts]
-   (remove :dapp? contacts)))
+   (->> (vals contacts)
+        (remove (fn [{:keys [dapp? pending? hide-contact? public-key]}]
+                  (or dapp? pending? hide-contact?)))
+        sort-contacts)))
+
+(defn- filter-dapps [v dev-mode?]
+  (remove #(when-not dev-mode? (true? (:developer? %))) v))
 
 (re-frame/reg-sub
- :all-dapps
- :<- [:get-dapps]
+ :contacts/dapps
+ :<- [::dapps]
  :<- [:account/account]
  (fn [[dapps {:keys [dev-mode?]}]]
-   (map (fn [m] (update m :data
-                        #(contact.db/filter-dapps % dev-mode?)))
-        dapps)))
+   (map (fn [m] (update m :data #(filter-dapps % dev-mode?))) dapps)))
 
 (re-frame/reg-sub
- :get-people-in-current-chat
- :<- [:get-current-chat-contacts]
- (fn [contacts]
-   (remove #(true? (:dapp? %)) contacts)))
-
-(re-frame/reg-sub
- :get-contact-by-identity
- :<- [:get-contacts]
- :<- [:get-current-chat]
- (fn [[all-contacts {:keys [contacts]}] [_ identity]]
-   (let [identity' (or identity (first contacts))]
-     (or
-      (get all-contacts identity')
-      (contact.db/public-key->new-contact identity')))))
+ :contacts/current
+ :<- [:contacts/contacts]
+ :<- [::public-key]
+ (fn [[contacts public-key]]
+   (contact.db/public-key->contact contacts public-key)))
 
 (re-frame/reg-sub
  :contacts/dapps-by-name
- :<- [:all-dapps]
+ :<- [:contacts/dapps]
  (fn [dapps]
    (reduce (fn [dapps-by-name category]
              (merge dapps-by-name
@@ -79,72 +68,46 @@
            dapps)))
 
 (re-frame/reg-sub
- :get-contact-name-by-identity
- :<- [:get-contacts]
+ :contacts/not-in-current-chat
+ :<- [:chats/current]
+ :<- [:contacts/contacts]
+ (fn [[{:keys [contacts]} all-contacts]]
+   (let [participants-set (into #{} (filter identity contacts))]
+     (->> (vals all-contacts)
+          (remove (fn [{:keys [public-key dapp?]}]
+                    (or (participants-set public-key)
+                        dapp?)))
+          sort-contacts))))
+
+(defn get-all-contacts-in-group-chat
+  [chat-contacts current-account]
+  (let [current-public-key (:public-key current-account)
+        current-account-contact (-> current-account
+                                    (select-keys [:name :photo-path :public-key])
+                                    (assoc :current-account? true))
+        chat-contacts (assoc chat-contacts
+                             current-public-key
+                             current-account-contact)]
+    (->> (vals chat-contacts)
+         (remove :dapp?)
+         sort-contacts)))
+
+(re-frame/reg-sub
+ :contacts/current-chat-contacts
+ :<- [:chats/current]
  :<- [:account/account]
- (fn [[contacts current-account] [_ identity]]
-   (let [me? (= (:public-key current-account) identity)]
-     (if me?
-       (:name current-account)
-       (:name (contacts identity))))))
+ (fn [[{:keys [contacts]} current-account]]
+   (get-all-contacts-in-group-chat contacts current-account)))
 
 (re-frame/reg-sub
- :query-current-chat-contacts
- :<- [:get-current-chat]
- :<- [:get-contacts]
- (fn [[chat contacts [_ query-fn]]]
-   (contact.db/query-chat-contacts chat contacts query-fn)))
-
-(re-frame/reg-sub
- :get-all-contacts-not-in-current-chat
- :<- [:query-current-chat-contacts remove]
- (fn [contacts]
-   (->> contacts
-        (remove :dapp?)
-        (sort-by (comp clojure.string/lower-case :name)))))
-
-(re-frame/reg-sub
- :get-current-chat-contacts
- :<- [:get-current-chat]
- :<- [:get-contacts]
- :<- [:account/account]
- (fn [[{:keys [contacts]} all-contacts current-account]]
-   (contact.db/get-all-contacts-in-group-chat contacts all-contacts current-account)))
-
-(re-frame/reg-sub
- :get-contacts-by-chat
- (fn [[_ _ chat-id] _]
-   [(re-frame/subscribe [:get-chat chat-id])
-    (re-frame/subscribe [:get-contacts])])
- (fn [[chat all-contacts [_ query-fn]]]
-   (contact.db/query-chat-contacts chat all-contacts query-fn)))
-
-(re-frame/reg-sub
- :get-chat-photo
- (fn [[_ chat-id] _]
-   [(re-frame/subscribe [:get-chat chat-id])
-    (re-frame/subscribe [:get-contacts-by-chat filter chat-id])])
- (fn [[chat contacts] [_ chat-id]]
-   (when (and chat (not (:group-chat chat)))
-     (cond
-       (:photo-path chat)
-       (:photo-path chat)
-
-       (pos? (count contacts))
-       (:photo-path (first contacts))
-
-       :else
-       (identicon/identicon chat-id)))))
-
-(re-frame/reg-sub
- :get-contact-by-address
- :<- [:get-contacts]
+ :contacts/contact-by-address
+ :<- [:contacts/contacts]
  (fn [contacts [_ address]]
-   (contact.db/find-contact-by-address contacts address)))
+   (contact.db/address->contact contacts address)))
 
 (re-frame/reg-sub
- :get-contacts-by-address
- :<- [:get-contacts]
+ :contacts/contacts-by-address
+ :<- [:contacts/contacts]
  (fn [contacts]
    (reduce (fn [acc [_ {:keys [address] :as contact}]]
              (if address

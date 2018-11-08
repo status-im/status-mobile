@@ -29,7 +29,7 @@
             disconnected?        [:disconnected?]
             mailserver-error?    [:mailserver/error]
             mailserver-fetching? [:mailserver/fetching?]
-            current-chat-contact [:get-current-chat-contact]
+            current-chat-contact [:chat/contact]
             view-id              [:get :view-id]
             window-width         [:dimensions/window-width]]
     (when-let [label (cond

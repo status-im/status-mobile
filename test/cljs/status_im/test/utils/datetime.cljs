@@ -66,24 +66,24 @@
   (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
                 d/time-zone-offset (t/period :hours 0)
                 d/date-fmt (d/mk-fmt "us" d/medium-date-time-format)]
-    (is (= (d/day-relative epoch) "Jan 1, 1970, 12:00:00 AM"))))
+    (is (= (d/day-relative d/date-fmt epoch) "Jan 1, 1970, 12:00:00 AM"))))
 
 (deftest day-relative-before-yesterday-nb-test
   (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
                 d/time-zone-offset (t/period :hours 0)
                 d/date-fmt (d/mk-fmt "nb-NO" d/medium-date-time-format)]
-    (is (= (d/day-relative epoch) "1. jan. 1970, 00:00:00"))))
+    (is (= (d/day-relative d/date-fmt epoch) "1. jan. 1970, 00:00:00"))))
 
 (deftest day-relative-before-yesterday-force-24H-test
   (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
                 d/is24Hour (constantly true)
                 d/time-zone-offset (t/period :hours 0)
                 d/date-fmt (d/mk-fmt "us" d/medium-date-time-format)]
-    (is (= (d/day-relative epoch) "Jan 1, 1970, 00:00:00"))))
+    (is (= (d/day-relative d/date-fmt epoch) "Jan 1, 1970, 00:00:00"))))
 
 (deftest day-relative-before-yesterday-force-AMPM-test
   (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
                 d/is24Hour (constantly false)
                 d/time-zone-offset (t/period :hours 0)
                 d/date-fmt (d/mk-fmt "it" d/medium-date-time-format)]
-    (is (= (d/day-relative epoch) "01 gen 1970, 12:00:00 AM"))))
+    (is (= (d/day-relative d/date-fmt epoch) "01 gen 1970, 12:00:00 AM"))))

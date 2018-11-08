@@ -289,7 +289,6 @@
                                    :chat/public-group-topic
                                    :chat/public-group-topic-error
                                    :chat/messages
-                                   :chat/message-groups
                                    :chat/message-statuses
                                    :chat/not-loaded-message-ids
                                    :chat/deduplication-ids
