@@ -28,12 +28,6 @@
    (#{:error :disconnected} state)))
 
 (re-frame/reg-sub
- :mailserver/connected?
- :<- [:mailserver/state]
- (fn [state]
-   (= :connected state)))
-
-(re-frame/reg-sub
  :mailserver/current-id
  (fn [db]
    (:mailserver/current-id db)))
