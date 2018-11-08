@@ -110,3 +110,61 @@ class TestWalletModal(SingleDeviceTestCase):
         chat.wallet_modal_button.click()
         if not wallet_modal.usd_total_value.is_element_displayed():
             pytest.fail("Wallet modal was not opened")
+
+
+    @marks.testrail_id(5484)
+    @marks.low
+    def test_close_wallet_modal_via_closs_icon(self):
+        sign_in_view = SignInView(self.driver)
+        home = sign_in_view.create_user()
+        start_new_chat = home.plus_button.click()
+        start_new_chat.open_d_app_button.click()
+        start_new_chat.element_by_text('Airswap').click()
+        web_view = start_new_chat.open_button.click()
+        web_view.web_view_menu_button.click()
+        wallet_modal = web_view.wallet_modal_button.click()
+        wallet_modal.cross_icon.click()
+        if not web_view.browser_previous_page_button.is_element_displayed():
+            pytest.fail('Modal wallet was not closed')
+
+
+    @marks.testrail_id(5483)
+    @marks.low
+    def test_close_wallet_modal_via_device_back_button(self):
+        sign_in_view = SignInView(self.driver)
+        home = sign_in_view.create_user()
+        start_new_chat = home.plus_button.click()
+        start_new_chat.open_d_app_button.click()
+        start_new_chat.element_by_text('Airswap').click()
+        web_view = start_new_chat.open_button.click()
+        web_view.web_view_menu_button.click()
+        wallet_modal = web_view.wallet_modal_button.click()
+        transaction_history = wallet_modal.transaction_history_button.click()
+        transaction_history.click_system_back_button()
+        if not web_view.web_view_menu_button.is_element_displayed():
+            pytest.fail('Transaction history screen from modal wallet was not closed')
+        else:
+            web_view.web_view_menu_button.click()
+        web_view.wallet_modal_button.click()
+        wallet_modal.click_system_back_button()
+        if not web_view.web_view_menu_button.is_element_displayed():
+            pytest.fail('Modal wallet was not closed')
+
+    @marks.testrail_id(5482)
+    @marks.low
+    def test_switch_between_main_and_history_in_wallet_modal(self):
+        sign_in_view = SignInView(self.driver)
+        home = sign_in_view.create_user()
+        start_new_chat = home.plus_button.click()
+        start_new_chat.open_d_app_button.click()
+        start_new_chat.element_by_text('Airswap').click()
+        web_view = start_new_chat.open_button.click()
+        web_view.web_view_menu_button.click()
+        wallet_modal = web_view.wallet_modal_button.click()
+        transaction_history = wallet_modal.transaction_history_button.click()
+        if not transaction_history.wallet_modal_switch_button.is_element_displayed():
+            pytest.fail('No back to wallet button in modal transaction history')
+        else:
+            transaction_history.wallet_modal_switch_button.click()
+        if not wallet_modal.transaction_history_button.is_element_displayed():
+            pytest.fail('Failed to switch back to wallet modal main screen')

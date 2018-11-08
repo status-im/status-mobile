@@ -120,12 +120,19 @@ class FilterCheckbox(BaseButton):
             "//*[@text='%s']/following-sibling::*[@content-desc='checkbox']" % filter_name)
 
 
+class WalletModalSwitchButton(BaseButton):
+    def __init__(self, driver):
+        super(WalletModalSwitchButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('wallet-modal-button')
+
+
 class TransactionsView(BaseView):
     def __init__(self, driver):
         super(TransactionsView, self).__init__(driver)
         self.driver = driver
         self.filters_button = FiltersButton(self.driver)
         self.transactions_table = TransactionTable(self.driver)
+        self.wallet_modal_switch_button = WalletModalSwitchButton(self.driver)
 
     def filter_checkbox(self, filter_name):
         return FilterCheckbox(self.driver, filter_name)
