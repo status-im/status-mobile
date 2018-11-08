@@ -7,20 +7,26 @@
             [re-frame.core :as re-frame]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.list.views :as list]
-            [status-im.utils.datetime :as datetime]))
+            [status-im.utils.datetime :as datetime]
+            [clojure.string :as string]))
 
 (defn render-row
   [{:keys [timestamp event]}]
   (let [[event-name event-body] event]
-    [react/view {:flex-direction     :column
-                 :background-color   :white
-                 :align-items        :center
-                 :padding-horizontal 16
-                 :ios                {:height 64}
-                 :android            {:height 56}}
-     [react/text (datetime/timestamp->long-date timestamp)]
-     [react/text event-name]
-     [react/text (prn-str event-body)]]))
+    [react/touchable-highlight
+     {:on-press #(.share
+                  react/sharing
+                  (clj->js
+                   {:message (string/join " " [(datetime/timestamp->long-date timestamp)
+                                               event-name
+                                               (prn-str event-body)])}))}
+     [react/view {:flex-direction     :column
+                  :background-color   :white
+                  :align-items        :center
+                  :padding-horizontal 16}
+      [react/text (datetime/timestamp->long-date timestamp)]
+      [react/text event-name]
+      [react/text (prn-str event-body)]]]))
 
 (defn mailserver-logs []
   [react/view {:flex 1}
@@ -28,7 +34,7 @@
    [toolbar/toolbar {}
     toolbar/default-nav-back
     [toolbar/content-title "Mailserver logs"]]
-   [react/view
+   [react/scroll-view
     [react/text {:on-press #(.share
                              react/sharing
                              (clj->js
@@ -51,6 +57,5 @@
     [list/flat-list {:data               @mailserver/logs
                      :default-separator? true
                      :key-fn             :timestamp
-                     :render-fn          render-row}]
-    [react/view {:width 100
-                 :height 400}]]])
+                     :render-fn          render-row
+                     :style              {:padding-bottom 20}}]]])
