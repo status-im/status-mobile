@@ -49,7 +49,7 @@
  http-get)
 
 (defn- http-raw-get [{:keys [url success-event-creator failure-event-creator timeout-ms]}]
-  (let [on-success #(re-frame/dispatch (success-event-creator %))
+  (let [on-success #(when-let [event (success-event-creator %)] (re-frame/dispatch event))
         on-error   (when failure-event-creator #(re-frame/dispatch (failure-event-creator %)))
         opts       {:timeout-ms      timeout-ms}]
     (http/raw-get url on-success on-error opts)))

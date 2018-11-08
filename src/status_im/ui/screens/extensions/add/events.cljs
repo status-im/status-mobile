@@ -10,7 +10,7 @@
  :extensions/load
  (fn [{:keys [extensions follow-up]}]
    (doseq [{:keys [url active?]} extensions]
-     (extensions/load-from url #(re-frame/dispatch [follow-up (-> % extensions/read-extension extensions/parse) active?])))))
+     (extensions/load-from url #(re-frame/dispatch [follow-up (extensions/parse-extension %) active?])))))
 
 (handlers/register-handler-fx
  :extensions/stage

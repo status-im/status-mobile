@@ -147,7 +147,7 @@
                            (id [_] (name id))
                            (scope [_] scope)
                            (description [_] description)
-                           (parameters [_] parameters)
+                           (parameters [_] (or parameters []))
                            (validate [_ _ _])
                            (on-send [_ command-message _] (when on-send {:dispatch (on-send command-message)}))
                            (on-receive [_ command-message _] (when on-receive {:dispatch (on-receive command-message)}))

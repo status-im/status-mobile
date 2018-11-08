@@ -64,10 +64,11 @@
      {:browser/call-rpc [{"jsonrpc" "2.0"
                           "method"  "eth_call"
                           "params"  [tx-object "latest"]}
-                         #(when on-result
-                            (let [result-str (when %2
-                                               (get (js->clj %2) "result"))
-                                  result     (if (and outputs result-str)
-                                               (abi-spec/decode (string/replace result-str #"0x" "")  outputs)
-                                               result-str)]
-                              (re-frame/dispatch (on-result {:error %1 :result result}))))]})))
+                         #(let [result-str (when %2
+                                             (get (js->clj %2) "result"))
+                                result     (cond
+                                             (= "0x" result-str) nil
+                                             (and outputs result-str)
+                                             (abi-spec/decode (string/replace result-str #"0x" "")  outputs)
+                                             :else result-str)]
+                            (re-frame/dispatch (on-result (merge {:result result} (when %1 {:error %1})))))]})))

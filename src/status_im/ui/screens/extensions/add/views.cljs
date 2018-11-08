@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.extensions.add.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
             [clojure.string :as string]
             [status-im.extensions.core :as extensions]
             [status-im.i18n :as i18n]
@@ -76,7 +77,8 @@
        [react/view {:flex 1}
         [toolbar/simple-toolbar (i18n/label :t/extension)]
         [react/view {:style {:flex 1 :justify-content :center :align-items :center}}
-         [react/text (i18n/label :t/invalid-extension)]]]])))
+         [react/text (i18n/label :t/invalid-extension)]
+         [react/text (str errors)]]]])))
 
 (def qr-code
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
@@ -88,7 +90,8 @@
 
 (views/defview edit-extension []
   (views/letsubs [manage-extension [:get-manage-extension]]
-    (let [url (get-in manage-extension [:url :value])]
+    (let [url     (get-in manage-extension [:url :value])
+          pressed (reagent/atom false)]
       [react/view styles/screen
        [status-bar/status-bar]
        [react/keyboard-avoiding-view components.styles/flex
@@ -108,5 +111,5 @@
          [components.common/bottom-button
           {:forward?  true
            :label     (i18n/label :t/find)
-           :disabled? (not (extensions/valid-uri? url))
-           :on-press  #(re-frame/dispatch [:extensions.ui/show-button-pressed (string/trim url)])}]]]])))
+           :disabled? (and (not @pressed) (not (extensions/valid-uri? url)))
+           :on-press  #(do (reset! pressed true) (re-frame/dispatch [:extensions.ui/show-button-pressed (string/trim url)]))}]]]])))

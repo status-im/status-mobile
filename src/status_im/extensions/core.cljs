@@ -65,23 +65,27 @@
    {:db (update-in db [:extensions-store :collectible] dissoc key)}))
 
 (defn- json? [res]
-  (string/starts-with? (get-in res [:headers "content-type"]) "application/json"))
+  (when-let [type (get-in res [:headers "content-type"])]
+    (string/starts-with? type "application/json")))
 
 (defn- parse-json [o]
-  (js->clj (js/JSON.parse o) :keywordize-keys true))
+  (when o
+    (js->clj (js/JSON.parse o) :keywordize-keys true)))
 
 (re-frame/reg-fx
  ::json-parse
- (fn [value on-result] (re-frame/dispatch (on-result {:value (parse-json value)}))))
+ (fn [{:keys [value on-result]}]
+   (re-frame/dispatch (on-result {:value (parse-json value)}))))
 
 (handlers/register-handler-fx
  :extensions/json-parse
- (fn [_ [_ {:keys [value]}]]
-   {::json-parse value}))
+ (fn [_ [_ m]]
+   {::json-parse m}))
 
 (re-frame/reg-fx
  ::json-stringify
- (fn [value on-result] (re-frame/dispatch (on-result {:value (js/JSON.stringify (clj->js value))}))))
+ (fn [value on-result]
+   (re-frame/dispatch (on-result {:value (js/JSON.stringify (clj->js value))}))))
 
 (handlers/register-handler-fx
  :extensions/json-stringify
@@ -93,8 +97,8 @@
  (fn [_ [_ {:keys [url on-success on-failure timeout]}]]
    {:http-raw-get (merge {:url url
                           :success-event-creator
-                          (fn [o]
-                            (let [res (if (json? o) (update o :body parse-json o))]
+                          (fn [{:keys [body] :as o}]
+                            (let [res (if (json? body) (update o :body parse-json))]
                               (on-success res)))}
                          (when on-failure
                            {:failure-event-creator on-failure})
@@ -106,9 +110,11 @@
  (fn [_ [_ {:keys [hash on-success on-failure]}]]
    {:http-raw-get (merge {:url (str "https://ipfs.infura.io/ipfs/" hash)
                           :success-event-creator
-                          (fn [o]
-                            (let [res (if (json? o) (update o :body parse-json o))]
-                              (on-success res)))}
+                          (fn [{:keys [status body]}]
+                            (if (= 200 status)
+                              (on-success {:value body})
+                              (when on-failure
+                                (on-failure {:value status}))))}
                          (when on-failure
                            {:failure-event-creator on-failure})
                          {:timeout-ms 5000})}))
@@ -117,10 +123,10 @@
  :http/post
  (fn [_ [_ {:keys [url body on-success on-failure timeout]}]]
    {:http-raw-post (merge {:url  url
-                           :body body
+                           :body (clj->js body)
                            :success-event-creator
-                           (fn [o]
-                             (let [res (if (json? o) (update o :body parse-json o))]
+                           (fn [{:keys [body] :as o}]
+                             (let [res (if (json? body) (update o :body parse-json))]
                                (on-success res)))}
                           (when on-failure
                             {:failure-event-creator on-failure})
@@ -272,21 +278,18 @@
                                :method     :string
                                :params?    :vector
                                :outputs?   :vector
-                               :on-result? :event}}}
+                               :on-result  :event}}}
    :hooks      {:commands commands/command-hook}})
-
-(defn read-extension [{:keys [value]}]
-  (when (seq value)
-    (let [{:keys [content]} (first value)]
-      (reader/read content))))
 
 (defn parse [{:keys [data]}]
   (try
-    (let [{:keys [errors] :as extension-data} (reader/parse {:capacities capacities} data)]
-      (when errors
-        (println "Failed to parse status extensions" errors))
-      extension-data)
-    (catch :default e (println "EXC" e))))
+    (reader/parse {:capacities capacities} data)
+    (catch :default e {:errors [{:value (str e)}]})))
+
+(defn parse-extension [{:keys [type value]}]
+  (if (= type :success)
+    (parse (reader/read (:content value)))
+    {:errors [{:type type :value value}]}))
 
 (def uri-prefix "https://get.status.im/extension/")
 
