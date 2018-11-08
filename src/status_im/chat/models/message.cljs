@@ -50,6 +50,9 @@
       (and (= constants/content-type-text content-type) (not emoji?))
       (update :content message-content/enrich-content))))
 
+(defn system-message? [{:keys [message-type]}]
+  (= :system-message message-type))
+
 (fx/defn re-index-message-groups
   "Relative datemarks of message groups can get obsolete with passing time,
   this function re-indexes them for given chat"
@@ -83,9 +86,9 @@
                               status)
      :data-store/tx [(user-statuses-store/save-status-tx status)]}))
 
-(defn add-outgoing-status [{:keys [from message-type] :as message} current-public-key]
+(defn add-outgoing-status [{:keys [from] :as message} current-public-key]
   (assoc message :outgoing (and (= from current-public-key)
-                                (not= :system-message message-type))))
+                                (not (system-message? message)))))
 
 (fx/defn add-message
   [{:keys [db] :as cofx} batch? {:keys [chat-id message-id clock-value timestamp content from] :as message} current-chat?]
@@ -109,7 +112,8 @@
                                 (update-in [:chats chat-id :unviewed-messages] (fnil conj #{}) message-id))
                :data-store/tx [(messages-store/save-message-tx prepared-message)]}
               (when (and platform/desktop?
-                         (not batch?))
+                         (not batch?)
+                         (not (system-message? prepared-message)))
                 (chat-model/update-dock-badge-label))
               (when-not batch?
                 (re-index-message-groups chat-id))

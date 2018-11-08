@@ -58,7 +58,7 @@
           [react/view styles/more-btn
            [vector-icons/icon :icons/options {:accessibility-label :options}]]]]))]])
 
-(views/defview toogle-contact-view [{:keys [public-key] :as contact} selected-key on-toggle-handler]
+(views/defview toggle-contact-view [{:keys [public-key] :as contact} selected-key on-toggle-handler]
   (views/letsubs [checked [selected-key public-key]]
     [react/view {:accessibility-label :contact-item}
      [list/list-item-with-checkbox

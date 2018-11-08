@@ -4,4 +4,7 @@
 
 (re-frame/reg-sub :pairing/installations
                   :<- [:get :pairing/installations]
-                  vals)
+                  (fn [k]
+                    (->> k
+                         vals
+                         (filter :device-type))))

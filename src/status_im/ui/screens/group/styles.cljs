@@ -17,3 +17,9 @@
 
 (def contacts-list
   {:background-color colors/white})
+
+(def no-contact-text
+  {:margin-bottom     20
+   :margin-horizontal 50
+   :text-align        :center
+   :color             colors/gray})

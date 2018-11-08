@@ -153,3 +153,6 @@
             new-user-status (aget new-user-statuses i)
             whisper-identity (aget old-user-status "whisper-identity")]
         (aset new-user-status "public-key" whisper-identity)))))
+
+(defn v24 [old-realm new-realm]
+  (log/debug "migrating v24 account database"))

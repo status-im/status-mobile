@@ -1,15 +1,18 @@
 (ns status-im.pairing.core
   (:require [re-frame.core :as re-frame]
+            [clojure.string :as string]
             [status-im.utils.fx :as fx]
             [status-im.utils.config :as config]
             [status-im.utils.platform :as utils.platform]
+            [status-im.accounts.db :as accounts.db]
             [status-im.transport.message.protocol :as protocol]
             [status-im.data-store.installations :as data-store.installations]
             [status-im.native-module.core :as native-module]
-            [status-im.accounts.db :as accounts.db]
             [status-im.utils.identicon :as identicon]
             [status-im.data-store.contacts :as data-store.contacts]
             [status-im.transport.message.pairing :as transport.pairing]))
+
+(def contact-batch-n 4)
 
 (defn- parse-response [response-js]
   (-> response-js
@@ -29,13 +32,9 @@
                                 :payload payload}}))
 
 (defn merge-contact [local remote]
-  (let [[old-contact new-contact] (sort-by :last-updated [local remote])]
+  (let [[old-contact new-contact] (sort-by :last-updated [remote local])]
     (-> local
         (merge new-contact)
-        (assoc :photo-path
-               (or (:photo-path new-contact)
-                   (:photo-path old-contact)
-                   (identicon/identicon (:public-key local))))
         (assoc :pending? (boolean
                           (and (:pending? local true)
                                (:pending? remote true)))))))
@@ -66,8 +65,15 @@
 (defn sync-installation-messages [{:keys [db]}]
   (let [contacts (:contacts/contacts db)]
     (map
-     (fn [[k v]] (transport.pairing/SyncInstallation. {k (dissoc v :photo-path)}))
-     contacts)))
+     (fn [batch]
+       (let [contacts-to-sync (reduce (fn [acc {:keys [public-key] :as contact}]
+                                        (assoc acc public-key (dissoc contact :photo-path)))
+                                      {}
+                                      batch)]
+         (transport.pairing/SyncInstallation. contacts-to-sync)))
+     (partition-all contact-batch-n (->> contacts
+                                         vals
+                                         (remove :dapp?))))))
 
 (defn enable [{:keys [db]} installation-id]
   {:db (assoc-in db
@@ -130,18 +136,32 @@
                      :dst current-public-key
                      :payload %) sync-messages)}))
 
+(defn ensure-photo-path
+  "Make sure a photo path is there, generate otherwise"
+  [contacts]
+  (reduce-kv (fn [acc k {:keys [public-key photo-path] :as v}]
+               (assoc acc k
+                      (assoc
+                       v
+                       :photo-path
+                       (if (string/blank? photo-path)
+                         (identicon/identicon public-key)
+                         photo-path))))
+             {}
+             contacts))
+
 (defn handle-sync-installation [{:keys [db] :as cofx} {:keys [contacts]} sender]
   (let [dev-mode? (get-in db [:account/account :dev-mode?])]
     (when (and (config/pairing-enabled? dev-mode?)
                (= sender (accounts.db/current-public-key cofx)))
-      (let [new-contacts  (merge-contacts (:contacts/contacts db) contacts)]
+      (let [new-contacts (merge-contacts (:contacts/contacts db) (ensure-photo-path contacts))]
         {:db (assoc db :contacts/contacts new-contacts)
          :data-store/tx [(data-store.contacts/save-contacts-tx (vals new-contacts))]}))))
 
 (defn handle-pair-installation [{:keys [db] :as cofx} {:keys [installation-id device-type]} timestamp sender]
   (let [dev-mode? (get-in db [:account/account :dev-mode?])]
     (when (and (config/pairing-enabled? dev-mode?)
-               (= sender (get-in cofx [:db :current-public-key]))
+               (= sender (accounts.db/current-public-key cofx))
                (not= (get-in db [:account/account :installation-id]) installation-id))
       (let [installation {:installation-id installation-id
                           :device-type     device-type
