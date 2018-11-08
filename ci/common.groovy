@@ -1,3 +1,5 @@
+import groovy.json.JsonBuilder
+
 def version() {
   return readFile("${env.WORKSPACE}/VERSION").trim()
 }
@@ -179,6 +181,16 @@ def setBuildDesc(Map links) {
     }
   }
   currentBuild.description = desc
+}
+
+def updateLatestNightlies(Map links) {
+  def latestFile = pwd() + '/' + 'pkg/latest.json'
+  /* it might not exist */
+  sh 'mkdir -p pkg'
+  def latestJson = new JsonBuilder(links).toPrettyString()
+  println("latest.json:\n${latestJson}")
+  new File(latestFile).write(latestJson)
+  return uploadArtifact(latestFile)
 }
 
 def getParentRunEnv(name) {

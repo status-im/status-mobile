@@ -80,12 +80,14 @@ pipeline {
         ipaUrl = ios.getBuildVariables().get('DIAWI_URL')
         /* add URLs to the build description */
         cmn.setBuildDesc(
-          Apk: apkUrl,
-          e2e: e2eUrl,
-          iOS: ipaUrl,
-          App: appUrl,
-          Mac: dmgUrl
+          Apk: apkUrl, e2e: e2eUrl, iOS: ipaUrl, App: appUrl, Mac: dmgUrl,
         )
+        /* Create latest.json with newest nightly URLs */
+        if (btype == 'nightly') {
+          cmn.updateLatestNightlies(
+            APK: apkUrl, IOS: ipaUrl, APP: appUrl, MAC: dmgUrl
+          )
+        }
       } }
     }
     stage('Notify') {
@@ -108,7 +110,7 @@ pipeline {
                 [name: 'APK_URL', value: apkUrl, $class: 'StringParameterValue'],
                 [name: 'IOS_URL', value: ipaUrl, $class: 'StringParameterValue'],
                 [name: 'DMG_URL', value: dmgUrl, $class: 'StringParameterValue'],
-                [name: 'NIX_URL', value: appUrl, $class: 'StringParameterValue']
+                [name: 'NIX_URL', value: appUrl, $class: 'StringParameterValue'],
               ]
             ); break
           case 'release':
