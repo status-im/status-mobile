@@ -16,12 +16,8 @@
       (format-author from username)))
 
 (def ^:private styling->prop
-  {:bold      (if platform/desktop?
-                {:font :medium}
-                {:style {:font-weight :bold}})
-   :italic    (if platform/desktop?
-                {:font :italic}
-                {:style {:font-style  :italic}})
+  {:bold      {:style {:font-weight :bold}}
+   :italic    {:style {:font-style  :italic}}
    :backquote {:style {:background-color colors/black
                        :color            colors/green}}})
 
