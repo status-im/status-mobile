@@ -98,7 +98,7 @@
                                                         :source  source
                                                         :value   value}]))
 
-(defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} currency]
+(defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} {:keys [settings]} currency]
   (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
     [react/view
      [profile.components/settings-title (i18n/label :t/settings)]
@@ -121,6 +121,11 @@
         {:label-kw     :t/backup-your-recovery-phrase
          :action-fn    #(re-frame/dispatch [:navigate-to :backup-seed])
          :icon-content [components.common/counter {:size 22} 1]}])
+     [profile.components/settings-item-separator]
+     [profile.components/settings-switch-item
+      {:label-kw  :t/web3-opt-in
+       :value     (:web3-opt-in? settings)
+       :action-fn #(re-frame/dispatch [:accounts.ui/web3-opt-in-mode-switched %])}]
      [profile.components/settings-item-separator]
      [profile.components/settings-item
       {:label-kw            :t/need-help
@@ -183,11 +188,6 @@
       {:label-kw            :t/devices
        :action-fn           #(re-frame/dispatch [:navigate-to :installations])
        :accessibility-label :pairing-settings-button}])
-   (when dev-mode?
-     [profile.components/settings-switch-item
-      {:label-kw  :t/web3-opt-in
-       :value     (:web3-opt-in? settings)
-       :action-fn #(re-frame/dispatch [:accounts.ui/web3-opt-in-mode-switched %])}])
    [profile.components/settings-item-separator]
    [profile.components/settings-switch-item
     {:label-kw  :t/dev-mode
@@ -252,5 +252,5 @@
                                    :accessibility-label :share-my-profile-button}
           (i18n/label :t/share-my-profile)]]
         [react/view styles/my-profile-info-container
-         [my-profile-settings current-account currency]]
+         [my-profile-settings current-account shown-account currency]]
         [advanced shown-account on-show-advanced]]])))

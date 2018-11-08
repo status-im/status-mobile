@@ -1,6 +1,7 @@
 if(typeof ReadOnlyProvider === "undefined"){
 var callbackId = 0;
 var callbacks = {};
+var currentAccountAddress;
 
 function bridgeSend(data){
     WebViewBridge.send(JSON.stringify(data));
@@ -54,11 +55,9 @@ WebViewBridge.onMessage = function (message) {
                 qrCodeResponse(data, callback);
             } else if (data.isAllowed) {
                 if (data.permission == 'web3') {
-                    window.currentAccountAddress = data.data;
-                    callback.resolve();
-                } else {
-                    callback.resolve(data.data);
+                    currentAccountAddress = data.data[0];
                 }
+                callback.resolve(data.data);
             } else {
                 callback.reject(new Error("Denied"));
             }
@@ -85,7 +84,6 @@ function web3Response (payload, result){
 }
 
 function getSyncResponse (payload) {
-    console.log("getSyncResponse " + payload.method + " !")
     if (payload.method == "eth_accounts" && currentAccountAddress){
         return web3Response(payload, [currentAccountAddress])
     } else if (payload.method == "eth_coinbase" && currentAccountAddress){
@@ -132,7 +130,6 @@ ReadOnlyProvider.prototype.send = function (payload) {
 };
 
 ReadOnlyProvider.prototype.sendAsync = function (payload, callback) {
-
    var syncResponse = getSyncResponse(payload);
    if (syncResponse && callback){
        callback(null, syncResponse);

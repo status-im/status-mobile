@@ -1,4 +1,6 @@
 ;; Browser (webview) configuration
 ;; :inject-js is a map of {<domain> <js-code>}, JS code will be injected if the domain name matches (www. is stripped away)
 
-{:inject-js {"cryptokitties.co" "; if (!window.chrome) { window.chrome = { webstore: true }; window.ethereum.isMetaMask = web3.currentProvider.isMetaMask = true; }"}}
+{:inject-js {"cryptokitties.co" "; if (!window.chrome) { window.chrome = { webstore: true };
+   if (ethereum) ethereum.isMetaMask = true;
+   if (web3 && web3.currentProvider) web3.currentProvider.isMetaMask = true; }"}}

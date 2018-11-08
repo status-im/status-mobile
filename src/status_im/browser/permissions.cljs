@@ -39,7 +39,7 @@
 (defn get-permission-data [cofx allowed-permission]
   (let [account (get-in cofx [:db :account/account])]
     (get {constants/dapp-permission-contact-code (:public-key account)
-          constants/dapp-permission-web3         (ethereum/normalized-address (:address account))}
+          constants/dapp-permission-web3         [(ethereum/normalized-address (:address account))]}
          allowed-permission)))
 
 (fx/defn send-response-to-bridge

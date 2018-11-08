@@ -134,7 +134,7 @@
         :on-bridge-message                     #(re-frame/dispatch [:browser/bridge-message-received %])
         :on-load                               #(re-frame/dispatch [:browser/loading-started])
         :on-error                              #(re-frame/dispatch [:browser/error-occured])
-        :injected-on-start-loading-java-script (str (not opt-in?) js-res/web3
+        :injected-on-start-loading-java-script (str (when-not opt-in? js-res/web3)
                                                     (if opt-in?
                                                       (js-res/web3-opt-in-init (str network-id))
                                                       (js-res/web3-init
