@@ -80,13 +80,9 @@
   [react/view
    [react/view {:style styles/title-separator}]
    [react/text {:style styles/mailserver-title} (i18n/label :devices)]
-   [react/touchable-highlight {:style styles/pair-button
-                               :on-press pairing.views/pair!}
-    [react/text (i18n/label :pair)]]
-   (for [installation installations]
-     ^{:key (:installation-id installation)}
-     [react/view {:style {:margin-vertical 8}}
-      [pairing.views/render-row installation]])])
+   [pairing.views/pair-this-device]
+   [pairing.views/sync-devices]
+   [pairing.views/installations-list installations]])
 
 (views/defview advanced-settings []
   (views/letsubs [installations    [:pairing/installations]

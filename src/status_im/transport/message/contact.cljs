@@ -8,33 +8,12 @@
 
 (defrecord ContactRequest [name profile-image address fcm-token]
   protocol/StatusMessage
-  (send [this chat-id {:keys [db random-id-generator] :as cofx}]
-    (fx/merge cofx
-              (protocol/init-chat {:chat-id chat-id
-                                   :resend? "contact-request"})
-              (protocol/send-with-pubkey {:chat-id chat-id
-                                          :payload this
-                                          :success-event [:transport/contact-message-sent chat-id]})))
   (validate [this]
     (when (spec/valid? :message/contact-request this)
       this)))
 
 (defrecord ContactRequestConfirmed [name profile-image address fcm-token]
   protocol/StatusMessage
-  (send [this chat-id {:keys [db] :as cofx}]
-    (let [success-event [:transport/contact-message-sent chat-id]
-          chat         (get-in db [:transport/chats chat-id])
-          updated-chat (if chat
-                         (assoc chat :resend? "contact-request-confirmation")
-                         (transport.db/create-chat {:resend? "contact-request-confirmation"}))]
-      (fx/merge cofx
-                {:db            (assoc-in db
-                                          [:transport/chats chat-id] updated-chat)
-                 :data-store/tx [(transport-store/save-transport-tx {:chat-id chat-id
-                                                                     :chat    updated-chat})]}
-                (protocol/send-with-pubkey {:chat-id chat-id
-                                            :payload this
-                                            :success-event success-event}))))
   (validate [this]
     (when (spec/valid? :message/contact-request-confirmed this)
       this)))
@@ -79,15 +58,3 @@
     {:shh/remove-filter {:chat-id chat-id
                          :filter filter}}))
 
-(defrecord NewContactKey [sym-key topic message]
-  protocol/StatusMessage
-  (send
-    ;; no-op, we don't send NewContactKey anymore
-    [this chat-id cofx])
-  (receive
-    ;;for compatibility with old clients, we only care about the message within
-    [this chat-id _ timestamp {:keys [db] :as cofx}]
-    (protocol/receive message chat-id chat-id timestamp cofx))
-  (validate [this]
-    (when (spec/valid? :message/new-contact-key this)
-      this)))

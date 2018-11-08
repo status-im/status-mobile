@@ -42,6 +42,9 @@
   {:font-weight        :normal
    :color              colors/white
    :padding-horizontal 16
+   :desktop            {:font-size        14
+                        :padding-vertical 10
+                        :letter-spacing   0.5}
    :android            {:font-size        14
                         :padding-vertical 10
                         :letter-spacing   0.5}

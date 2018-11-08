@@ -1115,7 +1115,7 @@
 (handlers/register-handler-fx
  :pairing.ui/synchronize-installation-pressed
  (fn [cofx _]
-   (pairing/send-installation-message cofx)))
+   (pairing/send-installation-messages cofx)))
 
 (handlers/register-handler-fx
  :pairing.ui/enable-installation-pressed

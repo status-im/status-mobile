@@ -21,11 +21,6 @@
 ;; The tag will determine which reader is used to recreate the clojure record
 ;; When migrating a particular record, it is important to use a different type and still handle the previous
 ;; gracefully for compatibility
-(deftype NewContactKeyHandler []
-  Object
-  (tag [this v] "c1")
-  (rep [this {:keys [sym-key topic message]}]
-    #js [sym-key topic message]))
 
 (deftype ContactRequestHandler []
   Object
@@ -102,8 +97,7 @@
 
 (def writer (transit/writer :json
                             {:handlers
-                             {contact/NewContactKey            (NewContactKeyHandler.)
-                              contact/ContactRequest           (ContactRequestHandler.)
+                             {contact/ContactRequest           (ContactRequestHandler.)
                               contact/ContactRequestConfirmed  (ContactRequestConfirmedHandler.)
                               contact/ContactUpdate            (ContactUpdateHandler.)
                               protocol/Message                 (MessageHandler.)
@@ -145,9 +139,7 @@
 ;; Here we only need to call the record with the arguments parsed from the clojure datastructures
 (def reader (transit/reader :json
                             {:handlers
-                             {"c1" (fn [[sym-key topic message]]
-                                     (contact/NewContactKey. sym-key topic message))
-                              "c2" (fn [[name profile-image address fcm-token]]
+                             {"c2" (fn [[name profile-image address fcm-token]]
                                      (contact/ContactRequest. name profile-image address fcm-token))
                               "c3" (fn [[name profile-image address fcm-token]]
                                      (contact/ContactRequestConfirmed. name profile-image address fcm-token))
