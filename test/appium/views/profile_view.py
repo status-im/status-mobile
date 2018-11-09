@@ -477,7 +477,8 @@ class ProfileView(BaseView):
         network_button.click()
         self.connect_button.click()
         from views.sign_in_view import SignInView
-        return SignInView(self.driver)
+        signin_view = SignInView(self.driver)
+        signin_view.sign_in()
 
     def add_custom_network(self):
         self.advanced_button.click()

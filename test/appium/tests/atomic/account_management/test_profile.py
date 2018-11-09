@@ -253,8 +253,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         home_view = signin_view.create_user()
         network_name = 'Mainnet with upstream RPC'
         profile = home_view.profile_button.click()
-        signin_view = profile.switch_network(network_name)
-        home_view = signin_view.sign_in()
+        profile.switch_network(network_name)
         profile = home_view.profile_button.click()
         if not profile.current_active_network == network_name.upper():
             self.driver.fail('Oops! Wrong network selected!')

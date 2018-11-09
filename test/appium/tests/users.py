@@ -34,6 +34,12 @@ wallet_users['D']['username'] = "Quickwitted United Orca"
 wallet_users['D']['address'] = "80b663e82657caf5657ce79b11aeaeda02c6cd92"
 wallet_users['D']['public_key'] = "0x048d9ee2acb99b0c9fef98665f8287d99fc365c5e827fc2541ffdce4cb87a9480bbea8" \
                                   "324968b9bb1ae6c2eca37cf0ab4aba9d85755e3a532431b9edc189f23c7c"
+wallet_users['E'] = dict()
+wallet_users['E']['passpharse'] = "record sphere illegal section blame swing wreck estate celery same excite summer"
+wallet_users['E']['username'] = "Homely Untimely Grasshopper"
+wallet_users['E']['address'] = "0x3e2e4077753d3c229a9ae332b9ca46958945e2f6"
+wallet_users['E']['public_key'] = "0x04a30d58c2c65c654a521455dabc139a9c26be7ca565f152a8182376150c1e12fe362c017a21b0e" \
+                                  "58676b84a945e34030c7150ae8d03758e94bf017f930d6189b2"
 
 transaction_senders = dict()
 
