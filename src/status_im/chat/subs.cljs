@@ -111,6 +111,59 @@
  :<- [:account/account]
  active-chats)
 
+(defn sort-message-groups
+  "Sorts message groups according to timestamp of first message in group"
+  [message-groups messages]
+  (sort-by
+   (comp unchecked-negate :timestamp (partial get messages) :message-id first second)
+   message-groups))
+
+(defn get-last-message [messages message-groups]
+  (->> (sort-message-groups message-groups messages)
+       first
+       second
+       last
+       :message-id
+       (get messages)))
+
+(reg-sub
+ :chats/active-chats
+ :<- [:get-contacts]
+ :<- [:get-chats]
+ :<- [:account/account]
+ (fn [[contacts chats {:keys [dev-mode?]}]]
+   (map (fn [{:keys [chat-id group-chat public? is-active messages
+                     message-groups unviewed-messages]
+              :as chat}]
+          (when (and is-active
+                     ;; not a group chat
+                     (or (not (and group-chat (not public?)))
+                         ;; if it's a group chat
+                         (utils.config/group-chats-enabled? dev-mode?)))
+            (let [{:keys [public-key tags photo-path] :as contact}
+                  (get contacts chat-id)
+                  unviewed-messages-count (count unviewed-messages)
+                  large-unviewed-messages-label? (< 9 unviewed-messages-count)
+                  last-message (get-last-message messages message-groups)]
+              (cond-> chat
+                tags
+                (update :tags clojure.set/union tags)
+
+                public-key
+                (assoc :random-name (gfycat/generate-gfy public-key))
+
+                (pos? unviewed-messages-count)
+                (assoc :unviewed-messages-label (if large-unviewed-messages-label?
+                                                  "9+"
+                                                  unviewed-messages-count))
+                large-unviewed-messages-label? (assoc :large-unviewed-messages-label? large-unviewed-messages-label?)
+                last-message (assoc :last-message last-message)
+                :always (assoc :name (chat-name chat contact)
+                               :photo-path (or photo-path
+                                               photo-path
+                                               (identicon/identicon chat-id)))))))
+        (vals chats))))
+
 (reg-sub
  :get-chat
  :<- [:get-active-chats]
@@ -146,13 +199,6 @@
  :<- [:get-current-chat]
  (fn [{:keys [referenced-messages]}]
    (or referenced-messages {})))
-
-(defn sort-message-groups
-  "Sorts message groups according to timestamp of first message in group"
-  [message-groups messages]
-  (sort-by
-   (comp unchecked-negate :timestamp (partial get messages) :message-id first second)
-   message-groups))
 
 (defn quoted-message-data
   "Selects certain data from quoted message which must be available in the view"

@@ -55,15 +55,12 @@
 
 (def chat-name-last-msg-box
   {:flex             1
-   :padding-vertical 16})
-
-(def chat-name
-  {:font-size  14})
+   :flex-direction :vertical})
 
 (def chat-last-message
   {:color      colors/gray
    :font-size  14
-   :max-height 20})
+   :max-height 24})
 
 (def timestamp
   {:justify-content :flex-start
