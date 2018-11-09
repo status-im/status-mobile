@@ -39,6 +39,7 @@ RUN LDFLAGS="-L/usr/local/lib" CFLAGS="-I/usr/local/include" make
 RUN make install
 RUN make install-langs
 RUN ldconfig
+RUN apt-get install -y imagemagick
 
 ADD . /home
 WORKDIR "/home"

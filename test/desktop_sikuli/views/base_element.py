@@ -2,9 +2,11 @@ import logging
 import time
 import pytest
 import re
-
-import org.sikuli.script.SikulixForJython
-from sikuli import *
+try:
+    import org.sikuli.script.SikulixForJython
+    from sikuli import *
+except Exception:
+    pass
 
 
 class BaseElement(object):
