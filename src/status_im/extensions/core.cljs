@@ -172,11 +172,6 @@
     :on-press #(re-frame/dispatch [:browser.ui/message-link-pressed uri])}
    uri])
 
-(defn text [o & children]
-  (if (map? o)
-    [react/text o children]
-    (into [react/text {} o] children)))
-
 (defn list [{:keys [data item-view]}]
   [list/flat-list {:data data :key-fn (fn [_ i] (str i)) :render-fn item-view}])
 
@@ -186,8 +181,21 @@
                        :style           {:padding 0}
                        :on-value-change #(re-frame/dispatch (on-change {:value %}))}]])
 
+(defn text [o & children]
+  (if (map? o)
+    [react/text o children]
+    (into [react/text {} o] children)))
+
+(defn- wrap-view-child [child]
+  (if (vector? child) child [text {} child]))
+
+(defn view [o & children]
+  (if (map? o)
+    [react/view o (map wrap-view-child children)]
+    (into [react/view {} (wrap-view-child o)] (map wrap-view-child children))))
+
 (def capacities
-  {:components {'view               {:value react/view}
+  {:components {'view               {:value view}
                 'text               {:value text}
                 'touchable-opacity  {:value touchable-opacity :properties {:on-press :event}}
                 'image              {:value image :properties {:uri :string}}
