@@ -1,8 +1,7 @@
-import pytest
-
 from tests import base_user
 from tests.base_test_case import BaseTestCase
 from views.sign_in_view import SignInView
+import pytest
 
 
 class TestProfile(BaseTestCase):

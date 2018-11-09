@@ -1,10 +1,10 @@
-import org.sikuli.script.SikulixForJython
-import pytest
-from sikuli import *
+try:
+    import org.sikuli.script.SikulixForJython
+    from sikuli import *
+except Exception:
+    pass
 import os
-
-from _pytest.runner import Failed
-
+import pytest
 from views.base_element import BaseElement, InputField
 from views.base_view import BaseView
 from views.home_view import HomeView
@@ -17,6 +17,7 @@ class CreateAccountButton(BaseElement):
         super(CreateAccountButton, self).__init__(IMAGES_PATH + '/create_account.png')
 
     def find_element(self, log=False):
+        from _pytest.runner import Failed
         try:
             super(CreateAccountButton, self).find_element(log=log)
         except Failed:

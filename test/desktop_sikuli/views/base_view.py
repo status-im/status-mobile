@@ -1,6 +1,9 @@
 import logging
-import org.sikuli.script.SikulixForJython
-from sikuli import *
+try:
+    import org.sikuli.script.SikulixForJython
+    from sikuli import *
+except Exception:
+    pass
 import os
 import pytest
 

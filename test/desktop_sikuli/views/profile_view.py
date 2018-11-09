@@ -1,6 +1,10 @@
-import org.sikuli.script.SikulixForJython
-from sikuli import *
 import os
+
+try:
+    import org.sikuli.script.SikulixForJython
+    from sikuli import *
+except Exception:
+    pass
 
 from views.base_element import BaseElement, TextElement
 from views.base_view import BaseView

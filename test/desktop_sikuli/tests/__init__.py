@@ -1,3 +1,12 @@
+
+class TestData(object):
+
+    def __init__(self):
+        self.tests_to_run = list()
+
+
+test_data = TestData()
+
 base_user = dict()
 base_user['passphrase'] = 'tree weekend ceiling awkward universe pyramid glimpse raven pair lounge grant grief'
 base_user['username'] = 'Little Weighty Iberianmole'
