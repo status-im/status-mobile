@@ -158,7 +158,7 @@
              :photo-path  "contacts://snt-voting"
              :description "Let your SNT be heard! Vote on decisions exclusive to SNT holders, or create a poll of your own."}
             {:name        "Status Test DApp"
-             :dapp-url    "https://status-im.github.io/dapp/"
+             :dapp-url    "simpledapp.eth"
              :description "Request test assets and test basic web3 functionality."
              :developer?  true}]}])
 

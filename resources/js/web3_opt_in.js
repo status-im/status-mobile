@@ -14,8 +14,7 @@ function sendAPIrequest(permission, params) {
     bridgeSend({
         type: 'api-request',
         permission: permission,
-        messageId: messageId,
-        host: window.location.hostname
+        messageId: messageId
     });
 
     return new Promise(function (resolve, reject) {
@@ -145,8 +144,7 @@ ReadOnlyProvider.prototype.sendAsync = function (payload, callback) {
            for (var i in payload) {
                bridgeSend({type:      'web3-send-async-read-only',
                            messageId: messageId,
-                           payload:   payload[i],
-                           host:      window.location.hostname});
+                           payload:   payload[i]});
            }
        }
        else
@@ -154,8 +152,7 @@ ReadOnlyProvider.prototype.sendAsync = function (payload, callback) {
            callbacks[messageId] = {callback: callback};
            bridgeSend({type:      'web3-send-async-read-only',
                        messageId: messageId,
-                       payload:   payload,
-                       host:      window.location.hostname});
+                       payload:   payload});
        }
 
    }

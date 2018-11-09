@@ -69,7 +69,8 @@
 
 (defn check-if-dapp-in-list [{:keys [history history-index] :as browser}]
   (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))
-        dapp         (first (filter #(= history-host (http/url-host (:dapp-url %))) (apply concat (mapv :data default-dapps/all))))]
+        dapp         (first (filter #(= history-host (http/url-host (http/normalize-url (:dapp-url %))))
+                                    (apply concat (mapv :data default-dapps/all))))]
     (if dapp
       ;;TODO(yenda): the consequence of this is that if user goes to a different
       ;;url from a dapp browser, the name of the browser in the home screen will
@@ -88,8 +89,8 @@
       (re-frame/dispatch [:browser.callback/resolve-ens-multihash-error]))))
 
 (fx/defn resolve-url
-  [{{:keys [web3 network] :as db} :db} {:keys [loading? error? resolved-url]}]
-  (when (and (not loading?) (not error?))
+  [{{:keys [web3 network] :as db} :db} {:keys [error? resolved-url]}]
+  (when (not error?)
     (let [current-url (get-current-url (get-current-browser db))
           host (http/url-host current-url)]
       (if (and (not resolved-url) (ens/is-valid-eth-name? host))
@@ -137,24 +138,15 @@
                 (resolve-url nil)))))
 
 (fx/defn update-browser-history
-  ;; TODO: not clear how this works
-  [{db :db :as cofx} browser url loading?]
-  (when-not loading?
-    (let [history-index (:history-index browser)
-          history       (:history browser)
-          current-url   (get-in db [:browser/options :url])]
-      (when (and (not= current-url url) (not= (str current-url "/") url))
-        (let [slash?      (= url (str current-url "/"))
-              new-history (if slash?
-                            (assoc history history-index url)
-                            (conj (subvec history 0 (inc history-index)) url))
-              new-index   (if slash?
-                            history-index
-                            (dec (count new-history)))]
-          (update-browser cofx
-                          (assoc browser
-                                 :history new-history
-                                 :history-index new-index)))))))
+  [cofx browser url]
+  (let [history-index (:history-index browser)
+        history       (:history browser)]
+    (let [new-history (conj (subvec history 0 (inc history-index)) url)
+          new-index   (dec (count new-history))]
+      (update-browser cofx
+                      (assoc browser
+                             :history new-history
+                             :history-index new-index)))))
 
 (fx/defn resolve-ens-multihash-success
   [{:keys [db] :as cofx} hash]
@@ -189,8 +181,8 @@
       (let [resolved-ens (first (filter #(not= (.indexOf url (second %)) -1) (:resolved-ens options)))
             resolved-url (if resolved-ens (string/replace url (second resolved-ens) (first resolved-ens)) url)]
         (fx/merge cofx
-                  (update-browser-history browser resolved-url loading?)
-                  (resolve-url {:loading? loading? :error? error? :resolved-url (when resolved-ens url)}))))))
+                  (update-browser-history browser resolved-url)
+                  (resolve-url {:error? error? :resolved-url (when resolved-ens url)}))))))
 
 (fx/defn navigation-state-changed
   [cofx event error?]
@@ -211,7 +203,7 @@
         normalized-url (http/normalize-and-decode-url url)]
     (fx/merge cofx
               (update-browser-option :url-editing? false)
-              (update-browser-history browser normalized-url false)
+              (update-browser-history browser normalized-url)
               (resolve-url nil))))
 
 (fx/defn open-url
@@ -288,19 +280,18 @@
 
 (fx/defn process-bridge-message
   [{:keys [db] :as cofx} message]
-  (let [{:browser/keys [options browsers]} db
-        {:keys [browser-id]} options
-        browser (get browsers browser-id)
+  (let [browser (get-current-browser db)
+        url-original (get-current-url browser)
         data    (types/json->clj message)
-        {{:keys [url]} :navState :keys [type host permission payload messageId]} data
+        {{:keys [url]} :navState :keys [type permission payload messageId]} data
         {:keys [dapp? name]} browser
-        dapp-name (if dapp? name host)]
+        dapp-name (if dapp? name (http/url-host url-original))]
     (cond
       (and (= type constants/history-state-changed)
            platform/ios?
            (not= "about:blank" url))
       (fx/merge cofx
-                (update-browser-history browser url false)
+                (update-browser-history browser url)
                 (resolve-url nil))
 
       (= type constants/web3-send-async)
