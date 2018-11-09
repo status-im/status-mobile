@@ -197,3 +197,18 @@ class TestWalletManagement(SingleDeviceTestCase):
                 pytest.fail('Failed transactions are not filtered')
             details.back_button.click()
         self.verify_no_errors()
+
+    @marks.testrail_id(5381)
+    @marks.high
+    @marks.skip
+    def test_user_can_see_all_own_assets_after_account_recovering(self):
+        passphrase = wallet_users['D']['passphrase']
+        signin_view = SignInView(self.driver)
+        home_view = signin_view.recover_access(passphrase=passphrase)
+        profile = home_view.profile_button.click()
+        profile.switch_network('Rinkeby with upstream RPC')
+        profile = home_view.profile_button.click()
+        wallet_view = profile.wallet_button.click()
+        wallet_view.set_up_wallet()
+        if wallet_view.collectible_amount_by_name('kdo') != '1':
+            self.driver.fail('User collectibles amount does not match!')
