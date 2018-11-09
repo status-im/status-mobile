@@ -69,12 +69,20 @@
 
 (fx/defn add-tag
   "add a tag to the contact"
-  [{:keys [db] :as cofx}]
-  (let [tag (get-in db [:ui/contact :contact/new-tag])
-        public-key (get-in db [:current-chat-id])
-        tags (conj (get-in db [:contacts/contacts public-key :tags] #{}) tag)]
-    {:db (assoc-in db [:contacts/contacts public-key :tags] tags)
-     :data-store/tx [(contacts-store/add-contact-tag-tx public-key tag)]}))
+  [{:keys [db] :as cofx} public-key tag]
+  (let [contact (get-in db [:contacts/contacts public-key])
+        tags (conj (or (:tags contact) #{}) tag)]
+    (if contact
+      {:db (assoc-in db [:contacts/contacts public-key :tags] tags)
+       :data-store/tx [(contacts-store/add-contact-tag-tx public-key tag)]}
+      (add-new-contact cofx {:public-key public-key
+                             :tags tags}))))
+
+(fx/defn add-current-tag
+  "add a tag to the contact"
+  [{:keys [db] :as cofx} public-key]
+  (let [tag (get-in db [:ui/contact :contact/new-tag])]
+    (add-tag cofx public-key tag)))
 
 (fx/defn remove-tag
   "remove a tag from the contact"

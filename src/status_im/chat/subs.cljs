@@ -114,9 +114,17 @@
 (defn sort-message-groups
   "Sorts message groups according to timestamp of first message in group"
   [message-groups messages]
-  (sort-by
-   (comp unchecked-negate :timestamp (partial get messages) :message-id first second)
-   message-groups))
+  (let [message-ids (set (keys messages))]
+    (sort-by
+     (comp unchecked-negate :timestamp (partial get messages) :message-id first second)
+     (reduce (fn [acc [datemark group-messages]]
+               (let [filtered-messages (filter #(message-ids (:message-id %))
+                                               group-messages)]
+                 (if (zero? (count filtered-messages))
+                   acc
+                   (assoc acc datemark filtered-messages))))
+             {}
+             message-groups))))
 
 (defn get-last-message [messages message-groups]
   (->> (sort-message-groups message-groups messages)
@@ -130,39 +138,41 @@
  :chats/active-chats
  :<- [:get-contacts]
  :<- [:get-chats]
+ :<- [:contacts/blocked]
  :<- [:account/account]
- (fn [[contacts chats {:keys [dev-mode?]}]]
-   (map (fn [{:keys [chat-id group-chat public? is-active messages
-                     message-groups unviewed-messages]
-              :as chat}]
-          (when (and is-active
-                     ;; not a group chat
-                     (or (not (and group-chat (not public?)))
-                         ;; if it's a group chat
-                         (utils.config/group-chats-enabled? dev-mode?)))
-            (let [{:keys [public-key tags photo-path] :as contact}
-                  (get contacts chat-id)
-                  unviewed-messages-count (count unviewed-messages)
-                  large-unviewed-messages-label? (< 9 unviewed-messages-count)
-                  last-message (get-last-message messages message-groups)]
-              (cond-> chat
-                tags
-                (update :tags clojure.set/union tags)
+ (fn [[contacts chats blocked-contacts {:keys [dev-mode?]}]]
+   (keep (fn [{:keys [chat-id group-chat public? is-active messages
+                      message-groups unviewed-messages]
+               :as chat}]
+           (let [{:keys [public-key tags photo-path] :as contact}
+                 (get contacts chat-id)]
+             (when (and is-active
+                        (not (blocked-contacts public-key))
+                        ;; not a group chat
+                        (or (not (and group-chat (not public?)))
+                            ;; if it's a group chat
+                            (utils.config/group-chats-enabled? dev-mode?)))
+               (let [unviewed-messages-count (count unviewed-messages)
+                     large-unviewed-messages-label? (< 9 unviewed-messages-count)
+                     last-message (get-last-message messages message-groups)]
+                 (cond-> chat
+                   tags
+                   (update :tags clojure.set/union tags)
 
-                public-key
-                (assoc :random-name (gfycat/generate-gfy public-key))
+                   public-key
+                   (assoc :random-name (gfycat/generate-gfy public-key))
 
-                (pos? unviewed-messages-count)
-                (assoc :unviewed-messages-label (if large-unviewed-messages-label?
-                                                  "9+"
-                                                  unviewed-messages-count))
-                large-unviewed-messages-label? (assoc :large-unviewed-messages-label? large-unviewed-messages-label?)
-                last-message (assoc :last-message last-message)
-                :always (assoc :name (chat-name chat contact)
-                               :photo-path (or photo-path
-                                               photo-path
-                                               (identicon/identicon chat-id)))))))
-        (vals chats))))
+                   (pos? unviewed-messages-count)
+                   (assoc :unviewed-messages-label (if large-unviewed-messages-label?
+                                                     "9+"
+                                                     unviewed-messages-count))
+                   large-unviewed-messages-label? (assoc :large-unviewed-messages-label? large-unviewed-messages-label?)
+                   last-message (assoc :last-message last-message)
+                   :always (assoc :name (chat-name chat contact)
+                                  :photo-path (or photo-path
+                                                  photo-path
+                                                  (identicon/identicon chat-id))))))))
+         (vals chats))))
 
 (reg-sub
  :get-chat
@@ -176,11 +186,21 @@
  (fn [{:keys [messages]} [_ message-id]]
    (get messages message-id)))
 
+(defn filter-messages-from-blocked-contacts
+  [messages blocked-contacts]
+  (reduce (fn [acc [message-id {:keys [from] :as message}]]
+            (if (blocked-contacts from)
+              acc
+              (assoc acc message-id message)))
+          {}
+          messages))
+
 (reg-sub
  :get-current-chat-messages
  :<- [:get-current-chat]
- (fn [{:keys [messages]}]
-   (or messages {})))
+ :<- [:contacts/blocked]
+ (fn [[{:keys [messages]} blocked-contacts]]
+   (filter-messages-from-blocked-contacts messages blocked-contacts)))
 
 (reg-sub
  :get-current-chat-message-groups

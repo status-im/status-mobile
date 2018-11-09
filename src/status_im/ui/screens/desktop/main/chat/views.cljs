@@ -278,7 +278,7 @@
   (views/letsubs [identity        [:get-current-contact-identity]
                   maybe-contact   [:get-current-contact]]
     (let [contact (or maybe-contact (utils.contacts/public-key->new-contact identity))
-          {:keys [pending? public-key]} contact]
+          {:keys [pending? public-key blocked?]} contact]
       [react/view {:style styles/chat-profile-body}
        [profile.views/profile-badge contact]
        ;; for private chat, public key will be chat-id
@@ -304,6 +304,20 @@
            [vector-icons/icon :icons/chats {:style (styles/chat-profile-icon colors/blue)}]]
           [react/text {:style (styles/contact-card-text colors/blue)}
            (i18n/label :t/send-message)]]]
+        [react/touchable-highlight {:on-press #(re-frame/dispatch [(if blocked?
+                                                                     :contact.ui/remove-tag
+                                                                     :contact.ui/add-tag) public-key "blocked"])}
+         [react/view {:style styles/chat-profile-row}
+          [react/view {:style styles/chat-profile-danger-icon-container
+                       :accessibility-label :add-contact-link}
+           [vector-icons/icon (if blocked?
+                                :icons/lock-opened
+                                :icons/lock)
+            {:style (styles/chat-profile-icon colors/black)}]]
+          [react/text {:style (styles/contact-card-text colors/red)}
+           (if blocked?
+             (i18n/label :t/unblock-user)
+             (i18n/label :t/block-user))]]]
         [react/text {:style styles/chat-profile-contact-code} (i18n/label :t/contact-code)]
         [react/text {:style           {:font-size 14}
                      :selectable      true

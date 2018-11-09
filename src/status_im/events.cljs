@@ -1104,8 +1104,13 @@
 
 (handlers/register-handler-fx
  :contact.ui/add-tag
- (fn [cofx _]
-   (contact/add-tag cofx)))
+ (fn [cofx [_ public-key tag]]
+   (contact/add-tag cofx public-key tag)))
+
+(handlers/register-handler-fx
+ :contact.ui/remove-tag
+ (fn [cofx [_ public-key tag]]
+   (contact/remove-tag cofx public-key tag)))
 
 (handlers/register-handler-fx
  :contact.ui/set-tag-input-field

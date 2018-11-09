@@ -8,7 +8,7 @@
 
 ;;we can't validate public key, because for dapps public-key is just string
 (spec/def :contact/public-key :global/not-empty-string)
-(spec/def :contact/name :global/not-empty-string)
+(spec/def :contact/name (spec/nilable :global/not-empty-string))
 (spec/def :contact/address (spec/nilable :global/address))
 (spec/def :contact/photo-path (spec/nilable string?))
 (spec/def :contact/status (spec/nilable string?))
@@ -30,10 +30,9 @@
 (spec/def :contact/subscriptions (spec/nilable map?))
 ;;true when contact added using status-dev-cli
 (spec/def :contact/debug? boolean?)
-(spec/def :contact/tags (spec/coll-of string? :kind set?))
 
-(spec/def :contact/contact (spec/keys  :req-un [:contact/name]
-                                       :opt-un [:contact/public-key
+(spec/def :contact/contact (spec/keys  :req-un [:contact/public-key]
+                                       :opt-un [:contact/name
                                                 :contact/address
                                                 :contact/photo-path
                                                 :contact/status
@@ -52,7 +51,7 @@
                                                 :contact/subscriptions
                                                 :contact/fcm-token
                                                 :contact/description
-                                                :contact/tags]))
+                                                :status/tags]))
 
 ;;Contact list ui props
 (spec/def :contact-list-ui/edit? boolean?)

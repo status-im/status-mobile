@@ -85,9 +85,9 @@
                                      (re-frame/dispatch [:search/filter-changed text])))}]])
 
 (views/defview chat-list-view []
-  (views/letsubs [{current-chat-id :chat-id}   [:chat/current]
-                  search-filter       [:search/filter]
-                  filtered-home-items [:search/filtered-home-items]]
+  (views/letsubs [{current-chat-id :chat-id} [:chat/current]
+                  search-filter              [:search/filter]
+                  filtered-home-items        [:search/filtered-home-items]]
     [react/view {:style styles/chat-list-view}
      [react/view {:style styles/chat-list-header}
       [search-input search-filter]

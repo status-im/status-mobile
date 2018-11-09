@@ -198,6 +198,17 @@
    :width      15
    :height     15})
 
+(def chat-profile-danger-icon-container
+  {:background-color (colors/alpha colors/red 0.5)
+   :justify-content  :center
+   :align-items      :center
+   :border-radius    15
+   ;; not sure idiomatic reagent for multiple style values
+   ;; for margin
+   :width            22
+   :height           22
+   :margin-right     10})
+
 (def chat-profile-contact-code
   {:color         colors/gray
    :margin-top    10

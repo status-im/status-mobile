@@ -11,11 +11,20 @@
          (fn [db]
            (:contacts/dapps db)))
 
+(reg-sub :contacts/blocked
+         :<- [:get-contacts]
+         (fn [contacts]
+           (set (keep #(when ((get % :tags #{}) "blocked")
+                         (:public-key %))
+                      (vals contacts)))))
+
 (reg-sub :get-current-contact
          :<- [:get-contacts]
+         :<- [:contacts/blocked]
          :<- [:get-current-contact-identity]
-         (fn [[contacts identity]]
-           (contacts identity)))
+         (fn [[contacts blocked identity]]
+           (cond-> (contacts identity)
+             (blocked identity) (assoc :blocked? true))))
 
 (reg-sub :get-current-chat-contact
          :<- [:get-contacts]
@@ -43,6 +52,16 @@
          :<- [:all-added-contacts]
          (fn [contacts]
            (remove :dapp? contacts)))
+
+(reg-sub :contacts/added
+         :<- [:get-contacts]
+         :<- [:contacts/blocked]
+         (fn [[contacts blocked-contacts]]
+           (->> contacts
+                (remove (fn [[_ {:keys [dapp? pending? hide-contact? public-key]}]]
+                          (or dapp? pending? hide-contact?
+                              (blocked-contacts public-key))))
+                (sort-contacts))))
 
 (defn- filter-dapps [v dev-mode?]
   (remove #(when-not dev-mode? (true? (:developer? %))) v))

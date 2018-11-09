@@ -47,8 +47,8 @@
     (let [contact       (get-contact-by-id public-key realm)
           existing-tags (object/get contact "tags")]
       (aset contact "tags"
-            (clj->js (into #{} (concat tag
-                                       (core/list->clj existing-tags))))))))
+            (clj->js (into #{} (conj (core/list->clj existing-tags)
+                                     tag)))))))
 
 (defn remove-contact-tag-tx
   "Returns tx function for removing chat contacts"

@@ -67,6 +67,7 @@
      :icons/hidden              (js/require "./resources/icons/hidden.svg")
      :icons/in-contacts         (js/require "./resources/icons/in_contacts.svg")
      :icons/lock                (js/require "./resources/icons/lock.svg")
+     :icons/lock-opened         (js/require "./resources/icons/lock_opened.svg")
      :icons/mic                 (js/require "./resources/icons/mic.svg")
      :icons/mobile              (js/require "./resources/icons/mobile.svg")
      :icons/ok                  (js/require "./resources/icons/ok.svg")
