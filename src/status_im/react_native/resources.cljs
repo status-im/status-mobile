@@ -15,7 +15,9 @@
    :easytrade          (js/require "./resources/images/contacts/easytrade.png")
 
    :name-bazaar        (js/require "./resources/images/contacts/name-bazaar.png")
+   :cryptographics     (js/require "./resources/images/contacts/cryptographics.png")
    :cryptopunks        (js/require "./resources/images/contacts/cryptopunks.png")
+   :cryptotakeovers    (js/require "./resources/images/contacts/cryptotakeovers.png")
    :cryptokitties      (js/require "./resources/images/contacts/cryptokitties.png")
    :etheremon          (js/require "./resources/images/contacts/etheremon.png")
    :cryptostrikers     (js/require "./resources/images/contacts/cryptostrikers.png")
@@ -29,6 +31,7 @@
    :opensea            (js/require "./resources/images/contacts/opensea.png")
    :kyber              (js/require "./resources/images/contacts/kyber.png")
    :bancor             (js/require "./resources/images/contacts/bancor.png")
+   :blockimmo          (js/require "./resources/images/contacts/blockimmo.png")
    :cryptocribs        (js/require "./resources/images/contacts/cryptocribs.png")
    :cryptofighters     (js/require "./resources/images/contacts/cryptofighters.png")
    :airswap            (js/require "./resources/images/contacts/airswap.png")

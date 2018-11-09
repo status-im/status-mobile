@@ -45,7 +45,11 @@
              :photo-path  "contacts://easytrade"
              :description "One exchange for every token"}]}
    {:title (i18n/label :t/default-dapps-marketplaces)
-    :data  [{:name        "CryptoCribs"
+    :data  [{:name        "blockimmo"
+             :dapp-url    "https://blockimmo.ch"
+             :photo-path  "contacts://blockimmo"
+             :description "blockimmo is a blockchain powered, regulated platform enabling shared property investments and ownership."}
+            {:name        "CryptoCribs"
              :dapp-url    "https://cryptocribs.com"
              :photo-path  "contacts://cryptocribs"
              :description "Travel the globe. Pay in crypto."}
@@ -82,10 +86,18 @@
              :dapp-url    "https://cryptofighters.io"
              :photo-path  "contacts://cryptofighters"
              :description "Collect train and fight digital fighters."}
+            {:name        "Cryptographics"
+             :dapp-url    "https://cryptographics.app/"
+             :photo-path  "contacts://cryptographics"
+             :description "Cryptographics is a digital art hub where artists, creators and collectors can submit asset packs, create unique cryptographics and trade them."}
             {:name        "CryptoPunks"
              :dapp-url    "https://www.larvalabs.com/cryptopunks"
              :photo-path  "contacts://cryptopunks"
              :description "10,000 unique collectible punks"}
+            {:name        "Crypto Takeovers"
+             :dapp-url    "https://cryptotakeovers.com/"
+             :photo-path  "contacts://cryptotakeovers"
+             :description "Predict and conquer the world. Make a crypto fortune."}
             {:name        "Etherbots"
              :dapp-url    "https://etherbots.io/"
              :photo-path  "contacts://etherbots"
