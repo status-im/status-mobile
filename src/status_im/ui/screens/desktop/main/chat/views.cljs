@@ -75,7 +75,7 @@
        [react/text {:style styles/author :font :medium} name]])))
 
 (views/defview member-photo [from]
-  (views/letsubs [current-public-key [:get-current-public-key]
+  (views/letsubs [current-public-key [:account/public-key]
                   photo-path [:get-photo-path from]]
     [react/view {:style {:width 40 :margin-horizontal 16}}
      [react/view {:style {:position :absolute}}
