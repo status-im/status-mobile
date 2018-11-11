@@ -3,7 +3,6 @@
             [status-im.data-store.contacts :as contacts-store]
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.contact :as message.contact]
-            [status-im.utils.contacts :as utils.contacts]
             [status-im.utils.fx :as fx]
             [re-frame.core :as re-frame]
             [status-im.chat.models :as chat.models]
@@ -12,7 +11,8 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.js-resources :as js-res]
             [status-im.utils.utils :as utils]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [status-im.contact.db :as contact.db]))
 
 (fx/defn load-contacts
   [{:keys [db all-contacts]}]
@@ -28,9 +28,8 @@
 
 (defn build-contact [{{:keys [chats] :account/keys [account]
                        :contacts/keys [contacts]} :db} public-key]
-  (cond-> (assoc (or (get contacts public-key)
-                     (utils.contacts/public-key->new-contact public-key))
-                 :address (utils.contacts/public-key->address public-key))
+  (cond-> (assoc (contact.db/public-key->contact contacts public-key)
+                 :address (contact.db/public-key->address public-key))
 
     (= public-key (:public-key account)) (assoc :name (:name account))))
 
@@ -70,13 +69,12 @@
 (fx/defn add-tag
   "add a tag to the contact"
   [{:keys [db] :as cofx} public-key tag]
-  (let [contact (get-in db [:contacts/contacts public-key])
-        tags (conj (or (:tags contact) #{}) tag)]
-    (if contact
-      {:db (assoc-in db [:contacts/contacts public-key :tags] tags)
-       :data-store/tx [(contacts-store/add-contact-tag-tx public-key tag)]}
-      (add-new-contact cofx {:public-key public-key
-                             :tags tags}))))
+  (if-let [contact (get-in db [:contacts/contacts public-key])]
+    {:db (update-in db [:contacts/contacts public-key :tags] conj tag)
+     :data-store/tx [(contacts-store/add-contact-tag-tx public-key tag)]}
+    (add-new-contact cofx
+                     (update (contact.db/public-key->new-contact public-key)
+                             :tags conj tag))))
 
 (fx/defn add-current-tag
   "add a tag to the contact"
@@ -118,7 +116,7 @@
                                :name         name
                                :address      (or address
                                                  (:address contact)
-                                                 (utils.contacts/public-key->address public-key))
+                                                 (contact.db/public-key->address public-key))
                                :last-updated timestamp-ms
                                   ;;NOTE (yenda) in case of concurrent contact request
                                :pending?     (get contact :pending? true)}

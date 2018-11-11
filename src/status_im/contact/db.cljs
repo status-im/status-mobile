@@ -1,5 +1,9 @@
 (ns status-im.contact.db
   (:require [cljs.spec.alpha :as spec]
+            [status-im.js-dependencies :as js-dependencies]
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.identicon :as identicon]
             status-im.utils.db))
 
 ;;;; DB
@@ -76,3 +80,55 @@
 
 (spec/def :contact/new-tag string?)
 (spec/def :ui/contact (spec/keys :opt [:contact/new-tag]))
+
+(defn public-key->new-contact
+  [public-key]
+  {:name       (gfycat/generate-gfy public-key)
+   :photo-path (identicon/identicon public-key)
+   :public-key public-key
+   :tags       #{}})
+
+(defn public-key->contact
+  [contacts public-key]
+  (when public-key
+    (get contacts public-key
+         (public-key->new-contact public-key))))
+
+(defn public-key->address [public-key]
+  (let [length (count public-key)
+        normalized-key (case length
+                         132 (subs public-key 4)
+                         130 (subs public-key 2)
+                         128 public-key
+                         nil)]
+    (when normalized-key
+      (subs (.sha3 js-dependencies/Web3.prototype normalized-key (clj->js {:encoding "hex"})) 26))))
+
+(defn- contact-by-address [[_ contact] address]
+  (when (ethereum/address= (:address contact) address)
+    contact))
+
+(defn address->contact
+  [contacts address]
+  (some #(contact-by-address % address) contacts))
+
+(defn blocked?
+  [{:keys [tags] :or {tags #{}}}]
+  (tags "blocked"))
+
+(defn blocked-contacts
+  [contacts]
+  (set (keep #(when (blocked? %)
+                (:public-key %))
+             (vals contacts))))
+
+(defn- enrich-contact
+  [{:keys [public-key] :as contact}]
+  (cond-> contact
+    (blocked? contact) (assoc :blocked? true)))
+
+(defn enrich-contacts
+  [contacts]
+  (reduce-kv #(assoc %1 %2 (enrich-contact %3))
+             {}
+             contacts))

@@ -1,33 +1,29 @@
 (ns status-im.ui.screens.desktop.main.chat.views
-  (:require-macros [status-im.utils.views :as views])
-  (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.icons.vector-icons :as icons]
-            [clojure.string :as string]
-            [status-im.ui.screens.chat.styles.message.message :as message.style]
-            [status-im.ui.screens.chat.message.message :as message]
-            [taoensso.timbre :as log]
-            [status-im.ui.components.list.views :as list]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.ui.screens.chat.utils :as chat-utils]
-            [status-im.utils.gfycat.core :as gfycat]
             [status-im.constants :as constants]
-            [status-im.utils.identicon :as identicon]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.chat :as components.chat]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.connectivity.view :as connectivity]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.message.datemark :as message.datemark]
+            [status-im.ui.screens.chat.message.message :as message]
+            [status-im.ui.screens.chat.styles.message.message :as message.style]
+            [status-im.ui.screens.chat.utils :as chat-utils]
+            [status-im.ui.screens.desktop.main.chat.styles :as styles]
+            [status-im.ui.screens.desktop.main.tabs.profile.views :as profile.views]
             [status-im.utils.datetime :as time]
             [status-im.utils.utils :as utils]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.connectivity.view :as connectivity]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.screens.chat.message.datemark :as message.datemark]
-            [status-im.ui.screens.desktop.main.tabs.profile.views :as profile.views]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.screens.desktop.main.chat.styles :as styles]
-            [status-im.utils.contacts :as utils.contacts]
-            [status-im.i18n :as i18n]
-            [status-im.ui.screens.desktop.main.chat.events :as chat.events]
-            [status-im.ui.screens.chat.message.message :as chat.message]))
+            [taoensso.timbre :as log])
+  (:require-macros [status-im.utils.views :as views]))
 
-(defn toolbar-chat-view [{:keys [chat-id color public? group-chat chat-name contact]
-                          :as current-chat}]
+(defn toolbar-chat-view
+  [{:keys [chat-id color public? group-chat name contact]
+    :as current-chat}]
   (let [{:keys [photo-path public-key pending?]} contact]
     [react/view {:style styles/toolbar-chat-view}
      [react/view {:style {:flex-direction :row
@@ -35,13 +31,13 @@
       (if public?
         [react/view {:style (styles/topic-image color)}
          [react/text {:style styles/topic-text}
-          (string/capitalize (second chat-name))]]
+          (string/capitalize (second name))]]
         [react/image {:style styles/chat-icon
                       :source {:uri photo-path}}])
       [react/view {:style (styles/chat-title-and-type pending?)}
        [react/text {:style styles/chat-title
                     :font  :medium}
-        chat-name]
+        name]
        (cond pending?
              [react/text {:style styles/add-contact-text
                           :on-press #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])}
@@ -68,15 +64,6 @@
                                                   chat-id])}
        (i18n/label :t/delete-chat)]]]))
 
-(defn message-author-name [style {:keys [from user-name generated-name]}]
-  [react/view {:flex-direction :row}
-   (when user-name
-     [react/text {:style style} user-name])
-   (when (and user-name generated-name)
-     [react/text {:style style} " :: "])
-   (when generated-name
-     [react/text {:style style} generated-name])])
-
 (defn member-photo [from photo-path on-press-photo-fn]
   [react/view {:style {:width 40 :margin-horizontal 16}}
    [react/view {:style {:position :absolute}}
@@ -86,14 +73,14 @@
                     :style  styles/photo-style}]]]]])
 
 (defn quoted-message
-  [{:keys [from text user-name generated-name on-press-photo-fn] :as message} outgoing]
+  [{:keys [text] :as message} outgoing]
   [react/view {:style styles/quoted-message-container}
    [react/view {:style styles/quoted-message-author-container}
-    [icons/icon :icons/reply {:style           (styles/reply-icon outgoing)
-                              :width           16
-                              :height          16
-                              :container-style (when outgoing {:opacity 0.4})}]
-    [message-author-name (message.style/quoted-message-author outgoing) message]]
+    [vector-icons/icon :icons/reply {:style           (styles/reply-icon outgoing)
+                                     :width           16
+                                     :height          16
+                                     :container-style (when outgoing {:opacity 0.4})}]
+    [components.chat/message-author-name (message.style/quoted-message-author outgoing) message]]
    [react/text {:style           (message.style/quoted-message-text outgoing)
                 :number-of-lines 5}
     text]])
@@ -126,7 +113,7 @@
    (when first-in-group?
      [react/view {:style {:flex-direction :row :margin-top 24}}
       [member-photo from photo-path on-press-photo-fn]
-      [message-author-name styles/author message]
+      [components.chat/message-author-name styles/author message]
       [react/view {:style {:flex 1}}]
       [react/text {:style styles/message-timestamp}
        (time/timestamp->time timestamp)]])
@@ -142,7 +129,7 @@
   [react/view
    [react/view {:style {:flex-direction :row :align-items :center :margin-top 15}}
     [member-photo from photo-path]
-    [message-author-name message]]
+    [components.chat/message-author-name message]]
    [react/view {:style styles/not-first-in-group-wrapper}
     [photo-placeholder]
     [react/view {:style styles/message-command-container}
@@ -184,6 +171,7 @@
 (defn messages-view [{:keys [messages all-loaded? group-chat] :as current-chat}]
   [react/view {:style styles/messages-view}
    [list/flat-list {:data                messages
+                    :style               {:flex 1}
                     :initialNumToRender  20
                     :headerHeight        styles/messages-list-vertical-padding
                     :footerWidth         styles/messages-list-vertical-padding
@@ -207,11 +195,12 @@
                                               (.focus @inp-ref)
                                               (re-frame/dispatch [:chat.ui/send-current-message])))}
      [react/view {:style (styles/send-icon inactive?)}
-      [icons/icon :icons/arrow-left {:style (styles/send-icon-arrow inactive?)}]]]))
+      [vector-icons/icon :icons/arrow-left {:style (styles/send-icon-arrow inactive?)}]]]))
 
-(defn reply-message [{:keys [content] :as message}]
+(defn reply-message
+  [{:keys [content] :as message}]
   [react/view {:style styles/reply-content-container}
-   [message-author-name styles/reply-content-author message]
+   [components.chat/message-author-name styles/reply-content-author message]
    [react/text {:style styles/reply-content-message} (:text content)]])
 
 (defn reply-message-view [{:keys [photo-path] :as message}]
@@ -226,7 +215,7 @@
        :on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])
        :accessibility-label :cancel-message-reply}
       [react/view {}
-       [icons/icon :icons/close {:style styles/reply-close-icon}]]]]))
+       [vector-icons/icon :icons/close {:style styles/reply-close-icon}]]]]))
 
 (defn chat-text-input [chat-id input-text network-status]
   (let [inp-ref (atom nil)]
@@ -236,7 +225,7 @@
         (let [[_ old-chat-id] (.. e -props -argv)]
           (when (not= old-chat-id new-chat-id)
             ;; reset default text when switch to another chat
-            (.setNativeProps @inp-ref #js {:text (or new-input-text "")}))))
+            (.setNativeProps @inp-ref (clj->js {:text (or new-input-text "")})))))
       :reagent-render (fn [chat-id input-text]
                         (let [component               (reagent/current-component)
                               set-container-height-fn #(reagent/set-state component {:container-height %})
@@ -263,62 +252,60 @@
                            [send-button input-text inp-ref network-status]]))})))
 
 (views/defview chat-view []
-  (views/letsubs [{:keys [input-text chat-id group-chat] :as current-chat} [:chat/current]
-                  reply-message [:get-reply-message]
+  (views/letsubs [{:keys [input-text chat-id group-chat] :as current-chat} [:chats/current]
+                  reply-message [:chat/reply-message]
                   network-status [:network-status]]
     [react/view {:style styles/chat-view}
      [toolbar-chat-view current-chat]
      [react/view {:style styles/separator}]
-     [messages-view current-chat]
+     [react/view {:style {:flex 1}}
+      [messages-view current-chat]]
      [react/view {:style styles/separator}]
      [reply-message-view reply-message]
      [chat-text-input chat-id input-text network-status]]))
 
 (views/defview chat-profile []
-  (views/letsubs [identity        [:get-current-contact-identity]
-                  maybe-contact   [:get-current-contact]]
-    (let [contact (or maybe-contact (utils.contacts/public-key->new-contact identity))
-          {:keys [pending? public-key blocked?]} contact]
-      [react/view {:style styles/chat-profile-body}
-       [profile.views/profile-badge contact]
-       ;; for private chat, public key will be chat-id
-       [react/view
-        (if (or (nil? pending?) pending?)
-          [react/touchable-highlight {:on-press #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])}
-           [react/view {:style styles/chat-profile-row}
-            [react/view {:style styles/chat-profile-icon-container
-                         :accessibility-label :add-contact-link}
-             [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/blue)}]]
-            [react/text {:style (styles/contact-card-text colors/blue)} (i18n/label :t/add-to-contacts)]]]
-          [react/view {:style styles/chat-profile-row}
-           [react/view {:style styles/chat-profile-icon-container
-                        :accessibility-label :add-contact-link}
-            [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/gray)}]]
-           [react/text {:style (styles/contact-card-text colors/gray)} (i18n/label :t/in-contacts)]])
-        [react/touchable-highlight
-         {:on-press #(re-frame/dispatch
-                      [:contact.ui/send-message-pressed {:public-key public-key}])}
+  (views/letsubs [{:keys [pending? public-key blocked?] :as contact} [:contacts/current]]
+    [react/view {:style styles/chat-profile-body}
+     [profile.views/profile-badge contact]
+     ;; for private chat, public key will be chat-id
+     [react/view
+      (if (or (nil? pending?) pending?)
+        [react/touchable-highlight {:on-press #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])}
          [react/view {:style styles/chat-profile-row}
           [react/view {:style styles/chat-profile-icon-container
-                       :accessibility-label :send-message-link}
-           [vector-icons/icon :icons/chats {:style (styles/chat-profile-icon colors/blue)}]]
-          [react/text {:style (styles/contact-card-text colors/blue)}
-           (i18n/label :t/send-message)]]]
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [(if blocked?
-                                                                     :contact.ui/remove-tag
-                                                                     :contact.ui/add-tag) public-key "blocked"])}
-         [react/view {:style styles/chat-profile-row}
-          [react/view {:style styles/chat-profile-danger-icon-container
                        :accessibility-label :add-contact-link}
-           [vector-icons/icon (if blocked?
-                                :icons/lock-opened
-                                :icons/lock)
-            {:style (styles/chat-profile-icon colors/black)}]]
-          [react/text {:style (styles/contact-card-text colors/red)}
-           (if blocked?
-             (i18n/label :t/unblock-user)
-             (i18n/label :t/block-user))]]]
-        [react/text {:style styles/chat-profile-contact-code} (i18n/label :t/contact-code)]
-        [react/text {:style           {:font-size 14}
-                     :selectable      true
-                     :selection-color colors/blue} public-key]]])))
+           [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/blue)}]]
+          [react/text {:style (styles/contact-card-text colors/blue)} (i18n/label :t/add-to-contacts)]]]
+        [react/view {:style styles/chat-profile-row}
+         [react/view {:style styles/chat-profile-icon-container
+                      :accessibility-label :add-contact-link}
+          [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/gray)}]]
+         [react/text {:style (styles/contact-card-text colors/gray)} (i18n/label :t/in-contacts)]])
+      [react/touchable-highlight
+       {:on-press #(re-frame/dispatch
+                    [:contact.ui/send-message-pressed {:public-key public-key}])}
+       [react/view {:style styles/chat-profile-row}
+        [react/view {:style styles/chat-profile-icon-container
+                     :accessibility-label :send-message-link}
+         [vector-icons/icon :icons/chats {:style (styles/chat-profile-icon colors/blue)}]]
+        [react/text {:style (styles/contact-card-text colors/blue)}
+         (i18n/label :t/send-message)]]]
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [(if blocked?
+                                                                   :contact.ui/remove-tag
+                                                                   :contact.ui/add-tag) public-key "blocked"])}
+       [react/view {:style styles/chat-profile-row}
+        [react/view {:style styles/chat-profile-danger-icon-container
+                     :accessibility-label :add-contact-link}
+         [vector-icons/icon (if blocked?
+                              :icons/lock-opened
+                              :icons/lock)
+          {:style (styles/chat-profile-icon colors/black)}]]
+        [react/text {:style (styles/contact-card-text colors/red)}
+         (if blocked?
+           (i18n/label :t/unblock-user)
+           (i18n/label :t/block-user))]]]
+      [react/text {:style styles/chat-profile-contact-code} (i18n/label :t/contact-code)]
+      [react/text {:style           {:font-size 14}
+                   :selectable      true
+                   :selection-color colors/blue} public-key]]]))

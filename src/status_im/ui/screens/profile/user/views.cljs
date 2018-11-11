@@ -120,7 +120,7 @@
        [profile.components/settings-item
         {:label-kw     :t/backup-your-recovery-phrase
          :action-fn    #(re-frame/dispatch [:navigate-to :backup-seed])
-         :icon-content [components.common/counter {:size 22} 1]}])
+         :icon-content [components.common/counter {:size 22} 1 false]}])
      [profile.components/settings-item-separator]
      [profile.components/settings-switch-item
       {:label-kw  :t/web3-opt-in

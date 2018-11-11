@@ -1,19 +1,9 @@
 (ns status-im.ui.screens.chat.utils
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.platform :as platform]
-            [status-im.i18n :as i18n]
-            [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
-            [status-im.utils.http :as http]))
-
-(defn format-author [from username]
-  (str (when username (str username " :: "))
-       (gfycat/generate-gfy from))) ; TODO: We defensively generate the name for now, to be revisited when new protocol is defined
-
-(defn format-reply-author [from username current-public-key]
-  (or (and (= from current-public-key) (i18n/label :t/You))
-      (format-author from username)))
+            [status-im.ui.components.react :as react]
+            [status-im.utils.http :as http]
+            [status-im.utils.platform :as platform]))
 
 (def ^:private styling->prop
   {:bold      {:style {:font-weight :bold}}

@@ -22,7 +22,7 @@
             [status-im.browser.core :as browser]))
 
 (defview command-short-preview [message]
-  (letsubs [id->command [:get-id->command]]
+  (letsubs [id->command [:chat/id->command]]
     (when-let [command (commands-receiving/lookup-command-by-ref message id->command)]
       (commands/generate-short-preview command message))))
 
@@ -62,14 +62,16 @@
                  :accessibility-label :last-message-time-text}
      (time/to-short-str timestamp)]))
 
-(defview unviewed-indicator [chat-id]
-  (letsubs [unviewed-messages-count [:unviewed-messages-count chat-id]]
-    (when (pos? unviewed-messages-count)
-      [components.common/counter {:size                22
-                                  :accessibility-label :unread-messages-count-text}
-       unviewed-messages-count])))
+(defn unviewed-indicator
+  [unviewed-messages-label large-unviewed-messages-label?]
+  (when unviewed-messages-label
+    [components.common/counter {:size                22
+                                :accessibility-label :unread-messages-count-text}
+     unviewed-messages-label
+     large-unviewed-messages-label?]))
 
-(defn chat-list-item-name [chat-name group-chat? public? public-key]
+(defn chat-list-item-name
+  [chat-name group-chat? public? public-key]
   (let [private-group? (and group-chat? (not public?))
         public-group?  (and group-chat? public?)]
     [react/view styles/name-view
@@ -85,28 +87,26 @@
                    :accessibility-label :chat-name-text}
        chat-name]]]))
 
-(defview home-list-chat-item-inner-view [{:keys [chat-id name color online
-                                                 group-chat public?
-                                                 public-key
-                                                 timestamp]}]
-  (letsubs [last-message [:get-last-message chat-id]
-            chat-name    [:get-chat-name chat-id]]
-    (let [truncated-chat-name (utils/truncate-str chat-name 30)]
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])}
-       [react/view styles/chat-container
-        [react/view styles/chat-icon-container
-         [chat-icon.screen/chat-icon-view-chat-list chat-id group-chat truncated-chat-name color online false]]
-        [react/view styles/chat-info-container
-         [react/view styles/item-upper-container
-          [chat-list-item-name truncated-chat-name group-chat public? public-key]
-          [react/view styles/message-status-container
-           [message-timestamp (or (:timestamp last-message)
-                                  timestamp)]]]
-         [react/view styles/item-lower-container
-          [message-content-text last-message]
-          [unviewed-indicator chat-id]]]]])))
+(defn home-list-chat-item-inner-view
+  [{:keys [chat-id name truncated-name color online group-chat public? public-key
+           timestamp last-message name unviewed-message-label
+           large-unviewed-messages-label?] :as chat}]
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])}
+   [react/view styles/chat-container
+    [react/view styles/chat-icon-container
+     [chat-icon.screen/chat-icon-view-chat-list chat]]
+    [react/view styles/chat-info-container
+     [react/view styles/item-upper-container
+      [chat-list-item-name truncated-name group-chat public? public-key]
+      [react/view styles/message-status-container
+       [message-timestamp (or (:timestamp last-message)
+                              timestamp)]]]
+     [react/view styles/item-lower-container
+      [message-content-text last-message]
+      [unviewed-indicator unviewed-message-label large-unviewed-messages-label?]]]]])
 
-(defn home-list-browser-item-inner-view [{:keys [dapp url name browser-id] :as browser}]
+(defn home-list-browser-item-inner-view
+  [{:keys [dapp url name browser-id] :as browser}]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/browser-item-selected browser-id])}
    [react/view styles/chat-container
     [react/view styles/chat-icon-container

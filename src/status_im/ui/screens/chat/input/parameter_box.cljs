@@ -5,13 +5,13 @@
             [status-im.ui.components.react :as react]))
 
 (defview parameter-box-container []
-  (letsubs [parameter-box [:chat-parameter-box]]
+  (letsubs [parameter-box [:chat/parameter-box]]
     (when parameter-box
       [react/view style/root
        [parameter-box]])))
 
 (defview parameter-box-view []
-  (letsubs [show-box? [:show-parameter-box?]]
+  (letsubs [show-box? [:chat/show-parameter-box?]]
     (when show-box?
       [react/view]
       [expandable/expandable-view {:key :parameter-box}

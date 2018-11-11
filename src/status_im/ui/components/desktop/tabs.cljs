@@ -15,7 +15,7 @@
     :content {:title         "Home"
               :icon-inactive :icons/home
               :icon-active   :icons/home-active}
-    :count-subscription  :get-chats-unread-messages-number}
+    :count-subscription  :chats/unread-messages-number}
    #_{:view-id :wallet
       :content {:title         "Wallet"
                 :icon-inactive :icons/wallet

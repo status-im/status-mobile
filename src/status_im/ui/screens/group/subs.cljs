@@ -16,7 +16,7 @@
 (reg-sub
  :selected-contacts-count
  :<- [:get :group/selected-contacts]
- :<- [:get-contacts]
+ :<- [:contacts/contacts]
  (fn [[selected-contacts contacts]]
    (count (filter-selected-contacts selected-contacts contacts))))
 
@@ -32,6 +32,6 @@
 (reg-sub
  :selected-group-contacts
  :<- [:get :group/selected-contacts]
- :<- [:all-added-contacts]
+ :<- [:contacts/added]
  (fn [[selected-contacts added-contacts]]
    (filter-contacts selected-contacts added-contacts)))

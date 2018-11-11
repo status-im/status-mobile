@@ -8,7 +8,7 @@
    (get-in db [:ui/search :filter] "")))
 
 (defn filter-chats
-  [[chats search-filter]]
+  [chats search-filter]
   (if (empty? search-filter)
     chats
     (let [search-filter (string/lower-case search-filter)]
@@ -25,7 +25,8 @@
  :search/filtered-active-chats
  :<- [:chats/active-chats]
  :<- [:search/filter]
- filter-chats)
+ (fn [[chats search-filter]]
+   (filter-chats (vals chats) search-filter)))
 
 (re-frame/reg-sub
  :search/filtered-home-items

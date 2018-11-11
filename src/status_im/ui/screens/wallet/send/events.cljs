@@ -264,7 +264,7 @@
 
 (handlers/register-handler-fx
  :close-transaction-sent-screen
- (fn [cofx [_ chat-id]]
+ (fn [cofx _]
    (fx/merge cofx
              {:dispatch-later [{:ms 400 :dispatch [:check-dapps-transactions-queue]}]}
              (navigation/navigate-back))))

@@ -19,7 +19,7 @@
                               :show-forward? true}])
 
 (views/defview new-chat []
-  (views/letsubs [contacts      [:all-added-people-contacts]
+  (views/letsubs [contacts      [:contacts/added]
                   error-message [:new-identity-error]]
     [react/keyboard-avoiding-view open-dapp.styles/main-container
      [status-bar/status-bar]

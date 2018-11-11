@@ -18,7 +18,7 @@
                        :key     label}]]]])
 
 (defn view []
-  (let [{:keys [chat-id message-id]} @(re-frame/subscribe [:get-current-chat-ui-prop :message-options])
+  (let [{:keys [chat-id message-id]} @(re-frame/subscribe [:chat/current-chat-ui-prop :message-options])
         close-message-options-fn #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:show-message-options? false}])]
     [bottom-info/overlay {:on-click-outside close-message-options-fn}
      [bottom-info/container (* styles/item-height 2)

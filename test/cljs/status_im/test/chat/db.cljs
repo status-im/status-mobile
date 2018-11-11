@@ -1,23 +1,23 @@
-(ns status-im.test.chat.subs
+(ns status-im.test.chat.db
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.chat.subs :as s]))
+            [status-im.chat.db :as chat.db]))
 
 (deftest chat-name
   (testing "it prepends # if it's a public chat"
-    (is (= "#withhash" (s/chat-name {:group-chat true
-                                     :chat-id "1"
-                                     :public? true
-                                     :name "withhash"} nil))))
+    (is (= "#withhash" (chat.db/chat-name {:group-chat true
+                                           :chat-id "1"
+                                           :public? true
+                                           :name "withhash"} nil))))
   (testing "it leaves the name unchanged if it's a group chat"
-    (is (= "unchanged" (s/chat-name {:group-chat true
-                                     :chat-id "1"
-                                     :name "unchanged"} nil))))
+    (is (= "unchanged" (chat.db/chat-name {:group-chat true
+                                           :chat-id "1"
+                                           :name "unchanged"} nil))))
   (testing "it pulls the name from contact if it's a one-to-one"
-    (is (= "this-one" (s/chat-name {:chat-id "1"
-                                    :name "not-this-one"} {:name "this-one"}))))
+    (is (= "this-one" (chat.db/chat-name {:chat-id "1"
+                                          :name "not-this-one"} {:name "this-one"}))))
   (testing "it generates the name from chat id if no contact"
-    (is (= "Blond Cooperative Coelacanth" (s/chat-name {:chat-id "1"
-                                                        :name "not-this-one"} nil)))))
+    (is (= "Blond Cooperative Coelacanth" (chat.db/chat-name {:chat-id "1"
+                                                              :name "not-this-one"} nil)))))
 
 (deftest message-stream-tests
   (testing "messages with no interspersed datemarks"
@@ -35,7 +35,7 @@
           messages [m1 m2 m3 dm1]
           [actual-m1
            actual-m2
-           actual-m3] (s/messages-stream messages)]
+           actual-m3] (chat.db/messages-stream messages)]
       (testing "it marks only the first message as :last?"
         (is (:last? actual-m1))
         (is (not (:last? actual-m2)))
@@ -87,7 +87,7 @@
            actual-m2
            actual-m3
            actual-m4
-           _] (s/messages-stream messages)]
+           _] (chat.db/messages-stream messages)]
       (testing "it marks the first outgoing message as :last-outgoing?"
         (is (:last-outgoing? actual-m1))
         (is (not (:last-outgoing? actual-m2)))
@@ -114,19 +114,18 @@
               :datemark "a"
               :outgoing false}
           messages [m1]
-          [actual-m1] (s/messages-stream messages)]
+          [actual-m1] (chat.db/messages-stream messages)]
       (testing "it does display the photo"
         (is (:display-photo? actual-m1))
         (testing "it does not display the username"
           (is (not (:display-username? actual-m1))))))))
 
 (deftest active-chats-test
-  (let [active-chat-1 {:is-active true :chat-id 1}
-        active-chat-2 {:is-active true :chat-id 2}
-        chats         {1 active-chat-1
-                       2 active-chat-2
-                       3 {:is-active false :chat-id 3}}]
+  (let [active-chat-1 {:is-active true :chat-id "1"}
+        active-chat-2 {:is-active true :chat-id "2"}
+        chats         {"1" active-chat-1
+                       "2" active-chat-2
+                       "3" {:is-active false :chat-id "3"}}]
     (testing "it returns only chats with is-active"
-      (is (= {1 active-chat-1
-              2 active-chat-2}
-             (s/active-chats [{} chats {}]))))))
+      (is (= ["1" "2"]
+             (keys (chat.db/active-chats chats {} nil false)))))))

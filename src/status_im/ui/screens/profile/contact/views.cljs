@@ -1,15 +1,14 @@
 (ns status-im.ui.screens.profile.contact.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.utils.contacts :as utils.contacts]
-            [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.screens.profile.contact.styles :as styles]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.profile.components.styles :as profile.components.styles]
-            [status-im.ui.screens.profile.components.views :as profile.components]))
+            [status-im.ui.screens.profile.components.views :as profile.components]
+            [status-im.ui.screens.profile.contact.styles :as styles])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn profile-contact-toolbar []
   [toolbar/toolbar {}
@@ -62,23 +61,21 @@
    [profile-info-contact-code-item public-key]])
 
 (defview profile []
-  (letsubs [identity        [:get-current-contact-identity]
-            maybe-contact   [:get-current-contact]]
-    (let [contact (or maybe-contact (utils.contacts/public-key->new-contact identity))]
-      [react/view profile.components.styles/profile
-       [status-bar/status-bar]
-       [profile-contact-toolbar]
-       [react/scroll-view
-        [react/view profile.components.styles/profile-form
-         [profile.components/profile-header
-          {:contact              contact
-           :editing?             false
-           :allow-icon-change?   false}]]
-        [list/action-list (actions contact)
-         {:container-style        styles/action-container
-          :action-style           styles/action
-          :action-label-style     styles/action-label
-          :action-separator-style styles/action-separator
-          :icon-opts              styles/action-icon-opts}]
-        [react/view styles/contact-profile-info-container
-         [profile-info contact]]]])))
+  (letsubs [contact [:contacts/current]]
+    [react/view profile.components.styles/profile
+     [status-bar/status-bar]
+     [profile-contact-toolbar]
+     [react/scroll-view
+      [react/view profile.components.styles/profile-form
+       [profile.components/profile-header
+        {:contact              contact
+         :editing?             false
+         :allow-icon-change?   false}]]
+      [list/action-list (actions contact)
+       {:container-style        styles/action-container
+        :action-style           styles/action
+        :action-label-style     styles/action-label
+        :action-separator-style styles/action-separator
+        :icon-opts              styles/action-icon-opts}]
+      [react/view styles/contact-profile-info-container
+       [profile-info contact]]]]))

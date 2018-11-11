@@ -32,7 +32,7 @@
 
 (reg-sub :wallet.transactions/transactions
          :<- [:wallet]
-         :<- [:get-contacts-by-address]
+         :<- [:contacts/contacts-by-address]
          (fn [[wallet contacts]]
            (reduce (fn [acc [hash transaction]]
                      (assoc acc hash (enrich-transaction transaction contacts)))

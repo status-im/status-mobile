@@ -4,9 +4,7 @@
             [status-im.chat.commands.core :as commands]
             [status-im.chat.models :as chat-model]
             [status-im.constants :as constants]
-            [status-im.data-store.contacts :as contacts-store]
             [status-im.data-store.user-statuses :as user-statuses-store]
-            [status-im.utils.contacts :as utils.contacts]
             [status-im.utils.datetime :as time]
             [status-im.utils.fx :as fx]))
 

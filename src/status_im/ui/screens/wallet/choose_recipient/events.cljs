@@ -1,13 +1,13 @@
 (ns status-im.ui.screens.wallet.choose-recipient.events
-  (:require [status-im.constants :as constants]
+  (:require [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
+            [status-im.contact.db :as contact.db]
             [status-im.i18n :as i18n]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.eip681 :as eip681]
-            [status-im.utils.handlers :as handlers]
-            [status-im.utils.money :as money]
             [status-im.utils.ethereum.ens :as ens]
-            [re-frame.core :as re-frame]
-            [status-im.utils.contacts :as utils.contacts]))
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.money :as money]))
 
 (handlers/register-handler-fx
  :wallet/toggle-flashlight
@@ -17,7 +17,7 @@
      {:db (assoc-in db [:wallet :send-transaction :camera-flashlight] toggled-state)})))
 
 (defn- find-address-name [db address]
-  (:name (utils.contacts/find-contact-by-address (:contacts/contacts db) address)))
+  (:name (contact.db/address->contact (:contacts/contacts db) address)))
 
 (defn- fill-request-details [db {:keys [address name value symbol gas gasPrice public-key from-chat?]}]
   {:pre [(not (nil? address))]}

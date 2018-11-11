@@ -1,30 +1,25 @@
 (ns status-im.ui.screens.chat.message.message
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.animation :as animation]
-            [status-im.ui.components.list-selection :as list-selection]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.action-sheet :as action-sheet]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.receiving :as commands-receiving]
-            [status-im.ui.screens.chat.styles.message.message :as style]
-            [status-im.ui.screens.chat.photos :as photos]
             [status-im.constants :as constants]
-            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.utils.core :as utils]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.action-sheet :as action-sheet]
+            [status-im.ui.components.chat :as components.chat]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.utils.identicon :as identicon]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.platform :as platform]
-            [status-im.i18n :as i18n]
-            [status-im.ui.components.colors :as colors]
-            [clojure.string :as string]))
+            [status-im.utils.platform :as platform])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview message-content-command
   [command-message]
-  (letsubs [id->command [:get-id->command]]
+  (letsubs [id->command [:chat/id->command]]
     (if-let [command (commands-receiving/lookup-command-by-ref command-message id->command)]
       (commands/generate-preview command command-message)
       [react/text (str "Unhandled command: " (-> command-message :content :command-path first))])))
@@ -47,16 +42,15 @@
 (defn timestamp-with-padding [t]
   (str "   " t))
 
-(defview quoted-message [{:keys [from text]} outgoing current-public-key]
-  (letsubs [username [:get-contact-name-by-identity from]]
-    [react/view {:style (style/quoted-message-container outgoing)}
-     [react/view {:style style/quoted-message-author-container}
-      [vector-icons/icon :icons/reply {:color (if outgoing colors/wild-blue-yonder colors/gray)}]
-      [react/text {:style (style/quoted-message-author outgoing)}
-       (chat.utils/format-reply-author from username current-public-key)]]
-     [react/text {:style           (style/quoted-message-text outgoing)
-                  :number-of-lines 5}
-      text]]))
+(defview quoted-message
+  [{:keys [text] :as message} outgoing]
+  [react/view {:style (style/quoted-message-container outgoing)}
+   [react/view {:style style/quoted-message-author-container}
+    [vector-icons/icon :icons/reply {:color (if outgoing colors/wild-blue-yonder colors/gray)}]
+    [components.chat/message-author-name {:style (style/quoted-message-author outgoing)} message]]
+   [react/text {:style           (style/quoted-message-text outgoing)
+                :number-of-lines 5}
+    text]])
 
 (defview message-content-status [{:keys [content]}]
   [react/view style/status-container
@@ -70,12 +64,12 @@
    (i18n/label (if expanded? :show-less :show-more))])
 
 (defn text-message
-  [{:keys [chat-id message-id content timestamp-str group-chat outgoing current-public-key expanded?] :as message}]
+  [{:keys [chat-id message-id content timestamp-str group-chat outgoing expanded?] :as message}]
   [message-view message
    (let [collapsible? (and (:should-collapse? content) group-chat)]
      [react/view
       (when (:response-to content)
-        [quoted-message (:response-to content) outgoing current-public-key])
+        [quoted-message (:response-to content) outgoing])
       [react/text (cond-> {:style           (style/text-message collapsible? outgoing)}
                     (and collapsible? (not expanded?))
                     (assoc :number-of-lines constants/lines-collapse-threshold))
@@ -131,8 +125,8 @@
     (i18n/message-status-label status)]])
 
 (defview group-message-delivery-status [{:keys [message-id current-public-key user-statuses] :as msg}]
-  (letsubs [{participants :contacts} [:get-current-chat]
-            contacts                 [:get-contacts]]
+  (letsubs [{participants :contacts} [:chats/current]
+            contacts                 [:contacts/contacts]]
     (let [outgoing-status         (or (get-in user-statuses [current-public-key :status]) :sending)
           delivery-statuses       (dissoc user-statuses current-public-key)
           delivery-statuses-count (count delivery-statuses)
@@ -209,11 +203,6 @@
               (if outgoing
                 [text-status status]))))))))
 
-(defview message-author-name [from message-username]
-  (letsubs [username [:get-contact-name-by-identity from]]
-    [react/text {:style style/message-author-name}
-     (chat.utils/format-author from (or username message-username))]))
-
 (defn message-body
   [{:keys [last-in-group?
            display-photo?
@@ -222,6 +211,7 @@
            from
            outgoing
            modal?
+           photo-path
            username] :as message} content]
   [react/view (style/group-message-wrapper message)
    [react/view (style/message-body message)
@@ -230,10 +220,10 @@
        (when last-in-group?
          [react/touchable-highlight {:on-press #(when-not modal? (re-frame/dispatch [:chat.ui/show-profile from]))}
           [react/view
-           [photos/member-photo from]]])])
+           [photos/member-photo photo-path]]])])
     [react/view (style/group-message-view outgoing message-type)
      (when display-username?
-       [message-author-name from username])
+       [components.chat/message-author-name {:style style/message-author-name} message])
      [react/view {:style (style/timestamp-content-wrapper message)}
       content]]]
    [react/view (style/delivery-status outgoing)

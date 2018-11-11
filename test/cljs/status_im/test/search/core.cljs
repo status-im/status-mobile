@@ -16,14 +16,14 @@
                 :random-name "random-name4"
                 :tags #{"tag4"}}]]
     (testing "no search filter"
-      (is (= 4 (count (search.subs/filter-chats [chats ""])))))
+      (is (= 4 (count (search.subs/filter-chats chats "")))))
     (testing "searching for a specific tag"
-      (is (= 1 (count (search.subs/filter-chats [chats "tag2"])))))
+      (is (= 1 (count (search.subs/filter-chats chats "tag2")))))
     (testing "searching for a partial tag"
-      (is (= 3 (count (search.subs/filter-chats [chats "tag"])))))
+      (is (= 3 (count (search.subs/filter-chats chats "tag")))))
     (testing "searching for a specific random-name"
-      (is (= 1 (count (search.subs/filter-chats [chats "random-name1"])))))
+      (is (= 1 (count (search.subs/filter-chats chats "random-name1")))))
     (testing "searching for a partial random-name"
-      (is (= 4 (count (search.subs/filter-chats [chats "random-name"])))))
+      (is (= 4 (count (search.subs/filter-chats chats "random-name")))))
     (testing "searching for a specific chat name"
-      (is (= 1 (count (search.subs/filter-chats [chats "name4"])))))))
+      (is (= 1 (count (search.subs/filter-chats chats "name4")))))))
