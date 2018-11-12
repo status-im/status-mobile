@@ -59,10 +59,16 @@
  :<- [::get-current-chat-message-groups]
  :<- [::get-current-chat-message-statuses]
  :<- [::get-current-chat-referenced-messages]
+ :<- [:chats/active-chats]
+ :<- [::current-chat-id]
+ :<- [:network-name]
  :<- [:contacts/contacts]
  :<- [:account/account]
- (fn [[messages message-groups message-statuses referenced-messages contacts account]]
-   (chat.db/get-current-chat-messages-stream messages message-groups message-statuses referenced-messages contacts account)))
+ (fn [[messages message-groups message-statuses referenced-messages active-chats chat-id current-network contacts account]]
+   (let [current-chat (get active-chats chat-id)]
+     (chat.db/get-current-chat-messages-stream
+      messages message-groups message-statuses referenced-messages
+      current-chat current-network contacts account))))
 
 (re-frame/reg-sub
  ::get-commands-for-chat
@@ -139,11 +145,8 @@
  :<- [::get-current-chat-messages-stream]
  :<- [:contacts/contacts]
  (fn [[chats chat-id messages all-contacts]]
-   (let [{:keys [contacts chat-id] :as current-chat} (get chats chat-id)
-         public-key (or chat-id
-                        (first contacts))]
-     (cond-> (assoc current-chat :messages messages)
-       public-key (assoc :contact (contact.db/public-key->contact contacts public-key))))))
+   (let [current-chat (get chats chat-id)]
+     (assoc current-chat :messages messages))))
 
 (def ^:private map->sorted-seq (comp (partial map second) (partial sort-by first)))
 
@@ -209,12 +212,6 @@
    (apply + (map :unviewed-messages-count (vals chats)))))
 
 (re-frame/reg-sub
- :chat-animations
- (fn [db [_ key type]]
-   (let [chat-id (subscribe [:get-current-chat-id])]
-     (get-in db [:animations :chats @chat-id key type]))))
-
-(re-frame/reg-sub
  :chats/transaction-confirmed?
  (fn [db [_ tx-hash]]
    (-> (get-in db [:wallet :transactions tx-hash :confirmations] "0")
@@ -243,3 +240,18 @@
  (fn [[{:keys [metadata]} messages contacts account]]
    (when-let [message (get messages (:responding-to-message metadata))]
      (chat.db/add-response-metadata message contacts account))))
+
+(re-frame/reg-sub
+ :chat/message-details
+ :<- [:chats/current]
+ :<- [:account/account]
+ ::current-chat-ui-props
+ (fn [[{:keys [contacts message-statuses]} {:keys [public-key]} {:keys [message-id]}]]
+   (let [message-status (get message-statuses message-id)
+         contacts (dissoc contacts public-key)
+         participants (reduce (fn [acc {:keys [public-key] :as contact}]
+                                (conj (assoc contact :status (get message-status public-key))))
+                              []
+                              contacts)]
+     {:participants participants
+      :participants-count (count participants)})))

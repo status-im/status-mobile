@@ -6,7 +6,8 @@
             [status-im.utils.config :as utils.config]
             [status-im.utils.core :as utils]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.identicon :as identicon]))
+            [status-im.utils.identicon :as identicon]
+            [status-im.contact.db :as contact.db]))
 
 (defn filter-messages-from-blocked-contacts
   [messages blocked-contacts]
@@ -145,12 +146,60 @@
              :generated-name (when-not me?
                                (gfycat/generate-gfy from))))))
 
+(defn get-group-message-delivery-status
+  [{:keys [user-statuses]} participants current-public-key]
+  (let [delivery-statuses (dissoc user-statuses current-public-key)
+        delivery-count    (count delivery-statuses)
+        seen-by-everyone? (and (= delivery-count (count participants))
+                               (every? (comp (partial = :seen) :status second) delivery-statuses))]
+    (cond
+      seen-by-everyone? :seen-by-everyone
+      (zero? delivery-count) :sent
+      :default :not-seen-by-everyone)))
+
+(defn get-delivery-status
+  [{:keys [last-outgoing? message-type user-statuses outgoing content chat-id]
+    :as message}
+   current-chat current-public-key current-network]
+  (let [outgoing-status (get-in user-statuses [current-public-key :status])
+        delivery-status (get-in user-statuses [chat-id :status])
+        status          (or delivery-status outgoing-status :not-sent)
+        incoming-command? (and (not outgoing)
+                               (:command content))
+        command-network-mismatch? (and incoming-command?
+                                       (not= (get-in content
+                                                     [:command :params :network])
+                                             current-network))]
+    (when (not= :system-message message-type)
+      (cond
+        (#{:sending :not-sent} status) status
+        command-network-mismatch? :network-mismatch
+        last-outgoing? (if (= message-type :group-user-message)
+                         (get-group-message-delivery-status message (:contacts current-chat) current-public-key)
+                         :sent)))))
+
+(defn get-delivery-details
+  [user-statuses chat-contacts current-public-key]
+  (let [delivery-statuses (set (dissoc user-statuses current-public-key))
+        delivery-count    (count delivery-statuses)
+        delivery-recipients (select-keys chat-contacts delivery-statuses)]
+    {:delivery-recipients  delivery-recipients
+     :delivery-count-label (when (> delivery-count 3)
+                             (str "+ " (- delivery-count 3)))}))
+
 (defn add-metadata
-  [{:keys [from response-to message-id chat-id outgoing message-status user-statuses] :as message} contacts account]
-  (let [current-public-key (:public-key account)]
+  [{:keys [from response-to message-id chat-id outgoing message-status user-statuses]
+    :as message}
+   {:keys [group-chat] :as current-chat}
+   current-network contacts account]
+  (let [current-public-key (:public-key account)
+        status (get-delivery-status message current-chat current-public-key current-network)
+        delivery-details (when (= status :not-seen-by-everyone)
+                           (get-delivery-details user-statuses
+                                                 (:contacts current-chat)
+                                                 current-public-key))]
     (-> message
-        (assoc :can-reply? (not= (get-in user-statuses [current-public-key :status])
-                                 :not-sent)
+        (assoc :can-reply? (not= status :not-sent)
                :on-seen-message-fn #(when (and message-id
                                                chat-id
                                                (not outgoing)
@@ -164,13 +213,14 @@
                :photo-path (get-photo-path contacts account from)
                :user-name (get-contact-name contacts account from)
                :generated-name (gfycat/generate-gfy from)
-               ;;TODO: remove this once message-delivery-status is fixed
-               :current-public-key current-public-key)
+               :status status
+               :group-chat group-chat
+               :delivery-details delivery-details)
         (update-in [:content :response-to] #(add-response-metadata % contacts account)))))
 
 (defn messages-with-metadata
-  [messages contacts account]
-  (mapv #(add-metadata % contacts account) messages))
+  [messages current-chat current-network contacts account]
+  (mapv #(add-metadata % current-chat current-network contacts account) messages))
 
 (defn sort-message-groups
   "Sorts message groups according to timestamp of first message in group"
@@ -188,11 +238,12 @@
              message-groups))))
 
 (defn get-current-chat-messages-stream
-  [messages message-groups message-statuses referenced-messages contacts account]
+  [messages message-groups message-statuses referenced-messages
+   current-chat current-network contacts account]
   (-> (sort-message-groups message-groups messages)
       (messages-with-datemarks-and-statuses messages message-statuses referenced-messages)
       messages-stream
-      (messages-with-metadata contacts account)))
+      (messages-with-metadata current-chat current-network contacts account)))
 
 (defn- get-last-message
   [messages]
@@ -211,8 +262,9 @@
                    (gfycat/generate-gfy chat-id))))
 
 (defn- enrich-active-chat
-  [{:keys [chat-id messages unviewed-messages] :as chat}
+  [{:keys [chat-id messages unviewed-messages group-chat public?] :as chat}
    {:keys [public-key tags photo-path] :as contact}
+   contacts
    blocked-contacts]
   (let [filtered-messages (filter-messages-from-blocked-contacts messages
                                                                  blocked-contacts)
@@ -220,13 +272,23 @@
                                                          (set (keys filtered-messages))))
         large-unviewed-messages-label? (< 9 unviewed-messages-count)
         last-message (get-last-message filtered-messages)
-        name (chat-name chat contact)]
+        name (chat-name chat contact)
+        chat-contacts (:contacts chat)]
     (cond-> chat
       tags
       (update :tags clojure.set/union tags)
 
       public-key
       (assoc :random-name (gfycat/generate-gfy public-key))
+
+      (and group-chat (not public?))
+      (update :contacts #(reduce (fn [acc public-key]
+                                   (assoc acc public-key
+                                          (contact.db/public-key->contact contacts public-key)))
+                                 {} %))
+
+      (not group-chat)
+      (assoc :contact (contact.db/public-key->contact (first (:contacts chat)) public-key))
 
       (pos? unviewed-messages-count)
       (assoc :unviewed-messages-label (if large-unviewed-messages-label?
@@ -257,7 +319,7 @@
   (reduce (fn [acc [chat-id chat]]
             (let [contact (get contacts chat-id)]
               (if (active-chat? chat contact dev-mode?)
-                (assoc acc chat-id (enrich-active-chat chat contact blocked-contacts))
+                (assoc acc chat-id (enrich-active-chat chat contact contacts blocked-contacts))
                 acc)))
           {}
           chats))

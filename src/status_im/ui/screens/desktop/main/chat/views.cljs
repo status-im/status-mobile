@@ -137,7 +137,7 @@
 
 (defmethod message-view
   constants/content-type-status
-  [{:keys [content from first-in-group? timestamp photo-path on-press-photo-fn] :as message}]
+  [{:keys [content from timestamp photo-path on-press-photo-fn] :as message}]
   [react/view
    [react/view {:style {:flex-direction :row :margin-top 24}}
     [member-photo from photo-path on-press-photo-fn]
@@ -150,8 +150,7 @@
 
 (defmethod message-view
   :default
-  [{:keys [content message-id chat-id message-status user-statuses from on-seen-message-fn
-           content-type outgoing type value] :as message}]
+  [{:keys [message-id on-seen-message-fn content-type type value] :as message}]
   (if (= type :datemark)
     ^{:key (str "datemark" message-id)}
     [message.datemark/chat-datemark value]
@@ -161,14 +160,14 @@
       (reagent.core/create-class
        {:component-did-mount on-seen-message-fn
         :reagent-render
-        (fn []
+        (fn [{:keys [message-id outgoing] :as message}]
           ^{:key (str "message" message-id)}
           [react/view
            [message-with-name-and-avatar message]
            [react/view {:style (message.style/delivery-status outgoing)}
             [message/message-delivery-status message]]])}))))
 
-(defn messages-view [{:keys [messages all-loaded? group-chat] :as current-chat}]
+(defn messages-view [{:keys [messages group-chat] :as current-chat}]
   [react/view {:style styles/messages-view}
    [list/flat-list {:data                messages
                     :style               {:flex 1}
@@ -177,7 +176,7 @@
                     :footerWidth         styles/messages-list-vertical-padding
                     :key-fn              #(or (:message-id %) (:value %))
                     :render-fn           (fn [message]
-                                           [message-view (assoc message :group-chat group-chat)])
+                                           [message-view message])
                     :inverted            true
                     :onEndReached        #(re-frame/dispatch [:chat.ui/load-more-messages])
                     :enableEmptySections true}]

@@ -132,7 +132,7 @@
 
 (defview chat-root [modal?]
   (letsubs [{:keys [group-chat] :as current-chat} [:chats/current]
-            show-bottom-info? [:chat/current-chat-ui-prop :show-bottom-info?]
+            message-details   [:chat/message-details]
             show-message-options? [:chat/current-chat-ui-prop :show-message-options?]
             current-view      [:get :view-id]]
     ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
@@ -150,8 +150,8 @@
          [messages-view current-chat modal?]]
         [react/view style/message-view-preview])
       [input/container]
-      (when show-bottom-info?
-        [bottom-info/bottom-info-view])
+      (when message-details
+        [bottom-info/bottom-info-view message-details])
       (when show-message-options?
         [message-options/view])
       [connectivity/error-view {:top (get platform/platform-specific :status-bar-default-height)}]]]))
