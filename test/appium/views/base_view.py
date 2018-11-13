@@ -461,7 +461,7 @@ class BaseView(object):
                 self.back_button.click()
             except (NoSuchElementException, TimeoutException):
                 counter += 1
-        return self.get_home_view()
+        return self.home_button.click()
 
     def relogin(self, password=common_password):
         self.get_back_to_home_view()

@@ -5,7 +5,7 @@ import emoji
 from datetime import datetime
 from selenium.common.exceptions import TimeoutException
 from tests import marks, get_current_time
-from tests.users import transaction_senders
+from tests.users import transaction_senders, transaction_recipients
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -495,4 +495,89 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
         if not chat.chat_element_by_text(emoji_unicode).is_element_displayed():
             self.errors.append('Message with emoji was not sent in 1-1 chat')
+        self.verify_no_errors()
+
+    @marks.testrail_id(5393)
+    @marks.high
+    def test_that_fiat_value_is_correct_for_token_transactions(self):
+        sender_passphrase = transaction_senders['X']['passphrase']
+        recipient_public_key = transaction_recipients['H']['public_key']
+        recipient_user_name = transaction_recipients['H']['username']
+        default_currency = 'USD'
+        user_currency = 'EUR'
+        sigin_view = SignInView(self.driver)
+        home_view = sigin_view.recover_access(sender_passphrase)
+        wallet = home_view.wallet_button.click()
+        wallet.set_up_wallet()
+
+        wallet.get_back_to_home_view()
+
+        chat = home_view.add_contact(recipient_public_key)
+        send_amount, request_amount = [chat.get_unique_amount() for _ in range(2)]
+        # Send and request some tokens in 1x1 chat and check whether the fiat currency value of the messages is equal
+        # to default
+        chat.send_transaction_in_1_1_chat('STT', send_amount)
+        chat.request_transaction_in_1_1_chat('STT', request_amount)
+
+        send_message = chat.chat_element_by_text(send_amount)
+        if not send_message.is_element_displayed() or not send_message.contains_text(default_currency):
+            self.errors.append('Wrong fiat value while sending assets in 1-1 chat with default currency.')
+
+        request_message = chat.chat_element_by_text(request_amount)
+        if not request_message.is_element_displayed() or not request_message.contains_text(default_currency):
+            self.errors.append('Wrong fiat value while requesting assets in 1-1 chat with default currency.')
+
+        chat.get_back_to_home_view()
+
+        # Switch default currency to user-selected
+        profile_view = sigin_view.profile_button.click()
+        profile_view.set_currency(user_currency)
+        profile_view.get_back_to_home_view()
+
+        chat = home_view.get_chat_with_user(recipient_user_name).click()
+
+        # Check whether the fiat currency value of the messages sent is not changed to user-selected
+        send_message = chat.chat_element_by_text(send_amount)
+        if not send_message.is_element_displayed() or not send_message.contains_text(default_currency):
+            self.errors.append('Wrong fiat value while sending assets in 1-1 chat with default currency.')
+
+        request_message = chat.chat_element_by_text(request_amount)
+        if not request_message.is_element_displayed() or not request_message.contains_text(default_currency):
+            self.errors.append('Wrong fiat value while requesting assets in 1-1 chat with default currency.')
+
+        # Send and request some tokens in 1x1 chat and check whether the fiat currency value of
+        # the new messages is equal to user-selected
+        send_amount, request_amount = [chat.get_unique_amount() for _ in range(2)]
+        chat.send_transaction_in_1_1_chat('STT', send_amount)
+        chat.request_transaction_in_1_1_chat('STT', request_amount)
+
+        send_message = chat.chat_element_by_text(send_amount)
+        if not send_message.is_element_displayed() or not send_message.contains_text(user_currency):
+            self.errors.append('Wrong fiat value while sending assets in 1-1 chat with user selected currency.')
+
+        request_message = chat.chat_element_by_text(request_amount)
+        if not request_message.is_element_displayed() or not request_message.contains_text(user_currency):
+            self.errors.append('Wrong fiat value while requesting assets in 1-1 chat with user selected currency.')
+
+        chat.get_back_to_home_view()
+
+        wallet = home_view.wallet_button.click()
+        send_amount, request_amount = [chat.get_unique_amount() for _ in range(2)]
+
+        # Send and request some tokens from wallet and check whether the fiat currency value of
+        # the new messages is equal to user-selected
+        wallet.send_transaction(asset_name='STT', recipient=recipient_user_name, amount=send_amount)
+        wallet.receive_transaction(asset_name='STT', recipient=recipient_user_name, amount=request_amount)
+
+        wallet.get_back_to_home_view()
+        chat = home_view.get_chat_with_user(recipient_user_name).click()
+
+        send_message = chat.chat_element_by_text(send_amount)
+        if not send_message.is_element_displayed() or not send_message.contains_text(user_currency):
+            self.errors.append('Wrong fiat value while sending assets from wallet with user selected currency.')
+
+        request_message = chat.chat_element_by_text(request_amount)
+        if not request_message.is_element_displayed() or not request_message.contains_text(user_currency):
+            self.errors.append('Wrong fiat value while requesting assets from wallet with user selected currency.')
+
         self.verify_no_errors()
