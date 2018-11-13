@@ -4,15 +4,10 @@
             [status-im.utils.datetime :as datetime]
             [status-im.utils.hex :as utils.hex]
             [status-im.utils.money :as money]
-            [status-im.utils.transactions :as transactions]
+            [status-im.models.transactions :as transactions]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.ui.screens.wallet.utils :as wallet.utils]))
-
-(reg-sub :wallet.transactions/transactions-loading?
-         :<- [:wallet]
-         (fn [wallet]
-           (:transactions-loading? wallet)))
 
 (reg-sub :wallet.transactions/current-tab
          :<- [:wallet]
@@ -130,8 +125,3 @@
 (reg-sub :wallet.transactions/filters
          (fn [db]
            (get-in db [:wallet.transactions :filters])))
-
-(reg-sub :wallet.transactions/error-message?
-         :<- [:wallet]
-         (fn [wallet]
-           (get-in wallet [:errors :transactions-update])))

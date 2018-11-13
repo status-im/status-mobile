@@ -10,26 +10,25 @@
 (spec/def :wallet/send (spec/keys :req-un [:wallet.send/recipient]))
 
 (spec/def :wallet/balance-loading? (spec/nilable boolean?))
-(spec/def :wallet/transactions-loading? (spec/nilable boolean?))
-(spec/def :wallet/transactions-sync-started? (spec/nilable boolean?))
-(spec/def :wallet/errors (spec/nilable any?))
-(spec/def :wallet/transactions-last-updated-at (spec/nilable any?))
-(spec/def :wallet/chat-transactions (spec/nilable any?))
-(spec/def :wallet/transactions (spec/nilable any?))
-(spec/def :wallet/transactions-queue (spec/nilable any?))
-(spec/def :wallet/edit (spec/nilable any?))
-(spec/def :wallet/current-tab (spec/nilable any?))
-(spec/def :wallet/current-transaction (spec/nilable any?))
-(spec/def :wallet/modal-history? (spec/nilable any?))
-(spec/def :wallet/visible-tokens (spec/nilable any?))
-(spec/def :wallet/currency (spec/nilable any?))
-(spec/def :wallet/balance (spec/nilable any?))
 
-(spec/def :wallet/wallet (spec/keys :opt-un [:wallet/send-transaction :wallet/request-transaction
+;; TODO these key specs are not needed, they don't do anything
+(spec/def :wallet/errors any?)
+(spec/def :wallet/transactions any?)
+(spec/def :wallet/transactions-queue any?)
+(spec/def :wallet/edit any?)
+(spec/def :wallet/current-tab any?)
+(spec/def :wallet/current-transaction any?)
+(spec/def :wallet/modal-history? any?)
+(spec/def :wallet/visible-tokens any?)
+(spec/def :wallet/currency any?)
+(spec/def :wallet/balance any?)
+
+(spec/def :wallet/wallet (spec/keys :opt-un [:wallet/send-transaction
+                                             :wallet/request-transaction
                                              :wallet/transactions-queue
-                                             :wallet/balance-loading? :wallet/errors :wallet/transactions-loading?
-                                             :wallet/transactions-last-updated-at :wallet/chat-transactions
-                                             :wallet/transactions-sync-started? :wallet/transactions
+                                             :wallet/balance-loading?
+                                             :wallet/errors
+                                             :wallet/transactions
                                              :wallet/edit
                                              :wallet/current-tab
                                              :wallet/current-transaction

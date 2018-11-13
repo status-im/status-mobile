@@ -492,15 +492,18 @@
                     :symbol   :MOKSHA
                     :decimals 18
                     :address  "0x6ba7dc8dd10880ab83041e60c4ede52bb607864b"}
-                   {:symbol  :KDO
-                    :nft?    true
-                    :name    "KudosToken"
-                    :address "0x93bB0AFbd0627Bbd3a6C72Bc318341D3A22e254a"}])
+                   {:symbol   :KDO
+                    :nft?     true
+                    :name     "KudosToken"
+                    :address  "0x93bb0afbd0627bbd3a6c72bc318341d3a22e254a"}])
 
    :custom  []})
 
-(defn tokens-for [chain]
-  (get all chain))
+(defn tokens-for
+  "makes sure all addresses are lower-case
+   TODO: token list should be speced and not accept non-lower-cased addresses"
+  [chain]
+  (mapv #(update % :address string/lower-case) (get all chain)))
 
 (defn all-assets-for [chain]
   (concat [(native-currency chain)]

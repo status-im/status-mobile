@@ -181,7 +181,6 @@
 (defn initialize-wallet [cofx]
   (fx/merge cofx
             (models.wallet/update-wallet)
-            (transactions/run-update)
             (transactions/start-sync)))
 
 (defn login-only-events [cofx address]

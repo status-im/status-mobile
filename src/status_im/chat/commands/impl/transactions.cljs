@@ -293,9 +293,7 @@
           (let [updated-request-message (assoc-in request-message [:content :params :answered?] true)]
             {:db            (assoc-in db [:chats chat-id :messages responding-to] updated-request-message)
              :data-store/tx [(messages-store/save-message-tx updated-request-message)]})))))
-  (on-receive [_ command-message cofx]
-    (when-let [tx-hash (get-in command-message [:content :params :tx-hash])]
-      (wallet.transactions/store-chat-transaction-hash tx-hash cofx)))
+  (on-receive [_ command-message cofx])
   (short-preview [_ command-message]
     (personal-send-request-short-preview :command-sending command-message))
   (preview [_ command-message]
