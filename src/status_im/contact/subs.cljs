@@ -87,22 +87,24 @@
           sort-contacts))))
 
 (defn get-all-contacts-in-group-chat
-  [members contacts current-account]
-  (let [current-account-contact (-> current-account
-                                    (select-keys [:name :photo-path :public-key]))
-        all-contacts            (assoc contacts (:public-key current-account-contact) current-account-contact)]
-    (->> members
-         (map #(contact.db/public-key->contact all-contacts %))
+  [chat-contacts current-account]
+  (let [current-public-key (:public-key current-account)
+        current-account-contact (-> current-account
+                                    (select-keys [:name :photo-path :public-key])
+                                    (assoc :current-account? true))
+        chat-contacts (assoc chat-contacts
+                             current-public-key
+                             current-account-contact)]
+    (->> (vals chat-contacts)
          (remove :dapp?)
-         (sort-by (comp clojure.string/lower-case :name)))))
+         sort-contacts)))
 
 (re-frame/reg-sub
  :contacts/current-chat-contacts
  :<- [:chats/current]
- :<- [:contacts/contacts]
  :<- [:account/account]
- (fn [[{:keys [contacts]} all-contacts current-account]]
-   (get-all-contacts-in-group-chat contacts all-contacts current-account)))
+ (fn [[{:keys [contacts]} current-account]]
+   (get-all-contacts-in-group-chat contacts current-account)))
 
 (re-frame/reg-sub
  :contacts/contact-by-address
