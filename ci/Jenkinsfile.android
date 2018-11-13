@@ -2,6 +2,7 @@ pipeline {
   agent { label 'linux' }
 
   options {
+    timestamps()
     /* Prevent Jenkins jobs from running forever */
     timeout(time: 25, unit: 'MINUTES')
     /* Limit builds retained */

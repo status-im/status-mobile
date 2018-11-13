@@ -2,6 +2,7 @@ pipeline {
   agent { label 'fastlane' }
 
   options {
+    timestamps()
     /* Prevent Jenkins jobs from running forever */
     timeout(time: 35, unit: 'MINUTES')
     /* Limit builds retained */
