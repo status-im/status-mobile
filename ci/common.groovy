@@ -142,31 +142,28 @@ def pkgFilename(type, ext) {
 }
 
 
-def githubNotify(apkUrl, e2eUrl, ipaUrl, dmgUrl, appUrl, zipUrl, changeId) {
+def githubNotify(Map urls) {
+  def githubIssuesUrl = 'https://api.github.com/repos/status-im/status-react/issues'
   withCredentials([string(credentialsId: 'GIT_HUB_TOKEN', variable: 'githubToken')]) {
-    def message = (
-      "#### :white_check_mark: CI BUILD SUCCESSFUL\\n" +
-      "Jenkins job: [${currentBuild.displayName}](${currentBuild.absoluteUrl})\\n"+
-      "##### Mobile\\n" +
-      "* [Android](${apkUrl}), ([e2e](${e2eUrl}))\\n" +
-      "* [iOS](${ipaUrl})\\n")
-
-    if (dmgUrl != null && appUrl != null && zipUrl != null) {
-      message = message +
-        "##### Desktop\\n" +
-        "* [MacOS](${dmgUrl})\\n" +
-        "* [AppImage](${appUrl})\\n" +
-        "* [Windows](${zipUrl})"
+    def message = "#### :white_check_mark: [${currentBuild.displayName}](${currentBuild.absoluteUrl}) "
+    message += "CI BUILD SUCCESSFUL in ${currentBuild.durationString} (${GIT_COMMIT})\n"
+    message += '| | | | | |\n'
+    message += '|-|-|-|-|-|\n'
+    message += "| [Android](${urls.apk})([e2e](${urls.e2e})) | [iOS](${urls.ipa}) |"
+    if (dmgUrl != null) {
+      message += " [MacOS](${urls.dmg}) | [AppImage](${urls.app}) | [Windows](${urls.win}) |"
+    } else {
+      message += " ~~MacOS~~ | ~~AppImage~~ | ~~Windows~~~ |"
     }
-    def script = (
-      "curl "+
-      "-u status-im:${githubToken} " +
-      "-H 'Content-Type: application/json' " +
-      "--data '{\"body\": \"${message}\"}' " +
-      "https://api.github.com/repos/status-im/status-react/issues/${changeId}/comments"
-    )
-    def ghOutput = sh(returnStdout: true, script: script)
-    println("Result of github comment curl: " + ghOutput);
+    def msgObj = [body: message]
+    def msgJson = new JsonBuilder(msgObj).toPrettyString()
+    sh """
+      curl --silent \
+        -u status-im:${githubToken} \
+        -H "Content-Type: application/json" \
+        --data '${msgJson}' \
+        "${githubIssuesUrl}/${env.CHANGE_ID}/comments"
+    """.trim()
   }
 }
 
