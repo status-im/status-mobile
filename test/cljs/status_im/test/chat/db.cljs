@@ -1,6 +1,6 @@
-(ns status-im.test.chat.subs
+(ns status-im.test.chat.db
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.chat.subs :as s]))
+            [status-im.chat.db :as s]))
 
 (deftest chat-name
   (testing "it prepends # if it's a public chat"
@@ -129,4 +129,4 @@
     (testing "it returns only chats with is-active"
       (is (= {1 active-chat-1
               2 active-chat-2}
-             (s/active-chats [{} chats {}]))))))
+             (s/active-chats {} chats {}))))))
