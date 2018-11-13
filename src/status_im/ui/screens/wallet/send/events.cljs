@@ -269,7 +269,3 @@
              {:dispatch-later [{:ms 400 :dispatch [:check-dapps-transactions-queue]}]}
              (navigation/navigate-back))))
 
-(handlers/register-handler-fx
- :sync-wallet-transactions
- (fn [cofx _]
-   (wallet.transactions/sync cofx)))
