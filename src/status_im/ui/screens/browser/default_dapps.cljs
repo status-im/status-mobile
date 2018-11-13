@@ -153,6 +153,10 @@
              :dapp-url    "https://smartz.io"
              :photo-path  "contacts://smartz"
              :description "Easy smart contract management"}
+            {:name        "SNT Voting DApp"
+             :dapp-url    "https://vote.status.im"
+             :photo-path  "contacts://snt-voting"
+             :description "Let your SNT be heard! Vote on decisions exclusive to SNT holders, or create a poll of your own."}
             {:name        "Status Test DApp"
              :dapp-url    "https://status-im.github.io/dapp/"
              :description "Request test assets and test basic web3 functionality."

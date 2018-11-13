@@ -43,6 +43,7 @@
    :cryptopurr         (js/require "./resources/images/contacts/cryptopurr.png")
    :ethlend            (js/require "./resources/images/contacts/ethlend.png")
    :smartz             (js/require "./resources/images/contacts/smartz.png")
+   :snt-voting         (js/require "./resources/images/contacts/snt-voting.png")
    :superrare          (js/require "./resources/images/contacts/superrare.png")
 
    :ddex               (js/require "./resources/images/contacts/ddex.png")
