@@ -4,23 +4,31 @@ env.LC_ALL="en_US.UTF-8"
 env.FASTLANE_DISABLE_COLORS=1
 env.REALM_DISABLE_ANALYTICS=1
 
-timeout(90) {
-    node ('fastlane'){
-
-    stage('Git & Dependencies'){
-
-      checkout([$class: 'GitSCM', branches: [[name: 'develop']],
-      doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout']],
-      submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/status-im/status-react.git']]])
-
-      load "$HOME/env.groovy"
+timeout(120) {
+  node ('macos') {
+    stage('Git Checkout'){
+      checkout([
+        $class: 'GitSCM',
+        branches: [[name: 'develop']],
+        doGenerateSubmoduleConfigurations: false,
+        extensions: [[$class: 'CleanBeforeCheckout']],
+        submoduleCfg: [],
+        userRemoteConfigs: [[url: 'https://github.com/status-im/status-react.git']]
+      ])
     }
 
-    stage('Clean Testflight Users'){
+    stage('Install Deps'){
+      sh ('bundle install')
+    }
 
-      withCredentials([string(credentialsId: 'FASTLANE_PASSWORD', variable: 'FASTLANE_PASSWORD'),
-      string(credentialsId: 'APPLE_ID', variable: 'APPLE_ID')]) {
+    stage('Clean Users'){
+      withCredentials([
+        string(credentialsId: 'FASTLANE_PASSWORD', variable: 'FASTLANE_PASSWORD'),
+        string(credentialsId: 'APPLE_ID', variable: 'APPLE_ID')]
+      ) {
         sh ('bundle install')
-        sh ('bundle exec fastlane ios clean')}}
+        sh ('bundle exec fastlane ios clean')
+      }
     }
+  }
 }
