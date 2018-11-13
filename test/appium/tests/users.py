@@ -188,6 +188,13 @@ transaction_senders['W']['address'] = "d5de9a58a3eab0643ecbd01729312215ef647a4d"
 transaction_senders['W']['public_key'] = "0x04fe5b77e1f0aa15b36090db04d830cd080a716982503d6b962a6ba2ed8f42bdbcc66bba8" \
                                          "9dba8c35620313c50f7ac625c9c75199d2164b07253143717f6ef0834"
 
+transaction_senders['X'] = dict()
+transaction_senders['X']['passphrase'] = "denial lend kit learn jacket mail ceiling crack affair stool spike sound"
+transaction_senders['X']['username'] = "Infatuated Zesty Ballpython"
+transaction_senders['X']['address'] = "0xc9cf2ff3ca98a91f2e3dfc35a13cf8425ecaf082"
+transaction_senders['X']['public_key'] = "0x04a712634920a012cd45d63a23832d494518d992b77d3b8aa81131a302657193e2d174e3a" \
+                                         "ffda80dad81bc3bf3edaf84334437cfecfb248f37fdcb1d882773cf08"
+
 transaction_recipients = dict()
 
 transaction_recipients['A'] = dict()
@@ -236,3 +243,10 @@ transaction_recipients['G']['username'] = "Amused Dazzling Badger"
 transaction_recipients['G']['address'] = "b1f8b0db0f12e45d7712625bc53535235d245a9f"
 transaction_recipients['G']['public_key'] = "0x04f08a05551c3704284ca03ea2ff7fe613a00e52be86d6b433f7e38fa31fd0741eebf" \
                                             "4344ad8d1652896440dada4017665e9b16ae328cb829b9e647b65c7024df7"
+
+transaction_recipients['H'] = dict()
+transaction_recipients['H']['passphrase'] = "rail change device celery metal husband panda avoid often shiver payment real"
+transaction_recipients['H']['username'] = "Glum Tricky Indianskimmer"
+transaction_recipients['H']['address'] = "0xe9676a57a28800d83301d9d3f9c77fd2e933609c"
+transaction_recipients['H']['public_key'] = "0x0400b4d2cb69c49d147af128a596a2160fb7ac1d2abc54156b26598feb5630e8e7529" \
+                                            "f5a8363a73d6a9df86fdda87c095a9462aca8b4cbf1f331152a9a22cdb35d"

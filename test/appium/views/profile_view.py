@@ -542,9 +542,12 @@ class ProfileView(BaseView):
         self.logout_button.click()
         return self.logout_dialog.logout_button.click()
 
-    def set_currency(self, desired_currency='Euro (EUR)'):
+    def set_currency(self, desired_currency='EUR'):
+        """
+        :param desired_currency: defines a currency designator which is expressed by ISO 4217 code
+        """
         self.main_currency_button.click()
-        desired_currency = self.element_by_text(desired_currency)
+        desired_currency = self.element_by_text_part(desired_currency)
         desired_currency.scroll_to_element()
         desired_currency.click()
 

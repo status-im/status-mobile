@@ -79,6 +79,10 @@ class SendTransactionRequestButton(BaseButton):
         super(SendTransactionRequestButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('sent-transaction-request-button')
 
+    def navigate(self):
+        from views.send_transaction_view import SendTransactionView
+        return SendTransactionView(self.driver)
+
 
 class OptionsButton(BaseButton):
     def __init__(self, driver):
@@ -265,3 +269,56 @@ class WalletView(BaseView):
 
     def asset_checkbox_by_name(self, asset_name):
         return AssetCheckBox(self.driver, asset_name)
+
+    def send_transaction(self, **kwargs):
+        send_transaction_view = self.send_transaction_button.click()
+        send_transaction_view.select_asset_button.click()
+        asset_name = kwargs.get('asset_name', 'ETHro')
+        asset_button = send_transaction_view.asset_by_name(asset_name)
+        send_transaction_view.select_asset_button.click_until_presence_of_element(asset_button)
+        asset_button.click()
+        send_transaction_view.amount_edit_box.click()
+
+        transaction_amount = str(kwargs.get('amount')) if kwargs.get('amount') else \
+            send_transaction_view.get_unique_amount()
+
+        send_transaction_view.amount_edit_box.set_value(transaction_amount)
+        send_transaction_view.confirm()
+        send_transaction_view.chose_recipient_button.click()
+
+        recipient = kwargs.get('recipient')
+
+        if '0x' in recipient:
+            send_transaction_view.enter_recipient_address_button.click()
+            send_transaction_view.enter_recipient_address_input.set_value(recipient)
+            send_transaction_view.done_button.click()
+        else:
+            send_transaction_view.recent_recipients_button.click()
+            recent_recipient = send_transaction_view.element_by_text(recipient)
+            send_transaction_view.recent_recipients_button.click_until_presence_of_element(recent_recipient)
+            recent_recipient.click()
+        send_transaction_view.sign_transaction()
+
+    def receive_transaction(self, **kwargs):
+        self.receive_transaction_button.click()
+        send_transaction_view = self.send_transaction_request.click()
+        send_transaction_view.select_asset_button.click()
+        asset_name = kwargs.get('asset_name', 'ETHro')
+        asset_button = send_transaction_view.asset_by_name(asset_name)
+        send_transaction_view.select_asset_button.click_until_presence_of_element(asset_button)
+        asset_button.click()
+        send_transaction_view.amount_edit_box.click()
+
+        transaction_amount = str(kwargs.get('amount')) if kwargs.get('amount') else \
+            send_transaction_view.get_unique_amount()
+
+        send_transaction_view.amount_edit_box.set_value(transaction_amount)
+        send_transaction_view.confirm()
+        send_transaction_view.chose_recipient_button.click()
+
+        recipient = kwargs.get('recipient')
+        send_transaction_view.recent_recipients_button.click()
+        recent_recipient = send_transaction_view.element_by_text(recipient)
+        send_transaction_view.recent_recipients_button.click_until_presence_of_element(recent_recipient)
+        recent_recipient.click()
+        self.send_request_button.click()
