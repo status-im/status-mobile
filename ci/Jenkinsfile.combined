@@ -104,22 +104,16 @@ pipeline {
       steps { script {
         switch (btype) {
           case 'nightly':
-            build(
-              job: 'misc/status-im.github.io-update_env',
-              parameters: [
-                [name: 'APK_URL', value: apkUrl, $class: 'StringParameterValue'],
-                [name: 'IOS_URL', value: ipaUrl, $class: 'StringParameterValue'],
-                [name: 'DMG_URL', value: dmgUrl, $class: 'StringParameterValue'],
-                [name: 'NIX_URL', value: appUrl, $class: 'StringParameterValue'],
-              ]
-            ); break
+            build('misc/status.im')
+            break
           case 'release':
             build(
               job: 'misc/cn.status.im',
               parameters: [
                 [name: 'APK_URL', value: apkUrl, $class: 'StringParameterValue'],
               ]
-            ); break
+            )
+            break
         }
       } }
     }
