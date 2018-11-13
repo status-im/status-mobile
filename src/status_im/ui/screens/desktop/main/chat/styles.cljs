@@ -1,7 +1,10 @@
 (ns status-im.ui.screens.desktop.main.chat.styles
   (:require [status-im.ui.components.colors :as colors]))
 
-(def min-input-container-height 68)
+;; TODO: see how this could be refactored to be
+;; automatically alignde with tabs-height in
+;; status-im.ui.screens.main-tabs.styles
+(def min-input-container-height 67)
 (def max-input-container-height 180)
 (def chat-vertical-padding 16)
 (def min-input-area-height 20)
