@@ -15,7 +15,7 @@
             [status-im.chat.models.loading :as chat-loading]
             [status-im.chat.models.message-content :as message-content]
             [status-im.chat.commands.receiving :as commands-receiving]
-            [status-im.chat.subs :as chat-subs]
+            [status-im.chat.db :as chat.db]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.money :as money]
             [status-im.utils.types :as types]
@@ -93,7 +93,7 @@
                                 (not (system-message? message)))))
 
 (defn build-desktop-notification [{:keys [db] :as cofx} {:keys [chat-id timestamp content from] :as message}]
-  (let [chat-name'        (chat-subs/chat-name (get-in db [:chats chat-id]) from)
+  (let [chat-name'        (chat.db/chat-name (get-in db [:chats chat-id]) from)
         contact-name'     (if-let [contact-name (get-in db [:contacts/contacts from :name])]
                             contact-name
                             (:name (utils.contacts/public-key->new-contact from)))
