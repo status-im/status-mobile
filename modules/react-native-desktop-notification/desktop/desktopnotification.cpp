@@ -65,17 +65,16 @@ DesktopNotification::DesktopNotification(QObject *parent)
        m_appHasFocus = (focusWindow != nullptr);
     });
 
-  d_ptr->snoreApp = Snore::Application(QCoreApplication::applicationName(),
-                                       Snore::Icon::defaultIcon());
-  d_ptr->snoreApp.addAlert(
-      Snore::Alert(NewMessageAlert, Snore::Icon::defaultIcon()));
-
   if (Snore::SnoreCore::instance().pluginNames().isEmpty()) {
     Snore::SnoreCore::instance().loadPlugins(Snore::SnorePlugin::Backend);
   }
 
   qCDebug(NOTIFICATION) << "DesktopNotification::DesktopNotification List of all loaded Snore plugins:"
                         << Snore::SnoreCore::instance().pluginNames();
+
+  Snore::Icon icon(":/icon.png");
+  d_ptr->snoreApp = Snore::Application(QCoreApplication::applicationName(), icon);
+  d_ptr->snoreApp.addAlert(Snore::Alert(NewMessageAlert, icon));
 
   Snore::SnoreCore::instance().registerApplication(d_ptr->snoreApp);
   Snore::SnoreCore::instance().setDefaultApplication(d_ptr->snoreApp);
@@ -101,7 +100,7 @@ QList<ModuleMethod *> DesktopNotification::methodsToExport() {
 
 QVariantMap DesktopNotification::constantsToExport() { return QVariantMap(); }
 
-void DesktopNotification::sendNotification(QString text) {
+void DesktopNotification::sendNotification(QString title, QString body, bool prioritary) {
   Q_D(DesktopNotification);
   qCDebug(NOTIFICATION) << "::sendNotification";
 
@@ -111,8 +110,9 @@ void DesktopNotification::sendNotification(QString text) {
   }
 
   Snore::Notification notification(
-      d_ptr->snoreApp, d_ptr->snoreApp.alerts()[NewMessageAlert], "New message",
-      text, Snore::Icon::defaultIcon());
+      d_ptr->snoreApp, d_ptr->snoreApp.alerts()[NewMessageAlert], title,
+      body, Snore::Icon::defaultIcon(),
+      prioritary ? Snore::Notification::Prioritys::High : Snore::Notification::Prioritys::Normal);
   Snore::SnoreCore::instance().broadcastNotification(notification);
 }
 
