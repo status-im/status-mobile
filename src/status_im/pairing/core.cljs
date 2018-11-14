@@ -47,6 +47,13 @@
 
 (def merge-contacts (partial merge-with merge-contact))
 
+(def account-mergeable-keys [:name :photo-path :last-updated])
+
+(defn merge-account [local remote]
+  (if (> (:last-updated remote) (:last-updated local))
+    (merge local (select-keys remote account-mergeable-keys))
+    local))
+
 (fx/defn upsert-installation [{:keys [db]} {:keys [installation-id] :as new-installation}]
   (let [old-installation (get-in db [:pairing/installations installation-id])
         updated-installation (merge old-installation new-installation)]
@@ -68,18 +75,26 @@
               (not (get-in db [:pairing/installations installation-id])))
           (upsert-installation cofx new-installation))))))
 
-(defn sync-installation-messages [{:keys [db]}]
-  (let [contacts (:contacts/contacts db)]
-    (map
-     (fn [batch]
-       (let [contacts-to-sync (reduce (fn [acc {:keys [public-key] :as contact}]
-                                        (assoc acc public-key (dissoc contact :photo-path)))
-                                      {}
-                                      batch)]
-         (transport.pairing/SyncInstallation. contacts-to-sync)))
-     (partition-all contact-batch-n (->> contacts
-                                         vals
-                                         (remove :dapp?))))))
+(defn sync-installation-account-message [{:keys [db]}]
+  (let [account (-> db
+                    :account/account
+                    (select-keys account-mergeable-keys))]
+    (transport.pairing/SyncInstallation. {} account)))
+
+(defn- contact-batch->sync-installation-message [batch]
+  (let [contacts-to-sync (reduce (fn [acc {:keys [public-key] :as contact}]
+                                   (assoc acc public-key (dissoc contact :photo-path)))
+                                 {}
+                                 batch)]
+    (transport.pairing/SyncInstallation. contacts-to-sync nil)))
+
+(defn sync-installation-messages [{:keys [db] :as cofx}]
+  (let [contacts (:contacts/contacts db)
+        contact-batches (partition-all contact-batch-n (->> contacts
+                                                            vals
+                                                            (remove :dapp?)))]
+    (conj (mapv contact-batch->sync-installation-message contact-batches)
+          (sync-installation-account-message cofx))))
 
 (defn enable [{:keys [db]} installation-id]
   {:db (assoc-in db
@@ -167,12 +182,15 @@
              {}
              contacts))
 
-(defn handle-sync-installation [{:keys [db] :as cofx} {:keys [contacts]} sender]
+(defn handle-sync-installation [{:keys [db] :as cofx} {:keys [contacts account]} sender]
   (let [dev-mode? (get-in db [:account/account :dev-mode?])]
     (when (and (config/pairing-enabled? dev-mode?)
                (= sender (accounts.db/current-public-key cofx)))
-      (let [new-contacts (merge-contacts (:contacts/contacts db) (ensure-photo-path contacts))]
-        {:db (assoc db :contacts/contacts new-contacts)
+      (let [new-contacts (merge-contacts (:contacts/contacts db) (ensure-photo-path contacts))
+            new-account  (merge-account (:account/account db) account)]
+        {:db            (assoc db
+                               :contacts/contacts new-contacts
+                               :account/account new-account)
          :data-store/tx [(data-store.contacts/save-contacts-tx (vals new-contacts))]}))))
 
 (defn handle-pair-installation [{:keys [db] :as cofx} {:keys [installation-id device-type]} timestamp sender]

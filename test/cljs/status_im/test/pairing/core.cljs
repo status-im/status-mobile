@@ -75,64 +75,85 @@
 (deftest handle-sync-installation-test
   (with-redefs [config/pairing-enabled? (constantly true)
                 identicon/identicon (constantly "generated")]
-    (let [old-contact-1   {:name "old-contact-one"
-                           :public-key "contact-1"
-                           :last-updated 0
-                           :photo-path "old-contact-1"
-                           :pending? true}
-          new-contact-1   {:name "new-contact-one"
-                           :public-key "contact-1"
-                           :last-updated 1
-                           :photo-path "new-contact-1"
-                           :pending? false}
-          old-contact-2   {:name "old-contact-2"
-                           :public-key "contact-2"
-                           :last-updated 0
-                           :photo-path "old-contact-2"
-                           :pending? false}
-          new-contact-2   {:name "new-contact-2"
-                           :public-key "contact-2"
-                           :last-updated 1
-                           :photo-path "new-contact-2"
-                           :pending? false}
-          contact-3        {:name "contact-3"
-                            :public-key "contact-3"
-                            :photo-path "contact-3"
-                            :pending? false}
-          contact-4        {:name "contact-4"
-                            :public-key "contact-4"
-                            :pending? true}
-          local-contact-5  {:name "contact-5"
-                            :photo-path "local"
-                            :public-key "contact-5"
-                            :pending? true
-                            :last-updated 1}
-          remote-contact-5 {:name "contact-5"
-                            :public-key "contact-5"
-                            :photo-path "remote"
-                            :pending? true
-                            :last-updated 1}
-          cofx {:db {:account/account {:public-key "us"}
-                     :contacts/contacts {"contact-1" old-contact-1
-                                         "contact-2" new-contact-2
-                                         "contact-3" contact-3
-                                         "contact-5" local-contact-5}}}
-          sync-message {:contacts {"contact-1" new-contact-1
-                                   "contact-2" old-contact-2
-                                   "contact-4" contact-4
-                                   "contact-5" remote-contact-5}}
-          expected {"contact-1" new-contact-1
-                    "contact-2" new-contact-2
-                    "contact-3" contact-3
-                    "contact-4" (assoc contact-4
-                                       :photo-path "generated")
-                    "contact-5" local-contact-5}]
-      (testing "not coming from us"
-        (is (not (pairing/handle-sync-installation cofx sync-message "not-us"))))
-      (testing "coming from us"
-        (is (= expected (get-in
-                         (pairing/handle-sync-installation cofx sync-message "us")
-                         [:db :contacts/contacts])))))))
+
+    (testing "syncing contacts"
+      (let [old-contact-1   {:name "old-contact-one"
+                             :public-key "contact-1"
+                             :last-updated 0
+                             :photo-path "old-contact-1"
+                             :pending? true}
+            new-contact-1   {:name "new-contact-one"
+                             :public-key "contact-1"
+                             :last-updated 1
+                             :photo-path "new-contact-1"
+                             :pending? false}
+            old-contact-2   {:name "old-contact-2"
+                             :public-key "contact-2"
+                             :last-updated 0
+                             :photo-path "old-contact-2"
+                             :pending? false}
+            new-contact-2   {:name "new-contact-2"
+                             :public-key "contact-2"
+                             :last-updated 1
+                             :photo-path "new-contact-2"
+                             :pending? false}
+            contact-3        {:name "contact-3"
+                              :public-key "contact-3"
+                              :photo-path "contact-3"
+                              :pending? false}
+            contact-4        {:name "contact-4"
+                              :public-key "contact-4"
+                              :pending? true}
+            local-contact-5  {:name "contact-5"
+                              :photo-path "local"
+                              :public-key "contact-5"
+                              :pending? true
+                              :last-updated 1}
+            remote-contact-5 {:name "contact-5"
+                              :public-key "contact-5"
+                              :photo-path "remote"
+                              :pending? true
+                              :last-updated 1}
+            cofx {:db {:account/account {:public-key "us"}
+                       :contacts/contacts {"contact-1" old-contact-1
+                                           "contact-2" new-contact-2
+                                           "contact-3" contact-3
+                                           "contact-5" local-contact-5}}}
+            sync-message {:contacts {"contact-1" new-contact-1
+                                     "contact-2" old-contact-2
+                                     "contact-4" contact-4
+                                     "contact-5" remote-contact-5}}
+            expected {"contact-1" new-contact-1
+                      "contact-2" new-contact-2
+                      "contact-3" contact-3
+                      "contact-4" (assoc contact-4
+                                         :photo-path "generated")
+                      "contact-5" local-contact-5}]
+        (testing "not coming from us"
+          (is (not (pairing/handle-sync-installation cofx sync-message "not-us"))))
+        (testing "coming from us"
+          (is (= expected (get-in
+                           (pairing/handle-sync-installation cofx sync-message "us")
+                           [:db :contacts/contacts]))))))
+    (testing "syncing account"
+      (let [old-account   {:name "old-name"
+                           :public-key "us"
+                           :photo-path "old-photo-path"
+                           :last-updated 0}
+            new-account   {:name "new-name"
+                           :public-key "us"
+                           :photo-path "new-photo-path"
+                           :last-updated 1}]
+        (testing "newer update"
+          (let [cofx {:db {:account/account old-account}}
+                sync-message    {:account new-account}]
+            (is (= new-account (get-in (pairing/handle-sync-installation cofx sync-message "us")
+                                       [:db :account/account])))))
+        (testing "older update"
+          (let [cofx {:db {:account/account new-account}}
+                sync-message    {:account old-account}]
+            (is (= new-account (get-in (pairing/handle-sync-installation cofx sync-message "us")
+                                       [:db :account/account])))))))))
 
 (deftest handle-pair-installation-test
   (with-redefs [config/pairing-enabled? (constantly true)]
@@ -158,7 +179,10 @@
 
 (deftest sync-installation-messages-test
   (testing "it creates a sync installation message"
-    (let [cofx {:db {:account/account {:public-key "us"}
+    (let [cofx {:db {:account/account {:public-key "us"
+                                       :name "name"
+                                       :photo-path "photo-path"
+                                       :last-updated 1}
                      :contacts/contacts {"contact-1" {:name "contact-1"
                                                       :public-key "contact-1"}
                                          "contact-2" {:name "contact-2"
@@ -176,9 +200,13 @@
                                                           "contact-3" {:name "contact-3"
                                                                        :public-key "contact-3"}
                                                           "contact-4" {:name "contact-4"
-                                                                       :public-key "contact-4"}})
+                                                                       :public-key "contact-4"}}
+                                                         nil)
                     (transport.pairing/SyncInstallation. {"contact-5" {:name "contact-5"
-                                                                       :public-key "contact-5"}})]]
+                                                                       :public-key "contact-5"}} nil)
+                    (transport.pairing/SyncInstallation. {} {:photo-path "photo-path"
+                                                             :name "name"
+                                                             :last-updated 1})]]
       (is (= expected (pairing/sync-installation-messages cofx))))))
 
 (deftest handle-bundles-added-test

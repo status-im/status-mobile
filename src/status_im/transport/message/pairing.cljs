@@ -12,7 +12,7 @@
       (log/warn "failed sync installation validation" (spec/explain :message/pair-installation this)))))
 
 (defrecord SyncInstallation
-           [contacts]
+           [contacts account]
   protocol/StatusMessage
   (validate [this]
     (if (spec/valid? :message/sync-installation this)

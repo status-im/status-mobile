@@ -86,8 +86,8 @@
 (deftype SyncInstallationHandler []
   Object
   (tag [this v] "p1")
-  (rep [this {:keys [contacts]}]
-    #js [contacts]))
+  (rep [this {:keys [contacts account]}]
+    #js [contacts account]))
 
 (deftype PairInstallationHandler []
   Object
@@ -154,8 +154,8 @@
                                      (contact/ContactUpdate. name profile-image address fcm-token))
                               "g5" (fn [[chat-id membership-updates message]]
                                      (group-chat/GroupMembershipUpdate. chat-id membership-updates message))
-                              "p1" (fn [[contacts]]
-                                     (pairing/SyncInstallation. contacts))
+                              "p1" (fn [[contacts account]]
+                                     (pairing/SyncInstallation. contacts account))
                               "p2" (fn [[installation-id device-type]]
                                      (pairing/PairInstallation. installation-id device-type))}}))
 
