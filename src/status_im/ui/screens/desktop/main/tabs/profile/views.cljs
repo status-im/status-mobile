@@ -87,12 +87,18 @@
 (views/defview advanced-settings []
   (views/letsubs [installations    [:pairing/installations]
                   current-mailserver-id [:mailserver/current-id]
-                  mailservers           [:mailserver/fleet-mailservers]]
-    (let [render-fn (offline-messaging.views/render-row current-mailserver-id)]
+                  mailservers           [:mailserver/fleet-mailservers]
+                  mailserver-state      [:mailserver/state]
+                  peers-count           [:peers-count]]
+    (let [render-fn (offline-messaging.views/render-row current-mailserver-id)
+          connected-peers-message      (str "Connected to " peers-count " peers")]
       [react/scroll-view
        [react/text {:style styles/advanced-settings-title
                     :font  :medium}
         (i18n/label :advanced-settings)]
+       [react/view
+        [react/text connected-peers-message]
+        [react/text (str mailserver-state)]]
        [react/view {:style styles/title-separator}]
        [react/text {:style styles/mailserver-title} (i18n/label :offline-messaging)]
        [react/view
