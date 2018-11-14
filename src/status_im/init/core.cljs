@@ -98,10 +98,10 @@
   {:db (assoc db :device-UUID device-uuid)})
 
 (fx/defn handle-change-account-error
-  [cofx]
+  [cofx error]
   {:ui/show-confirmation
    {:title               (i18n/label :invalid-key-title)
-    :content             (i18n/label :invalid-key-content)
+    :content             (str error "\n" (i18n/label :invalid-key-content))
     :confirm-button-text (i18n/label :invalid-key-confirm)
     ;; On cancel we initialize the app with the invalid key, to allow the user
     ;; to recover the seed phrase
@@ -209,13 +209,10 @@
                                              [:web3/fetch-node-version-callback %])]
              :notifications/get-fcm-token nil}
             (initialize-account-db address)
-            (protocol/initialize-protocol address)
             (contact/load-contacts)
             (pairing/load-installations)
             #(when (dev-mode? %)
                (models.dev-server/start))
-            (chat-loading/initialize-chats)
-            (chat-loading/initialize-pending-messages)
             (browser/initialize-browsers)
             (browser/initialize-dapp-permissions)
             (extensions.registry/initialize)

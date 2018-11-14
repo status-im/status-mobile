@@ -10,7 +10,9 @@
             [taoensso.timbre :as log]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.utils.utils :as utils]
+            [status-im.ui.components.react :as components]))
 
 (views/defview unviewed-indicator [chat-id]
   (let [unviewed-messages-count (re-frame/subscribe [:chats/unviewed-messages-count chat-id])]
@@ -99,9 +101,21 @@
                                          text         (.-text native-event)]
                                      (re-frame/dispatch [:search/filter-changed text])))}]])
 
-(views/defview chat-list-view []
+(views/defview chat-list-view [loading?]
   (views/letsubs [search-filter       [:search/filter]
                   filtered-home-items [:search/filtered-home-items]]
+    {:component-did-mount
+     (fn [this]
+       (let [[_ loading?] (.. this -props -argv)]
+         (when loading?
+           (re-frame/dispatch [:init-chats]))))
+
+     :component-did-update
+     (fn [this [_ old-loading?]]
+       (let [[_ loading?] (.. this -props -argv)]
+         (when (and (false? loading?)
+                    (true? old-loading?))
+           (re-frame/dispatch [:load-chats-messages]))))}
     [react/view {:style styles/chat-list-view}
      [react/view {:style styles/chat-list-header}
       [search-input search-filter]
@@ -109,8 +123,17 @@
        [react/view {:style styles/add-new}
         [icons/icon :icons/add {:style {:tint-color :white}}]]]]
      [react/view {:style styles/chat-list-separator}]
-     [react/scroll-view {:enableArrayScrollingOptimization true}
-      [react/view
-       (for [[index chat] (map-indexed vector filtered-home-items)]
-         ^{:key (first chat)}
-         [chat-list-item chat])]]]))
+     (if loading?
+       [react/view {:style {:flex            1
+                            :justify-content :center
+                            :align-items     :center}}
+        [components/activity-indicator {:animating true}]]
+       [react/scroll-view {:enableArrayScrollingOptimization true}
+        [react/view
+         (for [[index chat] (map-indexed vector filtered-home-items)]
+           ^{:key (first chat)}
+           [chat-list-item chat])]])]))
+
+(views/defview chat-list-view-wrapper []
+  (views/letsubs [loading? [:get :chats/loading?]]
+    [chat-list-view loading?]))

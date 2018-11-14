@@ -1,7 +1,9 @@
 (ns status-im.data-store.realm.schemas.account.migrations
   (:require [taoensso.timbre :as log]
             [cljs.reader :as reader]
-            [status-im.chat.models.message-content :as message-content]))
+            [status-im.chat.models.message-content :as message-content]
+            [status-im.transport.utils :as transport.utils]
+            [cljs.tools.reader.edn :as edn]))
 
 (defn v1 [old-realm new-realm]
   (log/debug "migrating v1 account database: " old-realm new-realm))
@@ -156,3 +158,59 @@
 
 (defn v24 [old-realm new-realm]
   (log/debug "migrating v24 account database"))
+
+(defn v25 [old-realm new-realm]
+  (log/debug "migrating v25 account database")
+  (let [new-messages (.objects new-realm "message")
+        user-statuses (.objects new-realm "user-status")
+        old-ids->new-ids (volatile! {})
+        updated-messages-ids (volatile! #{})
+        updated-message-statuses-ids (volatile! #{})
+        messages-to-be-deleted (volatile! [])
+        statuses-to-be-deleted (volatile! [])]
+    (dotimes [i (.-length new-messages)]
+      (let [message (aget new-messages i)
+            message-id (aget message "message-id")
+            from (aget message "from")
+            chat-id (aget message "chat-id")
+            clock-value (aget message "clock-value")
+            new-message-id (transport.utils/message-id
+                            {:from        from
+                             :chat-id     chat-id
+                             :clock-value clock-value})]
+        (vswap! old-ids->new-ids assoc message-id new-message-id)))
+
+    (dotimes [i (.-length new-messages)]
+      (let [message (aget new-messages i)
+            old-message-id (aget message "message-id")
+            content (edn/read-string (aget message "content"))
+            response-to (:response-to content)
+            new-message-id (get @old-ids->new-ids old-message-id)]
+        (if (contains? @updated-messages-ids new-message-id)
+          (vswap! messages-to-be-deleted conj message)
+          (do
+            (vswap! updated-messages-ids conj new-message-id)
+            (aset message "message-id" new-message-id)
+            (when (and response-to (get @old-ids->new-ids response-to))
+              (let [new-content (assoc content :response-to
+                                       (get @old-ids->new-ids response-to))]
+                (aset message "content" (prn-str new-content))))))))
+
+    (doseq [message @messages-to-be-deleted]
+      (.delete new-realm message))
+
+    (dotimes [i (.-length user-statuses)]
+      (let [user-status (aget user-statuses i)
+            message-id     (aget user-status "message-id")
+            new-message-id (get @old-ids->new-ids message-id)
+            whisper-id     (aget user-status "whisper-identity")
+            new-status-id (str new-message-id "-" whisper-id)]
+        (if (contains? @updated-message-statuses-ids new-status-id)
+          (vswap! statuses-to-be-deleted conj user-status)
+          (do
+            (vswap! updated-message-statuses-ids conj new-status-id)
+            (aset user-status "status-id" new-status-id)
+            (aset user-status "message-id" new-message-id)))))
+
+    (doseq [status @statuses-to-be-deleted]
+      (.delete new-realm status))))

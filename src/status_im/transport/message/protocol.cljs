@@ -87,7 +87,10 @@
                               :payload       this
                               :success-event [:transport/message-sent
                                               chat-id
-                                              (transport.utils/message-id this)
+                                              (transport.utils/message-id
+                                               {:from        current-public-key
+                                                :chat-id     chat-id
+                                                :clock-value clock-value})
                                               message-type]}]
       (case message-type
         :public-group-user-message
@@ -113,7 +116,10 @@
   (receive [this chat-id signature _ cofx]
     {:chat-received-message/add-fx
      [(assoc (into {} this)
-             :message-id (transport.utils/message-id this)
+             :message-id (transport.utils/message-id
+                          {:chat-id     chat-id
+                           :from        signature
+                           :clock-value clock-value})
              :chat-id chat-id
              :from signature
              :js-obj (:js-obj cofx))]})
