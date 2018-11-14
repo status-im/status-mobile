@@ -42,7 +42,9 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.datetime :as time]
+            [status-im.chat.models.loading :as chat-loading]))
 
 ;; init module
 
@@ -83,22 +85,34 @@
    (init/handle-init-store-error cofx encryption-key)))
 
 (handlers/register-handler-fx
- :init.callback/account-change-success
+ :load-chats-messages
+ [(re-frame/inject-cofx :data-store/get-unviewed-messages)
+  (re-frame/inject-cofx :data-store/get-messages)
+  (re-frame/inject-cofx :data-store/get-referenced-messages)
+  (re-frame/inject-cofx :data-store/get-user-statuses)]
+ (fn [cofx]
+   (chat-loading/load-chats-messages cofx)))
+
+(handlers/register-handler-fx
+ :init-chats
  [(re-frame/inject-cofx :web3/get-web3)
   (re-frame/inject-cofx :get-default-dapps)
   (re-frame/inject-cofx :data-store/all-chats)
-  (re-frame/inject-cofx :data-store/get-messages)
-  (re-frame/inject-cofx :data-store/get-user-statuses)
-  (re-frame/inject-cofx :data-store/get-unviewed-messages)
-  (re-frame/inject-cofx :data-store/get-referenced-messages)
-  (re-frame/inject-cofx :data-store/message-ids)
-  (re-frame/inject-cofx :data-store/deduplication-ids)
-  (re-frame/inject-cofx :data-store/get-local-storage-data)
-  (re-frame/inject-cofx :data-store/get-all-contacts)
-  (re-frame/inject-cofx :data-store/get-all-installations)
   (re-frame/inject-cofx :data-store/get-all-mailservers)
   (re-frame/inject-cofx :data-store/transport)
-  (re-frame/inject-cofx :data-store/mailserver-topics)
+  (re-frame/inject-cofx :data-store/mailserver-topics)]
+ (fn [{:keys [db] :as cofx} [_ address]]
+   (fx/merge cofx
+             {:db (assoc db :chats/loading? false)}
+             (chat-loading/initialize-chats)
+             (protocol/initialize-protocol address)
+             (chat-loading/initialize-pending-messages))))
+
+(handlers/register-handler-fx
+ :init.callback/account-change-success
+ [(re-frame/inject-cofx :web3/get-web3)
+  (re-frame/inject-cofx :data-store/get-all-contacts)
+  (re-frame/inject-cofx :data-store/get-all-installations)
   (re-frame/inject-cofx :data-store/all-browsers)
   (re-frame/inject-cofx :data-store/all-dapp-permissions)]
  (fn [cofx [_ address]]
@@ -106,8 +120,8 @@
 
 (handlers/register-handler-fx
  :init.callback/account-change-error
- (fn [cofx _]
-   (init/handle-change-account-error cofx)))
+ (fn [cofx [_ error]]
+   (init/handle-change-account-error cofx error)))
 
 (handlers/register-handler-fx
  :init.callback/keychain-reset

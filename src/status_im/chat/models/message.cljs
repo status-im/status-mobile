@@ -27,7 +27,8 @@
             [status-im.utils.platform :as platform]
             [status-im.ui.components.react :as react]
             [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.data-store.messages :as messages-store]))
 
 (defn- wrap-group-message
   "Wrap a group message in a membership update"
@@ -198,14 +199,13 @@
             (chat-loading/group-chat-messages chat-id (get chat->message chat-id))))
 
 (defn- add-to-chat?
-  [{:keys [db]} {:keys [chat-id clock-value message-id from] :as message}]
-  (let [deduplication-id (messages-store/deduplication-id from chat-id clock-value)
-        {:keys [deleted-at-clock-value messages not-loaded-message-ids deduplication-ids]}
+  [{:keys [db]} {:keys [chat-id clock-value message-id from]}]
+  (let [{:keys [deleted-at-clock-value messages not-loaded-message-ids]}
         (get-in db [:chats chat-id])]
     (not (or (get messages message-id)
              (get not-loaded-message-ids message-id)
-             (get deduplication-ids deduplication-id)
-             (>= deleted-at-clock-value clock-value)))))
+             (>= deleted-at-clock-value clock-value)
+             (messages-store/message-exists? message-id)))))
 
 (defn- filter-messages [cofx messages]
   (:accumulated (reduce (fn [{:keys [seen-ids] :as acc}
@@ -290,8 +290,9 @@
 
 (fx/defn upsert-and-send [{:keys [now] :as cofx} {:keys [chat-id] :as message}]
   (let [send-record     (protocol/map->Message (select-keys message transport-keys))
-        message-id      (transport.utils/message-id send-record)
+        message-id      (transport.utils/message-id message)
         message-with-id (assoc message :message-id message-id)]
+
     (fx/merge cofx
               (chat-model/upsert-chat {:chat-id chat-id
                                        :timestamp now})

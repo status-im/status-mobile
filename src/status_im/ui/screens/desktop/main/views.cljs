@@ -17,7 +17,7 @@
   (views/letsubs [tab [:get-in [:desktop/desktop :tab-view-id]]]
     (let [component (case tab
                       :profile profile.views/profile-data
-                      :home home.views/chat-list-view
+                      :home home.views/chat-list-view-wrapper
                       react/view)]
       [react/view {:style {:flex 1}}
        [component]])))

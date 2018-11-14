@@ -11,7 +11,10 @@
             [status-im.utils.platform :as platform]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.icons.vector-icons :as icons]))
+            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.utils.datetime :as time]
+            [status-im.ui.components.react :as components]
+            [status-im.utils.utils :as utils]))
 
 (defn- toolbar [show-welcome? show-sync-state sync-state latest-block-number]
   (when-not (and show-welcome?
@@ -74,26 +77,52 @@
       [react/i18n-text {:style styles/welcome-text-description
                         :key   :welcome-to-status-description}]]]))
 
-(views/defview home []
-  (views/letsubs [home-items [:home-items]
-                  show-welcome? [:get-in [:accounts/create :show-welcome?]]
+(views/defview chats-list []
+  (views/letsubs [home-items [:home-items]]
+    (if (empty? home-items)
+      [react/view styles/no-chats
+       [react/i18n-text {:style styles/no-chats-text :key :no-recent-chats}]]
+      [list/flat-list {:data      home-items
+                       :key-fn    first
+                       :render-fn (fn [home-item]
+                                    [home-list-item home-item])}])))
+
+(views/defview home [loading?]
+  (views/letsubs [show-welcome? [:get-in [:accounts/create :show-welcome?]]
                   view-id [:get :view-id]
                   sync-state [:chain-sync-state]
                   latest-block-number [:latest-block-number]
                   rpc-network? [:current-network-uses-rpc?]]
+    {:component-did-mount
+     (fn [this]
+       (let [[_ loading?] (.. this -props -argv)]
+         (when loading?
+           (utils/set-timeout
+            #(re-frame/dispatch [:init-chats])
+            100))))
+
+     :component-did-update
+     (fn [this [_ old-loading?]]
+       (let [[_ loading?] (.. this -props -argv)]
+         (when (and (false? loading?)
+                    (true? old-loading?))
+           (re-frame/dispatch [:load-chats-messages]))))}
     [react/view styles/container
      [toolbar show-welcome? (not rpc-network?) sync-state latest-block-number]
      (cond show-welcome?
            [welcome view-id]
-           (empty? home-items)
-           [react/view styles/no-chats
-            [react/i18n-text {:style styles/no-chats-text :key :no-recent-chats}]]
+           loading?
+           [react/view {:style {:flex            1
+                                :justify-content :center
+                                :align-items     :center}}
+            [components/activity-indicator {:animating true}]]
            :else
-           [list/flat-list {:data      home-items
-                            :key-fn    first
-                            :render-fn (fn [home-item]
-                                         [home-list-item home-item])}])
+           [chats-list])
      (when platform/android?
        [home-action-button])
      (when-not show-welcome?
        [connectivity/error-view])]))
+
+(views/defview home-wrapper []
+  (views/letsubs [loading? [:get :chats/loading?]]
+    [home loading?]))

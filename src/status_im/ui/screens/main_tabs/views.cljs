@@ -76,7 +76,7 @@
        (contains? #{:home :wallet :my-profile} new-view-id))}
     [react/view common.styles/main-container
      (case view-id
-       :home [home/home]
+       :home [home/home-wrapper]
        :wallet [wallet.main/wallet]
        :my-profile [profile.user/my-profile]
        nil)

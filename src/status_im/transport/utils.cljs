@@ -19,8 +19,10 @@
 
 (defn message-id
   "Get a message-id"
-  [message]
-  (sha3 (pr-str message)))
+  [{:keys [from chat-id clock-value] :as m}]
+  {:pre [(not (nil? from))
+         (not (nil? chat-id))]}
+  (sha3 (str from chat-id clock-value)))
 
 (defn get-topic
   "Get the topic of a group chat or public chat from the chat-id"
