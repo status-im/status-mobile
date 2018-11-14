@@ -56,7 +56,7 @@ class TransactionTable(BaseElement):
 
                 self.locators['transaction_hash'] = "//android.widget.TextView[@text='Hash']/following-sibling::*[1]"
                 self.locators['sender_address'] = "//*[@content-desc='sender-address-text']"
-                self.locators['recipient_address'] = "//*[@content-desc='recipient-address-text']"
+                self.locators['recipient_address'] = "//*[@content-desc='recipient-address-text'][last()]"
 
             class DetailsTextElement(BaseText):
                 def __init__(self, driver, locator):

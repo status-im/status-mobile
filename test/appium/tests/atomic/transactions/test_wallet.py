@@ -366,8 +366,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5314)
     def test_can_see_all_transactions_in_history(self):
-        address = transaction_senders['W']['address']
-        passphrase = transaction_senders['W']['passphrase']
+        address = wallet_users['D']['address']
+        passphrase = wallet_users['D']['passphrase']
 
         ropsten_txs = self.network_api.get_transactions(address)
         ropsten_tokens = self.network_api.get_token_transactions(address)
