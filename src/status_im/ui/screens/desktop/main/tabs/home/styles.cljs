@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.desktop.main.tabs.home.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.utils.platform :as platform]))
 
 (def chat-list-view
   {:flex             1
@@ -60,7 +61,7 @@
 (def chat-last-message
   {:color      colors/gray
    :font-size  14
-   :max-height 24})
+   :max-height (if platform/isMacOs? 20 24)})
 
 (def timestamp
   {:justify-content :flex-start

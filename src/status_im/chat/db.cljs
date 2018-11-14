@@ -288,7 +288,7 @@
                                  {} %))
 
       (not group-chat)
-      (assoc :contact (contact.db/public-key->contact (first (:contacts chat)) public-key))
+      (assoc :contact (contact.db/public-key->contact contacts public-key))
 
       (pos? unviewed-messages-count)
       (assoc :unviewed-messages-label (if large-unviewed-messages-label?
