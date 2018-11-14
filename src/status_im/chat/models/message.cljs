@@ -7,6 +7,7 @@
             [status-im.i18n :as i18n]
             [status-im.utils.core :as utils]
             [status-im.utils.config :as config]
+            [status-im.utils.contacts :as utils.contacts]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.datetime :as time]
             [status-im.transport.message.group-chat :as message.group-chat]
@@ -14,6 +15,7 @@
             [status-im.chat.models.loading :as chat-loading]
             [status-im.chat.models.message-content :as message-content]
             [status-im.chat.commands.receiving :as commands-receiving]
+            [status-im.chat.subs :as chat-subs]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.money :as money]
             [status-im.utils.types :as types]
@@ -90,6 +92,20 @@
   (assoc message :outgoing (and (= from current-public-key)
                                 (not (system-message? message)))))
 
+(defn build-desktop-notification [{:keys [db] :as cofx} {:keys [chat-id timestamp content from] :as message}]
+  (let [chat-name'        (chat-subs/chat-name (get-in db [:chats chat-id]) from)
+        contact-name'     (if-let [contact-name (get-in db [:contacts/contacts from :name])]
+                            contact-name
+                            (:name (utils.contacts/public-key->new-contact from)))
+        shown-chat-name   (when-not (= chat-name' contact-name') chat-name') ; No point in repeating contact name if the chat name already contains the same name
+        timestamp'        (when-not (< (time/seconds-ago (time/to-date timestamp)) 15)
+                            (str " @ " (time/to-short-str timestamp)))
+        body-first-line   (when (or shown-chat-name timestamp')
+                            (str shown-chat-name timestamp' ":\n"))]
+    {:title       contact-name'
+     :body        (str body-first-line (:text content))
+     :prioritary? (not (chat-model/multi-user-chat? cofx chat-id))}))
+
 (fx/defn add-message
   [{:keys [db] :as cofx} batch? {:keys [chat-id message-id clock-value timestamp content from] :as message} current-chat?]
   (let [current-public-key (accounts.db/current-public-key cofx)
@@ -100,7 +116,8 @@
                (not= from current-public-key)
                (get-in db [:account/account :desktop-notifications?])
                (< (time/seconds-ago (time/to-date timestamp)) constants/one-earth-day))
-      (.sendNotification react/desktop-notification (:text content)))
+      (let [{:keys [title body prioritary?]} (build-desktop-notification cofx message)]
+        (.sendNotification react/desktop-notification title body prioritary?)))
     (fx/merge cofx
               {:db            (cond->
                                (-> db
