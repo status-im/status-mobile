@@ -93,7 +93,7 @@ pipeline {
         /* Create latest.json with newest nightly URLs */
         if (btype == 'nightly') {
           cmn.updateLatestNightlies(
-            APK: apkUrl, IOS: ipaUrl, APP: appUrl, MAC: dmgUrl, Win: zipUrl
+            APK: apkUrl, IOS: ipaUrl, APP: appUrl, MAC: dmgUrl, WIN: zipUrl
           )
         }
       } }
