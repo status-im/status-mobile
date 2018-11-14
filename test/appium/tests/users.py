@@ -28,6 +28,13 @@ wallet_users['C']['address'] = "8dce052ccda2f6f6b555759cee6957e04a6ddf5b"
 wallet_users['C']['public_key'] = "0x04fd6db8ae245ca351cb6e24bea29df6d81cb35b7f7a91c68a8b5a0c49da444" \
                                   "8cdb356cc9c24b9d813094a86e1fb2dc2bf5252a3f117194bbb3bb29f4befbe898c"
 
+wallet_users['D'] = dict()
+wallet_users['D']['passphrase'] = "hen mango since lottery laundry flag report whisper cycle rate festival carry"
+wallet_users['D']['username'] = "Quickwitted United Orca"
+wallet_users['D']['address'] = "80b663e82657caf5657ce79b11aeaeda02c6cd92"
+wallet_users['D']['public_key'] = "0x048d9ee2acb99b0c9fef98665f8287d99fc365c5e827fc2541ffdce4cb87a9480bbea8" \
+                                  "324968b9bb1ae6c2eca37cf0ab4aba9d85755e3a532431b9edc189f23c7c"
+
 transaction_senders = dict()
 
 transaction_senders['A'] = dict()
