@@ -55,7 +55,7 @@ class DeleteButton(BaseButton):
 class YesButton(BaseButton):
     def __init__(self, driver):
         super(YesButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='YES']")
+        self.locator = self.Locator.xpath_selector("//*[@text='YES' or @text='GOT IT']")
 
 
 class NoButton(BaseButton):

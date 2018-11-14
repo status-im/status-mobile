@@ -33,7 +33,7 @@
             [status-im.ui.screens.wallet.choose-recipient.views :refer [choose-recipient]]
             [status-im.ui.screens.wallet.request.views :refer [request-transaction send-transaction-request]]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
-            [status-im.ui.screens.wallet.onboarding.setup.views :as wallet.onboarding.setup]
+            [status-im.ui.screens.wallet.onboarding.views :as wallet.onboarding]
             [status-im.ui.screens.wallet.transaction-fee.views :as wallet.transaction-fee]
             [status-im.ui.screens.wallet.settings.views :as wallet-settings]
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
@@ -194,7 +194,7 @@
         :wallet-send-modal-stack-with-onboarding
         {:screens
          {:wallet-onboarding-setup-modal
-          [:modal wallet.onboarding.setup/modal]
+          [:modal wallet.onboarding/modal]
 
           :wallet-send-transaction-modal
           [:modal send-transaction-modal]
@@ -222,7 +222,7 @@
          (stack-screens
           {:wallet                       (main-tabs/get-main-tab :wallet)
            :collectibles-list            collectibles-list
-           :wallet-onboarding-setup      wallet.onboarding.setup/screen
+           :wallet-onboarding-setup      wallet.onboarding/screen
            :wallet-send-transaction-chat send-transaction
            :contact-code                 contact-code
            :send-transaction-stack       {:screens {:wallet-send-transaction send-transaction

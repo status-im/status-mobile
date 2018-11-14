@@ -698,7 +698,6 @@
     "wallet-send-token": "{{symbol}} 보내기",
     "wallet-set-up-confirm-description": "3 단어 거래 구문을 앞으로 다시 볼 수 없습니다.",
     "wallet-set-up-confirm-title": "백업하셨나요?",
-    "wallet-set-up-signing-phrase": "보안을 위해서 입출금을 할 때마다 이 구문이 표시됩니다. 이 문구를 확인하게 되면, 거래를 진행해도 좋습니다.\n\n이 단어들을 안전한 장소에 보관하거나 암기하십시오. 반드시 문구를 확인 한 후에 거래를 진행하십시오.",
     "wallet-set-up-title": "지갑 설정",
     "wallet-settings": "지갑 설정",
     "wallet-total-value": "총 자산",

@@ -674,7 +674,6 @@
     "wallet-send-token": "Enviar {{symbol}}",
     "wallet-set-up-confirm-description": "No podrás volver a ver tu frase de transacción de 3 palabras después de esto.",
     "wallet-set-up-confirm-title": "¿Lo escribiste?",
-    "wallet-set-up-signing-phrase": "Para aumentar la seguridad, te mostraremos esta frase cada vez que inicies una transacción. Cuando la veas, sabrás que es seguro proceder.\n\nMemoriza o guarda estas palabras en un lugar seguro. Sólo confirma las transacciones si primero las ves .",
     "wallet-set-up-title": "Configura tu billetera",
     "wallet-settings": "Ajustes de billetera",
     "wallet-total-value": "Valor total",

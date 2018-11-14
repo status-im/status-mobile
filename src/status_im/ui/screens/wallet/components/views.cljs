@@ -52,7 +52,7 @@
    [toolbar/toolbar (utils.core/deep-merge {:style wallet.styles/toolbar}
                                            props)
     [toolbar/nav-button action]
-    [toolbar/content-title {:color :white}
+    [toolbar/content-title {:color :white :font-weight "700"}
      title]
     options]))
 

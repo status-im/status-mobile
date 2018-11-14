@@ -20,17 +20,17 @@ class TestWalletManagement(SingleDeviceTestCase):
         if not wallet.element_by_text(text).is_element_displayed():
             self.errors.append("'%s' is not displayed" % text)
         wallet.set_up_button.click()
-        text = ("To increase security, we'll show you this phrase each time you initiate a transaction. "
-                "When you see then you'll know it's safe to proceed. \n\n"
-                "Memorize or store these words in a secure location. Only confirm transactions if you see them first.")
-
-        if not wallet.element_by_text(text).is_element_displayed():
-            self.errors.append("'%s' text is not displayed" % text)
+        texts = ['Super-safe transactions', 'You should see these three words before signing each transaction',
+                 'If you see a different combo, cancel the transaction and logout.']
+        for text in texts:
+            if not wallet.element_by_text_part(text).is_element_displayed():
+                self.errors.append("'%s' text is not displayed" % text)
         phrase_length = len(wallet.sign_in_phrase.list)
         if phrase_length != 3:
             self.errors.append('Transaction phrase length is %s' % phrase_length)
         wallet.done_button.click()
-        for text in ['Wrote it down?', 'You won’t be able to see your 3-word transaction phrase again after this.']:
+        for text in ['Remember this!', "You'll need to recognize this to ensure your "
+                                       "transactions are safe. This combo is not stored in your account."]:
             if not wallet.element_by_text(text).is_element_displayed():
                 self.errors.append("'%s' text is not displayed" % text)
         wallet.yes_button.click()
