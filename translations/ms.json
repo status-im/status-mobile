@@ -699,7 +699,6 @@
     "wallet-send-token": "Hantar {{symbol}}",
     "wallet-set-up-confirm-description": "Anda tidak akan dapat melihat frasa transaksi tiga perkataan anda selepas ini.",
     "wallet-set-up-confirm-title": "Telah menulisnya?",
-    "wallet-set-up-signing-phrase": "Untuk meningkatkan keselamatan, kami akan menunjukkan frasa ini setiap kali anda memulakan transaksi. Apabila anda melihatnya maka anda akan tahu bahawa ia adalah selamat untuk diteruskan. \n\nHafal atau simpan perkataan-perkataan ini di lokasi yang selamat. Hanya sahkan transaksi jika anda melihatnya terlebih dahulu.",
     "wallet-set-up-title": "Sediakan dompet anda",
     "wallet-settings": "Tetapan dompet",
     "wallet-total-value": "Jumlah nilai",

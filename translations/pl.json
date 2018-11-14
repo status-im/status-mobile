@@ -657,7 +657,6 @@
     "wallet-send-token": "Wyślij {{symbol}}",
     "wallet-set-up-confirm-description": "Po tym nie zobaczysz ponownie 3-słownej frazy transakcji.",
     "wallet-set-up-confirm-title": "Zapisane?",
-    "wallet-set-up-signing-phrase": "Aby zwiększyć bezpieczeństwo, będziemy pokazywać Ci te słowa za każdym razem, gdy zainicjujesz transakcję. Gdy je zobaczysz, będziesz wiedział, że możesz bezpiecznie kontynuować. \n\nZapamiętaj lub zapisz te słowa w bezpiecznym miejscu. Potwierdź transakcje tylko wtedy, gdy je zobaczysz. ",
     "wallet-set-up-title": "Skonfiguruj portfel",
     "wallet-settings": "Ustawienia portfela",
     "wallet-total-value": "Całkowita wartość",

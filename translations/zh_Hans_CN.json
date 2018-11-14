@@ -699,7 +699,6 @@
     "wallet-send-token": "发送{{symbol}}",
     "wallet-set-up-confirm-description": "在此之后, 您将无法再次查看你的3字交易记录短语。",
     "wallet-set-up-confirm-title": "写下来了？",
-    "wallet-set-up-signing-phrase": "为了提高安全性，在您每次启动交易时我们会向您显示此短语。当你看到时你应明白继续执行是安全的。 \n\n将这些单词记下或存储在安全的地方。如果您先看到交易，只需确认交易。",
     "wallet-set-up-title": "设置钱包",
     "wallet-settings": "钱包设置",
     "wallet-total-value": "总值",
