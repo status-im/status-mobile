@@ -69,11 +69,11 @@
   (str realm-dir
        "default.realm"))
 
-(defn- delete-realms []
+(defn delete-realms []
   (log/warn "realm: deleting all realms")
   (fs/unlink realm-dir))
 
-(defn- ensure-directories []
+(defn ensure-directories []
   (..
    (fs/mkdir realm-dir)
    (then #(fs/mkdir accounts-realm-dir))))
@@ -88,7 +88,7 @@
       (fs/unlink path)
       (fs/move-file path new-path))))
 
-(defn- move-realms []
+(defn move-realms []
   (log/info "realm: moving all realms")
   (..
    (fs/read-dir old-realm-dir)
@@ -265,7 +265,7 @@
   (when realm-list
     (into coll (map map-fn) (range 0 (.-length realm-list)))))
 
-(defn- list->clj [realm-list]
+(defn list->clj [realm-list]
   (realm-list->clj-coll realm-list [] #(object/get realm-list %)))
 
 (defn- object-list->clj [realm-object-list entity-name]

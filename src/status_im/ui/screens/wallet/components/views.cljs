@@ -44,7 +44,7 @@
 
 (def default-action (actions/back-white actions/default-handler))
 
-(defn- toolbar
+(defn toolbar
   ([title] (toolbar {} title))
   ([props title] (toolbar props default-action title))
   ([props action title] (toolbar props action title nil))
@@ -94,7 +94,7 @@
   [react/text {:style styles/cartouche-primary-text}
    s])
 
-(defn- cartouche-secondary-text [s]
+(defn cartouche-secondary-text [s]
   [react/text {:style styles/cartouche-secondary-text}
    s])
 
@@ -273,8 +273,8 @@
       [recipient-contact address name request?]
       [recipient-address address modal?])]])
 
-(defn- amount-input [{:keys [input-options amount amount-text disabled?]}
-                     {:keys [symbol decimals]}]
+(defn amount-input [{:keys [input-options amount amount-text disabled?]}
+                    {:keys [symbol decimals]}]
   [react/view {:style               components.styles/flex
                :accessibility-label :specify-amount-button}
    [text-input
