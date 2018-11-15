@@ -77,7 +77,7 @@ release-android: prod-build-android ##@build build release for Android
 	react-native run-android --variant=release
 
 release-ios: prod-build-ios ##@build build release for iOS release
-	@echo "Build in XCode, see https://wiki.status.im/TBD for instructions"
+	@echo "Build in XCode, see https://status.im/build_status/ for instructions"
 
 release-desktop: prod-build-desktop ##@build build release for desktop release
 	scripts/build-desktop.sh
