@@ -10,7 +10,11 @@ include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
 set(SN_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/SnoreNotify_ep-prefix/src/SnoreNotify_ep)
 if (WIN32)
-  set(SnoreNotify_CMAKE_ARGS -DMINGW=1 -DBUILD_osxnotificationcenter=OFF -DBUILD_sound=OFF -DBUILD_speech=OFF -DBUILD_toasty=OFF -DBUILD_snoretoast=OFF
+  set(SnoreNotifyWindowsToast_STATIC_LIB ${SN_PREFIX}/lib${SN_LIBPATHSUFFIX}/${CMAKE_STATIC_LIBRARY_PREFIX}snore_backend_windowstoast${CMAKE_STATIC_LIBRARY_SUFFIX})
+
+  set(SnoreNotify_LIBS ${SnoreNotifyWindowsToast_STATIC_LIB})
+
+  set(SnoreNotify_CMAKE_ARGS -DMINGW=1 -DBUILD_osxnotificationcenter=OFF -DBUILD_sound=OFF -DBUILD_speech=OFF -DBUILD_toasty=OFF
                              -DBUILD_freedesktop_backend=OFF -DBUILD_snarl=OFF -DBUILD_growl=OFF -DBUILD_trayicon=OFF -DBUILD_pushover_backend=OFF)
 endif()
 
@@ -66,7 +70,7 @@ ExternalProject_Add(SnoreNotify_ep
   GIT_REPOSITORY https://github.com/status-im/snorenotify.git
   CMAKE_ARGS ${SnoreNotify_CMAKE_ARGS}
   BUILD_BYPRODUCTS ${SnoreNotify_STATIC_LIB} ${SnoreNotify_LIBS} ${SnoreNotifyBackend_STATIC_LIB}
-                    ${SnoreNotifyBackendSettings_STATIC_LIB} ${SnoreNotifySettings_STATIC_LIB}
+                   ${SnoreNotifyBackendSettings_STATIC_LIB} ${SnoreNotifySettings_STATIC_LIB}
   LOG_DOWNLOAD 1
 )
 

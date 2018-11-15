@@ -24,12 +24,16 @@
 
 Q_LOGGING_CATEGORY(NOTIFICATION, "RCTNotification")
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) || defined(Q_OS_WIN)
 namespace SnorePlugin {}
 
 
 using namespace SnorePlugin;
+#if defined(Q_OS_LINUX)
 Q_IMPORT_PLUGIN(Freedesktop)
+#elif defined(Q_OS_WIN)
+Q_IMPORT_PLUGIN(WindowsToast)
+#endif
 Q_IMPORT_PLUGIN(Snore)
 
 static void loadSnoreResources()
@@ -43,7 +47,7 @@ static void loadSnoreResources()
 }
 
 Q_COREAPP_STARTUP_FUNCTION(loadSnoreResources)
-#endif // Q_OS_LINUX
+#endif // defined(Q_OS_LINUX) || defined(Q_OS_WIN)
 
 namespace {
 struct RegisterQMLMetaType {
@@ -73,6 +77,7 @@ DesktopNotification::DesktopNotification(QObject *parent)
   if (Snore::SnoreCore::instance().pluginNames().isEmpty()) {
     Snore::SnoreCore::instance().loadPlugins(Snore::SnorePlugin::Backend);
   }
+  d_ptr->snoreApp.hints().setValue("windows-app-id", "StatusIm.Status.Desktop.1");
 
   qCDebug(NOTIFICATION) << "DesktopNotification::DesktopNotification List of all loaded Snore plugins:"
                         << Snore::SnoreCore::instance().pluginNames();

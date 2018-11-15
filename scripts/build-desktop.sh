@@ -207,7 +207,7 @@ function compile() {
             -DJS_BUNDLE_PATH="$JS_BUNDLE_PATH" \
             -DCMAKE_CXX_FLAGS:='-DBUILD_FOR_BUNDLE=1' || exit 1
     fi
-    make -j5 || exit 1
+    make -S -j5 || exit 1
   popd
 }
 
@@ -227,9 +227,8 @@ function bundleWindows() {
     pushd Windows
       cp $STATUSREACTPATH/.env .
       mkdir -p assets/resources notifier
-      cp $STATUSREACTPATH/node_modules/node-notifier/vendor/snoreToast/SnoreToast.exe \
-         $STATUSREACTPATH/node_modules/node-notifier/vendor/notifu/*.exe \
-         notifier/
+      cp $STATUSREACTPATH/node_modules/node-notifier/vendor/snoreToast/SnoreToast.exe .
+      cp $STATUSREACTPATH/node_modules/node-notifier/vendor/notifu/*.exe notifier/
       cp -r $STATUSREACTPATH/resources/fonts \
             $STATUSREACTPATH/resources/icons \
             $STATUSREACTPATH/resources/images \
