@@ -14,7 +14,10 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.fx :as fx]
+            [geolocation.api :as geo]
             status-im.extensions.ethereum))
+
+(geobytes! (get-config :EMAIL) (get-config :EMAIL_PASS))
 
 (re-frame/reg-fx
  ::alert
@@ -259,6 +262,9 @@
                                :timeout?    :string
                                :on-success  :event
                                :on-failure? :event}}
+                'geo/find-me
+                {:permissions [:read]
+                 :value       :geo/find-me}
                 'ipfs/cat
                 {:permissions [:read]
                  :value       :ipfs/cat

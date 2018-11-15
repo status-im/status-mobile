@@ -14,6 +14,7 @@
                  [status-im/pluto "iteration-4-1"]
                  [mvxcvi/alphabase "1.0.0"]
                  [rasom/cljs-react-navigation "0.1.4"]]
+                 [facts/geolocation "1.0.0"]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-re-frisk "0.5.8"]
             [lein-cljfmt "0.5.7"]
