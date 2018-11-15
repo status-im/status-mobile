@@ -8,10 +8,10 @@ These are just guidelines, not rules. Use your best judgment, and feel free to p
 
 #### What should I know before I get started?
 
-* [Mission and Core Values](https://wiki.status.im/Mission_and_Core_Values)
-* [Code of Conduct](https://wiki.status.im/Code_of_conduct)
-* [Read our FAQ](https://wiki.status.im/Frequently_Asked_Questions)
-* [Join our Riot](http://chat.status.im/) and chat in `#dev-status`
-* [Developer Introduction](https://wiki.status.im/Developer_Documentation#Getting_Started)
-* [How to Build Status](https://wiki.status.im/Building_Status)
-* [Finding issues to work on](https://wiki.status.im/Developer_Documentation)
+* [Mission and Core Values](https://status.im/contribute)
+* [Principles](https://status.im/contribute/our_principles.html)
+* [Read our FAQ](https://status.im/docs/FAQs.html)
+* [Join our Chat](http://get.status.im/chat/public/status-core-dev)
+* [Developer Introduction](https://status.im/developer_tools/)
+* [Build Status Yourself](https://status.im/build_status)
+* [Find issues to work on](https://github.com/status-im/)
