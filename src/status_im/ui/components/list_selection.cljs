@@ -7,7 +7,7 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.http :as http]))
 
-(defn- open-share [content]
+(defn open-share [content]
   (when (or (:message content)
             (:url content))
     (.share react/sharing (clj->js content))))

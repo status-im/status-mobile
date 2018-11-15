@@ -40,7 +40,7 @@
                                                 :number-of-lines 2}
                                     (i18n/label :t/maintain-card-to-phone-contact)]])})))
 
-(defn- wizard-step [step-number]
+(defn wizard-step [step-number]
   (when step-number
     [react/text {:style styles/wizard-step-text}
      (i18n/label :wizard-step {:current step-number
