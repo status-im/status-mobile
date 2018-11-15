@@ -228,10 +228,8 @@ function bundleWindows() {
     pushd Windows
       cp $STATUSREACTPATH/.env .
       mkdir -p assets/resources notifier
-      cp $STATUSREACTPATH/node_modules/node-notifier/vendor/notifu/*.exe \
-         notifier/
-      cp $STATUSREACTPATH/node_modules/node-notifier/vendor/snoreToast/SnoreToast.exe \
-         .
+      cp $STATUSREACTPATH/node_modules/node-notifier/vendor/snoreToast/SnoreToast.exe .
+      cp $STATUSREACTPATH/node_modules/node-notifier/vendor/notifu/*.exe notifier/
       cp -r $STATUSREACTPATH/resources/fonts \
             $STATUSREACTPATH/resources/icons \
             $STATUSREACTPATH/resources/images \
