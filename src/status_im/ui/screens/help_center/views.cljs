@@ -18,7 +18,7 @@
      [profile.components/settings-item-separator]
      [profile.components/settings-item {:label-kw            :t/faq
                                         :accessibility-label :faq-button
-                                        :action-fn           #(.openURL react/linking "https://wiki.status.im/Questions_around_beta#firstHeading")}]
+                                        :action-fn           #(.openURL react/linking "https://status.im/docs/FAQs.html")}]
      [profile.components/settings-item-separator]
      [profile.components/settings-item {:label-kw            :t/ask-in-status
                                         :accessibility-label :submit-bug-button
