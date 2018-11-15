@@ -84,7 +84,7 @@
 ; We should never receive messages from untrusted peers with a timestamp greater
 ; then now + 20s.
 ; We cap the timestamp to time now + 1 month to give some room for trusted peers
-(defn- safe-timestamp [t]
+(defn safe-timestamp [t]
   (min t (max-timestamp)))
 
 (defn safe-timestamp? [t]

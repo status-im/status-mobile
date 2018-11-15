@@ -34,8 +34,8 @@
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "ios"]]
             "prod-build-desktop"     ^{:doc "Recompile code for desktop with prod profile."}
-             ["do" "clean"
-              ["with-profile" "prod" "cljsbuild" "once" "desktop"]]
+            ["do" "clean"
+             ["with-profile" "prod" "cljsbuild" "once" "desktop"]]
             "figwheel-repl"      ["with-profile" "+figwheel" "run" "-m" "clojure.main" "env/dev/run.clj"]
             "test-cljs"          ["with-profile" "test" "doo" "node" "test" "once"]
             "test-protocol"      ["with-profile" "test" "doo" "node" "protocol" "once"]
@@ -64,7 +64,7 @@
                         :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]
                                        :timeout          240000}}
              :figwheel [:dev
-                        {:dependencies [[figwheel-sidecar "0.5.16-SNAPSHOT"]
+                        {:dependencies [[figwheel-sidecar "0.5.18-SNAPSHOT"]
                                         [re-frisk-remote "0.5.5"]
                                         [re-frisk-sidecar "0.5.7"]
                                         [day8.re-frame/tracing "0.5.0"]

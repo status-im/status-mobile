@@ -1,6 +1,6 @@
 {:paths ["components/src" "src" "react-native/src/cljsjs" "resources"]
  :deps  {org.clojure/clojure         {:mvn/version "1.9.0"}
-         org.clojure/clojurescript   {:mvn/version "1.10.238"}
+         org.clojure/clojurescript   {:mvn/version "1.10.439"}
          org.clojure/core.async      {:mvn/version "0.4.474"}
          reagent                     {:mvn/version "0.7.0"
                                       :exclusions  [cljsjs/react cljsjs/react-dom cljsjs/react-dom-server cljsjs/create-react-class]}
@@ -12,8 +12,7 @@
          hickory                     {:mvn/version "0.7.1"}
          com.cognitect/transit-cljs  {:mvn/version "0.8.248"}
          status-im/pluto             {:mvn/version "iteration-4-1"}
-         mvxcvi/alphabase            {:mvn/version "1.0.0"}
-         rasom/cljs-react-navigation {:mvn/version "0.1.4"}}
+         mvxcvi/alphabase            {:mvn/version "1.0.0"}}
 
  :aliases
  {:dev {:extra-deps
@@ -23,8 +22,7 @@
          ;; Figwheel ClojureScript REPL
          cider/piggieback        {:mvn/version "0.3.9"
                                   :exclusions  [com.google.javascript/closure-compiler]}
-         figwheel-sidecar        {:mvn/version "0.5.16"
-                                  :exclusions  [com.google.javascript/closure-compiler]}
+         figwheel-sidecar        {:mvn/version "0.5.18-SNAPSHOT"}
          re-frisk-remote         {:mvn/version "0.5.5"}
          re-frisk-sidecar        {:mvn/version "0.5.7"}
          hawk                    {:mvn/version "0.2.11"}
