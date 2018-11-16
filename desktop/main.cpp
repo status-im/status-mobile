@@ -38,8 +38,9 @@ static QStringList consoleOutputStrings;
 static QMutex consoleOutputMutex;
 
 #ifdef BUILD_FOR_BUNDLE
-bool ubuntuServerStarted = false;
-QProcess *g_ubuntuServerProcess = nullptr;
+bool nodeJsServerStarted = false;
+QProcess *g_nodeJsServerProcess = nullptr;
+#define NODEJS_SERVER_NAME "ubuntu-server"
 #endif
 
 const int MAIN_WINDOW_WIDTH = 1024;
@@ -54,12 +55,12 @@ const char *LOG_FILE_PATH_ENV_VAR_NAME = "STATUS_LOG_PATH";
 // TODO: some way to change while running
 class ReactNativeProperties : public QObject {
   Q_OBJECT
-  Q_PROPERTY(bool liveReload READ liveReload WRITE setLiveReload NOTIFY
-                 liveReloadChanged)
-  Q_PROPERTY(QUrl codeLocation READ codeLocation WRITE setCodeLocation NOTIFY
-                 codeLocationChanged)
-  Q_PROPERTY(QString pluginsPath READ pluginsPath WRITE setPluginsPath NOTIFY
-                 pluginsPathChanged)
+  Q_PROPERTY(
+      bool liveReload READ liveReload WRITE setLiveReload NOTIFY liveReloadChanged)
+  Q_PROPERTY(
+      QUrl codeLocation READ codeLocation WRITE setCodeLocation NOTIFY codeLocationChanged)
+  Q_PROPERTY(
+      QString pluginsPath READ pluginsPath WRITE setPluginsPath NOTIFY pluginsPathChanged)
   Q_PROPERTY(
       QString executor READ executor WRITE setExecutor NOTIFY executorChanged)
 public:
@@ -155,26 +156,29 @@ void writeSingleLineLogFromJSServer(const QString &msg);
 
 #ifdef BUILD_FOR_BUNDLE
 
-void runUbuntuServer();
+void killZombieJsServer();
+bool runNodeJsServer();
 
 #endif
 
 void loadFontsFromResources() {
-
   QDirIterator it(":", QDirIterator::Subdirectories);
   while (it.hasNext()) {
     QString resourceFile = it.next();
     if (resourceFile.endsWith(".otf", Qt::CaseInsensitive) ||
         resourceFile.endsWith(".ttf", Qt::CaseInsensitive)) {
-      QFontDatabase::addApplicationFont(resourceFile);
+      qint32 fontId = QFontDatabase::addApplicationFont(resourceFile);
+      if (Q_UNLIKELY(fontId == -1)) {
+        qCDebug(STATUS) << "Unable to install font" << resourceFile;
+      }
     }
   }
 }
 
 void exceptionPostHandledCallback() {
 #ifdef BUILD_FOR_BUNDLE
-  if (g_ubuntuServerProcess) {
-    g_ubuntuServerProcess->kill();
+  if (g_nodeJsServerProcess) {
+    g_nodeJsServerProcess->kill();
   }
 #endif
 }
@@ -199,7 +203,6 @@ QString getDataStoragePath() {
 }
 
 int main(int argc, char **argv) {
-
   QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   QGuiApplication app(argc, argv);
 
@@ -207,7 +210,9 @@ int main(int argc, char **argv) {
 
   QString appPath = QCoreApplication::applicationDirPath();
   QString dataStoragePath = getDataStoragePath();
-#ifndef BUILD_FOR_BUNDLE
+#ifdef BUILD_FOR_BUNDLE
+  killZombieJsServer();
+#else
   appPath.append(CRASH_REPORT_EXECUTABLE_RELATIVE_PATH);
   dataStoragePath = "";
 #endif
@@ -227,7 +232,15 @@ int main(int argc, char **argv) {
   }
 
 #ifdef BUILD_FOR_BUNDLE
-  runUbuntuServer();
+  if (!runNodeJsServer()) {
+    if (g_nodeJsServerProcess->state() == QProcess::NotRunning) {
+      // If we failed to start the Node.js server (happens on Windows if the Node.js server process was previously running), let's do a final attempt
+      delete g_nodeJsServerProcess;
+      if (!runNodeJsServer()) {
+        return 1;
+      }
+    }
+  }
 
   app.setWindowIcon(QIcon(":/icon.png"));
 #endif
@@ -285,11 +298,11 @@ int main(int argc, char **argv) {
 QString getLogFilePath() {
   QString logFilePath;
 #ifdef BUILD_FOR_BUNDLE
-  logFilePath = getDataStoragePath() + "/Status.log";
+  logFilePath = getDataStoragePath() + QDir::separator() + "Status.log";
 #else
   logFilePath = qEnvironmentVariable(LOG_FILE_PATH_ENV_VAR_NAME, "");
   if (logFilePath.isEmpty()) {
-    logFilePath = getDataStoragePath() + "/StatusDev.log";
+    logFilePath = getDataStoragePath() + QDir::separator() + "StatusDev.log";
   }
 #endif
   return logFilePath;
@@ -310,49 +323,112 @@ void writeLogsToFile() {
 }
 
 #ifdef BUILD_FOR_BUNDLE
-void runUbuntuServer() {
-  g_ubuntuServerProcess = new QProcess();
-  g_ubuntuServerProcess->setWorkingDirectory(getDataStoragePath());
-  g_ubuntuServerProcess->setProgram(QGuiApplication::applicationDirPath() +
-                                    "/ubuntu-server");
-  QObject::connect(g_ubuntuServerProcess, &QProcess::errorOccurred,
+
+#ifdef Q_OS_WIN
+
+#include <windows.h>
+#include <tlhelp32.h>
+
+bool IsProcessRunning(const wchar_t *processName) {
+  bool exists = false;
+  PROCESSENTRY32 entry = { sizeof(PROCESSENTRY32) };
+
+  HANDLE snapshot = ::CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  if (snapshot != NULL) {
+    if (::Process32First(snapshot, &entry)) {
+        do {
+            if (!wcsicmp(entry.szExeFile, processName)) {
+              exists = true;
+              break;
+            }
+        } while (::Process32Next(snapshot, &entry));
+    }
+
+    ::CloseHandle(snapshot);
+  }
+  return exists;
+}
+
+#endif
+
+void killZombieJsServer() {
+  // Ensure that a zombie Node.js server process is not still running in the background before we spawn a new one 
+  QString cmd;
+#ifdef Q_OS_LINUX
+  cmd = QString("pkill -f %1").arg(NODEJS_SERVER_NAME);
+#elif defined(Q_OS_MAC)
+  cmd = QString("killall -9 %1").arg(NODEJS_SERVER_NAME);
+#elif defined(Q_OS_WIN)
+#define _CAT(A, B)   A##B
+#define _W(A)       _CAT(L, #A)
+  WCHAR exeName[_MAX_PATH];
+  wsprintf(exeName, L"%s.exe", _W(NODEJS_SERVER_NAME));
+  if (IsProcessRunning(exeName)) {
+    qCDebug(STATUS) << NODEJS_SERVER_NAME << "is running, killing it";
+    ::ShellExecuteW(NULL, NULL, L"tskill", _W(NODEJS_SERVER_NAME), NULL, SW_HIDE);
+  } else {
+    qCDebug(STATUS) << NODEJS_SERVER_NAME << "is not running";
+  }
+#endif
+
+  if (!cmd.isEmpty()) {
+    qCDebug(STATUS) << "Running " << cmd;
+    QByteArray cmdArray = cmd.toLocal8Bit();
+    system(cmdArray.data());
+  }
+}
+
+bool runNodeJsServer() {
+  g_nodeJsServerProcess = new QProcess();
+  g_nodeJsServerProcess->setWorkingDirectory(getDataStoragePath());
+  g_nodeJsServerProcess->setProgram(QGuiApplication::applicationDirPath() + QDir::separator() + NODEJS_SERVER_NAME);
+  QObject::connect(g_nodeJsServerProcess, &QProcess::errorOccurred,
                    [=](QProcess::ProcessError) {
                      qCWarning(JSSERVER) << "process name: "
-                                         << qUtf8Printable(g_ubuntuServerProcess->program());
+                                         << qUtf8Printable(g_nodeJsServerProcess->program());
                      qCWarning(JSSERVER) << "process error: "
-                                         << qUtf8Printable(g_ubuntuServerProcess->errorString());
+                                         << qUtf8Printable(g_nodeJsServerProcess->errorString());
                    });
 
   QObject::connect(
-      g_ubuntuServerProcess, &QProcess::readyReadStandardOutput, [=] {
-        writeLogFromJSServer(g_ubuntuServerProcess->readAllStandardOutput().trimmed());
+      g_nodeJsServerProcess, &QProcess::readyReadStandardOutput, [=] {
+        writeLogFromJSServer(g_nodeJsServerProcess->readAllStandardOutput().trimmed());
       });
   QObject::connect(
-      g_ubuntuServerProcess, &QProcess::readyReadStandardError, [=] {
+      g_nodeJsServerProcess, &QProcess::readyReadStandardError, [=] {
         QString output =
-            g_ubuntuServerProcess->readAllStandardError().trimmed();
+            g_nodeJsServerProcess->readAllStandardError().trimmed();
         writeLogFromJSServer(output);
         if (output.contains("Server starting")) {
-          ubuntuServerStarted = true;
+          nodeJsServerStarted = true;
         }
       });
 
   QObject::connect(QGuiApplication::instance(), &QCoreApplication::aboutToQuit,
                    [=]() {
-                     qCDebug(STATUS) << "Kill ubuntu server";
-                     g_ubuntuServerProcess->kill();
+                     qCDebug(STATUS) << "Kill node.js server process";
+                     g_nodeJsServerProcess->kill();
                    });
 
-  qCDebug(STATUS) << "starting ubuntu server...";
-  g_ubuntuServerProcess->start();
+  qCDebug(STATUS) << "starting node.js server process...";
+  g_nodeJsServerProcess->start();
   qCDebug(STATUS) << "wait for started...";
 
-  while (!ubuntuServerStarted) {
-    QGuiApplication::processEvents();
+  if (g_nodeJsServerProcess->waitForReadyRead(10000)) {
+    // We know that the process started, now wait until it communicates that it has started
+    while (!nodeJsServerStarted) {
+      QGuiApplication::processEvents();
+    }
+    qCDebug(STATUS) << "waiting finished";
+
+    return true;
+  } else {
+    qCDebug(STATUS) << "failed to start process";
   }
 
-  qCDebug(STATUS) << "waiting finished";
+  return false;
 }
+
 #endif
 
 void writeLogFromJSServer(const QString &msg) {

@@ -130,6 +130,7 @@ CMakeCache.txt
 **/CMakeFiles/
 /StatusImPackage/*
 *.AppImage
+Status-Windows-x86_64.zip
 /desktop/bin/*
 /desktop/lib/*
 /desktop/modules/*
