@@ -39,17 +39,17 @@
   (-seq [this]
     (if keyfn
       (seq (for [[priority item-set] priority->set-of-items, item item-set]
-             (MapEntry. item (item->priority item))))
+             (MapEntry. item (item->priority item) nil)))
       (seq (for [[priority item-set] priority->set-of-items, item item-set]
-             (MapEntry. item priority)))))
+             (MapEntry. item priority nil)))))
 
   IReversible
   (-rseq [coll]
     (if keyfn
       (seq (for [[priority item-set] (rseq priority->set-of-items), item item-set]
-             (MapEntry. item (item->priority item))))
+             (MapEntry. item (item->priority item) nil)))
       (seq (for [[priority item-set] (rseq priority->set-of-items), item item-set]
-             (MapEntry. item priority)))))
+             (MapEntry. item priority nil)))))
 
   ICounted
   (-count [this]
