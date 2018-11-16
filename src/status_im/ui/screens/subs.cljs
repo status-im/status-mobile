@@ -48,17 +48,19 @@
 (reg-sub :network-status :network-status)
 (reg-sub :peers-count :peers-count)
 
-(reg-sub :offline?
-         :<- [:network-status]
-         :<- [:sync-state]
-         (fn [[network-status sync-state]]
-           (or (= network-status :offline)
-               (= sync-state :offline))))
-
 (reg-sub :disconnected?
          :<- [:peers-count]
          (fn [peers-count]
            (zero? peers-count)))
+
+(reg-sub :offline?
+         :<- [:network-status]
+         :<- [:sync-state]
+         :<- [:disconnected?]
+         (fn [[network-status sync-state disconnected?]]
+           (or disconnected?
+               (= network-status :offline)
+               (= sync-state :offline))))
 
 (reg-sub :syncing?
          :<- [:sync-state]
