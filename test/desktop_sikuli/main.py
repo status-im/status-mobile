@@ -2,6 +2,8 @@ import docker
 import pytest
 import argparse
 import os
+import re
+import requests
 from datetime import datetime
 from urllib.request import urlretrieve
 from tests.report import TEST_REPORT_DIR_CONTAINER
@@ -12,10 +14,12 @@ def main(**kwargs):
 
     if not os.path.exists(kwargs['test_results_path']):
         os.makedirs(kwargs['test_results_path'])
-    app_version = None
     if kwargs['linux_app_url']:
-        app_version = ([i for i in [i for i in kwargs['linux_app_url'].split('/') if '.AppImage' in i]])[0]
-        urlretrieve(kwargs['linux_app_url'], 'nightly.AppImage')
+        linux_app_url = kwargs['linux_app_url']
+    else:
+        linux_app_url = re.findall('https\S*AppImage', requests.get('https://status.im/nightly/').text)[0]
+    app_version = ([i for i in [i for i in linux_app_url.split('/') if '.AppImage' in i]])[0]
+    urlretrieve(linux_app_url, 'nightly.AppImage')
     client = docker.from_env()
     client.images.build(tag='status_desktop', path='.')
     pytest.main(['--collect-only', '-m %s' % kwargs['mark']])
@@ -55,7 +59,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--test_results_path',
                         action='store',
-                        default='/Users/adan/Desktop/desktop_e2e_results')
+                        default=os.path.dirname(os.path.abspath(__file__)))
     parser.add_argument('--linux_app_url',
                         action='store',
                         default=None)
