@@ -106,21 +106,22 @@
         current-public-key (accounts.db/current-public-key cofx)]
     (when (and (not= current-public-key public-key)
                (< prev-last-updated timestamp-ms))
-      (let [contact          (get contacts public-key)
+      (let [{:keys [tags] :as contact} (get contacts public-key)
 
             ;; Backward compatibility with <= 0.9.21, as they don't send
             ;; fcm-token & address in contact updates
-            contact-props    (cond->
-                              {:public-key   public-key
-                               :photo-path   profile-image
-                               :name         name
-                               :address      (or address
-                                                 (:address contact)
-                                                 (contact.db/public-key->address public-key))
-                               :last-updated timestamp-ms
-                                  ;;NOTE (yenda) in case of concurrent contact request
-                               :pending?     (get contact :pending? true)}
-                               fcm-token (assoc :fcm-token fcm-token))]
+            contact-props (cond->
+                           {:public-key   public-key
+                            :photo-path   profile-image
+                            :name         name
+                            :address      (or address
+                                              (:address contact)
+                                              (contact.db/public-key->address public-key))
+                            :last-updated timestamp-ms
+                               ;;NOTE (yenda) in case of concurrent contact request
+                            :pending?     (get contact :pending? true)}
+                            fcm-token (assoc :fcm-token fcm-token)
+                            (not tags) (assoc :tags #{}))]
         ;;NOTE (yenda) only update if there is changes to the contact
         (when-not (= contact-props
                      (select-keys contact [:public-key :address :photo-path

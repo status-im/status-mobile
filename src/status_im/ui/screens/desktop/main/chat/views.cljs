@@ -263,7 +263,42 @@
      [reply-message-view reply-message]
      [chat-text-input chat-id input-text network-status]]))
 
-(views/defview chat-profile []
+(defn add-contact-row
+  [label color]
+  [react/view {:style styles/chat-profile-row}
+   [react/view {:style styles/chat-profile-icon-container
+                :accessibility-label :add-contact-link}
+    [vector-icons/icon :icons/add {:style (styles/chat-profile-icon color)}]]
+   [react/text {:style (styles/contact-card-text color)} (i18n/label label)]])
+
+(defn send-message-row
+  []
+  [react/view {:style styles/chat-profile-row}
+   [react/view {:style styles/chat-profile-icon-container
+                :accessibility-label :send-message-link}
+    [vector-icons/icon :icons/chats {:style (styles/chat-profile-icon colors/blue)}]]
+   [react/text {:style (styles/contact-card-text colors/blue)}
+    (i18n/label :t/send-message)]])
+
+(defn block-user-row
+  [blocked? public-key]
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [(if blocked?
+                                                               :contact.ui/remove-tag
+                                                               :contact.ui/add-tag) public-key "blocked"])}
+   [react/view {:style styles/chat-profile-row}
+    [react/view {:style styles/chat-profile-danger-icon-container
+                 :accessibility-label :add-contact-link}
+     [vector-icons/icon (if blocked?
+                          :icons/lock-opened
+                          :icons/lock)
+      {:style (styles/chat-profile-icon colors/black)}]]
+    [react/text {:style (styles/contact-card-text colors/red)}
+     (if blocked?
+       (i18n/label :t/unblock-user)
+       (i18n/label :t/block-user))]]])
+
+(views/defview chat-profile
+  []
   (views/letsubs [{:keys [pending? public-key blocked?] :as contact} [:contacts/current]]
     [react/view {:style styles/chat-profile-body}
      [profile.views/profile-badge contact]
@@ -271,39 +306,14 @@
      [react/view
       (if (or (nil? pending?) pending?)
         [react/touchable-highlight {:on-press #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])}
-         [react/view {:style styles/chat-profile-row}
-          [react/view {:style styles/chat-profile-icon-container
-                       :accessibility-label :add-contact-link}
-           [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/blue)}]]
-          [react/text {:style (styles/contact-card-text colors/blue)} (i18n/label :t/add-to-contacts)]]]
-        [react/view {:style styles/chat-profile-row}
-         [react/view {:style styles/chat-profile-icon-container
-                      :accessibility-label :add-contact-link}
-          [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/gray)}]]
-         [react/text {:style (styles/contact-card-text colors/gray)} (i18n/label :t/in-contacts)]])
-      [react/touchable-highlight
-       {:on-press #(re-frame/dispatch
-                    [:contact.ui/send-message-pressed {:public-key public-key}])}
-       [react/view {:style styles/chat-profile-row}
-        [react/view {:style styles/chat-profile-icon-container
-                     :accessibility-label :send-message-link}
-         [vector-icons/icon :icons/chats {:style (styles/chat-profile-icon colors/blue)}]]
-        [react/text {:style (styles/contact-card-text colors/blue)}
-         (i18n/label :t/send-message)]]]
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [(if blocked?
-                                                                   :contact.ui/remove-tag
-                                                                   :contact.ui/add-tag) public-key "blocked"])}
-       [react/view {:style styles/chat-profile-row}
-        [react/view {:style styles/chat-profile-danger-icon-container
-                     :accessibility-label :add-contact-link}
-         [vector-icons/icon (if blocked?
-                              :icons/lock-opened
-                              :icons/lock)
-          {:style (styles/chat-profile-icon colors/black)}]]
-        [react/text {:style (styles/contact-card-text colors/red)}
-         (if blocked?
-           (i18n/label :t/unblock-user)
-           (i18n/label :t/block-user))]]]
+         [add-contact-row :t/add-to-contacts colors/blue]]
+        [add-contact-row :t/in-contacts colors/gray])
+      (when-not blocked?
+        [react/touchable-highlight
+         {:on-press #(re-frame/dispatch
+                      [:contact.ui/send-message-pressed {:public-key public-key}])}
+         [send-message-row]])
+      [block-user-row blocked? public-key]
       [react/text {:style styles/chat-profile-contact-code} (i18n/label :t/contact-code)]
       [react/text {:style           {:font-size 14}
                    :selectable      true
