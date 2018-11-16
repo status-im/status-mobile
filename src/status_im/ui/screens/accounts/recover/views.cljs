@@ -22,6 +22,7 @@
       :height              92
       :ref                 (partial reset! input-ref)
       :label               (i18n/label :t/recovery-phrase)
+      :accessibility-label :enter-12-words
       :placeholder         (i18n/label :t/enter-12-words)
       :multiline           true
       :default-value       passphrase
@@ -36,6 +37,7 @@
                :important-for-accessibility :no-hide-descendants}
    [text-input/text-input-with-label
     {:label             (i18n/label :t/password)
+     :accessibility-label :enter-password
      :placeholder       (i18n/label :t/enter-password)
      :default-value     password
      :auto-focus        false
