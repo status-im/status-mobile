@@ -6,7 +6,7 @@ class PassphraseInput(BaseEditBox):
 
     def __init__(self, driver):
         super(PassphraseInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.EditText[contains(@text,'phrase')]")
+        self.locator = self.Locator.accessibility_id("enter-12-words")
 
 
 class ConfirmRecoverAccess(BaseButton):
