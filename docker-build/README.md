@@ -1,6 +1,6 @@
 # Build
 
-```
+``` shell
 docker-compose -f docker-build/docker-compose.yml build
 ```
 
@@ -8,7 +8,7 @@ This will install all the required sdks, depending on the connection will take s
 
 # Run
 
-```
+``` shell
 docker-compose -f docker-build/docker-compose.yml up
 ```
 
@@ -18,7 +18,7 @@ You need to connect your device and accept the key.
 
 After the figwheel prompt you can install the application running:
 
-```
+``` shell
 docker-compose -f docker-build/docker-compose.yml exec adbd make run-android
 ```
 

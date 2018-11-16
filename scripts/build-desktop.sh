@@ -207,11 +207,12 @@ function compile() {
             -DJS_BUNDLE_PATH="$JS_BUNDLE_PATH" \
             -DCMAKE_CXX_FLAGS:='-DBUILD_FOR_BUNDLE=1' || exit 1
     fi
-    make -j5 || exit 1
+    make -S -j5 || exit 1
   popd
 }
 
 function bundleWindows() {
+  local buildType="$1"
   # TODO: Produce a setup program instead of a ZIP
   pushd $WORKFOLDER
     rm -rf Windows
@@ -227,9 +228,10 @@ function bundleWindows() {
     pushd Windows
       cp $STATUSREACTPATH/.env .
       mkdir -p assets/resources notifier
-      cp $STATUSREACTPATH/node_modules/node-notifier/vendor/snoreToast/SnoreToast.exe \
-         $STATUSREACTPATH/node_modules/node-notifier/vendor/notifu/*.exe \
+      cp $STATUSREACTPATH/node_modules/node-notifier/vendor/notifu/*.exe \
          notifier/
+      cp $STATUSREACTPATH/node_modules/node-notifier/vendor/snoreToast/SnoreToast.exe \
+         .
       cp -r $STATUSREACTPATH/resources/fonts \
             $STATUSREACTPATH/resources/icons \
             $STATUSREACTPATH/resources/images \
@@ -237,7 +239,14 @@ function bundleWindows() {
       local _bin=$STATUSREACTPATH/desktop/bin
       rm -rf $_bin/cmake_install.cmake $_bin/Makefile $_bin/CMakeFiles $_bin/Status_autogen && \
       cp -r $_bin/* .
-      zip -mr9 ../../Status-Windows-x86_64.zip .
+
+      local zipOptions="-mr9"
+      if [ -z $buildType ]; then
+        zipOptions="-mr1"
+      elif [ "$buildType" = "pr" ]; then
+        zipOptions="-mr2"
+      fi
+      zip $zipOptions ../../Status-Windows-x86_64.zip .
     popd
     rm -rf Windows
   popd
