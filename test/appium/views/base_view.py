@@ -347,7 +347,9 @@ class BaseView(object):
         time.sleep(3)
         self.driver.info("Enter '%s' using native keyboard" % string)
         for i in string:
-            if type(keys[i]) is list:
+            if i.isalpha() and i.isupper():
+                keycode, metastate = keys[i.lower()], 64  # META_SHIFT_LEFT_ON Constant Value: 64. Example: i='n' -> 'N'
+            elif type(keys[i]) is list:
                 keycode, metastate = keys[i][0], keys[i][1]
             else:
                 keycode, metastate = keys[i], None

@@ -147,3 +147,15 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
 
         if not home_view.profile_button.is_element_displayed():
             self.driver.fail('Something went wrong. Probably, could not reach the home screen out.')
+
+    @marks.testrail_id(5394)
+    @marks.high
+    def test_uppercase_is_replaced_by_lowercase_automatically(self):
+        passphrase = transaction_senders['A']['passphrase']
+        capitalized_passphrase = passphrase.upper()
+        signin_view = SignInView(self.driver)
+        recover_access_view = signin_view.i_have_account_button.click()
+        recover_access_view.passphrase_input.click()
+        recover_access_view.send_as_keyevent(capitalized_passphrase)
+        if recover_access_view.passphrase_input.text != passphrase:
+            self.driver.fail('Upper case was not replaced by lower case!')
