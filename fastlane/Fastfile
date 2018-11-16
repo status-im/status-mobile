@@ -129,11 +129,6 @@ platform :ios do
     upload_to_testflight(
         ipa: "status_appstore/StatusIm.ipa"
     )
-    slack(
-        message: "New release build uploaded to TestFlight",
-        slack_url: ENV["SLACK_URL"],
-        default_payloads: []
-    )
   end
 
   desc "`fastlane ios clean` - remove inactive TestFlight users"
@@ -144,11 +139,9 @@ platform :ios do
   end
 
   desc "`fastlane ios upload-diawi` - upload .ipa to diawi"
-  desc "also notifies in a GitHub comments and in Slack #jenkins channel"
   desc "expects to have an .ipa prepared: `status-adhoc/StatusIm.ipa`"
   desc "expects to have a diawi token as DIAWI_TOKEN env variable"
   desc "expects to have a github token as GITHUB_TOKEN env variable"
-  desc "expects to have a slack webhook URL as SLACK_URL env variable"
   desc "will fails if file isn't there"
   desc "---"
   desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
@@ -173,11 +166,6 @@ platform :android do
       json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"]
     )
 
-    slack(
-        message: "New nightly build uploaded to Google Play",
-        slack_url: ENV["SLACK_URL"],
-        default_payloads: []
-    )
   end
 
   desc "Deploy a new alpha (public) build to Google Play"
@@ -187,11 +175,6 @@ platform :android do
       track: "alpha",
       apk: "android/app/build/outputs/apk/release/app-release.apk",
       json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"]
-    )
-    slack(
-        message: "New release build uploaded to Google Play",
-        slack_url: ENV["SLACK_URL"],
-        default_payloads: []
     )
   end
 
@@ -207,11 +190,9 @@ platform :android do
   end
 
   desc "`fastlane android upload_diawi` - upload .apk to diawi"
-  desc "also notifies in a GitHub comments and in Slack #jenkins channel"
   desc "expects to have an .apk prepared: `android/app/build/outputs/apk/release/app-release.apk`"
   desc "expects to have a diawi token as DIAWI_TOKEN env variable"
   desc "expects to have a github token as GITHUB_TOKEN env variable"
-  desc "expects to have a slack webhook URL as SLACK_URL env variable"
   desc "will fails if file isn't there"
   desc "---"
   desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
@@ -220,7 +201,6 @@ platform :android do
   end
 
   desc "`fastlane android saucelabs` - upload .apk to sauce labs"
-  desc "also notifies in a GitHub comments and in Slack #jenkins channel"
   desc "expects to have an .apk prepared: `android/app/build/outputs/apk/release/app-release.apk`"
   desc "expects to have a saucelabs access key as SAUCE_ACCESS_KEY env variable"
   desc "expects to have a saucelabs username token as SAUCE_USERNAME env variable"
