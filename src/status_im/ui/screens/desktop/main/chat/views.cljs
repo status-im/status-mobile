@@ -150,7 +150,7 @@
 
 (defmethod message-view
   :default
-  [{:keys [message-id on-seen-message-fn content-type type value] :as message}]
+  [{:keys [message-id on-seen-message-fn content-type type value status] :as message}]
   (if (= type :datemark)
     ^{:key (str "datemark" message-id)}
     [message.datemark/chat-datemark value]
@@ -164,10 +164,11 @@
           ^{:key (str "message" message-id)}
           [react/view
            [message-with-name-and-avatar message]
-           [react/view {:style (message.style/delivery-status outgoing)}
-            [message/message-delivery-status message]]])}))))
+           (when status
+             [react/view {:style (message.style/delivery-status outgoing)}
+              [message/message-delivery-status message]])])}))))
 
-(defn messages-view [{:keys [messages group-chat] :as current-chat}]
+(defn messages-view [messages]
   [react/view {:style styles/messages-view}
    [list/flat-list {:data                messages
                     :style               {:flex 1}
@@ -178,8 +179,7 @@
                     :render-fn           (fn [message]
                                            [message-view message])
                     :inverted            true
-                    :onEndReached        #(re-frame/dispatch [:chat.ui/load-more-messages])
-                    :enableEmptySections true}]
+                    :onEndReached        #(re-frame/dispatch [:chat.ui/load-more-messages])}]
    [connectivity/error-view]])
 
 (defn send-button [input-text inp-ref network-status]
@@ -251,14 +251,14 @@
                            [send-button input-text inp-ref network-status]]))})))
 
 (views/defview chat-view []
-  (views/letsubs [{:keys [input-text chat-id group-chat] :as current-chat} [:chats/current]
+  (views/letsubs [{:keys [input-text chat-id group-chat messages] :as current-chat} [:chats/current]
                   reply-message [:chat/reply-message]
                   network-status [:network-status]]
     [react/view {:style styles/chat-view}
      [toolbar-chat-view current-chat]
      [react/view {:style styles/separator}]
      [react/view {:style {:flex 1}}
-      [messages-view current-chat]]
+      ^{:key chat-id} [messages-view messages]]
      [react/view {:style styles/separator}]
      [reply-message-view reply-message]
      [chat-text-input chat-id input-text network-status]]))

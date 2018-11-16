@@ -7,45 +7,13 @@
             [status-im.utils.core :as utils]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
-            [status-im.contact.db :as contact.db]))
+            [status-im.utils.datetime :as time]
+            [status-im.contact.db :as contact.db]
+            [taoensso.timbre :as log]))
 
 (defn filter-messages-from-blocked-contacts
   [messages blocked-contacts]
-  (reduce (fn [acc [message-id {:keys [from] :as message}]]
-            (if (blocked-contacts from)
-              acc
-              (assoc acc message-id message)))
-          {}
-          messages))
-
-(defn quoted-message-data
-  "Selects certain data from quoted message which must be available in the view"
-  [message-id messages referenced-messages]
-  (when-let [{:keys [from content]} (get messages message-id
-                                         (get referenced-messages message-id))]
-    {:from from
-     :text (:text content)}))
-
-(defn messages-with-datemarks-and-statuses
-  "Converts message groups into sequence of messages interspersed with datemarks,
-  with correct user statuses associated into message"
-  [message-groups messages message-statuses referenced-messages]
-  (mapcat (fn [[datemark message-references]]
-            (into (list {:value datemark
-                         :type  :datemark})
-                  (map (fn [{:keys [message-id timestamp-str]}]
-                         (let [{:keys [content] :as message} (get messages message-id)
-                               quote (some-> (:response-to content)
-                                             (quoted-message-data messages referenced-messages))]
-                           (cond-> (-> message
-                                       (update :content dissoc :response-to)
-                                       (assoc :datemark      datemark
-                                              :timestamp-str timestamp-str
-                                              :user-statuses (get message-statuses message-id)))
-                             quote ;; quoted message reference
-                             (assoc-in [:content :response-to] quote)))))
-                  message-references))
-          message-groups))
+  (remove #(blocked-contacts (:from %)) messages))
 
 (defn- set-previous-message-info
   [stream]
@@ -61,61 +29,46 @@
       (and (not outgoing)
            (not (= :user-message message-type)))))
 
+(defn- intersperse-datemark
+  "Reduce step which expects the input list of messages to be sorted by clock value.
+  It makes best effort to group them by day.
+  We cannot sort them by :timestamp, as that represents the clock of the sender
+  and we have no guarantees on the order.
+  We naively and arbitrarly group them assuming that out-of-order timestamps
+  fall in the previous bucket.
+  A sends M1 to B with timestamp 2000-01-01T00:00:00
+  B replies M2 with timestamp    1999-12-31-23:59:59
+  M1 needs to be displayed before M2
+  so we bucket both in 1999-12-31"
+  [{:keys [acc last-timestamp last-datemark]} {:keys [timestamp datemark] :as msg}]
+  (cond (empty? acc)                                     ; initial element
+        {:last-timestamp timestamp
+         :last-datemark  datemark
+         :acc            (conj acc msg)}
+
+        (and (not= last-datemark datemark)               ; not the same day
+             (< timestamp last-timestamp))               ; not out-of-order
+        {:last-timestamp timestamp
+         :last-datemark  datemark
+         :acc            (conj acc {:value last-datemark ; intersperse datemark message
+                                    :type  :datemark}
+                               msg)}
+        :else
+        {:last-timestamp (max timestamp last-timestamp)  ; use last datemark
+         :last-datemark  last-datemark
+         :acc            (conj acc (assoc msg :datemark last-datemark))}))
+
+(defn- add-datemark [{:keys [timestamp] :as msg}]
+  (assoc msg :datemark (time/day-relative timestamp)))
+
+(defn- add-timestamp [{:keys [timestamp] :as msg}]
+  (assoc msg :timestamp-str (time/timestamp->time timestamp)))
+
+(defn- set-previous-message-first-in-group [stream]
+  (conj (pop stream) (assoc (peek stream) :first-in-group? true)))
+
 ;; any message that comes after this amount of ms will be grouped separately
 (def ^:private group-ms 60000)
-
-(defn add-positional-metadata
-  "Reduce step which adds positional metadata to a message and conditionally
-  update the previous message with :first-in-group?."
-  [{:keys [stream last-outgoing-seen]}
-   {:keys [type message-type from datemark outgoing timestamp] :as message}]
-  (let [previous-message         (peek stream)
-        ;; Was the previous message from a different author or this message
-        ;; comes after x ms
-        last-in-group?           (or (= :system-message message-type)
-                                     (not= from (:from previous-message))
-                                     (> (- (:timestamp previous-message) timestamp) group-ms))
-        same-direction?          (= outgoing (:outgoing previous-message))
-        ;; Have we seen an outgoing message already?
-        last-outgoing?           (and (not last-outgoing-seen)
-                                      outgoing)
-        datemark?                (= :datemark (:type message))
-        ;; If this is a datemark or this is the last-message of a group,
-        ;; then the previous message was the first
-        previous-first-in-group? (or datemark?
-                                     last-in-group?)
-        new-message              (assoc message
-                                        :display-photo?  (display-photo? message)
-                                        :same-direction? same-direction?
-                                        :last-in-group?  last-in-group?
-                                        :last-outgoing?  last-outgoing?)]
-    {:stream             (cond-> stream
-                           previous-first-in-group?
-                           ;; update previuous message if necessary
-                           set-previous-message-info
-
-                           :always
-                           (conj new-message))
-     ;; mark the last message sent by the user
-     :last-outgoing-seen (or last-outgoing-seen last-outgoing?)}))
-
-(defn messages-stream
-  "Enhances the messages in message sequence interspersed with datemarks
-  with derived stream context information, like:
-  `:first-in-group?`, `last-in-group?`, `:same-direction?`, `:last?` and `:last-outgoing?` flags."
-  [ordered-messages]
-  (when (seq ordered-messages)
-    (let [initial-message (first ordered-messages)
-          message-with-metadata (assoc initial-message
-                                       :last-in-group? true
-                                       :last? true
-                                       :display-photo? (display-photo? initial-message)
-                                       :last-outgoing? (:outgoing initial-message))]
-      (->> (rest ordered-messages)
-           (reduce add-positional-metadata
-                   {:stream             [message-with-metadata]
-                    :last-outgoing-seen (:last-outgoing? message-with-metadata)})
-           :stream))))
 
 (defn get-photo-path
   [contacts account id]
@@ -134,17 +87,20 @@
       (:name (contacts id)))))
 
 (defn add-response-metadata
-  [response contacts account]
-  (when response
-    (let [{:keys [from]}  response
-          me? (= (:public-key account) from)]
-      (assoc response
-             :photo-path (get-photo-path contacts account from)
-             :user-name (if me?
-                          (i18n/label :t/You)
-                          (:name (contacts from)))
-             :generated-name (when-not me?
-                               (gfycat/generate-gfy from))))))
+  "Selects certain data from quoted message which must be available in the view"
+  [message-id messages referenced-messages contacts account]
+  (when-let [{:keys [from content]} (and message-id
+                                         (get messages message-id
+                                              (get referenced-messages message-id)))]
+    (let [me? (= (:public-key account) from)]
+      {:from from
+       :text (:text content)
+       :photo-path (get-photo-path contacts account from)
+       :user-name (if me?
+                    (i18n/label :t/You)
+                    (:name (contacts from)))
+       :generated-name (when-not me?
+                         (gfycat/generate-gfy from))})))
 
 (defn get-group-message-delivery-status
   [{:keys [user-statuses]} participants current-public-key]
@@ -158,11 +114,11 @@
       :default :not-seen-by-everyone)))
 
 (defn get-delivery-status
-  [{:keys [last-outgoing? message-type user-statuses outgoing content chat-id]
+  [{:keys [last-outgoing? message-type outgoing content chat-id]
     :as message}
-   current-chat current-public-key current-network]
-  (let [outgoing-status (get-in user-statuses [current-public-key :status])
-        delivery-status (get-in user-statuses [chat-id :status])
+   current-chat message-statuses current-public-key current-network]
+  (let [outgoing-status (get-in message-statuses [current-public-key :status])
+        delivery-status (get-in message-statuses [chat-id :status])
         status          (or delivery-status outgoing-status :not-sent)
         incoming-command? (and (not outgoing)
                                (:command content))
@@ -188,23 +144,31 @@
                              (str "+ " (- delivery-count 3)))}))
 
 (defn add-metadata
-  [{:keys [from response-to message-id chat-id outgoing message-status user-statuses]
+  [{:keys [from response-to message-id chat-id outgoing]
     :as message}
    {:keys [group-chat] :as current-chat}
-   current-network contacts account]
-  (let [current-public-key (:public-key account)
-        status (get-delivery-status message current-chat current-public-key current-network)
+   messages-statuses
+   messages
+   referenced-messages
+   current-network
+   contacts
+   account]
+  (let [message-statuses (get messages-statuses message-id)
+        current-public-key (:public-key account)
+        status (get-delivery-status message current-chat message-statuses current-public-key current-network)
         delivery-details (when (= status :not-seen-by-everyone)
-                           (get-delivery-details user-statuses
+                           (get-delivery-details message-statuses
                                                  (:contacts current-chat)
-                                                 current-public-key))]
+                                                 current-public-key))
+        unseen? (and message-id
+                     chat-id
+                     (not outgoing)
+                     (not= :seen status)
+                     (not= :seen (keyword (get-in message-statuses [current-public-key :status]))))]
     (-> message
-        (assoc :can-reply? (not= status :not-sent)
-               :on-seen-message-fn #(when (and message-id
-                                               chat-id
-                                               (not outgoing)
-                                               (not= :seen message-status)
-                                               (not= :seen (keyword (get-in user-statuses [current-public-key :status]))))
+        (assoc :unseen? unseen?
+               :can-reply? (not= status :not-sent)
+               :on-seen-message-fn #(when unseen?
                                       (re-frame/dispatch [:send-seen! {:chat-id    chat-id
                                                                        :from       from
                                                                        :message-id message-id}]))
@@ -216,39 +180,86 @@
                :status status
                :group-chat group-chat
                :delivery-details delivery-details)
-        (update-in [:content :response-to] #(add-response-metadata % contacts account)))))
+        (update-in [:content :response-to] #(add-response-metadata % messages referenced-messages contacts account)))))
 
 (defn messages-with-metadata
-  [messages current-chat current-network contacts account]
-  (mapv #(add-metadata % current-chat current-network contacts account) messages))
+  [messages current-chat messages-statuses referenced-messages current-network contacts account]
+  (mapv #(add-metadata % current-chat messages-statuses messages referenced-messages current-network contacts account) (vals messages)))
 
-(defn sort-message-groups
-  "Sorts message groups according to timestamp of first message in group"
-  [message-groups messages]
-  (let [message-ids (set (keys messages))]
-    (sort-by
-     (comp unchecked-negate :timestamp (partial get messages) :message-id first second)
-     (reduce (fn [acc [datemark group-messages]]
-               (let [filtered-messages (filter #(message-ids (:message-id %))
-                                               group-messages)]
-                 (if (zero? (count filtered-messages))
-                   acc
-                   (assoc acc datemark filtered-messages))))
-             {}
-             message-groups))))
+(defn intersperse-datemarks
+  "Add a datemark in between an ordered seq of messages when two datemarks are not
+  the same. Ignore messages with out-of-order timestamps"
+  [messages]
+  (when (seq messages)
+    (let [messages-with-datemarks (transduce (comp
+                                              (map add-datemark)
+                                              (map add-timestamp))
+                                             (completing intersperse-datemark :acc)
+                                             {:acc []}
+                                             messages)]
+      ;; Append last datemark
+      (conj messages-with-datemarks {:value (:datemark (peek messages-with-datemarks))
+                                     :type  :datemark}))))
+
+(defn add-positional-metadata
+  "Reduce step which adds positional metadata to a message and conditionally
+  update the previous message with :first-in-group?."
+  [{:keys [stream last-outgoing-seen]}
+   {:keys [type from datemark outgoing timestamp] :as message}]
+  (let [previous-message         (peek stream)
+        ;; Was the previous message from a different author or this message
+        ;; comes after x ms
+        last-in-group?           (or (not= from (:from previous-message))
+                                     (> (- (:timestamp previous-message) timestamp) group-ms))
+        same-direction?          (= outgoing (:outgoing previous-message))
+        ;; Have we seen an outgoing message already?
+        last-outgoing?           (and (not last-outgoing-seen)
+                                      outgoing)
+        datemark?                (= :datemark (:type message))
+        ;; If this is a datemark or this is the last-message of a group,
+        ;; then the previous message was the first
+        previous-first-in-group? (or datemark?
+                                     last-in-group?)
+        new-message              (assoc message
+                                        :same-direction? same-direction?
+                                        :last-in-group? last-in-group?
+                                        :last-outgoing? last-outgoing?)]
+    {:stream             (cond-> stream
+                           previous-first-in-group?
+                           ;; update previuous message if necessary
+                           set-previous-message-first-in-group
+
+                           :always
+                           (conj new-message))
+     ;; mark the last message sent by the user
+     :last-outgoing-seen (or last-outgoing-seen last-outgoing?)}))
+
+(defn messages-stream
+  "Enhances the messages in message sequence interspersed with datemarks
+  with derived stream context information, like:
+  q  `:first-in-group?`, `last-in-group?`, `:same-direction?`, `:last?` and `:last-outgoing?` flags."
+  [ordered-messages]
+  (when (seq ordered-messages)
+    (let [initial-message (first ordered-messages)
+          message-with-metadata (assoc initial-message
+                                       :last-in-group? true
+                                       :last? true
+                                       :display-photo? (display-photo? initial-message)
+                                       :last-outgoing? (:outgoing initial-message))]
+      (->> (rest ordered-messages)
+           (reduce add-positional-metadata
+                   {:stream             [message-with-metadata]
+                    :last-outgoing-seen (:last-outgoing? message-with-metadata)})
+           :stream))))
 
 (defn get-current-chat-messages-stream
-  [messages message-groups message-statuses referenced-messages
-   current-chat current-network contacts account]
-  (-> (sort-message-groups message-groups messages)
-      (messages-with-datemarks-and-statuses messages message-statuses referenced-messages)
-      messages-stream
-      (messages-with-metadata current-chat current-network contacts account)))
-
-(defn- get-last-message
-  [messages]
-  (when messages
-    (first (sort-by :timestamp > (vals messages)))))
+  [messages messages-statuses referenced-messages
+   current-chat current-network contacts blocked-contacts account]
+  (-> messages
+      (messages-with-metadata current-chat messages-statuses referenced-messages current-network contacts account)
+      (filter-messages-from-blocked-contacts blocked-contacts)
+      intersperse-datemarks
+      messages-stream))
 
 (defn chat-name [{:keys [group-chat
                          chat-id
@@ -262,18 +273,20 @@
                    (gfycat/generate-gfy chat-id))))
 
 (defn- enrich-active-chat
-  [{:keys [chat-id messages unviewed-messages group-chat public?] :as chat}
+  [{:keys [chat-id messages unviewed-messages group-chat
+           public? message-statuses referenced-messages] :as chat}
    {:keys [public-key tags photo-path] :as contact}
    contacts
-   blocked-contacts]
-  (let [filtered-messages (filter-messages-from-blocked-contacts messages
-                                                                 blocked-contacts)
-        unviewed-messages-count (count (set/intersection unviewed-messages
-                                                         (set (keys filtered-messages))))
+   blocked-contacts
+   current-network
+   current-account]
+  (let [messages (get-current-chat-messages-stream messages message-statuses referenced-messages chat current-network contacts blocked-contacts current-account)
+        unviewed-messages-count (count (filter #(:unseen? %) messages))
         large-unviewed-messages-label? (< 9 unviewed-messages-count)
-        last-message (get-last-message filtered-messages)
+        last-message (first messages)
         name (chat-name chat contact)
         chat-contacts (:contacts chat)]
+    (log/info chat-id (count messages))
     (cond-> chat
       tags
       (update :tags clojure.set/union tags)
@@ -294,12 +307,14 @@
       (assoc :unviewed-messages-label (if large-unviewed-messages-label?
                                         (i18n/label :t/counter-9-plus)
                                         unviewed-messages-count))
-      large-unviewed-messages-label? (assoc :large-unviewed-messages-label? large-unviewed-messages-label?)
+      large-unviewed-messages-label?
+      (assoc :large-unviewed-messages-label? large-unviewed-messages-label?)
+
       last-message (assoc :last-message last-message)
       :always (assoc :name name
                      :unviewed-messages-count unviewed-messages-count
                      :truncated-name (utils/truncate-str name 30)
-                     :messages filtered-messages
+                     :messages messages
                      :photo-path (or photo-path
                                      (identicon/identicon chat-id))))))
 
@@ -315,11 +330,12 @@
            (utils.config/group-chats-enabled? dev-mode?))))
 
 (defn active-chats
-  [chats contacts blocked-contacts dev-mode?]
+  [chats contacts blocked-contacts current-network
+   {:keys [dev-mode?] :as current-account}]
   (reduce (fn [acc [chat-id chat]]
             (let [contact (get contacts chat-id)]
               (if (active-chat? chat contact dev-mode?)
-                (assoc acc chat-id (enrich-active-chat chat contact contacts blocked-contacts))
+                (assoc acc chat-id (enrich-active-chat chat contact contacts blocked-contacts current-network current-account))
                 acc)))
           {}
           chats))

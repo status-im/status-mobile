@@ -6,40 +6,11 @@
             [status-im.constants :as constants]
             [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.utils.datetime :as time]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [status-im.utils.priority-map :refer [priority-map-keyfn-by]]))
 
-(def index-messages (partial into {} (map (juxt :message-id identity))))
-
-(defn- sort-references
-  "Sorts message-references sequence primary by clock value,
-  breaking ties by `:message-id`"
-  [messages message-references]
-  (sort-by (juxt (comp :clock-value (partial get messages) :message-id)
-                 :message-id)
-           message-references))
-
-(fx/defn group-chat-messages
-  "Takes chat-id, new messages + cofx and properly groups them
-  into the `:message-groups`index in db"
-  [{:keys [db]} chat-id messages]
-  {:db (reduce (fn [db [datemark grouped-messages]]
-                 (update-in db [:chats chat-id :message-groups datemark]
-                            (fn [message-references]
-                              (->> grouped-messages
-                                   (map (fn [{:keys [message-id timestamp]}]
-                                          {:message-id    message-id
-                                           :timestamp-str (time/timestamp->time timestamp)}))
-                                   (into (or message-references '()))
-                                   (sort-references (get-in db [:chats chat-id :messages]))))))
-               db
-               (group-by (comp time/day-relative :timestamp) messages))})
-
-(fx/defn group-messages
-  [{:keys [db]}]
-  (reduce-kv (fn [fx chat-id {:keys [messages]}]
-               (group-chat-messages fx chat-id (vals messages)))
-             {:db db}
-             (:chats db)))
+(def index-messages (partial into (priority-map-keyfn-by :clock-value >)
+                             (map (juxt :message-id identity))))
 
 (defn- get-referenced-ids
   "Takes map of message-id->messages and returns set of message ids which are referenced by the original messages,
@@ -68,17 +39,17 @@
                                         :deduplication-ids (get stored-deduplication-ids chat-id)
                                         :not-loaded-message-ids (set/difference (get stored-message-ids chat-id)
                                                                                 (set message-ids))
-                                        :referenced-messages (index-messages
-                                                              (get-referenced-messages
-                                                               chat-id
-                                                               (get-referenced-ids chat-messages)))))))
+                                        :referenced-messages (into {}
+                                                                   (map (juxt :message-id identity)
+                                                                        (get-referenced-messages
+                                                                         chat-id
+                                                                         (get-referenced-ids chat-messages))))))))
                       {}
                       all-stored-chats)]
     (fx/merge cofx
               {:db (assoc db
                           :chats          chats
                           :contacts/dapps default-dapps)}
-              (group-messages)
               (commands/load-commands commands/register))))
 
 (fx/defn initialize-pending-messages
@@ -127,5 +98,4 @@
                                     #(into (apply dissoc % new-message-ids) referenced-messages))
                          (assoc-in [:chats current-chat-id :all-loaded?]
                                    (> constants/default-number-of-messages (count new-messages))))}
-                (group-chat-messages current-chat-id new-messages)
                 (chat-model/mark-messages-seen current-chat-id)))))

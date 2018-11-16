@@ -36,41 +36,6 @@
    (get-in active-chats [chat-id :messages])))
 
 (re-frame/reg-sub
- ::get-current-chat-message-groups
- :<- [::current-chat]
- (fn [{:keys [message-groups]}]
-   (or message-groups {})))
-
-(re-frame/reg-sub
- ::get-current-chat-message-statuses
- :<- [::current-chat]
- (fn [{:keys [message-statuses]}]
-   (or message-statuses {})))
-
-(re-frame/reg-sub
- ::get-current-chat-referenced-messages
- :<- [::current-chat]
- (fn [{:keys [referenced-messages]}]
-   (or referenced-messages {})))
-
-(re-frame/reg-sub
- ::get-current-chat-messages-stream
- :<- [::get-current-chat-messages]
- :<- [::get-current-chat-message-groups]
- :<- [::get-current-chat-message-statuses]
- :<- [::get-current-chat-referenced-messages]
- :<- [:chats/active-chats]
- :<- [::current-chat-id]
- :<- [:network-name]
- :<- [:contacts/contacts]
- :<- [:account/account]
- (fn [[messages message-groups message-statuses referenced-messages active-chats chat-id current-network contacts account]]
-   (let [current-chat (get active-chats chat-id)]
-     (chat.db/get-current-chat-messages-stream
-      messages message-groups message-statuses referenced-messages
-      current-chat current-network contacts account))))
-
-(re-frame/reg-sub
  ::get-commands-for-chat
  :<- [:chat/id->command]
  :<- [::get-access-scope->command-id]
@@ -134,19 +99,17 @@
  :<- [::chats]
  :<- [:contacts/contacts]
  :<- [:contacts/blocked]
+ :<- [:network-name]
  :<- [:account/account]
- (fn [[chats contacts blocked-contacts {:keys [dev-mode?]}]]
-   (chat.db/active-chats chats contacts blocked-contacts dev-mode?)))
+ (fn [[chats contacts blocked-contacts current-network current-account]]
+   (chat.db/active-chats chats contacts blocked-contacts current-network current-account)))
 
 (re-frame/reg-sub
  :chats/current
  :<- [:chats/active-chats]
  :<- [::current-chat-id]
- :<- [::get-current-chat-messages-stream]
- :<- [:contacts/contacts]
- (fn [[chats chat-id messages all-contacts]]
-   (let [current-chat (get chats chat-id)]
-     (assoc current-chat :messages messages))))
+ (fn [[chats chat-id]]
+   (get chats chat-id)))
 
 (def ^:private map->sorted-seq (comp (partial map second) (partial sort-by first)))
 
@@ -239,7 +202,7 @@
  :<- [:account/account]
  (fn [[{:keys [metadata]} messages contacts account]]
    (when-let [message (get messages (:responding-to-message metadata))]
-     (chat.db/add-response-metadata message contacts account))))
+     #_(chat.db/add-response-metadata message contacts account))))
 
 (re-frame/reg-sub
  :chat/message-details
