@@ -22,7 +22,7 @@
 
 (handlers/register-handler-fx
  :alert
- (fn [_ [_ {:keys [value]}]]
+ (fn [_ [_ _ {:keys [value]}]]
    {::alert value}))
 
 (re-frame/reg-fx
@@ -31,21 +31,23 @@
 
 (handlers/register-handler-fx
  :log
- (fn [_ [_ {:keys [value]}]]
+ (fn [_ [_ _ {:keys [value]}]]
    {::log value}))
 
 (re-frame/reg-sub
- :store/get
- (fn [db [_ {:keys [key]}]]
-   (get-in db [:extensions-store :collectible key])))
+ :extensions/identity
+ (fn [_ [_ _ {:keys [value]}]]
+   value))
 
-(re-frame/reg-sub :extensions/identity
-                  (fn [_ [_ {:keys [value]}]] value))
+(re-frame/reg-sub
+ :store/get
+ (fn [db [_ {id :id} {:keys [key]}]]
+   (get-in db [:extensions/store id key])))
 
 (handlers/register-handler-fx
  :store/put
- (fn [{:keys [db]} [_ {:keys [key value]}]]
-   {:db (assoc-in db [:extensions-store :collectible key] value)}))
+ (fn [{:keys [db]} [_ {id :id} {:keys [key value]}]]
+   {:db (assoc-in db [:extensions/store id key] value)}))
 
 (defn- append [acc k v]
   (let [o (get acc k)]
@@ -53,13 +55,13 @@
 
 (handlers/register-handler-fx
  :store/append
- (fn [{:keys [db]} [_ {:keys [key value]}]]
-   {:db (update-in db [:extensions-store :collectible] append key value)}))
+ (fn [{:keys [db]} [_ {id :id} {:keys [key value]}]]
+   {:db (update-in db [:extensions/store id] append key value)}))
 
 (handlers/register-handler-fx
  :store/clear
- (fn [{:keys [db]} [_ {:keys [key]}]]
-   {:db (update-in db [:extensions-store :collectible] dissoc key)}))
+ (fn [{:keys [db]} [_ {id :id} {:keys [key]}]]
+   {:db (update-in db [:extensions/store id] dissoc key)}))
 
 (defn- json? [res]
   (when-let [type (get-in res [:headers "content-type"])]
@@ -76,7 +78,7 @@
 
 (handlers/register-handler-fx
  :extensions/json-parse
- (fn [_ [_ m]]
+ (fn [_ [_ _ m]]
    {::json-parse m}))
 
 (re-frame/reg-fx
@@ -86,12 +88,12 @@
 
 (handlers/register-handler-fx
  :extensions/json-stringify
- (fn [_ [_ {:keys [value]}]]
+ (fn [_ [_ _ {:keys [value]}]]
    {::json-stringify value}))
 
 (re-frame/reg-event-fx
  :http/get
- (fn [_ [_ {:keys [url on-success on-failure timeout]}]]
+ (fn [_ [_ _ {:keys [url on-success on-failure timeout]}]]
    {:http-raw-get (merge {:url url
                           :success-event-creator
                           (fn [{:keys [body] :as o}]
@@ -104,7 +106,7 @@
 
 (re-frame/reg-event-fx
  :ipfs/cat
- (fn [_ [_ {:keys [hash on-success on-failure]}]]
+ (fn [_ [_ _ {:keys [hash on-success on-failure]}]]
    {:http-raw-get (merge {:url (str "https://ipfs.infura.io/ipfs/" hash)
                           :success-event-creator
                           (fn [{:keys [status body]}]
@@ -118,7 +120,7 @@
 
 (re-frame/reg-event-fx
  :http/post
- (fn [_ [_ {:keys [url body on-success on-failure timeout]}]]
+ (fn [_ [_ _ {:keys [url body on-success on-failure timeout]}]]
    {:http-raw-post (merge {:url  url
                            :body (clj->js body)
                            :success-event-creator
@@ -144,7 +146,7 @@
 
 (handlers/register-handler-fx
  :extensions/arithmetic
- (fn [_ [_ m]]
+ (fn [_ [_ _ m]]
    {::arithmetic m}))
 
 (defn button [{:keys [on-click]} label]
@@ -286,14 +288,14 @@
                                :on-result  :event}}}
    :hooks      {:commands commands/command-hook}})
 
-(defn parse [{:keys [data]}]
+(defn parse [{:keys [data]} id]
   (try
-    (reader/parse {:capacities capacities} data)
+    (reader/parse {:capacities capacities :env {:id id}} data)
     (catch :default e {:errors [{:value (str e)}]})))
 
-(defn parse-extension [{:keys [type value]}]
+(defn parse-extension [{:keys [type value]} id]
   (if (= type :success)
-    (parse (reader/read (:content value)))
+    (parse (reader/read (:content value)) id)
     {:errors [{:type type :value value}]}))
 
 (def uri-prefix "https://get.status.im/extension/")

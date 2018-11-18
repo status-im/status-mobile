@@ -1,7 +1,6 @@
 (ns status-im.extensions.registry
   (:refer-clojure :exclude [list])
   (:require [clojure.string :as string]
-            [pluto.utils :as utils]
             [pluto.reader.hooks :as hooks]
             [re-frame.core :as re-frame]
             [status-im.accounts.update.core :as accounts.update]
@@ -13,7 +12,7 @@
   [{:keys [db] :as cofx} hook-fn extension-key]
   (let [account (get db :account/account)
         hooks   (get-in account [:extensions extension-key :hooks])]
-    (apply utils/merge-fx cofx
+    (apply fx/merge cofx
            (mapcat (fn [[_ extension-hooks]]
                      (map (fn [[hook-id {:keys [hook-ref parsed]}]]
                             (partial hook-fn (:hook hook-ref) hook-id parsed))
@@ -47,13 +46,11 @@
               (update-hooks hook-fn extension-key))))
 
 (fx/defn install
-  [{:keys [db random-id-generator] :as cofx} extension-data]
+  [{:keys [db] :as cofx} extension-data]
   (let [{:extensions/keys [manage]
          :account/keys    [account]} db
-        {:keys [id url]} manage
-        extension      {:id      (-> (:value id)
-                                     (or (random-id-generator))
-                                     (string/replace "-" ""))
+        {:keys [url]} manage
+        extension      {:id      (:value url)
                         :name    (get-in extension-data ['meta :name])
                         :url     (:value url)
                         :active? true}
