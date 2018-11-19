@@ -131,49 +131,44 @@
                 :font  :default}
     (i18n/message-status-label status)]])
 
-(defview group-message-delivery-status [{:keys [message-id current-public-key user-statuses] :as msg}]
-  (letsubs [{participants :contacts} [:chats/current-chat]
-            contacts                 [:contacts/contacts]]
-    (let [outgoing-status         (or (get-in user-statuses [current-public-key :status]) :sending)
-          delivery-statuses       (dissoc user-statuses current-public-key)
-          delivery-statuses-count (count delivery-statuses)
-          seen-by-everyone        (and (= delivery-statuses-count (count participants))
-                                       (every? (comp (partial = :seen) :status second) delivery-statuses)
-                                       :seen-by-everyone)]
-      (if (or seen-by-everyone (zero? delivery-statuses-count))
-        [text-status (or seen-by-everyone outgoing-status)]
-        [react/touchable-highlight
-         {:on-press #(re-frame/dispatch [:chat.ui/show-message-details {:message-status outgoing-status
-                                                                        :user-statuses  delivery-statuses
-                                                                        :participants   participants}])}
-         [react/view style/delivery-view
-          (for [[public-key] (take 3 delivery-statuses)]
-            ^{:key public-key}
-            [react/image {:source {:uri (or (get-in contacts [public-key :photo-path])
-                                            (identicon/identicon public-key))}
-                          :style  {:width         16
-                                   :height        16
-                                   :border-radius 8}}])
-          (if (> delivery-statuses-count 3)
-            [react/text {:style style/delivery-text
-                         :font  :default}
-             (str "+ " (- delivery-statuses-count 3))])]]))))
+(defn group-message-delivery-status
+  [message-id delivery-recipients delivery-count-label]
+  [react/touchable-highlight
+   {:on-press #(re-frame/dispatch [:chat.ui/show-message-details message-id])}
+   [react/view style/delivery-view
+    (for [[public-key {:keys [photo-path]}] (take 3 delivery-recipients)]
+      ^{:key public-key}
+      [react/image {:source {:uri photo-path}
+                    :style  {:width         16
+                             :height        16
+                             :border-radius 8}}])
+    (if delivery-count-label
+      [react/text {:style style/delivery-text
+                   :font  :default}
+       delivery-count-label])]])
 
-(defn message-activity-indicator []
+(defn message-activity-indicator
+  []
   [react/view style/message-activity-indicator
    [react/activity-indicator {:animating true}]])
 
-(defn message-not-sent-text [chat-id message-id]
-  [react/touchable-highlight {:on-press (fn [] (if platform/ios?
-                                                 (action-sheet/show {:title   (i18n/label :message-not-sent)
-                                                                     :options [{:label  (i18n/label :resend-message)
-                                                                                :action #(re-frame/dispatch [:chat.ui/resend-message chat-id message-id])}
-                                                                               {:label        (i18n/label :delete-message)
-                                                                                :destructive? true
-                                                                                :action       #(re-frame/dispatch [:chat.ui/delete-message chat-id message-id])}]})
-                                                 (re-frame/dispatch
-                                                  [:chat.ui/show-message-options {:chat-id    chat-id
-                                                                                  :message-id message-id}])))}
+(defn message-not-sent-text
+  [chat-id message-id]
+  [react/touchable-highlight
+   {:on-press (fn []
+                (if platform/ios?
+                  (action-sheet/show
+                   {:title   (i18n/label :message-not-sent)
+                    :options [{:label  (i18n/label :resend-message)
+                               :action #(re-frame/dispatch
+                                         [:chat.ui/resend-message chat-id message-id])}
+                              {:label        (i18n/label :delete-message)
+                               :destructive? true
+                               :action       #(re-frame/dispatch
+                                               [:chat.ui/delete-message chat-id message-id])}]})
+                  (re-frame/dispatch
+                   [:chat.ui/show-message-options {:chat-id    chat-id
+                                                   :message-id message-id}])))}
    [react/view style/not-sent-view
     [react/text {:style style/not-sent-text}
      (i18n/message-status-label (if platform/desktop?
@@ -183,32 +178,28 @@
       [react/view style/not-sent-icon
        [vector-icons/icon :icons/warning {:color colors/red}]])]])
 
-(defview command-status [{{:keys [network]} :params}]
-  (letsubs [current-network [:network-name]]
-    (when (and network (not= current-network network))
-      [react/view style/not-sent-view
-       [react/text {:style style/not-sent-text}
-        (i18n/label :network-mismatch)]
-       [react/view style/not-sent-icon
-        [vector-icons/icon :icons/warning {:color colors/red}]]])))
+(defn command-network-mismatch-status
+  []
+  [react/view style/not-sent-view
+   [react/text {:style style/not-sent-text}
+    (i18n/label :network-mismatch)]
+   [react/view style/not-sent-icon
+    [vector-icons/icon :icons/warning {:color colors/red}]]])
 
 (defn message-delivery-status
-  [{:keys [chat-id message-id current-public-key user-statuses content last-outgoing? outgoing message-type] :as message}]
-  (let [outgoing-status (or (get-in user-statuses [current-public-key :status]) :not-sent)
-        delivery-status (get-in user-statuses [chat-id :status])
-        status          (or delivery-status outgoing-status)]
-    (when (not= :system-message message-type)
-      (case status
-        :sending  [message-activity-indicator]
-        :not-sent [message-not-sent-text chat-id message-id]
-        (if (and (not outgoing)
-                 (:command content))
-          [command-status content]
-          (when last-outgoing?
-            (if (= message-type :group-user-message)
-              [group-message-delivery-status message]
-              (if outgoing
-                [text-status status]))))))))
+  [{:keys [chat-id message-id status delivery-recipients delivery-count-label]
+    :as message}]
+  (case status
+    :sending
+    [message-activity-indicator]
+    :not-sent
+    [message-not-sent-text chat-id message-id]
+    :network-mismatch
+    [command-network-mismatch-status]
+    :not-seen-by-everyone
+    [group-message-delivery-status message-id delivery-recipients delivery-count-label]
+    (when status
+      [text-status status])))
 
 (defview message-author-name [from message-username]
   (letsubs [username [:contacts/contact-name-by-identity from]]

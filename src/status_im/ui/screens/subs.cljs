@@ -2,7 +2,9 @@
   (:require [re-frame.core :refer [reg-sub subscribe]]
             [status-im.utils.ethereum.core :as ethereum]
             status-im.chat.subs
+            status-im.chat.deprecated-subs
             status-im.contact.subs
+            status-im.contact.deprecated-subs
             status-im.search.subs
             status-im.mailserver.subs
             status-im.ui.screens.accounts.subs

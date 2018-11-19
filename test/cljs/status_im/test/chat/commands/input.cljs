@@ -48,20 +48,21 @@
 (deftest set-command-parameter-test
   (testing "Setting command parameter correctly updates the text input"
     (let [create-cofx (fn [input-text]
-                        {:db {:chats           {"test" {:input-text input-text}}
+                        {:db {:chats           {"test" {}}
+                              :chats.ui/input-text {"test" input-text}
                               :current-chat-id "test"}})]
       (is (= "/test-command first-value "
              (get-in (input/set-command-parameter (create-cofx "/test-command")
                                                   false 0 "first-value")
-                     [:db :chats "test" :input-text])))
+                     [:db :chats.ui/input-text "test"])))
       (is (= "/test-command first-value second-value \"last value\""
              (get-in (input/set-command-parameter (create-cofx "/test-command first-value edited \"last value\"")
                                                   false 1 "second-value")
-                     [:db :chats "test" :input-text])))
+                     [:db :chats.ui/input-text "test"])))
       (is (= "/test-command first-value second-value \"last value\""
              (get-in (input/set-command-parameter (create-cofx "/test-command first-value second-value")
                                                   false 2 "last value")
-                     [:db :chats "test" :input-text]))))))
+                     [:db :chats.ui/input-text "test"]))))))
 
 (deftest parse-parameters-test
   (testing "testing that parse-parameters work correctly"

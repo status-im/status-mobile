@@ -93,21 +93,25 @@
           #(label :t/datetime-yesterday)
           #(.format time-fmt %)))
 
-(defn day-relative [ms]
+(defn- day-relative* [date-fmt ms]
   (to-str ms
           #(.format date-fmt %)
           #(label :t/datetime-yesterday)
           #(label :t/datetime-today)))
+
+(def day-relative (memoize day-relative*))
 
 (defn timestamp->mini-date [ms]
   (.format short-date-fmt (-> ms
                               from-long
                               (plus time-zone-offset))))
 
-(defn timestamp->time [ms]
+(defn- timestamp->time* [ms]
   (.format time-fmt (-> ms
                         from-long
                         (plus time-zone-offset))))
+
+(def timestamp->time (memoize timestamp->time*))
 
 (defn timestamp->date-key [ms]
   (keyword (unparse (formatter "YYYYMMDD") (-> ms

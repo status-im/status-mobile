@@ -32,6 +32,6 @@
 (reg-sub
  :selected-group-contacts
  :<- [:get :group/selected-contacts]
- :<- [:all-added-contacts]
+ :<- [:contacts/added]
  (fn [[selected-contacts added-contacts]]
    (filter-contacts selected-contacts added-contacts)))

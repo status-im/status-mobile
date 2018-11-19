@@ -135,7 +135,7 @@
   "Set value as command parameter for the current chat"
   [{:keys [db]} last-param? param-index value]
   (let [{:keys [current-chat-id chats]} db
-        [command & params]  (-> (get-in chats [current-chat-id :input-text])
+        [command & params]  (-> (get-in db [:chats.ui/input-text current-chat-id])
                                 split-command-args)
         param-count         (count params)
         ;; put the new value at the right place in parameters array
@@ -151,7 +151,7 @@
                                     (str chat.constants/spacing-char))]
     {:db (-> db
              (chat/set-chat-ui-props {:validation-messages nil})
-             (assoc-in [:chats current-chat-id :input-text] input-text))}))
+             (assoc-in [:chats.ui/input-text current-chat-id] input-text))}))
 
 (fx/defn select-chat-input-command
   "Takes command and (optional) map of input-parameters map and sets it as current-chat input"
@@ -160,7 +160,7 @@
     {:db (-> db
              (chat/set-chat-ui-props {:show-suggestions?   false
                                       :validation-messages nil})
-             (assoc-in [:chats current-chat-id :input-text]
+             (assoc-in [:chats.ui/input-text current-chat-id]
                        (str (commands/command-name type)
                             chat.constants/spacing-char
                             (join-command-args input-params))))}))

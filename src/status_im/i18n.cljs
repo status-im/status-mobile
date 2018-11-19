@@ -357,4 +357,3 @@
      (.format
       (new goog.i18n.NumberFormat (.-CURRENCY goog.i18n.NumberFormat.Format) currency-code)
       value))))
-

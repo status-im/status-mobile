@@ -113,12 +113,12 @@
      [react/text {:style (message-style/style-message-text false)} message-text]]))
 
 (defview reply-message-view []
-  (letsubs [{:keys [content from] :as message} [:chats/reply-message]]
+  (letsubs [{:keys [text from] :as message} [:chats/reply-message]]
     (when message
       [react/view {:style style/reply-message-container}
        [react/view {:style style/reply-message}
         [photos/member-photo from]
-        [reply-message from (:text content)]]
+        [reply-message from text]]
        [react/touchable-highlight
         {:style               style/cancel-reply-highlight
          :on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])

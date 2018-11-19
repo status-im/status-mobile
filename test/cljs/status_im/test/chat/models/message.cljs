@@ -193,22 +193,15 @@
                                                            1 {:message-id  1
                                                               :content     "b"
                                                               :clock-value 1
-                                                              :timestamp   timestamp}}
-                                           :message-groups {"datetime-today" '({:message-id 1}
-                                                                               {:message-id 0})}}}}}
+                                                              :timestamp   timestamp}}}}}}
         cofx2     {:db {:chats {"chat-id" {:messages      {0 {:message-id  0
                                                               :content     "a"
                                                               :clock-value 0
-                                                              :timestamp   timestamp}}
-                                           :message-groups {"datetime-today" '({:message-id 0})}}}}}
+                                                              :timestamp   timestamp}}}}}}
         fx1       (message/delete-message cofx1 "chat-id" 1)
         fx2       (message/delete-message cofx2 "chat-id" 0)]
     (testing "Deleting message deletes it along with all references"
       (is (= '(0)
              (keys (get-in fx1 [:db :chats "chat-id" :messages]))))
-      (is (= {"datetime-today" '({:message-id 0})}
-             (get-in fx1 [:db :chats "chat-id" :message-groups])))
       (is (= {}
-             (get-in fx2 [:db :chats "chat-id" :messages])))
-      (is (= {}
-             (get-in fx2 [:db :chats "chat-id" :message-groups]))))))
+             (get-in fx2 [:db :chats "chat-id" :messages]))))))

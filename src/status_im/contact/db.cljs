@@ -82,10 +82,18 @@
 (spec/def :contact/new-tag string?)
 (spec/def :ui/contact (spec/keys :opt [:contact/new-tag]))
 
-(defn public-key->new-contact [public-key]
+(defn public-key->new-contact
+  [public-key]
   {:name       (gfycat/generate-gfy public-key)
    :photo-path (identicon/identicon public-key)
-   :public-key public-key})
+   :public-key public-key
+   :tags       #{}})
+
+(defn public-key->contact
+  [contacts public-key]
+  (when public-key
+    (get contacts public-key
+         (public-key->new-contact public-key))))
 
 (defn public-key->address [public-key]
   (let [length (count public-key)
@@ -95,13 +103,14 @@
                          128 public-key
                          nil)]
     (when normalized-key
-      (subs (.sha3 js-dependencies/Web3.prototype normalized-key #js {:encoding "hex"}) 26))))
+      (subs (.sha3 js-dependencies/Web3.prototype normalized-key (clj->js {:encoding "hex"})) 26))))
 
 (defn- contact-by-address [[_ contact] address]
   (when (ethereum/address= (:address contact) address)
     contact))
 
-(defn find-contact-by-address [contacts address]
+(defn address->contact
+  [contacts address]
   (some #(contact-by-address % address) contacts))
 
 (defn sort-contacts
@@ -111,7 +120,7 @@
                 name2 (or (:name c2) (:address c2) (:public-key c2))]
             (compare (clojure.string/lower-case name1)
                      (clojure.string/lower-case name2))))
-        (vals contacts)))
+        contacts))
 
 (defn filter-dapps
   [v dev-mode?]
@@ -128,12 +137,14 @@
     (query-fn (comp participant-set :public-key) (vals all-contacts))))
 
 (defn get-all-contacts-in-group-chat
-  [members contacts current-account]
-  (let [current-account-contact (-> current-account
-                                    (select-keys [:name :photo-path :public-key]))
-        all-contacts            (assoc contacts (:public-key current-account-contact) current-account-contact)]
-    (->> members
-         (map #(or (get all-contacts %)
-                   (public-key->new-contact %)))
+  [chat-contacts current-account]
+  (let [current-public-key (:public-key current-account)
+        current-account-contact (-> current-account
+                                    (select-keys [:name :photo-path :public-key])
+                                    (assoc :current-account? true))
+        chat-contacts (assoc chat-contacts
+                             current-public-key
+                             current-account-contact)]
+    (->> (vals chat-contacts)
          (remove :dapp?)
-         (sort-by (comp clojure.string/lower-case :name)))))
+         sort-contacts)))
