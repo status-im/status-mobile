@@ -10,14 +10,14 @@
             [status-im.transport.message.public-chat :as public-chat]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.desktop.events :as desktop.events]
+            [status-im.ui.components.react :as react]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.fx :as fx]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.utils :as utils]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.react :as react]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.priority-map :refer [empty-message-map]]
+            [status-im.utils.utils :as utils]))
 
 (defn multi-user-chat? [cofx chat-id]
   (get-in cofx [:db :chats chat-id :group-chat]))
@@ -49,7 +49,8 @@
      :is-active          true
      :timestamp          now
      :contacts           #{chat-id}
-     :last-clock-value   0}))
+     :last-clock-value   0
+     :messages           empty-message-map}))
 
 (fx/defn upsert-chat
   "Upsert chat when not deleted"
@@ -97,7 +98,7 @@
                                      deleted-at-clock-value
                                      (utils.clocks/send 0))]
     {:db            (update-in db [:chats chat-id] merge
-                               {:messages               {}
+                               {:messages           empty-message-map
                                 :message-groups         {}
                                 :unviewed-messages      #{}
                                 :not-loaded-message-ids #{}
