@@ -4,13 +4,13 @@
             [status-im.chat.commands.core :as commands]
             [status-im.chat.models :as chat-model]
             [status-im.constants :as constants]
-            [status-im.data-store.contacts :as contacts-store]
             [status-im.data-store.user-statuses :as user-statuses-store]
-            [status-im.utils.contacts :as utils.contacts]
             [status-im.utils.datetime :as time]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [status-im.utils.priority-map :refer [empty-message-map]]))
 
-(def index-messages (partial into {} (map (juxt :message-id identity))))
+(def index-messages (partial into empty-message-map
+                             (map (juxt :message-id identity))))
 
 (defn- sort-references
   "Sorts message-references sequence primary by clock value,
@@ -70,10 +70,11 @@
                                         :deduplication-ids (get stored-deduplication-ids chat-id)
                                         :not-loaded-message-ids (set/difference (get stored-message-ids chat-id)
                                                                                 (set message-ids))
-                                        :referenced-messages (index-messages
-                                                              (get-referenced-messages
-                                                               chat-id
-                                                               (get-referenced-ids chat-messages)))))))
+                                        :referenced-messages (into {}
+                                                                   (map (juxt :message-id identity)
+                                                                        (get-referenced-messages
+                                                                         chat-id
+                                                                         (get-referenced-ids chat-messages))))))))
                       {}
                       all-stored-chats)]
     (fx/merge cofx
