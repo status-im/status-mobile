@@ -57,8 +57,11 @@
   {:flex             1
    :padding-vertical 16})
 
-(def chat-name
-  {:font-size  14})
+(defn chat-name [current?]
+  {:font-size  14
+   :font-weight (if current?
+                  :bold
+                  :normal)})
 
 (def chat-last-message
   {:color      colors/gray
