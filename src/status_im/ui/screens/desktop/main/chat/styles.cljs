@@ -38,7 +38,8 @@
 
 (def author
   {:color         colors/black
-   :font-size     14})
+   :font-size     14
+   :font-weight   :bold})
 
 (defn chat-box [height]
   {:height            (+ height (* 2 chat-vertical-padding))
