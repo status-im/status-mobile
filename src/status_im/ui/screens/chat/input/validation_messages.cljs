@@ -17,9 +17,9 @@
    markup])
 
 (defview validation-messages-view []
-  (letsubs [chat-input-margin [:chat-input-margin]
-            input-height      [:get-current-chat-ui-prop :input-height]
-            validation-result [:validation-messages]]
+  (letsubs [chat-input-margin [:chats/input-margin]
+            input-height      [:chats/current-chat-ui-prop :input-height]
+            validation-result [:chats/validation-messages]]
     (when validation-result
       (let [message (if (string? validation-result)
                       {:title       (i18n/label :t/error)

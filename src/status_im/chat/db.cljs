@@ -84,7 +84,7 @@
       (and (not outgoing)
            (not (= :user-message message-type)))))
 
-                                        ; any message that comes after this amount of ms will be grouped separately
+;; any message that comes after this amount of ms will be grouped separately
 (def ^:private group-ms 60000)
 
 (defn add-positional-metadata
@@ -93,18 +93,18 @@
   [{:keys [stream last-outgoing-seen]}
    {:keys [type message-type from datemark outgoing timestamp] :as message}]
   (let [previous-message         (peek stream)
-                                        ; Was the previous message from a different author or this message
-                                        ; comes after x ms
+        ;; Was the previous message from a different author or this message
+        ;; comes after x ms
         last-in-group?           (or (= :system-message message-type)
                                      (not= from (:from previous-message))
                                      (> (- (:timestamp previous-message) timestamp) group-ms))
         same-direction?          (= outgoing (:outgoing previous-message))
-                                        ; Have we seen an outgoing message already?
+        ;; Have we seen an outgoing message already?
         last-outgoing?           (and (not last-outgoing-seen)
                                       outgoing)
         datemark?                (= :datemark (:type message))
-                                        ; If this is a datemark or this is the last-message of a group,
-                                        ; then the previous message was the first
+        ;; If this is a datemark or this is the last-message of a group,
+        ;; then the previous message was the first
         previous-first-in-group? (or datemark?
                                      last-in-group?)
         new-message              (assoc message
@@ -114,12 +114,12 @@
                                         :last-outgoing?  last-outgoing?)]
     {:stream             (cond-> stream
                            previous-first-in-group?
-                                        ; update previuous message if necessary
+                           ;; update previous message if necessary
                            set-previous-message-info
 
                            :always
                            (conj new-message))
-                                        ; mark the last message sent by the user
+     ;; mark the last message sent by the user
      :last-outgoing-seen (or last-outgoing-seen last-outgoing?)}))
 
 (defn messages-stream

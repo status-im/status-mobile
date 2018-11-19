@@ -17,7 +17,7 @@
     :content             {:title         (i18n/label :t/home)
                           :icon-inactive :icons/home
                           :icon-active   :icons/home-active}
-    :count-subscription  :get-chats-unread-messages-number
+    :count-subscription  :chats/unread-messages-number
     :accessibility-label :home-tab-button}
    {:view-id             :wallet
     :content             {:title         (i18n/label :t/wallet)

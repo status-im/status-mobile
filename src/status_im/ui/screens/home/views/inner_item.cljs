@@ -22,7 +22,7 @@
             [status-im.browser.core :as browser]))
 
 (defview command-short-preview [message]
-  (letsubs [id->command [:get-id->command]]
+  (letsubs [id->command [:chats/id->command]]
     (when-let [command (commands-receiving/lookup-command-by-ref message id->command)]
       (commands/generate-short-preview command message))))
 
@@ -63,7 +63,7 @@
      (time/to-short-str timestamp)]))
 
 (defview unviewed-indicator [chat-id]
-  (letsubs [unviewed-messages-count [:unviewed-messages-count chat-id]]
+  (letsubs [unviewed-messages-count [:chats/unviewed-messages-count chat-id]]
     (when (pos? unviewed-messages-count)
       [components.common/counter {:size                22
                                   :accessibility-label :unread-messages-count-text}
@@ -89,8 +89,8 @@
                                                  group-chat public?
                                                  public-key
                                                  timestamp]}]
-  (letsubs [last-message [:get-last-message chat-id]
-            chat-name    [:get-chat-name chat-id]]
+  (letsubs [last-message [:chats/last-message chat-id]
+            chat-name    [:chats/chat-name chat-id]]
     (let [truncated-chat-name (utils/truncate-str chat-name 30)]
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])}
        [react/view styles/chat-container

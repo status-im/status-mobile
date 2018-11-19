@@ -61,8 +61,8 @@
       [message-status-row contact row])))
 
 (defn bottom-info-view []
-  (let [bottom-info (re-frame/subscribe [:get-current-chat-ui-prop :bottom-info])
-        contacts    (re-frame/subscribe [:get-contacts])]
+  (let [bottom-info (re-frame/subscribe [:chats/current-chat-ui-prop :bottom-info])
+        contacts    (re-frame/subscribe [:contacts/contacts])]
     (reagent/create-class
      {:display-name "bottom-info-view"
       :reagent-render

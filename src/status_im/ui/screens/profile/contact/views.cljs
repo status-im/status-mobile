@@ -62,8 +62,8 @@
    [profile-info-contact-code-item public-key]])
 
 (defview profile []
-  (letsubs [identity        [:get-current-contact-identity]
-            maybe-contact   [:get-current-contact]]
+  (letsubs [identity        [:contacts/current-contact-identity]
+            maybe-contact   [:contacts/current-contact]]
     (let [contact (or maybe-contact (contact.db/public-key->new-contact identity))]
       [react/view profile.components.styles/profile
        [status-bar/status-bar]

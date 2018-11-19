@@ -39,7 +39,7 @@
 
 (views/defview new-contact []
   (views/letsubs [new-contact-identity [:get :contacts/new-identity]
-                  contacts             [:all-added-people-contacts]
+                  contacts             [:contacts/all-added-people-contacts]
                   chat-error           [:new-identity-error]
                   topic                [:get :public-group-topic]
                   topic-error          [:public-chat.new/topic-error-message]]

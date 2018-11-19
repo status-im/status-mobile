@@ -23,7 +23,7 @@
 
 (re-frame/reg-sub
  :search/filtered-active-chats
- :<- [:get-active-chats]
+ :<- [:chats/active-chats]
  :<- [:search/filter]
  filter-chats)
 

@@ -184,7 +184,7 @@
          (i18n/label :t/specify-recipient)))])
 
 (views/defview recipient-contact [address name request?]
-  (views/letsubs [contact [:get-contact-by-address address]]
+  (views/letsubs [contact [:contacts/contact-by-address address]]
     (let [address? (and (not (nil? address)) (not= address ""))]
       [react/view styles/recipient-container
        [react/view styles/recipient-icon
@@ -211,7 +211,7 @@
       (ethereum/normalized-address (:address contact))]]]])
 
 (views/defview recent-recipients []
-  (views/letsubs [contacts [:all-added-people-contacts]]
+  (views/letsubs [contacts [:contacts/all-added-people-contacts]]
     [simple-screen
      [toolbar (i18n/label :t/recipient)]
      [react/view styles/recent-recipients

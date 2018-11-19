@@ -23,7 +23,7 @@
    [react/view {:style (style/photo-border size)}]])
 
 (defview member-photo [from]
-  (letsubs [photo-path [:get-photo-path from]]
+  (letsubs [photo-path [:chats/photo-path from]]
     (photo (if (string/blank? photo-path)
              (identicon/identicon from)
              photo-path)
