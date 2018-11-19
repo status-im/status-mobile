@@ -92,7 +92,7 @@
  :query-current-chat-contacts
  :<- [:get-current-chat]
  :<- [:get-contacts]
- (fn [[chat contacts [_ query-fn]]]
+ (fn [[chat contacts] [_ query-fn]]
    (contact.db/query-chat-contacts chat contacts query-fn)))
 
 (re-frame/reg-sub
@@ -116,7 +116,7 @@
  (fn [[_ _ chat-id] _]
    [(re-frame/subscribe [:get-chat chat-id])
     (re-frame/subscribe [:get-contacts])])
- (fn [[chat all-contacts [_ query-fn]]]
+ (fn [[chat all-contacts] [_ query-fn]]
    (contact.db/query-chat-contacts chat all-contacts query-fn)))
 
 (re-frame/reg-sub
