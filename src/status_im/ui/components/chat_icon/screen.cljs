@@ -28,7 +28,7 @@
         [react/view pending-inner-circle]]])))
 
 (defview chat-icon-view [chat-id _group-chat name _online styles & [hide-dapp?]]
-  (letsubs [photo-path [:get-chat-photo chat-id]
+  (letsubs [photo-path [:contacts/chat-photo chat-id]
             dapp?      [:get-in [:contacts/contacts chat-id :dapp?]]]
     [react/view (:container styles)
      (if-not (string/blank? photo-path)

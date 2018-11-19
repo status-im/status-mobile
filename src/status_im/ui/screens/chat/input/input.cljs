@@ -21,8 +21,8 @@
             [status-im.utils.utils :as utils]))
 
 (defview basic-text-input [{:keys [set-container-width-fn height single-line-input?]}]
-  (letsubs [{:keys [input-text]} [:get-current-chat]
-            cooldown-enabled?    [:chat-cooldown-enabled?]]
+  (letsubs [{:keys [input-text]} [:chats/current-chat]
+            cooldown-enabled?    [:chats/cooldown-enabled?]]
     [react/text-input
      (merge
       {:ref                    #(when % (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-ref %}]))
@@ -49,7 +49,7 @@
         {:placeholder (i18n/label :cooldown/text-input-disabled)}))]))
 
 (defview invisible-input [{:keys [set-layout-width-fn value]}]
-  (letsubs [{:keys [input-text]} [:get-current-chat]]
+  (letsubs [{:keys [input-text]} [:chats/current-chat]]
     [react/text {:style     style/invisible-input-text
                  :on-layout #(let [w (-> (.-nativeEvent %)
                                          (.-layout)
@@ -65,7 +65,7 @@
                                         :duration 300})))))
 
 (defview input-helper [{:keys [width]}]
-  (letsubs [placeholder   [:chat-input-placeholder]
+  (letsubs [placeholder   [:chats/input-placeholder]
             opacity-value (animation/create-value 0)
             on-update     (input-helper-view-on-update {:opacity-value opacity-value
                                                         :placeholder   placeholder})]
@@ -82,7 +82,7 @@
     nil))
 
 (defview input-view [{:keys [single-line-input?]}]
-  (letsubs [command [:selected-chat-command]]
+  (letsubs [command [:chats/selected-chat-command]]
     (let [component              (reagent/current-component)
           set-layout-width-fn    #(reagent/set-state component {:width %})
           set-container-width-fn #(reagent/set-state component {:container-width %})
@@ -95,8 +95,8 @@
         [input-helper {:width width}]]])))
 
 (defview commands-button []
-  (letsubs [commands      [:get-all-available-commands]
-            reply-message [:get-reply-message]]
+  (letsubs [commands      [:chats/all-available-commands]
+            reply-message [:chats/reply-message]]
     (when (and (not reply-message) (seq commands))
       [react/touchable-highlight
        {:on-press            #(re-frame/dispatch [:chat.ui/set-command-prefix])
@@ -106,14 +106,14 @@
                                                   :color           :dark}]]])))
 
 (defview reply-message [from message-text]
-  (letsubs [username           [:get-contact-name-by-identity from]
+  (letsubs [username           [:contacts/contact-name-by-identity from]
             current-public-key [:account/public-key]]
     [react/view {:style style/reply-message-content}
      [react/text {:style style/reply-message-author} (chat-utils/format-reply-author from username current-public-key)]
      [react/text {:style (message-style/style-message-text false)} message-text]]))
 
 (defview reply-message-view []
-  (letsubs [{:keys [content from] :as message} [:get-reply-message]]
+  (letsubs [{:keys [content from] :as message} [:chats/reply-message]]
     (when message
       [react/view {:style style/reply-message-container}
        [react/view {:style style/reply-message}
@@ -128,9 +128,9 @@
                                           :color           colors/white}]]]])))
 
 (defview input-container []
-  (letsubs [margin               [:chat-input-margin]
-            {:keys [input-text]} [:get-current-chat]
-            result-box           [:get-current-chat-ui-prop :result-box]]
+  (letsubs [margin               [:chats/input-margin]
+            {:keys [input-text]} [:chats/current-chat]
+            result-box           [:chats/current-chat-ui-prop :result-box]]
     (let [single-line-input? (:singleLineInput result-box)]
       [react/view {:style     (style/root margin)
                    :on-layout #(let [h (-> (.-nativeEvent %)

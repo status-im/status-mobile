@@ -26,7 +26,7 @@
             [status-im.ui.components.toolbar.actions :as toolbar.actions]))
 
 (defview add-contact-bar [contact-identity]
-  (letsubs [{:keys [hide-contact?] :as contact} [:get-contact-by-identity]]
+  (letsubs [{:keys [hide-contact?] :as contact} [:contacts/contact-by-identity]]
     (when (and (not hide-contact?)
                (models.contact/can-add-to-contacts? contact))
       [react/view style/add-contact
@@ -48,8 +48,8 @@
                         :options (actions/actions group-chat? chat-id public?)}))
 
 (defview chat-toolbar [public? modal?]
-  (letsubs [name                                  [:get-current-chat-name]
-            {:keys [group-chat chat-id contacts]} [:get-current-chat]]
+  (letsubs [name                                  [:chats/current-chat-name]
+            {:keys [group-chat chat-id contacts]} [:chats/current-chat]]
     [react/view
      [status-bar/status-bar (when modal? {:type :modal-white})]
      [toolbar/platform-agnostic-toolbar {}
@@ -101,7 +101,7 @@
        message-view]]]))
 
 (defview empty-chat-container [{:keys [group-chat chat-id]}]
-  (letsubs [contact [:get-contact-by-identity chat-id]]
+  (letsubs [contact [:contacts/contact-by-identity chat-id]]
     (let [one-to-one (and (not group-chat)
                           (not (:dapp? contact)))]
       [react/view style/empty-chat-container
@@ -115,8 +115,8 @@
           (i18n/label :t/empty-chat-description))]])))
 
 (defview messages-view [group-chat modal?]
-  (letsubs [messages           [:get-current-chat-messages-stream]
-            chat               [:get-current-chat]
+  (letsubs [messages           [:chats/current-chat-messages-stream]
+            chat               [:chats/current-chat]
             current-public-key [:account/public-key]]
     {:component-did-mount #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
                                                                            :input-focused? false}])}
@@ -135,10 +135,10 @@
                        :keyboardShouldPersistTaps :handled}])))
 
 (defview chat-root [modal?]
-  (letsubs [{:keys [group-chat public?]} [:get-current-chat]
-            show-bottom-info? [:get-current-chat-ui-prop :show-bottom-info?]
-            show-message-options? [:get-current-chat-ui-prop :show-message-options?]
-            current-view      [:get :view-id]]
+  (letsubs [{:keys [group-chat public?]} [:chats/current-chat]
+            show-bottom-info?            [:chats/current-chat-ui-prop :show-bottom-info?]
+            show-message-options?        [:chats/current-chat-ui-prop :show-message-options?]
+            current-view                 [:get :view-id]]
     ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
     ;; more details here: https://github.com/facebook/react-native/issues/11071
     [react/scroll-view {:scroll-enabled               false

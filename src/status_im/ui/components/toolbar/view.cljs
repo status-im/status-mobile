@@ -31,7 +31,7 @@
                              icon-opts)]])
 
 (defview nav-button-with-count [props]
-  (letsubs [unread-messages-number [:get-chats-unread-messages-number]]
+  (letsubs [unread-messages-number [:chats/unread-messages-number]]
     (let [unread-messages? (pos? unread-messages-number)]
       [react/view {:flex-direction :row}
        [nav-button (assoc props :unread-messages? unread-messages?)]

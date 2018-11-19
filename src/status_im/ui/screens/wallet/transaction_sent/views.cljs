@@ -13,7 +13,7 @@
             [status-im.ui.components.colors :as colors]))
 
 (defview transaction-sent [& [modal?]]
-  (letsubs [chat-id [:get-current-chat-id]]
+  (letsubs [chat-id [:chats/current-chat-id]]
     [react/view wallet.styles/wallet-modal-container
      [status-bar/status-bar {:type (if modal? :modal-wallet :transparent)}]
      [react/view styles/transaction-sent-container

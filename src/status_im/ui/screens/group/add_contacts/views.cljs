@@ -63,7 +63,7 @@
 
 ;; Start group chat
 (defview contact-toggle-list []
-  (letsubs [contacts                [:all-added-people-contacts]
+  (letsubs [contacts                [:contacts/all-added-people-contacts]
             selected-contacts-count [:selected-contacts-count]]
     [react/keyboard-avoiding-view {:style styles/group-container}
      [status-bar]
@@ -77,8 +77,8 @@
 
 ;; Add participants to existing group chat
 (defview add-participants-toggle-list []
-  (letsubs [contacts                [:get-all-contacts-not-in-current-chat]
-            {:keys [name]} [:get-current-chat]
+  (letsubs [contacts                [:contacts/all-contacts-not-in-current-chat]
+            {:keys [name]} [:chats/current-chat]
             selected-contacts-count [:selected-participants-count]]
     [react/keyboard-avoiding-view {:style styles/group-container}
      [status-bar]

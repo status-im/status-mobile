@@ -21,7 +21,7 @@
                               :accessibility-label :dapp-item}])
 
 (views/defview open-dapp []
-  (views/letsubs [dapps [:all-dapps]
+  (views/letsubs [dapps [:contacts/all-dapps]
                   url-text (atom nil)]
     [react/keyboard-avoiding-view styles/main-container
      [status-bar/status-bar]

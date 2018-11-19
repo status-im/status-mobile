@@ -24,7 +24,7 @@
 
 (defview message-content-command
   [command-message]
-  (letsubs [id->command [:get-id->command]]
+  (letsubs [id->command [:chats/id->command]]
     (if-let [command (commands-receiving/lookup-command-by-ref command-message id->command)]
       (commands/generate-preview command command-message)
       [react/text (str "Unhandled command: " (-> command-message :content :command-path first))])))
@@ -41,14 +41,15 @@
                                                                     (get content :command-ref))
     content]])
 
-; We can't use CSS as nested Text element don't accept margins nor padding
-; so we pad the invisible placeholder with some spaces to avoid having too
-; close to the text.
-(defn timestamp-with-padding [t]
+(defn timestamp-with-padding
+  "We can't use CSS as nested Text element don't accept margins nor padding
+  so we pad the invisible placeholder with some spaces to avoid having too
+  close to the text"
+  [t]
   (str "   " t))
 
 (defview quoted-message [{:keys [from text]} outgoing current-public-key]
-  (letsubs [username [:get-contact-name-by-identity from]]
+  (letsubs [username [:contacts/contact-name-by-identity from]]
     [react/view {:style (style/quoted-message-container outgoing)}
      [react/view {:style style/quoted-message-author-container}
       [vector-icons/icon :icons/reply {:color (if outgoing colors/wild-blue-yonder colors/gray)}]
@@ -131,8 +132,8 @@
     (i18n/message-status-label status)]])
 
 (defview group-message-delivery-status [{:keys [message-id current-public-key user-statuses] :as msg}]
-  (letsubs [{participants :contacts} [:get-current-chat]
-            contacts                 [:get-contacts]]
+  (letsubs [{participants :contacts} [:chats/current-chat]
+            contacts                 [:contacts/contacts]]
     (let [outgoing-status         (or (get-in user-statuses [current-public-key :status]) :sending)
           delivery-statuses       (dissoc user-statuses current-public-key)
           delivery-statuses-count (count delivery-statuses)
@@ -210,7 +211,7 @@
                 [text-status status]))))))))
 
 (defview message-author-name [from message-username]
-  (letsubs [username [:get-contact-name-by-identity from]]
+  (letsubs [username [:contacts/contact-name-by-identity from]]
     [react/text {:style style/message-author-name}
      (chat.utils/format-author from (or username message-username))]))
 
