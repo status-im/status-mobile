@@ -29,8 +29,9 @@
                    (gfycat/generate-gfy public-key))
           [unviewed-messages-label large?] (if (< 9 unviewed-messages-count)
                                              ["9+" true]
-                                             [unviewed-messages-count false])]
-      [react/view {:style (styles/chat-list-item (= current-chat-id chat-id))}
+                                             [unviewed-messages-count false])
+          current? (= current-chat-id chat-id)]
+      [react/view {:style (styles/chat-list-item current?)}
        [react/view {:style styles/img-container}
         (if public?
           [react/view {:style (styles/topic-image color)}
@@ -49,8 +50,7 @@
            [icons/icon :icons/public-chat])
          [react/text {:ellipsize-mode  :tail
                       :number-of-lines 1
-                      :style           styles/chat-name
-                      :font            (if (= current-chat-id chat-id) :medium :default)}
+                      :style           (styles/chat-name current?)}
           name]]
         [react/text {:ellipsize-mode  :tail
                      :number-of-lines 1
