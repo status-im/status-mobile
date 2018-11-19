@@ -20,7 +20,7 @@
             [status-im.ui.screens.desktop.main.tabs.profile.views :as profile.views]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.desktop.main.chat.styles :as styles]
-            [status-im.utils.contacts :as utils.contacts]
+            [status-im.contact.db :as contact.db]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.desktop.main.chat.events :as chat.events]
             [status-im.ui.screens.chat.message.message :as chat.message]))
@@ -332,7 +332,7 @@
 (views/defview chat-profile []
   (views/letsubs [identity        [:get-current-contact-identity]
                   maybe-contact   [:get-current-contact]]
-    (let [contact (or maybe-contact (utils.contacts/public-key->new-contact identity))
+    (let [contact (or maybe-contact (contact.db/public-key->new-contact identity))
           {:keys [pending? public-key]} contact]
       [react/view {:style styles/chat-profile-body}
        [profile.views/profile-badge contact]

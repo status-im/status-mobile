@@ -1,7 +1,7 @@
-(ns status-im.test.contacts.subs
+(ns status-im.test.contacts.db
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.utils.identicon :as identicon]
-            [status-im.contact.subs :as contacts-subs]))
+            [status-im.contact.db :as contact.db]))
 
 (deftest contacts-subs
   (testing "get-all-contacts-in-group-chat"
@@ -35,9 +35,9 @@
                               :photo-path          "photo2",
                               :public-key
                               "0x048a2f8b80c60f89a91b4c1316e56f75b087f446e7b8701ceca06a40142d8efe1f5aa36bd0fee9e248060a8d5207b43ae98bef4617c18c71e66f920f324869c09f"}]
-        (is (= (contacts-subs/get-all-contacts-in-group-chat chat-contact-ids
-                                                             contacts
-                                                             current-account)
+        (is (= (contact.db/get-all-contacts-in-group-chat chat-contact-ids
+                                                          contacts
+                                                          current-account)
                [{:name             "Snappy Impressive Leonberger"
                  :photo-path       "generated"
                  :public-key "0x04fcf40c526b09ff9fb22f4a5dbd08490ef9b64af700870f8a0ba2133f4251d5607ed83cd9047b8c2796576bc83fa0de23a13a4dced07654b8ff137fe744047917"}
