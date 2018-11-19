@@ -1,18 +1,16 @@
 (ns status-im.contact.core
-  (:require [status-im.accounts.db :as accounts.db]
-            [status-im.data-store.contacts :as contacts-store]
-            [status-im.transport.message.protocol :as protocol]
-            [status-im.transport.message.contact :as message.contact]
-            [status-im.utils.contacts :as utils.contacts]
-            [status-im.utils.fx :as fx]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
+            [status-im.accounts.db :as accounts.db]
             [status-im.chat.models :as chat.models]
+            [status-im.contact.db :as contact.db]
+            [status-im.data-store.contacts :as contacts-store]
             [status-im.i18n :as i18n]
+            [status-im.transport.message.contact :as message.contact]
+            [status-im.transport.message.protocol :as protocol]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.js-resources :as js-res]
-            [status-im.utils.utils :as utils]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [status-im.utils.utils :as utils]))
 
 (fx/defn load-contacts
   [{:keys [db all-contacts]}]
@@ -29,8 +27,8 @@
 (defn build-contact [{{:keys [chats] :account/keys [account]
                        :contacts/keys [contacts]} :db} public-key]
   (cond-> (assoc (or (get contacts public-key)
-                     (utils.contacts/public-key->new-contact public-key))
-                 :address (utils.contacts/public-key->address public-key))
+                     (contact.db/public-key->new-contact public-key))
+                 :address (contact.db/public-key->address public-key))
 
     (= public-key (:public-key account)) (assoc :name (:name account))))
 
@@ -110,7 +108,7 @@
                                :name         name
                                :address      (or address
                                                  (:address contact)
-                                                 (utils.contacts/public-key->address public-key))
+                                                 (contact.db/public-key->address public-key))
                                :last-updated timestamp-ms
                                   ;;NOTE (yenda) in case of concurrent contact request
                                :pending?     (get contact :pending? true)}

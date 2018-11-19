@@ -7,7 +7,7 @@
             [status-im.i18n :as i18n]
             [status-im.utils.core :as utils]
             [status-im.utils.config :as config]
-            [status-im.utils.contacts :as utils.contacts]
+            [status-im.contact.db :as contact.db]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.datetime :as time]
             [status-im.transport.message.group-chat :as message.group-chat]
@@ -96,7 +96,7 @@
   (let [chat-name'        (chat.db/chat-name (get-in db [:chats chat-id]) from)
         contact-name'     (if-let [contact-name (get-in db [:contacts/contacts from :name])]
                             contact-name
-                            (:name (utils.contacts/public-key->new-contact from)))
+                            (:name (contact.db/public-key->new-contact from)))
         shown-chat-name   (when-not (= chat-name' contact-name') chat-name') ; No point in repeating contact name if the chat name already contains the same name
         timestamp'        (when-not (< (time/seconds-ago (time/to-date timestamp)) 15)
                             (str " @ " (time/to-short-str timestamp)))
