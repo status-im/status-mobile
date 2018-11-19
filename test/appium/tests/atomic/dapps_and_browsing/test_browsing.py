@@ -100,6 +100,7 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing_view.element_by_text('Google').find_element()
 
     @marks.testrail_id(5321)
+    @marks.skip
     @marks.critical
     def test_back_forward_buttons_browsing_website(self):
         sign_in = SignInView(self.driver)

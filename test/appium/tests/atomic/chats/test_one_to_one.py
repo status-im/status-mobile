@@ -33,6 +33,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2_chat.chat_element_by_text(message).wait_for_visibility_of_element()
 
     @marks.testrail_id(5310)
+    @marks.skip
     @marks.critical
     def test_offline_messaging_1_1_chat(self):
         self.create_drivers(2, offline_mode=True)
