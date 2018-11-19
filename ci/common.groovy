@@ -144,7 +144,7 @@ def githubNotify(Map urls) {
     message += "CI BUILD SUCCESSFUL in ${currentBuild.durationString} (${GIT_COMMIT})\n"
     message += '| | | | | |\n'
     message += '|-|-|-|-|-|\n'
-    message += "| [Android](${urls.apk})([e2e](${urls.e2e})) | [iOS](${urls.ipa}) |"
+    message += "| [Android](${urls.apk}) ([e2e](${urls.apke2e})) | [iOS](${urls.ipa}) ([e2e](${urls.iose2e})) |"
     if (dmgUrl != null) {
       message += " [MacOS](${urls.dmg}) | [AppImage](${urls.app}) | [Windows](${urls.win}) |"
     } else {
@@ -163,7 +163,13 @@ def githubNotify(Map urls) {
 }
 
 def pkgFind(glob) {
-  return findFiles(glob: "pkg/*${glob}")[0].path
+  def fullGlob =  "pkg/*${glob}"
+  def found = findFiles(glob: fullGlob)
+  if (found.size() == 0) {
+    sh 'ls -l pkg/'
+    error("File not found via glob: ${fullGlob} ${found.size()}")
+  }
+  return found[0].path
 }
 
 def setBuildDesc(Map links) {

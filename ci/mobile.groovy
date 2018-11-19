@@ -27,7 +27,7 @@ def podUpdate() {
   try {
     wait(lockFile)
     sh "touch ${lockFile}"
-    sh 'pod update --silent'
+    sh 'pod update --silent --no-ansi'
   } finally {
     sh "rm ${lockFile}"
   }

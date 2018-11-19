@@ -91,6 +91,7 @@ status-go-*.zip
 ios/Pods
 ios/StatusIm.xcworkspace
 .ruby-version
+status-e2e/
 
 #python
 *.pyc

@@ -1,5 +1,5 @@
 pipeline {
-  agent { label 'fastlane' }
+  agent { label 'macos' }
 
   options {
     timestamps()
@@ -7,8 +7,8 @@ pipeline {
     timeout(time: 35, unit: 'MINUTES')
     /* Limit builds retained */
     buildDiscarder(logRotator(
-      numToKeepStr: '60',
-      daysToKeepStr: '30',
+      numToKeepStr: '90',
+      daysToKeepStr: '60',
       artifactNumToKeepStr: '60',
     ))
   }
@@ -66,7 +66,14 @@ pipeline {
     }
     stage('Upload') {
       steps {
-        script { env.DIAWI_URL = mobile.ios.uploadToDiawi() }
+        script {
+          switch (cmn.getBuildType()) {
+            case 'nightly':
+              env.DIAWI_URL = mobile.ios.uploadToDiawi(); break;
+            case 'e2e':
+              env.SAUCE_URL = mobile.ios.uploadToSauceLabs(); break;
+          }
+        }
       }
     }
   }

@@ -26,9 +26,9 @@ def uploadToPlayStore(type = 'nightly') {
 def uploadToSauceLabs() {
   def changeId = common.getParentRunEnv('CHANGE_ID')
   if (changeId != null) {
-    env.SAUCE_LABS_APK = "${changeId}.apk"
+    env.SAUCE_LABS_NAME = "${changeId}.apk"
   } else {
-    env.SAUCE_LABS_APK = "im.status.ethereum-e2e-${GIT_COMMIT.take(6)}.apk"
+    env.SAUCE_LABS_NAME = "im.status.ethereum-e2e-${GIT_COMMIT.take(6)}.apk"
   }
   withCredentials([
     string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
@@ -36,11 +36,11 @@ def uploadToSauceLabs() {
   ]) {
     sh 'bundle exec fastlane android saucelabs'
   }
-  return env.SAUCE_LABS_APK
+  return env.SAUCE_LABS_NAME
 }
 
 def uploadToDiawi() {
-  env.SAUCE_LABS_APK = "im.status.ethereum-e2e-${GIT_COMMIT.take(6)}.apk"
+  env.SAUCE_LABS_NAME = "im.status.ethereum-e2e-${GIT_COMMIT.take(6)}.apk"
   withCredentials([
     string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
   ]) {

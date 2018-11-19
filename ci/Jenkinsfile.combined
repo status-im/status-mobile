@@ -26,45 +26,44 @@ pipeline {
     }
     stage('Build') {
       parallel {
-        stage('MacOS') {
-        when { expression { btype != 'release' } }
+        stage('MacOS') { when { expression { btype != 'release' } }
         steps { script {
           osx = cmn.buildBranch('status-react/combined/desktop-macos')
         } } }
-        stage('Linux') {
-        when { expression { btype != 'release' } }
+        stage('Linux') { when { expression { btype != 'release' } }
         steps { script {
           nix = cmn.buildBranch('status-react/combined/desktop-linux')
         } } }
-        stage('Windows') {
-        when { expression { btype != 'release' } }
+        stage('Windows') { when { expression { btype != 'release' } }
         steps { script {
           win = cmn.buildBranch('status-react/combined/desktop-windows')
         } } }
         stage('iOS') { steps { script {
           ios = cmn.buildBranch('status-react/combined/mobile-ios')
         } } }
+        stage('iOS e2e') { steps { script {
+          iose2e = cmn.buildBranch('status-react/combined/mobile-ios', 'e2e')
+        } } }
         stage('Android') { steps { script {
-          dro = cmn.buildBranch('status-react/combined/mobile-android')
+          apk = cmn.buildBranch('status-react/combined/mobile-android')
         } } }
         stage('Android e2e') { steps { script {
-          e2e = cmn.buildBranch('status-react/combined/mobile-android', 'e2e')
+          apke2e = cmn.buildBranch('status-react/combined/mobile-android', 'e2e')
         } } }
       }
     }
     stage('Archive') {
       steps { script {
         sh('rm -f pkg/*')
-
         if (btype != 'release') {
           cmn.copyArts('status-react/combined/desktop-macos', osx.number)
           cmn.copyArts('status-react/combined/desktop-linux', nix.number)
           cmn.copyArts('status-react/combined/desktop-windows', win.number)
         }
         cmn.copyArts('status-react/combined/mobile-ios', ios.number)
-        cmn.copyArts('status-react/combined/mobile-android', dro.number)
-        cmn.copyArts('status-react/combined/mobile-android', e2e.number)
-        cmn.copyArts('status-react/combined/mobile-ios', ios.number)
+        cmn.copyArts('status-react/combined/mobile-ios', iose2e.number)
+        cmn.copyArts('status-react/combined/mobile-android', apk.number)
+        cmn.copyArts('status-react/combined/mobile-android', apke2e.number)
         dir('pkg') {
           /* generate sha256 checksums for upload */
           sh "sha256sum * | tee ${cmn.pkgFilename(btype, 'sha256')}"
@@ -74,7 +73,7 @@ pipeline {
     }
     stage('Upload') {
       steps { script {
-        e2eUrl = cmn.uploadArtifact(cmn.pkgFind('e2e.apk'))
+        apke2eUrl = cmn.uploadArtifact(cmn.pkgFind('e2e.apk'))
         apkUrl = cmn.uploadArtifact(cmn.pkgFind("${btype}.apk"))
         if (btype != 'release') {
           dmgUrl = cmn.uploadArtifact(cmn.pkgFind('dmg'))
@@ -85,18 +84,23 @@ pipeline {
           appUrl = null
           exeUrl = null
         }
+        iose2eUrl = cmn.uploadArtifact(cmn.pkgFind("e2e.app.zip"))
         /* special case for iOS Diawi links */
         ipaUrl = ios.getBuildVariables().get('DIAWI_URL')
         /* upload the sha256 checksums file too */
         shaUrl = cmn.uploadArtifact(cmn.pkgFind('sha256'))
         /* add URLs to the build description */
         cmn.setBuildDesc(
-          Apk: apkUrl, e2e: e2eUrl, iOS: ipaUrl, App: appUrl, Mac: dmgUrl, Win: exeUrl,
+          Apk: apkUrl, Apke2e: apke2eUrl,
+          iOS: ipaUrl, iOSe2e: iose2eUrl,
+          App: appUrl, Mac: dmgUrl, Win: exeUrl,
         )
         /* Create latest.json with newest nightly URLs */
         if (btype == 'nightly') {
           cmn.updateLatestNightlies(
-            APK: apkUrl, IOS: ipaUrl, APP: appUrl, MAC: dmgUrl, WIN: exeUrl, SHA: shaUrl
+            APK: apkUrl, IOS: ipaUrl,
+            APP: appUrl, MAC: dmgUrl,
+            WIN: exeUrl, SHA: shaUrl
           )
         }
       } }
@@ -105,7 +109,9 @@ pipeline {
       steps { script {
         if (env.CHANGE_ID != null) {
           cmn.githubNotify(
-            apk: apkUrl, e2e: e2eUrl, ipa: ipaUrl, app: appUrl, dmg: dmgUrl, win: exeUrl,
+            apk: apkUrl, apke2e: apke2eUrl,
+            ipa: ipaUrl, iose2e: iose2eUrl,
+            app: appUrl, dmg: dmgUrl, win: exeUrl,
           )
         }
       } }
@@ -130,7 +136,7 @@ pipeline {
     stage('Run e2e') {
       when { expression { btype == 'nightly' } }
       steps { script {
-        e2eApk = e2e.getBuildVariables().get('SAUCE_URL')
+        e2eApk = apke2e.getBuildVariables().get('SAUCE_URL')
         build(
           job: 'end-to-end-tests/status-app-nightly', wait: false,
           parameters: [string(name: 'apk', value: "--apk=${e2eApk}")]
