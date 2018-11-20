@@ -125,9 +125,11 @@
                                    (update-in [:chats chat-id :messages] assoc message-id prepared-message)
                                    ;; this will increase last-clock-value twice when sending our own messages
                                    (update-in [:chats chat-id :last-clock-value] (partial utils.clocks/receive clock-value)))
+
                                 (and (not current-chat?)
                                      (not= from current-public-key))
-                                (update-in [:chats chat-id :unviewed-messages] (fnil conj #{}) message-id))
+                                (update-in [:chats chat-id :loaded-unviewed-messages-ids]
+                                           (fnil conj #{}) message-id))
                :data-store/tx [(messages-store/save-message-tx prepared-message)]}
               (when (and platform/desktop?
                          (not batch?)
@@ -164,7 +166,7 @@
 (fx/defn add-received-message
   [{:keys [db now] :as cofx}
    batch?
-   {:keys [from message-id chat-id content content-type clock-value js-obj] :as raw-message}]
+   {:keys [from message-id chat-id js-obj] :as raw-message}]
   (let [{:keys [web3 current-chat-id view-id]} db
         current-public-key            (accounts.db/current-public-key cofx)
         current-chat?                 (and (or (= :chat view-id)
@@ -200,10 +202,9 @@
 
 (defn- add-to-chat?
   [{:keys [db]} {:keys [chat-id clock-value message-id from]}]
-  (let [{:keys [deleted-at-clock-value messages not-loaded-message-ids]}
+  (let [{:keys [deleted-at-clock-value messages]}
         (get-in db [:chats chat-id])]
     (not (or (get messages message-id)
-             (get not-loaded-message-ids message-id)
              (>= deleted-at-clock-value clock-value)
              (messages-store/message-exists? message-id)))))
 
@@ -231,15 +232,37 @@
          (= (accounts.db/current-public-key cofx) from)) chat-id
     (= :user-message message-type) from))
 
+(defn calculate-unviewed-messages-count
+  [{:keys [db] :as cofx} chat-id messages]
+  (let [{:keys [current-chat-id view-id]} db
+        chat-view?         (or (= :chat view-id)
+                               (= :chat-modal view-id))
+        current-public-key (accounts.db/current-public-key cofx)]
+    (+ (get-in db [:chats chat-id :unviewed-messages-count])
+       (if (and chat-view? (= current-chat-id chat-id))
+         0
+         (count (remove
+                 (fn [{:keys [from]}]
+                   (= from current-public-key))
+                 messages))))))
+
 (fx/defn receive-many
   [{:keys [now] :as cofx} messages]
   (let [valid-messages   (keep #(when-let [chat-id (extract-chat-id cofx %)] (assoc % :chat-id chat-id)) messages)
         deduped-messages (filter-messages cofx valid-messages)
         chat->message    (group-by :chat-id deduped-messages)
         chat-ids         (keys chat->message)
-        chats-fx-fns     (map #(chat-model/upsert-chat {:chat-id   %
-                                                        :is-active true
-                                                        :timestamp now})
+        chats-fx-fns     (map (fn [chat-id]
+                                (let [unviewed-messages-count
+                                      (calculate-unviewed-messages-count
+                                       cofx
+                                       chat-id
+                                       (get chat->message chat-id))]
+                                  (chat-model/upsert-chat
+                                   {:chat-id                 chat-id
+                                    :is-active               true
+                                    :timestamp               now
+                                    :unviewed-messages-count unviewed-messages-count})))
                               chat-ids)
         messages-fx-fns (map #(add-received-message true %) deduped-messages)
         groups-fx-fns   (map #(update-group-messages chat->message %) chat-ids)]

@@ -42,24 +42,6 @@
 (defn- sha3 [s]
   (.sha3 dependencies/Web3.prototype s))
 
-(defn- get-unviewed-messages
-  [public-key]
-  (-> @core/account-realm
-      (core/get-by-fields
-       :user-status
-       :and {:public-key public-key
-             :status     "received"})
-      (.reduce (fn [acc msg _ _]
-                 (let [chat-id (aget msg "chat-id")
-                       message-id (aget msg "message-id")]
-                   (update acc chat-id (fnil conj #{}) message-id)))
-               {})))
-
-(re-frame/reg-cofx
- :data-store/get-unviewed-messages
- (fn [cofx _]
-   (assoc cofx :get-stored-unviewed-messages get-unviewed-messages)))
-
 (re-frame/reg-cofx
  :data-store/get-referenced-messages
  (fn [cofx _]
