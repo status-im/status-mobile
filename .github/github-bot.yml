@@ -21,6 +21,7 @@ prchecklist:
 
 stale:
   daysUntilStale: 90
+  daysUntilPullRequestStale: 14
   daysUntilClose: 7
   exemptLabels:
     - 'wall of shame'
