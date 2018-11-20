@@ -278,7 +278,7 @@ class WalletView(BaseView):
     def send_transaction(self, **kwargs):
         send_transaction_view = self.send_transaction_button.click()
         send_transaction_view.select_asset_button.click()
-        asset_name = kwargs.get('asset_name', 'ETHro')
+        asset_name = kwargs.get('asset_name', 'ETHro').upper()
         asset_button = send_transaction_view.asset_by_name(asset_name)
         send_transaction_view.select_asset_button.click_until_presence_of_element(asset_button)
         asset_button.click()
@@ -308,7 +308,7 @@ class WalletView(BaseView):
         self.receive_transaction_button.click()
         send_transaction_view = self.send_transaction_request.click()
         send_transaction_view.select_asset_button.click()
-        asset_name = kwargs.get('asset_name', 'ETHro')
+        asset_name = kwargs.get('asset_name', 'ETHro').upper()
         asset_button = send_transaction_view.asset_by_name(asset_name)
         send_transaction_view.select_asset_button.click_until_presence_of_element(asset_button)
         asset_button.click()

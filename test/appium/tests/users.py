@@ -208,6 +208,13 @@ transaction_senders['X']['address'] = "0xc9cf2ff3ca98a91f2e3dfc35a13cf8425ecaf08
 transaction_senders['X']['public_key'] = "0x04a712634920a012cd45d63a23832d494518d992b77d3b8aa81131a302657193e2d174e3a" \
                                          "ffda80dad81bc3bf3edaf84334437cfecfb248f37fdcb1d882773cf08"
 
+transaction_senders['Y'] = dict()
+transaction_senders['Y']['passphrase'] = "slight thunder cup divorce hawk paper blush memory shaft extend laundry bone"
+transaction_senders['Y']['username'] = "Lighthearted Empty Longspur"
+transaction_senders['Y']['address'] = "0x2a5ed44a7092404ae08369ffde6e54ce47e3761c"
+transaction_senders['Y']['public_key'] = "0x04a6515d7f2a1659948429487ba3b747cc1860c29e304a5482492226ab65056c1c6ba6a" \
+                                         "5def258316d22882e43dd2b1b98b0f8d2488a7a5a967ac6d86c2a1088e2"
+
 transaction_recipients = dict()
 
 transaction_recipients['A'] = dict()
@@ -263,3 +270,10 @@ transaction_recipients['H']['username'] = "Glum Tricky Indianskimmer"
 transaction_recipients['H']['address'] = "0xe9676a57a28800d83301d9d3f9c77fd2e933609c"
 transaction_recipients['H']['public_key'] = "0x0400b4d2cb69c49d147af128a596a2160fb7ac1d2abc54156b26598feb5630e8e7529" \
                                             "f5a8363a73d6a9df86fdda87c095a9462aca8b4cbf1f331152a9a22cdb35d"
+
+transaction_recipients['I'] = dict()
+transaction_recipients['I']['passphrase'] = "engine equal wisdom saddle icon spring express limit surprise salute unique rose"
+transaction_recipients['I']['username'] = "Sharp Sour Greathornedowl"
+transaction_recipients['I']['address'] = "0x4e6c60f344b13d730682f0a6d8ae1255c75e730e"
+transaction_recipients['I']['public_key'] = "0x049d6fe0c874d11ddd92f72ac75659703a7b58211b934fc22f0c7eae835b71651c8" \
+                                            "3ae5e4fd688f1c898d39a657ea08a39d05d20a830bbf7eaffb6ccda9bef348f"
