@@ -40,9 +40,7 @@
         (.addEventListener react/app-state "change" app-state-change-handler))
       :component-did-mount
       (fn [this]
-        (dispatch [:set-initial-props (reagent/props this)])
-         ;; TODO(oskarth): Background click_action handler
-        (notifications/init))
+        (dispatch [:set-initial-props (reagent/props this)]))
       :component-will-unmount
       (fn []
         (.stop react/http-bridge)

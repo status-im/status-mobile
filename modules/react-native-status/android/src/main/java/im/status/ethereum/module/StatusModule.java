@@ -81,7 +81,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @Override
-    public void onHostResume() {  // Actvity `onResume`
+    public void onHostResume() {  // Activity `onResume`
         module = this;
         Activity currentActivity = getCurrentActivity();
         if (currentActivity == null) {
@@ -459,7 +459,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void notifyUsers(final String message, final String payloadJSON, final String tokensJSON, final Callback callback) {
+    public void notifyUsers(final String dataPayloadJSON, final String tokensJSON, final Callback callback) {
         Log.d(TAG, "notifyUsers");
         if (!checkAvailability()) {
             callback.invoke(false);
@@ -469,7 +469,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Runnable r = new Runnable() {
                 @Override
                 public void run() {
-                    String res = Statusgo.NotifyUsers(message, payloadJSON, tokensJSON);
+                    String res = Statusgo.NotifyUsers(dataPayloadJSON, tokensJSON);
 
                     callback.invoke(res);
                 }

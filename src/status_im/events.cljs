@@ -830,9 +830,9 @@
 ;; notifications module
 
 (handlers/register-handler-fx
- :notifications/notification-event-received
- (fn [cofx [_ event]]
-   (notifications/handle-push-notification cofx event)))
+ :notifications/notification-open-event-received
+ (fn [cofx [_ decoded-payload ctx]]
+   (notifications/handle-push-notification-open cofx decoded-payload ctx)))
 
 (handlers/register-handler-fx
  :notifications.callback/get-fcm-token-success
@@ -848,6 +848,11 @@
  :notifications.callback/request-notifications-permissions-denied
  (fn [cofx _]
    (accounts/show-mainnet-is-default-alert cofx)))
+
+(handlers/register-handler-fx
+ :notifications.callback/on-message
+ (fn [cofx [_ decoded-payload opts]]
+   (notifications/handle-on-message cofx decoded-payload opts)))
 
 ;; hardwallet module
 

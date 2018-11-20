@@ -74,23 +74,24 @@
 
 (fx/defn start-app [cofx]
   (fx/merge cofx
-            {:init/get-device-UUID                           nil
-             :init/restore-native-settings                   nil
-             :ui/listen-to-window-dimensions-change          nil
-             :notifications/handle-initial-push-notification nil
-             :network/listen-to-network-status               nil
-             :network/listen-to-connection-status            nil
-             :hardwallet/check-nfc-support                   nil
-             :hardwallet/check-nfc-enabled                   nil
-             :hardwallet/start-module                        nil
-             :hardwallet/register-card-events                nil}
+            {:init/get-device-UUID                  nil
+             :init/restore-native-settings          nil
+             :ui/listen-to-window-dimensions-change nil
+             :notifications/init                    nil
+             :network/listen-to-network-status      nil
+             :network/listen-to-connection-status   nil
+             :hardwallet/check-nfc-support          nil
+             :hardwallet/check-nfc-enabled          nil
+             :hardwallet/start-module               nil
+             :hardwallet/register-card-events       nil}
             (initialize-keychain)))
 
 (fx/defn initialize-app-db
   "Initialize db to initial state"
   [{{:keys [status-module-initialized? view-id hardwallet
             initial-props desktop/desktop
-            network-status network peers-count peers-summary device-UUID]
+            network-status network peers-count peers-summary device-UUID
+            push-notifications/stored]
      :node/keys [status]
      :or        {network (get app-db :network)}} :db}]
   {:db (assoc app-db
@@ -105,7 +106,8 @@
               :network network
               :hardwallet hardwallet
               :device-UUID device-UUID
-              :view-id view-id)})
+              :view-id view-id
+              :push-notifications/stored stored)})
 
 (fx/defn initialize-app
   [cofx encryption-key]
@@ -140,13 +142,18 @@
   (let [{{:accounts/keys [accounts] :as db} :db} cofx]
     (if (empty? accounts)
       (navigation/navigate-to-clean cofx :intro nil)
-      (let [account-with-notification (first (keys (:push-notifications/stored db)))
-            selection-fn (if (not-empty account-with-notification)
-                           #(filter (fn [account]
-                                      (= account-with-notification
-                                         (:public-key account)))
-                                    %)
-                           #(sort-by :last-sign-in > %))
+      (let [account-with-notification
+            (when-not platform/desktop?
+              (notifications/lookup-contact-pubkey-from-hash
+               cofx
+               (first (keys (:push-notifications/stored db)))))
+            selection-fn
+            (if (not-empty account-with-notification)
+              #(filter (fn [account]
+                         (= account-with-notification
+                            (:public-key account)))
+                       %)
+              #(sort-by :last-sign-in > %))
             {:keys [address photo-path name]} (first (selection-fn (vals accounts)))]
         (accounts.login/open-login cofx address photo-path name)))))
 
@@ -193,12 +200,12 @@
            (= view-id :create-account)
            (assoc-in [:accounts/create :step] :enter-name))}))
 
-(defn login-only-events [cofx address]
+(defn login-only-events [cofx address stored-pns]
   (fx/merge cofx
             {:notifications/request-notifications-permissions nil}
             (navigation/navigate-to-cofx :home nil)
             (universal-links/process-stored-event)
-            (notifications/process-stored-event address)
+            (notifications/process-stored-event address stored-pns)
             (when platform/desktop?
               (chat-model/update-dock-badge-label))))
 
@@ -213,22 +220,23 @@
   (= (get-in cofx [:db :view-id])
      :hardwallet-success))
 
-(fx/defn initialize-account [cofx address]
-  (fx/merge cofx
-            {:notifications/get-fcm-token nil}
-            (initialize-account-db address)
-            (contact/load-contacts)
-            (pairing/load-installations)
-            #(when (dev-mode? %)
-               (models.dev-server/start))
-            (browser/initialize-browsers)
+(fx/defn initialize-account [{:keys [db] :as cofx} address]
+  (let [stored-pns (:push-notifications/stored db)]
+    (fx/merge cofx
+              {:notifications/get-fcm-token nil}
+              (initialize-account-db address)
+              (contact/load-contacts)
+              (pairing/load-installations)
+              #(when (dev-mode? %)
+                 (models.dev-server/start))
+              (browser/initialize-browsers)
 
-            (browser/initialize-dapp-permissions)
-            (extensions.registry/initialize)
-            (accounts.update/update-sign-in-time)
-            #(when-not (or (creating-account? %)
-                           (finishing-hardwallet-setup? %))
-               (login-only-events % address))))
+              (browser/initialize-dapp-permissions)
+              (extensions.registry/initialize)
+              (accounts.update/update-sign-in-time)
+              #(when-not (or (creating-account? %)
+                             (finishing-hardwallet-setup? %))
+                 (login-only-events % address stored-pns)))))
 
 (re-frame/reg-fx
  :init/init-store

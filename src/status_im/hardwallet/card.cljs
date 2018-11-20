@@ -19,7 +19,8 @@
         (then #(re-frame/dispatch [:hardwallet.callback/check-nfc-support-success %])))))
 
 (defn check-nfc-enabled []
-  (when platform/android?
+  (when (and platform/android?
+             config/hardwallet-enabled?)
     (.. keycard
         nfcIsEnabled
         (then #(re-frame/dispatch [:hardwallet.callback/check-nfc-enabled-success %])))))
