@@ -26,7 +26,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         public_key = device_2_home.get_public_key()
         device_2_profile = device_2_home.get_profile_view()
         device_2_profile.switch_network('Mainnet with upstream RPC')
-        device_2_sign_in.sign_in()
 
         device_1_chat = device_1_home.add_contact(public_key)
         amount_1 = device_1_chat.get_unique_amount()
