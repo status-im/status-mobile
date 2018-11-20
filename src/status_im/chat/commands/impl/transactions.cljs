@@ -31,39 +31,37 @@
 
 ;; common `send/request` functionality
 
-(defn- render-asset [selected-event-creator]
-  (fn [{:keys [name symbol amount decimals] :as asset}]
-    [react/touchable-highlight
-     {:on-press #(re-frame/dispatch (selected-event-creator (wallet.utils/display-symbol asset)))}
-     [react/view transactions-styles/asset-container
-      [react/view transactions-styles/asset-main
-       [react/image {:source (-> asset :icon :source)
-                     :style  transactions-styles/asset-icon}]
-       [react/text {:style transactions-styles/asset-symbol}
-        (wallet.utils/display-symbol asset)]
-       [react/text {:style transactions-styles/asset-name} name]]
-      ;;TODO(goranjovic) : temporarily disabled to fix https://github.com/status-im/status-react/issues/4963
-      ;;until the resolution of https://github.com/status-im/status-react/issues/4972
-      #_[react/text {:style transactions-styles/asset-balance}
-         (str (money/internal->formatted amount symbol decimals))]]]))
+(defn- render-asset [{:keys [name symbol amount decimals] :as asset}]
+  [react/touchable-highlight
+   {:on-press #(re-frame/dispatch [:chat.ui/set-command-parameter (wallet.utils/display-symbol asset)])}
+   [react/view transactions-styles/asset-container
+    [react/view transactions-styles/asset-main
+     [react/image {:source (-> asset :icon :source)
+                   :style  transactions-styles/asset-icon}]
+     [react/text {:style transactions-styles/asset-symbol}
+      (wallet.utils/display-symbol asset)]
+     [react/text {:style transactions-styles/asset-name} name]]
+    ;;TODO(goranjovic) : temporarily disabled to fix https://github.com/status-im/status-react/issues/4963
+    ;;until the resolution of https://github.com/status-im/status-react/issues/4972
+    #_[react/text {:style transactions-styles/asset-balance}
+       (str (money/internal->formatted amount symbol decimals))]]])
 
-(defn- render-nft-asset [selected-event-creator]
-  (fn [{:keys [name symbol amount] :as asset}]
-    [react/touchable-highlight
-     {:on-press #(re-frame/dispatch (selected-event-creator (clojure.core/name symbol)))}
-     [react/view transactions-styles/asset-container
-      [react/view transactions-styles/asset-main
-       [react/image {:source (-> asset :icon :source)
-                     :style  transactions-styles/asset-icon}]
-       [react/text {:style transactions-styles/asset-symbol} name]]
-      [react/text {:style {:font-size     16
-                           :color         colors/gray
-                           :padding-right 14}}
-       (money/to-fixed amount)]]]))
+(defn- render-nft-asset [{:keys [name symbol amount] :as asset}]
+  [react/touchable-highlight
+   {:on-press #(re-frame/dispatch [:chat.ui/set-command-parameter (clojure.core/name symbol)])}
+   [react/view transactions-styles/asset-container
+    [react/view transactions-styles/asset-main
+     [react/image {:source (-> asset :icon :source)
+                   :style  transactions-styles/asset-icon}]
+     [react/text {:style transactions-styles/asset-symbol} name]]
+    [react/text {:style {:font-size     16
+                         :color         colors/gray
+                         :padding-right 14}}
+     (money/to-fixed amount)]]])
 
 (def assets-separator [react/view transactions-styles/asset-separator])
 
-(defview choose-asset [nft? selected-event-creator]
+(defview choose-asset [nft?]
   (letsubs [assets [:wallet/visible-assets-with-amount]]
     [react/view
      [list/flat-list {:data                      (filter #(if nft?
@@ -72,18 +70,15 @@
                                                          assets)
                       :key-fn                    (comp name :symbol)
                       :render-fn                 (if nft?
-                                                   (render-nft-asset selected-event-creator)
-                                                   (render-asset selected-event-creator))
+                                                   render-nft-asset
+                                                   render-asset)
                       :enableEmptySections       true
                       :separator                 assets-separator
                       :keyboardShouldPersistTaps :always
                       :bounces                   false}]]))
 
-(defn choose-asset-suggestion [selected-event-creator]
-  [choose-asset false selected-event-creator])
-
-(defn choose-nft-asset-suggestion [selected-event-creator]
-  [choose-asset true selected-event-creator])
+(defn choose-asset-suggestion []
+  [choose-asset false])
 
 (defn personal-send-request-short-preview
   [label-key {:keys [content]}]
@@ -104,7 +99,7 @@
     :type        :number
     :placeholder (i18n/label :t/send-request-amount)}])
 
-(defview choose-nft-token [selected-event-creator]
+(defview choose-nft-token []
   (letsubs [{:keys [input-params]} [:chats/selected-chat-command]
             collectibles           [:collectibles]]
     (let [collectible-tokens (get collectibles (keyword (:symbol input-params)))]
@@ -115,7 +110,7 @@
         (fn [[id {:keys [name image_url]}]]
           [react/touchable-highlight
            {:key      id
-            :on-press #(re-frame/dispatch (selected-event-creator (str id)))}
+            :on-press #(re-frame/dispatch [:chat.ui/set-command-parameter (str id)])}
            [react/view {:flex-direction  :column
                         :align-items     :center
                         :margin-left     10
@@ -129,9 +124,6 @@
                                 :source {:uri image_url}}]
             [react/text {} name]]])
         collectible-tokens)])))
-
-(defn choose-nft-token-suggestion [selected-event-creator]
-  [choose-nft-token selected-event-creator])
 
 (defview nft-token [{{:keys [name image_url]} :token}]
   [react/view {:flex-direction :column

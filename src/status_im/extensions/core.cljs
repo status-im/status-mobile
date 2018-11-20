@@ -134,6 +134,11 @@
                           (when timeout
                             {:timeout-ms timeout}))}))
 
+(handlers/register-handler-fx
+ :extensions.chat.command/set-parameter
+ (fn [_ [_ _ {:keys [value]}]]
+   {:dispatch [:chat.ui/set-command-parameter value]}))
+
 (defn operation->fn [k]
   (case k
     :plus   +
@@ -207,15 +212,17 @@
                 ;'list               {:value list :properties {:data :vector :item-view :view}}
                 'checkbox           {:value checkbox :properties {:on-change :event :checked :boolean}}
                 'nft-token-viewer   {:value transactions/nft-token :properties {:token :string}}
-                'transaction-status {:value transactions/transaction-status :properties {:outgoing :string :tx-hash :string}}
-                'asset-selector     {:value transactions/choose-nft-asset-suggestion}
-                'token-selector     {:value transactions/choose-nft-token-suggestion}}
+                'transaction-status {:value transactions/transaction-status :properties {:outgoing :string :tx-hash :string}}}
    :queries    {'identity            {:value :extensions/identity :arguments {:value :map}}
                 'store/get           {:value :store/get :arguments {:key :string}}
                 'wallet/collectibles {:value :get-collectible-token :arguments {:token :string :symbol :string}}}
    :events     {'alert
                 {:permissions [:read]
                  :value       :alert
+                 :arguments   {:value :string}}
+                'chat.command/set-parameter
+                {:permissions [:read]
+                 :value       :extensions.chat.command/set-parameter
                  :arguments   {:value :string}}
                 'log
                 {:permissions [:read]

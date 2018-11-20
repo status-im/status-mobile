@@ -70,17 +70,6 @@
       (is (= TestCommandInstance
              (get-in fx [:db :id->command
                          (core/command-id TestCommandInstance) :type]))))
-    (testing "Suggestions for parameters are injected with correct selection events"
-      (is (= [:chat.ui/set-command-parameter false 0 "first-value"]
-             ((get-in fx [:db :id->command
-                          (core/command-id TestCommandInstance) :params
-                          0 :suggestions])
-              "first-value")))
-      (is (= [:chat.ui/set-command-parameter true 2 "last-value"]
-             ((get-in fx [:db :id->command
-                          (core/command-id TestCommandInstance) :params
-                          2 :suggestions])
-              "last-value"))))
     (testing "Access scope indexes are correctly created"
       (is (contains? (get-in fx [:db :access-scope->command-id #{:personal-chats}])
                      (core/command-id TestCommandInstance)))
