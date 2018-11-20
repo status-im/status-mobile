@@ -247,6 +247,10 @@
        {:screen (nav-reagent/stack-screen
                  (wrap-modal :wallet-settings-assets wallet-settings/manage-assets))}
 
+       :wallet-settings-hook
+       {:screen (nav-reagent/stack-screen
+                 (wrap-modal :wallet-settings-assets wallet-settings/settings-hook))}
+
        :wallet-transaction-fee
        {:screen (nav-reagent/stack-screen
                  (wrap-modal :wallet-transaction-fee

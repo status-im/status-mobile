@@ -10,6 +10,7 @@
             [status-im.ui.screens.wallet.onboarding.views :as onboarding.views]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.ui.screens.wallet.main.styles :as styles]
+            [status-im.ui.screens.wallet.settings.views :as settings]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.money :as money]
             [status-im.ui.components.toolbar.actions :as action]
@@ -19,19 +20,7 @@
             status-im.ui.screens.wallet.collectibles.superrare.views
             status-im.ui.screens.wallet.collectibles.kudos.views
             [status-im.ui.components.status-bar.view :as status-bar.view]
-            [status-im.ui.screens.wallet.transactions.views :as transactions.views]
-            [status-im.ui.components.colors :as colors]))
-
-(defn toolbar-view []
-  [toolbar/toolbar {:style wallet.styles/toolbar :flat? true}
-   nil
-   [toolbar/content-wrapper]
-   [toolbar/actions
-    [{:icon      :icons/options
-      :icon-opts {:color               :white
-                  :accessibility-label :options-menu-button}
-      :options   [{:label  (i18n/label :t/wallet-manage-assets)
-                   :action #(re-frame/dispatch [:navigate-to :wallet-settings-assets])}]}]]])
+            [status-im.ui.screens.wallet.transactions.views :as transactions.views]))
 
 (defn toolbar-modal [modal-history?]
   [react/view
@@ -170,7 +159,7 @@
     [react/view styles/main-section
      (if modal?
        [toolbar-modal modal-history?]
-       [toolbar-view])
+       [settings/toolbar-view])
      (if (and modal? modal-history?)
        [react/view styles/modal-history
         [transactions.views/history-list true]]
