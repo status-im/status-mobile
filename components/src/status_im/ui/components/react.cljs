@@ -12,7 +12,7 @@
 
 (defn get-react-property [name]
   (if js-dependencies/react-native
-    (object/get js-dependencies/react-native name)
+    (or (object/get js-dependencies/react-native name) {})
     #js {}))
 
 (defn adapt-class [class]
@@ -48,6 +48,8 @@
 (def text-class (get-class "Text"))
 (def text-input-class (get-class "TextInput"))
 (def image-class (get-class "Image"))
+(def picker-class (get-class "Picker"))
+(def picker-item-class (adapt-class (.-Item (get-react-property "Picker"))))
 
 (defn valid-source? [source]
   (or (not (map? source))
@@ -141,6 +143,17 @@
 
 (defn list-item [component]
   (reagent/as-element component))
+
+(defn value->picker-item [{:keys [value label]}]
+  [picker-item-class {:value (or value "") :label (or label value "")}])
+
+(defn picker [{:keys [style on-change selected enabled data]}]
+  (into
+    [picker-class (merge (when style {:style style})
+                         (when enabled {:enabled enabled})
+                         (when on-change {:on-value-change on-change})
+                         (when selected {:selected-value selected}))]
+    (map value->picker-item data)))
 
 ;; Image picker
 

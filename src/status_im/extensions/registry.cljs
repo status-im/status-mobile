@@ -48,7 +48,7 @@
               (update-hooks hook-fn extension-key))))
 
 (fx/defn install
-  [{:keys [db] :as cofx} extension-data]
+  [{:keys [db] :as cofx} {:keys [hooks] :as extension-data}]
   (let [{:extensions/keys [manage]
          :account/keys    [account]} db
         {:keys [url]} manage
@@ -61,8 +61,8 @@
               {:utils/show-popup {:title     (i18n/label :t/success)
                                   :content   (i18n/label :t/extension-installed)
                                   :on-dismiss #(re-frame/dispatch [:navigate-to-clean :my-profile])}}
-              (accounts.update/account-update {:extensions new-extensions} {})
-              (add-to-registry (:value url) extension-data true))))
+              (when hooks (accounts.update/account-update {:extensions new-extensions} {}))
+              (when hooks (add-to-registry (:value url) extension-data true)))))
 
 (fx/defn uninstall
   [{:keys [db] :as cofx} extension-key]

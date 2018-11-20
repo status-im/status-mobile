@@ -201,14 +201,29 @@
     :on-press #(re-frame/dispatch [:browser.ui/message-link-pressed uri])}
    uri])
 
-(defn list [{:keys [data item-view]}]
-  [list/flat-list {:data data :key-fn (fn [_ i] (str i)) :render-fn item-view}])
+(defn list [{:keys [key data item-view]}]
+  [list/flat-list {:data data :key-fn (or key (fn [_ i] (str i))) :render-fn item-view}])
 
 (defn checkbox [{:keys [on-change checked]}]
   [react/view {:style {:background-color colors/white}}
    [checkbox/checkbox {:checked?        checked
                        :style           {:padding 0}
                        :on-value-change #(re-frame/dispatch (on-change {:value %}))}]])
+
+(defn activity-indicator-size [k]
+  (condp = k
+    :small "small"
+    :large "large"
+    nil))
+
+(defn activity-indicator [{:keys [animating hides-when-stopped color size]}]
+  [react/activity-indicator (merge (when animating {:animating animating})
+                                   (when hides-when-stopped {:hidesWhenStopped hides-when-stopped})
+                                   (when color {:color color})
+                                   (when-let [size' (activity-indicator-size size)] {:size size'}))])
+
+(defn picker [{:keys [style on-change selected enabled data]}]
+  [react/picker {:style style :on-change #(re-frame/dispatch (on-change {:value %})) :selected selected :enabled enabled :data data}])
 
 (defn text [o & children]
   (if (map? o)
@@ -231,8 +246,10 @@
                 'input              {:value input :properties {:on-change :event :placeholder :string}}
                 'button             {:value button :properties {:disabled :boolean :on-click :event}}
                 'link               {:value link :properties {:uri :string}}
-                ;'list               {:value list :properties {:data :vector :item-view :view}}
+                'list               {:value list :properties {:data :vector :item-view :view :key? :keyword}}
                 'checkbox           {:value checkbox :properties {:on-change :event :checked :boolean}}
+                'activity-indicator {:value activity-indicator :properties {:animating :boolean :color :string :size :keyword :hides-when-stopped :boolean}}
+                'picker             {:value picker :properties {:on-change :event :selected :string :enabled :boolean :data :vector}}
                 'nft-token-viewer   {:value transactions/nft-token :properties {:token :string}}
                 'transaction-status {:value transactions/transaction-status :properties {:outgoing :string :tx-hash :string}}}
    :queries    {'identity            {:value :extensions/identity :arguments {:value :map}}
