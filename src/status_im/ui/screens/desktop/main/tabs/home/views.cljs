@@ -14,19 +14,12 @@
             [status-im.utils.utils :as utils]
             [status-im.ui.components.react :as components]))
 
-(views/defview unviewed-indicator [chat-id]
-  (let [unviewed-messages-count (re-frame/subscribe [:chats/unviewed-messages-count chat-id])]
-    (when (pos? @unviewed-messages-count)
-      [react/view
-       [react/text {:font  :medium}
-        @unviewed-messages-count]])))
-
 (views/defview chat-list-item-inner-view [{:keys [chat-id name group-chat color public? public-key] :as chat-item}]
-  (letsubs [photo-path                         [:contacts/chat-photo chat-id]
-            unviewed-messages-count            [:chats/unviewed-messages-count chat-id]
-            chat-name                          [:chats/chat-name chat-id]
-            current-chat-id                    [:chats/current-chat-id]
-            {:keys [content] :as last-message} [:chats/last-message chat-id]]
+  (views/letsubs [photo-path              [:contacts/chat-photo chat-id]
+                  unviewed-messages-count [:chats/unviewed-messages-count chat-id]
+                  chat-name               [:chats/chat-name chat-id]
+                  current-chat-id         [:chats/current-chat-id]
+                  {:keys [content] :as last-message} [:chats/last-message chat-id]]
     (let [name (or chat-name
                    (gfycat/generate-gfy public-key))
           [unviewed-messages-label large?] (if (< 9 unviewed-messages-count)

@@ -91,12 +91,11 @@
 
 (deftest clear-history-test
   (let [chat-id "1"
-        cofx    {:db {:chats {chat-id {:message-groups        {:something "a"}
-                                       :messages              {"1" {:clock-value 1}
-                                                               "2" {:clock-value 10}
-                                                               "3" {:clock-value 2}}
-                                       :unviewed-messages      #{"3"}
-                                       :not-loaded-message-ids #{"2" "3"}}}}}]
+        cofx    {:db {:chats {chat-id {:message-groups          {:something "a"}
+                                       :messages                {"1" {:clock-value 1}
+                                                                 "2" {:clock-value 10}
+                                                                 "3" {:clock-value 2}}
+                                       :unviewed-messages-count 1}}}}]
     (testing "it deletes all the messages"
       (let [actual (chat/clear-history cofx chat-id)]
         (is (= {} (get-in actual [:db :chats chat-id :messages])))))
@@ -105,10 +104,7 @@
         (is (= {} (get-in actual [:db :chats chat-id :message-groups])))))
     (testing "it deletes unviewed messages set"
       (let [actual (chat/clear-history cofx chat-id)]
-        (is (= #{} (get-in actual [:db :chats chat-id :unviewed-messages])))))
-    (testing "it deletes not loaded message ids set"
-      (let [actual (chat/clear-history cofx chat-id)]
-        (is (= #{} (get-in actual [:db :chats chat-id :not-loaded-message-ids])))))
+        (is (= 0 (get-in actual [:db :chats chat-id :unviewed-messages-count])))))
     (testing "it sets a deleted-at-clock-value equal to the last message clock-value"
       (let [actual (chat/clear-history cofx chat-id)]
         (is (= 10 (get-in actual [:db :chats chat-id :deleted-at-clock-value])))))
@@ -202,7 +198,7 @@
   {:account/account {:public-key "me"}
    :chats {"status" {:public? true
                      :group-chat true
-                     :unviewed-messages #{"6" "5" "4" "3" "2" "1"}
+                     :loaded-unviewed-messages-ids #{"6" "5" "4"}
                      :message-statuses {"6" {"me" {:message-id "6"
                                                    :chat-id "status"
                                                    :public-key "me"
@@ -215,12 +211,12 @@
                                                    :chat-id "status"
                                                    :public-key "me"
                                                    :status :received}}}}
-           "opened" {:unviewed-messages #{}
+           "opened" {:loaded-unviewed-messages-ids #{}
                      :message-statuses {"1" {"me" {:message-id "1"
                                                    :chat-id "opened"
                                                    :public-key "me"
                                                    :status :seen}}}}
-           "1-1"    {:unviewed-messages #{"6" "5" "4" "3" "2" "1"}
+           "1-1"    {:loaded-unviewed-messages-ids #{"6" "5" "4"}
                      :message-statuses {"6" {"me" {:message-id "6"
                                                    :chat-id "status"
                                                    :public-key "me"
@@ -242,9 +238,9 @@
              (map (fn [[_ v]]
                     (get-in v [me :status]))
                   (get-in fx [:db :chats "status" :message-statuses]))))
-      (is (= 1 (count (:data-store/tx fx))))
-      (is (= nil (:shh/post fx))) ;; for public chats, no confirmation is sent out
-      (is (= #{"3" "2" "1"} (get-in fx [:db :chats "status" :unviewed-messages])))))
+      (is (= 2 (count (:data-store/tx fx))))
+      ;; for public chats, no confirmation is sent out
+      (is (= nil (:shh/post fx)))))
 
   (testing "With empty unviewed set, no effects are produced"
     (is (= nil (chat/mark-messages-seen {:db test-db} "opened"))))
@@ -257,25 +253,34 @@
 (deftest update-dock-badge-label
   (testing "When user has unseen private messages"
     (is (= {:set-dock-badge-label 3}
-           (chat/update-dock-badge-label {:db {:chats {"0x0"    {:is-active         true
-                                                                 :public?           false
-                                                                 :unviewed-messages #{1 2 3}}
-                                                       "status" {:is-active         true
-                                                                 :public?           true
-                                                                 :unviewed-messages #{1 2}}}}}))))
+           (chat/update-dock-badge-label
+            {:db {:chats {"0x0"    {:is-active                    true
+                                    :public?                      false
+                                    :unviewed-messages-count      3
+                                    :loaded-unviewed-messages-ids #{1 2 3}}
+                          "status" {:is-active                    true
+                                    :public?                      true
+                                    :unviewed-messages-count      2
+                                    :loaded-unviewed-messages-ids #{1 2}}}}}))))
   (testing "When user has unseen public messages and no unseen private messages"
     (is (= {:set-dock-badge-label "•"}
-           (chat/update-dock-badge-label {:db {:chats {"0x0"    {:is-active         true
-                                                                 :public?           false
-                                                                 :unviewed-messages #{}}
-                                                       "status" {:is-active         true
-                                                                 :public?           true
-                                                                 :unviewed-messages #{1 2}}}}}))))
+           (chat/update-dock-badge-label
+            {:db {:chats {"0x0"    {:is-active                    true
+                                    :public?                      false
+                                    :unviewed-messages-count      0
+                                    :loaded-unviewed-messages-ids #{}}
+                          "status" {:is-active                    true
+                                    :public?                      true
+                                    :unviewed-messages-count      2
+                                    :loaded-unviewed-messages-ids #{1 2}}}}}))))
   (testing "When user has no unseen messages"
     (is (= {:set-dock-badge-label nil}
-           (chat/update-dock-badge-label {:db {:chats {"0x0"    {:is-active         true
-                                                                 :public?           false
-                                                                 :unviewed-messages #{}}
-                                                       "status" {:is-active         true
-                                                                 :public?           true
-                                                                 :unviewed-messages #{}}}}})))))
+           (chat/update-dock-badge-label
+            {:db {:chats {"0x0"    {:is-active                    true
+                                    :public?                      false
+                                    :unviewed-messages-count      0
+                                    :loaded-unviewed-messages-ids #{}}
+                          "status" {:is-active                    true
+                                    :public?                      true
+                                    :unviewed-messages-count      0
+                                    :loaded-unviewed-messages-ids #{}}}}})))))

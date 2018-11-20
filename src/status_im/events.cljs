@@ -87,8 +87,7 @@
 
 (handlers/register-handler-fx
  :load-chats-messages
- [(re-frame/inject-cofx :data-store/get-unviewed-messages)
-  (re-frame/inject-cofx :data-store/get-messages)
+ [(re-frame/inject-cofx :data-store/get-messages)
   (re-frame/inject-cofx :data-store/get-referenced-messages)
   (re-frame/inject-cofx :data-store/get-user-statuses)]
  (fn [cofx]

@@ -229,4 +229,14 @@
                "user-status"
                new-status-id)
             (.delete new-realm user-status)
-            (aset user-status "status-id" new-status-id)))))))
+            (aset user-status "status-id" new-status-id))))))
+  (let [chats (.objects new-realm "chat")]
+    (dotimes [i (.-length chats)]
+      (let [chat                (aget chats i)
+            chat-id             (aget chat "chat-id")
+            user-statuses-count (-> (.objects new-realm "user-status")
+                                    (.filtered (str "chat-id=\"" chat-id "\""
+                                                    " and "
+                                                    "status = \"received\""))
+                                    (.-length))]
+        (aset chat "unviewed-messages-count" user-statuses-count)))))

@@ -17,12 +17,6 @@
                                     :from "a"
                                     :clock-value 1
                                     :chat-id "a"}))))
-  (testing "it returns false when it's already in the not-loaded-message-ids"
-    (is (not (message/add-to-chat? {:db {:chats {"a" {:not-loaded-message-ids #{"message-id"}}}}}
-                                   {:message-id "message-id"
-                                    :from "a"
-                                    :clock-value 1
-                                    :chat-id "a"}))))
   (testing "it returns false when the clock-value is the same as the deleted-clock-value in chat"
     (is (not (message/add-to-chat? {:db {:chats {"a" {:deleted-at-clock-value 1}}}}
                                    {:message-id "message-id"

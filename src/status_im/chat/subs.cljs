@@ -209,8 +209,8 @@
  :chats/unviewed-messages-count
  (fn [[_ chat-id]]
    (re-frame/subscribe [:chats/chat chat-id]))
- (fn [{:keys [unviewed-messages]}]
-   (count unviewed-messages)))
+ (fn [{:keys [unviewed-messages-count]}]
+   unviewed-messages-count))
 
 (re-frame/reg-sub
  :chats/photo-path
@@ -237,7 +237,7 @@
  :chats/unread-messages-number
  :<- [:chats/active-chats]
  (fn [chats _]
-   (apply + (map (comp count :unviewed-messages) (vals chats)))))
+   (apply + (map :unviewed-messages-count (vals chats)))))
 
 (re-frame/reg-sub
  :chats/transaction-confirmed?
