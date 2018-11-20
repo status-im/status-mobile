@@ -38,7 +38,7 @@
   (.hexToUtf8 utils (str "0x" x)))
 
 (defn hex-to-number [x]
-  (.hexToNumber utils (str "0x" x)))
+  (.toNumber (dependencies/Web3.prototype.toBigNumber (str "0x" x) 16)))
 
 (defn sha3 [s]
   (.sha3 utils (str s)))
@@ -59,21 +59,20 @@
 ;; higher-order (left) side with 0xff for negative X and with zero bytes for
 ;; positive X such that the length is 32 bytes.
 (defmethod enc :int
-  [{:keys [value]
-    :or {size 256}}]
+  [{:keys [value]}]
   (to-two-complement value))
 
 ;; uint<M>: enc(X) is the big-endian encoding of X, padded on the
 ;; higher-order (left) side with zero-bytes such that the length is 32 bytes.
 (defmethod enc :uint
-  [{:keys [value]
-    :or {size 256}}]
+  [{:keys [value]}]
   (left-pad (number-to-hex value)))
 
 ;; address: as in the uint160 case
 (defmethod enc :address
   [{:keys [value]}]
-  (right-pad value))
+  (when value
+    (left-pad (string/replace value "0x" ""))))
 
 ;; bytes, of length k (which is assumed to be of type uint256):
 ;; enc(X) = enc(k) pad_right(X), i.e. the number of bytes is encoded as a
@@ -85,7 +84,7 @@
 (defmethod enc :bytes
   [{:keys [value size dynamic?]
     :or {size 256}}]
-  ;; in the exemples of the abi specifications strings are passed for
+  ;; in the examples of the abi specifications strings are passed for
   ;; bytes parameters, in our ens resolver we pass encoded bytes directly
   ;; for namehash, this handles both cases by checking if the value is already
   ;; hex
@@ -160,9 +159,9 @@
 (defmethod enc :tuple
   [{:keys [value]}]
   (let [[len x] (reduce
-                 (fn [[len acc] {:keys [type value] :as x}]
+                 (fn [[len acc] {:keys [dynamic?] :as x}]
                    (let [enc-x (enc x)]
-                     (if (:dynamic? x)
+                     (if dynamic?
                        [(+ len 32)
                         (conj acc (assoc x :tail enc-x))]
                        [(+ len (/ (count enc-x) 2))

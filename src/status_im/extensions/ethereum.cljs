@@ -51,7 +51,7 @@
 
 (handlers/register-handler-fx
  :extensions/ethereum-send-transaction
- (fn [{db :db} [_ {:keys [method params on-result] :as arguments}]]
+ (fn [{db :db} [_ _ {:keys [method params on-result] :as arguments}]]
    (let [tx-object (assoc (select-keys arguments [:to :gas :gas-price :value :nonce])
                           :data (when (and method params) (abi-spec/encode method params)))
          transaction (prepare-extension-transaction tx-object (:contacts/contacts db) on-result)]
@@ -59,7 +59,7 @@
 
 (handlers/register-handler-fx
  :extensions/ethereum-call
- (fn [_ [_ {:keys [to method params outputs on-result]}]]
+ (fn [_ [_ _ {:keys [to method params outputs on-result]}]]
    (let [tx-object {:to to :data (when method (abi-spec/encode method params))}]
      {:browser/call-rpc [{"jsonrpc" "2.0"
                           "method"  "eth_call"
