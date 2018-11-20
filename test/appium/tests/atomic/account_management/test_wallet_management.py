@@ -125,7 +125,6 @@ class TestWalletManagement(SingleDeviceTestCase):
         sign_in.create_user()
         profile = sign_in.profile_button.click()
         profile.switch_network('Mainnet with upstream RPC')
-        sign_in.sign_in()
         wallet = sign_in.wallet_button.click()
         wallet.set_up_wallet()
         wallet.options_button.click()
