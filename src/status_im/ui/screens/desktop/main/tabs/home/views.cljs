@@ -32,10 +32,10 @@
                                              [unviewed-messages-count false])]
       [react/view {:style (styles/chat-list-item (= current-chat-id chat-id))}
        [react/view {:style styles/img-container}
-        (if public?
+        (if (or public? group-chat)
           [react/view {:style (styles/topic-image color)}
            [react/text {:style styles/topic-text}
-            (string/capitalize (second name))]]
+            (string/capitalize (if public? (second name) (first name)))]]
           [react/image {:style styles/chat-icon
                         :source {:uri photo-path}}])
         (when (pos? unviewed-messages-count)

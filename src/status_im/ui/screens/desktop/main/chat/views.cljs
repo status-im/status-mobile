@@ -32,10 +32,10 @@
     [react/view {:style styles/toolbar-chat-view}
      [react/view {:style {:flex-direction :row
                           :flex 1}}
-      (if public?
+      (if (or public? group-chat)
         [react/view {:style (styles/topic-image color)}
          [react/text {:style styles/topic-text}
-          (string/capitalize (second chat-name))]]
+          (string/capitalize (if public? (second chat-name) (first chat-name)))]]
         [react/image {:style styles/chat-icon
                       :source {:uri photo-path}}])
       [react/view {:style (styles/chat-title-and-type pending?)}
