@@ -44,22 +44,6 @@
   [{:keys [type]} command-message]
   (protocol/preview type command-message))
 
-(defn- prepare-params
-  "Prepares parameters sequence of command by providing suggestion components with
-  selected-event injected with correct arg indexes and `last-arg?` flag."
-  [command]
-  (let [parameters     (protocol/parameters command)
-        last-param-idx (dec (count parameters))]
-    (into []
-          (map-indexed (fn [idx {:keys [suggestions] :as param}]
-                         (if suggestions
-                           (update param :suggestions partial
-                                   (fn [value]
-                                     [:chat.ui/set-command-parameter
-                                      (= idx last-param-idx) idx value]))
-                           param))
-                       parameters))))
-
 (defn- add-exclusive-choices [initial-scope exclusive-choices]
   (reduce (fn [scopes-set exclusive-choices]
             (reduce (fn [scopes-set scope]
@@ -83,7 +67,7 @@
   (let [id->command              (reduce (fn [acc command]
                                            (assoc acc (command-id command)
                                                   {:type   command
-                                                   :params (prepare-params command)}))
+                                                   :params (into [] (protocol/parameters command))}))
                                          {}
                                          commands)
         access-scope->command-id (reduce-kv (fn [acc command-id {:keys [type]}]

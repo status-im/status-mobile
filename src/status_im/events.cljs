@@ -44,6 +44,7 @@
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]
             [status-im.utils.datetime :as time]
+            [status-im.chat.commands.core :as commands]
             [status-im.chat.models.loading :as chat-loading]))
 
 ;; init module
@@ -680,14 +681,23 @@
    (chat.input/reply-to-message cofx message-id)))
 
 (handlers/register-handler-fx
- :chat.ui/set-command-parameter
- (fn [cofx [_ last-param? index value]]
-   (commands.input/set-command-parameter cofx last-param? index value)))
-
-(handlers/register-handler-fx
  :chat.ui/send-current-message
  (fn [cofx _]
    (chat.input/send-current-message cofx)))
+
+(handlers/register-handler-fx
+ :chat.ui/set-command-parameter
+ (fn [{{:keys [chats current-chat-id chat-ui-props id->command access-scope->command-id]} :db :as cofx} [_ value]]
+   (let [current-chat (get chats current-chat-id)
+         selection (get-in chat-ui-props [current-chat-id :selection])
+         commands (commands/chat-commands id->command access-scope->command-id current-chat)
+         {:keys [current-param-position params]} (commands.input/selected-chat-command
+                                                  (:input-text current-chat) selection commands)
+         last-param-idx (dec (count params))]
+     (commands.input/set-command-parameter cofx
+                                           (= current-param-position last-param-idx)
+                                           current-param-position
+                                           value))))
 
 (handlers/register-handler-fx
  :chat/disable-cooldown
