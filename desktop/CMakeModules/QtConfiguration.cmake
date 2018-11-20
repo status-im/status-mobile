@@ -25,7 +25,7 @@ if(WIN32)
   # TODO: Create packages of qt5 for Linux and MacOS too, so that we can rely strictly on this branch of code 
   if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
       message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-      file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
+      file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/9cc97acda619b7917f140415241785a864482b11/conan.cmake"
                     "${CMAKE_BINARY_DIR}/conan.cmake")
   endif()
 
@@ -38,8 +38,7 @@ if(WIN32)
   endif()
   conan_cmake_run(REQUIRES qt5-mxe/5.11.2@status-im/stable
                   PROFILE ../node_modules/status-conan/profiles/status-mingw32-x86_64
-                  BASIC_SETUP
-                  SETTINGS "qt5-mxe:os=Windows qt5-mxe:arch=x86_64"
+                  SETTINGS "qt5-mxe:os=Windows" "qt5-mxe:arch=x86_64"
                   OPTIONS ${_QT_PACKAGE_OPTIONS}
                   BUILD never)
 
