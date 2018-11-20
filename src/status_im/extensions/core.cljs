@@ -10,6 +10,8 @@
             [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
+            [status-im.ui.screens.wallet.settings.views :as settings]
+            [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.handlers :as handlers]
@@ -150,15 +152,16 @@
    {::arithmetic m}))
 
 (defn button [{:keys [on-click]} label]
-  [button/secondary-button {:on-press #(re-frame/dispatch (on-click {}))} label])
+  [button/secondary-button (when on-click {:on-press #(re-frame/dispatch (on-click {}))}) label])
 
 (defn input [{:keys [on-change placeholder]}]
-  [react/text-input {:placeholder placeholder
-                     :style {:width "100%"}
-                     :on-change-text #(re-frame/dispatch (on-change {:value %}))}])
+  [react/text-input (merge {:placeholder placeholder
+                            :style {:width "100%"}}
+                           (when on-change
+                             {:on-change-text #(re-frame/dispatch (on-change {:value %}))}))])
 
 (defn touchable-opacity [{:keys [style on-press]} & children]
-  (into [react/touchable-opacity (merge {:on-press #(re-frame/dispatch (on-press {}))}
+  (into [react/touchable-opacity (merge (when on-press {:on-press #(re-frame/dispatch (on-press {}))})
                                         (when style {:style style}))] children))
 
 (defn image [{:keys [uri style]}]
@@ -190,7 +193,7 @@
 
 (defn view [o & children]
   (if (map? o)
-    [react/view o (map wrap-view-child children)]
+    (into [react/view o] (map wrap-view-child children))
     (into [react/view {} (wrap-view-child o)] (map wrap-view-child children))))
 
 (def capacities
@@ -286,7 +289,8 @@
                                :params?    :vector
                                :outputs?   :vector
                                :on-result  :event}}}
-   :hooks      {:commands commands/command-hook}})
+   :hooks      {:commands        commands/command-hook
+                :wallet.settings settings/hook}})
 
 (defn parse [{:keys [data]} id]
   (try

@@ -13,6 +13,7 @@
             status-im.ui.screens.wallet.collectibles.subs
             status-im.ui.screens.wallet.request.subs
             status-im.ui.screens.wallet.send.subs
+            status-im.ui.screens.wallet.settings.subs
             status-im.ui.screens.wallet.transactions.subs
             status-im.ui.screens.network-settings.subs
             status-im.ui.screens.log-level-settings.subs

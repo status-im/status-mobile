@@ -11,7 +11,7 @@
                  [com.taoensso/timbre "4.10.0"]
                  [hickory "0.7.1"]
                  [com.cognitect/transit-cljs "0.8.248"]
-                 [status-im/pluto "iteration-4-1"]
+                 [status-im/pluto "iteration-4-2"]
                  [mvxcvi/alphabase "1.0.0"]
                  [rasom/cljs-react-navigation "0.1.4"]]
   :plugins [[lein-cljsbuild "1.1.7"]
