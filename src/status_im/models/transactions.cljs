@@ -254,14 +254,23 @@
 
 (defn- async-periodic-exec
   "Periodically execute an function.
+
   Takes a work-fn of one argument `finished-fn -> any` this function
   is passed a finished-fn that must be called to signal that the work
   being performed in the work-fn is finished.
 
-  The work-fn can be forced to run immediately "
+  Returns a go channel that represents a way to control the looping process.
+
+  Stop the polling loop with `async-periodic-stop!`
+
+  The work-fn can be forced to run immediately with `async-periodic-run!`
+
+  Or you can queue up another fn `finished-fn -> any` to execute on
+  the queue with `async-periodic-run!`."
   [work-fn interval-ms timeout-ms]
   {:pre [(fn? work-fn) (integer? interval-ms) (integer? timeout-ms)]}
-  (let [do-now-chan (async/chan (async/sliding-buffer 1))]
+  (let [do-now-chan (async/chan (async/sliding-buffer 1))
+        try-it (fn [exec-fn catch-fn] (try (exec-fn) (catch :default e (catch-fn e))))]
     (go-loop []
       (let [timeout (async-util/timeout interval-ms)
             finished-chan (async/promise-chan)
@@ -269,12 +278,12 @@
             worker (if (and (= ch do-now-chan) (fn? v))
                      v work-fn)]
         (when-not (and (= ch do-now-chan) (nil? v))
-          (try
-            (worker #(async/put! finished-chan true))
-            ;; if an error occurs in work-fn log it and consider it done
-            (catch :default e
-              (log/error "failed to run transaction sync" e)
-              (async/put! finished-chan true)))
+          ;; don't let try catch be parsed by go-block
+          (try-it #(worker (fn [] (async/put! finished-chan true)))
+                  (fn [e]
+                    (log/error "failed to run transaction sync" e)
+                    ;; if an error occurs in work-fn log it and consider it done
+                    (async/put! finished-chan true)))
           ;; sanity timeout for work-fn
           (async/alts! [finished-chan (async-util/timeout timeout-ms)])
           (recur))))

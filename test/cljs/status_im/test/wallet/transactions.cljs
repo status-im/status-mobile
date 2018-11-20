@@ -104,7 +104,7 @@
                    (swap! state inc)
                    (throw (ex-info "Throwing this on purpose in error-in-job test" {})))
                  10
-                 10))
+                 100))
         (async test-done
                (js/setTimeout
                 (fn []
