@@ -98,7 +98,8 @@
 
 (def item-icon-forward
   [item-icon {:icon      :icons/forward
-              :icon-opts {:color colors/white-transparent}}])
+              :style     {:width 12}
+              :icon-opts {:color colors/white}}])
 
 (defn- wrap-render-fn [f]
   (fn [data]
@@ -189,8 +190,8 @@
           {:sections            (clj->js (map wrap-per-section-render-fn sections))
            :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)})])
 
-(defn- render-action [{:keys [label accessibility-label icon action disabled?]}
-                      {:keys [action-style action-label-style icon-opts]}]
+(defn render-action [{:keys [label accessibility-label icon action disabled?]}
+                     {:keys [action-style action-label-style icon-opts]}]
   [react/touchable-highlight {:on-press action}
    [react/view {:accessibility-label accessibility-label}
     [item

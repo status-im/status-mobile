@@ -3,8 +3,9 @@
   (:require [status-im.ui.components.colors :as colors]))
 
 (def item
-  {:flex-direction :row
-   :justify-content :center})
+  {:flex-direction     :row
+   :justify-content    :center
+   :padding-horizontal 16})
 
 (def item-content-view
   {:flex            1
@@ -52,22 +53,17 @@
   {:width  icon-size
    :height icon-size})
 
-(def horizontal-margin 12)
-(def vertical-margin 12)
-
 (def left-item-wrapper
   {:justify-content :center
-   :margin-left     horizontal-margin
-   :margin-vertical vertical-margin})
+   :margin-vertical 12})
 
 (def content-item-wrapper
   {:flex              1
    :justify-content   :center
-   :margin-horizontal horizontal-margin})
+   :margin-horizontal 16})
 
 (def right-item-wrapper
-  {:justify-content :center
-   :margin-right    12})
+  {:justify-content :center})
 
 (def base-separator
   {:height           1
