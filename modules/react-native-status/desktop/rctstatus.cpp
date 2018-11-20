@@ -136,14 +136,14 @@ void RCTStatus::createAccount(QString password, double callbackId) {
 }
 
 
-void RCTStatus::notifyUsers(QString token, QString payloadJSON, QString tokensJSON, double callbackId) {
+void RCTStatus::notifyUsers(QString dataPayloadJSON, QString tokensJSON, double callbackId) {
     Q_D(RCTStatus);
     qCDebug(RCTSTATUS) << "::notifyUsers call - callbackId:" << callbackId;
-    QtConcurrent::run([&](QString token, QString payloadJSON, QString tokensJSON, double callbackId) {
-            const char* result = NotifyUsers(token.toUtf8().data(), payloadJSON.toUtf8().data(), tokensJSON.toUtf8().data());
+    QtConcurrent::run([&](QString dataPayloadJSON, QString tokensJSON, double callbackId) {
+            const char* result = NotifyUsers(dataPayloadJSON.toUtf8().data(), tokensJSON.toUtf8().data());
             logStatusGoResult("::notifyUsers Notify", result);
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
-        }, token, payloadJSON, tokensJSON, callbackId);
+        }, dataPayloadJSON, tokensJSON, callbackId);
 }
 
 

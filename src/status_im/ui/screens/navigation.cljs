@@ -16,8 +16,8 @@
 
 (fx/defn navigate-to-clean
   [{:keys [db]} view-id screen-params]
-  (log/debug "current view-id " (:view-id db)
-             "changing to " view-id)
+  (log/debug "current view-id" (:view-id db)
+             "changing to" view-id)
   (let [db (cond-> db
              (seq screen-params)
              (assoc-in [:navigation/screen-params view-id] screen-params))]

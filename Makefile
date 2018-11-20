@@ -209,6 +209,8 @@ android-ports: ##@other Add proxies to Android Device/Simulator
 	adb reverse tcp:4567 tcp:4567
 	adb forward tcp:5561 tcp:5561
 
+android-logcat:
+	adb logcat | grep -e StatusModule -e ReactNativeJS -e StatusNativeLogs
 
 startdev-%:
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))

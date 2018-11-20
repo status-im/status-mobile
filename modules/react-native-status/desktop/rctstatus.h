@@ -38,7 +38,7 @@ public:
     Q_INVOKABLE void startNode(QString configString);
     Q_INVOKABLE void stopNode();
     Q_INVOKABLE void createAccount(QString password, double callbackId);
-    Q_INVOKABLE void notifyUsers(QString token, QString payloadJSON, QString tokensJSON, double callbackId);
+    Q_INVOKABLE void notifyUsers(QString dataPayloadJSON, QString tokensJSON, double callbackId);
     Q_INVOKABLE void sendLogs(QString dbJSON);
     Q_INVOKABLE void addPeer(QString enode, double callbackId);
     Q_INVOKABLE void recoverAccount(QString passphrase, QString password, double callbackId);

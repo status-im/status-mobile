@@ -842,6 +842,11 @@
  (fn [cofx _]
    (accounts/show-mainnet-is-default-alert cofx)))
 
+(handlers/register-handler-fx
+ :notifications.callback/on-message
+ (fn [cofx [_ from to]]
+   (notifications/handle-on-message cofx from to)))
+
 ;; hardwallet module
 
 (handlers/register-handler-fx
