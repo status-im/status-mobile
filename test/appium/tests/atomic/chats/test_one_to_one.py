@@ -411,6 +411,71 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         self.verify_no_errors()
 
+    @marks.testrail_id(5405)
+    @marks.high
+    def test_fiat_value_is_correctly_calculated_on_recipient_side(self):
+        sender = transaction_senders['Y']
+        recipient = transaction_recipients['I']
+
+        self.create_drivers(2)
+        signin_view1, signin_view2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        home_view1, home_view2 = signin_view1.recover_access(sender['passphrase']), signin_view2.recover_access(
+            recipient['passphrase'])
+
+        devices = [
+            {'home_view': home_view1, 'currency': 'AUD'},
+            {'home_view': home_view2, 'currency': 'EUR'},
+        ]
+
+        # changing currency for both devices
+        for device in devices:
+            profile_view = device['home_view'].profile_button.click()
+            profile_view.set_currency(device['currency'])
+            profile_view.get_back_to_home_view()
+
+        device1 = devices[0]
+        device2 = devices[1]
+
+        # setting up device1 wallet
+        wallet1 = device1['home_view'].wallet_button.click()
+        wallet1.set_up_wallet()
+        wallet1.get_back_to_home_view()
+
+        # sending ETH to device2 in 1*1 chat
+        device1_chat = device1['home_view'].add_contact(recipient['public_key'])
+        send_amount = device1_chat.get_unique_amount()
+        device1_chat.send_transaction_in_1_1_chat('ETHro', send_amount)
+
+        sent_message = device1_chat.chat_element_by_text(send_amount)
+        if not sent_message.is_element_displayed() and not sent_message.contains_text(device1['currency']):
+            self.errors.append('Wrong currency fiat value while sending ETH in 1*1 chat.')
+
+        device2_chat = device2['home_view'].get_chat_with_user(sender['username']).click()
+        received_message = device2_chat.chat_element_by_text(send_amount)
+        if not received_message.is_element_displayed() and not received_message.contains_text(device2['currency']):
+            self.errors.append('Wrong currency fiat value while receiving ETH in 1*1 chat.')
+
+        device1_chat.get_back_to_home_view()
+        wallet1 = device1['home_view'].wallet_button.click()
+        send_amount = device1_chat.get_unique_amount()
+
+        # Send and request some ETH from wallet and check whether the fiat currency value of
+        # the new messages is equal to user-selected
+        wallet1.send_transaction(asset_name='ETHro', recipient=recipient['username'], amount=send_amount)
+        wallet1.get_back_to_home_view()
+        device1_chat = device1['home_view'].get_chat_with_user(recipient['username']).click()
+
+        sent_message = device1_chat.chat_element_by_text(send_amount)
+        received_message = device2_chat.chat_element_by_text(send_amount)
+
+        if not sent_message.is_element_displayed() and not sent_message.contains_text(device1['currency']):
+            self.errors.append('Wrong currency fiat value while sending ETH from wallet.')
+
+        if not received_message.is_element_displayed() and not sent_message.contains_text(device2['currency']):
+            self.errors.append('Wrong currency fiat value while receiving ETH sent via wallet.')
+
+        self.verify_no_errors()
+
 
 @marks.all
 @marks.chat
@@ -521,11 +586,11 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat.request_transaction_in_1_1_chat('STT', request_amount)
 
         send_message = chat.chat_element_by_text(send_amount)
-        if not send_message.is_element_displayed() or not send_message.contains_text(default_currency):
+        if not send_message.is_element_displayed() and not send_message.contains_text(default_currency):
             self.errors.append('Wrong fiat value while sending assets in 1-1 chat with default currency.')
 
         request_message = chat.chat_element_by_text(request_amount)
-        if not request_message.is_element_displayed() or not request_message.contains_text(default_currency):
+        if not request_message.is_element_displayed() and not request_message.contains_text(default_currency):
             self.errors.append('Wrong fiat value while requesting assets in 1-1 chat with default currency.')
 
         chat.get_back_to_home_view()
@@ -539,11 +604,11 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
         # Check whether the fiat currency value of the messages sent is not changed to user-selected
         send_message = chat.chat_element_by_text(send_amount)
-        if not send_message.is_element_displayed() or not send_message.contains_text(default_currency):
+        if not send_message.is_element_displayed() and not send_message.contains_text(default_currency):
             self.errors.append('Wrong fiat value while sending assets in 1-1 chat with default currency.')
 
         request_message = chat.chat_element_by_text(request_amount)
-        if not request_message.is_element_displayed() or not request_message.contains_text(default_currency):
+        if not request_message.is_element_displayed() and not request_message.contains_text(default_currency):
             self.errors.append('Wrong fiat value while requesting assets in 1-1 chat with default currency.')
 
         # Send and request some tokens in 1x1 chat and check whether the fiat currency value of
@@ -553,11 +618,11 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat.request_transaction_in_1_1_chat('STT', request_amount)
 
         send_message = chat.chat_element_by_text(send_amount)
-        if not send_message.is_element_displayed() or not send_message.contains_text(user_currency):
+        if not send_message.is_element_displayed() and not send_message.contains_text(user_currency):
             self.errors.append('Wrong fiat value while sending assets in 1-1 chat with user selected currency.')
 
         request_message = chat.chat_element_by_text(request_amount)
-        if not request_message.is_element_displayed() or not request_message.contains_text(user_currency):
+        if not request_message.is_element_displayed() and not request_message.contains_text(user_currency):
             self.errors.append('Wrong fiat value while requesting assets in 1-1 chat with user selected currency.')
 
         chat.get_back_to_home_view()
@@ -574,11 +639,11 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat = home_view.get_chat_with_user(recipient_user_name).click()
 
         send_message = chat.chat_element_by_text(send_amount)
-        if not send_message.is_element_displayed() or not send_message.contains_text(user_currency):
+        if not send_message.is_element_displayed() and not send_message.contains_text(user_currency):
             self.errors.append('Wrong fiat value while sending assets from wallet with user selected currency.')
 
         request_message = chat.chat_element_by_text(request_amount)
-        if not request_message.is_element_displayed() or not request_message.contains_text(user_currency):
+        if not request_message.is_element_displayed() and not request_message.contains_text(user_currency):
             self.errors.append('Wrong fiat value while requesting assets from wallet with user selected currency.')
 
         self.verify_no_errors()
