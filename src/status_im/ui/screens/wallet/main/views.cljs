@@ -3,6 +3,7 @@
   (:require [reagent.core :as reagent]
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.view :as toolbar]
@@ -48,9 +49,7 @@
       value]
      [react/text {:style               styles/total-balance-currency
                   :accessibility-label :total-amount-currency-text}
-      (:code currency)]]
-    [react/i18n-text {:style styles/total-value
-                      :key   :wallet-total-value}]]])
+      (:code currency)]]]])
 
 (defn- backup-seed-phrase []
   [react/view styles/section
@@ -64,17 +63,17 @@
      [vector-icons/icon :icons/forward {:color :white}]]]])
 
 (def actions
-  [{:label               (i18n/label :t/send-transaction)
+  [{:label               (i18n/label :t/wallet-send)
     :accessibility-label :send-transaction-button
-    :icon                :icons/arrow-right
+    :icon                :icons/angle-arrow-right
     :action              #(re-frame/dispatch [:navigate-to :wallet-send-transaction])}
-   {:label               (i18n/label :t/receive-transaction)
+   {:label               (i18n/label :t/wallet-deposit)
     :accessibility-label :receive-transaction-button
-    :icon                :icons/arrow-left
+    :icon                :icons/angle-arrow-left
     :action              #(re-frame/dispatch [:navigate-to :wallet-request-transaction])}
    {:label               (i18n/label :t/transaction-history)
     :accessibility-label :transaction-history-button
-    :icon                :icons/transaction-history
+    :icon                :icons/list-page
     :action              #(re-frame/dispatch [:navigate-to :transactions-history])}])
 
 (defn- render-asset [currency]
@@ -100,6 +99,7 @@
 
 (def item-icon-forward
   [list/item-icon {:icon      :icons/forward
+                   :style     {:width 12}
                    :icon-opts {:color :gray}}])
 
 (defn- render-collectible [address-hex {:keys [symbol name icon amount] :as collectible} modal?]
@@ -131,9 +131,12 @@
   (let [{:keys [tokens nfts]} (group-assets assets)]
     [react/view styles/asset-section
      [list/section-list
-      {:default-separator? true
-       :scroll-enabled     false
+      {:scroll-enabled     false
        :key-fn             (comp str :symbol)
+       :render-section-header-fn (fn [{:keys [title data]}]
+                                   (when (not-empty data)
+                                     [react/text {:style styles/asset-section-header}
+                                      title]))
        :sections           [{:title     (i18n/label :t/wallet-assets)
                              :key       :assets
                              :data      tokens
@@ -183,8 +186,11 @@
                         :accessibility-label :address-text
                         :selectable          true}
             address-hex]]
-          [list/action-list actions
-           {:container-style styles/action-section}])
+          [react/view (merge {:background-color colors/blue} styles/action-section)
+           [list/flat-list
+            {:data      actions
+             :key-fn    (fn [_ i] (str i))
+             :render-fn #(list/render-action % {:action-label-style {:font-size 17}})}]])
         [asset-section assets currency address-hex modal?]
         ;; Hack to allow different colors for bottom scroll view (iOS only)
         [react/view {:style styles/scroll-bottom}]])]))
