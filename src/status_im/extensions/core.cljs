@@ -289,7 +289,7 @@
                                :params?    :vector
                                :outputs?   :vector
                                :on-result  :event}}}
-   :hooks      {:commands        commands/command-hook
+   :hooks      {:command         commands/command-hook
                 :wallet.settings settings/hook}})
 
 (defn parse [{:keys [data]} id]
