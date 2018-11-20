@@ -82,16 +82,16 @@
 
 (defn- get-unviewed-messages
   [public-key]
-  (into {}
-        (map (fn [[chat-id user-statuses]]
-               [chat-id (into #{} (map :message-id) user-statuses)]))
-        (group-by :chat-id
-                  (-> @core/account-realm
-                      (core/get-by-fields
-                       :user-status
-                       :and {:public-key public-key
-                             :status     "received"})
-                      (core/all-clj :user-status)))))
+  (-> @core/account-realm
+      (core/get-by-fields
+       :user-status
+       :and {:public-key public-key
+             :status     "received"})
+      (.reduce (fn [acc msg _ _]
+                 (let [chat-id (aget msg "chat-id")
+                       message-id (aget msg "message-id")]
+                   (update acc chat-id (fnil conj #{}) message-id)))
+               {})))
 
 (re-frame/reg-cofx
  :data-store/get-unviewed-messages
