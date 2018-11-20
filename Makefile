@@ -51,14 +51,18 @@ _prepare-mobile: ##@prepare Install mobile platform dependencies and prepare wor
 	npm install
 
 $(STATUS_GO_IOS_ARCH):
-	cd $(RCTSTATUS_DIR) && curl -s -OL "$(GITHUB_URL)/$(STATUS_GO_VER)/status-go-ios.zip"
+	curl -s -L \
+		"$(GITHUB_URL)/$(STATUS_GO_VER)/status-go-ios.zip" \
+		-o "$(STATUS_GO_IOS_ARCH)"
 
 $(STATUS_GO_DRO_ARCH):
 	mkdir -p $(ANDROID_LIBS_DIR)
-	cd $(ANDROID_LIBS_DIR) && curl -s -o status-go-$(STATUS_GO_VER).aar -OL "$(GITHUB_URL)/$(STATUS_GO_VER)/status-go-android.aar"
+	curl -s -L \
+		"$(GITHUB_URL)/$(STATUS_GO_VER)/status-go-android.aar" \
+		-o "$(STATUS_GO_DRO_ARCH)"
 
 prepare-ios: $(STATUS_GO_IOS_ARCH) _prepare-mobile ##@prepare Install and prepare iOS-specific dependencies
-	cd $(RCTSTATUS_DIR) && unzip -q -o status-go-ios.zip
+	unzip -q -o "$(STATUS_GO_IOS_ARCH)" -d "$(RCTSTATUS_DIR)"
 ifeq ($(OS),Darwin)
 	cd ios && pod install
 endif
