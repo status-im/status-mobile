@@ -86,5 +86,5 @@
         :icon-opts {:color               colors/white
                     :accessibility-label :options-menu-button}
         :options   (into [{:label  (i18n/label :t/wallet-manage-assets)
-                           :action #(re-frame/dispatch [:navigate-to-modal :wallet-settings-assets])}]
+                           :action #(re-frame/dispatch [:navigate-to :wallet-settings-assets])}]
                          (map setting->action settings))}]]]))
