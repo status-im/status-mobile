@@ -354,7 +354,7 @@ function install_android_ndk() {
       cecho "@cyan[[Extracting Android NDK to $_ndkParentDir.]]" && \
       unzip -q -o ./android-ndk.zip -d "$_ndkParentDir" && \
       rm -f ./android-ndk.zip && \
-      _ndkTargetDir="$_ndkParentDir/$(ls $_ndkParentDir | head -n 1)" && \
+      _ndkTargetDir="$_ndkParentDir/$(ls $_ndkParentDir | grep ndk)" && \
       echo "ndk.dir=$_ndkTargetDir" | tee -a $_localPropertiesPath && \
       cecho "@blue[[Android NDK installation completed in $_ndkTargetDir.]]"
   fi

@@ -9,19 +9,25 @@ PLATFORM_FOLDER=""
 
 #if no arguments passed, inform user about possible ones
 
-if [ $# -eq 0 ]
-  then
-    echo -e "${GREEN}This script should be invoked with platform argument: 'mobile' or 'desktop'${NC}"
-    echo "When called it links"
-    # echo "If invoked with 'mobile' argument it will make a copying: "
-    # echo "package.json.mobile -> package.json"
-    # echo "etc.."
-    exit 1
-  else
-    PLATFORM=$1
-    PLATFORM_FOLDER="${PLATFORM}_files"
+if [ $# -eq 0 ]; then
+  echo -e "${GREEN}This script should be invoked with platform argument: 'android', 'ios' or 'desktop'${NC}"
+  echo "If invoked with 'mobile' argument it will link: "
+  echo "package.json.mobile -> package.json"
+  echo "etc.."
+  exit 1
+else
+  case $1 in
+    android | ios)
+      PLATFORM='mobile'
+      ;;
+    *)
+      PLATFORM=$1
+      ;;
+  esac
+  PLATFORM_FOLDER="${PLATFORM}_files"
 fi
 
+scripts/run-pre-build-check.sh $1
 
 echo "Creating link: package.json -> ${PLATFORM_FOLDER}/package.json "
 ln -sf  ${PLATFORM_FOLDER}/package.json package.json
