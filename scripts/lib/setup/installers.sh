@@ -216,19 +216,25 @@ function install_node_via_nvm() {
   cd "$(repo_path)"
 
   if [ ! -e "$nvmrc" ]; then
-    cecho "@b@blue[[+ Installing Node 9 (Node 10 is not supported by Realm)]]"
+    cecho "@b@blue[[+ Installing Node 8 (Node 10 is not supported by Realm and Node 9 doesn't support npm 5.5.1)]]"
 
-    nvm install 9
-    nvm alias status-im 9
+    nvm install 8.9.4
+    nvm alias status-im 8.9.4
     echo status-im > "$nvmrc"
 
     nvm use status-im
+    npm install -g npm@5.5.1 # Explicitly downgrade to v5.5.1 of npm, since Status Desktop builds require it (npm install hangs with version higher than 5.5.1). We could maintain two versions of npm (5.5.1 for Desktop and a more recent on for mobile) but that can be confusing and lead to inconsistent environments
   else
     local version_alias=$(cat "$nvmrc")
     nvm use $version_alias
 
     local version=$(node -v)
     cecho "+ Node already installed ($version_alias $version via NVM)... skipping."
+  fi
+
+  local npm_version=$(npm -v)
+  if [[ $npm_version != "5.5.1" ]]; then
+    cecho "@b@red[[+ npm version $npm_version is installed. npm version 5.5.1 is recommended.]]"
   fi
 }
 

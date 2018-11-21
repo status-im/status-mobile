@@ -138,7 +138,7 @@ watch-desktop: ##@watch Start development for Desktop
 run-android: ##@run Run Android build
 	react-native run-android --appIdSuffix debug
 
-run-desktop: ##@run Run Android build
+run-desktop: ##@run Run Desktop build
 	react-native run-desktop
 
 SIMULATOR=

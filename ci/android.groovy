@@ -2,7 +2,8 @@ common = load 'ci/common.groovy'
 
 def compile(type = 'nightly') {
   common.buildNumber()
-  def gradleOpt = "-PbuildUrl='${currentBuild.absoluteUrl}' "
+  // Disable Gradle Daemon https://stackoverflow.com/questions/38710327/jenkins-builds-fail-using-the-gradle-daemon
+  def gradleOpt = "-PbuildUrl='${currentBuild.absoluteUrl}' -Dorg.gradle.daemon=false "
   if (type == 'release') {
     gradleOpt += "-PreleaseVersion='${common.version()}'"
   }
