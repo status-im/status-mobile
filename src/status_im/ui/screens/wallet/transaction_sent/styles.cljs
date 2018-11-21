@@ -1,41 +1,18 @@
 (ns status-im.ui.screens.wallet.transaction-sent.styles
-  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.ui.components.colors :as colors]))
-
-(def transaction-sent-container
-  {:align-items :center})
-
-(def ok-icon-container
-  {:width            56
-   :height           56
-   :border-radius    28
-   :background-color :white
-   :align-items      :center
-   :justify-content  :center
-   :margin-top       57
-   :margin-bottom    16})
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.utils.platform :as platform]))
 
 (def transaction-sent
-  {:color     :white
-   :font-size 17})
-
-(def gap
-  {:height 8})
+  {:color         colors/white
+   :font-weight   :bold
+   :line-height   27
+   :font-size     (if platform/android? 23 22)
+   :margin-bottom 8})
 
 (def transaction-sent-description
-  {:color              :white
-   :opacity            0.6
+  {:color              "rgba(255,255,255,0.6)"
+   :font-size          (if platform/android? 17 15)
+   :line-height        22
    :text-align         :center
-   :padding-horizontal 16})
-
-(def transaction-details
-  {:color     :white
-   :font-size 15})
-
-(def got-it-container
-  {:align-items      :center
-   :padding-vertical 18})
-
-(def got-it
-  {:color     :white
-   :font-size 15})
+   :padding-horizontal 30
+   :margin-bottom      35})
