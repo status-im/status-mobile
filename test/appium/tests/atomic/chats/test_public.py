@@ -1,3 +1,4 @@
+from support.utilities import generate_timestamp
 from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
@@ -126,3 +127,31 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         if not public_chat.chat_element_by_text(message).is_element_displayed():
             self.errors.append('Message with korean characters is not shown')
         self.verify_no_errors()
+
+    @marks.testrail_id(5336)
+    @marks.high
+    def test_user_can_interact_with_public_chat(self):
+        signin = SignInView(self.driver)
+        home_view = signin.create_user()
+        chat = home_view.join_public_chat('evripidis-middellijn')
+
+        if chat.empty_public_chat_message.is_element_displayed():
+            self.driver.fail('Empty chat: history is not fetched!')
+
+        # just to generate random text to be sent
+        text = generate_timestamp()
+        chat.send_message(text)
+
+        if not chat.chat_element_by_text(text).is_element_displayed():
+            self.errors.append('User sent message but it did not appear in chat!')
+
+        chat.move_to_messages_by_time_marker('Today')
+        if len(chat.chat_item.find_elements()) <= 1:
+            self.errors.append('There were no history messages fetched!')
+
+        chat.move_to_messages_by_time_marker('Yesterday')
+        if len(chat.chat_item.find_elements()) <= 1:
+            self.errors.append('There were no history messages fetched!')
+
+        self.verify_no_errors()
+

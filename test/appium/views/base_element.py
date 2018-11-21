@@ -110,13 +110,16 @@ class BaseElement(object):
             raise TimeoutException("Device %s: '%s' is still visible on the screen after %s seconds" % (
                 self.driver.number, self.name, seconds)) from None
 
-    def scroll_to_element(self):
-        for _ in range(9):
+    def scroll_to_element(self, depth: int = 9, direction='down'):
+        for _ in range(depth):
             try:
                 return self.find_element()
             except NoSuchElementException:
                 self.driver.info('Scrolling down to %s' % self.name)
-                self.driver.swipe(500, 1000, 500, 500)
+                if direction == 'down':
+                    self.driver.swipe(500, 1000, 500, 500)
+                else:
+                    self.driver.swipe(500, 500, 500, 1000)
 
     def is_element_present(self, sec=5):
         try:

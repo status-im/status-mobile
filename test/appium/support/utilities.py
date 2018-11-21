@@ -1,5 +1,6 @@
 from operator import itemgetter
 from typing import List
+from datetime import datetime
 
 
 def fill_string_with_char(string: str, fillchar: str, amount: int, start: bool = False, end: bool = False) -> str:
@@ -38,3 +39,7 @@ def get_merged_txs_list(normal_txs_list, token_events_list) -> List[dict]:
     res.extend(normal_txs_list)
     res.extend(token_events_list)
     return sorted(res, key=itemgetter('timeStamp'), reverse=True)
+
+
+def generate_timestamp():
+    return datetime.strftime(datetime.now(), '%F %H:%M:%S')
