@@ -567,7 +567,7 @@
     "no-statuses-found": "No statuses found",
     "extension-address": "Extension address",
     "can-not-add-yourself": "You can't add yourself",
-    "transaction-description": "Transactions with 12 confirmations can be considered irreversible",
+    "transaction-description": "Consider it complete after 12 confirmations on the network.",
     "add-to-contacts": "Add to contacts",
     "available": "Available",
     "currency-display-name-jpy": "Japanese Yen",
