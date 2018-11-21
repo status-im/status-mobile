@@ -275,7 +275,7 @@
                           #(let [realm-obj (object/get realm-object-list %)]
                              [(object/get realm-obj primary-key) (realm-obj->clj realm-obj entity-name)]))))
 
-(defn- realm-obj->clj [realm-obj entity-name]
+(defn realm-obj->clj [realm-obj entity-name]
   (when realm-obj
     (let [{:keys [primaryKey properties]} (get entity->schemas entity-name)]
       (into {}

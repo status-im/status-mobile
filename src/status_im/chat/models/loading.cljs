@@ -73,7 +73,6 @@
                                         :referenced-messages (into {}
                                                                    (map (juxt :message-id identity)
                                                                         (get-referenced-messages
-                                                                         chat-id
                                                                          (get-referenced-ids chat-messages))))))))
                       {}
                       all-stored-chats)]
@@ -116,8 +115,7 @@
           new-messages        (get-stored-messages current-chat-id loaded-count)
           indexed-messages    (index-messages new-messages)
           referenced-messages (index-messages
-                               (get-referenced-messages current-chat-id
-                                                        (get-referenced-ids indexed-messages)))
+                               (get-referenced-messages (get-referenced-ids indexed-messages)))
           new-message-ids     (keys indexed-messages)
           new-statuses        (get-stored-user-statuses current-chat-id new-message-ids)]
       (fx/merge cofx
