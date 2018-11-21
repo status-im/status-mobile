@@ -27,8 +27,10 @@ dependencies {
 
     // Check if the local status-go jar exists, and compile against that if it does
     final String localStatusLibOutputDir = "${rootDir}/../modules/react-native-status/android/libs", localVersion = 'local'
-    if ( new File("${localStatusLibOutputDir}/${statusGoGroup}/${statusGoName}/${localVersion}/${statusGoName}-${localVersion}.aar").exists() ) {
+    final File localFile = new File("${localStatusLibOutputDir}/${statusGoGroup}/${statusGoName}/${localVersion}/${statusGoName}-${localVersion}.aar")
+    if ( localFile.exists() ) {
         // Use the local version
+        logger.warn("Using local build of Android status-go library ${localFile.absolutePath}.")
         statusGoVersion = localVersion
     }
 

@@ -26,6 +26,6 @@ if [ $# -eq 0 ]; then
 fi
 
 STATUSGO_VERSION=$1
+STATUSGO_VERSION=${STATUSGO_VERSION#"v"}
 
-sedi "s/\([[:blank:]]\{28,\}<version>\).*\(<\/version>\)/\1$STATUSGO_VERSION\2/" modules/react-native-status/ios/RCTStatus/pom.xml
-sedi "s/\(statusGoVersion = '\).*\('\)/\1$STATUSGO_VERSION\2/" modules/react-native-status/android/build.gradle
+echo $STATUSGO_VERSION > STATUS_GO_VERSION
