@@ -3,7 +3,7 @@ import time
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 from tests import common_password
-from views.base_element import BaseButton, BaseEditBox, BaseText
+from views.base_element import BaseButton, BaseEditBox, BaseText, BaseElement
 from views.base_view import BaseView, ProgressBar
 from views.profile_view import ProfilePictureElement, ProfileAddressText
 
@@ -244,6 +244,24 @@ class ChatElementByText(BaseText):
         return element.is_element_displayed(wait_time)
 
 
+class EmptyPublicChatMessage(BaseText):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.text_part_selector("There are no messages")
+
+
+class ChatItem(BaseElement):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="chat-item"]')
+
+
+class HistoryTimeMarker(BaseText):
+    def __init__(self, driver, marker='Today'):
+        super().__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="%s"]' % marker)
+
+
 class ChatView(BaseView):
     def __init__(self, driver):
         super(ChatView, self).__init__(driver)
@@ -252,6 +270,8 @@ class ChatView(BaseView):
         self.add_to_contacts = AddToContacts(self.driver)
         self.user_name_text = UserNameText(self.driver)
         self.no_messages_in_chat = NoMessagesInChatText(self.driver)
+        self.empty_public_chat_message = EmptyPublicChatMessage(self.driver)
+        self.chat_item = ChatItem(self.driver)
 
         self.commands_button = CommandsButton(self.driver)
         self.send_command = SendCommand(self.driver)
@@ -390,3 +410,11 @@ class ChatView(BaseView):
         today_height = today_text_element.size['height']
         if message_location < today_location + today_height:
             errors.append("Message '%s' is not under 'Today' text" % text)
+
+    def send_message(self, message: str = 'test message'):
+        self.chat_message_input.send_keys(message)
+        self.send_message_button.click()
+
+    def move_to_messages_by_time_marker(self, marker='Today'):
+        self.driver.info("Moving to messages by time marker: '%s'" % marker)
+        HistoryTimeMarker(self.driver, marker).scroll_to_element(depth=50, direction='up')
