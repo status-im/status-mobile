@@ -21,15 +21,15 @@
                       (core/all-clj :message))]
      (map transform-message messages))))
 
-(defn- get-by-chat-and-messages-ids
-  [chat-id message-ids]
+(defn- get-by-messages-ids
+  [message-ids]
   (when (seq message-ids)
-    (let [messages (-> @core/account-realm
-                       (.objects "message")
-                       (.filtered (str "chat-id=\"" chat-id "\""
-                                       (str " and (" (core/in-query "message-id" message-ids) ")")))
-                       (core/all-clj :message))]
-      (map transform-message messages))))
+    (keep (fn [message-id]
+            (when-let [js-message (.objectForPrimaryKey @core/account-realm "message" message-id)]
+              (-> js-message
+                  (core/realm-obj->clj :message)
+                  transform-message)))
+          message-ids)))
 
 (def default-values
   {:to             nil})
@@ -101,7 +101,7 @@
 (re-frame/reg-cofx
  :data-store/get-referenced-messages
  (fn [cofx _]
-   (assoc cofx :get-referenced-messages get-by-chat-and-messages-ids)))
+   (assoc cofx :get-referenced-messages get-by-messages-ids)))
 
 (defn- prepare-content [content]
   (if (string? content)
