@@ -72,6 +72,7 @@
   (let [accounts (get db :accounts/accounts)
         current-fleet-key (fleet/current-fleet db address)
         current-fleet (get fleet/fleets current-fleet-key)
+        rendezvous-nodes (pick-nodes 3 (vals (:rendezvous current-fleet)))
         {:keys [network
                 installation-id
                 settings
@@ -86,13 +87,13 @@
 
       current-fleet
       (assoc :NoDiscovery   false
-             :Rendezvous    true
+             :Rendezvous    (not (empty? rendezvous-nodes))
              :ClusterConfig {:Enabled true
                              :Fleet              (name current-fleet-key)
                              :BootNodes          (pick-nodes 4 (vals (:boot current-fleet)))
                              :TrustedMailServers (pick-nodes 6 (vals (:mail current-fleet)))
                              :StaticNodes        (pick-nodes 2 (vals (:whisper current-fleet)))
-                             :RendezvousNodes    (pick-nodes 3 (vals (:rendezvous current-fleet)))})
+                             :RendezvousNodes    rendezvous-nodes})
 
       :always
       (assoc :WhisperConfig         {:Enabled true
