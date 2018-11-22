@@ -92,7 +92,7 @@
                              :Fleet              (name current-fleet-key)
                              :BootNodes          (pick-nodes 4 (vals (:boot current-fleet)))
                              :TrustedMailServers (pick-nodes 6 (vals (:mail current-fleet)))
-                             :StaticNodes        (pick-nodes 2 (vals (:whisper current-fleet)))
+                             :StaticNodes        (into (pick-nodes 2 (vals (:whisper current-fleet))) (vals (:static current-fleet)))
                              :RendezvousNodes    rendezvous-nodes})
 
       :always
