@@ -203,8 +203,8 @@
       (let [user-status (aget user-statuses i)
             message-id     (aget user-status "message-id")
             new-message-id (get @old-ids->new-ids message-id)
-            whisper-id     (aget user-status "whisper-identity")
-            new-status-id (str new-message-id "-" whisper-id)]
+            public-key     (aget user-status "public-key")
+            new-status-id (str new-message-id "-" public-key)]
         (if (contains? @updated-message-statuses-ids new-status-id)
           (vswap! statuses-to-be-deleted conj user-status)
           (do
@@ -214,3 +214,19 @@
 
     (doseq [status @statuses-to-be-deleted]
       (.delete new-realm status))))
+
+(defn v26 [old-realm new-realm]
+  (let [user-statuses (.objects new-realm "user-status")]
+    (dotimes [i (.-length user-statuses)]
+      (let [user-status   (aget user-statuses i)
+            status-id     (aget user-status "message-id")
+            message-id    (aget user-status "message-id")
+            public-key    (aget user-status "public-key")
+            new-status-id (str message-id "-" public-key)]
+        (when (and (= "-" (last status-id)))
+          (if (.objectForPrimaryKey
+               new-realm
+               "user-status"
+               new-status-id)
+            (.delete new-realm user-status)
+            (aset user-status "status-id" new-status-id)))))))
