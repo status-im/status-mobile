@@ -103,9 +103,9 @@
 
 (defn command-complete-fx
   "command is complete, proceed with command processing"
-  [input-text command {:keys [db now] :as cofx}]
+  [cofx input-text command custom-params]
   (fx/merge cofx
-            (commands.sending/validate-and-send input-text command)
+            (commands.sending/validate-and-send input-text command custom-params)
             (set-chat-input-text nil)
             (process-cooldown)))
 
@@ -137,7 +137,7 @@
 (fx/defn send-current-message
   "Sends message from current chat input"
   [{{:keys [current-chat-id id->command access-scope->command-id] :as db} :db :as cofx}]
-  (let [input-text   (get-in db [:chats current-chat-id :input-text])
+  (let [{:keys [input-text custom-params]} (get-in db [:chats current-chat-id])
         command      (commands.input/selected-chat-command
                       input-text nil (commands/chat-commands id->command
                                                              access-scope->command-id
@@ -145,7 +145,7 @@
     (if command
       ;; Returns true if current input contains command
       (if (= :complete (:command-completion command))
-        (command-complete-fx input-text command cofx)
+        (command-complete-fx cofx input-text command custom-params)
         (command-not-complete-fx input-text current-chat-id cofx))
       (plain-text-message-fx input-text current-chat-id cofx))))
 

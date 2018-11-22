@@ -21,12 +21,12 @@
 
 (fx/defn validate-and-send
   "Validates and sends command in current chat"
-  [{:keys [db now] :as cofx} input-text {:keys [type params] :as command}]
+  [{:keys [db] :as cofx} input-text {:keys [type params]} custom-params]
   (let [chat-id       (:current-chat-id db)
-        parameter-map (commands.input/parse-parameters params input-text)]
+        parameter-map (merge (commands.input/parse-parameters params input-text) custom-params)]
     (if-let [validation-error (protocol/validate type parameter-map cofx)]
       ;; errors during validation
-      {:db (chat/set-chat-ui-props db {:validation-messages  validation-error})}
+      {:db (chat/set-chat-ui-props db {:validation-messages validation-error})}
       ;; no errors
       (if (satisfies? protocol/Yielding type)
         ;; yield control implemented, don't send the message

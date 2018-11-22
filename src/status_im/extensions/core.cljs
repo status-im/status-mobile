@@ -139,6 +139,17 @@
  (fn [_ [_ _ {:keys [value]}]]
    {:dispatch [:chat.ui/set-command-parameter value]}))
 
+(handlers/register-handler-fx
+ :extensions.chat.command/set-custom-parameter
+ (fn [{{:keys [current-chat-id] :as db} :db} [_ _ {:keys [key value]}]]
+   {:db (assoc-in db [:chats current-chat-id :custom-params key] value)}))
+
+(handlers/register-handler-fx
+ :extensions.chat.command/set-parameter-with-custom-params
+ (fn [{{:keys [current-chat-id] :as db} :db} [_ _ {:keys [value params]}]]
+   {:db (update-in db [:chats current-chat-id :custom-params] merge params)
+    :dispatch [:chat.ui/set-command-parameter value]}))
+
 (defn operation->fn [k]
   (case k
     :plus   +
@@ -223,7 +234,15 @@
                 'chat.command/set-parameter
                 {:permissions [:read]
                  :value       :extensions.chat.command/set-parameter
-                 :arguments   {:value :string}}
+                 :arguments   {:value :any}}
+                'chat.command/set-custom-parameter
+                {:permissions [:read]
+                 :value       :extensions.chat.command/set-custom-parameter
+                 :arguments   {:key :keyword :value :any}}
+                'chat.command/set-parameter-with-custom-params
+                {:permissions [:read]
+                 :value       :extensions.chat.command/set-parameter-with-custom-params
+                 :arguments   {:value :string :params :map}}
                 'log
                 {:permissions [:read]
                  :value       :log
