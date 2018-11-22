@@ -7,7 +7,8 @@
             [status-im.i18n :as i18n]))
 
 (defview error-label
-  [{:keys [view-id label mailserver-fetching? mailserver-error?] :as opts}]
+  [{:keys [view-id label mailserver-fetching? mailserver-connection-error?
+           mailserver-request-error?] :as opts}]
   {:should-component-update
    (fn [_ [_ old-props] [_ new-props]]
      ;; prevents flickering on navigation
@@ -17,33 +18,40 @@
     [react/view {:style               wrapper-style
                  :accessibility-label :connection-status-text}
      [react/text {:style    styles/text
-                  :on-press (when mailserver-error?
-                              #(re-frame/dispatch [:mailserver.ui/reconnect-mailserver-pressed]))}
-      (if (and (not mailserver-error?)
+                  :on-press #(cond
+                               mailserver-connection-error?
+                               (re-frame/dispatch [:mailserver.ui/reconnect-mailserver-pressed])
+                               mailserver-request-error?
+                               (re-frame/dispatch [:mailserver.ui/request-error-pressed]))}
+      (if (and (not (or mailserver-connection-error?
+                        mailserver-request-error?))
                mailserver-fetching?)
         (i18n/label :t/fetching-messages {:requests-left (str mailserver-fetching?)})
         (i18n/label label))]]))
 
 (defview error-view [{:keys [top]}]
-  (letsubs [offline?             [:offline?]
-            disconnected?        [:disconnected?]
-            mailserver-error?    [:mailserver/error]
-            mailserver-fetching? [:mailserver/fetching?]
-            current-chat-contact [:chats/current-chat-contact]
-            view-id              [:get :view-id]
-            window-width         [:dimensions/window-width]]
+  (letsubs [offline?                     [:offline?]
+            disconnected?                [:disconnected?]
+            mailserver-connection-error? [:mailserver/connection-error?]
+            mailserver-request-error?    [:mailserver/request-error?]
+            mailserver-fetching?         [:mailserver/fetching?]
+            current-chat-contact         [:chats/current-chat-contact]
+            view-id                      [:get :view-id]
+            window-width                 [:dimensions/window-width]]
     (when-let [label (cond
                        offline? :t/offline
                        disconnected? :t/disconnected
-                       mailserver-error? :t/mailserver-reconnect
+                       mailserver-connection-error? :t/mailserver-reconnect
+                       mailserver-request-error? :t/mailserver-request-error-status
                        mailserver-fetching? :t/fetching-messages
                        :else nil)]
       (let [pending? (and (:pending current-chat-contact) (= :chat view-id))]
         [error-label
-         {:view-id              view-id
-          :top                  top
-          :window-width         window-width
-          :pending?             pending?
-          :label                label
-          :mailserver-fetching? mailserver-fetching?
-          :mailserver-error?    mailserver-error?}]))))
+         {:view-id                      view-id
+          :top                          top
+          :window-width                 window-width
+          :pending?                     pending?
+          :label                        label
+          :mailserver-fetching?         mailserver-fetching?
+          :mailserver-request-error?    mailserver-request-error?
+          :mailserver-connection-error? mailserver-connection-error?}]))))

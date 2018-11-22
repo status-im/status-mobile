@@ -248,6 +248,7 @@
                                 :mailserver/current-request
                                 :mailserver/connection-checks
                                 :mailserver/request-to
+                                :mailserver/request-error
                                 :desktop/desktop
                                 :dimensions/window
                                 :dapps/permissions

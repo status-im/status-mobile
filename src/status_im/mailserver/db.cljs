@@ -40,3 +40,4 @@
 (spec/def :mailserver/current-request (spec/keys :req-un [:request/from :request/to ::topics]
                                                  :opt-un [:request/attemps]))
 (spec/def :mailserver/pending-requests integer?)
+(spec/def :mailserver/request-error string?)

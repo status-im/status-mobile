@@ -440,6 +440,38 @@
                                         mailserver-topics)}
                   (process-next-messages-request))))))
 
+(fx/defn retry-next-messages-request
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (dissoc db :mailserver/request-error)}
+            (process-next-messages-request)))
+
+(fx/defn handle-request-error
+  [{:keys [db]} error]
+  {:db (-> db
+           (assoc :mailserver/request-error error)
+           (dissoc :mailserver/current-request
+                   :mailserver/pending-requests))})
+
+(fx/defn handle-request-completed
+  [cofx event]
+  (when (accounts.db/logged-in? cofx)
+    (let [error (:errorMessage event)]
+      (if (empty? error)
+        (update-mailserver-topics cofx
+                                  {:request-id (:requestID event)
+                                   :cursor     (:cursor event)})
+        (handle-request-error cofx error)))))
+
+(fx/defn show-request-error-popup
+  [{:keys [db]}]
+  (let [mailserver-error (:mailserver/request-error db)]
+    {:utils/show-confirmation
+     {:title (i18n/label :t/mailserver-request-error-title)
+      :content (i18n/label :t/mailserver-request-error-content {:error mailserver-error})
+      :on-accept #(re-frame/dispatch [:mailserver.ui/retry-request-pressed])
+      :confirm-button-text (i18n/label :t/mailserver-request-retry)}}))
+
 (fx/defn upsert-mailserver-topic
   "if the topic didn't exist
       create the topic

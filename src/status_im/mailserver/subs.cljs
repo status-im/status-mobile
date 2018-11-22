@@ -22,10 +22,15 @@
      pending-requests)))
 
 (re-frame/reg-sub
- :mailserver/error
+ :mailserver/connection-error?
  :<- [:mailserver/state]
  (fn [state]
    (#{:error :disconnected} state)))
+
+(re-frame/reg-sub
+ :mailserver/request-error?
+ (fn [db]
+   (get db :mailserver/request-error)))
 
 (re-frame/reg-sub
  :mailserver/current-id

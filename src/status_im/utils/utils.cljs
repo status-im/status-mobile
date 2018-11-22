@@ -40,6 +40,16 @@
                     :accessibility-label :confirm-button})
            #js {:cancelable false})))
 
+(re-frame/reg-fx
+ :utils/show-confirmation
+ (fn [{:keys [title content confirm-button-text on-accept on-cancel cancel-button-text]}]
+   (show-confirmation {:title title
+                       :content content
+                       :confirm-button-text confirm-button-text
+                       :cancel-button-text cancel-button-text
+                       :on-accept on-accept
+                       :on-cancel on-cancel})))
+
 (defn show-question
   ([title content on-accept]
    (show-question title content on-accept nil))

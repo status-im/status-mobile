@@ -595,6 +595,10 @@
     "currency-display-name-cny": "China Yuan Renminbi",
     "clear-history-confirmation-content": "Are you sure you want to clear this chat history?",
     "mailserver-reconnect": "Could not connect to mailserver. Tap to reconnect",
+    "mailserver-request-error-status": "An error occured while fetching history, check the logs for details",
+    "mailserver-request-error-title": "Mailserver request error",
+    "mailserver-request-error-content": "The following error was returned by the mailserver: {{error}}",
+    "mailserver-request-retry": "Retry request",
     "transactions": "Transactions",
     "transactions-unsigned": "Unsigned",
     "members": {

@@ -358,8 +358,18 @@
 
 (handlers/register-handler-fx
  :mailserver.ui/reconnect-mailserver-pressed
- (fn [cofx [_ args]]
+ (fn [cofx _]
    (mailserver/connect-to-mailserver cofx)))
+
+(handlers/register-handler-fx
+ :mailserver.ui/request-error-pressed
+ (fn [cofx _]
+   (mailserver/show-request-error-popup cofx)))
+
+(handlers/register-handler-fx
+ :mailserver.ui/retry-request-pressed
+ (fn [cofx [_ args]]
+   (mailserver/retry-next-messages-request cofx)))
 
 (handlers/register-handler-fx
  :mailserver/check-connection-timeout
