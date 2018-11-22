@@ -340,4 +340,7 @@
                :migration     migrations/v24}
               {:schema        v25
                :schemaVersion 25
-               :migration     migrations/v25}])
+               :migration     migrations/v25}
+              {:schema        v25
+               :schemaVersion 26
+               :migration     migrations/v26}])
