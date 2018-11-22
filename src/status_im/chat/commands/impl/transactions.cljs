@@ -91,9 +91,6 @@
   [{:id          :asset
     :type        :text
     :placeholder (i18n/label :t/send-request-currency)
-    ;; Suggestion components should be structured in such way that they will just take
-    ;; one argument, event-creator fn used to construct event to fire whenever something
-    ;; is selected.
     :suggestions choose-asset-suggestion}
    {:id          :amount
     :type        :number
