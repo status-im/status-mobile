@@ -163,3 +163,21 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
 
         self.verify_no_errors()
 
+    @marks.testrail_id(5675)
+    @marks.high
+    def test_redirect_to_public_chat_tapping_tag_message(self):
+        signin = SignInView(self.driver)
+        home_view = signin.create_user()
+        chat = home_view.join_public_chat('montagne-angerufen')
+        tag_message = '#spectentur'
+        chat.send_message(tag_message)
+        chat.element_starts_with_text(tag_message).click()
+        chat.empty_public_chat_message.wait_for_visibility_of_element()
+
+        if not chat.user_name_text.text == tag_message:
+            self.driver.fail('Could not redirect a user to a public chat tapping the tag message.')
+
+        home = chat.get_back_to_home_view()
+
+        if not home.chat_name_text.text == tag_message:
+            self.driver.fail('Could not find the public chat in user chat list.')
