@@ -87,12 +87,18 @@
 (views/defview advanced-settings []
   (views/letsubs [installations    [:pairing/installations]
                   current-mailserver-id [:mailserver/current-id]
-                  mailservers           [:mailserver/fleet-mailservers]]
-    (let [render-fn (offline-messaging.views/render-row current-mailserver-id)]
+                  mailservers           [:mailserver/fleet-mailservers]
+                  mailserver-state      [:mailserver/state]
+                  peers-count           [:peers-count]]
+    (let [render-fn (offline-messaging.views/render-row current-mailserver-id)
+          connected-peers-message      (str "Connected to " peers-count " peers")]
       [react/scroll-view
        [react/text {:style styles/advanced-settings-title
                     :font  :medium}
         (i18n/label :advanced-settings)]
+       [react/view
+        [react/text connected-peers-message]
+        [react/text (str mailserver-state)]]
        [react/view {:style styles/title-separator}]
        [react/text {:style styles/mailserver-title} (i18n/label :offline-messaging)]
        [react/view
@@ -118,14 +124,12 @@
 
 (views/defview profile [{:keys [seed-backed-up? mnemonic] :as user}]
   (views/letsubs [current-view-id [:get :view-id]
-                  peers-count     [:peers-count]
                   nightly-version [:get-in [:desktop/desktop :nightly-version]]
                   editing?        [:get :my-profile/editing?]] ;; TODO janherich: refactor my-profile, unnecessary complicated structure in db (could be just `:staged-name`/`:editing?` fields in account map) and horrible way to access it woth `:get`/`:set` subs/events
     (let [{:keys [url commit]}         nightly-version
           adv-settings-open?           (= current-view-id :advanced-settings)
           backup-recovery-phrase-open? (= current-view-id :backup-recovery-phrase)
           notifications?               (get-in user [:desktop-notifications?])
-          connected-peers-message      (str "Connected to " peers-count " peers")
           show-backup-seed?            (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
       [react/view
        [react/view {:style styles/profile-edit}
@@ -160,7 +164,6 @@
         [react/view {:style (styles/profile-row false)}
          [react/touchable-highlight {:on-press #(re-frame/dispatch [:accounts.logout.ui/logout-confirmed])}
           [react/text {:style (styles/profile-row-text colors/red)} (i18n/label :t/logout)]]
-         [react/text connected-peers-message]
          [react/view [react/text {:style (styles/profile-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]
         (when (and url commit (not= (subs build/commit-sha 0 6) commit))
           [react/view {:style {:margin-top 20}}
