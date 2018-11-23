@@ -30,6 +30,17 @@
     (.schemaVersion rn-dependencies/realm file-name (to-buffer encryption-key))
     (.schemaVersion rn-dependencies/realm file-name)))
 
+(defn encrypted-realm-version-promise
+  [file-name encryption-key]
+  (js/Promise.
+   (fn [on-success on-error]
+     (try
+       (encrypted-realm-version file-name encryption-key)
+       (on-success)
+       (catch :default e
+         (on-error {:message (str e)
+                    :error   :decryption-failed}))))))
+
 (defn open-realm
   [options file-name encryption-key]
   (log/debug "Opening realm at " file-name "...")
@@ -73,6 +84,15 @@
   (log/warn "realm: deleting all realms")
   (fs/unlink realm-dir))
 
+(defn delete-account-realm
+  [address]
+  (log/warn "realm: deleting account db " (utils.ethereum/sha3 address))
+  (let [file (str accounts-realm-dir (utils.ethereum/sha3 address))]
+    (.. (fs/unlink file)
+        (then #(fs/unlink (str file ".lock")))
+        (then #(fs/unlink (str file ".management")))
+        (then #(fs/unlink (str file ".note"))))))
+
 (defn ensure-directories []
   (..
    (fs/mkdir realm-dir)
@@ -104,11 +124,12 @@
 (defn- migrate-schemas
   "Apply migrations in sequence and open database with the last schema"
   [file-name schemas encryption-key current-version]
-  (log/info "migrate schemas")
-  (doseq [schema schemas
-          :when (> (:schemaVersion schema) current-version)
-          :let [migrated-realm (open-realm schema file-name encryption-key)]]
-    (close migrated-realm))
+  (log/info "migrate schemas" current-version)
+  (when (pos? current-version)
+    (doseq [schema schemas
+            :when (> (:schemaVersion schema) current-version)
+            :let [migrated-realm (open-realm schema file-name encryption-key)]]
+      (close migrated-realm)))
   (open-realm (last schemas) file-name encryption-key))
 
 (defn keccak512-array [key]
@@ -136,10 +157,6 @@
                                                      file-name
                                                      encryption-key)))
 
-(defn open-migrated-realm
-  [file-name schemas encryption-key]
-  (migrate-realm file-name schemas encryption-key))
-
 (defn- index-entity-schemas [all-schemas]
   (into {} (map (juxt :name identity)) (-> all-schemas last :schema)))
 
@@ -152,6 +169,7 @@
 (def realm-queue (utils.async/task-queue 2000))
 
 (defn close-account-realm []
+  (log/debug "closing account realm")
   (close @account-realm)
   (reset! account-realm nil))
 
@@ -159,7 +177,7 @@
   (log/debug "Opening base realm... (first run)")
   (when @base-realm
     (close @base-realm))
-  (reset! base-realm (open-migrated-realm base-realm-path base/schemas encryption-key))
+  (reset! base-realm (migrate-realm base-realm-path base/schemas encryption-key))
   (log/debug "Created @base-realm"))
 
 (defn re-encrypt-realm
@@ -172,11 +190,12 @@
         (catch (fn [e]
                  (let [message (str "can't move old database " (str e) " " file-name)]
                    (log/debug message)
-                   (on-error {:error message}))))
+                   (on-error {:message message
+                              :error   :removing-old-db-failed}))))
         (then (fn []
-                (let [old-account-db (open-migrated-realm old-file-name
-                                                          account/schemas
-                                                          old-key)]
+                (let [old-account-db (migrate-realm old-file-name
+                                                    account/schemas
+                                                    old-key)]
                   (log/info "copy old database")
                   (.writeCopyTo old-account-db file-name (to-buffer new-key))
                   (log/info "old database copied")
@@ -190,38 +209,48 @@
                       (catch :default _))
                  (let [message (str "something went wrong " (str e) " " file-name)]
                    (log/info message)
-                   (on-error {:error message})))))))
+                   (on-error {:error   :write-copy-to-failed
+                              :message message})))))))
+
+(defn get-account-db-path
+  [address]
+  (str accounts-realm-dir (utils.ethereum/sha3 address)))
 
 (defn check-db-encryption
-  [file-name old-key new-key]
-  (js/Promise.
-   (fn [on-success on-error]
-     (try
-       (do
-         (log/info "try to encrypt with password")
-         (encrypted-realm-version file-name new-key)
-         (log/info "try to encrypt with password success")
-         (on-success))
-       (catch :default e
+  [address password old-key]
+  (let [file-name (get-account-db-path address)
+        new-key   (db-encryption-key password old-key)]
+    (js/Promise.
+     (fn [on-success on-error]
+       (try
          (do
-           (log/warn "failed checking db encryption with" e)
-           (log/info "try to encrypt with old key")
-           (encrypted-realm-version file-name old-key)
-           (log/info "try to encrypt with old key success")
-           (re-encrypt-realm file-name old-key new-key on-success on-error)))))))
+           (log/info "try to encrypt with password")
+           (encrypted-realm-version file-name new-key)
+           (log/info "try to encrypt with password success")
+           (on-success))
+         (catch :default e
+           (do
+             (log/warn "failed checking db encryption with" e)
+             (log/info "try to encrypt with old key")
+             (.. (encrypted-realm-version-promise file-name old-key)
+                 (then
+                  #(re-encrypt-realm file-name old-key new-key on-success on-error))
+                 (catch on-error)))))))))
 
-(defn change-account [address password encryption-key]
-  (let [path           (str accounts-realm-dir (utils.ethereum/sha3 address))
+(defn open-account [address password encryption-key]
+  (let [path (get-account-db-path address)
         account-db-key (db-encryption-key password encryption-key)]
-    (close-account-realm)
-    (..
-     (check-db-encryption path encryption-key account-db-key)
-     (then
-      (fn []
-        (log/info "change-account done" (nil? @account-realm))
-        (reset! account-realm
-                (open-migrated-realm path account/schemas account-db-key))
-        (log/info "account-realm " (nil? @account-realm)))))))
+    (js/Promise.
+     (fn [on-success on-error]
+       (try
+         (log/info "open-account")
+         (reset! account-realm
+                 (migrate-realm path account/schemas account-db-key))
+         (log/info "account-realm " (nil? @account-realm))
+         (on-success)
+         (catch :default e
+           (on-error {:message (str e)
+                      :error   :migrations-failed})))))))
 
 (declare realm-obj->clj)
 

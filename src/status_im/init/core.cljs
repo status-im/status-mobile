@@ -29,7 +29,8 @@
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]
             [status-im.utils.fx :as fx]
-            [status-im.chat.models :as chat-model]))
+            [status-im.chat.models :as chat-model]
+            [status-im.accounts.db :as accounts.db]))
 
 (defn init-store!
   "Try to decrypt the database, move on if successful otherwise go back to
@@ -51,6 +52,12 @@
   (.. (realm/delete-realms)
       (then reset-keychain!)
       (catch reset-keychain!)))
+
+(defn reset-account-data! [address]
+  (let [callback #(re-frame/dispatch [:init.callback/account-db-removed])]
+    (.. (realm/delete-account-realm address)
+        (then callback)
+        (catch callback))))
 
 (fx/defn initialize-keychain
   "Entrypoint, fetches the key from the keychain and initialize the app"
@@ -98,15 +105,37 @@
   {:db (assoc db :device-UUID device-uuid)})
 
 (fx/defn handle-change-account-error
-  [cofx error]
-  {:ui/show-confirmation
-   {:title               (i18n/label :invalid-key-title)
-    :content             (str error "\n" (i18n/label :invalid-key-content))
-    :confirm-button-text (i18n/label :invalid-key-confirm)
-    ;; On cancel we initialize the app with the invalid key, to allow the user
-    ;; to recover the seed phrase
-    :on-cancel           #(re-frame/dispatch [:init.ui/data-reset-cancelled ""])
-    :on-accept           #(re-frame/dispatch [:init.ui/data-reset-accepted])}})
+  [{:keys [db]} error]
+  (let [{:keys [error message]}
+        (if (map? error)
+          error
+          {:message (str error)})
+        address (get-in db [:accounts/login :address])
+        erase-button-text (i18n/label :migrations-erase-accounts-data-button)]
+    (case error
+      :migrations-failed
+      {:ui/show-confirmation
+       {:title               (i18n/label :migrations-failed-title)
+        :content             (i18n/label
+                              :migrations-failed-content
+                              {:message                         message
+                               :erase-accounts-data-button-text erase-button-text})
+        :confirm-button-text erase-button-text
+        :on-cancel           #(re-frame/dispatch [:init.ui/data-reset-cancelled ""])
+        :on-accept           #(re-frame/dispatch [:init.ui/account-data-reset-accepted address])}}
+
+      ;; TODO(rasom): handle different errors as separate cases
+      ;; Right now it might be corrupted db file, wrong password,
+      ;; problem with permissions, etc.
+      {:ui/show-confirmation
+       {:title               (i18n/label :invalid-key-title)
+        :content             (i18n/label
+                              :invalid-key-content
+                              {:message                         message
+                               :erase-accounts-data-button-text erase-button-text})
+        :confirm-button-text (i18n/label :invalid-key-confirm)
+        :on-cancel           #(re-frame/dispatch [:init.ui/data-reset-cancelled ""])
+        :on-accept           #(re-frame/dispatch [:init.ui/account-data-reset-accepted address])}})))
 
 (fx/defn handle-init-store-error
   [encryption-key cofx]
@@ -238,3 +267,7 @@
 (re-frame/reg-fx
  :init/reset-data
  reset-data!)
+
+(re-frame/reg-fx
+ :init/reset-account-data
+ reset-account-data!)

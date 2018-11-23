@@ -55,6 +55,11 @@
    {:init/reset-data nil}))
 
 (handlers/register-handler-fx
+ :init.ui/account-data-reset-accepted
+ (fn [_ [_ address]]
+   {:init/reset-account-data address}))
+
+(handlers/register-handler-fx
  :init.ui/data-reset-cancelled
  (fn [cofx [_ encryption-key]]
    (init/initialize-app cofx encryption-key)))
@@ -127,6 +132,11 @@
  :init.callback/keychain-reset
  (fn [cofx _]
    (init/initialize-keychain cofx)))
+
+(handlers/register-handler-fx
+ :init.callback/account-db-removed
+ (fn [{:keys [db]} _]
+   {:db (assoc-in db [:accounts/login :processing] false)}))
 
 ;; home screen
 

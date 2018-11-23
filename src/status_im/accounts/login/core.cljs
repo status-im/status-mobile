@@ -33,7 +33,7 @@
       (catch (fn [error]
                (log/warn "Could not change account" error)
                ;; If all else fails we fallback to showing initial error
-               (re-frame/dispatch [:init.callback/account-change-error (str error)])))))
+               (re-frame/dispatch [:init.callback/account-change-error error])))))
 
 ;;;; Handlers
 (fx/defn login [cofx]

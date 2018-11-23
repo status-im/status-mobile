@@ -27,7 +27,19 @@
 
 (defn change-account [address password encryption-key]
   (log/debug "changing account to: " address)
-  (data-source/change-account address password encryption-key))
+  (..
+   (js/Promise.
+    (fn [on-success on-error]
+      (try
+        (data-source/close-account-realm)
+        (on-success)
+        (catch :default e
+          (on-error {:message (str e)
+                     :error   :closing-account-failed})))))
+   (then
+    #(data-source/check-db-encryption address password encryption-key))
+   (then
+    #(data-source/open-account address password encryption-key))))
 
 (defn- perform-transactions [raw-transactions realm]
   (let [success-events (keep :success-event raw-transactions)

@@ -380,7 +380,7 @@
     "recover-access": "Recover access",
     "currency-display-name-ron": "Romania Leu",
     "log-level-settings": "Log level settings",
-    "invalid-key-content": "To protect yourself, you need to create new account and erase your old data by tapping “Apply”. If you have an existing account and would like to save your recovery phrase then choose “Cancel”, back it up, and restart the app. We strongly recommend creating new account because the old one is stored unencrypted.",
+    "invalid-key-content": "{{message}}\n\nAccount's database can't be encrypted because file is corrupted. There is no way to restore it. If you press \"Cancel\" button, nothing will happen. If you press \"{{erase-accounts-data-button-text}}\" button, account's db will be removed and you will be able to unlock account. All account's data will be lost.",
     "advanced-settings": "Advanced settings",
     "group-info": "Group info",
     "currency-display-name-nio": "Nicaragua Cordoba",
@@ -782,5 +782,8 @@
     "network-invalid-status-code": "Invalid status code: {{code}}",
     "extension-is-already-added": "The extension is already added",
     "extension-uninstalled": "The extension was uninstalled",
-    "extension-hooks-cannot-be-added": "The following hooks from this extension cannot be added: {{hooks}}"
+    "extension-hooks-cannot-be-added": "The following hooks from this extension cannot be added: {{hooks}}",
+    "migrations-failed-title": "Migration failed",
+    "migrations-failed-content": "{{message}}\n\nPlease let us know about this problem at #status public chat. If you press \"Cancel\" button, nothing will happen. If you press \"{{erase-accounts-data-button-text}}\" button, account's db will be removed and you will be able to unlock account. All account's data will be lost.",
+    "migrations-erase-accounts-data-button": "Erase account's db"
 }
