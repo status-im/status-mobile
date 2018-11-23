@@ -16,7 +16,9 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.fx :as fx]
-            status-im.extensions.ethereum))
+            status-im.extensions.ethereum
+            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.utils.ethereum.core :as ethereum]))
 
 (re-frame/reg-fx
  ::alert
@@ -40,6 +42,16 @@
  :extensions/identity
  (fn [_ [_ _ {:keys [value]}]]
    value))
+
+(re-frame/reg-sub
+ :extensions.wallet/tokens
+ :<- [:wallet/all-tokens]
+ :<- [:network]
+ (fn [[all-tokens network] [_ _ {filter-vector :filter}]]
+   (let [tokens (tokens/sorted-tokens-for all-tokens (ethereum/network->chain-keyword network))]
+     (if (= :all (first filter-vector))
+       tokens
+       (filter #((set filter-vector) (:symbol %)) tokens)))))
 
 (re-frame/reg-sub
  :store/get
@@ -225,7 +237,8 @@
                 'transaction-status {:value transactions/transaction-status :properties {:outgoing :string :tx-hash :string}}}
    :queries    {'identity            {:value :extensions/identity :arguments {:value :map}}
                 'store/get           {:value :store/get :arguments {:key :string}}
-                'wallet/collectibles {:value :get-collectible-token :arguments {:token :string :symbol :string}}}
+                'wallet/collectibles {:value :get-collectible-token :arguments {:token :string :symbol :string}}
+                'wallet/tokens       {:value :extensions.wallet/tokens :arguments {:filter :vector}}}
    :events     {'alert
                 {:permissions [:read]
                  :value       :alert
