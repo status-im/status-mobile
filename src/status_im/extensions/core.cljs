@@ -93,14 +93,15 @@
  (fn [_ [_ _ {:keys [value]}]]
    {::json-stringify value}))
 
+(defn- parse-result [o on-success]
+  (let [res (if (json? o) (update o :body parse-json) o)]
+    (on-success res)))
+
 (re-frame/reg-event-fx
  :http/get
  (fn [_ [_ _ {:keys [url on-success on-failure timeout]}]]
    {:http-raw-get (merge {:url url
-                          :success-event-creator
-                          (fn [{:keys [body] :as o}]
-                            (let [res (if (json? body) (update o :body parse-json))]
-                              (on-success res)))}
+                          :success-event-creator #(parse-result % on-success)}
                          (when on-failure
                            {:failure-event-creator on-failure})
                          (when timeout
@@ -125,10 +126,7 @@
  (fn [_ [_ _ {:keys [url body on-success on-failure timeout]}]]
    {:http-raw-post (merge {:url  url
                            :body (clj->js body)
-                           :success-event-creator
-                           (fn [{:keys [body] :as o}]
-                             (let [res (if (json? body) (update o :body parse-json))]
-                               (on-success res)))}
+                           :success-event-creator #(parse-result % on-success)}
                           (when on-failure
                             {:failure-event-creator on-failure})
                           (when timeout
@@ -167,8 +165,9 @@
  (fn [_ [_ _ m]]
    {::arithmetic m}))
 
-(defn button [{:keys [on-click]} label]
-  [button/secondary-button (when on-click {:on-press #(re-frame/dispatch (on-click {}))}) label])
+(defn button [{:keys [on-click disabled]} label]
+  [button/secondary-button (merge {:disabled? disabled}
+                                  (when on-click {:on-press #(re-frame/dispatch (on-click {}))})) label])
 
 (defn input [{:keys [on-change placeholder]}]
   [react/text-input (merge {:placeholder placeholder
@@ -218,7 +217,7 @@
                 'touchable-opacity  {:value touchable-opacity :properties {:on-press :event}}
                 'image              {:value image :properties {:uri :string}}
                 'input              {:value input :properties {:on-change :event :placeholder :string}}
-                'button             {:value button :properties {:on-click :event}}
+                'button             {:value button :properties {:disabled :boolean :on-click :event}}
                 'link               {:value link :properties {:uri :string}}
                 ;'list               {:value list :properties {:data :vector :item-view :view}}
                 'checkbox           {:value checkbox :properties {:on-change :event :checked :boolean}}
@@ -273,7 +272,7 @@
                  :arguments   {:key :string :value :map}}
                 'store/clear
                 {:permissions [:read]
-                 :value       :store/put
+                 :value       :store/clear
                  :arguments   {:key :string}}
                 'http/get
                 {:permissions [:read]

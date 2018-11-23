@@ -1,8 +1,7 @@
 (ns status-im.utils.ethereum.abi-spec
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
-            [status-im.js-dependencies :as dependencies]
-            [clojure.string :as str]))
+            [status-im.js-dependencies :as dependencies]))
 
 ;; Utility functions for encoding
 
@@ -44,7 +43,8 @@
   (.sha3 utils (str s)))
 
 (defn is-hex? [value]
-  (string/starts-with? value "0x"))
+  (when value
+    (string/starts-with? value "0x")))
 
 ;; Encoder for parsed abi spec
 
@@ -71,7 +71,7 @@
 ;; address: as in the uint160 case
 (defmethod enc :address
   [{:keys [value]}]
-  (when value
+  (when (string? value)
     (left-pad (string/replace value "0x" ""))))
 
 ;; bytes, of length k (which is assumed to be of type uint256):
@@ -330,10 +330,10 @@
 
 (defn dyn-hex-to-value [hex type]
   (cond
-    (str/starts-with? type "bytes")
+    (string/starts-with? type "bytes")
     (str "0x" (hex-to-bytes hex))
 
-    (str/starts-with? type "string")
+    (string/starts-with? type "string")
     (hex-to-utf8 (hex-to-bytes hex))))
 
 (defn hex-to-bytesM [hex type]
@@ -343,10 +343,10 @@
 (defn hex-to-value [hex type]
   (cond
     (= "bool" type) (= hex "0000000000000000000000000000000000000000000000000000000000000001")
-    (str/starts-with? type "uint") (hex-to-number hex)
-    (str/starts-with? type "int") (hex-to-number hex)
-    (str/starts-with? type "address") (str "0x" (subs hex (- (count hex) 40)))
-    (str/starts-with? type "bytes") (hex-to-bytesM hex type)))
+    (string/starts-with? type "uint") (hex-to-number hex)
+    (string/starts-with? type "int") (hex-to-number hex)
+    (string/starts-with? type "address") (str "0x" (subs hex (- (count hex) 40)))
+    (string/starts-with? type "bytes") (hex-to-bytesM hex type)))
 
 (defn dec-type [bytes]
   (fn [offset type]
@@ -369,7 +369,7 @@
             (recur (conj res ((dec-type bytes) (+ arr-start i) nname))  (+ i rnstatpartlen)))))
 
       (or (re-matches #"^bytes(\[([0-9]*)\])*$" type)
-          (str/starts-with? type "string"))
+          (string/starts-with? type "string"))
 
       (let [dyn-off (js/parseInt (str "0x" (substr bytes (* offset 2) 64)))
             len (js/parseInt (str "0x" (substr bytes (* dyn-off 2) 64)))
