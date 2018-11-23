@@ -177,7 +177,7 @@ test-auto: ##@test Run tests in interactive (auto) mode in NodeJS
 # Other
 #--------------
 react-native: ##@other Start react native packager
-	react-native start
+	@scripts/start-react-native.sh
 
 geth-connect: ##@other Connect to Geth on the device
 	adb forward tcp:8545 tcp:8545
