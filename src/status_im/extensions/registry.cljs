@@ -29,10 +29,12 @@
               (update-hooks hooks/hook-in extension-key))))
 
 (fx/defn remove-from-registry
-  [{:keys [db] :as cofx} extension-key]
-  (fx/merge cofx
-            (update-hooks hooks/unhook extension-key)
-            {:db (update-in db [:account/account :extensions] dissoc extension-key)}))
+  [cofx extension-key]
+  (let [extensions (get-in cofx [:db :account/account :extensions])]
+    (fx/merge cofx
+              (when (get-in extensions [extension-key :active?])
+                (update-hooks hooks/unhook extension-key))
+              {:db (update-in cofx [:db :account/account :extensions] dissoc extension-key)})))
 
 (fx/defn change-state
   [cofx extension-key active?]
