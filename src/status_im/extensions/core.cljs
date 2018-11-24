@@ -305,7 +305,16 @@
                                :method?    :string
                                :params?    :vector
                                :nonce?     :string
-                               :on-result? :event}}
+                               :on-result :event}}
+                'ethereum/logs
+                {:permissions [:read]
+                 :value       :extensions/ethereum-logs
+                 :arguments   {:fromBlock? :string
+                               :toBlock?   :string
+                               :address?   :vector
+                               :topics?    :vector
+                               :blockhash? :string
+                               :on-result :event}}
                 'ethereum/call
                 {:permissions [:read]
                  :value       :extensions/ethereum-call

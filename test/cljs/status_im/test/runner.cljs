@@ -4,6 +4,7 @@
             [status-im.test.data-store.chats]
             [status-im.test.data-store.realm.core]
             [status-im.test.extensions.core]
+            [status-im.test.extensions.ethereum]
             [status-im.test.browser.core]
             [status-im.test.browser.permissions]
             [status-im.test.wallet.subs]
@@ -123,4 +124,5 @@
  'status-im.test.ui.screens.currency-settings.models
  'status-im.test.ui.screens.wallet.db
  'status-im.test.browser.core
+ 'status-im.test.extensions.ethereum
  'status-im.test.browser.permissions)

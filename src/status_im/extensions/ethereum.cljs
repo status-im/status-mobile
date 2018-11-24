@@ -9,7 +9,10 @@
             [status-im.utils.ethereum.abi-spec :as abi-spec]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [clojure.string :as string]
+            [status-im.utils.types :as types]
+            [status-im.native-module.core :as status]))
 
 (handlers/register-handler-fx
  :extensions/transaction-on-result
@@ -72,3 +75,57 @@
                                              (abi-spec/decode (string/replace result-str #"0x" "")  outputs)
                                              :else result-str)]
                             (re-frame/dispatch (on-result (merge {:result result} (when %1 {:error %1})))))]})))
+
+;; eth_getLogs implementation
+
+(defn- event-topic-enc [event params]
+  (let [eventid (str event "(" (string/join "," params) ")")]
+    (abi-spec/sha3 eventid)))
+
+(defn- types-mapping [type]
+  (cond
+    (= "bool" type) :bool
+    (string/starts-with? type "uint") :uint
+    (string/starts-with? type "int") :int
+    (string/starts-with? type "address") :address
+    (string/starts-with? type "bytes") :bytes
+    (string/starts-with? type "fixed") :bytes
+    :else :bytes))
+
+(defn- values-topic-enc [type values]
+  (let [mapped-type (types-mapping type)]
+    (mapv #(str "0x" (abi-spec/enc {:type mapped-type :value %})) values)))
+
+(defn- parse-topic [t]
+  (cond
+    (or (nil? t) (string? t)) t ;; nil topic ;; immediate topic (extension encode topic by its own) ;; vector of immediate topics
+    (vector? t) (mapv parse-topic t) ;; descend in vector elements
+    (map? t) ;; simplified topic interface, we need to encode
+    (let [{:keys [event params type values]} t]
+      (cond
+        (some? event) (event-topic-enc event params);; event params topic
+        (some? type) (values-topic-enc type values) ;; indexed values topic
+        :else nil)) ;; error
+    :else nil))
+
+(defn- ensure-hex-bn [block]
+  (cond
+    (nil? block) block
+    (re-matches #"^[0-9]+$" block) (str "0x" (abi-spec/number-to-hex block))
+    :else block))
+
+(handlers/register-handler-fx
+ :extensions/ethereum-logs
+ (fn [_ [_ _ {:keys [fromBlock toBlock address topics blockhash on-result]}]]
+   (let [parsed-topics (mapv parse-topic topics)
+         args {:jsonrpc "2.0"
+               :method constants/web3-get-logs
+               :params  [{:fromBlock (ensure-hex-bn fromBlock)
+                          :toBlock   (ensure-hex-bn toBlock)
+                          :address   address
+                          :topics    parsed-topics
+                          :blockhash blockhash}]}
+         payload (types/clj->json args)]
+     (status/call-private-rpc payload #(let [{:keys [error result]} (types/json->clj %1)
+                                             response (merge {:result result} (when error {:error error}))]
+                                         (re-frame/dispatch (on-result response)))))))
