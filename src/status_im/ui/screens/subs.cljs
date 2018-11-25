@@ -47,6 +47,7 @@
 (reg-sub :sync-state :sync-state)
 (reg-sub :network-status :network-status)
 (reg-sub :peers-count :peers-count)
+(reg-sub :node-status :node/status)
 
 (reg-sub :offline?
          :<- [:network-status]
