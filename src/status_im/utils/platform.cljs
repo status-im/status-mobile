@@ -23,6 +23,7 @@
 
 (def isMacOs? (when platform (.-isMacOs platform)))
 (def isNix? (when platform (or (.-isLinux platform) (.-isUnix platform))))
+(def isWin? (when platform (.-isWin platform)))
 
 (def platform-specific
   (cond

@@ -22,7 +22,7 @@
              (= tab-name :profile))
     {:http-get
      {:url
-      "https://raw.githubusercontent.com/status-im/status-im.github.io/develop/env.sh"
+      "https://status-im.ams3.digitaloceanspaces.com/latest.json"
       :success-event-creator
       (fn [o]
         [:fetch-desktop-version-success o])}}))
