@@ -163,6 +163,10 @@
   {:margin        24
    :font-size     20})
 
+(def connection-message-text
+  {:margin-left   24
+   :margin-bottom 10})
+
 (def title-separator
   {:height            1
    :background-color  colors/gray-light})

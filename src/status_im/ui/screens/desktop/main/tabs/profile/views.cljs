@@ -84,7 +84,6 @@
    [pairing.views/sync-devices]
    [pairing.views/installations-list installations]])
 
-
 (defn connection-status
   "generates a composite message of the current connection state given peer and mailserver statuses"
   [peers-count node-status mailserver-state peers-disconnected?]
@@ -115,7 +114,7 @@
                     :font  :medium}
         (i18n/label :advanced-settings)]
        [react/view
-        [react/text connection-message]]
+        [react/text {:style styles/connection-message-text} connection-message]]
        [react/view {:style styles/title-separator}]
        [react/text {:style styles/mailserver-title} (i18n/label :offline-messaging)]
        [react/view
