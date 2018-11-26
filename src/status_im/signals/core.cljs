@@ -55,7 +55,7 @@
       "node.stopped"       (status-node-stopped cofx)
       "module.initialized" (status-module-initialized cofx)
       "envelope.sent"      (transport.message/update-envelope-status cofx (:hash event) :sent)
-      "envelope.expired"   (transport.message/update-envelope-status cofx (:hash event) :sent)
+      "envelope.expired"   (transport.message/update-envelope-status cofx (:hash event) :not-sent)
       "bundles.added"      (pairing/handle-bundles-added cofx event)
       "mailserver.request.completed" (when (accounts.db/logged-in? cofx)
                                        (mailserver/update-mailserver-topics cofx {:request-id (:requestID event)
