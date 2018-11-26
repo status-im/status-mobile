@@ -1,15 +1,19 @@
 (ns status-im.ui.screens.wallet.send.events
-  (:require [re-frame.core :as re-frame]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [status-im.chat.commands.sending :as commands-sending]
             [status-im.chat.models.message :as models.message]
             [status-im.chat.models :as chat.models]
             [status-im.constants :as constants]
+            [status-im.contact.db :as contact.db]
             [status-im.i18n :as i18n]
             [status-im.models.transactions :as wallet.transactions]
             [status-im.models.wallet :as models.wallet]
             [status-im.native-module.core :as status]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.ui.screens.wallet.db :as wallet.db]
+            [status-im.utils.ethereum.ens :as ens]
+            [status-im.utils.ethereum.eip681 :as eip681]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.erc20 :as erc20]
             [status-im.utils.ethereum.tokens :as tokens]
@@ -52,6 +56,58 @@
    (utils/set-timeout #(utils/show-popup (i18n/label :t/transaction-failed) message) 1000)))
 
 ;;;; Handlers
+;; HANDLE QR CODE
+
+#_(defn- qr-data->send-tx-data [{:keys [address name value symbol gas gasPrice public-key from-chat?]}]
+    {:pre [(not (nil? address))]}
+    (cond-> {:to address :public-key public-key}
+      value      (assoc :amount value)
+      symbol     (assoc :symbol symbol)
+      gas        (assoc :gas (money/bignumber gas))
+      from-chat? (assoc :from-chat? from-chat?)
+      gasPrice   (assoc :gas-price (money/bignumber gasPrice))))
+
+#_(defn extract-qr-code-details [chain-id qr-uri]
+    {:pre [(integer? chain-id) (string? qr-uri)]}
+  ;; i don't like fetching all tokens here
+    (let [{:keys [:wallet/all-tokens]} @re-frame.db/app-db
+          qr-uri (string/trim qr-uri)
+        ;chain-id (ethereum/chain-keyword->chain-id chain)
+]
+      (or (let [m (eip681/parse-uri qr-uri)]
+            (merge m (eip681/extract-request-details m all-tokens)))
+          (when (ethereum/address? qr-uri)
+            {:address qr-uri :chain-id chain-id}))))
+
+#_(defn qr-data->transaction-data [qr-data]
+    {:pre [(map? qr-data)]}
+  ;; i don't like fetching all tokens here
+    (let [{:keys [:contacts/contacts]} @re-frame.db/app-db
+          {:keys [to] :as tx-details} (qr-data->send-tx-data qr-data)
+          contact-name (:name (contact.db/find-contact-by-address contacts to))]
+      (cond-> tx-details
+        contact-name (assoc :to-name name))))
+
+;; CHOOSEN RECIPIENT
+(defn eth-name->address [chain recipient callback]
+  (if (ens/is-valid-eth-name? recipient)
+    (ens/get-addr (get @re-frame.db/app-db :web3)
+                  (get ens/ens-registries chain)
+                  recipient
+                  callback)
+    (callback recipient)))
+
+(defn chosen-recipient [chain recipient success-callback error-callback]
+  {:pre [(keyword? chain) (string? recipient)]}
+  (eth-name->address chain recipient
+                     #(if (ethereum/address? %)
+                        (success-callback %)
+                        (error-callback %))))
+
+(handlers/register-handler-fx
+ :wallet/transaction-to-success
+ (fn [{:keys [db]} [_ recipient-address]]
+   {:db (assoc-in db [:wallet :send-transaction :to] recipient-address)}))
 
 ;; SEND TRANSACTION
 (handlers/register-handler-fx

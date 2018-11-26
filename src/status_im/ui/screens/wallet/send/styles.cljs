@@ -152,3 +152,18 @@
 
 (defstyle gas-input-error-tooltip
   {:android {:bottom-value -38}})
+
+;; ----------------------------------------------------------------------
+;; Choose Address View
+;; ----------------------------------------------------------------------
+
+(def centered {:justify-content :center
+               :align-items :center})
+
+(def choose-recipient-text-input
+  {:color             colors/white
+   :font-size         30
+   :font-weight       :bold
+   :line-height       39
+   :min-width         236
+   :margin-horizontal 24})

@@ -24,6 +24,7 @@
    [status-im.ui.screens.wallet.onboarding.views :as wallet.onboarding]
    [status-im.ui.screens.wallet.transaction-fee.views :as wallet.transaction-fee]
    [status-im.ui.screens.wallet.settings.views :as wallet-settings]
+   [status-im.ui.screens.wallet.send.views :as send.views]
    [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
    [status-im.ui.screens.wallet.transaction-sent.views :as transaction-sent]
    [status-im.ui.screens.contacts-list.views :as contacts-list]
@@ -104,6 +105,8 @@
    :recent-recipients                wallet.components/recent-recipients
    :wallet-transaction-sent          transaction-sent/transaction-sent
    :recipient-qr-code                wallet.components/recipient-qr-code
+   :wallet-choose-amount             send.views/choose-amount-token
+   :wallet-choose-asset              send.views/choose-asset
    :wallet-send-assets               wallet.components/send-assets
    :wallet-request-transaction       request/request-transaction
    :wallet-send-transaction-request  request/send-transaction-request
