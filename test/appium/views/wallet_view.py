@@ -284,8 +284,7 @@ class WalletView(BaseView):
         asset_button.click()
         send_transaction_view.amount_edit_box.click()
 
-        transaction_amount = str(kwargs.get('amount')) if kwargs.get('amount') else \
-            send_transaction_view.get_unique_amount()
+        transaction_amount = str(kwargs.get('amount', send_transaction_view.get_unique_amount()))
 
         send_transaction_view.amount_edit_box.set_value(transaction_amount)
         send_transaction_view.confirm()
@@ -302,7 +301,8 @@ class WalletView(BaseView):
             recent_recipient = send_transaction_view.element_by_text(recipient)
             send_transaction_view.recent_recipients_button.click_until_presence_of_element(recent_recipient)
             recent_recipient.click()
-        send_transaction_view.sign_transaction()
+        if kwargs.get('sign_transaction', True):
+            send_transaction_view.sign_transaction()
 
     def receive_transaction(self, **kwargs):
         self.receive_transaction_button.click()

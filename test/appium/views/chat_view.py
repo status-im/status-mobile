@@ -357,7 +357,7 @@ class ChatView(BaseView):
         self.clear_history_button.click()
         self.clear_button.click()
 
-    def send_transaction_in_1_1_chat(self, asset, amount, password=common_password, wallet_set_up=False):
+    def send_transaction_in_1_1_chat(self, asset, amount, password=common_password, wallet_set_up=False, **kwargs):
         self.commands_button.click()
         self.send_command.click()
         self.asset_by_name(asset).click()
@@ -370,12 +370,13 @@ class ChatView(BaseView):
             wallet_view.yes_button.click()
         else:
             self.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
-        send_transaction_view.sign_transaction(password)
-        chat_elem = self.chat_element_by_text(amount)
-        chat_elem.wait_for_visibility_of_element()
-        chat_elem.progress_bar.wait_for_invisibility_of_element(20)
-        if chat_elem.status.text not in ('Sent', 'Delivered', 'Seen'):
-            self.driver.fail('Sent transaction message was not sent')
+        if kwargs.get('sign_transaction', True):
+            send_transaction_view.sign_transaction(password)
+            chat_elem = self.chat_element_by_text(amount)
+            chat_elem.wait_for_visibility_of_element()
+            chat_elem.progress_bar.wait_for_invisibility_of_element(20)
+            if chat_elem.status.text not in ('Sent', 'Delivered', 'Seen'):
+                self.driver.fail('Sent transaction message was not sent')
 
     def send_transaction_in_group_chat(self, amount, password, recipient):
         self.commands_button.click()

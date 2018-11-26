@@ -143,6 +143,17 @@ class OnboardingMessage(BaseElement):
         self.locator = self.Locator.text_selector('Set up your wallet')
 
 
+class NotEnoughEthForGas(BaseText):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.text_selector('Not enough ETH for gas')
+
+
+class ValidationWarnings(object):
+    def __init__(self, driver):
+        self.not_enough_eth_for_gas = NotEnoughEthForGas(driver)
+
+
 class SendTransactionView(BaseView):
     def __init__(self, driver):
         super(SendTransactionView, self).__init__(driver)
@@ -176,6 +187,7 @@ class SendTransactionView(BaseView):
         self.progress_bar = ProgressBar(self.driver)
 
         self.onboarding_message = OnboardingMessage(self.driver)
+        self.validation_warnings = ValidationWarnings(self.driver)
 
     def complete_onboarding(self):
         if self.onboarding_message.is_element_displayed():
