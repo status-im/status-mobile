@@ -27,9 +27,7 @@
                   {:keys [content] :as last-message} [:chats/last-message chat-id]]
     (let [name (or chat-name
                    (gfycat/generate-gfy public-key))
-          [unviewed-messages-label large?] (if (< 9 unviewed-messages-count)
-                                             ["9+" true]
-                                             [unviewed-messages-count false])
+          [unviewed-messages-label large?] [(utils/unread-messages-count unviewed-messages-count) true]
           current? (= current-chat-id chat-id)]
       [react/view {:style (styles/chat-list-item current?)}
        [react/view {:style styles/img-container}
@@ -38,10 +36,7 @@
            [react/text {:style styles/topic-text}
             (string/capitalize (second name))]]
           [react/image {:style styles/chat-icon
-                        :source {:uri photo-path}}])
-        (when (pos? unviewed-messages-count)
-          [react/view {:style styles/unread-messages-icon}
-           [react/text {:style (styles/unread-messages-text large?)} unviewed-messages-label]])]
+                        :source {:uri photo-path}}])]
        [react/view {:style styles/chat-name-last-msg-box}
         [react/view {:style styles/chat-name-box}
          (when (and group-chat (not public?))
@@ -60,7 +55,10 @@
            (or (:text content)
                (i18n/label :no-messages-yet)))]]
        [react/view {:style styles/timestamp}
-        [chat-item/message-timestamp (:timestamp last-message)]]])))
+        [chat-item/message-timestamp (:timestamp last-message)]
+        (when (pos? unviewed-messages-count)
+          [react/view {:style styles/unread-messages-icon}
+           [react/text {:style (styles/unread-messages-text large?)} unviewed-messages-label]])]])))
 
 (defn chat-list-item [[chat-id
                        {:keys [group-chat public?] :as chat}]]
