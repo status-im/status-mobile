@@ -178,6 +178,11 @@
    (status/start-node config)))
 
 (re-frame/reg-fx
+ :node/ready
+ (fn [config]
+   (status/node-ready)))
+
+(re-frame/reg-fx
  :node/stop
  (fn []
    (status/stop-node)))

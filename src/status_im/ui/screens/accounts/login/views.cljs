@@ -38,7 +38,9 @@
     (string/starts-with? error "there is no running node")
     :t/node-unavailable
 
-    (string/starts-with? error "cannot retrieve a valid key")
+    (or
+     (string/starts-with? error "cannot retrieve a valid key")
+     (string/starts-with? error "could not decrypt key"))
     :t/wrong-password
 
     :else

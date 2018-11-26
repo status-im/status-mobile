@@ -98,7 +98,7 @@
                                                         :source  source
                                                         :value   value}]))
 
-(defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} {:keys [settings]} currency]
+(defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} {:keys [settings]} currency logged-in?]
   (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
     [react/view
      [profile.components/settings-title (i18n/label :t/settings)]
@@ -143,6 +143,7 @@
                                           :accessibility-label :log-out-button
                                           :destructive?        true
                                           :hide-arrow?         true
+                                          :active?             logged-in?
                                           :action-fn           #(re-frame/dispatch [:accounts.logout.ui/logout-pressed])}]]]]))
 
 (defview advanced-settings [{:keys [network networks dev-mode? settings]} on-show]
@@ -214,6 +215,7 @@
             editing?        [:get :my-profile/editing?]
             changed-account [:get :my-profile/profile]
             currency        [:wallet/currency]
+            login-data      [:get :accounts/login]
             scroll          (reagent/atom nil)]
     (let [shown-account    (merge current-account changed-account)
           ;; We scroll on the component once rendered. setTimeout is necessary,
@@ -252,5 +254,5 @@
                                    :accessibility-label :share-my-profile-button}
           (i18n/label :t/share-my-profile)]]
         [react/view styles/my-profile-info-container
-         [my-profile-settings current-account shown-account currency]]
+         [my-profile-settings current-account shown-account currency (nil? login-data)]]
         [advanced shown-account on-show-advanced]]])))

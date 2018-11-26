@@ -392,6 +392,31 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void verify(final String address, final String password, final Callback callback) {
+        Log.d(TAG, "verify");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Activity currentActivity = getCurrentActivity();
+
+        final String absRootDirPath = currentActivity.getApplicationInfo().dataDir;
+        final String newKeystoreDir = pathCombine(absRootDirPath, "keystore");
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String result = Statusgo.VerifyAccountPassword(newKeystoreDir, address, password);
+
+                callback.invoke(result);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
     public void createAccount(final String password, final Callback callback) {
         Log.d(TAG, "createAccount");
         if (!checkAvailability()) {

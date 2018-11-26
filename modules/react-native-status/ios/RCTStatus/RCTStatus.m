@@ -228,6 +228,25 @@ RCT_EXPORT_METHOD(login:(NSString *)address
     callback(@[[NSString stringWithUTF8String: result]]);
 }
 
+//////////////////////////////////////////////////////////////////// login
+RCT_EXPORT_METHOD(verify:(NSString *)address
+                  password:(NSString *)password
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"VerifyAccountPassword() method called");
+#endif
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl =[[fileManager
+                      URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
+                     lastObject];
+    NSURL *absKeystoreUrl = [rootUrl URLByAppendingPathComponent:@"keystore"];
+    
+    char * result = VerifyAccountPassword((char *) [absKeystoreUrl.path UTF8String],
+                                          (char *) [address UTF8String],
+                                          (char *) [password UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
+}
+
 ////////////////////////////////////////////////////////////////////
 #pragma mark - SendTransaction
 //////////////////////////////////////////////////////////////////// sendTransaction

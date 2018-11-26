@@ -54,9 +54,15 @@
   (.addListener r/device-event-emitter "gethEvent"
                 #(re-frame/dispatch [:signals/signal-received (.-jsonEvent %)])))
 
+(defonce node-started (atom false))
+
 (defn stop-node []
+  (reset! node-started false)
   (when status
     (call-module #(.stopNode status))))
+
+(defn node-ready []
+  (reset! node-started true))
 
 (defn start-node [config]
   (when status
@@ -82,16 +88,20 @@
     (call-module #(.notifyUsers status message payload tokens on-result))))
 
 (defn add-peer [enode on-result]
-  (when status
+  (when (and @node-started status)
     (call-module #(.addPeer status enode on-result))))
 
 (defn recover-account [passphrase password on-result]
-  (when status
+  (when (and @node-started status)
     (call-module #(.recoverAccount status passphrase password on-result))))
 
 (defn login [address password on-result]
-  (when status
+  (when (and @node-started status)
     (call-module #(.login status address password on-result))))
+
+(defn verify [address password on-result]
+  (when (and @node-started status)
+    (call-module #(.verify status address password on-result))))
 
 (defn set-soft-input-mode [mode]
   (when status
@@ -103,19 +113,19 @@
     (call-module #(.clearStorageAPIs status))))
 
 (defn call-rpc [payload callback]
-  (when status
+  (when (and @node-started status)
     (call-module #(.callRPC status payload callback))))
 
 (defn call-private-rpc [payload callback]
-  (when status
+  (when (and @node-started status)
     (call-module #(.callPrivateRPC status payload callback))))
 
 (defn sign-message [rpcParams callback]
-  (when status
+  (when (and @node-started status)
     (call-module #(.signMessage status rpcParams callback))))
 
 (defn send-transaction [rpcParams password callback]
-  (when status
+  (when (and @node-started status)
     (call-module #(.sendTransaction status rpcParams password callback))))
 
 (defn close-application []

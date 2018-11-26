@@ -255,6 +255,16 @@
                   #(re-encrypt-realm file-name old-key new-key on-success on-error))
                  (catch on-error)))))))))
 
+(defn db-exists? [address]
+  (js/Promise.
+   (fn [on-success on-error]
+     (.. (fs/file-exists? (get-account-db-path address))
+         (then (fn [db-exists?]
+                 (if db-exists?
+                   (on-success)
+                   (on-error {:message "Account's database doesn't exist."
+                              :error   :database-does-not-exist}))))))))
+
 (defn open-account [address password encryption-key]
   (let [path (get-account-db-path address)
         account-db-key (db-encryption-key password encryption-key)]

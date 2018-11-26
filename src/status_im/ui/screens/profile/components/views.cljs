@@ -84,7 +84,8 @@
    [react/view styles/settings-item
     [react/view styles/settings-item-text-wrapper
      [react/text {:style           (merge styles/settings-item-text
-                                          (when destructive? styles/settings-item-destructive))
+                                          (when destructive? styles/settings-item-destructive)
+                                          (when-not active? styles/settings-item-disabled))
                   :number-of-lines 1}
       (or item-text (i18n/label label-kw))]
      (when-not (string/blank? value)

@@ -365,12 +365,13 @@
   [{:keys [db] :as cofx}]
   ;; check if logged into account
   (when (contains? db :account/account)
-    (if (zero? (dec (:mailserver/connection-checks db)))
-      (fx/merge cofx
-                {:db (dissoc db :mailserver/connection-checks)}
-                (when (= :connecting (:mailserver/state db))
-                  (change-mailserver cofx)))
-      {:db (update db :mailserver/connection-checks dec)})))
+    (let [connection-checks (dec (:mailserver/connection-checks db))]
+      (if (>= 0 connection-checks)
+        (fx/merge cofx
+                  {:db (dissoc db :mailserver/connection-checks)}
+                  (when (= :connecting (:mailserver/state db))
+                    (change-mailserver cofx)))
+        {:db (update db :mailserver/connection-checks dec)}))))
 
 (fx/defn reset-request-to
   [{:keys [db]}]

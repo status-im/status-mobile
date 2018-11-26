@@ -45,7 +45,8 @@
             [taoensso.timbre :as log]
             [status-im.utils.datetime :as time]
             [status-im.chat.commands.core :as commands]
-            [status-im.chat.models.loading :as chat-loading]))
+            [status-im.chat.models.loading :as chat-loading]
+            [status-im.node.core :as node]))
 
 ;; init module
 
@@ -102,15 +103,11 @@
  :init-chats
  [(re-frame/inject-cofx :web3/get-web3)
   (re-frame/inject-cofx :get-default-dapps)
-  (re-frame/inject-cofx :data-store/all-chats)
-  (re-frame/inject-cofx :data-store/get-all-mailservers)
-  (re-frame/inject-cofx :data-store/transport)
-  (re-frame/inject-cofx :data-store/mailserver-topics)]
+  (re-frame/inject-cofx :data-store/all-chats)]
  (fn [{:keys [db] :as cofx} [_ address]]
    (fx/merge cofx
              {:db (assoc db :chats/loading? false)}
              (chat-loading/initialize-chats)
-             (protocol/initialize-protocol address)
              (chat-loading/initialize-pending-messages))))
 
 (handlers/register-handler-fx
@@ -120,13 +117,11 @@
   (re-frame/inject-cofx :data-store/get-all-installations)
   (re-frame/inject-cofx :data-store/all-browsers)
   (re-frame/inject-cofx :data-store/all-dapp-permissions)]
- (fn [cofx [_ address]]
-   (init/initialize-account cofx address)))
-
-(handlers/register-handler-fx
- :init.callback/account-change-error
- (fn [cofx [_ error]]
-   (init/handle-change-account-error cofx error)))
+ (fn [{:keys [db] :as cofx} [_ address]]
+   (fx/merge
+    cofx
+    (node/initialize (get-in db [:accounts/login :address]))
+    (init/initialize-account address))))
 
 (handlers/register-handler-fx
  :init.callback/keychain-reset
@@ -261,8 +256,23 @@
 
 (handlers/register-handler-fx
  :accounts.login.callback/login-success
+ [(re-frame/inject-cofx :web3/get-web3)
+  (re-frame/inject-cofx :data-store/all-chats)
+  (re-frame/inject-cofx :data-store/get-all-mailservers)
+  (re-frame/inject-cofx :data-store/transport)
+  (re-frame/inject-cofx :data-store/mailserver-topics)]
  (fn [cofx [_ login-result]]
    (accounts.login/user-login-callback cofx login-result)))
+
+(handlers/register-handler-fx
+ :accounts.login.callback/verify-success
+ (fn [cofx [_ verify-result realm-error]]
+   (accounts.login/verify-callback cofx verify-result realm-error)))
+
+(handlers/register-handler-fx
+ :init.callback/account-change-error
+ (fn [cofx [_ error]]
+   (accounts.login/handle-change-account-error cofx error)))
 
 (handlers/register-handler-fx
  :accounts.login.ui/account-selected

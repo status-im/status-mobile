@@ -16,9 +16,10 @@
         can-login? (and (not restart?)
                         (:password (accounts.db/credentials cofx)))]
     (fx/merge cofx
-              {:db (-> db
-                       (assoc :node/status :started)
-                       (dissoc :node/restart? :node/address))}
+              {:db         (-> db
+                               (assoc :node/status :started)
+                               (dissoc :node/restart? :node/address))
+               :node/ready nil}
 
               (when restart?
                 (node/initialize address))

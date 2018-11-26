@@ -17,3 +17,6 @@
 
 (defn unlink [path]
   (.unlink rn-dependencies/fs path))
+
+(defn file-exists? [path]
+  (.exists rn-dependencies/fs path))

@@ -106,41 +106,6 @@
   [{:keys [db]} device-uuid]
   {:db (assoc db :device-UUID device-uuid)})
 
-(fx/defn handle-change-account-error
-  [{:keys [db]} error]
-  (let [{:keys [error message details]}
-        (if (map? error)
-          error
-          {:message (str error)})
-        address (get-in db [:accounts/login :address])
-        erase-button-text (i18n/label :migrations-erase-accounts-data-button)]
-    (case error
-      :migrations-failed
-      {:ui/show-confirmation
-       {:title               (i18n/label :migrations-failed-title)
-        :content             (i18n/label
-                              :migrations-failed-content
-                              (merge
-                               {:message                         message
-                                :erase-accounts-data-button-text erase-button-text}
-                               details))
-        :confirm-button-text erase-button-text
-        :on-cancel           #(re-frame/dispatch [:init.ui/data-reset-cancelled ""])
-        :on-accept           #(re-frame/dispatch [:init.ui/account-data-reset-accepted address])}}
-
-      ;; TODO(rasom): handle different errors as separate cases
-      ;; Right now it might be corrupted db file, wrong password,
-      ;; problem with permissions, etc.
-      {:ui/show-confirmation
-       {:title               (i18n/label :invalid-key-title)
-        :content             (i18n/label
-                              :invalid-key-content
-                              {:message                         message
-                               :erase-accounts-data-button-text erase-button-text})
-        :confirm-button-text (i18n/label :invalid-key-confirm)
-        :on-cancel           #(re-frame/dispatch [:init.ui/data-reset-cancelled ""])
-        :on-accept           #(re-frame/dispatch [:init.ui/account-data-reset-accepted address])}})))
-
 (fx/defn handle-init-store-error
   [encryption-key cofx]
   {:ui/show-confirmation
@@ -183,9 +148,9 @@
 
 (fx/defn initialize-account-db [{:keys [db web3]} address]
   (let [{:universal-links/keys [url]
-         :keys [accounts/accounts accounts/create contacts/contacts networks/networks
-                network network-status peers-count peers-summary view-id navigation-stack
-                pairing/installations status-module-initialized? device-UUID semaphores]
+         :keys [accounts/accounts accounts/create networks/networks network
+                network-status peers-count peers-summary view-id navigation-stack
+                status-module-initialized? device-UUID semaphores accounts/login]
          :node/keys [status]
          :or   {network (get app-db :network)}} db
         current-account (get accounts address)
@@ -199,6 +164,8 @@
                         :accounts/create create
                         :networks/networks networks
                         :account/account current-account
+                        :accounts/login login
+                        :accounts/accounts accounts
                         :network-status network-status
                         :network network
                         :chain (ethereum/network->chain-name account-network)
@@ -210,12 +177,6 @@
                         :web3 web3)
            (= view-id :create-account)
            (assoc-in [:accounts/create :step] :enter-name))}))
-
-(defn initialize-wallet [cofx]
-  (fx/merge cofx
-            (models.wallet/initialize-tokens)
-            (models.wallet/update-wallet)
-            (transactions/start-sync)))
 
 (defn login-only-events [cofx address]
   (fx/merge cofx
@@ -234,23 +195,18 @@
   (= (get-in cofx [:db :view-id])
      :create-account))
 
-(fx/defn initialize-account [{:keys [db web3] :as cofx} address]
+(fx/defn initialize-account [cofx address]
   (fx/merge cofx
-            {:web3/set-default-account    [web3 address]
-             :web3/fetch-node-version     [web3
-                                           #(re-frame/dispatch
-                                             [:web3/fetch-node-version-callback %])]
-             :notifications/get-fcm-token nil}
+            {:notifications/get-fcm-token nil}
             (initialize-account-db address)
             (contact/load-contacts)
             (pairing/load-installations)
             #(when (dev-mode? %)
                (models.dev-server/start))
             (browser/initialize-browsers)
+
             (browser/initialize-dapp-permissions)
             (extensions.registry/initialize)
-            #(when-not platform/desktop?
-               (initialize-wallet %))
             (accounts.update/update-sign-in-time)
             #(when-not (creating-account? %)
                (login-only-events % address))))

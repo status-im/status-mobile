@@ -25,7 +25,8 @@
               (log/error "Could not move realms" error)))
      (then #(data-source/open-base-realm encryption-key)))))
 
-(defn change-account [address password encryption-key]
+(defn change-account
+  [address password encryption-key create-database-if-not-exist?]
   (log/debug "changing account to: " address)
   (..
    (js/Promise.
@@ -36,6 +37,10 @@
         (catch :default e
           (on-error {:message (str e)
                      :error   :closing-account-failed})))))
+   (then
+    (if create-database-if-not-exist?
+      #(js/Promise. (fn [on-success] (on-success)))
+      #(data-source/db-exists? address)))
    (then
     #(data-source/check-db-encryption address password encryption-key))
    (then

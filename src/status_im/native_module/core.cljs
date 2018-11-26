@@ -6,6 +6,9 @@
 (defn start-node [config]
   (native-module/start-node config))
 
+(defn node-ready []
+  (native-module/node-ready))
+
 (defn stop-node []
   (native-module/stop-node))
 
@@ -17,6 +20,9 @@
 
 (defn login [address password callback]
   (native-module/login address password callback))
+
+(defn verify [address password callback]
+  (native-module/verify address password callback))
 
 (defn set-soft-input-mode [mode]
   (native-module/set-soft-input-mode mode))

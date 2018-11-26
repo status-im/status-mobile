@@ -385,6 +385,7 @@
     "currency-display-name-ron": "Romania Leu",
     "log-level-settings": "Log level settings",
     "invalid-key-content": "{{message}}\n\nAccount's database can't be encrypted because file is corrupted. There is no way to restore it. If you press \"Cancel\" button, nothing will happen. If you press \"{{erase-accounts-data-button-text}}\" button, account's db will be removed and you will be able to unlock account. All account's data will be lost.",
+    "unknown-realm-error-content": "{{message}}\n\nAccount's database can't be opened. Please let us know about this problem at #status public chat. If you press \"Cancel\" button, nothing will happen. If you press \"{{erase-accounts-data-button-text}}\" button, account's db will be removed and you will be able to unlock account. All account's data will be lost.",
     "advanced-settings": "Advanced settings",
     "group-info": "Group info",
     "currency-display-name-nio": "Nicaragua Cordoba",
@@ -420,6 +421,7 @@
     "wallet-send": "Send",
     "wallet-deposit": "Deposit",
     "invalid-key-title": "We detected a problem with the encryption key",
+    "unknown-realm-error": "Something went wrong",
     "notifications": "Notifications",
     "currency-display-name-czk": "Czech Koruna",
     "extension-installed": "You installed an extension",
@@ -791,5 +793,7 @@
     "install-the-extension": "install the extension",
     "migrations-failed-title": "Migration failed",
     "migrations-failed-content": "{{message}}\nschema version: initial {{initial-version}}, current {{current-version}}, last {{last-version}}\n\nPlease let us know about this problem at #status public chat. If you press \"Cancel\" button, nothing will happen. If you press \"{{erase-accounts-data-button-text}}\" button, account's db will be removed and you will be able to unlock account. All account's data will be lost.",
-    "migrations-erase-accounts-data-button": "Erase account's db"
+    "migrations-erase-accounts-data-button": "Erase account's db",
+    "account-and-db-password-mismatch-title": "The problem occurred!",
+    "account-and-db-password-mismatch-content": "Account's and realm db passwords do not match."
 }

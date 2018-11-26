@@ -72,6 +72,9 @@
 (def settings-item-destructive
   {:color colors/red})
 
+(def settings-item-disabled
+  {:color colors/gray})
+
 (def settings-item-value
   {:flex          1
    :flex-wrap     :nowrap

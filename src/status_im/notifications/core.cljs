@@ -4,7 +4,6 @@
             [status-im.react-native.js-dependencies :as rn]
             [taoensso.timbre :as log]
             [status-im.accounts.db :as accounts.db]
-            [status-im.accounts.login.core :as accounts.login]
             [status-im.chat.models :as chat-model]
             [status-im.utils.platform :as platform]
             [status-im.utils.fx :as fx]))
