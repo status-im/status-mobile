@@ -1,3 +1,5 @@
+from selenium.common.exceptions import TimeoutException
+
 from support.utilities import generate_timestamp
 from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
@@ -129,13 +131,15 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(5336)
-    @marks.high
+    @marks.critical
     def test_user_can_interact_with_public_chat(self):
         signin = SignInView(self.driver)
         home_view = signin.create_user()
         chat = home_view.join_public_chat('evripidis-middellijn')
 
-        if chat.empty_public_chat_message.is_element_displayed():
+        try:
+            chat.empty_public_chat_message.wait_for_invisibility_of_element()
+        except TimeoutException:
             self.driver.fail('Empty chat: history is not fetched!')
 
         # just to generate random text to be sent
@@ -146,12 +150,16 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
             self.errors.append('User sent message but it did not appear in chat!')
 
         chat.move_to_messages_by_time_marker('Today')
+        if not chat.element_by_text('Today').is_element_displayed():
+            self.errors.append("'Today' chat marker is not shown")
         if len(chat.chat_item.find_elements()) <= 1:
-            self.errors.append('There were no history messages fetched!')
+            self.errors.append('No messages fetched for today!')
 
         chat.move_to_messages_by_time_marker('Yesterday')
+        if not chat.element_by_text('Yesterday').is_element_displayed():
+            self.errors.append("'Yesterday' chat marker is not shown")
         if len(chat.chat_item.find_elements()) <= 1:
-            self.errors.append('There were no history messages fetched!')
+            self.errors.append('No messages fetched for yesterday!')
 
         self.verify_no_errors()
 
