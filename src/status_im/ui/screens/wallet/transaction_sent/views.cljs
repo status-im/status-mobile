@@ -61,13 +61,14 @@
    (bottom-action-button on-next)])
 
 (defview transaction-sent []
-  (letsubs [chat-id [:chats/current-chat-id]]
+  (letsubs [chat-id                 [:chats/current-chat-id]
+            {:keys [send-command?]} [:get-screen-params :wallet-transaction-sent]]
     [react/view {:flex 1 :background-color colors/blue}
      [status-bar/status-bar {:type :transparent}]
-     (sent-screen {:on-next #(re-frame/dispatch [:close-transaction-sent-screen chat-id])})]))
+     (sent-screen {:on-next #(re-frame/dispatch [:close-transaction-sent-screen send-command? chat-id])})]))
 
 (defview transaction-sent-modal []
   (letsubs [chat-id [:chats/current-chat-id]]
     [react/view {:flex 1 :background-color colors/blue}
      [status-bar/status-bar {:type :modal-wallet}]
-     (sent-screen {:on-next #(re-frame/dispatch [:close-transaction-sent-screen chat-id])})]))
+     (sent-screen {:on-next #(re-frame/dispatch [:close-transaction-sent-screen false chat-id])})]))

@@ -165,7 +165,7 @@
      (fx/merge cofx
                #(when send-command?
                   (commands-sending/send % chat-id send-command? params))
-               (navigation/navigate-to-clean :wallet-transaction-sent {})))))
+               (navigation/navigate-to-clean :wallet-transaction-sent {:send-command? send-command?})))))
 
 (defn set-and-validate-amount-db [db amount symbol decimals]
   (let [{:keys [value error]} (wallet.db/parse-amount amount decimals)]
@@ -264,10 +264,15 @@
              cofx)
             :dispatch [:wallet/update-gas-price true]))))
 
+(fx/defn navigate-after-transaction [{:keys [db] :as cofx} send-command? chat-id]
+  (if (= :wallet-send-transaction-modal (second (:navigation-stack db)))
+    (chat.models/navigate-to-chat cofx chat-id {})
+    (navigation/navigate-back cofx)))
+
 (handlers/register-handler-fx
  :close-transaction-sent-screen
- (fn [cofx [_ chat-id]]
+ (fn [cofx [_ send-command? chat-id]]
    (fx/merge cofx
              {:dispatch-later [{:ms 400 :dispatch [:check-dapps-transactions-queue]}]}
-             (navigation/navigate-back))))
+             (navigate-after-transaction send-command? chat-id))))
 
