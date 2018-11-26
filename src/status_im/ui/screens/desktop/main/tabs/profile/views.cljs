@@ -84,24 +84,38 @@
    [pairing.views/sync-devices]
    [pairing.views/installations-list installations]])
 
+
+(defn connection-status
+  "generates a composite message of the current connection state given peer and mailserver statuses"
+  [peers-count node-status mailserver-state peers-disconnected?]
+  ;; TODO probably not ideal criteria for searching
+  ;; ask about directly calling rpc method to find discovery.started
+  (let [searching?            (= :starting node-status)
+        peers-connected?      (not peers-disconnected?)
+        mailserver-connected? (= :connected mailserver-state)]
+    (cond
+      (and peers-connected? searching?)                  "Connected and searching"
+      (and peers-connected? (not mailserver-connected?)) (str "Connected with " peers-count " peers")
+      (and peers-connected? mailserver-connected?)       (str "Connected with " peers-count " peers including mailserver.")
+      (and peers-disconnected? searching?)               "Disconnected and searching"
+      :else                                              "Disconnected")))
+
 (views/defview advanced-settings []
   (views/letsubs [installations    [:pairing/installations]
                   current-mailserver-id [:mailserver/current-id]
                   mailservers           [:mailserver/fleet-mailservers]
                   mailserver-state      [:mailserver/state]
                   node-status           [:node-status]
-                  peers-count           [:peers-count]]
+                  peers-count           [:peers-count]
+                  disconnected          [:disconnected?]]
     (let [render-fn (offline-messaging.views/render-row current-mailserver-id)
-          connected-peers-message      (str "Connected to " peers-count " peers")
-          node-status-message          (str "The node is currently " node-status)]
+          connection-message      (connection-status peers-count node-status mailserver-state disconnected)]
       [react/scroll-view
        [react/text {:style styles/advanced-settings-title
                     :font  :medium}
         (i18n/label :advanced-settings)]
        [react/view
-        [react/text connected-peers-message]
-        [react/text node-status-message]
-        [react/text (str mailserver-state)]]
+        [react/text connection-message]]
        [react/view {:style styles/title-separator}]
        [react/text {:style styles/mailserver-title} (i18n/label :offline-messaging)]
        [react/view
