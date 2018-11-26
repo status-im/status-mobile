@@ -3,6 +3,7 @@
 help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
+DO_SPACE_URL = https://status-go.ams3.digitaloceanspaces.com/
 GITHUB_URL = https://github.com/status-im/status-go/releases/download
 RCTSTATUS_DIR = modules/react-native-status/ios/RCTStatus
 ANDROID_LIBS_DIR = android/app/libs
@@ -47,15 +48,33 @@ prepare-desktop: ##@prepare Install desktop platform dependencies and prepare wo
 	npm install
 
 $(STATUS_GO_IOS_ARCH):
-	curl -s -L \
+	curl --fail --silent --location \
 		"$(GITHUB_URL)/$(STATUS_GO_VER)/status-go-ios.zip" \
-		-o "$(STATUS_GO_IOS_ARCH)"
+		--output "$(STATUS_GO_IOS_ARCH)"; \
+	if [ $$? -ne 0 ]; then \
+		echo "Failed to download from GitHub, checking DigitalOcean Bucket..."; \
+		curl --fail --silent --location \
+			"${DO_SPACE_URL}/status-go-ios-$(STATUS_GO_VER).zip" \
+			--output "$(STATUS_GO_IOS_ARCH)"; \
+		if [ $$? -ne 0 ]; then \
+			echo "Failed to download from DigitalOcean Spaces!"; \
+		fi \
+	fi
 
 $(STATUS_GO_DRO_ARCH):
 	mkdir -p $(ANDROID_LIBS_DIR)
-	curl -s -L \
+	curl --fail --silent --location \
 		"$(GITHUB_URL)/$(STATUS_GO_VER)/status-go-android.aar" \
-		-o "$(STATUS_GO_DRO_ARCH)"
+		--output "$(STATUS_GO_DRO_ARCH)"; \
+	if [ $$? -ne 0 ]; then \
+		echo "Failed to download from GitHub, checking DigitalOcean Bucket..."; \
+		curl --fail --silent --location \
+			"${DO_SPACE_URL}/status-go-android-$(STATUS_GO_VER).aar" \
+			--output "$(STATUS_GO_DRO_ARCH)"; \
+		if [ $$? -ne 0 ]; then \
+			echo "Failed to download from DigitalOcean Spaces!"; \
+		fi \
+	fi
 
 prepare-ios: $(STATUS_GO_IOS_ARCH) ##@prepare Install and prepare iOS-specific dependencies
 	scripts/prepare-for-platform.sh ios
