@@ -90,3 +90,19 @@
 (def topic-text
   {:font-size 25.6
    :color     colors/white})
+
+(def popup-shaddow
+  {:background-color colors/black-transparent
+   :border-radius    10
+   :margin-top       60
+   :margin-left      120})
+
+(def popup
+  {:background-color colors/white
+   :padding-right    15
+   :padding-vertical 10
+   :margin-top       1
+   :margin-bottom    4
+   :margin-left      3
+   :margin-right     3
+   :border-radius    10})

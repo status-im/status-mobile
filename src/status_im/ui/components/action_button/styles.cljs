@@ -8,6 +8,7 @@
    :flex-direction :row
    :align-items    :center
    :ios            {:height 63}
+   :desktop        {:height 50}
    :android        {:height 56}})
 
 (defnstyle action-button-icon-container [circle-color]

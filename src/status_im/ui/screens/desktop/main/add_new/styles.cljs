@@ -1,11 +1,11 @@
 (ns status-im.ui.screens.desktop.main.add-new.styles
   (:require [status-im.ui.components.colors :as colors]))
 
-(def new-contact-view
+(def new-view
   {:flex             1
    :background-color colors/white
-   :margin-left      24
-   :margin-right     37})
+   :margin-left      16
+   :margin-right     24})
 
 (def new-contact-title
   {:height          64
@@ -14,14 +14,11 @@
 
 (def new-contact-title-text
   {:font-size   20
+   :font-weight :bold
    :color       :black})
 
 (def new-contact-subtitle
   {:font-size 14})
-
-(def new-contact-separator
-  {:height           1
-   :background-color colors/gray-light})
 
 (def add-contact-edit-view
   {:height           45
@@ -32,7 +29,8 @@
    :margin-top       16})
 
 (defn add-contact-input [error?]
-  (cond-> {:font-size        14
+  (cond-> {:flex 1
+           :font-size        14
            :background-color colors/gray-lighter
            :margin-right     12
            :border-radius    8}

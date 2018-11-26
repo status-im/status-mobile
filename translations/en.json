@@ -92,6 +92,7 @@
     "network-id": "Network ID",
     "connection-problem": "Messages connection problem",
     "contact-code": "Contact code",
+    "enter-ens-or-contact-code": "Enter ENS username or contact code",
     "transactions-delete-content": "Transaction will be removed from 'Unsigned' list",
     "home": "Home",
     "transactions-unsigned-empty": "You don't have any unsigned transactions",

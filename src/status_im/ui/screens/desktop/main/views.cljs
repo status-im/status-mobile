@@ -6,7 +6,8 @@
             [status-im.ui.screens.desktop.main.chat.views :as chat.views]
             [status-im.ui.screens.desktop.main.add-new.views :as add-new.views]
             [status-im.ui.components.desktop.tabs :as tabs]
-            [status-im.ui.components.react :as react]))
+            [status-im.ui.components.react :as react]
+            [re-frame.core :as re-frame]))
 
 (views/defview status-view []
   [react/view {:style {:flex 1 :background-color "#eef2f5" :align-items :center :justify-content :center}}
@@ -22,11 +23,23 @@
       [react/view {:style {:flex 1}}
        [component]])))
 
+(views/defview popup-view []
+  (views/letsubs [popup [:get-in [:desktop :popup]]]
+    (when popup
+      [react/view {:style styles/absolute}
+       [react/touchable-highlight {:on-press #(re-frame/dispatch [:set-in [:desktop :popup] nil])
+                                   :style    {:flex 1}}
+        [react/view]]
+       [react/view {:style styles/absolute}
+        [popup]]])))
+
 (views/defview main-view []
   (views/letsubs [view-id [:get :view-id]]
     (let [component (case view-id
                       :chat         chat.views/chat-view
-                      :new-contact  add-new.views/new-contact
+                      :desktop/new-one-to-one  add-new.views/new-one-to-one
+                      :desktop/new-public-chat add-new.views/new-public-chat
+                      :desktop/new-group-chat add-new.views/new-group-chat
                       :qr-code      profile.views/qr-code
                       :advanced-settings profile.views/advanced-settings
                       :chat-profile chat.views/chat-profile
