@@ -60,6 +60,18 @@
 (defn set-timeout [cb ms]
   (.setTimeout rn-dependencies/background-timer cb ms))
 
+(defn unread-messages-count
+  "display actual # if less than 1K, round to the lowest thousand if between 1 and 10K, otherwise 10K+ for anything larger"
+  [messages-count]
+  (let [round-to-lowest-single-thousand #(-> %
+                                             (/ 1000)
+                                             (Math/floor)
+                                             (str "K+"))]
+    (cond
+      (< messages-count 1000)        (str messages-count)
+      (<= 1000 messages-count 10000) (round-to-lowest-single-thousand messages-count)
+      (> messages-count 10000)       "10K+")))
+
 ;; same as re-frame dispatch-later but using background timer for long
 ;; running timeouts
 (re-frame/reg-fx

@@ -26,13 +26,6 @@
               :icon-active   :icons/profile-active}
     :count-subscription  :get-profile-unread-messages-number}])
 
-(defn- counter [cnt]
-  (let [[unviewed-messages-label large?] (if (< 9 cnt)
-                                           ["9+" true]
-                                           [cnt false])]
-    [react/view {:style tabs.styles/unread-messages-icon}
-     [react/text {:style (tabs.styles/unread-messages-text large?)} unviewed-messages-label]]))
-
 (defn- tab-content [{:keys [title icon-active icon-inactive]}]
   (fn [active? cnt]
     [react/view {:style tabs.styles/tab-container}
@@ -41,9 +34,7 @@
         [icons/icon icon {:style {:tint-color (if active? colors/blue colors/black)}}]])
      [react/view
       [react/text {:style (tabs.styles/tab-title active?)}
-       title]]
-     (when (pos? cnt)
-       [counter cnt])]))
+       title]]]))
 
 (def tabs-list-indexed (map-indexed vector (map #(update % :content tab-content) tabs-list-data)))
 

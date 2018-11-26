@@ -1,12 +1,22 @@
 (ns status-im.test.utils.utils
   (:require [cljs.test :refer-macros [deftest is]]
-            [status-im.utils.core :as u]))
+            [status-im.utils.core :as u]
+            [status-im.utils.utils :as uu]))
 
 (deftest truncate-str-test
   (is (= (u/truncate-str "Long string" 7) "Long...")) ; threshold is less then string length
   (is (= (u/truncate-str "Long string" 7 true) "Lo...ng")) ; threshold is less then string length (truncate middle)
   (is (= (u/truncate-str "Long string" 11) "Long string")) ; threshold is the same as string length
   (is (= (u/truncate-str "Long string" 20) "Long string"))) ; threshold is more then string length
+
+(deftest unread-messages-count-test
+  (is (= (uu/unread-messages-count 2) "2"))
+  (is (= (uu/unread-messages-count 12) "12"))
+  (is (= (uu/unread-messages-count 400) "400"))
+  (is (= (uu/unread-messages-count 1220) "1K+"))
+  (is (= (uu/unread-messages-count 4353) "4K+"))
+  (is (= (uu/unread-messages-count 4999) "4K+"))
+  (is (= (uu/unread-messages-count 11000) "10K+")))
 
 (deftest clean-text-test
   (is (= (u/clean-text "Hello! \n\r") "Hello!")
