@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "prepare": "patch-package"
+    "prepare": "npm run snyk-protect; patch-package",
+    "snyk-protect": "snyk protect"
   },
   "desktopExternalModules": [
     "node_modules/react-native-i18n/desktop",
@@ -47,7 +48,7 @@
     "identicon.js": "github:status-im/identicon.js",
     "js-sha3": "^0.8.0",
     "level-filesystem": "1.2.0",
-    "metro": "^0.38.1",
+    "metro": "^0.45.0",
     "nfc-react-native": "github:status-im/nfc-react-native",
     "process": "0.11.10",
     "prop-types": "15.6.0",
@@ -86,12 +87,14 @@
     "text-encoding": "^0.6.4",
     "url": "0.10.3",
     "web3": "https://github.com/status-im/web3.js.git#features/pairing-message",
-    "web3-utils": "1.0.0-beta.36"
+    "web3-utils": "1.0.0-beta.36",
+    "snyk": "^1.110.2"
   },
   "devDependencies": {
     "patch-package": "^5.1.1"
   },
   "optionalDependencies": {
     "appdmg": "^0.5.2"
-  }
+  },
+  "snyk": true
 }

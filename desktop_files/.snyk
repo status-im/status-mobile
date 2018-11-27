@@ -1,0 +1,72 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.13.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:hoek:20180212':
+    - realm-js > node-pre-gyp > hawk > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > lzma-native > node-pre-gyp > hawk > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > node-pre-gyp > request > hawk > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > node-pre-gyp > hawk > sntp > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > node-pre-gyp > hawk > boom > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > lzma-native > node-pre-gyp > hawk > sntp > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > node-pre-gyp > request > hawk > boom > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > lzma-native > node-pre-gyp > hawk > boom > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > decompress-tarxz > lzma-native > node-pre-gyp > hawk > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > lzma-native > node-pre-gyp > request > hawk > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > node-pre-gyp > request > hawk > sntp > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > node-pre-gyp > hawk > cryptiles > boom > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > decompress-tarxz > lzma-native > node-pre-gyp > hawk > boom > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > decompress-tarxz > lzma-native > node-pre-gyp > hawk > sntp > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > decompress-tarxz > lzma-native > node-pre-gyp > request > hawk > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > node-pre-gyp > request > hawk > cryptiles > boom > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > lzma-native > node-pre-gyp > hawk > cryptiles > boom > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > lzma-native > node-pre-gyp > request > hawk > boom > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > lzma-native > node-pre-gyp > request > hawk > sntp > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > decompress-tarxz > lzma-native > node-pre-gyp > hawk > cryptiles > boom > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > lzma-native > node-pre-gyp > request > hawk > cryptiles > boom > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > decompress-tarxz > lzma-native > node-pre-gyp > request > hawk > boom > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > decompress-tarxz > lzma-native > node-pre-gyp > request > hawk > sntp > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+    - realm-js > decompress-tarxz > lzma-native > node-pre-gyp > request > hawk > cryptiles > boom > hoek:
+        patched: '2018-11-27T17:49:33.463Z'
+  'npm:lodash:20180130':
+    - rn-snoopy > lodash:
+        patched: '2018-11-27T17:49:33.463Z'
+    - react-native-desktop > yeoman-generator > lodash:
+        patched: '2018-11-27T17:49:33.463Z'
+    - react-native-desktop > yeoman-generator > inquirer > lodash:
+        patched: '2018-11-27T17:49:33.463Z'
+    - react-native-desktop > yeoman-generator > html-wiring > cheerio > lodash:
+        patched: '2018-11-27T17:49:33.463Z'
+  'npm:minimatch:20160620':
+    - react-native-desktop > yeoman-generator > findup-sync > glob > minimatch:
+        patched: '2018-11-27T17:49:33.463Z'
+  'npm:semver:20150403':
+    - react-native-level-fs > levelup > semver:
+        patched: '2018-11-27T17:49:33.463Z'
+  'npm:tunnel-agent:20170305':
+    - react-native-desktop > yeoman-generator > download > caw > tunnel-agent:
+        patched: '2018-11-27T17:49:33.463Z'
