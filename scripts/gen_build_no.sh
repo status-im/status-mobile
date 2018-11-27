@@ -20,7 +20,8 @@ BUILD_NUMBER_FILE="${GIT_ROOT}/BUILD_NUMBER"
 if [[ -f "${BUILD_NUMBER_FILE}" ]]; then
     cat "${BUILD_NUMBER_FILE}"
 else
-    # Format: Year(2 digit) + Month + Day + Hour + Minutes
-    # Example: 1812011805
-    date '+%y%m%d%H%M' | tee "${BUILD_NUMBER_FILE}"
+    # Format: Year(4 digit) + Month + Day + Hour
+    # Example: 2018120118
+    # We limited precision to hours to avoid of mismatched numbers.
+    date '+%Y%m%d%H' | tee "${BUILD_NUMBER_FILE}"
 fi
