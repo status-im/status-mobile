@@ -18,7 +18,8 @@
             [status-im.utils.fx :as fx]
             status-im.extensions.ethereum
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.chat.commands.sending :as commands-sending]))
 
 (re-frame/reg-fx
  ::alert
@@ -160,6 +161,18 @@
    {:db (update-in db [:chats current-chat-id :custom-params] merge params)
     :dispatch [:chat.ui/set-command-parameter value]}))
 
+(handlers/register-handler-fx
+ :extensions.chat.command/send-plain-text-message
+ (fn [_ [_ _ {:keys [value]}]]
+   {:dispatch [:chat/send-plain-text-message value]}))
+
+(handlers/register-handler-fx
+ :extensions.chat.command/send-message
+ (fn [{{:keys [current-chat-id] :as db} :db :as cofx} [_ {:keys [hook-id]} {:keys [params]}]]
+   (when hook-id
+     (when-let [command (last (first (filter #(= (ffirst %) (name hook-id)) (:id->command db))))]
+       (commands-sending/send cofx current-chat-id command params)))))
+
 (defn operation->fn [k]
   (case k
     :plus   +
@@ -272,6 +285,14 @@
                 {:permissions [:read]
                  :value       :extensions.chat.command/set-parameter-with-custom-params
                  :arguments   {:value :string :params :map}}
+                'chat.command/send-plain-text-message
+                {:permissions [:read]
+                 :value       :extensions.chat.command/send-plain-text-message
+                 :arguments   {:value :string}}
+                'chat.command/send-message
+                {:permissions [:read]
+                 :value       :extensions.chat.command/send-message
+                 :arguments   {:params :map}}
                 'log
                 {:permissions [:read]
                  :value       :log

@@ -120,23 +120,37 @@
     :preview       :view
     :on-send?      :event
     :on-receive?   :event
+    :on-send-sync? :event
     :parameters?    [{:id           :keyword
                       :type         {:one-of #{:text :phone :password :number}}
                       :placeholder  :string
                       :suggestions? :view}]}
    :hook
    (reify hooks/Hook
-     (hook-in [_ id {:keys [description scope parameters preview short-preview on-send on-receive]} cofx]
-       (let [new-command (reify protocol/Command
-                           (id [_] (name id))
-                           (scope [_] scope)
-                           (description [_] description)
-                           (parameters [_] (or parameters []))
-                           (validate [_ _ _])
-                           (on-send [_ command-message _] (when on-send {:dispatch (on-send command-message)}))
-                           (on-receive [_ command-message _] (when on-receive {:dispatch (on-receive command-message)}))
-                           (short-preview [_ props] (short-preview props))
-                           (preview [_ props] (preview props)))]
+     (hook-in [_ id {:keys [description scope parameters preview short-preview on-send on-receive on-send-sync]} cofx]
+       (let [new-command (if on-send-sync
+                           (reify protocol/Command
+                             (id [_] (name id))
+                             (scope [_] scope)
+                             (description [_] description)
+                             (parameters [_] (or parameters []))
+                             (validate [_ _ _])
+                             (on-send [_ command-message _] (when on-send {:dispatch (on-send command-message)}))
+                             (on-receive [_ command-message _] (when on-receive {:dispatch (on-receive command-message)}))
+                             (short-preview [_ props] (short-preview props))
+                             (preview [_ props] (preview props))
+                             protocol/Yielding
+                             (yield-control [_ props _] {:dispatch (on-send-sync props)}))
+                           (reify protocol/Command
+                             (id [_] (name id))
+                             (scope [_] scope)
+                             (description [_] description)
+                             (parameters [_] (or parameters []))
+                             (validate [_ _ _])
+                             (on-send [_ command-message _] (when on-send {:dispatch (on-send command-message)}))
+                             (on-receive [_ command-message _] (when on-receive {:dispatch (on-receive command-message)}))
+                             (short-preview [_ props] (short-preview props))
+                             (preview [_ props] (preview props))))]
          (load-commands cofx [new-command])))
      (unhook [_ id {:keys [scope]} {:keys [db] :as cofx}]
        (remove-command (get-in db [:id->command [(name id) scope] :type]) cofx)))})

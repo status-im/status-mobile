@@ -134,6 +134,15 @@
                 (set-chat-input-text nil)
                 (process-cooldown)))))
 
+(defn send-plain-text-message-fx
+  "no command detected, when not empty, proceed by sending text message without command processing"
+  [{:keys [db] :as cofx} message-text current-chat-id]
+  (when-not (string/blank? message-text)
+    (chat.message/send-message cofx {:chat-id      current-chat-id
+                                     :content-type constants/content-type-text
+                                     :content      (cond-> {:chat-id current-chat-id
+                                                            :text    message-text})})))
+
 (fx/defn send-current-message
   "Sends message from current chat input"
   [{{:keys [current-chat-id id->command access-scope->command-id] :as db} :db :as cofx}]

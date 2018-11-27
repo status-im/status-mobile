@@ -699,6 +699,11 @@
                                            value))))
 
 (handlers/register-handler-fx
+ :chat/send-plain-text-message
+ (fn [{{:keys [current-chat-id]} :db :as cofx} [_ message-text]]
+   (chat.input/send-plain-text-message-fx cofx message-text current-chat-id)))
+
+(handlers/register-handler-fx
  :chat/disable-cooldown
  (fn [cofx _]
    (chat/disable-chat-cooldown cofx)))
