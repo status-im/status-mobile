@@ -13,6 +13,12 @@
  (fn [{:node/keys [chain-sync-state]} _] chain-sync-state))
 
 (re-frame/reg-sub
+ :current-network-initialized?
+ (fn [db _]
+   (let [network (get-in db [:account/account :networks (:network db)])]
+     (boolean network))))
+
+(re-frame/reg-sub
  :current-network-uses-rpc?
  (fn [db _]
    (let [network (get-in db [:account/account :networks (:network db)])]
