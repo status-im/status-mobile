@@ -155,7 +155,7 @@ function buildClojureScript() {
 
   # Add path to javascript bundle to package.json
   jsBundleLine="\"desktopJSBundlePath\": \"$WORKFOLDER/Status.jsbundle\""
-  jsPackagePath=$(joinExistingPath "$STATUSREACTPATH" 'desktop_files/package.json')
+  jsPackagePath=$(joinExistingPath "$STATUSREACTPATH" 'desktop_files/package.json.orig')
   if grep -Fq "$jsBundleLine" "$jsPackagePath"; then
     echo -e "${GREEN}Found line in package.json.${NC}"
   else

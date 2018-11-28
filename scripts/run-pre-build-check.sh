@@ -6,6 +6,9 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 PLATFORM=""
 
+EXPECTED_NODE_VERSION="v9.3.0" # note the 'v' in front, that is how node does versioning
+EXPECTED_YARN_VERSION="1.12.3" # note the lack of 'v' in front. inconsistent. :(
+
 #if no arguments passed, inform user about possible ones
 
 if [ $# -eq 0 ]; then
@@ -15,9 +18,15 @@ else
   PLATFORM=$1
 fi
 
-npm_version=$(npm -v)
-if [[ $npm_version != "5.5.1" ]]; then
-  echo -e "${YELLOW}+ npm version $npm_version is installed. npm version 5.5.1 is recommended.${NC}"
+node_version=$(node -v)
+
+if [[ $node_version != $EXPECTED_NODE_VERSION ]]; then
+  echo -e "${YELLOW}+ node version $node_version is installed. node version $EXPECTED_NODE_VERSION is recommended.${NC}"
+fi
+
+yarn_version=$(yarn -v)
+if [[ $yarn_version != $EXPECTED_YARN_VERSION ]]; then
+  echo -e "${YELLOW}+ yarn version $yarn_version is installed. yarn version $EXPECTED_YARN_VERSION is recommended.${NC}"
 fi
 
 if [[ $PLATFORM == 'android' ]]; then
