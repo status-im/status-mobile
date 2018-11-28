@@ -23,9 +23,7 @@ fi
 
 EXIT_CODE=0
 
-                                                  # TODO: Re-enable when Desktop's package-lock is fixed.
-                                                  # 
-for LOCK_FILE in "mobile_files/package-lock.json" #"desktop_files/package-lock.json"
+for LOCK_FILE in "mobile_files/package-lock.json" "desktop_files/package-lock.json"
 do
     echo "VERIFYING LOCK FILE: $LOCK_FILE"
 
