@@ -53,19 +53,27 @@ def installJSDeps(platform) {
   def attempt = 1
   def maxAttempts = 10
   def installed = false
-  def errroCode = 0
+  def errorCode = 0
+  def errorLog = ""
   /* prepare environment for specific platform build */
   sh "scripts/prepare-for-platform.sh ${platform}"
   while (!installed && attempt <= maxAttempts) {
     println("#${attempt} attempt to install npm deps")
 
-    errorCode = sh('scripts/locked-npm-install.sh', returnStatus: true)
+    try {
+      errorLog = sh(
+        returnStdout: true, 
+        script: 'scripts/locked-npm-install.sh'
+      )
+    } catch (exc) {
+        errorCode = 1
+    }
     installed = fileExists('node_modules/web3/index.js')
     attemp = attempt + 1
   }
 
   if(!installed || errorCode != 0) {
-    error "node dependencies installation failed (installed: ${installed}, errorCode: ${errorCode})"
+    error "node dependencies installation failed (installed: ${installed}, errorCode: ${errorCode}, errorLog: ${errorLog})"
   }
 }
 
