@@ -26,6 +26,7 @@ external_modules_dir=( \
   'modules/react-native-status/desktop' \
   'node_modules/google-breakpad' \
   'modules/react-native-desktop-linking/desktop' \
+  'modules/react-native-desktop-menu/desktop' \
   'modules/react-native-desktop-notification/desktop' \
 )
 

@@ -14,7 +14,7 @@
 #include <QDirIterator>
 #include <QFile>
 #include <QFontDatabase>
-#include <QGuiApplication>
+#include <QApplication>
 #include <QMutexLocker>
 #include <QProcess>
 #include <QQuickView>
@@ -242,7 +242,7 @@ void renameRealmDirs() {
 
 int main(int argc, char **argv) {
   QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-  QGuiApplication app(argc, argv);
+  QApplication app(argc, argv);
 
   QCoreApplication::setApplicationName("Status");
 

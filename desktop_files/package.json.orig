@@ -16,6 +16,7 @@
     "node_modules/react-native-securerandom/desktop",
     "modules/react-native-status/desktop",
     "modules/react-native-desktop-linking/desktop",
+    "modules/react-native-desktop-menu/desktop",
     "modules/react-native-desktop-notification/desktop",
     "node_modules/google-breakpad"
   ],

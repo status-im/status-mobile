@@ -5,6 +5,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.desktop.main.tabs.home.styles :as styles]
+            [status-im.ui.components.popup-menu.views :as popup-menu]
             [clojure.string :as string]
             [status-im.ui.screens.home.views.inner-item :as chat-item]
             [taoensso.timbre :as log]
@@ -57,8 +58,15 @@
        [react/view {:style styles/timestamp}
         [chat-item/message-timestamp (:timestamp last-message)]]])))
 
-(defn chat-list-item [[chat-id chat]]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])}
+(defn chat-list-item [[chat-id
+                       {:keys [group-chat public?] :as chat}]]
+  [react/touchable-highlight
+   {:on-press (fn [arg]
+                (let [right-click? (= "right" (.-button (.-nativeEvent arg)))]
+                  (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
+                  (when right-click?
+                    (popup-menu/show-desktop-menu
+                     (popup-menu/get-chat-menu-items group-chat public? chat-id)))))}
    [chat-list-item-inner-view (assoc chat :chat-id chat-id)]])
 
 (defn tag-view [tag {:keys [on-press]}]

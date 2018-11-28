@@ -13,6 +13,7 @@
 (def fetch                  (.-default (js/require "react-native-fetch-polyfill")))
 (def i18n                   (js/require "react-native-i18n"))
 (def desktop-linking        (.-DesktopLinking (.-NativeModules react-native)))
+(def desktop-menu           (js/require "react-native-desktop-menu"))
 
 (def react-native-firebase  #js {})
 (def nfc-manager            #js {})

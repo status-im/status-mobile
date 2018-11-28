@@ -14,7 +14,6 @@
 (def linear-gradient        #js {})
 (def nfc                    #js {})
 (def orientation            #js {})
-(def popup-menu             #js {})
 (def qr-code                #js {})
 (def nfc-manager            #js {:default #js {}})
 (def react-native
