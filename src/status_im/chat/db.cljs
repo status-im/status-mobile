@@ -25,7 +25,7 @@
                      ;; not a group chat
                      (or (not (and group-chat (not public?)))
                          ;; if it's a group chat
-                         (utils.config/group-chats-enabled? dev-mode?)))
+                         utils.config/group-chats-enabled?))
               (assoc acc chat-id (if-let [contact (get contacts chat-id)]
                                    (-> chat
                                        (assoc :name (:name contact))

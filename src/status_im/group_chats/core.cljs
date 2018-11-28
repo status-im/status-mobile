@@ -381,7 +381,7 @@
                 membership-updates] :as membership-update}
    sender-signature]
   (let [dev-mode? (get-in cofx [:db :account/account :dev-mode?])]
-    (when (and (config/group-chats-enabled? dev-mode?)
+    (when (and config/group-chats-enabled?
                (valid-chat-id? chat-id (extract-creator membership-update)))
       (let [previous-chat (get-in cofx [:db :chats chat-id])
             all-updates (clojure.set/union (set (:membership-updates previous-chat))
