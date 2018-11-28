@@ -57,7 +57,7 @@ def installJSDeps(platform) {
   sh "scripts/prepare-for-platform.sh ${platform}"
   while (!installed && attempt <= maxAttempts) {
     println("#${attempt} attempt to install npm deps")
-    sh 'npm install'
+    sh 'yarn install --frozen-lockfile'
     installed = fileExists('node_modules/web3/index.js')
     attemp = attempt + 1
   }

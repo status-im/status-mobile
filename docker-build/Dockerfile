@@ -69,6 +69,8 @@ RUN mkdir -p $LEIN_INSTALL \
 
 # Install React-Native
 RUN npm install -g react-native-cli
+# Install Yarn
+RUN npm install -g yarn@1.12.3
 
 # Add files needed for installing dependencies
 # Use directory /build for that purpose
@@ -80,7 +82,7 @@ ADD ./project.clj ./
 
 ADD ./package.json package-lock.json ./
 
-RUN npm install
+RUN yarn install --frozen-lockfile
 
 ADD . ./
 
