@@ -297,7 +297,7 @@
 (defn cofx-fixtures [sym-key registered-peer?]
   {:db {:mailserver/state :connected
         :peers-summary (if registered-peer?
-                         [{:id "mailserver-id"}]
+                         [{:id "mailserver-id" :enode "enode://mailserver-id@ip"}]
                          [])
         :account/account {:settings {:fleet :eth.beta}}
         :mailserver/current-id "mailserver-a"
@@ -308,7 +308,7 @@
   (mailserver/peers-summary-change (cofx-fixtures sym-key
                                                   registered-peer?)
                                    (if registered-peer-before?
-                                     [{:id "mailserver-id"}]
+                                     [{:id "mailserver-id" :enode "enode://mailserver-id@ip"}]
                                      [])))
 
 (deftest peers-summary-change
