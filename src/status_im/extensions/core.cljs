@@ -366,6 +366,11 @@
                                :topics?    :vector
                                :blockhash? :string
                                :on-result :event}}
+                'ethereum/resolve-ens
+                {:permissions [:read]
+                 :value       :extensions/ethereum-resolve-ens
+                 :arguments   {:name       :string
+                               :on-result :event}}
                 'ethereum/call
                 {:permissions [:read]
                  :value       :extensions/ethereum-call
