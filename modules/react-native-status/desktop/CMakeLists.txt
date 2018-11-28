@@ -26,12 +26,22 @@ include_directories(${StatusGo_INCLUDE_DIR})
 
 set(CONFIGURE_SCRIPT build-status-go.sh)
 
-file (STRINGS "../../../STATUS_GO_VERSION" STATUS_GO_VERSION)
+file(STRINGS "../../../STATUS_GO_VERSION" STATUS_GO_VERSION)
+
+# custom status-go builds are identified by '{date}-{time}-{commit}'
+if ("${STATUS_GO_VERSION}" MATCHES "[0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9][0-9][0-9]-([0-9a-zA-Z]+)")
+  set(STATUS_GO_TAG ${CMAKE_MATCH_1})
+else()
+  set(STATUS_GO_TAG ${STATUS_GO_VERSION})
+endif()
 
 ExternalProject_Add(StatusGo_ep
   PREFIX ${StatusGo_PREFIX}
   SOURCE_DIR ${StatusGo_SOURCE_DIR}
-  URL https://github.com/status-im/status-go/releases/download/${STATUS_GO_VERSION}/status-go-desktop.zip
+  GIT_REPOSITORY https://github.com/status-im/status-go.git
+  GIT_TAG ${STATUS_GO_TAG}
+  URL https://status-go.ams3.digitaloceanspaces.com/status-go-desktop-${STATUS_GO_VERSION}.zip
+      https://github.com/status-im/status-go/archive/${STATUS_GO_VERSION}.zip
   BUILD_BYPRODUCTS ${StatusGo_STATIC_LIB}
   CONFIGURE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/${CONFIGURE_SCRIPT} ${CMAKE_SYSTEM_NAME} ${GO_ROOT_PATH} ${StatusGo_ROOT} ${StatusGo_SOURCE_DIR} ${CMAKE_C_COMPILER} ${CMAKE_CXX_COMPILER}
   BUILD_COMMAND ""
