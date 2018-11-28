@@ -68,3 +68,7 @@
     "Function which takes original parameters + cofx map and returns new map of parameters")
   (enhance-receive-parameters [this parameters cofx]
     "Function which takes original parameters + cofx map and returns new map of parameters"))
+
+(defprotocol Extension
+  "Protocol for defining extension"
+  (extension-id [this]))

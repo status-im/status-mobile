@@ -1,9 +1,7 @@
 (ns status-im.ui.screens.chat.message.message
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.animation :as animation]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.action-sheet :as action-sheet]
@@ -12,22 +10,31 @@
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.constants :as constants]
-            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.utils.core :as utils]
             [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.utils.identicon :as identicon]
-            [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
-            [clojure.string :as string]))
+            [status-im.ui.components.icons.vector-icons :as icons]))
+
+(defn install-extension-message [extension-id outgoing]
+  [react/touchable-highlight {:on-press #(re-frame/dispatch
+                                          [:extensions.ui/install-extension-button-pressed extension-id])}
+   [react/view style/extension-container
+    [icons/icon :icons/info {:color (if outgoing colors/white colors/gray)}]
+    [react/text {:style (style/extension-text outgoing)}
+     (i18n/label :to-see-this-message)]
+    [react/text {:style (style/extension-install outgoing)}
+     (i18n/label :install-the-extension)]]])
 
 (defview message-content-command
   [command-message]
   (letsubs [id->command [:chats/id->command]]
     (if-let [command (commands-receiving/lookup-command-by-ref command-message id->command)]
       (commands/generate-preview command command-message)
-      [react/text (str "Unhandled command: " (-> command-message :content :command-path first))])))
+      (if-let [extension-id (get-in command-message [:content :params :extension-id])]
+        [install-extension-message extension-id (:outgoing command-message)]
+        [react/text (str "Unhandled command: " (-> command-message :content :command-path first))]))))
 
 (defview message-timestamp [t justify-timestamp? outgoing command? content]
   (when-not command?

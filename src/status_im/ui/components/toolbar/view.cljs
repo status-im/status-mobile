@@ -53,6 +53,7 @@
    (nav-text (merge props styles/item-text-white-background) text)))
 
 (def default-nav-back [nav-button actions/default-back])
+(def default-nav-close [nav-button actions/default-close])
 
 (defn nav-back-count
   ([]
@@ -160,4 +161,5 @@
 (defn simple-toolbar
   "A simple toolbar composed of a nav-back item and a single line title."
   ([] (simple-toolbar nil))
-  ([title] (toolbar nil default-nav-back [content-title title])))
+  ([title] (simple-toolbar title false))
+  ([title modal?] (toolbar nil (if modal? default-nav-close default-nav-back) [content-title title])))

@@ -47,7 +47,7 @@
             [status-im.ui.screens.fleet-settings.views :refer [fleet-settings]]
             [status-im.ui.screens.offline-messaging-settings.views :refer [offline-messaging-settings]]
             [status-im.ui.screens.offline-messaging-settings.edit-mailserver.views :refer [edit-mailserver]]
-            [status-im.ui.screens.extensions.add.views :refer [edit-extension show-extension]]
+            [status-im.ui.screens.extensions.add.views :refer [edit-extension show-extension show-extension-modal]]
             [status-im.ui.screens.bootnodes-settings.views :refer [bootnodes-settings]]
             [status-im.ui.screens.pairing.views :refer [installations]]
             [status-im.ui.screens.bootnodes-settings.edit-bootnode.views :refer [edit-bootnode]]
@@ -176,6 +176,9 @@
 
         :chat-modal
         (wrap-modal :chat-modal chat-modal)
+
+        :show-extension-modal
+        (wrap-modal :show-extension-modal show-extension-modal)
 
         :wallet-send-modal-stack
         {:screens

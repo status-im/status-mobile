@@ -12,12 +12,15 @@
   [chat-id type parameter-map cofx]
   (let [command-path      (commands/command-id type)
         new-parameter-map (and (satisfies? protocol/EnhancedParameters type)
-                               (protocol/enhance-send-parameters type parameter-map cofx))]
+                               (protocol/enhance-send-parameters type parameter-map cofx))
+        params            (merge (or new-parameter-map parameter-map)
+                                 (when (satisfies? protocol/Extension type)
+                                   {:extension-id (protocol/extension-id type)}))]
     {:chat-id      chat-id
      :content-type constants/content-type-command
      :content      {:chat-id      chat-id
                     :command-path command-path
-                    :params       (or new-parameter-map parameter-map)}}))
+                    :params       params}}))
 
 (fx/defn validate-and-send
   "Validates and sends command in current chat"

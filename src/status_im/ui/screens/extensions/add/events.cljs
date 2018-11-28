@@ -15,17 +15,13 @@
 
 (handlers/register-handler-fx
  :extensions/stage
- (fn [{:keys [db] :as cofx} [_ _ extension-data]]
-   (let [hooks (extensions.registry/existing-hooks cofx extension-data)]
-     (if (empty? hooks)
-       (fx/merge cofx
-                 {:db (assoc db :staged-extension extension-data)}
-                 (navigation/navigate-to-cofx :show-extension nil))
-       {:utils/show-popup {:title   (i18n/label :t/error)
-                           :content (i18n/label :t/extension-hooks-cannot-be-added
-                                                {:hooks (->> hooks
-                                                             (map name)
-                                                             (clojure.string/join ", "))})}}))))
+ (fn [cofx [_ _ extension-data]]
+   (extensions.registry/stage-extension cofx extension-data false)))
+
+(handlers/register-handler-fx
+ :extensions/stage-modal
+ (fn [cofx [_ _ extension-data]]
+   (extensions.registry/stage-extension cofx extension-data true)))
 
 (handlers/register-handler-fx
  :extensions/add-to-registry

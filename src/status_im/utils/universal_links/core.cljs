@@ -72,7 +72,7 @@
 
 (fx/defn handle-extension [cofx url]
   (log/info "universal-links: handling url profile" url)
-  (extensions.registry/load cofx url))
+  (extensions.registry/load cofx url false))
 
 (defn handle-not-found [full-url]
   (log/info "universal-links: no handler for " full-url))
