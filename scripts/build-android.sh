@@ -14,7 +14,7 @@ echo
 
 GRADLE_PROPERTIES="--daemon --parallel -q -b android/build.gradle"
 
-npm install
+scripts/locked-npm-install.sh
 
 case $TARGET in
   debug)

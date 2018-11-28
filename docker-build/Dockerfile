@@ -80,7 +80,9 @@ ADD ./project.clj ./
 
 ADD ./package.json package-lock.json ./
 
-RUN npm install
+ADD ./scripts ./
+
+RUN scripts/locked-npm-install.sh
 
 ADD . ./
 
