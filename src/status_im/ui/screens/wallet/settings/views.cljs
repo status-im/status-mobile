@@ -21,9 +21,9 @@
     :on-click? :event}
    :hook
    (reify hooks/Hook
-     (hook-in [_ id {:keys [label view on-click]} {:keys [db]}]
+     (hook-in [_ id env {:keys [label view on-click]} {:keys [db]}]
        {:db (assoc-in db [:wallet :settings id] {:label label :view view :on-click on-click})})
-     (unhook [_ id _ {:keys [db]}]
+     (unhook [_ id env _ {:keys [db]}]
        {:db (update-in db [:wallet :settings] dissoc id)}))})
 
 (defn- render-token [{:keys [symbol name icon]} visible-tokens]

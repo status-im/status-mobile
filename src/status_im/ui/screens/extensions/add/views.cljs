@@ -30,13 +30,13 @@
                  values))
           hooks))
 
-(views/defview show-extension []
+(views/defview show-extension-base [modal?]
   (views/letsubs [{:keys [data errors]} [:get-staged-extension]]
     (if data
       [react/view styles/screen
        [status-bar/status-bar]
        [react/keyboard-avoiding-view components.styles/flex
-        [toolbar/simple-toolbar (i18n/label :t/extension)]
+        [toolbar/simple-toolbar (i18n/label :t/extension) modal?]
         [react/scroll-view {:keyboard-should-persist-taps :handled}
          [react/view styles/wrapper
           [react/view {:style {:border-radius 8 :margin 10 :padding 8 :background-color colors/red}}
@@ -71,7 +71,7 @@
           {:forward?  true
            :label     (i18n/label :t/install)
            :disabled? (not (empty? errors))
-           :on-press  #(re-frame/dispatch [:extensions.ui/install-button-pressed data])}]]]]
+           :on-press  #(re-frame/dispatch [:extensions.ui/install-button-pressed data modal?])}]]]]
       [react/view styles/screen
        [status-bar/status-bar]
        [react/view {:flex 1}
@@ -79,6 +79,12 @@
         [react/view {:style {:flex 1 :justify-content :center :align-items :center}}
          [react/text (i18n/label :t/invalid-extension)]
          [react/text (str errors)]]]])))
+
+(views/defview show-extension []
+  [show-extension-base false])
+
+(views/defview show-extension-modal []
+  [show-extension-base true])
 
 (def qr-code
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed

@@ -127,7 +127,8 @@
                       :suggestions? :view}]}
    :hook
    (reify hooks/Hook
-     (hook-in [_ id {:keys [description scope parameters preview short-preview on-send on-receive on-send-sync]} cofx]
+     (hook-in [_ id {extension-id :id} {:keys [description scope parameters preview short-preview
+                                               on-send on-receive on-send-sync]} cofx]
        (let [new-command (if on-send-sync
                            (reify protocol/Command
                              (id [_] (name id))
@@ -140,7 +141,9 @@
                              (short-preview [_ props] (short-preview props))
                              (preview [_ props] (preview props))
                              protocol/Yielding
-                             (yield-control [_ props _] {:dispatch (on-send-sync props)}))
+                             (yield-control [_ props _] {:dispatch (on-send-sync props)})
+                             protocol/Extension
+                             (extension-id [_] extension-id))
                            (reify protocol/Command
                              (id [_] (name id))
                              (scope [_] scope)
@@ -150,9 +153,11 @@
                              (on-send [_ command-message _] (when on-send {:dispatch (on-send command-message)}))
                              (on-receive [_ command-message _] (when on-receive {:dispatch (on-receive command-message)}))
                              (short-preview [_ props] (short-preview props))
-                             (preview [_ props] (preview props))))]
+                             (preview [_ props] (preview props))
+                             protocol/Extension
+                             (extension-id [_] extension-id)))]
          (load-commands cofx [new-command])))
-     (unhook [_ id {:keys [scope]} {:keys [db] :as cofx}]
+     (unhook [_ id _ {:keys [scope]} {:keys [db] :as cofx}]
        (remove-command (get-in db [:id->command [(name id) scope] :type]) cofx)))})
 
 (handlers/register-handler-fx

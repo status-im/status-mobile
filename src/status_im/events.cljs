@@ -502,13 +502,19 @@
 (handlers/register-handler-fx
  :extensions.ui/show-button-pressed
  (fn [cofx [_ url]]
-   (extensions.registry/load cofx url)))
+   (extensions.registry/load cofx url false)))
+
+(handlers/register-handler-fx
+ :extensions.ui/install-extension-button-pressed
+ (fn [{:keys [db] :as cofx} [_ url]]
+   (fx/merge cofx
+             {:db (assoc-in db [:extensions/manage :url :value] url)}
+             (extensions.registry/load url true))))
 
 (handlers/register-handler-fx
  :extensions.ui/install-button-pressed
- [(re-frame/inject-cofx :random-id-generator)]
- (fn [cofx [_ data]]
-   (extensions.registry/install cofx data)))
+ (fn [cofx [_ data modal?]]
+   (extensions.registry/install cofx data modal?)))
 
 ;; log-level module
 
