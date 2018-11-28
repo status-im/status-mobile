@@ -92,7 +92,7 @@
              [react/image {:style  styles/suggested-contact-image
                            :source {:uri (:photo-path c)}}]
              [react/text {:style styles/new-contact-subtitle} (:name c)]]]))]]
-      (when (config/group-chats-enabled? true) group-chat-section)
+      (when config/group-chats-enabled? group-chat-section)
       ^{:key "publicchat"}
       [react/view {:style styles/new-contact-title}
        [react/text {:style styles/new-contact-title-text
