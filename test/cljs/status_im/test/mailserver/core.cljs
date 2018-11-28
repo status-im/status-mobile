@@ -26,18 +26,6 @@
    {:id "0f7c65277f916ff4379fe520b875082a56e587eb3ce1c1567d9ff94206bdb05ba167c52272f20f634cd1ebdec5d9dfeb393018bfde1595d8e64a717c8b46692f"
     :name "Geth/v1.7.2-stable/linux-amd64/go1.9.1"}])
 
-(deftest test-registered-peer?
-  (testing "Peer is registered"
-    (is (mailserver/registered-peer? peers enode)))
-  (testing "Peer is not peers list"
-    (is (not (mailserver/registered-peer? peers enode2))))
-  (testing "Empty peers"
-    (is (not (mailserver/registered-peer? [] enode))))
-  (testing "Empty peer"
-    (is (not (mailserver/registered-peer? peers ""))))
-  (testing "Nil peer"
-    (is (not (mailserver/registered-peer? peers nil)))))
-
 (def enode-id "1da276e34126e93babf24ec88aac1a7602b4cbb2e11b0961d0ab5e989ca9c261aa7f7c1c85f15550a5f1e5a5ca2305b53b9280cf5894d5ecf7d257b173136d40")
 (def password "password")
 (def host "167.99.209.61:30504")
