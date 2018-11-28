@@ -174,9 +174,8 @@
 (defn registered-peer?
   "truthy if the enode is a registered peer"
   [peers enode]
-  (let [peer-ids (into #{} (map :id) peers)
-        enode-id (transport.utils/extract-enode-id enode)]
-    (contains? peer-ids enode-id)))
+  (let [connected-enodes (into #{} (map :enode) peers)]
+    (contains? connected-enodes enode)))
 
 (defn update-mailserver-state [db state]
   (assoc db :mailserver/state state))
