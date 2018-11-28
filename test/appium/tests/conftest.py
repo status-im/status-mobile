@@ -190,6 +190,12 @@ def pytest_unconfigure(config):
             pull.create_issue_comment(github_report.build_html_report(testrail_report.run_id))
 
 
+def should_save_device_stats(config):
+    db_args = [config.getoption(option) for option in
+               ('stats_db_host', 'stats_db_port', 'stats_db_username', 'stats_db_password', 'stats_db_database')]
+    return all(db_args)
+
+
 @pytest.mark.hookwrapper
 def pytest_runtest_makereport(item, call):
     outcome = yield
@@ -217,14 +223,15 @@ def pytest_runtest_makereport(item, call):
             else:
                 test_group = None
 
-            device_stats_db = DeviceStatsDB(
-                item.config.getoption('stats_db_host'),
-                item.config.getoption('stats_db_port'),
-                item.config.getoption('stats_db_username'),
-                item.config.getoption('stats_db_password'),
-                item.config.getoption('stats_db_database'),
-            )
-            device_stats_db.save_stats(build_name, item.name, test_group, not report.failed, device_stats)
+            if should_save_device_stats(item.config):
+                device_stats_db = DeviceStatsDB(
+                    item.config.getoption('stats_db_host'),
+                    item.config.getoption('stats_db_port'),
+                    item.config.getoption('stats_db_username'),
+                    item.config.getoption('stats_db_password'),
+                    item.config.getoption('stats_db_database'),
+                )
+                device_stats_db.save_stats(build_name, item.name, test_group, not report.failed, device_stats)
 
 
 def update_sauce_jobs(test_name, job_ids, passed):
