@@ -213,4 +213,8 @@ startdev-%:
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
 	$(eval DEVICE := $(word 3, $(subst -, , $@)))
 	${MAKE} prepare-${SYSTEM}
-	${MAKE} watch-$(SYSTEM)-$(DEVICE)
+	if [ -z "$(DEVICE)" ]; then \
+		${MAKE} watch-$(SYSTEM); \
+	else \
+		${MAKE} watch-$(SYSTEM)-$(DEVICE); \
+	fi
