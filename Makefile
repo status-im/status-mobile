@@ -41,7 +41,8 @@ clean: ##@prepare Remove all output folders
 	git clean -dxf -f -e android/local.properties
 
 setup: ##@prepare Install all the requirements for status-react
-	./scripts/setup
+	@./scripts/setup
+	@./scripts/run-pre-build-check.sh
 
 prepare-desktop: ##@prepare Install desktop platform dependencies and prepare workspace
 	scripts/prepare-for-platform.sh desktop
