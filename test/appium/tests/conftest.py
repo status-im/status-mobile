@@ -2,7 +2,7 @@ import requests
 import pytest
 import re
 from _pytest.runner import runtestprotocol
-
+from http.client import RemoteDisconnected
 from support.device_stats_db import DeviceStatsDB
 from support.test_rerun import should_rerun_test
 from tests import test_suite_data, appium_container
@@ -236,7 +236,10 @@ def pytest_runtest_makereport(item, call):
 
 def update_sauce_jobs(test_name, job_ids, passed):
     for job_id in job_ids.keys():
-        sauce.jobs.update_job(job_id, name=test_name, passed=passed)
+        try:
+            sauce.jobs.update_job(job_id, name=test_name, passed=passed)
+        except RemoteDisconnected:
+            pass
 
 
 def get_testrail_case_id(obj):
