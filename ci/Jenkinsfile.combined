@@ -65,7 +65,11 @@ pipeline {
         cmn.copyArts('status-react/combined/mobile-android', dro.number)
         cmn.copyArts('status-react/combined/mobile-android', e2e.number)
         cmn.copyArts('status-react/combined/mobile-ios', ios.number)
-        archiveArtifacts('pkg/*')
+        dir('pkg') {
+          /* generate sha256 checksums for upload */
+          sh "sha256sum * | tee ${cmn.pkgFilename(btype, 'sha256')}"
+          archiveArtifacts('*')
+        }
       } }
     }
     stage('Upload') {
@@ -83,6 +87,8 @@ pipeline {
         }
         /* special case for iOS Diawi links */
         ipaUrl = ios.getBuildVariables().get('DIAWI_URL')
+        /* upload the sha256 checksums file too */
+        e2eUrl = cmn.uploadArtifact(cmn.pkgFind('sha256'))
         /* add URLs to the build description */
         cmn.setBuildDesc(
           Apk: apkUrl, e2e: e2eUrl, iOS: ipaUrl, App: appUrl, Mac: dmgUrl, Win: exeUrl,
