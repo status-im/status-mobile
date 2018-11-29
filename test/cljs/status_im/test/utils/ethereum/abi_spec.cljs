@@ -2,6 +2,9 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.utils.ethereum.abi-spec :as abi-spec]))
 
+(deftest enc
+  (is (= "000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" (abi-spec/enc {:type :address :value "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}))))
+
 (deftest test-encode
   (is (= (abi-spec/encode "baz(uint32,bool)" [69 true])
          "0xcdcd77c000000000000000000000000000000000000000000000000000000000000000450000000000000000000000000000000000000000000000000000000000000001"))
