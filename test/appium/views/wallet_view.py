@@ -330,4 +330,5 @@ class WalletView(BaseView):
 
     def collectible_amount_by_name(self, name):
         elm = CollectibleTextElement(self.driver, name)
+        elm.scroll_to_element()
         return elm.text

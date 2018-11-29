@@ -199,9 +199,8 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5381)
     @marks.high
-    @marks.skip
     def test_user_can_see_all_own_assets_after_account_recovering(self):
-        passphrase = wallet_users['D']['passphrase']
+        passphrase = wallet_users['E']['passphrase']
         signin_view = SignInView(self.driver)
         home_view = signin_view.recover_access(passphrase=passphrase)
         profile = home_view.profile_button.click()
