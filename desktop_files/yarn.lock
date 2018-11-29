@@ -7724,7 +7724,7 @@ readline2@^0.1.1:
 
 "realm@git+https://github.com/status-im/realm-js.git#heads/v2.20.1":
   version "2.20.1"
-  resolved "git+https://github.com/status-im/realm-js.git#433b2d66294fcd3a28e867438b48c9643acdb18a"
+  resolved "git+https://github.com/status-im/realm-js.git#edffdd3d36f42e9ade787cad73b707a7658ae44a"
   dependencies:
     command-line-args "^4.0.6"
     decompress "^4.2.0"
