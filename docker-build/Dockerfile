@@ -41,7 +41,7 @@ RUN groupadd --gid 1000 node \
 
 ENV NPM_CONFIG_LOGLEVEL info
 # that's the only version that doesn't hang on installing react-native-http inside docker
-ENV NODE_VERSION 8.9.1
+ENV NODE_VERSION 10.14.0
 ENV NODE_ENV development
 
 RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \

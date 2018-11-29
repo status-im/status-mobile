@@ -211,10 +211,10 @@ function install_node_via_nvm() {
   cd "$(repo_path)"
 
   if [ ! -e "$nvmrc" ]; then
-    cecho "@b@blue[[+ Installing Node 9 (Node 10 is not supported by Realm)]]"
+      cecho "@b@blue[[+ Installing Node 10]]"
 
-    nvm install 9
-    nvm alias status-im 9
+    nvm install 10.14.0
+    nvm alias status-im 10.14.0
     echo status-im > "$nvmrc"
 
     nvm use status-im

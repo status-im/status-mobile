@@ -37,6 +37,7 @@ pipeline {
     stage('Prep') {
       steps {
         script { nvm(env.NODE_VERSION) {
+          print "Running ${params.BUILD_TYPE} build!"
           /* Necessary to load methods */
           mobile = load 'ci/mobile.groovy'
           cmn    = load 'ci/common.groovy'
