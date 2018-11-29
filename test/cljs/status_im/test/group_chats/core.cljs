@@ -116,11 +116,12 @@
             (testing "the name is updated"
               (is (= "new-name" (:name actual-chat))))
             (testing "it adds a system message"
-              (is (= 6 (count (:messages actual-chat)))))
+              (is (= 7 (count (:messages actual-chat)))))
             (testing "it sets the right text"
               (is (= ["group-chat-created"
                       "group-chat-member-added"
                       "group-chat-member-added"
+                      "group-chat-admin-added"
                       "group-chat-member-added"
                       "group-chat-member-removed"
                       "group-chat-name-changed"]
@@ -179,6 +180,31 @@
                          :admin-added 2
                          :admin-removed 3
                          :removed 4}
+                    :admins #{"1"}
+                    :contacts #{"1"}}]
+      (is (= expected (group-chats/build-group events)))))
+  (testing "an admin removing themselves"
+    (let [events [{:type    "chat-created"
+                   :clock-value 0
+                   :name  "chat-name"
+                   :from    "1"}
+                  {:type    "members-added"
+                   :clock-value 1
+                   :from    "1"
+                   :members  ["2"]}
+                  {:type    "admins-added"
+                   :clock-value 2
+                   :from    "1"
+                   :members  ["2"]}
+                  {:type    "member-removed"
+                   :clock-value 3
+                   :from   "2"
+                   :member "2"}]
+          expected {:name "chat-name"
+                    :created-at 0
+                    "2" {:added 1
+                         :admin-added 2
+                         :removed 3}
                     :admins #{"1"}
                     :contacts #{"1"}}]
       (is (= expected (group-chats/build-group events)))))
@@ -297,9 +323,9 @@
       (testing "admins can remove non-admin members"
         (is (group-chats/valid-event? multi-admin-group
                                       {:type "member-removed" :clock-value 6 :from "1" :member "3"})))
-      (testing "admins can't remove themselves"
-        (is (not (group-chats/valid-event? multi-admin-group
-                                           {:type "member-removed" :clock-value 6 :from "1" :member "1"}))))
+      (testing "admins can remove themselves"
+        (is (group-chats/valid-event? multi-admin-group
+                                      {:type "member-removed" :clock-value 6 :from "1" :member "1"})))
       (testing "participants non-admin can remove themselves"
         (is (group-chats/valid-event? multi-admin-group
                                       {:type "member-removed" :clock-value 6 :from "3" :member "3"})))
@@ -316,9 +342,9 @@
       (testing "participants non-admin can't remove other admins"
         (is (not (group-chats/valid-event? multi-admin-group
                                            {:type "admin-removed" :clock-value 6 :from "3" :member "1"}))))
-      (testing "the last admin can't be removed"
-        (is (not (group-chats/valid-event? single-admin-group
-                                           {:type "admin-removed" :clock-value 6 :from "1" :member "1"}))))
+      (testing "the last admin can be removed"
+        (is (group-chats/valid-event? single-admin-group
+                                      {:type "admin-removed" :clock-value 6 :from "1" :member "1"})))
       (testing "name-changed"
         (testing "a change from an admin"
           (is (group-chats/valid-event? multi-admin-group
@@ -381,7 +407,7 @@
 
 (deftest remove-group-chat-test
   (with-redefs [utils.clocks/send inc]
-    (let [cofx {:db {:chats {chat-id {:admins #{admin}
+    (let [cofx {:db {:chats {chat-id {:admins #{member-1 member-2}
                                       :name "chat-name"
                                       :chat-id chat-id
                                       :last-clock-value 3
@@ -398,10 +424,13 @@
                  (assoc-in cofx [:db :account/account :public-key] member-3)
                  chat-id)))))
       (testing "removing an admin"
-        (is (not (:group-chats/sign-membership
-                  (group-chats/remove
-                   (assoc-in cofx [:db :account/account :public-key] member-1)
-                   chat-id))))))))
+        (is (= {:from member-1
+                :chat-id chat-id
+                :events [{:type "member-removed" :member member-1 :clock-value 4}]}
+               (:group-chats/sign-membership
+                (group-chats/remove
+                 (assoc-in cofx [:db :account/account :public-key] member-1)
+                 chat-id))))))))
 
 (deftest add-members-test
   (with-redefs [utils.clocks/send inc]
@@ -432,3 +461,18 @@
                           :clock-value 2
                           :member "member"}]}
                (:group-chats/sign-membership (group-chats/remove-member cofx chat-id "member"))))))))
+
+(deftest make-admin-test
+  (with-redefs [utils.clocks/send inc]
+    (testing "make-admin"
+      (let [cofx {:db {:account/account {:public-key "me"}
+                       :chats {chat-id {:admins #{"me"}
+                                        :last-clock-value 1
+                                        :contacts #{"member"}
+                                        :membership-updates [{:events [{:clock-value 1}]}]}}}}]
+        (is (= {:chat-id chat-id
+                :from "me"
+                :events [{:type "admins-added"
+                          :clock-value 2
+                          :members ["member"]}]}
+               (:group-chats/sign-membership (group-chats/make-admin cofx chat-id "member"))))))))
