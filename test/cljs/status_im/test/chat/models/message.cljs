@@ -66,10 +66,11 @@
           (is (= :sent status)))))))
 
 (deftest receive-group-chats
-  (let [cofx                 {:db {:chats {"chat-id" {:contacts #{"present"}}}
+  (let [cofx                 {:db {:chats {"chat-id" {:contacts #{"present" "a"}}}
                                    :account/account {:public-key "a"}
                                    :current-chat-id "chat-id"
                                    :view-id :chat}}
+        cofx-without-member  (update-in cofx [:db :chats "chat-id" :contacts] disj "a")
         valid-message        {:chat-id     "chat-id"
                               :from        "present"
                               :message-type :group-user-message
@@ -93,7 +94,9 @@
     (testing "a message from someone not in the list of participants"
       (is (= cofx (message/receive-many cofx [bad-from-message]))))
     (testing "a message with non existing chat-id"
-      (is (= cofx (message/receive-many cofx [bad-chat-id-message]))))))
+      (is (= cofx (message/receive-many cofx [bad-chat-id-message]))))
+    (testing "a message from a delete chat"
+      (is (= cofx-without-member (message/receive-many cofx-without-member [valid-message]))))))
 
 (deftest receive-public-chats
   (let [cofx                 {:db {:chats {"chat-id" {:public? true}}

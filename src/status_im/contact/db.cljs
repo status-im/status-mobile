@@ -128,7 +128,7 @@
     (query-fn (comp participant-set :public-key) (vals all-contacts))))
 
 (defn get-all-contacts-in-group-chat
-  [members contacts current-account]
+  [members admins contacts current-account]
   (let [current-account-contact (-> current-account
                                     (select-keys [:name :photo-path :public-key]))
         all-contacts            (assoc contacts (:public-key current-account-contact) current-account-contact)]
@@ -136,4 +136,7 @@
          (map #(or (get all-contacts %)
                    (public-key->new-contact %)))
          (remove :dapp?)
-         (sort-by (comp clojure.string/lower-case :name)))))
+         (sort-by (comp clojure.string/lower-case :name))
+         (map #(if (admins (:public-key %))
+                 (assoc % :admin? true)
+                 %)))))

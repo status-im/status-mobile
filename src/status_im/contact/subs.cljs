@@ -102,8 +102,8 @@
  :<- [:chats/current-chat]
  :<- [:contacts/contacts]
  :<- [:account/account]
- (fn [[{:keys [contacts]} all-contacts current-account]]
-   (contact.db/get-all-contacts-in-group-chat contacts all-contacts current-account)))
+ (fn [[{:keys [contacts admins]} all-contacts current-account]]
+   (contact.db/get-all-contacts-in-group-chat contacts admins all-contacts current-account)))
 
 (re-frame/reg-sub
  :contacts/contacts-by-chat

@@ -1047,6 +1047,11 @@
    (group-chats/remove-member cofx chat-id public-key)))
 
 (handlers/register-handler-fx
+ :group-chats.ui/make-admin-pressed
+ (fn [cofx [_ chat-id public-key]]
+   (group-chats/make-admin cofx chat-id public-key)))
+
+(handlers/register-handler-fx
  :group-chats.ui/remove-chat-pressed
  (fn [_ [_ chat-id group?]]
    {:ui/show-confirmation {:title               (i18n/label :t/delete-confirmation)

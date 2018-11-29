@@ -225,7 +225,8 @@
   "Validate and return a valid chat-id"
   (cond
     (and (= :group-user-message message-type)
-         (get-in cofx [:db :chats chat-id :contacts from])) chat-id
+         (and (get-in cofx [:db :chats chat-id :contacts from])
+              (get-in cofx [:db :chats chat-id :contacts (accounts.db/current-public-key cofx)]))) chat-id
     (and (= :public-group-user-message message-type)
          (get-in cofx [:db :chats chat-id :public?])) chat-id
     (and (= :user-message message-type)
