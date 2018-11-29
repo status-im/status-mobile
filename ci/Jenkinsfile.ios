@@ -14,6 +14,7 @@ pipeline {
   }
 
   environment {
+    NODE_VERSION = 'v10.14.1'
     BUILD_PLATFORM = 'ios'
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
@@ -26,7 +27,7 @@ pipeline {
   stages {
     stage('Prep') {
       steps {
-        script {
+        script { nvm(env.NODE_VERSION) {
           print "Running ${params.BUILD_TYPE} build!"
           /* Necessary to load methods */
           mobile = load 'ci/mobile.groovy'
@@ -35,28 +36,28 @@ pipeline {
           mobile.prep(cmn.getBuildType())
           /* Run at start to void mismatched numbers */
           cmn.buildNumber()
-        }
+        } }
       }
     }
     stage('Lint') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { cmn.runLint() }
-      }
+      } }
     }
     stage('Tests') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { cmn.runTests() }
-      }
+      } }
     }
     stage('Build') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { mobile.leinBuild('ios') }
-      }
+      } }
     }
     stage('Compile') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { api = mobile.ios.compile(cmn.getBuildType()) }
-      }
+      } }
     }
     stage('Archive') {
       steps {
