@@ -523,6 +523,9 @@
 (defn nfts-for [all-tokens chain]
   (filter :nft? (tokens-for all-tokens chain)))
 
+(defn token-for [chain all-tokens token]
+  (some #(when (= token (name (:symbol %))) %) (tokens-for all-tokens chain)))
+
 (defn sorted-tokens-for [all-tokens chain]
   (->> (tokens-for all-tokens chain)
        (filter #(not (:hidden? %)))

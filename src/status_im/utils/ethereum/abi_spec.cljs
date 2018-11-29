@@ -37,7 +37,8 @@
   (.hexToUtf8 utils (str "0x" x)))
 
 (defn hex-to-number [x]
-  (.toNumber (dependencies/Web3.prototype.toBigNumber (str "0x" x) 16)))
+  (when x
+    (.toNumber (dependencies/Web3.prototype.toBigNumber (str "0x" x) 16))))
 
 (defn sha3 [s]
   (.sha3 utils (str s)))
