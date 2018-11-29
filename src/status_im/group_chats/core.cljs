@@ -115,11 +115,9 @@
                                 :dsts          members
                                 :success-event [:transport/message-sent
                                                 chat-id
-                                                (transport.utils/message-id
-                                                 ;; NOTE: There is no clock-value here.
-                                                 ;; Will we have collision?
-                                                 {:from current-public-key
-                                                  :chat-id chat-id})
+                                                (transport.utils/message-id (assoc (:message payload)
+                                                                                   :chat-id chat-id
+                                                                                   :from current-public-key))
                                                 :group-user-message]
                                 :payload       payload}}))))
 
