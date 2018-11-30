@@ -17,15 +17,17 @@
             [status-im.native-module.core :as status]))
 
 (handlers/register-handler-fx
- :extensions/transaction-on-result
+ :extensions/wallet-ui-on-result
  (fn [cofx [_ on-result id result method]]
    (fx/merge cofx
              (when on-result
                {:dispatch (on-result {:error nil :result result})})
-             (navigation/navigate-to-clean :wallet-transaction-sent nil))))
+             (cond
+               (= method constants/web3-send-transaction) (navigation/navigate-to-clean :wallet-transaction-sent nil)
+               (= method constants/web3-personal-sign) (navigation/navigate-back)))))
 
 (handlers/register-handler-fx
- :extensions/transaction-on-error
+ :extensions/wallet-ui-on-error
  (fn [{db :db} [_ on-result message]]
    (when on-result {:dispatch (on-result {:error message :result nil})})))
 
@@ -64,8 +66,8 @@
              :gas-price        (when gasPrice
                                  (money/bignumber gasPrice))
              :data             data
-             :on-result        [:extensions/transaction-on-result on-result]
-             :on-error         [:extensions/transaction-on-error on-result]}
+             :on-result        [:extensions/wallet-ui-on-result on-result]
+             :on-error         [:extensions/wallet-ui-on-error on-result]}
       nonce
       (assoc :nonce nonce))))
 
@@ -204,3 +206,19 @@
            registry (get ens/ens-registries chain)]
        (ens/get-addr web3 registry name #(re-frame/dispatch (on-result {:result %}))))
      (re-frame/dispatch (on-result {:error (str "'" name "' is not a valid name")})))))
+
+;; EXTENSION SIGN -> SIGN MESSAGE
+(handlers/register-handler-fx
+ :extensions/ethereum-sign
+ (fn [{db :db :as cofx} [_ _ {:keys [message data id on-result]}]]
+   (if (= (nil? message) (nil? data))
+     {:dispatch (on-result {:error "only one of :message and :data can be used"})}
+     (fx/merge cofx
+               {:db (assoc-in db [:wallet :send-transaction]
+                              {:id                id
+                               :from             (ethereum/normalized-address  (get-in db [:account/account :address]))
+                               :data             (or data (str "0x" (abi-spec/from-utf8 message)))
+                               :on-result        [:extensions/wallet-ui-on-result on-result]
+                               :on-error         [:extensions/wallet-ui-on-error on-result]
+                               :method           constants/web3-personal-sign})}
+               (navigation/navigate-to-cofx :wallet-sign-message-modal nil)))))

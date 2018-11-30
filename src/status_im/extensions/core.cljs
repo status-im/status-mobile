@@ -444,6 +444,12 @@
                  :value       :extensions/ethereum-transaction-receipt
                  :arguments   {:value     :string
                                :on-result :event}}
+                'ethereum/sign
+                {:permissions [:read]
+                 :value       :extensions/ethereum-sign
+                 :arguments   {:message?   :string
+                               :data?      :string
+                               :on-result  :event}}
                 'ethereum/send-transaction
                 {:permissions [:read]
                  :value       :extensions/ethereum-send-transaction
