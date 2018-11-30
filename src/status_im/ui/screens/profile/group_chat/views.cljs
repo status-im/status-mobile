@@ -90,24 +90,25 @@
             editing?     [:get :group-chat-profile/editing?]
             changed-chat [:get :group-chat-profile/profile]
             current-pk   [:account/public-key]]
-    (let [shown-chat (merge current-chat changed-chat)
-          admin?     (admins current-pk)]
-      [react/view profile.components.styles/profile
-       [status-bar/status-bar]
-       (if editing?
-         [group-chat-profile-edit-toolbar]
-         [group-chat-profile-toolbar admin?])
-       [react/scroll-view
-        [react/view profile.components.styles/profile-form
-         [profile.components/profile-header
-          {:contact              shown-chat
-           :editing?             editing?
-           :allow-icon-change?   false
-           :on-change-text-event :group-chats.ui/name-changed}]
-         [list/action-list (actions admin? chat-id)
-          {:container-style        styles/action-container
-           :action-style           styles/action
-           :action-label-style     styles/action-label
-           :action-separator-style styles/action-separator
-           :icon-opts              styles/action-icon-opts}]
-         [members-list chat-id admin? (first admins) current-pk]]]])))
+    (when current-chat
+      (let [shown-chat (merge current-chat changed-chat)
+            admin?     (admins current-pk)]
+        [react/view profile.components.styles/profile
+         [status-bar/status-bar]
+         (if editing?
+           [group-chat-profile-edit-toolbar]
+           [group-chat-profile-toolbar admin?])
+         [react/scroll-view
+          [react/view profile.components.styles/profile-form
+           [profile.components/profile-header
+            {:contact              shown-chat
+             :editing?             editing?
+             :allow-icon-change?   false
+             :on-change-text-event :group-chats.ui/name-changed}]
+           [list/action-list (actions admin? chat-id)
+            {:container-style        styles/action-container
+             :action-style           styles/action
+             :action-label-style     styles/action-label
+             :action-separator-style styles/action-separator
+             :icon-opts              styles/action-icon-opts}]
+           [members-list chat-id admin? (first admins) current-pk]]]]))))
