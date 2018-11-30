@@ -1191,6 +1191,16 @@
    (pairing/disable-fx cofx installation-id)))
 
 (handlers/register-handler-fx
+ :pairing.ui/prompt-dismissed
+ (fn [cofx _]
+   (pairing/prompt-dismissed cofx)))
+
+(handlers/register-handler-fx
+ :pairing.ui/prompt-accepted
+ (fn [cofx _]
+   (pairing/prompt-accepted cofx)))
+
+(handlers/register-handler-fx
  :pairing.callback/enable-installation-success
  (fn [cofx [_ installation-id]]
    (pairing/enable cofx installation-id)))

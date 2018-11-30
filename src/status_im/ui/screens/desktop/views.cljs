@@ -28,6 +28,7 @@
 
                       (:new-contact
                        :advanced-settings
+                       :installations
                        :chat
                        :home
                        :qr-code

@@ -24,7 +24,7 @@
    (show-popup title content on-dismiss)))
 
 (defn show-confirmation
-  [{:keys [title content confirm-button-text on-accept on-cancel cancel-button-text]}]
+  [{:keys [title content confirm-button-text on-dismiss on-accept on-cancel cancel-button-text]}]
   (.alert (.-Alert rn-dependencies/react-native)
           title
           content
@@ -37,8 +37,8 @@
                    {:text                (or confirm-button-text (i18n/label :t/ok))
                     :onPress             on-accept
                     :style               "default"
-                    :accessibility-label :confirm-button})
-           #js {:cancelable false})))
+                    :accessibility-label :confirm-button}))
+          #js {:cancelable false}))
 
 (defn show-question
   ([title content on-accept]
