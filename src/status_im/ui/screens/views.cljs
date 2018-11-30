@@ -243,16 +243,43 @@
            :unsigned-transactions        wallet-transactions/transactions
            :transactions-history         wallet-transactions/transactions
            :wallet-transaction-details   wallet-transactions/transaction-details
-           :login                        login})
+           :login                        login
+           :wallet-settings-hook         wallet-settings/settings-hook})
          {:headerMode       "none"
           :initialRouteName "wallet"})}
+
+       :wallet-send-modal-stack
+       {:screen
+        (nav-reagent/stack-navigator (stack-screens {:wallet-send-transaction-modal
+                                                     [:modal send-transaction-modal]
+
+                                                     :wallet-transaction-sent
+                                                     [:modal transaction-sent-modal]
+
+                                                     :wallet-transaction-fee
+                                                     [:modal wallet.transaction-fee/transaction-fee]})
+                                     {:headerMode       "none"
+                                      :initialRouteName "wallet-send-transaction-modal"})}
+
+       :wallet-send-modal-stack-with-onboarding
+       {:screen
+        (nav-reagent/stack-navigator (stack-screens {:wallet-onboarding-setup-modal
+                                                     [:modal wallet.onboarding/modal]
+
+                                                     :wallet-send-transaction-modal
+                                                     [:modal send-transaction-modal]
+
+                                                     :wallet-transaction-sent
+                                                     [:modal transaction-sent-modal]
+
+                                                     :wallet-transaction-fee
+                                                     [:modal wallet.transaction-fee/transaction-fee]})
+                                     {:headerMode       "none"
+                                      :initialRouteName "wallet-send-modal-stack-with-onboarding"})}
+
        :wallet-settings-assets
        {:screen (nav-reagent/stack-screen
                  (wrap-modal :wallet-settings-assets wallet-settings/manage-assets))}
-
-       :wallet-settings-hook
-       {:screen (nav-reagent/stack-screen
-                 (wrap-modal :wallet-settings-assets wallet-settings/settings-hook))}
 
        :wallet-transaction-fee
        {:screen (nav-reagent/stack-screen
