@@ -88,7 +88,7 @@ pipeline {
         /* special case for iOS Diawi links */
         ipaUrl = ios.getBuildVariables().get('DIAWI_URL')
         /* upload the sha256 checksums file too */
-        e2eUrl = cmn.uploadArtifact(cmn.pkgFind('sha256'))
+        shaUrl = cmn.uploadArtifact(cmn.pkgFind('sha256'))
         /* add URLs to the build description */
         cmn.setBuildDesc(
           Apk: apkUrl, e2e: e2eUrl, iOS: ipaUrl, App: appUrl, Mac: dmgUrl, Win: exeUrl,
@@ -96,7 +96,7 @@ pipeline {
         /* Create latest.json with newest nightly URLs */
         if (btype == 'nightly') {
           cmn.updateLatestNightlies(
-            APK: apkUrl, IOS: ipaUrl, APP: appUrl, MAC: dmgUrl, WIN: exeUrl
+            APK: apkUrl, IOS: ipaUrl, APP: appUrl, MAC: dmgUrl, WIN: exeUrl, SHA: shaUrl
           )
         }
       } }
