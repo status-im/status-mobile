@@ -14,6 +14,7 @@
    :ethcro             (js/require "./resources/images/contacts/ethcro.png")
    :easytrade          (js/require "./resources/images/contacts/easytrade.png")
 
+   :dragonereum        (js/require "./resources/images/contacts/dragonereum.png")
    :name-bazaar        (js/require "./resources/images/contacts/name-bazaar.png")
    :cryptographics     (js/require "./resources/images/contacts/cryptographics.png")
    :cryptopunks        (js/require "./resources/images/contacts/cryptopunks.png")
