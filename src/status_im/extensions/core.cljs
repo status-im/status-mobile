@@ -538,6 +538,24 @@
                  :value       :extensions/ethereum-resolve-ens
                  :arguments   {:name      :string
                                :on-result :event}}
+                'ethereum/create-filter
+                {:permissions [:read]
+                 :value       :extensions/ethereum-create-filter
+                 :arguments   {:filter-type :string
+                               :from? :string
+                               :to?   :string
+                               :address?   :vector
+                               :topics?    :vector
+                               :block-hash? :string
+                               :on-result :event}}
+                'ethereum/logs-changes
+                {:permissions [:read]
+                 :value       :extensions/ethereum-logs-changes
+                 :arguments   {:id  :string}}
+                'ethereum/cancel-filter
+                {:permissions [:read]
+                 :value       :extensions/ethereum-cancel-filter
+                 :arguments   {:id  :string}}
                 'ethereum/call
                 {:permissions [:read]
                  :value       :extensions/ethereum-call

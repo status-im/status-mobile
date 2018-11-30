@@ -222,3 +222,47 @@
                                :on-error         [:extensions/wallet-ui-on-error on-result]
                                :method           constants/web3-personal-sign})}
                (navigation/navigate-to-cofx :wallet-sign-message-modal nil)))))
+
+;; poll logs implementation
+(handlers/register-handler-fx
+ :extensions/ethereum-logs-changes
+ (fn [_ [_ _ {:keys [filterId on-result]}]]
+   (let [args {:jsonrpc "2.0"
+               :method constants/web3-get-filter-changes
+               :params [filterId]}
+         payload (types/clj->json args)]
+     (status/call-private-rpc payload #(let [{:keys [error result]} (types/json->clj %1)
+                                             response (merge {:result result} (when error {:error error}))]
+                                         (mapv (fn [one-result]
+                                                 (re-frame/dispatch (on-result one-result))) result))))))
+(handlers/register-handler-fx
+ :extensions/ethereum-cancel-filter
+ (fn [_ [_ _ {:keys [filterId on-result]}]]
+   (let [args {:jsonrpc "2.0"
+               :method constants/web3-uninstall-filter
+               :params  [filterId]}
+         payload (types/clj->json args)]
+     (status/call-private-rpc payload #(let [{:keys [error result]} (types/json->clj %1)
+                                             response (merge {:result result} (when error {:error error}))]
+                                         (re-frame/dispatch (on-result response)))))))
+
+(handlers/register-handler-fx
+ :extensions/ethereum-create-filter
+ (fn [_ [_ _ {:keys [filter-type from to address topics block-hash on-result]}]]
+   (let [parsed-topics (mapv parse-topic topics)
+         args (case filter-type
+                "filter" {:jsonrpc "2.0"
+                          :method constants/web3-new-filter
+                          :params  [{:fromBlock (ensure-hex-bn from)
+                                     :toBlock   (ensure-hex-bn to)
+                                     :address   address
+                                     :topics    parsed-topics
+                                     :blockhash block-hash}]}
+                "block" {:jsonrpc "2.0"
+                         :method constants/web3-new-block-filter}
+                "pendingTransaction" {:jsonrpc "2.0"
+                                      :method constants/web3-new-pending-transaction-filter})
+         payload (types/clj->json args)]
+     (status/call-private-rpc payload #(let [{:keys [error result]} (types/json->clj %1)
+                                             response (merge {:result result} (when error {:error error}))]
+                                         (re-frame/dispatch (on-result response)))))))

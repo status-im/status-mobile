@@ -201,6 +201,11 @@
 (def ^:const web3-personal-sign "personal_sign")
 (def ^:const web3-get-logs "eth_getLogs")
 (def ^:const web3-transaction-receipt "eth_getTransactionReceipt")
+(def ^:const web3-new-filter "eth_newFilter")
+(def ^:const web3-new-pending-transaction-filter "eth_newPendingTransactionFilter")
+(def ^:const web3-new-block-filter "eth_newBlockFilter")
+(def ^:const web3-uninstall-filter "eth_uninstallFilter")
+(def ^:const web3-get-filter-changes "eth_getFilterChanges")
 
 (def ^:const event-transfer-hash
   (ethereum/sha3 "Transfer(address,address,uint256)"))
