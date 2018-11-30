@@ -27,7 +27,7 @@ else
   PLATFORM_FOLDER="${PLATFORM}_files"
 fi
 
-scripts/run-pre-build-check.sh $1
+scripts/run-environment-check.sh $1
 
 echo "Creating link: package.json -> ${PLATFORM_FOLDER}/package.json.orig "
 ln -sf  ${PLATFORM_FOLDER}/package.json.orig package.json
