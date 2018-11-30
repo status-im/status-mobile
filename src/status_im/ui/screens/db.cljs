@@ -136,6 +136,7 @@
 (spec/def :navigation.screen-params/collectibles-list map?)
 
 (spec/def :navigation.screen-params/show-extension map?)
+(spec/def :navigation.screen-params/selection-modal-screen map?)
 
 (spec/def :navigation/screen-params (spec/nilable (spec/keys :opt-un [:navigation.screen-params/network-details
                                                                       :navigation.screen-params/browser
@@ -145,7 +146,8 @@
                                                                       :navigation.screen-params/edit-contact-group
                                                                       :navigation.screen-params/dapp-description
                                                                       :navigation.screen-params/collectibles-list
-                                                                      :navigation.screen-params/show-extension])))
+                                                                      :navigation.screen-params/show-extension
+                                                                      :navigation.screen-params/selection-modal-screen])))
 
 (spec/def :desktop/desktop (spec/nilable any?))
 (spec/def ::tooltips (spec/nilable any?))

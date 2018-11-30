@@ -42,7 +42,7 @@
             [status-im.ui.screens.network-settings.views :refer [network-settings]]
             [status-im.ui.screens.network-settings.network-details.views :refer [network-details]]
             [status-im.ui.screens.network-settings.edit-network.views :refer [edit-network]]
-            [status-im.ui.screens.extensions.views :refer [extensions-settings]]
+            [status-im.ui.screens.extensions.views :refer [extensions-settings selection-modal-screen]]
             [status-im.ui.screens.log-level-settings.views :refer [log-level-settings]]
             [status-im.ui.screens.fleet-settings.views :refer [fleet-settings]]
             [status-im.ui.screens.offline-messaging-settings.views :refer [offline-messaging-settings]]
@@ -247,6 +247,10 @@
            :wallet-settings-hook         wallet-settings/settings-hook})
          {:headerMode       "none"
           :initialRouteName "wallet"})}
+
+       :selection-modal-screen
+       {:screen (nav-reagent/stack-screen
+                 (wrap-modal :selection-modal-screen selection-modal-screen))}
 
        :wallet-send-modal-stack
        {:screen

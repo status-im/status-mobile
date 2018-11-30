@@ -48,3 +48,24 @@
                                                        {:justify-content :center})
                        :empty-component         [react/text {:style styles/empty-list}
                                                  (i18n/label :t/no-extension)]}]]]))
+
+(defn- render-selection-item [render on-select]
+  (fn [item]
+    [react/touchable-highlight {:on-press #(on-select item)}
+     [render item]]))
+
+(views/defview selection-modal-screen []
+  (views/letsubs [{:keys [items render title extractor-key on-select]} [:get-screen-params :selection-modal-screen]]
+    [react/view {:flex 1}
+     [status-bar/status-bar]
+     [toolbar/toolbar {}
+      toolbar/default-nav-close
+      [toolbar/content-title title]]
+     [react/view styles/wrapper
+      [list/flat-list {:data                    items
+                       :default-separator?      false
+                       :key-fn                  extractor-key
+                       :render-fn               (render-selection-item render on-select)
+                       :content-container-style {:justify-content :center}
+                       :empty-component         [react/text {:style styles/empty-list}
+                                                 "No items"]}]]]))
