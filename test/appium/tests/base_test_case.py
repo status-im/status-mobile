@@ -61,7 +61,7 @@ class AbstractTestCase:
         desired_caps['build'] = pytest.config.getoption('build')
         desired_caps['name'] = test_suite_data.current_test.name
         desired_caps['platformName'] = 'Android'
-        desired_caps['appiumVersion'] = '1.7.2'
+        desired_caps['appiumVersion'] = '1.9.1'
         desired_caps['platformVersion'] = '7.1'
         desired_caps['deviceName'] = 'Android GoogleAPI Emulator'
         desired_caps['deviceOrientation'] = "portrait"
@@ -90,7 +90,7 @@ class AbstractTestCase:
         desired_caps['app'] = apk
         desired_caps['deviceName'] = 'nexus_5'
         desired_caps['platformName'] = 'Android'
-        desired_caps['appiumVersion'] = '1.7.2'
+        desired_caps['appiumVersion'] = '1.9.1'
         desired_caps['platformVersion'] = pytest.config.getoption('platform_version')
         desired_caps['newCommandTimeout'] = 600
         desired_caps['fullReset'] = False

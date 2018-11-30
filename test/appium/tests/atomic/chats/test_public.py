@@ -130,6 +130,7 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
             self.errors.append('Message with korean characters is not shown')
         self.verify_no_errors()
 
+    @marks.skip
     @marks.testrail_id(5336)
     @marks.medium
     def test_user_can_interact_with_public_chat(self):

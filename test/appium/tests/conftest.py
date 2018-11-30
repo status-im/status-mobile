@@ -57,13 +57,13 @@ def pytest_addoption(parser):
                      action='store',
                      default='ropsten',
                      help='string; ropsten or rinkeby')
-
-    # message reliability
-
     parser.addoption('--rerun_count',
                      action='store',
                      default=0,
                      help='How many times tests should be re-run if failed')
+
+    # message reliability
+
     parser.addoption('--messages_number',
                      action='store',
                      default=20,

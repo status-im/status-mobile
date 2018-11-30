@@ -90,3 +90,10 @@ class StartNewChatView(ContactsView):
 
     def get_username_checkbox(self, username: str):
         return UsernameCheckbox(self.driver, username)
+
+    def open_url(self, url):
+        self.open_d_app_button.click()
+        self.enter_url_editbox.click()
+        self.enter_url_editbox.send_keys(url)
+        self.confirm()
+        return self.get_base_web_view()
