@@ -94,7 +94,7 @@
          (i18n/label :t/syncing-disabled))]]]]])
 
 (defn render-rows [installations]
-  [react/view {:style styles/wrapper}
+  [react/scroll-view {:style styles/wrapper}
    [list/flat-list {:data               installations
                     :default-separator? false
                     :key-fn             :installation-id

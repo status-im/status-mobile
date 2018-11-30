@@ -44,6 +44,7 @@
                       :qr-code profile.views/qr-code
                       :advanced-settings profile.views/advanced-settings
                       :help-center help-center.views/help-center
+                      :installations profile.views/installations
                       :chat-profile chat.views/chat-profile
                       :backup-recovery-phrase profile.views/backup-recovery-phrase
                       status-view)]

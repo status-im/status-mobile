@@ -44,6 +44,7 @@
                        :desktop/new-public-chat
                        :advanced-settings
                        :help-center
+                       :installations
                        :chat
                        :home
                        :qr-code

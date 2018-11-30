@@ -1,7 +1,9 @@
 (ns status-im.pairing.core
   (:require [re-frame.core :as re-frame]
             [clojure.string :as string]
+            [status-im.i18n :as i18n]
             [status-im.utils.fx :as fx]
+            [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
             [status-im.utils.platform :as utils.platform]
             [status-im.accounts.db :as accounts.db]
@@ -54,6 +56,23 @@
     (merge local (select-keys remote account-mergeable-keys))
     local))
 
+(fx/defn prompt-dismissed [{:keys [db]}]
+  {:db (assoc-in db [:pairing/prompt-user-pop-up] false)})
+
+(fx/defn prompt-accepted [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (assoc-in db [:pairing/prompt-user-pop-up] false)}
+            (navigation/navigate-to-cofx :installations nil)))
+
+(fx/defn prompt-user-on-new-installation [{:keys [db]}]
+  {:db               (assoc-in db [:pairing/prompt-user-pop-up] true)
+   :ui/show-confirmation {:title      (i18n/label :t/pairing-new-installation-detected-title)
+                          :content    (i18n/label :t/pairing-new-installation-detected-content)
+                          :confirm-button-text (i18n/label :t/pairing-go-to-installation)
+                          :cancel-button-text  (i18n/label :t/cancel)
+                          :on-cancel  #(re-frame/dispatch [:pairing.ui/prompt-dismissed])
+                          :on-accept #(re-frame/dispatch [:pairing.ui/prompt-accepted])}})
+
 (fx/defn upsert-installation [{:keys [db]} {:keys [installation-id] :as new-installation}]
   (let [old-installation (get-in db [:pairing/installations installation-id])
         updated-installation (merge old-installation new-installation)]
@@ -73,7 +92,10 @@
                  (accounts.db/current-public-key cofx))
               (not= (get-in db [:account/account :installation-id]) installation-id)
               (not (get-in db [:pairing/installations installation-id])))
-          (upsert-installation cofx new-installation))))))
+          (fx/merge cofx
+                    (upsert-installation new-installation)
+                    #(when-not (get-in % [:db :pairing/prompt-user-pop-up])
+                       (prompt-user-on-new-installation %))))))))
 
 (defn sync-installation-account-message [{:keys [db]}]
   (let [account (-> db
