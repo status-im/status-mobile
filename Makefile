@@ -42,7 +42,7 @@ clean: ##@prepare Remove all output folders
 
 setup: ##@prepare Install all the requirements for status-react
 	@./scripts/setup
-	@./scripts/run-pre-build-check.sh
+	@./scripts/run-environment-check.sh setup
 
 prepare-desktop: ##@prepare Install desktop platform dependencies and prepare workspace
 	scripts/prepare-for-platform.sh desktop
@@ -110,18 +110,18 @@ release-windows-desktop: prod-build-desktop ##@build build release for desktop r
 	TARGET_SYSTEM_NAME=Windows scripts/build-desktop.sh
 
 prod-build:
-	scripts/run-pre-build-check.sh android
-	scripts/run-pre-build-check.sh ios
+	scripts/run-environment-check.sh android
+	scripts/run-environment-check.sh ios
 	lein prod-build
 
 prod-build-android:
 	rm ./modules/react-native-status/android/libs/status-im/status-go/local/status-go-local.aar 2> /dev/null || true
-	scripts/run-pre-build-check.sh android
+	scripts/run-environment-check.sh android
 	lein prod-build-android
 
 prod-build-ios:
 	rm -r ./modules/react-native-status/ios/RCTStatus/Statusgo.framework/ 2> /dev/null || true
-	scripts/run-pre-build-check.sh ios
+	scripts/run-environment-check.sh ios
 	lein prod-build-ios
 
 full-prod-build: ##@build build prod for both Android and iOS
@@ -132,7 +132,7 @@ full-prod-build: ##@build build prod for both Android and iOS
 
 prod-build-desktop:
 	git clean -qdxf -f ./index.desktop.js desktop/
-	scripts/run-pre-build-check.sh desktop
+	scripts/run-environment-check.sh desktop
 	lein prod-build-desktop
 
 #--------------
@@ -140,43 +140,43 @@ prod-build-desktop:
 # -------------
 
 watch-ios-real: ##@watch Start development for iOS real device
-	scripts/run-pre-build-check.sh ios
+	scripts/run-environment-check.sh ios
 	clj -R:dev build.clj watch --platform ios --ios-device real
 
 watch-ios-simulator: ##@watch Start development for iOS simulator
-	scripts/run-pre-build-check.sh ios
+	scripts/run-environment-check.sh ios
 	clj -R:dev build.clj watch --platform ios --ios-device simulator
 
 watch-android-real: ##@watch Start development for Android real device
-	scripts/run-pre-build-check.sh android
+	scripts/run-environment-check.sh android
 	clj -R:dev build.clj watch --platform android --android-device real
 
 watch-android-avd: ##@watch Start development for Android AVD
-	scripts/run-pre-build-check.sh android
+	scripts/run-environment-check.sh android
 	clj -R:dev build.clj watch --platform android --android-device avd
 
 watch-android-genymotion: ##@watch Start development for Android Genymotion
-	scripts/run-pre-build-check.sh android
+	scripts/run-environment-check.sh android
 	clj -R:dev build.clj watch --platform android --android-device genymotion
 
 watch-desktop: ##@watch Start development for Desktop
-	scripts/run-pre-build-check.sh desktop
+	scripts/run-environment-check.sh desktop
 	clj -R:dev build.clj watch --platform desktop
 
 #--------------
 # Run
 # -------------
 run-android: ##@run Run Android build
-	scripts/run-pre-build-check.sh android
+	scripts/run-environment-check.sh android
 	react-native run-android --appIdSuffix debug
 
 run-desktop: ##@run Run Desktop build
-	scripts/run-pre-build-check.sh desktop
+	scripts/run-environment-check.sh desktop
 	react-native run-desktop
 
 SIMULATOR=
 run-ios: ##@run Run iOS build
-	scripts/run-pre-build-check.sh ios
+	scripts/run-environment-check.sh ios
 ifneq ("$(SIMULATOR)", "")
 	react-native run-ios --simulator="$(SIMULATOR)"
 else
