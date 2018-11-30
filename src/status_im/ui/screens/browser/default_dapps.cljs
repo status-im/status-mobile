@@ -102,6 +102,10 @@
              :dapp-url    "https://market.decentraland.org/"
              :photo-path  "contacts://decentraland"
              :description "Decentraland is a virtual reality platform powered by the Ethereum blockchain."}
+            {:name        "Dragonereum"
+             :dapp-url    "https://dapp.dragonereum.io"
+             :photo-path  "contacts://dragonereum"
+             :description "Own and trade dragons, fight with other players."}
             {:name        "Etherbots"
              :dapp-url    "https://etherbots.io/"
              :photo-path  "contacts://etherbots"
