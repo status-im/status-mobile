@@ -263,4 +263,4 @@
  :chats/reply-message
  :<- [:chats/current-chat]
  (fn [{:keys [metadata messages]}]
-   (get messages (:responding-to-message metadata))))
+   (get messages (get-in metadata [:responding-to-message :message-id]))))

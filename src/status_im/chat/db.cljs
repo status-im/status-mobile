@@ -60,10 +60,11 @@
                          :type  :datemark})
                   (map (fn [{:keys [message-id timestamp-str]}]
                          (let [{:keys [content] :as message} (get messages message-id)
-                               quote (some-> (:response-to content)
+                               {:keys [response-to response-to-v2]} content
+                               quote (some-> (or response-to-v2 response-to)
                                              (quoted-message-data messages referenced-messages))]
                            (cond-> (-> message
-                                       (update :content dissoc :response-to)
+                                       (update :content dissoc :response-to :response-to-v2)
                                        (assoc :datemark      datemark
                                               :timestamp-str timestamp-str
                                               :user-statuses (get message-statuses message-id)))

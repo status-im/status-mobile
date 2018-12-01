@@ -105,13 +105,13 @@
   (not= (get-in user-statuses [current-public-key :status]) :not-sent))
 
 (views/defview message-without-timestamp
-  [text {:keys [message-id content current-public-key user-statuses] :as message} style]
+  [text {:keys [message-id old-message-id content current-public-key user-statuses] :as message} style]
   [react/view {:flex 1 :margin-vertical 5}
    [react/touchable-highlight {:on-press #(if (= "right" (.-button (.-nativeEvent %)))
                                             (do (utils/show-popup "" "Message copied to clipboard")
                                                 (react/copy-to-clipboard text))
                                             (when (message-sent? user-statuses current-public-key)
-                                              (re-frame/dispatch [:chat.ui/reply-to-message message-id])))}
+                                              (re-frame/dispatch [:chat.ui/reply-to-message message-id old-message-id])))}
     [react/view {:style styles/message-container}
      (when (:response-to content)
        [quoted-message (:response-to content) false current-public-key])

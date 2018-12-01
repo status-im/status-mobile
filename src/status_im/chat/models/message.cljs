@@ -163,10 +163,20 @@
                                               :to    chat-id
                                               :from  from}}))))
 
+(defn check-response-to
+  [{{:keys [response-to response-to-v2]} :content :as message}
+   old-id->message]
+  (if (and response-to (not response-to-v2))
+    (let [response-to-v2
+          (or (get-in old-id->message [response-to :message-id])
+              (messages-store/get-message-id-by-old response-to))]
+      (assoc-in message [:content :response-to-v2] response-to-v2))
+    message))
+
 (fx/defn add-received-message
-  [{:keys [db now] :as cofx}
-   batch?
-   {:keys [from message-id chat-id js-obj] :as raw-message}]
+  [{:keys [db] :as cofx}
+   old-id->message
+   {:keys [from message-id chat-id js-obj content] :as raw-message}]
   (let [{:keys [web3 current-chat-id view-id]} db
         current-public-key            (accounts.db/current-public-key cofx)
         current-chat?                 (and (or (= :chat view-id)
@@ -176,12 +186,13 @@
         message                       (-> raw-message
                                           (commands-receiving/enhance-receive-parameters cofx)
                                           (ensure-clock-value chat)
+                                          (check-response-to old-id->message)
                                           ;; TODO (cammellos): Refactor so it's not computed twice
                                           (add-outgoing-status current-public-key))]
     (fx/merge cofx
               {:transport/confirm-messages-processed [{:web3   web3
                                                        :js-obj js-obj}]}
-              (add-message batch? message current-chat?)
+              (add-message true message current-chat?)
               ;; Checking :outgoing here only works for now as we don't have a :seen
               ;; status for public chats, if we add processing of our own messages
               ;; for 1-to-1 care needs to be taken not to override the :seen status
@@ -209,17 +220,24 @@
              (messages-store/message-exists? message-id)))))
 
 (defn- filter-messages [cofx messages]
-  (:accumulated (reduce (fn [{:keys [seen-ids] :as acc}
-                             {:keys [message-id] :as message}]
-                          (if (and (add-to-chat? cofx message)
-                                   (not (seen-ids message-id)))
-                            (-> acc
-                                (update :seen-ids conj message-id)
-                                (update :accumulated conj message))
-                            acc))
-                        {:seen-ids    #{}
-                         :accumulated []}
-                        messages)))
+  (:accumulated
+   (reduce (fn [{:keys [seen-ids] :as acc}
+                {:keys [message-id old-message-id] :as message}]
+             (if (and (add-to-chat? cofx message)
+                      (not (seen-ids message-id)))
+               (-> acc
+                   (update :seen-ids conj message-id)
+                   (update :accumulated
+                           (fn [acc]
+                             (-> acc
+                                 (update :messages conj message)
+                                 (assoc-in [:by-old-message-id old-message-id]
+                                           message)))))
+               acc))
+           {:seen-ids    #{}
+            :accumulated {:messages     []
+                          :by-old-message-id {}}}
+           messages)))
 
 (defn extract-chat-id [cofx {:keys [chat-id from message-type]}]
   "Validate and return a valid chat-id"
@@ -249,8 +267,11 @@
 
 (fx/defn receive-many
   [{:keys [now] :as cofx} messages]
-  (let [valid-messages   (keep #(when-let [chat-id (extract-chat-id cofx %)] (assoc % :chat-id chat-id)) messages)
-        deduped-messages (filter-messages cofx valid-messages)
+  (let [valid-messages   (keep #(when-let [chat-id (extract-chat-id cofx %)]
+                                  (assoc % :chat-id chat-id)) messages)
+        filtered-messages (filter-messages cofx valid-messages)
+        deduped-messages (:messages filtered-messages)
+        old-id->message  (:by-old-message-id filtered-messages)
         chat->message    (group-by :chat-id deduped-messages)
         chat-ids         (keys chat->message)
         chats-fx-fns     (map (fn [chat-id]
@@ -265,7 +286,7 @@
                                     :timestamp               now
                                     :unviewed-messages-count unviewed-messages-count})))
                               chat-ids)
-        messages-fx-fns (map #(add-received-message true %) deduped-messages)
+        messages-fx-fns (map #(add-received-message old-id->message %) deduped-messages)
         groups-fx-fns   (map #(update-group-messages chat->message %) chat-ids)]
     (apply fx/merge cofx (concat chats-fx-fns
                                  messages-fx-fns
@@ -283,7 +304,9 @@
                  :content      content
                  :message-type :system-message
                  :content-type constants/content-type-status}]
-    (assoc message :message-id (transport.utils/message-id message))))
+    (assoc message
+           :message-id (transport.utils/message-id message)
+           :old-message-id "system")))
 
 (defn group-message? [{:keys [message-type]}]
   (#{:group-user-message :public-group-user-message} message-type))
@@ -314,8 +337,11 @@
 
 (fx/defn upsert-and-send [{:keys [now] :as cofx} {:keys [chat-id] :as message}]
   (let [send-record     (protocol/map->Message (select-keys message transport-keys))
+        old-message-id  (transport.utils/old-message-id send-record)
         message-id      (transport.utils/message-id message)
-        message-with-id (assoc message :message-id message-id)]
+        message-with-id (assoc message
+                               :message-id message-id
+                               :old-message-id old-message-id)]
 
     (fx/merge cofx
               (chat-model/upsert-chat {:chat-id chat-id

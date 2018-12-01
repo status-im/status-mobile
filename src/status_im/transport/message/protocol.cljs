@@ -116,8 +116,9 @@
   (receive [this chat-id signature _ cofx]
     {:chat-received-message/add-fx
      [(assoc (into {} this)
+             :old-message-id (transport.utils/old-message-id this)
              :message-id (transport.utils/message-id
-                          {:chat-id     chat-id
+                          {:chat-id     (:chat-id content)
                            :from        signature
                            :clock-value clock-value})
              :chat-id chat-id

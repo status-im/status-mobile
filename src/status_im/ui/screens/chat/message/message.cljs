@@ -247,13 +247,13 @@
    [react/view (style/delivery-status outgoing)
     [message-delivery-status message]]])
 
-(defn chat-message [{:keys [message-id outgoing group-chat modal? current-public-key content-type content] :as message}]
+(defn chat-message [{:keys [message-id old-message-id outgoing group-chat modal? current-public-key content-type content] :as message}]
   [react/view
    [react/touchable-highlight {:on-press      (fn [_]
                                                 (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true}])
                                                 (react/dismiss-keyboard!))
                                :on-long-press #(when (= content-type constants/content-type-text)
-                                                 (list-selection/chat-message message-id (:text content) (i18n/label :t/message)))}
+                                                 (list-selection/chat-message message-id old-message-id (:text content) (i18n/label :t/message)))}
     [react/view {:accessibility-label :chat-item}
      (let [incoming-group (and group-chat (not outgoing))]
        [message-content message-body (merge message

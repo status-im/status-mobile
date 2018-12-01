@@ -21,18 +21,32 @@
                       (core/all-clj :message))]
      (map transform-message messages))))
 
-(defn- get-by-messages-ids
+(defn get-message-id-by-old [old-message-id]
+  (when-let
+   [js-message (core/single
+                (core/get-by-field
+                 @core/account-realm
+                 :message :old-message-id old-message-id))]
+    (aget js-message "message-id")))
+
+(defn- get-references-by-ids
   [message-ids]
   (when (seq message-ids)
-    (keep (fn [message-id]
-            (when-let [js-message (.objectForPrimaryKey @core/account-realm "message" message-id)]
-              (-> js-message
-                  (core/realm-obj->clj :message)
-                  transform-message)))
+    (keep (fn [{:keys [response-to response-to-v2]}]
+            (when-let [js-message
+                       (if response-to-v2
+                         (.objectForPrimaryKey @core/account-realm "message" response-to-v2)
+                         (core/single (core/get-by-field
+                                       @core/account-realm
+                                       :message :old-message-id response-to)))]
+              [(or response-to-v2 response-to)
+               (-> js-message
+                   (core/realm-obj->clj :message)
+                   transform-message)]))
           message-ids)))
 
 (def default-values
-  {:to             nil})
+  {:to nil})
 
 (re-frame/reg-cofx
  :data-store/get-messages
@@ -45,7 +59,7 @@
 (re-frame/reg-cofx
  :data-store/get-referenced-messages
  (fn [cofx _]
-   (assoc cofx :get-referenced-messages get-by-messages-ids)))
+   (assoc cofx :get-referenced-messages get-references-by-ids)))
 
 (defn- prepare-content [content]
   (if (string? content)
