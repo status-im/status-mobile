@@ -44,12 +44,17 @@
              (:chats db)))
 
 (defn- get-referenced-ids
-  "Takes map of message-id->messages and returns set of message ids which are referenced by the original messages,
-  excluding any message id, which is already in the original map"
+  "Takes map of `message-id->messages` and returns set of maps of
+  `{:response-to old-message-id :response-to-v2 message-id}`,
+   excluding any `message-id` which is already in the original map"
   [message-id->messages]
   (into #{}
-        (comp (keep (comp :response-to :content))
-              (filter #(not (contains? message-id->messages %))))
+        (comp (keep (fn [{:keys [content]}]
+                      (let [response-to-id
+                            (select-keys content [:response-to :response-to-v2])]
+                        (when (some (complement nil?) (vals response-to-id))
+                          response-to-id))))
+              (remove #(some message-id->messages (vals %))))
         (vals message-id->messages)))
 
 (defn get-unviewed-messages-ids
@@ -86,9 +91,8 @@
                  :message-statuses statuses
                  :loaded-unviewed-messages-ids unviewed-messages-ids
                  :referenced-messages (into {}
-                                            (map (juxt :message-id identity)
-                                                 (get-referenced-messages
-                                                  (get-referenced-ids chat-messages)))))))
+                                            (get-referenced-messages
+                                             (get-referenced-ids chat-messages))))))
             chats
             (keys chats)))}
      (group-messages))))
@@ -137,8 +141,8 @@
     (let [loaded-count        (count (get-in db [:chats current-chat-id :messages]))
           new-messages        (get-stored-messages current-chat-id loaded-count)
           indexed-messages    (index-messages new-messages)
-          referenced-messages (index-messages
-                               (get-referenced-messages (get-referenced-ids indexed-messages)))
+          referenced-messages (into empty-message-map
+                                    (get-referenced-messages (get-referenced-ids indexed-messages)))
           new-message-ids     (keys indexed-messages)
           new-statuses        (get-stored-user-statuses current-chat-id new-message-ids)
           public-key          (accounts.db/current-public-key cofx)

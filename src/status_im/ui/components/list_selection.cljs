@@ -12,9 +12,9 @@
             (:url content))
     (.share react/sharing (clj->js content))))
 
-(defn- message-options [message-id text]
+(defn- message-options [message-id old-message-id text]
   [{:label  (i18n/label :t/message-reply)
-    :action #(re-frame/dispatch [:chat.ui/reply-to-message message-id])}
+    :action #(re-frame/dispatch [:chat.ui/reply-to-message message-id old-message-id])}
    {:label  (i18n/label :t/sharing-copy-to-clipboard)
     :action #(react/copy-to-clipboard text)}
    {:label  (i18n/label :t/sharing-share)
@@ -25,9 +25,9 @@
     (action-sheet/show options)
     (dialog/show options)))
 
-(defn chat-message [message-id text dialog-title]
+(defn chat-message [message-id old-message-id text dialog-title]
   (show {:title       dialog-title
-         :options     (message-options message-id text)
+         :options     (message-options message-id old-message-id text)
          :cancel-text (i18n/label :t/message-options-cancel)}))
 
 (defn browse [link]
