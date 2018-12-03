@@ -33,7 +33,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_1.send_message_button.click()
 
         chat_2.verify_message_is_under_today_text(message, self.errors)
-        full_username = '%s :: %s' % (username_1, default_username_1)
+        full_username = '%s • %s' % (username_1, default_username_1)
         if chat_2.chat_element_by_text(message).username.text != full_username:
             self.errors.append("Username '%s' is not shown next to the received message" % full_username)
 
@@ -131,7 +131,7 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(5336)
-    @marks.critical
+    @marks.medium
     def test_user_can_interact_with_public_chat(self):
         signin = SignInView(self.driver)
         home_view = signin.create_user()
