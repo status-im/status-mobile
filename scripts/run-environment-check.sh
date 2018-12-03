@@ -25,7 +25,16 @@ fi
 
 if ! program_exists node || ! program_exists yarn; then
   echo -e "${YELLOW}********************************************************************************************"
-  echo -e "Please open another console to reload the environment, and then run make setup if necessary."
+
+  nvmrc="./.nvmrc"
+  if [ -e "$nvmrc" ]; then
+    node_version=$(node -v)
+    version_alias=$(cat "$nvmrc")
+    echo -e "Please run 'nvm use $version_alias' in the terminal and try again."
+  else
+    echo -e "Please open another console to reload the environment, and then run make setup if necessary."
+  fi
+
   echo -e "********************************************************************************************${NC}"
   exit 1
 fi
