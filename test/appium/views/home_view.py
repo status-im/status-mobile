@@ -143,6 +143,8 @@ class HomeView(BaseView):
         start_new_chat.next_button.click()
         start_new_chat.chat_name_editbox.send_keys(group_chat_name)
         start_new_chat.create_button.click()
+        from views.chat_view import ChatView
+        return ChatView(self.driver)
 
     def join_public_chat(self, chat_name: str):
         start_new_chat = self.plus_button.click()
