@@ -13,6 +13,7 @@
             [clojure.string :as string]
             [status-im.data-store.mailservers :as data-store.mailservers]
             [status-im.i18n :as i18n]
+            [status-im.utils.handlers :as handlers]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.ui.screens.navigation :as navigation]))
 
@@ -94,38 +95,10 @@
                db
                mailservers)})
 
-(defn- parse-json
-  ;; NOTE(dmitryn) Expects JSON response like:
-  ;; {"error": "msg"} or {"result": true}
-  [s]
-  (try
-    (let [res (-> s
-                  js/JSON.parse
-                  (js->clj :keywordize-keys true))]
-      ;; NOTE(dmitryn): AddPeer() may return {"error": ""}
-      ;; assuming empty error is a success response
-      ;; by transforming {"error": ""} to {:result true}
-      (if (and (:error res)
-               (= (:error res) ""))
-        {:result true}
-        res))
-    (catch :default e
-      {:error (.-message e)})))
-
-(defn- response-handler [success-fn error-fn]
-  (fn handle-response
-    ([response]
-     (let [{:keys [error result]} (parse-json response)]
-       (handle-response error result)))
-    ([error result]
-     (if error
-       (error-fn error)
-       (success-fn result)))))
-
 (defn add-peer! [enode]
   (status/add-peer enode
-                   (response-handler #(log/debug "mailserver: add-peer success" %)
-                                     #(log/error "mailserver: add-peer error" %))))
+                   (handlers/response-handler #(log/debug "mailserver: add-peer success" %)
+                                              #(log/error "mailserver: add-peer error" %))))
 
 ;; We now wait for a confirmation from the mailserver before marking the message
 ;; as sent.
@@ -133,8 +106,8 @@
 (defn update-mailservers! [enodes]
   (status/update-mailservers
    (.stringify js/JSON (clj->js enodes))
-   (response-handler #(log/debug "mailserver: update-mailservers success" %)
-                     #(log/error "mailserver: update-mailservers error" %))))
+   (handlers/response-handler #(log/debug "mailserver: update-mailservers success" %)
+                              #(log/error "mailserver: update-mailservers error" %))))
 
 (defn remove-peer! [enode]
   (let [args    {:jsonrpc "2.0"
@@ -143,8 +116,8 @@
                  :params  [enode]}
         payload (.stringify js/JSON (clj->js args))]
     (status/call-private-rpc payload
-                             (response-handler #(log/debug "mailserver: remove-peer success" %)
-                                               #(log/error "mailserver: remove-peer error" %)))))
+                             (handlers/response-handler #(log/debug "mailserver: remove-peer success" %)
+                                                        #(log/error "mailserver: remove-peer error" %)))))
 
 (re-frame/reg-fx
  :mailserver/add-peer

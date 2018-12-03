@@ -15,6 +15,9 @@
             [status-im.ui.screens.pairing.views :as pairing.views]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.screens.desktop.main.tabs.profile.styles :as styles]
+            [status-im.native-module.core :as status]
+            [status-im.mailserver.core :as mailserver.core]
+            [status-im.constants :as constants]
             [status-im.ui.screens.profile.user.views :as profile]
             [status-im.ui.screens.profile.seed.views :as profile.recovery]
             [status-im.ui.components.common.common :as components.common]))
@@ -99,6 +102,36 @@
       (and peers-disconnected? searching?)               "Disconnected and searching"
       :else                                              "Disconnected")))
 
+(defn connection-statistics-display
+  [{:keys [mailserver-request-process-time
+           mailserver-request-errors
+           les-packets-in
+           les-packets-out
+           p2p-inbound-traffic
+           p2p-outbound-traffic]}]
+  [react/view {:style {:flex-direction :row}}
+   [react/view
+    [react/text {:style styles/connection-stats-title}
+     "Mailserver requests"]
+    [react/text {:style styles/connection-stats-entry}
+     (str "errors " p2p-inbound-traffic)]
+    [react/text {:style styles/connection-stats-entry}
+     (str "process time " p2p-outbound-traffic)]]
+   [react/view
+    [react/text {:style styles/connection-stats-title}
+     "p2p traffic"]
+    [react/text {:style styles/connection-stats-entry}
+     (str "inbound " p2p-inbound-traffic)]
+    [react/text {:style styles/connection-stats-entry}
+     (str "outbound " p2p-outbound-traffic)]]
+   [react/view
+    [react/text {:style styles/connection-stats-title}
+     "LES packets"]
+    [react/text {:style styles/connection-stats-entry}
+     (str "inbound " les-packets-in)]
+    [react/text {:style styles/connection-stats-entry}
+     (str "outbound " les-packets-out)]]])
+
 (views/defview advanced-settings []
   (views/letsubs [installations    [:pairing/installations]
                   current-mailserver-id [:mailserver/current-id]
@@ -106,6 +139,7 @@
                   mailserver-state      [:mailserver/state]
                   node-status           [:node-status]
                   peers-count           [:peers-count]
+                  connection-stats      [:connection-stats]
                   disconnected          [:disconnected?]]
     (let [render-fn (offline-messaging.views/render-row current-mailserver-id)
           connection-message      (connection-status peers-count node-status mailserver-state disconnected)]
@@ -123,7 +157,9 @@
           [react/view {:style {:margin-vertical 8}}
            [render-fn mailserver]])]
        (when (config/pairing-enabled? true)
-         (installations-section installations))])))
+         (installations-section installations))
+       [react/view {:style styles/title-separator}]
+       (connection-statistics-display connection-stats)])))
 
 (views/defview backup-recovery-phrase []
   [profile.recovery/backup-seed])
@@ -161,7 +197,9 @@
                         :value           notifications?
                         :on-value-change #(re-frame/dispatch [:accounts.ui/notifications-enabled (not notifications?)])}]]
         [react/touchable-highlight {:style  (styles/profile-row adv-settings-open?)
-                                    :on-press #(re-frame/dispatch [:navigate-to (if adv-settings-open? :home :advanced-settings)])}
+                                    :on-press #(do
+                                                 (re-frame/dispatch [:navigate-to (if adv-settings-open? :home :advanced-settings)])
+                                                 (re-frame/dispatch [:load-debug-metrics]))}
          [react/view {:style styles/adv-settings}
           [react/text {:style (styles/profile-row-text colors/black)
                        :font  (if adv-settings-open? :medium :default)}

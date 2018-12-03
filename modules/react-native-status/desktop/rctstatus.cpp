@@ -92,15 +92,7 @@ void RCTStatus::startNode(QString configString) {
     if (!relativeDataDirPath.startsWith("/"))
         relativeDataDirPath.prepend("/");
 
-    QString statusDataDir = qgetenv("STATUS_DATA_DIR");
-    QString rootDirPath;
-    if (!statusDataDir.isEmpty()) {
-      rootDirPath = statusDataDir;
-    }
-    else {
-      rootDirPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-    }
-
+    QString rootDirPath = getRootDirPath();
     QDir rootDir(rootDirPath);
     QString absDataDirPath = rootDirPath + relativeDataDirPath;
     QDir dataDir(absDataDirPath);
@@ -180,6 +172,19 @@ void RCTStatus::login(QString address, QString password, double callbackId) {
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, address, password, callbackId);
 }
+
+void RCTStatus::verify(QString address, QString password, double callbackId) {
+    Q_D(RCTStatus);
+    qCInfo(RCTSTATUS) << "::verify call - callbackId:" << callbackId;
+    QtConcurrent::run([&](QString address, QString password, double callbackId) {
+            QDir rootDir(getRootDirPath());
+            QString keystorePath = rootDir.absoluteFilePath("keystore");
+            const char* result = VerifyAccountPassword(keystorePath.toUtf8().data(), address.toUtf8().data(), password.toUtf8().data());
+            logStatusGoResult("::verify VerifyAccountPassword", result);
+            d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
+        }, address, password, callbackId);
+}
+
 
 
 void RCTStatus::sendTransaction(QString txArgsJSON, QString password, double callbackId) {
@@ -329,3 +334,17 @@ void RCTStatus::updateMailservers(QString enodes, double callbackId) {
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, enodes, callbackId);
 }
+
+QString RCTStatus::getRootDirPath() {
+    QString statusDataDir = qgetenv("STATUS_DATA_DIR");
+    QString rootDirPath;
+    if (!statusDataDir.isEmpty()) {
+        rootDirPath = statusDataDir;
+    }
+    else {
+        rootDirPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    }
+
+    return rootDirPath;
+}
+
