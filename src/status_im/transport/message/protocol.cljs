@@ -80,17 +80,14 @@
 
 (defrecord Message [content content-type message-type clock-value timestamp]
   StatusMessage
-  (send [this chat-id cofx]
+  (send [this chat-id {:keys [message-id] :as cofx}]
     (let [dev-mode?          (get-in cofx [:db :account/account :dev-mode?])
           current-public-key (accounts.db/current-public-key cofx)
           params             {:chat-id       chat-id
                               :payload       this
                               :success-event [:transport/message-sent
                                               chat-id
-                                              (transport.utils/message-id
-                                               {:from        current-public-key
-                                                :chat-id     chat-id
-                                                :clock-value clock-value})
+                                              message-id
                                               message-type]}]
       (case message-type
         :public-group-user-message
@@ -118,9 +115,8 @@
      [(assoc (into {} this)
              :old-message-id (transport.utils/old-message-id this)
              :message-id (transport.utils/message-id
-                          {:chat-id     (:chat-id content)
-                           :from        signature
-                           :clock-value clock-value})
+                          signature
+                          (.-payload (:js-obj cofx)))
              :chat-id chat-id
              :from signature
              :js-obj (:js-obj cofx))]})

@@ -32,7 +32,7 @@
   (with-redefs [config/group-chats-enabled? true]
     (testing "a brand new chat"
       (let [actual   (->
-                      (group-chats/handle-membership-update {:now 0 :db {}} initial-message admin)
+                      (group-chats/handle-membership-update {:now 0 :db {}} initial-message "payload" admin)
                       :db
                       :chats
                       (get chat-id))]
@@ -66,6 +66,7 @@
                          (group-chats/handle-membership-update
                           {:now 0 :db {}}
                           (assoc initial-message :chat-id bad-chat-id)
+                          "payload"
                           admin)
                          :db
                          :chats
@@ -74,10 +75,10 @@
           (is (not actual)))))
     (testing "an already existing chat"
       (let [cofx (assoc
-                  (group-chats/handle-membership-update {:now 0 :db {}} initial-message admin)
+                  (group-chats/handle-membership-update {:now 0 :db {}} initial-message "payload" admin)
                   :now 0)]
         (testing "the message has already been received"
-          (let [actual (group-chats/handle-membership-update cofx initial-message admin)]
+          (let [actual (group-chats/handle-membership-update cofx initial-message "payload" admin)]
             (testing "it noops"
               (is (=
                    (get-in cofx [:db :chats chat-id])
@@ -105,6 +106,7 @@
                                                                                              {:type "name-changed"
                                                                                               :clock-value 13
                                                                                               :name "new-name"}]}]}
+                                                             "payload"
                                                              member-3)
                 actual-chat (get-in actual [:db :chats chat-id])]
             (testing "the chat is updated"

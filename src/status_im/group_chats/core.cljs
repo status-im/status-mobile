@@ -17,7 +17,8 @@
             [status-im.transport.message.group-chat :as message.group-chat]
             [status-im.utils.fx :as fx]
             [status-im.chat.models :as models.chat]
-            [status-im.accounts.db :as accounts.db]))
+            [status-im.accounts.db :as accounts.db]
+            [status-im.transport.message.transit :as transit]))
 
 ;; Description of the flow:
 ;; the flow is complicated a bit by 2 asynchronous call to status-go, which might make the logic a bit more opaque.
@@ -99,28 +100,27 @@
   "Send a membership update to all participants but the sender"
   ([cofx payload chat-id]
    (send-membership-update cofx payload chat-id nil))
-  ([cofx payload chat-id removed-members]
+  ([{:keys [message-id] :as cofx} payload chat-id removed-members]
    (let [members (clojure.set/union (get-in cofx [:db :chats chat-id :contacts])
                                     removed-members)
          {:keys [web3]} (:db cofx)
          current-public-key (accounts.db/current-public-key cofx)]
      (fx/merge
       cofx
-      {:shh/send-group-message {:web3          web3
-                                :src           current-public-key
-                                :dsts          members
-                                :success-event [:transport/message-sent
-                                                chat-id
-                                                (transport.utils/message-id (assoc (:message payload)
-                                                                                   :chat-id chat-id
-                                                                                   :from current-public-key))
-                                                :group-user-message]
-                                :payload       payload}}))))
+      {:shh/send-group-message
+       {:web3          web3
+        :src           current-public-key
+        :dsts          members
+        :success-event [:transport/message-sent
+                        chat-id
+                        message-id
+                        :group-user-message]
+        :payload       payload}}))))
 
 (fx/defn handle-membership-update-received
   "Extract signatures in status-go and act if successful"
-  [cofx membership-update signature]
-  {:group-chats/extract-membership-signature [[membership-update signature]]})
+  [cofx membership-update signature raw-payload]
+  {:group-chats/extract-membership-signature [[membership-update raw-payload signature]]})
 
 (defn chat->group-update
   "Transform a chat in a GroupMembershipUpdate"
@@ -147,19 +147,21 @@
 
 (defn handle-extract-signature-response
   "Callback to dispatch on extract signature response"
-  [payload sender-signature response-js]
+  [payload raw-payload sender-signature response-js]
   (let [{:keys [error identities]} (parse-response response-js)]
     (if error
       (re-frame/dispatch [:group-chats.callback/extract-signature-failed  error])
-      (re-frame/dispatch [:group-chats.callback/extract-signature-success (add-identities payload identities) sender-signature]))))
+      (re-frame/dispatch [:group-chats.callback/extract-signature-success
+                          (add-identities payload identities) raw-payload sender-signature]))))
 
 (defn sign-membership [{:keys [chat-id events] :as payload}]
   (native-module/sign-group-membership (signature-material chat-id events)
                                        (partial handle-sign-response payload)))
 
-(defn extract-membership-signature [payload sender]
-  (native-module/extract-group-membership-signatures (signature-pairs payload)
-                                                     (partial handle-extract-signature-response payload sender)))
+(defn extract-membership-signature [payload raw-payload sender]
+  (native-module/extract-group-membership-signatures
+   (signature-pairs payload)
+   (partial handle-extract-signature-response payload raw-payload sender)))
 
 (defn- members-added-event [last-clock-value members]
   {:type "members-added"
@@ -404,6 +406,7 @@
   [cofx {:keys [chat-id
                 message
                 membership-updates] :as membership-update}
+   raw-payload
    sender-signature]
   (let [dev-mode? (get-in cofx [:db :account/account :dev-mode?])]
     (when (and config/group-chats-enabled?
@@ -426,7 +429,8 @@
                               ;; don't allow anything but group messages
                               (instance? protocol/Message message)
                               (= :group-user-message (:message-type message)))
-                     (protocol/receive message chat-id sender-signature nil %)))))))
+                     (protocol/receive message chat-id sender-signature nil
+                                       (assoc % :js-obj #js {:payload raw-payload}))))))))
 
 (defn handle-sign-success
   "Upsert chat and send signed payload to group members"
@@ -435,7 +439,7 @@
         updated-chat  (update old-chat :membership-updates conj signed-events)
         my-public-key (accounts.db/current-public-key cofx)
         group-update  (chat->group-update chat-id updated-chat)
-        new-group-fx  (handle-membership-update group-update my-public-key)
+        new-group-fx  (handle-membership-update group-update nil my-public-key)
         ;; We need to send to users who have been removed as well
         recipients    (clojure.set/union
                        (:contacts old-chat)
@@ -453,5 +457,5 @@
 (re-frame/reg-fx
  :group-chats/extract-membership-signature
  (fn [signatures]
-   (doseq [[payload sender] signatures]
-     (extract-membership-signature payload sender))))
+   (doseq [[payload raw-payload sender] signatures]
+     (extract-membership-signature payload raw-payload sender))))
