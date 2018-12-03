@@ -2,7 +2,6 @@
  status-im.transport.message.contact
   (:require [cljs.spec.alpha :as spec]
             [status-im.data-store.transport :as transport-store]
-            [status-im.transport.db :as transport.db]
             [status-im.transport.message.protocol :as protocol]
             [status-im.utils.fx :as fx]))
 
