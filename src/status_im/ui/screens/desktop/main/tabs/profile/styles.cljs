@@ -165,6 +165,11 @@
 
 (def connection-message-text
   {:margin-left   24
+   :margin-bottom 10
+   :font-size 16})
+
+(def connection-stats-entry
+  {:margin-left   24
    :margin-bottom 10})
 
 (def title-separator
@@ -174,6 +179,12 @@
 (def mailserver-title
   {:margin-left      24
    :margin-top       36
+   :margin-bottom    16
+   :font-size        16})
+
+(def connection-stats-title
+  {:margin-left      24
+   :margin-top       16
    :margin-bottom    16
    :font-size        16})
 

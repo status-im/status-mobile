@@ -54,6 +54,10 @@
          (fn [peers-count]
            (zero? peers-count)))
 
+(reg-sub :connection-stats
+         (fn [db _]
+           (get-in db [:desktop/desktop :debug-metrics])))
+
 (reg-sub :offline?
          :<- [:network-status]
          :<- [:sync-state]

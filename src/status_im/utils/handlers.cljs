@@ -95,6 +95,34 @@
      check-spec)
    (re-frame/inject-cofx :now)])
 
+(defn- parse-json
+  ;; NOTE(dmitryn) Expects JSON response like:
+  ;; {"error": "msg"} or {"result": true}
+  [s]
+  (try
+    (let [res (-> s
+                  js/JSON.parse
+                  (js->clj :keywordize-keys true))]
+      ;; NOTE(dmitryn): AddPeer() may return {"error": ""}
+      ;; assuming empty error is a success response
+      ;; by transforming {"error": ""} to {:result true}
+      (if (and (:error res)
+               (= (:error res) ""))
+        {:result true}
+        res))
+    (catch :default e
+      {:error (.-message e)})))
+
+(defn response-handler [success-fn error-fn]
+  (fn handle-response
+    ([response]
+     (let [{:keys [error result]} (parse-json response)]
+       (handle-response error result)))
+    ([error result]
+     (if error
+       (error-fn error)
+       (success-fn result)))))
+
 (defn register-handler-fx
   ([name handler]
    (register-handler-fx name nil handler))

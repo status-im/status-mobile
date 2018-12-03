@@ -229,6 +229,7 @@
 (def ^:const api-response "api-response")
 (def ^:const api-request "api-request")
 (def ^:const history-state-changed "history-state-changed")
+(def ^:const debug-metrics "debug_metrics")
 (def ^:const web3-send-async "web3-send-async")
 (def ^:const web3-send-async-read-only "web3-send-async-read-only")
 (def ^:const web3-send-async-callback "web3-send-async-callback")
