@@ -10,6 +10,7 @@
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]
             [status-im.transport.db :as transport.db]
+            [status-im.transport.message.protocol :as protocol]
             [clojure.string :as string]
             [status-im.data-store.mailservers :as data-store.mailservers]
             [status-im.i18n :as i18n]
@@ -245,9 +246,9 @@
 
 (defn request-messages! [web3 {:keys [sym-key-id address]} {:keys [topics to from]}]
   (log/info "mailserver: request-messages for: "
-            " topics " topics
-            " from " from
-            " to   " to)
+            "topics" topics
+            "from" from
+            "to" to)
   (.requestMessages (transport.utils/shh web3)
                     (clj->js {:topics         topics
                               :mailServerPeer address
@@ -291,6 +292,12 @@
        :from  from
        :to    to})))
 
+(defn adjust-request-for-transit-time
+  [request]
+  (let [ttl               (:ttl protocol/whisper-opts)
+        whisper-tolerance (:whisper-drift-tolerance protocol/whisper-opts)]
+    (update request :from - (+ whisper-tolerance ttl))))
+
 (defn prepare-messages-requests
   [{:keys [db now] :as cofx} request-to]
   (let [web3     (:web3 db)]
@@ -315,9 +322,9 @@
                       :mailserver/pending-requests (count requests)
                       :mailserver/current-request request
                       :mailserver/request-to request-to)
-           :mailserver/request-messages {:web3     web3
-                                         :mailserver    mailserver
-                                         :request request}}
+           :mailserver/request-messages {:web3       web3
+                                         :mailserver mailserver
+                                         :request    (adjust-request-for-transit-time request)}}
           {:db (dissoc db
                        :mailserver/pending-requests
                        :mailserver/request-to)})))))
@@ -420,7 +427,7 @@
   [{:keys [db now] :as cofx} {:keys [request-id]}]
   (when-let [request (get db :mailserver/current-request)]
     (let [{:keys [from to topics]} request
-          mailserver-topics (get-updated-mailserver-topics db topics to)]
+          mailserver-topics        (get-updated-mailserver-topics db topics to)]
       (log/info "mailserver: message request " request-id
                 "completed for mailserver topics" topics "from" from "to" to)
       (if (empty? mailserver-topics)
@@ -468,12 +475,13 @@
               (change-mailserver))
     (when-let [mailserver (get-mailserver-when-ready cofx)]
       (let [{:keys [topics from to] :as request} (get db :mailserver/current-request)
-            web3 (:web3 db)]
-        (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to)
+            adjusted-request                     (adjust-request-for-transit-time request)
+            web3                                 (:web3 db)]
+        (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to")
         {:db (update-in db [:mailserver/current-request :attemps] inc)
-         :mailserver/request-messages {:web3    web3
-                                       :mailserver   mailserver
-                                       :request request}}))))
+         :mailserver/request-messages {:web3       web3
+                                       :mailserver mailserver
+                                       :request    adjusted-request}}))))
 
 (fx/defn initialize-mailserver
   [cofx custom-mailservers]
