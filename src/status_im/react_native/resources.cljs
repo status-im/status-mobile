@@ -19,6 +19,7 @@
    :cryptopunks        (js/require "./resources/images/contacts/cryptopunks.png")
    :cryptotakeovers    (js/require "./resources/images/contacts/cryptotakeovers.png")
    :cryptokitties      (js/require "./resources/images/contacts/cryptokitties.png")
+   :decentraland       (js/require "./resources/images/contacts/decentraland.png")
    :etheremon          (js/require "./resources/images/contacts/etheremon.png")
    :cryptostrikers     (js/require "./resources/images/contacts/cryptostrikers.png")
    :oasis-direct       (js/require "./resources/images/contacts/oasis-direct.png")

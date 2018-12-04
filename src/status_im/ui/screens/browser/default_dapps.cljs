@@ -98,6 +98,10 @@
              :dapp-url    "https://cryptotakeovers.com/"
              :photo-path  "contacts://cryptotakeovers"
              :description "Predict and conquer the world. Make a crypto fortune."}
+            {:name        "Decentraland"
+             :dapp-url    "https://market.decentraland.org/"
+             :photo-path  "contacts://decentraland"
+             :description "Decentraland is a virtual reality platform powered by the Ethereum blockchain."}
             {:name        "Etherbots"
              :dapp-url    "https://etherbots.io/"
              :photo-path  "contacts://etherbots"
