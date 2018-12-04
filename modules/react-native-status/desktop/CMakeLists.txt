@@ -38,8 +38,6 @@ endif()
 ExternalProject_Add(StatusGo_ep
   PREFIX ${StatusGo_PREFIX}
   SOURCE_DIR ${StatusGo_SOURCE_DIR}
-  GIT_REPOSITORY https://github.com/status-im/status-go.git
-  GIT_TAG ${STATUS_GO_TAG}
   URL https://status-go.ams3.digitaloceanspaces.com/status-go-desktop-${STATUS_GO_VERSION}.zip
       https://github.com/status-im/status-go/archive/${STATUS_GO_VERSION}.zip
   BUILD_BYPRODUCTS ${StatusGo_STATIC_LIB}
