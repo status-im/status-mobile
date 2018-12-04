@@ -8,7 +8,6 @@
             [status-im.constants :as constants]
             [status-im.data-store.accounts :as accounts-store]
             [status-im.i18n :as i18n]
-            [status-im.hardwallet.core :as hardwallet]
             [status-im.native-module.core :as status]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
@@ -62,7 +61,7 @@
   [{:keys [signing-phrase
            status
            db] :as cofx}
-   {:keys [pubkey address mnemonic installation-id]} password seed-backed-up]
+   {:keys [pubkey address mnemonic installation-id keycard-instance-uid]} password seed-backed-up]
   (let [normalized-address (utils.hex/normalize-hex address)
         account            {:public-key             pubkey
                             :installation-id        (or installation-id (get-in db [:accounts/new-installation-id]))
@@ -75,6 +74,7 @@
                             :signing-phrase         signing-phrase
                             :seed-backed-up?        seed-backed-up
                             :mnemonic               mnemonic
+                            :keycard-instance-uid   keycard-instance-uid
                             :settings               (constants/default-account-settings)}]
     (log/debug "account-created")
     (when-not (string/blank? pubkey)
@@ -127,12 +127,6 @@
                               (assoc :step :enter-password)
                               (dissoc :password :password-confirm :name :error)))}
             (navigation/navigate-to-cofx :create-account nil)))
-
-(fx/defn navigate-to-authentication-method
-  [{:keys [db] :as cofx}]
-  (if (hardwallet/hardwallet-supported? db)
-    (navigation/navigate-to-cofx cofx :hardwallet-authentication-method nil)
-    (navigate-to-create-account-screen cofx)))
 
 ;;;; COFX
 

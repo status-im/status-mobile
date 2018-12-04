@@ -11,53 +11,47 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]))
 
+(defn nfc-enabled []
+  [react/view styles/nfc-enabled-container
+   [react/view
+    [react/image {:source (:hold-card-animation resources/ui)
+                  :style  styles/phone-nfc-on-image}]]
+   [react/view styles/turn-nfc-text-container
+    [react/text {:style           styles/status-hardwallet-text
+                 :number-of-lines 2}
+     (i18n/label :t/hold-card)]]])
+
+(defn nfc-disabled []
+  [react/view styles/nfc-disabled-container
+   [react/view
+    [react/image {:source (:phone-nfc-off resources/ui)
+                  :style  styles/phone-nfc-off-image}]]
+   [react/view styles/turn-nfc-text-container
+    [react/text {:style    styles/status-hardwallet-text
+                 :on-press #(re-frame/dispatch [:hardwallet.ui/go-to-settings-button-pressed])}
+     (i18n/label :t/turn-nfc-on)]
+    [react/text {:style    styles/go-to-settings-text
+                 :on-press #(re-frame/dispatch [:hardwallet.ui/go-to-settings-button-pressed])}
+     (i18n/label :t/go-to-settings)]]])
+
 (defview hardwallet-connect []
   (letsubs [nfc-enabled? [:hardwallet/nfc-enabled?]]
     [react/view styles/container
      [status-bar/status-bar]
-     [react/view components.styles/flex
+     [react/view {:flex            1
+                  :flex-direction  :column
+                  :justify-content :space-between}
       [toolbar/toolbar {}
        toolbar/default-nav-back
-       nil
-       [toolbar/actions [{:icon      :icons/info
-                          :icon-opts {:color               :black
-                                      :accessibility-label :hardwallet-connect-info-button}
-                          :handler   #(re-frame/dispatch [:hardwallet.ui/connect-info-button-pressed])}]]]
+       nil]
       [react/view styles/hardwallet-connect
-       [react/view styles/hardwallet-card-image-container
-        [react/image {:source (:hardwallet-card resources/ui)
-                      :style  styles/hardwallet-card-image}]]
-       [react/view styles/status-hardwallet-text-container
-        [react/text {:style styles/status-hardwallet-text}
-         (i18n/label :t/status-hardwallet)]
-        [react/text {:style styles/status-hardwallet-text}
-         (i18n/label :t/secure-your-assets)]
-        [react/text {:style           styles/link-card-text
-                     :number-of-lines 2}
-         (i18n/label :t/link-card)]]
-       [react/view (styles/bottom-action-container nfc-enabled?)
-        (if nfc-enabled?
-          [react/touchable-highlight
-           {:on-press #(re-frame/dispatch [:hardwallet.ui/hold-card-button-pressed])}
-           [react/view styles/nfc-enabled-container
-            [react/image {:source (:phone-nfc resources/ui)
-                          :style  styles/phone-nfc-image}]
-            [react/image {:source (:hardwallet-card resources/ui)
-                          :style  styles/hardwallet-card-image-small}]
-            [react/text {:style           styles/hold-card-text
-                         :number-of-lines 2
-                         :font            :medium
-                         :uppercase?      true}
-             (i18n/label :t/hold-card)]]]
-          [react/view styles/nfc-disabled-container
-           [vector-icons/icon :icons/nfc {:color           colors/gray
-                                          :container-style styles/nfc-icon}]
-           [react/view styles/nfc-disabled-actions-container
-            [react/text {:style      styles/turn-nfc-text
-                         :font       :medium
-                         :on-press   #(re-frame/dispatch [:hardwallet.ui/go-to-settings-button-pressed])
-                         :uppercase? true}
-             (i18n/label :t/turn-nfc-on)]
-            [react/text {:style    styles/go-to-settings-text
-                         :on-press #(re-frame/dispatch [:hardwallet.ui/go-to-settings-button-pressed])}
-             (i18n/label :t/go-to-settings)]]])]]]]))
+       (if nfc-enabled?
+         [nfc-enabled]
+         [nfc-disabled])]
+      [react/view styles/bottom-container
+       [react/touchable-highlight {:on-press #(.openURL react/linking "https://hardwallet.status.im")}
+        [react/view styles/product-info-container
+         [react/text {:style styles/product-info-text}
+          (i18n/label :t/product-information)]
+         [vector-icons/icon :icons/link {:color           colors/blue
+                                         :container-style styles/external-link-icon}]]]]]]))

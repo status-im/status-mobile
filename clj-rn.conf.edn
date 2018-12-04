@@ -10,6 +10,7 @@
               "dismissKeyboard"
               "react-native-splash-screen"
               "react-native-status"
+              "react-native-status-keycard"
               "react-native-camera"
               "react-native-qrcode"
               "identicon.js"
@@ -37,7 +38,6 @@
               "react-native/Libraries/vendor/emitter/EventEmitter"
               "react-native-background-timer"
               "react-native-fetch-polyfill"
-              "react-native-nfc-manager"
               "text-encoding"
               "js-sha3"
               "react-navigation"]

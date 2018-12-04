@@ -17,8 +17,8 @@
 (def desktop-config         (js/require "react-native-desktop-config"))
 
 (def react-native-firebase  #js {})
-(def nfc-manager            #js {})
 (def camera                 #js {:default #js {:constants {:Aspect "Portrait"}}})
+(def status-keycard         #js {:default #js {}})
 (def dialogs                #js {})
 (def dismiss-keyboard       #js {})
 (def image-crop-picker      #js {})

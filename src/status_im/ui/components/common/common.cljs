@@ -68,11 +68,15 @@
    [react/view {:style (styles/logo-container size shadow?)}
     [icons/icon :icons/logo (styles/logo icon-size)]]))
 
-(defn bottom-button [{:keys [label disabled? on-press forward?]}]
+(defn bottom-button [{:keys [label disabled? on-press forward? back? uppercase?]
+                      :or {uppercase? true}}]
   [react/touchable-highlight {:on-press on-press :disabled disabled?}
    [react/view (styles/bottom-button disabled?)
+    (when back?
+      [icons/icon :icons/back {:color colors/blue
+                               :container-style {:align-self :baseline}}])
     [react/text {:style      styles/bottom-button-label
-                 :uppercase? true}
+                 :uppercase? uppercase?}
      (or label (i18n/label :t/next))]
     (when forward?
       [icons/icon :icons/forward {:color colors/blue}])]])

@@ -5,6 +5,18 @@
   {:flex             1
    :background-color colors/white})
 
+(def lock-image-container
+  {:background-color colors/blue-light
+   :width            160
+   :height           160
+   :border-radius    80
+   :align-items      :center
+   :justify-content  :center})
+
+(def lock-image
+  {:width  160
+   :height 160})
+
 (def choose-authentication-method
   {:flex-direction  :column
    :flex            1
@@ -13,6 +25,7 @@
 
 (def choose-authentication-method-text
   {:color              colors/black
+   :margin-top         51
    :padding-horizontal 60
    :text-align         :center
    :font-weight        :bold

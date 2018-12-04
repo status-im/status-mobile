@@ -57,13 +57,17 @@
    :console            (js/require "./resources/images/contacts/console.png")})
 
 (def ui
-  {:empty-hashtags  (js/require "./resources/images/ui/empty-hashtags.png")
-   :empty-recent    (js/require "./resources/images/ui/empty-recent.png")
-   :analytics-image (js/require "./resources/images/ui/analytics-image.png")
-   :welcome-image   (js/require "./resources/images/ui/welcome-image.png")
-   :lock            {:image  (js/require "./resources/images/ui/lock.png")
-                     :width  993
-                     :height 933}
-   :wallet-welcome  (js/require "./resources/images/ui/wallet-welcome.png")
-   :hardwallet-card (js/require "./resources/images/ui/hardwallet-card.png")
-   :phone-nfc       (js/require "./resources/images/ui/phone-nfc.png")})
+  {:empty-hashtags      (js/require "./resources/images/ui/empty-hashtags.png")
+   :empty-recent        (js/require "./resources/images/ui/empty-recent.png")
+   :analytics-image     (js/require "./resources/images/ui/analytics-image.png")
+   :welcome-image       (js/require "./resources/images/ui/welcome-image.png")
+   :lock                {:image  (js/require "./resources/images/ui/lock.png")
+                         :width  993
+                         :height 933}
+   :wallet-welcome      (js/require "./resources/images/ui/wallet-welcome.png")
+   :hardwallet-card     (js/require "./resources/images/ui/hardwallet-card.png")
+   :secret-keys         (js/require "./resources/images/ui/secret-keys.png")
+   :keycard-lock        (js/require "./resources/images/ui/keycard-lock.png")
+   :hold-card-animation (js/require "./resources/images/ui/hold-card-animation.png")
+   :phone-nfc-on        (js/require "./resources/images/ui/phone-nfc-on.png")
+   :phone-nfc-off       (js/require "./resources/images/ui/phone-nfc-off.png")})

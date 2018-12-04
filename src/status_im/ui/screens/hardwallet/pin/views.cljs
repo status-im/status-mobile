@@ -60,7 +60,7 @@
   (let [enabled? (not= status :validating)]
     [react/view styles/pin-container
      [react/view styles/center-container
-      [components/wizard-step 4]
+      ;[components/wizard-step 4]
       [react/text {:style styles/center-title-text
                    :font  :bold}
        (i18n/label title)]

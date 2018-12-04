@@ -14,7 +14,7 @@
 (re-frame/reg-sub
  :hardwallet/pin-enter-step
  (fn [db]
-   (get-in db [:hardwallet :pin :enter-step])))
+   (get-in db [:hardwallet :pin :enter-step] :original)))
 
 (re-frame/reg-sub
  :hardwallet/pin-status

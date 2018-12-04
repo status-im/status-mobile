@@ -213,3 +213,7 @@
                    {:type :bool :default false}))
 
 (def v15 (update v14 :properties dissoc :email))
+
+(def v16 (assoc-in v15
+                   [:properties :keycard-instance-uid]
+                   {:type :string :optional true}))

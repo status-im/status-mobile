@@ -40,6 +40,7 @@
 
 ;; GREEN
 (def green "#44d058") ;; icon for successful inboud transaction
+(def green-transparent-10 (alpha green 0.1)) ;; icon for successful inboud transaction
 
 (def chat-colors ["#fa6565"
                   "#7cda00"

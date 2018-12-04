@@ -127,3 +127,6 @@
                                        (contains? % :BQX) (conj :ETHOS)))
             updated      (serialize new-settings)]
         (aset account "settings" updated)))))
+
+(defn v18 [old-realm new-realm]
+  (log/debug "migrating base database v18: " old-realm new-realm))

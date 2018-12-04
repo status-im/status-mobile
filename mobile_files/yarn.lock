@@ -5949,11 +5949,6 @@ react-native-level-fs@3.0.1:
     level-filesystem "^1.0.1"
     levelup "^0.18.2"
 
-react-native-nfc-manager@^0.5.5:
-  version "0.5.5"
-  resolved "https://registry.yarnpkg.com/react-native-nfc-manager/-/react-native-nfc-manager-0.5.5.tgz#5b60376bbc2287fc5e1a75c6c15e5511be788e7b"
-  integrity sha512-4gFuyDnNWXe81R7tTbc1AFlrz1LfBHp/S7daWL7gEsBFdeRegDmopecUJER511UR5d5Ymttw37LzTZUbnNKTlQ==
-
 "react-native-os@https://github.com/status-im/react-native-os.git#1.1.0-1":
   version "1.1.0"
   resolved "https://github.com/status-im/react-native-os.git#1a6d0835f919cb075793ad7c602f2724eee4702d"
@@ -6009,6 +6004,10 @@ react-native-splash-screen@3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.1.1.tgz#1a4e46c9fdce53ff52af2a2cb4181788c4e30b30"
   integrity sha512-PU2YocOSGbLjL9Vgcq/cwMNuHHKNjjuPpa1IPMuWo+6EB/fSZ5VOmxSa7+eucQe3631s3NhGuk3eHKahU03a4Q==
+
+"react-native-status-keycard@github:status-im/react-native-status-keycard":
+  version "1.0.0"
+  resolved "https://codeload.github.com/status-im/react-native-status-keycard/tar.gz/b6c7324a8fd69acba42127000189bf9d58f4b774"
 
 react-native-svg@6.5.2:
   version "6.5.2"

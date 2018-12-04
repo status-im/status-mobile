@@ -188,7 +188,7 @@
 
 (spec/def ::semaphores set?)
 
-(spec/def ::hardwallet map?)
+(spec/def ::hardwallet (spec/nilable map?))
 
 (spec/def ::db (spec/keys :opt [:contacts/contacts
                                 :contacts/dapps

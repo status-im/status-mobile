@@ -66,6 +66,11 @@
 
 (def v17 v16)
 
+(def v18 [network/v1
+          bootnode/v4
+          extension/v12
+          account/v16])
+
 ;; put schemas ordered by version
 (def schemas [{:schema        v1
                :schemaVersion 1
@@ -117,4 +122,7 @@
                :migration     migrations/v16}
               {:schema        v17
                :schemaVersion 17
-               :migration     migrations/v17}])
+               :migration     migrations/v17}
+              {:schema        v18
+               :schemaVersion 18
+               :migration     migrations/v18}])

@@ -219,7 +219,6 @@ configurations.all {
 }
 
 dependencies {
-    compile project(':react-native-nfc-manager')
     implementation project(':react-native-background-timer')
     implementation project(':react-native-svg')
     implementation 'com.android.support:multidex:1.0.2'
@@ -249,6 +248,7 @@ dependencies {
         exclude group: "com.google.android.gms"
         compile 'com.android.support:exifinterface:27.+'
     }
+    implementation project(':react-native-status-keycard')
     implementation 'com.google.firebase:firebase-core:16.0.3' //this decides your firebase SDK version
     implementation 'com.google.firebase:firebase-messaging:17.1.0'
     implementation project(':react-native-keychain')

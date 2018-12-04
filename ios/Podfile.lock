@@ -66,8 +66,6 @@ PODS:
     - React
   - react-native-camera/RN (1.1.5):
     - React
-  - react-native-nfc-manager (0.5.5):
-    - React
   - React/Core (0.56.0):
     - yoga (= 0.56.0.React)
   - RNKeychain (3.0.0):
@@ -80,7 +78,6 @@ DEPENDENCIES:
   - React (from `../node_modules/react-native`)
   - react-native-background-timer (from `../node_modules/react-native-background-timer`)
   - react-native-camera (from `../node_modules/react-native-camera`)
-  - react-native-nfc-manager (from `../node_modules/react-native-nfc-manager`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -103,8 +100,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-background-timer"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
-  react-native-nfc-manager:
-    :path: "../node_modules/react-native-nfc-manager"
   RNKeychain:
     :path: "../node_modules/react-native-keychain"
   yoga:
@@ -123,10 +118,9 @@ SPEC CHECKSUMS:
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
   react-native-background-timer: bb7a98c8e97fc7c290de2d423dd09ddb73dcbcbb
   react-native-camera: 68ad5143d2d0636236d46c7de8d2a6455ca52a36
-  react-native-nfc-manager: a74ef58b29f0015ae9e70f120645b796668ba5c2
   RNKeychain: 627c6095cef215dd3d9804a9a9cf45ab96aa3997
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: b24b9e1dd90a715fd354083342dceb8f1a2f6d75
+PODFILE CHECKSUM: 7636f960a0dbec2dd55b8b20e244befa3fdb4438
 
 COCOAPODS: 1.5.2
