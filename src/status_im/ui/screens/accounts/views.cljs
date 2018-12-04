@@ -14,14 +14,18 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.privacy-policy.views :as privacy-policy]))
 
-(defn account-view [{:keys [address photo-path name public-key]}]
+(defn account-view [{:keys [address photo-path name public-key keycard-instance-uid]}]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:accounts.login.ui/account-selected address photo-path name])}
    [react/view styles/account-view
     [photos/photo photo-path {:size styles/account-image-size}]
     [react/view styles/account-badge-text-view
-     [react/text {:style         styles/account-badge-text
-                  :numberOfLines 1}
-      name]
+     [react/view {:flex-direction :row}
+      [react/text {:style         styles/account-badge-text
+                   :numberOfLines 1}
+       name]
+      (when keycard-instance-uid
+        [icons/icon :icons/hardwallet {:color           colors/blue
+                                       :container-style {:margin-left 7}}])]
      [react/text {:style          styles/account-badge-pub-key-text
                   :ellipsize-mode :middle
                   :numberOfLines  1}

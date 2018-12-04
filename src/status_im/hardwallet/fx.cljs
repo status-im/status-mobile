@@ -1,8 +1,9 @@
 (ns status-im.hardwallet.fx
   (:require [re-frame.core :as re-frame]
             [status-im.hardwallet.card :as card]
-            [status-im.react-native.js-dependencies :as js-dependencies]
-            [status-im.utils.datetime :as utils.datetime]))
+            [status-im.utils.datetime :as utils.datetime]
+            [status-im.native-module.core :as statusgo]
+            [status-im.react-native.js-dependencies :as js-dependencies]))
 
 (re-frame/reg-fx
  :hardwallet/get-application-info
@@ -68,6 +69,10 @@
  :hardwallet/unpair-and-delete
  card/unpair-and-delete)
 
+(re-frame/reg-fx
+ :hardwallet/get-keys
+ card/get-keys)
+
 ;TODO remove when keycard login will be ready
 (re-frame/reg-fx
  :hardwallet/persist-pairing
@@ -98,3 +103,7 @@
    (.. js-dependencies/react-native
        -AsyncStorage
        (removeItem "status-keycard-pairing"))))
+
+(re-frame/reg-fx
+ :hardwallet/login-with-keycard
+ statusgo/login-with-keycard)

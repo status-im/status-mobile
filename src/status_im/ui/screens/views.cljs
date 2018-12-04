@@ -53,7 +53,7 @@
             [status-im.ui.screens.pairing.views :refer [installations]]
             [status-im.ui.screens.bootnodes-settings.edit-bootnode.views :refer [edit-bootnode]]
             [status-im.ui.screens.currency-settings.views :refer [currency-settings]]
-            [status-im.ui.screens.hardwallet.settings.views :refer [keycard-settings enter-pin reset-card]]
+            [status-im.ui.screens.hardwallet.settings.views :refer [keycard-settings reset-card]]
             [status-im.ui.screens.help-center.views :refer [help-center]]
             [status-im.ui.screens.browser.views :refer [browser]]
             [status-im.ui.screens.add-new.open-dapp.views :refer [open-dapp dapp-description]]
@@ -61,6 +61,7 @@
             [status-im.ui.screens.accounts.create.views :refer [create-account]]
             [status-im.ui.screens.hardwallet.authentication-method.views :refer [hardwallet-authentication-method]]
             [status-im.ui.screens.hardwallet.connect.views :refer [hardwallet-connect]]
+            [status-im.ui.screens.hardwallet.pin.views :refer [enter-pin]]
             [status-im.ui.screens.hardwallet.setup.views :refer [hardwallet-setup]]
             [status-im.ui.screens.hardwallet.success.views :refer [hardwallet-success]]
             [status-im.ui.screens.profile.seed.views :refer [backup-seed]]
@@ -144,10 +145,12 @@
          config/hardwallet-enabled?
          (assoc :hardwallet-authentication-method hardwallet-authentication-method
                 :hardwallet-connect hardwallet-connect
+                :enter-pin enter-pin
                 :hardwallet-setup hardwallet-setup
                 :hardwallet-success hardwallet-success)))
       (cond-> {:headerMode "none"}
-        (#{:intro :login :progress} view-id)
+        ; add view-id here if you'd like that view to be first view when app is started
+        (#{:intro :login :progress :accounts} view-id)
         (assoc :initialRouteName (name view-id))))}
     :chat-stack
     {:screen
@@ -155,23 +158,28 @@
       (stack-screens
        {:main-stack
         {:screens
-         {:home                         (main-tabs/get-main-tab :home)
-          :chat                         chat
-          :profile                      profile.contact/profile
-          :new                          add-new
-          :new-chat                     new-chat
-          :qr-scanner                   qr-scanner
-          :new-group                    new-group
-          :add-participants-toggle-list add-participants-toggle-list
-          :contact-toggle-list          contact-toggle-list
-          :group-chat-profile           profile.group-chat/group-chat-profile
-          :new-public-chat              new-public-chat
-          :open-dapp                    open-dapp
-          :dapp-description             dapp-description
-          :browser                      browser
-          :stickers                     stickers/packs
-          :stickers-pack                stickers/pack
-          :login                        login}
+         (cond->
+          {:home                         (main-tabs/get-main-tab :home)
+           :chat                         chat
+           :profile                      profile.contact/profile
+           :new                          add-new
+           :new-chat                     new-chat
+           :qr-scanner                   qr-scanner
+           :new-group                    new-group
+           :add-participants-toggle-list add-participants-toggle-list
+           :contact-toggle-list          contact-toggle-list
+           :group-chat-profile           profile.group-chat/group-chat-profile
+           :new-public-chat              new-public-chat
+           :open-dapp                    open-dapp
+           :dapp-description             dapp-description
+           :browser                      browser
+           :stickers                     stickers/packs
+           :stickers-pack                stickers/pack
+           :login                        login}
+
+           config/hardwallet-enabled?
+           (assoc :hardwallet-connect hardwallet-connect
+                  :enter-pin enter-pin))
          :config
          {:headerMode       "none"
           :initialRouteName "home"}}

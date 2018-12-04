@@ -891,8 +891,8 @@
 
 (handlers/register-handler-fx
  :hardwallet.callback/on-get-application-info-success
- (fn [cofx [_ info]]
-   (hardwallet/on-get-application-info-success cofx info)))
+ (fn [cofx [_ info on-success]]
+   (hardwallet/on-get-application-info-success cofx info on-success)))
 
 (handlers/register-handler-fx
  :hardwallet.callback/on-get-application-info-error
@@ -1011,6 +1011,26 @@
  :hardwallet.callback/on-delete-error
  (fn [cofx [_ error]]
    (hardwallet/on-delete-error cofx error)))
+
+(handlers/register-handler-fx
+ :hardwallet.callback/on-get-keys-success
+ (fn [cofx [_ data]]
+   (hardwallet/on-get-keys-success cofx data)))
+
+(handlers/register-handler-fx
+ :hardwallet/auto-login
+ (fn [cofx _]
+   (hardwallet/login-with-keycard cofx true)))
+
+(handlers/register-handler-fx
+ :hardwallet/login-with-keycard
+ (fn [cofx _]
+   (hardwallet/login-with-keycard cofx false)))
+
+(handlers/register-handler-fx
+ :hardwallet.callback/on-get-keys-error
+ (fn [cofx [_ error]]
+   (hardwallet/on-get-keys-error cofx error)))
 
 (handlers/register-handler-fx
  :hardwallet.ui/status-hardwallet-option-pressed

@@ -414,6 +414,26 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void loginWithKeycard(final String whisperPrivateKey, final String encryptionPublicKey, final Callback callback) {
+        Log.d(TAG, "loginWithKeycard");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                  String result = Statusgo.LoginWithKeycard(whisperPrivateKey, encryptionPublicKey);
+
+                  callback.invoke(result);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
     public void createAccount(final String password, final Callback callback) {
         Log.d(TAG, "createAccount");
         if (!checkAvailability()) {

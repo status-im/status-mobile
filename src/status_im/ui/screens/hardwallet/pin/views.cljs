@@ -6,7 +6,10 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.hardwallet.pin.styles :as styles]
-            [status-im.ui.screens.hardwallet.components :as components]))
+            [status-im.ui.screens.hardwallet.components :as components]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.toolbar.actions :as actions]))
 
 (defn numpad-button [n step enabled?]
   [react/touchable-highlight
@@ -98,22 +101,40 @@
            [pin-indicators pin]))
        [numpad step enabled?]]]]))
 
-(defview main []
-  (letsubs [original [:hardwallet/original-pin]
-            confirmation [:hardwallet/pin-confirmation]
-            enter-step [:hardwallet/pin-enter-step]
+(def pin-retries 3)
+(def puk-retries 5)
+
+(defview enter-pin []
+  (letsubs [pin [:hardwallet/pin]
+            step [:hardwallet/pin-enter-step]
             status [:hardwallet/pin-status]
+            pin-retry-counter [:hardwallet/pin-retry-counter]
+            puk-retry-counter [:hardwallet/puk-retry-counter]
             error-label [:hardwallet/pin-error-label]]
-    (case enter-step
-      :original [pin-view {:pin               original
-                           :title-label       :t/create-pin
-                           :description-label :t/create-pin-description
-                           :step              :original
-                           :status            status
-                           :error-label       error-label}]
-      :confirmation [pin-view {:pin               confirmation
-                               :title-label       :t/repeat-pin
-                               :description-label :t/create-pin-description
-                               :step              :confirmation
-                               :status            status
-                               :error-label       error-label}])))
+    [react/view {:flex             1
+                 :background-color colors/white}
+     [status-bar/status-bar]
+     [toolbar/toolbar nil toolbar/default-nav-back nil]
+     (if (zero? pin-retry-counter)
+       [pin-view {:pin               pin
+                  :retry-counter     (when (< puk-retry-counter puk-retries) puk-retry-counter)
+                  :title-label       :t/enter-puk-code
+                  :description-label :t/enter-puk-code-description
+                  :step              step
+                  :status            status
+                  :error-label       error-label}]
+       [pin-view {:pin               pin
+                  :retry-counter     (when (< pin-retry-counter pin-retries) pin-retry-counter)
+                  :title-label       (case step
+                                       :current :t/current-pin
+                                       :login :t/current-pin
+                                       :original :t/create-pin
+                                       :confirmation :t/repeat-pin
+                                       :t/current-pin)
+                  :description-label (case step
+                                       :current :t/current-pin-description
+                                       :login :t/login-pin-description
+                                       :t/new-pin-description)
+                  :step              step
+                  :status            status
+                  :error-label       error-label}])]))

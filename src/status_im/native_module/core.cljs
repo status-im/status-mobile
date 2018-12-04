@@ -28,6 +28,10 @@
 (defn verify [address password callback]
   (native-module/verify address password callback))
 
+(defn login-with-keycard
+  [{:keys [whisper-private-key encryption-public-key on-result]}]
+  (native-module/login-with-keycard whisper-private-key encryption-public-key on-result))
+
 (defn set-soft-input-mode [mode]
   (native-module/set-soft-input-mode mode))
 

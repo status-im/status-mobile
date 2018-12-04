@@ -37,7 +37,7 @@
 
 (def account-badge-text-view
   {:margin-left  16
-   :margin-right 21
+   :margin-right 31
    :flex-shrink  1})
 
 (def account-badge-text

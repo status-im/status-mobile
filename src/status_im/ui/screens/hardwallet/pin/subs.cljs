@@ -7,6 +7,11 @@
    (get-in db [:hardwallet :pin :original])))
 
 (re-frame/reg-sub
+ :hardwallet/login-pin
+ (fn [db]
+   (get-in db [:hardwallet :pin :login])))
+
+(re-frame/reg-sub
  :hardwallet/pin-confirmation
  (fn [db]
    (get-in db [:hardwallet :pin :confirmation])))

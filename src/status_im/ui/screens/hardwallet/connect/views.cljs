@@ -11,15 +11,20 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]))
 
-(defn nfc-enabled []
-  [react/view styles/nfc-enabled-container
-   [react/view
-    [react/image {:source (:hold-card-animation resources/ui)
-                  :style  styles/phone-nfc-on-image}]]
-   [react/view styles/turn-nfc-text-container
-    [react/text {:style           styles/status-hardwallet-text
-                 :number-of-lines 2}
-     (i18n/label :t/hold-card)]]])
+(defview nfc-enabled []
+  (letsubs [card-read-in-progress? [:hardwallet/card-read-in-progress?]]
+    [react/view styles/nfc-enabled-container
+     [react/view
+      [react/image {:source (:hold-card-animation resources/ui)
+                    :style  styles/phone-nfc-on-image}]]
+     [react/view styles/turn-nfc-text-container
+      [react/text {:style           styles/status-hardwallet-text
+                   :number-of-lines 2}
+       (i18n/label :t/hold-card)]]
+     (when card-read-in-progress?
+       [react/view {:margin-top 35}
+        [react/activity-indicator {:animating true
+                                   :size      :large}]])]))
 
 (defn nfc-disabled []
   [react/view styles/nfc-disabled-container

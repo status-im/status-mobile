@@ -75,6 +75,10 @@
   (when (and @node-started status)
     (.verify status address password on-result)))
 
+(defn login-with-keycard [whisper-private-key encryption-public-key on-result]
+  (when (and @node-started status)
+    (.loginWithKeycard status whisper-private-key encryption-public-key on-result)))
+
 (defn set-soft-input-mode [mode]
   (when status
     (.setSoftInputMode status mode)))

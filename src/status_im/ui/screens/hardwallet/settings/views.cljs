@@ -13,46 +13,6 @@
             [status-im.ui.components.common.common :as components.common]
             [reagent.core :as reagent]))
 
-(def pin-retries 3)
-(def puk-retries 5)
-
-(defview enter-pin []
-  (letsubs [pin [:hardwallet/pin]
-            step [:hardwallet/pin-enter-step]
-            status [:hardwallet/pin-status]
-            pin-retry-counter [:hardwallet/pin-retry-counter]
-            puk-retry-counter [:hardwallet/puk-retry-counter]
-            error-label [:hardwallet/pin-error-label]]
-    [react/keyboard-avoiding-view {:flex 1}
-     [react/view {:flex             1
-                  :background-color colors/white}
-      [react/view {:flex-direction  :column
-                   :flex            1
-                   :align-items     :center
-                   :justify-content :space-between}
-       [components/maintain-card nil]
-       (if (zero? pin-retry-counter)
-         [pin.views/pin-view {:pin               pin
-                              :retry-counter     (when (< puk-retry-counter puk-retries) puk-retry-counter)
-                              :title-label       :t/enter-puk-code
-                              :description-label :t/enter-puk-code-description
-                              :step              step
-                              :status            status
-                              :error-label       error-label}]
-         [pin.views/pin-view {:pin               pin
-                              :retry-counter     (when (< pin-retry-counter pin-retries) pin-retry-counter)
-                              :title-label       (case step
-                                                   :current :t/current-pin
-                                                   :original :t/create-pin
-                                                   :confirmation :t/repeat-pin
-                                                   :t/current-pin)
-                              :description-label (case step
-                                                   :current :t/current-pin-description
-                                                   :t/new-pin-description)
-                              :step              step
-                              :status            status
-                              :error-label       error-label}])]]]))
-
 (defn- action-row [{:keys [icon label on-press color-theme]}]
   [react/touchable-highlight
    {:on-press on-press}

@@ -378,7 +378,7 @@
     :no-slots [no-slots]
     :card-already-linked [card-already-linked]
     :pairing [pairing]
-    :pin [pin.views/main]
+    :pin [pin.views/enter-pin]
     :recovery-phrase [recovery-phrase]
     :recovery-phrase-confirm-word1 [recovery-phrase-confirm-word step]
     :recovery-phrase-confirm-word2 [recovery-phrase-confirm-word step]

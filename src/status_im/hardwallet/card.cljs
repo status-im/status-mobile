@@ -50,10 +50,10 @@
                                        "keyCardOnDisconnected"
                                        #(re-frame/dispatch [:hardwallet.callback/on-card-disconnected %]))}])))
 
-(defn get-application-info [pairing]
+(defn get-application-info [{:keys [pairing on-success]}]
   (.. keycard
       (getApplicationInfo (str pairing))
-      (then #(re-frame/dispatch [:hardwallet.callback/on-get-application-info-success %]))
+      (then #(re-frame/dispatch [:hardwallet.callback/on-get-application-info-success % on-success]))
       (catch #(re-frame/dispatch [:hardwallet.callback/on-get-application-info-error (error-object->map %)]))))
 
 (defn install-applet-and-init-card []
@@ -133,3 +133,10 @@
         (unpairAndDelete pairing pin)
         (then #(re-frame/dispatch [:hardwallet.callback/on-delete-success %]))
         (catch #(re-frame/dispatch [:hardwallet.callback/on-delete-error (error-object->map %)])))))
+
+(defn get-keys
+  [{:keys [pairing pin]}]
+  (.. keycard
+      (getKeys pairing pin)
+      (then #(re-frame/dispatch [:hardwallet.callback/on-get-keys-success %]))
+      (catch #(re-frame/dispatch [:hardwallet.callback/on-get-keys-error (error-object->map %)]))))
