@@ -21,7 +21,8 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.desktop.main.chat.styles :as styles]
             [status-im.contact.db :as contact.db]
-            [status-im.ui.components.popup-menu.views :as popup-menu]
+            [status-im.ui.components.popup-menu.views :refer [show-desktop-menu
+                                                              get-chat-menu-items]]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.desktop.main.chat.events :as chat.events]
             [status-im.ui.screens.chat.message.message :as chat.message]))
@@ -51,8 +52,8 @@
              [react/text {:style styles/public-chat-text}
               (i18n/label :t/public-chat)])]]
      [react/touchable-highlight
-      {:on-press #(popup-menu/show-desktop-menu
-                   (popup-menu/get-chat-menu-items group-chat public? chat-id))}
+      {:on-press #(show-desktop-menu
+                   (get-chat-menu-items group-chat public? chat-id))}
       [vector-icons/icon :icons/dots-horizontal
        {:style {:tint-color colors/black
                 :width      24
@@ -99,11 +100,14 @@
 (views/defview message-without-timestamp
   [text {:keys [message-id content current-public-key user-statuses] :as message} style]
   [react/view {:flex 1 :margin-vertical 5}
-   [react/touchable-highlight {:on-press #(if (= "right" (.-button (.-nativeEvent %)))
-                                            (do (utils/show-popup "" "Message copied to clipboard")
-                                                (react/copy-to-clipboard text))
-                                            (when (message-sent? user-statuses current-public-key)
-                                              (re-frame/dispatch [:chat.ui/reply-to-message message-id])))}
+   [react/touchable-highlight {:on-press (fn [arg]
+                                           (when (= "right" (.-button (.-nativeEvent arg)))
+                                             (show-desktop-menu
+                                              [{:text (i18n/label :t/sharing-copy-to-clipboard)
+                                                :on-select #(do (utils/show-popup "" "Message copied to clipboard") (react/copy-to-clipboard text))}
+                                               {:text (i18n/label :t/message-reply)
+                                                :on-select #(when (message-sent? user-statuses current-public-key)
+                                                              (re-frame/dispatch [:chat.ui/reply-to-message message-id]))}])))}
     [react/view {:style styles/message-container}
      (when (:response-to content)
        [quoted-message (:response-to content) false current-public-key])
