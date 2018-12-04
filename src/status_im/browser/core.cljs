@@ -189,8 +189,7 @@
   (let [browser (get-current-browser (:db cofx))
         {:strs [url loading]} (js->clj event)]
     (fx/merge cofx
-              #(when platform/ios?
-                 (update-browser-option % :loading? loading))
+              (update-browser-option :loading? loading)
               (update-browser-on-nav-change browser url loading error?))))
 
 (fx/defn open-url-in-current-browser

@@ -20,7 +20,8 @@
             [status-im.ui.screens.wallet.actions :as wallet.actions]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.http :as http]
-            [status-im.utils.js-resources :as js-res])
+            [status-im.utils.js-resources :as js-res]
+            [status-im.ui.components.animation :as animation])
   (:require-macros
    [status-im.utils.slurp :refer [slurp]]
    [status-im.utils.views :as views]))
@@ -103,18 +104,44 @@
                                :accessibility-label :refresh-page-button}
     [icons/icon :icons/refresh]]])
 
+(views/defview loading-indicatior [parent-width]
+  (views/letsubs [anim-width (animation/create-value (* 0.15 parent-width))
+                  anim-x (animation/create-value 0)
+                  easing-in (fn [n] {:toValue (* n parent-width)
+                                     :easing   (.in (animation/easing) (.-quad (animation/easing)))
+                                     :duration 400})
+                  easing-out (fn [n] {:toValue (* n parent-width)
+                                      :easing   (.out (animation/easing) (.-quad (animation/easing)))
+                                      :duration 400})]
+    {:component-did-mount (fn [_]
+                            (animation/start
+                             (animation/anim-loop
+                              (animation/anim-sequence
+                               [(animation/parallel
+                                 [(animation/timing anim-width (easing-in 0.6))
+                                  (animation/timing anim-x (easing-in 0.2))])
+                                (animation/parallel
+                                 [(animation/timing anim-width (easing-out 0.15))
+                                  (animation/timing anim-x (easing-out 0.85))])
+                                (animation/parallel
+                                 [(animation/timing anim-width (easing-in 0.6))
+                                  (animation/timing anim-x (easing-in 0.2))])
+                                (animation/parallel
+                                 [(animation/timing anim-width (easing-out 0.15))
+                                  (animation/timing anim-x (easing-out 0))])]))))}
+    [react/view {:style {:width parent-width :height 3 :background-color colors/blue-light}}
+     [react/animated-view {:style {:margin-left anim-x :width anim-width :height 3 :background-color colors/blue}}]]))
+
 ;; should-component-update is called only when component's props are changed,
 ;; that's why it can't be used in `browser`, because `url` comes from subs
 (views/defview browser-component
   [{:keys [webview error? url browser browser-id unsafe? can-go-back?
-           can-go-forward? url-editing? resolving? network-id address url-original
-           show-permission show-tooltip opt-in? loading? dapp? rpc-url name]}]
+           can-go-forward? resolving? network-id address url-original
+           show-permission show-tooltip opt-in? dapp? rpc-url name]}]
   {:should-component-update (fn [_ _ args]
                               (let [[_ props] args]
                                 (not (nil? (:url props)))))}
-  [react/view styles/browser
-   [status-bar/status-bar]
-   [toolbar error? url url-original browser browser-id url-editing?]
+  [react/view {:flex 1}
    [react/view components.styles/flex
     (if unsafe?
       [site-blocked.views/view {:can-go-back? can-go-back?
@@ -142,10 +169,7 @@
                                                        (ethereum/normalized-address address)
                                                        (str network-id)))
                                                     (get-inject-js url))
-        :injected-java-script                  js-res/webview-js}])
-    (when (or loading? resolving?)
-      [react/view styles/web-view-loading
-       [react/activity-indicator {:animating true}]])]
+        :injected-java-script                  js-res/webview-js}])]
    [navigation url-original webview can-go-back? can-go-forward?]
    [permissions.views/permissions-panel browser show-permission]
    (when show-tooltip
@@ -156,7 +180,8 @@
       #(re-frame/dispatch [:browser.ui/close-tooltip-pressed])])])
 
 (views/defview browser []
-  (views/letsubs [webview    (atom nil)
+  (views/letsubs [webview (atom nil)
+                  width (reagent/atom nil)
                   {:keys [address settings]} [:account/account]
                   {:keys [browser-id dapp? name unsafe?] :as browser} [:get-current-browser]
                   {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:get :browser/options]
@@ -166,23 +191,26 @@
           can-go-forward? (browser/can-go-forward? browser)
           url-original    (browser/get-current-url browser)
           opt-in?         (:web3-opt-in? settings)]
-      [browser-component {:webview         webview
-                          :dapp?           dapp?
-                          :error?          error?
-                          :url             url
-                          :url-original    url-original
-                          :browser         browser
-                          :browser-id      browser-id
-                          :unsafe?         unsafe?
-                          :can-go-back?    can-go-back?
-                          :can-go-forward? can-go-forward?
-                          :url-editing?    url-editing?
-                          :resolving?      resolving?
-                          :network-id      network-id
-                          :address         address
-                          :show-permission show-permission
-                          :show-tooltip    show-tooltip
-                          :opt-in?         opt-in?
-                          :loading?        loading?
-                          :rpc-url         rpc-url
-                          :name            name}])))
+      [react/view {:style styles/browser :on-layout #(reset! width (.-width (.-layout (.-nativeEvent %))))}
+       [status-bar/status-bar]
+       [toolbar error? url url-original browser browser-id url-editing?]
+       (when (and loading? (not (nil? @width)))
+         [loading-indicatior @width])
+       [browser-component {:webview         webview
+                           :dapp?           dapp?
+                           :error?          error?
+                           :url             url
+                           :url-original    url-original
+                           :browser         browser
+                           :browser-id      browser-id
+                           :unsafe?         unsafe?
+                           :can-go-back?    can-go-back?
+                           :can-go-forward? can-go-forward?
+                           :resolving?      resolving?
+                           :network-id      network-id
+                           :address         address
+                           :show-permission show-permission
+                           :show-tooltip    show-tooltip
+                           :opt-in?         opt-in?
+                           :rpc-url         rpc-url
+                           :name            name}]])))
