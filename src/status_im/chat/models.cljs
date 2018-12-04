@@ -240,10 +240,11 @@
 
 (fx/defn start-public-chat
   "Starts a new public chat"
-  [cofx topic opts]
+  [cofx topic {:keys [dont-navigate?] :as opts}]
   (fx/merge cofx
             (add-public-chat topic)
-            (navigate-to-chat topic opts)
+            #(when-not dont-navigate?
+               (navigate-to-chat % topic opts))
             (public-chat/join-public-chat topic)
             (when platform/desktop?
               (desktop.events/change-tab :home))))

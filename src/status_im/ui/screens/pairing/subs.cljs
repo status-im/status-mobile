@@ -8,3 +8,7 @@
                     (->> installations
                          vals
                          (sort-by (comp unchecked-negate :last-paired)))))
+
+(re-frame/reg-sub :pairing/installation-id
+                  :<- [:get :account/account]
+                  :installation-id)

@@ -671,7 +671,10 @@
 (handlers/register-handler-fx
  :chat.ui/start-public-chat
  (fn [cofx [_ topic opts]]
-   (chat/start-public-chat cofx topic opts)))
+   (fx/merge
+    cofx
+    (chat/start-public-chat topic opts)
+    (pairing/sync-public-chat topic))))
 
 (handlers/register-handler-fx
  :chat.ui/remove-chat

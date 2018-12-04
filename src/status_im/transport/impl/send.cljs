@@ -31,6 +31,7 @@
                         (select-keys
                          (get-in cofx [:db :contacts/contacts])
                          [chat-id])
+                        nil
                         nil)]
       (fx/merge cofx
                 (protocol/init-chat {:chat-id chat-id
@@ -47,6 +48,7 @@
                         (select-keys
                          (get-in cofx [:db :contacts/contacts])
                          [chat-id])
+                        nil
                         nil)
           success-event [:transport/contact-message-sent chat-id]
           chat         (get-in db [:transport/chats chat-id])

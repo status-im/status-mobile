@@ -77,11 +77,12 @@
         [react/text {:style styles/qr-code-copy-text}
          (i18n/label :copy-qr)]]]]]))
 
-(defn installations-section [installations]
+(defn installations-section [your-installation-id installations]
   [react/view
    [pairing.views/pair-this-device]
    [pairing.views/sync-devices]
    [react/view {:style pairing.styles/installation-list}
+    [pairing.views/your-device your-installation-id]
     (for [installation installations]
       ^{:key (:installation-id installation)}
       [react/view {:style {:margin-bottom 10}}
@@ -176,10 +177,11 @@
        [logging-display]])))
 
 (views/defview installations []
-  (views/letsubs [installations    [:pairing/installations]]
+  (views/letsubs [installations    [:pairing/installations]
+                  installation-id  [:pairing/installation-id]]
     [react/scroll-view
      (when (config/pairing-enabled? true)
-       (installations-section installations))]))
+       (installations-section installation-id installations))]))
 
 (views/defview backup-recovery-phrase []
   [profile.recovery/backup-seed])
