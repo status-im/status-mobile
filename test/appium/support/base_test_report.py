@@ -48,7 +48,10 @@ class BaseTestReport:
             testruns = list()
             for testrun_data in test_data['testruns']:
                 testruns.append(SingleTestData.TestRunData(
-                    steps=testrun_data['steps'], jobs=testrun_data['jobs'], error=testrun_data['error']))
+                    steps=testrun_data['steps'],
+                    jobs=testrun_data['jobs'],
+                    error=testrun_data['error'],
+                    associated_github_issues=testrun_data['associated_github_issues']))
             tests.append(SingleTestData(name=test_data['name'], testruns=testruns,
                                         testrail_case_id=test_data['testrail_case_id']))
         return tests
@@ -57,9 +60,14 @@ class BaseTestReport:
         tests = self.get_all_tests()
         failed = list()
         for test in tests:
-            if not self.is_test_successful(test):
+            if not self.is_test_successful(test) and not test.testruns[-1].associated_github_issues:
                 failed.append(test)
         return failed
+
+    def get_failed_tests_with_known_issues_assigned(self):
+        all_tests = self.get_all_tests()
+        return [test for test in all_tests if
+                not self.is_test_successful(test) and test.testruns[-1].associated_github_issues]
 
     def get_passed_tests(self):
         tests = self.get_all_tests()

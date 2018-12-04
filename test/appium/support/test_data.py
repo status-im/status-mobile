@@ -1,5 +1,3 @@
-
-
 class SingleTestData(object):
     def __init__(self, name, testruns, testrail_case_id):
         self.testrail_case_id = testrail_case_id
@@ -7,10 +5,11 @@ class SingleTestData(object):
         self.testruns = testruns
 
     class TestRunData(object):
-        def __init__(self, steps, jobs, error):
+        def __init__(self, steps, jobs, error, associated_github_issues=None):
             self.steps = steps
             self.jobs = jobs
             self.error = error
+            self.associated_github_issues = associated_github_issues
 
     def create_new_testrun(self):
         self.testruns.append(SingleTestData.TestRunData(list(), dict(), None))

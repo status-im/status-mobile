@@ -13,26 +13,35 @@ class GithubHtmlReport(BaseTestReport):
         tests = self.get_all_tests()
         passed_tests = self.get_passed_tests()
         failed_tests = self.get_failed_tests()
+        failed_tests_with_known_issues = self.get_failed_tests_with_known_issues_assigned()
 
         if len(tests) > 0:
             title_html = "## %.0f%% of end-end tests have passed\n" % (len(passed_tests) / len(tests) * 100)
             summary_html = "```\n"
             summary_html += "Total executed tests: %d\n" % len(tests)
-            summary_html += "Failed tests: %d\n" % len(failed_tests)
+            summary_html += "Failed tests: %d\n" % len(failed_tests + failed_tests_with_known_issues)
             summary_html += "Passed tests: %d\n" % len(passed_tests)
             summary_html += "```\n"
             failed_tests_html = str()
             passed_tests_html = str()
+            failed_tests_known_issues_html = ''
             if failed_tests:
-                failed_tests_html = self.build_tests_table_html(failed_tests, run_id, failed_tests=True)
+                failed_tests_html = self.build_tests_table_html(tests=failed_tests, run_id=run_id,
+                                                                test_type='Failed tests')
             if passed_tests:
-                passed_tests_html = self.build_tests_table_html(passed_tests, run_id, failed_tests=False)
-            return title_html + summary_html + failed_tests_html + passed_tests_html
+                passed_tests_html = self.build_tests_table_html(tests=passed_tests, run_id=run_id,
+                                                                test_type='Passed tests')
+            if failed_tests_with_known_issues:
+                failed_tests_known_issues_html = self.build_tests_table_html(tests=failed_tests_with_known_issues,
+                                                                             run_id=run_id, test_type='Known issues')
+            return title_html + summary_html + failed_tests_html + failed_tests_known_issues_html + passed_tests_html
         else:
             return None
 
-    def build_tests_table_html(self, tests, run_id, failed_tests=False):
-        tests_type = "Failed tests" if failed_tests else "Passed tests"
+    def build_tests_table_html(self, **kwargs):
+        tests_type = kwargs.get('test_type')
+        tests = kwargs.get('tests')
+        run_id = kwargs.get('run_id')
         html = "<h3>%s (%d)</h3>" % (tests_type, len(tests))
         html += "<details>"
         html += "<summary>Click to expand</summary>"
@@ -58,9 +67,12 @@ class GithubHtmlReport(BaseTestReport):
             html = "<tr><td><b>%s. <a href=\"%s\">%s</a></b></td></tr>" % (index + 1, test_rail_link, test.name)
         else:
             html = "<tr><td><b>%d. %s</b> (TestRail link is not found)</td></tr>" % (index + 1, test.name)
-        html += "<tr><td>"
         test_steps_html = list()
         last_testrun = test.testruns[-1]
+        if last_testrun.associated_github_issues:
+            html += "<tr><td><b>Associated issues: %s</b></td></tr>" % ', '.join(
+                ['#%d' % i for i in last_testrun.associated_github_issues])
+        html += "<tr><td>"
         for step in last_testrun.steps:
             test_steps_html.append("<div>%s</div>" % step)
         if last_testrun.error:

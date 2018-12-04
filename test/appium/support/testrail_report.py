@@ -20,7 +20,9 @@ class TestrailReport(BaseTestReport):
 
         self.outcomes = {
             'passed': 1,
-            'undefined_fail': 10}
+            'undefined_fail': 10,
+            'failed': 5
+        }
 
         self.headers = dict()
         self.headers['Authorization'] = 'Basic %s' % str(
@@ -97,9 +99,20 @@ class TestrailReport(BaseTestReport):
                 test_steps += step + "\n"
             for i, device in enumerate(last_testrun.jobs):
                 devices += "# [Device %d](%s) \n" % (i + 1, self.get_sauce_job_url(device))
-            data = {'status_id': self.outcomes['undefined_fail'] if last_testrun.error else self.outcomes['passed'],
+
+            if last_testrun.error and last_testrun.associated_github_issues:
+                outcome = self.outcomes['failed']
+            elif last_testrun.error:
+                outcome = self.outcomes['undefined_fail']
+            else:
+                outcome = self.outcomes['passed']
+
+            data = {'status_id': outcome,
                     'comment': '%s' % ('# Error: \n %s \n' % emoji.demojize(last_testrun.error)) + devices + test_steps if last_testrun.error
-                    else devices + test_steps}
+                    else devices + test_steps,
+                    'defects': ','.join([str(issue_id) for issue_id in last_testrun.associated_github_issues]) if last_testrun.associated_github_issues else ''
+                    }
+
             self.post(method, data=data)
 
     def get_test_result_link(self, test_run_id, test_case_id):

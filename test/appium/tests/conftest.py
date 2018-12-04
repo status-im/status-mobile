@@ -3,6 +3,7 @@ import pytest
 import re
 from _pytest.runner import runtestprotocol
 from http.client import RemoteDisconnected
+from github import Github
 from support.device_stats_db import DeviceStatsDB
 from support.test_rerun import should_rerun_test
 from tests import test_suite_data, appium_container
@@ -184,7 +185,6 @@ def pytest_unconfigure(config):
         if config.getoption('testrail_report'):
             testrail_report.add_results()
         if config.getoption('pr_number'):
-            from github import Github
             repo = Github(github_token).get_user('status-im').get_repo('status-react')
             pull = repo.get_pull(int(config.getoption('pr_number')))
             pull.create_issue_comment(github_report.build_html_report(testrail_report.run_id))
@@ -209,6 +209,11 @@ def pytest_runtest_makereport(item, call):
             if exception:
                 error = error.replace(re.findall('E.*Message:|E.*Error:|E.*Failed:', report.longreprtext)[0], '')
             current_test.testruns[-1].error = error
+            if item.get_marker('github_issue'):
+                repo = Github(github_token).get_user('hetvart').get_repo('TestHttpServer')
+                issues = [repo.get_issue(issue) for issue in item.get_marker('github_issue').args]
+                associated_issues = [issue.number for issue in issues if issue.state == 'open']
+                current_test.testruns[-1].associated_github_issues = associated_issues
         if is_sauce_env:
             update_sauce_jobs(current_test.name, current_test.testruns[-1].jobs, report.passed)
         if pytest.config.getoption('docker'):
