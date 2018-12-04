@@ -193,12 +193,12 @@
            (= view-id :create-account)
            (assoc-in [:accounts/create :step] :enter-name))}))
 
-(defn login-only-events [cofx address]
+(defn login-only-events [cofx address stored-pns]
   (fx/merge cofx
             {:notifications/request-notifications-permissions nil}
             (navigation/navigate-to-cofx :home nil)
             (universal-links/process-stored-event)
-            (notifications/process-stored-event address)
+            (notifications/process-stored-event address stored-pns)
             (when platform/desktop?
               (chat-model/update-dock-badge-label))))
 
@@ -213,22 +213,23 @@
   (= (get-in cofx [:db :view-id])
      :hardwallet-success))
 
-(fx/defn initialize-account [cofx address]
-  (fx/merge cofx
-            {:notifications/get-fcm-token nil}
-            (initialize-account-db address)
-            (contact/load-contacts)
-            (pairing/load-installations)
-            #(when (dev-mode? %)
-               (models.dev-server/start))
-            (browser/initialize-browsers)
+(fx/defn initialize-account [{:keys [db] :as cofx} address]
+  (let [stored-pns (:push-notifications/stored db)]
+    (fx/merge cofx
+              {:notifications/get-fcm-token nil}
+              (initialize-account-db address)
+              (contact/load-contacts)
+              (pairing/load-installations)
+              #(when (dev-mode? %)
+                 (models.dev-server/start))
+              (browser/initialize-browsers)
 
-            (browser/initialize-dapp-permissions)
-            (extensions.registry/initialize)
-            (accounts.update/update-sign-in-time)
-            #(when-not (or (creating-account? %)
-                           (finishing-hardwallet-setup? %))
-               (login-only-events % address))))
+              (browser/initialize-dapp-permissions)
+              (extensions.registry/initialize)
+              (accounts.update/update-sign-in-time)
+              #(when-not (or (creating-account? %)
+                             (finishing-hardwallet-setup? %))
+                 (login-only-events % address stored-pns)))))
 
 (re-frame/reg-fx
  :init/init-store

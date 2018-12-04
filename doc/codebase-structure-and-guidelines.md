@@ -63,9 +63,9 @@ These guidelines make db.cljs namespaces the place to go when making changes to 
 - events must only contain a function call defined in a module
     ```clojure
     (handlers/register-handler-fx
-      :notifications/handle-push-notification
+      :notifications/handle-push-notification-open
     (fn [cofx [_ event]]
-      (notifications/handle-push-notification event cofx)))
+      (notifications/handle-push-notification-open event cofx)))
     ```
 - events must use synthetic namespaces:
 

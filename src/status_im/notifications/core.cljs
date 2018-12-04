@@ -125,19 +125,20 @@
                                               :to    to
                                               :from  from}})))
 
-  (fx/defn handle-push-notification
-    [{:keys [db] :as cofx} {:keys [from to] :as event}]
-    (let [current-public-key (accounts.db/current-public-key cofx)]
+  (fx/defn handle-push-notification-open
+    [{:keys [db] :as cofx} {:keys [from to stored?] :as event}]
+    (let [current-public-key (accounts.db/current-public-key cofx)
+          nav-opts (when stored? {:navigation-reset? true})]
       (if (= to current-public-key)
         (fx/merge cofx
                   {:db (update db :push-notifications/stored dissoc to)}
-                  (chat-model/navigate-to-chat from nil))
+                  (chat-model/navigate-to-chat from nav-opts))
         {:db (assoc-in db [:push-notifications/stored to] from)})))
 
-  (defn handle-notification-event [event] ;; https://github.com/invertase/react-native-firebase/blob/adcbeac3d11585dd63922ef178ff6fd886d5aa9b/src/modules/notifications/Notification.js#L13
+  (defn handle-notification-open-event [event] ;; https://github.com/invertase/react-native-firebase/blob/adcbeac3d11585dd63922ef178ff6fd886d5aa9b/src/modules/notifications/Notification.js#L13
     (let [payload (get-notification-payload (.. event -notification))]
       (when payload
-        (re-frame/dispatch [:notifications/notification-event-received payload]))))
+        (re-frame/dispatch [:notifications/notification-open-event-received payload]))))
 
   (defn handle-initial-push-notification
     "This method handles pending push notifications. It is only needed to handle PNs from legacy clients (which use firebase.notifications API)"
@@ -147,7 +148,7 @@
         getInitialNotification
         (then (fn [event]
                 (when event
-                  (handle-notification-event event))))))
+                  (handle-notification-open-event event))))))
 
   (defn setup-token-refresh-callback []
     (.onTokenRefresh (.messaging firebase)
@@ -182,7 +183,7 @@
   (defn setup-on-notification-opened-callback []
     (.. firebase
         notifications
-        (onNotificationOpened handle-notification-event)))
+        (onNotificationOpened handle-notification-open-event)))
 
   (defn init []
     (setup-token-refresh-callback)
@@ -192,17 +193,21 @@
     (when platform/android?
       (create-notification-channel))))
 
-(fx/defn process-stored-event [cofx address]
+(fx/defn process-stored-event [cofx address stored-pns]
   (when-not platform/desktop?
-    (let [current-account (get-in cofx [:db :account/account])
-          current-address (:address current-account)
-          to              (:public-key current-account)
-          from            (get-in cofx [:db :push-notifications/stored to])]
-      (when (and from
-                 (= address current-address))
-        (handle-push-notification cofx
-                                  {:from from
-                                   :to   to})))))
+    (if (accounts.db/logged-in? cofx)
+      (let [current-account (get-in cofx [:db :account/account])
+            current-address (:address current-account)
+            to              (:public-key current-account)
+            from            (get stored-pns to)]
+        (log/debug "process-stored-event" "address" address "from" from "to" to)
+        (when (and from
+                   (= address current-address))
+          (handle-push-notification-open cofx
+                                         {:from    from
+                                          :to      to
+                                          :stored? true})))
+      (log/error "process-stored-event called without user being logged in!"))))
 
 (re-frame/reg-fx
  :notifications/display-notification

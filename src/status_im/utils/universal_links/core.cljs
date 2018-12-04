@@ -55,11 +55,11 @@
     (re-frame/dispatch [:handle-universal-link url])))
 
 (fx/defn handle-browse [cofx url]
-  (log/info "universal-links: handling browse " url)
+  (log/info "universal-links: handling browse" url)
   {:browser/show-browser-selection url})
 
 (fx/defn handle-public-chat [cofx public-chat]
-  (log/info "universal-links: handling public chat " public-chat)
+  (log/info "universal-links: handling public chat" public-chat)
   (chat/start-public-chat cofx public-chat {:navigation-reset? true}))
 
 (fx/defn handle-view-profile [{:keys [db] :as cofx} public-key]
