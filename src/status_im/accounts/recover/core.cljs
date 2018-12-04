@@ -71,7 +71,7 @@
                    :address    address
                    :photo-path (identicon/identicon pubkey)
                    :mnemonic   ""}]
-      (accounts.create/on-account-created cofx account password true))
+      (accounts.create/on-account-created cofx account password {:seed-backed-up? true}))
     {:db (assoc-in db [:accounts/recover :password-error] :recover-password-invalid)}))
 
 (fx/defn on-account-recovered

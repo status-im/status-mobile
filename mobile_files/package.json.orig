@@ -55,7 +55,7 @@
     "react-native-safe-area-view": "0.9.0",
     "react-native-securerandom": "https://github.com/status-im/react-native-securerandom#0.1.1-1",
     "react-native-splash-screen": "3.1.1",
-    "react-native-status-keycard": "github:status-im/react-native-status-keycard",
+    "react-native-status-keycard": "https://github.com/status-im/react-native-status-keycard",
     "react-native-svg": "6.5.2",
     "react-native-tcp": "https://github.com/status-im/react-native-tcp.git#3.3.0-1",
     "react-native-udp": "https://github.com/status-im/react-native-udp.git#2.3.1-1",

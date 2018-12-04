@@ -8,7 +8,8 @@
             [taoensso.timbre :as log]
             [status-im.i18n :as i18n]
             [status-im.accounts.create.core :as accounts.create]
-            [status-im.accounts.login.core :as accounts.login]))
+            [status-im.accounts.login.core :as accounts.login]
+            [status-im.node.core :as node]))
 
 (defn hardwallet-supported? [{:keys [db]}]
   (and config/hardwallet-enabled?
@@ -259,8 +260,27 @@
                                                   :pairing  pairing
                                                   :pin      pin}})))
 
+(fx/defn create-keycard-account
+  [{:keys [db] :as cofx}]
+  (let [{{:keys [whisper-public-key
+                 wallet-address
+                 encryption-public-key
+                 keycard-instance-uid]} :hardwallet} db]
+    (fx/merge (-> cofx
+                  (accounts.create/get-signing-phrase)
+                  (accounts.create/get-status))
+              {:db (assoc-in db [:hardwallet :setup-step] nil)}
+              (accounts.create/on-account-created {:pubkey               whisper-public-key
+                                                   :address              wallet-address
+                                                   :mnemonic             ""
+                                                   :keycard-instance-uid keycard-instance-uid}
+                                                  encryption-public-key
+                                                  {:seed-backed-up? true
+                                                   :login?          false})
+              (navigation/navigate-to-cofx :hardwallet-success nil))))
+
 (fx/defn on-generate-and-load-key-success
-  [{:keys [db] :as cofx} data]
+  [{:keys [db random-guid-generator] :as cofx} data]
   (let [{:keys [whisper-public-key
                 whisper-private-key
                 whisper-address
@@ -275,14 +295,10 @@
                        (assoc-in [:hardwallet :whisper-address] whisper-address)
                        (assoc-in [:hardwallet :wallet-address] wallet-address)
                        (assoc-in [:hardwallet :encryption-public-key] encryption-public-key)
-                       (assoc-in [:hardwallet :setup-step] nil))}
-              (accounts.create/on-account-created {:pubkey   whisper-public-key'
-                                                   :address  wallet-address
-                                                   :mnemonic ""
-                                                   :keycard-instance-uid keycard-instance-uid}
-                                                  encryption-public-key
-                                                  true)
-              (navigation/navigate-to-cofx :hardwallet-success nil))))
+                       (assoc-in [:hardwallet :keycard-instance-uid] keycard-instance-uid)
+                       (assoc :node/on-ready :create-keycard-account)
+                       (assoc :accounts/new-installation-id (random-guid-generator)))}
+              (node/initialize nil))))
 
 (fx/defn on-generate-and-load-key-error
   [{:keys [db] :as cofx} {:keys [error code]}]

@@ -4,11 +4,11 @@
 
 (def container
   {:flex             1
+   :justify-content :space-between
    :background-color colors/white})
 
 (def inner-container
   {:flex-direction  :column
-   :flex            1
    :align-items     :center
    :justify-content :space-between})
 
@@ -46,12 +46,10 @@
 (def maintain-card-second-step-text
   {:font-size    12
    :padding-left 8
-   ;:background-color :red
    :color        colors/gray})
 
 (def maintain-card-third-step-text
   {:font-size    12
-   ;:background-color :yellow
    :padding-left 8
    :color        colors/gray})
 
@@ -207,6 +205,9 @@
 
 (def waiting-indicator-container
   {:height 200})
+
+(def progress-bar-container
+  {:width "65%"})
 
 ;; secret keys step
 

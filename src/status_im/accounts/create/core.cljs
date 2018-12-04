@@ -61,7 +61,9 @@
   [{:keys [signing-phrase
            status
            db] :as cofx}
-   {:keys [pubkey address mnemonic installation-id keycard-instance-uid]} password seed-backed-up]
+   {:keys [pubkey address mnemonic installation-id keycard-instance-uid]}
+   password
+   {:keys [seed-backed-up? login?] :or {login? true}}]
   (let [normalized-address (utils.hex/normalize-hex address)
         account            {:public-key             pubkey
                             :installation-id        (or installation-id (get-in db [:accounts/new-installation-id]))
@@ -72,7 +74,7 @@
                             :desktop-notifications? false
                             :photo-path             (identicon/identicon pubkey)
                             :signing-phrase         signing-phrase
-                            :seed-backed-up?        seed-backed-up
+                            :seed-backed-up?        seed-backed-up?
                             :mnemonic               mnemonic
                             :keycard-instance-uid   keycard-instance-uid
                             :settings               (constants/default-account-settings)}]
@@ -83,7 +85,8 @@
                                                 :password   password
                                                 :processing true})}
                 (add-account account)
-                (accounts.login/user-login true)))))
+                (when login?
+                  (accounts.login/user-login true))))))
 
 (defn reset-account-creation [{db :db}]
   {:db (update db :accounts/create assoc

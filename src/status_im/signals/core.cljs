@@ -9,7 +9,8 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
-            [status-im.utils.security :as security]))
+            [status-im.utils.security :as security]
+            [status-im.hardwallet.core :as hardwallet]))
 
 (fx/defn status-node-started
   [{db :db :as cofx}]
@@ -38,7 +39,9 @@
                 (fn [{:keys [db]}]
                   (let [{:keys [password passphrase]} (:accounts/recover db)]
                     {:accounts.recover/recover-account
-                     [(security/mask-data passphrase) password]}))))))
+                     [(security/mask-data passphrase) password]}))
+                :create-keycard-account
+                (hardwallet/create-keycard-account)))))
 
 (fx/defn status-node-stopped
   [{db :db}]

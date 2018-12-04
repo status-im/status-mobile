@@ -186,7 +186,7 @@
   (re-frame/inject-cofx :accounts.create/get-signing-phrase)
   (re-frame/inject-cofx :accounts.create/get-status)]
  (fn [cofx [_ result password]]
-   (accounts.create/on-account-created cofx result password false)))
+   (accounts.create/on-account-created cofx result password {:seed-backed-up? false})))
 
 (handlers/register-handler-fx
  :accounts.create.ui/create-new-account-button-pressed

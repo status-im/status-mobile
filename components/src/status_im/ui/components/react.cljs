@@ -36,6 +36,7 @@
 (def net-info (get-react-property "NetInfo"))
 (def view (get-class "View"))
 (def safe-area-view (get-class "SafeAreaView"))
+(def progress-bar (get-class "ProgressBarAndroid"))
 
 (def status-bar (get-class (if platform/desktop? "View" "StatusBar")))
 

@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.hardwallet.setup.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
+            [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.ui.screens.profile.seed.views :as seed.views]
             [status-im.ui.screens.hardwallet.components :as components]
             [status-im.ui.screens.hardwallet.pin.views :as pin.views]
@@ -17,6 +17,8 @@
             [status-im.utils.utils :as utils]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.hardwallet.setup.styles :as styles]))
+
+(defonce event-emitter (.-DeviceEventEmitter js-dependencies/react-native))
 
 (defview secret-keys []
   (letsubs [secrets [:hardwallet-secrets]]
@@ -82,8 +84,9 @@
      [react/view components.styles/flex]
      [react/view {:margin-right 20}
       [components.common/bottom-button
-       {:on-press #(re-frame/dispatch [:hardwallet.ui/card-ready-next-button-pressed])
-        :forward? true}]]]]])
+       {:on-press   #(re-frame/dispatch [:hardwallet.ui/card-ready-next-button-pressed])
+        :uppercase? false
+        :forward?   true}]]]]])
 
 (defview recovery-phrase []
   (letsubs [mnemonic [:hardwallet-mnemonic]]
@@ -135,7 +138,7 @@
             word [:hardwallet-recovery-phrase-word]
             input-word [:hardwallet-recovery-phrase-input-word]
             error [:hardwallet-recovery-phrase-confirm-error]
-            ref (reagent/atom nil)]
+            ref (atom nil)]
     (let [{:keys [word idx]} word]
       [react/view styles/enter-pair-code-container
        [react/view styles/enter-pair-code-title-container
@@ -288,20 +291,34 @@
     [react/activity-indicator {:animating true
                                :size      :large}]]])
 
-(defn- preparing []
-  [react/view styles/loading-view-container
-   [react/view styles/center-container
-    [react/text {:style styles/center-title-text
-                 :font  :bold}
-     (i18n/label :t/preparing-card)]
-    [react/text {:style           styles/generating-codes-for-pairing-text
-                 :number-of-lines 2}
-     (i18n/label :t/generating-codes-for-pairing)]
-    [react/text {:style styles/estimated-time-text}
-     (i18n/label :t/taking-long-hold-phone-connected)]]
-   [react/view styles/waiting-indicator-container
-    [react/activity-indicator {:animating true
-                               :size      :large}]]])
+(defview preparing []
+  (letsubs [progress-bar (atom nil)
+            listener (atom nil)]
+    {:component-will-mount (fn []
+                             (when @listener
+                               (.removeListener @listener)))
+     :component-did-mount  (fn []
+                             (reset! listener
+                                     (.addListener event-emitter
+                                                   "keycardInstallationProgress"
+                                                   (fn [params]
+                                                     (when @progress-bar
+                                                       (.setNativeProps @progress-bar params))))))}
+    [react/view styles/loading-view-container
+     [react/view styles/center-container
+      [react/text {:style styles/center-title-text
+                   :font  :bold}
+       (i18n/label :t/preparing-card)]
+      [react/text {:style           styles/generating-codes-for-pairing-text
+                   :number-of-lines 2}
+       (i18n/label :t/generating-codes-for-pairing)]
+      [react/text {:style styles/estimated-time-text}
+       (i18n/label :t/taking-long-hold-phone-connected)]]
+     [react/view styles/progress-bar-container
+      [react/progress-bar {:styleAttr     "Horizontal"
+                           :indeterminate false
+                           :progress      0
+                           :ref           #(reset! progress-bar %)}]]]))
 
 (defn- generating-mnemonic []
   [react/view styles/loading-view-container
@@ -373,5 +390,5 @@
     [react/keyboard-avoiding-view components.styles/flex
      [react/view styles/container
       [react/view styles/inner-container
-       [components/maintain-card step]
-       [content step]]]]))
+       [components/maintain-card step]]
+      [content step]]]))
