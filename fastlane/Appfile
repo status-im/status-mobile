@@ -1,7 +1,7 @@
 # iOS
 
 app_identifier("im.status.ethereum") # The bundle identifier of your app
-apple_id(ENV["APPLE_ID"]) # Your Apple email address
+apple_id("support@status.im") # Your Apple email address
 itc_team_id("118430139") # iTunes Connect Team ID
 
 # Android
