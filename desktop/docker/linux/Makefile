@@ -7,7 +7,8 @@ QT_ARCHIVE = qt-opensource-linux-x64-$(QT_VERSION).run
 QT_MD5SUM  = 974fda61267cfb6e45984ee5f0a285f8
 QT_URL = https://download.qt.io/archive/qt
 
-IMAGE_TAG = qt-$(QT_VERSION)
+# WARNING: Remember to change the tag when updating the image
+IMAGE_TAG = 1.1.0
 IMAGE_NAME = statusteam/linux-desktop-ubuntu:$(IMAGE_TAG)
 
 build: $(QT_ARCHIVE)

@@ -10,7 +10,7 @@ ENV NPM_CONFIG_CACHE /var/tmp/npm
 ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 RUN apt-get update && apt-get -q -y --no-install-recommends install curl software-properties-common && \
-    curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
+    curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
     add-apt-repository -y ppa:longsleep/golang-backports && \
@@ -48,8 +48,10 @@ RUN cd /tmp && \
 RUN addgroup --gid 1002 jenkins && \
     adduser --shell /bin/bash \
       --disabled-password --gecos "" \
-      --uid 1001 --gid 1002 \
-      --home /var/tmp/jenkins jenkins
+      --uid 1001 --gid 1002 jenkins
+
+# Install NVM for Jenkins
+RUN su jenkins -c 'curl -s -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash'
 
 LABEL source="https://github.com/status-im/status-react/tree/develop/desktop/windows/docker" \
       description="Image for building Windows Desktop version of Status app." \

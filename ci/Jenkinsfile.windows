@@ -3,7 +3,7 @@ pipeline {
     /* privileged mode is necessary for fuse */
     docker {
       label 'linux-new'
-      image 'statusteam/windows-desktop-ubuntu:nsis-1.0.0'
+      image 'statusteam/windows-desktop-ubuntu:1.1.0'
       args (
         "--privileged "+
         "-v /dev/fuse:/dev/fuse "+
