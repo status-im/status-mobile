@@ -480,6 +480,10 @@ class ProfileView(BaseView):
         signin_view = SignInView(self.driver)
         signin_view.sign_in()
 
+    def switch_development_mode(self):
+        self.advanced_button.click()
+        self.debug_mode_toggle.click()
+
     def add_custom_network(self):
         self.advanced_button.click()
         self.debug_mode_toggle.click()

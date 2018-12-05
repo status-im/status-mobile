@@ -41,6 +41,23 @@ wallet_users['E']['address'] = "0x3e2e4077753d3c229a9ae332b9ca46958945e2f6"
 wallet_users['E']['public_key'] = "0x04a30d58c2c65c654a521455dabc139a9c26be7ca565f152a8182376150c1e12fe362c017a21b0e" \
                                   "58676b84a945e34030c7150ae8d03758e94bf017f930d6189b2"
 
+# Users used in chats. E.g. as members of a group chat
+chat_users = dict()
+
+chat_users['A'] = dict()
+chat_users['A']['passphrase'] = "canoe edit leg exit game glue blame electric bar now box point"
+chat_users['A']['username'] = "Woozy Dopey Zander"
+chat_users['A']['address'] = "0x5626db866676d70f5fa58366d8df3b1053b8d9cc"
+chat_users['A']['public_key'] = "0x0455614888aa78b24bb0ddee94edb5f15a6a61c9053c4a9b671415" \
+                                "ce8047222f24fe48a4ecaa4d34e900cf8f01227910b925f6f8de0c435c83c6374c13d979c2e3"
+
+chat_users['B'] = dict()
+chat_users['B']['passphrase'] = "found ridge build seven whisper enact weekend nation during law external december"
+chat_users['B']['username'] = "Hospitable Dizzy Ichneumonfly"
+chat_users['B']['address'] = "0x0b6f148eb4b87e1fd112374078fef2624727f030"
+chat_users['B']['public_key'] = "0x043bd46619c7c09e300a0c4ae002a6aba82b3408db6026cdd21a45e85955c76aa6aa044daaa2606d" \
+                                "440a46463092372b48b0c7ab420e70fb7da4f0253ccd4554b6"
+
 transaction_senders = dict()
 
 transaction_senders['A'] = dict()
@@ -277,3 +294,4 @@ transaction_recipients['I']['username'] = "Sharp Sour Greathornedowl"
 transaction_recipients['I']['address'] = "0x4e6c60f344b13d730682f0a6d8ae1255c75e730e"
 transaction_recipients['I']['public_key'] = "0x049d6fe0c874d11ddd92f72ac75659703a7b58211b934fc22f0c7eae835b71651c8" \
                                             "3ae5e4fd688f1c898d39a657ea08a39d05d20a830bbf7eaffb6ccda9bef348f"
+

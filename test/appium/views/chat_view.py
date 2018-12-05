@@ -6,6 +6,7 @@ from tests import common_password
 from views.base_element import BaseButton, BaseEditBox, BaseText, BaseElement
 from views.base_view import BaseView, ProgressBar
 from views.profile_view import ProfilePictureElement, ProfileAddressText
+from views.start_new_chat_view import StartNewChatView
 
 
 class ChatMessageInput(BaseEditBox):
@@ -18,6 +19,15 @@ class AddToContacts(BaseButton):
     def __init__(self, driver):
         super(AddToContacts, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('add-to-contacts-button')
+
+
+class AddGroupChatMembersButton(BaseButton):
+    def __init__(self, driver):
+        super(AddGroupChatMembersButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Add members']")
+
+    def navigate(self):
+        return StartNewChatView(self.driver)
 
 
 class UserNameText(BaseText):
@@ -86,6 +96,16 @@ class ClearHistoryButton(BaseButton):
     def __init__(self, driver):
         super(ClearHistoryButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="Clear history"]')
+
+
+class GroupInfoButton(BaseButton):
+
+    def __init__(self, driver):
+        super(GroupInfoButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="Group info"]')
+
+    def navigate(self):
+        return GroupChatInfoView(self.driver)
 
 
 class LeaveChatButton(BaseButton):
@@ -262,6 +282,13 @@ class HistoryTimeMarker(BaseText):
         self.locator = self.Locator.xpath_selector('//*[@text="%s"]' % marker)
 
 
+class GroupChatInfoView(BaseView):
+    def __init__(self, driver):
+        super(GroupChatInfoView, self).__init__(driver)
+
+        self.add_members = AddGroupChatMembersButton(self.driver)
+
+
 class ChatView(BaseView):
     def __init__(self, driver):
         super(ChatView, self).__init__(driver)
@@ -281,6 +308,7 @@ class ChatView(BaseView):
         self.members_button = MembersButton(self.driver)
         self.delete_chat_button = DeleteChatButton(self.driver)
         self.clear_history_button = ClearHistoryButton(self.driver)
+        self.group_info = GroupInfoButton(self.driver)
         self.clear_button = ClearButton(self.driver)
         self.leave_chat_button = LeaveChatButton(self.driver)
         self.leave_button = LeaveButton(self.driver)
@@ -390,6 +418,16 @@ class ChatView(BaseView):
         send_transaction_view.sign_transaction(password)
         send_transaction_view.find_full_text(amount)
         self.find_full_text('to  ' + recipient['username'], 10)
+
+    def add_members_to_group_chat(self, user_names_to_add: list):
+        self.chat_options.click()
+        group_info_view = self.group_info.click()
+        add_members_view = group_info_view.add_members.click()
+        for user_name in user_names_to_add:
+            user_contact = add_members_view.get_username_checkbox(user_name)
+            user_contact.scroll_to_element()
+            user_contact.click()
+        add_members_view.add_button.click()
 
     def request_transaction_in_1_1_chat(self, asset, amount):
         self.commands_button.click()

@@ -49,6 +49,10 @@ class CreateButton(BaseButton):
         super(CreateButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('create-button')
 
+    def navigate(self):
+        from views.chat_view import ChatView
+        return ChatView(self.driver)
+
 
 class EnterUrlEditbox(BaseEditBox):
     def __init__(self, driver):
