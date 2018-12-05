@@ -256,9 +256,11 @@
                                       clock-value timestamp)
             old-message-id  (old-message-id message-record)
             raw-payload     (raw-payload message-record)
-            message-id      (transport.utils/message-id from raw-payload)]
+            message-id      (transport.utils/message-id from raw-payload)
+            raw-payload-hash (transport.utils/sha3 raw-payload)]
         (vswap! old-ids->new-ids assoc prev-message-id message-id)
         (aset message "message-id" message-id)
+        (aset message "raw-payload-hash" raw-payload-hash)
         (aset message "old-message-id" old-message-id)))
 
     (dotimes [i (.-length user-statuses)]

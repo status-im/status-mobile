@@ -307,7 +307,8 @@
                  :content-type constants/content-type-status}]
     (assoc message
            :message-id (transport.utils/system-message-id message)
-           :old-message-id "system")))
+           :old-message-id "system"
+           :raw-payload-hash "system")))
 
 (defn group-message? [{:keys [message-type]}]
   (#{:group-user-message :public-group-user-message} message-type))
@@ -342,7 +343,8 @@
         message-id      (transport.utils/message-id from raw-payload)
         message-with-id (assoc message
                                :message-id message-id
-                               :old-message-id old-message-id)]
+                               :old-message-id old-message-id
+                               :raw-payload-hash (transport.utils/sha3 raw-payload))]
 
     (fx/merge cofx
               (chat-model/upsert-chat {:chat-id chat-id

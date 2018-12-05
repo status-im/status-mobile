@@ -57,3 +57,8 @@
       (assoc-in [:properties :old-message-id]
                 {:type    :string
                  :indexed true})))
+
+(def v9
+  (-> v8
+      (assoc-in [:properties :raw-payload-hash]
+                {:type :string})))

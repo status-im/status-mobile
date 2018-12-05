@@ -281,7 +281,7 @@
 (def v27 [chat/v9
           transport/v7
           contact/v3
-          message/v8
+          message/v9
           mailserver/v11
           mailserver-topic/v1
           user-status/v2
