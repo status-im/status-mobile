@@ -266,9 +266,15 @@
             message-id      (transport.utils/message-id from raw-payload)
             raw-payload-hash (transport.utils/sha3 raw-payload)]
         (vswap! old-ids->new-ids assoc prev-message-id message-id)
-        (aset message "message-id" message-id)
-        (aset message "raw-payload-hash" raw-payload-hash)
-        (aset message "old-message-id" old-message-id)))
+        (if (.objectForPrimaryKey
+             new-realm
+             "message"
+             message-id)
+          (.delete new-realm message)
+          (do
+            (aset message "message-id" message-id)
+            (aset message "raw-payload-hash" raw-payload-hash)
+            (aset message "old-message-id" old-message-id)))))
 
     (dotimes [i (.-length user-statuses)]
       (let [user-status (aget user-statuses i)
@@ -276,6 +282,11 @@
             new-message-id (get @old-ids->new-ids message-id)
             public-key     (aget user-status "public-key")
             new-status-id (str new-message-id "-" public-key)]
-        (when (contains? @old-ids->new-ids message-id)
-          (aset user-status "status-id" new-status-id)
-          (aset user-status "message-id" new-message-id))))))
+        (if (.objectForPrimaryKey
+             new-realm
+             "user-status"
+             new-status-id)
+          (.delete new-realm user-status)
+          (when (contains? @old-ids->new-ids message-id)
+            (aset user-status "status-id" new-status-id)
+            (aset user-status "message-id" new-message-id)))))))
