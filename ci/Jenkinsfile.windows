@@ -46,7 +46,7 @@ pipeline {
 
   stages {
     stage('Prep') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {
         script { nvm(env.NODE_VERSION) {
           /* Necessary to load methods */
           desktop = load 'ci/desktop.groovy'
