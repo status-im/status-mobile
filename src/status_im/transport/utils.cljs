@@ -28,7 +28,7 @@
 (defn message-id
   "Get a message-id"
   [from raw-payload]
-  (sha3 (str from raw-payload)))
+  (sha3 (str from (sha3 raw-payload))))
 
 (defn get-topic
   "Get the topic of a group chat or public chat from the chat-id"

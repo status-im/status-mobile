@@ -118,6 +118,8 @@
                           signature
                           (.-payload (:js-obj cofx)))
              :chat-id chat-id
+             :raw-payload-hash (transport.utils/sha3
+                                (.-payload (:js-obj cofx)))
              :from signature
              :js-obj (:js-obj cofx))]})
   (validate [this]
