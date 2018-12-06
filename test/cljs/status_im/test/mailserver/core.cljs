@@ -321,13 +321,13 @@
   (testing "Mailserver disconnected, sym-key exists"
     (let [result (peers-summary-change-result true false true)]
       (is (= (into #{} (keys result))
-             #{:db :mailserver/add-peer :utils/dispatch-later}))
+             #{:db :mailserver/add-peer :utils/dispatch-later :mailserver/update-mailservers}))
       (is (= (get-in result [:db :mailserver/state])
              :connecting))))
   (testing "Mailserver disconnected, sym-key doesn't exists (unlikely situation in practice)"
     (let [result (peers-summary-change-result false false true)]
       (is (= (into #{} (keys result))
-             #{:db :mailserver/add-peer :utils/dispatch-later  :shh/generate-sym-key-from-password}))
+             #{:db :mailserver/add-peer :utils/dispatch-later  :shh/generate-sym-key-from-password :mailserver/update-mailservers}))
       (is (= (get-in result [:db :mailserver/state])
              :connecting))))
   (testing "Mailserver isn't concerned by peer summary changes"

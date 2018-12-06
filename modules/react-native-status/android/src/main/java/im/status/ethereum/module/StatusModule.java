@@ -791,6 +791,26 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     StatusThreadPoolExecutor.getInstance().execute(r);
   }
 
+  @ReactMethod
+  public void updateMailservers(final String enodes, final Callback callback) {
+    Log.d(TAG, "updateMailservers");
+    if (!checkAvailability()) {
+      callback.invoke(false);
+      return;
+    }
+
+    Runnable r = new Runnable() {
+      @Override
+      public void run() {
+        String res = Statusgo.UpdateMailservers(enodes);
+
+        callback.invoke(res);
+      }
+    };
+
+    StatusThreadPoolExecutor.getInstance().execute(r);
+  }
+
   @Override
   public @Nullable
   Map<String, Object> getConstants() {

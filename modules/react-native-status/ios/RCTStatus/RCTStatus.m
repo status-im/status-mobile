@@ -206,6 +206,16 @@ RCT_EXPORT_METHOD(addPeer:(NSString *)enode
 #endif
 }
 
+//////////////////////////////////////////////////////////////////// updateMailservers
+RCT_EXPORT_METHOD(updateMailservers:(NSString *)enodes
+                  callback:(RCTResponseSenderBlock)callback) {
+  char * result = UpdateMailservers((char *) [enodes UTF8String]);
+  callback(@[[NSString stringWithUTF8String: result]]);
+#if DEBUG
+  NSLog(@"UpdateMailservers() method called");
+#endif
+}
+
 //////////////////////////////////////////////////////////////////// recoverAccount
 RCT_EXPORT_METHOD(recoverAccount:(NSString *)passphrase
                   password:(NSString *)password

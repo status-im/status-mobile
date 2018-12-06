@@ -39,7 +39,9 @@
             view-id                      [:get :view-id]
             window-width                 [:dimensions/window-width]]
     (when-let [label (cond
-                       offline? :t/offline
+                       (and offline?
+                            disconnected?) :t/offline
+                       offline? :t/wallet-offline
                        disconnected? :t/disconnected
                        mailserver-connection-error? :t/mailserver-reconnect
                        mailserver-request-error? :t/mailserver-request-error-status

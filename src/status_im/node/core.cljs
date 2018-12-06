@@ -100,18 +100,19 @@
                              :RendezvousNodes    rendezvous-nodes})
 
       :always
-      (assoc :WhisperConfig         {:Enabled true
-                                     :LightClient true
-                                     :MinimumPoW 0.001
-                                     :EnableNTPSync true}
-             :RequireTopics         (get-topics network)
-             :InstallationID        installation-id
-             :PFSEnabled            (or config/pfs-encryption-enabled?
+      (assoc :WhisperConfig           {:Enabled true
+                                       :LightClient true
+                                       :MinimumPoW 0.001
+                                       :EnableNTPSync true}
+             :RequireTopics           (get-topics network)
+             :InstallationID          installation-id
+             :MailServerConfirmations config/mailserver-confirmations-enabled?
+             :PFSEnabled              (or config/pfs-encryption-enabled?
                                         ;; We don't check dev-mode? here as
                                         ;; otherwise we would have to restart the node
                                         ;; when the user enables it
-                                        config/group-chats-enabled?
-                                        (config/pairing-enabled? true)))
+                                          config/group-chats-enabled?
+                                          (config/pairing-enabled? true)))
 
       (and
        config/bootnodes-settings-enabled?

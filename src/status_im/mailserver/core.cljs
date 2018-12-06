@@ -127,6 +127,15 @@
                    (response-handler #(log/debug "mailserver: add-peer success" %)
                                      #(log/error "mailserver: add-peer error" %))))
 
+;; We now wait for a confirmation from the mailserver before marking the message
+;; as sent.
+
+(defn update-mailservers! [enodes]
+  (status/update-mailservers
+   (.stringify js/JSON (clj->js enodes))
+   (response-handler #(log/debug "mailserver: update-mailservers success" %)
+                     #(log/error "mailserver: update-mailservers error" %))))
+
 (defn remove-peer! [enode]
   (let [args    {:jsonrpc "2.0"
                  :id      2
@@ -146,6 +155,11 @@
  :mailserver/remove-peer
  (fn [enode]
    (remove-peer! enode)))
+
+(re-frame/reg-fx
+ :mailserver/update-mailservers
+ (fn [enodes]
+   (update-mailservers! enodes)))
 
 (defn mark-trusted-peer! [web3 enode]
   (.markTrustedPeer (transport.utils/shh web3)
@@ -198,6 +212,9 @@
                        (update-mailserver-state :connecting)
                        (update :mailserver/connection-checks inc))
                :mailserver/add-peer address
+               ;; Any message sent before this takes effect will not be marked as sent
+               ;; probably we should improve the UX so that is more transparent to the user
+               :mailserver/update-mailservers [address]
                :utils/dispatch-later [{:ms connection-timeout
                                        :dispatch [:mailserver/check-connection-timeout]}]}
               (when-not (or sym-key-id generating-sym-key?)

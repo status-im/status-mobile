@@ -73,3 +73,5 @@
 (def enable-installation native-module/enable-installation)
 
 (def disable-installation native-module/disable-installation)
+
+(def update-mailservers native-module/update-mailservers)

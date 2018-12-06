@@ -319,3 +319,13 @@ void RCTStatus::logStatusGoResult(const char* methodName, const char* result)
         qCWarning(RCTSTATUS) << methodName << "- error:" << qUtf8Printable(error);
     }
 }
+
+void RCTStatus::updateMailservers(QString enodes, double callbackId) {
+    Q_D(RCTStatus);
+    qCDebug(RCTSTATUS) << "::updateMailservers call - callbackId:" << callbackId;
+    QtConcurrent::run([&](QString enodes, double callbackId) {
+            const char* result = UpdateMailservers(enodes.toUtf8().data());
+            logStatusGoResult("::updateMailservers UpdateMailservers", result);
+            d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
+        }, enodes, callbackId);
+}
