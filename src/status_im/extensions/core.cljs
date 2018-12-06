@@ -276,8 +276,9 @@
   [button/secondary-button (merge {:disabled? (or (when (contains? m :enabled) (or (nil? enabled) (false? enabled))) disabled)}
                                   (when on-click {:on-press #(re-frame/dispatch (on-click {}))})) label])
 
-(defn input [{:keys [keyboard-type style on-change placeholder]}]
+(defn input [{:keys [keyboard-type style on-change placeholder placeholder-text-color]}]
   [react/text-input (merge {:placeholder placeholder}
+                           (when placeholder-text-color {:placeholder-text-color placeholder-text-color})
                            (when style {:style style})
                            (when keyboard-type {:keyboard-type keyboard-type})
                            (when on-change
@@ -287,8 +288,8 @@
   (into [react/touchable-opacity (merge (when on-press {:on-press #(re-frame/dispatch (on-press {}))})
                                         (when style {:style style}))] children))
 
-(defn image [{:keys [uri style]}]
-  [react/image (merge {:style (merge {:width 100 :height 100} style)} {:source {:uri uri}})])
+(defn image [{:keys [source uri style]}]
+  [react/image (merge {:style (merge {:width 100 :height 100} style)} {:source (if source source {:uri uri})})])
 
 (defn link [{:keys [uri]}]
   [react/text
@@ -341,9 +342,9 @@
   {:components {'view               {:value view}
                 'text               {:value text}
                 'touchable-opacity  {:value touchable-opacity :properties {:on-press :event}}
-                'icon               {:value icon :properties {:key :keyword :color :keyword}}
-                'image              {:value image :properties {:uri :string}}
-                'input              {:value input :properties {:on-change :event :placeholder :string :keyboard-type :keyword}}
+                'icon               {:value icon :properties {:key :keyword :color :any}}
+                'image              {:value image :properties {:uri :string :source :numeric}}
+                'input              {:value input :properties {:on-change :event :placeholder :string :keyboard-type :keyword :placeholder-text-color :any}}
                 'button             {:value button :properties {:enabled :boolean :disabled :boolean :on-click :event}}
                 'link               {:value link :properties {:uri :string}}
                 'list               {:value list :properties {:data :vector :item-view :view :key? :keyword}}
