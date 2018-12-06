@@ -4,7 +4,10 @@ def plutil(name, value) {
   sh "plutil -replace ${name} -string ${value} ios/StatusIm/Info.plist"
 }
 
-def compile(type = 'nightly') {
+def bundle(type) {
+  if (!type) {
+    type = cmn.getBuildType()
+  }
   def target
   switch (type) {
     case 'release':     target = 'release'; break;
@@ -13,8 +16,8 @@ def compile(type = 'nightly') {
     default:            target = 'nightly';
   }
   /* configure build metadata */
-  plutil('CFBundleShortVersionString', common.version())
-  plutil('CFBundleVersion', common.buildNumber())
+  plutil('CFBundleShortVersionString', cmn.version())
+  plutil('CFBundleVersion', cmn.buildNumber())
   plutil('CFBundleBuildUrl', currentBuild.absoluteUrl)
   /* the dir might not exist */
   sh 'mkdir -p status-e2e'

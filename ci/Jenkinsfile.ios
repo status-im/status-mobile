@@ -63,9 +63,9 @@ pipeline {
         script { mobile.leinBuild('ios') }
       } }
     }
-    stage('Compile') {
+    stage('Bundle') {
       steps { nvm(env.NODE_VERSION) {
-        script { api = mobile.ios.compile(cmn.getBuildType()) }
+        script { api = mobile.ios.bundle(cmn.getBuildType()) }
       } }
     }
     stage('Archive') {

@@ -1,15 +1,15 @@
-common = load 'ci/common.groovy'
+cmn = load 'ci/common.groovy'
 
-def compile(type = 'nightly') {
+def bundle(type = 'nightly') {
   /* Disable Gradle Daemon https://stackoverflow.com/questions/38710327/jenkins-builds-fail-using-the-gradle-daemon */
   def gradleOpt = "-PbuildUrl='${currentBuild.absoluteUrl}' -Dorg.gradle.daemon=false "
   if (type == 'release') {
-    gradleOpt += "-PreleaseVersion='${common.version()}'"
+    gradleOpt += "-PreleaseVersion='${cmn.version()}'"
   }
   dir('android') {
     sh "./gradlew assembleRelease ${gradleOpt}"
   }
-  def pkg = common.pkgFilename(type, 'apk')
+  def pkg = cmn.pkgFilename(type, 'apk')
   sh "cp android/app/build/outputs/apk/release/app-release.apk ${pkg}"
   return pkg
 }
@@ -24,7 +24,7 @@ def uploadToPlayStore(type = 'nightly') {
 }
 
 def uploadToSauceLabs() {
-  def changeId = common.getParentRunEnv('CHANGE_ID')
+  def changeId = cmn.getParentRunEnv('CHANGE_ID')
   if (changeId != null) {
     env.SAUCE_LABS_NAME = "${changeId}.apk"
   } else {

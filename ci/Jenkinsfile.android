@@ -66,9 +66,9 @@ pipeline {
         script { mobile.leinBuild('android') }
       }
     }
-    stage('Compile') {
+    stage('Bundle') {
       steps {
-        script { apk = mobile.android.compile(cmn.getBuildType()) }
+        script { apk = mobile.android.bundle(cmn.getBuildType()) }
       }
     }
     stage('Archive') {
