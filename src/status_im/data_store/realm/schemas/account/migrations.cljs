@@ -239,7 +239,9 @@
 (defn v27 [old-ream new-realm]
   (let [messages (.objects new-realm "message")
         user-statuses (.objects new-realm "user-status")
-        old-ids->new-ids (volatile! {})]
+        old-ids->new-ids (volatile! {})
+        messages-to-be-deleted (volatile! [])
+        statuses-to-be-deleted (volatile! [])]
     (dotimes [i (.-length messages)]
       (let [message         (aget messages i)
             prev-message-id (aget message "message-id")
@@ -263,11 +265,14 @@
              new-realm
              "message"
              message-id)
-          (.delete new-realm message)
+          (vswap! messages-to-be-deleted conj message)
           (do
             (aset message "message-id" message-id)
             (aset message "raw-payload-hash" raw-payload-hash)
             (aset message "old-message-id" old-message-id)))))
+
+    (doseq [message @messages-to-be-deleted]
+      (.delete new-realm message))
 
     (dotimes [i (.-length user-statuses)]
       (let [user-status (aget user-statuses i)
@@ -279,7 +284,10 @@
              new-realm
              "user-status"
              new-status-id)
-          (.delete new-realm user-status)
+          (vswap! statuses-to-be-deleted conj user-status)
           (when (contains? @old-ids->new-ids message-id)
             (aset user-status "status-id" new-status-id)
-            (aset user-status "message-id" new-message-id)))))))
+            (aset user-status "message-id" new-message-id)))))
+
+    (doseq [status @statuses-to-be-deleted]
+      (.delete new-realm status))))
