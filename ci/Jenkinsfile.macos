@@ -21,7 +21,6 @@ pipeline {
     LC_ALL = 'en_US.UTF-8'
     QT_PATH = '/usr/local/opt/qt'
     PATH = "/usr/local/opt/qt/bin:${env.PATH}"
-    MACDEPLOYQT = '/usr/local/opt/qt/bin/macdeployqt'
   }
 
   stages {
