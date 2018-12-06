@@ -26,16 +26,13 @@ pipeline {
     }
     stage('Build') {
       parallel {
-        stage('MacOS') { when { expression { btype != 'release' } }
-        steps { script {
+        stage('MacOS') { steps { script {
           osx = cmn.buildBranch('status-react/combined/desktop-macos')
         } } }
-        stage('Linux') { when { expression { btype != 'release' } }
-        steps { script {
+        stage('Linux') { steps { script {
           nix = cmn.buildBranch('status-react/combined/desktop-linux')
         } } }
-        stage('Windows') { when { expression { btype != 'release' } }
-        steps { script {
+        stage('Windows') { steps { script {
           win = cmn.buildBranch('status-react/combined/desktop-windows')
         } } }
         stage('iOS') { steps { script {
