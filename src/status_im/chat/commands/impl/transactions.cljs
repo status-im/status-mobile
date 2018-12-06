@@ -23,7 +23,6 @@
             [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]
             [status-im.ui.screens.wallet.db :as wallet.db]
-            [status-im.ui.screens.wallet.choose-recipient.events :as choose-recipient.events]
             [status-im.ui.screens.currency-settings.subs :as currency-settings.subs]
             [status-im.models.transactions :as wallet.transactions]
             [status-im.ui.screens.navigation :as navigation]
@@ -317,8 +316,8 @@
                                     :amount (money/formatted->internal value symbol decimals)
                                     :amount-text amount
                                     :amount-error error)
-                         (choose-recipient.events/fill-request-details
-                          (transaction-details recipient-contact symbol))
+                         #_(choose-recipient.events/fill-request-details
+                            (transaction-details recipient-contact symbol))
                          (update-in [:wallet :send-transaction]
                                     dissoc :id :password :wrong-password?))
                  ;; TODO(janherich) - refactor wallet send events, updating gas price

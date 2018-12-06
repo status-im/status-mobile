@@ -199,47 +199,6 @@
                      :accessibility-label (if request? :contact-address-text :recipient-address-text)}
          (ethereum/normalized-address address)]]])))
 
-(defn render-contact [contact]
-  [list/touchable-item #(re-frame/dispatch [:wallet/fill-request-from-contact contact])
-   [list/item
-    [photos/photo (:photo-path contact) {:size list.styles/image-size}]
-    [list/item-content
-     [list/item-primary {:accessibility-label :contact-name-text}
-      (:name contact)]
-     [react/text {:style list.styles/secondary-text
-                  :accessibility-label :contact-address-text}
-      (ethereum/normalized-address (:address contact))]]]])
-
-(views/defview recent-recipients []
-  (views/letsubs [contacts [:contacts/active]]
-    [simple-screen
-     [toolbar (i18n/label :t/recipient)]
-     [react/view styles/recent-recipients
-      [list/flat-list {:data      contacts
-                       :key-fn    :address
-                       :render-fn render-contact}]]]))
-
-(defn contact-code []
-  (let [content (reagent/atom nil)]
-    (fn []
-      [simple-screen {:avoid-keyboard? true}
-       [toolbar {:style wallet.styles/toolbar-bottom-line}
-        default-action
-        (i18n/label :t/recipient)]
-       [react/view components.styles/flex
-        [cartouche {}
-         (i18n/label :t/recipient)
-         [text-input {:multiline           true
-                      :style               styles/contact-code-text-input
-                      :placeholder         (i18n/label :t/recipient-code)
-                      :on-change-text      #(reset! content %)
-                      :accessibility-label :recipient-address-input}]]
-        [bottom-buttons/bottom-button
-         [button/button {:disabled?    (string/blank? @content)
-                         :on-press     #(re-frame/dispatch [:wallet.send/set-recipient @content])
-                         :fit-to-text? false}
-          (i18n/label :t/done)]]]])))
-
 (defn recipient-qr-code []
   [choose-recipient/choose-recipient])
 

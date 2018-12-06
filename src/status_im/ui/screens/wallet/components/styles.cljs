@@ -188,10 +188,6 @@
 (def recipient-no-address
   {:color colors/white-transparent})
 
-(def recent-recipients
-  {:flex             1
-   :background-color colors/white})
-
 (def wallet-value-container
   {:flex           1
    :flex-direction :row})

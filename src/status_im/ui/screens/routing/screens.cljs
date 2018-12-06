@@ -102,7 +102,7 @@
    :wallet-send-transaction-chat     send/send-transaction
    :contact-code                     wallet.components/contact-code
    :wallet-send-transaction          send/send-transaction
-   :recent-recipients                wallet.components/recent-recipients
+   :recent-recipients                request/wallet-request-contacts-list
    :wallet-transaction-sent          transaction-sent/transaction-sent
    :recipient-qr-code                wallet.components/recipient-qr-code
    :wallet-choose-amount             send.views/choose-amount-token

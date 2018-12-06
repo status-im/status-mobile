@@ -165,5 +165,5 @@
    :font-size         30
    :font-weight       :bold
    :line-height       39
-   :min-width         236
+   :width             236
    :margin-horizontal 24})

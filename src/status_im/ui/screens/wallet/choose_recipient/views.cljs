@@ -10,18 +10,25 @@
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.wallet.choose-recipient.styles :as styles]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.dimensions :as dimensions]
+            [reagent.core :as reagent]))
+
+(defn toggle-flashlight [old-value]
+  (if (= :off old-value)
+    :on
+    :off))
 
 (defn- toolbar-view [camera-flashlight]
   [toolbar/toolbar styles/toolbar
    [toolbar/nav-button (actions/back-white actions/default-handler)]
    [toolbar/content-title {:color :white}
     (i18n/label :t/wallet-choose-recipient)]
-   [toolbar/actions [{:icon      (if (= :on camera-flashlight)
+   [toolbar/actions [{:icon      (if (= :on @camera-flashlight)
                                    :main-icons/flash-active
                                    :main-icons/flash-inactive)
                       :icon-opts {:color :white}
-                      :handler   #(re-frame/dispatch [:wallet/toggle-flashlight])}]]])
+                      :handler   #(swap! camera-flashlight toggle-flashlight)}]]])
 
 (defn- viewfinder [{:keys [height width]} size]
   (let [height (cond-> height
@@ -44,9 +51,10 @@
   (int (* 2 (/ (min height width) 3))))
 
 (defview choose-recipient []
-  (letsubs [read-once?        (atom false)
-            dimensions        [:dimensions/window]
-            camera-flashlight [:wallet.send/camera-flashlight]]
+  (letsubs [{:keys [on-recipient]} [:get-screen-params :recipient-qr-code]
+            camera-flashlight      (reagent/atom :off) ;; values are :off and :on
+            read-once?             (atom false)
+            dimensions             (dimensions/window)]
     [react/view {:style styles/qr-code}
      [status-bar/status-bar {:type :transparent}]
      [toolbar-view camera-flashlight]
@@ -60,10 +68,11 @@
        [camera/camera {:style         styles/preview
                        :aspect        :fill
                        :captureAudio  false
-                       :torchMode     (camera/set-torch camera-flashlight)
+                       :torchMode     (camera/set-torch @camera-flashlight)
                        :onBarCodeRead #(when-not @read-once?
                                          (reset! read-once? true)
-                                         (re-frame/dispatch [:wallet/fill-request-from-url (camera/get-qr-code-data %) :qr]))}]]
+                                         (on-recipient (camera/get-qr-code-data %))
+                                         (re-frame/dispatch [:navigate-back]))}]]
       [viewfinder dimensions (size dimensions)]]
      [bottom-buttons/bottom-button
       [button/button {:disabled?           false

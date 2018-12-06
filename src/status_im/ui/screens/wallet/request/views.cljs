@@ -21,15 +21,37 @@
             [status-im.utils.ethereum.eip681 :as eip681]
             [status-im.utils.utils :as utils]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]))
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.components.list.styles :as list.styles]
+            [status-im.ui.components.colors :as colors]))
 
-;; Request screen
+(defn render-contact [contact]
+  [list/touchable-item #(re-frame/dispatch [:wallet/fill-request-from-contact contact])
+   [list/item
+    [photos/photo (:photo-path contact) {:size list.styles/image-size}]
+    [list/item-content
+     [list/item-primary {:accessibility-label :contact-name-text}
+      (:name contact)]
+     [react/text {:style               list.styles/secondary-text
+                  :accessibility-label :contact-address-text}
+      (ethereum/normalized-address (:address contact))]]]])
+
+(views/defview wallet-request-contacts-list []
+  (views/letsubs [contacts [:contacts/all-added-people-contacts]]
+    [wallet.components/simple-screen
+     [wallet.components/toolbar (i18n/label :t/recipient)]
+     [react/view {:flex             1
+                  :background-color colors/white}
+      [list/flat-list {:data      contacts
+                       :key-fn    :address
+                       :render-fn render-contact}]]]))
 
 (views/defview send-transaction-request []
-  ;; TODO(jeluard) both send and request flows should be merged
   (views/letsubs [network                                           [:account/network]
-                  {:keys [to to-name public-key]}                   [:wallet.send/transaction]
-                  {:keys [amount amount-error amount-text symbol]}  [:wallet.request/transaction]
+                  {:keys [to to-name public-key amount amount-error
+                          amount-text symbol]}                      [:wallet.request/transaction]
                   network-status                                    [:network-status]
                   all-tokens                                        [:wallet/all-tokens]
                   scroll                                            (atom nil)]

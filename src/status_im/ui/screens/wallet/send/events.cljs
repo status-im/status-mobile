@@ -58,35 +58,34 @@
 ;;;; Handlers
 ;; HANDLE QR CODE
 
-#_(defn- qr-data->send-tx-data [{:keys [address name value symbol gas gasPrice public-key from-chat?]}]
-    {:pre [(not (nil? address))]}
-    (cond-> {:to address :public-key public-key}
-      value      (assoc :amount value)
-      symbol     (assoc :symbol symbol)
-      gas        (assoc :gas (money/bignumber gas))
-      from-chat? (assoc :from-chat? from-chat?)
-      gasPrice   (assoc :gas-price (money/bignumber gasPrice))))
+(defn qr-data->send-tx-data [{:keys [address value symbol gas gasPrice public-key from-chat?]}]
+  {:pre [(not (nil? address))]}
+  (cond-> {:to address :public-key public-key}
+    value (assoc :amount value)
+    symbol (assoc :symbol symbol)
+    gas (assoc :gas (money/bignumber gas))
+    from-chat? (assoc :from-chat? from-chat?)
+    gasPrice (assoc :gas-price (money/bignumber gasPrice))))
 
-#_(defn extract-qr-code-details [chain-id qr-uri]
-    {:pre [(integer? chain-id) (string? qr-uri)]}
+(defn extract-qr-code-details [chain qr-uri]
+  {:pre [(keyword? chain) (string? qr-uri)]}
   ;; i don't like fetching all tokens here
-    (let [{:keys [:wallet/all-tokens]} @re-frame.db/app-db
-          qr-uri (string/trim qr-uri)
-        ;chain-id (ethereum/chain-keyword->chain-id chain)
-]
-      (or (let [m (eip681/parse-uri qr-uri)]
-            (merge m (eip681/extract-request-details m all-tokens)))
-          (when (ethereum/address? qr-uri)
-            {:address qr-uri :chain-id chain-id}))))
+  (let [{:keys [:wallet/all-tokens]} @re-frame.db/app-db
+        qr-uri (string/trim qr-uri)
+        chain-id (ethereum/chain-keyword->chain-id chain)]
+    (or (let [m (eip681/parse-uri qr-uri)]
+          (merge m (eip681/extract-request-details m all-tokens)))
+        (when (ethereum/address? qr-uri)
+          {:address qr-uri :chain-id chain-id}))))
 
-#_(defn qr-data->transaction-data [qr-data]
-    {:pre [(map? qr-data)]}
+(defn qr-data->transaction-data [qr-data]
+  {:pre [(map? qr-data)]}
   ;; i don't like fetching all tokens here
-    (let [{:keys [:contacts/contacts]} @re-frame.db/app-db
-          {:keys [to] :as tx-details} (qr-data->send-tx-data qr-data)
-          contact-name (:name (contact.db/find-contact-by-address contacts to))]
-      (cond-> tx-details
-        contact-name (assoc :to-name name))))
+  (let [{:keys [:contacts/contacts]} @re-frame.db/app-db
+        {:keys [to name] :as tx-details} (qr-data->send-tx-data qr-data)
+        contact-name (:name (contact.db/find-contact-by-address contacts to))]
+    (cond-> tx-details
+      contact-name (assoc :to-name name))))
 
 ;; CHOOSEN RECIPIENT
 (defn eth-name->address [chain recipient callback]
