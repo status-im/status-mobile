@@ -14,7 +14,8 @@ function sendAPIrequest(permission, params) {
     bridgeSend({
         type: 'api-request',
         permission: permission,
-        messageId: messageId
+        messageId: messageId,
+        params: params
     });
 
     return new Promise(function (resolve, reject) {
@@ -100,6 +101,10 @@ var StatusAPI = function () {};
 
 StatusAPI.prototype.getContactCode = function () {
     return sendAPIrequest('contact-code');
+};
+
+StatusAPI.prototype.installExtension = function (uri) {
+    return sendAPIrequest('install-extension', {uri: uri});
 };
 
 var ReadOnlyProvider = function () {};

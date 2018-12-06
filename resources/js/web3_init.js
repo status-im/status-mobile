@@ -14,6 +14,7 @@ function sendAPIrequest(permission, params) {
         type: 'api-request',
         permission: permission,
         messageId: messageId,
+        params: params,
         host: window.location.hostname
     });
 
@@ -77,6 +78,10 @@ var StatusAPI = function () {};
 
 StatusAPI.prototype.getContactCode = function () {
     return sendAPIrequest('contact-code');
+};
+
+StatusAPI.prototype.installExtension = function (uri) {
+    return sendAPIrequest('install-extension', {uri: uri});
 };
 
 var StatusHttpProvider = function () {};

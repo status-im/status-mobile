@@ -4,21 +4,34 @@
             [status-im.i18n :as i18n]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.fx :as fx]
-            [status-im.qr-scanner.core :as qr-scanner]))
+            [status-im.qr-scanner.core :as qr-scanner]
+            [status-im.extensions.registry :as extensions.registry]))
+
+(declare process-next-permission)
+(declare send-response-to-bridge)
 
 (def supported-permissions
-  {constants/dapp-permission-qr-code      {:yield-control? true
-                                           :allowed?       true}
-   constants/dapp-permission-contact-code {:title       (i18n/label :t/wants-to-access-profile)
-                                           :description (i18n/label :t/your-contact-code)
-                                           :icon        :icons/profile-active}
-   constants/dapp-permission-web3         {:title       (i18n/label :t/dapp-would-like-to-connect-wallet)
-                                           :description (i18n/label :t/allowing-authorizes-this-dapp)
-                                           :icon        :icons/wallet-active}})
+  {constants/dapp-permission-qr-code           {:yield-control? true
+                                                :allowed?       true}
+   constants/dapp-permission-install-extension {:yield-control? true
+                                                :allowed?       true}
+   constants/dapp-permission-contact-code      {:title       (i18n/label :t/wants-to-access-profile)
+                                                :description (i18n/label :t/your-contact-code)
+                                                :icon        :icons/profile-active}
+   constants/dapp-permission-web3              {:title       (i18n/label :t/dapp-would-like-to-connect-wallet)
+                                                :description (i18n/label :t/allowing-authorizes-this-dapp)
+                                                :icon        :icons/wallet-active}})
 
 (fx/defn permission-yield-control
-  [{:keys [db] :as cofx} dapp-name permission message-id]
+  [{:keys [db] :as cofx} dapp-name permission message-id params]
   (cond
+    (= permission constants/dapp-permission-install-extension)
+    (fx/merge cofx
+              {:db (assoc-in db [:extensions/manage :url :value] (:uri params))}
+              (extensions.registry/load (:uri params) true)
+              (send-response-to-bridge permission message-id true nil)
+              (process-next-permission dapp-name))
+
     (= permission constants/dapp-permission-qr-code)
     (fx/merge (assoc-in cofx [:db :browser/options :yielding-control?] true)
               (qr-scanner/scan-qr-code {:modal? false}
@@ -76,9 +89,9 @@
       (let [pending-permissions (get-in db [:browser/options :pending-permissions])
             next-permission     (last pending-permissions)
             new-cofx (update-in cofx [:db :browser/options :pending-permissions] butlast)]
-        (when-let [{:keys [yield-control? permission message-id allowed?]} next-permission]
+        (when-let [{:keys [yield-control? permission message-id allowed? params]} next-permission]
           (if (and yield-control? allowed?)
-            (permission-yield-control new-cofx dapp-name permission message-id)
+            (permission-yield-control new-cofx dapp-name permission message-id params)
             (permission-show-permission new-cofx dapp-name permission message-id yield-control?)))))))
 
 (fx/defn send-response-and-process-next-permission
@@ -93,12 +106,12 @@
 (fx/defn allow-permission
   "Add permission to set of allowed permission and process next permission"
   [{:keys [db] :as cofx}]
-  (let [{:keys [requested-permission message-id dapp-name yield-control?]}
+  (let [{:keys [requested-permission message-id dapp-name yield-control? params]}
         (get-in db [:browser/options :show-permission])]
     (fx/merge (assoc-in cofx [:db :browser/options :show-permission] nil)
               (update-dapp-permissions dapp-name requested-permission true)
               (if yield-control?
-                (permission-yield-control dapp-name requested-permission message-id)
+                (permission-yield-control dapp-name requested-permission message-id params)
                 (send-response-and-process-next-permission dapp-name requested-permission message-id)))))
 
 (fx/defn deny-permission
@@ -116,7 +129,7 @@
   "Process the permission requested by a dapp
   If supported permission is already granted, return the result immediatly to the bridge
   Otherwise process the first permission which will prompt user"
-  [cofx dapp-name permission message-id]
+  [cofx dapp-name permission message-id params]
   (let [allowed-permissions  (set (get-in cofx [:db :dapps/permissions dapp-name :permissions]))
         permission-allowed?  (boolean (allowed-permissions permission))
         supported-permission (get supported-permissions permission)]
@@ -133,5 +146,6 @@
                                                 :allowed?       (or permission-allowed?
                                                                     (:allowed? supported-permission))
                                                 :yield-control? (:yield-control? supported-permission)
+                                                :params         params
                                                 :message-id     message-id})
                                dapp-name))))

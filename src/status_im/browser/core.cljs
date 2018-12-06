@@ -282,7 +282,7 @@
   (let [browser (get-current-browser db)
         url-original (get-current-url browser)
         data    (types/json->clj message)
-        {{:keys [url]} :navState :keys [type permission payload messageId]} data
+        {{:keys [url]} :navState :keys [type permission payload messageId params]} data
         {:keys [dapp? name]} browser
         dapp-name (if dapp? name (http/url-host url-original))]
     (cond
@@ -300,7 +300,7 @@
       (web3-send-async-read-only cofx dapp-name payload messageId)
 
       (= type constants/api-request)
-      (browser.permissions/process-permission cofx dapp-name permission messageId))))
+      (browser.permissions/process-permission cofx dapp-name permission messageId params))))
 
 (fx/defn handle-message-link
   [cofx link]
