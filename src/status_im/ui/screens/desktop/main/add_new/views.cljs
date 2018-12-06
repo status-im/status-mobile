@@ -45,6 +45,7 @@
          (when show-error-tooltip?
            [error-tooltip chat-error])
          [react/text-input {:placeholder       "name.stateofus.eth"
+                            :auto-focus        true
                             :flex              1
                             :selection-color   colors/blue
                             :font              :default
@@ -108,6 +109,7 @@
            [error-tooltip topic-error])
 
          [react/text-input {:flex            1
+                            :auto-focus      true
                             :font            :default
                             :selection-color colors/blue
                             :placeholder     ""

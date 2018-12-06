@@ -7,6 +7,7 @@
             status-im.ui.screens.subs
             status-im.data-store.core
             [reagent.impl.component :as reagent.component]
+            [status-im.ui.components.desktop.shortcuts :as shortcuts]
             [status-im.ui.screens.desktop.views :as views]
             [status-im.core :as core]
             [status-im.desktop.deep-links :as deep-links]))
@@ -15,6 +16,7 @@
   (reagent/create-class
    {:component-did-mount (fn [this]
                            (re-frame/dispatch [:set-initial-props (reagent/props this)])
+                           (shortcuts/register-default-shortcuts)
                            (deep-links/add-event-listener))
     :reagent-render      (fn [props]
                            views/main)}))

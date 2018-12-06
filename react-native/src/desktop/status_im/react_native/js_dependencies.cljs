@@ -15,7 +15,7 @@
 (def desktop-linking        (.-DesktopLinking (.-NativeModules react-native)))
 (def desktop-menu           (js/require "react-native-desktop-menu"))
 (def desktop-config         (js/require "react-native-desktop-config"))
-
+(def desktop-shortcuts      (js/require "react-native-desktop-shortcuts"))
 (def react-native-firebase  #js {})
 (def camera                 #js {:default #js {:constants {:Aspect "Portrait"}}})
 (def status-keycard         #js {:default #js {}})

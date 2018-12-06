@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "nativePackage": true,
+  "name": "react-native-desktop-shortcuts",
+  "version": "1.0.0",
+  "description": "App-global keyboard shortcuts for Desktop",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": ""
+}
