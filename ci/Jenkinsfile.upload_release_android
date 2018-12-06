@@ -26,11 +26,13 @@ pipeline {
   stages {
     stage('Prep') {
       steps { script {
-          /* Necessary to load methods */
-          mobile = load 'ci/mobile.groovy'
-          cmn    = load 'ci/common.groovy'
-          mobile.prep('release')
-        } }
+        /* Necessary to load methods */
+        mobile = load 'ci/mobile.groovy'
+        cmn    = load 'ci/common.groovy'
+        mobile.prep('release')
+        /* Run at start to void mismatched numbers */
+        cmn.buildNumber()
+      } }
     }
     stage('Lint') {
       steps { script { cmn.runLint() } }
