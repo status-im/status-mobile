@@ -40,6 +40,7 @@ ExternalProject_Add(StatusGo_ep
   SOURCE_DIR ${StatusGo_SOURCE_DIR}
   GIT_REPOSITORY https://github.com/status-im/status-go.git
   GIT_TAG ${STATUS_GO_TAG}
+  GIT_SHALLOW true
   URL https://status-go.ams3.digitaloceanspaces.com/status-go-desktop-${STATUS_GO_VERSION}.zip
       https://github.com/status-im/status-go/archive/${STATUS_GO_VERSION}.zip
   BUILD_BYPRODUCTS ${StatusGo_STATIC_LIB}

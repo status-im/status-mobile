@@ -57,6 +57,10 @@ def prepDeps() {
 }
 
 def compile() {
+  /* since QT is in a custom path we need to add it to PATH */
+  if (env.QT_PATH) {
+    env.PATH = "${env.QT_PATH}:${env.PATH}"
+  }
   sh './scripts/build-desktop.sh compile'
 }
 

@@ -51,14 +51,14 @@ pipeline {
       } }
     }
     stage('Compile') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {
         script { desktop.compile() }
-      } }
+      }
     }
     stage('Bundle') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { dmg = desktop.bundleMacOS(cmn.getBuildType()) }
-      }
+      } }
     }
     stage('Archive') {
       steps { archiveArtifacts dmg }
