@@ -99,8 +99,7 @@
   [cofx encryption-key]
   (fx/merge cofx
             {:init/init-store encryption-key}
-            (initialize-app-db)
-            (node/initialize nil)))
+            (initialize-app-db)))
 
 (fx/defn set-device-uuid
   [{:keys [db]} device-uuid]

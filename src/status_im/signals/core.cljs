@@ -8,11 +8,13 @@
             [status-im.transport.message.core :as transport.message]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.security :as security]))
 
 (fx/defn status-node-started
   [{db :db :as cofx}]
-  (let [{:node/keys [restart? address]} db
+  (let [{:node/keys [restart? address on-ready]
+         :accounts/keys [create]} db
         can-login? (and (not restart?)
                         (:password (accounts.db/credentials cofx)))]
     (fx/merge cofx
@@ -24,14 +26,19 @@
               (when restart?
                 (node/initialize address))
               (when can-login?
-                (accounts.login/login)))))
+                (accounts.login/login))
+              (when (= :create-account on-ready)
+                (fn [_]
+                  {:accounts.create/create-account (:password create)}))
+              (when (= :recover-account on-ready)
+                (fn [{:keys [db]}]
+                  (let [{:keys [password passphrase]} (:accounts/recover db)]
+                    {:accounts.recover/recover-account
+                     [(security/mask-data passphrase) password]}))))))
 
 (fx/defn status-node-stopped
-  [{db :db :as cofx}]
-  (let [{:keys [address]} (accounts.db/credentials cofx)]
-    (fx/merge cofx
-              {:db (assoc db :node/status :stopped)}
-              (node/start address))))
+  [{db :db}]
+  {:db (assoc db :node/status :stopped)})
 
 (fx/defn status-module-initialized [{:keys [db]}]
   {:db                             (assoc db :status-module-initialized? true)

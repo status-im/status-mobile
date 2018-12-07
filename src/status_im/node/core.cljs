@@ -77,11 +77,13 @@
         current-fleet-key (fleet/current-fleet db address)
         current-fleet (get fleet/fleets current-fleet-key)
         rendezvous-nodes (pick-nodes 3 (vals (:rendezvous current-fleet)))
-        {:keys [network
-                installation-id
-                settings
-                bootnodes
-                networks]} (get accounts address)
+        {:keys [network installation-id settings bootnodes networks]}
+        (merge
+         {:network         config/default-network
+          :networks        (:networks/networks db)
+          :settings        (constants/default-account-settings)
+          :installation-id (get db :accounts/new-installation-id)}
+         (get accounts address))
         use-custom-bootnodes (get-in settings [:bootnodes network])
         log-level (or (:log-level settings)
                       config/log-level-status-go)]
@@ -122,13 +124,6 @@
       :always
       (add-log-level log-level))))
 
-(defn get-node-config [db network]
-  (-> (get-in (:networks/networks db) [network :config])
-      (get-base-node-config)
-      (assoc :PFSEnabled false
-             :NoDiscovery true)
-      (add-log-level config/log-level-status-go)))
-
 (fx/defn update-sync-state
   [{:keys [db]} error sync-state]
   {:db (assoc db :node/chain-sync-state
@@ -146,9 +141,7 @@
   (let [network     (if address
                       (get-account-network db address)
                       (:network db))
-        node-config (if address
-                      (get-account-node-config db address)
-                      (get-node-config db network))
+        node-config (get-account-node-config db address)
         node-config-json (types/clj->json node-config)]
     (log/info "Node config: " node-config-json)
     {:db        (assoc db
@@ -156,7 +149,7 @@
                        :node/status :starting)
      :node/start node-config-json}))
 
-(defn stop
+(fx/defn stop
   [{:keys [db]}]
   {:db        (assoc db :node/status :stopping)
    :node/stop nil})
@@ -165,7 +158,7 @@
   [{{:node/keys [status] :as db} :db :as cofx} address]
   (let [restart {:db (assoc db :node/restart? true :node/address address)}]
     (case status
-      :started (stop cofx)
+      :started nil
       :starting (do
                   (when utils.platform/desktop?
                     (status/stop-node))

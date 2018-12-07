@@ -55,14 +55,16 @@
             (models.wallet/update-wallet)
             (transactions/start-sync)))
 
-(fx/defn user-login [{:keys [db] :as cofx}]
+(fx/defn user-login [{:keys [db] :as cofx} create-database?]
   (let [{:keys [address password save-password?]} (accounts.db/credentials cofx)]
     (fx/merge
      cofx
      (merge
-      {:db                            (assoc-in db [:accounts/login :processing] true)
+      {:db                            (-> db
+                                          (assoc-in [:accounts/login :processing] true)
+                                          (assoc :node/on-ready :login))
        :accounts.login/clear-web-data nil
-       :data-store/change-account     [address password false]}
+       :data-store/change-account     [address password create-database?]}
       (when save-password?
         {:keychain/save-user-password [address password]})))))
 
@@ -199,7 +201,7 @@
     (fx/merge cofx
               {:db (assoc-in db [:accounts/login :password] password)}
               (navigation/navigate-to-cofx :progress nil)
-              (user-login))
+              (user-login false))
     (navigation/navigate-to-clean cofx :login nil)))
 
 (re-frame/reg-fx

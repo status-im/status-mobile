@@ -118,10 +118,13 @@
   (re-frame/inject-cofx :data-store/all-browsers)
   (re-frame/inject-cofx :data-store/all-dapp-permissions)]
  (fn [{:keys [db] :as cofx} [_ address]]
-   (fx/merge
-    cofx
-    (node/initialize (get-in db [:accounts/login :address]))
-    (init/initialize-account address))))
+   (let [{:node/keys [status]} db]
+     (fx/merge
+      cofx
+      (if (= status :started)
+        (accounts.login/login)
+        (node/initialize (get-in db [:accounts/login :address])))
+      (init/initialize-account address)))))
 
 (handlers/register-handler-fx
  :init.callback/keychain-reset
@@ -176,6 +179,7 @@
 
 (handlers/register-handler-fx
  :accounts.create.ui/next-step-pressed
+ [(re-frame/inject-cofx :random-guid-generator)]
  (fn [cofx [_ step password password-confirm]]
    (accounts.create/next-step cofx step password password-confirm)))
 
@@ -231,11 +235,13 @@
 
 (handlers/register-handler-fx
  :accounts.recover.ui/sign-in-button-pressed
+ [(re-frame/inject-cofx :random-guid-generator)]
  (fn [cofx _]
    (accounts.recover/recover-account-with-checks cofx)))
 
 (handlers/register-handler-fx
  :accounts.recover.ui/recover-account-confirmed
+ [(re-frame/inject-cofx :random-guid-generator)]
  (fn [cofx _]
    (accounts.recover/recover-account cofx)))
 
@@ -252,7 +258,7 @@
 (handlers/register-handler-fx
  :accounts.login.ui/password-input-submitted
  (fn [cofx _]
-   (accounts.login/user-login cofx)))
+   (accounts.login/user-login cofx false)))
 
 (handlers/register-handler-fx
  :accounts.login.callback/login-success
@@ -293,6 +299,7 @@
 
 (handlers/register-handler-fx
  :accounts.logout.ui/logout-confirmed
+ [(re-frame/inject-cofx :data-store/get-all-accounts)]
  (fn [cofx _]
    (accounts.logout/logout cofx)))
 
@@ -300,6 +307,7 @@
 
 (handlers/register-handler-fx
  :accounts.update.callback/save-settings-success
+ [(re-frame/inject-cofx :data-store/get-all-accounts)]
  (fn [cofx _]
    (accounts.logout/logout cofx)))
 

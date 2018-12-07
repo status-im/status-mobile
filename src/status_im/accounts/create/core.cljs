@@ -19,7 +19,8 @@
             [status-im.utils.signing-phrase.core :as signing-phrase]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [status-im.node.core :as node]))
 
 (defn get-signing-phrase [cofx]
   (assoc cofx :signing-phrase (signing-phrase/generate)))
@@ -33,10 +34,17 @@
    #(re-frame/dispatch [:accounts.create.callback/create-account-success (types/json->clj %) password])))
 
 ;;;; Handlers
-
-(defn create-account [{{:accounts/keys [create] :as db} :db}]
-  {:db (update db :accounts/create assoc :step :account-creating :error nil)
-   :accounts.create/create-account (:password create)})
+(defn create-account
+  [{:keys [db random-guid-generator] :as   cofx}]
+  (fx/merge
+   cofx
+   {:db (-> db
+            (update :accounts/create assoc
+                    :step :account-creating
+                    :error nil)
+            (assoc :node/on-ready :create-account
+                   :accounts/new-installation-id (random-guid-generator)))}
+   (node/initialize nil)))
 
 (fx/defn add-account
   "Takes db and new account, creates map of effects describing adding account to database and realm"
@@ -51,14 +59,13 @@
      :data-store/base-tx [(accounts-store/save-account-tx enriched-account)]}))
 
 (fx/defn on-account-created
-  [{:keys [random-guid-generator
-           signing-phrase
+  [{:keys [signing-phrase
            status
            db] :as cofx}
-   {:keys [pubkey address mnemonic]} password seed-backed-up]
+   {:keys [pubkey address mnemonic installation-id]} password seed-backed-up]
   (let [normalized-address (utils.hex/normalize-hex address)
         account            {:public-key             pubkey
-                            :installation-id        (random-guid-generator)
+                            :installation-id        (or installation-id (get-in db [:accounts/new-installation-id]))
                             :address                normalized-address
                             :name                   (gfycat/generate-gfy pubkey)
                             :status                 status
@@ -72,11 +79,11 @@
     (log/debug "account-created")
     (when-not (string/blank? pubkey)
       (fx/merge cofx
-                {:db (assoc db :accounts/login {:address normalized-address
-                                                :password password
+                {:db (assoc db :accounts/login {:address    normalized-address
+                                                :password   password
                                                 :processing true})}
                 (add-account account)
-                (accounts.login/user-login)))))
+                (accounts.login/user-login true)))))
 
 (defn reset-account-creation [{db :db}]
   {:db (update db :accounts/create assoc
