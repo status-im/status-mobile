@@ -19,10 +19,10 @@
        (try
          (when message-js
            (log/debug "message-handler-fn called" (js/JSON.stringify message-js))
-           (let [payload (notifications/get-notification-payload message-js)]
-             (when payload
-               (log/debug "dispatching :notifications.callback/on-message to display background message" payload)
-               (re-frame/dispatch [:notifications.callback/on-message (:from payload) (:to payload)]))))
+           (let [decoded-payload (notifications/decode-notification-payload message-js)]
+             (when decoded-payload
+               (log/debug "dispatching :notifications.callback/on-message to display background message" decoded-payload)
+               (re-frame/dispatch [:notifications.callback/on-message decoded-payload]))))
          (on-success)
          (catch :default e
            (log/warn "failed to handle background message" e)

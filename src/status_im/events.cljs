@@ -824,8 +824,8 @@
 
 (handlers/register-handler-fx
  :notifications/notification-open-event-received
- (fn [cofx [_ event]]
-   (notifications/handle-push-notification-open cofx event)))
+ (fn [cofx [_ decoded-payload ctx]]
+   (notifications/handle-push-notification-open cofx decoded-payload ctx)))
 
 (handlers/register-handler-fx
  :notifications.callback/get-fcm-token-success
@@ -844,8 +844,8 @@
 
 (handlers/register-handler-fx
  :notifications.callback/on-message
- (fn [cofx [_ from to]]
-   (notifications/handle-on-message cofx from to)))
+ (fn [cofx [_ decoded-payload]]
+   (notifications/handle-on-message cofx decoded-payload)))
 
 ;; hardwallet module
 

@@ -87,7 +87,7 @@
           (fx/merge cofx
                     (remove-hash envelope-hash)
                     (check-confirmations status chat-id message-id)
-                    (models.message/send-push-notification fcm-token status)))))))
+                    (models.message/send-push-notification message-id fcm-token status)))))))
 
 (fx/defn set-contact-message-envelope-hash
   [{:keys [db] :as cofx} chat-id envelope-hash]

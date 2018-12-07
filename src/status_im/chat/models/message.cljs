@@ -375,11 +375,13 @@
               (add-own-status chat-id message-id :sending)
               (send chat-id message-id wrapped-record))))
 
-(fx/defn send-push-notification [cofx fcm-token status]
+(fx/defn send-push-notification [cofx message-id fcm-token status]
+  (log/debug "#6772 - send-push-notification" message-id fcm-token)
   (when (and fcm-token (= status :sent))
     (let [payload {:from (accounts.db/current-public-key cofx)
-                   :to   (get-in cofx [:db :current-chat-id])}]
-      {:send-notification {:data-payload (notifications/create-notification-payload payload)
+                   :to   (get-in cofx [:db :current-chat-id])
+                   :id   message-id}]
+      {:send-notification {:data-payload (notifications/encode-notification-payload payload)
                            :tokens       [fcm-token]}})))
 
 (fx/defn update-message-status [{:keys [db]} chat-id message-id status]
