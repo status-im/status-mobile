@@ -229,3 +229,8 @@
 (def ^:const web3-send-async-callback "web3-send-async-callback")
 (def ^:const scan-qr-code "scan-qr-code")
 (def ^:const scan-qr-code-callback "scan-qr-code-callback")
+
+;;ipfs
+(def ^:const ipfs-add-url "https://ipfs.infura.io:5001/api/v0/add")
+(def ^:const ipfs-add-param-name "extension.event.edn")
+(def ^:const ipfs-cat-url "https://ipfs.infura.io/ipfs/")

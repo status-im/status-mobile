@@ -77,6 +77,18 @@
  :http-post
  http-post)
 
+(defn- http-raw-post [{:keys [url body response-validator success-event-creator failure-event-creator timeout-ms opts]}]
+  (let [on-success #(re-frame/dispatch (success-event-creator %))
+        on-error   #(re-frame/dispatch (failure-event-creator %))
+        all-opts   (assoc opts
+                          :valid-response? response-validator
+                          :timeout-ms      timeout-ms)]
+    (http/raw-post url body on-success on-error all-opts)))
+
+(re-frame/reg-fx
+ :http-raw-post
+ http-raw-post)
+
 (re-frame/reg-fx
  :request-permissions-fx
  (fn [options]

@@ -13,6 +13,7 @@
             [status-im.ui.screens.wallet.settings.views :as settings]
             [status-im.i18n :as i18n]
             [status-im.utils.money :as money]
+            [status-im.constants :as constants]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.handlers :as handlers]
@@ -196,7 +197,7 @@
 (re-frame/reg-event-fx
  :ipfs/cat
  (fn [_ [_ _ {:keys [hash on-success on-failure]}]]
-   {:http-raw-get (merge {:url (str "https://ipfs.infura.io/ipfs/" hash)
+   {:http-raw-get (merge {:url (str constants/ipfs-cat-url hash)
                           :success-event-creator
                           (fn [{:keys [status body]}]
                             (if (= 200 status)
@@ -206,6 +207,30 @@
                          (when on-failure
                            {:failure-event-creator on-failure})
                          {:timeout-ms 5000})}))
+
+(defn- parse-ipfs-add-response [res]
+  (let [{:keys [Name Hash Size]} (parse-json res)]
+    {:name Name
+     :hash Hash
+     :size Size}))
+
+(re-frame/reg-event-fx
+ :ipfs/add
+ (fn [_ [_ _ {:keys [value on-success on-failure]}]]
+   (let [formdata (doto
+                   (js/FormData.)
+                    (.append constants/ipfs-add-param-name value))]
+     {:http-raw-post (merge {:url  constants/ipfs-add-url
+                             :body formdata
+                             :success-event-creator
+                             (fn [{:keys [status body]}]
+                               (if (= 200 status)
+                                 (on-success {:value (parse-ipfs-add-response body)})
+                                 (when on-failure
+                                   (on-failure {:value status}))))}
+                            (when on-failure
+                              {:failure-event-creator on-failure})
+                            {:timeout-ms 5000})})))
 
 (re-frame/reg-event-fx
  :http/post
@@ -456,6 +481,12 @@
                 {:permissions [:read]
                  :value       :ipfs/cat
                  :arguments   {:hash        :string
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ipfs/add
+                {:permissions [:read]
+                 :value       :ipfs/add
+                 :arguments   {:value        :string
                                :on-success  :event
                                :on-failure? :event}}
                 'ethereum/transaction-receipt
