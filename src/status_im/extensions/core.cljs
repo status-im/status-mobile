@@ -423,7 +423,7 @@
                 'arithmetic
                 {:permissions [:read]
                  :value       :extensions/arithmetic
-                 :arguments   {:values    #{:plus :minus :times :divide}
+                 :arguments   {:values    :vector
                                :operation :keyword
                                :on-result :event}}
                 'schedule/start
