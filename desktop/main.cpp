@@ -46,12 +46,6 @@ QProcess *g_nodeJsServerProcess = nullptr;
 const int MAIN_WINDOW_WIDTH = 1024;
 const int MAIN_WINDOW_HEIGHT = 768;
 const QString CRASH_REPORT_EXECUTABLE = QStringLiteral("reportApp");
-const QString CRASH_REPORT_EXECUTABLE_RELATIVE_PATH =
-#ifdef Q_OS_WIN
-    QStringLiteral("");
-#else
-    QStringLiteral("/../reportApp");
-#endif
 
 const char *ENABLE_LOG_FILE_ENV_VAR_NAME = "STATUS_LOG_FILE_ENABLED";
 const char *LOG_FILE_PATH_ENV_VAR_NAME = "STATUS_LOG_PATH";
@@ -253,7 +247,6 @@ int main(int argc, char **argv) {
     killZombieJsServer();
   }
 #else
-  appPath.append(CRASH_REPORT_EXECUTABLE_RELATIVE_PATH);
   dataStoragePath = "";
 #endif
 

@@ -28,7 +28,7 @@ Rectangle {
       Text {
         Layout.alignment: Qt.AlignCenter
         Layout.topMargin: 20
-        text: "Please report us crash log files to allow us fix the issue!"
+        text: "Please report us <b>crash.dmp</b> and <b>Status</b> executable files to allow us fix the issue!"
         font.bold: true
         font.pointSize: 20
       }
@@ -63,7 +63,8 @@ Rectangle {
               wrapMode: TextEdit.Wrap
               selectByMouse: true
               font.pointSize: 12
-              text: "Log files directory:\n" + reportPublisher.resolveDataStoragePath()
+              textFormat: TextEdit.RichText
+              text: "<div>Please upload both <b>crash.dmp</b> and <b>Status</b> executable files from the report directory:<br>" + reportPublisher.resolveDataStoragePath() + "</div>"
           }
 
           Button {

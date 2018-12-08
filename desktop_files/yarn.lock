@@ -4501,7 +4501,7 @@ glogg@^1.0.0:
 
 "google-breakpad@git+https://github.com/status-im/google-breakpad.git":
   version "1.0.0"
-  resolved "git+https://github.com/status-im/google-breakpad.git#9b6167b415d704c80a3303418a7c79d5ed0482ff"
+  resolved "git+https://github.com/status-im/google-breakpad.git#9fcfdc23010ce2b0742d276e2959ab13e7cf0dc7"
 
 got@^5.0.0, got@^5.2.0:
   version "5.7.1"
