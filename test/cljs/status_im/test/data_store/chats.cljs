@@ -10,9 +10,14 @@
               :admins #{4}
               :contacts #{2}
               :tags #{}
-              :membership-updates []}
-             (chats/normalize-chat {:admins [4]
-                                    :contacts [2]})))))
+              :membership-updates []
+              :last-message-type :message-type
+              :last-message-content {:foo "bar"}}
+             (chats/normalize-chat
+              {:admins            [4]
+               :contacts          [2]
+               :last-message-type "message-type"
+               :last-message-content "{:foo \"bar\"}"})))))
   (testing "membership-updates"
     (with-redefs [chats/get-last-clock-value (constantly 42)]
       (let [raw-events {"1" {:id "1" :type "members-added" :clock-value 10 :members [1 2] :signature "a" :from "id-1"}

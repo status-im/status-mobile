@@ -66,42 +66,15 @@
          message-id)))
    statuses))
 
-(fx/defn load-chats-messages
-  [{:keys [db get-stored-messages get-stored-user-statuses get-referenced-messages]
-    :as cofx}]
-  (let [chats (:chats db)
-        public-key (accounts.db/current-public-key cofx)]
-    (fx/merge
-     cofx
-     {:db (assoc
-           db :chats
-           (reduce
-            (fn [chats chat-id]
-              (let [{:keys [messages]}    (get-stored-messages chat-id)
-                    chat-messages         (index-messages messages)
-                    message-ids           (keys chat-messages)
-                    statuses              (get-stored-user-statuses chat-id message-ids)
-                    unviewed-messages-ids (get-unviewed-messages-ids statuses public-key)]
-                (update
-                 chats
-                 chat-id
-                 assoc
-
-                 :messages chat-messages
-                 :message-statuses statuses
-                 :loaded-unviewed-messages-ids unviewed-messages-ids
-                 :referenced-messages (into {}
-                                            (get-referenced-messages
-                                             (get-referenced-ids chat-messages))))))
-            chats
-            (keys chats)))}
-     (group-messages))))
-
 (fx/defn initialize-chats
   "Initialize all persisted chats on startup"
   [{:keys [db default-dapps all-stored-chats] :as cofx}]
   (let [chats (reduce (fn [acc {:keys [chat-id] :as chat}]
-                        (assoc acc chat-id chat))
+                        (assoc acc chat-id
+                               (assoc chat
+                                      :messages-initialized? false
+                                      :referenced-messages {}
+                                      :messages empty-message-map)))
                       {}
                       all-stored-chats)]
     (fx/merge cofx
@@ -154,6 +127,7 @@
           loaded-unviewed-messages   (get-unviewed-messages-ids new-statuses public-key)]
       (fx/merge cofx
                 {:db (-> db
+                         (assoc-in [:chats current-chat-id :messages-initialized?] true)
                          (update-in [:chats current-chat-id :messages] merge indexed-messages)
                          (update-in [:chats current-chat-id :message-statuses] merge new-statuses)
                          (update-in [:chats current-chat-id :referenced-messages]

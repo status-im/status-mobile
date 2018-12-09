@@ -298,3 +298,21 @@
 
     (doseq [status @statuses-to-be-deleted]
       (.delete new-realm status))))
+
+(defn get-last-message [realm chat-id]
+  (->
+   (.objects realm "message")
+   (.filtered (str "chat-id=\"" chat-id "\""))
+   (.sorted "timestamp" true)
+   (aget 0)))
+
+(defn v28 [old-realm new-realm]
+  (let [chats (.objects new-realm "chat")]
+    (dotimes [i (.-length chats)]
+      (let [chat (aget chats i)
+            chat-id (aget chat "chat-id")]
+        (when-let [last-message (get-last-message new-realm chat-id)]
+          (let [content (aget last-message "content")
+                message-type (aget last-message "message-type")]
+            (aset chat "last-message-content" content)
+            (aset chat "last-message-type" message-type)))))))

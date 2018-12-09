@@ -88,9 +88,10 @@
 (defview home-list-chat-item-inner-view [{:keys [chat-id name color online
                                                  group-chat public?
                                                  public-key
-                                                 timestamp]}]
-  (letsubs [last-message [:chats/last-message chat-id]
-            chat-name    [:chats/chat-name chat-id]]
+                                                 timestamp
+                                                 last-message-content
+                                                 last-message-type]}]
+  (letsubs [chat-name    [:chats/chat-name chat-id]]
     (let [truncated-chat-name (utils/truncate-str chat-name 30)]
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])}
        [react/view styles/chat-container
@@ -100,10 +101,10 @@
          [react/view styles/item-upper-container
           [chat-list-item-name truncated-chat-name group-chat public? public-key]
           [react/view styles/message-status-container
-           [message-timestamp (or (:timestamp last-message)
-                                  timestamp)]]]
+           [message-timestamp timestamp]]]
          [react/view styles/item-lower-container
-          [message-content-text last-message]
+          [message-content-text {:content      last-message-content
+                                 :content-type last-message-type}]
           [unviewed-indicator chat-id]]]]])))
 
 (defn home-list-browser-item-inner-view [{:keys [dapp url name browser-id] :as browser}]

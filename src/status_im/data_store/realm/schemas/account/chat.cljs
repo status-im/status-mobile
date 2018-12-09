@@ -223,3 +223,10 @@
                       :tags                    {:type "string[]"}
                       :unviewed-messages-count {:type    :int
                                                 :default 0}}})
+
+(def v10
+  (update v9 :properties merge
+          {:last-message-content {:type     :string
+                                  :optional true}
+           :last-message-type    {:type     :string
+                                  :optional true}}))

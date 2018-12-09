@@ -266,6 +266,26 @@
                    (= from current-public-key))
                  messages))))))
 
+(defn- update-last-message [all-chats chat-id]
+  (let [{:keys [messages message-groups]}
+        (get all-chats chat-id)
+        {:keys [content message-type]}
+        (->> (chat.db/sort-message-groups message-groups messages)
+             first
+             second
+             last
+             :message-id
+             (get messages))]
+    (chat-model/upsert-chat
+     {:chat-id              chat-id
+      :last-message-content content
+      :last-message-type    message-type})))
+
+(fx/defn update-last-messages
+  [{:keys [db] :as cofx} chat-ids]
+  (apply fx/merge cofx
+         (map (partial update-last-message (:chats db)) chat-ids)))
+
 (fx/defn receive-many
   [{:keys [now] :as cofx} messages]
   (let [valid-messages   (keep #(when-let [chat-id (extract-chat-id cofx %)]
@@ -293,7 +313,8 @@
                                  messages-fx-fns
                                  groups-fx-fns
                                  (when platform/desktop?
-                                   [(chat-model/update-dock-badge-label)])))))
+                                   [(chat-model/update-dock-badge-label)])
+                                 [(update-last-messages chat-ids)]))))
 
 (defn system-message [{:keys [now] :as cofx} {:keys [clock-value chat-id content from]}]
   (let [{:keys [last-clock-value]} (get-in cofx [:db :chats chat-id])
@@ -347,8 +368,11 @@
                                :raw-payload-hash (transport.utils/sha3 raw-payload))]
 
     (fx/merge cofx
-              (chat-model/upsert-chat {:chat-id chat-id
-                                       :timestamp now})
+              (chat-model/upsert-chat
+               {:chat-id              chat-id
+                :timestamp            now
+                :last-message-content (:content message)
+                :last-message-type    (:message-type message)})
               (add-message false message-with-id true)
               (add-own-status chat-id message-id :sending)
               (send chat-id message-id wrapped-record))))

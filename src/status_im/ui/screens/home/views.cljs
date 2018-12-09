@@ -100,14 +100,7 @@
          (when loading?
            (utils/set-timeout
             #(re-frame/dispatch [:init-chats])
-            100))))
-
-     :component-did-update
-     (fn [this [_ old-loading?]]
-       (let [[_ loading?] (.. this -props -argv)]
-         (when (and (false? loading?)
-                    (true? old-loading?))
-           (re-frame/dispatch [:load-chats-messages]))))}
+            100))))}
     [react/view styles/container
      [toolbar show-welcome? (and network-initialized? (not rpc-network?)) sync-state latest-block-number]
      (cond show-welcome?

@@ -92,14 +92,6 @@
    (init/handle-init-store-error cofx encryption-key)))
 
 (handlers/register-handler-fx
- :load-chats-messages
- [(re-frame/inject-cofx :data-store/get-messages)
-  (re-frame/inject-cofx :data-store/get-referenced-messages)
-  (re-frame/inject-cofx :data-store/get-user-statuses)]
- (fn [cofx]
-   (chat-loading/load-chats-messages cofx)))
-
-(handlers/register-handler-fx
  :init-chats
  [(re-frame/inject-cofx :web3/get-web3)
   (re-frame/inject-cofx :get-default-dapps)

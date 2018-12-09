@@ -66,7 +66,7 @@
  (fn [cofx _]
    (assoc cofx :get-referenced-messages get-references-by-ids)))
 
-(defn- prepare-content [content]
+(defn prepare-content [content]
   (if (string? content)
     content
     (pr-str content)))

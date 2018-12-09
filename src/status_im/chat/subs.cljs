@@ -222,18 +222,6 @@
          (:photo-path account)))))
 
 (re-frame/reg-sub
- :chats/last-message
- (fn [[_ chat-id]]
-   (re-frame/subscribe [:chats/chat chat-id]))
- (fn [{:keys [messages message-groups]}]
-   (->> (chat.db/sort-message-groups message-groups messages)
-        first
-        second
-        last
-        :message-id
-        (get messages))))
-
-(re-frame/reg-sub
  :chats/unread-messages-number
  :<- [:chats/active-chats]
  (fn [chats _]

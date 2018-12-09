@@ -114,13 +114,18 @@
            [react/text {:style style/empty-chat-text-name} (:name contact)]]
           (i18n/label :t/empty-chat-description))]])))
 
-(defview messages-view [group-chat modal?]
+(defview messages-view [chat group-chat modal?]
   (letsubs [messages           [:chats/current-chat-messages-stream]
-            chat               [:chats/current-chat]
             current-public-key [:account/public-key]]
-    {:component-did-mount #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
-                                                                           :input-focused? false}])}
-    (if (empty? messages)
+    {:component-did-mount
+     (fn [args]
+       (when-not (:messages-initialized? (second (.-argv (.-props args))))
+         (re-frame/dispatch [:chat.ui/load-more-messages]))
+       (re-frame/dispatch [:chat.ui/set-chat-ui-props
+                           {:messages-focused? true
+                            :input-focused?    false}]))}
+    (if (and (empty? messages)
+             (:messages-initialized? chat))
       [empty-chat-container chat]
       [list/flat-list {:data                      messages
                        :key-fn                    #(or (:message-id %) (:value %))
@@ -133,6 +138,10 @@
                        :onEndReached              #(re-frame/dispatch [:chat.ui/load-more-messages])
                        :enableEmptySections       true
                        :keyboardShouldPersistTaps :handled}])))
+
+(defview messages-view-wrapper [group-chat modal?]
+  (letsubs [chat               [:chats/current-chat]]
+    [messages-view chat group-chat modal?]))
 
 (defview chat-root [modal?]
   (letsubs [{:keys [group-chat public?]} [:chats/current-chat]
@@ -151,7 +160,7 @@
       [chat-toolbar public? modal?]
       (if (or (= :chat current-view) modal?)
         [messages-view-animation
-         [messages-view group-chat modal?]]
+         [messages-view-wrapper group-chat modal?]]
         [react/view style/message-view-preview])
       [input/container]
       (when show-bottom-info?

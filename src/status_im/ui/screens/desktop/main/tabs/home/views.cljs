@@ -19,13 +19,18 @@
             [status-im.ui.components.action-button.action-button :as action-button]
             [status-im.utils.config :as config]))
 
-(views/defview chat-list-item-inner-view [{:keys [chat-id name group-chat color public? public-key] :as chat-item}]
+(views/defview chat-list-item-inner-view [{:keys [chat-id name group-chat
+                                                  color public? public-key
+                                                  last-message-content
+                                                  last-message-type]
+                                           :as chat-item}]
   (views/letsubs [photo-path              [:contacts/chat-photo chat-id]
                   unviewed-messages-count [:chats/unviewed-messages-count chat-id]
                   chat-name               [:chats/chat-name chat-id]
-                  current-chat-id         [:chats/current-chat-id]
-                  {:keys [content] :as last-message} [:chats/last-message chat-id]]
-    (let [name (or chat-name
+                  current-chat-id         [:chats/current-chat-id]]
+    (let [last-message {:content      last-message-content
+                        :message-type last-message-type}
+          name (or chat-name
                    (gfycat/generate-gfy public-key))
           [unviewed-messages-label large?] [(utils/unread-messages-count unviewed-messages-count) true]
           current? (= current-chat-id chat-id)]
@@ -52,7 +57,7 @@
                      :style           styles/chat-last-message}
          (if (= constants/content-type-command (:content-type last-message))
            [chat-item/command-short-preview last-message]
-           (or (:text content)
+           (or (:text last-message-content)
                (i18n/label :no-messages-yet)))]]
        [react/view {:style styles/timestamp}
         [chat-item/message-timestamp (:timestamp last-message)]
@@ -140,14 +145,7 @@
      (fn [this]
        (let [[_ loading?] (.. this -props -argv)]
          (when loading?
-           (re-frame/dispatch [:init-chats]))))
-
-     :component-did-update
-     (fn [this [_ old-loading?]]
-       (let [[_ loading?] (.. this -props -argv)]
-         (when (and (false? loading?)
-                    (true? old-loading?))
-           (re-frame/dispatch [:load-chats-messages]))))}
+           (re-frame/dispatch [:init-chats]))))}
     [react/view {:style styles/chat-list-view}
      [react/view {:style styles/chat-list-header}
       [search-input search-filter]

@@ -1,10 +1,12 @@
 (ns status-im.data-store.chats
   (:require [goog.object :as object]
-            [cljs.core.async :as async]
             [re-frame.core :as re-frame]
             [status-im.utils.ethereum.core :as utils.ethereum]
             [status-im.utils.clocks :as utils.clocks]
-            [status-im.data-store.realm.core :as core]))
+            [status-im.data-store.realm.core :as core]
+            [status-im.data-store.messages :as messages]
+            [status-im.utils.core :as utils]
+            [cljs.tools.reader.edn :as edn]))
 
 (defn remove-empty-vals
   "Remove key/value when empty seq or nil"
@@ -60,7 +62,9 @@
       (update :tags #(into #{} %))
       (update :membership-updates  (partial unmarshal-membership-updates chat-id))
       ;; We cap the clock value to a safe value in case the db has been polluted
-      (assoc :last-clock-value (get-last-clock-value chat-id))))
+      (assoc :last-clock-value (get-last-clock-value chat-id))
+      (update :last-message-type keyword)
+      (update :last-message-content edn/read-string)))
 
 (re-frame/reg-cofx
  :data-store/all-chats
@@ -73,12 +77,14 @@
 
 (defn save-chat-tx
   "Returns tx function for saving chat"
-  [{:keys [chat-id] :as chat}]
+  [chat]
   (fn [realm]
     (core/create
      realm
      :chat
-     (update chat :membership-updates marshal-membership-updates)
+     (-> chat
+         (update :membership-updates marshal-membership-updates)
+         (utils/update-if-present :last-message-content messages/prepare-content))
      true)))
 
 ;; Only used in debug mode
