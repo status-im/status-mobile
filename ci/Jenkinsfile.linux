@@ -9,7 +9,7 @@ pipeline {
         "-v /dev/fuse:/dev/fuse "+
         "-v /var/tmp/lein:/var/tmp/lein:rw "+
         "-v /var/tmp/npm:/var/tmp/npm:rw "+
-        "-v /opt/StatusImAppImage_20181113.zip:/opt/StatusImAppImage.zip:ro"
+        "-v /opt/desktop-files:/opt/desktop-files:rw"
       )
     }
   }
@@ -39,7 +39,7 @@ pipeline {
     NPM_CONFIG_CACHE = '/var/tmp/npm'
     LEIN_HOME = '/var/tmp/lein'
     QT_PATH = '/opt/qt'
-    STATUSIM_APPIMAGE = '/opt/StatusImAppImage.zip'
+    STATUSIM_APPIMAGE_DIR = '/opt/desktop-files'
   }
 
   stages {

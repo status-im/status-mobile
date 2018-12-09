@@ -73,6 +73,7 @@ STATUSREACTPATH="$(cd "$SCRIPTPATH" && cd '..' && pwd)"
 WORKFOLDER="$(joinExistingPath "$STATUSREACTPATH" 'StatusImPackage')"
 DEPLOYQT="$(joinPath . 'linuxdeployqt-continuous-x86_64.AppImage')"
 APPIMAGETOOL="$(joinPath . 'appimagetool-x86_64.AppImage')"
+STATUSIM_APPIMAGE_ARCHIVE="StatusImAppImage_20181208.zip"
 
 function init() {
   if [ -z $STATUSREACTPATH ]; then
@@ -270,14 +271,15 @@ function bundleLinux() {
 
   # invoke linuxdeployqt to create Status.AppImage
   echo "Creating AppImage..."
-
   pushd $WORKFOLDER
     rm -rf StatusImAppImage*
     # TODO this needs to be fixed: status-react/issues/5378
-    if [ -z $STATUSIM_APPIMAGE ]; then
-      STATUSIM_APPIMAGE=./StatusImAppImage.zip
-      [ -f $STATUSIM_APPIMAGE ] || wget https://desktop-app-files.ams3.digitaloceanspaces.com/StatusImAppImage_20181113.zip -O StatusImAppImage.zip
+    if [ -z $STATUSIM_APPIMAGE_DIR ]; then
+      STATUSIM_APPIMAGE="./${STATUSIM_APPIMAGE_ARCHIVE}"
+    else
+      STATUSIM_APPIMAGE="${STATUSIM_APPIMAGE_DIR}/${STATUSIM_APPIMAGE_ARCHIVE}"
     fi
+    [ -f $STATUSIM_APPIMAGE ] || wget "https://desktop-app-files.ams3.digitaloceanspaces.com/${STATUSIM_APPIMAGE_ARCHIVE}" -O $STATUSIM_APPIMAGE
     unzip "$STATUSIM_APPIMAGE" -d .
     rm -rf AppDir
     mkdir AppDir
