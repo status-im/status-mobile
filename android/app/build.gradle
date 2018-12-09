@@ -125,6 +125,12 @@ def getBuildUrl = { ->
     }
 }
 
+/* check if environment variable exists for given variable name first */
+def getEnvOrConfig = { varName ->
+    def val = System.getenv(varName) ? System.getenv(varName) : project.property(varName)
+    return val
+}
+
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.2"
@@ -171,10 +177,11 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file(STATUS_RELEASE_STORE_FILE.replaceAll("~", System.properties['user.home']))
-            storePassword STATUS_RELEASE_STORE_PASSWORD
-            keyAlias STATUS_RELEASE_KEY_ALIAS
-            keyPassword STATUS_RELEASE_KEY_PASSWORD
+            /* environment variables take precedence over gradle.properties file */
+            storeFile     file(getEnvOrConfig('STATUS_RELEASE_STORE_FILE').replaceAll("~", System.properties['user.home']))
+            storePassword getEnvOrConfig('STATUS_RELEASE_STORE_PASSWORD')
+            keyAlias      getEnvOrConfig('STATUS_RELEASE_KEY_ALIAS')
+            keyPassword   getEnvOrConfig('STATUS_RELEASE_KEY_PASSWORD')
         }
     }
     splits {

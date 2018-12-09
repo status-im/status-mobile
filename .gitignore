@@ -24,6 +24,8 @@ DerivedData
 *.ipa
 *.xcuserstate
 project.xcworkspace
+docker/*/*.zip
+docker/*/*.run
 
 # Android/IJ
 #
@@ -80,6 +82,9 @@ figwheel_server.log
 #
 out
 doo-index.html
+
+# Bundler
+.bundle
 
 # Status
 Statusgo.framework

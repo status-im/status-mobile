@@ -50,7 +50,7 @@ def prep(type = 'nightly') {
   }
   /* install ruby dependencies */
   sh 'bundle install --quiet'
-  /* npm deps and status-go download */
+  /* node deps and status-go download */
   sh "make prepare-${env.BUILD_PLATFORM}"
   /* generate ios/StatusIm.xcworkspace */
   if (env.BUILD_PLATFORM == 'ios') {
