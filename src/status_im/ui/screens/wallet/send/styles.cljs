@@ -160,10 +160,10 @@
 (def centered {:justify-content :center
                :align-items :center})
 
-(def choose-recipient-text-input
+(defstyle choose-recipient-text-input
   {:color             colors/white
    :font-size         30
    :font-weight       :bold
-   :line-height       39
-   :width             236
+   :android {:width "100%"}
+   :ios     {:min-width 236}
    :margin-horizontal 24})
