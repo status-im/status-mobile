@@ -4,6 +4,7 @@
             [reagent.core :as reagent]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.connectivity.styles :as styles]
+            [status-im.utils.platform :as utils.platform]
             [status-im.i18n :as i18n]))
 
 (defview error-label
@@ -38,22 +39,28 @@
             current-chat-contact         [:chats/current-chat-contact]
             view-id                      [:get :view-id]
             window-width                 [:dimensions/window-width]]
-    (when-let [label (cond
-                       (and offline?
-                            disconnected?) :t/offline
-                       offline? :t/wallet-offline
-                       disconnected? :t/disconnected
-                       mailserver-connection-error? :t/mailserver-reconnect
-                       mailserver-request-error? :t/mailserver-request-error-status
-                       mailserver-fetching? :t/fetching-messages
-                       :else nil)]
-      (let [pending? (and (:pending current-chat-contact) (= :chat view-id))]
-        [error-label
-         {:view-id                      view-id
-          :top                          top
-          :window-width                 window-width
-          :pending?                     pending?
-          :label                        label
-          :mailserver-fetching?         mailserver-fetching?
-          :mailserver-request-error?    mailserver-request-error?
-          :mailserver-connection-error? mailserver-connection-error?}]))))
+    (let [wallet-offline? (and offline?
+                               ;; There's no wallet of desktop
+                               (not utils.platform/desktop?))]
+
+      (when-let [label (cond
+                         (and wallet-offline?
+                              disconnected?) :t/offline
+
+                         wallet-offline? :t/wallet-offline
+                         disconnected? :t/disconnected
+
+                         mailserver-connection-error? :t/mailserver-reconnect
+                         mailserver-request-error? :t/mailserver-request-error-status
+                         mailserver-fetching? :t/fetching-messages
+                         :else nil)]
+        (let [pending? (and (:pending current-chat-contact) (= :chat view-id))]
+          [error-label
+           {:view-id                      view-id
+            :top                          top
+            :window-width                 window-width
+            :pending?                     pending?
+            :label                        label
+            :mailserver-fetching?         mailserver-fetching?
+            :mailserver-request-error?    mailserver-request-error?
+            :mailserver-connection-error? mailserver-connection-error?}])))))
