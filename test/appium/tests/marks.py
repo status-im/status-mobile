@@ -23,3 +23,4 @@ skip = pytest.mark.skip
 logcat = pytest.mark.logcat
 
 battery_consumption = pytest.mark.battery_consumption
+upgrade = pytest.mark.upgrade
