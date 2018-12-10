@@ -29,7 +29,7 @@ def podUpdate() {
     sh "touch ${lockFile}"
     sh 'pod update --silent --no-ansi'
   } finally {
-    sh "rm ${lockFile}"
+    sh "rm -f ${lockFile}"
   }
 }
 
