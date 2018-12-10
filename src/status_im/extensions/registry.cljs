@@ -49,10 +49,8 @@
               (update-hooks hook-fn extension-key))))
 
 (fx/defn install
-  [{:keys [db] :as cofx} {:keys [hooks] :as extension-data} modal?]
-  (let [{:extensions/keys [manage]
-         :account/keys    [account]} db
-        url            (get-in manage [:url :value])
+  [{:keys [db] :as cofx} url {:keys [hooks] :as extension-data} modal?]
+  (let [{:account/keys    [account]} db
         extension      {:id      url
                         :name    (get-in extension-data ['meta :name])
                         :url     url
@@ -112,11 +110,12 @@
        (map #(existing-hooks-for % cofx extension-data))
        (apply set/union)))
 
-(fx/defn stage-extension [{:keys [db] :as cofx} extension-data modal?]
+(fx/defn stage-extension [{:keys [db] :as cofx} url extension-data modal?]
   (let [hooks (existing-hooks cofx extension-data)]
     (if (empty? hooks)
       (fx/merge cofx
-                {:db (assoc db :staged-extension extension-data)}
+                {:db (assoc db :extensions/staged-extension {:url            url
+                                                             :extension-data extension-data})}
                 (navigation/navigate-to-cofx (if modal? :show-extension-modal :show-extension) nil))
       {:utils/show-popup {:title   (i18n/label :t/error)
                           :content (i18n/label :t/extension-hooks-cannot-be-added

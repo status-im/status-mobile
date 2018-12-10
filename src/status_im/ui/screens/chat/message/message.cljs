@@ -16,7 +16,8 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.chat.commands.protocol :as protocol]))
+            [status-im.chat.commands.protocol :as protocol]
+            [status-im.extensions.core :as extensions]))
 
 (defn install-extension-message [extension-id outgoing]
   [react/touchable-highlight {:on-press #(re-frame/dispatch
@@ -33,8 +34,10 @@
   (letsubs [id->command [:chats/id->command]]
     (let [{:keys [type] :as command} (commands-receiving/lookup-command-by-ref command-message id->command)
           extension-id (get-in command-message [:content :params :extension-id])]
-      (if (and platform/mobile? extension-id (or (not type) (and type (satisfies? protocol/Extension type)
-                                                                 (not= extension-id (protocol/extension-id type)))))
+      (if (and platform/mobile? extension-id
+               (extensions/valid-uri? extension-id)
+               (or (not type) (and type (satisfies? protocol/Extension type)
+                                   (not= extension-id (protocol/extension-id type)))))
         ;; Show install message only for mobile and if message contains extension id and there is no extension installed
         ;; or installed extension has differen extension id
         [install-extension-message extension-id (:outgoing command-message)]

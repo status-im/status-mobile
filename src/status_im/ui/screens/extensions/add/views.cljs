@@ -31,54 +31,55 @@
           hooks))
 
 (views/defview show-extension-base [modal?]
-  (views/letsubs [{:keys [data errors]} [:get-staged-extension]]
-    (if data
-      [react/view styles/screen
-       [status-bar/status-bar]
-       [react/keyboard-avoiding-view components.styles/flex
-        [toolbar/simple-toolbar (i18n/label :t/extension) modal?]
-        [react/scroll-view {:keyboard-should-persist-taps :handled}
-         [react/view styles/wrapper
-          [react/view {:style {:border-radius 8 :margin 10 :padding 8 :background-color colors/red}}
-           [react/text {:style {:color colors/white}}
-            (i18n/label :t/extensions-disclaimer)]]
-          [cartouche {:header (i18n/label :t/identifier)}
-           [react/text {:style styles/text}
-            (str (get-in data ['meta :name]))]]
-          [cartouche {:header (i18n/label :t/name)}
-           [react/text {:style styles/text}
-            (str (get-in data ['meta :name]))]]
-          [cartouche {:header (i18n/label :t/description)}
-           [react/text {:style styles/text}
-            (str (get-in data ['meta :description]))]]
-          [cartouche {:header (i18n/label :t/hooks)}
-           (into [react/view] (for [hook (hooks data)]
-                                [react/text {:style styles/text}
-                                 (str hook)]))]
-          [cartouche {:header (i18n/label :t/permissions)}
-           [react/text {:style styles/text}
-            (i18n/label :t/none)]]
-          [cartouche {:header (i18n/label :t/errors)}
-           (if errors
-             (into [react/view] (for [error errors]
-                                  [react/text {:style styles/text}
-                                   (str (name (:pluto.reader.errors/type error)) " " (str (:pluto.reader.errors/value error)))]))
+  (views/letsubs [{:keys [extension-data url]} [:get-staged-extension]]
+    (let [{:keys [data errors]} extension-data]
+      (if data
+        [react/view styles/screen
+         [status-bar/status-bar]
+         [react/keyboard-avoiding-view components.styles/flex
+          [toolbar/simple-toolbar (i18n/label :t/extension) modal?]
+          [react/scroll-view {:keyboard-should-persist-taps :handled}
+           [react/view styles/wrapper
+            [react/view {:style {:border-radius 8 :margin 10 :padding 8 :background-color colors/red}}
+             [react/text {:style {:color colors/white}}
+              (i18n/label :t/extensions-disclaimer)]]
+            [cartouche {:header (i18n/label :t/identifier)}
              [react/text {:style styles/text}
-              (i18n/label :t/none)])]]]
-        [react/view styles/bottom-container
-         [react/view components.styles/flex]
-         [components.common/bottom-button
-          {:forward?  true
-           :label     (i18n/label :t/install)
-           :disabled? (not (empty? errors))
-           :on-press  #(re-frame/dispatch [:extensions.ui/install-button-pressed data modal?])}]]]]
-      [react/view styles/screen
-       [status-bar/status-bar]
-       [react/view {:flex 1}
-        [toolbar/simple-toolbar (i18n/label :t/extension)]
-        [react/view {:style {:flex 1 :justify-content :center :align-items :center}}
-         [react/text (i18n/label :t/invalid-extension)]
-         [react/text (str errors)]]]])))
+              (str (get-in data ['meta :name]))]]
+            [cartouche {:header (i18n/label :t/name)}
+             [react/text {:style styles/text}
+              (str (get-in data ['meta :name]))]]
+            [cartouche {:header (i18n/label :t/description)}
+             [react/text {:style styles/text}
+              (str (get-in data ['meta :description]))]]
+            [cartouche {:header (i18n/label :t/hooks)}
+             (into [react/view] (for [hook (hooks data)]
+                                  [react/text {:style styles/text}
+                                   (str hook)]))]
+            [cartouche {:header (i18n/label :t/permissions)}
+             [react/text {:style styles/text}
+              (i18n/label :t/none)]]
+            [cartouche {:header (i18n/label :t/errors)}
+             (if errors
+               (into [react/view] (for [error errors]
+                                    [react/text {:style styles/text}
+                                     (str (name (:pluto.reader.errors/type error)) " " (str (:pluto.reader.errors/value error)))]))
+               [react/text {:style styles/text}
+                (i18n/label :t/none)])]]]
+          [react/view styles/bottom-container
+           [react/view components.styles/flex]
+           [components.common/bottom-button
+            {:forward?  true
+             :label     (i18n/label :t/install)
+             :disabled? (not (empty? errors))
+             :on-press  #(re-frame/dispatch [:extensions.ui/install-button-pressed url data modal?])}]]]]
+        [react/view styles/screen
+         [status-bar/status-bar]
+         [react/view {:flex 1}
+          [toolbar/simple-toolbar (i18n/label :t/extension)]
+          [react/view {:style {:flex 1 :justify-content :center :align-items :center}}
+           [react/text (i18n/label :t/invalid-extension)]
+           [react/text (str errors)]]]]))))
 
 (views/defview show-extension []
   [show-extension-base false])
@@ -118,4 +119,4 @@
           {:forward?  true
            :label     (i18n/label :t/find)
            :disabled? (and (not @pressed) (not (extensions/valid-uri? url)))
-           :on-press  #(do (reset! pressed true) (re-frame/dispatch [:extensions.ui/show-button-pressed (string/trim url)]))}]]]])))
+           :on-press  #(do (reset! pressed true) (re-frame/dispatch [:extensions.ui/find-button-pressed (string/trim url)]))}]]]])))

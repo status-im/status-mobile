@@ -27,7 +27,6 @@
   (cond
     (= permission constants/dapp-permission-install-extension)
     (fx/merge cofx
-              {:db (assoc-in db [:extensions/manage :url :value] (:uri params))}
               (extensions.registry/load (:uri params) true)
               (send-response-to-bridge permission message-id true nil)
               (process-next-permission dapp-name))

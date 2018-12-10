@@ -164,7 +164,8 @@
 (spec/def ::collectibles (spec/nilable map?))
 
 (spec/def ::extension-url (spec/nilable string?))
-(spec/def ::staged-extension (spec/nilable any?))
+(spec/def :extensions/staged-extension (spec/nilable any?))
+(spec/def :extensions/manage (spec/nilable any?))
 (spec/def ::extensions-store (spec/nilable any?))
 
 ;;;;NODE
@@ -218,6 +219,7 @@
                                 :networks/networks
                                 :networks/manage
                                 :bootnodes/manage
+                                :extensions/staged-extension
                                 :extensions/manage
                                 :node/status
                                 :node/restart?
@@ -321,6 +323,5 @@
                                    ::device-UUID
                                    ::collectible
                                    ::collectibles
-                                   ::staged-extension
                                    ::extensions-store
                                    :registry/registry]))

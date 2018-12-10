@@ -15,13 +15,13 @@
 
 (handlers/register-handler-fx
  :extensions/stage
- (fn [cofx [_ _ extension-data]]
-   (extensions.registry/stage-extension cofx extension-data false)))
+ (fn [cofx [_ url extension-data]]
+   (extensions.registry/stage-extension cofx url extension-data false)))
 
 (handlers/register-handler-fx
  :extensions/stage-modal
- (fn [cofx [_ _ extension-data]]
-   (extensions.registry/stage-extension cofx extension-data true)))
+ (fn [cofx [_ url extension-data]]
+   (extensions.registry/stage-extension cofx url extension-data true)))
 
 (handlers/register-handler-fx
  :extensions/add-to-registry

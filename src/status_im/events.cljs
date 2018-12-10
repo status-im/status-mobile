@@ -510,21 +510,19 @@
    (extensions.registry/change-state cofx extension-key active?)))
 
 (handlers/register-handler-fx
- :extensions.ui/show-button-pressed
+ :extensions.ui/find-button-pressed
  (fn [cofx [_ url]]
    (extensions.registry/load cofx url false)))
 
 (handlers/register-handler-fx
  :extensions.ui/install-extension-button-pressed
- (fn [{:keys [db] :as cofx} [_ url]]
-   (fx/merge cofx
-             {:db (assoc-in db [:extensions/manage :url :value] url)}
-             (extensions.registry/load url true))))
+ (fn [cofx [_ url]]
+   (extensions.registry/load cofx url true)))
 
 (handlers/register-handler-fx
  :extensions.ui/install-button-pressed
- (fn [cofx [_ data modal?]]
-   (extensions.registry/install cofx data modal?)))
+ (fn [cofx [_ url data modal?]]
+   (extensions.registry/install cofx url data modal?)))
 
 ;; log-level module
 
