@@ -108,7 +108,7 @@
 
 (fx/defn handle-change-account-error
   [{:keys [db]} error]
-  (let [{:keys [error message]}
+  (let [{:keys [error message details]}
         (if (map? error)
           error
           {:message (str error)})
@@ -120,8 +120,10 @@
        {:title               (i18n/label :migrations-failed-title)
         :content             (i18n/label
                               :migrations-failed-content
-                              {:message                         message
-                               :erase-accounts-data-button-text erase-button-text})
+                              (merge
+                               {:message                         message
+                                :erase-accounts-data-button-text erase-button-text}
+                               details))
         :confirm-button-text erase-button-text
         :on-cancel           #(re-frame/dispatch [:init.ui/data-reset-cancelled ""])
         :on-accept           #(re-frame/dispatch [:init.ui/account-data-reset-accepted address])}}

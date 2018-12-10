@@ -133,15 +133,25 @@
   (when realm
     (.close realm)))
 
+(defonce schema-migration-log (atom {}))
+
+(defn migration-log [k v]
+  (swap! schema-migration-log assoc k v))
+
 (defn- migrate-schemas
   "Apply migrations in sequence and open database with the last schema"
   [file-name schemas encryption-key current-version]
+  (reset! schema-migration-log {})
+  (migration-log :initial-version current-version)
+  (migration-log :current-version current-version)
+  (migration-log :last-version (:schemaVersion (last schemas)))
   (log/info "migrate schemas" current-version)
   (when (pos? current-version)
     (doseq [schema schemas
-            :when (> (:schemaVersion schema) current-version)
-            :let [migrated-realm (open-realm schema file-name encryption-key)]]
-      (close migrated-realm)))
+            :when (> (:schemaVersion schema) current-version)]
+      (migration-log :current-version current-version)
+      (let [migrated-realm (open-realm schema file-name encryption-key)]
+        (close migrated-realm))))
   (open-realm (last schemas) file-name encryption-key))
 
 (defn keccak512-array [key]
@@ -258,7 +268,8 @@
          (on-success)
          (catch :default e
            (on-error {:message (str e)
-                      :error   :migrations-failed})))))))
+                      :error   :migrations-failed
+                      :details @schema-migration-log})))))))
 
 (declare realm-obj->clj)
 
