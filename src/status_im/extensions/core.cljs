@@ -301,13 +301,26 @@
   [button/secondary-button (merge {:disabled? (or (when (contains? m :enabled) (or (nil? enabled) (false? enabled))) disabled)}
                                   (when on-click {:on-press #(re-frame/dispatch (on-click {}))})) label])
 
-(defn input [{:keys [keyboard-type style on-change placeholder placeholder-text-color]}]
+(defn on-input-change-text [on-change value]
+  (re-frame/dispatch (on-change {:value value})))
+
+(defn- on-input-change-text-delay [current on-change value delay]
+  ;; If an input change handler has been already scheduled cancel it.
+  (when-let [id @current]
+    (js/clearTimeout id))
+  (reset! current (js/setTimeout #(on-input-change-text on-change value) delay)))
+
+(defn input [{:keys [keyboard-type style on-change change-delay placeholder placeholder-text-color]}]
   [react/text-input (merge {:placeholder placeholder}
                            (when placeholder-text-color {:placeholder-text-color placeholder-text-color})
                            (when style {:style style})
                            (when keyboard-type {:keyboard-type keyboard-type})
                            (when on-change
-                             {:on-change-text #(re-frame/dispatch (on-change {:value %}))}))])
+                             {:on-change-text
+                              (if change-delay
+                                (let [current (atom nil)]
+                                  #(on-input-change-text-delay current on-change % change-delay))
+                                #(on-input-change-text on-change %))}))])
 
 (defn touchable-opacity [{:keys [style on-press]} & children]
   (into [react/touchable-opacity (merge (when on-press {:on-press #(re-frame/dispatch (on-press {}))})
@@ -369,7 +382,7 @@
                 'touchable-opacity  {:value touchable-opacity :properties {:on-press :event}}
                 'icon               {:value icon :properties {:key :keyword :color :any}}
                 'image              {:value image :properties {:uri :string :source :numeric}}
-                'input              {:value input :properties {:on-change :event :placeholder :string :keyboard-type :keyword :placeholder-text-color :any}}
+                'input              {:value input :properties {:on-change :event :change-delay :number :placeholder :string :keyboard-type :keyword :placeholder-text-color :any}}
                 'button             {:value button :properties {:enabled :boolean :disabled :boolean :on-click :event}}
                 'link               {:value link :properties {:uri :string}}
                 'list               {:value list :properties {:data :vector :item-view :view :key? :keyword}}
