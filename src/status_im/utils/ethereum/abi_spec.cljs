@@ -22,16 +22,20 @@
       (.leftPad utils x (+ len to-pad)))))
 
 (defn to-two-complement [x]
-  (subs (.toTwosComplement utils x) 2))
+  (when x
+    (subs (.toTwosComplement utils x) 2)))
 
 (defn from-utf8 [x]
-  (subs (.fromUtf8 utils x) 2))
+  (when x
+    (subs (.fromUtf8 utils x) 2)))
 
 (defn bytes-to-hex [x]
-  (subs (.bytesToHex utils x) 2))
+  (when x
+    (subs (.bytesToHex utils x) 2)))
 
 (defn number-to-hex [x]
-  (subs (.numberToHex utils x) 2))
+  (when x
+    (subs (.numberToHex utils x) 2)))
 
 (defn hex-to-utf8 [x]
   (.hexToUtf8 utils (str "0x" x)))

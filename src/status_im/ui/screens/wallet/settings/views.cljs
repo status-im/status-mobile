@@ -18,13 +18,12 @@
   "Hook for extensions"
   {:properties
    {:label     :string
-    :view      :view
-    :on-click? :event}
+    :view      :view}
    :hook
    (reify hooks/Hook
-     (hook-in [_ id env {:keys [label view on-click]} {:keys [db]}]
-       {:db (assoc-in db [:wallet :settings id] {:label label :view view :on-click on-click})})
-     (unhook [_ id env _ {:keys [db]}]
+     (hook-in [_ id _ {:keys [label view _]} {:keys [db]}]
+       {:db (assoc-in db [:wallet :settings id] {:label label :view view})})
+     (unhook [_ id _ _ {:keys [db]}]
        {:db (update-in db [:wallet :settings] dissoc id)}))})
 
 (defn- render-token [{:keys [symbol name icon]} visible-tokens]
@@ -57,7 +56,8 @@
                        :render-fn #(render-token % visible-tokens)}]]]))
 
 (defview settings-hook []
-  (letsubs [{:keys [label view]} [:get-screen-params :wallet-settings-hook]]
+  (letsubs [{:keys [label view]} [:get-screen-params :wallet-settings-hook]
+            {address :address} [:account/account]]
     [react/view {:style {:flex 1 :background-color colors/white}}
      [status-bar/status-bar {:type :modal-wallet}]
      [toolbar/toolbar {:style wallet.styles/toolbar}
@@ -65,14 +65,11 @@
                                                    (re-frame/dispatch [:navigate-back])))]
       [toolbar/content-title {:color colors/white}
        label]]
-     [view]]))
+     [view {:address (ethereum/normalized-address address)}]]))
 
-(defn- setting->action [{:keys [label on-click] :as m}]
+(defn- setting->action [{:keys [label] :as m}]
   {:label  label
-   :action #(do
-              (when on-click
-                (re-frame/dispatch (on-click {})))
-              (re-frame/dispatch [:navigate-to :wallet-settings-hook m]))})
+   :action #(re-frame/dispatch [:navigate-to :wallet-settings-hook m])})
 
 (defview toolbar-view []
   (letsubs [settings [:wallet/settings]]

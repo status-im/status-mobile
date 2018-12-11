@@ -114,17 +114,17 @@
 (def command-hook
   "Hook for extensions"
   {:properties
-   {:description?  :string
-    :scope         #{:personal-chats :public-chats}
-    :short-preview :view
-    :preview       :view
-    :on-send?      :event
-    :on-receive?   :event
-    :on-send-sync? :event
-    :parameters?    [{:id           :keyword
-                      :type         {:one-of #{:text :phone :password :number}}
-                      :placeholder  :string
-                      :suggestions? :view}]}
+   {:description?   :string
+    :scope          #{:personal-chats :public-chats :group-chats}
+    :short-preview? :view
+    :preview?       :view
+    :on-send?       :event
+    :on-receive?    :event
+    :on-send-sync?  :event
+    :parameters?     [{:id           :keyword
+                       :type         {:one-of #{:text :phone :password :number}}
+                       :placeholder  :string
+                       :suggestions? :view}]}
    :hook
    (reify hooks/Hook
      (hook-in [_ id {extension-id :id} {:keys [description scope parameters preview short-preview
@@ -138,8 +138,8 @@
                              (validate [_ _ _])
                              (on-send [_ command-message _] (when on-send {:dispatch (on-send command-message)}))
                              (on-receive [_ command-message _] (when on-receive {:dispatch (on-receive command-message)}))
-                             (short-preview [_ props] (short-preview props))
-                             (preview [_ props] (preview props))
+                             (short-preview [_ props] (when short-preview (short-preview props)))
+                             (preview [_ props] (when preview (preview props)))
                              protocol/Yielding
                              (yield-control [_ props _] {:dispatch (on-send-sync props)})
                              protocol/Extension
@@ -152,8 +152,8 @@
                              (validate [_ _ _])
                              (on-send [_ command-message _] (when on-send {:dispatch (on-send command-message)}))
                              (on-receive [_ command-message _] (when on-receive {:dispatch (on-receive command-message)}))
-                             (short-preview [_ props] (short-preview props))
-                             (preview [_ props] (preview props))
+                             (short-preview [_ props] (when short-preview (short-preview props)))
+                             (preview [_ props] (when preview (preview props)))
                              protocol/Extension
                              (extension-id [_] extension-id)))]
          (load-commands cofx [new-command])))
