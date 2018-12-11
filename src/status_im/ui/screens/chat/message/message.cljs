@@ -9,6 +9,7 @@
             [status-im.chat.commands.receiving :as commands-receiving]
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.components.popup-menu.views :as desktop.pop-up]
             [status-im.constants :as constants]
             [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.utils.identicon :as identicon]
@@ -180,24 +181,29 @@
    [react/activity-indicator {:animating true}]])
 
 (defn message-not-sent-text [chat-id message-id]
-  [react/touchable-highlight {:on-press (fn [] (if platform/ios?
+  [react/touchable-highlight {:on-press (fn [] (cond
+                                                 platform/ios?
                                                  (action-sheet/show {:title   (i18n/label :message-not-sent)
                                                                      :options [{:label  (i18n/label :resend-message)
                                                                                 :action #(re-frame/dispatch [:chat.ui/resend-message chat-id message-id])}
                                                                                {:label        (i18n/label :delete-message)
                                                                                 :destructive? true
                                                                                 :action       #(re-frame/dispatch [:chat.ui/delete-message chat-id message-id])}]})
+                                                 platform/desktop?
+                                                 (desktop.pop-up/show-desktop-menu
+                                                  (desktop.pop-up/get-message-menu-items chat-id message-id))
+
+                                                 :else
                                                  (re-frame/dispatch
                                                   [:chat.ui/show-message-options {:chat-id    chat-id
                                                                                   :message-id message-id}])))}
    [react/view style/not-sent-view
     [react/text {:style style/not-sent-text}
      (i18n/message-status-label (if platform/desktop?
-                                  :not-sent-without-tap
-                                  :not-sent))]
-    (when-not platform/desktop?
-      [react/view style/not-sent-icon
-       [vector-icons/icon :icons/warning {:color colors/red}]])]])
+                                  :not-sent-click
+                                  :not-sent-tap))]
+    [react/view style/not-sent-icon
+     [vector-icons/icon :icons/warning {:color colors/red}]]]])
 
 (defview command-status [{{:keys [network]} :params}]
   (letsubs [current-network [:network-name]]

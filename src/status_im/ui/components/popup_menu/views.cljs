@@ -26,3 +26,8 @@
                                          chat-id])}]
        (remove nil?)))
 
+(defn get-message-menu-items [chat-id message-id]
+  [{:text (i18n/label :t/resend-message)
+    :on-select #(re-frame/dispatch [:chat.ui/resend-message chat-id message-id])}
+   {:text (i18n/label :t/delete-message)
+    :on-select #(re-frame/dispatch [:chat.ui/delete-message chat-id message-id])}])
