@@ -576,7 +576,7 @@
     "status-failed": "Fallido",
     "status-hardwallet": "Status hardwallet",
     "status-hardwallet-capitalized": "Status Hardwallet",
-    "status-not-sent": "No enviado. Toca para ver las opciones",
+    "status-not-sent-tap": "No enviado. Toca para ver las opciones",
     "status-pending": "Pendiente",
     "status-prompt": "Establece tu estado. Usar #hastags ayudará a otros a descubrirte y a hablar sobre lo que tienes en mente",
     "status-seen": "Visto",
