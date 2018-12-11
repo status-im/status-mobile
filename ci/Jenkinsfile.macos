@@ -2,7 +2,7 @@ pipeline {
   agent { label 'macos' }
 
   parameters {
-    booleanParam(
+    string(
       name: 'BUILD_TYPE',
       description: 'Specify build type. Values: pr / nightly / release',
       defaultValue: 'pr',
@@ -11,6 +11,7 @@ pipeline {
 
   options {
     timestamps()
+    disableConcurrentBuilds()
     /* Prevent Jenkins jobs from running forever */
     timeout(time: 25, unit: 'MINUTES')
     /* Limit builds retained */
@@ -69,7 +70,22 @@ pipeline {
       } }
     }
     stage('Archive') {
-      steps { archiveArtifacts dmg }
+      steps {
+        archiveArtifacts dmg
+      }
     }
+    stage('Upload') {
+      steps {
+        script { env.PKG_URL = cmn.uploadArtifact(dmg) }
+      }
+    }
+    stage('Notify') {
+      steps {
+        script { cmn.gitHubNotifyPRSuccess() }
+      }
+    }
+  }
+  post {
+    failure { script { load('ci/common.groovy').gitHubNotifyPRFail() } }
   }
 }

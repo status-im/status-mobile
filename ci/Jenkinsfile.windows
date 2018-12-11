@@ -3,7 +3,7 @@ pipeline {
     /* privileged mode is necessary for fuse */
     docker {
       label 'linux-new'
-      image 'statusteam/windows-desktop-ubuntu:1.1.0'
+      image 'statusteam/windows-desktop-ubuntu:1.1.1'
       args (
         "--privileged "+
         "-v /dev/fuse:/dev/fuse "+
@@ -15,7 +15,7 @@ pipeline {
   }
 
   parameters {
-    booleanParam(
+    string(
       name: 'BUILD_TYPE',
       description: 'Specify build type. Values: pr / nightly / release',
       defaultValue: 'pr',
@@ -23,6 +23,8 @@ pipeline {
   }
 
   options {
+    timestamps()
+    disableConcurrentBuilds()
     /* Prevent Jenkins jobs from running forever */
     timeout(time: 45, unit: 'MINUTES')
     /* Limit builds retained */
@@ -39,7 +41,7 @@ pipeline {
    **/
   environment {
     NODE_VERSION = 'v10.14.1'
-    BUILD_PLATFORM = 'linux'
+    BUILD_PLATFORM = 'windows'
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
     LC_ALL = 'en_US.UTF-8'
@@ -90,7 +92,22 @@ pipeline {
       }
     }
     stage('Archive') {
-      steps { archiveArtifacts app }
+      steps {
+        archiveArtifacts app
+      }
     }
+    stage('Upload') {
+      steps {
+        script { env.PKG_URL = cmn.uploadArtifact(app) }
+      }
+    }
+    stage('Notify') {
+      steps {
+        script { cmn.gitHubNotifyPRSuccess() }
+      }
+    }
+  }
+  post {
+    failure { script { load('ci/common.groovy').gitHubNotifyPRFail() } }
   }
 }

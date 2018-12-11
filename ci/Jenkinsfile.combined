@@ -2,6 +2,7 @@ pipeline {
   agent { label 'master' }
 
   options {
+    timestamps()
     disableConcurrentBuilds()
     /* Prevent Jenkins jobs from running forever */
     timeout(time: 45, unit: 'MINUTES')
@@ -70,47 +71,27 @@ pipeline {
     }
     stage('Upload') {
       steps { script {
-        apke2eUrl = cmn.uploadArtifact(cmn.pkgFind('e2e.apk'))
-        apkUrl = cmn.uploadArtifact(cmn.pkgFind("${btype}.apk"))
-        if (btype != 'release') {
-          dmgUrl = cmn.uploadArtifact(cmn.pkgFind('dmg'))
-          appUrl = cmn.uploadArtifact(cmn.pkgFind('AppImage'))
-          exeUrl = cmn.uploadArtifact(cmn.pkgFind('exe'))
-        } else {
-          dmgUrl = null
-          appUrl = null
-          exeUrl = null
-        }
-        iose2eUrl = cmn.uploadArtifact(cmn.pkgFind("e2e.app.zip"))
-        /* special case for iOS Diawi links */
-        ipaUrl = ios.getBuildVariables().get('DIAWI_URL')
-        /* upload the sha256 checksums file too */
-        shaUrl = cmn.uploadArtifact(cmn.pkgFind('sha256'))
+        /* object for easier URLs handling */
+        urls = [
+          /* mobile */
+          Apk: cmn.pkgUrl(apk), Apke2e: cmn.pkgUrl(apke2e),
+          iOS: cmn.pkgUrl(ios), iOSe2e: cmn.pkgUrl(iose2e),
+          /* desktop */
+          App: cmn.pkgUrl(nix), Mac: cmn.pkgUrl(ios), Win: cmn.pkgUrl(win),
+          /* upload the sha256 checksums file too */
+          SHA: cmn.uploadArtifact(cmn.pkgFind('sha256')),
+        ]
         /* add URLs to the build description */
-        cmn.setBuildDesc(
-          Apk: apkUrl, Apke2e: apke2eUrl,
-          iOS: ipaUrl, iOSe2e: iose2eUrl,
-          App: appUrl, Mac: dmgUrl, Win: exeUrl,
-        )
+        cmn.setBuildDesc(urls)
         /* Create latest.json with newest nightly URLs */
         if (btype == 'nightly') {
-          cmn.updateLatestNightlies(
-            APK: apkUrl, IOS: ipaUrl,
-            APP: appUrl, MAC: dmgUrl,
-            WIN: exeUrl, SHA: shaUrl
-          )
+          cmn.updateLatestNightlies(urls)
         }
       } }
     }
-    stage('Notify') {
+    stage('Notify') { when { expression { env.CHANGE_ID != null } }
       steps { script {
-        if (env.CHANGE_ID != null) {
-          cmn.githubNotify(
-            apk: apkUrl, apke2e: apke2eUrl,
-            ipa: ipaUrl, iose2e: iose2eUrl,
-            app: appUrl, dmg: dmgUrl, win: exeUrl,
-          )
-        }
+        cmn.gitHubNotifyFull(urls)
       } }
     }
     stage('Publish') {
@@ -123,7 +104,7 @@ pipeline {
             build(
               job: 'misc/cn.status.im',
               parameters: [
-                [name: 'APK_URL', value: apkUrl, $class: 'StringParameterValue'],
+                [name: 'APK_URL', value: urls.Apk, $class: 'StringParameterValue'],
               ]
             )
             break
@@ -133,7 +114,7 @@ pipeline {
     stage('Run e2e') {
       when { expression { btype == 'nightly' } }
       steps { script {
-        e2eApk = apke2e.getBuildVariables().get('SAUCE_URL')
+        e2eApk = cmn.getEnv(apke2e, 'SAUCE_URL')
         build(
           job: 'end-to-end-tests/status-app-nightly', wait: false,
           parameters: [string(name: 'apk', value: "--apk=${e2eApk}")]

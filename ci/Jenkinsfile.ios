@@ -2,15 +2,16 @@ pipeline {
   agent { label 'macos' }
 
   parameters {
-    booleanParam(
+    string(
       name: 'BUILD_TYPE',
-      description: 'Specify build type. Values: pr / nightly / release',
+      description: 'Specify build type. Values: pr / e2e / nightly / release',
       defaultValue: 'pr',
     )
   }
 
   options {
     timestamps()
+    disableConcurrentBuilds()
     /* Prevent Jenkins jobs from running forever */
     timeout(time: 35, unit: 'MINUTES')
     /* Limit builds retained */
@@ -36,10 +37,10 @@ pipeline {
     stage('Prep') {
       steps {
         script { nvm(env.NODE_VERSION) {
-          print "Running ${params.BUILD_TYPE} build!"
           /* Necessary to load methods */
           mobile = load 'ci/mobile.groovy'
           cmn    = load 'ci/common.groovy'
+          print "Running ${cmn.getBuildType()} build!"
           /* Cleanup and Prep */
           mobile.prep(cmn.getBuildType())
           /* Run at start to void mismatched numbers */
@@ -69,20 +70,28 @@ pipeline {
     }
     stage('Archive') {
       steps {
-        script { archiveArtifacts api }
+        archiveArtifacts api
       }
     }
     stage('Upload') {
       steps {
         script {
           /* e2e builds get tested in SauceLabs */
-          if (params.BUILD_TYPE == 'e2e') {
+          if (cmn.getBuildType() == 'e2e') {
             env.SAUCE_URL = mobile.ios.uploadToSauceLabs()
           } else {
-            env.DIAWI_URL = mobile.ios.uploadToDiawi()
+            env.PKG_URL = mobile.ios.uploadToDiawi()
           }
         }
       }
     }
+    stage('Notify') {
+      steps {
+        script { cmn.gitHubNotifyPRSuccess() }
+      }
+    }
+  }
+  post {
+    failure { script { load('ci/common.groovy').gitHubNotifyPRFail() } }
   }
 }

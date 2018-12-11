@@ -8,7 +8,7 @@ QT_MD5SUM  = 974fda61267cfb6e45984ee5f0a285f8
 QT_URL = https://download.qt.io/archive/qt
 
 # WARNING: Remember to change the tag when updating the image
-IMAGE_TAG = 1.1.0
+IMAGE_TAG = 1.1.1
 IMAGE_NAME = statusteam/linux-desktop-ubuntu:$(IMAGE_TAG)
 
 build: $(QT_ARCHIVE)

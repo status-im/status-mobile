@@ -1,4 +1,4 @@
-common = load 'ci/common.groovy'
+cmn = load 'ci/common.groovy'
 ios = load 'ci/ios.groovy'
 android = load 'ci/android.groovy'
 
@@ -34,6 +34,7 @@ def podUpdate() {
 }
 
 def prep(type = 'nightly') {
+  cmn.doGitRebase()
   /* ensure that we start from a known state */
   sh 'make clean'
   /* select type of build */
@@ -53,7 +54,9 @@ def prep(type = 'nightly') {
   sh "make prepare-${env.BUILD_PLATFORM}"
   /* generate ios/StatusIm.xcworkspace */
   dir('ios') {
-    podUpdate()
+    if (env.BUILD_PLATFORM == 'ios') {
+      podUpdate()
+    }
     sh 'pod install --silent'
   }
 }
