@@ -296,7 +296,10 @@
   [request]
   (let [ttl               (:ttl protocol/whisper-opts)
         whisper-tolerance (:whisper-drift-tolerance protocol/whisper-opts)]
-    (update request :from - (+ whisper-tolerance ttl))))
+    (update request :from #(let [adjustment    (+ whisper-tolerance ttl)
+                                 adjusted-from (- (max % adjustment) adjustment)]
+                             (log/debug "Adjusting mailserver request" "from:" % "adjusted-from:" adjusted-from)
+                             adjusted-from))))
 
 (defn prepare-messages-requests
   [{:keys [db now] :as cofx} request-to]
@@ -318,13 +321,14 @@
             requests (prepare-messages-requests cofx request-to)
             web3 (:web3 db)]
         (if-let [request (first requests)]
-          {:db (assoc db
-                      :mailserver/pending-requests (count requests)
-                      :mailserver/current-request request
-                      :mailserver/request-to request-to)
-           :mailserver/request-messages {:web3       web3
-                                         :mailserver mailserver
-                                         :request    (adjust-request-for-transit-time request)}}
+          (let [adjusted-request (adjust-request-for-transit-time request)]
+            {:db (assoc db
+                        :mailserver/pending-requests (count requests)
+                        :mailserver/current-request adjusted-request
+                        :mailserver/request-to request-to)
+             :mailserver/request-messages {:web3       web3
+                                           :mailserver mailserver
+                                           :request    adjusted-request}})
           {:db (dissoc db
                        :mailserver/pending-requests
                        :mailserver/request-to)})))))
@@ -477,7 +481,7 @@
       (let [{:keys [topics from to] :as request} (get db :mailserver/current-request)
             adjusted-request                     (adjust-request-for-transit-time request)
             web3                                 (:web3 db)]
-        (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to")
+        (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to)
         {:db (update-in db [:mailserver/current-request :attemps] inc)
          :mailserver/request-messages {:web3       web3
                                        :mailserver mailserver
