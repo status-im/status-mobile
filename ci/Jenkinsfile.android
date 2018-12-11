@@ -13,6 +13,14 @@ pipeline {
     ))
   }
 
+  parameters {
+    booleanParam(
+      name: 'BUILD_TYPE',
+      description: 'Specify build type. Values: pr / nightly / release',
+      defaultValue: 'pr',
+    )
+  }
+
   environment {
     BUILD_PLATFORM = 'android'
     LANG = 'en_US.UTF-8'

@@ -1,6 +1,14 @@
 pipeline {
   agent { label 'macos' }
 
+  parameters {
+    booleanParam(
+      name: 'BUILD_TYPE',
+      description: 'Specify build type. Values: pr / nightly / release',
+      defaultValue: 'pr',
+    )
+  }
+
   options {
     timestamps()
     /* Prevent Jenkins jobs from running forever */
