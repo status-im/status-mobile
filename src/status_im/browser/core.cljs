@@ -82,10 +82,17 @@
   (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))]
     (assoc browser :unsafe? (dependencies/phishing-detect history-host))))
 
-(defn resolve-ens-multihash-callback [hex]
+(defn resolve-ens-content-callback [hex]
   (let [hash (when hex (multihash/base58 (multihash/create :sha2-256 (subs hex 2))))]
     (if (and hash (not= hash resolver/default-hash))
-      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success hash])
+      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success "01" hash])
+      (re-frame/dispatch [:browser.callback/resolve-ens-contenthash]))))
+
+(defn resolve-ens-contenthash-callback [hex]
+  (let [proto-code (subs hex 2 4)
+        hash (when hex (multihash/base58 (multihash/create :sha2-256 (subs hex 8))))]
+    (if (and (#{"00" "01"} proto-code) hash (not= hash resolver/default-hash))
+      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success proto-code hash])
       (re-frame/dispatch [:browser.callback/resolve-ens-multihash-error]))))
 
 (fx/defn resolve-url
@@ -97,12 +104,25 @@
         (let [network (get-in db [:account/account :networks network])
               chain   (ethereum/network->chain-keyword network)]
           {:db                            (update db :browser/options assoc :resolving? true)
-           :browser/resolve-ens-multihash {:web3     web3
-                                           :registry (get ens/ens-registries
-                                                          chain)
-                                           :ens-name host
-                                           :cb       resolve-ens-multihash-callback}})
+           :browser/resolve-ens-content {:web3     web3
+                                         :registry (get ens/ens-registries
+                                                        chain)
+                                         :ens-name host
+                                         :cb       resolve-ens-content-callback}})
         {:db (update db :browser/options assoc :url (or resolved-url current-url) :resolving? false)}))))
+
+(fx/defn resolve-ens-contenthash
+  [{{:keys [web3 network] :as db} :db}]
+  (let [current-url (get-current-url (get-current-browser db))
+        host (http/url-host current-url)]
+    (let [network (get-in db [:account/account :networks network])
+          chain   (ethereum/network->chain-keyword network)]
+      {:db                            (update db :browser/options assoc :resolving? true)
+       :browser/resolve-ens-contenthash {:web3     web3
+                                         :registry (get ens/ens-registries
+                                                        chain)
+                                         :ens-name host
+                                         :cb       resolve-ens-contenthash-callback}})))
 
 (fx/defn update-browser
   [{:keys [db now]}
@@ -149,17 +169,17 @@
                              :history-index new-index)))))
 
 (fx/defn resolve-ens-multihash-success
-  [{:keys [db] :as cofx} hash]
+  [{:keys [db] :as cofx} proto-code hash]
   (let [current-url (get-current-url (get-current-browser db))
         host (http/url-host current-url)
-        infura-host "ipfs.infura.io/ipfs/"]
+        gateways (if (= "00" proto-code) "swarm-gateways.net/bzz:/" "ipfs.infura.io/ipfs/")]
     (fx/merge cofx
               {:db (-> (update db :browser/options
                                assoc
-                               :url (str "https://" infura-host hash
+                               :url (str "https://" gateways hash
                                          (subs current-url (+ (.indexOf current-url host) (count host))))
                                :resolving? false)
-                       (assoc-in [:browser/options :resolved-ens host] (str infura-host hash)))})))
+                       (assoc-in [:browser/options :resolved-ens host] (str gateways hash)))})))
 
 (fx/defn resolve-ens-multihash-error
   [{:keys [db] :as cofx}]
@@ -323,9 +343,14 @@
     {:dispatch [:chat.ui/start-public-chat topic {:modal? true :navigation-reset? true}]}))
 
 (re-frame/reg-fx
- :browser/resolve-ens-multihash
+ :browser/resolve-ens-content
  (fn [{:keys [web3 registry ens-name cb]}]
    (resolver/content web3 registry ens-name cb)))
+
+(re-frame/reg-fx
+ :browser/resolve-ens-contenthash
+ (fn [{:keys [web3 registry ens-name cb]}]
+   (resolver/contenthash web3 registry ens-name cb)))
 
 (re-frame/reg-fx
  :browser/send-to-bridge

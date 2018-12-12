@@ -998,13 +998,18 @@
 
 (handlers/register-handler-fx
  :browser.callback/resolve-ens-multihash-success
- (fn [cofx [_ hash]]
-   (browser/resolve-ens-multihash-success cofx hash)))
+ (fn [cofx [_ proto-code hash]]
+   (browser/resolve-ens-multihash-success cofx proto-code hash)))
 
 (handlers/register-handler-fx
  :browser.callback/resolve-ens-multihash-error
  (fn [cofx _]
    (browser/resolve-ens-multihash-error cofx)))
+
+(handlers/register-handler-fx
+ :browser.callback/resolve-ens-contenthash
+ (fn [cofx _]
+   (browser/resolve-ens-contenthash cofx)))
 
 (handlers/register-handler-fx
  :browser.callback/call-rpc

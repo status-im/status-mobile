@@ -4,6 +4,12 @@
 
 (def default-hash "0x0000000000000000000000000000000000000000000000000000000000000000")
 
+(defn contenthash [web3 registry ens-name cb]
+  (ens/resolver web3
+                registry
+                ens-name
+                #(ens/contenthash web3 % ens-name cb)))
+
 (defn content [web3 registry ens-name cb]
   (ens/resolver web3
                 registry
