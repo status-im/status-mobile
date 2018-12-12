@@ -53,11 +53,11 @@ def prep(type = 'nightly') {
   /* npm deps and status-go download */
   sh "make prepare-${env.BUILD_PLATFORM}"
   /* generate ios/StatusIm.xcworkspace */
-  dir('ios') {
-    if (env.BUILD_PLATFORM == 'ios') {
+  if (env.BUILD_PLATFORM == 'ios') {
+    dir('ios') {
       podUpdate()
+      sh 'pod install --silent'
     }
-    sh 'pod install --silent'
   }
 }
 
