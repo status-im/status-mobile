@@ -7,6 +7,7 @@
             [status-im.native-module.core :as status]
             [status-im.transport.utils :as transport.utils]
             [status-im.utils.fx :as fx]
+            [status-im.constants :as constants]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]
             [status-im.transport.db :as transport.db]
@@ -481,6 +482,20 @@
                  :data-store/tx [(data-store.mailservers/save-mailserver-topic-tx
                                   {:topic topic
                                    :mailserver-topic mailserver-topic})]}))))
+(fx/defn fetch-history
+  [{:keys [db] :as cofx} chat-id]
+  (let [topic  (or (get-in db [:transport/chats chat-id :topic])
+                   (transport.utils/get-topic constants/contact-discovery))
+        {:keys [chat-ids last-request] :as current-mailserver-topic}
+        (get-in db [:mailserver/topics topic] {:chat-ids #{}})]
+    (let [mailserver-topic (-> current-mailserver-topic
+                               (assoc :last-request 1))]
+      (fx/merge cofx
+                {:db (assoc-in db [:mailserver/topics topic] mailserver-topic)
+                 :data-store/tx [(data-store.mailservers/save-mailserver-topic-tx
+                                  {:topic topic
+                                   :mailserver-topic mailserver-topic})]}
+                (process-next-messages-request)))))
 
 (fx/defn resend-request
   [{:keys [db] :as cofx} {:keys [request-id]}]

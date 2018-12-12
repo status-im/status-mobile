@@ -610,6 +610,11 @@
                            :on-accept           #(re-frame/dispatch [:chat.ui/clear-history])}}))
 
 (handlers/register-handler-fx
+ :chat.ui/fetch-history-pressed
+ (fn [cofx [_ chat-id]]
+   (mailserver/fetch-history cofx chat-id)))
+
+(handlers/register-handler-fx
  :chat.ui/remove-chat-pressed
  (fn [_ [_ chat-id]]
    {:ui/show-confirmation {:title               (i18n/label :t/delete-confirmation)
