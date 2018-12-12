@@ -54,8 +54,8 @@ PODS:
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
   - Protobuf (3.6.1)
-  - React (0.56.0):
-    - React/Core (= 0.56.0)
+  - React (0.57.5):
+    - React/Core (= 0.57.5)
   - react-native-background-timer (2.1.0-alpha.6):
     - React
   - react-native-camera (1.1.5):
@@ -66,11 +66,11 @@ PODS:
     - React
   - react-native-camera/RN (1.1.5):
     - React
-  - React/Core (0.56.0):
-    - yoga (= 0.56.0.React)
+  - React/Core (0.57.5):
+    - yoga (= 0.57.5.React)
   - RNKeychain (3.0.0-rc.3):
     - React
-  - yoga (0.56.0.React)
+  - yoga (0.57.5.React)
 
 DEPENDENCIES:
   - Firebase/Core
