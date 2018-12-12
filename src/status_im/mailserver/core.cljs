@@ -11,6 +11,7 @@
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]
             [status-im.transport.db :as transport.db]
+            [status-im.transport.message.protocol :as protocol]
             [clojure.string :as string]
             [status-im.data-store.mailservers :as data-store.mailservers]
             [status-im.i18n :as i18n]
@@ -236,26 +237,41 @@
 
 (def limit 200)
 
+(defn adjust-request-for-transit-time
+  [from]
+  (let [ttl               (:ttl protocol/whisper-opts)
+        whisper-tolerance (:whisper-drift-tolerance protocol/whisper-opts)
+        adjustment    (+ whisper-tolerance ttl)
+        adjusted-from (- (max from adjustment) adjustment)]
+    (log/debug "Adjusting mailserver request" "from:" from "adjusted-from:" adjusted-from)
+    adjusted-from))
+
 (defn request-messages! [web3 {:keys [sym-key-id address]} {:keys [topics cursor to from]}]
-  (log/info "mailserver: request-messages for: "
-            " topics " topics
-            " from " from
-            " cursor " cursor
-            " limit " limit
-            " to   " to)
-  (.requestMessages (transport.utils/shh web3)
-                    (clj->js {:topics         topics
-                              :mailServerPeer address
-                              :symKeyID       sym-key-id
-                              :timeout        request-timeout
-                              :limit          limit
-                              :cursor         cursor
-                              :from           from
-                              :to             to})
-                    (fn [error request-id]
-                      (if-not error
-                        (log/info "mailserver: messages request success for topic " topics "from" from "to" to)
-                        (log/error "mailserver: messages request error for topic " topics ": " error)))))
+  ;; Add some room to from, unless we break day boundaries so that messages that have
+  ;; been received after the last request are also fetched
+  (let [adjusted-from (adjust-request-for-transit-time from)
+        actual-from   (if (> (- to adjusted-from) one-day)
+                        from
+                        adjusted-from)]
+    (log/info "mailserver: request-messages for: "
+              " topics " topics
+              " from " actual-from
+              " cursor " cursor
+              " limit " limit
+              " to   " to)
+    (.requestMessages (transport.utils/shh web3)
+                      (clj->js {:topics         topics
+                                :mailServerPeer address
+                                :symKeyID       sym-key-id
+                                :timeout        request-timeout
+                                :limit          limit
+                                :cursor         cursor
+                                :from           actual-from
+                                :to             to})
+                      (fn [error request-id]
+                        (if-not error
+                          (log/info "mailserver: messages request success for topic " topics "from" from "to" to)
+                          (log/error "mailserver: messages request error for topic " topics ": " error))))))
 
 (re-frame/reg-fx
  :mailserver/request-messages
