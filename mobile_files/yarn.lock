@@ -6246,10 +6246,10 @@ readable-stream@~1.0.26, readable-stream@~1.0.26-4:
     isarray "0.0.1"
     string_decoder "~0.10.x"
 
-realm@2.20.1:
-  version "2.20.1"
-  resolved "https://registry.yarnpkg.com/realm/-/realm-2.20.1.tgz#3a36d2df13ac53a8de5b75c5d6fd7bedd575d267"
-  integrity sha512-0puUpkzD8HYeDcq7SLxrX44F9q011aC0MbYAWyS8ldg92IbpS170uW9C+GXAqmrf45kocIbM0WBWXt7/SOYH7Q==
+realm@2.21.0:
+  version "2.21.0"
+  resolved "https://registry.yarnpkg.com/realm/-/realm-2.21.0.tgz#fd70067ffede61e3749ffa4cb32d827585d0b735"
+  integrity sha512-2XxkVogKOObhwBUcP7NPvyA9kU/HIeopVbAGgKanJWYw5z09J+I+q1CN2gCVR5EC4+H55Ht4loEhjDud5+LEYQ==
   dependencies:
     command-line-args "^4.0.6"
     decompress "^4.2.0"
