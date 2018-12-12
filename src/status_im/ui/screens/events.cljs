@@ -171,12 +171,3 @@
  :update-window-dimensions
  (fn [{:keys [db]} [_ dimensions]]
    {:db (assoc db :dimensions/window (dimensions/window dimensions))}))
-
-(handlers/register-handler-fx
- :fetch-desktop-version-success
- (fn [{:keys [db]} [_ result]]
-   (when (and result (not (str/blank? result)) (or platform/isMacOs? platform/isNix?))
-     (when-let [url (get (types/json->clj result) (if platform/isMacOs? :MAC :APP))]
-       (let [dt     (- (count url) (if platform/isMacOs? 12 17))
-             commit (subs url (- dt 6) dt)]
-         {:db (assoc-in db [:desktop/desktop :nightly-version] {:url url :commit commit})})))))

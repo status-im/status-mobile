@@ -16,23 +16,11 @@
                                  :home)
                                nil))
 
-(fx/defn fetch-desktop-version
-  [_ tab-name]
-  (when (and platform/isMacOs?
-             (= tab-name :profile))
-    {:http-get
-     {:url
-      "https://status-im.ams3.digitaloceanspaces.com/latest.json"
-      :success-event-creator
-      (fn [o]
-        [:fetch-desktop-version-success o])}}))
-
 (fx/defn show-desktop-tab
   [cofx tab-name]
   (fx/merge cofx
             (change-tab tab-name)
-            (navigate-to tab-name)
-            (fetch-desktop-version tab-name)))
+            (navigate-to tab-name)))
 
 (handlers/register-handler-fx
  :show-desktop-tab
