@@ -234,16 +234,22 @@
         mailserver-removed?
         (connect-to-mailserver cofx)))))
 
-(defn request-messages! [web3 {:keys [sym-key-id address]} {:keys [topics to from]}]
+(def limit 200)
+
+(defn request-messages! [web3 {:keys [sym-key-id address]} {:keys [topics cursor to from]}]
   (log/info "mailserver: request-messages for: "
             " topics " topics
             " from " from
+            " cursor " cursor
+            " limit " limit
             " to   " to)
   (.requestMessages (transport.utils/shh web3)
                     (clj->js {:topics         topics
                               :mailServerPeer address
                               :symKeyID       sym-key-id
                               :timeout        request-timeout
+                              :limit          limit
+                              :cursor         cursor
                               :from           from
                               :to             to})
                     (fn [error request-id]
@@ -409,7 +415,7 @@
 (fx/defn update-mailserver-topics
   "TODO: add support for cursors
   if there is a cursor, do not update `last-request`"
-  [{:keys [db now] :as cofx} {:keys [request-id]}]
+  [{:keys [db now] :as cofx} {:keys [request-id cursor]}]
   (when-let [request (get db :mailserver/current-request)]
     (let [{:keys [from to topics]} request
           mailserver-topics (get-updated-mailserver-topics db topics to)]
@@ -420,16 +426,23 @@
         (fx/merge cofx
                   {:db (dissoc db :mailserver/current-request)}
                   (process-next-messages-request))
-        (fx/merge cofx
-                  {:db (-> db
-                           (dissoc :mailserver/current-request)
-                           (update :mailserver/topics merge mailserver-topics))
-                   :data-store/tx (mapv (fn [[topic mailserver-topic]]
-                                          (data-store.mailservers/save-mailserver-topic-tx
-                                           {:topic topic
-                                            :mailserver-topic mailserver-topic}))
-                                        mailserver-topics)}
-                  (process-next-messages-request))))))
+        ;; If a cursor is returned, add cursor and fire request again
+        (if (seq cursor)
+          (when-let [mailserver (get-mailserver-when-ready cofx)]
+
+            {:mailserver/request-messages {:web3 (:web3 db)
+                                           :mailserver    mailserver
+                                           :request (assoc request :cursor cursor)}})
+          (fx/merge cofx
+                    {:db (-> db
+                             (dissoc :mailserver/current-request)
+                             (update :mailserver/topics merge mailserver-topics))
+                     :data-store/tx (mapv (fn [[topic mailserver-topic]]
+                                            (data-store.mailservers/save-mailserver-topic-tx
+                                             {:topic topic
+                                              :mailserver-topic mailserver-topic}))
+                                          mailserver-topics)}
+                    (process-next-messages-request)))))))
 
 (fx/defn retry-next-messages-request
   [{:keys [db] :as cofx}]
@@ -437,6 +450,8 @@
             {:db (dissoc db :mailserver/request-error)}
             (process-next-messages-request)))
 
+;; At some point we should update `last-request`, as eventually we want to move
+;; on, rather then keep asking for the same data, say after n amounts of attempts
 (fx/defn handle-request-error
   [{:keys [db]} error]
   {:db (-> db
