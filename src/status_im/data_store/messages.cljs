@@ -1,5 +1,6 @@
 (ns status-im.data-store.messages
   (:require [cljs.tools.reader.edn :as edn]
+            [taoensso.timbre :as log]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.data-store.realm.core :as core]
@@ -7,9 +8,12 @@
             [status-im.js-dependencies :as dependencies]))
 
 (defn- transform-message [message]
-  (-> message
-      (update :message-type keyword)
-      (update :content edn/read-string)))
+  (try
+    (-> message
+        (update :message-type keyword)
+        (update :content edn/read-string))
+    (catch :default e
+      (log/warn "failed to transform message with " e))))
 
 (defn- get-by-chat-id
   ([chat-id]
@@ -19,7 +23,8 @@
                       (core/sorted :timestamp :desc)
                       (core/page from (+ from constants/default-number-of-messages))
                       (core/all-clj :message))]
-     (map transform-message messages))))
+     {:all-loaded? (> constants/default-number-of-messages (count messages))
+      :messages    (keep transform-message messages)})))
 
 (defn get-message-id-by-old [old-message-id]
   (when-let
@@ -39,10 +44,10 @@
                          (core/single (core/get-by-field
                                        @core/account-realm
                                        :message :old-message-id response-to)))]
-              [(or response-to-v2 response-to)
-               (-> js-message
-                   (core/realm-obj->clj :message)
-                   transform-message)]))
+              (when-let [deserialized-message (-> js-message
+                                                  (core/realm-obj->clj :message)
+                                                  transform-message)]
+                [(or response-to-v2 response-to) deserialized-message])))
           message-ids)))
 
 (def default-values
