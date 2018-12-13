@@ -16,9 +16,9 @@ pipeline {
     timeout(time: 35, unit: 'MINUTES')
     /* Limit builds retained */
     buildDiscarder(logRotator(
-      numToKeepStr: '90',
-      daysToKeepStr: '60',
-      artifactNumToKeepStr: '60',
+      numToKeepStr: '10',
+      daysToKeepStr: '20',
+      artifactNumToKeepStr: '10',
     ))
   }
 
@@ -88,6 +88,11 @@ pipeline {
     stage('Notify') {
       steps {
         script { cmn.gitHubNotifyPRSuccess() }
+      }
+    }
+    stage('Cleanup') {
+      steps {
+        script { cmn.clean() }
       }
     }
   }

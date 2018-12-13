@@ -2,12 +2,8 @@ cmn = load 'ci/common.groovy'
 
 packageFolder = './StatusImPackage'
 
-def cleanupBuild() {
-  sh 'make clean'
-}
-
 def cleanupAndDeps() {
-  cleanupBuild()
+  cmn.clean()
   sh 'cp .env.jenkins .env'
   sh 'lein deps'
   cmn.installJSDeps('desktop')

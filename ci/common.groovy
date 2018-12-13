@@ -149,8 +149,16 @@ def buildDuration() {
 
 def gitHubNotify(message) {
   def githubIssuesUrl = 'https://api.github.com/repos/status-im/status-react/issues'
-  /* CHANGE_ID can be provided via the build parameters */
-  def changeId = params.CHANGE_ID ? params.CHANGE_ID : env.CHANGE_ID
+  /* CHANGE_ID can be provided via the build parameters or from parent */
+  def changeId = env.CHANGE_ID
+  changeId = params.CHANGE_ID ? params.CHANGE_ID : changeId
+  changeId = getParentRunEnv('CHANGE_ID') ? getParentRunEnv('CHANGE_ID') : changeId
+  /* CHANGE_ID exists only when run as a PR build */
+  if (!changeId) {
+    println('This build is not related to a PR, CHANGE_ID missing.')
+    println('GitHub notification impossible, skipping...')
+    return
+  }
   def msgObj = [body: message]
   def msgJson = new JsonBuilder(msgObj).toPrettyString()
   withCredentials([usernamePassword(
@@ -262,6 +270,10 @@ def runLint() {
 
 def runTests() {
   sh 'lein test-cljs'
+}
+
+def clean() {
+  sh 'make clean'
 }
 
 return this

@@ -36,7 +36,7 @@ def podUpdate() {
 def prep(type = 'nightly') {
   cmn.doGitRebase()
   /* ensure that we start from a known state */
-  sh 'make clean'
+  cmn.clean()
   /* select type of build */
   switch (type) {
     case 'nightly':
