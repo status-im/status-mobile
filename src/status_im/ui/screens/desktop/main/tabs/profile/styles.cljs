@@ -163,10 +163,15 @@
   {:margin        24
    :font-size     20})
 
-(def connection-message-text
+(def adv-settings-subtitle
   {:margin-left   24
    :margin-bottom 10
+   :font-weight   :bold
    :font-size 16})
+
+(def connection-stats-title
+  (merge adv-settings-subtitle
+         {:font-size 14}))
 
 (def connection-stats-entry
   {:margin-left   24
@@ -174,19 +179,17 @@
 
 (def title-separator
   {:height            1
+   :margin-top        16
+   :margin-bottom     8
    :background-color  colors/gray-light})
-
-(def mailserver-title
-  {:margin-left      24
-   :margin-top       36
-   :margin-bottom    16
-   :font-size        16})
-
-(def connection-stats-title
-  {:margin-left      24
-   :margin-top       16
-   :margin-bottom    16
-   :font-size        16})
 
 (def pair-button
   {:margin-left 32})
+
+(defn connection-circle [disconnected?]
+  {:background-color (if disconnected? colors/red colors/green)
+   :margin-left  24
+   :margin-right 16
+   :width 16
+   :height 16
+   :border-radius 16})

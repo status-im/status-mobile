@@ -81,8 +81,6 @@
 
 (defn installations-section [installations]
   [react/view
-   [react/view {:style styles/title-separator}]
-   [react/text {:style styles/mailserver-title} (i18n/label :devices)]
    [pairing.views/pair-this-device]
    [pairing.views/sync-devices]
    [pairing.views/installations-list installations]])
@@ -132,6 +130,18 @@
     [react/text {:style styles/connection-stats-entry}
      (str "outbound " les-packets-out)]]])
 
+(views/defview logging-display []
+  (views/letsubs [logging-enabled [:settings/logging-enabled]]
+    [react/view {:style (styles/profile-row false)}
+     [react/text {:style (assoc (styles/profile-row-text colors/black)
+                                :font-size 14)} "Logging enabled?"]
+     (let [_ (log/debug "### logging-display" logging-enabled)]
+       [react/switch {:on-tint-color   colors/blue
+                      :value           logging-enabled
+                      :on-value-change #(do
+                                          (log/debug "### changelogging-enabled:" logging-enabled)
+                                          (re-frame/dispatch [:log-level.ui/logging-enabled (not logging-enabled)]))}])]))
+
 (views/defview advanced-settings []
   (views/letsubs [installations    [:pairing/installations]
                   current-mailserver-id [:mailserver/current-id]
@@ -147,19 +157,31 @@
        [react/text {:style styles/advanced-settings-title
                     :font  :medium}
         (i18n/label :advanced-settings)]
-       [react/view
-        [react/text {:style styles/connection-message-text} connection-message]]
+
        [react/view {:style styles/title-separator}]
-       [react/text {:style styles/mailserver-title} (i18n/label :offline-messaging)]
+       [react/text {:style styles/adv-settings-subtitle} "Connections"]
+       [react/view {:style {:flex-direction :row
+                            :margin-bottom 8}}
+        [react/view {:style (styles/connection-circle disconnected)}]
+        [react/text connection-message]]
+       (connection-statistics-display connection-stats)
+
+       [react/view {:style styles/title-separator}]
+       [react/text {:style styles/adv-settings-subtitle} (i18n/label :offline-messaging)]
        [react/view
         (for [mailserver (vals mailservers)]
           ^{:key (:id mailserver)}
           [react/view {:style {:margin-vertical 8}}
            [render-fn mailserver]])]
+;
+       [react/view {:style styles/title-separator}]
+       [react/text {:style styles/adv-settings-subtitle} (i18n/label :devices)]
        (when (config/pairing-enabled? true)
          (installations-section installations))
+;
        [react/view {:style styles/title-separator}]
-       (connection-statistics-display connection-stats)])))
+       [react/text {:style styles/adv-settings-subtitle} "Logging"]
+       [logging-display]])))
 
 (views/defview backup-recovery-phrase []
   [profile.recovery/backup-seed])

@@ -88,6 +88,12 @@ else()
   set(RUN_SCRIPT_FILE_NAME "run-app.sh")
 endif()
 
+
+target_sources(${APP_NAME} 
+  PRIVATE
+    "${CMAKE_CURRENT_LIST_DIR}/appconfig.h"
+    "${CMAKE_CURRENT_LIST_DIR}/appconfig.cpp")
+
 configure_file(
   ${RUN_SCRIPT_FILE_NAME}.in
   ${CMAKE_CURRENT_BINARY_DIR}/${RUN_SCRIPT_FILE_NAME}

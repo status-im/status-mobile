@@ -73,6 +73,7 @@
                    "react-native-fetch-polyfill"
                    "react-native-desktop-linking"
                    "react-native-desktop-menu"
+                   "react-native-desktop-config"
                    "react-native-desktop-notification"
                    "text-encoding"
                    "js-sha3"

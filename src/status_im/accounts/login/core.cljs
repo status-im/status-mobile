@@ -5,6 +5,7 @@
             [status-im.native-module.core :as status]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
+            [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
@@ -100,6 +101,10 @@
                                      #(re-frame/dispatch
                                        [:web3/fetch-node-version-callback %])]}
          (protocol/initialize-protocol address)
+         #(when platform/desktop?
+            (let [logging-enabled (get-in db [:account/account :settings :logging-enabled])]
+              (log/debug "### user-login-callback .setLoggingEnabled" logging-enabled)
+              (.setLoggingEnabled rn-dependencies/desktop-config logging-enabled)))
          #(when-not platform/desktop?
             (initialize-wallet %)))
         (account-and-db-password-do-not-match cofx error)))))

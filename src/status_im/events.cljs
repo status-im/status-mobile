@@ -556,6 +556,18 @@
  (fn [cofx [_ log-level]]
    (log-level/show-change-log-level-confirmation cofx log-level)))
 
+(handlers/register-handler-fx
+ :log-level.ui/logging-enabled
+ (fn [cofx [_ enabled]]
+   (log/debug "### :log-level.ui/logging-enabled" enabled)
+
+   (log-level/show-logging-enabled-confirmation cofx enabled)))
+
+(handlers/register-handler-fx
+ :log-level.ui/logging-enabled-confirmed
+ (fn [cofx [_ enabled]]
+   (log-level/save-logging-enabled cofx enabled)))
+
 ;; Browser bridge module
 
 (handlers/register-handler-fx

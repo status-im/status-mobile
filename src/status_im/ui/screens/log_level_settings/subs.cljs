@@ -7,3 +7,8 @@
  (fn [db _]
    (or (get-in db [:account/account :settings :log-level])
        config/log-level-status-go)))
+
+(re-frame/reg-sub
+ :settings/logging-enabled
+ (fn [db _]
+   (or (get-in db [:account/account :settings :logging-enabled]) false)))

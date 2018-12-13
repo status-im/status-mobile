@@ -28,3 +28,4 @@
 (def react-navigation       (js/require "react-navigation"))
 (def desktop-linking        #js {:addEventListener (fn [])})
 (def desktop-menu           #js {:addEventListener (fn [])})
+(def desktop-config         #js {:addEventListener (fn [])})

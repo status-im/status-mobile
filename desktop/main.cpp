@@ -29,6 +29,7 @@
 
 #include "exceptionglobalhandler.h"
 
+#include "appconfig.h"
 Q_DECLARE_LOGGING_CATEGORY(JSSERVER)
 Q_DECLARE_LOGGING_CATEGORY(STATUS)
 Q_LOGGING_CATEGORY(JSSERVER, "jsserver")
@@ -221,7 +222,6 @@ QString getDataStoragePath() {
 
 void renameRealmDirs() {
   QDir dataDir(getDataStoragePath());
-  qCDebug(STATUS) << "### path: " << getDataStoragePath();
 
   if (dataDir.exists("default.realmaccounts")) {
     dataDir.mkdir("default.realm");
@@ -258,24 +258,13 @@ int main(int argc, char **argv) {
   Q_INIT_RESOURCE(react_resources);
 
   loadFontsFromResources();
-#ifdef STATUS_NO_LOGGING
-  QLoggingCategory::setFilterRules("UIManager=false\n"
-                                     "Flexbox=false\n"
-                                     "WebSocketModule=false\n"
-                                     "Networking=false\n"
-                                     "ViewManager=false\n"
-                                     "RCTNotification=false\n"
-                                     "default=false\n"
-                                     "RCTStatus=false\n"
-                                     "jsserver=false\n"
-                                     "status=false\n");
-#else
-  QLoggingCategory::setFilterRules(QStringLiteral("UIManager=false\nFlexbox=false\nViewManager=false\nNetworking=false\nWebSocketModule=false"));
-#endif
-
   if (redirectLogIntoFile()) {
     qInstallMessageHandler(saveMessage);
   }
+
+  //qCDebug(STATUS) << "###STATUS_NO_LOGGING";
+  AppConfig::inst().setLoggingEnabled(false);
+
 
 #ifdef BUILD_FOR_BUNDLE
   if (!runNodeJsServer()) {

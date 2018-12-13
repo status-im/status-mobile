@@ -86,7 +86,8 @@
          (get accounts address))
         use-custom-bootnodes (get-in settings [:bootnodes network])
         log-level (or (:log-level settings)
-                      config/log-level-status-go)]
+                      (if utils.platform/desktop? ""
+                          config/log-level-status-go))]
     (cond-> (get-in networks [network :config])
       :always
       (get-base-node-config)
