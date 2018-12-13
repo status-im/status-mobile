@@ -15,6 +15,12 @@ if [ -z $TARGET_SYSTEM_NAME ]; then
 fi
 WINDOWS_CROSSTOOLCHAIN_PKG_NAME='mxetoolchain-x86_64-w64-mingw32'
 
+if [ -z $STATUS_NO_LOGGING ]; then
+  COMPILE_FLAGS="-DCMAKE_CXX_FLAGS:='-DBUILD_FOR_BUNDLE=1'"
+else
+  COMPILE_FLAGS="-DCMAKE_CXX_FLAGS:=-DBUILD_FOR_BUNDLE=1 -DSTATUS_NO_LOGGING=1"
+fi
+
 external_modules_dir=( \
   'node_modules/react-native-i18n/desktop' \
   'node_modules/react-native-config/desktop' \
@@ -200,14 +206,14 @@ function compile() {
             -DEXTERNAL_MODULES_DIR="$EXTERNAL_MODULES_DIR" \
             -DDESKTOP_FONTS="$DESKTOP_FONTS" \
             -DJS_BUNDLE_PATH="$JS_BUNDLE_PATH" \
-            -DCMAKE_CXX_FLAGS:='-DBUILD_FOR_BUNDLE=1' || exit 1
+            $COMPILE_FLAGS || exit 1
     else
       cmake -Wno-dev \
             -DCMAKE_BUILD_TYPE=Release \
             -DEXTERNAL_MODULES_DIR="$EXTERNAL_MODULES_DIR" \
             -DDESKTOP_FONTS="$DESKTOP_FONTS" \
             -DJS_BUNDLE_PATH="$JS_BUNDLE_PATH" \
-            -DCMAKE_CXX_FLAGS:='-DBUILD_FOR_BUNDLE=1' || exit 1
+            $COMPILE_FLAGS || exit 1
     fi
     make -S -j5 || exit 1
   popd

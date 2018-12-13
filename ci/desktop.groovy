@@ -53,6 +53,10 @@ def prepDeps() {
 }
 
 def compile() {
+  /* disable logs for desktop builds when releasing */
+  if (params.BUILD_TYPE == 'release') {
+    env.STATUS_NO_LOGGING = 1
+  }
   /* since QT is in a custom path we need to add it to PATH */
   if (env.QT_PATH) {
     env.PATH = "${env.QT_PATH}:${env.PATH}"
