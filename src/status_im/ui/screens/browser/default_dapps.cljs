@@ -43,7 +43,11 @@
             {:name        "EasyTrade"
              :dapp-url    "https://easytrade.io"
              :photo-path  "contacts://easytrade"
-             :description "One exchange for every token"}]}
+             :description "One exchange for every token"}
+            {:name        "slow.trade"
+             :dapp-url    "https://slow.trade/"
+             :photo-path  "contacts://slowtrade"
+             :description "Trade fairly priced crypto assets on the first platform built with the DutchX protocol."}]}
    {:title (i18n/label :t/default-dapps-marketplaces)
     :data  [{:name        "blockimmo"
              :dapp-url    "https://blockimmo.ch"
@@ -141,7 +145,11 @@
              :photo-path  "contacts://livepeer"
              :description "Decentralized video broadcasting"}]}
    {:title (i18n/label :t/default-dapps-social-utilities)
-    :data  [{:name        "Civitas"
+    :data  [{:name        "3Box"
+             :dapp-url    "https://3box.io/"
+             :photo-path  "contacts://3box"
+             :description "Create and manage your Ethereum Profile."}
+            {:name        "Civitas"
              :dapp-url    "https://communities.colu.com/"
              :photo-path  "contacts://civitas"
              :description "Blockchain-powered local communities"}

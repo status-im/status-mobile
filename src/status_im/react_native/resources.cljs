@@ -47,6 +47,8 @@
    :smartz             (js/require "./resources/images/contacts/smartz.png")
    :snt-voting         (js/require "./resources/images/contacts/snt-voting.png")
    :superrare          (js/require "./resources/images/contacts/superrare.png")
+   :3box               (js/require "./resources/images/contacts/3Box.png")
+   :slowtrade          (js/require "./resources/images/contacts/slowtrade.png")
 
    :ddex               (js/require "./resources/images/contacts/ddex.png")
    :emoon              (js/require "./resources/images/contacts/emoon.png")
