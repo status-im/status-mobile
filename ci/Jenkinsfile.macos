@@ -81,7 +81,7 @@ pipeline {
     }
     stage('Notify') {
       steps {
-        script { cmn.gitHubNotifyPRSuccess() }
+        script { cmn.notifyPRSuccess() }
       }
     }
     stage('Cleanup') {
@@ -91,6 +91,6 @@ pipeline {
     }
   }
   post {
-    failure { script { load('ci/common.groovy').gitHubNotifyPRFail() } }
+    failure { script { load('ci/common.groovy').notifyPRFailure() } }
   }
 }

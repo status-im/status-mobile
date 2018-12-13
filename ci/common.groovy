@@ -37,7 +37,7 @@ def buildBranch(name = null, buildType = null) {
       [name: 'CHANGE_ID',  value: env.CHANGE_ID, $class: 'StringParameterValue'],
   ])
   /* BlueOcean seems to not show child-build links */
-  print "Build: ${b.getAbsoluteUrl()} (${b.result})"
+  println "Build: ${b.getAbsoluteUrl()} (${b.result})"
   if (b.result != 'SUCCESS') {
     error("Build Failed")
   }
@@ -61,7 +61,7 @@ def installJSDeps(platform) {
   sh "scripts/run-environment-check.sh ${platform}"
   sh "scripts/prepare-for-platform.sh ${platform}"
   while (!installed && attempt <= maxAttempts) {
-    println("#${attempt} attempt to install npm deps")
+    println "#${attempt} attempt to install npm deps"
     sh 'yarn install --frozen-lockfile'
     installed = fileExists('node_modules/web3/index.js')
     attemp = attempt + 1
@@ -84,7 +84,7 @@ def buildNumber() {
     returnStdout: true,
     script: "./scripts/gen_build_no.sh"
   ).trim()
-  println("Build Number: ${number}")
+  println "Build Number: ${number}"
   return number
 }
 
@@ -147,14 +147,54 @@ def buildDuration() {
   return '~' + duration.take(duration.lastIndexOf(' and counting'))
 }
 
-def gitHubNotify(message) {
-  def githubIssuesUrl = 'https://api.github.com/repos/status-im/status-react/issues'
+def changeId() {
   /* CHANGE_ID can be provided via the build parameters or from parent */
   def changeId = env.CHANGE_ID
   changeId = params.CHANGE_ID ? params.CHANGE_ID : changeId
   changeId = getParentRunEnv('CHANGE_ID') ? getParentRunEnv('CHANGE_ID') : changeId
-  /* CHANGE_ID exists only when run as a PR build */
-  if (!changeId) {
+  return changeId
+}
+
+def ghcmgrBuildObj(success) {
+  /* assemble build object valid for ghcmgr */
+  return [
+    id: env.BUILD_DISPLAY_NAME,
+    commit: GIT_COMMIT.take(8),
+    success: success ? success : true,
+    platform: env.BUILD_PLATFORM + (getBuildType() == 'e2e' ? '-e2e' : ''),
+    duration: buildDuration(),
+    url: currentBuild.absoluteUrl,
+    pkg_url: env.PKG_URL,
+  ]
+}
+
+def ghcmgrPostBuild(success) {
+  /**
+   * This is our own service for avoiding comment spam.
+   * https://github.com/status-im/github-comment-manager
+   **/
+  def ghcmgrurl = 'https://ghcmgr.status.im'
+  def changeId = changeId()
+  def body = ghcmgrBuildObj(success)
+  def json = new JsonBuilder(body).toPrettyString()
+  withCredentials([usernamePassword(
+    credentialsId:  'ghcmgr-auth',
+    usernameVariable: 'GHCMGR_USER',
+    passwordVariable: 'GHCMGR_PASS'
+  )]) {
+    sh """
+      curl --silent --verbose -XPOST --data '${json}' \
+        -u '${GHCMGR_USER}:${GHCMGR_PASS}' \
+        -H "content-type: application/json" \
+        '${ghcmgrurl}/builds/${changeId}'
+    """
+  }
+}
+
+def gitHubNotify(message) {
+  def githubIssuesUrl = 'https://api.github.com/repos/status-im/status-react/issues'
+  def changeId = changeId() 
+  if (!changeId) { /* CHANGE_ID exists only when run as a PR build */
     println('This build is not related to a PR, CHANGE_ID missing.')
     println('GitHub notification impossible, skipping...')
     return
@@ -193,7 +233,7 @@ def gitHubNotifyFull(urls) {
 }
 
 
-def gitHubNotifyPRFail() {
+def gitHubNotifyPRFailure() {
   def d = ":small_orange_diamond:"
   def msg = "#### :x: "
   msg += "[${env.JOB_NAME}${currentBuild.displayName}](${currentBuild.absoluteUrl}) ${d} "
@@ -212,6 +252,24 @@ def gitHubNotifyPRSuccess() {
   msg += "${buildDuration()} ${d} ${GIT_COMMIT.take(8)} ${d} "
   msg += "[:package: ${env.BUILD_PLATFORM}${type} package](${env.PKG_URL})"
   gitHubNotify(msg)
+}
+
+def notifyPRFailure() {
+  try {
+    ghcmgrPostBuild(false)
+  } catch (ex) { /* fallback to posting directly to GitHub */
+    println "Failed to use GHCMGR: ${ex}"
+    gitHubNotifyPRFailure()
+  }
+}
+
+def notifyPRSuccess() {
+  try {
+    ghcmgrPostBuild(true)
+  } catch (ex) { /* fallback to posting directly to GitHub */
+    println "Failed to use GHCMGR: ${ex}"
+    gitHubNotifyPRSuccess()
+  }
 }
 
 def getEnv(build, envvar) {
@@ -253,7 +311,7 @@ def updateLatestNightlies(urls) {
   /* it might not exist */
   sh 'mkdir -p pkg'
   def latestJson = new JsonBuilder(latest).toPrettyString()
-  println("latest.json:\n${latestJson}")
+  println "latest.json:\n${latestJson}"
   new File(latestFile).write(latestJson)
   return uploadArtifact(latestFile)
 }
