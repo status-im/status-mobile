@@ -77,7 +77,7 @@ pipeline {
           Apk: cmn.pkgUrl(apk), Apke2e: cmn.pkgUrl(apke2e),
           iOS: cmn.pkgUrl(ios), iOSe2e: cmn.pkgUrl(iose2e),
           /* desktop */
-          App: cmn.pkgUrl(nix), Mac: cmn.pkgUrl(ios), Win: cmn.pkgUrl(win),
+          App: cmn.pkgUrl(nix), Mac: cmn.pkgUrl(osx), Win: cmn.pkgUrl(win),
           /* upload the sha256 checksums file too */
           SHA: cmn.uploadArtifact(cmn.pkgFind('sha256')),
         ]
