@@ -449,6 +449,7 @@ bool runNodeJsServer() {
       QStringList arguments = (QStringList() << "--port" << port);
       g_nodeJsServerProcess->setArguments(arguments);
   }
+  qputenv("REALM_DISABLE_ANALYTICS", "1");
   QObject::connect(g_nodeJsServerProcess, &QProcess::errorOccurred,
                    [=](QProcess::ProcessError) {
                      qCWarning(JSSERVER) << "process name: "
