@@ -3,7 +3,6 @@
             [status-im.accounts.db :as accounts.db]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.models :as chat-model]
-            [status-im.constants :as constants]
             [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.utils.datetime :as time]
             [status-im.utils.fx :as fx]
@@ -78,7 +77,8 @@
            db :chats
            (reduce
             (fn [chats chat-id]
-              (let [chat-messages         (index-messages (get-stored-messages chat-id))
+              (let [{:keys [messages]}    (get-stored-messages chat-id)
+                    chat-messages         (index-messages messages)
                     message-ids           (keys chat-messages)
                     statuses              (get-stored-user-statuses chat-id message-ids)
                     unviewed-messages-ids (get-unviewed-messages-ids statuses public-key)]
@@ -138,15 +138,20 @@
     get-stored-user-statuses :get-stored-user-statuses
     get-referenced-messages :get-referenced-messages :as cofx}]
   (when-not (get-in db [:chats current-chat-id :all-loaded?])
-    (let [loaded-count        (count (get-in db [:chats current-chat-id :messages]))
-          new-messages        (get-stored-messages current-chat-id loaded-count)
-          indexed-messages    (index-messages new-messages)
-          referenced-messages (into empty-message-map
-                                    (get-referenced-messages (get-referenced-ids indexed-messages)))
-          new-message-ids     (keys indexed-messages)
-          new-statuses        (get-stored-user-statuses current-chat-id new-message-ids)
-          public-key          (accounts.db/current-public-key cofx)
-          loaded-unviewed-messages (get-unviewed-messages-ids new-statuses public-key)]
+    (let [loaded-count               (count (get-in db [:chats current-chat-id :messages]))
+          {:keys [messages
+                  all-loaded?]}      (get-stored-messages current-chat-id loaded-count)
+          already-loaded-messages    (get-in db [:chats current-chat-id :messages])
+          ;; We remove those messages that are already loaded, as we might get some duplicates
+          new-messages               (remove (comp already-loaded-messages :message-id)
+                                             messages)
+          indexed-messages           (index-messages new-messages)
+          referenced-messages        (into empty-message-map
+                                           (get-referenced-messages (get-referenced-ids indexed-messages)))
+          new-message-ids            (keys indexed-messages)
+          new-statuses               (get-stored-user-statuses current-chat-id new-message-ids)
+          public-key                 (accounts.db/current-public-key cofx)
+          loaded-unviewed-messages   (get-unviewed-messages-ids new-statuses public-key)]
       (fx/merge cofx
                 {:db (-> db
                          (update-in [:chats current-chat-id :messages] merge indexed-messages)
@@ -154,7 +159,7 @@
                          (update-in [:chats current-chat-id :referenced-messages]
                                     #(into (apply dissoc % new-message-ids) referenced-messages))
                          (assoc-in [:chats current-chat-id :all-loaded?]
-                                   (> constants/default-number-of-messages (count new-messages))))}
+                                   all-loaded?))}
                 (chat-model/update-chats-unviewed-messages-count
                  {:chat-id                          current-chat-id
                   :new-loaded-unviewed-messages-ids loaded-unviewed-messages})
