@@ -207,7 +207,6 @@
 
 (fx/defn handle-connection-status-change
   [{:keys [db] :as cofx} is-connected?]
-  (println "ChANGED" is-connected?)
   (fx/merge cofx
             {:db (assoc db :network-status (if is-connected? :online :offline))}
             (mailserver/network-connection-status-changed is-connected?)))
