@@ -41,9 +41,10 @@
    :background-color   colors/gray
    :border-radius      8})
 
-(defn tooltip-text [font-size]
-  {:color     colors/red
-   :font-size font-size})
+(defn tooltip-text [font-size text-color]
+  {:color      (or text-color colors/red)
+   :font-size  font-size
+   :text-align :center})
 
 (def bottom-tooltip-text
   {:color     colors/white

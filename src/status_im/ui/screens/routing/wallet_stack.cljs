@@ -11,6 +11,9 @@
                         {:name    :send-transaction-stack
                          :screens [:wallet-send-transaction
                                    :recent-recipients
+                                   :wallet-choose-amount
+                                   :wallet-txn-overview
+                                   :wallet-choose-asset
                                    :wallet-transaction-sent
                                    :recipient-qr-code
                                    :wallet-send-assets]}

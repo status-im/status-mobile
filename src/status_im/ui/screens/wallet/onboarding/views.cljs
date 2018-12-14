@@ -100,23 +100,25 @@
        nil]]]))
 
 (views/defview screen []
-  (views/letsubs [{:keys [signing-phrase]} [:account/account]]
+  (views/letsubs [{:keys [signing-phrase]} [:account/account]
+                  screen-params            [:get-screen-params :wallet-onboarding-setup]]
     [wallet.components/simple-screen
      {:avoid-keyboard? true}
      (toolbar)
      (main-panel
       signing-phrase
-      (partial display-confirmation #(re-frame/dispatch [:accounts.ui/wallet-set-up-confirmed false])))]))
+      (partial display-confirmation #(re-frame/dispatch [:accounts.ui/wallet-set-up-confirmed false screen-params])))]))
 
 (views/defview modal []
-  (views/letsubs [{:keys [signing-phrase]} [:account/account]]
+  (views/letsubs [{:keys [signing-phrase]} [:account/account]
+                  screen-params            [:get-screen-params :wallet-onboarding-setup-modal]]
     [react/view styles/modal
      [status-bar/status-bar {:type :modal-wallet}]
      [react/view components.styles/flex
       (toolbar)
       (main-panel
        signing-phrase
-       (partial display-confirmation #(re-frame/dispatch [:accounts.ui/wallet-set-up-confirmed true])))]]))
+       (partial display-confirmation #(re-frame/dispatch [:accounts.ui/wallet-set-up-confirmed true screen-params])))]]))
 
 (defn onboarding []
   [react/view styles/root

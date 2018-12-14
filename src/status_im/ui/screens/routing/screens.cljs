@@ -21,8 +21,9 @@
    [status-im.ui.screens.wallet.send.views :as send]
    [status-im.ui.screens.wallet.request.views :as request]
    [status-im.ui.screens.wallet.components.views :as wallet.components]
+   [status-im.ui.screens.wallet.send.views.amount :as wallet.send.amount]
    [status-im.ui.screens.wallet.onboarding.views :as wallet.onboarding]
-   [status-im.ui.screens.wallet.transaction-fee.views :as wallet.transaction-fee]
+   [status-im.ui.screens.wallet.sign-message.views :as wallet.sign-message]
    [status-im.ui.screens.wallet.settings.views :as wallet-settings]
    [status-im.ui.screens.wallet.send.views :as send.views]
    [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
@@ -93,20 +94,19 @@
    :show-extension-modal             [:modal extensions.add/show-extension-modal]
    :wallet-send-transaction-modal    [:modal send/send-transaction-modal]
    :wallet-transaction-sent-modal    [:modal transaction-sent/transaction-sent-modal]
-   :wallet-transaction-fee           [:modal wallet.transaction-fee/transaction-fee]
    :wallet-onboarding-setup-modal    [:modal wallet.onboarding/modal]
-   :wallet-sign-message-modal        [:modal send/sign-message-modal]
+   :wallet-sign-message-modal        [:modal wallet.sign-message/sign-message-modal]
    :wallet                           (main-tabs/get-main-tab :wallet)
    :collectibles-list                collectibles/collectibles-list
    :wallet-onboarding-setup          wallet.onboarding/screen
    :wallet-send-transaction-chat     send/send-transaction
-   :contact-code                     wallet.components/contact-code
    :wallet-send-transaction          send/send-transaction
    :recent-recipients                request/wallet-request-contacts-list
    :wallet-transaction-sent          transaction-sent/transaction-sent
    :recipient-qr-code                wallet.components/recipient-qr-code
    :wallet-choose-amount             send.views/choose-amount-token
-   :wallet-choose-asset              send.views/choose-asset
+   :wallet-txn-overview              send.views/transaction-overview
+   :wallet-choose-asset              wallet.send.amount/choose-asset
    :wallet-send-assets               wallet.components/send-assets
    :wallet-request-transaction       request/request-transaction
    :wallet-send-transaction-request  request/send-transaction-request

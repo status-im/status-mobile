@@ -91,12 +91,12 @@
       (assoc :nonce nonce))))
 
 ;; SEND TRANSACTION -> RPC TRANSACTION
-(defn prepare-send-transaction [from {:keys [amount to gas gas-price data nonce]}]
+(defn prepare-send-transaction [from {:keys [amount to gas gas-price optimal-gas optimal-gas-price data nonce]}]
   (cond-> {:from     (ethereum/normalized-address from)
            :to       (ethereum/normalized-address to)
            :value    (ethereum/int->hex amount)
-           :gas      (ethereum/int->hex gas)
-           :gasPrice (ethereum/int->hex gas-price)}
+           :gas      (ethereum/int->hex (or gas optimal-gas))
+           :gasPrice (ethereum/int->hex (or gas-price optimal-gas-price))}
     data
     (assoc :data data)
     nonce
@@ -145,9 +145,8 @@
            (when on-error
              {:dispatch (conj on-error "transaction was cancelled by user")}))))
 
-(defn prepare-unconfirmed-transaction [db now hash]
-  (let [transaction (get-in db [:wallet :send-transaction])
-        all-tokens  (:wallet/all-tokens db)]
+(defn prepare-unconfirmed-transaction [db now transaction hash]
+  (let [all-tokens  (:wallet/all-tokens db)]
     (let [chain (:chain db)
           token (tokens/symbol->token all-tokens (keyword chain) (:symbol transaction))]
       (-> transaction
@@ -237,18 +236,14 @@
                                (assoc-in [:wallet :balance-loading?] true)
                                (assoc :prices-loading? true))})))
 
-(defn open-modal-wallet-for-transaction [db transaction tx-object]
-  (let [{:keys [gas gas-price]} transaction
+(defn open-modal-wallet-for-transaction [db transaction]
+  (let [{:keys [gas]} transaction
         {:keys [wallet-set-up-passed?]} (:account/account db)]
-    {:db         (-> db
-                     (assoc-in [:wallet :send-transaction] transaction)
-                     (assoc-in [:wallet :send-transaction :original-gas] gas))
+    {:db         db
      :dispatch-n [[:update-wallet]
-                  (when-not gas
-                    [:wallet/update-estimated-gas tx-object])
-                  (when-not gas-price
-                    [:wallet/update-gas-price])
                   [:navigate-to
                    (if wallet-set-up-passed?
-                     :wallet-send-modal-stack
-                     :wallet-send-modal-stack-with-onboarding)]]}))
+                     :wallet-send-transaction-modal
+                     :wallet-onboarding-setup-modal)
+                   {:transaction (assoc transaction :original-gas gas)
+                    :flow        :dapp}]]}))

@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.send.styles
   (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as styles]
             [status-im.ui.screens.wallet.components.styles :as wallet.components.styles]))
 
 (def send-transaction-form
@@ -76,60 +75,9 @@
    :padding          8
    :align-items      :center})
 
-(def advanced-button-wrapper
-  {:align-items :center})
-
-(def advanced-wrapper
-  {:margin-top    24
-   :margin-bottom 16})
-
-(def gas-container-wrapper
-  {:flex           1
-   :flex-direction :row})
-
-(def gas-input-wrapper
-  {:align-items     :center
-   :justify-content :space-between
-   :flex-direction  :row})
-
-(def advanced-options-text-wrapper
-  {:flex            1
-   :flex-direction  :row
-   :justify-content :space-between
-   :margin-vertical 15})
-
-(def advanced-label
-  {:text-align-vertical :center
-   :margin-left         4})
-
-(def advanced-fees-text
-  {:color            colors/white})
-
-(def advanced-fees-details-text
-  {:color colors/white-transparent})
-
-(def transaction-fee-block-wrapper
-  {:flex-direction :row})
-
 (def transaction-fee-info
   {:flex-direction   :row
    :margin           15})
-
-(def transaction-fee-info-text-wrapper
-  {:flex-shrink      1})
-
-(def transaction-fee-info-icon
-  {:border-radius    25
-   :width            25
-   :height           25
-   :margin-right     15
-   :align-items      :center
-   :justify-content  :center
-   :background-color colors/black-transparent})
-
-(def transaction-fee-info-icon-text
-  {:color            colors/white
-   :font-size        14})
 
 (def transaction-fee-input
   {:keyboard-type          :numeric
@@ -143,27 +91,22 @@
   {:background-color colors/blue
    :padding-vertical 8})
 
-(def fee-buttons
-  {:background-color colors/blue})
-
 (def password-error-tooltip
   {:bottom-value 15
    :color        colors/red-light})
-
-(defstyle gas-input-error-tooltip
-  {:android {:bottom-value -38}})
 
 ;; ----------------------------------------------------------------------
 ;; Choose Address View
 ;; ----------------------------------------------------------------------
 
-(def centered {:justify-content :center
-               :align-items :center})
+(def centered
+  {:justify-content :center
+   :align-items :center})
 
 (defstyle choose-recipient-text-input
   {:color             colors/white
    :font-size         30
-   :font-weight       :bold
-   :android {:width "100%"}
-   :ios     {:min-width 236}
+   :font-weight       "500"
+   :android           {:width "75%"}
+   :ios               {:min-width 236}
    :margin-horizontal 24})

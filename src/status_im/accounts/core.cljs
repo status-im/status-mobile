@@ -23,21 +23,19 @@
 
 (defn- chat-send? [transaction]
   (and (seq transaction)
-       (not (:in-progress? transaction))
        (:from-chat? transaction)))
 
-(fx/defn continue-after-wallet-onboarding [{:keys [db] :as cofx} modal?]
-  (let [transaction (get-in db [:wallet :send-transaction])]
-    (if modal?
-      {:dispatch [:navigate-to-clean :wallet-send-transaction-modal]}
-      (if-not (chat-send? transaction)
-        (navigation/navigate-to-clean cofx :wallet nil)
-        (navigation/navigate-to-cofx cofx :wallet-send-transaction-modal nil)))))
+(fx/defn continue-after-wallet-onboarding [{:keys [db] :as cofx} modal? {:keys [flow] :as screen-params}]
+  (if modal?
+    {:dispatch [:navigate-to :wallet-send-transaction-modal screen-params]}
+    (if (= :chat flow)
+      (navigation/navigate-to-cofx cofx :wallet-txn-overview screen-params)
+      (navigation/navigate-to-clean cofx :wallet nil))))
 
 (fx/defn confirm-wallet-set-up
-  [{:keys [db] :as cofx} modal?]
+  [{:keys [db] :as cofx} modal? screen-params]
   (fx/merge cofx
-            (continue-after-wallet-onboarding modal?)
+            (continue-after-wallet-onboarding modal? screen-params)
             (wallet.settings.models/wallet-autoconfig-tokens)
             (accounts.update/account-update {:wallet-set-up-passed? true} {})))
 

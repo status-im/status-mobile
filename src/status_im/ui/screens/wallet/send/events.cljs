@@ -14,6 +14,7 @@
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.utils.ethereum.ens :as ens]
             [status-im.utils.ethereum.eip681 :as eip681]
+            [status-im.utils.ethereum.eip55 :as eip55]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.erc20 :as erc20]
             [status-im.utils.ethereum.tokens :as tokens]
@@ -23,25 +24,59 @@
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [taoensso.timbre :as log]))
+
+(def wrong-password-error-code 5)
 
 ;;;; FX
 
-(defn- send-ethers [params on-completed masked-password]
-  (status/send-transaction (types/clj->json params)
-                           (security/safe-unmask-data masked-password)
-                           on-completed))
+(defn get-tx-params [{:keys [from to value gas gasPrice] :as params} symbol coin]
+  (if (= :ETH symbol)
+    params
+    (erc20/transfer-tx (:address coin) from to value gas gasPrice)))
 
-(defn- send-tokens [all-tokens symbol chain {:keys [from to value gas gasPrice]} on-completed masked-password]
-  (let [contract (:address (tokens/symbol->token all-tokens (keyword chain) symbol))]
-    (erc20/transfer contract from to value gas gasPrice masked-password on-completed)))
+(defn send-transaction! [params symbol coin on-completed password]
+  (let [tx-params (get-tx-params params symbol coin)]
+    (status/send-transaction (types/clj->json tx-params)
+                             password
+                             on-completed)))
 
-(re-frame/reg-fx
- ::send-transaction
- (fn [[params all-tokens symbol chain on-completed masked-password]]
-   (case symbol
-     :ETH (send-ethers params on-completed masked-password)
-     (send-tokens all-tokens symbol chain params on-completed masked-password))))
+(handlers/register-handler-fx
+ :wallet/add-unconfirmed-transaction
+ (fn [{:keys [db now]} [_ transaction result]]
+   {:db (assoc-in db [:wallet :transactions result]
+                  (models.wallet/prepare-unconfirmed-transaction db now transaction result))}))
+
+;;TODO(goranjovic) - fully refactor
+(defn on-transaction-completed [transaction flow {:keys [public-key]} {:keys [decimals] :as coin} {:keys [result error]} in-progress?]
+  (let [{:keys [id method to symbol amount on-result]} transaction
+        amount-text (str (money/internal->formatted amount symbol decimals))]
+    (if error
+      ;; ERROR
+      (do (utils/show-popup (i18n/label :t/error)
+                            (if (= (:code error) wrong-password-error-code)
+                              (i18n/label :t/wrong-password)
+                              (:message error)))
+          (reset! in-progress? false))
+      (do
+        (re-frame/dispatch [:wallet/add-unconfirmed-transaction transaction result])
+        (if on-result
+          (re-frame/dispatch (conj on-result id result method))
+          (re-frame/dispatch [:send-transaction-message public-key flow {:address to
+                                                                         :asset   (name symbol)
+                                                                         :amount  amount-text
+                                                                         :tx-hash result}]))))))
+
+(defn send-transaction-wrapper [{:keys [transaction password flow all-tokens in-progress? chain contact account]}]
+  (let [symbol (:symbol transaction)
+        coin   (tokens/asset-for all-tokens (keyword chain) symbol)]
+    (reset! in-progress? true)
+    (send-transaction! (models.wallet/prepare-send-transaction (:address account) transaction)
+                       symbol
+                       coin
+                       #(on-transaction-completed transaction flow contact coin (types/json->clj %) in-progress?)
+                       password)))
 
 (re-frame/reg-fx
  ::sign-message
@@ -67,41 +102,41 @@
     from-chat? (assoc :from-chat? from-chat?)
     gasPrice (assoc :gas-price (money/bignumber gasPrice))))
 
-(defn extract-qr-code-details [chain qr-uri]
+(defn extract-qr-code-details [chain all-tokens qr-uri]
   {:pre [(keyword? chain) (string? qr-uri)]}
   ;; i don't like fetching all tokens here
-  (let [{:keys [:wallet/all-tokens]} @re-frame.db/app-db
-        qr-uri (string/trim qr-uri)
+  (let [qr-uri (string/trim qr-uri)
         chain-id (ethereum/chain-keyword->chain-id chain)]
     (or (let [m (eip681/parse-uri qr-uri)]
           (merge m (eip681/extract-request-details m all-tokens)))
         (when (ethereum/address? qr-uri)
           {:address qr-uri :chain-id chain-id}))))
 
-(defn qr-data->transaction-data [qr-data]
+(defn qr-data->transaction-data [qr-data contacts]
   {:pre [(map? qr-data)]}
-  ;; i don't like fetching all tokens here
-  (let [{:keys [:contacts/contacts]} @re-frame.db/app-db
-        {:keys [to name] :as tx-details} (qr-data->send-tx-data qr-data)
+  (let [{:keys [to name] :as tx-details} (qr-data->send-tx-data qr-data)
         contact-name (:name (contact.db/find-contact-by-address contacts to))]
     (cond-> tx-details
       contact-name (assoc :to-name name))))
 
 ;; CHOOSEN RECIPIENT
-(defn eth-name->address [chain recipient callback]
+(defn eth-name->address [web3 chain recipient callback]
   (if (ens/is-valid-eth-name? recipient)
-    (ens/get-addr (get @re-frame.db/app-db :web3)
+    (ens/get-addr web3
                   (get ens/ens-registries chain)
                   recipient
-                  callback)
+                  #(callback %))
     (callback recipient)))
 
-(defn chosen-recipient [chain recipient success-callback error-callback]
-  {:pre [(keyword? chain) (string? recipient)]}
-  (eth-name->address chain recipient
-                     #(if (ethereum/address? %)
-                        (success-callback %)
-                        (error-callback %))))
+(defn chosen-recipient [web3 chain {:keys [to to-ens]} success-callback error-callback]
+  {:pre [(keyword? chain) (string? to)]}
+  (eth-name->address web3 chain to
+                     (fn [to]
+                       (if (ethereum/address? to)
+                         (if (and (not to-ens) (not (eip55/valid-address-checksum? to)))
+                           (error-callback :t/wallet-invalid-address-checksum)
+                           (success-callback to))
+                         (error-callback :t/invalid-address)))))
 
 (handlers/register-handler-fx
  :wallet/transaction-to-success
@@ -142,7 +177,8 @@
  ::transaction-completed
  (fn [{:keys [db now] :as cofx} [_ {:keys [result error]}]]
    (let [{:keys [id method public-key to symbol amount-text on-result]} (get-in db [:wallet :send-transaction])
-         db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
+         db' (assoc-in db [:wallet :send-transaction :in-progress?] false)
+         transaction (get-in db [:wallet :send-transaction])]
      (if error
         ;; ERROR
        (models.wallet/handle-transaction-error (assoc cofx :db db') error)
@@ -152,20 +188,14 @@
 
                (not= method constants/web3-personal-sign)
                (assoc-in [:wallet :transactions result]
-                         (models.wallet/prepare-unconfirmed-transaction db now result)))}
+                         (models.wallet/prepare-unconfirmed-transaction db now transaction result)))}
 
         (if on-result
           {:dispatch (conj on-result id result method)}
-          {:dispatch [:send-transaction-message public-key {:address to
-                                                            :asset   (name symbol)
-                                                            :amount  amount-text
-                                                            :tx-hash result}]}))))))
-
-;; DISCARD TRANSACTION
-(handlers/register-handler-fx
- :wallet/discard-transaction
- (fn [cofx _]
-   (models.wallet/discard-transaction cofx)))
+          {:dispatch [:send-transaction-message public-key :dapp {:address to
+                                                                  :asset   (name symbol)
+                                                                  :amount  amount-text
+                                                                  :tx-hash result}]}))))))
 
 (handlers/register-handler-fx
  :wallet.dapp/transaction-on-result
@@ -197,7 +227,7 @@
          ;;SEND TRANSACTION
          (= method constants/web3-send-transaction)
          (let [transaction (models.wallet/prepare-dapp-transaction queued-transaction (:contacts/contacts db))]
-           (models.wallet/open-modal-wallet-for-transaction db' transaction (first params)))
+           (models.wallet/open-modal-wallet-for-transaction db' transaction))
 
          ;;SIGN MESSAGE
          (= method constants/web3-personal-sign)
@@ -217,71 +247,21 @@
  :send-transaction-message
  (concat [(re-frame/inject-cofx :random-id-generator)]
          navigation/navigation-interceptors)
- (fn [{:keys [db] :as cofx} [_ chat-id params]]
+ (fn [{:keys [db] :as cofx} [_ chat-id flow params]]
    ;;NOTE(goranjovic): we want to send the payment message only when we have a whisper id
    ;; for the recipient, we always redirect to `:wallet-transaction-sent` even when we don't
    (let [send-command? (and chat-id (get-in db [:id->command ["send" #{:personal-chats}]]))]
      (fx/merge cofx
-               #(when send-command?
+               #(when (and chat-id send-command?)
                   (commands-sending/send % chat-id send-command? params))
-               (navigation/navigate-to-clean
-                (if (= (:view-id db) :wallet-send-transaction)
-                  :wallet-transaction-sent
-                  :wallet-transaction-sent-modal)
-                {})))))
-
-(defn set-and-validate-amount-db [db amount symbol decimals]
-  (let [{:keys [value error]} (wallet.db/parse-amount amount decimals)]
-    (-> db
-        (assoc-in [:wallet :send-transaction :amount] (money/formatted->internal value symbol decimals))
-        (assoc-in [:wallet :send-transaction :amount-text] amount)
-        (assoc-in [:wallet :send-transaction :amount-error] error))))
-
-(handlers/register-handler-fx
- :wallet.send/set-and-validate-amount
- (fn [{:keys [db]} [_ amount symbol decimals]]
-   {:db (set-and-validate-amount-db db amount symbol decimals)}))
-
+               (navigation/navigate-to-clean :wallet-transaction-sent {:flow    flow
+                                                                       :chat-id chat-id})))))
 (handlers/register-handler-fx
  :wallet/discard-transaction-navigate-back
  (fn [cofx _]
    (fx/merge cofx
              (navigation/navigate-back)
              (models.wallet/discard-transaction))))
-
-(defn update-gas-price
-  ([db edit? success-event]
-   {:update-gas-price {:web3          (:web3 db)
-                       :success-event (or success-event :wallet/update-gas-price-success)
-                       :edit?         edit?}})
-  ([db edit?] (update-gas-price db edit? :wallet/update-gas-price-success))
-  ([db] (update-gas-price db false :wallet/update-gas-price-success)))
-
-(defn recalculate-gas [{:keys [db] :as fx} symbol]
-  (-> fx
-      (assoc-in [:db :wallet :send-transaction :gas] (ethereum/estimate-gas symbol))
-      (merge (update-gas-price db))))
-
-(handlers/register-handler-fx
- :wallet/update-gas-price
- (fn [{:keys [db]} [_ edit?]]
-   (update-gas-price db edit?)))
-
-(handlers/register-handler-fx
- :wallet.send/set-symbol
- (fn [{:keys [db]} [_ symbol]]
-   (let [old-symbol (get-in db [:wallet :send-transaction :symbol])]
-     (cond-> {:db (-> db
-                      (assoc-in [:wallet :send-transaction :symbol] symbol)
-                      (assoc-in [:wallet :send-transaction :amount] nil)
-                      (assoc-in [:wallet :send-transaction :amount-text] nil)
-                      (assoc-in [:wallet :send-transaction :asset-error] nil))}
-       (not= old-symbol symbol) (recalculate-gas symbol)))))
-
-(handlers/register-handler-fx
- :wallet.send/toggle-advanced
- (fn [{:keys [db]} [_ advanced?]]
-   {:db (assoc-in db [:wallet :send-transaction :advanced?] advanced?)}))
 
 (handlers/register-handler-fx
  :wallet/cancel-entering-password
@@ -297,40 +277,12 @@
    {:db (assoc-in db [:wallet :send-transaction :password] masked-password)}))
 
 (handlers/register-handler-fx
- :wallet.send/edit-value
- (fn [cofx [_ key value]]
-   (models.wallet/edit-value key value cofx)))
-
-(handlers/register-handler-fx
- :wallet.send/set-gas-details
- (fn [{:keys [db]} [_ gas gas-price]]
-   {:db (-> db
-            (assoc-in [:wallet :send-transaction :gas] gas)
-            (assoc-in [:wallet :send-transaction :gas-price] gas-price))}))
-
-(handlers/register-handler-fx
- :wallet.send/clear-gas
- (fn [{:keys [db]}]
-   {:db (update db :wallet dissoc :edit)}))
-
-(handlers/register-handler-fx
- :wallet.send/reset-gas-default
- (fn [{:keys [db] :as cofx}]
-   (let [gas-default (if-some [original-gas (-> db :wallet :send-transaction :original-gas)]
-                       (money/to-fixed original-gas)
-                       (money/to-fixed
-                        (ethereum/estimate-gas
-                         (-> db :wallet :send-transaction :symbol))))]
-     (assoc (models.wallet/edit-value
-             :gas
-             gas-default
-             cofx)
-            :dispatch [:wallet/update-gas-price true]))))
-
-(handlers/register-handler-fx
  :close-transaction-sent-screen
- (fn [cofx [_ chat-id]]
+ (fn [cofx [_ chat-id flow]]
    (fx/merge cofx
              {:dispatch-later [{:ms 400 :dispatch [:check-dapps-transactions-queue]}]}
-             (navigation/navigate-back))))
+             #(case flow
+                :chat (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id {}])
+                :dapp (re-frame/dispatch [:navigate-back])
+                (re-frame/dispatch [:navigate-to :wallet {}])))))
 

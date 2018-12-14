@@ -55,7 +55,7 @@
 
 (def total-balance-value
   {:font-size   32
-   :font-weight :bold
+   :font-weight "500"
    :color       colors/white})
 
 (def total-balance-tilde
@@ -63,7 +63,7 @@
 
 (defstyle total-balance-currency
   {:font-size   32
-   :font-weight :bold
+   :font-weight "500"
    :margin-left 6
    :color       colors/white-transparent})
 

@@ -188,8 +188,8 @@
 
 (handlers/register-handler-fx
  :accounts.ui/wallet-set-up-confirmed
- (fn [cofx [_ modal?]]
-   (accounts/confirm-wallet-set-up cofx modal?)))
+ (fn [cofx [_ modal? screen-params]]
+   (accounts/confirm-wallet-set-up cofx modal? screen-params)))
 
 ;; accounts create module
 

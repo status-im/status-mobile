@@ -39,7 +39,7 @@
       (ethereum/normalized-address (:address contact))]]]])
 
 (views/defview wallet-request-contacts-list []
-  (views/letsubs [contacts [:contacts/all-added-people-contacts]]
+  (views/letsubs [contacts [:contacts/active]]
     [wallet.components/simple-screen
      [wallet.components/toolbar (i18n/label :t/recipient)]
      [react/view {:flex             1

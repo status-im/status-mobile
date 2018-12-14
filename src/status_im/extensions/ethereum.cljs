@@ -70,8 +70,8 @@
 (defn- execute-send-transaction [db {:keys [method params on-success on-failure] :as arguments}]
   (let [tx-object (assoc (select-keys arguments [:to :gas :gas-price :value :nonce])
                          :data (when (and method params) (abi-spec/encode method params)))
-        transaction (prepare-extension-transaction tx-object (:contacts/contacts db) on-success on-failure)]
-    (models.wallet/open-modal-wallet-for-transaction db transaction tx-object)))
+        transaction (prepare-extension-transaction tx-object (:contacts/contacts db)  on-success on-failure)]
+    (models.wallet/open-modal-wallet-for-transaction db transaction)))
 
 (handlers/register-handler-fx
  :extensions/ethereum-send-transaction

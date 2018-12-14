@@ -19,7 +19,8 @@
             [status-im.native-module.core :as status]
             [status-im.utils.security :as security]
             [status-im.js-dependencies :as dependencies]
-            [status-im.utils.types :as types])
+            [status-im.utils.types :as types]
+            [taoensso.timbre :as log])
   (:refer-clojure :exclude [name symbol]))
 
 (def utils dependencies/web3-utils)
@@ -112,13 +113,15 @@
 (defn balance-of [web3 contract address cb]
   (.balanceOf (get-instance web3 contract) address cb))
 
-(defn transfer [contract from to value gas gas-price masked-password on-completed]
-  (status/send-transaction (types/clj->json
-                            (merge (ethereum/call-params contract "transfer(address,uint256)" to value)
-                                   {:from     from
-                                    :gas      gas
-                                    :gasPrice gas-price}))
-                           (security/safe-unmask-data masked-password)
+(defn transfer-tx [contract from to value gas gas-price]
+  (merge (ethereum/call-params contract "transfer(address,uint256)" to value)
+         {:from     from
+          :gas      gas
+          :gasPrice gas-price}))
+
+(defn transfer [contract from to value gas gas-price password on-completed]
+  (status/send-transaction (types/clj->json (transfer-tx contract from to value gas gas-price))
+                           password
                            on-completed))
 
 (defn transfer-from [web3 contract from-address to-address value cb]

@@ -90,30 +90,9 @@
            [vector-icons/icon icon (merge {:color :white} icon-opts)]]
           content)]]])])
 
-(defn- cartouche-primary-text [s]
-  [react/text {:style styles/cartouche-primary-text}
-   s])
-
-(defn cartouche-secondary-text [s]
-  [react/text {:style styles/cartouche-secondary-text}
-   s])
-
-(defn cartouche-text-content [primary secondary]
-  [react/view styles/cartouche-text-wrapper
-   [cartouche-primary-text primary]
-   [cartouche-secondary-text secondary]])
-
-(defn view-asset [symbol]
-  [react/view
-   [react/i18n-text {:style styles/label :key :wallet-asset}]
-   [react/view styles/asset-container-read-only
-    [react/text {:style styles/asset-text}
-     (name symbol)]]])
-
 (defn- type->handler [k]
-  (case k
-    :send    :wallet.send/set-symbol
-    :request :wallet.request/set-symbol
+  (if (= k :request)
+    :wallet.request/set-symbol
     (throw (str "Unknown type: " k))))
 
 (defn- render-token [{:keys [symbol name icon decimals amount] :as token} type]
@@ -262,12 +241,3 @@
     [amount-input m token]]
    (when error
      [tooltip/tooltip error])])
-
-(defn separator []
-  [react/view styles/separator])
-
-(defn button-text [label]
-  [react/text {:style      styles/button-text
-               :font       (if platform/android? :medium :default)
-               :uppercase? true}
-   label])

@@ -31,29 +31,15 @@
    :justify-content :space-between
    :align-items     :center})
 
-(def cartouche-text-wrapper
-  {:flex-direction     :row
-   :justify-content    :space-between
-   :padding-horizontal 15
-   :padding-vertical   15})
-
-(def cartouche-primary-text
-  {:color colors/white})
-
-(def cartouche-secondary-text
-  {:color colors/white-transparent})
-
 (def text-content
   {:color colors/white})
 
 (def text-secondary-content
   {:color colors/white-transparent})
 
-(def text
-  {:margin-right 10})
-
 (def text-list-primary-content
-  (merge text {:color colors/black}))
+  {:margin-right 10
+   :color        colors/black})
 
 (def text-input
   (merge text-content
@@ -63,22 +49,6 @@
           :padding-top    0
           :height         52
           :letter-spacing -0.2}))
-
-(def contact-code-text-input
-  {:text-align-vertical :top
-   :padding-top         16
-   :padding-left        2
-   :padding-right       8
-   :height              72})
-
-(defstyle label
-  {:color   :white
-   :ios     {:line-height 16}
-   :android {:font-size   12}})
-
-(def label-transparent
-  (merge label
-         {:color colors/white-transparent}))
 
 (def network
   {:color          :white
@@ -93,27 +63,6 @@
    :border-color       colors/white-light-transparent
    :align-items        :center
    :justify-content    :center})
-
-(def asset-container
-  {:margin-top       8
-   :height           52
-   :background-color colors/white-light-transparent
-   :justify-content  :center
-   :padding-left     14
-   :padding-vertical 14
-   :padding-right    8
-   :border-radius    8})
-
-(def asset-container-read-only
-  {:margin-top       8
-   :height           52
-   :border-color     colors/white-light-transparent
-   :border-width     1
-   :justify-content  :center
-   :padding-left     14
-   :padding-vertical 14
-   :padding-right    8
-   :border-radius    8})
 
 (def asset-content-container
   {:flex-direction  :row
@@ -139,30 +88,6 @@
 (def asset-label
   {:margin-right 10})
 
-(def asset-text
-  {:color colors/white})
-
-(defstyle container-disabled
-  {:border-width     1
-   :border-color     colors/white-light-transparent
-   :background-color nil
-   :border-radius    8})
-
-(def wallet-container
-  {:flex-direction :row
-   :margin-top     8
-   :height         52
-   :border-width   1
-   :border-color   colors/white-light-transparent
-   :align-items    :center
-   :padding        14
-   :border-radius  8})
-
-(def wallet-name
-  {:color          :white
-   :font-size      15
-   :letter-spacing -0.2})
-
 (defn participant [address?]
   {:color          (if address? :white colors/white-transparent)
    :flex-shrink    1
@@ -187,27 +112,3 @@
 
 (def recipient-no-address
   {:color colors/white-transparent})
-
-(def wallet-value-container
-  {:flex           1
-   :flex-direction :row})
-
-(def wallet-value
-  {:padding-left   6
-   :color          colors/white-transparent
-   :font-size      15
-   :letter-spacing -0.2})
-
-(def wallet-value-amount
-  {:flex -1})
-
-(def separator
-  {:height            1
-   :margin-horizontal 15
-   :background-color  colors/white-light-transparent})
-
-(def button-text
-  {:color          :white
-   :font-size      15
-   :letter-spacing -0.2})
-

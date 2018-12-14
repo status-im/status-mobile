@@ -236,14 +236,6 @@
         (when network-mismatch?
           [react/text send-network])]])))
 
-;; TODO(goranjovic) - update to include tokens in https://github.com/status-im/status-react/issues/3233
-(defn- transaction-details [contact symbol]
-  (-> contact
-      (select-keys [:name :address :public-key])
-      (assoc :symbol symbol
-             :gas (ethereum/estimate-gas symbol)
-             :from-chat? true)))
-
 (defn- inject-network-info [parameters {:keys [db]}]
   (assoc parameters :network (:chain db)))
 
@@ -307,26 +299,14 @@
           {:keys [symbol decimals]} (tokens/asset-for all-tokens chain symbol-param)
           {:keys [value error]}     (wallet.db/parse-amount amount decimals)
           next-view-id              (if (:wallet-set-up-passed? sender-account)
-                                      :wallet-send-transaction-modal
+                                      :wallet-txn-overview
                                       :wallet-onboarding-setup)]
-      (fx/merge cofx
-                {:db (-> db
-                         (update-in [:wallet :send-transaction]
-                                    assoc
-                                    :amount (money/formatted->internal value symbol decimals)
-                                    :amount-text amount
-                                    :amount-error error)
-                         #_(choose-recipient.events/fill-request-details
-                            (transaction-details recipient-contact symbol))
-                         (update-in [:wallet :send-transaction]
-                                    dissoc :id :password :wrong-password?))
-                 ;; TODO(janherich) - refactor wallet send events, updating gas price
-                 ;; is generic thing which shouldn't be defined in wallet.send, then
-                 ;; we can include the utility helper without running into circ-dep problem
-                 :update-gas-price {:web3          (:web3 db)
-                                    :success-event :wallet/update-gas-price-success
-                                    :edit?         false}}
-                (navigation/navigate-to-cofx next-view-id {}))))
+      (let [transaction {:amount (money/formatted->internal value symbol decimals)
+                         :symbol symbol
+                         :to     (:address recipient-contact)}]
+        (navigation/navigate-to-cofx cofx next-view-id {:transaction transaction
+                                                        :contact     recipient-contact
+                                                        :flow        :chat}))))
   protocol/EnhancedParameters
   (enhance-send-parameters [_ parameters cofx]
     (-> parameters

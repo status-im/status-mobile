@@ -78,7 +78,7 @@
                                               (= :offline network-status))
                      :accessibility-label :sign-transaction-button}
       (i18n/label sign-label)
-      [vector-icons/icon :icons/forward {:color colors/white}]]]))
+      [vector-icons/icon :main-icons/next {:color colors/white}]]]))
 
 ;; SIGN MESSAGE FROM DAPP
 (defview sign-message-modal []
