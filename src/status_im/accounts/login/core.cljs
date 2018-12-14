@@ -101,7 +101,7 @@
           :web3/fetch-node-version  [web3
                                      #(re-frame/dispatch
                                        [:web3/fetch-node-version-callback %])]}
-         (protocol/initialize-protocol address)
+         (protocol/initialize-protocol)
          #(when-not platform/desktop?
             (initialize-wallet %)))
         (account-and-db-password-do-not-match cofx error)))))

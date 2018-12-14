@@ -151,6 +151,31 @@
                              (on-success resp)
                              (on-error err))))))
 
+(defn add-sym-keys-batch
+  [{:keys [web3 keys on-success on-error]}]
+  (let [batch    (.createBatch web3)
+        results  (atom [])
+        total    (count keys)
+        counter  (atom 0)
+        callback (fn [chat-id sym-key err resp]
+                   (swap! counter inc)
+                   (if err
+                     (on-error err)
+                     (swap! results conj {:chat-id    chat-id
+                                          :sym-key    sym-key
+                                          :sym-key-id resp}))
+                   (when (= @counter total)
+                     (on-success @results)))]
+    (log/debug "PERF" :add-sym-key-batch total)
+    (doseq [{:keys [chat-id sym-key]} keys]
+      (let [request (.. web3
+                        -shh
+                        -addSymKey
+                        (request sym-key
+                                 (partial callback chat-id sym-key)))]
+        (.add batch request)))
+    (.execute batch)))
+
 (defn get-sym-key
   [{:keys [web3 sym-key-id on-success on-error]}]
   (.. web3
@@ -174,15 +199,13 @@
 
 ;;TODO (yenda) remove once go implements persistence
 (re-frame/reg-fx
- :shh/restore-sym-keys
+ :shh/restore-sym-keys-batch
  (fn [{:keys [web3 transport on-success]}]
-   (doseq [[chat-id {:keys [sym-key]}] transport]
-     (when sym-key
-       (add-sym-key {:web3       web3
-                     :sym-key    sym-key
-                     :on-success (fn [sym-key-id]
-                                   (on-success chat-id sym-key sym-key-id))
-                     :on-error   log-error})))))
+   (log/debug "PERF" :shh/restore-sym-keys-batch (.now js/Date))
+   (add-sym-keys-batch {:web3       web3
+                        :keys       transport
+                        :on-success on-success
+                        :on-error   log-error})))
 
 (defn add-new-sym-key [{:keys [web3 sym-key on-success]}]
   (add-sym-key {:web3       web3
