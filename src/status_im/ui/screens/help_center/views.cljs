@@ -6,6 +6,7 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.help-center.styles :as styles]
+            [status-im.utils.platform :as platform]
             [status-im.ui.screens.profile.components.views :as profile.components]))
 
 (views/defview help-center []
@@ -16,10 +17,19 @@
    [react/scroll-view
     [react/view
      [profile.components/settings-item-separator]
-     [profile.components/settings-item {:label-kw            :t/faq
-                                        :accessibility-label :faq-button
-                                        :action-fn           #(.openURL react/linking "https://status.im/docs/FAQs.html")}]
+     [profile.components/settings-item
+      {:label-kw            :t/faq
+       :accessibility-label :faq-button
+       :action-fn           #(.openURL react/linking
+                                       (if platform/desktop?
+                                         "https://status.im/docs/FAQ-desktop.html"
+                                         "https://status.im/docs/FAQs.html"))}]
      [profile.components/settings-item-separator]
-     [profile.components/settings-item {:label-kw            :t/ask-in-status
-                                        :accessibility-label :submit-bug-button
-                                        :action-fn           #(re-frame/dispatch [:chat.ui/start-public-chat "status" {:navigation-reset? false}])}]]]])
+     [profile.components/settings-item
+      {:label-kw            :t/ask-in-status
+       :accessibility-label :submit-bug-button
+       :action-fn           #(re-frame/dispatch [:chat.ui/start-public-chat
+                                                 (if platform/desktop?
+                                                   "status-desktop"
+                                                   "status")
+                                                 {:navigation-reset? false}])}]]]])
