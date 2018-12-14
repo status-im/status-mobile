@@ -20,7 +20,8 @@
             [status-im.utils.random :as random]
             [status-im.utils.types :as types]
             [status-im.utils.universal-links.core :as utils.universal-links]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [clojure.string :as str]))
 
 (fx/defn initialize-browsers
   [{:keys [db all-stored-browsers]}]
@@ -204,13 +205,19 @@
                   (update-browser-history browser resolved-url)
                   (resolve-url {:error? error? :resolved-url (when resolved-ens url)}))))))
 
+(defn normalize-pdf-url [url]
+  (let [drive-url "https://drive.google.com/viewerng/viewer?embedded=true&url="]
+    (if (and platform/android? (str/ends-with? url ".pdf") (not (str/starts-with? url drive-url)))
+      (str drive-url url)
+      url)))
+
 (fx/defn navigation-state-changed
   [cofx event error?]
   (let [browser (get-current-browser (:db cofx))
         {:strs [url loading]} (js->clj event)]
     (fx/merge cofx
               (update-browser-option :loading? loading)
-              (update-browser-on-nav-change browser url loading error?))))
+              (update-browser-on-nav-change browser (normalize-pdf-url url) loading error?))))
 
 (fx/defn open-url-in-current-browser
   "Opens a url in the current browser, which mean no new entry is added to the home page
