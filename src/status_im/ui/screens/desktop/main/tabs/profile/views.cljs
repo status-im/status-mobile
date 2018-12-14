@@ -196,10 +196,31 @@
                  :accessibility-label :share-my-contact-code-button}
      [vector-icons/icon :icons/qr {:style {:tint-color colors/blue}}]]]])
 
+(defn help-item [help-open?]
+  [react/touchable-highlight {:style  (styles/profile-row help-open?)
+                              :on-press #(re-frame/dispatch [:navigate-to (if help-open? :home :help-center)])}
+   [react/view {:style styles/adv-settings}
+    [react/text {:style (styles/profile-row-text colors/black)
+                 :font  (if help-open? :medium :default)}
+     (i18n/label  :t/help-center)]
+    [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]])
+
+(defn advanced-settings-item [adv-settings-open?]
+  [react/touchable-highlight {:style  (styles/profile-row adv-settings-open?)
+                              :on-press #(do
+                                           (re-frame/dispatch [:navigate-to (if adv-settings-open? :home :advanced-settings)])
+                                           (re-frame/dispatch [:load-debug-metrics]))}
+   [react/view {:style styles/adv-settings}
+    [react/text {:style (styles/profile-row-text colors/black)
+                 :font  (if adv-settings-open? :medium :default)}
+     (i18n/label :t/advanced-settings)]
+    [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]])
+
 (views/defview profile [{:keys [seed-backed-up? mnemonic] :as user}]
   (views/letsubs [current-view-id [:get :view-id]
                   editing?        [:get :my-profile/editing?]] ;; TODO janherich: refactor my-profile, unnecessary complicated structure in db (could be just `:staged-name`/`:editing?` fields in account map) and horrible way to access it woth `:get`/`:set` subs/events
     (let [adv-settings-open?           (= current-view-id :advanced-settings)
+          help-open?                   (= current-view-id :help-center)
           backup-recovery-phrase-open? (= current-view-id :backup-recovery-phrase)
           notifications?               (get-in user [:desktop-notifications?])
           show-backup-seed?            (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
@@ -218,15 +239,8 @@
          [react/switch {:on-tint-color   colors/blue
                         :value           notifications?
                         :on-value-change #(re-frame/dispatch [:accounts.ui/notifications-enabled (not notifications?)])}]]
-        [react/touchable-highlight {:style  (styles/profile-row adv-settings-open?)
-                                    :on-press #(do
-                                                 (re-frame/dispatch [:navigate-to (if adv-settings-open? :home :advanced-settings)])
-                                                 (re-frame/dispatch [:load-debug-metrics]))}
-         [react/view {:style styles/adv-settings}
-          [react/text {:style (styles/profile-row-text colors/black)
-                       :font  (if adv-settings-open? :medium :default)}
-           (i18n/label :t/advanced-settings)]
-          [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]]
+        [advanced-settings-item adv-settings-open?]
+        [help-item help-open?]
         (when show-backup-seed?
           [react/touchable-highlight {:style  (styles/profile-row backup-recovery-phrase-open?)
                                       :on-press #(re-frame/dispatch [:navigate-to :backup-recovery-phrase])}

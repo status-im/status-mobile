@@ -30,6 +30,7 @@
                        :desktop/new-group-chat
                        :desktop/new-public-chat
                        :advanced-settings
+                       :help-center
                        :chat
                        :home
                        :qr-code
