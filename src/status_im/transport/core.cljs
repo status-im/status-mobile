@@ -17,22 +17,23 @@
   - adding fixed shh discovery filter
   - restoring existing symetric keys along with their unique filters
   - (optionally) initializing mailserver"
-  [{:keys [db web3] :as cofx} current-account-id]
+  [{:keys [db web3] :as cofx}]
   (log/debug :init-whisper)
   (when-let [public-key (get-in db [:account/account :public-key])]
-
-    (let [sym-key-added-callback (fn [chat-id sym-key sym-key-id]
-                                   (re-frame/dispatch [::sym-key-added {:chat-id    chat-id
-                                                                        :sym-key    sym-key
-                                                                        :sym-key-id sym-key-id}]))
-          topic (transport.utils/get-topic constants/contact-discovery)]
+    (let [topic (transport.utils/get-topic constants/contact-discovery)]
       (fx/merge cofx
-                {:shh/add-discovery-filter {:web3           web3
-                                            :private-key-id public-key
-                                            :topic topic}
-                 :shh/restore-sym-keys {:web3       web3
-                                        :transport  (filter (comp :topic second) (:transport/chats db))
-                                        :on-success sym-key-added-callback}}
+                {:shh/add-discovery-filter
+                 {:web3           web3
+                  :private-key-id public-key
+                  :topic          topic}
+                 :shh/restore-sym-keys-batch
+                 {:web3       web3
+                  :transport  (keep (fn [[chat-id {:keys [topic sym-key]
+                                                   :as   chat}]]
+                                      (when (and topic sym-key)
+                                        (assoc chat :chat-id chat-id)))
+                                    (:transport/chats db))
+                  :on-success #(re-frame/dispatch [::sym-keys-added %])}}
                 (mailserver/connect-to-mailserver)
                 (message/resend-contact-messages [])))))
 
@@ -42,17 +43,27 @@
 ;;it saves the sym-key-id in app-db to send messages later
 ;;and starts a filter to receive messages
 (handlers/register-handler-fx
- ::sym-key-added
- (fn [{:keys [db]} [_ {:keys [chat-id sym-key sym-key-id]}]]
+ ::sym-keys-added
+ (fn [{:keys [db]} [_ keys]]
+   (log/debug "PERF" ::sym-keys-added (count keys))
    (let [web3 (:web3 db)
-         {:keys [topic] :as chat} (get-in db [:transport/chats chat-id])]
-     {:db (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
-      :data-store/tx   [(transport-store/save-transport-tx {:chat-id chat-id
-                                                            :chat    (assoc chat :sym-key-id sym-key-id)})]
-      :shh/add-filter {:web3       web3
-                       :sym-key-id sym-key-id
-                       :topic      topic
-                       :chat-id    chat-id}})))
+         chats (:transport/chats db)
+         {:keys [updated-chats filters]}
+         (reduce
+          (fn [{:keys [updated-chats filters]} chat]
+            (let [{:keys [chat-id sym-key-id]} chat
+                  {:keys [topic]} (get updated-chats chat-id)]
+              {:updated-chats (assoc-in updated-chats
+                                        [chat-id :sym-key-id] sym-key-id)
+               :filters       (conj filters {:sym-key-id sym-key-id
+                                             :topic      topic
+                                             :chat-id    chat-id})}))
+          {:updated-chats chats
+           :filters       []}
+          keys)]
+     {:db              (assoc db :transport/chats updated-chats)
+      :shh/add-filters {:web3    web3
+                        :filters filters}})))
 
 ;;TODO (yenda) uncomment and rework once go implements persistence
 #_(doseq [[chat-id {:keys [sym-key-id topic] :as chat}] transport]

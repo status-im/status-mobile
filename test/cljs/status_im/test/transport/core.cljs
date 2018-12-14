@@ -6,16 +6,19 @@
 
 (deftest init-whisper
   (let [cofx {:db {:account/account {:public-key "1"}
-                   :transport/chats {"1" {:topic "topic-1"}
+                   :transport/chats {"1" {:topic   "topic-1"
+                                          :sym-key "sk1"}
                                      "2" {}
-                                     "3" {:topic "topic-3"}}
-                   :semaphores #{}}}]
+                                     "3" {:topic   "topic-3"
+                                          :sym-key "sk3"}}
+                   :semaphores      #{}}}]
     (testing "it adds the discover filter"
       (is (= {:web3 nil :private-key-id "1" :topic "0xf8946aac"}
-             (:shh/add-discovery-filter (transport/init-whisper cofx "user-address")))))
+             (:shh/add-discovery-filter (transport/init-whisper cofx)))))
     (testing "it restores the sym-keys"
-      (is (= [["1" {:topic "topic-1"}] ["3" {:topic "topic-3"}]]
-             (-> (transport/init-whisper cofx  "user-address") :shh/restore-sym-keys :transport))))
+      (is (= [{:topic "topic-1", :sym-key "sk1", :chat-id "1"}
+              {:topic "topic-3", :sym-key "sk3", :chat-id "3"}]
+             (-> (transport/init-whisper cofx) :shh/restore-sym-keys-batch :transport))))
     (testing "custom mailservers"
       (let [ms-1            {:id "1"
                              :fleet :eth.beta
@@ -48,7 +51,7 @@
                                     ms-3])]
         (is (= expected-mailservers
                (-> (get-in
-                    (protocol/initialize-protocol cofx-with-ms "user-address")
+                    (protocol/initialize-protocol cofx-with-ms)
                     [:db :mailserver/mailservers])
                    (update-in [:eth.beta "1"] dissoc :generating-sym-key?)
                    (update-in [:eth.beta "2"] dissoc :generating-sym-key?)

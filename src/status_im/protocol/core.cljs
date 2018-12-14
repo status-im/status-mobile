@@ -47,7 +47,7 @@
 
 (fx/defn initialize-protocol
   [{:data-store/keys [transport mailserver-topics mailservers]
-    :keys [db web3] :as cofx} address]
+    :keys [db web3] :as cofx}]
   (let [network (get-in db [:account/account :network])
         network-id (str (get-in db [:account/account :networks network :config :NetworkId]))]
     (fx/merge cofx
@@ -59,7 +59,7 @@
                                                  :network-id network-id}}
               (start-check-sync-state)
               (mailserver/initialize-mailserver mailservers)
-              (transport/init-whisper address))))
+              (transport/init-whisper))))
 
 (fx/defn handle-close-app-confirmed
   [_]
