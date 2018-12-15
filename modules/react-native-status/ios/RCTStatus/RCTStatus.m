@@ -196,6 +196,16 @@ RCT_EXPORT_METHOD(notifyUsers:(NSString *)message
 #endif
 }
 
+////////////////////////////////////////////////////////////////////
+#pragma mark - SendLogs method
+//////////////////////////////////////////////////////////////////// sendLogs
+RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson) {
+    // TODO: Implement SendLogs for iOS
+#if DEBUG
+    NSLog(@"SendLogs() method called, not implemented");
+#endif
+}
+
 //////////////////////////////////////////////////////////////////// addPeer
 RCT_EXPORT_METHOD(addPeer:(NSString *)enode
                   callback:(RCTResponseSenderBlock)callback) {

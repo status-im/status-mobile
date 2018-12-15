@@ -183,6 +183,19 @@
    :margin-bottom     8
    :background-color  colors/gray-light})
 
+(defn adv-settings-row-text [color]
+  {:color       color
+   :font-size   14})
+
+(defn adv-settings-row [active?]
+  {:justify-content    :space-between
+   :flex-direction     :row
+   :padding-horizontal 24
+   :height             56
+   :align-self         :stretch
+   :align-items        :center
+   :background-color   (if active? colors/gray-lighter colors/white)})
+
 (def pair-button
   {:margin-left 32})
 

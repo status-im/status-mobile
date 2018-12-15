@@ -24,6 +24,7 @@
             [status-im.hardwallet.core :as hardwallet]
             [status-im.i18n :as i18n]
             [status-im.init.core :as init]
+            [status-im.utils.logging.core :as logging]
             [status-im.log-level.core :as log-level]
             [status-im.mailserver.core :as mailserver]
             [status-im.network.core :as network]
@@ -542,6 +543,13 @@
  :extensions.ui/install-button-pressed
  (fn [cofx [_ url data modal?]]
    (extensions.registry/install cofx url data modal?)))
+
+;; logging module
+
+(handlers/register-handler-fx
+ :logging.ui/send-logs-pressed
+ (fn [cofx _]
+   (logging/send-logs cofx)))
 
 ;; log-level module
 

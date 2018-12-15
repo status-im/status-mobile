@@ -39,6 +39,7 @@ public:
     Q_INVOKABLE void stopNode();
     Q_INVOKABLE void createAccount(QString password, double callbackId);
     Q_INVOKABLE void notifyUsers(QString token, QString payloadJSON, QString tokensJSON, double callbackId);
+    Q_INVOKABLE void sendLogs(QString dbJSON);
     Q_INVOKABLE void addPeer(QString enode, double callbackId);
     Q_INVOKABLE void recoverAccount(QString passphrase, QString password, double callbackId);
     Q_INVOKABLE void login(QString address, QString password, double callbackId);
@@ -75,9 +76,9 @@ private Q_SLOTS:
 
 private:
     void logStatusGoResult(const char* methodName, const char* result);
-    QString getRootDirPath();
 
     QScopedPointer<RCTStatusPrivate> d_ptr;
+    QString d_gethLogFilePath;
 };
 
 #endif // RCTSTATUS_H

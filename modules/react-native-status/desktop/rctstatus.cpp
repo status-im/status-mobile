@@ -13,6 +13,8 @@
 #include "eventdispatcher.h"
 
 #include <QDebug>
+#include <QMessageBox>
+#include <QStorageInfo>
 #include <QJsonDocument>
 #include <QByteArray>
 #include <QVariantMap>
@@ -21,6 +23,9 @@
 #include <QtConcurrent>
 
 #include "libstatus.h"
+
+extern QString getDataStoragePath();
+extern QString getLogFilePath();
 
 namespace {
 struct RegisterQMLMetaType {
@@ -92,7 +97,7 @@ void RCTStatus::startNode(QString configString) {
     if (!relativeDataDirPath.startsWith("/"))
         relativeDataDirPath.prepend("/");
 
-    QString rootDirPath = getRootDirPath();
+    QString rootDirPath = getDataStoragePath();
     QDir rootDir(rootDirPath);
     QString absDataDirPath = rootDirPath + relativeDataDirPath;
     QDir dataDir(absDataDirPath);
@@ -100,10 +105,11 @@ void RCTStatus::startNode(QString configString) {
       dataDir.mkpath(".");
     }
 
+    d_gethLogFilePath = dataDir.absoluteFilePath("geth.log");
     configJSON["DataDir"] = absDataDirPath;
     configJSON["BackupDisabledDataDir"] = absDataDirPath;
     configJSON["KeyStoreDir"] = rootDir.absoluteFilePath("keystore");
-    configJSON["LogFile"] = dataDir.absoluteFilePath("geth.log");
+    configJSON["LogFile"] = d_gethLogFilePath;
 
     const QJsonDocument& updatedJsonDoc = QJsonDocument::fromVariant(configJSON);
     qCInfo(RCTSTATUS) << "::startNode updated configString: " << updatedJsonDoc.toVariant().toMap();
@@ -138,6 +144,97 @@ void RCTStatus::notifyUsers(QString token, QString payloadJSON, QString tokensJS
             logStatusGoResult("::notifyUsers Notify", result);
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, token, payloadJSON, tokensJSON, callbackId);
+}
+
+
+#include <QApplication>
+#include <QProcess>
+#include <QStandardPaths>
+#include <QMessageBox>
+#include <QtGui/private/qzipwriter_p.h>
+
+void showFileInGraphicalShell(QWidget *parent, const QFileInfo &fileInfo)
+{
+    // Mac, Windows support folder or file.
+#ifdef Q_OS_WIN
+    const QString explorer = QStandardPaths::findExecutable(QLatin1String("explorer.exe"));
+    if (explorer.isEmpty()) {
+        QMessageBox::warning(parent,
+                             QApplication::translate("Core::Internal",
+                                                     "Launching Windows Explorer Failed"),
+                             QApplication::translate("Core::Internal",
+                                                     "Could not find explorer.exe in path to launch Windows Explorer."));
+        return;
+    }
+    QStringList param;
+    if (!fileInfo.isDir())
+        param += QLatin1String("/select,");
+    param += QDir::toNativeSeparators(fileInfo.canonicalFilePath());
+    QProcess::startDetached(explorer, param);
+#elif defined(Q_OS_MAC)
+    QStringList scriptArgs;
+    scriptArgs << QLatin1String("-e")
+               << QString::fromLatin1("tell application \"Finder\" to reveal POSIX file \"%1\"")
+                                     .arg(fileInfo.canonicalFilePath());
+    QProcess::execute(QLatin1String("/usr/bin/osascript"), scriptArgs);
+    scriptArgs.clear();
+    scriptArgs << QLatin1String("-e")
+               << QLatin1String("tell application \"Finder\" to activate");
+    QProcess::execute(QLatin1String("/usr/bin/osascript"), scriptArgs);
+#else
+    // we cannot select a file here, because no file browser really supports it...
+    const QString folder = fileInfo.isDir() ? fileInfo.absoluteFilePath() : fileInfo.dir().absolutePath();
+    QProcess browserProc;
+    browserProc.setProgram("xdg-open");
+    browserProc.setArguments(QStringList(folder));
+    bool success = browserProc.startDetached();
+    const QString error = QString::fromLocal8Bit(browserProc.readAllStandardError());
+    success = success && error.isEmpty();
+    if (!success) {
+        QMessageBox::warning(parent, "Launching Explorer Failed", error);
+        return;
+    }
+#endif
+}
+
+void RCTStatus::sendLogs(QString dbJSON) {
+    Q_D(RCTStatus);
+
+    qCDebug(RCTSTATUS) << "::sendLogs call - logFilePath:" << getLogFilePath()
+                       << "d_gethLogFilePath:" << d_gethLogFilePath
+                       << "dbJSON:" << dbJSON;
+
+    QString tmpDirName("Status.im");
+    QDir    tmpDir(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
+    if (!tmpDir.mkpath(tmpDirName)) {
+        qCWarning(RCTSTATUS) << "::sendLogs could not create temp dir:" << tmpDirName;
+        return;
+    }
+
+    // Check that at least 20MB are available for log generation
+    QStorageInfo storage(tmpDir);
+    if (storage.bytesAvailable() < 20 * 1024 * 1024) {
+        QMessageBox dlg;
+        dlg.warning(QApplication::activeWindow(),
+                    "Error", QString("Insufficient storage space available in %1 for log generation. Please free up some space.").arg(storage.rootPath()),
+                    QMessageBox::Close);
+        return;
+    }
+
+    QFile      zipFile(tmpDir.absoluteFilePath(tmpDirName + QDir::separator() + "Status-debug-logs.zip"));
+    QZipWriter zipWriter(&zipFile);
+    QFile      gethLogFile(d_gethLogFilePath);
+    QFile      logFile(getLogFilePath());
+    zipWriter.addFile("db.json", dbJSON.toUtf8());
+    if (gethLogFile.exists()) {
+        zipWriter.addFile(QFileInfo(gethLogFile).fileName(), &gethLogFile);
+    }
+    if (logFile.exists()) {
+        zipWriter.addFile(QFileInfo(logFile).fileName(), &logFile);
+    }
+    zipWriter.close();
+
+    showFileInGraphicalShell(QApplication::activeWindow(), QFileInfo(zipFile));
 }
 
 
@@ -177,7 +274,7 @@ void RCTStatus::verify(QString address, QString password, double callbackId) {
     Q_D(RCTStatus);
     qCInfo(RCTSTATUS) << "::verify call - callbackId:" << callbackId;
     QtConcurrent::run([&](QString address, QString password, double callbackId) {
-            QDir rootDir(getRootDirPath());
+            QDir rootDir(getDataStoragePath());
             QString keystorePath = rootDir.absoluteFilePath("keystore");
             const char* result = VerifyAccountPassword(keystorePath.toUtf8().data(), address.toUtf8().data(), password.toUtf8().data());
             logStatusGoResult("::verify VerifyAccountPassword", result);
@@ -334,17 +431,3 @@ void RCTStatus::updateMailservers(QString enodes, double callbackId) {
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, enodes, callbackId);
 }
-
-QString RCTStatus::getRootDirPath() {
-    QString statusDataDir = qgetenv("STATUS_DATA_DIR");
-    QString rootDirPath;
-    if (!statusDataDir.isEmpty()) {
-        rootDirPath = statusDataDir;
-    }
-    else {
-        rootDirPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-    }
-
-    return rootDirPath;
-}
-

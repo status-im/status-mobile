@@ -72,6 +72,12 @@
   [limit nodes]
   (take limit (shuffle nodes)))
 
+(defn get-log-level
+  [account-settings]
+  (or (:log-level account-settings)
+      (if utils.platform/desktop? ""
+          config/log-level-status-go)))
+
 (defn- get-account-node-config [db address]
   (let [accounts (get db :accounts/accounts)
         current-fleet-key (fleet/current-fleet db address)
@@ -85,9 +91,7 @@
           :installation-id (get db :accounts/new-installation-id)}
          (get accounts address))
         use-custom-bootnodes (get-in settings [:bootnodes network])
-        log-level (or (:log-level settings)
-                      (if utils.platform/desktop? ""
-                          config/log-level-status-go))]
+        log-level (get-log-level settings)]
     (cond-> (get-in networks [network :config])
       :always
       (get-base-node-config)

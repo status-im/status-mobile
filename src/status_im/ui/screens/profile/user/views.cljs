@@ -170,6 +170,13 @@
     {:label-kw            :t/log-level
      :action-fn           #(re-frame/dispatch [:navigate-to :log-level-settings])
      :accessibility-label :log-level-settings-button}]
+   (when (and dev-mode? (not platform/ios?))
+     [react/view styles/my-profile-settings-send-logs-wrapper
+      [react/view styles/my-profile-settings-send-logs
+       [profile.components/settings-item {:label-kw            :t/send-logs
+                                          :destructive?        true
+                                          :hide-arrow?         true
+                                          :action-fn           #(re-frame/dispatch [:logging.ui/send-logs-pressed])}]]])
    [profile.components/settings-item-separator]
    [profile.components/settings-item
     {:label-kw            :t/fleet
@@ -250,7 +257,7 @@
                                                                              {:contact current-account
                                                                               :source  :public-key
                                                                               :value   public-key}])
-                                   :style styles/share-contact-code-button
+                                   :style               styles/share-contact-code-button
                                    :accessibility-label :share-my-profile-button}
           (i18n/label :t/share-my-profile)]]
         [react/view styles/my-profile-info-container

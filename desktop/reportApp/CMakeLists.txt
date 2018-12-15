@@ -14,7 +14,6 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 set(APP_NAME "reportApp")
 
 set(MAIN_CPP_SOURCE reportpublisher.cpp
-                    reportpublisher.cpp
                     main.cpp)
 
 add_executable(
@@ -23,7 +22,7 @@ add_executable(
   main.qrc
 )
 
-set(USED_QT_MODULES Core Qml Quick WebSockets Svg)
+set(USED_QT_MODULES Core Qml Quick WebSockets Widgets Svg)
 
 qt5_use_modules(${APP_NAME} ${USED_QT_MODULES})
 

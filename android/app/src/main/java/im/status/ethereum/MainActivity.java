@@ -30,7 +30,6 @@ import im.status.ethereum.module.StatusThreadPoolExecutor;
 public class MainActivity extends ReactActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback{
 
-    private static final int PERMISSION_REQUEST_CAMERA = 0;
 
     @Nullable private PermissionListener mPermissionListener;
 

@@ -54,6 +54,9 @@
 (defn notify-users [m callback]
   (native-module/notify-users m callback))
 
+(defn send-logs [dbJson]
+  (native-module/send-logs dbJson))
+
 (defn add-peer [enode callback]
   (native-module/add-peer enode callback))
 

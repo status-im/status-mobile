@@ -7,6 +7,8 @@
             [status-im.utils.utils :as utils]
             [status-im.ui.components.colors :as colors]
             [status-im.i18n :as i18n]
+            [status-im.utils.logging.core :as logging]
+            [status-im.utils.platform :as platform]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [taoensso.timbre :as log]
             [status-im.utils.gfycat.core :as gfy]
@@ -135,15 +137,21 @@
 
 (views/defview logging-display []
   (views/letsubs [logging-enabled [:settings/logging-enabled]]
-    [react/view {:style (styles/profile-row false)}
-     [react/text {:style (assoc (styles/profile-row-text colors/black)
-                                :font-size 14)} (i18n/label :t/logging-enabled)]
-     [react/switch {:on-tint-color   colors/blue
-                    :value           logging-enabled
-                    :on-value-change #(re-frame/dispatch [:log-level.ui/logging-enabled (not logging-enabled)])}]]))
+    [react/view
+     [react/view {:style (styles/adv-settings-row false)}
+      [react/text {:style (assoc (styles/adv-settings-row-text colors/black)
+                                 :font-size 14)} (i18n/label :t/logging-enabled)]
+      [react/switch {:on-tint-color   colors/blue
+                     :value           logging-enabled
+                     :on-value-change #(re-frame/dispatch [:log-level.ui/logging-enabled (not logging-enabled)])}]]
+     [react/view {:style (styles/adv-settings-row false)}
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:logging.ui/send-logs-pressed])}
+       [react/text {:style (styles/adv-settings-row-text colors/red)}
+        (i18n/label :t/send-logs)]]]]))
 
 (views/defview advanced-settings []
-  (views/letsubs [current-mailserver-id [:mailserver/current-id]
+  (views/letsubs [installations         [:pairing/installations]
+                  current-mailserver-id [:mailserver/current-id]
                   mailservers           [:mailserver/fleet-mailservers]
                   mailserver-state      [:mailserver/state]
                   node-status           [:node-status]
@@ -197,21 +205,21 @@
      [vector-icons/icon :icons/qr {:style {:tint-color colors/blue}}]]]])
 
 (defn help-item [help-open?]
-  [react/touchable-highlight {:style  (styles/profile-row help-open?)
+  [react/touchable-highlight {:style    (styles/adv-settings-row help-open?)
                               :on-press #(re-frame/dispatch [:navigate-to (if help-open? :home :help-center)])}
    [react/view {:style styles/adv-settings}
-    [react/text {:style (styles/profile-row-text colors/black)
+    [react/text {:style (styles/adv-settings-row-text colors/black)
                  :font  (if help-open? :medium :default)}
      (i18n/label  :t/help-center)]
     [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]])
 
 (defn advanced-settings-item [adv-settings-open?]
-  [react/touchable-highlight {:style  (styles/profile-row adv-settings-open?)
+  [react/touchable-highlight {:style  (styles/adv-settings-row adv-settings-open?)
                               :on-press #(do
                                            (re-frame/dispatch [:navigate-to (if adv-settings-open? :home :advanced-settings)])
                                            (re-frame/dispatch [:load-debug-metrics]))}
    [react/view {:style styles/adv-settings}
-    [react/text {:style (styles/profile-row-text colors/black)
+    [react/text {:style (styles/adv-settings-row-text colors/black)
                  :font  (if adv-settings-open? :medium :default)}
      (i18n/label :t/advanced-settings)]
     [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]])

@@ -87,6 +87,10 @@
   (when status
     (call-module #(.notifyUsers status message payload tokens on-result))))
 
+(defn send-logs [dbJson]
+  (when status
+    (call-module #(.sendLogs status dbJson))))
+
 (defn add-peer [enode on-result]
   (when (and @node-started status)
     (call-module #(.addPeer status enode on-result))))
