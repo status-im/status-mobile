@@ -7,7 +7,8 @@
             [clojure.string :as string]
             [status-im.constants :as constants]
             [cognitect.transit :as transit]
-            [status-im.js-dependencies :as dependencies]))
+            [status-im.js-dependencies :as dependencies]
+            [status-im.utils.clocks :as utils.clocks]))
 
 (defn v1 [old-realm new-realm]
   (log/debug "migrating v1 account database: " old-realm new-realm))
@@ -316,3 +317,23 @@
                 message-type (aget last-message "message-type")]
             (aset chat "last-message-content" content)
             (aset chat "last-message-type" message-type)))))))
+
+(defn get-last-clock-value [realm chat-id]
+  (if-let [last-message
+           (-> (.objects realm "message")
+               (.filtered (str "chat-id=\"" chat-id "\""))
+               (.sorted "clock-value" true)
+               (aget 0))]
+    (->
+     last-message
+     (aget "clock-value")
+     (utils.clocks/safe-timestamp))
+    0))
+
+(defn v29 [old-realm new-realm]
+  (let [chats (.objects new-realm "chat")]
+    (dotimes [i (.-length chats)]
+      (let [chat (aget chats i)
+            chat-id (aget chat "chat-id")]
+        (when-let [last-clock-value (get-last-clock-value new-realm chat-id)]
+          (aset chat "last-clock-value" last-clock-value))))))

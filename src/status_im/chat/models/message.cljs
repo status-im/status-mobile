@@ -109,7 +109,9 @@
      :prioritary? (not (chat-model/multi-user-chat? cofx chat-id))}))
 
 (fx/defn add-message
-  [{:keys [db] :as cofx} batch? {:keys [chat-id message-id clock-value timestamp content from] :as message} current-chat?]
+  [{:keys [db] :as cofx}
+   {{:keys [chat-id message-id clock-value timestamp from] :as message} :message
+    :keys [current-chat? batch? last-clock-value]}]
   (let [current-public-key (accounts.db/current-public-key cofx)
         prepared-message (-> message
                              (prepare-message chat-id current-chat?)
@@ -124,8 +126,11 @@
               {:db            (cond->
                                (-> db
                                    (update-in [:chats chat-id :messages] assoc message-id prepared-message)
-                                   ;; this will increase last-clock-value twice when sending our own messages
-                                   (update-in [:chats chat-id :last-clock-value] (partial utils.clocks/receive clock-value)))
+                                   (update-in [:chats chat-id :last-clock-value]
+                                              (fn [old-clock-value]
+                                                (or last-clock-value
+                                                    (utils.clocks/receive clock-value
+                                                                          old-clock-value)))))
 
                                 (and (not current-chat?)
                                      (not= from current-public-key))
@@ -193,7 +198,9 @@
     (fx/merge cofx
               {:transport/confirm-messages-processed [{:web3   web3
                                                        :js-obj js-obj}]}
-              (add-message true message current-chat?)
+              (add-message {:batch?       true
+                            :message      message
+                            :current-chat current-chat?})
               ;; Checking :outgoing here only works for now as we don't have a :seen
               ;; status for public chats, if we add processing of our own messages
               ;; for 1-to-1 care needs to be taken not to override the :seen status
@@ -269,7 +276,7 @@
 (defn- update-last-message [all-chats chat-id]
   (let [{:keys [messages message-groups]}
         (get all-chats chat-id)
-        {:keys [content message-type]}
+        {:keys [content message-type clock-value]}
         (->> (chat.db/sort-message-groups message-groups messages)
              first
              second
@@ -279,7 +286,8 @@
     (chat-model/upsert-chat
      {:chat-id              chat-id
       :last-message-content content
-      :last-message-type    message-type})))
+      :last-message-type    message-type
+      :last-clock-value     clock-value})))
 
 (fx/defn update-last-messages
   [{:keys [db] :as cofx} chat-ids]
@@ -372,8 +380,12 @@
                {:chat-id              chat-id
                 :timestamp            now
                 :last-message-content (:content message)
-                :last-message-type    (:message-type message)})
-              (add-message false message-with-id true)
+                :last-message-type    (:message-type message)
+                :last-clock-value     (:clock-value message)})
+              (add-message {:batch?           false
+                            :message          message-with-id
+                            :current-chat?    true
+                            :last-clock-value (:clock-value message)})
               (add-own-status chat-id message-id :sending)
               (send chat-id message-id wrapped-record))))
 
@@ -433,7 +445,11 @@
             (remove-message-from-group chat-id (get-in db [:chats chat-id :messages message-id]))))
 
 (fx/defn add-system-messages [cofx messages]
-  (let [messages-fx (map #(add-message false (system-message cofx %) true) messages)]
+  (let [messages-fx (map #(add-message
+                           {:batch         false
+                            :message       (system-message cofx %)
+                            :current-chat? true})
+                         messages)]
     (apply fx/merge cofx messages-fx)))
 
 (fx/defn send-message

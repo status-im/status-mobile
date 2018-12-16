@@ -47,22 +47,13 @@
                :signature signature
                :chat-id chat-id}))))
 
-(defn- get-last-clock-value [chat-id]
-  (-> (core/get-by-field @core/account-realm
-                         :message :chat-id chat-id)
-      (core/sorted :clock-value :desc)
-      (core/single-clj :message)
-      :clock-value
-      (utils.clocks/safe-timestamp)))
-
 (defn- normalize-chat [{:keys [chat-id] :as chat}]
   (-> chat
       (update :admins   #(into #{} %))
       (update :contacts #(into #{} %))
       (update :tags #(into #{} %))
       (update :membership-updates  (partial unmarshal-membership-updates chat-id))
-      ;; We cap the clock value to a safe value in case the db has been polluted
-      (assoc :last-clock-value (get-last-clock-value chat-id))
+      (update :last-clock-value utils.clocks/safe-timestamp)
       (update :last-message-type keyword)
       (update :last-message-content edn/read-string)))
 

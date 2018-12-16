@@ -149,7 +149,7 @@
   (when (pos? current-version)
     (doseq [schema schemas
             :when (> (:schemaVersion schema) current-version)]
-      (migration-log :current-version current-version)
+      (migration-log :current-version (:schemaVersion schema))
       (let [migrated-realm (open-realm schema file-name encryption-key)]
         (close migrated-realm))))
   (open-realm (last schemas) file-name encryption-key))
