@@ -556,6 +556,81 @@
                 {:permissions [:read]
                  :value       :extensions/ethereum-cancel-filter
                  :arguments   {:id  :string}}
+                'ethereum.erc20/total-supply
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc20-total-supply
+                 :arguments   {:contract     :string
+                               :on-result    :event}}
+                'ethereum.erc20/balance-of
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc20-balance-of
+                 :arguments   {:contract     :string
+                               :token-owner  :string
+                               :on-result    :event}}
+                'ethereum.erc20/transfer
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc20-transfer
+                 :arguments   {:contract  :string
+                               :to        :string
+                               :value     :number
+                               :on-result :event}}
+                'ethereum.erc20/transfer-from
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc20-transfer-from
+                 :arguments   {:contract   :string
+                               :from      :string
+                               :to        :string
+                               :value     :number
+                               :on-result :event}}
+                'ethereum.erc20/approve
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc20-approve
+                 :arguments   {:contract    :string
+                               :spender     :string
+                               :value       :number
+                               :on-result   :event}}
+                'ethereum.erc20/allowance
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc20-allowance
+                 :arguments   {:contract     :string
+                               :token-owner  :string
+                               :spender      :string
+                               :on-result    :event}}
+                'ethereum.erc721/owner-of
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc721-owner-of
+                 :arguments   {:contract    :string
+                               :token-id    :string
+                               :on-result   :event}}
+                'ethereum.erc721/is-approved-for-all
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc721-is-approved-for-all
+                 :arguments   {:contract   :string
+                               :owner      :string
+                               :operator   :string
+                               :on-result  :event}}
+                'ethereum.erc721/get-approved
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc721-get-approved
+                 :arguments   {:contract   :string
+                               :token-id   :string
+                               :on-result  :event}}
+                'ethereum.erc721/set-approval-for-all
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc721-set-approval-for-all
+                 :arguments   {:contract   :string
+                               :operator   :string
+                               :approved   :boolean
+                               :on-result  :event}}
+                'ethereum.erc721/safe-transfer-from
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc721-safe-transfer-from
+                 :arguments   {:contract   :string
+                               :from       :string
+                               :to         :string
+                               :token-id   :string
+                               :data?      :string
+                               :on-result  :event}}
                 'ethereum/call
                 {:permissions [:read]
                  :value       :extensions/ethereum-call

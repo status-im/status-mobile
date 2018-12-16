@@ -101,6 +101,114 @@
  (fn [{db :db} [_ _ {:keys [to] :as arguments}]]
    (wrap-with-resolution db arguments :to execute-ethcall)))
 
+(handlers/register-handler-fx
+ :extensions/ethereum-erc20-total-supply
+ (fn [{db :db} [_ _ {:keys [contract on-result]}]]
+   (let [json-rpc-args {:to contract
+                        :method "totalSupply()"
+                        :outputs ["uint256"]
+                        :on-result on-result}]
+     (wrap-with-resolution db json-rpc-args :to execute-ethcall))))
+
+(handlers/register-handler-fx
+ :extensions/ethereum-erc20-balance-of
+ (fn [{db :db} [_ _ {:keys [contract token-owner on-result]}]]
+   (let [json-rpc-args {:to contract
+                        :method "balanceOf(address)"
+                        :params [token-owner]
+                        :outputs ["uint256"]
+                        :on-result on-result}]
+     (wrap-with-resolution db json-rpc-args :to execute-ethcall))))
+
+(handlers/register-handler-fx
+ :extensions/ethereum-erc20-allowance
+ (fn [{db :db} [_ _ {:keys [contract token-owner spender on-result]}]]
+   (let [json-rpc-args {:to contract
+                        :method "allowance(address,address)"
+                        :params [token-owner spender]
+                        :outputs ["uint256"]
+                        :on-result on-result}]
+     (wrap-with-resolution db json-rpc-args :to execute-ethcall))))
+
+(handlers/register-handler-fx
+ :extensions/ethereum-erc20-transfer
+ (fn [{db :db} [_ _ {:keys [contract to value on-result]}]]
+   (let [json-rpc-args {:to contract
+                        :method "transfer(address,uint256)"
+                        :params [to value]
+                        :on-result on-result}]
+     (wrap-with-resolution db json-rpc-args :to execute-send-transaction))))
+
+(handlers/register-handler-fx
+ :extensions/ethereum-erc20-transfer-from
+ (fn [{db :db} [_ _ {:keys [contract from to value on-result]}]]
+   (let [json-rpc-args {:to contract
+                        :method "transferFrom(address,address,uint256)"
+                        :params [from to value]
+                        :on-result on-result}]
+     (wrap-with-resolution db json-rpc-args :to execute-send-transaction))))
+
+(handlers/register-handler-fx
+ :extensions/ethereum-erc20-approve
+ (fn [{db :db} [_ _ {:keys [contract spender value on-result]}]]
+   (let [json-rpc-args {:to contract
+                        :method "approve(address,uint256)"
+                        :params [spender value]
+                        :on-result on-result}]
+     (wrap-with-resolution db json-rpc-args :to execute-send-transaction))))
+
+(handlers/register-handler-fx
+ :extensions/ethereum-erc721-owner-of
+ (fn [{db :db} [_ _ {:keys [contract token-id on-result]}]]
+   (let [json-rpc-args {:to contract
+                        :method "ownerOf(uint256)"
+                        :params [token-id]
+                        :outputs ["address"]
+                        :on-result on-result}]
+     (wrap-with-resolution db json-rpc-args :to execute-ethcall))))
+
+(handlers/register-handler-fx
+ :extensions/ethereum-erc721-is-approved-for-all
+ (fn [{db :db} [_ _ {:keys [contract owner operator on-result]}]]
+   (let [json-rpc-args {:to contract
+                        :method "isApprovedForAll(address,address)"
+                        :params [owner operator]
+                        :outputs ["bool"]
+                        :on-result on-result}]
+     (wrap-with-resolution db json-rpc-args :to execute-ethcall))))
+
+(handlers/register-handler-fx
+ :extensions/ethereum-erc721-get-approved
+ (fn [{db :db} [_ _ {:keys [contract token-id on-result]}]]
+   (let [json-rpc-args {:to contract
+                        :method "getApproved(uint256)"
+                        :params [token-id]
+                        :outputs ["address"]
+                        :on-result on-result}]
+     (wrap-with-resolution db json-rpc-args :to execute-ethcall))))
+
+(handlers/register-handler-fx
+ :extensions/ethereum-erc721-set-approval-for-all
+ (fn [{db :db} [_ _ {:keys [contract to approved on-result]}]]
+   (let [json-rpc-args {:to contract
+                        :method "setApprovalForAll(address,bool)"
+                        :params [to approved]
+                        :on-result on-result}]
+     (wrap-with-resolution db json-rpc-args :to execute-send-transaction))))
+
+(handlers/register-handler-fx
+ :extensions/ethereum-erc721-safe-transfer-from
+ (fn [{db :db} [_ _ {:keys [contract from to token-id data on-result]}]]
+   (let [json-rpc-args {:to contract
+                        :method (if data
+                                  "safeTransferFrom(address,address,uint256,bytes)"
+                                  "safeTransferFrom(address,address,uint256)")
+                        :params (if data
+                                  [from to token-id data]
+                                  [from to token-id])
+                        :on-result on-result}]
+     (wrap-with-resolution db json-rpc-args :to execute-send-transaction))))
+
 (defn- parse-log [{:keys [address transactionHash blockHash transactionIndex topics blockNumber logIndex removed data]}]
   {:address           address
    :transaction-hash  transactionHash
