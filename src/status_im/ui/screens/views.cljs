@@ -17,6 +17,7 @@
             [status-im.ui.screens.add-new.views :refer [add-new]]
             [status-im.ui.screens.add-new.new-chat.views :refer [new-chat]]
             [status-im.ui.screens.add-new.new-public-chat.view :refer [new-public-chat]]
+            [status-im.ui.screens.add-new.many-public-chats.views :refer [many-public-chats]]
 
             [status-im.ui.screens.qr-scanner.views :refer [qr-scanner]]
 
@@ -163,6 +164,7 @@
           :contact-toggle-list          contact-toggle-list
           :group-chat-profile           profile.group-chat/group-chat-profile
           :new-public-chat              new-public-chat
+          :many-public-chats            many-public-chats
           :open-dapp                    open-dapp
           :dapp-description             dapp-description
           :browser                      browser

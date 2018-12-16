@@ -40,7 +40,12 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.datetime :as time]
+            [status-im.chat.commands.core :as commands]
+            [status-im.chat.models.loading :as chat-loading]
+            [status-im.node.core :as node]
+            [status-im.ui.screens.add-new.many-public-chats.events]))
 
 ;; init module
 
