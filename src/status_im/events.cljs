@@ -46,7 +46,8 @@
             [status-im.utils.datetime :as time]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.models.loading :as chat-loading]
-            [status-im.node.core :as node]))
+            [status-im.node.core :as node]
+            [status-im.ui.screens.add-new.many-public-chats.events]))
 
 ;; init module
 
