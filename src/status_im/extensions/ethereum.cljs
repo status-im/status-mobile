@@ -345,6 +345,18 @@
                (navigation/navigate-to-cofx :wallet-sign-message-modal nil)))))
 
 (handlers/register-handler-fx
+ :extensions/ethereum-create-address
+ (fn [_ [_ _ {:keys [on-result]}]]
+   (let [args {:jsonrpc "2.0"
+               :method constants/status-create-address}
+         payload (types/clj->json args)]
+     (status/call-private-rpc payload #(let [{:keys [error result]} (types/json->clj %1)
+                                             response (if error {:result result :error error}
+                                                          {:result result})]
+                                         (re-frame/dispatch (on-result response)))))))
+
+;; poll logs implementation
+(handlers/register-handler-fx
  :extensions/ethereum-logs-changes
  (fn [_ [_ _ {:keys [id] :as m}]]
    (rpc-call constants/web3-get-filter-changes [(abi-spec/number-to-hex id)] #(map parse-log %) m)))

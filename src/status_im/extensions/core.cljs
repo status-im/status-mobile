@@ -535,6 +535,10 @@
                                :data?       :string
                                :on-success  :event
                                :on-failure? :event}}
+                'ethereum/create-address
+                {:permissions [:read]
+                 :value       :extensions/ethereum-create-address
+                 :arguments   {:on-result  :event}}
                 'ethereum/send-transaction
                 {:permissions [:read]
                  :value       :extensions/ethereum-send-transaction
