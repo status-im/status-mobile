@@ -12,19 +12,44 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.group.styles :as styles]))
 
-(defn- on-toggle [checked? public-key]
-  (let [action (if checked? :deselect-contact :select-contact)]
-    (re-frame/dispatch [action public-key])))
+(defn- on-toggle [allow-new-users? checked? public-key]
+  (cond
 
-(defn- on-toggle-participant [checked? public-key]
-  (let [action (if checked? :deselect-participant :select-participant)]
-    (re-frame/dispatch [action public-key])))
+    checked?
+    (re-frame/dispatch [:deselect-contact public-key allow-new-users?])
 
-(defn- group-toggle-contact [contact]
-  [toggle-contact-view contact :is-contact-selected? on-toggle])
+   ;; Only allow new users if not reached the maximum
+    (and (not checked?)
+         allow-new-users?)
+    (re-frame/dispatch [:select-contact public-key allow-new-users?])))
 
-(defn- group-toggle-participant [contact]
-  [toggle-contact-view contact :is-participant-selected? on-toggle-participant])
+(defn- on-toggle-participant [allow-new-users? checked? public-key]
+  (cond
+
+    checked?
+    (re-frame/dispatch [:deselect-participant public-key allow-new-users?])
+
+   ;; Only allow new users if not reached the maximum
+    (and (not checked?)
+         allow-new-users?)
+    (re-frame/dispatch [:select-participant public-key allow-new-users?])))
+
+(defn- group-toggle-contact [allow-new-users? contact]
+  [toggle-contact-view
+   contact
+   :is-contact-selected?
+   (partial on-toggle allow-new-users?)
+   (and (not (:is-contact-selected? contact))
+        (not allow-new-users?))])
+
+(defn- group-toggle-participant [allow-new-users? contact]
+  [toggle-contact-view
+   contact
+   :is-participant-selected?
+   (partial on-toggle-participant allow-new-users?)
+   ;; Disable if not-checked and we don't allow new users
+   (and (not (:is-participant-selected? contact))
+        (not allow-new-users?))])
 
 (defn- handle-invite-friends-pressed []
   (if utils.platform/desktop?
@@ -61,6 +86,15 @@
     (i18n/label :t/group-chat-no-contacts)]
    [buttons/secondary-button {:on-press handle-invite-friends-pressed} (i18n/label :t/invite-friends)]])
 
+(def max-participants 10)
+
+(defn number-of-participants-disclaimer [number-of-participants-available]
+  [react/view {:style styles/number-of-participants-disclaimer}
+   [react/text (if (> number-of-participants-available
+                      0)
+                 (i18n/label-pluralize number-of-participants-available :t/available-participants)
+                 (i18n/label :t/no-more-participants-available))]])
+
 ;; Start group chat
 (defview contact-toggle-list []
   (letsubs [contacts                [:contacts/all-added-people-contacts]
@@ -71,22 +105,27 @@
                            :label   (i18n/label :t/next)
                            :count   (pos? selected-contacts-count)}
       (i18n/label :t/group-chat)]
+     [number-of-participants-disclaimer (- (dec max-participants) selected-contacts-count)]
      (if (seq contacts)
-       [toggle-list contacts group-toggle-contact]
+       [toggle-list contacts (partial group-toggle-contact (< selected-contacts-count (dec max-participants)))]
        [no-contacts])]))
 
 ;; Add participants to existing group chat
 (defview add-participants-toggle-list []
-  (letsubs [contacts                [:contacts/all-contacts-not-in-current-chat]
-            {:keys [name]} [:chats/current-chat]
-            selected-contacts-count [:selected-participants-count]]
-    [react/keyboard-avoiding-view {:style styles/group-container}
-     [status-bar]
-     [toggle-list-toolbar {:count   selected-contacts-count
-                           :handler #(do
-                                       (re-frame/dispatch [:group-chats.ui/add-members-pressed])
-                                       (re-frame/dispatch [:navigate-back]))
-                           :label   (i18n/label :t/add)}
-      name]
-     (when (seq contacts)
-       [toggle-list contacts group-toggle-participant])]))
+  (letsubs [contacts                        [:contacts/all-contacts-not-in-current-chat]
+            {:keys [name] :as current-chat} [:chats/current-chat]
+            selected-contacts-count         [:selected-participants-count]]
+    (let [current-participants-count (count (:contacts current-chat))]
+      [react/keyboard-avoiding-view {:style styles/group-container}
+       [status-bar]
+       [toggle-list-toolbar {:count   selected-contacts-count
+                             :handler #(do
+                                         (re-frame/dispatch [:group-chats.ui/add-members-pressed])
+                                         (re-frame/dispatch [:navigate-back]))
+                             :label   (i18n/label :t/add)}
+        name]
+
+       [number-of-participants-disclaimer (- max-participants current-participants-count)]
+       (when (seq contacts)
+         [toggle-list contacts (partial group-toggle-participant (< (+ current-participants-count
+                                                                       selected-contacts-count) max-participants))])])))

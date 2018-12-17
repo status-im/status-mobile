@@ -23,3 +23,10 @@
    :margin-horizontal 50
    :text-align        :center
    :color             colors/gray})
+
+(def number-of-participants-disclaimer
+  {:margin-top        20
+   :margin-bottom     5
+   :font-size         12
+   :margin-horizontal 17})
+
