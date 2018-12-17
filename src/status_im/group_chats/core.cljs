@@ -84,6 +84,8 @@
       "name-changed"   (and (admins from)
                             (not (string/blank? (:name new-event))))
       "members-added"   (admins from)
+      "member-joined"   (and (contacts member)
+                             (= from member))
       "admins-added"    (and (admins from)
                              (clojure.set/subset? members contacts))
       "member-removed" (or
@@ -168,6 +170,11 @@
    :clock-value (utils.clocks/send last-clock-value)
    :members members})
 
+(defn- member-joined-event [last-clock-value member]
+  {:type "member-joined"
+   :clock-value (utils.clocks/send last-clock-value)
+   :member member})
+
 (fx/defn create
   "Format group update message and sign membership"
   [{:keys [db random-guid-generator] :as cofx} group-name]
@@ -201,6 +208,20 @@
       {:group-chats/sign-membership {:chat-id chat-id
                                      :from    my-public-key
                                      :events  [remove-event]}})))
+
+(fx/defn join-chat
+  "Format group update message and sign membership"
+  [{:keys [db] :as cofx} chat-id]
+  (let [my-public-key     (accounts.db/current-public-key cofx)
+        last-clock-value  (get-last-clock-value cofx chat-id)
+        chat              (get-in cofx [:db :chats chat-id])
+        event             (member-joined-event last-clock-value my-public-key)]
+    (when (valid-event? chat (assoc event
+                                    :from
+                                    my-public-key))
+      {:group-chats/sign-membership {:chat-id chat-id
+                                     :from    my-public-key
+                                     :events  [event]}})))
 
 (fx/defn make-admin
   "Format group update with make admin message and sign membership"
@@ -283,8 +304,9 @@
     (case type
       "chat-created"   {:name       name
                         :created-at clock-value
-                        :admins     #{from}
-                        :contacts   #{from}}
+                        :admins         #{from}
+                        :members-joined #{from}
+                        :contacts       #{from}}
       "name-changed"   (assoc group
                               :name name
                               :name-changed-by from
@@ -292,12 +314,16 @@
       "members-added"  (as-> group $
                          (update $ :contacts clojure.set/union (set members))
                          (reduce (fn [acc member] (assoc-in acc [member :added] clock-value)) $ members))
+      "member-joined"  (-> group
+                           (update  :members-joined conj member)
+                           (assoc-in  [member :joined] clock-value))
       "admins-added"   (as-> group $
                          (update $ :admins clojure.set/union (set members))
                          (reduce (fn [acc member] (assoc-in acc [member :admin-added] clock-value)) $ members))
       "member-removed" (-> group
                            (update :contacts disj member)
                            (update :admins disj member)
+                           (update :members-joined disj member)
                            (assoc-in [member :removed] clock-value))
       "admin-removed"  (-> group
                            (update :admins disj member)
@@ -312,6 +338,7 @@
        (reduce
         process-event
         {:admins #{}
+         :members-joined #{}
          :contacts #{}})))
 
 (defn membership-changes->system-messages [cofx
@@ -320,6 +347,7 @@
                                                    chat-name
                                                    creator
                                                    members-added
+                                                   members-joined
                                                    admins-added
                                                    name-changed?
                                                    members-removed]}]
@@ -337,6 +365,9 @@
         contacts-added      (map
                              get-contact
                              (disj members-added creator))
+        contacts-joined     (map
+                             get-contact
+                             (disj members-joined creator))
         contacts-removed    (map
                              get-contact
                              members-removed)]
@@ -356,6 +387,11 @@
                                          (i18n/label :t/group-chat-member-added {:member (:name %)})
                                          (get-in clock-values [(:public-key %) :added]))
                                        contacts-added))
+      (seq members-joined) (concat (map #(format-message
+                                          %
+                                          (i18n/label :t/group-chat-member-joined {:member (:name %)})
+                                          (get-in clock-values [(:public-key %) :joined]))
+                                        contacts-joined))
       (seq admins-added) (concat (map #(format-message
                                         %
                                         (i18n/label :t/group-chat-admin-added {:member (:name %)})
@@ -373,6 +409,7 @@
         name-changed?  (and (seq previous-chat)
                             (not= (:name previous-chat) (:name current-chat)))
         members-added (clojure.set/difference (:contacts current-chat) (:contacts previous-chat))
+        members-joined (clojure.set/difference (:members-joined current-chat) (:members-joined previous-chat))
         members-removed (clojure.set/difference (:contacts previous-chat) (:contacts current-chat))
         admins-added  (clojure.set/difference (:admins current-chat) (:admins previous-chat))
         membership-changes (cond-> {:chat-id         chat-id
@@ -380,12 +417,14 @@
                                     :chat-name       (:name current-chat)
                                     :admins-added    admins-added
                                     :members-added   members-added
+                                    :members-joined  members-joined
                                     :members-removed members-removed}
                              (nil? previous-chat)
                              (assoc :creator (extract-creator current-chat)))]
     (when (or name-changed?
               (seq admins-added)
               (seq members-added)
+              (seq members-joined)
               (seq members-removed))
       (->> membership-changes
            (membership-changes->system-messages cofx clock-values)
@@ -398,6 +437,21 @@
    (fn [{:keys [events from]}]
      (map #(assoc % :from from) events))
    all-updates))
+
+(defn joined? [my-public-key {:keys [members-joined]}]
+  (contains? members-joined my-public-key))
+
+(defn invited? [my-public-key {:keys [contacts]}]
+  (contains? contacts my-public-key))
+
+(defn get-inviter-pk [my-public-key {:keys [membership-updates] :as chat}]
+  (->> membership-updates
+       unwrap-events
+       (keep (fn [{:keys [from type members]}]
+               (when (and (= type "members-added")
+                          (contains? members my-public-key))
+                 from)))
+       last))
 
 (fx/defn handle-membership-update
   "Upsert chat and receive message if valid"
@@ -423,6 +477,7 @@
                                             :group-chat         true
                                             :membership-updates (into [] all-updates)
                                             :admins             (:admins new-group)
+                                            :members-joined     (:members-joined new-group)
                                             :contacts           (:contacts new-group)})
                   (add-system-messages chat-id previous-chat new-group)
                   #(when (and message

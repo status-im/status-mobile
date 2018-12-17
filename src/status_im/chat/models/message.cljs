@@ -252,7 +252,7 @@
   (cond
     (and (= :group-user-message message-type)
          (and (get-in cofx [:db :chats chat-id :contacts from])
-              (get-in cofx [:db :chats chat-id :contacts (accounts.db/current-public-key cofx)]))) chat-id
+              (get-in cofx [:db :chats chat-id :members-joined (accounts.db/current-public-key cofx)]))) chat-id
     (and (= :public-group-user-message message-type)
          (get-in cofx [:db :chats chat-id :public?])) chat-id
     (and (= :user-message message-type)

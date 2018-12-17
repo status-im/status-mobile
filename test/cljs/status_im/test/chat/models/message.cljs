@@ -66,11 +66,12 @@
           (is (= :sent status)))))))
 
 (deftest receive-group-chats
-  (let [cofx                 {:db {:chats {"chat-id" {:contacts #{"present" "a"}}}
+  (let [cofx                 {:db {:chats {"chat-id" {:contacts #{"present"}
+                                                      :members-joined #{"a"}}}
                                    :account/account {:public-key "a"}
                                    :current-chat-id "chat-id"
                                    :view-id :chat}}
-        cofx-without-member  (update-in cofx [:db :chats "chat-id" :contacts] disj "a")
+        cofx-without-member  (update-in cofx [:db :chats "chat-id" :members-joined] disj "a")
         valid-message        {:chat-id     "chat-id"
                               :from        "present"
                               :message-type :group-user-message

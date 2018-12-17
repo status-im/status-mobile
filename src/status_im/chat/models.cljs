@@ -19,15 +19,27 @@
             [status-im.utils.priority-map :refer [empty-message-map]]
             [status-im.utils.utils :as utils]))
 
-(defn multi-user-chat? [cofx chat-id]
-  (get-in cofx [:db :chats chat-id :group-chat]))
+(defn- get-chat [cofx chat-id]
+  (get-in cofx [:db :chats chat-id]))
 
-(defn group-chat? [cofx chat-id]
-  (and (multi-user-chat? cofx chat-id)
-       (not (get-in cofx [:db :chats chat-id :public?]))))
+(defn multi-user-chat?
+  ([chat]
+   (:group-chat chat))
+  ([cofx chat-id]
+   (multi-user-chat? (get-chat cofx chat-id))))
 
-(defn public-chat? [cofx chat-id]
-  (get-in cofx [:db :chats chat-id :public?]))
+(defn public-chat?
+  ([chat]
+   (:public? chat))
+  ([cofx chat-id]
+   (public-chat? (get-chat cofx chat-id))))
+
+(defn group-chat?
+  ([chat]
+   (and (multi-user-chat? chat)
+        (not (public-chat? chat))))
+  ([cofx chat-id]
+   (group-chat? (get-chat cofx chat-id))))
 
 (defn set-chat-ui-props
   "Updates ui-props in active chat by merging provided kvs into them"

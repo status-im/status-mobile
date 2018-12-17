@@ -1255,6 +1255,11 @@
    (group-chats/remove cofx chat-id)))
 
 (handlers/register-handler-fx
+ :group-chats.ui/join-pressed
+ (fn [cofx [_ chat-id]]
+   (group-chats/join-chat cofx chat-id)))
+
+(handlers/register-handler-fx
  :group-chats.callback/sign-success
  [(re-frame/inject-cofx :random-guid-generator)]
  (fn [cofx [_ group-update]]

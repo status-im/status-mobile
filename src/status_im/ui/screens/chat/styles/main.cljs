@@ -234,3 +234,6 @@
 
 (def empty-chat-text-name
   {:color colors/black})
+
+(def join-button
+  {:margin-bottom 5})

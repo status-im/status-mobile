@@ -146,13 +146,19 @@
                   {:type    "members-added"
                    :clock-value 3
                    :from    "2"
-                   :members  ["3"]}]
+                   :members  ["3"]}
+                  {:type    "member-joined"
+                   :clock-value 4
+                   :from    "3"
+                   :member  "3"}]
           expected {:name   "chat-name"
                     :created-at 0
                     "2" {:added 1
                          :admin-added 2}
-                    "3" {:added 3}
+                    "3" {:added 3
+                         :joined 4}
                     :admins #{"1" "2"}
+                    :members-joined #{"1" "3"}
                     :contacts #{"1" "2" "3"}}]
       (is (= expected (group-chats/build-group events)))))
   (testing "adds and removes"
@@ -164,25 +170,31 @@
                    :clock-value 1
                    :from    "1"
                    :members  ["2"]}
-                  {:type    "admins-added"
-                   :clock-value 2
-                   :from    "1"
-                   :members  ["2"]}
-                  {:type    "admin-removed"
+                  {:type    "member-joined"
                    :clock-value 3
                    :from    "2"
                    :member  "2"}
-                  {:type    "member-removed"
+                  {:type    "admins-added"
                    :clock-value 4
+                   :from    "1"
+                   :members  ["2"]}
+                  {:type    "admin-removed"
+                   :clock-value 5
+                   :from    "2"
+                   :member  "2"}
+                  {:type    "member-removed"
+                   :clock-value 6
                    :from   "2"
                    :member "2"}]
           expected {:name "chat-name"
                     :created-at 0
                     "2" {:added 1
-                         :admin-added 2
-                         :admin-removed 3
-                         :removed 4}
+                         :joined 3
+                         :admin-added 4
+                         :admin-removed 5
+                         :removed 6}
                     :admins #{"1"}
+                    :members-joined #{"1"}
                     :contacts #{"1"}}]
       (is (= expected (group-chats/build-group events)))))
   (testing "an admin removing themselves"
@@ -204,6 +216,7 @@
                    :member "2"}]
           expected {:name "chat-name"
                     :created-at 0
+                    :members-joined #{"1"}
                     "2" {:added 1
                          :admin-added 2
                          :removed 3}
@@ -229,6 +242,7 @@
                    :name  "new-name"}]
           expected {:name "new-name"
                     :created-at 0
+                    :members-joined #{"1"}
                     :name-changed-by "2"
                     :name-changed-at 3
                     "2" {:added 1
@@ -249,6 +263,10 @@
                    :clock-value 2
                    :from    "1"
                    :members  ["2"]}
+                  {:type    "member-joined" ; non-invited user joining
+                   :clock-value 2
+                   :from    "non-invited"
+                   :member  "non-invited"}
                   {:type    "admins-added"
                    :clock-value 3
                    :from    "1"
@@ -261,15 +279,40 @@
                    :clock-value 5
                    :from    "1"
                    :member  "2"}
+                  {:type    "member-joined"
+                   :clock-value 5
+                   :from    "2"
+                   :member  "2"}
                   {:type    "member-removed" ; can't remove an admin from the group
                    :clock-value 6
                    :from    "1"
-                   :member  "2"}]
+                   :member  "2"}
+                  {:type    "members-added"
+                   :clock-value 7
+                   :from    "2"
+                   :members  ["4"]}
+                  {:type    "member-joined"
+                   :clock-value 8
+                   :from    "4"
+                   :member  "4"}
+                  {:type    "member-removed"
+                   :clock-value 9
+                   :from    "1"
+                   :member  "4"}
+                  {:type    "member-joined" ; join after being removed
+                   :clock-value 10
+                   :from    "4"
+                   :member  "4"}]
           expected {:name "chat-name"
+                    :members-joined #{"1" "2"}
                     :created-at 0
                     "2" {:added 2
-                         :admin-added 3}
+                         :admin-added 3
+                         :joined 5}
                     "3" {:added 4}
+                    "4" {:added 7
+                         :joined 8
+                         :removed 9}
                     :admins #{"1" "2"}
                     :contacts #{"1" "2" "3"}}]
       (is (= expected (group-chats/build-group events)))))
@@ -292,6 +335,7 @@
                    :members  ["3"]}]
           expected {:name "chat-name"
                     :created-at 0
+                    :members-joined #{"1"}
                     "2" {:added 1
                          :admin-added 2}
                     "3" {:added 3}
