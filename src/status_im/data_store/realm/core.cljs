@@ -307,6 +307,9 @@
                                        false
                                        true)))
 
+(defn multi-field-sorted [results fields]
+  (.sorted results (clj->js fields)))
+
 (defn page [results from to]
   (js/Array.prototype.slice.call results from to))
 

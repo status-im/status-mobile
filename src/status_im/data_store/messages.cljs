@@ -1,5 +1,7 @@
 (ns status-im.data-store.messages
   (:require [re-frame.core :as re-frame]
+            [clojure.set :as clojure.set]
+            [clojure.string :as string]
             [status-im.constants :as constants]
             [status-im.data-store.realm.core :as core]
             [status-im.utils.core :as utils]
@@ -11,15 +13,36 @@
         (update :message-type keyword)
         (assoc :content parsed-content))))
 
+(defn- exclude-messages [query message-ids]
+  (let [string-queries (map #(str "message-id != \"" % "\"") message-ids)]
+    (core/filtered query (string/join " AND " string-queries))))
+
 (defn- get-by-chat-id
   ([chat-id]
-   (get-by-chat-id chat-id 0))
-  ([chat-id from]
-   (let [messages (-> (core/get-by-field @core/account-realm :message :chat-id chat-id)
-                      (core/sorted :timestamp :desc)
-                      (core/page from (+ from constants/default-number-of-messages))
-                      (core/all-clj :message))]
+   (get-by-chat-id chat-id nil))
+  ([chat-id {:keys [last-clock-value message-ids]}]
+   (let [messages (cond-> (core/get-by-field @core/account-realm :message :chat-id chat-id)
+                    :always (core/multi-field-sorted [["clock-value" true] ["message-id" true]])
+                    last-clock-value    (core/filtered (str "clock-value <= \"" last-clock-value "\""))
+                    (seq message-ids)   (exclude-messages message-ids)
+                    :always (core/page 0  constants/default-number-of-messages)
+                    :always (core/all-clj :message))
+         clock-value (-> messages last :clock-value)
+         new-message-ids (->> messages
+                              (filter #(= clock-value (:clock-value %)))
+                              (map :message-id)
+                              (into #{}))]
      {:all-loaded? (> constants/default-number-of-messages (count messages))
+      ;; We paginate using clock-value + message-id to break ties, we need
+      ;; to exclude previously loaded messages with identical clock value
+      ;; otherwise we might fetch exactly the same page if all the messages
+      ;; in a page have the same clock-value. The initial idea was to use a
+      ;; cursor clock-value-message-id but realm does not support </> operators
+      ;; on strings
+      :pagination-info {:last-clock-value clock-value
+                        :message-ids (if (= clock-value last-clock-value)
+                                       (clojure.set/union message-ids new-message-ids)
+                                       new-message-ids)}
       :messages    (keep transform-message messages)})))
 
 (defn get-message-id-by-old [old-message-id]

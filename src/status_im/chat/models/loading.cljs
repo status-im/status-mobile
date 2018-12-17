@@ -111,9 +111,10 @@
     get-stored-user-statuses :get-stored-user-statuses
     get-referenced-messages :get-referenced-messages :as cofx}]
   (when-not (get-in db [:chats current-chat-id :all-loaded?])
-    (let [loaded-count               (count (get-in db [:chats current-chat-id :messages]))
+    (let [previous-pagination-info   (get-in db [:chats current-chat-id :pagination-info])
           {:keys [messages
-                  all-loaded?]}      (get-stored-messages current-chat-id loaded-count)
+                  pagination-info
+                  all-loaded?]}      (get-stored-messages current-chat-id previous-pagination-info)
           already-loaded-messages    (get-in db [:chats current-chat-id :messages])
           ;; We remove those messages that are already loaded, as we might get some duplicates
           new-messages               (remove (comp already-loaded-messages :message-id)
@@ -132,6 +133,7 @@
                          (update-in [:chats current-chat-id :message-statuses] merge new-statuses)
                          (update-in [:chats current-chat-id :referenced-messages]
                                     #(into (apply dissoc % new-message-ids) referenced-messages))
+                         (assoc-in [:chats current-chat-id :pagination-info] pagination-info)
                          (assoc-in [:chats current-chat-id :all-loaded?]
                                    all-loaded?))}
                 (chat-model/update-chats-unviewed-messages-count
