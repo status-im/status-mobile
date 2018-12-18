@@ -77,9 +77,7 @@
   [outgoing message-type]
   (let [align (if outgoing :flex-end :flex-start)]
     {:flex-direction :column
-     :width          (if (= :system-message message-type)
-                       300
-                       230)
+     :width          320
      :padding-left   8
      :padding-right  8
      :align-items    align}))
@@ -211,4 +209,3 @@
 (defn extension-install [outgoing]
   {:font-size 12
    :color     (if outgoing colors/white colors/blue)})
-
