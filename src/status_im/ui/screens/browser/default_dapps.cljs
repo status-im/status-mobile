@@ -5,7 +5,7 @@
 (def all
   [{:title (i18n/label :t/default-dapps-exchanges)
     :data  [{:name        "Airswap"
-             :dapp-url    "https://www.airswap.io/trade"
+             :dapp-url    "https://instant.airswap.io/"
              :photo-path  "contacts://airswap"
              :description "Meet the future of trading."}
             {:name        "Bancor"
