@@ -5,6 +5,7 @@
             status-im.contact.subs
             status-im.search.subs
             status-im.mailserver.subs
+            status-im.ui.components.connectivity.subs
             status-im.ui.screens.accounts.subs
             status-im.ui.screens.extensions.subs
             status-im.ui.screens.home.subs

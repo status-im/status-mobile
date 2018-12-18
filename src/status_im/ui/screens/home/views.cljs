@@ -109,13 +109,15 @@
            [react/view {:style {:flex            1
                                 :justify-content :center
                                 :align-items     :center}}
-            [components/activity-indicator {:animating true}]]
+            [connectivity/connectivity-view]
+            [components/activity-indicator {:flex 1
+                                            :animating true}]]
            :else
-           [chats-list])
+           [react/view
+            [connectivity/connectivity-view]
+            [chats-list]])
      (when platform/android?
-       [home-action-button])
-     (when-not show-welcome?
-       [connectivity/error-view])]))
+       [home-action-button])]))
 
 (views/defview home-wrapper []
   (views/letsubs [loading? [:get :chats/loading?]]
