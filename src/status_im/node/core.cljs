@@ -159,10 +159,7 @@
   (let [restart {:db (assoc db :node/restart? true :node/address address)}]
     (case status
       :started nil
-      :starting (do
-                  (when utils.platform/desktop?
-                    (status/stop-node))
-                  restart)
+      :starting restart
       :stopping restart
       (start cofx address))))
 

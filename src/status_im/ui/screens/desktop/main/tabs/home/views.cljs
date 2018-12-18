@@ -21,6 +21,7 @@
 
 (views/defview chat-list-item-inner-view [{:keys [chat-id name group-chat
                                                   color public? public-key
+                                                  timestamp
                                                   last-message-content
                                                   last-message-type]
                                            :as chat-item}]
@@ -29,6 +30,7 @@
                   chat-name               [:chats/chat-name chat-id]
                   current-chat-id         [:chats/current-chat-id]]
     (let [last-message {:content      last-message-content
+                        :timestamp    timestamp
                         :message-type last-message-type}
           name (or chat-name
                    (gfycat/generate-gfy public-key))

@@ -206,8 +206,12 @@
                   current-public-key [:account/public-key]
                   messages-to-load (reagent/atom load-step)
                   chat-id* (reagent/atom nil)]
-    {:component-did-update #(load-more (count messages) messages-to-load)
-     :component-did-mount  #(load-more (count messages) messages-to-load)}
+    {:component-did-update #(if (:messages-initialized? (second (.-argv (.-props %1))))
+                              (load-more (count messages) messages-to-load)
+                              (re-frame/dispatch [:chat.ui/load-more-messages]))
+     :component-did-mount  #(if (:messages-initialized? (second (.-argv (.-props %1))))
+                              (load-more (count messages) messages-to-load)
+                              (re-frame/dispatch [:chat.ui/load-more-messages]))}
     (let [scroll-ref (atom nil)
           scroll-timer (atom nil)
           scroll-height (atom nil)
