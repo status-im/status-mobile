@@ -18,7 +18,6 @@
   - restoring existing symetric keys along with their unique filters
   - (optionally) initializing mailserver"
   [{:keys [db web3] :as cofx}]
-  (log/debug :init-whisper)
   (when-let [public-key (get-in db [:account/account :public-key])]
     (let [public-key-topics (keep (fn [[chat-id {:keys [topic sym-key]}]]
                                     (when (and (not sym-key)

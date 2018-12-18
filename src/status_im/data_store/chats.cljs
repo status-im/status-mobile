@@ -60,11 +60,14 @@
 (re-frame/reg-cofx
  :data-store/all-chats
  (fn [cofx _]
-   (assoc cofx :all-stored-chats (map normalize-chat
-                                      (-> @core/account-realm
-                                          (core/get-all :chat)
-                                          (core/sorted :timestamp :desc)
-                                          (core/all-clj :chat))))))
+   (assoc cofx :get-all-stored-chats
+          (fn [from to]
+            (map normalize-chat
+                 (-> @core/account-realm
+                     (core/get-all :chat)
+                     (core/sorted :timestamp :desc)
+                     (core/page from to)
+                     (core/all-clj :chat)))))))
 
 (defn save-chat-tx
   "Returns tx function for saving chat"

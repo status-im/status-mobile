@@ -99,17 +99,12 @@
        (let [[_ loading?] (.. this -props -argv)]
          (when loading?
            (utils/set-timeout
-            #(re-frame/dispatch [:init-chats])
+            #(re-frame/dispatch [:init-rest-of-chats])
             100))))}
     [react/view styles/container
      [toolbar show-welcome? (and network-initialized? (not rpc-network?)) sync-state latest-block-number]
      (cond show-welcome?
            [welcome view-id]
-           loading?
-           [react/view {:style {:flex            1
-                                :justify-content :center
-                                :align-items     :center}}
-            [components/activity-indicator {:animating true}]]
            :else
            [chats-list])
      (when platform/android?

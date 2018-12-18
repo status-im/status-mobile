@@ -311,7 +311,7 @@
   (.sorted results (clj->js fields)))
 
 (defn page [results from to]
-  (js/Array.prototype.slice.call results from to))
+  (js/Array.prototype.slice.call results from (or to -1)))
 
 (defn filtered [results filter-query]
   (.filtered results filter-query))

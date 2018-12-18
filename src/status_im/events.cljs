@@ -94,15 +94,15 @@
    (init/handle-init-store-error cofx encryption-key)))
 
 (handlers/register-handler-fx
- :init-chats
+ :init-rest-of-chats
  [(re-frame/inject-cofx :web3/get-web3)
   (re-frame/inject-cofx :get-default-dapps)
   (re-frame/inject-cofx :data-store/all-chats)]
- (fn [{:keys [db] :as cofx} [_ address]]
+ (fn [{:keys [db] :as cofx} [_]]
+   (log/debug "PERF" :init-rest-of-chats (.now js/Date))
    (fx/merge cofx
              {:db (assoc db :chats/loading? false)}
-             (chat-loading/initialize-chats)
-             (chat-loading/initialize-pending-messages))))
+             (chat-loading/initialize-chats {:from 10}))))
 
 (handlers/register-handler-fx
  :init.callback/account-change-success
@@ -110,7 +110,9 @@
   (re-frame/inject-cofx :data-store/get-all-contacts)
   (re-frame/inject-cofx :data-store/get-all-installations)
   (re-frame/inject-cofx :data-store/all-browsers)
-  (re-frame/inject-cofx :data-store/all-dapp-permissions)]
+  (re-frame/inject-cofx :data-store/all-dapp-permissions)
+  (re-frame/inject-cofx :get-default-dapps)
+  (re-frame/inject-cofx :data-store/all-chats)]
  (fn [{:keys [db] :as cofx} [_ address]]
    (let [{:node/keys [status on-ready]} db]
      (fx/merge
@@ -118,7 +120,8 @@
       (if (= status :started)
         (accounts.login/login)
         (node/initialize (get-in db [:accounts/login :address])))
-      (init/initialize-account address)))))
+      (init/initialize-account address)
+      (chat-loading/initialize-chats {:to 10})))))
 
 (handlers/register-handler-fx
  :init.callback/keychain-reset

@@ -67,42 +67,24 @@
    statuses))
 
 (fx/defn initialize-chats
-  "Initialize all persisted chats on startup"
-  [{:keys [db default-dapps all-stored-chats] :as cofx}]
-  (let [chats (reduce (fn [acc {:keys [chat-id] :as chat}]
+  "Initialize persisted chats on startup"
+  [{:keys [db default-dapps get-all-stored-chats] :as cofx}
+   {:keys [from to] :or {from 0 to nil}}]
+  (let [old-chats (:chats db)
+        chats (reduce (fn [acc {:keys [chat-id] :as chat}]
                         (assoc acc chat-id
                                (assoc chat
                                       :messages-initialized? false
                                       :referenced-messages {}
                                       :messages empty-message-map)))
                       {}
-                      all-stored-chats)]
+                      (get-all-stored-chats from to))
+        chats (merge old-chats chats)]
     (fx/merge cofx
               {:db (assoc db
                           :chats chats
                           :contacts/dapps default-dapps)}
               (commands/load-commands commands/register))))
-
-(fx/defn initialize-pending-messages
-  "Change status of own messages which are still in `sending` status to `not-sent`
-  (If signal from status-go has not been received)"
-  [{:keys [db] :as cofx}]
-  (let [me               (accounts.db/current-public-key cofx)
-        pending-statuses (->> (vals (:chats db))
-                              (mapcat :message-statuses)
-                              (mapcat (fn [[_ user-id->status]]
-                                        (filter (comp (partial = :sending) :status)
-                                                (get user-id->status me)))))
-        updated-statuses (map #(assoc % :status :not-sent) pending-statuses)]
-    {:data-store/tx [(user-statuses-store/save-statuses-tx updated-statuses)]
-     :db            (reduce
-                     (fn [acc {:keys [chat-id message-id status public-key]}]
-                       (assoc-in acc
-                                 [:chats chat-id :message-status message-id
-                                  public-key :status]
-                                 status))
-                     db
-                     updated-statuses)}))
 
 (defn load-more-messages
   "Loads more messages for current chat"

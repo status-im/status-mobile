@@ -147,7 +147,7 @@
      (fn [this]
        (let [[_ loading?] (.. this -props -argv)]
          (when loading?
-           (re-frame/dispatch [:init-chats]))))}
+           (re-frame/dispatch [:init-rest-of-chats]))))}
     [react/view {:style styles/chat-list-view}
      [react/view {:style styles/chat-list-header}
       [search-input search-filter]
@@ -155,16 +155,11 @@
        [react/touchable-highlight {:on-press #(re-frame/dispatch [:set-in [:desktop :popup] popup])}
         [react/view {:style styles/add-new}
          [icons/icon :icons/add {:style {:tint-color :white}}]]]]]
-     (if loading?
-       [react/view {:style {:flex            1
-                            :justify-content :center
-                            :align-items     :center}}
-        [components/activity-indicator {:animating true}]]
-       [react/scroll-view {:enableArrayScrollingOptimization true}
-        [react/view
-         (for [[index chat] (map-indexed vector filtered-home-items)]
-           ^{:key (first chat)}
-           [chat-list-item chat])]])]))
+     [react/scroll-view {:enableArrayScrollingOptimization true}
+      [react/view
+       (for [[index chat] (map-indexed vector filtered-home-items)]
+         ^{:key (first chat)}
+         [chat-list-item chat])]]]))
 
 (views/defview chat-list-view-wrapper []
   (views/letsubs [loading? [:get :chats/loading?]]
