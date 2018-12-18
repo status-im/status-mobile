@@ -14,7 +14,8 @@
             [status-im.protocol.core :as protocol]
             [status-im.models.wallet :as models.wallet]
             [status-im.models.transactions :as transactions]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n :as i18n]
+            [status-im.node.core :as node]))
 
 ;; login flow:
 ;;
@@ -126,21 +127,25 @@
       :on-accept           #(re-frame/dispatch
                              [:init.ui/account-data-reset-accepted address])}}))
 (fx/defn verify-callback
-  [{:keys [db] :as cofx} verify-result realm-error]
+  [cofx verify-result realm-error]
   (let [data    (types/json->clj verify-result)
         error   (:error data)
         success (empty? error)]
-    (if success
-      (case (:error realm-error)
-        :decryption-failed
-        (show-migration-error-dialog cofx realm-error)
+    (fx/merge
+     cofx
+     {:node/stop nil}
+     (fn [{:keys [db] :as cofx}]
+       (if success
+         (case (:error realm-error)
+           :decryption-failed
+           (show-migration-error-dialog cofx realm-error)
 
-        :database-does-not-exist
-        (let [{:keys [address password]} (accounts.db/credentials cofx)]
-          {:data-store/change-account [address password true]}))
-      {:db (update db :accounts/login assoc
-                   :error error
-                   :processing false)})))
+           :database-does-not-exist
+           (let [{:keys [address password]} (accounts.db/credentials cofx)]
+             {:data-store/change-account [address password true]}))
+         {:db (update db :accounts/login assoc
+                      :error error
+                      :processing false)})))))
 
 (fx/defn handle-change-account-error
   [{:keys [db] :as cofx} error]
@@ -148,7 +153,7 @@
         (if (map? error)
           error
           {:message (str error)})
-        {:keys [address password]} (accounts.db/credentials cofx)
+        {:keys [address]} (accounts.db/credentials cofx)
         erase-button (i18n/label :migrations-erase-accounts-data-button)]
     (case error
       :migrations-failed
@@ -168,12 +173,12 @@
           :on-accept           #(re-frame/dispatch
                                  [:init.ui/account-data-reset-accepted address])}})
 
-      :database-does-not-exist
-      {:accounts.login/verify [address password realm-error]}
-
-      :decryption-failed
-      ;; check if decryption failed because of wrong password
-      {:accounts.login/verify [address password realm-error]}
+      (:database-does-not-exist :decryption-failed)
+      (fx/merge cofx
+                {:db (-> db
+                         (assoc :node/on-ready :verify-account)
+                         (assoc :realm-error realm-error))}
+                (node/initialize nil))
 
       {:ui/show-confirmation
        {:title               (i18n/label :unknown-realm-error)

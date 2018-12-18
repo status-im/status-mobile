@@ -150,7 +150,7 @@
          :keys [accounts/accounts accounts/create networks/networks network
                 network-status peers-count peers-summary view-id navigation-stack
                 status-module-initialized? device-UUID semaphores accounts/login]
-         :node/keys [status]
+         :node/keys [status on-ready]
          :or   {network (get app-db :network)}} db
         current-account (get accounts address)
         account-network-id (get current-account :network network)
@@ -160,6 +160,7 @@
                         :navigation-stack navigation-stack
                         :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
                         :node/status status
+                        :node/on-ready on-ready
                         :accounts/create create
                         :networks/networks networks
                         :account/account current-account

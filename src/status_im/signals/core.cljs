@@ -14,9 +14,7 @@
 (fx/defn status-node-started
   [{db :db :as cofx}]
   (let [{:node/keys [restart? address on-ready]
-         :accounts/keys [create]} db
-        can-login? (and (not restart?)
-                        (:password (accounts.db/credentials cofx)))]
+         :accounts/keys [create]} db]
     (fx/merge cofx
               {:db         (-> db
                                (assoc :node/status :started)
@@ -25,12 +23,18 @@
 
               (when restart?
                 (node/initialize address))
-              (when can-login?
-                (accounts.login/login))
-              (when (= :create-account on-ready)
+              (case on-ready
+                :login
+                (accounts.login/login)
+                :verify-account
+                (let [{:keys [address password]} (accounts.db/credentials cofx)]
+                  (fn [_]
+                    {:accounts.login/verify
+                     [address password (:realm-error db)]}))
+                :create-account
                 (fn [_]
-                  {:accounts.create/create-account (:password create)}))
-              (when (= :recover-account on-ready)
+                  {:accounts.create/create-account (:password create)})
+                :recover-account
                 (fn [{:keys [db]}]
                   (let [{:keys [password passphrase]} (:accounts/recover db)]
                     {:accounts.recover/recover-account
