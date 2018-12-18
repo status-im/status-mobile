@@ -193,6 +193,11 @@
             (update-browser-option :error? true)
             (update-browser-option :loading? false)))
 
+(fx/defn handle-pdf
+  [_ url]
+  (when (and platform/android? (string/ends-with? url ".pdf"))
+    {:browser/show-web-browser-selection url}))
+
 (fx/defn update-browser-on-nav-change
   [cofx browser url loading? error?]
   (let [options (get-in cofx [:db :browser/options])
@@ -202,6 +207,7 @@
             resolved-url (if resolved-ens (string/replace url (second resolved-ens) (first resolved-ens)) url)]
         (fx/merge cofx
                   (update-browser-history browser resolved-url)
+                  (handle-pdf url)
                   (resolve-url {:error? error? :resolved-url (when resolved-ens url)}))))))
 
 (fx/defn navigation-state-changed
@@ -374,3 +380,9 @@
  :browser/show-browser-selection
  (fn [link]
    (list-selection/browse link)))
+
+(re-frame/reg-fx
+ :browser/show-web-browser-selection
+ (fn [link]
+   (list-selection/browse-in-web-browser link)))
+
