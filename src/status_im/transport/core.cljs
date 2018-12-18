@@ -20,12 +20,20 @@
   [{:keys [db web3] :as cofx}]
   (log/debug :init-whisper)
   (when-let [public-key (get-in db [:account/account :public-key])]
-    (let [topic (transport.utils/get-topic constants/contact-discovery)]
+    (let [public-key-topics (keep (fn [[chat-id {:keys [topic sym-key]}]]
+                                    (when (and (not sym-key)
+                                               topic)
+                                      {:topic topic
+                                       :chat-id chat-id}))
+                                  (:transport/chats db))
+          discovery-topic (transport.utils/get-topic constants/contact-discovery)]
       (fx/merge cofx
-                {:shh/add-discovery-filter
-                 {:web3           web3
-                  :private-key-id public-key
-                  :topic          topic}
+                {:shh/add-discovery-filters {:web3           web3
+                                             :private-key-id public-key
+                                             :topics (conj public-key-topics
+                                                           {:topic discovery-topic
+                                                            :chat-id :discovery-topic})}
+
                  :shh/restore-sym-keys-batch
                  {:web3       web3
                   :transport  (keep (fn [[chat-id {:keys [topic sym-key]

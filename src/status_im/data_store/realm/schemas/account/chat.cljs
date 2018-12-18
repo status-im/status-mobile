@@ -235,7 +235,6 @@
   (update v10 :properties merge
           {:last-clock-value {:type     :int
                               :optional true}}))
-
 (def v12
   (-> v11
       (update :properties merge
@@ -243,3 +242,7 @@
                {:type     :string
                 :optional true}})
       (update :properties dissoc :last-message-type)))
+
+(def v13
+  (update v12 :properties assoc
+          :members-joined         {:type "string[]"}))

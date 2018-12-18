@@ -1,6 +1,7 @@
 (ns ^{:doc "Whisper API and events for managing keys and posting messages"}
  status-im.transport.shh
   (:require [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
             [status-im.transport.message.transit :as transit]
             [status-im.transport.utils :as transport.utils]
             [taoensso.timbre :as log]))
@@ -73,6 +74,7 @@
             :or   {error-event :transport/send-status-message-error}} post-calls]
      (let [direct-message (clj->js {:pubKey dst
                                     :sig src
+                                    :chat constants/contact-discovery
                                     :payload (-> payload
                                                  transit/serialize
                                                  transport.utils/from-utf8)})]
@@ -88,6 +90,7 @@
    (let [{:keys [web3 payload src dsts success-event error-event]
           :or   {error-event :protocol/send-status-message-error}} params
          message (clj->js {:sig src
+                           :chat constants/contact-discovery
                            :payload (-> payload
                                         transit/serialize
                                         transport.utils/from-utf8)})]
@@ -100,18 +103,22 @@
 (re-frame/reg-fx
  :shh/send-group-message
  (fn [params]
-   (let [{:keys [web3 payload src dsts success-event error-event]
-          :or   {error-event :transport/send-status-message-error}} params
-         message (clj->js {:pubKeys dsts
-                           :sig src
-                           :payload (-> payload
-                                        transit/serialize
-                                        transport.utils/from-utf8)})]
-     (.. web3
-         -shh
-         (sendGroupMessage
-          message
-          (handle-response success-event error-event))))))
+   (let [{:keys [web3 payload chat src dsts success-event error-event]
+          :or   {error-event :transport/send-status-message-error}} params]
+     (doseq [{:keys [public-key chat]} dsts]
+       (let [message
+             (clj->js {:pubKey public-key
+                       :chat chat
+                       :sig src
+                       :payload (-> payload
+                                    transit/serialize
+                                    transport.utils/from-utf8)})]
+
+         (.. web3
+             -shh
+             (sendDirectMessage
+              message
+              (handle-response success-event error-event))))))))
 
 (re-frame/reg-fx
  :shh/send-public-message

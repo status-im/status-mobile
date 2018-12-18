@@ -73,20 +73,14 @@
      (add-filters! web3 filters))))
 
 (re-frame/reg-fx
- :shh/add-discovery-filter
- (fn [{:keys [web3 private-key-id topic]}]
-   (let [params   {:topics [topic]
+ :shh/add-discovery-filters
+ (fn [{:keys [web3 private-key-id topics]}]
+   (let [params   {:topics (mapv :topic topics)
                    :privateKeyID private-key-id}
          callback (fn [js-error js-message]
                     (re-frame/dispatch [:transport/messages-received js-error js-message]))]
-     (add-filter! web3 params callback :discovery-topic))))
-
-(defn all-filters-added?
-  [{:keys [db]}]
-  (let [filters (set (keys (get db :transport/filters)))
-        chats (into #{:discovery-topic}
-                    (keys (filter #(:topic (val %)) (get db :transport/chats))))]
-    (= chats filters)))
+     (doseq [{:keys [chat-id topic]} topics]
+       (add-filter! web3 params callback chat-id)))))
 
 (handlers/register-handler-fx
  :shh.callback/filter-added

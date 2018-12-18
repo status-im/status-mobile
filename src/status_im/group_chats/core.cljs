@@ -5,6 +5,7 @@
             [clojure.set :as clojure.set]
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
+            [status-im.constants :as constants]
             [status-im.utils.config :as config]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.chat.models.message :as models.message]
@@ -15,6 +16,9 @@
             [status-im.transport.utils :as transport.utils]
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.group-chat :as message.group-chat]
+            [status-im.transport.message.public-chat :as transport.public-chat]
+
+            [status-im.transport.chat.core :as transport.chat]
             [status-im.utils.fx :as fx]
             [status-im.chat.models :as models.chat]
             [status-im.accounts.db :as accounts.db]
@@ -48,6 +52,21 @@
   (-> response-js
       js/JSON.parse
       (js->clj :keywordize-keys true)))
+
+(defn joined? [public-key {:keys [members-joined]}]
+  (contains? members-joined public-key))
+
+(defn invited? [my-public-key {:keys [contacts]}]
+  (contains? contacts my-public-key))
+
+(defn extract-creator
+  "Takes a chat as an input, returns the creator"
+  [{:keys [membership-updates]}]
+  (->> membership-updates
+       (filter (fn [{:keys [events]}]
+                 (some #(= "chat-created" (:type %)) events)))
+       first
+       :from))
 
 (defn signature-material
   "Transform an update into a signable string"
@@ -103,16 +122,33 @@
   ([cofx payload chat-id]
    (send-membership-update cofx payload chat-id nil))
   ([{:keys [message-id] :as cofx} payload chat-id removed-members]
-   (let [members (clojure.set/union (get-in cofx [:db :chats chat-id :contacts])
+   (let [chat    (get-in cofx [:db :chats chat-id])
+         creator (extract-creator chat)
+         members (clojure.set/union (get-in cofx [:db :chats chat-id :contacts])
                                     removed-members)
          {:keys [web3]} (:db cofx)
-         current-public-key (accounts.db/current-public-key cofx)]
+         current-public-key (accounts.db/current-public-key cofx)
+         ;; If a member has joined is listening to the shared topic and we send there
+         ;; to ourselves we send always on contact-discovery to make sure all devices
+         ;; are informed, in case of dropped messages.
+         ;; We send on the discovery topic to the creator as it's automatically
+         ;; joined or for contact that have not joined yet,
+         ;; for backward compatibility
+         destinations (map (fn [member]
+                             (if (and (joined? member chat)
+                                      (not= creator member)
+                                      (not= current-public-key member))
+                               {:public-key member
+                                :chat chat-id}
+                               {:public-key member
+                                :chat constants/contact-discovery}))
+                           members)]
      (fx/merge
       cofx
       {:shh/send-group-message
        {:web3          web3
         :src           current-public-key
-        :dsts          members
+        :dsts          destinations
         :success-event [:transport/message-sent
                         chat-id
                         message-id
@@ -263,15 +299,6 @@
   {:db (-> db
            (assoc-in [:group-chat-profile/profile :valid-name?] (valid-name? name))
            (assoc-in [:group-chat-profile/profile :name] name))})
-
-(defn extract-creator
-  "Takes a chat as an input, returns the creator"
-  [{:keys [membership-updates]}]
-  (->> membership-updates
-       (filter (fn [{:keys [events]}]
-                 (some #(= "chat-created" (:type %)) events)))
-       first
-       :from))
 
 (fx/defn handle-name-changed
   "Store name in profile scratchpad"
@@ -438,12 +465,6 @@
      (map #(assoc % :from from) events))
    all-updates))
 
-(defn joined? [my-public-key {:keys [members-joined]}]
-  (contains? members-joined my-public-key))
-
-(defn invited? [my-public-key {:keys [contacts]}]
-  (contains? contacts my-public-key))
-
 (defn get-inviter-pk [my-public-key {:keys [membership-updates] :as chat}]
   (->> membership-updates
        unwrap-events
@@ -452,6 +473,18 @@
                           (contains? members my-public-key))
                  from)))
        last))
+
+(fx/defn set-up-topic [cofx chat-id previous-chat]
+  (let [my-public-key (accounts.db/current-public-key cofx)
+        new-chat (get-in cofx [:db :chats chat-id])]
+    (cond
+      (and (not (joined? my-public-key previous-chat))
+           (joined? my-public-key new-chat))
+      (transport.public-chat/join-group-chat cofx chat-id)
+
+      (and (joined? my-public-key previous-chat)
+           (not (joined? my-public-key new-chat)))
+      (transport.chat/unsubscribe-from-chat cofx chat-id))))
 
 (fx/defn handle-membership-update
   "Upsert chat and receive message if valid"
@@ -480,6 +513,7 @@
                                             :members-joined     (:members-joined new-group)
                                             :contacts           (:contacts new-group)})
                   (add-system-messages chat-id previous-chat new-group)
+                  (set-up-topic chat-id previous-chat)
                   #(when (and message
                               ;; don't allow anything but group messages
                               (instance? protocol/Message message)
