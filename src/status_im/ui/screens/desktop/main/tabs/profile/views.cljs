@@ -134,13 +134,10 @@
   (views/letsubs [logging-enabled [:settings/logging-enabled]]
     [react/view {:style (styles/profile-row false)}
      [react/text {:style (assoc (styles/profile-row-text colors/black)
-                                :font-size 14)} "Logging enabled?"]
-     (let [_ (log/debug "### logging-display" logging-enabled)]
-       [react/switch {:on-tint-color   colors/blue
-                      :value           logging-enabled
-                      :on-value-change #(do
-                                          (log/debug "### changelogging-enabled:" logging-enabled)
-                                          (re-frame/dispatch [:log-level.ui/logging-enabled (not logging-enabled)]))}])]))
+                                :font-size 14)} (i18n/label :t/logging-enabled)]
+     [react/switch {:on-tint-color   colors/blue
+                    :value           logging-enabled
+                    :on-value-change #(re-frame/dispatch [:log-level.ui/logging-enabled (not logging-enabled)])}]]))
 
 (views/defview advanced-settings []
   (views/letsubs [installations    [:pairing/installations]
@@ -180,7 +177,7 @@
          (installations-section installations))
 ;
        [react/view {:style styles/title-separator}]
-       [react/text {:style styles/adv-settings-subtitle} "Logging"]
+       [react/text {:style styles/adv-settings-subtitle} (i18n/label :t/logging)]
        [logging-display]])))
 
 (views/defview backup-recovery-phrase []

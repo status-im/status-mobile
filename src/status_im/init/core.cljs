@@ -5,6 +5,7 @@
             [status-im.accounts.login.core :as accounts.login]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.constants :as constants]
+            [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.data-store.core :as data-store]
             [status-im.data-store.realm.core :as realm]
             [status-im.extensions.registry :as extensions.registry]
@@ -42,6 +43,11 @@
                (log/warn "Could not decrypt database" error)
                (re-frame/dispatch [:init.callback/init-store-error encryption-key])))))
 
+(defn restore-native-settings! []
+  (when platform/desktop?
+    (.getValue rn-dependencies/desktop-config "logging_enabled"
+               #(re-frame/dispatch [:set-in [:desktop/desktop :logging-enabled] %1]))))
+
 ;; TODO (yenda) move keychain functions to dedicated namespace
 (defn reset-keychain! []
   (.. (keychain/reset)
@@ -67,6 +73,7 @@
 (fx/defn start-app [cofx]
   (fx/merge cofx
             {:init/get-device-UUID                           nil
+             :init/restore-native-settings                   nil
              :ui/listen-to-window-dimensions-change          nil
              :notifications/handle-initial-push-notification nil
              :network/listen-to-network-status               nil
@@ -78,13 +85,14 @@
 (fx/defn initialize-app-db
   "Initialize db to initial state"
   [{{:keys [status-module-initialized? view-id hardwallet
-            initial-props
+            initial-props desktop/desktop
             network-status network peers-count peers-summary device-UUID]
      :node/keys [status]
      :or   {network (get app-db :network)}} :db}]
   {:db (assoc app-db
               :contacts/contacts {}
               :initial-props initial-props
+              :desktop/desktop (merge desktop (:desktop/desktop app-db))
               :network-status network-status
               :peers-count (or peers-count 0)
               :peers-summary (or peers-summary [])
@@ -149,6 +157,7 @@
   (let [{:universal-links/keys [url]
          :keys [accounts/accounts accounts/create networks/networks network
                 network-status peers-count peers-summary view-id navigation-stack
+                desktop/desktop
                 status-module-initialized? device-UUID semaphores accounts/login]
          :node/keys [status on-ready]
          :or   {network (get app-db :network)}} db
@@ -162,6 +171,7 @@
                         :node/status status
                         :node/on-ready on-ready
                         :accounts/create create
+                        :desktop/desktop (merge desktop (:desktop/desktop app-db))
                         :networks/networks networks
                         :account/account current-account
                         :accounts/login login
@@ -216,6 +226,10 @@
  init-store!)
 
 (re-frame/reg-fx
+ :init/restore-native-settings
+ restore-native-settings!)
+
+(re-frame/reg-fx
  :init/status-module-initialized
  status/module-initialized!)
 
@@ -231,3 +245,4 @@
 (re-frame/reg-fx
  :init/reset-account-data
  reset-account-data!)
+

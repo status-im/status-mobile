@@ -4,15 +4,12 @@ const NativeModules = require('react-native').NativeModules;
 
 class DesktopConfig {
 
-  static getLoggingEnabled(callbackFn) {
-    NativeModules.DesktopConfigManager.getLoggingEnabled(
-      (enabled) => {
-        callbackFn(enabled);
-      });
+  static getValue(name, callbackFn) {
+    NativeModules.DesktopConfigManager.getValue(name, callbackFn);
   }
 
-  static setLoggingEnabled(enabled) {
-    NativeModules.DesktopConfigManager.setLoggingEnabled(enabled);
+  static setValue(name, value) {
+    NativeModules.DesktopConfigManager.setValue(name, value);
 
   }
 }

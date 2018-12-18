@@ -102,10 +102,6 @@
                                      #(re-frame/dispatch
                                        [:web3/fetch-node-version-callback %])]}
          (protocol/initialize-protocol address)
-         #(when platform/desktop?
-            (let [logging-enabled (get-in db [:account/account :settings :logging-enabled])]
-              (log/debug "### user-login-callback .setLoggingEnabled" logging-enabled)
-              (.setLoggingEnabled rn-dependencies/desktop-config logging-enabled)))
          #(when-not platform/desktop?
             (initialize-wallet %)))
         (account-and-db-password-do-not-match cofx error)))))

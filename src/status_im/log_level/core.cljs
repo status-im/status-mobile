@@ -34,12 +34,10 @@
                           :on-cancel           nil}})
 
 (fx/defn save-logging-enabled
-  [{:keys [db now] :as cofx} enabled]
+  [{:keys [db] :as cofx}  enabled]
+  (.setValue rn-dependencies/desktop-config "logging_enabled" enabled)
   (let [settings (get-in db [:account/account :settings])]
-    (.setLoggingEnabled rn-dependencies/desktop-config enabled)
-    (accounts.update/update-settings cofx
-                                     (-> settings
-                                         (assoc :logging-enabled enabled)
-                                         (#(if enabled (assoc %1 :log-level "INFO") (dissoc %1 :log-level))))
+    (accounts.update/update-settings (assoc-in cofx [:db :desktop/desktop :logging-enabled] enabled)
+                                     (if enabled (assoc settings :log-level "INFO") (dissoc settings :log-level))
                                      {:success-event [:accounts.update.callback/save-settings-success]})))
 

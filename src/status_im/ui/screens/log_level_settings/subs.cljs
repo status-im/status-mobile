@@ -11,4 +11,5 @@
 (re-frame/reg-sub
  :settings/logging-enabled
  (fn [db _]
-   (or (get-in db [:account/account :settings :logging-enabled]) false)))
+   (or (get-in db [:desktop/desktop :logging-enabled]) false)))
+
