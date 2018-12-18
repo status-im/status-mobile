@@ -23,13 +23,17 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         device_2_sign_in.create_user()
         device_1_home, device_2_home = device_1_sign_in.get_home_view(), device_2_sign_in.get_home_view()
 
+        device_1_wallet_view = device_1_home.wallet_button.click()
+        device_1_wallet_view.set_up_wallet()
+        device_1_wallet_view.get_back_to_home_view()
+
         public_key = device_2_home.get_public_key()
         device_2_profile = device_2_home.get_profile_view()
         device_2_profile.switch_network('Mainnet with upstream RPC')
 
         device_1_chat = device_1_home.add_contact(public_key)
         amount_1 = device_1_chat.get_unique_amount()
-        device_1_chat.send_transaction_in_1_1_chat('ETHro', amount_1, wallet_set_up=True)
+        device_1_chat.send_transaction_in_1_1_chat('ETHro', amount_1, wallet_set_up=False)
         device_1_chat.chat_element_by_text(amount_1).progress_bar.wait_for_invisibility_of_element()
         status_text_1 = device_1_chat.chat_element_by_text(amount_1).status.text
         if status_text_1 != 'Sent':
