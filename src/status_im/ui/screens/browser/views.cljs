@@ -21,7 +21,7 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.http :as http]
             [status-im.utils.js-resources :as js-res]
-            [status-im.ui.components.animation :as animation])
+            [status-im.ui.components.connectivity.view :as connectivity])
   (:require-macros
    [status-im.utils.slurp :refer [slurp]]
    [status-im.utils.views :as views]))
@@ -104,34 +104,6 @@
                                :accessibility-label :refresh-page-button}
     [icons/icon :icons/refresh]]])
 
-(views/defview loading-indicatior [parent-width]
-  (views/letsubs [anim-width (animation/create-value (* 0.15 parent-width))
-                  anim-x (animation/create-value 0)
-                  easing-in (fn [n] {:toValue (* n parent-width)
-                                     :easing   (.in (animation/easing) (.-quad (animation/easing)))
-                                     :duration 400})
-                  easing-out (fn [n] {:toValue (* n parent-width)
-                                      :easing   (.out (animation/easing) (.-quad (animation/easing)))
-                                      :duration 400})]
-    {:component-did-mount (fn [_]
-                            (animation/start
-                             (animation/anim-loop
-                              (animation/anim-sequence
-                               [(animation/parallel
-                                 [(animation/timing anim-width (easing-in 0.6))
-                                  (animation/timing anim-x (easing-in 0.2))])
-                                (animation/parallel
-                                 [(animation/timing anim-width (easing-out 0.15))
-                                  (animation/timing anim-x (easing-out 0.85))])
-                                (animation/parallel
-                                 [(animation/timing anim-width (easing-in 0.6))
-                                  (animation/timing anim-x (easing-in 0.2))])
-                                (animation/parallel
-                                 [(animation/timing anim-width (easing-out 0.15))
-                                  (animation/timing anim-x (easing-out 0))])]))))}
-    [react/view {:style {:width parent-width :height 3 :background-color colors/blue-light}}
-     [react/animated-view {:style {:margin-left anim-x :width anim-width :height 3 :background-color colors/blue}}]]))
-
 ;; should-component-update is called only when component's props are changed,
 ;; that's why it can't be used in `browser`, because `url` comes from subs
 (views/defview browser-component
@@ -195,7 +167,7 @@
        [status-bar/status-bar]
        [toolbar error? url url-original browser browser-id url-editing?]
        (when (and loading? (not (nil? @width)))
-         [loading-indicatior @width])
+         [connectivity/loading-indicator @width])
        [browser-component {:webview         webview
                            :dapp?           dapp?
                            :error?          error?

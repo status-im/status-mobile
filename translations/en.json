@@ -190,6 +190,7 @@
     "create-new-account": "Create new account",
     "are-you-sure?": "Are you sure?",
     "disconnected": "Chat offline",
+    "connecting": "Connecting...",
     "wallet-offline": "Wallet offline",
     "sign-in-to-status": "Sign in to Status",
     "leave-group-chat-confirmation": "Are you sure you want to leave this group?",

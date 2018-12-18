@@ -249,7 +249,7 @@
             [message (:text content) (= from current-public-key)
              (assoc message-obj :group-chat group-chat
                     :current-public-key current-public-key)]))]]
-       [connectivity/error-view]])))
+       [connectivity/connectivity-view]])))
 
 (views/defview send-button [inp-ref disconnected?]
   (views/letsubs [{:keys [input-text]} [:chats/current-chat]]

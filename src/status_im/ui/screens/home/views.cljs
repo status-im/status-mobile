@@ -105,12 +105,19 @@
      [toolbar show-welcome? (and network-initialized? (not rpc-network?)) sync-state latest-block-number]
      (cond show-welcome?
            [welcome view-id]
+           loading?
+           [react/view {:style {:flex            1
+                                :justify-content :center
+                                :align-items     :center}}
+            [connectivity/connectivity-view]
+            [components/activity-indicator {:flex 1
+                                            :animating true}]]
            :else
-           [chats-list])
+           [react/view {:style {:flex 1}}
+            [connectivity/connectivity-view]
+            [chats-list]])
      (when platform/android?
-       [home-action-button])
-     (when-not show-welcome?
-       [connectivity/error-view])]))
+       [home-action-button])]))
 
 (views/defview home-wrapper []
   (views/letsubs [loading? [:get :chats/loading?]]

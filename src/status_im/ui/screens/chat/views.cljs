@@ -66,7 +66,9 @@
                            :icon-opts {:color               :black
                                        :accessibility-label :chat-menu-button}
                            :handler   #(on-options chat-id name group-chat public?)}]])]
-     (when-not (or public? group-chat) [add-contact-bar (first contacts)])]))
+     [connectivity/connectivity-view]
+     (when-not (or public? group-chat)
+       [add-contact-bar (first contacts)])]))
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))
 
@@ -198,8 +200,7 @@
       (when show-bottom-info?
         [bottom-info/bottom-info-view])
       (when show-message-options?
-        [message-options/view])
-      [connectivity/error-view {:top (get platform/platform-specific :status-bar-default-height)}]]]))
+        [message-options/view])]]))
 
 (defview chat []
   [chat-root false])
