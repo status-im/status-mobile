@@ -18,7 +18,7 @@
   - restoring existing symetric keys along with their unique filters
   - (optionally) initializing mailserver"
   [{:keys [db web3] :as cofx}]
-  (log/debug :init-whisper)
+  (log/debug "PERF" :init-whisper (.now js/Date))
   (when-let [public-key (get-in db [:account/account :public-key])]
     (let [topic (transport.utils/get-topic constants/contact-discovery)]
       (fx/merge cofx

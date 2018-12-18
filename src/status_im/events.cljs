@@ -92,15 +92,15 @@
    (init/handle-init-store-error cofx encryption-key)))
 
 (handlers/register-handler-fx
- :init-chats
+ :init-rest-of-chats
  [(re-frame/inject-cofx :web3/get-web3)
   (re-frame/inject-cofx :get-default-dapps)
   (re-frame/inject-cofx :data-store/all-chats)]
- (fn [{:keys [db] :as cofx} [_ address]]
+ (fn [{:keys [db] :as cofx} [_]]
+   (log/debug "PERF" :init-rest-of-chats (.now js/Date))
    (fx/merge cofx
              {:db (assoc db :chats/loading? false)}
-             (chat-loading/initialize-chats)
-             (chat-loading/initialize-pending-messages))))
+             (chat-loading/initialize-chats 15 nil))))
 
 (handlers/register-handler-fx
  :init.callback/account-change-success
@@ -108,15 +108,19 @@
   (re-frame/inject-cofx :data-store/get-all-contacts)
   (re-frame/inject-cofx :data-store/get-all-installations)
   (re-frame/inject-cofx :data-store/all-browsers)
-  (re-frame/inject-cofx :data-store/all-dapp-permissions)]
+  (re-frame/inject-cofx :data-store/all-dapp-permissions)
+  (re-frame/inject-cofx :get-default-dapps)
+  (re-frame/inject-cofx :data-store/all-chats)]
  (fn [{:keys [db] :as cofx} [_ address]]
+   (log/debug "PERF" :init.callback/account-change-success (.now js/Date))
    (let [{:node/keys [status]} db]
      (fx/merge
       cofx
       (if (= status :started)
         (accounts.login/login)
         (node/initialize (get-in db [:accounts/login :address])))
-      (init/initialize-account address)))))
+      (init/initialize-account address)
+      (chat-loading/initialize-chats 0 15)))))
 
 (handlers/register-handler-fx
  :init.callback/keychain-reset
@@ -245,6 +249,7 @@
 (handlers/register-handler-fx
  :accounts.login.ui/password-input-submitted
  (fn [cofx _]
+   (log/debug "PERF" :accounts.login.ui/password-input-submitted (.now js/Date))
    (accounts.login/user-login cofx false)))
 
 (handlers/register-handler-fx
@@ -255,6 +260,7 @@
   (re-frame/inject-cofx :data-store/transport)
   (re-frame/inject-cofx :data-store/mailserver-topics)]
  (fn [cofx [_ login-result]]
+   (log/debug "PERF" :accounts.login.callback/login-success (.now js/Date))
    (accounts.login/user-login-callback cofx login-result)))
 
 (handlers/register-handler-fx

@@ -130,7 +130,7 @@
         string->js-array))
 
 (defn get-encryption-key []
-  (log/debug "initializing realm encryption key...")
+  (log/debug "PERF" "initializing realm encryption key..." (.now js/Date))
   (.. (.getGenericPassword rn/keychain)
       (then
        (fn [res]

@@ -27,7 +27,7 @@
 
 (defn change-account
   [address password encryption-key create-database-if-not-exist?]
-  (log/debug "changing account to: " address)
+  (log/debug "PERF changing account to: " address (.now js/Date))
   (..
    (js/Promise.
     (fn [on-success on-error]
