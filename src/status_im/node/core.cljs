@@ -125,6 +125,16 @@
       :always
       (add-log-level log-level))))
 
+(defn get-verify-account-config
+  "Is used when the node has to be started before
+  `VerifyAccountPassword` call."
+  [db network]
+  (-> (get-in (:networks/networks db) [network :config])
+      (get-base-node-config)
+      (assoc :PFSEnabled false
+             :NoDiscovery true)
+      (add-log-level config/log-level-status-go)))
+
 (fx/defn update-sync-state
   [{:keys [db]} error sync-state]
   {:db (assoc db :node/chain-sync-state
@@ -142,7 +152,9 @@
   (let [network     (if address
                       (get-account-network db address)
                       (:network db))
-        node-config (get-account-node-config db address)
+        node-config (if (= (:node/on-ready db) :verify-account)
+                      (get-verify-account-config db network)
+                      (get-account-node-config db address))
         node-config-json (types/clj->json node-config)]
     (log/info "Node config: " node-config-json)
     {:db        (assoc db

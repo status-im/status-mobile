@@ -2,7 +2,8 @@
   (:require [re-frame.core :as re-frame]
             [status-im.accounts.db :as db]
             [status-im.utils.ethereum.core :as ethereum]
-            [cljs.spec.alpha :as spec]))
+            [cljs.spec.alpha :as spec]
+            [status-im.utils.security :as security]))
 
 (re-frame/reg-sub
  :accounts/accounts
@@ -40,3 +41,12 @@
  :get-recover-account
  (fn [db]
    (:accounts/recover db)))
+
+(re-frame/reg-sub
+ :sign-in-enabled?
+ :<- [:get :accounts/login]
+ :<- [:get :node/status]
+ (fn [[{:keys [password]} status]]
+   (and (or (nil? status) (= status :stopped))
+        (spec/valid? ::db/password
+                     (security/safe-unmask-data password)))))

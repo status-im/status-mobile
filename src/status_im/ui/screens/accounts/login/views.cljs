@@ -55,9 +55,10 @@
      name]]])
 
 (defview login []
-  (letsubs [{:keys [address photo-path name password error processing save-password? can-save-password?]} [:get :accounts/login]
+  (letsubs [{:keys [photo-path name error processing save-password? can-save-password?]} [:get :accounts/login]
             can-navigate-back? [:can-navigate-back?]
-            password-text-input (atom nil)]
+            password-text-input (atom nil)
+            sign-in-enabled? [:sign-in-enabled?]]
     [react/keyboard-avoiding-view {:style ast/accounts-view}
      [status-bar/status-bar]
      [login-toolbar can-navigate-back?]
@@ -72,7 +73,8 @@
           :placeholder       (i18n/label :t/password)
           :ref               #(reset! password-text-input %)
           :auto-focus        true
-          :on-submit-editing #(login-account @password-text-input)
+          :on-submit-editing (when sign-in-enabled?
+                               #(login-account @password-text-input))
           :on-change-text    #(do
                                 (re-frame/dispatch [:set-in [:accounts/login :password]
                                                     (security/mask-data %)])
@@ -82,11 +84,11 @@
        (when platform/ios?
          [react/view {:style styles/save-password-checkbox-container}
           [profile.components/settings-switch-item
-           {:label-kw (if can-save-password?
-                        :t/save-password
-                        :t/save-password-unavailable)
-            :active? can-save-password?
-            :value save-password?
+           {:label-kw  (if can-save-password?
+                         :t/save-password
+                         :t/save-password-unavailable)
+            :active?   can-save-password?
+            :value     save-password?
             :action-fn #(re-frame/dispatch [:set-in [:accounts/login :save-password?] %])}]])]]
      (when processing
        [react/view styles/processing-view
@@ -102,5 +104,5 @@
         [components.common/bottom-button
          {:forward?  true
           :label     (i18n/label :t/sign-in)
-          :disabled? (not (spec/valid? ::db/password (security/safe-unmask-data password)))
+          :disabled? (not sign-in-enabled?)
           :on-press  #(login-account @password-text-input)}]])]))
