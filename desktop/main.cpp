@@ -1,4 +1,3 @@
-
 /**
  * Copyright (C) 2016, Canonical Ltd.
  * All rights reserved.
@@ -240,6 +239,9 @@ int main(int argc, char **argv) {
 
   QCoreApplication::setApplicationName("Status");
 
+  // Init AppConfig
+  AppConfig::inst().getValue(AppConfig::LOGGING_ENABLED);
+
   QString appPath = QCoreApplication::applicationDirPath();
   QString dataStoragePath = getDataStoragePath();
 #ifdef BUILD_FOR_BUNDLE
@@ -263,7 +265,6 @@ int main(int argc, char **argv) {
   }
 
   //qCDebug(STATUS) << "###STATUS_NO_LOGGING";
-  AppConfig::inst().setLoggingEnabled(false);
 
 
 #ifdef BUILD_FOR_BUNDLE
@@ -558,3 +559,4 @@ void saveMessage(QtMsgType type, const QMessageLogContext &context,
 }
 
 #include "main.moc"
+

@@ -33,12 +33,14 @@ QList<ModuleMethod *> DesktopConfig::methodsToExport() {
 
 QVariantMap DesktopConfig::constantsToExport() { return QVariantMap(); }
 
-void DesktopConfig::getLoggingEnabled(double callback) {
-  bridge->invokePromiseCallback(callback, QVariantList{AppConfig::inst().getLoggingEnabled()});
+void DesktopConfig::getValue(const QString& name, double callback) {
+  //qCDebug(DESKTOPCONFIG) << "### getValue" << name;
+  bridge->invokePromiseCallback(callback, QVariantList{AppConfig::inst().getValue(name)});
 }
 
-void DesktopConfig::setLoggingEnabled(bool enable) {
-  //qCDebug(DESKTOPCONFIG) << "### setLoggingEnabled " << enable;
-  AppConfig::inst().setLoggingEnabled(enable);
+void DesktopConfig::setValue(const QString& name, const QVariant& value) {
+  //qCDebug(DESKTOPCONFIG) << "### setValue" << name << ": " << value;
+  AppConfig::inst().setValue(name, value);
 }
+
 

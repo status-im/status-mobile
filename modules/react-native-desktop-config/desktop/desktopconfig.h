@@ -2,7 +2,7 @@
 #define DESKTOPCONFIG_H
 
 #include "moduleinterface.h"
-
+#include <QVariant>
 #include <QLoggingCategory>
 
 Q_DECLARE_LOGGING_CATEGORY(CONFIG)
@@ -22,8 +22,8 @@ public:
     QList<ModuleMethod*> methodsToExport() override;
     QVariantMap constantsToExport() override;
 
-    Q_INVOKABLE void getLoggingEnabled(double callback);
-    Q_INVOKABLE void setLoggingEnabled(bool enable);
+    Q_INVOKABLE void getValue(const QString& name, double callback);
+    Q_INVOKABLE void setValue(const QString& name, const QVariant& value);
 
 private:
     Bridge* bridge = nullptr;

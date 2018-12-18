@@ -564,6 +564,8 @@
     "transactions-sign-transaction": "Sign transaction",
     "wallet-backup-recovery-title": "Backup your recovery phrase",
     "change-log-level": "Change log level to {{log-level}}",
+    "logging": "Logging",
+    "logging-enabled": "Logging enabled?",
     "change-logging-enabled": "Are you sure you want to {{enable}} logging?",
     "enable": "enable",
     "disable": "disable",

@@ -2,6 +2,8 @@
 #define APPCONFIG_H
 
 #include <QString>
+#include <QVariant>
+#include <QSettings>
 
 // This class is intended to store app configuration
 // modifiable from JS side
@@ -12,15 +14,18 @@ public:
 
   static AppConfig& inst();
 
-  bool getLoggingEnabled() const;
-  void setLoggingEnabled(bool enable);
+  QVariant getValue(const QString& name) const;
+  void setValue(const QString& name, const QVariant& value);
 
+  const static QString LOGGING_ENABLED;
 private:
   AppConfig();
 
-  bool loggingEnabled = false;
   static AppConfig appConfig;
+  QSettings settings;
 
   QString getLoggingFilterRules(bool enabled) const;
+  void processFx(const QString& name, const QVariant& value) const;
 };
 #endif // APPCONFIG_H
+
