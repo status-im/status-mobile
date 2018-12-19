@@ -78,8 +78,10 @@ function joinExistingPath() {
 
 STATUSREACTPATH="$(cd "$SCRIPTPATH" && cd '..' && pwd)"
 WORKFOLDER="$(joinExistingPath "$STATUSREACTPATH" 'StatusImPackage')"
-DEPLOYQT="$(joinPath . 'linuxdeployqt-continuous-x86_64.AppImage')"
-APPIMAGETOOL="$(joinPath . 'appimagetool-x86_64.AppImage')"
+DEPLOYQTFNAME='linuxdeployqt-continuous-x86_64_20181215.AppImage'
+APPIMAGETOOLFNAME='appimagetool-x86_64_20181109.AppImage'
+DEPLOYQT=$(joinPath . "$DEPLOYQTFNAME")
+APPIMAGETOOL=$(joinPath . "$APPIMAGETOOLFNAME")
 STATUSIM_APPIMAGE_ARCHIVE="StatusImAppImage_20181208.zip"
 
 function init() {
@@ -300,12 +302,12 @@ function bundleLinux() {
   cp ./desktop/bin/reportApp $usrBinPath
   
   if [ ! -f $DEPLOYQT ]; then
-    wget --output-document="$DEPLOYQT" --show-progress -q https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
+    wget --output-document="$DEPLOYQT" --show-progress "https://desktop-app-files.ams3.digitaloceanspaces.com/$DEPLOYQTFNAME" # Versioned from https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
     chmod a+x $DEPLOYQT
   fi
 
   if [ ! -f $APPIMAGETOOL ]; then
-    wget --output-document="$APPIMAGETOOL" --show-progress -q https://github.com/AppImage/AppImageKit/releases/download/10/appimagetool-x86_64.AppImage
+    wget --output-document="$APPIMAGETOOL" --show-progress "https://desktop-app-files.ams3.digitaloceanspaces.com/$APPIMAGETOOLFNAME" # Versioned from https://github.com/AppImage/AppImageKit/releases/download/10/appimagetool-x86_64.AppImage
     chmod a+x $APPIMAGETOOL
   fi
 
@@ -313,19 +315,20 @@ function bundleLinux() {
   rm -f Status-x86_64.AppImage
 
   [ $VERBOSE_LEVEL -ge 1 ] && ldd $(joinExistingPath "$usrBinPath" 'Status') 
-  $DEPLOYQT \
-    $(joinExistingPath "$usrBinPath" 'reportApp') \
-    -verbose=$VERBOSE_LEVEL -always-overwrite -no-strip -no-translations -qmake="$(joinExistingPath "${QTBIN}" 'qmake')" \
-    -qmldir="$STATUSREACTPATH/desktop/reportApp"
-
   desktopFilePath="$(joinExistingPath "$WORKFOLDER" 'AppDir/usr/share/applications/Status.desktop')"
   $DEPLOYQT \
     $desktopFilePath \
     -verbose=$VERBOSE_LEVEL -always-overwrite -no-strip \
     -no-translations -bundle-non-qt-libs \
+    -executable="$usrBinPath/reportApp" \
     -qmake="$qmakePath" \
     -extra-plugins=imageformats/libqsvg.so \
     -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'node_modules/react-native')"
+
+  $DEPLOYQT \
+    $(joinExistingPath "$usrBinPath" 'reportApp') \
+    -verbose=$VERBOSE_LEVEL -always-overwrite -no-strip -no-translations -qmake="$qmakePath" \
+    -qmldir="$STATUSREACTPATH/desktop/reportApp"
 
   pushd $WORKFOLDER
     [ $VERBOSE_LEVEL -ge 1 ] && ldd AppDir/usr/bin/Status
