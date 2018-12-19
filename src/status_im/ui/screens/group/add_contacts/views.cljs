@@ -4,6 +4,7 @@
             [status-im.i18n :as i18n]
             [status-im.utils.platform :as utils.platform]
             [status-im.ui.components.button.view :as buttons]
+            [status-im.constants :as constants]
             [status-im.ui.components.contact.contact :refer [toggle-contact-view]]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.list-selection :as list-selection]
@@ -86,8 +87,6 @@
     (i18n/label :t/group-chat-no-contacts)]
    [buttons/secondary-button {:on-press handle-invite-friends-pressed} (i18n/label :t/invite-friends)]])
 
-(def max-participants 10)
-
 (defn number-of-participants-disclaimer [number-of-participants-available]
   [react/view {:style styles/number-of-participants-disclaimer}
    [react/text (if (> number-of-participants-available
@@ -105,9 +104,10 @@
                            :label   (i18n/label :t/next)
                            :count   (pos? selected-contacts-count)}
       (i18n/label :t/group-chat)]
-     [number-of-participants-disclaimer (- (dec max-participants) selected-contacts-count)]
+     (when (seq contacts)
+       [number-of-participants-disclaimer (- (dec constants/max-group-chat-participants) selected-contacts-count)])
      (if (seq contacts)
-       [toggle-list contacts (partial group-toggle-contact (< selected-contacts-count (dec max-participants)))]
+       [toggle-list contacts (partial group-toggle-contact (< selected-contacts-count (dec constants/max-group-chat-participants)))]
        [no-contacts])]))
 
 ;; Add participants to existing group chat
@@ -125,7 +125,7 @@
                              :label   (i18n/label :t/add)}
         name]
 
-       [number-of-participants-disclaimer (- max-participants current-participants-count)]
+       [number-of-participants-disclaimer (- constants/max-group-chat-participants current-participants-count)]
        (when (seq contacts)
          [toggle-list contacts (partial group-toggle-participant (< (+ current-participants-count
-                                                                       selected-contacts-count) max-participants))])])))
+                                                                       selected-contacts-count) constants/max-group-chat-participants))])])))

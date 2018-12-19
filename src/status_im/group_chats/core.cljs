@@ -17,7 +17,6 @@
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.group-chat :as message.group-chat]
             [status-im.transport.message.public-chat :as transport.public-chat]
-
             [status-im.transport.chat.core :as transport.chat]
             [status-im.utils.fx :as fx]
             [status-im.chat.models :as models.chat]
@@ -465,7 +464,7 @@
      (map #(assoc % :from from) events))
    all-updates))
 
-(defn get-inviter-pk [my-public-key {:keys [membership-updates] :as chat}]
+(defn get-inviter-pk [my-public-key {:keys [membership-updates]}]
   (->> membership-updates
        unwrap-events
        (keep (fn [{:keys [from type members]}]
@@ -501,12 +500,15 @@
       (let [previous-chat (get-in cofx [:db :chats chat-id])
             all-updates (clojure.set/union (set (:membership-updates previous-chat))
                                            (set (:membership-updates membership-update)))
+            my-public-key (accounts.db/current-public-key cofx)
             unwrapped-events (unwrap-events all-updates)
-            new-group (build-group unwrapped-events)]
+            new-group (build-group unwrapped-events)
+            member? (contains? (:contacts new-group) my-public-key)]
         (fx/merge cofx
                   (models.chat/upsert-chat {:chat-id            chat-id
                                             :name               (:name new-group)
-                                            :is-active          (get previous-chat :is-active true)
+                                            :is-active          (or member?
+                                                                    (get previous-chat :is-active true))
                                             :group-chat         true
                                             :membership-updates (into [] all-updates)
                                             :admins             (:admins new-group)

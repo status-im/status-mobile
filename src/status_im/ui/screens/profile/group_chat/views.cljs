@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.profile.group-chat.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.utils.platform :as platform]
+            [status-im.constants :as constants]
             [status-im.ui.screens.profile.group-chat.styles :as styles]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.components.styles :as profile.components.styles]
@@ -37,9 +38,9 @@
                           :icon-opts {:color               colors/blue
                                       :accessibility-label :done-button}}]])
 
-(defn actions [admin? chat-id]
+(defn actions [allow-adding-members? chat-id]
   (concat
-   (when admin?
+   (when allow-adding-members?
      [{:label  (i18n/label :add-members)
        :icon   :icons/add
        :action #(re-frame/dispatch [:navigate-to :add-participants-toggle-list])}])
@@ -96,11 +97,14 @@
 (defview group-chat-profile []
   (letsubs [{:keys [admins chat-id] :as current-chat} [:chats/current-chat]
             editing?     [:get :group-chat-profile/editing?]
+            members      [:contacts/current-chat-contacts]
             changed-chat [:get :group-chat-profile/profile]
             current-pk   [:account/public-key]]
     (when current-chat
-      (let [shown-chat (merge current-chat changed-chat)
-            admin?     (admins current-pk)]
+      (let [shown-chat            (merge current-chat changed-chat)
+            admin?                (admins current-pk)
+            allow-adding-members? (and admin?
+                                       (< (count members) constants/max-group-chat-participants))]
         [react/view profile.components.styles/profile
          [status-bar/status-bar]
          (if editing?
@@ -113,7 +117,7 @@
              :editing?             editing?
              :allow-icon-change?   false
              :on-change-text-event :group-chats.ui/name-changed}]
-           [list/action-list (actions admin? chat-id)
+           [list/action-list (actions allow-adding-members? chat-id)
             {:container-style        styles/action-container
              :action-style           styles/action
              :action-label-style     styles/action-label

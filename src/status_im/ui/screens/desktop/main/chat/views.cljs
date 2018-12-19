@@ -7,6 +7,8 @@
             [status-im.ui.screens.chat.message.message :as message]
             [taoensso.timbre :as log]
             [reagent.core :as reagent]
+            [status-im.chat.models :as models.chat]
+            [status-im.group-chats.core :as models.group-chats]
             [status-im.ui.screens.chat.utils :as chat-utils]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.constants :as constants]
@@ -22,6 +24,7 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.desktop.main.chat.styles :as styles]
             [status-im.contact.db :as contact.db]
+            [status-im.ui.screens.chat.views :as views.chat]
             [status-im.ui.components.popup-menu.views :refer [show-desktop-menu
                                                               get-chat-menu-items]]
             [status-im.i18n :as i18n]
@@ -323,12 +326,21 @@
                                                       (re-frame/dispatch [:chat.ui/set-chat-input-text text])))}]
        [send-button inp-ref disconnected?]])))
 
+(defn not-joined-group-chat? [chat current-public-key]
+  (and (models.chat/group-chat? chat)
+       (models.group-chats/invited? current-public-key chat)
+       (not (models.group-chats/joined? current-public-key chat))))
+
 (views/defview chat-view []
-  (views/letsubs [{:keys [input-text chat-id] :as current-chat} [:chats/current-chat]]
+  (views/letsubs [{:keys [input-text chat-id] :as current-chat} [:chats/current-chat]
+                  current-public-key [:account/public-key]]
+
     [react/view {:style styles/chat-view}
      [toolbar-chat-view current-chat]
      [react/view {:style styles/separator}]
-     [messages-view current-chat]
+     (if (not-joined-group-chat? current-chat current-public-key)
+       [views.chat/group-chat-join-section current-public-key current-chat]
+       [messages-view current-chat])
      [react/view {:style styles/separator}]
      [reply-message-view]
      [chat-text-input chat-id input-text]]))

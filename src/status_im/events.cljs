@@ -1292,8 +1292,8 @@
 
 (handlers/register-handler-fx
  :transport/message-sent
- (fn [cofx [_ chat-id message-id message-type envelope-hash-js]]
-   (transport.message/set-message-envelope-hash cofx chat-id message-id message-type envelope-hash-js)))
+ (fn [cofx [_ chat-id message-id message-type envelope-hash-js messages-count]]
+   (transport.message/set-message-envelope-hash cofx chat-id message-id message-type envelope-hash-js messages-count)))
 
 (handlers/register-handler-fx
  :transport/contact-message-sent

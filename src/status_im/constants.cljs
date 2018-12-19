@@ -17,6 +17,7 @@
 
 (def min-password-length 6)
 (def max-chat-name-length 20)
+(def max-group-chat-participants 10)
 (def response-suggesstion-resize-duration 100)
 (def default-number-of-messages 20)
 (def blocks-per-hour 120)

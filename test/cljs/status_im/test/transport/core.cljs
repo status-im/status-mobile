@@ -1,5 +1,6 @@
 (ns status-im.test.transport.core
   (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.utils.fx :as fx]
             [status-im.protocol.core :as protocol]
             [status-im.transport.core :as transport]
             [status-im.transport.message.core :as message]))
@@ -82,3 +83,71 @@
     (let [actual (message/receive-whisper-messages {:db {}} nil messages sig)]
       (testing "it add an fx for the message"
         (is (:chat-received-message/add-fx actual))))))
+
+(deftest message-envelopes
+  (let [chat-id "chat-id"
+        from "from"
+        message-id "message-id"
+        initial-cofx {:db {:chats {chat-id {:messages {message-id {:from from}}}}}}]
+
+    (testing "a single envelope message"
+      (let [cofx (message/set-message-envelope-hash initial-cofx chat-id message-id :message-type "hash-1" 1)]
+        (testing "it sets the message-infos"
+          (is (= {:chat-id chat-id
+                  :message-id message-id
+                  :message-type :message-type}
+                 (get-in cofx [:db :transport/message-envelopes "hash-1"]))))
+        (testing "the message is sent"
+          (is (= :sent
+
+                 (get-in
+                  (message/update-envelope-status cofx "hash-1" :sent)
+                  [:db :chats chat-id :message-statuses message-id from :status]))))
+
+        (testing "the message is not sent"
+          (is (= :not-sent
+                 (get-in
+                  (message/update-envelope-status cofx "hash-1" :not-sent)
+                  [:db :chats chat-id :message-statuses message-id from :status]))))))
+    (testing "multi envelope message"
+      (testing "only inserts"
+        (let [cofx (fx/merge
+                    initial-cofx
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-1" 3)
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-2" 3)
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-3" 3))]
+          (testing "it sets the message count"
+            (is (= {:pending-confirmations 3}
+                   (get-in cofx [:db :transport/message-ids->confirmations message-id]))))))
+      (testing "message sent correctly"
+        (let [cofx (fx/merge
+                    initial-cofx
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-1" 3)
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-2" 3)
+                    (message/update-envelope-status "hash-1" :sent)
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-3" 3)
+                    (message/update-envelope-status "hash-2" :sent)
+                    (message/update-envelope-status "hash-3" :sent))]
+          (testing "it removes the confirmations"
+            (is (not (get-in cofx [:db :transport/message-ids->confirmations message-id]))))
+          (testing "the message is sent"
+            (is (= :sent
+                   (get-in
+                    cofx
+                    [:db :chats chat-id :message-statuses message-id from :status]))))))
+      (testing "message not sent"
+        (let [cofx (fx/merge
+                    initial-cofx
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-1" 3)
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-2" 3)
+                    (message/update-envelope-status "hash-1" :sent)
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-3" 3)
+                    (message/update-envelope-status "hash-2" :not-sent)
+                    (message/update-envelope-status "hash-3" :sent))]
+          (testing "it removes the confirmations"
+            (is (not (get-in cofx [:db :transport/message-ids->confirmations message-id]))))
+          (testing "the message is sent"
+            (is (= :not-sent
+                   (get-in
+                    cofx
+                    [:db :chats chat-id :message-statuses message-id from :status])))))))))

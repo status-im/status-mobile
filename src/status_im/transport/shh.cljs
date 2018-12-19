@@ -59,11 +59,11 @@
                                              (on-success resp)
                                              (on-error err))))))
 
-(defn handle-response [success-event error-event]
+(defn handle-response [success-event error-event messages-count]
   (fn [err resp]
     (if-not err
       (if success-event
-        (re-frame/dispatch (conj success-event resp))
+        (re-frame/dispatch (conj success-event resp messages-count))
         (log/debug :shh/post-success))
       (re-frame/dispatch [error-event err resp]))))
 
@@ -82,12 +82,12 @@
            -shh
            (sendDirectMessage
             direct-message
-            (handle-response success-event error-event)))))))
+            (handle-response success-event error-event 1)))))))
 
 (re-frame/reg-fx
  :shh/send-pairing-message
  (fn [params]
-   (let [{:keys [web3 payload src dsts success-event error-event]
+   (let [{:keys [web3 payload src success-event error-event]
           :or   {error-event :protocol/send-status-message-error}} params
          message (clj->js {:sig src
                            :chat constants/contact-discovery
@@ -98,7 +98,7 @@
          -shh
          (sendPairingMessage
           message
-          (handle-response success-event error-event))))))
+          (handle-response success-event error-event 1))))))
 
 (re-frame/reg-fx
  :shh/send-group-message
@@ -118,7 +118,7 @@
              -shh
              (sendDirectMessage
               message
-              (handle-response success-event error-event))))))))
+              (handle-response success-event error-event (count dsts)))))))))
 
 (re-frame/reg-fx
  :shh/send-public-message
@@ -134,7 +134,7 @@
            -shh
            (sendPublicMessage
             message
-            (handle-response success-event error-event)))))))
+            (handle-response success-event error-event 1)))))))
 
 (re-frame/reg-fx
  :shh/post
@@ -145,7 +145,7 @@
                     :whisper-message (update message :payload (comp transport.utils/from-utf8
                                                                     transit/serialize))
                     :on-success      (if success-event
-                                       #(re-frame/dispatch (conj success-event %))
+                                       #(re-frame/dispatch (conj success-event % 1))
                                        #(log/debug :shh/post-success))
                     :on-error        #(re-frame/dispatch [error-event %])}))))
 
