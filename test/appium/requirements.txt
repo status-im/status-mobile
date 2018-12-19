@@ -30,7 +30,7 @@ pycryptodome==3.6.1
 pyethash==0.1.27
 pyparsing==2.2.0
 pysha3==1.0.2
-pytest==3.2.1
+pytest==4.0.2
 pytest-forked==0.2
 pytest-xdist==1.22.2
 python-dateutil==2.7.3

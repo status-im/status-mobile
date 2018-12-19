@@ -39,7 +39,7 @@ def pytest_addoption(parser):
                      help='Specify environment: local/sauce/api')
     parser.addoption('--platform_version',
                      action='store',
-                     default='7.1',
+                     default='8.0',
                      help='Android device platform version')
     parser.addoption('--log',
                      action='store',
@@ -61,32 +61,18 @@ def pytest_addoption(parser):
                      action='store',
                      default=0,
                      help='How many times tests should be re-run if failed')
+    parser.addoption("--run_testrail_ids",
+                     action="store",
+                     metavar="NAME",
+                     default=None,
+                     help="only run tests matching the environment NAME.")
 
-    # message reliability
+    # chat bot
 
     parser.addoption('--messages_number',
                      action='store',
                      default=20,
                      help='Messages number')
-    parser.addoption('--message_wait_time',
-                     action='store',
-                     default=20,
-                     help='Max time to wait for a message to be received')
-    parser.addoption('--participants_number',
-                     action='store',
-                     default=5,
-                     help='Public chat participants number')
-    parser.addoption('--chat_name',
-                     action='store',
-                     default=None,
-                     help='Public chat name')
-    parser.addoption('--user_public_key',
-                     action='store',
-                     default=None,
-                     help='Public key of user for 1-1 chat')
-
-    # chat bot
-
     parser.addoption('--public_keys',
                      action='store',
                      default='',
@@ -148,6 +134,8 @@ def is_uploaded():
 
 
 def pytest_configure(config):
+    config.addinivalue_line("markers", "testrail_id(name): empty")
+
     if config.getoption('log'):
         import logging
         logging.basicConfig(level=logging.INFO)
@@ -242,13 +230,18 @@ def update_sauce_jobs(test_name, job_ids, passed):
             pass
 
 
-def get_testrail_case_id(obj):
-    testrail_id = obj.get_marker('testrail_id')
+def get_testrail_case_id(item):
+    testrail_id = item.get_closest_marker('testrail_id')
     if testrail_id:
         return testrail_id.args[0]
 
 
 def pytest_runtest_setup(item):
+    testrail_id = [mark.args[0] for mark in item.iter_markers(name='testrail_id')][0]
+    run_testrail_ids = item.config.getoption("run_testrail_ids")
+    if run_testrail_ids:
+        if str(testrail_id) not in run_testrail_ids:
+            pytest.skip("test requires testrail case id %s" % testrail_id)
     test_suite_data.set_current_test(item.name, testrail_case_id=get_testrail_case_id(item))
     test_suite_data.current_test.create_new_testrun()
 
