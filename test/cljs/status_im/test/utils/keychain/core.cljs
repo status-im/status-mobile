@@ -40,7 +40,8 @@
 (deftest key-is-weak
   (async
    done
-   (with-redefs [rn/keychain #js {:getGenericPassword (constantly (.resolve js/Promise #js {:password (key->json weak-key)}))}]
+   (with-redefs [rn/keychain #js {:getGenericPassword (constantly (.resolve js/Promise #js {:password (key->json weak-key)}))}
+                 keychain/generic-password (atom nil)]
      (testing "it returns a valid key"
        (.. (keychain/get-encryption-key)
            (then (fn [_]
@@ -54,7 +55,8 @@
 (deftest safe-key-is-not-valid
   (async
    done
-   (with-redefs [rn/keychain #js {:getGenericPassword (constantly (.resolve js/Promise #js {:password (key->json weak-key)}))}]
+   (with-redefs [rn/keychain #js {:getGenericPassword (constantly (.resolve js/Promise #js {:password (key->json weak-key)}))}
+                 keychain/generic-password (atom nil)]
      (testing "it returns a valid key"
        (.. (keychain/safe-get-encryption-key)
            (then (fn [k]
@@ -67,7 +69,8 @@
 (deftest safe-key-is-nil
   (async
    done
-   (with-redefs [rn/keychain #js {:getGenericPassword (constantly (.resolve js/Promise #js {:password nil}))}]
+   (with-redefs [rn/keychain #js {:getGenericPassword (constantly (.resolve js/Promise #js {:password nil}))}
+                 keychain/generic-password (atom nil)]
      (testing "it returns a valid key"
        (.. (keychain/safe-get-encryption-key)
            (then (fn [k]

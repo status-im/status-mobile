@@ -129,14 +129,23 @@
   (comp validate
         string->js-array))
 
+(defonce generic-password (atom nil))
+
 (defn get-encryption-key []
-  (log/debug "initializing realm encryption key...")
-  (.. (.getGenericPassword rn/keychain)
-      (then
-       (fn [res]
-         (if res
-           (handle-found res)
-           (handle-not-found))))))
+  (log/debug "PERF" "initializing realm encryption key..." (.now js/Date))
+  (if @generic-password
+    (js/Promise.
+     (fn [on-success _]
+       (on-success (security/unmask @generic-password))))
+    (.. (.getGenericPassword rn/keychain)
+        (then
+         (fn [res]
+           (if res
+             (let [handled-res (handle-found res)]
+               (reset! generic-password
+                       (security/->MaskedData handled-res))
+               handled-res)
+             (handle-not-found)))))))
 
 (defn safe-get-encryption-key
   "Return encryption key or empty string in case invalid/empty"
