@@ -255,4 +255,5 @@
           (i18n/label :t/share-my-profile)]]
         [react/view styles/my-profile-info-container
          [my-profile-settings current-account shown-account currency (nil? login-data)]]
-        [advanced shown-account on-show-advanced]]])))
+        (when (nil? login-data)
+          [advanced shown-account on-show-advanced])]])))
