@@ -13,10 +13,16 @@
             {:keychain/clear-user-password (get-in db [:account/account :address])
              :dev-server/stop              nil}
             (transactions/stop-sync)
-            (transport/stop-whisper)
-            (init/initialize-app-db)
-            (init/load-accounts-and-initialize-views)
-            (node/stop)))
+            (transport/stop-whisper
+             #(re-frame/dispatch [:accounts.logout/filters-removed]))))
+
+(fx/defn leave-account
+  [cofx]
+  (fx/merge
+   cofx
+   (init/initialize-app-db)
+   (init/load-accounts-and-initialize-views)
+   (node/stop)))
 
 (fx/defn show-logout-confirmation [_]
   {:ui/show-confirmation

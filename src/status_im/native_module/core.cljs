@@ -6,10 +6,14 @@
 (defn start-node [config]
   (native-module/start-node config))
 
+(def node-started (atom false))
+
 (defn node-ready []
+  (reset! node-started true)
   (native-module/node-ready))
 
 (defn stop-node []
+  (reset! node-started false)
   (native-module/stop-node))
 
 (defn create-account [password callback]
@@ -31,10 +35,12 @@
   (native-module/clear-web-data))
 
 (defn call-rpc [payload callback]
-  (native-module/call-rpc payload callback))
+  (when @node-started
+    (native-module/call-rpc payload callback)))
 
 (defn call-private-rpc [payload callback]
-  (native-module/call-private-rpc payload callback))
+  (when @node-started
+    (native-module/call-private-rpc payload callback)))
 
 (defn sign-message [rpcParams callback]
   (native-module/sign-message rpcParams callback))

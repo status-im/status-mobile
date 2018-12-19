@@ -68,6 +68,6 @@
   It is necessary to remove the filters because status-go there isn't currently a logout feature in status-go
   to clean-up after logout. When logging out of account A and logging in account B, account B would receive
   account A messages without this."
-  [{:keys [db]}]
+  [{:keys [db]} callback]
   (let [{:transport/keys [filters]} db]
-    {:shh/remove-filters filters}))
+    {:shh/remove-filters [filters callback]}))

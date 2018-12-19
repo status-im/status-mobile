@@ -291,15 +291,19 @@
 
 (handlers/register-handler-fx
  :accounts.logout.ui/logout-confirmed
- [(re-frame/inject-cofx :data-store/get-all-accounts)]
  (fn [cofx _]
    (accounts.logout/logout cofx)))
+
+(handlers/register-handler-fx
+ :accounts.logout/filters-removed
+ [(re-frame/inject-cofx :data-store/get-all-accounts)]
+ (fn [cofx]
+   (accounts.logout/leave-account cofx)))
 
 ;; accounts update module
 
 (handlers/register-handler-fx
  :accounts.update.callback/save-settings-success
- [(re-frame/inject-cofx :data-store/get-all-accounts)]
  (fn [cofx _]
    (accounts.logout/logout cofx)))
 

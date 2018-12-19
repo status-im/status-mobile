@@ -7,12 +7,14 @@
             [status-im.utils.handlers :as handlers]
             [taoensso.timbre :as log]))
 
-(defn remove-filter! [{:keys [chat-id filter]}]
+(defn remove-filter! [{:keys [chat-id filter success-callback?]
+                       :or   {success-callback? true}}]
   (.stopWatching filter
                  (fn [error _]
                    (if error
                      (log/warn :remove-filter-error filter error)
-                     (re-frame/dispatch [:shh.callback/filter-removed chat-id]))))
+                     (when success-callback?
+                       (re-frame/dispatch [:shh.callback/filter-removed chat-id])))))
   (log/debug :stop-watching filter))
 
 (defn add-filter!
@@ -72,7 +74,10 @@
 
 (re-frame/reg-fx
  :shh/remove-filters
- (fn [filters]
+ (fn [[filters callback]]
    (doseq [[chat-id filter] filters]
-     (when filter (remove-filter! {:chat-id chat-id
-                                   :filter filter})))))
+     (when filter (remove-filter!
+                   {:chat-id          chat-id
+                    :filter           filter
+                    :success-callback false})))
+   (callback)))
