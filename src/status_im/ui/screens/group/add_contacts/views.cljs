@@ -96,7 +96,7 @@
 
 ;; Start group chat
 (defview contact-toggle-list []
-  (letsubs [contacts                [:contacts/all-added-people-contacts]
+  (letsubs [contacts                [:contacts/active]
             selected-contacts-count [:selected-contacts-count]]
     [react/keyboard-avoiding-view {:style styles/group-container}
      [status-bar]

@@ -9,15 +9,6 @@
    (:contacts/dapps db)))
 
 (re-frame/reg-sub
- ::all-added-contacts
- :<- [:contacts/contacts]
- (fn [contacts]
-   (->> contacts
-        (remove (fn [[_ {:keys [pending? hide-contact?]}]]
-                  (or pending? hide-contact?)))
-        (contact.db/sort-contacts))))
-
-(re-frame/reg-sub
  ::query-current-chat-contacts
  :<- [:chats/current-chat]
  :<- [:contacts/contacts]
@@ -30,6 +21,15 @@
    (get db :contacts/contacts)))
 
 (re-frame/reg-sub
+ :contacts/active
+ :<- [:contacts/contacts]
+ (fn [contacts]
+   (->> contacts
+        (remove (fn [[_ {:keys [pending? hide-contact?]}]]
+                  (or pending? hide-contact?)))
+        (contact.db/sort-contacts))))
+
+(re-frame/reg-sub
  :contacts/current-contact-identity
  (fn [db]
    (get db :contacts/identity)))
@@ -40,12 +40,6 @@
  :<- [:contacts/current-contact-identity]
  (fn [[contacts identity]]
    (contacts identity)))
-
-(re-frame/reg-sub
- :contacts/all-added-people-contacts
- :<- [::all-added-contacts]
- (fn [contacts]
-   (remove :dapp? contacts)))
 
 (re-frame/reg-sub
  :contacts/all-dapps
