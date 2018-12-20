@@ -28,6 +28,11 @@
    :font-size      13
    :color          colors/black})
 
+(def recover-release-warning
+  {:margin-top     16
+   :font-size      12
+   :color          colors/gray})
+
 (def recovery-phrase-input
   {:flex                1
    :text-align-vertical :top})

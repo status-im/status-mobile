@@ -198,8 +198,7 @@
             (universal-links/process-stored-event)
             (notifications/process-stored-event address)
             (when platform/desktop?
-              (chat-model/update-dock-badge-label))
-            (accounts.core/show-desktop-alpha-release-warning)))
+              (chat-model/update-dock-badge-label))))
 
 (defn dev-mode? [cofx]
   (get-in cofx [:db :account/account :dev-mode?]))

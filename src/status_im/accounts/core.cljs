@@ -21,17 +21,6 @@
        (i18n/label :mainnet-is-default-alert-text)
        #(re-frame/dispatch [:accounts.ui/mainnet-warning-shown])))))
 
-(fx/defn show-desktop-alpha-release-warning [{:keys [db]}]
-  (let [enter-name-screen? (= :enter-name (get-in db [:accounts/create :step]))
-        shown? (get-in db [:account/account :desktop-alpha-release-warning-shown?])]
-    (when (and platform/desktop?
-               (not shown?)
-               (not enter-name-screen?))
-      (utils/show-popup
-       nil
-       (i18n/label :desktop-alpha-release-warning)
-       #(re-frame/dispatch [:accounts.ui/desktop-alpha-release-warning-shown])))))
-
 (defn- chat-send? [transaction]
   (and (seq transaction)
        (not (:in-progress? transaction))

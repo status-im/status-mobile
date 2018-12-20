@@ -101,8 +101,7 @@
             {:db                                  (assoc db :accounts/create {:show-welcome? true})
              :notifications/request-notifications-permissions nil
              :dispatch                            [:navigate-to :home]}
-            (accounts.update/account-update {:name (:name create)} {})
-            (accounts.core/show-desktop-alpha-release-warning)))
+            (accounts.update/account-update {:name (:name create)} {})))
 
 (fx/defn next-step
   [{:keys [db] :as cofx} step password password-confirm]

@@ -13,7 +13,8 @@
             [status-im.utils.core :as utils.core]
             [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.ui.components.common.common :as components.common]
-            [status-im.utils.security :as security]))
+            [status-im.utils.security :as security]
+            [status-im.utils.platform :as platform]))
 
 (defview passphrase-input [passphrase error warning]
   (letsubs [input-ref (reagent/atom nil)]
@@ -61,7 +62,10 @@
        [components.common/separator]
        [react/view styles/inputs-container
         [passphrase-input (or passphrase "") passphrase-error passphrase-warning]
-        [password-input (or password "") password-error (when-not disabled? sign-in)]]
+        [password-input (or password "") password-error (when-not disabled? sign-in)]
+        (when platform/desktop?
+          [react/i18n-text {:style styles/recover-release-warning
+                            :key   :recover-account-warning}])]
        [react/view components.styles/flex]
        (if processing
          [react/view styles/processing-view
