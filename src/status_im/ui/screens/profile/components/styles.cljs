@@ -15,7 +15,7 @@
    :justify-content :center})
 
 (defstyle profile-name-text
-  {:padding-vertical 14
+  {:padding-vertical 8
    :font-size        15
    :text-align       :center
    :font-weight      :bold
@@ -24,7 +24,6 @@
 (defstyle profile-three-words
   {:font-size   12
    :text-align  :center
-   :font-weight :bold
    :color       colors/gray})
 
 (defstyle profile-name-input-text
@@ -58,6 +57,15 @@
    :align-items        :center
    :background-color   colors/white
    :height             52})
+
+(def settings-item-icon
+  {:background-color colors/blue-light
+   :width            34
+   :height           34
+   :border-radius    34
+   :margin-right     16
+   :justify-content  :center
+   :align-items      :center})
 
 (def settings-item-text-wrapper
   {:flex             1

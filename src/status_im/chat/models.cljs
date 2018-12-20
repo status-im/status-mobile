@@ -119,7 +119,7 @@
                                 :unviewed-messages-count   0
                                 :deleted-at-clock-value    last-message-clock-value})
      :data-store/tx [(chats-store/clear-history-tx chat-id last-message-clock-value)
-                     (messages-store/delete-messages-tx chat-id)]}))
+                     (messages-store/delete-chat-messages-tx chat-id)]}))
 
 (fx/defn deactivate-chat
   [{:keys [db now] :as cofx} chat-id]

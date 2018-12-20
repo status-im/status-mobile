@@ -3,7 +3,7 @@
             [status-im.ui.components.toolbar.styles :as styles]))
 
 (defn add [illuminated? handler]
-  {:icon      :icons/add
+  {:icon      :main-icons/add
    :icon-opts (if illuminated? styles/icon-add-illuminated styles/icon-add)
    :handler   handler})
 

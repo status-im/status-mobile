@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
+            [status-im.ui.components.list.views :as list.views]
             [status-im.i18n :as i18n]
             [status-im.ui.components.action-button.styles :as action-button.styles]
             [status-im.ui.components.button.view :as button]
@@ -77,7 +78,7 @@
     [button/button-with-icon
      {:on-press            #(list-selection/open-share {:message link})
       :label               (i18n/label :t/share-link)
-      :icon                :icons/share
+      :icon                :main-icons/share
       :accessibility-label :share-my-contact-code-button
       :style               styles/share-link-button}]))
 
@@ -125,6 +126,7 @@
      (when show-backup-seed?
        [profile.components/settings-item
         {:label-kw     :t/backup-your-recovery-phrase
+         :accessibility-label :back-up-recovery-phrase-button
          :action-fn    #(re-frame/dispatch [:navigate-to :backup-seed])
          :icon-content [components.common/counter {:size 22} 1]}])
      [profile.components/settings-item-separator]
@@ -228,13 +230,33 @@
      (when advanced?
        [advanced-settings params on-show])]))
 
+(defn share-profile-item
+  [{:keys [public-key photo-path] :as current-account}]
+  [list.views/big-list-item
+   {:text            (i18n/label :t/share-my-profile)
+    :icon                :main-icons/share
+    :accessibility-label :share-my-profile-button
+    :action-fn           #(re-frame/dispatch [:navigate-to :profile-qr-viewer
+                                              {:contact current-account
+                                               :source  :public-key
+                                               :value   public-key}])}])
+
+(defn contacts-list-item [active-contacts-count]
+  [list.views/big-list-item
+   {:text            (i18n/label :t/contacts)
+    :icon                :main-icons/in-contacts
+    :accessibility-label :notifications-button
+    :accessory-value     active-contacts-count
+    :action-fn           #(re-frame/dispatch [:navigate-to :contacts-list])}])
+
 (defview my-profile []
   (letsubs [{:keys [public-key photo-path] :as current-account} [:account/account]
             editing?        [:get :my-profile/editing?]
             changed-account [:get :my-profile/profile]
             currency        [:wallet/currency]
             login-data      [:get :accounts/login]
-            scroll          (reagent/atom nil)]
+            scroll          (reagent/atom nil)
+            active-contacts-count [:contacts/active-count]]
     (let [shown-account    (merge current-account changed-account)
           ;; We scroll on the component once rendered. setTimeout is necessary,
           ;; likely to allow the animation to finish.
@@ -262,15 +284,8 @@
                                    (profile-icon-options-ext)
                                    profile-icon-options)
            :on-change-text-event :my-profile/update-name}]]
-        [react/view (merge action-button.styles/actions-list
-                           styles/share-contact-code-container)
-         [button/secondary-button {:on-press            #(re-frame/dispatch [:navigate-to :profile-qr-viewer
-                                                                             {:contact (dissoc current-account :mnemonic)
-                                                                              :source  :public-key
-                                                                              :value   public-key}])
-                                   :style               styles/share-contact-code-button
-                                   :accessibility-label :share-my-profile-button}
-          (i18n/label :t/share-my-profile)]]
+        [share-profile-item (dissoc current-account :mnemonic)]
+        [contacts-list-item active-contacts-count]
         [react/view styles/my-profile-info-container
          [my-profile-settings current-account shown-account currency (nil? login-data)]]
         (when (nil? login-data)

@@ -164,7 +164,7 @@
                        :on-press #(.openURL react/linking "https://hardwallet.status.im")}]
           (when pairing
             [react/view
-             [action-row {:icon     :icons/add
+             [action-row {:icon     :main-icons/add
                           :label    :t/change-pin
                           :on-press #(re-frame/dispatch [:keycard-settings.ui/change-pin-pressed])}]
              [action-row {:icon     :icons/close

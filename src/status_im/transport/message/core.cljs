@@ -12,11 +12,14 @@
 
 (fx/defn receive-message
   [cofx now-in-s filter-chat-id js-message]
-  (let [{:keys [payload sig timestamp ttl]} (js->clj js-message :keywordize-keys true)
+  (let [blocked-contacts (get-in cofx [:db :contacts/blocked] #{})
+        {:keys [payload sig timestamp ttl]} (js->clj js-message :keywordize-keys true)
         status-message (-> payload
                            transport.utils/to-utf8
                            transit/deserialize)]
-    (when (and sig status-message)
+    (when (and sig
+               status-message
+               (not (blocked-contacts sig)))
       (try
         (when-let [valid-message (protocol/validate status-message)]
           (fx/merge (assoc cofx :js-obj js-message)

@@ -51,11 +51,10 @@
    [react/touchable-highlight {:accessibility-label :new-chat-button
                                :on-press            (when logged-in? #(re-frame/dispatch [:navigate-to :new]))}
     [react/view styles/action-button
-
      (if-not logged-in?
        [components/activity-indicator {:color :white
                                        :animating true}]
-       [icons/icon :icons/add {:color :white}])]]])
+       [icons/icon :main-icons/add {:color :white}])]]])
 
 (defn home-list-item [[home-item-id home-item]]
   (let [delete-action   (if (:chat-id home-item)

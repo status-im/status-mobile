@@ -24,10 +24,28 @@
  :contacts/active
  :<- [:contacts/contacts]
  (fn [contacts]
+   (contact.db/active contacts)))
+
+(re-frame/reg-sub
+ :contacts/active-count
+ :<- [:contacts/active]
+ (fn [active-contacts]
+   (count active-contacts)))
+
+(re-frame/reg-sub
+ :contacts/blocked
+ :<- [:contacts/contacts]
+ (fn [contacts]
    (->> contacts
-        (remove (fn [[_ {:keys [pending? hide-contact?]}]]
-                  (or pending? hide-contact?)))
+        (filter (fn [[_ {:keys [blocked?]}]]
+                  blocked?))
         (contact.db/sort-contacts))))
+
+(re-frame/reg-sub
+ :contacts/blocked-count
+ :<- [:contacts/blocked]
+ (fn [blocked-contacts]
+   (count blocked-contacts)))
 
 (re-frame/reg-sub
  :contacts/current-contact-identity

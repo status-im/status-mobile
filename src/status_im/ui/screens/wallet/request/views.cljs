@@ -80,7 +80,7 @@
      [wallet.components/toolbar {}
       wallet.components/default-action
       (i18n/label :t/receive)
-      [toolbar/actions [{:icon      :icons/share
+      [toolbar/actions [{:icon      :main-icons/share
                          :icon-opts {:color               :white
                                      :accessibility-label :share-button}
                          :handler   #(list-selection/open-share {:message address-hex})}]]]

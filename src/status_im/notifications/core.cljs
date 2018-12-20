@@ -6,6 +6,7 @@
             [taoensso.timbre :as log]
             [status-im.i18n :as i18n]
             [status-im.accounts.db :as accounts.db]
+            [status-im.contact.db :as contact.db]
             [status-im.chat.models :as chat-model]
             [status-im.utils.platform :as platform]
             [status-im.utils.fx :as fx]
@@ -82,7 +83,7 @@
     (:public-key
      (first
       (filter #(= (anonymize-pubkey (:public-key %)) hash)
-              (vals accounts)))))
+              accounts))))
 
   (defn lookup-contact-pubkey-from-hash
     [{:keys [db] :as cofx} contact-pubkey-or-hash]
@@ -93,13 +94,14 @@
              (= (count contact-pubkey-or-hash) pn-pubkey-hash-length))
       (if-let
        [account-pubkey (hash->pubkey contact-pubkey-or-hash
-                                     (:accounts/accounts db))]
+                                     (vals (:accounts/accounts db)))]
         account-pubkey
         (if (accounts.db/logged-in? cofx)
           ;; TODO: for simplicity we're doing a linear lookup of the contacts,
           ;; but we might want to build a map of hashed pubkeys to pubkeys
           ;; for this purpose
-          (hash->pubkey contact-pubkey-or-hash (:contacts/contacts db))
+          (hash->pubkey contact-pubkey-or-hash
+                        (contact.db/active (:contacts/contacts db)))
           (do
             (log/warn "failed to lookup contact from hash, not logged in")
             contact-pubkey-or-hash)))
@@ -202,7 +204,7 @@
     (and (valid-notification-payload? rehydrated-payload)
          (accounts.db/logged-in? cofx)
          (some #(= (:public-key %) from)
-               (vals (:contacts/contacts db)))
+               (contact.db/active (:contacts/contacts db)))
          (some #(= (:chat-id %) from)
                (vals (:chats db)))))
 
@@ -318,10 +320,10 @@
       (create-notification-channel))
     (handle-initial-push-notification)))
 
-(fx/defn process-stored-event [cofx address stored-pns]
+(fx/defn process-stored-event [{:keys [db] :as cofx} address stored-pns]
   (when-not platform/desktop?
     (if (accounts.db/logged-in? cofx)
-      (let [current-account        (get-in cofx [:db :account/account])
+      (let [current-account        (:account/account db)
             current-address        (:address current-account)
             current-account-pubkey (:public-key current-account)
             stored-pn-val-json     (or (get stored-pns current-account-pubkey)
@@ -333,6 +335,7 @@
             from                   (lookup-contact-pubkey-from-hash cofx (:from stored-pn-payload))
             to                     (lookup-contact-pubkey-from-hash cofx (:to stored-pn-payload))]
         (when (and from
+                   (not (contact.db/blocked? db from))
                    (= address current-address))
           (log/debug "process-stored-event" "address" address "from" from "to" to)
           (handle-push-notification-open cofx

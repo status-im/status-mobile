@@ -47,7 +47,7 @@
        [react/view {:style styles/chat-name-last-msg-box}
         [react/view {:style styles/chat-name-box}
          (when (and group-chat (not public?))
-           [icons/icon :icons/group-chat])
+           [icons/icon :tiny-icons/tiny-group])
          (when public?
            [icons/icon :icons/public-chat])
          [react/text {:ellipsize-mode  :tail
@@ -126,7 +126,7 @@
      [action-button/action-button
       {:label               (i18n/label :t/start-group-chat)
        :accessibility-label :start-group-chat-button
-       :icon                :icons/contacts
+       :icon                :main-icons/group-chat
        :icon-opts           {:color colors/blue}
        :on-press            #(do
                                (re-frame/dispatch [:set-in [:desktop :popup] nil])
@@ -157,7 +157,7 @@
         [react/view {:style styles/add-new}
          (if logging-in?
            [components/activity-indicator {:animating true :color :white}]
-           [icons/icon :icons/add {:style {:tint-color :white}}])]]]]
+           [icons/icon :main-icons/add {:style {:tint-color :white}}])]]]]
      [react/scroll-view {:enableArrayScrollingOptimization true}
       [react/view
        (for [[index chat] (map-indexed vector filtered-home-items)]

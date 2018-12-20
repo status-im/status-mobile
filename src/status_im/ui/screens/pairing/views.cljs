@@ -74,7 +74,7 @@
    [react/view {:style styles/pair-this-device-actions}
     [react/view
      [react/view (styles/pairing-button true)
-      [icons/icon :icons/add (icon-style (styles/pairing-button-icon true))]]]
+      [icons/icon :main-icons/add (icon-style (styles/pairing-button-icon true))]]]
     [react/view {:style styles/pairing-actions-text}
      [react/view
       [react/text {:style styles/pair-this-device-title} (i18n/label :t/pair-this-device)]]

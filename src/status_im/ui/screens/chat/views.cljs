@@ -40,7 +40,7 @@
         {:on-press            #(re-frame/dispatch [:contact.ui/add-to-contact-pressed contact-identity])
          :accessibility-label :add-to-contacts-button}
         [react/view style/add-contact-center
-         [vector-icons/icon :icons/add {:color colors/blue}]
+         [vector-icons/icon :main-icons/add {:color colors/blue}]
          [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]]
        [react/touchable-highlight
         {:on-press            #(re-frame/dispatch [:contact.ui/close-contact-pressed contact-identity])

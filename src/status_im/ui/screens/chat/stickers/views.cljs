@@ -76,7 +76,7 @@
                                (re-frame/dispatch [:stickers/load-packs])
                                (re-frame/dispatch [:navigate-to :stickers]))
                   :selected? false :background-color colors/blue}
-       [vector-icons/icon :icons/add {:width 20 :height 20 :color colors/white}]]
+       [vector-icons/icon :main-icons/add {:width 20 :height 20 :color colors/white}]]
       [react/view {:width 4}]
       [pack-icon {:id :recent :selected? (or (= :recent selected-pack) (and (nil? selected-pack) (seq installed-packs)))}
        [vector-icons/icon :icons/clock]]

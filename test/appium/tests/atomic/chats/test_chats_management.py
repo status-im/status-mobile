@@ -175,11 +175,14 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_element.find_element()
         username = chat_element.username.text
         chat_element.member_photo.click()
-        for element in [chat_1.contact_profile_picture, chat_1.add_to_contacts, chat_1.profile_send_message,
-                        chat_1.profile_send_transaction, chat_1.profile_address_text,
+        for element in [chat_1.contact_profile_picture,
+                        chat_1.add_to_contacts,
+                        chat_1.profile_send_message,
+                        chat_1.profile_send_transaction,
+                        chat_1.profile_address_text,
                         chat_1.element_by_text(username, 'text')]:
-            if not element.is_element_displayed():
-                self.errors.append('%s is not visible' % 'user name' if 'Base' in element.name else element.name)
+            if not element.scroll_to_element():
+                self.errors.append('%s is not visible' % element.name)
         chat_1.add_to_contacts.click()
         if not chat_1.element_by_text('In contacts').is_element_displayed():
             self.errors.append("'Add to contacts' is not changed to 'In contacts'")

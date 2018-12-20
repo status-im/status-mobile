@@ -42,7 +42,7 @@
   (concat
    (when allow-adding-members?
      [{:label  (i18n/label :add-members)
-       :icon   :icons/add
+       :icon   :main-icons/add
        :action #(re-frame/dispatch [:navigate-to :add-participants-toggle-list])}])
    [{:label               (i18n/label :t/clear-history)
      :icon                :icons/close

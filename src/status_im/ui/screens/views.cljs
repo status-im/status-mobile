@@ -39,6 +39,7 @@
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
             [status-im.ui.screens.wallet.transaction-sent.views :refer [transaction-sent transaction-sent-modal]]
             [status-im.ui.screens.wallet.components.views :refer [contact-code recent-recipients recipient-qr-code]]
+            [status-im.ui.screens.contacts-list.views :refer [contacts-list blocked-users-list]]
             [status-im.ui.screens.network-settings.views :refer [network-settings]]
             [status-im.ui.screens.network-settings.network-details.views :refer [network-details]]
             [status-im.ui.screens.network-settings.edit-network.views :refer [edit-network]]
@@ -310,6 +311,8 @@
         (nav-reagent/stack-navigator
          (stack-screens
           (cond-> {:my-profile                       (main-tabs/get-main-tab :my-profile)
+                   :contacts-list                    contacts-list
+                   :blocked-users-list               blocked-users-list
                    :profile-photo-capture            profile-photo-capture
                    :about-app                        about-app/about-app
                    :bootnodes-settings               bootnodes-settings

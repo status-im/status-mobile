@@ -181,6 +181,11 @@ class BackupRecoveryPhraseButton(BaseButton):
         super(BackupRecoveryPhraseButton, self).__init__(driver)
         self.locator = self.Locator.text_selector('Backup your recovery phrase')
 
+    def click(self):
+        self.scroll_to_element().click()
+        self.driver.info('Tap on %s' % self.name)
+        return self.navigate()
+
 
 class OkContinueButton(BaseButton):
 

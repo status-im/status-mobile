@@ -360,12 +360,12 @@
            [react/view {:style styles/chat-profile-row}
             [react/view {:style styles/chat-profile-icon-container
                          :accessibility-label :add-contact-link}
-             [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/blue)}]]
+             [vector-icons/icon :main-icons/add {:style (styles/chat-profile-icon colors/blue)}]]
             [react/text {:style (styles/contact-card-text colors/blue)} (i18n/label :t/add-to-contacts)]]]
           [react/view {:style styles/chat-profile-row}
            [react/view {:style styles/chat-profile-icon-container
                         :accessibility-label :add-contact-link}
-            [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/gray)}]]
+            [vector-icons/icon :main-icons/add {:style (styles/chat-profile-icon colors/gray)}]]
            [react/text {:style (styles/contact-card-text colors/gray)} (i18n/label :t/in-contacts)]])
         [react/touchable-highlight
          {:on-press #(re-frame/dispatch
