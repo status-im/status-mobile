@@ -806,5 +806,6 @@
     "migrations-failed-content": "{{message}}\nschema version: initial {{initial-version}}, current {{current-version}}, last {{last-version}}\n\nPlease let us know about this problem at #status public chat. If you press \"Cancel\" button, nothing will happen. If you press \"{{erase-accounts-data-button-text}}\" button, account's db will be removed and you will be able to unlock account. All account's data will be lost.",
     "migrations-erase-accounts-data-button": "Erase account's db",
     "account-and-db-password-mismatch-title": "The problem occurred!",
-    "account-and-db-password-mismatch-content": "Account's and realm db passwords do not match."
+    "account-and-db-password-mismatch-content": "Account's and realm db passwords do not match.",
+    "recover-account-warning": "Your wallet information will be exposed by importing this account."
 }
