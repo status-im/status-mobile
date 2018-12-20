@@ -123,12 +123,13 @@
    :color color
    :margin-bottom 4})
 
-(defn message-text [outgoing]
+(defn message-text [collapsible? outgoing]
   {:color (if outgoing colors/white colors/black)
-   :font-size 14})
+   :font-size 14
+   :margin-bottom (if collapsible? 2 0)})
 
 (defn message-link [outgoing]
-  (assoc (message-text outgoing)
+  (assoc (message-text false outgoing)
          :color (if outgoing colors/white colors/blue)
          :text-decoration-line :underline))
 

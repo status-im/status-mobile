@@ -12,6 +12,7 @@
             [status-im.constants :as constants]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.datetime :as time]
+            [status-im.utils.core :as core-utils]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.connectivity.view :as connectivity]
@@ -92,13 +93,13 @@
        (chat-utils/format-reply-author from username current-public-key)]]
      [react/text {:style           (message.style/quoted-message-text outgoing)
                   :number-of-lines 5}
-      text]]))
+      (core-utils/truncate-str text constants/chars-collapse-threshold)]]))
 
 (defn- message-sent? [user-statuses current-public-key]
   (not= (get-in user-statuses [current-public-key :status]) :not-sent))
 
 (views/defview message-without-timestamp
-  [text {:keys [message-id old-message-id content current-public-key user-statuses] :as message} style]
+  [text {:keys [chat-id message-id old-message-id content group-chat expanded? current-public-key user-statuses] :as message} style]
   [react/view {:flex 1 :margin-vertical 5}
    [react/touchable-highlight {:on-press (fn [arg]
                                            (when (= "right" (.-button (.-nativeEvent arg)))
@@ -108,15 +109,19 @@
                                                {:text (i18n/label :t/message-reply)
                                                 :on-select #(when (message-sent? user-statuses current-public-key)
                                                               (re-frame/dispatch [:chat.ui/reply-to-message message-id old-message-id]))}])))}
-    [react/view {:style styles/message-container}
-     (when (:response-to content)
-       [quoted-message (:response-to content) false current-public-key])
-     [react/text {:style           (styles/message-text false)
-                  :selectable      true
-                  :selection-color colors/blue-light}
-      (if-let [render-recipe (:render-recipe content)]
-        (chat-utils/render-chunks render-recipe message)
-        (:text content))]]]])
+    (let [collapsible? (and (:should-collapse? content) group-chat)
+          message-text (cond-> (:text content)
+                         (and collapsible? (not expanded?))
+                         (core-utils/truncate-str constants/chars-collapse-threshold))]
+      [react/view {:style styles/message-container}
+       (when (:response-to content)
+         [quoted-message (:response-to content) false current-public-key])
+       [react/text {:style           (styles/message-text collapsible? false)
+                    :selectable      true
+                    :selection-color colors/blue-light}
+        message-text]
+       (when collapsible?
+         [message/expand-button expanded? chat-id message-id])])]])
 
 (views/defview photo-placeholder []
   [react/view {:style {:width             40
