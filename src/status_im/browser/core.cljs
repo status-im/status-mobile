@@ -67,7 +67,7 @@
   {:db            (update-in db [:browser/browsers] dissoc browser-id)
    :data-store/tx [(browser-store/remove-browser-tx browser-id)]})
 
-(defn check-if-dapp-in-list [{:keys [history history-index] :as browser}]
+(defn check-if-dapp-in-list [{:keys [history history-index name] :as browser}]
   (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))
         dapp         (first (filter #(= history-host (http/url-host (http/normalize-url (:dapp-url %))))
                                     (apply concat (mapv :data default-dapps/all))))]
@@ -76,7 +76,7 @@
       ;;url from a dapp browser, the name of the browser in the home screen will
       ;;change
       (assoc browser :dapp? true :name (:name dapp))
-      (assoc browser :dapp? false :name (i18n/label :t/browser)))))
+      (assoc browser :dapp? false :name (or name (i18n/label :t/browser))))))
 
 (defn check-if-phishing-url [{:keys [history history-index] :as browser}]
   (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))]
@@ -199,8 +199,9 @@
     {:browser/show-web-browser-selection url}))
 
 (fx/defn update-browser-on-nav-change
-  [cofx browser url loading? error?]
-  (let [options (get-in cofx [:db :browser/options])
+  [cofx url error?]
+  (let [browser (get-current-browser (:db cofx))
+        options (get-in cofx [:db :browser/options])
         current-url (:url options)]
     (when (and (not= "about:blank" url) (not= current-url url) (not= (str current-url "/") url))
       (let [resolved-ens (first (filter #(not= (.indexOf url (second %)) -1) (:resolved-ens options)))
@@ -210,13 +211,19 @@
                   (handle-pdf url)
                   (resolve-url {:error? error? :resolved-url (when resolved-ens url)}))))))
 
+(fx/defn update-browser-name
+  [cofx title]
+  (let [browser (get-current-browser (:db cofx))]
+    (when (and (not (:dapp? browser)) title (not (string/blank? title)))
+      (update-browser cofx (assoc browser :name title)))))
+
 (fx/defn navigation-state-changed
   [cofx event error?]
-  (let [browser (get-current-browser (:db cofx))
-        {:strs [url loading]} (js->clj event)]
+  (let [{:strs [url loading title]} (js->clj event)]
     (fx/merge cofx
               (update-browser-option :loading? loading)
-              (update-browser-on-nav-change browser url loading error?))))
+              (update-browser-name title)
+              (update-browser-on-nav-change url error?))))
 
 (fx/defn open-url-in-current-browser
   "Opens a url in the current browser, which mean no new entry is added to the home page
