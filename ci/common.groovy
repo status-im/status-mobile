@@ -160,7 +160,7 @@ def ghcmgrBuildObj(success) {
   return [
     id: env.BUILD_DISPLAY_NAME,
     commit: GIT_COMMIT.take(8),
-    success: success ? success : true,
+    success: success != null ? success : true,
     platform: env.BUILD_PLATFORM + (getBuildType() == 'e2e' ? '-e2e' : ''),
     duration: buildDuration(),
     url: currentBuild.absoluteUrl,
