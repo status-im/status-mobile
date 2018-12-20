@@ -38,6 +38,7 @@
             [status-im.signals.core :as signals]
             [status-im.transport.message.core :as transport.message]
             [status-im.ui.screens.currency-settings.models :as currency-settings.models]
+            [status-im.chat.models.message :as models.message]
             [status-im.node.core :as node]
             [status-im.web3.core :as web3]
             [status-im.ui.screens.navigation :as navigation]
@@ -1333,6 +1334,23 @@
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx [_ public-key]]
    (contact/add-contact cofx public-key)))
+
+(handlers/register-handler-fx
+ :contact.ui/block-contact-pressed
+ (fn [cofx [_ public-key]]
+   (contact/block-contact-confirmation cofx public-key)))
+
+(handlers/register-handler-fx
+ :contact.ui/block-contact-confirmed
+ [(re-frame/inject-cofx :data-store/get-user-messages)
+  (re-frame/inject-cofx :data-store/get-user-statuses)]
+ (fn [cofx [_ public-key]]
+   (contact/block-contact cofx public-key)))
+
+(handlers/register-handler-fx
+ :contact.ui/unblock-contact-pressed
+ (fn [cofx [_ public-key]]
+   (contact/unblock-contact cofx public-key)))
 
 (handlers/register-handler-fx
  :contact.ui/close-contact-pressed

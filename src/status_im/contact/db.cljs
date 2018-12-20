@@ -68,6 +68,12 @@
    :photo-path (identicon/identicon public-key)
    :public-key public-key})
 
+(defn public-key->contact
+  [contacts public-key]
+  (when public-key
+    (get contacts public-key
+         (public-key->new-contact public-key))))
+
 (defn public-key->address [public-key]
   (let [length (count public-key)
         normalized-key (case length
@@ -121,3 +127,7 @@
          (map #(if (admins (:public-key %))
                  (assoc % :admin? true)
                  %)))))
+
+(defn get-blocked-contacts
+  [contacts]
+  (into #{} (map :public-key (filter :blocked? contacts))))

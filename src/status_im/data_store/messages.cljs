@@ -85,6 +85,21 @@
  (fn [cofx _]
    (assoc cofx :get-referenced-messages get-references-by-ids)))
 
+(defn get-user-messages
+  [public-key]
+  (.reduce (core/get-by-field @core/account-realm
+                              :message :from public-key)
+           (fn [acc message-object _ _]
+             (conj acc
+                   {:message-id (aget message-object "message-id")
+                    :chat-id (aget message-object "chat-id")}))
+           []))
+
+(re-frame/reg-cofx
+ :data-store/get-user-messages
+ (fn [cofx _]
+   (assoc cofx :get-user-messages get-user-messages)))
+
 (defn prepare-content [content]
   (if (string? content)
     content
@@ -112,7 +127,7 @@
       (core/delete realm message)
       (core/delete realm (core/get-by-field realm :user-status :message-id message-id)))))
 
-(defn delete-messages-tx
+(defn delete-chat-messages-tx
   "Returns tx function for deleting messages with user statuses for given chat-id"
   [chat-id]
   (fn [realm]

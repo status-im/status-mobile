@@ -25,8 +25,17 @@
  :<- [:contacts/contacts]
  (fn [contacts]
    (->> contacts
-        (remove (fn [[_ {:keys [pending? hide-contact?]}]]
-                  (or pending? hide-contact?)))
+        (remove (fn [[_ {:keys [pending? hide-contact? blocked?]}]]
+                  (or pending? hide-contact? blocked?)))
+        (contact.db/sort-contacts))))
+
+(re-frame/reg-sub
+ :contacts/blocked
+ :<- [:contacts/contacts]
+ (fn [contacts]
+   (->> contacts
+        (filter (fn [[_ {:keys [blocked?]}]]
+                  blocked?))
         (contact.db/sort-contacts))))
 
 (re-frame/reg-sub

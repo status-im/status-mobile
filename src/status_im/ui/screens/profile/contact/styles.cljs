@@ -29,8 +29,7 @@
              :color     colors/black}})
 
 (def action-container
-  {:background-color colors/white
-   :padding-top      24})
+  {:background-color colors/white})
 
 (def action
   {:background-color (colors/alpha colors/blue 0.1)
@@ -46,6 +45,16 @@
 
 (def action-icon-opts
   {:color colors/blue})
+
+(def block-action
+  {:background-color (colors/alpha colors/red 0.1)
+   :border-radius    50})
+
+(def block-action-label
+  {:color colors/red})
+
+(def block-action-icon-opts
+  {:color colors/red})
 
 (def profile-setting-text-empty
   (merge profile-setting-text

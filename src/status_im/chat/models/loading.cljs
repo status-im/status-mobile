@@ -35,13 +35,6 @@
                db
                (group-by (comp time/day-relative :timestamp) messages))})
 
-(fx/defn group-messages
-  [{:keys [db]}]
-  (reduce-kv (fn [fx chat-id {:keys [messages]}]
-               (group-chat-messages fx chat-id (vals messages)))
-             {:db db}
-             (:chats db)))
-
 (defn- get-referenced-ids
   "Takes map of `message-id->messages` and returns set of maps of
   `{:response-to old-message-id :response-to-v2 message-id}`,
