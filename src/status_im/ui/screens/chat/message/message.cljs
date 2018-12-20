@@ -82,7 +82,7 @@
                 :font  :default}
     (:text content)]])
 
-(defn- expand-button [expanded? chat-id message-id]
+(defn expand-button [expanded? chat-id message-id]
   [react/text {:style    style/message-expand-button
                :on-press #(re-frame/dispatch [:chat.ui/message-expand-toggled chat-id message-id])}
    (i18n/label (if expanded? :show-less :show-more))])
