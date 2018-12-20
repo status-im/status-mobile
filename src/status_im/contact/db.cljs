@@ -18,23 +18,12 @@
 (spec/def :contact/status (spec/nilable string?))
 (spec/def :contact/fcm-token (spec/nilable string?))
 (spec/def :contact/description (spec/nilable string?))
-
 (spec/def :contact/last-updated (spec/nilable int?))
 (spec/def :contact/last-online (spec/nilable int?))
 (spec/def :contact/pending? boolean?)
-(spec/def :contact/unremovable? boolean?)
 (spec/def :contact/hide-contact? boolean?)
-
-(spec/def :contact/dapp? boolean?)
-(spec/def :contact/dapp-url (spec/nilable string?))
-(spec/def :contact/dapp-hash (spec/nilable int?))
-(spec/def :contact/bot-url (spec/nilable string?))
-(spec/def :contact/command (spec/nilable (spec/map-of int? map?)))
-(spec/def :contact/response (spec/nilable (spec/map-of int? map?)))
-(spec/def :contact/subscriptions (spec/nilable map?))
-;;true when contact added using status-dev-cli
-(spec/def :contact/debug? boolean?)
 (spec/def :contact/tags (spec/coll-of string? :kind set?))
+(spec/def :contact/blocked? boolean?)
 
 (spec/def :contact/contact (spec/keys  :req-un [:contact/name]
                                        :opt-un [:contact/public-key
@@ -45,17 +34,9 @@
                                                 :contact/last-online
                                                 :contact/pending?
                                                 :contact/hide-contact?
-                                                :contact/unremovable?
-                                                :contact/dapp?
-                                                :contact/dapp-url
-                                                :contact/dapp-hash
-                                                :contact/bot-url
-                                                :contact/command
-                                                :contact/response
-                                                :contact/debug?
-                                                :contact/subscriptions
                                                 :contact/fcm-token
                                                 :contact/description
+                                                :contact/blocked?
                                                 :contact/tags]))
 
 ;;Contact list ui props

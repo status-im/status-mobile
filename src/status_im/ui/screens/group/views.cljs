@@ -121,7 +121,7 @@
 
 ;; Start group chat
 (views/defview contact-toggle-list []
-  (views/letsubs [contacts                [:contacts/all-added-people-contacts]
+  (views/letsubs [contacts                [:contacts/active]
                   selected-contacts-count [:selected-contacts-count]]
     [react/keyboard-avoiding-view {:style styles/group-container}
      [status-bar/status-bar]

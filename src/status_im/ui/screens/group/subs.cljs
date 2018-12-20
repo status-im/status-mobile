@@ -26,12 +26,12 @@
  (fn [selected-participants]
    (count selected-participants)))
 
-(defn filter-contacts [selected-contacts added-contacts]
-  (filter #(selected-contacts (:public-key %)) added-contacts))
+(defn filter-contacts [selected-contacts active-contacts]
+  (filter #(selected-contacts (:public-key %)) active-contacts))
 
 (reg-sub
  :selected-group-contacts
  :<- [:get :group/selected-contacts]
- :<- [:contacts/all-added-people-contacts]
- (fn [[selected-contacts added-contacts]]
-   (filter-contacts selected-contacts added-contacts)))
+ :<- [:contacts/active]
+ (fn [[selected-contacts active-contacts]]
+   (filter-contacts selected-contacts active-contacts)))

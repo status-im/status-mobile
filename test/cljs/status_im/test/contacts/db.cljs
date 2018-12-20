@@ -18,15 +18,11 @@
                                :address       "eca8218b5ebeb2c47ba94c1b6e0a779d78fff7bc",
                                :name          "User B",
                                :fcm-token     nil,
-                               :dapp-url      nil,
-                               :dapp-hash     nil,
                                :photo-path    "photo1",
-                               :debug?        false,
                                :status        nil,
-                               :bot-url       nil,
+                               :blocked?      false,
                                :pending?      true,
                                :last-online   0,
-                               :dapp?         false,
                                :public-key
                                "0x04985040682b77a32bb4bb58268a0719bd24ca4d07c255153fe1eb2ccd5883669627bd1a092d7cc76e8e4b9104327667b19dcda3ac469f572efabe588c38c1985f"}}
             current-account  {:last-updated        0,
@@ -54,13 +50,9 @@
                  :address          "eca8218b5ebeb2c47ba94c1b6e0a779d78fff7bc"
                  :name             "User B"
                  :fcm-token        nil
-                 :dapp-url         nil
-                 :dapp-hash        nil
                  :photo-path       "photo1"
-                 :debug?           false
                  :status           nil
-                 :bot-url          nil
+                 :blocked?         false
                  :pending?         true
                  :last-online      0
-                 :dapp?            false
                  :public-key       "0x04985040682b77a32bb4bb58268a0719bd24ca4d07c255153fe1eb2ccd5883669627bd1a092d7cc76e8e4b9104327667b19dcda3ac469f572efabe588c38c1985f"}]))))))

@@ -77,3 +77,19 @@
                       :debug?           {:type    :bool
                                          :default false}
                       :tags             {:type     "string[]"}}})
+
+(def v4 {:name       :contact
+         :primaryKey :public-key
+         :properties {:address          {:type :string :optional true}
+                      :name             {:type :string :optional true}
+                      :photo-path       {:type :string :optional true}
+                      :last-updated     {:type :int :default 0}
+                      :last-online      {:type :int :default 0}
+                      :blocked?         {:type :bool :default false}
+                      :pending?         {:type :bool :default false}
+                      :hide-contact?    {:type :bool :default false}
+                      :status           {:type :string :optional true}
+                      :fcm-token        {:type :string :optional true}
+                      :description      {:type :string :optional true}
+                      :public-key       :string
+                      :tags             {:type     "string[]"}}})

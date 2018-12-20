@@ -26,7 +26,7 @@
 
 (views/defview new-one-to-one []
   (views/letsubs [new-contact-identity [:get :contacts/new-identity]
-                  contacts             [:contacts/all-added-people-contacts]
+                  contacts             [:contacts/active]
                   chat-error           [:new-identity-error]]
     {:component-will-unmount #(re-frame/dispatch [:new-chat/set-new-identity nil])}
     [react/view {:style styles/new-view}
