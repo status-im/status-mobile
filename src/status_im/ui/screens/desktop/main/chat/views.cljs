@@ -119,7 +119,13 @@
        [react/text {:style           (styles/message-text collapsible? false)
                     :selectable      true
                     :selection-color colors/blue-light}
-        message-text]
+        (if-let [render-recipe (:render-recipe content)]
+          (apply
+           (if (and collapsible? (not expanded?))
+             chat-utils/render-chunks-desktop
+             chat-utils/render-chunks)
+           render-recipe message-text)
+          message-text)]
        (when collapsible?
          [message/expand-button expanded? chat-id message-id])])]])
 
