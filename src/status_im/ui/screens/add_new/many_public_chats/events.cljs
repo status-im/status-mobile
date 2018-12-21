@@ -50,6 +50,52 @@
       :public-key public-key
       :status     :seen}}))
 
+(defn- get-add-chats-fx-fns
+  [{:keys [base-topic timestamp message-num total-num base-message]}]
+  (mapcat
+   (fn [i]
+     (let [topic       (str base-topic i)
+           clock-value (inc (* (+ timestamp i (* 2 message-num)) 100))]
+       [(models/upsert-chat
+         {:chat-id                      topic
+          :is-active                    true
+          :name                         topic
+          :group-chat                   true
+          :contacts                     #{}
+          :public?                      true
+          :unviewed-messages-count      0
+          :loaded-unviewed-messages-ids #{}
+          :last-clock-value             clock-value
+          :last-message-content         {:chat-id topic
+                                         :text    (str base-message
+                                                       (dec message-num))}
+          :last-message-content-type    :public-group-user-message})
+        (public-chat/join-public-chat topic)]))
+   (range total-num)))
+
+(defn- db-transactions
+  [{:keys [base-topic timestamp public-key message-num total-num
+           base-message]}]
+  (mapcat
+   (fn [i]
+     (let [timestamp (+ timestamp i)
+           topic     (str base-topic i)]
+       (mapcat (fn [j]
+                 (let [timestamp   (+ timestamp j)
+                       clock-value (* timestamp 100)
+                       {:keys [message status]}
+                       (generate-message
+                        topic
+                        (str base-message j)
+                        another-user
+                        public-key
+                        timestamp
+                        clock-value)]
+                   [(messages/save-message-tx message)
+                    (statuses/save-status-tx status)]))
+               (range message-num))))
+   (range total-num)))
+
 (handlers/register-handler-fx
  :add-many-pub-chats
  (fn [{:keys [db] :as cofx}]
@@ -63,46 +109,19 @@
          message-num-int  (js/parseInt messages-num)
 
          timestamp        (utils.datetime/timestamp)
-         add-chats-fx-fns (mapcat (fn [i]
-                                    (let [topic (str base-topic i)
-                                          clock-value (inc
-                                                       (* (+ timestamp i
-                                                             (* 2 message-num-int))
-                                                          100))]
-                                      [(models/upsert-chat
-                                        {:chat-id                      topic
-                                         :is-active                    true
-                                         :name                         topic
-                                         :group-chat                   true
-                                         :contacts                     #{}
-                                         :public?                      true
-                                         :unviewed-messages-count      0
-                                         :loaded-unviewed-messages-ids #{}
-                                         :last-clock-value             clock-value
-                                         :last-message-content         {:chat-id topic
-                                                                        :text    (str base-message (dec message-num-int))}
-                                         :last-message-type            :public-group-user-message})
-                                       (public-chat/join-public-chat topic)]))
-                                  (range total-num-int))
-         transactions     (mapcat
-                           (fn [i]
-                             (let [timestamp (+ timestamp i)
-                                   topic     (str base-topic i)]
-                               (mapcat (fn [j]
-                                         (let [timestamp   (+ timestamp j)
-                                               clock-value (* timestamp 100)
-                                               {:keys [message status]}
-                                               (generate-message
-                                                topic
-                                                (str base-message j)
-                                                another-user
-                                                public-key
-                                                timestamp
-                                                clock-value)]
-                                           [(messages/save-message-tx message)
-                                            (statuses/save-status-tx status)]))
-                                       (range message-num-int))))
-                           (range total-num-int))]
+         add-chats-fx-fns (get-add-chats-fx-fns
+                           {:base-topic   base-topic
+                            :base-message base-message
+                            :timestamp    timestamp
+                            :message-num  message-num-int
+                            :total-num    total-num-int})
+         transactions     (db-transactions
+                           {:base-topic   base-topic
+                            :base-message base-message
+                            :timestamp    timestamp
+                            :message-num  message-num-int
+                            :total-num    total-num-int
+                            :public-key   public-key})]
 
      (apply
       fx/merge
