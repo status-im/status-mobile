@@ -7,10 +7,10 @@ def plutil(name, value) {
 def compile(type = 'nightly') {
   def target
   switch (type) {
-    case 'release': 	target = 'adhoc'; 	break;
-    case 'testflight': 	target = 'release'; break;
-    case 'e2e': 		target = 'e2e'; 	break;
-    default:  			target = 'nightly';
+    case 'release':     target = 'release'; break;
+    case 'testflight':  target = 'release'; break;
+    case 'e2e':         target = 'e2e';     break;
+    default:            target = 'nightly';
   }
   /* configure build metadata */
   plutil('CFBundleShortVersionString', common.version())
