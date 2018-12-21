@@ -298,8 +298,7 @@ function bundleLinux() {
   usrBinPath=$(joinPath "$WORKFOLDER" "AppDir/usr/bin")
   cp -r ./deployment/linux/usr $WORKFOLDER/AppDir
   cp ./.env $usrBinPath
-  cp ./desktop/bin/Status $usrBinPath
-  cp ./desktop/bin/reportApp $usrBinPath
+  cp ./desktop/bin/Status ./desktop/bin/reportApp $usrBinPath
   
   if [ ! -f $DEPLOYQT ]; then
     wget --output-document="$DEPLOYQT" --show-progress "https://desktop-app-files.ams3.digitaloceanspaces.com/$DEPLOYQTFNAME" # Versioned from https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
@@ -311,45 +310,33 @@ function bundleLinux() {
     chmod a+x $APPIMAGETOOL
   fi
 
-  rm -f Application-x86_64.AppImage
-  rm -f Status-x86_64.AppImage
+  rm -f Application-x86_64.AppImage Status-x86_64.AppImage
 
   [ $VERBOSE_LEVEL -ge 1 ] && ldd $(joinExistingPath "$usrBinPath" 'Status') 
   desktopFilePath="$(joinExistingPath "$WORKFOLDER" 'AppDir/usr/share/applications/Status.desktop')"
+  pushd $WORKFOLDER
+    [ $VERBOSE_LEVEL -ge 1 ] && ldd $usrBinPath/Status
+    cp -r assets/share/assets $usrBinPath
+    cp -rf StatusImAppImage/* $usrBinPath
+    rm -f $usrBinPath/Status.AppImage
+  popd
+
   $DEPLOYQT \
     $desktopFilePath \
     -verbose=$VERBOSE_LEVEL -always-overwrite -no-strip \
     -no-translations -bundle-non-qt-libs \
-    -executable="$usrBinPath/reportApp" \
     -qmake="$qmakePath" \
+    -executable="$(joinExistingPath "$usrBinPath" 'reportApp')" \
+    -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'node_modules/react-native')" \
+    -qmldir="$STATUSREACTPATH/desktop/reportApp" \
     -extra-plugins=imageformats/libqsvg.so \
-    -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'node_modules/react-native')"
-
-  $DEPLOYQT \
-    $(joinExistingPath "$usrBinPath" 'reportApp') \
-    -verbose=$VERBOSE_LEVEL -always-overwrite -no-strip -no-translations -qmake="$qmakePath" \
-    -qmldir="$STATUSREACTPATH/desktop/reportApp"
+    -appimage
 
   pushd $WORKFOLDER
-    [ $VERBOSE_LEVEL -ge 1 ] && ldd AppDir/usr/bin/Status
-    cp -r assets/share/assets AppDir/usr/bin
-    cp -rf StatusImAppImage/* AppDir/usr/bin
-    rm -f AppDir/usr/bin/Status.AppImage
-  popd
-
-  $DEPLOYQT \
-    $desktopFilePath \
-    -verbose=$VERBOSE_LEVEL -appimage -qmake="$qmakePath"
-  pushd $WORKFOLDER
-    [ $VERBOSE_LEVEL -ge 1 ] && ldd AppDir/usr/bin/Status
-    cp -r assets/share/assets AppDir/usr/bin
-    cp -rf StatusImAppImage/* AppDir/usr/bin
-    rm -f AppDir/usr/bin/Status.AppImage
-  popd
-  $APPIMAGETOOL \
-    "$WORKFOLDER/AppDir"
-  pushd $WORKFOLDER
-    [ $VERBOSE_LEVEL -ge 1 ] && ldd AppDir/usr/bin/Status
+    [ $VERBOSE_LEVEL -ge 1 ] && ldd $usrBinPath/Status
+    rm -f $usrBinPath/Status.AppImage
+    $APPIMAGETOOL ./AppDir
+    [ $VERBOSE_LEVEL -ge 1 ] && ldd $usrBinPath/Status
     rm -rf Status.AppImage
   popd
 

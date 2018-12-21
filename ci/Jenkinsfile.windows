@@ -52,6 +52,7 @@ pipeline {
     CONAN_SYSREQUIRES_MODE = 'disabled'
     CONAN_SYSREQUIRES_SUDO = '0'
     STATUSIM_WINDOWS_BASEIMAGE_ZIP = '/opt/StatusIm-Windows-base-image.zip'
+    VERBOSE_LEVEL = '3'
   }
 
   stages {

@@ -208,8 +208,7 @@ QString getDataStoragePath() {
   QString dataStoragePath;
   if (!statusDataDir.isEmpty()) {
     dataStoragePath = statusDataDir;
-  }
-  else {
+  } else {
     dataStoragePath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
   }
   QDir dir(dataStoragePath);
