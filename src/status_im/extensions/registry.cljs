@@ -15,8 +15,9 @@
         hooks   (get-in account [:extensions extension-id :hooks])]
     (apply fx/merge cofx
            (mapcat (fn [[_ extension-hooks]]
-                     (map (fn [[hook-id {:keys [hook-ref parsed]}]]
-                            (partial hook-fn (:hook hook-ref) hook-id {:id extension-id} parsed))
+                     (map (fn [[hook-id {parsed :parsed {hook :hook} :hook-ref}]]
+                            (when hook
+                              (partial hook-fn hook hook-id {:id extension-id} parsed)))
                           extension-hooks))
                    hooks))))
 
