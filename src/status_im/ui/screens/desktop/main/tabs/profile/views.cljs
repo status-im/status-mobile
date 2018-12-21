@@ -249,7 +249,7 @@
         [react/view {:style (styles/profile-row false)}
          [react/touchable-highlight {:on-press #(re-frame/dispatch [:accounts.logout.ui/logout-confirmed])}
           [react/text {:style (styles/profile-row-text colors/red)} (i18n/label :t/logout)]]
-         [react/view [react/text {:style (styles/profile-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]]])))
+         [react/view [react/text {:style (styles/profile-row-text colors/gray)} "V" build/version " (" "release" ")"]]]]])))
 
 (views/defview profile-data []
   (views/letsubs
