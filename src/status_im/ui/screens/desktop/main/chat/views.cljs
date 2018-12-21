@@ -110,9 +110,9 @@
                                                 :on-select #(when (message-sent? user-statuses current-public-key)
                                                               (re-frame/dispatch [:chat.ui/reply-to-message message-id old-message-id]))}])))}
     (let [collapsible? (and (:should-collapse? content) group-chat)
-          message-text (cond-> (:text content)
-                         (and collapsible? (not expanded?))
-                         (core-utils/truncate-str constants/chars-collapse-threshold))]
+          char-limit (if (and collapsible? (not expanded?))
+                       constants/chars-collapse-threshold constants/desktop-msg-chars-hard-limit)
+          message-text (core-utils/truncate-str (:text content) char-limit)]
       [react/view {:style styles/message-container}
        (when (:response-to content)
          [quoted-message (:response-to content) false current-public-key])
@@ -120,11 +120,7 @@
                     :selectable      true
                     :selection-color colors/blue-light}
         (if-let [render-recipe (:render-recipe content)]
-          (apply
-           (if (and collapsible? (not expanded?))
-             chat-utils/render-chunks-desktop
-             chat-utils/render-chunks)
-           render-recipe message-text)
+          (chat-utils/render-chunks-desktop char-limit render-recipe message-text)
           message-text)]
        (when collapsible?
          [message/expand-button expanded? chat-id message-id])])]])
@@ -186,8 +182,6 @@
     ^{:key (str "datemark" message-id)}
     [message.datemark/chat-datemark value]
     (when (contains? constants/desktop-content-types content-type)
-      (when (nil? message-id)
-        (log/debug "nil?" message))
       (reagent.core/create-class
        {:component-did-mount
         #(when (and message-id

@@ -221,6 +221,7 @@
 
 (def ^:const lines-collapse-threshold 20)
 (def ^:const chars-collapse-threshold 600)
+(def ^:const desktop-msg-chars-hard-limit 10000)
 
 (def ^:const dapp-permission-contact-code "contact-code")
 (def ^:const dapp-permission-web3 "web3")
