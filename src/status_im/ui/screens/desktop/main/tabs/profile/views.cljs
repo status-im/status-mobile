@@ -150,8 +150,8 @@
         (i18n/label :t/send-logs)]]]]))
 
 (views/defview advanced-settings []
-  (views/letsubs [installations         [:pairing/installations]
-                  current-mailserver-id [:mailserver/current-id]
+  (views/letsubs [current-mailserver-id [:mailserver/current-id]
+                  {:keys [settings]}    [:account/account]
                   mailservers           [:mailserver/fleet-mailservers]
                   mailserver-state      [:mailserver/state]
                   node-status           [:node-status]
@@ -159,7 +159,8 @@
                   connection-stats      [:connection-stats]
                   disconnected          [:disconnected?]]
     (let [render-fn (offline-messaging.views/render-row current-mailserver-id)
-          connection-message      (connection-status peers-count node-status mailserver-state disconnected)]
+          pfs? (:pfs? settings)
+          connection-message (connection-status peers-count node-status mailserver-state disconnected)]
       [react/scroll-view
        [react/text {:style styles/advanced-settings-title
                     :font  :medium}
@@ -182,7 +183,15 @@
            [render-fn mailserver]])]
        [react/view {:style styles/title-separator}]
        [react/text {:style styles/adv-settings-subtitle} (i18n/label :t/logging)]
-       [logging-display]])))
+       [logging-display]
+
+       [react/view {:style styles/title-separator}]
+       [react/text {:style styles/adv-settings-subtitle} (i18n/label :t/pfs)]
+       [react/view {:style (styles/profile-row false)}
+        [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :notifications)]
+        [react/switch {:on-tint-color   colors/blue
+                       :value           pfs?
+                       :on-value-change #(re-frame/dispatch [:accounts.ui/toggle-pfs (not pfs?)])}]]])))
 
 (views/defview installations []
   (views/letsubs [installations    [:pairing/installations]

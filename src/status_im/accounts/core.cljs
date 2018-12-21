@@ -67,6 +67,16 @@
                                   {:desktop-notifications? desktop-notifications?}
                                   {}))
 
+(fx/defn toggle-pfs [{:keys [db] :as cofx} enabled?]
+  (let [settings (get-in db [:account/account :settings])
+        warning  {:utils/show-popup {:title (i18n/label :t/pfs-warning-title)
+                                     :content (i18n/label :t/pfs-warning-content)}}]
+
+    (fx/merge cofx
+              (when enabled? warning)
+              (accounts.update/update-settings (assoc settings :pfs? enabled?)
+                                               {}))))
+
 (fx/defn switch-web3-opt-in-mode [{:keys [db] :as cofx} opt-in]
   (let [settings (get-in db [:account/account :settings])]
     (accounts.update/update-settings cofx

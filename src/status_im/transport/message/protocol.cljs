@@ -85,6 +85,7 @@
   StatusMessage
   (send [this chat-id {:keys [message-id] :as cofx}]
     (let [dev-mode?          (get-in cofx [:db :account/account :dev-mode?])
+          pfs?               (get-in cofx [:db :account/account :settings :pfs?])
           current-public-key (accounts.db/current-public-key cofx)
           params             {:chat-id       chat-id
                               :payload       this
@@ -94,7 +95,7 @@
                                               message-type]}]
       (case message-type
         :public-group-user-message
-        (if config/pfs-encryption-enabled?
+        (if pfs?
           (send-public-message
            cofx
            chat-id
@@ -103,7 +104,7 @@
           (send-with-sym-key cofx params))
 
         :user-message
-        (if config/pfs-encryption-enabled?
+        (if pfs?
           (send-direct-message
            cofx
            chat-id
@@ -133,13 +134,14 @@
 (defrecord MessagesSeen [message-ids]
   StatusMessage
   (send [this chat-id cofx]
-    (if config/pfs-encryption-enabled?
-      (send-direct-message cofx
-                           chat-id
-                           nil
-                           this)
-      (send-with-pubkey cofx {:chat-id chat-id
-                              :payload this})))
+    (let [pfs?               (get-in cofx [:db :account/account :settings :pfs?])]
+      (if pfs?
+        (send-direct-message cofx
+                             chat-id
+                             nil
+                             this)
+        (send-with-pubkey cofx {:chat-id chat-id
+                                :payload this}))))
   (receive [this chat-id signature _ cofx]
     (chat/receive-seen cofx chat-id signature this))
   (validate [this]

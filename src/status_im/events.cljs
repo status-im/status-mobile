@@ -154,6 +154,11 @@
    (accounts/enable-notifications cofx desktop-notifications?)))
 
 (handlers/register-handler-fx
+ :accounts.ui/toggle-pfs
+ (fn [cofx [_ enabled?]]
+   (accounts/toggle-pfs cofx enabled?)))
+
+(handlers/register-handler-fx
  :accounts.ui/web3-opt-in-mode-switched
  (fn [cofx [_ opt-in]]
    (accounts/switch-web3-opt-in-mode cofx opt-in)))

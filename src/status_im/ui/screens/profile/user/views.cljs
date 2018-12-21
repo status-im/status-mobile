@@ -196,6 +196,13 @@
       {:label-kw            :t/devices
        :action-fn           #(re-frame/dispatch [:navigate-to :installations])
        :accessibility-label :pairing-settings-button}])
+   (when dev-mode?
+     [profile.components/settings-item-separator])
+   (when dev-mode?
+     [profile.components/settings-switch-item
+      {:label-kw  :t/pfs
+       :value     (:pfs? settings)
+       :action-fn #(re-frame/dispatch [:accounts.ui/toggle-pfs %])}])
    [profile.components/settings-item-separator]
    [profile.components/settings-switch-item
     {:label-kw  :t/dev-mode
