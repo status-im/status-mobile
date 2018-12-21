@@ -17,20 +17,23 @@
             [status-im.native-module.core :as status]))
 
 (handlers/register-handler-fx
- :extensions/wallet-ui-on-success
- (fn [cofx [_ on-success _ result _]]
+ :extensions/wallet-ui-on-result
+ (fn [cofx [_ on-result id result method]]
    (fx/merge cofx
-             {:dispatch (on-success {:value result})}
-             (navigation/navigate-back))))
+             (when on-result
+               {:dispatch (on-result {:error nil :result result})})
+             (cond
+               (= method constants/web3-send-transaction) (navigation/navigate-to-clean :wallet-transaction-sent nil)
+               (= method constants/web3-personal-sign) (navigation/navigate-back)))))
 
 (handlers/register-handler-fx
- :extensions/wallet-ui-on-failure
- (fn [_ [_ on-failure message]]
-   (when on-failure {:dispatch (on-failure {:value message})})))
+ :extensions/wallet-ui-on-error
+ (fn [{db :db} [_ on-result message]]
+   (when on-result {:dispatch (on-result {:error message :result nil})})))
 
 (defn- wrap-with-resolution [db arguments address-keyword f]
-  "function responsible to resolve ens taken from argument
-   and call the specified function with resolved address"
+  "funtction responsible to resolve ens taken from argument
+ and call the specified function with resolved address"
   (let [address (get arguments address-keyword)
         first-address (if (vector? address)  ;; currently we only support one ens for address
                         (first address)
@@ -43,7 +46,8 @@
         (ens/get-addr web3 registry first-address #(f db (assoc arguments address-keyword %))))
       (f db arguments))))
 
-(defn prepare-extension-transaction [params contacts on-success on-failure]
+;; EXTENSION TRANSACTION -> SEND TRANSACTION
+(defn  prepare-extension-transaction [params contacts on-result]
   (let [{:keys [to value data gas gasPrice nonce]} params
         contact (get contacts (hex/normalize-hex to))]
     (cond-> {:id               "extension-id"
@@ -62,15 +66,15 @@
              :gas-price        (when gasPrice
                                  (money/bignumber gasPrice))
              :data             data
-             :on-result        [:extensions/wallet-ui-on-success on-success]
-             :on-error         [:extensions/wallet-ui-on-failure on-failure]}
+             :on-result        [:extensions/wallet-ui-on-result on-result]
+             :on-error         [:extensions/wallet-ui-on-error on-result]}
       nonce
       (assoc :nonce nonce))))
 
-(defn- execute-send-transaction [db {:keys [method params on-success on-failure] :as arguments}]
+(defn- execute-send-transaction [db {:keys [method params on-result] :as arguments}]
   (let [tx-object (assoc (select-keys arguments [:to :gas :gas-price :value :nonce])
                          :data (when (and method params) (abi-spec/encode method params)))
-        transaction (prepare-extension-transaction tx-object (:contacts/contacts db) on-success on-failure)]
+        transaction (prepare-extension-transaction tx-object (:contacts/contacts db) on-result)]
     (models.wallet/open-modal-wallet-for-transaction db transaction tx-object)))
 
 (handlers/register-handler-fx
@@ -78,173 +82,143 @@
  (fn [{db :db} [_ _ arguments]]
    (wrap-with-resolution db arguments :to execute-send-transaction)))
 
-(defn- rpc-args [method params]
-  {:jsonrpc "2.0"
-   :method  method
-   :params  params})
-
-(defn- rpc-dispatch [error result f on-success on-failure]
-  (when result
-    (re-frame/dispatch (on-success {:result (f result)})))
-  (when (and error on-failure)
-    (re-frame/dispatch (on-failure {:result error}))))
-
-(defn- rpc-handler [o f on-success on-failure]
-  (let [{:keys [error result]} (types/json->clj o)]
-    (rpc-dispatch error result f on-success on-failure)))
-
-(defn- rpc-call [method params f {:keys [on-success on-failure]}]
-  (let [payload (types/clj->json (rpc-args method params))]
-    (status/call-private-rpc payload #(rpc-handler % f on-success on-failure))))
-
-(defn parse-call-result [o outputs]
-  (let [result (get (js->clj o) "result")]
-    (cond
-      (= "0x" result) nil
-      (and outputs result)
-      (abi-spec/decode (string/replace result #"^0x" "")  outputs)
-      :else result)))
-
-(defn- execute-ethcall [_ {:keys [to method params outputs on-success on-failure]}]
+(defn- execute-ethcall [_ {:keys [to method params outputs on-result]}]
   (let [tx-object {:to to :data (when method (abi-spec/encode method params))}]
-    {:browser/call-rpc [(rpc-args "eth_call" [tx-object "latest"])
-                        #(rpc-dispatch %1 %2 (fn [o] (parse-call-result o outputs)) on-success on-failure)]}))
+    {:browser/call-rpc [{"jsonrpc" "2.0"
+                         "method"  "eth_call"
+                         "params"  [tx-object "latest"]}
+                        #(let [result-str (when %2
+                                            (get (js->clj %2) "result"))
+                               result     (cond
+                                            (= "0x" result-str) nil
+                                            (and outputs result-str)
+                                            (abi-spec/decode (string/replace result-str #"0x" "")  outputs)
+                                            :else result-str)]
+                           (re-frame/dispatch (on-result (merge {:result result} (when %1 {:error %1})))))]}))
 
 (handlers/register-handler-fx
  :extensions/ethereum-call
- (fn [{db :db} [_ _ arguments]]
+ (fn [{db :db} [_ _ {:keys [to] :as arguments}]]
    (wrap-with-resolution db arguments :to execute-ethcall)))
 
 (handlers/register-handler-fx
  :extensions/ethereum-erc20-total-supply
- (fn [{db :db} [_ _ {:keys [contract on-success on-failure]}]]
+ (fn [{db :db} [_ _ {:keys [contract on-result]}]]
    (let [json-rpc-args {:to contract
-                        :method     "totalSupply()"
-                        :outputs    ["uint256"]
-                        :on-success on-success
-                        :on-failure on-failure}]
+                        :method "totalSupply()"
+                        :outputs ["uint256"]
+                        :on-result on-result}]
      (wrap-with-resolution db json-rpc-args :to execute-ethcall))))
 
 (handlers/register-handler-fx
  :extensions/ethereum-erc20-balance-of
- (fn [{db :db} [_ _ {:keys [contract token-owner on-success on-failure]}]]
+ (fn [{db :db} [_ _ {:keys [contract token-owner on-result]}]]
    (let [json-rpc-args {:to contract
-                        :method     "balanceOf(address)"
-                        :params     [token-owner]
-                        :outputs    ["uint256"]
-                        :on-success on-success
-                        :on-failure on-failure}]
+                        :method "balanceOf(address)"
+                        :params [token-owner]
+                        :outputs ["uint256"]
+                        :on-result on-result}]
      (wrap-with-resolution db json-rpc-args :to execute-ethcall))))
 
 (handlers/register-handler-fx
  :extensions/ethereum-erc20-allowance
- (fn [{db :db} [_ _ {:keys [contract token-owner spender on-success on-failure]}]]
+ (fn [{db :db} [_ _ {:keys [contract token-owner spender on-result]}]]
    (let [json-rpc-args {:to contract
-                        :method     "allowance(address,address)"
-                        :params     [token-owner spender]
-                        :outputs    ["uint256"]
-                        :on-success on-success
-                        :on-failure on-failure}]
+                        :method "allowance(address,address)"
+                        :params [token-owner spender]
+                        :outputs ["uint256"]
+                        :on-result on-result}]
      (wrap-with-resolution db json-rpc-args :to execute-ethcall))))
 
 (handlers/register-handler-fx
  :extensions/ethereum-erc20-transfer
- (fn [{db :db} [_ _ {:keys [contract to value on-success on-failure]}]]
+ (fn [{db :db} [_ _ {:keys [contract to value on-result]}]]
    (let [json-rpc-args {:to contract
-                        :method     "transfer(address,uint256)"
-                        :params     [to value]
-                        :on-success on-success
-                        :on-failure on-failure}]
+                        :method "transfer(address,uint256)"
+                        :params [to value]
+                        :on-result on-result}]
      (wrap-with-resolution db json-rpc-args :to execute-send-transaction))))
 
 (handlers/register-handler-fx
  :extensions/ethereum-erc20-transfer-from
- (fn [{db :db} [_ _ {:keys [contract from to value on-success on-failure]}]]
+ (fn [{db :db} [_ _ {:keys [contract from to value on-result]}]]
    (let [json-rpc-args {:to contract
-                        :method     "transferFrom(address,address,uint256)"
-                        :params     [from to value]
-                        :on-success on-success
-                        :on-failure on-failure}]
+                        :method "transferFrom(address,address,uint256)"
+                        :params [from to value]
+                        :on-result on-result}]
      (wrap-with-resolution db json-rpc-args :to execute-send-transaction))))
 
 (handlers/register-handler-fx
  :extensions/ethereum-erc20-approve
- (fn [{db :db} [_ _ {:keys [contract spender value on-success on-failure]}]]
+ (fn [{db :db} [_ _ {:keys [contract spender value on-result]}]]
    (let [json-rpc-args {:to contract
-                        :method     "approve(address,uint256)"
-                        :params     [spender value]
-                        :on-success on-success
-                        :on-failure on-failure}]
+                        :method "approve(address,uint256)"
+                        :params [spender value]
+                        :on-result on-result}]
      (wrap-with-resolution db json-rpc-args :to execute-send-transaction))))
 
 (handlers/register-handler-fx
  :extensions/ethereum-erc721-owner-of
- (fn [{db :db} [_ _ {:keys [contract token-id on-success on-failure]}]]
+ (fn [{db :db} [_ _ {:keys [contract token-id on-result]}]]
    (let [json-rpc-args {:to contract
-                        :method     "ownerOf(uint256)"
-                        :params     [token-id]
-                        :outputs    ["address"]
-                        :on-success on-success
-                        :on-failure on-failure}]
+                        :method "ownerOf(uint256)"
+                        :params [token-id]
+                        :outputs ["address"]
+                        :on-result on-result}]
      (wrap-with-resolution db json-rpc-args :to execute-ethcall))))
 
 (handlers/register-handler-fx
  :extensions/ethereum-erc721-is-approved-for-all
- (fn [{db :db} [_ _ {:keys [contract owner operator on-success on-failure]}]]
+ (fn [{db :db} [_ _ {:keys [contract owner operator on-result]}]]
    (let [json-rpc-args {:to contract
-                        :method     "isApprovedForAll(address,address)"
-                        :params     [owner operator]
-                        :outputs    ["bool"]
-                        :on-success on-success
-                        :on-failure on-failure}]
+                        :method "isApprovedForAll(address,address)"
+                        :params [owner operator]
+                        :outputs ["bool"]
+                        :on-result on-result}]
      (wrap-with-resolution db json-rpc-args :to execute-ethcall))))
 
 (handlers/register-handler-fx
  :extensions/ethereum-erc721-get-approved
- (fn [{db :db} [_ _ {:keys [contract token-id on-success on-failure]}]]
+ (fn [{db :db} [_ _ {:keys [contract token-id on-result]}]]
    (let [json-rpc-args {:to contract
-                        :method     "getApproved(uint256)"
-                        :params     [token-id]
-                        :outputs    ["address"]
-                        :on-success on-success
-                        :on-failure on-failure}]
+                        :method "getApproved(uint256)"
+                        :params [token-id]
+                        :outputs ["address"]
+                        :on-result on-result}]
      (wrap-with-resolution db json-rpc-args :to execute-ethcall))))
 
 (handlers/register-handler-fx
  :extensions/ethereum-erc721-set-approval-for-all
- (fn [{db :db} [_ _ {:keys [contract to approved on-success on-failure]}]]
+ (fn [{db :db} [_ _ {:keys [contract to approved on-result]}]]
    (let [json-rpc-args {:to contract
-                        :method     "setApprovalForAll(address,bool)"
-                        :params     [to approved]
-                        :on-success on-success
-                        :on-failure on-failure}]
+                        :method "setApprovalForAll(address,bool)"
+                        :params [to approved]
+                        :on-result on-result}]
      (wrap-with-resolution db json-rpc-args :to execute-send-transaction))))
 
 (handlers/register-handler-fx
  :extensions/ethereum-erc721-safe-transfer-from
- (fn [{db :db} [_ _ {:keys [contract from to token-id data on-success on-failure]}]]
+ (fn [{db :db} [_ _ {:keys [contract from to token-id data on-result]}]]
    (let [json-rpc-args {:to contract
-                        :method     (if data
-                                      "safeTransferFrom(address,address,uint256,bytes)"
-                                      "safeTransferFrom(address,address,uint256)")
-                        :params     (if data
-                                      [from to token-id data]
-                                      [from to token-id])
-                        :on-success on-success
-                        :on-failure on-failure}]
+                        :method (if data
+                                  "safeTransferFrom(address,address,uint256,bytes)"
+                                  "safeTransferFrom(address,address,uint256)")
+                        :params (if data
+                                  [from to token-id data]
+                                  [from to token-id])
+                        :on-result on-result}]
      (wrap-with-resolution db json-rpc-args :to execute-send-transaction))))
 
 (defn- parse-log [{:keys [address transactionHash blockHash transactionIndex topics blockNumber logIndex removed data]}]
-  (merge {:data    data
-          :topics  topics
-          :address address
-          :removed removed}
-        ;; TODO parse data and topics, filter useless solidity first topic, aggregate as events ?
-         (when logIndex {:log-index (abi-spec/hex-to-number logIndex)})
-         (when transactionIndex {:transaction-index (abi-spec/hex-to-number transactionIndex)})
-         (when transactionHash {:transaction-hash transactionHash})
-         (when blockHash {:block-hash blockHash})
-         (when blockNumber {:block-number (abi-spec/hex-to-number blockNumber)})))
+  {:address           address
+   :transaction-hash  transactionHash
+   :blockHash         blockHash
+   :transaction-index (abi-spec/hex-to-number transactionIndex)
+   :topics            topics ;; TODO parse topics
+   :block-number      (abi-spec/hex-to-number blockNumber)
+   :log-index         (abi-spec/hex-to-number logIndex)
+   :removed           removed
+   :data              data})
 
 (defn- parse-receipt [m]
   (when m
@@ -264,8 +238,16 @@
 
 (handlers/register-handler-fx
  :extensions/ethereum-transaction-receipt
- (fn [_ [_ _ {:keys [value] :as m}]]
-   (rpc-call constants/web3-transaction-receipt [value] parse-receipt m)))
+ (fn [_ [_ _ {:keys [value on-result]}]]
+   (let [args {:jsonrpc "2.0"
+               :method constants/web3-transaction-receipt
+               :params  [value]}
+         payload (types/clj->json args)]
+     (status/call-private-rpc payload #(let [{:keys [error result]} (types/json->clj %1)
+                                             response (merge {:result (parse-receipt result)} (when error {:error error}))]
+                                         (re-frame/dispatch (on-result response)))))))
+
+;; eth_getLogs implementation
 
 (defn- event-topic-enc [event params]
   (let [eventid (str event "(" (string/join "," params) ")")]
@@ -282,16 +264,17 @@
     :else :bytes))
 
 (defn- values-topic-enc [type values]
-  (mapv #(str "0x" (abi-spec/enc {:type (types-mapping type) :value %})) values))
+  (let [mapped-type (types-mapping type)]
+    (mapv #(str "0x" (abi-spec/enc {:type mapped-type :value %})) values)))
 
-(defn- generate-topic [t]
+(defn- parse-topic [t]
   (cond
     (or (nil? t) (string? t)) t ;; nil topic ;; immediate topic (extension encode topic by its own) ;; vector of immediate topics
-    (vector? t) (mapv generate-topic t) ;; descend in vector elements
+    (vector? t) (mapv parse-topic t) ;; descend in vector elements
     (map? t) ;; simplified topic interface, we need to encode
     (let [{:keys [event params type values]} t]
       (cond
-        (some? event) (event-topic-enc event params);; event params topic {:event "Transfer" :params ["uint"]}
+        (some? event) (event-topic-enc event params);; event params topic
         (some? type) (values-topic-enc type values) ;; indexed values topic
         :else nil)) ;; error
     :else nil))
@@ -302,13 +285,19 @@
     (re-matches #"^[0-9]+$" block) (str "0x" (abi-spec/number-to-hex block))
     :else block))
 
-(defn- execute-get-logs [_ {:keys [from to address topics block-hash] :as m}]
-  (let [params [{:from      (ensure-hex-bn from)
-                 :to        (ensure-hex-bn to)
-                 :address   address
-                 :topics    (generate-topic topics)
-                 :blockhash block-hash}]]
-    (rpc-call constants/web3-get-logs params #(map parse-log %) m)))
+(defn- execute-get-logs [_ {:keys [fromBlock toBlock address topics blockhash on-result]}]
+  (let [parsed-topics (mapv parse-topic topics)
+        args {:jsonrpc "2.0"
+              :method constants/web3-get-logs
+              :params  [{:fromBlock (ensure-hex-bn fromBlock)
+                         :toBlock   (ensure-hex-bn toBlock)
+                         :address   address
+                         :topics    parsed-topics
+                         :blockhash blockhash}]}
+        payload (types/clj->json args)]
+    (status/call-private-rpc payload #(let [{:keys [error result]} (types/json->clj %1)
+                                            response (merge {:result result} (when error {:error error}))]
+                                        (re-frame/dispatch (on-result response))))))
 
 (handlers/register-handler-fx
  :extensions/ethereum-logs
@@ -317,59 +306,71 @@
 
 (handlers/register-handler-fx
  :extensions/ethereum-resolve-ens
- (fn [{db :db} [_ _ {:keys [name on-success on-failure]}]]
+ (fn [{db :db} [_ _ {:keys [name on-result]}]]
    (if (ens/is-valid-eth-name? name)
      (let [{:keys [web3 network]} db
            network-info (get-in db [:account/account :networks network])
            chain (ethereum/network->chain-keyword network-info)
            registry (get ens/ens-registries chain)]
-       (ens/get-addr web3 registry name #(re-frame/dispatch (on-success {:value %}))))
-     (when on-failure
-       (re-frame/dispatch (on-failure {:value (str "'" name "' is not a valid name")}))))))
+       (ens/get-addr web3 registry name #(re-frame/dispatch (on-result {:result %}))))
+     (re-frame/dispatch (on-result {:error (str "'" name "' is not a valid name")})))))
 
 ;; EXTENSION SIGN -> SIGN MESSAGE
 (handlers/register-handler-fx
  :extensions/ethereum-sign
- (fn [{db :db :as cofx} [_ _ {:keys [message data id on-success on-failure]}]]
-   (if (and message data)
-     (when on-failure
-       {:dispatch (on-failure {:error "only one of :message and :data can be used"})})
+ (fn [{db :db :as cofx} [_ _ {:keys [message data id on-result]}]]
+   (if (= (nil? message) (nil? data))
+     {:dispatch (on-result {:error "only one of :message and :data can be used"})}
      (fx/merge cofx
                {:db (assoc-in db [:wallet :send-transaction]
                               {:id                id
-                               :from             (ethereum/normalized-address (get-in db [:account/account :address]))
+                               :from             (ethereum/normalized-address  (get-in db [:account/account :address]))
                                :data             (or data (str "0x" (abi-spec/from-utf8 message)))
-                               :on-result        [:extensions/wallet-ui-on-success on-success]
-                               :on-error         [:extensions/wallet-ui-on-failure on-failure]
+                               :on-result        [:extensions/wallet-ui-on-result on-result]
+                               :on-error         [:extensions/wallet-ui-on-error on-result]
                                :method           constants/web3-personal-sign})}
                (navigation/navigate-to-cofx :wallet-sign-message-modal nil)))))
 
+;; poll logs implementation
 (handlers/register-handler-fx
  :extensions/ethereum-logs-changes
- (fn [_ [_ _ {:keys [id] :as m}]]
-   (rpc-call constants/web3-get-filter-changes [(abi-spec/number-to-hex id)] #(map parse-log %) m)))
-
+ (fn [_ [_ _ {:keys [filterId on-result]}]]
+   (let [args {:jsonrpc "2.0"
+               :method constants/web3-get-filter-changes
+               :params [filterId]}
+         payload (types/clj->json args)]
+     (status/call-private-rpc payload #(let [{:keys [error result]} (types/json->clj %1)
+                                             response (merge {:result result} (when error {:error error}))]
+                                         (mapv (fn [one-result]
+                                                 (re-frame/dispatch (on-result one-result))) result))))))
 (handlers/register-handler-fx
  :extensions/ethereum-cancel-filter
- (fn [_ [_ _ {:keys [id] :as m}]]
-   (rpc-call constants/web3-uninstall-filter [(abi-spec/number-to-hex id)] #(abi-spec/hex-to-value % "bool") m)))
-
-(defn create-filter-method [type]
-  (case type
-    :filter              constants/web3-new-filter
-    :block               constants/web3-new-block-filter
-    :pending-transaction constants/web3-new-pending-transaction-filter))
-
-(defn create-filter-arguments [type {:keys [from to address block-hash topics]}]
-  (case type
-    :filter
-    [{:fromBlock (ensure-hex-bn from)
-      :toBlock   (ensure-hex-bn to)
-      :address   address
-      :topics    (mapv generate-topic topics)
-      :blockhash block-hash}]))
+ (fn [_ [_ _ {:keys [filterId on-result]}]]
+   (let [args {:jsonrpc "2.0"
+               :method constants/web3-uninstall-filter
+               :params  [filterId]}
+         payload (types/clj->json args)]
+     (status/call-private-rpc payload #(let [{:keys [error result]} (types/json->clj %1)
+                                             response (merge {:result result} (when error {:error error}))]
+                                         (re-frame/dispatch (on-result response)))))))
 
 (handlers/register-handler-fx
  :extensions/ethereum-create-filter
- (fn [_ [_ _ {:keys [type] :as m}]]
-   (rpc-call (create-filter-method type) (create-filter-arguments type m) abi-spec/hex-to-number m)))
+ (fn [_ [_ _ {:keys [filter-type from to address topics block-hash on-result]}]]
+   (let [parsed-topics (mapv parse-topic topics)
+         args (case filter-type
+                "filter" {:jsonrpc "2.0"
+                          :method constants/web3-new-filter
+                          :params  [{:fromBlock (ensure-hex-bn from)
+                                     :toBlock   (ensure-hex-bn to)
+                                     :address   address
+                                     :topics    parsed-topics
+                                     :blockhash block-hash}]}
+                "block" {:jsonrpc "2.0"
+                         :method constants/web3-new-block-filter}
+                "pendingTransaction" {:jsonrpc "2.0"
+                                      :method constants/web3-new-pending-transaction-filter})
+         payload (types/clj->json args)]
+     (status/call-private-rpc payload #(let [{:keys [error result]} (types/json->clj %1)
+                                             response (merge {:result result} (when error {:error error}))]
+                                         (re-frame/dispatch (on-result response)))))))
