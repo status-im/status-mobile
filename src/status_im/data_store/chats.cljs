@@ -94,6 +94,8 @@
   (fn [realm]
     (let [chat (get-chat-by-id chat-id realm)]
       (doto chat
+        (aset "last-message-content" nil)
+        (aset "last-message-type" nil)
         (aset "deleted-at-clock-value" deleted-at-clock-value)))))
 
 (defn deactivate-chat-tx

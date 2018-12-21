@@ -30,7 +30,7 @@
   [react/view styles/last-message-container
    (cond
 
-     (not message)
+     (not (and content content-type))
      [react/text {:style               styles/last-message-text
                   :accessibility-label :no-messages-text}
       (i18n/label :t/no-messages)]
