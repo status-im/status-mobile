@@ -14,7 +14,8 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.utils.datetime :as time]
             [status-im.ui.components.react :as components]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [taoensso.timbre :as log]))
 
 (defn- toolbar [show-welcome? show-sync-state sync-state latest-block-number]
   (when-not (and show-welcome?
@@ -101,7 +102,10 @@
          (when loading?
            (utils/set-timeout
             #(re-frame/dispatch [:init-rest-of-chats])
-            100))))}
+            100))))
+     :component-did-update
+     (fn [_]
+       (log/debug :HOME-DID-UPDATE))}
     [react/view styles/container
      [toolbar show-welcome? (and network-initialized? (not rpc-network?)) sync-state latest-block-number]
      (cond show-welcome?
