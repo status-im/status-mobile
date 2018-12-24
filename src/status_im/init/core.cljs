@@ -46,7 +46,9 @@
 (defn restore-native-settings! []
   (when platform/desktop?
     (.getValue rn-dependencies/desktop-config "logging_enabled"
-               #(re-frame/dispatch [:set-in [:desktop/desktop :logging-enabled] %1]))))
+               #(re-frame/dispatch [:set-in [:desktop/desktop :logging-enabled]
+                                    (if (boolean? %1)
+                                      %1 (cljs.reader/read-string %1))]))))
 
 ;; TODO (yenda) move keychain functions to dedicated namespace
 (defn reset-keychain! []
