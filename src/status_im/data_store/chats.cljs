@@ -55,7 +55,7 @@
       (update :membership-updates  (partial unmarshal-membership-updates chat-id))
       (update :last-clock-value utils.clocks/safe-timestamp)
       (update :last-message-type keyword)
-      (update :last-message-content edn/read-string)))
+      (update :last-message-content utils/safe-read-message-content)))
 
 (re-frame/reg-cofx
  :data-store/all-chats

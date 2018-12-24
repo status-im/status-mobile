@@ -1,19 +1,15 @@
 (ns status-im.data-store.messages
-  (:require [cljs.tools.reader.edn :as edn]
-            [taoensso.timbre :as log]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.data-store.realm.core :as core]
             [status-im.utils.core :as utils]
             [status-im.js-dependencies :as dependencies]))
 
-(defn- transform-message [message]
-  (try
+(defn- transform-message [{:keys [content] :as message}]
+  (when-let [parsed-content (utils/safe-read-message-content content)]
     (-> message
         (update :message-type keyword)
-        (update :content edn/read-string))
-    (catch :default e
-      (log/warn "failed to transform message with " e))))
+        (assoc :content parsed-content))))
 
 (defn- get-by-chat-id
   ([chat-id]

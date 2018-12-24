@@ -1,5 +1,7 @@
 (ns status-im.utils.core
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [cljs.tools.reader.edn :as edn]
+            [taoensso.timbre :as log]))
 
 (defn truncate-str
   "Given string and max threshold, trims the string to threshold length with `...`
@@ -63,3 +65,9 @@
   Similar to group-by except that the map values are single objects (depends on key uniqueness)."
   [key coll]
   (into {} (map #(vector (key %) %) coll)))
+
+(defn safe-read-message-content [content]
+  (try
+    (edn/read-string content)
+    (catch :default e
+      (log/warn "failed to transform message with " e))))
