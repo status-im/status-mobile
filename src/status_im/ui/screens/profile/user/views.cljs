@@ -124,7 +124,7 @@
      [profile.components/settings-item-separator]
      [profile.components/settings-switch-item
       {:label-kw  :t/web3-opt-in
-       :value     (:web3-opt-in? settings)
+       :value     (or (nil? (:web3-opt-in? settings)) (:web3-opt-in? settings))
        :action-fn #(re-frame/dispatch [:accounts.ui/web3-opt-in-mode-switched %])}]
      [profile.components/settings-item-separator]
      [profile.components/settings-item

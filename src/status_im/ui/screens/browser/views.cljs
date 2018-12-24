@@ -190,7 +190,7 @@
     (let [can-go-back?    (browser/can-go-back? browser)
           can-go-forward? (browser/can-go-forward? browser)
           url-original    (browser/get-current-url browser)
-          opt-in?         (:web3-opt-in? settings)]
+          opt-in?         (or (nil? (:web3-opt-in? settings)) (:web3-opt-in? settings))]
       [react/view {:style styles/browser :on-layout #(reset! width (.-width (.-layout (.-nativeEvent %))))}
        [status-bar/status-bar]
        [toolbar error? url url-original browser browser-id url-editing?]
