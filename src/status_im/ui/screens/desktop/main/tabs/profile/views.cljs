@@ -115,9 +115,9 @@
     [react/text {:style styles/connection-stats-title}
      "Mailserver requests"]
     [react/text {:style styles/connection-stats-entry}
-     (str "errors " p2p-inbound-traffic)]
+     (str "errors " mailserver-request-errors)]
     [react/text {:style styles/connection-stats-entry}
-     (str "process time " p2p-outbound-traffic)]]
+     (str "process time " mailserver-request-process-time)]]
    [react/view
     [react/text {:style styles/connection-stats-title}
      "p2p traffic"]
