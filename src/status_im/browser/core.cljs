@@ -294,7 +294,7 @@
       (send-to-bridge cofx
                       {:type      constants/web3-send-async-callback
                        :messageId message-id
-                       :error     "Denied"})
+                       :error     {:code 4100 :message "The requested account has not been authorized by the user."}})
       (web3-send-async cofx payload message-id))))
 
 (fx/defn handle-scanned-qr-code

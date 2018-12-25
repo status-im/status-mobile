@@ -59,13 +59,21 @@ WebViewBridge.onMessage = function (message) {
                 }
                 callback.resolve(data.data);
             } else {
-                callback.reject(new Error("Denied"));
+                callback.reject({code: 4001, message: "User denied authorizing any accounts for the dapp."});
             }
         } else if (data.type === "web3-send-async-callback") {
             var id = data.messageId;
             var callback = callbacks[id];
             if (callback) {
-                if (callback.results) {
+                if (callback.beta){
+                    if (data.error || data.result.error){
+                        callback.reject(data.error || data.result.error);
+                    }
+                    else{
+                        callback.resolve(data.result.result);
+                    }
+                }
+                else if (callback.results) {
                     callback.results.push(data.error || data.result);
                     if (callback.results.length == callback.num)
                         callback.callback(undefined, callback.results);
@@ -133,7 +141,7 @@ ReadOnlyProvider.prototype.send = function (payload) {
     }
 };
 
-ReadOnlyProvider.prototype.sendAsync = function (payload, callback) {
+function sendAsync (payload, callback) {
    var syncResponse = getSyncResponse(payload);
    if (syncResponse && callback){
        callback(null, syncResponse);
@@ -162,7 +170,55 @@ ReadOnlyProvider.prototype.sendAsync = function (payload, callback) {
 
    }
 };
+
+ReadOnlyProvider.prototype.sendAsync = sendAsync;
+
+var ReadOnlyBetaProvider = function () {};
+
+ReadOnlyBetaProvider.prototype.isStatus = true;
+ReadOnlyBetaProvider.prototype.status = new StatusAPI();
+
+//web3.js Backwards Compatibility
+ReadOnlyBetaProvider.prototype.isConnected = function () { return true; };
+ReadOnlyBetaProvider.prototype.sendAsync = sendAsync;
+
+ReadOnlyBetaProvider.prototype.scanQRCode = function (regex) {
+    return sendAPIrequest('qr-code', {regex: regex});
+};
+
+ReadOnlyBetaProvider.prototype.send = function (method, params = []) {
+
+    if (!method || typeof method !== 'string') {
+      return new Error('Method is not a valid string.');
+    }
+
+    if (!(params instanceof Array)) {
+      return new Error('Params is not a valid array.');
+    }
+
+    if (method == 'eth_requestAccounts'){
+        return sendAPIrequest('web3');
+    }
+
+    var messageId = callbackId++;
+    var payload = {id:      messageId,
+                   jsonrpc: "2.0",
+                   method:  method,
+                   params:  params};
+
+    bridgeSend({type:      'web3-send-async-read-only',
+                messageId: messageId,
+                payload:   payload});
+
+    return new Promise(function (resolve, reject) {
+                           callbacks[messageId] = {beta:    true,
+                                                   resolve: resolve,
+                                                   reject:  reject};
+                       });
+};
 }
 
 console.log("ReadOnlyProvider");
 ethereum = new ReadOnlyProvider();
+console.log("ReadOnlyBetaProvider");
+ethereumBeta = new ReadOnlyBetaProvider();
