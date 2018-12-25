@@ -101,8 +101,8 @@ class TestBrowsing(SingleDeviceTestCase):
     @marks.critical
     def test_refresh_button_browsing_app_webview(self):
         sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        status_test_dapp = sign_in_view.open_status_test_dapp()
+        home_view = sign_in_view.create_user()
+        status_test_dapp = home_view.open_status_test_dapp()
         status_test_dapp.transactions_button.click()
         status_test_dapp.find_full_text('Sign message')
         status_test_dapp.browser_refresh_page_button.click()

@@ -167,4 +167,6 @@ class HomeView(BaseView):
         start_new_chat_view.status_test_dapp_button.scroll_to_element()
         status_test_dapp = start_new_chat_view.status_test_dapp_button.click()
         start_new_chat_view.open_button.click()
+        for _ in range(2):
+            status_test_dapp.allow_button.click()
         return status_test_dapp
