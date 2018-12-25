@@ -5,17 +5,15 @@
 
 (deftest normalize-chat-test
   (testing "admins & contacts"
-    (is (= {:admins               #{4}
-            :contacts             #{2}
-            :tags                 #{}
-            :membership-updates   []
-            :last-message-type    :message-type
-            :last-message-content {:foo "bar"}
-            :last-clock-value     nil}
+    (is (= {:admins                    #{4}
+            :contacts                  #{2}
+            :tags                      #{}
+            :membership-updates        []
+            :last-message-content      {:foo "bar"}
+            :last-clock-value          nil}
            (chats/normalize-chat
-            {:admins               [4]
-             :contacts             [2]
-             :last-message-type    "message-type"
+            {:admins                    [4]
+             :contacts                  [2]
              :last-message-content "{:foo \"bar\"}"}))))
   (testing "membership-updates"
     (let [raw-events {"1" {:id "1" :type "members-added" :clock-value 10 :members [1 2] :signature "a" :from "id-1"}

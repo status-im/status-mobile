@@ -100,12 +100,12 @@
                                      deleted-at-clock-value
                                      (utils.clocks/send 0))]
     {:db            (update-in db [:chats chat-id] merge
-                               {:messages                empty-message-map
-                                :message-groups          {}
-                                :last-message-content    nil
-                                :last-message-type       nil
-                                :unviewed-messages-count 0
-                                :deleted-at-clock-value  last-message-clock-value})
+                               {:messages                  empty-message-map
+                                :message-groups            {}
+                                :last-message-content      nil
+                                :last-message-content-type nil
+                                :unviewed-messages-count   0
+                                :deleted-at-clock-value    last-message-clock-value})
      :data-store/tx [(chats-store/clear-history-tx chat-id last-message-clock-value)
                      (messages-store/delete-messages-tx chat-id)]}))
 

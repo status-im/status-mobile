@@ -235,3 +235,11 @@
   (update v10 :properties merge
           {:last-clock-value {:type     :int
                               :optional true}}))
+
+(def v12
+  (-> v11
+      (update :properties merge
+              {:last-message-content-type
+               {:type     :string
+                :optional true}})
+      (update :properties dissoc :last-message-type)))

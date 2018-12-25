@@ -307,16 +307,7 @@
    (.sorted "timestamp" true)
    (aget 0)))
 
-(defn v28 [old-realm new-realm]
-  (let [chats (.objects new-realm "chat")]
-    (dotimes [i (.-length chats)]
-      (let [chat (aget chats i)
-            chat-id (aget chat "chat-id")]
-        (when-let [last-message (get-last-message new-realm chat-id)]
-          (let [content (aget last-message "content")
-                message-type (aget last-message "message-type")]
-            (aset chat "last-message-content" content)
-            (aset chat "last-message-type" message-type)))))))
+(defn v28 [old-realm new-realm])
 
 (defn get-last-clock-value [realm chat-id]
   (if-let [last-message
@@ -337,3 +328,14 @@
             chat-id (aget chat "chat-id")]
         (when-let [last-clock-value (get-last-clock-value new-realm chat-id)]
           (aset chat "last-clock-value" last-clock-value))))))
+
+(defn v30 [old-realm new-realm]
+  (let [chats (.objects new-realm "chat")]
+    (dotimes [i (.-length chats)]
+      (let [chat (aget chats i)
+            chat-id (aget chat "chat-id")]
+        (when-let [last-message (get-last-message new-realm chat-id)]
+          (let [content (aget last-message "content")
+                content-type (aget last-message "content-type")]
+            (aset chat "last-message-content" content)
+            (aset chat "last-message-content-type" content-type)))))))

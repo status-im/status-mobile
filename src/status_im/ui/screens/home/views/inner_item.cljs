@@ -90,7 +90,7 @@
                                                  public-key
                                                  timestamp
                                                  last-message-content
-                                                 last-message-type]}]
+                                                 last-message-content-type]}]
   (letsubs [chat-name    [:chats/chat-name chat-id]]
     (let [truncated-chat-name (utils/truncate-str chat-name 30)]
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])}
@@ -104,7 +104,7 @@
            [message-timestamp timestamp]]]
          [react/view styles/item-lower-container
           [message-content-text {:content      last-message-content
-                                 :content-type last-message-type}]
+                                 :content-type last-message-content-type}]
           [unviewed-indicator chat-id]]]]])))
 
 (defn home-list-browser-item-inner-view [{:keys [dapp url name browser-id] :as browser}]

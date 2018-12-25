@@ -23,7 +23,7 @@
                                                   color public? public-key
                                                   timestamp
                                                   last-message-content
-                                                  last-message-type]
+                                                  last-message-content-type]
                                            :as chat-item}]
   (views/letsubs [photo-path              [:contacts/chat-photo chat-id]
                   unviewed-messages-count [:chats/unviewed-messages-count chat-id]
@@ -31,7 +31,7 @@
                   current-chat-id         [:chats/current-chat-id]]
     (let [last-message {:content      last-message-content
                         :timestamp    timestamp
-                        :message-type last-message-type}
+                        :content-type last-message-content-type}
           name (or chat-name
                    (gfycat/generate-gfy public-key))
           [unviewed-messages-label large?] [(utils/unread-messages-count unviewed-messages-count) true]

@@ -276,7 +276,7 @@
 (defn- update-last-message [all-chats chat-id]
   (let [{:keys [messages message-groups]}
         (get all-chats chat-id)
-        {:keys [content message-type clock-value]}
+        {:keys [content content-type clock-value]}
         (->> (chat.db/sort-message-groups message-groups messages)
              first
              second
@@ -284,10 +284,10 @@
              :message-id
              (get messages))]
     (chat-model/upsert-chat
-     {:chat-id              chat-id
-      :last-message-content content
-      :last-message-type    message-type
-      :last-clock-value     clock-value})))
+     {:chat-id                   chat-id
+      :last-message-content      content
+      :last-message-content-type content-type
+      :last-clock-value          clock-value})))
 
 (fx/defn update-last-messages
   [{:keys [db] :as cofx} chat-ids]
@@ -377,11 +377,11 @@
 
     (fx/merge cofx
               (chat-model/upsert-chat
-               {:chat-id              chat-id
-                :timestamp            now
-                :last-message-content (:content message)
-                :last-message-type    (:message-type message)
-                :last-clock-value     (:clock-value message)})
+               {:chat-id                   chat-id
+                :timestamp                 now
+                :last-message-content      (:content message)
+                :last-message-content-type (:content-type message)
+                :last-clock-value          (:clock-value message)})
               (add-message {:batch?           false
                             :message          message-with-id
                             :current-chat?    true

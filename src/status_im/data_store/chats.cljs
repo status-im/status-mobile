@@ -54,7 +54,6 @@
       (update :tags #(into #{} %))
       (update :membership-updates  (partial unmarshal-membership-updates chat-id))
       (update :last-clock-value utils.clocks/safe-timestamp)
-      (update :last-message-type keyword)
       (update :last-message-content utils/safe-read-message-content)))
 
 (re-frame/reg-cofx
@@ -95,7 +94,7 @@
     (let [chat (get-chat-by-id chat-id realm)]
       (doto chat
         (aset "last-message-content" nil)
-        (aset "last-message-type" nil)
+        (aset "last-message-content-type" nil)
         (aset "deleted-at-clock-value" deleted-at-clock-value)))))
 
 (defn deactivate-chat-tx
