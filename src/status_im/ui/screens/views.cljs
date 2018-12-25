@@ -52,6 +52,7 @@
             [status-im.ui.screens.pairing.views :refer [installations]]
             [status-im.ui.screens.bootnodes-settings.edit-bootnode.views :refer [edit-bootnode]]
             [status-im.ui.screens.currency-settings.views :refer [currency-settings]]
+            [status-im.ui.screens.hardwallet.settings.views :refer [keycard-settings enter-pin reset-card]]
             [status-im.ui.screens.help-center.views :refer [help-center]]
             [status-im.ui.screens.browser.views :refer [browser]]
             [status-im.ui.screens.add-new.open-dapp.views :refer [open-dapp dapp-description]]
@@ -81,7 +82,7 @@
         {:on-will-focus
          (fn []
            (log/debug :on-will-focus view-id)
-           (re-frame/dispatch [:set :view-id view-id]))}]])))
+           (re-frame/dispatch [:screens/on-will-focus view-id]))}]])))
 
 (defn wrap-modal [modal-view component]
   (fn []
@@ -334,7 +335,10 @@
             (assoc :hardwallet-authentication-method hardwallet-authentication-method
                    :hardwallet-connect hardwallet-connect
                    :hardwallet-setup hardwallet-setup
-                   :hardwallet-success hardwallet-success)))
+                   :hardwallet-success hardwallet-success
+                   :keycard-settings keycard-settings
+                   :reset-card reset-card
+                   :enter-pin enter-pin)))
          {:headerMode       "none"
           :initialRouteName "my-profile"})}
        :profile-qr-viewer

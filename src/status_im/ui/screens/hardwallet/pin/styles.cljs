@@ -6,6 +6,7 @@
   {:flex            1
    :flex-direction  :column
    :justify-content :space-between
+   :padding-bottom  10
    :ios             {:margin-top 30}})
 
 (defstyle error-container

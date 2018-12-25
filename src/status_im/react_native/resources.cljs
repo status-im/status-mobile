@@ -69,5 +69,6 @@
    :secret-keys         (js/require "./resources/images/ui/secret-keys.png")
    :keycard-lock        (js/require "./resources/images/ui/keycard-lock.png")
    :hold-card-animation (js/require "./resources/images/ui/hold-card-animation.png")
+   :warning-sign        (js/require "./resources/images/ui/warning-sign.png")
    :phone-nfc-on        (js/require "./resources/images/ui/phone-nfc-on.png")
    :phone-nfc-off       (js/require "./resources/images/ui/phone-nfc-off.png")})

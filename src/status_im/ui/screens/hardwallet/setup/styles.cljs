@@ -27,7 +27,8 @@
 
 (def maintain-card-text
   {:font-size          12
-   :padding-horizontal 30
+   :flex               1
+   :padding-horizontal 20
    :color              colors/blue})
 
 (def setup-steps-container

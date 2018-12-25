@@ -57,6 +57,9 @@
 (spec/def :account/wallet-set-up-passed? (spec/nilable boolean?))
 (spec/def :account/mainnet-warning-shown? (spec/nilable boolean?))
 (spec/def :account/desktop-alpha-release-warning-shown? (spec/nilable boolean?))
+(spec/def :account/keycard-instance-uid (spec/nilable string?))
+(spec/def :account/keycard-pairing (spec/nilable string?))
+(spec/def :account/keycard-paired-on (spec/nilable int?))
 
 (spec/def :accounts/account (spec/keys :req-un [:account/name :account/address :account/public-key
                                                 :account/photo-path :account/signing-phrase
@@ -69,7 +72,10 @@
                                                 :account/wallet-set-up-passed? :account/last-request
                                                 :account/bootnodes :account/extensions
                                                 :account/mainnet-warning-shown?
-                                                :account/desktop-alpha-release-warning-shown?]))
+                                                :account/desktop-alpha-release-warning-shown?
+                                                :account/keycard-instance-uid
+                                                :account/keycard-pairing
+                                                :account/keycard-paired-on]))
 
 (spec/def :accounts/accounts (spec/nilable (spec/map-of :account/address :accounts/account)))
 

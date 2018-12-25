@@ -196,3 +196,6 @@
   ;; - nightlies that had v18 as an empty transition will apply the empty transition
   ;;    v19 again, and migrate Infura IDs as v20.
   (migrate-infura-project-ids! new-realm))
+
+(defn v21 [old-realm new-realm]
+  (log/debug "migrating base database v21: " old-realm new-realm))

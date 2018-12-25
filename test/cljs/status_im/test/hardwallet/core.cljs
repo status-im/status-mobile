@@ -8,42 +8,38 @@
                                     :confirmation []
                                     :status       nil
                                     :enter-step   :original}}}}
-           (hardwallet/process-pin-input {:db {:hardwallet {:pin {:original     []
+           (hardwallet/process-pin-input {:db {:hardwallet {:pin {:original     [1]
                                                                   :confirmation []
-                                                                  :enter-step   :original}}}}
-                                         1
-                                         :original))))
+                                                                  :enter-step   :original}}}}))))
   (testing "first 6 numbers entered"
     (is (= {:db {:hardwallet {:pin {:original     [1 2 3 4 5 6]
                                     :confirmation []
                                     :status       nil
                                     :enter-step   :confirmation}}}}
-           (hardwallet/process-pin-input {:db {:hardwallet {:pin {:original     [1 2 3 4 5]
-                                                                  :confirmation []
-                                                                  :enter-step   :original}}}}
-                                         6
-                                         :original))))
-  (testing "confirmation entered"
-    (is (= {:db                   {:hardwallet {:pin {:original     [1 2 3 4 5 6]
-                                                      :confirmation [1 2 3 4 5 6]
-                                                      :enter-step   :confirmation
-                                                      :status       :validating}}}}
            (hardwallet/process-pin-input {:db {:hardwallet {:pin {:original     [1 2 3 4 5 6]
-                                                                  :confirmation [1 2 3 4 5]
-                                                                  :enter-step   :confirmation}}}}
-                                         6
-                                         :confirmation))))
+                                                                  :confirmation []
+                                                                  :enter-step   :original}}}}))))
+  (testing "confirmation entered"
+    (is (= {:db                    {:hardwallet {:pin {:original     [1 2 3 4 5 6]
+                                                       :confirmation [1 2 3 4 5 6]
+                                                       :enter-step   :confirmation
+                                                       :status       :verifying}}}
+            :hardwallet/change-pin {:new-pin     "123456"
+                                    :current-pin ""
+                                    :pairing     nil}}
+           (hardwallet/process-pin-input {:db {:hardwallet {:pin     {:original     [1 2 3 4 5 6]
+                                                                      :confirmation [1 2 3 4 5 6]
+                                                                      :enter-step   :confirmation}}}}))))
+
   (testing "confirmation doesn't match"
     (is (= {:db {:hardwallet {:pin {:original     []
                                     :confirmation []
                                     :enter-step   :original
-                                    :error        :t/pin-mismatch
+                                    :error-label  :t/pin-mismatch
                                     :status       :error}}}}
            (hardwallet/process-pin-input {:db {:hardwallet {:pin {:original     [1 2 3 4 5 6]
-                                                                  :confirmation [1 2 3 4 5]
-                                                                  :enter-step   :confirmation}}}}
-                                         7
-                                         :confirmation)))))
+                                                                  :confirmation [1 2 3 4 5 7]
+                                                                  :enter-step   :confirmation}}}})))))
 
 (deftest on-generate-and-load-key-success
   (is (= (select-keys

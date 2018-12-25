@@ -67,6 +67,8 @@
                                                   :nfc-enabled?   false
                                                   :pin            {:original     []
                                                                    :confirmation []
+                                                                   :current      []
+                                                                   :puk          []
                                                                    :enter-step   :original}}
              :chats/loading?                     true})
 

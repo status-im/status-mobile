@@ -15,6 +15,7 @@
             status-im.ui.screens.wallet.send.subs
             status-im.ui.screens.wallet.settings.subs
             status-im.ui.screens.wallet.transactions.subs
+            status-im.ui.screens.hardwallet.settings.subs
             status-im.ui.screens.network-settings.subs
             status-im.ui.screens.log-level-settings.subs
             status-im.ui.screens.fleet-settings.subs

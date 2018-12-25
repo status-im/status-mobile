@@ -111,6 +111,10 @@
                                         :action-fn           #(re-frame/dispatch [:navigate-to :currency-settings])
                                         :accessibility-label :currency-button}]
      [profile.components/settings-item-separator]
+     (when config/hardwallet-enabled?
+       [profile.components/settings-item {:label-kw            :t/status-keycard
+                                          :accessibility-label :keycard-button
+                                          :action-fn           #(re-frame/dispatch [:profile.ui/keycard-settings-button-pressed])}])
      [profile.components/settings-item {:label-kw            :t/notifications
                                         :accessibility-label :notifications-button
                                         :action-fn           #(.openURL react/linking "app-settings://notification/status-im")}]

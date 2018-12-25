@@ -145,6 +145,9 @@
 (defn timestamp []
   (inst-ms (js/Date.)))
 
+(defn timestamp->year-month-day-date [ms]
+  (unparse (:year-month-day formatters) (to-date ms)))
+
 (re-frame/reg-cofx
  :now
  (fn [coeffects _]
