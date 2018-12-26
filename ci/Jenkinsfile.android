@@ -24,6 +24,7 @@ pipeline {
 
   environment {
     BUILD_PLATFORM = 'android'
+    NODE_VERSION = 'v8.14.1'
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
     LC_ALL = 'en_US.UTF-8'
