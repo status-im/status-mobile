@@ -71,15 +71,21 @@
                    :address    address
                    :photo-path (identicon/identicon pubkey)
                    :mnemonic   ""}]
-      (accounts.create/on-account-created cofx account password {:seed-backed-up? true}))
-    {:db (assoc-in db [:accounts/recover :password-error] :recover-password-invalid)}))
+      (accounts.create/on-account-created
+       cofx account password {:seed-backed-up? true}))
+    {:db        (-> db
+                    (update :accounts/recover assoc
+                            :processing? false
+                            :password ""
+                            :password-error :recover-password-invalid)
+                    (update :accounts/recover dissoc
+                            :password-valid?))
+     :node/stop nil}))
 
 (fx/defn on-account-recovered
-  [{:keys [db] :as cofx} result password]
+  [cofx result password]
   (let [data (types/json->clj result)]
-    (fx/merge cofx
-              {:db (dissoc db :accounts/recover)}
-              (validate-recover-result data password))))
+    (validate-recover-result cofx data password)))
 
 (fx/defn recover-account
   [{:keys [db random-guid-generator] :as cofx}]
