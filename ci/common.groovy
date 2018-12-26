@@ -71,12 +71,12 @@ def installJSDeps(platform) {
 def doGitRebase() {
   sh 'git status'
   sh 'git fetch --force origin develop:develop'
-  try {
+  /*try {
     sh 'git rebase develop'
   } catch (e) {
     sh 'git rebase --abort'
     throw e
-  }
+  }*/
 }
 
 def buildNumber() {
@@ -193,7 +193,7 @@ def ghcmgrPostBuild(success) {
 
 def gitHubNotify(message) {
   def githubIssuesUrl = 'https://api.github.com/repos/status-im/status-react/issues'
-  def changeId = changeId() 
+  def changeId = changeId()
   if (!changeId) { /* CHANGE_ID exists only when run as a PR build */
     println('This build is not related to a PR, CHANGE_ID missing.')
     println('GitHub notification impossible, skipping...')
