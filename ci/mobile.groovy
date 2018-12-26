@@ -1,4 +1,4 @@
-common = load 'ci/common.groovy'
+cmn = load 'ci/common.groovy'
 ios = load 'ci/ios.groovy'
 android = load 'ci/android.groovy'
 
@@ -27,15 +27,16 @@ def podUpdate() {
   try {
     wait(lockFile)
     sh "touch ${lockFile}"
-    sh 'pod update --silent'
+    sh 'pod update --silent --no-ansi'
   } finally {
-    sh "rm ${lockFile}"
+    sh "rm -f ${lockFile}"
   }
 }
 
 def prep(type = 'nightly') {
+  cmn.doGitRebase()
   /* ensure that we start from a known state */
-  sh 'make clean'
+  cmn.clean()
   /* select type of build */
   switch (type) {
     case 'nightly':
@@ -52,9 +53,11 @@ def prep(type = 'nightly') {
   /* npm deps and status-go download */
   sh "make prepare-${env.BUILD_PLATFORM}"
   /* generate ios/StatusIm.xcworkspace */
-  dir('ios') {
-    podUpdate()
-    sh 'pod install --silent'
+  if (env.BUILD_PLATFORM == 'ios') {
+    dir('ios') {
+      podUpdate()
+      sh 'pod install --silent'
+    }
   }
 }
 

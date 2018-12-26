@@ -1,19 +1,29 @@
 pipeline {
-  agent { label 'fastlane' }
+  agent { label 'macos' }
+
+  parameters {
+    string(
+      name: 'BUILD_TYPE',
+      description: 'Specify build type. Values: pr / e2e / nightly / release',
+      defaultValue: 'pr',
+    )
+  }
 
   options {
     timestamps()
+    disableConcurrentBuilds()
     /* Prevent Jenkins jobs from running forever */
     timeout(time: 35, unit: 'MINUTES')
     /* Limit builds retained */
     buildDiscarder(logRotator(
-      numToKeepStr: '60',
-      daysToKeepStr: '30',
-      artifactNumToKeepStr: '60',
+      numToKeepStr: '10',
+      daysToKeepStr: '20',
+      artifactNumToKeepStr: '10',
     ))
   }
 
   environment {
+    NODE_VERSION = 'v10.14.1'
     BUILD_PLATFORM = 'ios'
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
@@ -26,44 +36,68 @@ pipeline {
   stages {
     stage('Prep') {
       steps {
-        script {
-          print "Running ${params.BUILD_TYPE} build!"
+        script { nvm(env.NODE_VERSION) {
           /* Necessary to load methods */
           mobile = load 'ci/mobile.groovy'
           cmn    = load 'ci/common.groovy'
+          print "Running ${cmn.getBuildType()} build!"
+          /* Cleanup and Prep */
           mobile.prep(cmn.getBuildType())
-        }
+          /* Run at start to void mismatched numbers */
+          cmn.buildNumber()
+        } }
       }
     }
     stage('Lint') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { cmn.runLint() }
-      }
+      } }
     }
     stage('Tests') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { cmn.runTests() }
-      }
+      } }
     }
     stage('Build') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { mobile.leinBuild('ios') }
-      }
+      } }
     }
     stage('Compile') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { api = mobile.ios.compile(cmn.getBuildType()) }
-      }
+      } }
     }
     stage('Archive') {
       steps {
-        script { archiveArtifacts api }
+        archiveArtifacts api
       }
     }
     stage('Upload') {
       steps {
-        script { env.DIAWI_URL = mobile.ios.uploadToDiawi() }
+        script {
+          /* e2e builds get tested in SauceLabs */
+          if (cmn.getBuildType() == 'e2e') {
+            env.SAUCE_URL = mobile.ios.uploadToSauceLabs()
+            env.PKG_URL = cmn.uploadArtifact(api)
+          } else {
+            env.PKG_URL = mobile.ios.uploadToDiawi()
+          }
+        }
       }
     }
+    stage('Notify') {
+      steps {
+        script { cmn.notifyPRSuccess() }
+      }
+    }
+    stage('Cleanup') {
+      steps {
+        script { cmn.clean() }
+      }
+    }
+  }
+  post {
+    failure { script { load('ci/common.groovy').notifyPRFailure() } }
   }
 }

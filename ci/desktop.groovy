@@ -1,16 +1,12 @@
-common = load 'ci/common.groovy'
+cmn = load 'ci/common.groovy'
 
 packageFolder = './StatusImPackage'
 
-def cleanupBuild() {
-  sh 'make clean'
-}
-
 def cleanupAndDeps() {
-  cleanupBuild()
+  cmn.clean()
   sh 'cp .env.jenkins .env'
   sh 'lein deps'
-  common.installJSDeps('desktop')
+  cmn.installJSDeps('desktop')
 }
 
 def slackNotify(message, color = 'good') {
@@ -52,12 +48,31 @@ def uploadArtifact(filename) {
 /* MAIN --------------------------------------------------*/
 
 def prepDeps() {
-  common.doGitRebase()
+  cmn.doGitRebase()
   cleanupAndDeps()
 }
 
 def compile() {
+  /* disable logs for desktop builds when releasing */
+  if (params.BUILD_TYPE == 'release') {
+    env.STATUS_NO_LOGGING = 1
+  }
+  /* since QT is in a custom path we need to add it to PATH */
+  if (env.QT_PATH) {
+    env.PATH = "${env.QT_PATH}:${env.PATH}"
+  }
   sh './scripts/build-desktop.sh compile'
+}
+
+def bundleWindows(type = 'nightly') {
+  def pkg
+
+  sh './scripts/build-desktop.sh bundle'
+  dir(packageFolder) {
+    pkg = cmn.pkgFilename(type, 'exe')
+    sh "mv ../Status-x86_64-setup.exe ${pkg}"
+  }
+  return "${packageFolder}/${pkg}".drop(2)
 }
 
 def bundleLinux(type = 'nightly') {
@@ -65,14 +80,14 @@ def bundleLinux(type = 'nightly') {
 
   sh './scripts/build-desktop.sh bundle'
   dir(packageFolder) {
-    pkg = common.pkgFilename(type, 'AppImage')
+    pkg = cmn.pkgFilename(type, 'AppImage')
     sh "mv ../Status-x86_64.AppImage ${pkg}"
   }
   return "${packageFolder}/${pkg}".drop(2)
 }
 
 def bundleMacOS(type = 'nightly') {
-  def pkg = common.pkgFilename(type, 'dmg')
+  def pkg = cmn.pkgFilename(type, 'dmg')
   sh './scripts/build-desktop.sh bundle'
   dir(packageFolder) {
     withCredentials([
