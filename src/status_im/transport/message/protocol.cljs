@@ -35,19 +35,36 @@
                                             :resend? resend?
                                             :now     now}))})
 
+(defn send-public-message
+  "Sends the payload to topic"
+  [{:keys [db] :as cofx} chat-id success-event payload]
+  (let [{:keys [web3]} db]
+    {:shh/send-public-message [{:web3 web3
+                                :success-event success-event
+                                :src     (accounts.db/current-public-key cofx)
+                                :chat    chat-id
+                                :payload payload}]}))
+
 (fx/defn send-with-sym-key
   "Sends the payload using symetric key and topic from db (looked up by `chat-id`)"
   [{:keys [db] :as cofx} {:keys [payload chat-id success-event]}]
   ;; we assume that the chat contains the contact public-key
   (let [{:keys [web3]} db
-        {:keys [sym-key-id topic]} (get-in db [:transport/chats chat-id])]
-    {:shh/post [{:web3          web3
-                 :success-event success-event
-                 :message       (merge {:sig      (accounts.db/current-public-key cofx)
-                                        :symKeyID sym-key-id
-                                        :payload  payload
-                                        :topic    topic}
-                                       whisper-opts)}]}))
+        {:keys [sym-key-id topic]} (get-in db [:transport/chats chat-id])
+        pfs? (get-in db [:account/account :settings :pfs?])]
+    (if pfs?
+      (send-public-message
+       cofx
+       chat-id
+       success-event
+       payload)
+      {:shh/post [{:web3          web3
+                   :success-event success-event
+                   :message       (merge {:sig      (accounts.db/current-public-key cofx)
+                                          :symKeyID sym-key-id
+                                          :payload  payload
+                                          :topic    topic}
+                                         whisper-opts)}]})))
 
 (fx/defn send-direct-message
   "Sends the payload using to dst"
@@ -59,33 +76,28 @@
                                 :dst     dst
                                 :payload payload}]}))
 
-(defn send-public-message
-  "Sends the payload to topic"
-  [{:keys [db] :as cofx} chat-id success-event payload]
-  (let [{:keys [web3]} db]
-    {:shh/send-public-message [{:web3 web3
-                                :success-event success-event
-                                :src     (accounts.db/current-public-key cofx)
-                                :chat    chat-id
-                                :payload payload}]}))
-
 (fx/defn send-with-pubkey
   "Sends the payload using asymetric key (account `:public-key` in db) and fixed discovery topic"
   [{:keys [db] :as cofx} {:keys [payload chat-id success-event]}]
   (let [{:keys [web3]} db]
-    {:shh/post [{:web3          web3
-                 :success-event success-event
-                 :message       (merge {:sig     (accounts.db/current-public-key cofx)
-                                        :pubKey  chat-id
-                                        :payload payload
-                                        :topic   (transport.utils/get-topic constants/contact-discovery)}
-                                       whisper-opts)}]}))
+    (let [pfs? (get-in db [:account/account :settings :pfs?])]
+      (if pfs?
+        (send-direct-message cofx
+                             chat-id
+                             success-event
+                             payload)
+        {:shh/post [{:web3          web3
+                     :success-event success-event
+                     :message       (merge {:sig     (accounts.db/current-public-key cofx)
+                                            :pubKey  chat-id
+                                            :payload payload
+                                            :topic   (transport.utils/get-topic constants/contact-discovery)}
+                                           whisper-opts)}]}))))
 
 (defrecord Message [content content-type message-type clock-value timestamp]
   StatusMessage
   (send [this chat-id {:keys [message-id] :as cofx}]
     (let [dev-mode?          (get-in cofx [:db :account/account :dev-mode?])
-          pfs?               (get-in cofx [:db :account/account :settings :pfs?])
           current-public-key (accounts.db/current-public-key cofx)
           params             {:chat-id       chat-id
                               :payload       this
@@ -95,25 +107,13 @@
                                               message-type]}]
       (case message-type
         :public-group-user-message
-        (if pfs?
-          (send-public-message
-           cofx
-           chat-id
-           (:success-event params)
-           this)
-          (send-with-sym-key cofx params))
+        (send-with-sym-key cofx params)
 
         :user-message
-        (if pfs?
-          (send-direct-message
-           cofx
-           chat-id
-           (:success-event params)
-           this)
-          (fx/merge cofx
-                    #(when (config/pairing-enabled? dev-mode?)
-                       (send-direct-message % current-public-key nil this))
-                    (send-with-pubkey params))))))
+        (fx/merge cofx
+                  #(when (config/pairing-enabled? dev-mode?)
+                     (send-direct-message % current-public-key nil this))
+                  (send-with-pubkey params)))))
   (receive [this chat-id signature _ cofx]
     {:chat-received-message/add-fx
      [(assoc (into {} this)
@@ -134,14 +134,8 @@
 (defrecord MessagesSeen [message-ids]
   StatusMessage
   (send [this chat-id cofx]
-    (let [pfs?               (get-in cofx [:db :account/account :settings :pfs?])]
-      (if pfs?
-        (send-direct-message cofx
-                             chat-id
-                             nil
-                             this)
-        (send-with-pubkey cofx {:chat-id chat-id
-                                :payload this}))))
+    (send-with-pubkey cofx {:chat-id chat-id
+                            :payload this}))
   (receive [this chat-id signature _ cofx]
     (chat/receive-seen cofx chat-id signature this))
   (validate [this]

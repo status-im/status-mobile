@@ -15,6 +15,8 @@
     "sync-all-devices": "Sync all devices",
     "syncing-devices": "Syncing...",
     "paired-devices": "Paired devices",
+    "contact-recovery-title": "{{name}} has sent you a message",
+    "contact-recovery-content": "{{name}} has sent you a message but did not include this device.\nThis might happen if you have more than 3 devices, you haven't paired your devices correctly or you just recovered your account.\nPlease make sure your devices are paired correctly and click Add to contacts to notify the user of this device.",
     "pairing-maximum-number-reached-title": "Max number of devices reached",
     "pairing-maximum-number-reached-content": "Please disable one of your devices before enabling a new one.",
     "pairing-new-installation-detected-title": "New device detected",

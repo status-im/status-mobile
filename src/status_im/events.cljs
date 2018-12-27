@@ -16,6 +16,7 @@
             [status-im.chat.models.loading :as chat.loading]
             [status-im.chat.models.message :as chat.message]
             [status-im.contact.core :as contact]
+            [status-im.contact-recovery.core :as contact-recovery]
             [status-im.data-store.core :as data-store]
             [status-im.extensions.core :as extensions]
             [status-im.extensions.registry :as extensions.registry]
@@ -1404,3 +1405,25 @@
  :pairing.callback/disable-installation-success
  (fn [cofx [_ installation-id]]
    (pairing/disable cofx installation-id)))
+
+;; Contact recovery module
+
+(handlers/register-handler-fx
+ :contact-recovery.ui/prompt-accepted
+ [(re-frame/inject-cofx :random-id-generator)]
+ (fn [cofx [_ public-key]]
+   (fx/merge
+    cofx
+    (contact/add-contact public-key)
+    (contact-recovery/prompt-accepted public-key))))
+
+(handlers/register-handler-fx
+ :contact-recovery.ui/prompt-dismissed
+ (fn [cofx [_ public-key]]
+   (contact-recovery/prompt-dismissed cofx public-key)))
+
+(handlers/register-handler-fx
+ :contact-recovery.callback/show-contact-recovery-message
+ [(re-frame/inject-cofx :random-id-generator)]
+ (fn [cofx [_ public-key]]
+   (contact-recovery/show-contact-recovery-message cofx public-key)))

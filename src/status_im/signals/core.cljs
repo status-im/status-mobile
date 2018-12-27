@@ -4,6 +4,7 @@
             [status-im.init.core :as init]
             [status-im.node.core :as node]
             [status-im.pairing.core :as pairing]
+            [status-im.contact-recovery.core :as contact-recovery]
             [status-im.mailserver.core :as mailserver]
             [status-im.transport.message.core :as transport.message]
             [status-im.utils.fx :as fx]
@@ -75,5 +76,6 @@
       "mailserver.request.completed" (mailserver/handle-request-completed cofx event)
       "mailserver.request.expired"   (when (accounts.db/logged-in? cofx)
                                        (mailserver/resend-request cofx {:request-id (:hash event)}))
+      "messages.decrypt.failed" (contact-recovery/show-contact-recovery-fx cofx (:sender event))
       "discovery.summary"  (summary cofx event)
       (log/debug "Event " type " not handled"))))
