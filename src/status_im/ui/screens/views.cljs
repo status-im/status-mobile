@@ -144,7 +144,7 @@
                 :hardwallet-setup hardwallet-setup
                 :hardwallet-success hardwallet-success)))
       (cond-> {:headerMode "none"}
-        (#{:intro :login} view-id)
+        (#{:intro :login :progress} view-id)
         (assoc :initialRouteName (name view-id))))}
     :chat-stack
     {:screen
@@ -403,7 +403,7 @@
                               (when (and
                                      platform/android?
                                      (not js/goog.DEBUG)
-                                     (not (contains? #{:intro :login} @view-id)))
+                                     (not (contains? #{:intro :login :progress} @view-id)))
                                 (navigation/navigate-to @view-id)))
             ;; see https://reactnavigation.org/docs/en/state-persistence.html#development-mode
             :persistenceKey (when js/goog.DEBUG rand-label)}]))})))

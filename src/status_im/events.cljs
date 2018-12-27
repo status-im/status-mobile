@@ -110,7 +110,7 @@
   (re-frame/inject-cofx :data-store/all-browsers)
   (re-frame/inject-cofx :data-store/all-dapp-permissions)]
  (fn [{:keys [db] :as cofx} [_ address]]
-   (let [{:node/keys [status]} db]
+   (let [{:node/keys [status on-ready]} db]
      (fx/merge
       cofx
       (if (= status :started)
