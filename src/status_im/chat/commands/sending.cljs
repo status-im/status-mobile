@@ -37,15 +37,15 @@
         ;; no yield control, proceed with sending the command message
         (let [command-message (create-command-message chat-id type parameter-map cofx)]
           (fx/merge cofx
-                    #(protocol/on-send type command-message %)
+                    #(protocol/on-send type (commands/enrich-command-message-for-events db command-message) %)
                     (commands.input/set-command-reference nil)
                     (chat.message/send-message command-message)))))))
 
 (fx/defn send
   "Sends command with given parameters in particular chat"
-  [cofx chat-id {:keys [type]} parameter-map]
+  [{:keys [db] :as cofx} chat-id {:keys [type]} parameter-map]
   (let [command-message (create-command-message chat-id type parameter-map cofx)]
     (fx/merge cofx
-              #(protocol/on-send type command-message %)
+              #(protocol/on-send type (commands/enrich-command-message-for-events db command-message) %)
               (commands.input/set-command-reference nil)
               (chat.message/send-message command-message))))

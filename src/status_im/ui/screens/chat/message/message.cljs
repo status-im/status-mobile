@@ -32,7 +32,8 @@
 
 (defview message-content-command
   [command-message]
-  (letsubs [id->command [:chats/id->command]]
+  (letsubs [id->command [:chats/id->command]
+            {:keys [contacts]} [:chats/current-chat]]
     (let [{:keys [type] :as command} (commands-receiving/lookup-command-by-ref command-message id->command)
           extension-id (get-in command-message [:content :params :extension-id])]
       (if (and platform/mobile? extension-id
@@ -43,7 +44,7 @@
         ;; or installed extension has differen extension id
         [install-extension-message extension-id (:outgoing command-message)]
         (if command
-          (commands/generate-preview command command-message)
+          (commands/generate-preview command (commands/add-chat-contacts contacts command-message))
           [react/text (str "Unhandled command: " (-> command-message :content :command-path first))])))))
 
 (defview message-timestamp [t justify-timestamp? outgoing command? content]

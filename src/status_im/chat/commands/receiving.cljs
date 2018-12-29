@@ -1,5 +1,6 @@
 (ns status-im.chat.commands.receiving
   (:require [status-im.chat.commands.protocol :as protocol]
+            [status-im.chat.commands.core :as commands]
             [status-im.utils.fx :as fx]))
 
 (defn lookup-command-by-ref
@@ -14,7 +15,7 @@
   [{:keys [db] :as cofx} message]
   (let [id->command (:id->command db)]
     (when-let [{:keys [type]} (lookup-command-by-ref message id->command)]
-      (protocol/on-receive type message cofx))))
+      (protocol/on-receive type (commands/enrich-command-message-for-events db message) cofx))))
 
 (defn enhance-receive-parameters
   "Enhances parameters for the received command message.

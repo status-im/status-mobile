@@ -22,9 +22,10 @@
             [status-im.browser.core :as browser]))
 
 (defview command-short-preview [message]
-  (letsubs [id->command [:chats/id->command]]
+  (letsubs [id->command [:chats/id->command]
+            {:keys [contacts]} [:chats/current-chat]]
     (when-let [command (commands-receiving/lookup-command-by-ref message id->command)]
-      (commands/generate-short-preview command message))))
+      (commands/generate-short-preview command (commands/add-chat-contacts contacts message)))))
 
 (defn message-content-text [{:keys [content content-type] :as message}]
   [react/view styles/last-message-container
