@@ -131,17 +131,22 @@
        :id      id}
       decoded-payload))
 
-  (defn display-notification [{:keys [title body decoded-payload]}]
-    (let [notification (firebase.notifications.Notification.
-                        nil (.notifications firebase))
-          msg-id       (:id decoded-payload)]
-      (when msg-id
-        (.. notification (setNotificationId (str "hash:" msg-id)))) ;; We must prefix the notification ID, otherwise it will cause a crash in iOS
-      (.. notification
-          (setTitle title)
-          (setBody body)
-          (setData (clj->js (encode-notification-payload decoded-payload)))
-          (setSound sound-name))
+  (defn- build-notification [{:keys [title body decoded-payload]}]
+    (let [native-notification
+          (clj->js
+           (merge
+            {:title title
+             :body  body
+             :data  (clj->js (encode-notification-payload decoded-payload))
+             :sound sound-name}
+            (when-let [msg-id (:id decoded-payload)]
+              ;; We must prefix the notification ID, otherwise it will cause a crash in iOS
+              {:notificationId (str "hash:" msg-id)})))]
+      (firebase.notifications.Notification.
+       native-notification (.notifications firebase))))
+
+  (defn display-notification [{:keys [title body] :as params}]
+    (let [notification (build-notification params)]
       (when platform/android?
         (.. notification
             (-android.setChannelId channel-id)
