@@ -339,7 +339,7 @@ function use_android_sdk() {
       echo "sdk.dir=$ANDROID_SDK_ROOT" | tee -a $_localPropertiesPath
     fi
   else
-    local _docUrl="https://docs.status.im/docs/build_status.html"
+    local _docUrl="https://status.im/build_status/"
     cecho "@yellow[[ANDROID_SDK_ROOT environment variable not defined, please install the Android SDK.]]"
     cecho "@yellow[[(see $_docUrl).]]"
 
