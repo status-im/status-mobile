@@ -201,9 +201,7 @@
           from               (:from rehydrated-payload)]
       (log/debug "handle-on-message" "app-state:" app-state "view-id:"
                  view-id "current-chat-id:" current-chat-id "from:" from)
-      (when-not (and (= app-state "active")
-                     (= :chat view-id)
-                     (= current-chat-id from))
+      (when-not (= app-state "active")
         (when (show-notification? cofx rehydrated-payload)
           {:notifications/display-notification {:title           (i18n/label :notifications-new-message-title)
                                                 :body            (i18n/label :notifications-new-message-body)
@@ -215,7 +213,7 @@
           nav-opts           (when stored? {:navigation-reset? true})
           rehydrated-payload (rehydrate-payload cofx decoded-payload)
           from               (:from rehydrated-payload)
-          to                 (:to rehydrated-payload)]
+          to                 (:to   rehydrated-payload)]
       (log/debug "handle-push-notification-open"
                  "current-public-key:" current-public-key
                  "rehydrated-payload:" rehydrated-payload "stored?:" stored?)

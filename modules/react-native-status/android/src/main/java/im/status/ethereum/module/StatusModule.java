@@ -81,7 +81,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @Override
-    public void onHostResume() {  // Actvity `onResume`
+    public void onHostResume() {  // Activity `onResume`
         module = this;
         Activity currentActivity = getCurrentActivity();
         if (currentActivity == null) {
