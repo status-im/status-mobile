@@ -31,7 +31,8 @@
             [taoensso.timbre :as log]
             [status-im.utils.fx :as fx]
             [status-im.chat.models :as chat-model]
-            [status-im.accounts.db :as accounts.db]))
+            [status-im.accounts.db :as accounts.db]
+            [status-im.stickers.core :as stickers]))
 
 (defn init-store!
   "Try to decrypt the database, move on if successful otherwise go back to
@@ -231,9 +232,9 @@
               #(when (dev-mode? %)
                  (models.dev-server/start))
               (browser/initialize-browsers)
-
               (browser/initialize-dapp-permissions)
               (extensions.registry/initialize)
+              (stickers/init-stickers-packs)
               (accounts.update/update-sign-in-time)
               #(when-not (or (creating-account? %)
                              (finishing-hardwallet-setup? %))

@@ -122,7 +122,7 @@
   (validate [this]
     (if (spec/valid? :message/message this)
       this
-      (log/warn "failed to validate Message" (spec/explain :message/message this)))))
+      (log/warn "failed to validate Message" (spec/explain-str :message/message this)))))
 
 (defrecord MessagesSeen [message-ids]
   StatusMessage

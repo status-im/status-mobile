@@ -14,8 +14,7 @@
             [status-im.data-store.realm.schemas.account.membership-update :as membership-update]
             [status-im.data-store.realm.schemas.account.installation :as installation]
             [status-im.data-store.realm.schemas.account.contact-recovery :as contact-recovery]
-            [status-im.data-store.realm.schemas.account.migrations :as migrations]
-            [taoensso.timbre :as log]))
+            [status-im.data-store.realm.schemas.account.migrations :as migrations]))
 
 (def v1 [chat/v1
          transport/v1

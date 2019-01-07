@@ -104,7 +104,8 @@
      :icons/reply               (js/require "./resources/icons/reply.svg")
      :icons/indicator-big       (js/require "./resources/icons/indicator-big.svg")
      :icons/indicator-middle    (js/require "./resources/icons/indicator-middle.svg")
-     :icons/indicator-small     (js/require "./resources/icons/indicator-small.svg")}
+     :icons/indicator-small     (js/require "./resources/icons/indicator-small.svg")
+     :icons/stickers            (js/require "./resources/icons/stickers.svg")}
     {:icons/discover            (components.svg/slurp-svg "./resources/icons/bottom/discover_gray.svg")
      :icons/contacts            (components.svg/slurp-svg "./resources/icons/bottom/contacts_gray.svg")
      :icons/home                (components.svg/slurp-svg "./resources/icons/bottom/home_gray.svg")
@@ -185,7 +186,10 @@
      :icons/reply               (components.svg/slurp-svg "./resources/icons/reply.svg")
      :icons/indicator-big       (components.svg/slurp-svg "./resources/icons/indicator-big.svg")
      :icons/indicator-middle    (components.svg/slurp-svg "./resources/icons/indicator-middle.svg")
-     :icons/indicator-small     (components.svg/slurp-svg "./resources/icons/indicator-small.svg")}))
+     :icons/indicator-small     (components.svg/slurp-svg "./resources/icons/indicator-small.svg")
+     :icons/stickers            (components.svg/slurp-svg "./resources/icons/stickers.svg")
+     :icons/stickers-big        (components.svg/slurp-svg "./resources/icons/stickers_big.svg")
+     :icons/clock               (components.svg/slurp-svg "./resources/icons/clock.svg")}))
 
 (defn normalize-property-name [n]
   (if (= n :icons/options)

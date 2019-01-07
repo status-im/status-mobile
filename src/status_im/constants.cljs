@@ -7,6 +7,7 @@
 (def ethereum-rpc-url "http://localhost:8545")
 
 (def content-type-text "text/plain")
+(def content-type-sticker "sticker")
 (def content-type-status "status")
 (def content-type-command "command")
 (def content-type-command-request "command-request")

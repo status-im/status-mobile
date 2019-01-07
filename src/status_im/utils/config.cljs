@@ -27,6 +27,7 @@
 (def cached-webviews-enabled? (enabled? (get-config :CACHED_WEBVIEWS_ENABLED 0)))
 (def rn-bridge-threshold-warnings-enabled? (enabled? (get-config :RN_BRIDGE_THRESHOLD_WARNINGS 0)))
 (def extensions-enabled? (enabled? (get-config :EXTENSIONS 0)))
+(def stickers-enabled? (enabled? (get-config :STICKERS_ENABLED 0)))
 (def hardwallet-enabled? (enabled? (get-config :HARDWALLET_ENABLED 0)))
 (def dev-build? (enabled? (get-config :DEV_BUILD 0)))
 (def erc20-contract-warnings-enabled? (enabled? (get-config :ERC20_CONTRACT_WARNINGS)))

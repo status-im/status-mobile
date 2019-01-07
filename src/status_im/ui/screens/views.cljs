@@ -64,6 +64,7 @@
             [status-im.ui.screens.hardwallet.success.views :refer [hardwallet-success]]
             [status-im.ui.screens.profile.seed.views :refer [backup-seed]]
             [status-im.ui.screens.about-app.views :as about-app]
+            [status-im.ui.screens.stickers.views :as stickers]
             [status-im.utils.navigation :as navigation]
             [reagent.core :as reagent]
             [cljs-react-navigation.reagent :as nav-reagent]
@@ -167,6 +168,8 @@
           :open-dapp                    open-dapp
           :dapp-description             dapp-description
           :browser                      browser
+          :stickers                     stickers/packs
+          :stickers-pack                stickers/pack
           :login                        login}
          :config
          {:headerMode       "none"

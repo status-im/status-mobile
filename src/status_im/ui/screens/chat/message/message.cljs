@@ -137,6 +137,12 @@
   [wrapper message]
   [wrapper message [emoji-message message]])
 
+(defmethod message-content constants/content-type-sticker
+  [wrapper {:keys [content] :as message}]
+  [wrapper message
+   [react/image {:style {:margin 10 :width 100 :height 100}
+                 :source {:uri (:uri content)}}]])
+
 (defmethod message-content :default
   [wrapper {:keys [content-type] :as message}]
   [wrapper message

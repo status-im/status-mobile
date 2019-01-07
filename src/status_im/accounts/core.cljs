@@ -82,3 +82,13 @@
     (accounts.update/update-settings cofx
                                      (assoc settings :web3-opt-in? opt-in)
                                      {})))
+
+(fx/defn update-recent-stickers [cofx stickers]
+  (accounts.update/account-update cofx
+                                  {:recent-stickers stickers}
+                                  {}))
+
+(fx/defn update-stickers [cofx stickers]
+  (accounts.update/account-update cofx
+                                  {:stickers stickers}
+                                  {}))

@@ -48,7 +48,9 @@
             [status-im.utils.datetime :as time]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.models.loading :as chat-loading]
-            [status-im.node.core :as node]))
+            [status-im.node.core :as node]
+            [cljs.reader :as edn]
+            [status-im.stickers.core :as stickers]))
 
 ;; init module
 
@@ -774,6 +776,14 @@
  :chat/send-plain-text-message
  (fn [{{:keys [current-chat-id]} :db :as cofx} [_ message-text]]
    (chat.input/send-plain-text-message-fx cofx message-text current-chat-id)))
+
+(handlers/register-handler-fx
+ :chat/send-sticker
+ (fn [{{:keys [current-chat-id] :account/keys [account]} :db :as cofx} [_ {:keys [uri]}]]
+   (fx/merge
+    cofx
+    (accounts/update-recent-stickers (conj (remove #(= uri %) (:recent-stickers account)) uri))
+    (chat.input/send-sticker-fx uri current-chat-id))))
 
 (handlers/register-handler-fx
  :chat/disable-cooldown
@@ -1573,3 +1583,30 @@
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx [_ public-key]]
    (contact-recovery/show-contact-recovery-message cofx public-key)))
+
+(handlers/register-handler-fx
+ :stickers/load-sticker-pack-success
+ (fn [{:keys [db]} [_ edn-string]]
+   (let [{{:keys [id] :as pack} 'meta} (edn/read-string edn-string)]
+     {:db (-> db (assoc-in [:stickers/packs id] (assoc pack :edn edn-string)))})))
+
+(handlers/register-handler-fx
+ :stickers/install-pack
+ (fn [cofx [_ id]]
+   (stickers/install-stickers-pack cofx id)))
+
+(handlers/register-handler-fx
+ :stickers/load-packs
+ (fn [_ _]
+   {;;TODO request list of packs from contract
+    :http-get-n (mapv (fn [uri] {:url                   uri
+                                 :success-event-creator (fn [o]
+                                                          [:stickers/load-sticker-pack-success o])
+                                 :failure-event-creator (fn [o] nil)})
+                      ;;TODO for testing ONLY
+                      ["https://ipfs.infura.io/ipfs/QmbgsCFEz4ubLFzF3SFfCxDEeXeMxe4yypxC3W1Ro9rLXS/"])}))
+
+(handlers/register-handler-fx
+ :stickers/select-pack
+ (fn [{:keys [db]} [_ id]]
+   {:db (assoc db :stickers/selected-pack id)}))

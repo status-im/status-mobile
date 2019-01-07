@@ -32,11 +32,7 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.http :as http]
             [status-im.utils.utils :as utils]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.platform :as platform]
-            [taoensso.timbre :as log]
-            [clojure.string :as str]
-            [status-im.utils.types :as types]))
+            [status-im.utils.fx :as fx]))
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))

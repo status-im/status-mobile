@@ -39,6 +39,10 @@
      (= constants/content-type-command content-type)
      [command-short-preview message]
 
+     (= constants/content-type-sticker content-type)
+     [react/image {:style {:margin 2 :width 30 :height 30}
+                   :source {:uri (:uri content)}}]
+
      (str/blank? (:text content))
      [react/text {:style styles/last-message-text}
       ""]

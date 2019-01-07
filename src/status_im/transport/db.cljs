@@ -3,7 +3,8 @@
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as s]
             status-im.contact.db
-            [status-im.utils.clocks :as utils.clocks]))
+            [status-im.utils.clocks :as utils.clocks]
+            [status-im.constants :as constants]))
 
 ;; required
 (spec/def ::ack (spec/coll-of string? :kind vector?))
@@ -60,9 +61,11 @@
 (spec/def :message.content/response-to string?)
 (spec/def :message.content/response-to-v2 string?)
 (spec/def :message.content/command-path (spec/tuple string? (spec/coll-of (spec/or :scope keyword? :chat-id string?) :kind set? :min-count 1)))
+(spec/def :message.content/uri (spec/and string? (complement s/blank?)))
 (spec/def :message.content/params (spec/map-of keyword? any?))
 
-(spec/def ::content-type #{"text/plain" "command" "command-request"})
+(spec/def ::content-type #{constants/content-type-text constants/content-type-command
+                           constants/content-type-command-request constants/content-type-sticker})
 (spec/def ::message-type #{:group-user-message :public-group-user-message :user-message})
 (spec/def ::clock-value (spec/and pos-int?
                                   utils.clocks/safe-timestamp?))
@@ -95,15 +98,21 @@
                                            :req-opt [:message.content/response-to]))
 (spec/def :message.command/content (spec/keys :req-un [:message.content/command-path :message.content/params]))
 
+(spec/def :message.sticker/content (spec/keys :req-un [:message.content/uri]))
+
 (defmulti content-type :content-type)
 
-(defmethod content-type "command" [_]
+(defmethod content-type constants/content-type-command [_]
   (spec/merge :message/message-common
               (spec/keys :req-un [:message.command/content])))
 
-(defmethod content-type "command-request" [_]
+(defmethod content-type constants/content-type-command-request [_]
   (spec/merge :message/message-common
               (spec/keys :req-un [:message.command/content])))
+
+(defmethod content-type constants/content-type-sticker [_]
+  (spec/merge :message/message-common
+              (spec/keys :req-un [:message.sticker/content])))
 
 (defmethod content-type :default [_]
   (spec/merge :message/message-common

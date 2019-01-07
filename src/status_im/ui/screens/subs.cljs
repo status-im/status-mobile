@@ -7,9 +7,11 @@
             status-im.mailserver.subs
             status-im.ui.components.connectivity.subs
             status-im.ui.screens.accounts.subs
+            status-im.ui.screens.chat.stickers.subs
             status-im.ui.screens.extensions.subs
             status-im.ui.screens.home.subs
             status-im.ui.screens.group.subs
+            status-im.ui.screens.stickers.subs
             status-im.ui.screens.wallet.subs
             status-im.ui.screens.wallet.collectibles.subs
             status-im.ui.screens.wallet.request.subs
