@@ -51,7 +51,7 @@
 (defn anonymize-pubkey
   [pubkey]
   "Anonymize a public key, if needed, by hashing it and taking the first 4 bytes"
-  (if (= (.-length pubkey) pn-pubkey-hash-length)
+  (if (= (count pubkey) pn-pubkey-hash-length)
     pubkey
     (apply str (take pn-pubkey-hash-length (sha3 pubkey)))))
 
@@ -74,25 +74,31 @@
   (def group-id "im.status.ethereum.MESSAGE")
   (def icon "ic_stat_status_notification")
 
+  (defn- hash->pubkey [hash accounts]
+    (:public-key
+     (first
+      (filter #(= (anonymize-pubkey (:public-key %)) hash)
+              (vals accounts)))))
+
   (defn lookup-contact-pubkey-from-hash
     [{:keys [db] :as cofx} contact-pubkey-or-hash]
-    "Tries to deanonymize a given contact pubkey hash by looking up the full pubkey"
-    "(if db is unlocked) in :contacts/contacts."
-    "Returns original value if not a hash (e.g. already a public key)."
+    "Tries to deanonymize a given contact pubkey hash by looking up the
+    full pubkey (if db is unlocked) in :contacts/contacts.
+    Returns original value if not a hash (e.g. already a public key)."
     (if (and contact-pubkey-or-hash
-             (= (.-length contact-pubkey-or-hash) pn-pubkey-hash-length))
-      ;; Do easy (and most common) lookup first, the current account public key
-      (let [current-account-pubkey (get-in db [:account/account :public-key])]
-        (if (= (anonymize-pubkey current-account-pubkey) contact-pubkey-or-hash)
-          current-account-pubkey
-          (if (accounts.db/logged-in? cofx)
-            ;; TODO: for simplicity we're doing a linear lookup of the contacts,
-            ;; but we might want to build a map of hashed pubkeys to pubkeys
-            ;; for this purpose
-            (:public-key (first
-                          (filter #(= (anonymize-pubkey (:public-key %)) contact-pubkey-or-hash)
-                                  (vals (:contacts/contacts db)))))
-            (log/warn "failed to lookup contact from hash, not logged in"))))
+             (= (count contact-pubkey-or-hash) pn-pubkey-hash-length))
+      (if-let
+       [account-pubkey (hash->pubkey contact-pubkey-or-hash
+                                     (:accounts/accounts db))]
+        account-pubkey
+        ;(= (anonymize-pubkey current-account-pubkey) contact-pubkey-or-hash)
+        ; current-account-pubkey
+        (if (accounts.db/logged-in? cofx)
+          ;; TODO: for simplicity we're doing a linear lookup of the contacts,
+          ;; but we might want to build a map of hashed pubkeys to pubkeys
+          ;; for this purpose
+          (hash->pubkey contact-pubkey-or-hash (:contacts/contacts db))
+          (log/warn "failed to lookup contact from hash, not logged in")))
       contact-pubkey-or-hash))
 
   (defn parse-notification-v1-payload [msg-json]
@@ -124,12 +130,10 @@
   (defn rehydrate-payload
     [cofx {:keys [from to id] :as decoded-payload}]
     "Takes a payload with hashed pubkeys and returns a payload with the real (matched) pubkeys"
-    (if (accounts.db/logged-in? cofx)
-      {:from    (lookup-contact-pubkey-from-hash cofx from)
-       :to      (lookup-contact-pubkey-from-hash cofx to)
-       ;; TODO: Rehydrate message id
-       :id      id}
-      decoded-payload))
+    {:from (lookup-contact-pubkey-from-hash cofx from)
+     :to   (lookup-contact-pubkey-from-hash cofx to)
+     ;; TODO: Rehydrate message id
+     :id   id})
 
   (defn- build-notification [{:keys [title body decoded-payload]}]
     (let [native-notification
