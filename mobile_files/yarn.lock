@@ -6006,7 +6006,7 @@ react-native-splash-screen@3.1.1:
 
 "react-native-status-keycard@https://github.com/status-im/react-native-status-keycard":
   version "2.0.1"
-  resolved "https://github.com/status-im/react-native-status-keycard#5a16166a97035d4edf94ad5278910df5740a4361"
+  resolved "https://github.com/status-im/react-native-status-keycard#b2cf1b0a7ab98246e331aa8a048e6e1ca7dfa197"
 
 react-native-svg@6.5.2:
   version "6.5.2"
