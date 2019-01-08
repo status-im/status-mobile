@@ -197,7 +197,7 @@
                (vals (:chats db)))))
 
   (fx/defn handle-on-message
-    [{:keys [db] :as cofx} decoded-payload]
+    [{:keys [db] :as cofx} decoded-payload {:keys [force] :as opts}]
     (let [view-id            (:view-id db)
           current-chat-id    (:current-chat-id db)
           app-state          (:app-state db)
@@ -205,7 +205,8 @@
           from               (:from rehydrated-payload)]
       (log/debug "handle-on-message" "app-state:" app-state "view-id:"
                  view-id "current-chat-id:" current-chat-id "from:" from)
-      (when-not (= app-state "active")
+      (when (or force
+                (not= app-state "active"))
         (when (show-notification? cofx rehydrated-payload)
           {:notifications/display-notification {:title           (i18n/label :notifications-new-message-title)
                                                 :body            (i18n/label :notifications-new-message-body)

@@ -844,8 +844,8 @@
 
 (handlers/register-handler-fx
  :notifications.callback/on-message
- (fn [cofx [_ decoded-payload]]
-   (notifications/handle-on-message cofx decoded-payload)))
+ (fn [cofx [_ decoded-payload opts]]
+   (notifications/handle-on-message cofx decoded-payload opts)))
 
 ;; hardwallet module
 

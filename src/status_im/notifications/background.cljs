@@ -22,7 +22,7 @@
            (let [decoded-payload (notifications/decode-notification-payload message-js)]
              (when decoded-payload
                (log/debug "dispatching :notifications.callback/on-message to display background message" decoded-payload)
-               (re-frame/dispatch [:notifications.callback/on-message decoded-payload]))))
+               (re-frame/dispatch [:notifications.callback/on-message decoded-payload {:force true}]))))
          (on-success)
          (catch :default e
            (log/warn "failed to handle background message" e)
