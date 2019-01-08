@@ -276,7 +276,8 @@
         "one": "分",
         "other": "分"
     },
-    "browsing-open-in-web-browser": "ブラウザーで閲覧",
+    "browsing-open-in-android-web-browser": "ブラウザーで閲覧",
+    "browsing-open-in-ios-web-browser": "ブラウザーで閲覧",
     "delete-group-prompt": "連絡先には影響を与えません。",
     "wallet-insufficient-funds": "残高不足",
     "edit-profile": "プロフィールを編集",

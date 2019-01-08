@@ -30,17 +30,20 @@
          :options     (message-options message-id old-message-id text)
          :cancel-text (i18n/label :t/message-options-cancel)}))
 
+(defn- platform-web-browser []
+  (if platform/ios? :t/browsing-open-in-ios-web-browser :t/browsing-open-in-android-web-browser))
+
 (defn browse [link]
   (show {:title       (i18n/label :t/browsing-title)
          :options     [{:label  (i18n/label :t/browsing-open-in-status)
                         :action #(re-frame/dispatch [:browser.ui/open-in-status-option-selected link])}
-                       {:label  (i18n/label :t/browsing-open-in-web-browser)
+                       {:label  (i18n/label (platform-web-browser))
                         :action #(.openURL react/linking (http/normalize-url link))}]
          :cancel-text (i18n/label :t/browsing-cancel)}))
 
 (defn browse-in-web-browser [link]
   (show {:title       (i18n/label :t/browsing-title)
-         :options     [{:label  (i18n/label :t/browsing-open-in-web-browser)
+         :options     [{:label  (i18n/label (platform-web-browser))
                         :action #(.openURL react/linking (http/normalize-url link))}]
          :cancel-text (i18n/label :t/browsing-cancel)}))
 

@@ -194,7 +194,8 @@
         "one": "minutt",
         "other": "minutter"
     },
-    "browsing-open-in-web-browser": "Åpne i nettleser",
+    "browsing-open-in-android-web-browser": "Åpne i nettleser",
+    "browsing-open-in-ios-web-browser": "Åpne i nettleser",
     "delete-group-prompt": "Dette vil ikke affektere kontakter",
     "edit-profile": "Rediger profil",
     "active-unknown": "Ukjent",

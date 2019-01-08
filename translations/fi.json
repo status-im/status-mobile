@@ -173,7 +173,8 @@
         "one": "minuutti",
         "other": "minuuttia"
     },
-    "browsing-open-in-web-browser": "Avaa selaimessa",
+    "browsing-open-in-android-web-browser": "Avaa selaimessa",
+    "browsing-open-in-ios-web-browser": "Avaa selaimessa",
     "delete-group-prompt": "Tämä ei vaikuta yhteystietoihin",
     "edit-profile": "Muokkaa profiilia",
     "active-unknown": "Ei tiedossa",

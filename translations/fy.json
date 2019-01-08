@@ -173,7 +173,8 @@
         "one": "minút",
         "other": "minuten"
     },
-    "browsing-open-in-web-browser": "Iepenje yn web blêder",
+    "browsing-open-in-android-web-browser": "Iepenje yn web blêder",
+    "browsing-open-in-ios-web-browser": "Iepenje yn web blêder",
     "delete-group-prompt": "Dit sil gjin ynfloed ha mei jo kontakten",
     "edit-profile": "Profyl oanpasse",
     "active-unknown": "Ûnbekend",

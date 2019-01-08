@@ -266,7 +266,8 @@
         "one": "минут",
         "other": "минута"
     },
-    "browsing-open-in-web-browser": "Отвори у интернет претраживачу",
+    "browsing-open-in-android-web-browser": "Отвори у интернет претраживачу",
+    "browsing-open-in-ios-web-browser": "Отвори у интернет претраживачу",
     "delete-group-prompt": "Ово неће утицати на ваше контакте",
     "wallet-insufficient-funds": "Недовољно средстава",
     "edit-profile": "Ажурирајте профил",

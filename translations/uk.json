@@ -272,7 +272,8 @@
         "one": "хвилина",
         "other": "хвилин"
     },
-    "browsing-open-in-web-browser": "Відкрити у веб-браузері",
+    "browsing-open-in-android-web-browser": "Відкрити у веб-браузері",
+    "browsing-open-in-ios-web-browser": "Відкрити у веб-браузері",
     "delete-group-prompt": "Це не вплине на ваші контакти",
     "wallet-insufficient-funds": "Недостатньо коштів",
     "edit-profile": "Редагувати профіль",

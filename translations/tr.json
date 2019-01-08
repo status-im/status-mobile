@@ -167,7 +167,8 @@
         "one": "dakika",
         "other": "dakika"
     },
-    "browsing-open-in-web-browser": "Web tarayıcısında açın",
+    "browsing-open-in-android-web-browser": "Web tarayıcısında açın",
+    "browsing-open-in-ios-web-browser": "Web tarayıcısında açın",
     "delete-group-prompt": "Bu, kişi listesini etkilemeyecektir",
     "edit-profile": "Profili düzenleyin",
     "active-unknown": "Bilinmiyor",

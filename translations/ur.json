@@ -167,7 +167,8 @@
         "one": "منٹ",
         "other": "منٹ"
     },
-    "browsing-open-in-web-browser": "ویب براؤزر میں کھولیں",
+    "browsing-open-in-android-web-browser": "ویب براؤزر میں کھولیں",
+    "browsing-open-in-ios-web-browser": "ویب براؤزر میں کھولیں",
     "delete-group-prompt": "اس سے روابط متاثر نہیں ہونگے",
     "edit-profile": "پروفائل میں ترمیم کریں",
     "active-unknown": "نامعلوم",

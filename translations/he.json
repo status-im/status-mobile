@@ -173,7 +173,8 @@
         "one": "דקה",
         "other": "דקות"
     },
-    "browsing-open-in-web-browser": "פתח בדפדפן",
+    "browsing-open-in-android-web-browser": "פתח בדפדפן",
+    "browsing-open-in-ios-web-browser": "פתח בדפדפן",
     "delete-group-prompt": "זה לא ישפיע על אנשי הקשר",
     "edit-profile": "ערוך פרופיל",
     "active-unknown": "לא ידוע",

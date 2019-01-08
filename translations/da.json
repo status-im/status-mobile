@@ -173,7 +173,8 @@
         "one": "minut",
         "other": "minutter"
     },
-    "browsing-open-in-web-browser": "Åben i web browser",
+    "browsing-open-in-android-web-browser": "Åben i web browser",
+    "browsing-open-in-ios-web-browser": "Åben i web browser",
     "delete-group-prompt": "Dette vil ikke påvirke dine kontakter",
     "edit-profile": "Rediger profil",
     "active-unknown": "Ukendt",

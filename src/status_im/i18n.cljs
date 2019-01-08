@@ -116,7 +116,8 @@
     :public-chat-user-count :eth :transactions-history :not-implemented
     :new-contact :datetime-second :status-failed :is-typing :recover
     :suggestions-commands :nonce :new-network :contact-already-added :datetime-minute
-    :browsing-open-in-web-browser :delete-group-prompt :wallet-total-value
+    :browsing-open-in-ios-web-browser :browsing-open-in-android-web-browser
+    :delete-group-prompt :wallet-total-value
     :wallet-insufficient-funds :edit-profile :active-unknown
     :search-tags :transaction-failed :public-key :error-processing-json
     :status-seen :transactions-filter-tokens :status-delivered :profile

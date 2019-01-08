@@ -266,7 +266,8 @@
         "one": "分钟",
         "other": "分钟"
     },
-    "browsing-open-in-web-browser": "在网络浏览器中打开",
+    "browsing-open-in-android-web-browser": "在网络浏览器中打开",
+    "browsing-open-in-ios-web-browser": "在网络浏览器中打开",
     "delete-group-prompt": "这不会影响你的联系人",
     "wallet-insufficient-funds": "资金不足",
     "edit-profile": "编辑个人资料",

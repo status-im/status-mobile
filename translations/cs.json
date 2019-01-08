@@ -191,7 +191,8 @@
         "one": "minuta",
         "other": "minut(y)"
     },
-    "browsing-open-in-web-browser": "Otevřít ve webovém prohlížeči",
+    "browsing-open-in-android-web-browser": "Otevřít ve webovém prohlížeči",
+    "browsing-open-in-ios-web-browser": "Otevřít ve webovém prohlížeči",
     "delete-group-prompt": "Kontaktů se to nedotkne",
     "edit-profile": "Upravit profil",
     "active-unknown": "Neznámý",
