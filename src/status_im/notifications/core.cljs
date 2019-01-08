@@ -91,14 +91,14 @@
        [account-pubkey (hash->pubkey contact-pubkey-or-hash
                                      (:accounts/accounts db))]
         account-pubkey
-        ;(= (anonymize-pubkey current-account-pubkey) contact-pubkey-or-hash)
-        ; current-account-pubkey
         (if (accounts.db/logged-in? cofx)
           ;; TODO: for simplicity we're doing a linear lookup of the contacts,
           ;; but we might want to build a map of hashed pubkeys to pubkeys
           ;; for this purpose
           (hash->pubkey contact-pubkey-or-hash (:contacts/contacts db))
-          (log/warn "failed to lookup contact from hash, not logged in")))
+          (do
+            (log/warn "failed to lookup contact from hash, not logged in")
+            contact-pubkey-or-hash)))
       contact-pubkey-or-hash))
 
   (defn parse-notification-v1-payload [msg-json]
@@ -203,8 +203,9 @@
           app-state          (:app-state db)
           rehydrated-payload (rehydrate-payload cofx decoded-payload)
           from               (:from rehydrated-payload)]
-      (log/debug "handle-on-message" "app-state:" app-state "view-id:"
-                 view-id "current-chat-id:" current-chat-id "from:" from)
+      (log/debug "handle-on-message" "app-state:" app-state
+                 "view-id:" view-id "current-chat-id:" current-chat-id
+                 "from:" from "force:" force)
       (when (or force
                 (not= app-state "active"))
         (when (show-notification? cofx rehydrated-payload)
