@@ -691,15 +691,21 @@
     {:errors [{:type type :value value}]}))
 
 (def uri-prefix "https://get.status.im/extension/")
+(def link-prefix "status-im://extension/")
 
 (defn valid-uri? [s]
   (boolean
    (when s
-     (re-matches (re-pattern (str "^" uri-prefix "\\w+@.+")) (string/trim s)))))
+     (let [s' (string/trim s)]
+       (or
+        (re-matches (re-pattern (str "^" uri-prefix "\\w+@.+")) s')
+        (re-matches (re-pattern (str "^" link-prefix "\\w+@.+")) s'))))))
 
 (defn url->uri [s]
   (when s
-    (string/replace s uri-prefix "")))
+    (-> s
+        (string/replace uri-prefix "")
+        (string/replace link-prefix ""))))
 
 (defn load-from [url f]
   (when-let [uri (url->uri url)]
