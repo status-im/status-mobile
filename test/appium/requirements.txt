@@ -35,7 +35,7 @@ pytest-forked==0.2
 pytest-xdist==1.22.2
 python-dateutil==2.7.3
 pytz==2018.4
-PyYAML==3.12
+PyYAML==4.1
 repoze.lru==0.7
 requests==2.20.1
 rlp==1.0.1
