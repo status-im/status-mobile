@@ -50,6 +50,7 @@
     "identicon.js": "github:status-im/identicon.js",
     "js-sha3": "^0.8.0",
     "level-filesystem": "1.2.0",
+    "metro-react-native-babel-preset": "0.45.6",
     "metro": "^0.48.1",
     "nfc-react-native": "github:status-im/nfc-react-native",
     "process": "0.11.10",
