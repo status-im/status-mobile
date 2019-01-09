@@ -466,7 +466,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        Runnable r = new Runnable() {
+        /*Runnable r = new Runnable() {
                 @Override
                 public void run() {
                     String res = Statusgo.NotifyUsers(message, payloadJSON, tokensJSON);
@@ -475,7 +475,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                 }
             };
 
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        StatusThreadPoolExecutor.getInstance().execute(r);*/
     }
 
     private Boolean zip(File[] _files, File zipFile, Stack<String> errorList) {
@@ -513,7 +513,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 			}
 
             out.close();
-            
+
             return true;
 		} catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -548,7 +548,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                            }
                        }).show();
     }
-    
+
     @ReactMethod
     public void sendLogs(final String dbJson) {
         Log.d(TAG, "sendLogs");
@@ -585,9 +585,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                     return;
                 }
             }
-            
+
             dumpAdbLogsTo(new FileOutputStream(statusLogFile));
-        
+
             final Stack<String> errorList = new Stack<String>();
             final Boolean zipped = zip(new File[] {dbFile, gethLogFile, statusLogFile}, zipFile, errorList);
             if (zipped && zipFile.exists()) {
