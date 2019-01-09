@@ -157,7 +157,7 @@ class HomeView(BaseView):
         start_new_chat.confirm_until_presence_of_element(chat_view.chat_message_input)
         return chat_view
 
-    def open_status_test_dapp(self):
+    def open_status_test_dapp(self, allow_all=True):
         profile_view = self.profile_button.click()
         profile_view.advanced_button.click()
         profile_view.debug_mode_toggle.click()
@@ -168,5 +168,8 @@ class HomeView(BaseView):
         status_test_dapp = start_new_chat_view.status_test_dapp_button.click()
         start_new_chat_view.open_button.click()
         for _ in range(2):
-            status_test_dapp.allow_button.click()
+            if allow_all:
+                status_test_dapp.allow_button.click()
+            else:
+                status_test_dapp.deny_button.click()
         return status_test_dapp

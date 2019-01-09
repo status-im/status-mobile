@@ -65,10 +65,11 @@ class TestBrowsing(SingleDeviceTestCase):
         start_new_chat = home_view.plus_button.click()
         browsing_view = start_new_chat.open_url('google.com')
         browsing_view.cross_icon.click()
-        home_view.get_chat_with_user('Browser').swipe_and_delete()
+        browser_entry = home_view.get_chat_with_user('Google')
+        browser_entry.swipe_and_delete()
         home_view.relogin()
-        if home_view.get_chat_with_user('Browser').is_element_present(20):
-            pytest.fail('The browser entry is present after re-login')
+        if browser_entry.is_element_present(20):
+            self.driver.fail('The browser entry is present after re-login')
 
     @marks.testrail_id(5320)
     @marks.critical

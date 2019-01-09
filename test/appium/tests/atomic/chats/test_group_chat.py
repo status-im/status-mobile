@@ -27,6 +27,7 @@ def create_and_join_group_chat(device_1_home, device_2_home, chat_name):
 
     # device 2: open group chat
     device_2_chat = device_2_home.get_chat_with_user(chat_name).click()
+    device_2_home.element_by_text_part('JOIN CHAT').click()
 
     return device_1_chat, device_2_chat
 

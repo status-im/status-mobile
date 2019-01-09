@@ -27,8 +27,7 @@ class TestDApps(SingleDeviceTestCase):
         user = basic_user
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(passphrase=user['passphrase'])
-        status_test_dapp = home_view.open_status_test_dapp()
-        status_test_dapp.wait_for_d_aap_to_load()
+        status_test_dapp = home_view.open_status_test_dapp(allow_all=False)
         status_test_dapp.status_api_button.click()
         status_test_dapp.request_contact_code_button.click()
         status_test_dapp.deny_button.click()
