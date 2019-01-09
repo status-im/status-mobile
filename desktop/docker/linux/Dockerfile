@@ -1,6 +1,8 @@
 FROM ubuntu:16.04 AS qt_build
 
 ARG QT_VERSION
+ARG REACT_NATIVE_DESKTOP_COMMIT_SHA
+ARG QT_CI_COMMIT_SHA
 
 RUN apt-get update && apt-get -y install \
       git libx11-xcb1 libxss1 libasound2 libfontconfig1 libdbus-1-3 && \
@@ -14,8 +16,13 @@ ENV QT_CI_PACKAGES qt.qt5.5112.gcc_64,qt.qt5.5112.qtwebengine.gcc_64
 # We run this as part of a separate container to reduce number of stages.
 # We also remove some of the static-linked binaries since they are so big.
 # Crucial ones: qmake,rcc,moc,uic,qdbuscpp2xml,qdbusxml2cpp,lrelease,lupdate,lconvert
+# NOTE: Unfortunately GitHub doesn't support cloning a specific SHA1, so we need to
+# resort to git fetch (https://stackoverflow.com/questions/3489173/how-to-clone-git-repository-with-specific-revision-changeset)
 ADD qt-opensource-linux-x64-${QT_VERSION}.run /tmp/
-RUN git clone --depth=1 https://github.com/benlau/qtci.git /tmp/qtci && \
+RUN mkdir -p /tmp/qtci && cd /tmp/qtci && \
+      git init && git remote add origin https://github.com/benlau/qtci.git && \
+      git fetch --depth=1 origin ${QT_CI_COMMIT_SHA} && \
+      git reset --hard FETCH_HEAD && \
     /tmp/qtci/bin/extract-qt-installer --disable-progress-report \
         /tmp/qt-opensource-linux-x64-${QT_VERSION}.run /opt/qt-all && \
     find /opt/qt-all/${QT_VERSION}/gcc_64/bin -type f -regextype posix-egrep -regex \
@@ -65,8 +72,10 @@ RUN cd /tmp && wget -q https://cmake.org/files/v3.12/cmake-3.12.2-Linux-x86_64.t
 RUN curl -sL https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein -o /usr/bin/lein && \
     chmod +x /usr/bin/lein && /usr/bin/lein version
 
-RUN cd /tmp && \
-    git clone --depth=1 https://github.com/status-im/react-native-desktop.git && \
+RUN mkdir -p /tmp/react-native-desktop && cd /tmp/react-native-desktop && \
+      git init && git remote add origin https://github.com/status-im/react-native-desktop.git && \
+      git fetch --depth=1 origin ${REACT_NATIVE_DESKTOP_COMMIT_SHA} && \
+      git reset --hard FETCH_HEAD && \
     cp -r /tmp/react-native-desktop/react-native-cli /opt && \
     cd /opt/react-native-cli && \
     npm update && npm install -g && \

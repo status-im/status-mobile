@@ -68,6 +68,8 @@ endif()
 
 ExternalProject_Add(SnoreNotify_ep
   GIT_REPOSITORY https://github.com/status-im/snorenotify.git
+  GIT_TAG 9d54904e4896ab6c3c3a52f97381e5948b455970
+  GIT_SHALLOW TRUE
   CMAKE_ARGS ${SnoreNotify_CMAKE_ARGS}
   BUILD_BYPRODUCTS ${SnoreNotify_STATIC_LIB} ${SnoreNotify_LIBS} ${SnoreNotifyBackend_STATIC_LIB}
                    ${SnoreNotifyBackendSettings_STATIC_LIB} ${SnoreNotifySettings_STATIC_LIB}

@@ -1,5 +1,7 @@
 FROM ubuntu:16.04
 
+ARG REACT_NATIVE_DESKTOP_COMMIT_SHA
+
 ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
@@ -37,8 +39,10 @@ RUN cd /tmp && wget -q https://cmake.org/files/v3.12/cmake-3.12.2-Linux-x86_64.t
 RUN curl -sL https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein -o /usr/bin/lein && \
     chmod +x /usr/bin/lein && /usr/bin/lein version
 
-RUN cd /tmp && \
-    git clone --depth=1 https://github.com/status-im/react-native-desktop.git && \
+RUN mkdir -p /tmp/react-native-desktop && cd /tmp/react-native-desktop && \
+      git init && git remote add origin https://github.com/status-im/react-native-desktop.git && \
+      git fetch --depth=1 origin ${REACT_NATIVE_DESKTOP_COMMIT_SHA} && \
+      git reset --hard FETCH_HEAD && \
     cp -r /tmp/react-native-desktop/react-native-cli /opt && \
     cd /opt/react-native-cli && \
     npm update && npm install -g && \
