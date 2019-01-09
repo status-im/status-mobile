@@ -33,7 +33,10 @@ def bundle(type) {
   }
   /* rename built file for uploads and archivization */
   def pkg = ''
-  if (type == 'e2e') {
+  if (type == 'release') {
+    pkg = cmn.pkgFilename('release', 'ipa')
+    sh "cp status_appstore/StatusIm.ipa ${pkg}"
+  } else if (type == 'e2e') {
     pkg = cmn.pkgFilename('e2e', 'app.zip')
     sh "cp status-e2e/StatusIm.app.zip ${pkg}"
   } else if (type != 'testflight') {
