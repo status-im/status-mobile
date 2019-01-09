@@ -8,7 +8,8 @@
             [re-frame.core :as re-frame]))
 
 (views/defview about-app []
-  (views/letsubs [version [:get-app-version]]
+  (views/letsubs [app-version [:get-app-short-version]
+                  node-version [:get-app-node-version]]
     [react/view {:flex 1}
      [status-bar/status-bar]
      [toolbar/simple-toolbar (i18n/label :t/about-app)]
@@ -22,6 +23,12 @@
        (when status-im.utils.platform/ios?
          [profile.components/settings-item-separator])
        [profile.components/settings-item
-        {:item-text           (i18n/label :t/version {:version version})
+        {:item-text           (i18n/label :t/version {:version app-version})
+         :accessibility-label :version
+         :hide-arrow?         true}]
+       (when status-im.utils.platform/ios?
+         [profile.components/settings-item-separator])
+       [profile.components/settings-item
+        {:item-text           node-version
          :accessibility-label :version
          :hide-arrow?         true}]]]]))
