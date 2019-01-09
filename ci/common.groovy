@@ -152,6 +152,11 @@ def changeId() {
   def changeId = env.CHANGE_ID
   changeId = params.CHANGE_ID ? params.CHANGE_ID : changeId
   changeId = getParentRunEnv('CHANGE_ID') ? getParentRunEnv('CHANGE_ID') : changeId
+  if (!changeId) {
+    println('This build is not related to a PR, CHANGE_ID missing.')
+    println('GitHub notification impossible, skipping...')
+    return null
+  }
   return changeId
 }
 
@@ -194,11 +199,7 @@ def ghcmgrPostBuild(success) {
 def gitHubNotify(message) {
   def githubIssuesUrl = 'https://api.github.com/repos/status-im/status-react/issues'
   def changeId = changeId() 
-  if (!changeId) { /* CHANGE_ID exists only when run as a PR build */
-    println('This build is not related to a PR, CHANGE_ID missing.')
-    println('GitHub notification impossible, skipping...')
-    return
-  }
+  if (changeId == null) { return }
   def msgObj = [body: message]
   def msgJson = new JsonBuilder(msgObj).toPrettyString()
   withCredentials([usernamePassword(
@@ -255,6 +256,7 @@ def gitHubNotifyPRSuccess() {
 }
 
 def notifyPRFailure() {
+  if (changeId() == null) { return }
   try {
     ghcmgrPostBuild(false)
   } catch (ex) { /* fallback to posting directly to GitHub */
@@ -264,6 +266,7 @@ def notifyPRFailure() {
 }
 
 def notifyPRSuccess() {
+  if (changeId() == null) { return }
   try {
     ghcmgrPostBuild(true)
   } catch (ex) { /* fallback to posting directly to GitHub */

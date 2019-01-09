@@ -102,11 +102,6 @@ pipeline {
         script { env.PKG_URL = cmn.uploadArtifact(app) }
       }
     }
-    stage('Notify') {
-      steps {
-        script { cmn.notifyPRSuccess() }
-      }
-    }
     stage('Cleanup') {
       steps {
         script { cmn.clean() }
@@ -115,5 +110,6 @@ pipeline {
   }
   post {
     failure { script { load('ci/common.groovy').notifyPRFailure() } }
+    success { script { load('ci/common.groovy').notifyPRSuccess() } }
   }
 }
