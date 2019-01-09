@@ -7,7 +7,8 @@
   (-> config
       :node/start
       (js/JSON.parse)
-      (js->clj :keywordize-keys true)))
+      (js->clj :keywordize-keys true)
+      :ShhextConfig))
 
 (deftest start-test
   (let [address "a"
