@@ -788,6 +788,11 @@
  (fn [cofx [_ chat-id message-id status]]
    (chat.message/update-message-status cofx chat-id message-id status)))
 
+(handlers/register-handler-fx
+ :message/message-persisted
+ (fn [cofx [_ raw-message]]
+   (chat.message/confirm-message-processed cofx raw-message)))
+
 ;; signal module
 
 (handlers/register-handler-fx

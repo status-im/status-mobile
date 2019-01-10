@@ -150,7 +150,6 @@
       (apply fx/merge cofx resend-contact-message-fxs))))
 
 (re-frame/reg-fx
- ;; TODO(janherich): this should be called after `:data-store/tx` actually
  :transport/confirm-messages-processed
  (fn [messages]
    (let [{:keys [web3]} (first messages)

@@ -111,7 +111,7 @@
 (fx/defn add-message
   [{:keys [db] :as cofx}
    {{:keys [chat-id message-id clock-value timestamp from] :as message} :message
-    :keys [current-chat? batch? last-clock-value]}]
+    :keys [current-chat? batch? last-clock-value raw-message]}]
   (let [current-public-key (accounts.db/current-public-key cofx)
         prepared-message (-> message
                              (prepare-message chat-id current-chat?)
@@ -136,7 +136,10 @@
                                      (not= from current-public-key))
                                 (update-in [:chats chat-id :loaded-unviewed-messages-ids]
                                            (fnil conj #{}) message-id))
-               :data-store/tx [(messages-store/save-message-tx prepared-message)]}
+               :data-store/tx [(merge
+                                {:transaction (messages-store/save-message-tx prepared-message)}
+                                (when raw-message
+                                  {:success-event [:message/message-persisted raw-message]}))]}
               (when (and platform/desktop?
                          (not batch?)
                          (not (system-message? prepared-message)))
@@ -196,11 +199,10 @@
                                           ;; TODO (cammellos): Refactor so it's not computed twice
                                           (add-outgoing-status current-public-key))]
     (fx/merge cofx
-              {:transport/confirm-messages-processed [{:web3   web3
-                                                       :js-obj js-obj}]}
               (add-message {:batch?       true
                             :message      message
-                            :current-chat current-chat?})
+                            :current-chat current-chat?
+                            :raw-message  js-obj})
               ;; Checking :outgoing here only works for now as we don't have a :seen
               ;; status for public chats, if we add processing of our own messages
               ;; for 1-to-1 care needs to be taken not to override the :seen status
@@ -467,6 +469,11 @@
 (fx/defn toggle-expand-message
   [{:keys [db]} chat-id message-id]
   {:db (update-in db [:chats chat-id :messages message-id :expanded?] not)})
+
+(fx/defn confirm-message-processed
+  [{:keys [db]} raw-message]
+  {:transport/confirm-messages-processed [{:web3 (:web3 db)
+                                           :js-obj raw-message}]})
 
 ;; effects
 

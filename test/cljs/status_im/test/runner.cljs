@@ -2,6 +2,7 @@
   (:require [doo.runner :refer-macros [doo-tests]]
             [status-im.test.contacts.db]
             [status-im.test.data-store.chats]
+            [status-im.test.data-store.core]
             [status-im.test.data-store.realm.core]
             [status-im.test.extensions.core]
             [status-im.test.extensions.ethereum]
@@ -75,6 +76,7 @@
  'status-im.test.chat.models
  'status-im.test.init.core
  'status-im.test.data-store.chats
+ 'status-im.test.data-store.core
  'status-im.test.data-store.realm.core
  'status-im.test.extensions.core
  'status-im.test.mailserver.core
