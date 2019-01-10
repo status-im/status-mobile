@@ -270,7 +270,8 @@
                                        :wallet-onboarding-setup
                                        :wallet-settings-assets
                                        :wallet-modal
-                                       :wallet-onboarding-setup-modal)
+                                       :wallet-onboarding-setup-modal
+                                       :wallet-settings-hook)
                                       colors/blue
 
                                       (:qr-viewer

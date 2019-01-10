@@ -58,8 +58,8 @@
 (defview settings-hook []
   (letsubs [{:keys [label view]} [:get-screen-params :wallet-settings-hook]
             {address :address} [:account/account]]
-    [react/view {:style {:flex 1 :background-color colors/white}}
-     [status-bar/status-bar {:type :modal-wallet}]
+    [react/view {:style {:flex 1 :background-color colors/blue}}
+     [status-bar/status-bar {:type :wallet}]
      [toolbar/toolbar {:style wallet.styles/toolbar}
       [toolbar/nav-button (actions/back-white #(do (re-frame/dispatch [:update-wallet])
                                                    (re-frame/dispatch [:navigate-back])))]
