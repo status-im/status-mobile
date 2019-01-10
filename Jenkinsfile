@@ -14,12 +14,31 @@ def installJSDeps() {
     }
 }
 
+<<<<<<< HEAD
 timeout(90) {
     node ('macos') {
       def apkUrl = ''
       def ipaUrl = ''
       def testPassed = true
       def branch;
+=======
+    stage('Build') {
+      sh 'lein prod-build'
+    }
+    
+    // Android
+    stage('Build (Android)') {
+      sh 'cd android && ./gradlew assembleRelease'
+    }
+    stage('Deploy (Android)') {
+        withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
+            def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@android/app/build/outputs/apk/app-release.apk -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
+            sh 'sleep 10'
+            def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
+            apkUrl = 'https://i.diawi.com/' + hash
+        }
+    }
+>>>>>>> c9335d0b8e9fcdd5207824839aff75e86c9befc9
 
       load "$HOME/env.groovy"
 
