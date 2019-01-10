@@ -44,7 +44,6 @@
     "react-native-fs": "2.8.1",
     "react-native-http": "github:tradle/react-native-http#834492d",
     "react-native-http-bridge": "github:status-im/react-native-http-bridge",
-    "react-native-i18n": "2.0.9",
     "react-native-image-crop-picker": "0.18.1",
     "react-native-image-resizer": "1.0.0",
     "react-native-invertible-scroll-view": "1.1.0",
