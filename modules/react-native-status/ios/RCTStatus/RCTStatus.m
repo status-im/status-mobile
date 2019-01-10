@@ -189,7 +189,7 @@ RCT_EXPORT_METHOD(notifyUsers:(NSString *)message
                   payloadJSON:(NSString *)payloadJSON
                   tokensJSON:(NSString *)tokensJSON
                   callback:(RCTResponseSenderBlock)callback) {
-    char * result = NotifyUsers((char *) [message UTF8String], (char *) [payloadJSON UTF8String], (char *) [tokensJSON UTF8String]);
+    char * result = NotifyUsers((char *) [message UTF8String], (char *) [payloadJSON UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
 #if DEBUG
     NSLog(@"NotifyUsers() method called");
@@ -327,6 +327,31 @@ RCT_EXPORT_METHOD(disableInstallation:(NSString *)content
     NSLog(@"DisableInstallation() method called");
 #endif
     char * result = DisableInstallation((char *) [content UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
+}
+
+////////////////////////////////////////////////////////////////////
+#pragma mark - Subscribe
+//////////////////////////////////////////////////////////////////// Subscribe
+RCT_EXPORT_METHOD(subscribe:(NSString *)namespace
+                  argsJSON:(NSString *)argsJSON
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"Subscribe() method called");
+#endif
+    char * result = Subscribe((char *) [namespace UTF8String], (char *) [argsJSON UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
+}
+
+////////////////////////////////////////////////////////////////////
+#pragma mark - Unsubscribe
+//////////////////////////////////////////////////////////////////// Unsubscribe
+RCT_EXPORT_METHOD(unsubscribe:(NSString *)subid
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"Unsubscribe() method called");
+#endif
+    char * result = Unsubscribe((char *) [subid UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
 }
 

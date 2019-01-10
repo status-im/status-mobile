@@ -10,7 +10,8 @@
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
             [status-im.utils.security :as security]
-            [status-im.hardwallet.core :as hardwallet]))
+            [status-im.hardwallet.core :as hardwallet]
+            [status-im.browser.core :as browser]))
 
 (fx/defn status-node-started
   [{db :db :as cofx}]
@@ -76,4 +77,5 @@
       "mailserver.request.expired"   (when (accounts.db/logged-in? cofx)
                                        (mailserver/resend-request cofx {:request-id (:hash event)}))
       "discovery.summary"  (summary cofx event)
+      "subscription.notification" (browser/subscription-notification cofx (:subscription event) (:result event))
       (log/debug "Event " type " not handled"))))

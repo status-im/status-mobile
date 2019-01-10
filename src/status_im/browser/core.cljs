@@ -266,24 +266,40 @@
               (navigation/navigate-to-cofx :browser nil)
               (resolve-url nil))))
 
+(defn dispatch-rpc-callback [message-id err result]
+  (re-frame/dispatch [:browser.callback/call-rpc
+                      {:type      constants/web3-send-async-callback
+                       :messageId message-id
+                       :error     err
+                       :result    result}]))
+
 (fx/defn web3-send-async
-  [{:keys [db]} {:keys [method] :as payload} message-id]
-  (if (or (= method constants/web3-send-transaction)
-          (= method constants/web3-personal-sign))
+  [{:keys [db]} {:keys [method params] :as payload} message-id]
+  (cond
+    (or (= method constants/web3-send-transaction)
+        (= method constants/web3-personal-sign))
     {:db       (update-in db [:wallet :transactions-queue] conj {:message-id message-id :payload payload})
      ;;TODO(yenda): refactor check-dapps-transactions-queue to remove this dispatch
      :dispatch [:check-dapps-transactions-queue]}
-    {:browser/call-rpc [payload
-                        #(re-frame/dispatch [:browser.callback/call-rpc
-                                             {:type      constants/web3-send-async-callback
-                                              :messageId message-id
-                                              :error     %1
-                                              :result    %2}])]}))
+
+    (= method constants/web3-eth-subscribe)
+    {:browser/subscribe ["eth" params #(dispatch-rpc-callback message-id %1 %2)]}
+
+    (= method constants/web3-eth-unsubscribe)
+    {:browser/unsubscribe [(first params) #(dispatch-rpc-callback message-id %1 %2)]}
+
+    :else
+    {:browser/call-rpc [payload #(dispatch-rpc-callback message-id %1 %2)]}))
 
 (fx/defn send-to-bridge
   [cofx message]
   {:browser/send-to-bridge {:message message
                             :webview (get-in cofx [:db :webview-bridge])}})
+
+(fx/defn subscription-notification [cofx subid result]
+  (send-to-bridge cofx {:type   constants/web3-subscription-notification
+                        :subid  subid
+                        :result result}))
 
 (fx/defn web3-send-async-read-only
   [{:keys [db] :as cofx} dapp-name {:keys [method] :as payload} message-id]
@@ -371,17 +387,27 @@
    (when (and message webview)
      (.sendToBridge webview (types/clj->json message)))))
 
+(defn rpc-callback [callback response]
+  (if (= "" response)
+    (do
+      (log/warn :web3-response-error)
+      (callback "web3-response-error" nil))
+    (callback nil (.parse js/JSON response))))
+
 (re-frame/reg-fx
  :browser/call-rpc
  (fn [[payload callback]]
-   (status/call-rpc
-    (types/clj->json payload)
-    (fn [response]
-      (if (= "" response)
-        (do
-          (log/warn :web3-response-error)
-          (callback "web3-response-error" nil))
-        (callback nil (.parse js/JSON response)))))))
+   (status/call-rpc (types/clj->json payload) #(rpc-callback callback %))))
+
+(re-frame/reg-fx
+ :browser/subscribe
+ (fn [[namespace params callback]]
+   (status/subscribe namespace (types/clj->json params) #(rpc-callback callback %))))
+
+(re-frame/reg-fx
+ :browser/unsubscribe
+ (fn [[subid callback]]
+   (status/unsubscribe subid #(rpc-callback callback %))))
 
 (re-frame/reg-fx
  :browser/show-browser-selection

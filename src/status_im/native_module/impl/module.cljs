@@ -128,6 +128,14 @@
   (when (and @node-started status)
     (call-module #(.sendTransaction status rpcParams password callback))))
 
+(defn subscribe [namespace params callback]
+  (when (and @node-started status)
+    (call-module #(.subscribe status namespace params callback))))
+
+(defn unsubscribe [subid callback]
+  (when (and @node-started status)
+    (call-module #(.unsubscribe status subid callback))))
+
 (defn close-application []
   (.closeApplication status))
 

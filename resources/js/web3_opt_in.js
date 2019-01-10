@@ -61,6 +61,9 @@ WebViewBridge.onMessage = function (message) {
             } else {
                 callback.reject({code: 4001, message: "User denied authorizing any accounts for the dapp."});
             }
+        } else if (data.type === "web3-subscription-notification") {
+            if (ethereumBeta)
+                ethereumBeta.emit("notification", data.result);
         } else if (data.type === "web3-send-async-callback") {
             var id = data.messageId;
             var callback = callbacks[id];
@@ -173,10 +176,7 @@ function sendAsync (payload, callback) {
 
 ReadOnlyProvider.prototype.sendAsync = sendAsync;
 
-function ReadOnlyBetaProvider () {};
-
-ReadOnlyBetaProvider.prototype = Object.create(EventEmitter.prototype);
-ReadOnlyBetaProvider.prototype.constructor = ReadOnlyBetaProvider;
+var ReadOnlyBetaProvider = function () { this.events = {}; };
 
 ReadOnlyBetaProvider.prototype.isStatus = true;
 ReadOnlyBetaProvider.prototype.status = new StatusAPI();
@@ -189,7 +189,7 @@ ReadOnlyBetaProvider.prototype.scanQRCode = function (regex) {
     return sendAPIrequest('qr-code', {regex: regex});
 };
 
-ReadOnlyBetaProvider.prototype.send = function (method, params = []) {
+ReadOnlyBetaProvider.prototype.send = function (method, params) {
 
     if (!method || typeof method !== 'string') {
       return new Error('Method is not a valid string.');
@@ -206,7 +206,7 @@ ReadOnlyBetaProvider.prototype.send = function (method, params = []) {
     var messageId = callbackId++;
     var payload = {id:      messageId,
                    jsonrpc: "2.0",
-                   method:  method
+                   method:  method,
                    params:  params};
 
     bridgeSend({type:      'web3-send-async-read-only',
@@ -218,6 +218,46 @@ ReadOnlyBetaProvider.prototype.send = function (method, params = []) {
                                                    resolve: resolve,
                                                    reject:  reject};
                        });
+};
+
+ReadOnlyBetaProvider.prototype.on = function (event, listener) {
+    if (typeof this.events[event] !== 'object') {
+        this.events[event] = [];
+    }
+
+    this.events[event].push(listener);
+};
+
+ReadOnlyBetaProvider.prototype.removeListener = function (event, listener) {
+    var idx;
+
+    if (typeof this.events[event] === 'object') {
+        idx = indexOf(this.events[event], listener);
+
+        if (idx > -1) {
+            this.events[event].splice(idx, 1);
+        }
+    }
+};
+
+ReadOnlyBetaProvider.prototype.emit = function (event) {
+    var i, listeners, length, args = [].slice.call(arguments, 1);
+
+    if (typeof this.events[event] === 'object') {
+        listeners = this.events[event].slice();
+        length = listeners.length;
+
+        for (i = 0; i < length; i++) {
+            listeners[i].apply(this, args);
+        }
+    }
+};
+
+ReadOnlyBetaProvider.prototype.once = function (event, listener) {
+    this.on(event, function g () {
+        this.removeListener(event, g);
+        listener.apply(this, arguments);
+    });
 };
 }
 

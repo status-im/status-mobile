@@ -48,6 +48,12 @@
 (defn send-transaction [rpcParams password callback]
   (native-module/send-transaction rpcParams password callback))
 
+(defn subscribe [namespace params callback]
+  (native-module/subscribe namespace params callback))
+
+(defn unsubscribe [subid callback]
+  (native-module/unsubscribe subid callback))
+
 (defn module-initialized! []
   (native-module/module-initialized!))
 

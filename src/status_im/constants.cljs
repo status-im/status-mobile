@@ -206,6 +206,8 @@
 (def ^:const web3-new-block-filter "eth_newBlockFilter")
 (def ^:const web3-uninstall-filter "eth_uninstallFilter")
 (def ^:const web3-get-filter-changes "eth_getFilterChanges")
+(def ^:const web3-eth-subscribe "eth_subscribe")
+(def ^:const web3-eth-unsubscribe "eth_unsubscribe")
 
 (def ^:const event-transfer-hash
   (ethereum/sha3 "Transfer(address,address,uint256)"))
@@ -234,6 +236,8 @@
 (def ^:const web3-send-async "web3-send-async")
 (def ^:const web3-send-async-read-only "web3-send-async-read-only")
 (def ^:const web3-send-async-callback "web3-send-async-callback")
+(def ^:const web3-subscription-notification "web3-subscription-notification")
+
 (def ^:const scan-qr-code "scan-qr-code")
 (def ^:const scan-qr-code-callback "scan-qr-code-callback")
 
