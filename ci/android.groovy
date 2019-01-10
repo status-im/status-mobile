@@ -24,7 +24,7 @@ def uploadToPlayStore(type = 'nightly') {
 }
 
 def uploadToSauceLabs() {
-  def changeId = cmn.getParentRunEnv('CHANGE_ID')
+  def changeId = cmn.changeId()
   if (changeId != null) {
     env.SAUCE_LABS_NAME = "${changeId}.apk"
   } else {
