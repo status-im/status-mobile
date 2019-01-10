@@ -74,6 +74,7 @@ pipeline {
       }
     }
     stage('Upload') {
+      when { expression { cmn.getBuildType() != 'release' } }
       steps {
         script {
           /* e2e builds get tested in SauceLabs */
