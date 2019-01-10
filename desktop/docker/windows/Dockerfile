@@ -27,7 +27,7 @@ RUN apt-get update && apt-get -q -y --no-install-recommends install curl softwar
       libx11-xcb1 libxss1 libasound2 libgl-dev libsm6 libxrandr2 python-dev \
       libjasper-dev libegl1-mesa libxcomposite-dev libxcursor-dev && \
     locale-gen en_US.UTF-8 && \
-    npm install -g yarn@1.12.3 && \
+    npm install -g yarn@1.13.0 && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/man && \
     python3 -m pip install --upgrade pip && \
     pip3 install conan==1.9.0

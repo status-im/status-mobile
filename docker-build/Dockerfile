@@ -70,7 +70,7 @@ RUN mkdir -p $LEIN_INSTALL \
 # Install React-Native
 RUN npm install -g react-native-cli
 # Install Yarn
-RUN npm install -g yarn@1.12.3
+RUN npm install -g yarn@1.13.0
 
 # Add files needed for installing dependencies
 # Use directory /build for that purpose

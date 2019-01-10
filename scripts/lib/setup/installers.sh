@@ -211,9 +211,9 @@ function install_react_native_cli() {
 }
 
 function install_yarn() {
-  local expected_version="1.12.3"
+  local expected_version='1.13.0'
   if ! program_exists "yarn"; then
-    npm install -g yarn@$expected_version # Install the latest yarn
+    npm install -g yarn@$expected_version # Install the expected yarn version
   else
     cecho "+ yarn already installed... skipping."
   fi
@@ -222,6 +222,7 @@ function install_yarn() {
     local yarn_version=$(yarn -v)
     if [[ $yarn_version != "$expected_version" ]]; then
       cecho "@b@red[[+ yarn version $yarn_version is installed. yarn version $expected_version is recommended.]]"
+      exit 1
     fi
   fi
 }

@@ -7,7 +7,7 @@ NC='\033[0m'
 PLATFORM=""
 
 EXPECTED_NODE_VERSION="v10.14.0" # note the 'v' in front, that is how node does versioning
-EXPECTED_YARN_VERSION="1.12.3" # note the lack of 'v' in front. inconsistent. :(
+EXPECTED_YARN_VERSION="1.13.0" # note the lack of 'v' in front. inconsistent. :(
 
 function program_exists() {
   local program=$1
