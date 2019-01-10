@@ -9,14 +9,6 @@ def cleanupAndDeps() {
   cmn.installJSDeps('desktop')
 }
 
-def slackNotify(message, color = 'good') {
-  slackSend(
-    color: color,
-    channel: '#jenkins-desktop',
-    message: "develop (${env.CHANGE_BRANCH}) ${message} ${env.BUILD_URL}"
-  )
-}
-
 def buildClojureScript() {
   sh 'make prod-build-desktop'
   sh './scripts/build-desktop.sh buildClojureScript'

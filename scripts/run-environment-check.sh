@@ -6,13 +6,13 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 PLATFORM=""
 
-EXPECTED_NODE_VERSION="v10.14.0" # note the 'v' in front, that is how node does versioning
-EXPECTED_YARN_VERSION="1.13.0" # note the lack of 'v' in front. inconsistent. :(
+_current_dir=$(cd "${BASH_SOURCE%/*}" && pwd)
+source "$_current_dir/lib/setup/path-support.sh"
 
-function program_exists() {
-  local program=$1
-  command -v "$program" >/dev/null 2>&1
-}
+source_lib "packages.sh"
+
+EXPECTED_NODE_VERSION="v$(get_tool_version node)" # note the 'v' in front, that is how node does versioning
+EXPECTED_YARN_VERSION="$(get_tool_version yarn)" # note the lack of 'v' in front. inconsistent. :(
 
 #if no arguments passed, inform user about possible ones
 

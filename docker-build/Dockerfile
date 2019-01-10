@@ -23,14 +23,16 @@ RUN cd /opt/android-sdk-linux && \
 	sdkmanager "cmake;3.6.4111459"
 
 RUN cd /opt/android-sdk-linux && \
-    wget -q --output-document=sdk-platform-tools.zip  'https://dl.google.com/android/repository/platform-tools-latest-linux.zip' && \
+    wget -q --output-document=sdk-platform-tools.zip 'https://dl.google.com/android/repository/platform-tools-latest-linux.zip' && \
     unzip sdk-platform-tools.zip && \
     rm -f sdk-platform-tools.zip
 
-RUN wget -q --output-document=android-ndk.zip http://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip && \
-	unzip android-ndk.zip && \
-	rm -f android-ndk.zip && \
-	mv android-ndk-r10e android-ndk-linux
+ARG ANDROID_NDK_VERSION
+
+RUN wget -q --output-document=android-ndk.zip "http://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip" && \
+	  unzip android-ndk.zip && \
+	  rm -f android-ndk.zip && \
+	  mv android-ndk-${ANDROID_NDK_VERSION} android-ndk-linux
 
 RUN yes | sdkmanager --licenses
 
@@ -41,12 +43,12 @@ RUN groupadd --gid 1000 node \
 
 ENV NPM_CONFIG_LOGLEVEL info
 # that's the only version that doesn't hang on installing react-native-http inside docker
-ENV NODE_VERSION 10.14.0
+ARG NODE_VERSION=10.14.0
 ENV NODE_ENV development
 
-RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
-  && tar -xJf "node-v$NODE_VERSION-linux-x64.tar.xz" -C /usr/local --strip-components=1 \
-  && rm "node-v$NODE_VERSION-linux-x64.tar.xz" \
+RUN curl -SLO "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" \
+  && tar -xJf "node-v${NODE_VERSION}-linux-x64.tar.xz" -C /usr/local --strip-components=1 \
+  && rm "node-v${NODE_VERSION}-linux-x64.tar.xz" \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 # END install Node JS
@@ -56,21 +58,23 @@ ENV TERM dumb
 
 # Install Lein
 # Check out latest releases from https://github.com/technomancy/leiningen/releases
-ENV LEIN_VERSION=2.8.1
+ARG LEIN_VERSION
 ENV LEIN_INSTALL=/usr/local/bin/
 
 RUN mkdir -p $LEIN_INSTALL \
-  && wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg \
+  && wget -q https://raw.githubusercontent.com/technomancy/leiningen/${LEIN_VERSION}/bin/lein-pkg \
   && mv lein-pkg $LEIN_INSTALL/lein \
   && chmod 0755 $LEIN_INSTALL/lein \
-  && wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip \
+  && wget -q https://github.com/technomancy/leiningen/releases/download/${LEIN_VERSION}/leiningen-${LEIN_VERSION}-standalone.zip \
   && mkdir -p /usr/share/java \
-  && mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar
+  && mv leiningen-${LEIN_VERSION}-standalone.zip /usr/share/java/leiningen-${LEIN_VERSION}-standalone.jar
 
 # Install React-Native
-RUN npm install -g react-native-cli
+ARG REACT_NATIVE_CLI_VERSION
+RUN npm install -g react-native-cli@${REACT_NATIVE_CLI_VERSION}
 # Install Yarn
-RUN npm install -g yarn@1.13.0
+ARG YARN_VERSION
+RUN npm install -g yarn@${YARN_VERSION}
 
 # Add files needed for installing dependencies
 # Use directory /build for that purpose
@@ -78,28 +82,21 @@ WORKDIR /build
 
 ADD .env.jenkins .env
 
-ADD ./project.clj ./
-
-ADD ./package.json package-lock.json ./
-
-RUN yarn install --frozen-lockfile
-
 ADD . ./
 
-RUN make setup
-RUN make prepare
+RUN export ANDROID_SDK_ROOT=/opt/android-sdk-linux && \
+    rm ./android/local.properties && make setup && make prepare-android
 
 COPY supervisord.conf /etc/supervisord.conf
 
-RUN keytool -genkey -v -keystore status-im.keystore -storepass password -alias status -keyalg RSA -keysize 2048 -validity 10000  -dname "CN=mqttserver.ibm.com, OU=ID, O=IBM, L=Hursley, S=Hants, C=GB" -keypass password
-RUN mkdir -p /root/.gradle
-RUN mv status-im.keystore /root/.gradle/
+RUN keytool -genkey -v -keystore status-im.keystore -storepass password -alias status -keyalg RSA -keysize 2048 -validity 10000  -dname "CN=mqttserver.ibm.com, OU=ID, O=IBM, L=Hursley, S=Hants, C=GB" -keypass password && \
+    mkdir -p /root/.gradle && \
+    mv status-im.keystore /root/.gradle/
 
+RUN echo "sdk.dir=/opt/android-sdk-linux" >> android/local.properties && \
+    echo "ndk.dir=/opt/android-ndk-linux" >> android/local.properties
 
-RUN echo "sdk.dir=/opt/android-sdk-linux" >> android/local.properties
-RUN echo "ndk.dir=/opt/android-ndk-linux" >> android/local.properties
-
-RUN cd ./android && ./gradlew react-native-android:installArchives
-RUN cd ./android && ./gradlew assembleRelease
+RUN cd ./android && ./gradlew react-native-android:installArchives && \
+    ./gradlew assembleRelease
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

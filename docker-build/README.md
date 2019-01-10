@@ -1,7 +1,7 @@
 # Build
 
 ``` shell
-docker-compose -f docker-build/docker-compose.yml build
+make docker-build
 ```
 
 This will install all the required sdks, depending on the connection will take some time.
@@ -9,7 +9,7 @@ This will install all the required sdks, depending on the connection will take s
 # Run
 
 ``` shell
-docker-compose -f docker-build/docker-compose.yml up
+make docker-run
 ```
 
 This will start `adbd` and `fighwheel` listening on port `4567`.

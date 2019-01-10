@@ -52,7 +52,7 @@ function install_and_setup_package_manager() {
 
 function install_wget() {
   if is_macos; then
-    brew_install wget
+    brew_install wget 1.19.4 0505e48743f82ac2e9f5d0c9d6d811949982262e
   fi
   # it's installed on ubuntu/debian by default
 }
@@ -80,7 +80,7 @@ EOF
 
 function install_leiningen() {
   if is_macos; then
-    brew_install leiningen
+    brew_install leiningen $(get_tool_version leiningen) f7e10afc6d04a13d28e825db71326d16c12e9724
   elif is_linux; then
     install_leiningen_linux
   fi
@@ -88,8 +88,8 @@ function install_leiningen() {
 
 function install_leiningen_linux() {
   local destination=/usr/bin/lein
-
-  if ! program_exists "lein"; then
+  local required_version=$(get_tool_version leiningen)
+  if ! program_version_exists "lein" "$required_version"; then
     cecho "@b@blue[[+ Installing lein...]]"
 
     sudo su << EOF
@@ -99,7 +99,7 @@ function install_leiningen_linux() {
 
       chmod 755 $destination
 
-      cd $HOME && lein upgrade
+      cd $HOME && lein downgrade $required_version
 EOF
   else
     already_installed "lein"
@@ -108,20 +108,23 @@ EOF
 
 function install_clojure_cli() {
   if is_macos; then
-    brew_install clojure
+    local required_version=$(get_tool_version clojure_cli)
+    brew_install clojure $required_version 90ea0cb4b194282b5906108dcec522c5a1ed7ce0
   elif is_linux; then
     install_clojure_cli_linux
   fi
 }
 
 function install_clojure_cli_linux() {
-  if ! program_exists "lein"; then
+  local required_version=$(get_tool_version clojure_cli)
+
+  if ! program_exists "clojure" || ! echo "$(clj -r <<< '(System/exit 0)')" | grep -q -o ${required_version%.*}; then
     cecho "@b@blue[[+ Installing Clojure CLI...]]"
 
     local current_dir=$(pwd)
     sudo su << EOF
       curl --silent \
-        https://download.clojure.org/install/linux-install-1.9.0.381.sh \
+        https://download.clojure.org/install/linux-install-${required_version}.sh \
         -o /tmp/clojure
 
       chmod +x /tmp/clojure
@@ -135,16 +138,17 @@ EOF
 }
 
 function install_watchman() {
+  local required_version=$(get_tool_version watchman)
   if is_macos; then
-    brew_install watchman
+    brew_install watchman $required_version 1a41406af8db6bbc0c94811cf60043a7436be3c4
   elif is_linux; then
-    if ! program_exists "watchman"; then
+    if ! program_version_exists "watchman" "$required_version"; then
       local current_dir=$(pwd)
       local clone_path="/tmp/watchman"
 
       git clone https://github.com/facebook/watchman.git $clone_path
       cd $clone_path
-      git checkout v4.9.0
+      git checkout v$required_version
       ./autogen.sh && \
         ./configure && \
         make && \
@@ -189,74 +193,80 @@ function install_android_sdk_linux() {
 }
 
 function install_maven() {
-  brew_install maven
+  local required_version=$(get_tool_version maven)
+  brew_install maven $required_version 4c23c22dc71eadaeb7b25d6e6c10fd53bfc26976
   linux_install maven
 }
 
 function install_react_native_cli() {
   cd "$(repo_path)"
 
-  local npm_command="npm"
+  local npm_command='npm'
+  local required_version=$(get_tool_version react_native_cli)
 
   if is_linux && ! nvm_installed; then
     # aptitude version of node requires sudo for global install
-    npm_command="sudo npm"
+    npm_command="sudo $npm_command"
   fi
 
-  if npm list -g | grep -q react-native-cli; then
-    already_installed "react-native-cli"
+  if npm list -g "react-native-cli@{required_version}" &>/dev/null; then
+    already_installed "react-native-cli@{required_version}"
   else
-    $npm_command install -g react-native-cli
+    $npm_command install -g react-native-cli@${required_version}
   fi
 }
 
 function install_yarn() {
-  local expected_version='1.13.0'
+  local required_version=$(get_tool_version yarn)
   if ! program_exists "yarn"; then
-    npm install -g yarn@$expected_version # Install the expected yarn version
+    npm install -g yarn@$required_version # Install the required yarn version
   else
     cecho "+ yarn already installed... skipping."
   fi
 
   if program_exists "yarn"; then
     local yarn_version=$(yarn -v)
-    if [[ $yarn_version != "$expected_version" ]]; then
-      cecho "@b@red[[+ yarn version $yarn_version is installed. yarn version $expected_version is recommended.]]"
-      exit 1
+    if [[ $yarn_version != "$required_version" ]]; then
+      cecho "@b@yellow[[+ yarn version $yarn_version is installed. Downloading yarn version $required_version in the local repo.]]"
+      yarn policies set-version $required_version
     fi
   fi
 }
 
 function install_node_via_nvm() {
   local nvmrc="$(repo_path)/.nvmrc"
+  local required_version=$(get_tool_version node)
 
   cd "$(repo_path)"
 
-  if [ ! -e "$nvmrc" ]; then
-      cecho "@b@blue[[+ Installing Node 10]]"
+  if [ ! -e "$nvmrc" -o "$(nvm version v""$required_version"")" = "N/A" ]; then
+    cecho "@b@blue[[+ Installing Node $required_version]]"
 
-    nvm install 10.14.0 
-    nvm alias status-im 10.14.0
+    nvm install $required_version
+    nvm alias status-im $required_version
     echo status-im > "$nvmrc"
 
     nvm use status-im
 
   else
     local version_alias=$(cat "$nvmrc")
+    if [ "$(nvm version status-im)" != "v$required_version" ]; then
+      nvm alias status-im $required_version
+    fi
     nvm use $version_alias
 
     local version=$(node -v)
     cecho "+ Node already installed ($version_alias $version via NVM)... skipping."
   fi
-
 }
 
 function install_node_via_package_manager() {
-  if ! program_exists "node"; then
+  local required_version=$(get_tool_version node)
+  if ! program_version_exists "node" "v$required_version"; then
     if is_macos; then
-      brew_install node
+      brew_install node "$required_version" b801cc6b71e7c09448b4f823e493710665de68eb
     elif is_linux; then
-      curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
+      curl -sL https://deb.nodesource.com/setup_${required_version%%\.*}.x | sudo -E bash -
       linux_update
 
       linux_install nodejs
@@ -339,6 +349,11 @@ function use_android_sdk() {
     if ! grep -Fq "sdk.dir" $_localPropertiesPath; then
       echo "sdk.dir=$ANDROID_SDK_ROOT" | tee -a $_localPropertiesPath
     fi
+
+    local ANDROID_BUILD_TOOLS_VERSION=$(get_tool_version ANDROID_BUILD_TOOLS_VERSION)
+    local ANDROID_PLATFORM_VERSION=$(get_tool_version ANDROID_PLATFORM_VERSION)
+    touch ~/.android/repositories.cfg
+    echo y | sdkmanager "platform-tools" "build-tools;$ANDROID_BUILD_TOOLS_VERSION" "platforms;$ANDROID_PLATFORM_VERSION"
   else
     local _docUrl="https://status.im/build_status/"
     cecho "@yellow[[ANDROID_SDK_ROOT environment variable not defined, please install the Android SDK.]]"
@@ -363,7 +378,8 @@ function install_android_ndk() {
         PLATFORM="darwin"
     fi
 
-    downloadUrl . android-ndk.zip https://dl.google.com/android/repository/android-ndk-r10e-$PLATFORM-x86_64.zip && \
+    local ANDROID_NDK_VERSION=$(get_tool_version ANDROID_NDK_VERSION)
+    downloadUrl . android-ndk.zip https://dl.google.com/android/repository/android-ndk-$ANDROID_NDK_VERSION-$PLATFORM-x86_64.zip && \
       cecho "@cyan[[Extracting Android NDK to $_ndkParentDir.]]" && \
       unzip -q -o ./android-ndk.zip -d "$_ndkParentDir" && \
       rm -f ./android-ndk.zip && \

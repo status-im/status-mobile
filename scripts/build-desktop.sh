@@ -44,6 +44,10 @@ external_fonts=( \
   '../../../../../resources/fonts/Inter-UI-Regular.otf' \
 )
 
+source "$SCRIPTPATH/lib/setup/path-support.sh"
+
+source_lib "packages.sh"
+
 function is_macos() {
   [[ "$OS" =~ Darwin ]]
 }
@@ -54,11 +58,6 @@ function is_linux() {
 
 function is_windows_target() {
   [[ "$TARGET_SYSTEM_NAME" =~ Windows ]]
-}
-
-function program_exists() {
-  local program=$1
-  command -v "$program" >/dev/null 2>&1
 }
 
 function joinPath() {
@@ -127,7 +126,7 @@ function init() {
         fi
 
         echo "${RED}Conan package manager not found. Installing...${NC}"
-        pip3 install conan==1.9.0
+        pip3 install conan==$(get_tool_version conan)
       fi
 
       conan remote add --insert 0 -f status-im https://conan.status.im

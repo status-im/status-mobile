@@ -1,0 +1,12 @@
+ANDROID_BUILD_TOOLS_VERSION=28.0.1
+ANDROID_NDK_VERSION=r10e
+ANDROID_PLATFORM_VERSION=android-27
+clojure_cli=1.9.0.381
+conan=1.9.0
+leiningen=2.8.1
+maven=3.5.2
+node=10.12.0
+nvm=0.33.11
+react_native_cli=2.0.1
+watchman=4.9.0
+yarn=1.13.0
