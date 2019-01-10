@@ -1,4 +1,4 @@
- status-im.utils.error-handler
+(ns status-im.utils.error-handler
   (:require [clojure.string :as string]
             [status-im.utils.utils :as utils]))
 
@@ -55,3 +55,4 @@
          (if js/goog.DEBUG
            (some-> orig-handler (.call nil e isFatal))
            (utils/show-popup "Error" (.-message e))))))))
+

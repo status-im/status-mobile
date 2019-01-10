@@ -14,14 +14,12 @@ def installJSDeps() {
     }
 }
 
-<<<<<<< HEAD
 timeout(90) {
     node ('macos') {
       def apkUrl = ''
       def ipaUrl = ''
       def testPassed = true
       def branch;
-=======
     stage('Build') {
       sh 'lein prod-build'
     }
@@ -38,8 +36,6 @@ timeout(90) {
             apkUrl = 'https://i.diawi.com/' + hash
         }
     }
->>>>>>> c9335d0b8e9fcdd5207824839aff75e86c9befc9
-
       load "$HOME/env.groovy"
 
       try {
