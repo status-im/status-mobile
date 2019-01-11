@@ -95,21 +95,6 @@ prepare-android: $(STATUS_GO_DRO_ARCH) ##@prepare Install and prepare Android-sp
 prepare-mobile: prepare-android prepare-ios ##@prepare Install and prepare mobile platform specific dependencies
 
 #----------------
-# Docker image
-#----------------
-docker-build-image: ##@docker build Docker image for debugging environment
-	docker-compose -f docker-build/docker-compose.yml build \
-		--build-arg="ANDROID_NDK_VERSION=$(call __read__toolversion__,ANDROID_NDK_VERSION)" \
-		--build-arg="LEIN_VERSION=$(call __read__toolversion__,lein)" \
-		--build-arg="NODE_VERSION=$(call __read__toolversion__,node)" \
-		--build-arg="YARN_VERSION=$(call __read__toolversion__,yarn)" \
-		--build-arg="REACT_NATIVE_CLI_VERSION=$(call __read__toolversion__,react_native_cli)" \
-		adbd
-
-docker-run: docker-build ##@docker run Docker container for debugging environment
-	docker-compose -f docker-build/docker-compose.yml up
-
-#----------------
 # Release builds
 #----------------
 release: release-android release-ios ##@build build release for Android and iOS
