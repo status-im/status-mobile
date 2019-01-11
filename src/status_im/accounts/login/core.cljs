@@ -17,14 +17,6 @@
             [status-im.i18n :as i18n]
             [status-im.node.core :as node]))
 
-;; login flow:
-;;
-;; - event `:ui/login` is dispatched
-;; - node is initialized with user config or default config
-;; - `node.started` signal is received, applying `:login` fx
-;; - `:callback/login` event is dispatched, account is changed in datastore, web-data is cleared
-;; - `:init.callback/account-change-success` event is dispatched
-
 (defn login! [address password]
   (status/login address password #(re-frame/dispatch [:accounts.login.callback/login-success %])))
 
