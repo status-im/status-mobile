@@ -38,4 +38,8 @@ ln -sf  ${PLATFORM_FOLDER}/yarn.lock yarn.lock
 echo "Creating link: VERSION -> ${PLATFORM_FOLDER}/VERSION"
 ln -sf  ${PLATFORM_FOLDER}/VERSION VERSION
 
+echo "Creating link: .babelrc -> ${PLATFORM_FOLDER}/.babelrc"
+ln -sf  ${PLATFORM_FOLDER}/.babelrc VERSION
+
+
 echo -e "${GREEN}Finished!${NC}"
