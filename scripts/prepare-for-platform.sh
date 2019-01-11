@@ -39,7 +39,7 @@ echo "Creating link: VERSION -> ${PLATFORM_FOLDER}/VERSION"
 ln -sf  ${PLATFORM_FOLDER}/VERSION VERSION
 
 echo "Creating link: .babelrc -> ${PLATFORM_FOLDER}/.babelrc"
-ln -sf  ${PLATFORM_FOLDER}/.babelrc VERSION
+ln -sf  ${PLATFORM_FOLDER}/.babelrc .babelrc
 
 
 echo -e "${GREEN}Finished!${NC}"
