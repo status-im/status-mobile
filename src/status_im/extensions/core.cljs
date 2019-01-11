@@ -396,7 +396,7 @@
 
 (def capacities
   {:components {'view                   {:value view}
-                'scroll-view            {:value scroll-view}
+                'scroll-view            {:value scroll-view :properties {:keyboard-should-persist-taps :keyword :content-container-style :map}}
                 'keyboard-avoiding-view {:value react/keyboard-avoiding-view}
                 'text                   {:value text}
                 'touchable-opacity      {:value touchable-opacity :properties {:on-press :event}}
