@@ -104,6 +104,17 @@
              {:db (assoc db :chats/loading? false)}
              (chat-loading/initialize-chats {:from 10}))))
 
+(defn account-change-success
+  [{:keys [db] :as cofx} [_ address]]
+  (let [{:node/keys [status on-ready]} db]
+    (fx/merge
+     cofx
+     (if (= status :started)
+       (accounts.login/login)
+       (node/initialize (get-in db [:accounts/login :address])))
+     (init/initialize-account address)
+     (chat-loading/initialize-chats {:to 10}))))
+
 (handlers/register-handler-fx
  :init.callback/account-change-success
  [(re-frame/inject-cofx :web3/get-web3)
@@ -113,15 +124,7 @@
   (re-frame/inject-cofx :data-store/all-dapp-permissions)
   (re-frame/inject-cofx :get-default-dapps)
   (re-frame/inject-cofx :data-store/all-chats)]
- (fn [{:keys [db] :as cofx} [_ address]]
-   (let [{:node/keys [status on-ready]} db]
-     (fx/merge
-      cofx
-      (if (= status :started)
-        (accounts.login/login)
-        (node/initialize (get-in db [:accounts/login :address])))
-      (init/initialize-account address)
-      (chat-loading/initialize-chats {:to 10})))))
+ account-change-success)
 
 (handlers/register-handler-fx
  :init.callback/keychain-reset
@@ -260,7 +263,6 @@
 (handlers/register-handler-fx
  :accounts.login.callback/login-success
  [(re-frame/inject-cofx :web3/get-web3)
-  (re-frame/inject-cofx :data-store/all-chats)
   (re-frame/inject-cofx :data-store/get-all-mailservers)
   (re-frame/inject-cofx :data-store/transport)
   (re-frame/inject-cofx :data-store/mailserver-topics)]
