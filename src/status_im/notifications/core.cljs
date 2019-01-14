@@ -41,6 +41,9 @@
         ;; is it full pubkey?
         (and (= (.-length from) pn-pubkey-length)
              (= (.-length to) pn-pubkey-length))
+        ;; partially deanonymized
+        (and (= (.-length from) pn-pubkey-length)
+             (= (.-length to) pn-pubkey-hash-length))
         ;; or is it an anonymized pubkey hash (v2 payload)?
         (and (= (.-length from) pn-pubkey-hash-length)
              (= (.-length to) pn-pubkey-hash-length)))))
