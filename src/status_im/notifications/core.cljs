@@ -197,7 +197,7 @@
                (vals (:chats db)))))
 
   (fx/defn handle-on-message
-    [{:keys [db] :as cofx} decoded-payload {:keys [force] :as opts}]
+    [{:keys [db] :as cofx} decoded-payload {:keys [force]}]
     (let [view-id            (:view-id db)
           current-chat-id    (:current-chat-id db)
           app-state          (:app-state db)
@@ -208,10 +208,11 @@
                  "from:" from "force:" force)
       (when (or force
                 (not= app-state "active"))
-        (when (show-notification? cofx rehydrated-payload)
-          {:notifications/display-notification {:title           (i18n/label :notifications-new-message-title)
-                                                :body            (i18n/label :notifications-new-message-body)
-                                                :decoded-payload rehydrated-payload}}))))
+        ;; when (show-notification? cofx rehydrated-payload)
+        {:notifications/display-notification
+         {:title           (i18n/label :notifications-new-message-title)
+          :body            (i18n/label :notifications-new-message-body)
+          :decoded-payload rehydrated-payload}})))
 
   (fx/defn handle-push-notification-open
     [{:keys [db] :as cofx} decoded-payload {:keys [stored?] :as ctx}]
@@ -229,7 +230,8 @@
                   (chat-model/navigate-to-chat from nav-opts))
         {:db (assoc-in db [:push-notifications/stored to] (js/JSON.stringify (clj->js rehydrated-payload)))})))
 
-  (defn handle-notification-open-event [event] ;; https://github.com/invertase/react-native-firebase/blob/adcbeac3d11585dd63922ef178ff6fd886d5aa9b/src/modules/notifications/Notification.js#L13
+  ;; https://github.com/invertase/react-native-firebase/blob/adcbeac3d11585dd63922ef178ff6fd886d5aa9b/src/modules/notifications/Notification.js#L13
+  (defn handle-notification-open-event [event]
     (let [decoded-payload (decode-notification-payload (.. event -notification))]
       (when decoded-payload
         (re-frame/dispatch [:notifications/notification-open-event-received decoded-payload nil]))))
