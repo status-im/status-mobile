@@ -12,3 +12,7 @@
 (re-frame/reg-sub :pairing/installation-id
                   :<- [:get :account/account]
                   :installation-id)
+
+(re-frame/reg-sub :pairing/installation-name
+                  :<- [:get :account/account]
+                  (fn [account] (:installation-name account)))

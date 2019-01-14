@@ -222,3 +222,6 @@
                                         {:type :string :optional true}
                                         :keycard-paired-on
                                         {:type :int :optional true}}))
+(def v18 (assoc-in v17
+                   [:properties :installation-name]
+                   {:type :string :optional true}))

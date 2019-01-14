@@ -3,6 +3,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [reagent.core :as reagent]
+            [clojure.string :as string]
             [status-im.utils.config :as config]
             [status-im.ui.screens.main-tabs.styles :as main-tabs.styles]
             [status-im.ui.components.colors :as colors]
@@ -11,16 +12,20 @@
             [status-im.utils.platform :as utils.platform]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.ui.components.button.view :as buttons]
+            [status-im.ui.components.styles :as components.styles]
+            [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.checkbox.view :as checkbox.views]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
+            [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.pairing.styles :as styles]))
 
 (def syncing (reagent/atom false))
+(def installation-name (reagent/atom ""))
 
 (defn icon-style [{:keys [width height] :as style}]
   (if utils.platform/desktop?
@@ -90,7 +95,7 @@
          (i18n/label :t/syncing-devices)
          (i18n/label :t/sync-all-devices))]]]]])
 
-(defn your-device [installation-id]
+(defn your-device [installation-id installation-name]
   [react/view {:style styles/installation-item}
    [react/view {:style (styles/pairing-button true)}
     [icons/icon (if utils.platform/desktop?
@@ -101,12 +106,17 @@
     [react/view
      [react/text {:style styles/installation-item-name-text}
       (str
-       (gfycat/generate-gfy installation-id)
+       installation-name
        " ("
        (i18n/label :t/you)
+       ", "
+       (subs installation-id 0 5)
        ")")]]]])
 
-(defn render-row [{:keys [device-type enabled? installation-id]}]
+(defn render-row [{:keys [name
+                          device-type
+                          enabled?
+                          installation-id]}]
   [react/touchable-highlight
    {:accessibility-label :installation-item}
    [react/view {:style styles/installation-item}
@@ -119,7 +129,13 @@
     [react/view {:style styles/pairing-actions-text}
      [react/view
       [react/text {:style styles/installation-item-name-text}
-       (gfycat/generate-gfy installation-id)]]]
+       (if (string/blank? name)
+         (str
+          (i18n/label :t/pairing-no-info)
+          " ("
+          (subs installation-id 0 5)
+          ")")
+         name)]]]
     [react/view
      (if utils.platform/ios?
        ;; On IOS switches seems to be broken, they take up value of dev-mode? (so if dev mode is on they all show to be on).
@@ -130,23 +146,46 @@
                       :value           enabled?
                       :on-value-change (partial toggle-enabled! installation-id enabled?)}])]]])
 
-(defn render-rows [installation-id installations]
+(defn render-rows [installation-id installation-name installations]
   [react/scroll-view {:style styles/wrapper}
-   [your-device installation-id]
+   [your-device installation-id installation-name]
    (when (seq installations)
      [list/flat-list {:data               installations
                       :default-separator? false
                       :key-fn             :installation-id
                       :render-fn          render-row}])])
 
-(defn installations-list [installation-id installations]
+(views/defview edit-installation-name []
+  [react/keyboard-avoiding-view styles/edit-installation
+   [react/scroll-view {:keyboard-should-persist-taps :handled}
+    [react/view
+     [react/text (i18n/label :t/pairing-please-set-a-name)]]
+    [text-input/text-input-with-label
+     {:placeholder     (i18n/label :t/specify-name)
+      :style           styles/input
+      :container       styles/input-container
+      :default-value   @installation-name
+      :on-change-text  #(reset! installation-name %)
+      :auto-focus      true}]]
+   [react/view styles/bottom-container
+    [react/view components.styles/flex]
+    [components.common/bottom-button
+     {:forward?  true
+      :label     (i18n/label :t/continue)
+      :disabled? (string/blank? @installation-name)
+      :on-press  #(do
+                    (re-frame/dispatch [:pairing.ui/set-name-pressed @installation-name])
+                    (reset! installation-name ""))}]]])
+
+(defn installations-list [installation-id installation-name installations]
   [react/view {:style styles/installation-list}
    [react/view {:style styles/paired-devices-title}
     [react/text (i18n/label :t/paired-devices)]]
-   (render-rows installation-id installations)])
+   (render-rows installation-id installation-name installations)])
 
 (views/defview installations []
   (views/letsubs [installation-id [:pairing/installation-id]
+                  installation-name [:pairing/installation-name]
                   installations [:pairing/installations]]
     [react/view {:flex 1}
      [status-bar/status-bar]
@@ -154,6 +193,9 @@
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/devices)]]
      [react/scroll-view {:style {:background-color :white}}
-      [pair-this-device]
-      [installations-list installation-id installations]]
+      (if (string/blank? installation-name)
+        [edit-installation-name]
+        [react/view
+         [pair-this-device]
+         [installations-list installation-id installation-name installations]])]
      (when (seq installations) [footer syncing])]))

@@ -1,5 +1,7 @@
 (ns status-im.ui.screens.pairing.styles
-  (:require [status-im.ui.components.colors :as colors])
+  (:require
+   [status-im.ui.components.styles :as styles]
+   [status-im.ui.components.colors :as colors])
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]]))
 
 (def wrapper
@@ -24,6 +26,10 @@
   {:background-color   :white
    :padding-horizontal 16
    :flex               1})
+
+(def edit-installation
+  {:padding-top        10
+   :padding-horizontal 16})
 
 (def footer-content {:justify-content :center
                      :flex            1
@@ -76,3 +82,23 @@
 (def paired-devices-title
   {:color           colors/gray
    :margin-vertical 10})
+
+(def bottom-container
+  {:flex-direction    :row
+   :margin-horizontal 12
+   :margin-vertical   15})
+
+(def input-container
+  {:flex-direction    :row
+   :align-items       :center
+   :justify-content   :space-between
+   :border-radius     styles/border-radius
+   :height            52
+   :margin-top        15})
+
+(defstyle input
+  {:flex               1
+   :font-size          15
+   :letter-spacing     -0.2
+   :android            {:padding 0}})
+

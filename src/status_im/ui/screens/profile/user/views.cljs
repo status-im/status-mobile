@@ -98,7 +98,9 @@
                                                         :source  source
                                                         :value   value}]))
 
-(defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} {:keys [settings]} currency logged-in?]
+(defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]}
+                            {:keys [dev-mode?
+                                    settings]} currency logged-in?]
   (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
     [react/view
      [profile.components/settings-title (i18n/label :t/settings)]
@@ -125,6 +127,13 @@
         {:label-kw     :t/backup-your-recovery-phrase
          :action-fn    #(re-frame/dispatch [:navigate-to :backup-seed])
          :icon-content [components.common/counter {:size 22} 1]}])
+     (when (config/pairing-enabled? dev-mode?)
+       [profile.components/settings-item-separator])
+     (when (config/pairing-enabled? dev-mode?)
+       [profile.components/settings-item
+        {:label-kw            :t/devices
+         :action-fn           #(re-frame/dispatch [:navigate-to :installations])
+         :accessibility-label :pairing-settings-button}])
      [profile.components/settings-item-separator]
      [profile.components/settings-switch-item
       {:label-kw  :t/web3-opt-in
@@ -193,13 +202,6 @@
       {:label-kw            :t/bootnodes
        :action-fn           #(re-frame/dispatch [:navigate-to :bootnodes-settings])
        :accessibility-label :bootnodes-settings-button}])
-   (when (config/pairing-enabled? dev-mode?)
-     [profile.components/settings-item-separator])
-   (when (config/pairing-enabled? dev-mode?)
-     [profile.components/settings-item
-      {:label-kw            :t/devices
-       :action-fn           #(re-frame/dispatch [:navigate-to :installations])
-       :accessibility-label :pairing-settings-button}])
    (when dev-mode?
      [profile.components/settings-item-separator])
    (when dev-mode?

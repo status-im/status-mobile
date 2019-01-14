@@ -18,3 +18,6 @@
                       :enabled?        {:type     :bool
                                         :optional true
                                         :default  false}}})
+
+(def v3 (assoc-in v2 [:properties :name] {:type     :string
+                                          :optional true}))

@@ -171,12 +171,14 @@
                                              "2" {:has-bundle? false
                                                   :installation-id "2"}}}}
           pair-message {:device-type "ios"
+                        :name "name"
                         :installation-id "1"}]
       (testing "not coming from us"
         (is (not (pairing/handle-pair-installation cofx pair-message 1 "not-us"))))
       (testing "coming from us"
         (is (= {"1" {:has-bundle? true
                      :installation-id "1"
+                     :name "name"
                      :last-paired 1
                      :device-type "ios"}
                 "2"  {:has-bundle? false

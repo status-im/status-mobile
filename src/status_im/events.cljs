@@ -1508,6 +1508,11 @@
    (pairing/pair-installation cofx)))
 
 (handlers/register-handler-fx
+ :pairing.ui/set-name-pressed
+ (fn [cofx [_ installation-name]]
+   (pairing/set-name cofx installation-name)))
+
+(handlers/register-handler-fx
  :pairing.ui/synchronize-installation-pressed
  (fn [cofx _]
    (pairing/send-installation-messages cofx)))

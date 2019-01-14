@@ -79,16 +79,21 @@
         [react/text {:style styles/qr-code-copy-text}
          (i18n/label :copy-qr)]]]]]))
 
-(defn installations-section [your-installation-id installations]
+(defn installations-section [your-installation-id
+                             your-installation-name
+                             installations]
   [react/view
-   [pairing.views/pair-this-device]
-   [pairing.views/sync-devices]
-   [react/view {:style pairing.styles/installation-list}
-    [pairing.views/your-device your-installation-id]
-    (for [installation installations]
-      ^{:key (:installation-id installation)}
-      [react/view {:style {:margin-bottom 10}}
-       (pairing.views/render-row installation)])]])
+   (if (string/blank? your-installation-name)
+     [pairing.views/edit-installation-name]
+     [react/view
+      [pairing.views/pair-this-device]
+      [pairing.views/sync-devices]
+      [react/view {:style pairing.styles/installation-list}
+       [pairing.views/your-device your-installation-id your-installation-name]
+       (for [installation installations]
+         ^{:key (:installation-id installation)}
+         [react/view {:style {:margin-bottom 10}}
+          (pairing.views/render-row installation)])]])])
 
 (defn connection-status
   "generates a composite message of the current connection state given peer and mailserver statuses"
@@ -194,11 +199,15 @@
                        :on-value-change #(re-frame/dispatch [:accounts.ui/toggle-pfs (not pfs?)])}]]])))
 
 (views/defview installations []
-  (views/letsubs [installations    [:pairing/installations]
-                  installation-id  [:pairing/installation-id]]
+  (views/letsubs [installations     [:pairing/installations]
+                  installation-id   [:pairing/installation-id]
+                  installation-name [:pairing/installation-name]]
     [react/scroll-view
      (when (config/pairing-enabled? true)
-       (installations-section installation-id installations))]))
+       (installations-section
+        installation-id
+        installation-name
+        installations))]))
 
 (views/defview backup-recovery-phrase []
   [profile.recovery/backup-seed])

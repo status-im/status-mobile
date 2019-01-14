@@ -4,7 +4,7 @@
             [taoensso.timbre :as log]))
 
 (defrecord PairInstallation
-           [installation-id device-type]
+           [installation-id device-type name]
   protocol/StatusMessage
   (validate [this]
     (if (spec/valid? :message/pair-installation this)

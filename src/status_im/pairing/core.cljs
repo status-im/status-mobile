@@ -25,9 +25,10 @@
       (js->clj :keywordize-keys true)))
 
 (defn pair-installation [cofx]
-  (let [installation-id (get-in cofx [:db :account/account :installation-id])
+  (let [installation-name (get-in cofx [:db :account/account :installation-name])
+        installation-id (get-in cofx [:db :account/account :installation-id])
         device-type     utils.platform/os]
-    (protocol/send (transport.pairing/PairInstallation. installation-id device-type) nil cofx)))
+    (protocol/send (transport.pairing/PairInstallation. installation-id device-type installation-name) nil cofx)))
 
 (defn has-paired-installations? [cofx]
   (->>
@@ -243,15 +244,21 @@
                   #(when (:public? chat)
                      (models.chat/start-public-chat % (:chat-id chat) {:dont-navigate? true})))))))
 
-(defn handle-pair-installation [{:keys [db] :as cofx} {:keys [installation-id device-type]} timestamp sender]
+(defn handle-pair-installation [{:keys [db] :as cofx} {:keys [name installation-id device-type]} timestamp sender]
   (let [dev-mode? (get-in db [:account/account :dev-mode?])]
     (when (and (config/pairing-enabled? dev-mode?)
                (= sender (accounts.db/current-public-key cofx))
                (not= (get-in db [:account/account :installation-id]) installation-id))
-      (let [installation {:installation-id installation-id
-                          :device-type     device-type
-                          :last-paired     timestamp}]
+      (let [installation {:installation-id   installation-id
+                          :name              name
+                          :device-type       device-type
+                          :last-paired       timestamp}]
         (upsert-installation cofx installation)))))
+
+(fx/defn set-name [{:keys [db] :as cofx} installation-name]
+  (let [new-account (assoc (get-in cofx [:db :account/account]) :installation-name installation-name)]
+    {:db (assoc db :account/account new-account)
+     :data-store/base-tx [(data-store.accounts/save-account-tx new-account)]}))
 
 (fx/defn load-installations [{:keys [db all-installations]}]
   {:db (assoc db :pairing/installations (reduce
