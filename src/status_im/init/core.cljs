@@ -141,9 +141,10 @@
     (if (empty? accounts)
       (navigation/navigate-to-clean cofx :intro nil)
       (let [account-with-notification
-            (notifications/lookup-contact-pubkey-from-hash
-             cofx
-             (first (keys (:push-notifications/stored db))))
+            (when-not platform/desktop?
+              (notifications/lookup-contact-pubkey-from-hash
+               cofx
+               (first (keys (:push-notifications/stored db)))))
             selection-fn
             (if (not-empty account-with-notification)
               #(filter (fn [account]
