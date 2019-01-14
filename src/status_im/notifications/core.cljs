@@ -35,15 +35,15 @@
            (re-frame/dispatch [:notifications.callback/request-notifications-permissions-denied {}]))))))
 
 (defn valid-notification-payload?
-  [{:keys [from to] :as payload}]
+  [{:keys [from to]}]
   (and from to
        (or
         ;; is it full pubkey?
         (and (= (.-length from) pn-pubkey-length)
              (= (.-length to) pn-pubkey-length))
         ;; partially deanonymized
-        (and (= (.-length from) pn-pubkey-length)
-             (= (.-length to) pn-pubkey-hash-length))
+        (and (= (.-length from) pn-pubkey-hash-length)
+             (= (.-length to) pn-pubkey-length))
         ;; or is it an anonymized pubkey hash (v2 payload)?
         (and (= (.-length from) pn-pubkey-hash-length)
              (= (.-length to) pn-pubkey-hash-length)))))
@@ -126,13 +126,16 @@
                         (parse-notification-v1-payload (object/get data-js "msg")))]
           (if (valid-notification-payload? payload)
             payload
-            (log/warn "failed to retrieve notification payload from" (js/JSON.stringify data-js))))
+            (log/warn "failed to retrieve notification payload from"
+                      (js/JSON.stringify data-js))))
         (catch :default e
-          (log/debug "failed to parse" (js/JSON.stringify data-js) "exception:" e)))))
+          (log/debug "failed to parse" (js/JSON.stringify data-js)
+                     "exception:" e)))))
 
   (defn rehydrate-payload
     [cofx {:keys [from to id] :as decoded-payload}]
-    "Takes a payload with hashed pubkeys and returns a payload with the real (matched) pubkeys"
+    "Takes a payload with hashed pubkeys and returns a payload with the real
+    (matched) pubkeys"
     {:from (lookup-contact-pubkey-from-hash cofx from)
      :to   (lookup-contact-pubkey-from-hash cofx to)
      ;; TODO: Rehydrate message id
@@ -147,7 +150,8 @@
              :data  (clj->js (encode-notification-payload decoded-payload))
              :sound sound-name}
             (when-let [msg-id (:id decoded-payload)]
-              ;; We must prefix the notification ID, otherwise it will cause a crash in iOS
+              ;; We must prefix the notification ID, otherwise it will
+              ;; cause a crash in iOS
               {:notificationId (str "hash:" msg-id)})))]
       (firebase.notifications.Notification.
        native-notification (.notifications firebase))))
@@ -176,12 +180,14 @@
     (-> (.getToken (.messaging firebase))
         (.then (fn [x]
                  (log/debug "get-fcm-token:" x)
-                 (re-frame/dispatch [:notifications.callback/get-fcm-token-success x])))))
+                 (re-frame/dispatch
+                  [:notifications.callback/get-fcm-token-success x])))))
 
   (defn create-notification-channel []
-    (let [channel (firebase.notifications.Android.Channel. channel-id
-                                                           channel-name
-                                                           firebase.notifications.Android.Importance.High)]
+    (let [channel (firebase.notifications.Android.Channel.
+                   channel-id
+                   channel-name
+                   firebase.notifications.Android.Importance.High)]
       (.setSound channel sound-name)
       (.setShowBadge channel true)
       (.enableVibration channel true)
@@ -213,8 +219,9 @@
                  "view-id:" view-id "current-chat-id:" current-chat-id
                  "from:" from "force:" force)
       (when (or force
-                (not= app-state "active"))
-        ;; when (show-notification? cofx rehydrated-payload)
+                (and
+                 (not= app-state "active")
+                 (show-notification? cofx rehydrated-payload)))
         {:notifications/display-notification
          {:title           (i18n/label :notifications-new-message-title)
           :body            (i18n/label :notifications-new-message-body)
@@ -234,13 +241,15 @@
         (fx/merge cofx
                   {:db (update db :push-notifications/stored dissoc to)}
                   (chat-model/navigate-to-chat from nav-opts))
-        {:db (assoc-in db [:push-notifications/stored to] (js/JSON.stringify (clj->js rehydrated-payload)))})))
+        {:db (assoc-in db [:push-notifications/stored to]
+                       (js/JSON.stringify (clj->js rehydrated-payload)))})))
 
   ;; https://github.com/invertase/react-native-firebase/blob/adcbeac3d11585dd63922ef178ff6fd886d5aa9b/src/modules/notifications/Notification.js#L13
   (defn handle-notification-open-event [event]
     (let [decoded-payload (decode-notification-payload (.. event -notification))]
       (when decoded-payload
-        (re-frame/dispatch [:notifications/notification-open-event-received decoded-payload nil]))))
+        (re-frame/dispatch
+         [:notifications/notification-open-event-received decoded-payload nil]))))
 
   (defn handle-initial-push-notification []
     "This method handles pending push notifications."
@@ -254,10 +263,11 @@
                   (handle-notification-open-event event))))))
 
   (defn setup-token-refresh-callback []
-    (.onTokenRefresh (.messaging firebase)
-                     (fn [x]
-                       (log/debug "onTokenRefresh:" x)
-                       (re-frame/dispatch [:notifications.callback/get-fcm-token-success x]))))
+    (.onTokenRefresh
+     (.messaging firebase)
+     (fn [x]
+       (log/debug "onTokenRefresh:" x)
+       (re-frame/dispatch [:notifications.callback/get-fcm-token-success x]))))
 
   (defn setup-on-notification-callback []
     "Calling onNotification is only needed so that we're able to receive PNs"
@@ -265,23 +275,28 @@
     "on the notifications API. Once that is no longer a consideration"
     "we can remove this method"
     (log/debug "calling onNotification")
-    (.onNotification (.notifications firebase)
-                     (fn [message-js]
-                       (log/debug "handle-on-notification-callback called")
-                       (let [decoded-payload (decode-notification-payload message-js)]
-                         (log/debug "handle-on-notification-callback payload:" decoded-payload)
-                         (when decoded-payload
-                           (re-frame/dispatch [:notifications.callback/on-message decoded-payload]))))))
+    (.onNotification
+     (.notifications firebase)
+     (fn [message-js]
+       (log/debug "handle-on-notification-callback called")
+       (let [decoded-payload (decode-notification-payload message-js)]
+         (log/debug "handle-on-notification-callback payload:" decoded-payload)
+         (when decoded-payload
+           (re-frame/dispatch
+            [:notifications.callback/on-message decoded-payload]))))))
 
   (defn setup-on-message-callback []
     (log/debug "calling onMessage")
-    (.onMessage (.messaging firebase)
-                (fn [message-js]
-                  (log/debug "handle-on-message-callback called")
-                  (let [decoded-payload (decode-notification-payload message-js)]
-                    (log/debug "handle-on-message-callback decoded-payload:" decoded-payload)
-                    (when decoded-payload
-                      (re-frame/dispatch [:notifications.callback/on-message decoded-payload]))))))
+    (.onMessage
+     (.messaging firebase)
+     (fn [message-js]
+       (log/debug "handle-on-message-callback called")
+       (let [decoded-payload (decode-notification-payload message-js)]
+         (log/debug "handle-on-message-callback decoded-payload:"
+                    decoded-payload)
+         (when decoded-payload
+           (re-frame/dispatch
+            [:notifications.callback/on-message decoded-payload]))))))
 
   (defn setup-on-notification-opened-callback []
     (.. firebase
