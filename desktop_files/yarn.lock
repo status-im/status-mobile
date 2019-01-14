@@ -1863,9 +1863,9 @@ big-integer@^1.6.7:
   resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.40.tgz#02e4cd4d6e266c4d9ece2469c05cb6439149fc78"
   integrity sha512-CjhtJp0BViLzP1ZkEnoywjgtFQXS2pomKjAJtIISTCnuHILkLcAXLdFLG/nxsHc4s9kJfc+82Xpg8WNyhfACzQ==
 
-"bignumber.js@github:status-im/bignumber.js#master":
+"bignumber.js@git+https://github.com/status-im/bignumber.js.git#v4.0.2-status":
   version "4.0.2"
-  resolved "https://codeload.github.com/status-im/bignumber.js/tar.gz/cc066a0a3d6bfe0c436c9957f4ea8344bf963c89"
+  resolved "git+https://github.com/status-im/bignumber.js.git#cc066a0a3d6bfe0c436c9957f4ea8344bf963c89"
 
 binaryextensions@~1.0.0:
   version "1.0.1"
@@ -8223,7 +8223,7 @@ static-extend@^0.1.1:
     define-property "^0.2.5"
     object-copy "^0.1.0"
 
-"status-conan@git+https://github.com/status-im/status-conan.git#master":
+"status-conan@git+https://github.com/status-im/status-conan.git#v1.0.0":
   version "1.0.0"
   resolved "git+https://github.com/status-im/status-conan.git#47a1b8264cd321ed3122762e9a07a6df1dea5d8e"
 
@@ -9110,9 +9110,9 @@ web3-utils@1.0.0-beta.36:
 
 "web3@https://github.com/status-im/web3.js.git#features/pairing-message":
   version "0.20.1"
-  resolved "https://github.com/status-im/web3.js.git#5fd0b24fd10ce55183a5253a370840540a07db1e"
+  resolved "https://github.com/status-im/web3.js.git#dad342dc95f7d5a888411ed57c9618937e2b6ebd"
   dependencies:
-    bignumber.js "github:status-im/bignumber.js#master"
+    bignumber.js "git+https://github.com/status-im/bignumber.js.git#v4.0.2-status"
     crypto-js "^3.1.4"
     utf8 "^2.1.1"
     xhr2 "*"

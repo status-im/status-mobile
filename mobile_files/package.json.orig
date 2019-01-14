@@ -14,8 +14,7 @@
     "@tradle/react-native-http": "2.0.1",
     "assert": "1.4.1",
     "asyncstorage-down": "4.0.1",
-    "babel-preset-react-native": "5.0.2",
-    "bignumber.js": "git+https://github.com/status-im/bignumber.js.git",
+    "bignumber.js": "git+https://github.com/status-im/bignumber.js.git#v4.0.2-status",
     "buffer": "3.6.0",
     "chance": "1.0.12",
     "create-react-class": "15.6.2",
@@ -68,5 +67,8 @@
     "url": "0.10.3",
     "web3": "git+https://github.com/status-im/web3.js.git#features/pairing-message",
     "web3-utils": "1.0.0-beta.36"
+  },
+  "devDependencies": {
+    "@babel/core": "7.0.0-beta.47"
   }
 }

@@ -2080,7 +2080,7 @@ big-integer@^1.6.7:
   resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.40.tgz#02e4cd4d6e266c4d9ece2469c05cb6439149fc78"
   integrity sha512-CjhtJp0BViLzP1ZkEnoywjgtFQXS2pomKjAJtIISTCnuHILkLcAXLdFLG/nxsHc4s9kJfc+82Xpg8WNyhfACzQ==
 
-"bignumber.js@git+https://github.com/status-im/bignumber.js.git", "bignumber.js@git+https://github.com/status-im/bignumber.js.git#v4.0.2-status":
+"bignumber.js@git+https://github.com/status-im/bignumber.js.git#v4.0.2-status":
   version "4.0.2"
   resolved "git+https://github.com/status-im/bignumber.js.git#cc066a0a3d6bfe0c436c9957f4ea8344bf963c89"
 
