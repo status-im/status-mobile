@@ -9,13 +9,23 @@
             [status-im.ui.components.colors :as colors]
             [status-im.utils.http :as http]))
 
-(defn format-author [from username]
-  (str (when username (str username " • "))
-       (gfycat/generate-gfy from))) ; TODO: We defensively generate the name for now, to be revisited when new protocol is defined
+(defn format-author [from username style]
+  ;; TODO: We defensively generate the name for now, to be revisited when new protocol is defined
+  (cond->> [react/text {:style (style false)
+                        :number-of-lines 1
+                        :ellipsize-mode  :tail}
+            (gfycat/generate-gfy from)]
+    username
+    (conj [react/text {:style (style true)
+                       :number-of-lines 1
+                       :ellipsize-mode  :tail}
+           (str username " • ")])))
 
-(defn format-reply-author [from username current-public-key]
-  (or (and (= from current-public-key) (i18n/label :t/You))
-      (format-author from username)))
+(defn format-reply-author [from username current-public-key style]
+  (or (and (= from current-public-key)
+           [react/text {:style (style true)}
+            (i18n/label :t/You)])
+      (format-author from username style)))
 
 (def ^:private styling->prop
   {:bold      {:style {:font-weight :bold}}

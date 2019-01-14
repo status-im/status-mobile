@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.desktop.main.chat.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.screens.chat.styles.message.message :refer [message-author-name]]))
 
 ;; TODO: see how this could be refactored to be
 ;; automatically alignde with tabs-height in
@@ -239,11 +240,10 @@
   {:flex-direction :column
    :padding-bottom 10})
 
-(def reply-content-author
-  {:margin-top     5
-   :color          colors/gray
-   :font-size      12
-   :padding-bottom 3})
+(defn reply-content-author [chosen?]
+  (assoc (message-author-name chosen?)
+         :margin-top     5
+         :padding-bottom 3))
 
 (def reply-content-message
   {:padding-left   7

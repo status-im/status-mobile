@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.chat.styles.input.input
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.screens.chat.styles.message.message :refer [message-author-name]]))
 
 (def min-input-height 36)
 (def padding-vertical 8)
@@ -36,10 +37,9 @@
    :max-height     140
    :overflow       :scroll})
 
-(def reply-message-author
-  {:font-size      12
-   :color          colors/gray
-   :padding-bottom 6})
+(defn reply-message-author [chosen?]
+  (assoc (message-author-name chosen?)
+         :padding-bottom 6))
 
 (def reply-message-container
   {:flex-direction :column-reverse})

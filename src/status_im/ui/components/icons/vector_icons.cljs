@@ -112,6 +112,7 @@
      :tiny-icons/tiny-lock         (js/require "./resources/icons/tiny/tiny_lock.svg")
      :tiny-icons/tiny-lock-broken  (js/require "./resources/icons/tiny/tiny_lock_broken.svg")
      :tiny-icons/tiny-new-contact  (js/require "./resources/icons/tiny/tiny_new_contact.svg")
+     :tiny-icons/tiny-pending      (js/require "./resources/icons/tiny/tiny_pending.svg")
      :tiny-icons/tiny-public       (js/require "./resources/icons/tiny/tiny_public.svg")
      :tiny-icons/tiny-reply        (js/require "./resources/icons/tiny/tiny_reply.svg")
      :tiny-icons/tiny-settings     (js/require "./resources/icons/tiny/tiny_settings.svg")
@@ -125,6 +126,8 @@
      :icons/indicator-big          (js/require "./resources/icons/indicator-big.svg")
      :icons/indicator-middle       (js/require "./resources/icons/indicator-middle.svg")
      :icons/indicator-small        (js/require "./resources/icons/indicator-small.svg")}
+
+    ;; Mobile icons
     {;; Main icons
      :main-icons/add               (components.svg/slurp-svg "./resources/icons/main/add.svg")
      :main-icons/add-contact       (components.svg/slurp-svg "./resources/icons/main/add_contact.svg")
@@ -204,9 +207,10 @@
      :tiny-icons/tiny-check        (components.svg/slurp-svg "./resources/icons/tiny/tiny_check.svg")
      :tiny-icons/tiny-external     (components.svg/slurp-svg "./resources/icons/tiny/tiny_external.svg")
      :tiny-icons/tiny-group        (components.svg/slurp-svg "./resources/icons/tiny/tiny_group.svg")
-     :tiny-icons/tiny-new-contact  (components.svg/slurp-svg "./resources/icons/tiny/tiny_new_contact.svg")
      :tiny-icons/tiny-lock         (components.svg/slurp-svg "./resources/icons/tiny/tiny_lock.svg")
      :tiny-icons/tiny-lock-broken  (components.svg/slurp-svg "./resources/icons/tiny/tiny_lock_broken.svg")
+     :tiny-icons/tiny-new-contact  (components.svg/slurp-svg "./resources/icons/tiny/tiny_new_contact.svg")
+     :tiny-icons/tiny-pending      (components.svg/slurp-svg "./resources/icons/tiny/tiny_pending.svg")
      :tiny-icons/tiny-public       (components.svg/slurp-svg "./resources/icons/tiny/tiny_public.svg")
      :tiny-icons/tiny-reply        (components.svg/slurp-svg "./resources/icons/tiny/tiny_reply.svg")
      :tiny-icons/tiny-settings     (components.svg/slurp-svg "./resources/icons/tiny/tiny_settings.svg")

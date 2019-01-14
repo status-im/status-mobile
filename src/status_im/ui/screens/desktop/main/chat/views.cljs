@@ -88,12 +88,11 @@
   (views/letsubs [username [:contacts/contact-name-by-identity from]]
     [react/view {:style styles/quoted-message-container}
      [react/view {:style styles/quoted-message-author-container}
-      [icons/icon :main-icons/reply {:style           (styles/reply-icon outgoing)
-                                     :width           16
-                                     :height          16
-                                     :container-style (when outgoing {:opacity 0.4})}]
-      [react/text {:style (message.style/quoted-message-author outgoing)}
-       (chat-utils/format-reply-author from username current-public-key)]]
+      [icons/icon :tiny-icons/tiny-reply {:style           (styles/reply-icon outgoing)
+                                          :width           16
+                                          :height          16
+                                          :container-style (when outgoing {:opacity 0.4})}]
+      (chat-utils/format-reply-author from username current-public-key (partial message.style/quoted-message-author outgoing))]
      [react/text {:style           (message.style/quoted-message-text outgoing)
                   :number-of-lines 5}
       (core-utils/truncate-str text constants/chars-collapse-threshold)]]))
@@ -269,8 +268,7 @@
   (views/letsubs [username           [:contacts/contact-name-by-identity from]
                   current-public-key [:account/public-key]]
     [react/view {:style styles/reply-content-container}
-     [react/text {:style styles/reply-content-author}
-      (chat-utils/format-reply-author from username current-public-key)]
+     (chat-utils/format-reply-author from username current-public-key styles/reply-content-author)
      [react/text {:style styles/reply-content-message} message-text]]))
 
 (views/defview reply-member-photo [from]
