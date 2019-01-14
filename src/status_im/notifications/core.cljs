@@ -152,6 +152,7 @@
   (defn display-notification [{:keys [title body] :as params}]
     (let [notification (build-notification params)]
       (when platform/android?
+        #(log/debug "Well, that's android :D")
         (.. notification
             (-android.setChannelId channel-id)
             (-android.setAutoCancel true)
@@ -159,12 +160,14 @@
             (-android.setCategory firebase.notifications.Android.Category.Message)
             (-android.setGroup group-id)
             (-android.setSmallIcon icon)))
+      #(log/debug "Before")
       (.. firebase
           notifications
           (displayNotification notification)
           (then #(log/debug "Display Notification" title body))
           (catch (fn [error]
-                   (log/debug "Display Notification error" title body error))))))
+                   (log/debug "Display Notification error" title body error))))
+      #(log/debug "After")))
 
   (defn get-fcm-token []
     (-> (.getToken (.messaging firebase))
