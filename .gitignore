@@ -147,6 +147,7 @@ Status-Windows-x86_64.exe
 /desktop/CMakeFiles/
 /desktop/reportApp/Makefile
 /deployment/windows/Status.rc
+/docker/*/scripts/
 *_autogen/
 CompleteBundleWin.cmake
 logger_settings.ini

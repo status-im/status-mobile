@@ -83,9 +83,10 @@ RUN mkdir -p $LEIN_INSTALL \
 ARG NVM_VERSION
 ARG NODE_VERSION
 ARG YARN_VERSION
-RUN curl -s -o- https://raw.githubusercontent.com/creationix/nvm/v${NVM_VERSION}/install.sh | bash
+ADD scripts/3rd-party/nvm/${NVM_VERSION}/install.sh /tmp/nvm/${NVM_VERSION}/
 
-RUN mkdir -p /tmp/react-native-desktop && cd /tmp/react-native-desktop && \
+RUN /tmp/nvm/${NVM_VERSION}/install.sh && \
+    mkdir -p /tmp/react-native-desktop && cd /tmp/react-native-desktop && \
       git init && git remote add origin https://github.com/status-im/react-native-desktop.git && \
       git fetch --depth=1 origin ${REACT_NATIVE_DESKTOP_COMMIT_SHA} && \
       git reset --hard FETCH_HEAD && \
@@ -106,7 +107,7 @@ RUN addgroup --gid 1002 jenkins && \
       --uid 1001 --gid 1002 jenkins
 
 # Install NVM for Jenkins
-RUN su jenkins -c 'curl -s -o- https://raw.githubusercontent.com/creationix/nvm/v${NVM_VERSION}/install.sh | bash'
+RUN su jenkins -c '/tmp/nvm/${NVM_VERSION}/install.sh'
 
 LABEL source="https://github.com/status-im/status-react/tree/develop/desktop/docker" \
       description="Image for building Linux Desktop version of Status app." \

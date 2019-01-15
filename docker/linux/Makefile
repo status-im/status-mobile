@@ -15,6 +15,9 @@ IMAGE_TAG = 1.1.1
 IMAGE_NAME = statusteam/linux-desktop-ubuntu:$(IMAGE_TAG)
 
 build: $(QT_ARCHIVE)
+	rm -rf ./scripts && \
+	mkdir -p ./scripts/3rd-party && \
+	cp -R ../../scripts/3rd-party/ ./scripts/ && \
 	docker build \
 		--build-arg="QT_VERSION=$(QT_VERSION)" \
 		--build-arg="QT_CI_COMMIT_SHA=$(QT_CI_COMMIT_SHA)" \
@@ -24,7 +27,8 @@ build: $(QT_ARCHIVE)
 		--build-arg="NVM_VERSION=$(call __read__toolversion__,nvm)" \
 		--build-arg="YARN_VERSION=$(call __read__toolversion__,yarn)" \
 		--label="commit=$(GIT_COMMIT)" \
-		-t $(IMAGE_NAME) .
+		-t $(IMAGE_NAME) .; \
+	rm -rf ./scripts
 
 $(QT_ARCHIVE):
 	wget $(QT_URL)/$(QT_VER_MJR)/$(QT_VERSION)/$(QT_ARCHIVE)

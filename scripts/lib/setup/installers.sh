@@ -16,6 +16,10 @@ function install_nsis() {
 }
 
 function install_node() {
+  if ! nvm_installed && ! program_exists 'node'; then
+    install_nvm
+  fi
+
   if nvm_installed; then
     install_node_via_nvm
   else
@@ -230,6 +234,22 @@ function install_yarn() {
       cecho "@b@yellow[[+ yarn version $yarn_version is installed. Downloading yarn version $required_version in the local repo.]]"
       yarn policies set-version $required_version
     fi
+  fi
+}
+
+function install_nvm() {
+  local required_version=$(get_tool_version nvm)
+
+  if ! program_version_exists 'nvm' "$required_version"; then
+    cecho "@b@blue[[+ Installing nvm $required_version]]"
+
+    sudo apt install -y build-essential libssl-dev
+    source scripts/3rd-party/nvm/${required_version}/install.sh
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+  else
+    cecho "+ nvm already installed... skipping."
   fi
 }
 
