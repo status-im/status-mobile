@@ -13,9 +13,9 @@ class PrivacyPolicyButton(BaseButton):
         return BaseWebView(self.driver)
 
 
-class VersionInfo(BaseText):
+class VersionText(BaseText):
     def __init__(self, driver):
-        super(VersionInfo, self).__init__(driver)
+        super(VersionText, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
             '//*[@content-desc="version"]//android.widget.TextView')
 
@@ -25,4 +25,4 @@ class AboutView(BaseView):
         super(AboutView, self).__init__(driver)
 
         self.privacy_policy_button = PrivacyPolicyButton(self.driver)
-        self.version_info = VersionInfo(self.driver)
+        self.version = VersionText(self.driver)

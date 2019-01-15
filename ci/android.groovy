@@ -40,7 +40,8 @@ def uploadToSauceLabs() {
   if (changeId != null) {
     env.SAUCE_LABS_NAME = "${changeId}.apk"
   } else {
-    env.SAUCE_LABS_NAME = "im.status.ethereum-e2e-${GIT_COMMIT.take(6)}.apk"
+    def pkg = cmn.pkgFilename(type, 'apk')
+    env.SAUCE_LABS_NAME = "${pkg}"
   }
   withCredentials([
     string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),

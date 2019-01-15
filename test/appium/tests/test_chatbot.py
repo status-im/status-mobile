@@ -15,8 +15,8 @@ repeats = 24 / len(public_keys) if public_keys else 0
 @pytest.mark.chatbot
 class TestChatBot(SingleDeviceTestCase):
 
-    def setup_method(self, method, max_duration=10800):
-        super(TestChatBot, self).setup_method(method, max_duration=10800)
+    def setup_method(self, method, **kwargs):
+        super(TestChatBot, self).setup_method(method, maxDuration=10800)
 
     @pytest.mark.parametrize('key', numpy.repeat(public_keys, repeats))
     def test_one_to_one_chatbot(self, key):
