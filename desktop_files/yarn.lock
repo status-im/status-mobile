@@ -4490,7 +4490,7 @@ iconv-lite@^0.4.17, iconv-lite@^0.4.4, iconv-lite@~0.4.13:
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
 
-"identicon.js@git+https://github.com/status-im/identicon.js.git":
+"identicon.js@git+https://github.com/status-im/identicon.js.git#v1.2.1-status":
   version "1.2.1"
   resolved "git+https://github.com/status-im/identicon.js.git#4cd179daaf6f01384502b4b2c1876f982db0f57e"
 
@@ -6229,7 +6229,7 @@ nested-error-stacks@^1.0.1:
   dependencies:
     inherits "~2.0.1"
 
-"nfc-react-native@git+https://github.com/status-im/nfc-react-native.git":
+"nfc-react-native@git+https://github.com/status-im/nfc-react-native.git#v0.3.8-status":
   version "0.3.8"
   resolved "git+https://github.com/status-im/nfc-react-native.git#ecdb55e470bb9fa569d26fcc8af4e5169511a4d3"
 
@@ -7150,7 +7150,7 @@ react-native-camera@0.10.0:
   dependencies:
     prop-types "^15.5.10"
 
-"react-native-config@git+https://github.com/status-im/react-native-config.git":
+"react-native-config@git+https://github.com/status-im/react-native-config.git#v0.11.2-status":
   version "0.11.2"
   resolved "git+https://github.com/status-im/react-native-config.git#e705dac8ab459614906c060dcf699e5fe5c05d9d"
 
@@ -7179,7 +7179,7 @@ react-native-fetch-polyfill@1.1.2:
   resolved "https://registry.yarnpkg.com/react-native-fetch-polyfill/-/react-native-fetch-polyfill-1.1.2.tgz#256b5a0abd78cc4992f7a7cf82543da2f2124a73"
   integrity sha1-JWtaCr14zEmS96fPglQ9ovISSnM=
 
-"react-native-fs@git+https://github.com/status-im/react-native-fs.git":
+"react-native-fs@git+https://github.com/status-im/react-native-fs.git#v2.9.7-status":
   version "2.9.7"
   resolved "git+https://github.com/status-im/react-native-fs.git#e60e5cd6062e8c33379dd50f09b76f4f5024d5c0"
   dependencies:
@@ -7191,9 +7191,9 @@ react-native-http-bridge@0.6.1:
   resolved "https://registry.yarnpkg.com/react-native-http-bridge/-/react-native-http-bridge-0.6.1.tgz#1b85688174870e9b009692e1a6cdc5f5396c5ca4"
   integrity sha512-XnPVdaYkKIC8bRGmADVLhgDO0Evnya3rOExVEzxk6pBJjNUewWljkGHt//OTpb4t7Te6oDqQAwa+gfVtzhRU1A==
 
-"react-native-http@github:tradle/react-native-http#834492d":
+"react-native-http@git+https://github.com/tradle/react-native-http.git#834492d":
   version "1.0.0"
-  resolved "https://codeload.github.com/tradle/react-native-http/tar.gz/834492dbc792b1dec8ec8f0a1c9671f640339f01"
+  resolved "git+https://github.com/tradle/react-native-http.git#834492dbc792b1dec8ec8f0a1c9671f640339f01"
   dependencies:
     Base64 "~0.2.0"
     inherits "~2.0.1"
@@ -7222,9 +7222,9 @@ react-native-invertible-scroll-view@1.1.0:
     react-clone-referenced-element "^1.0.1"
     react-native-scrollable-mixin "^1.0.1"
 
-"react-native-keychain@git+https://github.com/status-im/react-native-keychain.git":
+"react-native-keychain@git+https://github.com/status-im/react-native-keychain.git#v.3.0.0-status":
   version "3.0.0-rc.3"
-  resolved "git+https://github.com/status-im/react-native-keychain.git#ea1bfe6b803ab712d6009a40267db820ce2ec2cd"
+  resolved "git+https://github.com/status-im/react-native-keychain.git#43e5512cabb8ee064fd9e503be943dcf2c7d7669"
 
 react-native-level-fs@3.0.0:
   version "3.0.0"
@@ -7253,9 +7253,9 @@ react-native-scrollable-mixin@^1.0.1:
   resolved "https://registry.yarnpkg.com/react-native-scrollable-mixin/-/react-native-scrollable-mixin-1.0.1.tgz#34a32167b64248594154fd0d6a8b03f22740548e"
   integrity sha1-NKMhZ7ZCSFlBVP0NaosD8idAVI4=
 
-"react-native-securerandom@git+https://github.com/status-im/react-native-securerandom.git":
+"react-native-securerandom@git+https://github.com/status-im/react-native-securerandom.git#0.1.1-2":
   version "0.1.1"
-  resolved "git+https://github.com/status-im/react-native-securerandom.git#58aeb7e581bbccf3bfa54e1fbe48c3d5dca9a675"
+  resolved "git+https://github.com/status-im/react-native-securerandom.git#ffff3f91ad9f239fe333880e720b21a3a03a9252"
   dependencies:
     base64-js "*"
 
@@ -7296,7 +7296,7 @@ react-native-udp@2.2.1:
     ip-regex "^1.0.3"
     util "^0.10.3"
 
-"react-native-webview-bridge@git+https://github.com/status-im/react-native-webview-bridge.git#react-native-0.49-desktop":
+"react-native-webview-bridge@git+https://github.com/status-im/react-native-webview-bridge.git#0.33.16-status-rn049-desktop":
   version "0.33.16"
   resolved "git+https://github.com/status-im/react-native-webview-bridge.git#da824f59731af37b877e325204637d7c52e170f6"
   dependencies:
@@ -7735,7 +7735,7 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-"rn-snoopy@git+https://github.com/status-im/rn-snoopy.git":
+"rn-snoopy@git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status":
   version "2.0.2"
   resolved "git+https://github.com/status-im/rn-snoopy.git#f23dc13469c6c2a694649f658cdc1d1eaf8def64"
   dependencies:
@@ -9108,7 +9108,7 @@ web3-utils@1.0.0-beta.36:
     underscore "1.8.3"
     utf8 "2.1.1"
 
-"web3@git+https://github.com/status-im/web3.js.git#features/pairing-message":
+"web3@git+https://github.com/status-im/web3.js.git#0.20.1-status":
   version "0.20.1"
   resolved "git+https://github.com/status-im/web3.js.git#dad342dc95f7d5a888411ed57c9618937e2b6ebd"
   dependencies:

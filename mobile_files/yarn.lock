@@ -3875,7 +3875,7 @@ iconv-lite@^0.4.17, iconv-lite@^0.4.4, iconv-lite@~0.4.13:
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
 
-"identicon.js@git+https://github.com/status-im/identicon.js.git":
+"identicon.js@git+https://github.com/status-im/identicon.js.git#v1.2.1-status":
   version "1.2.1"
   resolved "git+https://github.com/status-im/identicon.js.git#4cd179daaf6f01384502b4b2c1876f982db0f57e"
 
@@ -5996,7 +5996,7 @@ react-native-scrollable-mixin@^1.0.1:
   resolved "https://registry.yarnpkg.com/react-native-scrollable-mixin/-/react-native-scrollable-mixin-1.0.1.tgz#34a32167b64248594154fd0d6a8b03f22740548e"
   integrity sha1-NKMhZ7ZCSFlBVP0NaosD8idAVI4=
 
-"react-native-securerandom@git+https://github.com/status-im/react-native-securerandom.git#0.1.1-1":
+"react-native-securerandom@git+https://github.com/status-im/react-native-securerandom.git#0.1.1-2":
   version "0.1.1"
   resolved "git+https://github.com/status-im/react-native-securerandom.git#ff9f56fae93520c78503c10e24603d3853aece0f"
   dependencies:
@@ -6007,7 +6007,7 @@ react-native-splash-screen@3.1.1:
   resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.1.1.tgz#1a4e46c9fdce53ff52af2a2cb4181788c4e30b30"
   integrity sha512-PU2YocOSGbLjL9Vgcq/cwMNuHHKNjjuPpa1IPMuWo+6EB/fSZ5VOmxSa7+eucQe3631s3NhGuk3eHKahU03a4Q==
 
-"react-native-status-keycard@git+https://github.com/status-im/react-native-status-keycard.git":
+"react-native-status-keycard@git+https://github.com/status-im/react-native-status-keycard.git#v2.3.1":
   version "2.3.1"
   resolved "git+https://github.com/status-im/react-native-status-keycard.git#2dffe6aae4d2d29bc2649637f3c4a9157b2460c6"
 
@@ -6062,9 +6062,9 @@ react-native-tab-view@^1.0.0:
     invariant "2.2.0"
     keymirror "0.1.1"
 
-"react-native@git+https://github.com/status-im/react-native#status-0.56-1":
+"react-native@git+https://github.com/status-im/react-native.git#status-0.56-1":
   version "0.56.0"
-  resolved "git+https://github.com/status-im/react-native#aa51c6e7a17776f7277f7f2124467fc0d41d6841"
+  resolved "git+https://github.com/status-im/react-native.git#aa51c6e7a17776f7277f7f2124467fc0d41d6841"
   dependencies:
     absolute-path "^0.0.0"
     art "^0.10.0"
@@ -6467,7 +6467,7 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-"rn-snoopy@git+https://github.com/status-im/rn-snoopy.git":
+"rn-snoopy@git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status":
   version "2.0.2"
   resolved "git+https://github.com/status-im/rn-snoopy.git#f23dc13469c6c2a694649f658cdc1d1eaf8def64"
   dependencies:
@@ -7419,7 +7419,7 @@ web3-utils@1.0.0-beta.36:
     underscore "1.8.3"
     utf8 "2.1.1"
 
-"web3@git+https://github.com/status-im/web3.js.git#features/pairing-message":
+"web3@git+https://github.com/status-im/web3.js.git#0.20.1-status":
   version "0.20.1"
   resolved "git+https://github.com/status-im/web3.js.git#dad342dc95f7d5a888411ed57c9618937e2b6ebd"
   dependencies:
