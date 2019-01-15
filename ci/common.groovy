@@ -4,6 +4,14 @@ def version() {
   return readFile("${env.WORKSPACE}/VERSION").trim()
 }
 
+def getToolVersion(name) {
+  def version = sh(
+    returnStdout: true,
+    script: "grep ${name} ${env.WORKSPACE}/.TOOLVERSIONS | cut -d'=' -f2-"
+  ).trim()
+  return version
+}
+
 def getBuildType() {
   def jobName = env.JOB_NAME
   if (jobName.contains('e2e')) {

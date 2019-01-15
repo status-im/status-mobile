@@ -44,32 +44,36 @@ pipeline {
           mobile = load 'ci/mobile.groovy'
           cmn    = load 'ci/common.groovy'
           print "Running ${cmn.getBuildType()} build!"
-          /* Cleanup and Prep */
-          mobile.prep(cmn.getBuildType())
           /* Run at start to void mismatched numbers */
           cmn.buildNumber()
+          /* Read the valid NodeJS version */
+          env.NODE_VERSION = cmn.getToolVersion('node')
+          /* Cleanup and Prep */
+          nvm(env.NODE_VERSION) {
+            mobile.prep(cmn.getBuildType())
+          }
         }
       }
     }
     stage('Lint') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { cmn.runLint() }
-      }
+      } }
     }
     stage('Tests') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { cmn.runTests() }
-      }
+      } }
     }
     stage('Build') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { mobile.leinBuild('android') }
-      }
+      } }
     }
     stage('Bundle') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { apk = mobile.android.bundle(cmn.getBuildType()) }
-      }
+      } }
     }
     stage('Archive') {
       steps {

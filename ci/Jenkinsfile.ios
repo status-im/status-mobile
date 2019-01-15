@@ -23,7 +23,6 @@ pipeline {
   }
 
   environment {
-    NODE_VERSION = 'v10.14.1'
     BUILD_PLATFORM = 'ios'
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
@@ -36,20 +35,24 @@ pipeline {
   stages {
     stage('Prep') {
       steps {
-        script { nvm(env.NODE_VERSION) {
+        script { 
           /* Necessary to load methods */
           mobile = load 'ci/mobile.groovy'
           cmn    = load 'ci/common.groovy'
           print "Running ${cmn.getBuildType()} build!"
-          /* Cleanup and Prep */
-          mobile.prep(cmn.getBuildType())
           /* Run at start to void mismatched numbers */
           cmn.buildNumber()
-        } }
+          /* Read the valid NodeJS version */
+          env.NODE_VERSION = cmn.getToolVersion('node')
+          /* Cleanup and Prep */
+          nvm(env.NODE_VERSION) {
+            mobile.prep(cmn.getBuildType())
+          }
+        }
       }
     }
     stage('Lint') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {nvm(env.NODE_VERSION) {
         script { cmn.runLint() }
       } }
     }

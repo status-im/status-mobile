@@ -23,7 +23,6 @@ pipeline {
   }
 
   environment {
-    NODE_VERSION = 'v10.14.1'
     BUILD_PLATFORM = 'macos'
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
@@ -37,12 +36,17 @@ pipeline {
   stages {
     stage('Prep') {
       steps {
-        script { nvm(env.NODE_VERSION) {
+        script {
           /* Necessary to load methods */
           desktop = load 'ci/desktop.groovy'
           cmn     = load 'ci/common.groovy'
-          desktop.prepDeps()
-        } }
+          /* Read the valid NodeJS version */
+          env.NODE_VERSION = cmn.getToolVersion('node')
+          /* Cleanup and Prep */
+          nvm(env.NODE_VERSION) {
+            desktop.prepDeps()
+          }
+        }
       }
     }
     stage('Lint') {
