@@ -111,9 +111,9 @@
                 "0x04b790f2c3f4079f35a1fa396465ceb243cc446c9af211d0a1774f869eb9632a67a6e664e24075ec5c5a8a95a509a2a8173dbfeb88af372e784a37fecc1b5c0ba5"
                 "0x04cc3cec3f88dc1a39e224388f0304023fc78c2a7d05e4ebd61638192cc592d2c13d8f081b5d9995dbfcbe45a4ca7eb80d5c505eee660e8fee0df2da222f047287"})
 
-(def contacts_addresses '("5adf1b9e1fa4bd4889fecd598b45079045d98f0e"
-                          "21631d18d9681d4ffdd460fc45fa52159fcd95c8"
-                          "5541e3be81b76d76cdbf968516caa5a5b773763b"))
+(def contacts_addresses '("0x5adf1b9e1fa4bd4889fecd598b45079045d98f0e"
+                          "0x21631d18d9681d4ffdd460fc45fa52159fcd95c8"
+                          "0x5541e3be81b76d76cdbf968516caa5a5b773763b"))
 
 (deftest enrich-command-message-for-events-test-public
   (let [db {:chats {"1" {:contacts nil :public? true :group-chat false}}}

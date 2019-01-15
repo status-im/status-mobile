@@ -294,7 +294,7 @@
   (preview [_ command-message]
     (send-preview command-message))
   protocol/Yielding
-  (yield-control [_ {:keys [amount asset]} {:keys [db] :as cofx}]
+  (yield-control [_ {{{amount :amount asset :asset} :params} :content} {:keys [db] :as cofx}]
     ;; Prefill wallet and navigate there
     (let [recipient-contact     (get-in db [:contacts/contacts (:current-chat-id db)])
           sender-account        (:account/account db)
