@@ -32,7 +32,7 @@
     "querystring-es3": "0.2.1",
     "react": "16.4.1",
     "react-dom": "16.4.2",
-    "react-native": "git+https://github.com/status-im/react-native#status-0.56-1",
+    "react-native": "git+https://github.com/status-im/react-native.git#status-0.56-1",
     "react-native-background-timer": "2.1.0-alpha.6",
     "react-native-camera": "git+https://github.com/status-im/react-native-camera.git#1.1.5-1",
     "react-native-config": "git+https://github.com/status-im/react-native-config.git#0.11.2-1",

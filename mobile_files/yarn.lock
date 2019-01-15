@@ -1923,7 +1923,7 @@ babel-preset-fbjs@^2.1.2, babel-preset-fbjs@^2.1.4:
     babel-plugin-transform-react-display-name "^6.8.0"
     babel-plugin-transform-react-jsx "^6.8.0"
 
-babel-preset-react-native@5.0.2, babel-preset-react-native@^5.0.0:
+babel-preset-react-native@^5.0.0:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/babel-preset-react-native/-/babel-preset-react-native-5.0.2.tgz#dfed62379712a9c017ff99ce4fbeac1e11d42285"
   integrity sha512-Ua5JeQ1yGK8UoydMPzE2Ghq5raOKxXzpyApYDuHi4etIbXi5+GnCin19Nu+1obLQCf2Dxy9Y/GZwI0rnNOjggA==

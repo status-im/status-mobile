@@ -4175,7 +4175,7 @@ glogg@^1.0.0:
   dependencies:
     sparkles "^1.0.0"
 
-"google-breakpad@git+https://github.com/status-im/google-breakpad.git":
+"google-breakpad@git+https://github.com/status-im/google-breakpad.git#v0.9.0":
   version "1.0.0"
   resolved "git+https://github.com/status-im/google-breakpad.git#9fcfdc23010ce2b0742d276e2959ab13e7cf0dc7"
 
@@ -4490,9 +4490,9 @@ iconv-lite@^0.4.17, iconv-lite@^0.4.4, iconv-lite@~0.4.13:
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
 
-"identicon.js@github:status-im/identicon.js":
+"identicon.js@git+https://github.com/status-im/identicon.js.git":
   version "1.2.1"
-  resolved "https://codeload.github.com/status-im/identicon.js/tar.gz/4cd179daaf6f01384502b4b2c1876f982db0f57e"
+  resolved "git+https://github.com/status-im/identicon.js.git#4cd179daaf6f01384502b4b2c1876f982db0f57e"
 
 ieee754@^1.1.4:
   version "1.1.12"
@@ -6229,9 +6229,9 @@ nested-error-stacks@^1.0.1:
   dependencies:
     inherits "~2.0.1"
 
-"nfc-react-native@github:status-im/nfc-react-native":
+"nfc-react-native@git+https://github.com/status-im/nfc-react-native.git":
   version "0.3.8"
-  resolved "https://codeload.github.com/status-im/nfc-react-native/tar.gz/ecdb55e470bb9fa569d26fcc8af4e5169511a4d3"
+  resolved "git+https://github.com/status-im/nfc-react-native.git#ecdb55e470bb9fa569d26fcc8af4e5169511a4d3"
 
 node-fetch@^1.0.1, node-fetch@^1.6.3:
   version "1.7.3"
@@ -7296,9 +7296,9 @@ react-native-udp@2.2.1:
     ip-regex "^1.0.3"
     util "^0.10.3"
 
-"react-native-webview-bridge@github:status-im/react-native-webview-bridge#react-native-0.49-desktop":
+"react-native-webview-bridge@git+https://github.com/status-im/react-native-webview-bridge.git#react-native-0.49-desktop":
   version "0.33.16"
-  resolved "https://codeload.github.com/status-im/react-native-webview-bridge/tar.gz/da824f59731af37b877e325204637d7c52e170f6"
+  resolved "git+https://github.com/status-im/react-native-webview-bridge.git#da824f59731af37b877e325204637d7c52e170f6"
   dependencies:
     invariant "2.2.0"
     keymirror "0.1.1"
@@ -7735,9 +7735,9 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-"rn-snoopy@github:status-im/rn-snoopy":
+"rn-snoopy@git+https://github.com/status-im/rn-snoopy.git":
   version "2.0.2"
-  resolved "https://codeload.github.com/status-im/rn-snoopy/tar.gz/f23dc13469c6c2a694649f658cdc1d1eaf8def64"
+  resolved "git+https://github.com/status-im/rn-snoopy.git#f23dc13469c6c2a694649f658cdc1d1eaf8def64"
   dependencies:
     eslint-plugin-jsx-a11y "5.1.1"
     lodash "^3.10.0"
@@ -9108,9 +9108,9 @@ web3-utils@1.0.0-beta.36:
     underscore "1.8.3"
     utf8 "2.1.1"
 
-"web3@https://github.com/status-im/web3.js.git#features/pairing-message":
+"web3@git+https://github.com/status-im/web3.js.git#features/pairing-message":
   version "0.20.1"
-  resolved "https://github.com/status-im/web3.js.git#dad342dc95f7d5a888411ed57c9618937e2b6ebd"
+  resolved "git+https://github.com/status-im/web3.js.git#dad342dc95f7d5a888411ed57c9618937e2b6ebd"
   dependencies:
     bignumber.js "git+https://github.com/status-im/bignumber.js.git#v4.0.2-status"
     crypto-js "^3.1.4"
