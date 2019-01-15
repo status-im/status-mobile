@@ -200,6 +200,12 @@ class ProfileSendTransactionButton(BaseButton):
         self.locator = self.Locator.accessibility_id('send-transaction-button')
 
 
+class JoinChatButton(BaseButton):
+    def __init__(self, driver):
+        super(JoinChatButton, self).__init__(driver)
+        self.locator = self.Locator.text_part_selector('JOIN CHAT')
+
+
 class ChatElementByText(BaseText):
     def __init__(self, driver, text):
         super(ChatElementByText, self).__init__(driver)
@@ -312,6 +318,7 @@ class ChatView(BaseView):
         self.clear_button = ClearButton(self.driver)
         self.leave_chat_button = LeaveChatButton(self.driver)
         self.leave_button = LeaveButton(self.driver)
+        self.join_chat_button = JoinChatButton(self.driver)
 
         self.chat_settings = ChatSettings(self.driver)
         self.view_profile_button = ViewProfileButton(self.driver)

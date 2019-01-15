@@ -36,7 +36,7 @@ class TestBrowsing(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         home_view = sign_in.create_user()
         start_new_chat = home_view.plus_button.click()
-        browsing_view = start_new_chat.open_url('www.bbc.com')
+        browsing_view = start_new_chat.open_url('http://www.dvwa.co.uk')
         browsing_view.url_edit_box_lock_icon.click()
         browsing_view.find_full_text(connection_not_secure_text)
 

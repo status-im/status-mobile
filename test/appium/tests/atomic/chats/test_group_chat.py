@@ -27,7 +27,7 @@ def create_and_join_group_chat(device_1_home, device_2_home, chat_name):
 
     # device 2: open group chat
     device_2_chat = device_2_home.get_chat_with_user(chat_name).click()
-    device_2_home.element_by_text_part('JOIN CHAT').click()
+    device_2_chat.join_chat_button.click()
 
     return device_1_chat, device_2_chat
 
@@ -87,7 +87,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_1_chat, device_2_chat = create_and_join_group_chat(device_1_home, device_2_home, chat_name)
 
         admin_created_chat_system_message = "*%s* created the group *%s*" % (username_1, chat_name)
-        user2_joined_chat_system_message = "*%s* joined the group" % device_2_default_username
+        user2_joined_chat_system_message = "*%s* has joined the group" % device_2_default_username
         user2_left_chat_system_message = "*%s* left the group" % device_2_default_username
 
         # device 2: delete group chat
@@ -165,6 +165,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
         # device 2: open the chat and check messages
         device_2_chat = device_2_home.get_chat_with_user(chat_name).click()
+        device_2_chat.join_chat_button.click()
         if not device_2_chat.chat_element_by_text(message_for_device_2).is_element_displayed():
             self.errors.append('Message that was sent after device 2 has joined is not visible')
 
