@@ -95,20 +95,9 @@ pipeline {
       } }
     }
     stage('Publish') {
+      when { expression { btype == 'nightly' } }
       steps { script {
-        switch (btype) {
-          case 'nightly':
-            build('misc/status.im')
-            break
-          case 'release':
-            build(
-              job: 'misc/cn.status.im',
-              parameters: [
-                [name: 'APK_URL', value: urls.Apk, $class: 'StringParameterValue'],
-              ]
-            )
-            break
-        }
+        build('misc/status.im')
       } }
     }
     stage('Run e2e') {
