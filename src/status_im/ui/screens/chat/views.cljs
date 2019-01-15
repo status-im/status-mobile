@@ -14,6 +14,7 @@
             [status-im.ui.screens.chat.message.message :as message]
             [status-im.ui.screens.chat.message.options :as message-options]
             [status-im.ui.screens.chat.message.datemark :as message-datemark]
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.screens.chat.toolbar-content :as toolbar-content]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.button.view :as buttons]
@@ -121,18 +122,35 @@
           (i18n/label :t/empty-chat-description))]])))
 
 (defn join-chat-button [chat-id]
-  [buttons/primary-button {:style style/join-button
-                           :on-press #(re-frame/dispatch [:group-chats.ui/join-pressed chat-id])}
+  [buttons/secondary-button {:style style/join-button
+                             :on-press #(re-frame/dispatch [:group-chats.ui/join-pressed chat-id])}
    (i18n/label :t/join-group-chat)])
 
-(defview group-chat-join-section [my-public-key {:keys [name chat-id] :as chat}]
+(defn decline-chat [chat-id]
+  [react/touchable-highlight
+   {:on-press
+    #(re-frame/dispatch [:group-chats.ui/remove-chat-confirmed chat-id])}
+   [react/text {:style style/decline-chat}
+    (i18n/label :t/group-chat-decline-invitation)]])
+
+(defview group-chat-join-section [my-public-key {:keys [name
+                                                        group-chat
+                                                        color
+                                                        chat-id] :as chat}]
   (letsubs [contact [:contacts/contact-by-identity (models.group-chats/get-inviter-pk my-public-key chat)]]
     [react/view style/empty-chat-container
-     [join-chat-button chat-id]
-     [react/text {:style style/empty-chat-text}
-      [react/text style/empty-chat-container-one-to-one
-       (i18n/label :t/join-group-chat-description {:username (:name contact)
-                                                   :group-name name})]]]))
+     [react/view {:style {:margin-bottom 170}}
+      [chat-icon.screen/profile-icon-view nil name color false 100 {:default-chat-icon-text style/group-chat-icon}]]
+     [react/view {:style style/group-chat-join-footer}
+      [react/view {:style style/group-chat-join-container}
+       [react/view
+        [react/text {:style style/group-chat-join-name} name]]
+       [react/text {:style style/empty-chat-text}
+        [react/text style/empty-chat-container-one-to-one
+         (i18n/label :t/join-group-chat-description {:username (:name contact)
+                                                     :group-name name})]]
+       [join-chat-button chat-id]
+       [decline-chat chat-id]]]]))
 
 (defview messages-view [{:keys [group-chat] :as chat} modal?]
   (letsubs [messages           [:chats/current-chat-messages-stream]

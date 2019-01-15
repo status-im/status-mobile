@@ -160,15 +160,15 @@
     :default-chat-icon      (styles/default-chat-icon-profile colors/default-chat-color size)
     :default-chat-icon-text styles/default-chat-icon-text}])
 
-(defn profile-icon-view [photo-path name color edit? size]
-  (let [styles {:container              {:width size :height size}
-                :online-view            styles/online-view-profile
-                :online-dot-left        styles/online-dot-left-profile
-                :online-dot-right       styles/online-dot-right-profile
-                :size                   size
-                :chat-icon              styles/chat-icon-profile
-                :default-chat-icon      (styles/default-chat-icon-profile color size)
-                :default-chat-icon-text styles/default-chat-icon-text}]
+(defn profile-icon-view [photo-path name color edit? size override-styles]
+  (let [styles (merge {:container              {:width size :height size}
+                       :online-view            styles/online-view-profile
+                       :online-dot-left        styles/online-dot-left-profile
+                       :online-dot-right       styles/online-dot-right-profile
+                       :size                   size
+                       :chat-icon              styles/chat-icon-profile
+                       :default-chat-icon      (styles/default-chat-icon-profile color size)
+                       :default-chat-icon-text styles/default-chat-icon-text} override-styles)]
     [react/view (:container styles)
      (when edit?
        [react/view (styles/profile-icon-mask size)])
@@ -183,4 +183,4 @@
                         edit?                     :edit?}]
   (let [color colors/default-chat-color
         size  56]
-    [profile-icon-view photo-path name color edit? size]))
+    [profile-icon-view photo-path name color edit? size {}]))

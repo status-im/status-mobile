@@ -21,11 +21,7 @@
 (defn active-chats
   [contacts chats {:keys [dev-mode?]}]
   (reduce (fn [acc [chat-id {:keys [group-chat public? is-active] :as chat}]]
-            (if (and is-active
-                     ;; not a group chat
-                     (or (not (and group-chat (not public?)))
-                         ;; if it's a group chat
-                         utils.config/group-chats-enabled?))
+            (if is-active
               (assoc acc chat-id (if-let [contact (get contacts chat-id)]
                                    (-> chat
                                        (assoc :name (:name contact))

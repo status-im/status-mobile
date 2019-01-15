@@ -30,3 +30,22 @@
    :font-size         12
    :margin-horizontal 17})
 
+(def bottom-container
+  {:padding-horizontal 12
+   :padding-vertical   15})
+
+(def toolbar-header-container
+  {:align-items :center})
+
+(def toolbar-header
+  {:font-size 15
+   :color colors/black})
+
+(def toolbar-sub-header
+  {:font-size 15
+   :color colors/gray})
+
+(def no-contacts
+  {:flex 1
+   :justify-content :center
+   :align-items :center})

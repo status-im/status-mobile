@@ -113,12 +113,7 @@
              :ShhextConfig        {:BackupDisabledDataDir (utils.platform/no-backup-directory)
                                    :InstallationID          installation-id
                                    :MailServerConfirmations config/mailserver-confirmations-enabled?
-                                   :PFSEnabled              (or config/pfs-encryption-enabled?
-                                                                ;; We don't check dev-mode? here as
-                                                                ;; otherwise we would have to restart the node
-                                                                ;; when the user enables it
-                                                                config/group-chats-enabled?
-                                                                (config/pairing-enabled? true))}
+                                   :PFSEnabled              true}
              :RequireTopics           (get-topics network))
 
       (and

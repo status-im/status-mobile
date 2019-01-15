@@ -246,3 +246,8 @@
 (def v13
   (update v12 :properties assoc
           :members-joined         {:type "string[]"}))
+
+(def v14
+  (update v13 :properties assoc
+          :group-chat-local-version {:type :int
+                                     :optional true}))

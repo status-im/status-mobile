@@ -339,3 +339,10 @@
                 content-type (aget last-message "content-type")]
             (aset chat "last-message-content" content)
             (aset chat "last-message-content-type" content-type)))))))
+
+(defn v34 [old-realm new-realm]
+  (let [chats (.objects new-realm "chat")]
+    (dotimes [i (.-length chats)]
+      (let [chat (aget chats i)
+            chat-id (aget chat "chat-id")]
+        (aset chat "group-chat-local-version" 0)))))

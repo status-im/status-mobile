@@ -52,12 +52,6 @@
       js/JSON.parse
       (js->clj :keywordize-keys true)))
 
-(defn joined? [public-key {:keys [members-joined]}]
-  (contains? members-joined public-key))
-
-(defn invited? [my-public-key {:keys [contacts]}]
-  (contains? contacts my-public-key))
-
 (defn extract-creator
   "Takes a chat as an input, returns the creator"
   [{:keys [membership-updates]}]
@@ -66,6 +60,20 @@
                  (some #(= "chat-created" (:type %)) events)))
        first
        :from))
+
+(defn joined-event? [public-key {:keys [members-joined] :as chat}]
+  (contains? members-joined public-key))
+
+(defn joined? [public-key {:keys [group-chat-local-version] :as chat}]
+  ;; We consider group chats with local version of 0 as joined for local events
+  (or (zero? group-chat-local-version)
+      (joined-event? public-key chat)))
+
+(defn creator? [public-key chat]
+  (= public-key (extract-creator chat)))
+
+(defn invited? [my-public-key {:keys [contacts]}]
+  (contains? contacts my-public-key))
 
 (defn signature-material
   "Transform an update into a signable string"
@@ -130,13 +138,14 @@
          ;; If a member has joined is listening to the shared topic and we send there
          ;; to ourselves we send always on contact-discovery to make sure all devices
          ;; are informed, in case of dropped messages.
-         ;; We send on the discovery topic to the creator as it's automatically
-         ;; joined or for contact that have not joined yet,
-         ;; for backward compatibility
+         ;; We check that it has explicitly joined, regardless of the local
+         ;; version of the group chat, for backward compatibility
          destinations (map (fn [member]
-                             (if (and (joined? member chat)
-                                      (not= creator member)
-                                      (not= current-public-key member))
+                             (if (and
+                                  config/group-chats-publish-to-topic?
+                                  (joined-event? member chat)
+                                  (not= creator member)
+                                  (not= current-public-key member))
                                {:public-key member
                                 :chat chat-id}
                                {:public-key member
@@ -476,14 +485,11 @@
 (fx/defn set-up-topic [cofx chat-id previous-chat]
   (let [my-public-key (accounts.db/current-public-key cofx)
         new-chat (get-in cofx [:db :chats chat-id])]
-    (cond
-      (and (not (joined? my-public-key previous-chat))
-           (joined? my-public-key new-chat))
-      (transport.public-chat/join-group-chat cofx chat-id)
-
-      (and (joined? my-public-key previous-chat)
-           (not (joined? my-public-key new-chat)))
-      (transport.chat/unsubscribe-from-chat cofx chat-id))))
+    ;; If we left the chat, teardown, otherwise upsert
+    (if (and (joined? my-public-key previous-chat)
+             (not (joined? my-public-key new-chat)))
+      (transport.chat/unsubscribe-from-chat cofx chat-id)
+      (transport.public-chat/join-group-chat cofx chat-id))))
 
 (fx/defn handle-membership-update
   "Upsert chat and receive message if valid"
@@ -495,8 +501,7 @@
    raw-payload
    sender-signature]
   (let [dev-mode? (get-in cofx [:db :account/account :dev-mode?])]
-    (when (and config/group-chats-enabled?
-               (valid-chat-id? chat-id (extract-creator membership-update)))
+    (when (valid-chat-id? chat-id (extract-creator membership-update))
       (let [previous-chat (get-in cofx [:db :chats chat-id])
             all-updates (clojure.set/union (set (:membership-updates previous-chat))
                                            (set (:membership-updates membership-update)))
@@ -505,15 +510,16 @@
             new-group (build-group unwrapped-events)
             member? (contains? (:contacts new-group) my-public-key)]
         (fx/merge cofx
-                  (models.chat/upsert-chat {:chat-id            chat-id
-                                            :name               (:name new-group)
-                                            :is-active          (or member?
-                                                                    (get previous-chat :is-active true))
-                                            :group-chat         true
-                                            :membership-updates (into [] all-updates)
-                                            :admins             (:admins new-group)
-                                            :members-joined     (:members-joined new-group)
-                                            :contacts           (:contacts new-group)})
+                  (models.chat/upsert-chat {:chat-id                  chat-id
+                                            :name                     (:name new-group)
+                                            :group-chat-local-version (get previous-chat :group-chat-local-version 1)
+                                            :is-active                (or member?
+                                                                          (get previous-chat :is-active true))
+                                            :group-chat               true
+                                            :membership-updates       (into [] all-updates)
+                                            :admins                   (:admins new-group)
+                                            :members-joined           (:members-joined new-group)
+                                            :contacts                 (:contacts new-group)})
                   (add-system-messages chat-id previous-chat new-group)
                   (set-up-topic chat-id previous-chat)
                   #(when (and message

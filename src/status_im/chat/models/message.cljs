@@ -242,7 +242,10 @@
   (cond
     (and (= :group-user-message message-type)
          (and (get-in cofx [:db :chats chat-id :contacts from])
-              (get-in cofx [:db :chats chat-id :members-joined (accounts.db/current-public-key cofx)]))) chat-id
+              ;; Version 0 does not have a concept of joining, so any message is ok
+              ;; otherwise check we joined
+              (or (= 0 (get-in cofx [:db :chats chat-id :group-chat-local-version]))
+                  (get-in cofx [:db :chats chat-id :members-joined (accounts.db/current-public-key cofx)])))) chat-id
     (and (= :public-group-user-message message-type)
          (get-in cofx [:db :chats chat-id :public?])) chat-id
     (and (= :user-message message-type)

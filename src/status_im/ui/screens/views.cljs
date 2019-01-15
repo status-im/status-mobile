@@ -20,9 +20,9 @@
 
             [status-im.ui.screens.qr-scanner.views :refer [qr-scanner]]
 
-            [status-im.ui.screens.group.views :refer [new-group]]
-            [status-im.ui.screens.group.add-contacts.views :refer [contact-toggle-list
-                                                                   add-participants-toggle-list]]
+            [status-im.ui.screens.group.views :refer [new-group
+                                                      contact-toggle-list
+                                                      add-participants-toggle-list]]
             [status-im.ui.screens.profile.user.views :as profile.user]
             [status-im.ui.screens.profile.contact.views :as profile.contact]
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]

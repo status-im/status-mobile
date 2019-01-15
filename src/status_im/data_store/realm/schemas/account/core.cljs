@@ -371,6 +371,20 @@
           dapp-permissions/v9
           contact-recovery/v1])
 
+(def v34 [chat/v14
+          transport/v7
+          contact/v3
+          message/v9
+          mailserver/v11
+          mailserver-topic/v1
+          user-status/v2
+          membership-update/v1
+          installation/v3
+          local-storage/v1
+          browser/v8
+          dapp-permissions/v9
+          contact-recovery/v1])
+
 ;; put schemas ordered by version
 (def schemas [{:schema        v1
                :schemaVersion 1
@@ -470,4 +484,7 @@
                :migration     (constantly nil)}
               {:schema        v33
                :schemaVersion 33
-               :migration     (constantly nil)}])
+               :migration     (constantly nil)}
+              {:schema        v34
+               :schemaVersion 34
+               :migration     migrations/v34}])

@@ -3,9 +3,9 @@
   (:require [status-im.ui.screens.desktop.main.views :as main.views]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.intro.views :as intro.views]
-            [status-im.ui.screens.group.add-contacts.views :refer [contact-toggle-list
-                                                                   add-participants-toggle-list]]
-            [status-im.ui.screens.group.views :refer [new-group]]
+            [status-im.ui.screens.group.views :refer [contact-toggle-list
+                                                      new-group
+                                                      add-participants-toggle-list]]
             [status-im.ui.screens.profile.group-chat.views :refer [group-chat-profile]]
             [status-im.ui.screens.accounts.create.views :as create.views]
             [status-im.ui.screens.accounts.login.views :as login.views]
