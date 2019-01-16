@@ -26,7 +26,6 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.platform :as platform]
-            [status-im.utils.universal-links.core :as universal-links]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]
             [status-im.utils.fx :as fx]
@@ -204,7 +203,6 @@
   (fx/merge cofx
             {:notifications/request-notifications-permissions nil}
             (navigation/navigate-to-cofx :home nil)
-            (universal-links/process-stored-event)
             (notifications/process-stored-event address stored-pns)
             (when platform/desktop?
               (chat-model/update-dock-badge-label))))

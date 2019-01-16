@@ -187,3 +187,6 @@
    :border-radius    28
    :align-items      :center
    :justify-content  :center})
+
+(def spinner-container
+  {:margin-right 10})

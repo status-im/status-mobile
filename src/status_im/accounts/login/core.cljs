@@ -9,6 +9,7 @@
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
+            [status-im.utils.universal-links.core :as universal-links]
             [status-im.utils.security :as security]
             [status-im.utils.platform :as platform]
             [status-im.protocol.core :as protocol]
@@ -96,6 +97,7 @@
            (when save-password?
              {:keychain/save-user-password [address password]}))
          (protocol/initialize-protocol)
+         (universal-links/process-stored-event)
          #(when-not platform/desktop?
             (initialize-wallet %)))
         (account-and-db-password-do-not-match cofx error)))))
