@@ -90,6 +90,7 @@ void RCTStatus::startNode(QString configString) {
     }
 
     QVariantMap configJSON = jsonDoc.toVariant().toMap();
+    QVariantMap shhextConfig = configJSON["ShhextConfig"].toMap();
     qCDebug(RCTSTATUS) << "::startNode configString: " << configJSON;
 
     int networkId = configJSON["NetworkId"].toInt();
@@ -107,9 +108,11 @@ void RCTStatus::startNode(QString configString) {
 
     d_gethLogFilePath = dataDir.absoluteFilePath("geth.log");
     configJSON["DataDir"] = absDataDirPath;
-    configJSON["BackupDisabledDataDir"] = absDataDirPath;
     configJSON["KeyStoreDir"] = rootDir.absoluteFilePath("keystore");
     configJSON["LogFile"] = d_gethLogFilePath;
+
+    shhextConfig["BackupDisabledDataDir"] = absDataDirPath;
+    configJSON["ShhExtConfig"] = shhextConfig;
 
     const QJsonDocument& updatedJsonDoc = QJsonDocument::fromVariant(configJSON);
     qCInfo(RCTSTATUS) << "::startNode updated configString: " << updatedJsonDoc.toVariant().toMap();
@@ -136,12 +139,12 @@ void RCTStatus::createAccount(QString password, double callbackId) {
 }
 
 
-void RCTStatus::notifyUsers(QString dataPayloadJSON, QString tokensJSON, double callbackId) {
+void RCTStatus::sendDataNotification(QString dataPayloadJSON, QString tokensJSON, double callbackId) {
     Q_D(RCTStatus);
-    qCDebug(RCTSTATUS) << "::notifyUsers call - callbackId:" << callbackId;
+    qCDebug(RCTSTATUS) << "::sendDataNotification call - callbackId:" << callbackId;
     QtConcurrent::run([&](QString dataPayloadJSON, QString tokensJSON, double callbackId) {
-            const char* result = NotifyUsers(dataPayloadJSON.toUtf8().data(), tokensJSON.toUtf8().data());
-            logStatusGoResult("::notifyUsers Notify", result);
+            const char* result = SendDataNotification(dataPayloadJSON.toUtf8().data(), tokensJSON.toUtf8().data());
+            logStatusGoResult("::sendDataNotification SendDataNotification", result);
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, dataPayloadJSON, tokensJSON, callbackId);
 }

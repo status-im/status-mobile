@@ -57,8 +57,7 @@
   (let [initial-props @(re-frame/subscribe [:initial-props])
         status-node-port (get initial-props :STATUS_NODE_PORT)]
     (cond-> (assoc config
-                   :Name "StatusIM"
-                   :BackupDisabledDataDir (utils.platform/no-backup-directory))
+                   :Name "StatusIM")
       config/dev-build?
       (assoc :ListenAddr ":30304"
              :DataDir (str (:DataDir config) "_dev"))
@@ -111,15 +110,16 @@
                                        :LightClient true
                                        :MinimumPoW 0.001
                                        :EnableNTPSync true}
-             :RequireTopics           (get-topics network)
-             :InstallationID          installation-id
-             :MailServerConfirmations config/mailserver-confirmations-enabled?
-             :PFSEnabled              (or config/pfs-encryption-enabled?
-                                        ;; We don't check dev-mode? here as
-                                        ;; otherwise we would have to restart the node
-                                        ;; when the user enables it
-                                          config/group-chats-enabled?
-                                          (config/pairing-enabled? true)))
+             :ShhextConfig        {:BackupDisabledDataDir (utils.platform/no-backup-directory)
+                                   :InstallationID          installation-id
+                                   :MailServerConfirmations config/mailserver-confirmations-enabled?
+                                   :PFSEnabled              (or config/pfs-encryption-enabled?
+                                                                ;; We don't check dev-mode? here as
+                                                                ;; otherwise we would have to restart the node
+                                                                ;; when the user enables it
+                                                                config/group-chats-enabled?
+                                                                (config/pairing-enabled? true))}
+             :RequireTopics           (get-topics network))
 
       (and
        config/bootnodes-settings-enabled?
@@ -135,6 +135,8 @@
   [db network]
   (-> (get-in (:networks/networks db) [network :config])
       (get-base-node-config)
+
+      (assoc :ShhextConfig {:BackupDisabledDataDir (utils.platform/no-backup-directory)})
       (assoc :PFSEnabled false
              :NoDiscovery true)
       (add-log-level config/log-level-status-go)))

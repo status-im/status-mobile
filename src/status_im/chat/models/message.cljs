@@ -479,5 +479,5 @@
      ;; NOTE: react-native-firebase doesn't have a good implementation of sendMessage
      ;;       (supporting e.g. priority or content_available properties),
      ;;       therefore we must use an implementation in status-go.
-     (status/notify-users {:data-payload data-payload-json :tokens tokens-json}
-                          #(log/debug "send-notification cb result: " %)))))
+     (status/send-data-notification {:data-payload data-payload-json :tokens tokens-json}
+                                    #(log/debug "send-data-notification cb result: " %)))))

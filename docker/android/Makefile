@@ -12,7 +12,7 @@ ANDROID_SDK_URL = https://dl.google.com/android/repository/sdk-tools-linux-$(AND
 ANDROID_SDK_ARCHIVE = sdk-tools-linux-$(ANDROID_SDK_VERSION).zip
 
 # WARNING: Remember to change the tag when updating the image
-IMAGE_TAG = 1.0.0
+IMAGE_TAG = 1.0.1
 IMAGE_NAME = statusteam/status-build-android:$(IMAGE_TAG)
 
 build: $(ANDROID_NDK_ARCHIVE) $(ANDROID_SDK_ARCHIVE)

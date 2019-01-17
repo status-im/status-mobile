@@ -51,8 +51,8 @@
 (defn module-initialized! []
   (native-module/module-initialized!))
 
-(defn notify-users [m callback]
-  (native-module/notify-users m callback))
+(defn send-data-notification [m callback]
+  (native-module/send-data-notification m callback))
 
 (defn send-logs [dbJson]
   (native-module/send-logs dbJson))

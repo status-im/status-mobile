@@ -459,8 +459,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void notifyUsers(final String dataPayloadJSON, final String tokensJSON, final Callback callback) {
-        Log.d(TAG, "notifyUsers");
+    public void sendDataNotification(final String dataPayloadJSON, final String tokensJSON, final Callback callback) {
+        Log.d(TAG, "sendDataNotification");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -469,7 +469,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Runnable r = new Runnable() {
                 @Override
                 public void run() {
-                    String res = Statusgo.NotifyUsers(dataPayloadJSON, tokensJSON);
+                    String res = Statusgo.SendDataNotification(dataPayloadJSON, tokensJSON);
 
                     callback.invoke(res);
                 }
