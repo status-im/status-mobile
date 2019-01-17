@@ -68,6 +68,11 @@
  (fn [cofx _]
    (profile.models/finish cofx)))
 
+(handlers/register-handler-fx
+ :my-profile/set-tribute
+ (fn [cofx _]
+   (profile.models/set-tribute cofx)))
+
 (re-frame/reg-fx
  :copy-to-clipboard
  (fn [value]

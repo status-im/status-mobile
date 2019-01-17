@@ -65,6 +65,9 @@
    :lock                {:image  (js/require "./resources/images/ui/lock.png")
                          :width  993
                          :height 933}
+   :ttt-logo            {:image (js/require "./resources/images/ui/ttt-logo.png")
+                         :width  246
+                         :height 219}
    :wallet-welcome      (js/require "./resources/images/ui/wallet-welcome.png")
    :hardwallet-card     (js/require "./resources/images/ui/hardwallet-card.png")
    :secret-keys         (js/require "./resources/images/ui/secret-keys.png")

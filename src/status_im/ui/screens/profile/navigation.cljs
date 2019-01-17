@@ -9,6 +9,12 @@
                                   :source  source
                                   :value   value})))
 
+(defmethod navigation/preload-data! :tribute-to-talk
+  [db [_ _]]
+  (if (-> db :my-profile/tribute-to-talk :snt-amount)
+    (assoc-in db [:my-profile/tribute-to-talk :step] :edit)
+    (assoc db :my-profile/tribute-to-talk {:step :intro})))
+
 (defmethod navigation/unload-data! :my-profile
   [db]
   (dissoc db :my-profile/editing?))

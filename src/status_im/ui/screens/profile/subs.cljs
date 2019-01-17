@@ -39,3 +39,8 @@
  :my-profile/recovery
  (fn [db]
    (or (:my-profile/seed db) {:step :intro})))
+
+(re-frame/reg-sub
+ :my-profile/tribute-to-talk
+ (fn [db]
+   (or (:my-profile/tribute-to-talk db) {:step :intro})))
