@@ -6,7 +6,6 @@
             [status-im.chat.constants :as chat.constants]
             [status-im.chat.commands.protocol :as protocol]
             [status-im.chat.commands.impl.transactions :as transactions]
-            [status-im.contact.db :as db]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.fx :as fx]))
 
@@ -35,16 +34,13 @@
   [type]
   (keyword (str (protocol/id type) "-button")))
 
-(defn- contact->address [contact]
-  (str "0x" (db/public-key->address contact)))
-
 (defn add-chat-contacts
   "Enrich command-message by adding contact list of the current private or group chat"
   [contacts {:keys [public? group-chat] :as command-message}]
   (cond
     public? command-message
-    group-chat (assoc command-message :contacts (map contact->address contacts))
-    :else (assoc command-message :contact (contact->address (first contacts)))))
+    group-chat (assoc command-message :contacts (map status-im.contact.db/public-key->address contacts))
+    :else (assoc command-message :contact (status-im.contact.db/public-key->address (first contacts)))))
 
 (defn enrich-command-message-for-events
   "adds new pairs to command-message to be consumed by extension events"
