@@ -39,6 +39,7 @@
             [status-im.transport.message.core :as transport.message]
             [status-im.transport.core :as transport]
             [status-im.ui.screens.currency-settings.models :as currency-settings.models]
+            [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.node.core :as node]
             [status-im.web3.core :as web3]
             [status-im.ui.screens.navigation :as navigation]
@@ -1729,3 +1730,44 @@
  :transport.callback/node-info-fetched
  (fn [cofx [_ node-info]]
    (transport/set-node-info cofx node-info)))
+
+;; Tribute to Talk
+(handlers/register-handler-fx
+ :tribute-to-talk.ui/menu-item-pressed
+ (fn [cofx _]
+   (tribute-to-talk/open-settings cofx)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.ui/learn-more-pressed
+ (fn [cofx _]
+   (tribute-to-talk/open-learn-more cofx)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.ui/step-back-pressed
+ (fn [cofx _]
+   (tribute-to-talk/step-back cofx)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.ui/step-forward-pressed
+ (fn [cofx _]
+   (tribute-to-talk/step-forward cofx)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.ui/numpad-key-pressed
+ (fn [cofx [_ numpad-key]]
+   (tribute-to-talk/update-snt-amount cofx numpad-key)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.ui/message-changed
+ (fn [cofx [_ message]]
+   (tribute-to-talk/update-message cofx message)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.ui/edit-pressed
+ (fn [cofx _]
+   (tribute-to-talk/start-editing cofx)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.ui/remove-pressed
+ (fn [cofx _]
+   (tribute-to-talk/remove cofx)))

@@ -85,9 +85,10 @@
     (when forward?
       [vector-icons/icon :main-icons/next {:color colors/blue}])]])
 
-(defn button [{:keys [on-press label background? uppercase? button-style label-style] :or {background? true uppercase? true}}]
-  [react/touchable-highlight {:on-press on-press}
-   [react/view {:style (styles/button button-style background?)}
+(defn button [{:keys [on-press label background? uppercase? button-style label-style disabled?] :or {background? true uppercase? true disabled false}}]
+  [react/touchable-highlight {:on-press on-press
+                              :disabled disabled?}
+   [react/view {:style (styles/button button-style background? disabled?)}
     [react/text {:uppercase? uppercase?
                  :style      (merge styles/button-label label-style)}
      label]]])

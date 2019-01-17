@@ -107,8 +107,8 @@
               :icon-opts {:color colors/white}}])
 
 (defn big-list-item
-  [{:keys [text text-color value action-fn active? destructive? hide-chevron?
-           accessory-value text-color
+  [{:keys [text text-color subtext value action-fn active? destructive? hide-chevron?
+           accessory-value text-color new?
            accessibility-label icon icon-color image-source icon-content]
     :or   {icon-color colors/blue
            text-color colors/black
@@ -121,15 +121,29 @@
    {:on-press action-fn
     :accessibility-label accessibility-label
     :disabled (not active?)}
-   [react/view styles/settings-item
+   [react/view (styles/settings-item subtext)
     (if icon
-      [react/view (styles/settings-item-icon icon-color)
+      [react/view (styles/settings-item-icon icon-color subtext)
        [vector-icons/icon icon {:color icon-color}]]
       [react/image {:source {:uri image-source}
                     :style   styles/big-item-image}])
-    [react/text {:style (styles/settings-item-text text-color)
-                 :number-of-lines 1}
-     text]
+    (if subtext
+      [react/view {:style styles/settings-item-text-container}
+       [react/view {:style styles/settings-item-main-text-container}
+        (when new?
+          [react/view {:style styles/new-label}
+           [react/text {:style styles/new-label-text}
+            (string/upper-case (i18n/label :t/new))]])
+        [react/text {:style (styles/settings-item-text-new text-color)}
+         text]]
+       [react/view {:style {:margin-top 2
+                            :justify-content :flex-start}}
+        [react/text {:style styles/settings-item-subtext
+                     :number-of-lines 2}
+         subtext]]]
+      [react/text {:style (styles/settings-item-text text-color)
+                   :number-of-lines 1}
+       text])
     (when accessory-value
       [react/text {:style           styles/settings-item-value
                    :number-of-lines 1
