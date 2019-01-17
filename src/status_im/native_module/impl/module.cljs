@@ -62,6 +62,10 @@
   (when status
     (call-module #(.stopNode status))))
 
+(defn stop-cpu-profiling []
+  (when status
+    (call-module #(.stopCPUProfiling status))))
+
 (defn node-ready []
   (reset! node-started true))
 

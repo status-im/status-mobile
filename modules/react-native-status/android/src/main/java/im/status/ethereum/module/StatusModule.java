@@ -267,6 +267,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
             prettyPrintConfig(updatedJsonConfigString);
 
+            Statusgo.StartCPUProfile(dataFolder);
             String res = Statusgo.StartNode(updatedJsonConfigString);
             if (res.startsWith("{\"error\":\"\"")) {
                 Log.d(TAG, "StartNode result: " + res);
@@ -387,6 +388,20 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             public void run() {
                 Log.d(TAG, "stopNode");
                 String res = Statusgo.StopNode();
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void stopCPUProfiling() {
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "stopCPUProfiling");
+                String res = Statusgo.StopCPUProfiling();
             }
         };
 

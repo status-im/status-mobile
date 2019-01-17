@@ -16,6 +16,9 @@
   (reset! node-started false)
   (native-module/stop-node))
 
+(defn stop-cpu-profiling []
+  (native-module/stop-cpu-profiling))
+
 (defn create-account [password callback]
   (native-module/create-account password callback))
 

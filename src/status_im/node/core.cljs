@@ -196,6 +196,11 @@
    (status/stop-node)))
 
 (re-frame/reg-fx
+ :node/stop-cpu-profiling
+ (fn []
+   (status/stop-cpu-profiling)))
+
+(re-frame/reg-fx
  :node/les-show-debug-info
  (fn [[web3 account chain-sync-state]]
    (.getBalance

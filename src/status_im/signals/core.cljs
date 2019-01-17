@@ -46,7 +46,8 @@
 
 (fx/defn status-node-stopped
   [{db :db}]
-  {:db (assoc db :node/status :stopped)})
+  {:db (assoc db :node/status :stopped)
+   :node/stop-cpu-profiling nil})
 
 (fx/defn status-module-initialized [{:keys [db]}]
   {:db                             (assoc db :status-module-initialized? true)

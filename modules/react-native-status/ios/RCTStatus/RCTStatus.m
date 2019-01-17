@@ -134,6 +134,7 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                    ^(void)
                    {
+                       StartCPUProfiling((char *) [absDataDir UTF8String]);
                        char *res = StartNode((char *) [resultingConfig UTF8String]);
                        NSLog(@"StartNode result %@", [NSString stringWithUTF8String: res]);
                    });
@@ -167,6 +168,21 @@ RCT_EXPORT_METHOD(stopNode) {
                    {
                        char *res = StopNode();
                        NSLog(@"StopNode result %@", [NSString stringWithUTF8String: res]);
+                   });
+}
+
+////////////////////////////////////////////////////////////////////
+#pragma mark - StopCPUProfiling method
+//////////////////////////////////////////////////////////////////// StopCPUProfiling
+RCT_EXPORT_METHOD(stopCPUProfiling) {
+#if DEBUG
+    NSLog(@"StopCPUProfiling() method called");
+#endif
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                   ^(void)
+                   {
+                       char *res = StopCPUProfiling();
+                       NSLog(@"StopCPUProfiling result %@", [NSString stringWithUTF8String: res]);
                    });
 }
 
