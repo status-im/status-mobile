@@ -87,7 +87,7 @@ def doGitRebase() {
   }
 }
 
-def buildNumber() {
+def genBuildNumber() {
   def number = sh(
     returnStdout: true,
     script: "./scripts/gen_build_no.sh"

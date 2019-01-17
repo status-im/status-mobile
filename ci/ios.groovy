@@ -17,7 +17,7 @@ def bundle(type) {
   }
   /* configure build metadata */
   plutil('CFBundleShortVersionString', cmn.version())
-  plutil('CFBundleVersion', cmn.buildNumber())
+  plutil('CFBundleVersion', cmn.genBuildNumber())
   plutil('CFBundleBuildUrl', currentBuild.absoluteUrl)
   /* the dir might not exist */
   sh 'mkdir -p status-e2e'

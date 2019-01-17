@@ -37,6 +37,8 @@ def prep(type = 'nightly') {
   cmn.doGitRebase()
   /* ensure that we start from a known state */
   cmn.clean()
+  /* Run at start to void mismatched numbers */
+  cmn.genBuildNumber()
   /* select type of build */
   switch (type) {
     case 'nightly':

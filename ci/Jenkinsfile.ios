@@ -40,8 +40,6 @@ pipeline {
           mobile = load 'ci/mobile.groovy'
           cmn    = load 'ci/common.groovy'
           print "Running ${cmn.getBuildType()} build!"
-          /* Run at start to void mismatched numbers */
-          cmn.buildNumber()
           /* Read the valid NodeJS version */
           env.NODE_VERSION = cmn.getToolVersion('node')
           /* Cleanup and Prep */
