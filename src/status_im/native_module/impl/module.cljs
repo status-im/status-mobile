@@ -84,9 +84,9 @@
                    true)
                  false))))))
 
-(defn notify-users [{:keys [data-payload tokens] :as m} on-result]
+(defn send-data-notification [{:keys [data-payload tokens] :as m} on-result]
   (when status
-    (call-module #(.notifyUsers status data-payload tokens on-result))))
+    (call-module #(.sendDataNotification status data-payload tokens on-result))))
 
 (defn send-logs [dbJson]
   (when status
