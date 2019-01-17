@@ -1,0 +1,11 @@
+patch-package
+--- a/node_modules/metro/src/DeltaBundler/WorkerFarm.js
++++ b/node_modules/metro/src/DeltaBundler/WorkerFarm.js
+@@ -130,6 +130,7 @@ class WorkerFarm {
+     if (execArgv.length > 0 && execArgv[0].charAt(0) !== "-") {
+       execArgv.shift();
+     }
++    execArgv.push("--max-old-space-size=8192");
+ 
+     const env = _extends({}, process.env, {
+       // Force color to print syntax highlighted code frames.
