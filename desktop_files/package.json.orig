@@ -63,7 +63,7 @@
     "react-native-fs": "git+https://github.com/status-im/react-native-fs.git#v2.9.7-status",
     "react-native-http": "git+https://github.com/tradle/react-native-http.git#834492d",
     "react-native-http-bridge": "0.6.1",
-    "react-native-i18n": "git+https://github.com/status-im/react-native-i18n.git#version_0.0.8_desktop",
+    "react-native-i18n": "git+https://github.com/status-im/react-native-i18n.git#v0.0.8-desktop",
     "react-native-image-crop-picker": "0.18.1",
     "react-native-image-resizer": "1.0.0",
     "react-native-invertible-scroll-view": "1.1.0",

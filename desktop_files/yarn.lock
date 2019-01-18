@@ -7198,7 +7198,7 @@ react-native-http-bridge@0.6.1:
     Base64 "~0.2.0"
     inherits "~2.0.1"
 
-"react-native-i18n@git+https://github.com/status-im/react-native-i18n.git#version_0.0.8_desktop":
+"react-native-i18n@git+https://github.com/status-im/react-native-i18n.git#v0.0.8-desktop":
   version "0.0.8"
   resolved "git+https://github.com/status-im/react-native-i18n.git#e4361722d5fcaaa52d561d948dc7ed2a5e709d38"
 

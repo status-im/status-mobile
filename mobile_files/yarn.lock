@@ -5838,7 +5838,7 @@ react-native-background-timer@2.1.0-alpha.6:
   resolved "https://registry.yarnpkg.com/react-native-background-timer/-/react-native-background-timer-2.1.0-alpha.6.tgz#f8495a9c44d80295c088b09c59d88fdf0a8d6ecd"
   integrity sha512-2J87AlGjDsfujxdEGXJxqYpSVyNrgcfwqh0PDwesQoOCqmiIkLA7N0tLE4joB9N0oYMraIteFYaiUu8jJdO7oA==
 
-"react-native-camera@git+https://github.com/status-im/react-native-camera.git#1.1.5-1":
+"react-native-camera@git+https://github.com/status-im/react-native-camera.git#v1.1.5-1-status":
   version "1.1.5"
   resolved "git+https://github.com/status-im/react-native-camera.git#6de8c8d1ba28906ab014d717a33a7b6f73c433c5"
   dependencies:
@@ -5893,7 +5893,7 @@ react-native-fetch-polyfill@1.1.2:
   resolved "https://registry.yarnpkg.com/react-native-fetch-polyfill/-/react-native-fetch-polyfill-1.1.2.tgz#256b5a0abd78cc4992f7a7cf82543da2f2124a73"
   integrity sha1-JWtaCr14zEmS96fPglQ9ovISSnM=
 
-"react-native-firebase@git+https://github.com/status-im/react-native-firebase.git#5.0.0-rc1":
+"react-native-firebase@git+https://github.com/status-im/react-native-firebase.git#v5.0.0-rc1-status":
   version "5.0.0-rc1"
   resolved "git+https://github.com/status-im/react-native-firebase.git#46951bf438ba4965f314a1b75a68d174d8e3eb01"
   dependencies:
@@ -5925,7 +5925,7 @@ react-native-image-crop-picker@0.18.1:
   resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.18.1.tgz#ebdbe72def5afb6c69aa6e2ad72fd3a7de8ee408"
   integrity sha512-63Yr+Mzl/CzDze1eqMg/GGFOODgGrixSMO+28TVGCX3982f76w/op0JKoL7zuSKz/P/mVsbi9RnHA0z6Ih/RHQ==
 
-"react-native-image-resizer@git+https://github.com/status-im/react-native-image-resizer.git#1.0.0-1":
+"react-native-image-resizer@git+https://github.com/status-im/react-native-image-resizer.git#1.0.0-1-status":
   version "1.0.0"
   resolved "git+https://github.com/status-im/react-native-image-resizer.git#dcbe2e1c461b0dbc265435bfb873f0257c1a1c4a"
 
@@ -5951,7 +5951,7 @@ react-native-level-fs@3.0.1:
     level-filesystem "^1.0.1"
     levelup "^0.18.2"
 
-"react-native-os@git+https://github.com/status-im/react-native-os.git#1.1.0-1":
+"react-native-os@git+https://github.com/status-im/react-native-os.git#v1.1.0-1-status":
   version "1.1.0"
   resolved "git+https://github.com/status-im/react-native-os.git#1a6d0835f919cb075793ad7c602f2724eee4702d"
 
@@ -6034,7 +6034,7 @@ react-native-tab-view@^1.0.0:
   dependencies:
     prop-types "^15.6.1"
 
-"react-native-tcp@git+https://github.com/status-im/react-native-tcp.git#3.3.0-1":
+"react-native-tcp@git+https://github.com/status-im/react-native-tcp.git#v3.3.0-1-status":
   version "3.3.0"
   resolved "git+https://github.com/status-im/react-native-tcp.git#08e9794f2076e67963e027b42b562c9f4c979b2e"
   dependencies:
@@ -6055,14 +6055,14 @@ react-native-tab-view@^1.0.0:
     ip-regex "^1.0.3"
     util "^0.10.3"
 
-"react-native-webview-bridge@git+https://github.com/status-im/react-native-webview-bridge.git#0.33.16-3":
+"react-native-webview-bridge@git+https://github.com/status-im/react-native-webview-bridge.git#0.33.16-3-status":
   version "0.33.16"
   resolved "git+https://github.com/status-im/react-native-webview-bridge.git#2e1735a1d512ad7505e55b055e36b80bfe780ba6"
   dependencies:
     invariant "2.2.0"
     keymirror "0.1.1"
 
-"react-native@git+https://github.com/status-im/react-native.git#status-0.56-1":
+"react-native@git+https://github.com/status-im/react-native.git#0.56.1-status":
   version "0.56.0"
   resolved "git+https://github.com/status-im/react-native.git#aa51c6e7a17776f7277f7f2124467fc0d41d6841"
   dependencies:
