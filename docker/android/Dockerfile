@@ -1,11 +1,17 @@
 # This image is only for extracting and cleaning up NDK and SDK
-FROM statusteam/status-build-base:1.0.0 AS sdk_and_ndk
+FROM statusteam/status-build-base:1.1.0 AS sdk_and_ndk
 
 ARG ANDROID_NDK_VERSION
 ARG ANDROID_SDK_VERSION
+ARG SDK_PLATFORM_VERSION
+ARG SDK_BUILD_TOOLS_VERSION
 
 # names of packages to install with sdkmanager
-ENV SDK_PACKAGES emulator patcher;v4 build-tools;26.0.2 platforms;android-26 platforms;android-27 platforms;android-28 extras;android;m2repository extras;google;m2repository
+ENV SDK_PACKAGES emulator patcher;v4 \
+                 platforms;android-26 \ 
+                 platforms;${SDK_PLATFORM_VERSION} \
+                 build-tools;${SDK_BUILD_TOOLS_VERSION} \
+                 extras;android;m2repository extras;google;m2repository
 
 # install SDK
 COPY sdk-tools-linux-${ANDROID_SDK_VERSION}.zip /tmp/sdk-tools-linux.zip
@@ -32,7 +38,7 @@ RUN cd /usr/lib/android-ndk && rm -fr docs tests samples \
  && find sources -mindepth 2 -maxdepth 2 | grep -v 'gnu-libstdc' | xargs rm -fr
 
 ################################################################################
-FROM statusteam/status-build-base:1.0.0
+FROM statusteam/status-build-base:1.1.0
 
 ARG ANDROID_NDK_VERSION
 ARG ANDROID_SDK_VERSION

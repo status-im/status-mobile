@@ -1,24 +1,31 @@
+__toolversion = $(shell $(GIT_ROOT)/scripts/toolversion $(1))
+
 GIT_COMMIT = $(shell git rev-parse --short HEAD)
 GIT_ROOT = $(shell git rev-parse --show-toplevel)
 
-ANDROID_NDK_VERSION = r10e
-ANDROID_NDK_CHECKSUM = 070be287539e3e7706f8dabfb6bf9879
+ANDROID_NDK_VERSION = $(call  __toolversion, android-ndk)
+ANDROID_NDK_CHECKSUM = $(call  __toolversion, android-ndk_md5)
 ANDROID_NDK_ARCHIVE = android-ndk-$(ANDROID_NDK_VERSION)-linux-x86_64.zip
 ANDROID_NDK_URL = https://dl.google.com/android/repository/$(ANDROID_NDK_ARCHIVE)
 
-ANDROID_SDK_VERSION = 4333796
-ANDROID_SDK_CHECKSUM = aa190cfd7299cd6a1c687355bb2764e4
+ANDROID_SDK_VERSION = $(call  __toolversion, android-sdk)
+ANDROID_SDK_CHECKSUM = $(call  __toolversion, android-sdk_md5)
 ANDROID_SDK_URL = https://dl.google.com/android/repository/sdk-tools-linux-$(ANDROID_SDK_VERSION).zip
 ANDROID_SDK_ARCHIVE = sdk-tools-linux-$(ANDROID_SDK_VERSION).zip
 
+SDK_PLATFORM_VERSION=$(call  __toolversion, android-sdk-platform)
+SDK_BUILD_TOOLS_VERSION=$(call  __toolversion, android-sdk-build-tools)
+
 # WARNING: Remember to change the tag when updating the image
-IMAGE_TAG = 1.0.1
+IMAGE_TAG = 1.1.0
 IMAGE_NAME = statusteam/status-build-android:$(IMAGE_TAG)
 
 build: $(ANDROID_NDK_ARCHIVE) $(ANDROID_SDK_ARCHIVE)
 	docker build \
 		--build-arg="ANDROID_NDK_VERSION=$(ANDROID_NDK_VERSION)" \
 		--build-arg="ANDROID_SDK_VERSION=$(ANDROID_SDK_VERSION)" \
+		--build-arg="SDK_PLATFORM_VERSION=$(SDK_PLATFORM_VERSION)" \
+		--build-arg="SDK_BUILD_TOOLS_VERSION=$(SDK_BUILD_TOOLS_VERSION)" \
 		--label="commit=$(GIT_COMMIT)" \
 		-t $(IMAGE_NAME) .
 

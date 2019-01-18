@@ -2,7 +2,7 @@ pipeline {
   agent { 
     docker {
       label 'linux'
-      image 'statusteam/status-build-android:1.0.1'
+      image 'statusteam/status-build-android:1.1.0'
       args (
         "-v /home/jenkins/tmp:/var/tmp:rw "+
         "-v /home/jenkins/status-im.keystore:/tmp/status-im.keystore:ro"
@@ -59,34 +59,30 @@ pipeline {
           cmn    = load 'ci/common.groovy'
           print "Running ${cmn.getBuildType()} build!"
           cmn.abortPreviousRunningBuilds()
-          /* Read the valid NodeJS version */
-          env.NODE_VERSION = cmn.getToolVersion('node')
           /* Cleanup and Prep */
-          nvm(env.NODE_VERSION) {
-            mobile.prep(cmn.getBuildType())
-          }
+          mobile.prep(cmn.getBuildType())
         }
       }
     }
     stage('Lint') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {
         script { cmn.runLint() }
-      } }
+      }
     }
     stage('Tests') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {
         script { cmn.runTests() }
-      } }
+      }
     }
     stage('Build') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {
         script { mobile.leinBuild('android') }
-      } }
+      }
     }
     stage('Bundle') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {
         script { apk = mobile.android.bundle(cmn.getBuildType()) }
-      } }
+      }
     }
     stage('Archive') {
       steps {

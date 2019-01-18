@@ -3,7 +3,7 @@ pipeline {
     /* privileged mode is necessary for fuse */
     docker {
       label 'linux-new'
-      image 'statusteam/linux-desktop-ubuntu:1.1.1'
+      image 'statusteam/status-build-linux:1.1.0'
       args (
         "--privileged "+
         "-v /dev/fuse:/dev/fuse "+
@@ -59,34 +59,30 @@ pipeline {
           cmn     = load 'ci/common.groovy'
           print "Running ${cmn.getBuildType()} build!"
           cmn.abortPreviousRunningBuilds()
-          /* Read the valid NodeJS version */
-          env.NODE_VERSION = cmn.getToolVersion('node')
           /* Cleanup and Prep */
-          nvm(env.NODE_VERSION) {
-            desktop.prepDeps()
-          }
+          desktop.prepDeps()
         }
       }
     }
     stage('Lint') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {
         script { cmn.runLint() }
-      } }
+      }
     }
     stage('Tests') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {
         script { cmn.runTests() }
-      } }
+      }
     }
     stage('Build') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {
         script { desktop.buildClojureScript() }
-      } }
+      }
     }
     stage('Compile') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {
         script { desktop.compile() }
-      } }
+      }
     }
     stage('Bundle') {
       steps {
