@@ -126,7 +126,7 @@ function init() {
         fi
 
         echo "${RED}Conan package manager not found. Installing...${NC}"
-        pip3 install conan==$(get_tool_version conan)
+        pip3 install conan==$(toolversion conan)
       fi
 
       conan remote add --insert 0 -f status-im https://conan.status.im

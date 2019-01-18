@@ -7,7 +7,7 @@ def version() {
 def getToolVersion(name) {
   def version = sh(
     returnStdout: true,
-    script: "grep ${name} ${env.WORKSPACE}/.TOOLVERSIONS | cut -d'=' -f2-"
+    script: "${env.WORKSPACE}/scripts/toolversion ${name}"
   ).trim()
   return version
 }

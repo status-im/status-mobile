@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+################################################################################
+# This tool fetches versions and checksums of build tools from the .TOOLVERSIONS
+# file in project root. This is then used by various setup scripts,
+# and most importantly by Dockerfiles.
+################################################################################
+
+set -e
+
+GIT_ROOT=$(git rev-parse --show-toplevel)
+TOOL_VERSIONS_FILE="${GIT_ROOT}/.TOOLVERSIONS"
+
+usage () {
+  echo "Usage: toolversion [-c] <name>" >&2
+  echo
+  echo "This script extract tooling versions from ${TOOL_VERSIONS_FILE}"
+  exit 0
+}
+
+# some options parsing
+while getopts ":ch" opt; do
+  case $opt in
+    c)  CHECKSUM=1; shift ;;
+    h)  usage;;
+    \?) echo "Invalid option: -$OPTARG" >&2; exit 1;;
+  esac
+done
+
+# verify the main argument was given
+if [[ -z "${1}" ]]; then usage; fi
+
+NAME=${1}
+
+getColumn () {
+    awk -F';' "/^${NAME};/{print \$${1}}" "${TOOL_VERSIONS_FILE}"
+}
+
+if [[ $CHECKSUM ]]; then
+    getColumn 3
+else
+    getColumn 2
+fi

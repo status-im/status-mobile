@@ -24,17 +24,9 @@ function program_version_exists() {
   $(exit 1)
 }
 
-function get_tool_version() {
-  local toolName=$1
-  local version=`grep "^$toolName" ./.TOOLVERSIONS | cut -d'=' -f2-`
-  if [ -z "$version" ]; then
-    exit 1
-  fi
-
-  echo $version
+function toolversion() {
+  ./toolversion "${1}"
 }
-
-
 
 ########
 # Homebrew

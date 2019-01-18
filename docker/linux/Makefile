@@ -1,3 +1,5 @@
+__toolversion = $(shell $(GIT_ROOT)/scripts/toolversion $(1))
+
 GIT_COMMIT = $(shell git rev-parse --short HEAD)
 
 # WARNING: Change version in Dockerfile too
@@ -8,7 +10,6 @@ QT_MD5SUM  = 974fda61267cfb6e45984ee5f0a285f8
 QT_URL = https://download.qt.io/archive/qt
 QT_CI_COMMIT_SHA = 55ffd9f225708b3aa1443851cfa8dead2c1f9959
 REACT_NATIVE_DESKTOP_COMMIT_SHA = 2a76c435a27f0bf6c089f74222212b3a58e10385
-__read__toolversion__ = $(shell grep $(1) ../../../.TOOLVERSIONS | cut -d'=' -f2-)
 
 # WARNING: Remember to change the tag when updating the image
 IMAGE_TAG = 1.1.1
@@ -22,10 +23,10 @@ build: $(QT_ARCHIVE)
 		--build-arg="QT_VERSION=$(QT_VERSION)" \
 		--build-arg="QT_CI_COMMIT_SHA=$(QT_CI_COMMIT_SHA)" \
 		--build-arg="REACT_NATIVE_DESKTOP_COMMIT_SHA=$(REACT_NATIVE_DESKTOP_COMMIT_SHA)" \
-		--build-arg="LEIN_VERSION=$(call __read__toolversion__,lein)" \
-		--build-arg="NODE_VERSION=$(call __read__toolversion__,node)" \
-		--build-arg="NVM_VERSION=$(call __read__toolversion__,nvm)" \
-		--build-arg="YARN_VERSION=$(call __read__toolversion__,yarn)" \
+		--build-arg="LEIN_VERSION=$(call __toolversion,lein)" \
+		--build-arg="NODE_VERSION=$(call __toolversion,node)" \
+		--build-arg="NVM_VERSION=$(call __toolversion,nvm)" \
+		--build-arg="YARN_VERSION=$(call __toolversion,yarn)" \
 		--label="commit=$(GIT_COMMIT)" \
 		-t $(IMAGE_NAME) .; \
 	rm -rf ./scripts

@@ -11,8 +11,8 @@ source "$_current_dir/lib/setup/path-support.sh"
 
 source_lib "packages.sh"
 
-EXPECTED_NODE_VERSION="v$(get_tool_version node)" # note the 'v' in front, that is how node does versioning
-EXPECTED_YARN_VERSION="$(get_tool_version yarn)" # note the lack of 'v' in front. inconsistent. :(
+EXPECTED_NODE_VERSION="v$(toolversion node)" # note the 'v' in front, that is how node does versioning
+EXPECTED_YARN_VERSION="$(toolversion yarn)" # note the lack of 'v' in front. inconsistent. :(
 
 #if no arguments passed, inform user about possible ones
 

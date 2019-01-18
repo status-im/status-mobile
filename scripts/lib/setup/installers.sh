@@ -84,7 +84,7 @@ EOF
 
 function install_leiningen() {
   if is_macos; then
-    brew_install leiningen $(get_tool_version leiningen) f7e10afc6d04a13d28e825db71326d16c12e9724
+    brew_install leiningen $(toolversion leiningen) f7e10afc6d04a13d28e825db71326d16c12e9724
   elif is_linux; then
     install_leiningen_linux
   fi
@@ -92,7 +92,7 @@ function install_leiningen() {
 
 function install_leiningen_linux() {
   local destination=/usr/bin/lein
-  local required_version=$(get_tool_version leiningen)
+  local required_version=$(toolversion leiningen)
   if ! program_version_exists "lein" "$required_version"; then
     cecho "@b@blue[[+ Installing lein...]]"
 
@@ -112,7 +112,7 @@ EOF
 
 function install_clojure_cli() {
   if is_macos; then
-    local required_version=$(get_tool_version clojure_cli)
+    local required_version=$(toolversion clojure_cli)
     brew_install clojure $required_version 90ea0cb4b194282b5906108dcec522c5a1ed7ce0
   elif is_linux; then
     install_clojure_cli_linux
@@ -120,7 +120,7 @@ function install_clojure_cli() {
 }
 
 function install_clojure_cli_linux() {
-  local required_version=$(get_tool_version clojure_cli)
+  local required_version=$(toolversion clojure_cli)
 
   if ! program_exists "clojure" || ! echo "$(clj -r <<< '(System/exit 0)')" | grep -q -o ${required_version%.*}; then
     cecho "@b@blue[[+ Installing Clojure CLI...]]"
@@ -142,7 +142,7 @@ EOF
 }
 
 function install_watchman() {
-  local required_version=$(get_tool_version watchman)
+  local required_version=$(toolversion watchman)
   if is_macos; then
     brew_install watchman $required_version 1a41406af8db6bbc0c94811cf60043a7436be3c4
   elif is_linux; then
@@ -197,7 +197,7 @@ function install_android_sdk_linux() {
 }
 
 function install_maven() {
-  local required_version=$(get_tool_version maven)
+  local required_version=$(toolversion maven)
   brew_install maven $required_version 4c23c22dc71eadaeb7b25d6e6c10fd53bfc26976
   linux_install maven
 }
@@ -206,7 +206,7 @@ function install_react_native_cli() {
   cd "$(repo_path)"
 
   local npm_command='npm'
-  local required_version=$(get_tool_version react_native_cli)
+  local required_version=$(toolversion react_native_cli)
 
   if is_linux && ! nvm_installed; then
     # aptitude version of node requires sudo for global install
@@ -221,7 +221,7 @@ function install_react_native_cli() {
 }
 
 function install_yarn() {
-  local required_version=$(get_tool_version yarn)
+  local required_version=$(toolversion yarn)
   if ! program_exists "yarn"; then
     npm install -g yarn@$required_version # Install the required yarn version
   else
@@ -238,7 +238,7 @@ function install_yarn() {
 }
 
 function install_nvm() {
-  local required_version=$(get_tool_version nvm)
+  local required_version=$(toolversion nvm)
 
   if ! program_version_exists 'nvm' "$required_version"; then
     cecho "@b@blue[[+ Installing nvm $required_version]]"
@@ -255,7 +255,7 @@ function install_nvm() {
 
 function install_node_via_nvm() {
   local nvmrc="$(repo_path)/.nvmrc"
-  local required_version=$(get_tool_version node)
+  local required_version=$(toolversion node)
 
   cd "$(repo_path)"
 
@@ -281,7 +281,7 @@ function install_node_via_nvm() {
 }
 
 function install_node_via_package_manager() {
-  local required_version=$(get_tool_version node)
+  local required_version=$(toolversion node)
   if ! program_version_exists "node" "v$required_version"; then
     if is_macos; then
       brew_install node "$required_version" b801cc6b71e7c09448b4f823e493710665de68eb
@@ -370,8 +370,8 @@ function use_android_sdk() {
       echo "sdk.dir=$ANDROID_SDK_ROOT" | tee -a $_localPropertiesPath
     fi
 
-    local ANDROID_BUILD_TOOLS_VERSION=$(get_tool_version ANDROID_BUILD_TOOLS_VERSION)
-    local ANDROID_PLATFORM_VERSION=$(get_tool_version ANDROID_PLATFORM_VERSION)
+    local ANDROID_BUILD_TOOLS_VERSION=$(toolversion ANDROID_BUILD_TOOLS_VERSION)
+    local ANDROID_PLATFORM_VERSION=$(toolversion ANDROID_PLATFORM_VERSION)
     touch ~/.android/repositories.cfg
     echo y | sdkmanager "platform-tools" "build-tools;$ANDROID_BUILD_TOOLS_VERSION" "platforms;$ANDROID_PLATFORM_VERSION"
   else
@@ -398,7 +398,7 @@ function install_android_ndk() {
         PLATFORM="darwin"
     fi
 
-    local ANDROID_NDK_VERSION=$(get_tool_version ANDROID_NDK_VERSION)
+    local ANDROID_NDK_VERSION=$(toolversion ANDROID_NDK_VERSION)
     downloadUrl . android-ndk.zip https://dl.google.com/android/repository/android-ndk-$ANDROID_NDK_VERSION-$PLATFORM-x86_64.zip && \
       cecho "@cyan[[Extracting Android NDK to $_ndkParentDir.]]" && \
       unzip -q -o ./android-ndk.zip -d "$_ndkParentDir" && \

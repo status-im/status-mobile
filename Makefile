@@ -4,7 +4,7 @@ help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
 DO_SPACE_URL = https://status-go.ams3.digitaloceanspaces.com
-GITHUB_URL = https://github.com/status-im/status-go/releases/download
+GITHUB_URL = https://github.com/status-im/status-go/releases
 RCTSTATUS_DIR = modules/react-native-status/ios/RCTStatus
 ANDROID_LIBS_DIR = android/app/libs
 STATUS_GO_VER = $(shell cat STATUS_GO_VERSION)
@@ -35,7 +35,7 @@ HELP_FUN = \
 			   print "\n"; \
 		   }
 
-__read__toolversion__ = $(shell grep $(1) ./.TOOLVERSIONS | cut -d'=' -f2-)
+__toolversion = $(shell $(GIT_ROOT)/scripts/toolversion $(1))
 
 # Main targets
 
@@ -57,10 +57,15 @@ $(STATUS_GO_IOS_ARCH):
 	if [ $$? -ne 0 ]; then \
 		echo "Failed to download from DigitalOcean Bucket, checking GitHub..."; \
 		curl --fail --silent --location \
-			"$(GITHUB_URL)/$(STATUS_GO_VER)/status-go-ios.zip" \
+			"$(GITHUB_URL)/download/$(STATUS_GO_VER)/status-go-ios.zip" \
 			--output "$(STATUS_GO_IOS_ARCH)"; \
 		if [ $$? -ne 0 ]; then \
 			echo "Failed to download from GitHub!"; \
+			echo "Please check the contents of your STATUS_GO_VERSION are correct."; \
+			echo "Verify the version has been uploaded:"; \
+			echo " * $(DO_SPACE_URL)/index.html"; \
+			echo " * $(GITHUB_URL)"; \
+			exit 1; \
 		fi \
 	fi
 
