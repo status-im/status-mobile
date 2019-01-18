@@ -67,7 +67,7 @@
     "react-native-image-crop-picker": "0.18.1",
     "react-native-image-resizer": "1.0.0",
     "react-native-invertible-scroll-view": "1.1.0",
-    "react-native-keychain": "git+https://github.com/status-im/react-native-keychain.git#v.3.0.0-status",
+    "react-native-keychain": "git+https://github.com/status-im/react-native-keychain.git#v.3.0.0-1-status",
     "react-native-level-fs": "3.0.0",
     "react-native-os": "1.1.0",
     "react-native-qrcode": "0.2.6",
