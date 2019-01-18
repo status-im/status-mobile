@@ -267,7 +267,7 @@
         [react/view (merge action-button.styles/actions-list
                            styles/share-contact-code-container)
          [button/secondary-button {:on-press            #(re-frame/dispatch [:navigate-to :profile-qr-viewer
-                                                                             {:contact current-account
+                                                                             {:contact (dissoc current-account :mnemonic)
                                                                               :source  :public-key
                                                                               :value   public-key}])
                                    :style               styles/share-contact-code-button
