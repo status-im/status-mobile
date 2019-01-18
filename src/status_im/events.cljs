@@ -791,9 +791,14 @@
    (chat.message/update-message-status cofx chat-id message-id status)))
 
 (handlers/register-handler-fx
- :message/message-persisted
- (fn [cofx [_ raw-message]]
-   (chat.message/confirm-message-processed cofx raw-message)))
+ :message/messages-persisted
+ (fn [cofx [_ raw-messages]]
+   (apply fx/merge
+          cofx
+          (map
+           (fn [raw-message]
+             (chat.message/confirm-message-processed raw-message))
+           raw-messages))))
 
 ;; signal module
 

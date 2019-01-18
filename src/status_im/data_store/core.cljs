@@ -66,7 +66,7 @@
                              [merged-values]))]))))))
 
 (defn- merge-persistence-events [success-events]
-  (merge-events-of-type success-events :message/message-persisted))
+  (merge-events-of-type success-events :message/messages-persisted))
 
 (defn- perform-transactions [raw-transactions realm]
   (let [success-events (keep :success-event raw-transactions)

@@ -21,4 +21,4 @@
                               db
                               statuses)
        :data-store/tx [{:transaction (user-statuses-store/save-statuses-tx statuses)
-                        :success-event [:message/message-persisted js-obj]}]})))
+                        :success-event [:message/messages-persisted [js-obj]]}]})))

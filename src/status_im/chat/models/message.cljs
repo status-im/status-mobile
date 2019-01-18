@@ -139,7 +139,8 @@
                :data-store/tx [(merge
                                 {:transaction (messages-store/save-message-tx prepared-message)}
                                 (when raw-message
-                                  {:success-event [:message/message-persisted raw-message]}))]}
+                                  {:success-event
+                                   [:message/messages-persisted [raw-message]]}))]}
               (when (and platform/desktop?
                          (not batch?)
                          (not (system-message? prepared-message)))
