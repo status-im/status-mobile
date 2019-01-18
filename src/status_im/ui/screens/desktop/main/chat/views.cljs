@@ -192,9 +192,10 @@
                     (not outgoing)
                     (not= :seen message-status)
                     (not= :seen (keyword (get-in user-statuses [current-public-key :status]))))
-           (re-frame/dispatch [:send-seen! {:chat-id    chat-id
-                                            :from       from
-                                            :message-id message-id}]))
+           ;;TODO(rasom): revisit this when seen messages will be reimplemented
+           #_(re-frame/dispatch [:send-seen! {:chat-id    chat-id
+                                              :from       from
+                                              :message-id message-id}]))
         :reagent-render
         (fn []
           ^{:key (str "message" message-id)}
