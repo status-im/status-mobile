@@ -224,6 +224,21 @@
      (when advanced?
        [advanced-settings params on-show])]))
 
+(defn share-profile-item []
+  (let [link (universal-links/generate-link :user :external {})]
+    [profile.components/settings-item
+     {:label-kw            :t/share-my-profile
+      :icon                :icons/share
+      :accessibility-label :share-button
+      :action-fn           #(list-selection/open-share {:message link})}]))
+
+(defn contacts-list-item []
+  [profile.components/settings-item
+   {:label-kw            :t/contacts
+    :icon                :icons/contacts
+    :accessibility-label :notifications-button
+    :action-fn           #(.openURL react/linking "app-settings://notification/status-im")}])
+
 (defview my-profile []
   (letsubs [{:keys [public-key photo-path] :as current-account} [:account/account]
             editing?        [:get :my-profile/editing?]
@@ -258,15 +273,17 @@
                                    (profile-icon-options-ext)
                                    profile-icon-options)
            :on-change-text-event :my-profile/update-name}]]
-        [react/view (merge action-button.styles/actions-list
-                           styles/share-contact-code-container)
-         [button/secondary-button {:on-press            #(re-frame/dispatch [:navigate-to :profile-qr-viewer
-                                                                             {:contact current-account
-                                                                              :source  :public-key
-                                                                              :value   public-key}])
-                                   :style               styles/share-contact-code-button
-                                   :accessibility-label :share-my-profile-button}
-          (i18n/label :t/share-my-profile)]]
+        #_[react/view (merge action-button.styles/actions-list
+                             styles/share-contact-code-container)
+           [button/secondary-button {:on-press            #(re-frame/dispatch [:navigate-to :profile-qr-viewer
+                                                                               {:contact current-account
+                                                                                :source  :public-key
+                                                                                :value   public-key}])
+                                     :style               styles/share-contact-code-button
+                                     :accessibility-label :share-my-profile-button}
+            (i18n/label :t/share-my-profile)]]
+        [share-profile-item]
+        [contacts-list-item]
         [react/view styles/my-profile-info-container
          [my-profile-settings current-account shown-account currency (nil? login-data)]]
         (when (nil? login-data)

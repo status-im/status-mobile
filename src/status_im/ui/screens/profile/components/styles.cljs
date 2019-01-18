@@ -59,6 +59,15 @@
    :background-color   colors/white
    :height             52})
 
+(def settings-item-icon
+  {:background-color colors/blue-light
+   :width            34
+   :height           34
+   :border-radius    34
+   :margin-right     16
+   :justify-content  :center
+   :align-items      :center})
+
 (def settings-item-text-wrapper
   {:flex             1
    :flex-direction   :row
