@@ -12,7 +12,8 @@ COPY sdk-tools-linux-${ANDROID_SDK_VERSION}.zip /tmp/sdk-tools-linux.zip
 RUN unzip -q /tmp/sdk-tools-linux.zip -d /usr/lib/android-sdk \
  && mkdir ~/.android && touch ~/.android/repositories.cfg \
  && yes | /usr/lib/android-sdk/tools/bin/sdkmanager --licenses > /dev/null \
- && for PKG in ${SDK_PACKAGES}; do /usr/lib/android-sdk/tools/bin/sdkmanager --install "${PKG}"; done \
+ && for PKG in ${SDK_PACKAGES}; do \
+      yes | /usr/lib/android-sdk/tools/bin/sdkmanager --install "${PKG}" > /dev/null; done \
  && chmod 777 -R /usr/lib/android-sdk
 # cleanup SDK
 RUN cd /usr/lib/android-sdk \
