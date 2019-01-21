@@ -49,6 +49,7 @@
       :reagent-render views/main})))
 
 (defn init []
+  (log/debug :INIT-APP)
   (status/set-soft-input-mode status/adjust-resize)
   (core/init app-root)
   (snoopy/subscribe!))
