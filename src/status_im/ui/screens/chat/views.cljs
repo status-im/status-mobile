@@ -41,7 +41,7 @@
          [vector-icons/icon :icons/add {:color colors/blue}]
          [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]]
        [react/touchable-highlight
-        {:on-press            #(re-frame/dispatch [:contacts.ui/close-contact-pressed contact-identity])
+        {:on-press            #(re-frame/dispatch [:contact.ui/close-contact-pressed contact-identity])
          :accessibility-label :add-to-contacts-close-button}
         [vector-icons/icon :icons/close {:color           colors/black
                                          :container-style style/add-contact-close-icon}]]])))
