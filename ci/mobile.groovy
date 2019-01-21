@@ -57,8 +57,14 @@ def prep(type = 'nightly') {
   /* generate ios/StatusIm.xcworkspace */
   if (env.BUILD_PLATFORM == 'ios') {
     dir('ios') {
-      podUpdate()
-      sh 'pod install --silent'
+      try {
+         sh 'pod install --silent'
+      } catch (Exception ex) {
+         println "pod installation failed, trying to upgrade the repo"
+         /* only if pod install fails, we try to upgrade the repo */
+         podUpdate()
+         sh 'pod install --silent'
+      }
     }
   }
 }
