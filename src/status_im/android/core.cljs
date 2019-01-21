@@ -36,7 +36,7 @@
                         (dispatch [:show-tab-bar])
                         (when (zero? @keyboard-height)
                           (dispatch [:set :keyboard-height 0]))))
-        (.hide react/splash-screen)
+        #_(.hide react/splash-screen)
         (.addEventListener react/app-state "change" app-state-change-handler))
       :component-did-mount
       (fn [this]

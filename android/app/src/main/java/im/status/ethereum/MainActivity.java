@@ -110,7 +110,7 @@ public class MainActivity extends ReactActivity
         Log.v("RNBootstrap", "Available system memory "+getAvailableMemory(activityManager).availMem + ", maximum usable application memory " + activityManager.getLargeMemoryClass()+"M");
 
 
-        SplashScreen.show(this, true);
+        //SplashScreen.show(this, true);
         super.onCreate(savedInstanceState);
 
         if (!shouldShowRootedNotification()) {
