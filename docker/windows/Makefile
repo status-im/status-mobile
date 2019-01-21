@@ -1,6 +1,7 @@
 __toolversion = $(shell $(GIT_ROOT)/scripts/toolversion $(1))
 
 GIT_COMMIT = $(shell git rev-parse --short HEAD)
+GIT_ROOT = $(shell git rev-parse --show-toplevel)
 
 # WARNING: Remember to change the tag when updating the image
 IMAGE_TAG = 1.1.1

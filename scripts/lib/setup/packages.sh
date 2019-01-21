@@ -4,6 +4,8 @@
 # Install checks
 ########
 
+GIT_ROOT=$(git rev-parse --show-toplevel)
+
 function program_exists() {
   local program=$1
   command -v "$program" >/dev/null 2>&1
@@ -25,7 +27,7 @@ function program_version_exists() {
 }
 
 function toolversion() {
-  ./toolversion "${1}"
+  ${GIT_ROOT}/scripts/toolversion "${1}"
 }
 
 ########
