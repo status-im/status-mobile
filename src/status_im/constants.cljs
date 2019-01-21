@@ -47,7 +47,7 @@
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
                            :DataDir        "/ethereum/mainnet_rpc"
                            :UpstreamConfig {:Enabled true
-                                            :URL     "https://mainnet.infura.io/z6GCTmjdP3FETEJmMBI4"}}}})
+                                            :URL     "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a"}}}})
 
 (def sidechain-networks
   {"xdai_rpc" {:id     "xdai_rpc",
@@ -74,7 +74,7 @@
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
                            :DataDir        "/ethereum/testnet_rpc"
                            :UpstreamConfig {:Enabled true
-                                            :URL     "https://ropsten.infura.io/z6GCTmjdP3FETEJmMBI4"}}}
+                                            :URL     "https://ropsten.infura.io/v3/f315575765b14720b32382a61a89341a"}}}
    "rinkeby"     {:id     "rinkeby",
                   :name   "Rinkeby",
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
@@ -85,7 +85,7 @@
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
                            :DataDir        "/ethereum/rinkeby_rpc"
                            :UpstreamConfig {:Enabled true
-                                            :URL     "https://rinkeby.infura.io/z6GCTmjdP3FETEJmMBI4"}}}})
+                                            :URL     "https://rinkeby.infura.io/v3/f315575765b14720b32382a61a89341a"}}}})
 
 (defn network-enabled? [network]
   (let [rpc-network? (get-in (val network) [:config :UpstreamConfig :Enabled])
