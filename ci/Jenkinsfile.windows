@@ -24,7 +24,6 @@ pipeline {
 
   options {
     timestamps()
-    disableConcurrentBuilds()
     /* Prevent Jenkins jobs from running forever */
     timeout(time: 45, unit: 'MINUTES')
     /* Limit builds retained */
@@ -61,6 +60,8 @@ pipeline {
           /* Necessary to load methods */
           desktop = load 'ci/desktop.groovy'
           cmn     = load 'ci/common.groovy'
+          print "Running ${cmn.getBuildType()} build!"
+          cmn.abortPreviousRunningBuilds()
           /* Read the valid NodeJS version */
           env.NODE_VERSION = cmn.getToolVersion('node')
           /* Cleanup and Prep */
