@@ -50,21 +50,14 @@
   [{:keys [db] :as cofx} {:keys [payload chat-id success-event]}]
   ;; we assume that the chat contains the contact public-key
   (let [{:keys [web3]} db
-        {:keys [sym-key-id topic]} (get-in db [:transport/chats chat-id])
-        pfs? (get-in db [:account/account :settings :pfs?])]
-    (if pfs?
-      (send-public-message
-       cofx
-       chat-id
-       success-event
-       payload)
-      {:shh/post [{:web3          web3
-                   :success-event success-event
-                   :message       (merge {:sig      (accounts.db/current-public-key cofx)
-                                          :symKeyID sym-key-id
-                                          :payload  payload
-                                          :topic    topic}
-                                         whisper-opts)}]})))
+        {:keys [sym-key-id topic]} (get-in db [:transport/chats chat-id])]
+    {:shh/post [{:web3          web3
+                 :success-event success-event
+                 :message       (merge {:sig      (accounts.db/current-public-key cofx)
+                                        :symKeyID sym-key-id
+                                        :payload  payload
+                                        :topic    topic}
+                                       whisper-opts)}]}))
 
 (fx/defn send-direct-message
   "Sends the payload using to dst"
