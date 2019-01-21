@@ -135,6 +135,8 @@
   [db network]
   (-> (get-in (:networks/networks db) [network :config])
       (get-base-node-config)
+
+      (assoc :ShhextConfig {:BackupDisabledDataDir (utils.platform/no-backup-directory)})
       (assoc :PFSEnabled false
              :NoDiscovery true)
       (add-log-level config/log-level-status-go)))
