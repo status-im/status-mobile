@@ -34,13 +34,18 @@ def getBuildType() {
 
 @NonCPS
 def abortPreviousRunningBuilds() {
+  /* Aborting makes sense only for PR builds, since devs start so many of them */
+  if (!env.JOB_NAME.contains('status-react/prs')) {
+    println ">> Not aborting any previous jobs. Not a PR build."
+    return
+  }
   Run previousBuild = currentBuild.rawBuild.getPreviousBuildInProgress()
 
   while (previousBuild != null) {
     if (previousBuild.isInProgress()) {
       def executor = previousBuild.getExecutor()
       if (executor != null) {
-        echo ">> Aborting older build #${previousBuild.number}"
+        println ">> Aborting older build #${previousBuild.number}"
         executor.interrupt(Result.ABORTED, new UserInterruption(
           "newer build #${currentBuild.number}"
         ))

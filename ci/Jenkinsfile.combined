@@ -40,13 +40,13 @@ pipeline {
           ios = cmn.buildBranch('status-react/combined/mobile-ios')
         } } }
         stage('iOS e2e') { steps { script {
-          iose2e = cmn.buildBranch('status-react/combined/mobile-ios', 'e2e')
+          iose2e = cmn.buildBranch('status-react/combined/mobile-ios-e2e')
         } } }
         stage('Android') { steps { script {
           apk = cmn.buildBranch('status-react/combined/mobile-android')
         } } }
         stage('Android e2e') { steps { script {
-          apke2e = cmn.buildBranch('status-react/combined/mobile-android', 'e2e')
+          apke2e = cmn.buildBranch('status-react/combined/mobile-android-e2e')
         } } }
       }
     }
