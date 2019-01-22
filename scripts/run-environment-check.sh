@@ -23,8 +23,8 @@ else
   PLATFORM=$1
 fi
 
-if ! program_exists node || ! program_exists yarn; then
-  echo -e "${YELLOW}********************************************************************************************"
+if ! program_version_exists node $EXPECTED_NODE_VERSION || ! program_exists yarn $EXPECTED_YARN_VERSION; then
+  echo -e "${YELLOW}**********************************************************************************************"
 
   nvmrc="./.nvmrc"
   if [ -e "$nvmrc" ]; then
@@ -32,10 +32,15 @@ if ! program_exists node || ! program_exists yarn; then
     version_alias=$(cat "$nvmrc")
     echo -e "Please run 'nvm use $version_alias' in the terminal and try again."
   else
-    echo -e "Please open another console to reload the environment, and then run make setup if necessary."
+    echo -e "The current environment doesn't contain the expected versions of node and/or yarn"
+    echo -e "  - node:\texpected\t${EXPECTED_NODE_VERSION}"
+    echo -e "  \t\tfound\t\t$(node -v) ($(which node))"
+    echo -e "  - yarn:\texpected\t${EXPECTED_YARN_VERSION}"
+    echo -e "  \t\tfound\t\t$(yarn -v) ($(which yarn))"
+    echo -e "Please open another console to reload the environment, and then run 'make setup' if necessary."
   fi
 
-  echo -e "********************************************************************************************${NC}"
+  echo -e "**********************************************************************************************${NC}"
   exit 1
 fi
 
