@@ -40,7 +40,7 @@ def uploadToSauceLabs() {
   if (changeId != null) {
     env.SAUCE_LABS_NAME = "${changeId}.apk"
   } else {
-    def pkg = cmn.pkgFilename(type, 'apk')
+    def pkg = cmn.pkgFilename(cmn.getBuildType(), 'apk')
     env.SAUCE_LABS_NAME = "${pkg}"
   }
   withCredentials([
