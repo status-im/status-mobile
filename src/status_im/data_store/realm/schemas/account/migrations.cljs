@@ -346,3 +346,17 @@
       (let [chat (aget chats i)
             chat-id (aget chat "chat-id")]
         (aset chat "group-chat-local-version" 0)))))
+
+(defn one-to-one? [chat-id]
+  (re-matches #"^0x[0-9a-fA-F]+$" chat-id))
+
+(defn v35 [old-realm new-realm]
+  (log/debug "migrating transport chats")
+  (let [old-chats (.objects old-realm "transport")
+        new-chats (.objects new-realm "transport")]
+    (dotimes [i (.-length old-chats)]
+      (let [old-chat (aget old-chats i)
+            new-chat (aget new-chats i)
+            chat-id  (aget old-chat "chat-id")]
+        (when (one-to-one? chat-id)
+          (aset new-chat "one-to-one" true))))))

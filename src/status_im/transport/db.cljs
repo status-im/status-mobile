@@ -29,18 +29,19 @@
 (spec/def :transport/chat (spec/keys :req-un [::ack ::seen ::pending-ack ::pending-send ::topic]
                                      :opt-un [::sym-key-id ::sym-key ::resend?]))
 (spec/def :transport/chats (spec/map-of :global/not-empty-string :transport/chat))
-(spec/def :transport/filters (spec/map-of :transport/filter-id :transport/filter))
+(spec/def :transport/filters (spec/map-of :transport/filter-id (spec/coll-of :transport/filter)))
 
 (defn create-chat
   "Initialize datastructure for chat representation at the transport level
   Currently only :topic is actually used"
-  [{:keys [topic resend? now]}]
-  {:ack                   []
-   :seen                  []
-   :pending-ack           []
-   :pending-send          []
-   :resend?               resend?
-   :topic                 topic})
+  [{:keys [topic resend? one-to-one now]}]
+  {:ack          []
+   :seen         []
+   :pending-ack  []
+   :pending-send []
+   :one-to-one   (boolean one-to-one)
+   :resend?      resend?
+   :topic        topic})
 
 (spec/def ::profile-image :contact/photo-path)
 
@@ -123,6 +124,10 @@
 (defn all-filters-added?
   [{:keys [db]}]
   (let [filters (set (keys (get db :transport/filters)))
-        chats (into #{:discovery-topic}
-                    (keys (filter #(:topic (val %)) (get db :transport/chats))))]
+        chats   (into #{:discovery-topic}
+                      (keys (filter (fn [[chat-id {:keys [topic one-to-one]}]]
+                                      (if one-to-one
+                                        chat-id
+                                        topic))
+                                    (get db :transport/chats))))]
     (= chats filters)))

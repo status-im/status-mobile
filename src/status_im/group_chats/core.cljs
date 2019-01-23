@@ -17,6 +17,7 @@
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.group-chat :as message.group-chat]
             [status-im.transport.message.public-chat :as transport.public-chat]
+            [status-im.transport.partitioned-topic :as transport.topic]
             [status-im.transport.chat.core :as transport.chat]
             [status-im.utils.fx :as fx]
             [status-im.chat.models :as models.chat]
@@ -149,7 +150,7 @@
                                {:public-key member
                                 :chat chat-id}
                                {:public-key member
-                                :chat constants/contact-discovery}))
+                                :chat       (transport.topic/public-key->discovery-topic member)}))
                            members)]
      (fx/merge
       cofx

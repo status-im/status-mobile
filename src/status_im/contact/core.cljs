@@ -10,7 +10,9 @@
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.transport.partitioned-topic :as transport.topic]
+            [status-im.utils.config :as config]))
 
 (fx/defn load-contacts
   [{:keys [db all-contacts]}]
@@ -64,6 +66,24 @@
       (fx/merge cofx
                 (add-new-contact contact)
                 (send-contact-request contact)))))
+
+(fx/defn add-contacts-filter [{:keys [db]} public-key action]
+  (when (not= (get-in db [:account/account :public-key]) public-key)
+    (let [current-public-key (get-in db [:account/account :public-key])]
+      {:db
+       (cond-> db
+         config/partitioned-topic-enabled?
+         (assoc :filters/after-adding-discovery-filter
+                {:action     action
+                 :public-key public-key}))
+
+       :shh/add-discovery-filters
+       {:web3           (:web3 db)
+        :private-key-id current-public-key
+        :topics         [{:topic    (transport.topic/partitioned-topic-hash public-key)
+                          :chat-id  public-key
+                          :minPow   1
+                          :callback (constantly nil)}]}})))
 
 (fx/defn add-tag
   "add a tag to the contact"
@@ -148,7 +168,9 @@
                           :on-dismiss #(re-frame/dispatch [:navigate-to-clean :home])}}
       (fx/merge cofx
                 fx
-                (add-contact-and-open-chat contact-identity)))))
+                (if config/partitioned-topic-enabled?
+                  (add-contacts-filter contact-identity :add-contact-and-open-chat)
+                  (add-contact-and-open-chat contact-identity))))))
 
 (fx/defn open-contact-toggle-list
   [{:keys [db :as cofx]}]

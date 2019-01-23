@@ -15,10 +15,12 @@
                                      "4" {:topic "topic-4"}}
                    :semaphores      #{}}}]
     (testing "it adds the discover filters"
-      (is (= {:web3 nil :private-key-id "1" :topics [{:chat-id :discovery-topic
-                                                      :topic "0xf8946aac"}
-                                                     {:chat-id "4"
-                                                      :topic "topic-4"}]}
+      (is (= {:web3 nil :private-key-id "1" :topics '({:topic   "topic-4"
+                                                       :chat-id "4"}
+                                                      {:topic   "0x2af2e6e7"
+                                                       :chat-id :discovery-topic}
+                                                      {:topic   "0xf8946aac"
+                                                       :chat-id :discovery-topic})}
              (:shh/add-discovery-filters (transport/init-whisper cofx)))))
 
     (testing "it restores the sym-keys"

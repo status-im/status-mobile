@@ -196,7 +196,7 @@
                                                          :member member-1}]}]}
             actual (group-chats/handle-membership-update cofx new-message "payload" admin)]
         (testing "it removes the topic"
-          (is (:shh/remove-filter actual)))))))
+          (is (:shh/remove-filters actual)))))))
 
 (deftest build-group-test
   (testing "only adds"

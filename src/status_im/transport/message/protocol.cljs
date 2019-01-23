@@ -3,9 +3,9 @@
   (:require [cljs.spec.alpha :as spec]
             [status-im.accounts.db :as accounts.db]
             [status-im.chat.core :as chat]
-            [status-im.constants :as constants]
             [status-im.transport.db :as transport.db]
             [status-im.transport.utils :as transport.utils]
+            [status-im.transport.partitioned-topic :as transport.topic]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
@@ -28,12 +28,13 @@
   "Initialises chat on protocol layer.
   If topic is not passed as argument it is derived from `chat-id`"
   [{:keys [db now]}
-   {:keys [chat-id topic resend?]}]
+   {:keys [chat-id topic one-to-one resend?]}]
   {:db (assoc-in db
                  [:transport/chats chat-id]
-                 (transport.db/create-chat {:topic   topic
-                                            :resend? resend?
-                                            :now     now}))})
+                 (transport.db/create-chat {:topic      topic
+                                            :one-to-one one-to-one
+                                            :resend?    resend?
+                                            :now        now}))})
 
 (defn send-public-message
   "Sends the payload to topic"
@@ -56,7 +57,8 @@
                  :message       (merge {:sig      (accounts.db/current-public-key cofx)
                                         :symKeyID sym-key-id
                                         :payload  payload
-                                        :topic    topic}
+                                        :topic    (or topic
+                                                      (transport.topic/public-key->discovery-topic-hash chat-id))}
                                        whisper-opts)}]}))
 
 (fx/defn send-direct-message
@@ -84,7 +86,7 @@
                      :message       (merge {:sig     (accounts.db/current-public-key cofx)
                                             :pubKey  chat-id
                                             :payload payload
-                                            :topic   (transport.utils/get-topic constants/contact-discovery)}
+                                            :topic   (transport.topic/public-key->discovery-topic-hash chat-id)}
                                            whisper-opts)}]}))))
 
 (defrecord Message [content content-type message-type clock-value timestamp]

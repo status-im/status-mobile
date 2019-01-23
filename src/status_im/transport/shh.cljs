@@ -4,7 +4,9 @@
             [status-im.constants :as constants]
             [status-im.transport.message.transit :as transit]
             [status-im.transport.utils :as transport.utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.transport.partitioned-topic :as transport.topic]
+            [status-im.utils.config :as config]))
 
 (defn get-new-key-pair [{:keys [web3 on-success on-error]}]
   (if web3
@@ -72,9 +74,10 @@
  (fn [post-calls]
    (doseq [{:keys [web3 payload src dst success-event error-event]
             :or   {error-event :transport/send-status-message-error}} post-calls]
-     (let [direct-message (clj->js {:pubKey dst
+     (let [chat           (transport.topic/public-key->discovery-topic dst)
+           direct-message (clj->js {:pubKey dst
                                     :sig src
-                                    :chat constants/contact-discovery
+                                    :chat chat
                                     :payload (-> payload
                                                  transit/serialize
                                                  transport.utils/from-utf8)})]
@@ -90,7 +93,7 @@
    (let [{:keys [web3 payload src success-event error-event]
           :or   {error-event :protocol/send-status-message-error}} params
          message (clj->js {:sig src
-                           :chat constants/contact-discovery
+                           :chat (transport.topic/public-key->discovery-topic src)
                            :payload (-> payload
                                         transit/serialize
                                         transport.utils/from-utf8)})]

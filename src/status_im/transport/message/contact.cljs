@@ -25,7 +25,7 @@
 (fx/defn remove-chat-filter
   "Stops the filter for the given chat-id"
   [{:keys [db]} chat-id]
-  (when-let [filter (get-in db [:transport/filters chat-id])]
-    {:shh/remove-filter {:chat-id chat-id
-                         :filter filter}}))
+  (when-let [filters (get-in db [:transport/filters chat-id])]
+    {:shh/remove-filters
+     {:filters  (map (fn [filter] [chat-id filter]) filters)}}))
 

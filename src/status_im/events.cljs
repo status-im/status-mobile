@@ -50,7 +50,8 @@
             [status-im.chat.models.loading :as chat-loading]
             [status-im.node.core :as node]
             [cljs.reader :as edn]
-            [status-im.stickers.core :as stickers]))
+            [status-im.stickers.core :as stickers]
+            [status-im.utils.config :as config]))
 
 ;; init module
 
@@ -1463,7 +1464,9 @@
  :contact.ui/add-to-contact-pressed
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx [_ public-key]]
-   (contact/add-contact cofx public-key)))
+   (if config/partitioned-topic-enabled?
+     (contact/add-contacts-filter cofx public-key :add-contact)
+     (contact/add-contact cofx public-key))))
 
 (handlers/register-handler-fx
  :contact.ui/close-contact-pressed
@@ -1475,6 +1478,11 @@
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx [_ _ contact-identity]]
    (contact/handle-qr-code cofx contact-identity)))
+
+(handlers/register-handler-fx
+ :contact/filters-added
+ (fn [cofx [_ contact-identity]]
+   (contact/add-contact-and-open-chat cofx contact-identity)))
 
 (handlers/register-handler-fx
  :contact.ui/start-group-chat-pressed

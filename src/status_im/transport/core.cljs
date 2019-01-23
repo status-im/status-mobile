@@ -2,15 +2,29 @@
  status-im.transport.core
   (:require status-im.transport.filters
             [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [status-im.data-store.transport :as transport-store]
             [status-im.mailserver.core :as mailserver]
             [status-im.transport.message.core :as message]
-            [status-im.transport.shh :as shh]
-            [status-im.transport.utils :as transport.utils]
+            [status-im.transport.partitioned-topic :as transport.topic]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            status-im.transport.shh
+            [status-im.utils.config :as config]))
+
+(defn get-public-key-topics [chats]
+  (keep (fn [[chat-id {:keys [topic sym-key one-to-one]}]]
+          (cond (and (not sym-key) topic)
+                {:topic   topic
+                 :chat-id chat-id}
+
+                ;; we have to listen the topic to which we are going to send
+                ;; a message, otherwise the message will not match bloom
+                (and config/partitioned-topic-enabled? one-to-one)
+                {:topic   (transport.topic/partitioned-topic-hash chat-id)
+                 :chat-id chat-id
+                 :minPow 1
+                 :callback (constantly nil)}))
+        chats))
 
 (fx/defn init-whisper
   "Initialises whisper protocol by:
@@ -19,19 +33,18 @@
   - (optionally) initializing mailserver"
   [{:keys [db web3] :as cofx}]
   (when-let [public-key (get-in db [:account/account :public-key])]
-    (let [public-key-topics (keep (fn [[chat-id {:keys [topic sym-key]}]]
-                                    (when (and (not sym-key)
-                                               topic)
-                                      {:topic topic
-                                       :chat-id chat-id}))
-                                  (:transport/chats db))
-          discovery-topic (transport.utils/get-topic constants/contact-discovery)]
+    (let [public-key-topics (get-public-key-topics (:transport/chats db))
+          discovery-topics (transport.topic/discovery-topics public-key)]
       (fx/merge cofx
-                {:shh/add-discovery-filters {:web3           web3
-                                             :private-key-id public-key
-                                             :topics (conj public-key-topics
-                                                           {:topic discovery-topic
-                                                            :chat-id :discovery-topic})}
+                {:shh/add-discovery-filters
+                 {:web3           web3
+                  :private-key-id public-key
+                  :topics         (concat public-key-topics
+                                          (map
+                                           (fn [discovery-topic]
+                                             {:topic   discovery-topic
+                                              :chat-id :discovery-topic})
+                                           discovery-topics))}
 
                  :shh/restore-sym-keys-batch
                  {:web3       web3
@@ -59,12 +72,13 @@
          (reduce
           (fn [{:keys [updated-chats filters]} chat]
             (let [{:keys [chat-id sym-key-id]} chat
-                  {:keys [topic]} (get updated-chats chat-id)]
+                  {:keys [topic one-to-one]} (get updated-chats chat-id)]
               {:updated-chats (assoc-in updated-chats
                                         [chat-id :sym-key-id] sym-key-id)
                :filters       (conj filters {:sym-key-id sym-key-id
                                              :topic      topic
-                                             :chat-id    chat-id})}))
+                                             :chat-id    chat-id
+                                             :one-to-one one-to-one})}))
           {:updated-chats chats
            :filters       []}
           keys)]
@@ -88,4 +102,9 @@
   account A messages without this."
   [{:keys [db]} callback]
   (let [{:transport/keys [filters]} db]
-    {:shh/remove-filters [filters callback]}))
+    {:shh/remove-filters {:filter   (mapcat (fn [[chat-id chat-filters]]
+                                              (map (fn [filter]
+                                                     [chat-id filter])
+                                                   chat-filters))
+                                            filters)
+                          :callback callback}}))

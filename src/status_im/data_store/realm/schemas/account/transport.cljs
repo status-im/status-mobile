@@ -64,3 +64,7 @@
                       ;;TODO (yenda) remove once go implements persistence
                       :sym-key               {:type     :string
                                               :optional true}}})
+
+(def v8 (assoc-in v7 [:properties :one-to-one]
+                  {:type     :bool
+                   :optional true}))

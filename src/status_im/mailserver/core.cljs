@@ -17,7 +17,8 @@
             [status-im.i18n :as i18n]
             [status-im.utils.handlers :as handlers]
             [status-im.accounts.update.core :as accounts.update]
-            [status-im.ui.screens.navigation :as navigation]))
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.transport.partitioned-topic :as transport.topic]))
 
 ;; How do mailserver work ?
 ;;
@@ -515,8 +516,9 @@
                                    :mailserver-topic mailserver-topic})]}))))
 (fx/defn fetch-history
   [{:keys [db] :as cofx} chat-id]
-  (let [topic  (or (get-in db [:transport/chats chat-id :topic])
-                   (transport.utils/get-topic constants/contact-discovery))
+  (let [public-key (accounts.db/current-public-key cofx)
+        topic  (or (get-in db [:transport/chats chat-id :topic])
+                   (transport.topic/public-key->discovery-topic-hash public-key))
         {:keys [chat-ids last-request] :as current-mailserver-topic}
         (get-in db [:mailserver/topics topic] {:chat-ids #{}})]
     (let [mailserver-topic (-> current-mailserver-topic
