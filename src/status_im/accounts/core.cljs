@@ -53,7 +53,7 @@
     (if dev-mode?
       {:extensions/load {:extensions extensions
                          :follow-up  :extensions/add-to-registry}}
-      {:dispatch [:extensions/update-hooks extensions]})))
+      {:dispatch [:extensions/disable-all-hooks extensions]})))
 
 (fx/defn switch-dev-mode [cofx dev-mode?]
   (fx/merge cofx

@@ -158,6 +158,11 @@
  (fn [{:keys [db]} [_ {id :id} {:keys [key]}]]
    {:db (update-in db [:extensions/store id] dissoc key)}))
 
+(handlers/register-handler-fx
+ :store/clear-all
+ (fn [{:keys [db]} [_ {id :id} _]]
+   {:db (update db :extensions/store dissoc id)}))
+
 (defn- json? [res]
   (when-let [type (get-in res [:headers "content-type"])]
     (string/starts-with? type "application/json")))
@@ -223,8 +228,7 @@
 (re-frame/reg-event-fx
  :ipfs/add
  (fn [_ [_ _ {:keys [value on-success on-failure]}]]
-   (let [formdata (doto
-                   (js/FormData.)
+   (let [formdata (doto (js/FormData.)
                     (.append constants/ipfs-add-param-name value))]
      {:http-raw-post (merge {:url  constants/ipfs-add-url
                              :body formdata
@@ -316,9 +320,10 @@
     (js/clearTimeout id))
   (reset! current (js/setTimeout #(on-input-change-text on-change value) delay)))
 
-(defn input [{:keys [keyboard-type style on-change change-delay placeholder placeholder-text-color]}]
+(defn input [{:keys [keyboard-type style on-change change-delay placeholder placeholder-text-color selection-color]}]
   [react/text-input (merge {:placeholder placeholder}
                            (when placeholder-text-color {:placeholder-text-color placeholder-text-color})
+                           (when selection-color {:selection-color selection-color})
                            (when style {:style style})
                            (when keyboard-type {:keyboard-type keyboard-type})
                            (when on-change
@@ -402,7 +407,7 @@
                 'touchable-opacity      {:value touchable-opacity :properties {:on-press :event}}
                 'icon                   {:value icon :properties {:key :keyword :color :any}}
                 'image                  {:value image :properties {:uri :string :source :string}}
-                'input                  {:value input :properties {:on-change :event :placeholder :string :keyboard-type :keyword :change-delay? :number :placeholder-text-color :any}}
+                'input                  {:value input :properties {:on-change :event :placeholder :string :keyboard-type :keyword :change-delay? :number :placeholder-text-color :any :selection-color :any}}
                 'button                 {:value button :properties {:enabled :boolean :disabled :boolean :on-click :event}}
                 'link                   {:value link :properties {:uri :string}}
                 'list                   {:value list :properties {:data :vector :item-view :view :key? :keyword}}
@@ -495,6 +500,9 @@
                 {:permissions [:read]
                  :value       :store/clear
                  :arguments   {:key :string}}
+                'store/clear-all
+                {:permissions [:read]
+                 :value       :store/clear-all}
                 'http/get
                 {:permissions [:read]
                  :value       :http/get
@@ -519,13 +527,20 @@
                 'ipfs/add
                 {:permissions [:read]
                  :value       :ipfs/add
-                 :arguments   {:value        :string
+                 :arguments   {:value       :string
                                :on-success  :event
                                :on-failure? :event}}
                 'ethereum/transaction-receipt
                 {:permissions [:read]
                  :value       :extensions/ethereum-transaction-receipt
                  :arguments   {:value       :string
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum/await-transaction-receipt
+                {:permissions [:read]
+                 :value       :extensions/ethereum-await-transaction-receipt
+                 :arguments   {:value       :string
+                               :interval    :number
                                :on-success  :event
                                :on-failure? :event}}
                 'ethereum/sign

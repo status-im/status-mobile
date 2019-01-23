@@ -1,0 +1,227 @@
+{meta {:name          "Kyber UI"
+       :description   "Kyber exchange"
+       :documentation ""}
+
+ events/on-transaction-receipt
+ (let [{value :value} properties]
+   [store/put {:key "RECEIPT" :value value}])
+
+ events/on-trade-result
+ (let [{value :value} properties]
+   [ethereum/await-transaction-receipt {:interval 1000 :value value :on-success [on-transaction-receipt]}])
+
+ events/trade
+ (let [{src-address :src-address dest-address :dest-address amount-in-wei :amount-in-wei address :address slippage :slippage} properties]
+   [ethereum/send-transaction {:to "0x818E6FECD516Ecc3849DAf6845e3EC868087B755"
+                               :method "trade(address,uint256,address,address,uint256,uint256,address)"
+                               :gas "600000"
+                               :params [src-address amount-in-wei dest-address address "57896044618658097711785492504343953926634992332820282019728792003956564819968" slippage "0xD8a38Ae058fB6a6A6CB9517cF9Bc1730a6E15617"]
+                               :on-success [on-trade-result]}])
+ events/approve
+ (let [{src-address :src-address dest-address :dest-address address :address amount-in-wei :amount-in-wei slippage :slippage} properties]
+   ;; Approve Kyber contract for further transfer
+   [ethereum/send-transaction {:to src-address
+                               :method "approve(address,uint256)"
+                               :params ["0x818E6FECD516Ecc3849DAf6845e3EC868087B755" amount-in-wei]
+                               :gas "100000"
+                               :on-success [trade {:address address :amount-in-wei amount-in-wei :slippage slippage :src-address src-address :dest-address dest-address}]}])
+
+ views/render-token
+ (let [{name :name {source :source} :icon} properties]
+   [view {:style {:height 64 :margin-horizontal 16 :flex-direction :row :align-items :center}}
+    [image {:source source :style {:width 40 :height 40}}]
+    [text {:style {:margin-left 16 :font-size 16 :color :black}} name]])
+
+ events/aputs
+ (let [{key :key selection :selection source :source symbol :symbol rate :rate value :value} properties]
+   [store/puts {:value [{:key key :value {:selection selection :source source :symbol symbol}}
+                        {:key "RATE" :value {:value rate}}
+                        {:key "AMOUNT-TO-RECEIVE" :value value}]}])
+
+ events/on-rate-result
+ (let [{key :key amount :amount selection :selection source :source symbol :symbol [_ slippage :as result] :value} properties]
+   [arithmetic {:operation :times :values [amount slippage]
+                :on-result [aputs {:key key :amount amount :rate result :selection selection :source source :symbol symbol}]}])
+
+ ;; TODO Consider Kyber tokens list (require view lifecycle?)
+ ;; TODO react on amount changes too
+ ;; TODO hook completion screens (require case support?)
+ ;; TODO proper error handling
+
+ events/on-src-rate-params-change
+ (let [{key :key amount :amount amount-in-wei :amount-in-wei dest-address :dest-address address :address selection :name {source :source} :icon symbol :symbol} properties]
+   [ethereum/call {:to         "0x818E6FECD516Ecc3849DAf6845e3EC868087B755"
+                   :method     "getExpectedRate(address,address,uint256)"
+                   :params     [address dest-address amount-in-wei]
+                   :outputs    ["uint256" "uint256"]
+                   :on-success [on-rate-result {:key key :amount amount :selection selection :source source :symbol symbol}]}])
+
+ events/on-dest-rate-params-change
+ (let [{key :key amount :amount amount-in-wei :amount-in-wei src-address :src-address address :address selection :name {source :source} :icon symbol :symbol} properties]
+   [ethereum/call {:to         "0x818E6FECD516Ecc3849DAf6845e3EC868087B755"
+                   :method     "getExpectedRate(address,address,uint256)"
+                   :params     [src-address address amount-in-wei]
+                   :outputs    ["uint256" "uint256"]
+                   :on-success [on-rate-result {:key key :amount amount :selection selection :source source :symbol symbol}]}])
+
+ events/bputs
+ (let [{amount :amount rate :rate value :value} properties]
+   [store/puts {:value [{:key "RATE" :value {:value rate}}
+                        {:key "AMOUNT" :value amount}
+                        {:key "AMOUNT-TO-RECEIVE" :value value}]}])
+
+ events/on-amount-rate-result
+ (let [{amount :amount [_ slippage :as result] :result} properties]
+   [arithmetic {:operation :times :values [amount slippage]
+                :on-result [bputs {:amount amount :rate result}]}])
+
+ events/on-amount-params-change
+ (let [{amount :value src-address :src-address dest-address :dest-address} properties]
+   [ethereum/call {:to         "0x818E6FECD516Ecc3849DAf6845e3EC868087B755"
+                   :method     "getExpectedRate(address,address,uint256)"
+                   :params     [src-address dest-address amount-in-wei]
+                   :outputs    ["uint256" "uint256"]
+                   :on-success [on-amount-rate-result {:amount amount}]}])
+
+ events/store-amount
+ (let [{amount :value} properties]
+   [store/put {:key "AMOUNT" :value amount}])
+
+ views/sign-to-confirm
+ (let [{color :color} properties]
+   [view {:style {:flex-direction :row :margin-vertical 14 :align-items :center}}
+    [view {:style {:flex 1}}]
+    [text {:style {:color color :font-size 15 :margin-right 5}} "Sign to confirm"]
+    [icon {:key :icons/forward :color color}]])
+
+ views/transaction-failed-panel
+ (let [{} properties]
+   [view {:style {:flex 1 :background-color "#4360df"}}
+    [view {:style {:flex 1 :justify-content :center :align-items :center}}
+     [view {:style {:background-color :white :width 56 :height 56 :border-radius 28 :align-items :center :justify-content :center}}
+      [icon {:key :icons/ok :color "#4360df"}]]
+     [text {:style {:color :white :font-size 17 :margin-top 16}} "Transaction Failed"]
+     [text {:style {:color "rgba(255,255,255,0.6)" :font-size 15 :margin-top 8}} "Sorry :("]
+     [view {:style {:height 1 :background-color :white :opacity 0.2}}]
+     [view {:style {:flex 1}}]
+     [touchable-opacity {:on-press [store/put {:key "completed?" :value false}]}
+      [text {:style {:color :white :font-size 15 :margin-top 16}} "Try again"]]]])
+
+ views/transaction-pending-panel
+ (let [{} properties]
+   [view {:style {:flex 1 :background-color "#4360df"}}
+    [view {:style {:flex 1 :justify-content :center :align-items :center :margin-top 200}}
+     [view {:style {:background-color :white :width 56 :height 56 :border-radius 28 :align-items :center :justify-content :center}}
+      [icon {:key :icons/ok :color "#4360df"}]]
+     [text {:style {:color :white :font-size 17 :margin-top 16}} "Transaction Pending"]
+     [text {:style {:color "rgba(255,255,255,0.6)" :font-size 15 :margin-top 8 :margin-horizontal 40}}
+      "Your transaction is pending confirmation on the blockchain. You can check its status in your transaction history."]
+     [view {:style {:flex 1}}]
+     [view {:style {:height 1 :background-color :white :opacity 0.2}}]
+     [touchable-opacity {:on-press [store/put {:key "completed?" :value false}]}
+      [text {:style {:color :white :font-size 15 :margin-bottom 14 :margin-top 18}} "Back to wallet"]]]])
+
+ views/transaction-completed-panel
+ (let [{tokenname1 :tokenname1 tokenname2 :tokenname2 source1 :source1 source2 :source2 address :address} properties]
+   [view {:style {:flex 1 :background-color "#4360df"}}
+    [view {:style {:flex 1 :justify-content :center :align-items :center}}
+     [view {:style {:background-color :white :width 56 :height 56 :border-radius 28 :align-items :center :justify-content :center}}
+      [icon {:key :icons/ok :color "#4360df"}]]
+     [text {:style {:color :white :font-size 17 :margin-top 16}} "Transaction Confirmed"]
+     [view {:style {:height 1 :background-color :white :opacity 0.2}}]
+     [touchable-opacity {:on-press [store/put {:key "completed?" :value false}]}
+      [text {:style {:color :white :font-size 15 :margin-top 16}} "Back to exchange"]]]
+    [view {:style {:flex 1 :background-color :white :padding-horizontal 16 :padding-top 23}}
+     [text {:style {:font-size 15}} "You exchanged"]
+     [view {:style {:border-color "#EEF2F5" :border-radius 8 :border-width 1 :flex-direction :row :margin-top 6 :padding 15 :align-items :center}}
+      [image {:source source1 :style {:width 30 :height 30}}]
+      [text {:style {:flex 1 :font-size 15 :margin-left 12}} tokenname1]]
+     [view {:style {:flex 1}}]
+     [text {:style {:font-size 15}} "You received"]
+     [view {:style {:border-color "#EEF2F5" :border-radius 8 :border-width 1 :flex-direction :row :margin-top 6 :padding 15 :align-items :center}}
+      [image {:source source2 :style {:width 30 :height 30}}]
+      [text {:style {:flex 1 :font-size 15 :margin-left 12}} tokenname2]]
+     [view {:style {:flex 1}}]]])
+
+ views/transaction-panel
+ (let [m properties
+       {status :status} [store/get {:key "RECEIPT"}]]
+   (if status
+     [transaction-completed-panel m]
+     [transaction-pending-panel m]))
+
+ views/kyber-panel
+ {:component-will-mount [store/clear-all]
+  :view
+  (let [{address :address} properties
+        visible-tokens [wallet/tokens {:visible true}]
+        tokens [wallet/tokens]
+        {tokenname1 :selection source1 :source src-symbol :symbol} [store/get {:key "SRC"}]
+        {tokenname2 :selection source2 :source dest-symbol :symbol} [store/get {:key "DEST"}]
+        completed?                                       [store/get {:key "completed?"}]
+        amount                                           [store/get {:key "AMOUNT"}]
+        amount-to-receive-in-wei                         [store/get {:key "AMOUNT-TO-RECEIVE"}]
+        {[expected slippage-in-wei] :value}              [store/get {:key "RATE"}]
+        {slippage :amount}                               [wallet/token {:token "ETH" :amount-in-wei slippage-in-wei}] ;; Kyber returns slippage with 18 decimals
+        {amount-to-receive :amount}                      [wallet/token {:token "ETH" :amount-in-wei amount-to-receive-in-wei}]
+        {src-decimals :decimals src-address :address amount-in-wei :amount-in-wei}    [wallet/token {:token src-symbol :amount amount}]
+        {dest-decimals :decimals dest-address :address}  [wallet/token {:token dest-symbol}]
+        {balance :value}                                 [wallet/balance {:token src-symbol}]]
+    (if completed?
+      [transaction-panel {:source1 source1 :source2 source2 :tokenname1 tokenname1 :tokenname2 tokenname2 :address completed?}]
+      [view {:style {:flex 1 :background-color "#4360df" :padding-horizontal 16 :padding-top 20}}
+       [scroll-view {:keyboard-should-persist-taps :always}
+        [view {:style {:flex 1}}
+         [text {:style {:color :white :font-size 15}} "I want to exchange"]
+         [touchable-opacity {:on-press [selection-screen {:title "Choose asset" :items visible-tokens :on-select [on-src-rate-params-change {:key "SRC" :amount amount :dest-address dest-address :amount-in-wei amount-in-wei}]
+                                                          :render [render-token] :extractor-key :name}]}
+          [view {:style {:flex-direction :row :margin-top 8 :border-radius 8 :height 52 :background-color "rgba(255,255,255,0.1)"
+                         :align-items :center :padding-horizontal 14}}
+           [image {:source source1 :style {:width 30 :height 30}}]
+           (if tokenname1
+             [view {:style {:flex 1 :flex-direction :column}}
+              [view {:style {:flex-direction :row}}
+               [text {:style {:margin-left 16 :color :white :font-size 15}} tokenname1]
+               [text {:style {:margin-left 16 :color :white :font-size 15 :opacity 0.6}} src-symbol]]
+              [text {:style {:margin-left 16 :color :white :font-size 15 :opacity 0.6}} "Available: ${balance}"]]
+             [text {:style {:flex 1 :color :white :margin-left 12}} "Select token"])
+           [icon {:key :icons/forward :color :white}]]]
+         [text {:style {:color :white :font-size 15 :margin-top 28}} "Amount"]
+         [view {:style {:flex-direction :row :margin-top 8 :border-radius 8 :height 52 :background-color "rgba(255,255,255,0.1)"
+                        :align-items :center :padding-horizontal 14 :margin-bottom 32}}
+          [input {:style {:color :white :flex 1} :placeholder "Specify amount..." :placeholder-text-color "rgba(255,255,255,0.6)" :selection-color :white :keyboard-type :decimal-pad
+                  :on-change [store-amount {:amount amount :src-address src-address :dest-address dest-address}]}]]
+         [view {:style {:flex 1}}]
+         [view {:style {:height 1 :background-color :white :opacity 0.2}}]
+         [view {:style {:flex 1}}]
+         [text {:style {:color :white :font-size 15 :margin-top 32}} "I want to recieve"]
+         [touchable-opacity {:on-press [selection-screen {:title "Choose asset" :items tokens :on-select [on-dest-rate-params-change {:key "DEST" :amount amount :src-address src-address :amount-in-wei amount-in-wei}]
+                                                          :render [render-token] :extractor-key :name}]}
+          [view {:style {:flex-direction :row :margin-top 8 :border-radius 8 :height 52 :background-color "rgba(255,255,255,0.1)"
+                         :align-items :center :padding-horizontal 14}}
+           (when source2
+             [image {:source source2 :style {:width 30 :height 30}}])
+           (if tokenname2
+             [view {:style {:flex 1 :flex-direction :row}}
+              [text {:style {:margin-left 16 :color :white :font-size 15}} tokenname2]
+              [text {:style {:margin-left 16 :color :white :font-size 15 :opacity 0.6}} dest-symbol]]
+             [text {:style {:flex 1 :color :white :margin-left 12}} "Select token"])
+           [icon {:key :icons/forward :color :white}]]]
+         [text {:style {:color :white :opacity 0.6 :font-size 15 :margin-top 28}} "Amount to receive"]
+         [view {:style {:flex-direction :row :margin-top 8 :border-radius 8 :height 52 :border-color "rgba(255,255,255,0.1)" :border-width 1
+                        :align-items :center :padding-horizontal 14}}
+          [text {:style {:color :white}} amount-to-receive]]
+         (when slippage
+           [text {:style {:margin-top 16 :color :white :opacity 0.6}} "1 ${src-symbol} = ${slippage} ${dest-symbol}"])
+         [view {:style {:flex 1}}]
+         [text {:style {:color :white :opacity 0.6}} "Powered by Kyber Network"]
+         [view {:style {:height 1 :background-color :white :opacity 0.2}}]]]
+       (if slippage
+         [touchable-opacity {:on-press [approve {:slippage slippage-in-wei :amount-in-wei amount-in-wei
+                                                 :src-address src-address :dest-address dest-address :address address}]}
+          [sign-to-confirm {:color :white}]]
+         [sign-to-confirm {:color "#FFFFFF66"}])]))}
+
+ hooks/wallet.settings.kyber
+ {:label    "Exchange Assets"
+  :view     [kyber-panel]}}

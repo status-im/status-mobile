@@ -29,8 +29,8 @@
    (extensions.registry/add-to-registry cofx extension-key data active?)))
 
 (handlers/register-handler-fx
- :extensions/update-hooks
+ :extensions/disable-all-hooks
  (fn [cofx [_ extensions]]
-   (apply fx/merge cofx (map (fn [{:keys [url]}]
-                               (extensions.registry/update-hooks cofx url))
+   (apply fx/merge cofx (map (fn [{:keys [id]}]
+                               (extensions.registry/disable-hooks cofx id))
                              extensions))))

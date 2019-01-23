@@ -21,6 +21,10 @@
                           extension-hooks))
                    hooks))))
 
+(fx/defn disable-hooks
+  [{:keys [db] :as cofx} extension-id]
+  (update-hooks cofx hooks/unhook extension-id))
+
 (fx/defn add-to-registry
   [{:keys [db] :as cofx} extension-id extension-data active?]
   (let [{:keys [hooks]} extension-data

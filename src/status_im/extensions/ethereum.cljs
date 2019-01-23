@@ -85,9 +85,9 @@
 
 (defn- rpc-dispatch [error result f on-success on-failure]
   (when result
-    (re-frame/dispatch (on-success {:result (f result)})))
+    (re-frame/dispatch (on-success {:value (f result)})))
   (when (and error on-failure)
-    (re-frame/dispatch (on-failure {:result error}))))
+    (re-frame/dispatch (on-failure {:value error}))))
 
 (defn- rpc-handler [o f on-success on-failure]
   (let [{:keys [error result]} (types/json->clj o)]
@@ -249,7 +249,7 @@
 (defn- parse-receipt [m]
   (when m
     (let [{:keys [status transactionHash transactionIndex blockHash blockNumber from to cumulativeGasUsed gasUsed contractAddress logs logsBloom]} m]
-      {:status              (abi-spec/hex-to-number status)
+      {:status              (= 1 (abi-spec/hex-to-number status))
        :transaction-hash    transactionHash
        :transaction-index   (abi-spec/hex-to-number transactionIndex)
        :block-hash          blockHash
@@ -266,6 +266,15 @@
  :extensions/ethereum-transaction-receipt
  (fn [_ [_ _ {:keys [value] :as m}]]
    (rpc-call constants/web3-transaction-receipt [value] parse-receipt m)))
+
+(handlers/register-handler-fx
+ :extensions/ethereum-await-transaction-receipt
+ (fn [_ [_ _ {:keys [value interval on-success] :as m}]]
+   (let [id            (atom nil)
+         new-on-success (fn [o] (js/clearInterval @id) (on-success o))]
+     (reset! id (js/setInterval #(rpc-call constants/web3-transaction-receipt [value] parse-receipt
+                                           (assoc m :on-success new-on-success)) interval))
+     nil)))
 
 (defn- event-topic-enc [event params]
   (let [eventid (str event "(" (string/join "," params) ")")]
