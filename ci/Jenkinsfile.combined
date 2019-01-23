@@ -59,9 +59,9 @@ pipeline {
           cmn.copyArts('status-react/combined/desktop-windows', win.number)
         }
         cmn.copyArts('status-react/combined/mobile-ios', ios.number)
-        cmn.copyArts('status-react/combined/mobile-ios', iose2e.number)
+        cmn.copyArts('status-react/combined/mobile-ios-e2e', iose2e.number)
         cmn.copyArts('status-react/combined/mobile-android', apk.number)
-        cmn.copyArts('status-react/combined/mobile-android', apke2e.number)
+        cmn.copyArts('status-react/combined/mobile-android-e2e', apke2e.number)
         dir('pkg') {
           /* generate sha256 checksums for upload */
           sh "sha256sum * | tee ${cmn.pkgFilename(btype, 'sha256')}"
