@@ -1,4 +1,6 @@
-FROM statusteam/status-build-base:1.1.0
+ARG BASE_IMAGE_TAG
+
+FROM statusteam/status-build-base:1.1.0-${BASE_IMAGE_TAG}
 
 ARG RNATIVE_VERSION
 ARG CONAN_VERSION

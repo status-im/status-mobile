@@ -14,7 +14,7 @@ TOOL_VERSIONS_FILE="${GIT_ROOT}/.TOOLVERSIONS"
 usage () {
   echo "Usage: toolversion [-c] <name>" >&2
   echo
-  echo "This script extract tooling versions from ${TOOL_VERSIONS_FILE}"
+  echo "This script extracts tooling versions from ${TOOL_VERSIONS_FILE}"
   exit 0
 }
 
@@ -33,7 +33,9 @@ if [[ -z "${1}" ]]; then usage; fi
 NAME=${1}
 
 getColumn () {
-    awk -F';' "/^${NAME};/{print \$${1}}" "${TOOL_VERSIONS_FILE}"
+    local out=$(awk -F';' "/^${NAME};/{print \$${1}}" "${TOOL_VERSIONS_FILE}")
+    [ -z "$out" ] && exit 1
+    echo "$out"
 }
 
 if [[ $CHECKSUM ]]; then

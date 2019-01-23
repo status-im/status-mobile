@@ -2,7 +2,8 @@ pipeline {
   agent { 
     docker {
       label 'linux'
-      image 'statusteam/status-build-android:1.1.0'
+      /* WARNING: remember to keep this up-to-date with the value in docker/android/Makefile */
+      image 'statusteam/status-build-android:1.1.0-16a42e06'
       args (
         "-v /home/jenkins/tmp:/var/tmp:rw "+
         "-v /home/jenkins/status-im.keystore:/tmp/status-im.keystore:ro"

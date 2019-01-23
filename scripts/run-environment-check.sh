@@ -56,7 +56,7 @@ fi
 
 if [[ $PLATFORM == 'android' ]]; then
   _localPropertiesPath=./android/local.properties
-  if ! grep -Fq "ndk.dir" $_localPropertiesPath; then
+  if ! grep -Fq "ndk.dir" $_localPropertiesPath > /dev/null; then
     if [ -z $ANDROID_NDK_HOME ]; then
       echo -e "${GREEN}NDK directory not configured, please run 'make setup' or add the line to ${_localPropertiesPath}!${NC}"
       exit 1

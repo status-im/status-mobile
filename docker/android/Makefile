@@ -17,17 +17,20 @@ SDK_PLATFORM_VERSION=$(call  __toolversion, android-sdk-platform)
 SDK_BUILD_TOOLS_VERSION=$(call  __toolversion, android-sdk-build-tools)
 
 # WARNING: Remember to change the tag when updating the image
-IMAGE_TAG = 1.1.0
+BASE_IMAGE_TAG = $(shell cd ../base && make get-image-tag)
+DEPS_HASH = $(shell $(GIT_ROOT)/scripts/gen-deps-hash.sh -b $(BASE_IMAGE_TAG) -d android-ndk -d android-sdk -d android-sdk-platform -d android-sdk-build-tools)
+IMAGE_TAG = 1.1.0-$(DEPS_HASH)
 IMAGE_NAME = statusteam/status-build-android:$(IMAGE_TAG)
 
 build: $(ANDROID_NDK_ARCHIVE) $(ANDROID_SDK_ARCHIVE)
 	docker build \
-		--build-arg="ANDROID_NDK_VERSION=$(ANDROID_NDK_VERSION)" \
-		--build-arg="ANDROID_SDK_VERSION=$(ANDROID_SDK_VERSION)" \
-		--build-arg="SDK_PLATFORM_VERSION=$(SDK_PLATFORM_VERSION)" \
-		--build-arg="SDK_BUILD_TOOLS_VERSION=$(SDK_BUILD_TOOLS_VERSION)" \
-		--label="commit=$(GIT_COMMIT)" \
-		-t $(IMAGE_NAME) .
+        --build-arg="BASE_IMAGE_TAG=$(BASE_IMAGE_TAG)" \
+        --build-arg="ANDROID_NDK_VERSION=$(ANDROID_NDK_VERSION)" \
+        --build-arg="ANDROID_SDK_VERSION=$(ANDROID_SDK_VERSION)" \
+        --build-arg="SDK_PLATFORM_VERSION=$(SDK_PLATFORM_VERSION)" \
+        --build-arg="SDK_BUILD_TOOLS_VERSION=$(SDK_BUILD_TOOLS_VERSION)" \
+        --label="commit=$(GIT_COMMIT)" \
+        -t $(IMAGE_NAME) .
 
 $(ANDROID_NDK_ARCHIVE):
 	wget -q "$(ANDROID_NDK_URL)" -O "$(ANDROID_NDK_ARCHIVE)"
@@ -39,11 +42,11 @@ $(ANDROID_SDK_ARCHIVE):
 
 test: ## Run build inside the image as a test
 	docker run -u $(shell id -u):$(shell id -g) \
-		--name android-test --rm \
+        --name android-test --rm \
         --tmpfs /var/tmp:rw,size=1G,exec,mode=1777 \
-		-v $(GIT_ROOT):/repo:rw \
-		-w /repo $(IMAGE_NAME) \
-		docker/android/build.sh
+        -v $(GIT_ROOT):/repo:rw \
+        -w /repo $(IMAGE_NAME) \
+        docker/android/build.sh
 
 push: build
 	docker push $(IMAGE_NAME)

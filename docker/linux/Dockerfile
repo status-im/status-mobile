@@ -1,4 +1,6 @@
-FROM statusteam/status-build-base:1.1.0 AS qt_build
+ARG BASE_IMAGE_TAG
+
+FROM statusteam/status-build-base:1.1.0-${BASE_IMAGE_TAG} AS qt_build
 
 ARG QT_VERSION
 ARG RNATIVE_VERSION
@@ -36,7 +38,7 @@ RUN mkdir -p /tmp/qtci \
         '.*\/(qdoc|qgltf|linguist|designer|assistant|qhelpconverter|qmlprofiler)$' -delete \
  && rm -fr ${XDG_RUNTIME_DIR}
 
-FROM statusteam/status-build-base:1.1.0
+FROM statusteam/status-build-base:1.1.0-${BASE_IMAGE_TAG}
 
 ARG QT_VERSION
 ARG CMAKE_VERSION
@@ -47,7 +49,8 @@ RUN ln -s /opt/qt/mkspecs /usr/local/mkspecs \
 
 # We have to do this because Jenkins doesn't let us
 # https://issues.jenkins-ci.org/browse/JENKINS-49076
-ENV PATH /opt/qt/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ARG NODE_VERSION
+ENV PATH=/opt/qt/bin:/home/jenkins/.nvm/versions/node/v${NODE_VERSION}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 RUN apt-get update \
  && add-apt-repository -y ppa:git-core/ppa \

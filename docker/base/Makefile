@@ -4,8 +4,12 @@ GIT_COMMIT = $(shell git rev-parse --short HEAD)
 GIT_ROOT = $(shell git rev-parse --show-toplevel)
 
 # WARNING: Remember to change the tag when updating the image
-IMAGE_TAG = 1.1.0
+DEPS_HASH = $(shell $(GIT_ROOT)/scripts/gen-deps-hash.sh -d leiningen -d node -d yarn)
+IMAGE_TAG = 1.1.0-$(DEPS_HASH)
 IMAGE_NAME = statusteam/status-build-base:$(IMAGE_TAG)
+
+get-image-tag:
+	@echo $(DEPS_HASH)
 
 build: nvm_install.sh
 	docker build \

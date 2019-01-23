@@ -3,7 +3,8 @@ pipeline {
     /* privileged mode is necessary for fuse */
     docker {
       label 'linux-new'
-      image 'statusteam/status-build-windows:1.1.0'
+      /* WARNING: remember to keep this up-to-date with the value in docker/windows/Makefile */
+      image 'statusteam/status-build-windows:1.1.0-c37b3fa2'
       args (
         "--privileged "+
         "-v /dev/fuse:/dev/fuse "+
