@@ -75,10 +75,6 @@
                 <data android:scheme="status-im" />
             </intent-filter>
         </activity>
-        <service
-                android:name=".module.StatusService"
-                android:enabled="true"
-                android:exported="true"/>
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
         <service android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService">
           <intent-filter>

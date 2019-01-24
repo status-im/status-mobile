@@ -395,7 +395,6 @@
 (defview request-preview
   [{:keys [message-id content outgoing timestamp timestamp-str group-chat]}]
   (letsubs [id->command         [:chats/id->command]
-            status-initialized? [:get :status-module-initialized?]
             network             [:network-name]
             prices              [:prices]]
     (let [{:keys [amount asset fiat-amount currency answered?] request-network :network} (:params content)
@@ -440,7 +439,6 @@
                                  [react/text {:style (transactions-styles/command-request-button-text answered?)}
                                   (i18n/label (if answered? :command-button-sent :command-button-send))]]])]]
       (if (and (not network-mismatch?)
-               status-initialized?
                (not outgoing)
                (not answered?))
         [react/touchable-highlight

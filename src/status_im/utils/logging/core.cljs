@@ -20,7 +20,6 @@
                                                   :network-status
                                                   :peers-count
                                                   :peers-summary
-                                                  :status-module-initialized?
                                                   :sync-state
                                                   :tab-bar-visible?
                                                   :view-id

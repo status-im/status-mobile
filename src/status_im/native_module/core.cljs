@@ -48,9 +48,6 @@
 (defn send-transaction [rpcParams password callback]
   (native-module/send-transaction rpcParams password callback))
 
-(defn module-initialized! []
-  (native-module/module-initialized!))
-
 (defn send-data-notification [m callback]
   (native-module/send-data-notification m callback))
 

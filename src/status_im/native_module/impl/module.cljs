@@ -11,39 +11,6 @@
             [clojure.string :as string]
             [status-im.utils.platform :as platform]))
 
-;; if StatusModule is not initialized better to store
-;; calls and make them only when StatusModule is ready
-;; this flag helps to handle this
-(defonce module-initialized? (atom (or p/ios? js/goog.DEBUG p/desktop?)))
-
-;; array of calls to StatusModule
-(defonce calls (atom []))
-
-(defn module-initialized! []
-  (reset! module-initialized? true))
-
-(defn store-call [args]
-  (log/debug :store-call args)
-  (swap! calls conj args))
-
-(defn call-module [f]
-  ;;(log/debug :call-module f)
-  (if @module-initialized?
-    (f)
-    (store-call f)))
-
-(defonce loop-started (atom false))
-
-(when-not @loop-started
-  (go-loop [_ nil]
-    (reset! loop-started true)
-    (if (and (seq @calls) @module-initialized?)
-      (do (swap! calls (fn [calls]
-                         (doseq [call calls]
-                           (call))))
-          (reset! loop-started false))
-      (recur (async/<! (async-util/timeout 500))))))
-
 (def status
   (when (exists? (.-NativeModules rn-dependencies/react-native))
     (.-Status (.-NativeModules rn-dependencies/react-native))))
@@ -60,14 +27,14 @@
 (defn stop-node []
   (reset! node-started false)
   (when status
-    (call-module #(.stopNode status))))
+    (.stopNode status)))
 
 (defn node-ready []
   (reset! node-started true))
 
 (defn start-node [config]
   (when status
-    (call-module #(.startNode status config))))
+    (.startNode status config)))
 
 (defonce account-creation? (atom false))
 
@@ -80,58 +47,58 @@
              (fn [creation?]
                (if-not creation?
                  (do
-                   (call-module #(.createAccount status password callback))
+                   (.createAccount status password callback)
                    true)
                  false))))))
 
 (defn send-data-notification [{:keys [data-payload tokens] :as m} on-result]
   (when status
-    (call-module #(.sendDataNotification status data-payload tokens on-result))))
+    (.sendDataNotification status data-payload tokens on-result)))
 
 (defn send-logs [dbJson]
   (when status
-    (call-module #(.sendLogs status dbJson))))
+    (.sendLogs status dbJson)))
 
 (defn add-peer [enode on-result]
   (when (and @node-started status)
-    (call-module #(.addPeer status enode on-result))))
+    (.addPeer status enode on-result)))
 
 (defn recover-account [passphrase password on-result]
   (when (and @node-started status)
-    (call-module #(.recoverAccount status passphrase password on-result))))
+    (.recoverAccount status passphrase password on-result)))
 
 (defn login [address password on-result]
   (when (and @node-started status)
-    (call-module #(.login status address password on-result))))
+    (.login status address password on-result)))
 
 (defn verify [address password on-result]
   (when (and @node-started status)
-    (call-module #(.verify status address password on-result))))
+    (.verify status address password on-result)))
 
 (defn set-soft-input-mode [mode]
   (when status
-    (call-module #(.setSoftInputMode status mode))))
+    (.setSoftInputMode status mode)))
 
 (defn clear-web-data []
   (when status
-    (call-module #(.clearCookies status))
-    (call-module #(.clearStorageAPIs status))))
+    (.clearCookies status)
+    (.clearStorageAPIs status)))
 
 (defn call-rpc [payload callback]
   (when (and @node-started status)
-    (call-module #(.callRPC status payload callback))))
+    (.callRPC status payload callback)))
 
 (defn call-private-rpc [payload callback]
   (when (and @node-started status)
-    (call-module #(.callPrivateRPC status payload callback))))
+    (.callPrivateRPC status payload callback)))
 
 (defn sign-message [rpcParams callback]
   (when (and @node-started status)
-    (call-module #(.signMessage status rpcParams callback))))
+    (.signMessage status rpcParams callback)))
 
 (defn send-transaction [rpcParams password callback]
   (when (and @node-started status)
-    (call-module #(.sendTransaction status rpcParams password callback))))
+    (.sendTransaction status rpcParams password callback)))
 
 (defn close-application []
   (.closeApplication status))
@@ -143,27 +110,26 @@
   (.appStateChange status state))
 
 (defn get-device-UUID [callback]
-  (call-module
-   #(.getDeviceUUID
-     status
-     (fn [UUID]
-       (callback (string/upper-case UUID))))))
+  (.getDeviceUUID
+   status
+   (fn [UUID]
+     (callback (string/upper-case UUID)))))
 
 (defn extract-group-membership-signatures [signature-pairs callback]
   (when status
-    (call-module #(.extractGroupMembershipSignatures status signature-pairs callback))))
+    (.extractGroupMembershipSignatures status signature-pairs callback)))
 
 (defn sign-group-membership [content callback]
   (when status
-    (call-module #(.signGroupMembership status content callback))))
+    (.signGroupMembership status content callback)))
 
 (defn enable-installation [installation-id callback]
   (when status
-    (call-module #(.enableInstallation status installation-id callback))))
+    (.enableInstallation status installation-id callback)))
 
 (defn disable-installation [installation-id callback]
   (when status
-    (call-module #(.disableInstallation status installation-id callback))))
+    (.disableInstallation status installation-id callback)))
 
 (defn is24Hour []
   (when status
@@ -171,7 +137,7 @@
 
 (defn update-mailservers [enodes on-result]
   (when status
-    (call-module #(.updateMailservers status enodes on-result))))
+    (.updateMailservers status enodes on-result)))
 
 (defn rooted-device? [callback]
   (cond
@@ -187,7 +153,7 @@
     ;; we check root on android
     platform/android?
     (if status
-      (call-module #(.isDeviceRooted status callback))
+      (.isDeviceRooted status callback)
       ;; if module isn't initialized we return true to avoid degrading security
       (callback true))
 

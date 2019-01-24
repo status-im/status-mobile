@@ -18,8 +18,7 @@
             status-im.ui.screens.add-new.new-public-chat.db))
 
 ;; initial state of app-db
-(def app-db {:status-module-initialized?         (or platform/ios? js/goog.DEBUG platform/desktop?)
-             :keyboard-height                    0
+(def app-db {:keyboard-height                    0
              :tab-bar-visible?                   true
              :navigation-stack                   '()
              :contacts/contacts                  {}
@@ -82,7 +81,6 @@
 (spec/def ::web3-node-version (spec/nilable string?))
 ;;object?
 (spec/def ::webview-bridge (spec/nilable any?))
-(spec/def ::status-module-initialized? (spec/nilable boolean?))
 (spec/def :node/status (spec/nilable #{:stopped :starting :started :stopping}))
 (spec/def :node/node-restart? (spec/nilable boolean?))
 (spec/def :node/address (spec/nilable string?))
@@ -277,7 +275,6 @@
                                    ::web3
                                    ::web3-node-version
                                    ::webview-bridge
-                                   ::status-module-initialized?
                                    ::keyboard-height
                                    ::keyboard-max-height
                                    ::tab-bar-visible?

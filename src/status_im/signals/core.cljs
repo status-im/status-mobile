@@ -48,10 +48,6 @@
   [{db :db}]
   {:db (assoc db :node/status :stopped)})
 
-(fx/defn status-module-initialized [{:keys [db]}]
-  {:db                             (assoc db :status-module-initialized? true)
-   :init/status-module-initialized nil})
-
 (fx/defn summary
   [{:keys [db] :as cofx} peers-summary]
   (let [previous-summary (:peers-summary db)
@@ -69,7 +65,6 @@
     (case type
       "node.ready"         (status-node-started cofx)
       "node.stopped"       (status-node-stopped cofx)
-      "module.initialized" (status-module-initialized cofx)
       "envelope.sent"      (transport.message/update-envelope-status cofx (:hash event) :sent)
       "envelope.expired"   (transport.message/update-envelope-status cofx (:hash event) :not-sent)
       "bundles.added"      (pairing/handle-bundles-added cofx event)

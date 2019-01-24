@@ -4,72 +4,63 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.*;
-import android.support.v4.content.FileProvider ;
-import android.text.TextUtils;
-import android.view.WindowManager;
+import android.os.Build;
+import android.os.Environment;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
+import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebStorage;
 
-import com.facebook.react.bridge.*;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.github.status_im.status_go.Statusgo;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
-import java.util.Stack;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.json.JSONObject;
-import org.json.JSONException;
-
 import javax.annotation.Nullable;
 
-class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ConnectorHandler {
+class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventListener, StatusNodeEventHandler {
 
     private static final String TAG = "StatusModule";
     private static final String logsZipFileName = "Status-debug-logs.zip";
     private static final String gethLogFileName = "geth.log";
     private static final String statusLogFileName = "Status.log";
 
-    private final static int TESTNET_NETWORK_ID = 3;
-
     private static StatusModule module;
-    private ServiceConnector status = null;
-    private ExecutorService executor = null;
-    private boolean debug;
-    private boolean devCluster;
     private ReactApplicationContext reactContext;
     private boolean rootedDevice;
 
-    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster, boolean rootedDevice) {
+    StatusModule(ReactApplicationContext reactContext, boolean rootedDevice) {
         super(reactContext);
-        if (executor == null) {
-            executor = Executors.newCachedThreadPool();
-        }
-        this.debug = debug;
-        this.devCluster = devCluster;
         this.reactContext = reactContext;
         this.rootedDevice = rootedDevice;
         reactContext.addLifecycleEventListener(this);
@@ -83,27 +74,12 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @Override
     public void onHostResume() {  // Activity `onResume`
         module = this;
-        Activity currentActivity = getCurrentActivity();
-        if (currentActivity == null) {
-            Log.d(TAG, "On host Activity doesn't exist");
-            return;
-        }
-
-        if (status == null) {
-            status = new ServiceConnector(currentActivity, StatusService.class);
-            status.registerHandler(this);
-        }
-
-        status.bindService();
-
-        signalEvent("{\"type\":\"module.initialized\"}");
+        StatusService.INSTANCE.setSignalEventListener(this);
     }
 
     @Override
     public void onHostPause() {
-        if (status != null) {
-            status.unbindService();
-        }
+
     }
 
     @Override
@@ -112,19 +88,18 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     private boolean checkAvailability() {
-
-        Activity currentActivity = getCurrentActivity();
-        if (currentActivity == null) {
-            Log.d(TAG, "Activity doesn't exist");
-            return false;
+        if (getCurrentActivity() != null) {
+            return true;
         }
 
-        return true;
+        Log.d(TAG, "Activity doesn't exist");
+        return false;
+
     }
 
-
-    void signalEvent(String jsonEvent) {
-        Log.d(TAG, "Signal event: " + jsonEvent);
+    @Override
+    public void handleEvent(String jsonEvent) {
+        Log.d(TAG, "[handleEvent] event: " + jsonEvent);
         WritableMap params = Arguments.createMap();
         params.putString("jsonEvent", jsonEvent);
         this.getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);
@@ -275,7 +250,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             else {
                 Log.e(TAG, "StartNode failed: " + res);
             }
-            status.sendMessage();
         } catch (JSONException e) {
             Log.e(TAG, "updateConfig failed: " + e.getMessage());
             System.exit(1);
@@ -366,6 +340,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     public void startNode(final String config) {
         Log.d(TAG, "startNode");
         if (!checkAvailability()) {
+            Log.e(TAG, "[startNode] Activity doesn't exist, cannot start node");
             return;
         }
 
@@ -793,28 +768,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         if (storage != null) {
             storage.deleteAllData();
         }
-    }
-
-    @Override
-    public boolean handleMessage(Message message) {
-
-        Log.d(TAG, "Received message: " + message.toString());
-        Bundle bundle = message.getData();
-
-        String event = bundle.getString("event");
-        signalEvent(event);
-
-        return true;
-    }
-
-    @Override
-    public void onConnectorConnected() {
-
-    }
-
-    @Override
-    public void onConnectorDisconnected() {
-
     }
 
     @ReactMethod

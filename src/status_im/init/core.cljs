@@ -86,7 +86,7 @@
 
 (fx/defn initialize-app-db
   "Initialize db to initial state"
-  [{{:keys      [status-module-initialized? view-id hardwallet
+  [{{:keys      [view-id hardwallet
                  initial-props desktop/desktop
                  network-status network peers-count peers-summary device-UUID
                  push-notifications/stored]
@@ -101,7 +101,6 @@
                                        :network-status network-status
                                        :peers-count (or peers-count 0)
                                        :peers-summary (or peers-summary [])
-                                       :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
                                        :node/status status
                                        :network network
                                        :hardwallet hardwallet
@@ -171,7 +170,7 @@
          :keys                 [accounts/accounts accounts/create networks/networks network
                                 network-status peers-count peers-summary view-id navigation-stack
                                 desktop/desktop hardwallet
-                                status-module-initialized? device-UUID semaphores accounts/login]
+                                device-UUID semaphores accounts/login]
          :node/keys            [status on-ready]
          :or                   {network (get app-db :network)}} db
         current-account (get accounts address)
@@ -180,7 +179,6 @@
     {:db (cond-> (assoc app-db
                         :view-id view-id
                         :navigation-stack navigation-stack
-                        :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
                         :node/status status
                         :node/on-ready on-ready
                         :accounts/create create
@@ -247,10 +245,6 @@
 (re-frame/reg-fx
  :init/restore-native-settings
  restore-native-settings!)
-
-(re-frame/reg-fx
- :init/status-module-initialized
- status/module-initialized!)
 
 (re-frame/reg-fx
  :init/get-device-UUID
