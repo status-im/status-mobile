@@ -209,7 +209,8 @@
                                         updated-statuses)
                  :data-store/tx [(user-statuses-store/save-statuses-tx updated-statuses)]}
                 (update-chats-unviewed-messages-count {:chat-id chat-id})
-                (send-messages-seen chat-id loaded-unviewed-ids)
+                ;;TODO(rasom): uncomment when seen messages will be revisited
+                #_(send-messages-seen chat-id loaded-unviewed-ids)
                 (when platform/desktop?
                   (update-dock-badge-label))))))
 

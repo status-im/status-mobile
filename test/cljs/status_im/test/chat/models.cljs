@@ -245,10 +245,11 @@
   (testing "With empty unviewed set, no effects are produced"
     (is (= nil (chat/mark-messages-seen {:db test-db} "opened"))))
 
-  (testing "For 1-1 chat, we send seen messages confirmation to the recipient as well"
-    (is (= #{"4" "5" "6"}
-           (set (get-in (chat/mark-messages-seen {:db test-db} "1-1")
-                        [:shh/post 0 :message :payload :message-ids]))))))
+  #_(testing "For 1-1 chat, we send seen messages confirmation to the
+  recipient as well"
+      (is (= #{"4" "5" "6"}
+             (set (get-in (chat/mark-messages-seen {:db test-db} "1-1")
+                          [:shh/post 0 :message :payload :message-ids]))))))
 
 (deftest update-dock-badge-label
   (testing "When user has unseen private messages"

@@ -198,10 +198,11 @@
                                                        current-chat? :seen
                                                        :else :received))
               (commands-receiving/receive message)
-              (send-message-seen chat-id message-id (and (not group-chat)
-                                                         current-chat?
-                                                         (not (= constants/system from))
-                                                         (not (:outgoing message)))))))
+              ;;TODO(rasom): uncomment when seen messages will be revisited
+              #_(send-message-seen chat-id message-id (and (not group-chat)
+                                                           current-chat?
+                                                           (not (= constants/system from))
+                                                           (not (:outgoing message)))))))
 
 (fx/defn update-group-messages [cofx chat->message chat-id]
   (fx/merge cofx

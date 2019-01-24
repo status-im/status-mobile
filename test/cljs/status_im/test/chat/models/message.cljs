@@ -162,10 +162,10 @@
                       :clock-value 1
                       :timestamp   0}
         extract-seen (comp :payload :message first :shh/post)]
-    (testing "it send a seen message when the chat is 1-to-1 and is open"
-      (is (instance? protocol/MessagesSeen
-                     (extract-seen (message/receive-many cofx [message]))))
-      (is (= #{"1"} (:message-ids (extract-seen (message/receive-many cofx [message]))))))
+    #_(testing "it sends a seen message when the chat is 1-to-1 and is open"
+        (is (instance? protocol/MessagesSeen
+                       (extract-seen (message/receive-many cofx [message]))))
+        (is (= #{"1"} (:message-ids (extract-seen (message/receive-many cofx [message]))))))
     (testing "it does not send any when the chat is a group-chat"
       (is (nil? (extract-seen
                  (message/receive-many
