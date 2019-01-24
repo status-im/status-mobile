@@ -10,10 +10,10 @@
             [status-im.data-store.chats :as data-store.chats]
             [status-im.i18n :as i18n]
             [status-im.transport.utils :as transport.utils]
-            [status-im.transport.message.contact :as message.contact]
             [status-im.transport.message.public-chat :as transport.public-chat]
             [status-im.transport.message.protocol :as protocol]
             [status-im.contact-code.core :as contact-code]
+            [status-im.contact.request :as contact.request]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
@@ -44,15 +44,6 @@
     (= public-key (:public-key account))
     (assoc :name (:name account))))
 
-(defn- own-info [db]
-  (let [{:keys [name photo-path address]} (:account/account db)
-        fcm-token (get-in db [:notifications :fcm-token])]
-    {:name          name
-     :profile-image photo-path
-     :address       address
-     :device-info   (device-info/all {:db db})
-     :fcm-token     fcm-token}))
-
 (fx/defn upsert-contact [{:keys [db] :as cofx}
                          {:keys [pending?
                                  public-key] :as contact}]
@@ -64,15 +55,14 @@
                (contact-code/listen-to-chat % public-key))))
 
 (fx/defn send-contact-request
-  [{:keys [db] :as cofx} {:keys [public-key pending? dapp?] :as contact}]
+  [cofx {:keys [public-key dapp?] :as contact} message]
   (when-not dapp?
-    (if pending?
-      (protocol/send (message.contact/map->ContactRequestConfirmed (own-info db)) public-key cofx)
-      (protocol/send (message.contact/map->ContactRequest (own-info db)) public-key cofx))))
+    (let [contact-request (contact.request/build cofx contact message)]
+      (protocol/send contact-request public-key cofx))))
 
 (fx/defn add-contact
   "Add a contact and set pending to false"
-  [{:keys [db] :as cofx} public-key]
+  [{:keys [db] :as cofx} public-key message]
   (when (not= (get-in db [:account/account :public-key]) public-key)
     (let [contact (-> (build-contact cofx public-key)
                       (assoc :pending? false
@@ -80,7 +70,7 @@
       (fx/merge cofx
                 {:db (assoc-in db [:contacts/new-identity] "")}
                 (upsert-contact contact)
-                (send-contact-request contact)))))
+                (send-contact-request contact message)))))
 
 (fx/defn add-contacts-filter [{:keys [db]} public-key action]
   (when (not= (get-in db [:account/account :public-key]) public-key)
@@ -221,7 +211,7 @@
 (defn handle-contact-update
   [public-key
    timestamp
-   {:keys [name profile-image address fcm-token device-info] :as m}
+   {:keys [name profile-image address fcm-token message device-info raw-payload] :as m}
    {{:contacts/keys [contacts] :as db} :db :as cofx}]
   ;; We need to convert to timestamp ms as before we were using now in ms to
   ;; set last updated
@@ -254,9 +244,19 @@
                                 ;;NOTE (yenda) in case of concurrent contact request
                                :pending?     (get contact :pending? true)}
                                fcm-token (assoc :fcm-token fcm-token))]
-        (upsert-contact cofx contact-props)))))
+        (fx/merge cofx
+                  (upsert-contact contact-props)
+                  #(when (and raw-payload message)
+                     (protocol/receive message public-key public-key nil
+                                       (assoc % :js-obj #js {:payload raw-payload}))))))))
 
-(def receive-contact-request handle-contact-update)
+(defn receive-contact-request [public-key timestamp request raw-payload cofx]
+  (handle-contact-update
+   public-key
+   timestamp
+   (assoc request :raw-payload raw-payload)
+   cofx))
+
 (def receive-contact-request-confirmation handle-contact-update)
 (def receive-contact-update handle-contact-update)
 

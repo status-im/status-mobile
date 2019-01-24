@@ -1,7 +1,9 @@
 (ns status-im.test.chat.models.input
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.chat.constants :as constants]
+            [status-im.constants :as global.constants]
             [status-im.utils.config :as config]
+            [status-im.chat.models.message :as chat.message]
             [status-im.utils.datetime :as datetime]
             [status-im.chat.models.input :as input]))
 
@@ -78,3 +80,73 @@
                                                  :ms       (constants/cooldown-periods-ms 3)}]}
               actual (input/process-cooldown {:db db})]
           (is (= expected actual)))))))
+
+(deftest contact-request-message-fx-test
+  (let [actual (:dispatch
+                (input/contact-request-message-fx "input-text" "chat-id" {:now 1
+                                                                          :db {}}))]
+
+    (testing "it dispatches the contact request message"
+      (is actual))
+    (testing "it sets the content-type"
+      (is (= global.constants/content-type-contact-request
+             (-> actual
+                 (nth 3)
+                 :content-type))))))
+
+(deftest send-current-message-test
+  (with-redefs [chat.message/send-message (fn [{:keys [content-type]}]
+                                            (fn [{:keys [db]}]
+                                              {:db (assoc db :message-sent content-type)}))]
+    (testing "pfs is enabled"
+      (with-redefs [config/pfs-encryption-enabled? (constantly true)]
+        (testing "is a group chat"
+          (testing "does not send a contact request"
+            (is
+             (= global.constants/content-type-text
+                (->
+                 (input/send-current-message
+                  {:now 0
+                   :db {:current-chat-id "chat-id"
+                        :chats {"chat-id" {:input-text "input-text"
+                                           :group-chat true}}}})
+                 :db
+                 :message-sent)))))
+        (testing "is a 1-to-1 chat"
+          (testing "there no contact code"
+            (testing "it sends a contact request"
+              (is
+               (= global.constants/content-type-contact-request
+                  (->
+                   (input/send-current-message
+                    {:now 0
+                     :db {:current-chat-id "chat-id"
+                          :chats {"chat-id" {:input-text "input-text"}}}})
+                   :db
+                   :message-sent)))))
+          (testing "there's a contact code"
+            (testing "it does not send a contact request"
+              (is
+               (= global.constants/content-type-text
+                  (->
+                   (input/send-current-message
+                    {:now 0
+                     :db {:contact-codes/contact-codes {"chat-id" true}
+                          :current-chat-id "chat-id"
+                          :chats {"chat-id" {:input-text "input-text"}}}})
+                   :db
+                   :message-sent))))))))
+    (testing "pfs is not enabled"
+      (with-redefs [config/pfs-encryption-enabled? (constantly false)]
+        (testing "is a 1-to-1 chat"
+          (testing "there's no contact-code"
+            (testing "it does not send a contact-request"
+              (is
+               (= global.constants/content-type-text
+                  (->
+                   (input/send-current-message
+                    {:now 0
+                     :db {:current-chat-id "chat-id"
+                          :chats {"chat-id" {:input-text "input-text"}}}})
+                   :db
+                   :message-sent))))))))))

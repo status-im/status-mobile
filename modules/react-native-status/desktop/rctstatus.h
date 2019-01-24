@@ -51,6 +51,7 @@ public:
     Q_INVOKABLE void enableInstallation(QString installationId, double callbackId);
     Q_INVOKABLE void disableInstallation(QString installationId, double callbackId);
     Q_INVOKABLE void updateMailservers(QString enodes, double callbackId);
+    Q_INVOKABLE void getContactCode(QString identity, double callbackId);
 
     Q_INVOKABLE void setAdjustResize();
     Q_INVOKABLE void setAdjustPan();

@@ -134,21 +134,53 @@
    :margin-top (if incoming-group 4 0)})
 
 (defn message-view
-  [{:keys [content-type outgoing group-chat first-in-group?]}]
-  (merge {:padding-vertical   6
-          :padding-horizontal 12
-          :border-radius      8
-          :margin-top         (if (and first-in-group?
-                                       (or outgoing
-                                           (not group-chat)))
-                                16
-                                4)}
-         (if (= content-type constants/content-type-emoji)
-           {:flex-direction :row}
-           {:background-color (if outgoing colors/blue colors/blue-light)})
-         (when (= content-type constants/content-type-command)
-           {:padding-top    12
-            :padding-bottom 10})))
+  ([message] (message-view message {}))
+  ([{:keys [content-type outgoing group-chat first-in-group?]}
+    {:keys [sent-by-us?
+            pending-state?]}]
+   (merge {:padding-vertical   6
+           :padding-horizontal 12
+           :margin-top         (if (and first-in-group?
+                                        (or outgoing
+                                            (not group-chat)))
+                                 16
+                                 4)}
+          (if (and (= content-type constants/content-type-contact-request)
+                   (not sent-by-us?)
+                   pending-state?)
+            {:border-top-left-radius 8
+             :border-top-right-radius 8}
+            {:border-radius 8})
+          (if (= content-type constants/content-type-emoji)
+            {:flex-direction :row}
+            {:background-color (if outgoing colors/blue colors/blue-light)})
+          (when (= content-type constants/content-type-command)
+            {:padding-top    12
+             :padding-bottom 10}))))
+
+(def accept-contact-request
+  {:padding-vertical   6
+   :padding-horizontal 12
+   :margin-top         1
+   :background-color   colors/blue-light})
+
+(def accept-contact-request-text
+  {:color              colors/blue
+   :padding-horizontal 12
+   :text-align         :center})
+
+(def block-contact-request
+  {:padding-vertical           6
+   :padding-horizontal         12
+   :margin-top                 1
+   :border-bottom-left-radius  8
+   :border-bottom-right-radius 8
+   :background-color           colors/blue-light})
+
+(def block-contact-request-text
+  {:color              colors/red
+   :padding-horizontal 12
+   :text-align         :center})
 
 (def play-image
   {:width  33
@@ -219,3 +251,8 @@
 (defn extension-install [outgoing]
   {:font-size 12
    :color     (if outgoing colors/white colors/blue)})
+
+(defn contact-request-state [pending?]
+  {:margin-bottom -10
+   :font-size 12
+   :color (if pending? colors/gray colors/green)})

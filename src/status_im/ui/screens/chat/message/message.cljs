@@ -56,8 +56,8 @@
                          (= content-type constants/content-type-emoji))} t]))
 
 (defn message-view
-  [{:keys [timestamp-str outgoing content content-type] :as message} message-content {:keys [justify-timestamp?]}]
-  [react/view (style/message-view message)
+  [{:keys [timestamp-str outgoing content content-type] :as message} message-content {:keys [justify-timestamp?] :as opts}]
+  [react/view (style/message-view message opts)
    message-content
    [message-timestamp timestamp-str justify-timestamp? outgoing (or (get content :command-path)
                                                                     (get content :command-ref))
@@ -111,6 +111,52 @@
         [expand-button expanded? chat-id message-id])])
    {:justify-timestamp? true}])
 
+(defview contact-request-message
+  [{:keys [chat-id message-id content from timestamp-str group-chat outgoing current-public-key expanded?] :as message}]
+  (letsubs [{:keys [last-updated
+                    pending?]} [:contacts/contact-by-identity chat-id]]
+    (let [sent-by-us? (= current-public-key from)
+          pending-state? (if sent-by-us?
+                           ;; last-updated is only updated if we have been added to their contacts
+                           (not (pos? last-updated))
+                           pending?)]
+      [react/view
+       [react/text {:style (style/contact-request-state pending-state?)}
+        (if pending-state?
+          (i18n/label :t/contact-request-pending)
+          (i18n/label :t/contact-request-accepted))]
+       [message-view message
+        (let [collapsible? (and (:should-collapse? content) group-chat)]
+          [react/view
+           [react/text (cond-> {:style           (style/text-message collapsible? outgoing)}
+                         (and collapsible? (not expanded?))
+                         (assoc :number-of-lines constants/lines-collapse-threshold))
+            (if-let [render-recipe (:render-recipe content)]
+              (chat.utils/render-chunks render-recipe message)
+              (:text content))
+            [react/text {:style (style/message-timestamp-placeholder-text outgoing)}
+             (timestamp-with-padding timestamp-str)]]
+           (when collapsible?
+             [expand-button expanded? chat-id message-id])])
+        {:sent-by-us?        sent-by-us?
+         :pending-state?     pending-state?
+         :justify-timestamp? true}]
+       (when (and (not sent-by-us?)
+                  pending-state?)
+         [react/view
+          [react/touchable-highlight {:on-press #(re-frame/dispatch
+                                                  [:contact.ui/add-to-contact-pressed
+                                                   chat-id])
+                                      :style style/accept-contact-request}
+           [react/text {:style style/accept-contact-request-text}
+            (i18n/label :t/contact-request-accept)]]
+          [react/touchable-highlight {:on-press #(re-frame/dispatch
+                                                  [:contact.ui/block-contact-pressed
+                                                   chat-id])
+                                      :style style/block-contact-request}
+           [react/text {:style style/block-contact-request-text}
+            (i18n/label :t/contact-request-block)]]])])))
+
 (defn emoji-message
   [{:keys [content] :as message}]
   [message-view message
@@ -121,6 +167,10 @@
 (defmethod message-content constants/content-type-text
   [wrapper message]
   [wrapper message [text-message message]])
+
+(defmethod message-content constants/content-type-contact-request
+  [wrapper message]
+  [wrapper message [contact-request-message message]])
 
 (defmethod message-content constants/content-type-status
   [wrapper message]

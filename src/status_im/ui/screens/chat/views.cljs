@@ -3,6 +3,7 @@
             [status-im.chat.models :as models.chat]
             [status-im.contact.core :as models.contact]
             [status-im.group-chats.db :as group-chats.db]
+            [status-im.utils.config :as config]
             [status-im.i18n :as i18n]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.button.view :as buttons]
@@ -153,7 +154,7 @@
      [decline-chat chat-id]]]])
 
 (defview messages-view
-  [{:keys [group-chat name pending-invite-inviter-name messages-initialized?] :as chat}
+  [{:keys [group-chat chat-id name pending-invite-inviter-name messages-initialized?] :as chat}
    modal?]
   (letsubs [messages           [:chats/current-chat-messages-stream]
             current-public-key [:account/public-key]]
@@ -196,31 +197,44 @@
       (group-chats.db/joined? my-public-key current-chat)))
 
 (defview chat-root [modal?]
-  (letsubs [{:keys [public?] :as current-chat} [:chats/current-chat]
+  (letsubs [{:keys [public?
+                    group-chat
+                    chat-id] :as current-chat} [:chats/current-chat]
+            contact-code                       [:contact-codes/current-contact-code]
+
             my-public-key                      [:account/public-key]
+            account                            [:account/account]
             show-bottom-info?                  [:chats/current-chat-ui-prop :show-bottom-info?]
             show-message-options?              [:chats/current-chat-ui-prop :show-message-options?]
             show-stickers?                     [:chats/current-chat-ui-prop :show-stickers?]]
-    ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
-    ;; more details here: https://github.com/facebook/react-native/issues/11071
-    [react/scroll-view {:scroll-enabled               false
-                        :style                        style/scroll-root
-                        :content-container-style      style/scroll-root
-                        :keyboard-should-persist-taps :handled}
-     [react/view {:style     style/chat-view
-                  :on-layout (fn [e]
-                               (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
-      [chat-toolbar public? modal?]
-      [messages-view-animation
-       [messages-view-wrapper modal?]]
-      (when (show-input-container? my-public-key current-chat)
-        [input/container])
-      (when show-stickers?
-        [stickers/stickers-view])
-      (when show-bottom-info?
-        [bottom-info/bottom-info-view])
-      (when show-message-options?
-        [message-options/view])]]))
+    (let [show-contact-request? (and (config/pfs-encryption-enabled? account)
+                                     (not group-chat)
+                                     (not contact-code))]
+
+      ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
+      ;; more details here: https://github.com/facebook/react-native/issues/11071
+      [react/scroll-view {:scroll-enabled               false
+                          :style                        style/scroll-root
+                          :content-container-style      style/scroll-root
+                          :keyboard-should-persist-taps :handled}
+       [react/view {:style     style/chat-view
+                    :on-layout (fn [e]
+                                 (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
+        [chat-toolbar public? modal?]
+        [messages-view-animation
+         [messages-view-wrapper modal?]]
+        (when (show-input-container? my-public-key current-chat)
+          (if
+           show-contact-request?
+            [input/contact-request]
+            [input/container]))
+        (when (and (not show-contact-request?)
+                   show-stickers?)
+          [stickers/stickers-view])
+        (when show-bottom-info?
+          [bottom-info/bottom-info-view])
+        (when show-message-options?
+          [message-options/view])]])))
 
 (defview chat []
   [chat-root false])

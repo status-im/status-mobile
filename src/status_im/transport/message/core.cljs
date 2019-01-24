@@ -103,6 +103,7 @@
       (when (= :sent status)
         (fx/merge cofx
                   (remove-hash envelope-hash)
+                  (check-confirmations status chat-id message-id)
                   (update-resend-contact-message chat-id)))
 
       (when-let [{:keys [from]} (get-in db [:chats chat-id :messages message-id])]
@@ -123,26 +124,19 @@
                     (check-confirmations status chat-id message-id)
                     (models.message/send-push-notification chat-id message-id fcm-tokens status)))))))
 
-(fx/defn set-contact-message-envelope-hash
-  [{:keys [db] :as cofx} chat-id envelope-hash]
-  {:db (assoc-in db [:transport/message-envelopes envelope-hash]
-                 {:chat-id      chat-id
-                  :message-type :contact-message})})
-
 (fx/defn set-message-envelope-hash
   "message-type is used for tracking"
-  [{:keys [db] :as cofx} chat-id message-id message-type envelope-hash-js messages-count]
-  (let [envelope-hash (js->clj envelope-hash-js)
-        hash (if (vector? envelope-hash)
-               (last envelope-hash)
-               envelope-hash)]
-    {:db (-> db
-             (assoc-in [:transport/message-envelopes hash]
-                       {:chat-id      chat-id
-                        :message-id   message-id
-                        :message-type message-type})
-             (update-in [:transport/message-ids->confirmations message-id]
-                        #(or % {:pending-confirmations messages-count})))}))
+  [{:keys [db] :as cofx} chat-id message-id message-type hash messages-count]
+  {:db (cond->
+        (assoc-in db [:transport/message-envelopes hash]
+                  {:chat-id      chat-id
+                   :message-type message-type})
+
+         message-id
+         (->
+          (assoc-in [:transport/message-envelopes hash :message-id] message-id)
+          (update-in [:transport/message-ids->confirmations message-id]
+                     #(or % {:pending-confirmations messages-count}))))})
 
 (defn- own-info [db]
   (let [{:keys [name photo-path address]} (:account/account db)

@@ -40,7 +40,7 @@
                                      :resend?    "contact-request"})
                 (protocol/send-with-pubkey {:chat-id chat-id
                                             :payload this
-                                            :success-event [:transport/contact-message-sent chat-id]})
+                                            :success-event [:transport/contact-message-sent chat-id (:message-id cofx)]})
                 (pairing/send-installation-message-fx sync-message)))))
 
 (extend-type transport.contact/ContactRequestConfirmed
@@ -52,7 +52,7 @@
                          [chat-id])
                         nil
                         nil)
-          success-event [:transport/contact-message-sent chat-id]
+          success-event [:transport/contact-message-sent chat-id nil]
           chat         (get-in db [:transport/chats chat-id])
           updated-chat (if chat
                          (assoc chat :resend? "contact-request-confirmation")

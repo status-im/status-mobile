@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [goog.object :as object]
             [re-frame.core :as re-frame]
+            [status-im.utils.config :as config]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.input :as commands.input]
             [status-im.chat.commands.sending :as commands.sending]
@@ -138,6 +139,20 @@
                 (set-chat-input-text nil)
                 (process-cooldown)))))
 
+(defn contact-request-message-fx
+  "send a contact request message fx"
+  [input-text current-chat-id {:keys [db] :as cofx}]
+  (when-not (string/blank? input-text)
+    (fx/merge cofx
+              {:db (assoc-in db [:chats current-chat-id :metadata :responding-to-message] nil)}
+              (chat.message/send-message {:chat-id      current-chat-id
+                                          :content-type constants/content-type-contact-request
+                                          :content      {:chat-id current-chat-id
+                                                         :text    input-text}})
+              (commands.input/set-command-reference nil)
+              (set-chat-input-text nil)
+              (process-cooldown))))
+
 (defn send-plain-text-message-fx
   "no command detected, when not empty, proceed by sending text message without command processing"
   [{:keys [db] :as cofx} message-text current-chat-id]
@@ -161,15 +176,24 @@
   "Sends message from current chat input"
   [{{:keys [current-chat-id id->command access-scope->command-id] :as db} :db :as cofx}]
   (let [{:keys [input-text custom-params]} (get-in db [:chats current-chat-id])
+        contact-request? (and
+                          (config/pfs-encryption-enabled? (:account/account db))
+                          (not (get-in db [:chats current-chat-id :group-chat]))
+                          ;; We don't have a contact-code, we send a contact request
+                          (not (get-in db [:contact-codes/contact-codes current-chat-id])))
         command      (commands.input/selected-chat-command
                       input-text nil (commands/chat-commands id->command
                                                              access-scope->command-id
                                                              (get-in db [:chats current-chat-id])))]
-    (if command
-      ;; Returns true if current input contains command
-      (if (= :complete (:command-completion command))
-        (command-complete-fx cofx input-text command custom-params)
-        (command-not-complete-fx input-text current-chat-id cofx))
+    (cond
+      (and command
+           (= :complete (:command-completion command)))
+      (command-complete-fx cofx input-text command custom-params)
+      command
+      (command-not-complete-fx input-text current-chat-id cofx)
+      contact-request?
+      (contact-request-message-fx input-text current-chat-id cofx)
+      :else
       (plain-text-message-fx input-text current-chat-id cofx))))
 
 ;; effects

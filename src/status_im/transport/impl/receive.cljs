@@ -15,8 +15,8 @@
 
 (extend-type transport.contact/ContactRequest
   protocol/StatusMessage
-  (receive [this _ signature timestamp cofx]
-    (contact/receive-contact-request signature timestamp this cofx)))
+  (receive [this _ signature timestamp {:keys [js-obj] :as cofx}]
+    (contact/receive-contact-request signature timestamp this (.-payload js-obj) cofx)))
 
 (extend-type transport.contact/ContactRequestConfirmed
   protocol/StatusMessage

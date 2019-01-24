@@ -82,6 +82,20 @@
            dapps)))
 
 (re-frame/reg-sub
+ :contacts/contact-by-identity
+ :<- [:contacts/contacts]
+ (fn [contacts [_ identity]]
+   (get contacts identity)))
+
+(re-frame/reg-sub
+ :contacts/current-chat-contact
+ :<- [:contacts/contacts]
+ :<- [:chats/current-chat]
+ (fn [[contacts {:keys [chat-id group-chat]}] [_ identity]]
+   (when-not group-chat
+     (get contacts chat-id))))
+
+(re-frame/reg-sub
  :contacts/contact-name-by-identity
  :<- [:contacts/contacts]
  :<- [:account/account]

@@ -7,6 +7,7 @@
             status-im.mailserver.subs
             status-im.tribute-to-talk.subs
             status-im.ui.components.connectivity.subs
+            status-im.contact-code.subs
             status-im.ui.screens.accounts.subs
             status-im.ui.screens.chat.stickers.subs
             status-im.ui.screens.extensions.subs

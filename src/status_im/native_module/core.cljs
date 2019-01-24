@@ -96,3 +96,5 @@
 (def update-mailservers native-module/update-mailservers)
 
 (def rooted-device? native-module/rooted-device?)
+
+(def get-contact-code native-module/get-contact-code)

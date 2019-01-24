@@ -22,15 +22,19 @@
             [status-im.utils.config :as config]
             [status-im.ui.screens.chat.stickers.views :as stickers]))
 
-(defview basic-text-input [{:keys [set-container-width-fn height single-line-input?]}]
-  (letsubs [{:keys [input-text]} [:chats/current-chat]
+(defview basic-text-input [{:keys [chat set-container-width-fn height single-line-input?]}]
+  (letsubs [contact-code         [:contact-codes/contact-code (:chat-id chat)]
+            {:keys [dev-mode?
+                    settings]
+             :as account}        [:account/account]
+
             cooldown-enabled?    [:chats/cooldown-enabled?]]
     [react/text-input
      (merge
       {:ref                    #(when % (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-ref %}]))
        :accessibility-label    :chat-message-input
        :multiline              (not single-line-input?)
-       :default-value          (or input-text "")
+       :default-value          (or (:input-text chat) "")
        :editable               (not cooldown-enabled?)
        :blur-on-submit         false
        :on-focus               #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused?    true
@@ -49,7 +53,12 @@
        :placeholder-text-color colors/gray
        :auto-capitalize        :sentences}
       (when cooldown-enabled?
-        {:placeholder (i18n/label :cooldown/text-input-disabled)}))]))
+        {:placeholder (i18n/label :cooldown/text-input-disabled)})
+      (when (and
+             (config/pfs-encryption-enabled? account)
+             (not (:group-chat chat))
+             (not contact-code))
+        {:placeholder (i18n/label :type-a-contact-request)}))]))
 
 (defview invisible-input [{:keys [set-layout-width-fn value]}]
   (letsubs [{:keys [input-text]} [:chats/current-chat]]
@@ -85,7 +94,8 @@
     nil))
 
 (defview input-view [{:keys [single-line-input?]}]
-  (letsubs [command [:chats/selected-chat-command]]
+  (letsubs [chat    [:chats/current-chat]
+            command [:chats/selected-chat-command]]
     (let [component              (reagent/current-component)
           set-layout-width-fn    #(reagent/set-state component {:width %})
           set-container-width-fn #(reagent/set-state component {:container-width %})
@@ -94,6 +104,7 @@
        [react/animated-view {:style style/input-animated}
         [invisible-input {:set-layout-width-fn set-layout-width-fn}]
         [basic-text-input {:set-container-width-fn set-container-width-fn
+                           :chat                   chat
                            :single-line-input?     single-line-input?}]
         [input-helper {:width width}]]])))
 
@@ -151,9 +162,29 @@
           [commands-button]
           [send-button/send-button-view])]])))
 
+(defview contact-request-input-container []
+  (letsubs [margin               [:chats/input-margin]
+            {:keys [input-text]} [:chats/current-chat]
+            result-box           [:chats/current-chat-ui-prop :result-box]]
+    (let [single-line-input? (:singleLineInput result-box)]
+      [react/view {:style     (style/root margin)
+                   :on-layout #(let [h (-> (.-nativeEvent %)
+                                           (.-layout)
+                                           (.-height))]
+                                 (when (> h 0)
+                                   (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-height h}])))}
+       [react/view {:style style/input-container}
+        [input-view {:single-line-input? single-line-input?}]
+        (when-not (string/blank? input-text)
+          [send-button/send-button-view])]])))
+
 (defn container []
   [react/view
    [parameter-box/parameter-box-view]
    [suggestions/suggestions-view]
    [validation-messages/validation-messages-view]
    [input-container]])
+
+(defn contact-request []
+  [react/view
+   [contact-request-input-container]])

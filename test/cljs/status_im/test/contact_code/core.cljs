@@ -76,3 +76,25 @@
                                                            {member-1 {:is-active true}}}}
                                                      member-1)]
           (is (not transport)))))))
+
+(deftest load-fx-test
+  (testing "there's already a contact code"
+    (is (not (::contact-code/load-contact-code
+              (contact-code/load-fx
+               {:db {:contact-codes/contact-codes {"1" true}}}
+               "1")))))
+  (testing "there's no contact-code"
+    (is (::contact-code/load-contact-code
+         (contact-code/load-fx
+          {:db {}}
+          "1")))))
+
+(deftest add-contact-code-test
+  (testing "adding a contact-code"
+    (is
+     (= {:db {:contact-codes/contact-codes
+              {"1" "contact-code"}}}
+        (contact-code/add-contact-code
+         {:db {}}
+         "1"
+         "contact-code")))))

@@ -12,6 +12,7 @@
 (def content-type-command "command")
 (def content-type-command-request "command-request")
 (def content-type-emoji "emoji")
+(def content-type-contact-request "contact-request")
 
 (def desktop-content-types
   #{content-type-text content-type-emoji content-type-status})

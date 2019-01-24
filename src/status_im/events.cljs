@@ -17,6 +17,8 @@
             [status-im.chat.models.message :as chat.message]
             [status-im.contact.core :as contact]
             [status-im.contact-recovery.core :as contact-recovery]
+            [status-im.contact-code.core :as contact-code]
+            [status-im.data-store.core :as data-store]
             [status-im.extensions.core :as extensions]
             [status-im.extensions.registry :as extensions.registry]
             [status-im.fleet.core :as fleet]
@@ -1536,8 +1538,14 @@
 
 (handlers/register-handler-fx
  :transport/contact-message-sent
- (fn [cofx [_ chat-id envelope-hash]]
-   (transport.message/set-contact-message-envelope-hash cofx chat-id envelope-hash)))
+ (fn [cofx [_ chat-id message-id envelope-hash]]
+   (transport.message/set-message-envelope-hash
+    cofx
+    chat-id
+    message-id
+    :contact-message
+    envelope-hash
+    1)))
 
 ;; contact module
 
@@ -1547,7 +1555,7 @@
  (fn [cofx [_ public-key]]
    (if config/partitioned-topic-enabled?
      (contact/add-contacts-filter cofx public-key :add-contact)
-     (contact/add-contact cofx public-key))))
+     (contact/add-contact cofx public-key nil))))
 
 (handlers/register-handler-fx
  :contact.ui/block-contact-pressed
@@ -1576,6 +1584,15 @@
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx [_ _ contact-identity]]
    (contact/handle-qr-code cofx contact-identity)))
+
+(handlers/register-handler-fx
+ :contact/send-contact-request-message
+ [(re-frame/inject-cofx :random-id-generator)]
+ (fn [cofx [_ contact-identity message-id message]]
+   (contact/add-contact
+    (assoc cofx :message-id message-id)
+    contact-identity
+    message)))
 
 (handlers/register-handler-fx
  :contact/filters-added
@@ -1647,6 +1664,13 @@
  :contact-code.callback/contact-code-publishing-failed
  (fn [cofx _]
    (contact-code/publishing-failed cofx)))
+
+(handlers/register-handler-fx
+ :contact-code.callback/contact-code-loaded
+ (fn [cofx [_ public-key contact-code]]
+   (fx/merge
+    cofx
+    (contact-code/loaded cofx public-key contact-code))))
 
 (handlers/register-handler-fx
  :pairing.ui/enable-installation-pressed

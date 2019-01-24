@@ -435,3 +435,13 @@ void RCTStatus::updateMailservers(QString enodes, double callbackId) {
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, enodes, callbackId);
 }
+
+void RCTStatus::getContactCode(QString identity, double callbackId) {
+    Q_D(RCTStatus);
+    qCDebug(RCTSTATUS) << "::getContactCode call - callbackId:" << callbackId;
+    QtConcurrent::run([&](QString identity, double callbackId) {
+            const char* result = GetContactCode(identity.toUtf8().data());
+            logStatusGoResult("::getContactCode GetContactCode", result);
+            d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
+        }, identity, callbackId);
+}

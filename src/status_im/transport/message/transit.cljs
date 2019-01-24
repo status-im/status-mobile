@@ -25,8 +25,8 @@
 (deftype ContactRequestHandler []
   Object
   (tag [this v] "c2")
-  (rep [this {:keys [name profile-image address fcm-token device-info]}]
-    #js [name profile-image address fcm-token device-info]))
+  (rep [this {:keys [name profile-image address fcm-token device-info message]}]
+    #js [name profile-image address fcm-token device-info message]))
 
 (deftype ContactRequestConfirmedHandler []
   Object
@@ -139,8 +139,8 @@
 ;; Here we only need to call the record with the arguments parsed from the clojure datastructures
 (def reader (transit/reader :json
                             {:handlers
-                             {"c2" (fn [[name profile-image address fcm-token device-info]]
-                                     (contact/ContactRequest. name profile-image address fcm-token device-info))
+                             {"c2" (fn [[name profile-image address fcm-token device-info message]]
+                                     (contact/ContactRequest. name profile-image address fcm-token device-info message))
                               "c3" (fn [[name profile-image address fcm-token device-info]]
                                      (contact/ContactRequestConfirmed. name profile-image address fcm-token device-info))
                               "c4" (fn [[legacy-content content-type message-type clock-value timestamp content]]

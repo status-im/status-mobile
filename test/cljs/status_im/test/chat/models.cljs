@@ -1,6 +1,7 @@
 (ns status-im.test.chat.models
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.utils.clocks :as utils.clocks]
+            [status-im.contact-code.core :as contact-code]
             [status-im.chat.models :as chat]))
 
 (deftest upsert-chat-test
@@ -285,3 +286,19 @@
                                     :public?                      true
                                     :unviewed-messages-count      0
                                     :loaded-unviewed-messages-ids #{}}}}})))))
+
+(deftest preload-chat-data-test
+  (let [chat-id "chat-id"]
+    (testing "it's not a group chat"
+      (testing "it loads a contact code"
+        (is (::contact-code/load-contact-code
+             (chat/preload-chat-data
+              {:db {:chats {chat-id {}}}}
+              chat-id)))))
+    (testing "it is a group chat"
+      (testing "it does not load a contact code"
+        (is (not
+             (::contact-code/load-contact-code
+              (chat/preload-chat-data
+               {:db {:chats {chat-id {:group-chat true}}}}
+               chat-id))))))))

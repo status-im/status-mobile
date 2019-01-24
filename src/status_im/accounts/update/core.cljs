@@ -25,7 +25,7 @@
     (let [updated-chat  (assoc chat :resend? "contact-update")
           tx            [(transport-store/save-transport-tx {:chat-id chat-id
                                                              :chat    updated-chat})]
-          success-event [:transport/contact-message-sent chat-id]]
+          success-event [:transport/contact-message-sent chat-id nil]]
       (fx/merge cofx
                 {:db (assoc-in db
                                [:transport/chats chat-id :resend?]

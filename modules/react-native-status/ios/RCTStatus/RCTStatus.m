@@ -254,6 +254,16 @@ RCT_EXPORT_METHOD(updateMailservers:(NSString *)enodes
 #endif
 }
 
+//////////////////////////////////////////////////////////////////// getContactCode
+RCT_EXPORT_METHOD(getContactCode:(NSString *)identity
+                  callback:(RCTResponseSenderBlock)callback) {
+  NSString* result = StatusgoGetContactCode(identity);
+  callback(@[result]);
+#if DEBUG
+  NSLog(@"GetContactCode() method called");
+#endif
+}
+
 //////////////////////////////////////////////////////////////////// recoverAccount
 RCT_EXPORT_METHOD(recoverAccount:(NSString *)passphrase
                   password:(NSString *)password
