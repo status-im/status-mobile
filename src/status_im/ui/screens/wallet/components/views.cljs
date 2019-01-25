@@ -211,7 +211,7 @@
       (ethereum/normalized-address (:address contact))]]]])
 
 (views/defview recent-recipients []
-  (views/letsubs [contacts [:contacts/active]]
+  (views/letsubs [contacts [:contacts/active-with-address]]
     [simple-screen
      [toolbar (i18n/label :t/recipient)]
      [react/view styles/recent-recipients

@@ -1,5 +1,6 @@
 (ns status-im.contact.subs
   (:require [re-frame.core :as re-frame]
+            [clojure.string :as str]
             [status-im.utils.identicon :as identicon]
             [status-im.contact.db :as contact.db]))
 
@@ -25,6 +26,12 @@
  :<- [:contacts/contacts]
  (fn [contacts]
    (contact.db/active contacts)))
+
+(re-frame/reg-sub
+ :contacts/active-with-address
+ :<- [:contacts/active]
+ (fn [contacts]
+   (remove #(-> % :address (str/blank?)) contacts)))
 
 (re-frame/reg-sub
  :contacts/active-count
