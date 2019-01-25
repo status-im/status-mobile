@@ -30,7 +30,7 @@
 (defn permission-details [requested-permission]
   (get browser.permissions/supported-permissions requested-permission))
 
-(views/defview permissions-panel [{:keys [dapp? dapp]} {:keys [dapp-name]}]
+(views/defview permissions-panel [[dapp? dapp] {:keys [dapp-name]}]
   (views/letsubs [bottom-anim-value  (anim/create-value -354)
                   alpha-value        (anim/create-value 0)
                   current-permission (reagent/atom nil)

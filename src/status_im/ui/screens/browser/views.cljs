@@ -143,7 +143,7 @@
                                                     (get-inject-js url))
         :injected-java-script                  js-res/webview-js}])]
    [navigation url-original webview can-go-back? can-go-forward?]
-   [permissions.views/permissions-panel browser show-permission]
+   [permissions.views/permissions-panel [(:dapp? browser) (:dapp browser)] show-permission]
    (when show-tooltip
      [tooltip/bottom-tooltip-info
       (if (= show-tooltip :secure)
