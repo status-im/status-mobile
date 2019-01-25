@@ -1,5 +1,6 @@
 (ns status-im.contact.subs
   (:require [re-frame.core :as re-frame]
+            [clojure.string :as str]
             [status-im.utils.identicon :as identicon]
             [status-im.contact.db :as contact.db]))
 
@@ -46,6 +47,12 @@
  :<- [::all-added-contacts]
  (fn [contacts]
    (remove :dapp? contacts)))
+
+(re-frame/reg-sub
+ :contacts/all-added-people-contacts-with-address
+ :<- [:contacts/all-added-people-contacts]
+ (fn [contacts]
+   (remove #(-> % :address (str/blank?)) contacts)))
 
 (re-frame/reg-sub
  :contacts/all-dapps

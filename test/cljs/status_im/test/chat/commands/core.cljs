@@ -115,6 +115,11 @@
                           "0x21631d18d9681d4ffdd460fc45fa52159fcd95c8"
                           "0x5541e3be81b76d76cdbf968516caa5a5b773763b"))
 
+(def contacts-list
+  (let [pairs (zipmap contacts contacts_addresses)]
+    (reduce (fn [acc [pub addr]]
+              (assoc acc pub {:address addr})) {} pairs)))
+
 (deftest enrich-command-message-for-events-test-public
   (let [db {:chats {"1" {:contacts nil :public? true :group-chat false}}}
         msg {:chat-id "1"}
@@ -124,7 +129,8 @@
              (assoc msg :public? true :group-chat false))))))
 
 (deftest enrich-command-message-for-events-test-groupchat
-  (let [db {:chats {"1" {:contacts contacts :public? false :group-chat true}}}
+  (let [db {:contacts/contacts contacts-list
+            :chats {"1" {:contacts contacts :public? false :group-chat true}}}
         msg {:chat-id "1"}
         enriched-msg (core/enrich-command-message-for-events db msg)]
     (testing "command-message correctly enriched - group chat"
@@ -132,7 +138,8 @@
              (assoc msg :public? false :group-chat true :contacts contacts_addresses))))))
 
 (deftest enrich-command-message-for-events-test-1on1-chat
-  (let [db {:chats {"1" {:contacts contacts :public? false :group-chat false}}}
+  (let [db {:contacts/contacts contacts-list
+            :chats {"1" {:contacts contacts :public? false :group-chat false}}}
         msg {:chat-id "1"}
         enriched-msg (core/enrich-command-message-for-events db msg)]
     (testing "command-message correctly enriched - 1on1 chat"
