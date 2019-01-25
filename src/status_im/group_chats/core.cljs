@@ -10,6 +10,7 @@
             [status-im.utils.clocks :as utils.clocks]
             [status-im.chat.models.message :as models.message]
             [status-im.contact.core :as models.contact]
+            [status-im.contact-code.core :as contact-code]
             [status-im.native-module.core :as native-module]
             [status-im.transport.utils :as transport.utils]
             [status-im.transport.db :as transport.db]
@@ -483,14 +484,30 @@
                  from)))
        last))
 
-(fx/defn set-up-topic [cofx chat-id previous-chat]
+(fx/defn set-up-topic
+  "Listen/Tear down the shared topic/contact-codes. Stop listening for members who
+  have left the chat"
+  [cofx chat-id previous-chat]
   (let [my-public-key (accounts.db/current-public-key cofx)
         new-chat (get-in cofx [:db :chats chat-id])]
     ;; If we left the chat, teardown, otherwise upsert
     (if (and (joined? my-public-key previous-chat)
              (not (joined? my-public-key new-chat)))
-      (transport.chat/unsubscribe-from-chat cofx chat-id)
-      (transport.public-chat/join-group-chat cofx chat-id))))
+      (apply fx/merge
+             cofx
+             (conj
+              (map #(contact-code/stop-listening %)
+                   (:members new-chat))
+              (transport.chat/unsubscribe-from-chat chat-id)))
+      (apply fx/merge
+             cofx
+             (concat
+              (map #(contact-code/listen-to-chat %)
+                   (:members new-chat))
+              (map #(contact-code/stop-listening %)
+                   (clojure.set/difference (:members previous-chat)
+                                           (:members new-chat)))
+              [(transport.public-chat/join-group-chat chat-id)])))))
 
 (fx/defn handle-membership-update
   "Upsert chat and receive message if valid"

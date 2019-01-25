@@ -73,8 +73,7 @@
       (is (= expected (pairing/merge-contact contact-1 contact-2))))))
 
 (deftest handle-sync-installation-test
-  (with-redefs [config/pairing-enabled? (constantly true)
-                identicon/identicon (constantly "generated")]
+  (with-redefs [identicon/identicon (constantly "generated")]
 
     (testing "syncing contacts"
       (let [old-contact-1   {:name "old-contact-one"
@@ -164,28 +163,27 @@
                         [:db :chats "status"]))))))))
 
 (deftest handle-pair-installation-test
-  (with-redefs [config/pairing-enabled? (constantly true)]
-    (let [cofx {:db {:account/account {:public-key "us"}
-                     :pairing/installations {"1" {:has-bundle? true
-                                                  :installation-id "1"}
-                                             "2" {:has-bundle? false
-                                                  :installation-id "2"}}}}
-          pair-message {:device-type "ios"
-                        :name "name"
-                        :installation-id "1"}]
-      (testing "not coming from us"
-        (is (not (pairing/handle-pair-installation cofx pair-message 1 "not-us"))))
-      (testing "coming from us"
-        (is (= {"1" {:has-bundle? true
-                     :installation-id "1"
-                     :name "name"
-                     :last-paired 1
-                     :device-type "ios"}
-                "2"  {:has-bundle? false
-                      :installation-id "2"}}
-               (get-in
-                (pairing/handle-pair-installation cofx pair-message 1 "us")
-                [:db :pairing/installations])))))))
+  (let [cofx {:db {:account/account {:public-key "us"}
+                   :pairing/installations {"1" {:has-bundle? true
+                                                :installation-id "1"}
+                                           "2" {:has-bundle? false
+                                                :installation-id "2"}}}}
+        pair-message {:device-type "ios"
+                      :name "name"
+                      :installation-id "1"}]
+    (testing "not coming from us"
+      (is (not (pairing/handle-pair-installation cofx pair-message 1 "not-us"))))
+    (testing "coming from us"
+      (is (= {"1" {:has-bundle? true
+                   :installation-id "1"
+                   :name "name"
+                   :last-paired 1
+                   :device-type "ios"}
+              "2"  {:has-bundle? false
+                    :installation-id "2"}}
+             (get-in
+              (pairing/handle-pair-installation cofx pair-message 1 "us")
+              [:db :pairing/installations]))))))
 
 (deftest sync-installation-messages-test
   (testing "it creates a sync installation message"
@@ -225,23 +223,22 @@
       (is (= expected (pairing/sync-installation-messages cofx))))))
 
 (deftest handle-bundles-added-test
-  (with-redefs [config/pairing-enabled? (constantly true)]
-    (let [installation-1 {:has-bundle? false
-                          :installation-id "installation-1"}
-          cofx {:db {:account/account {:public-key "us"}
-                     :pairing/installations {"installation-1" installation-1}}}]
-      (testing "new installations"
-        (let [new-installation {:identity "us" :installationID "installation-2"}
-              expected {"installation-1" installation-1
-                        "installation-2" {:has-bundle? true
-                                          :installation-id "installation-2"}}]
-          (is (= expected (get-in (pairing/handle-bundles-added cofx new-installation) [:db :pairing/installations])))))
-      (testing "already existing installation"
-        (let [old-installation {:identity "us" :installationID "installation-1"}]
-          (is (not (pairing/handle-bundles-added cofx old-installation)))))
-      (testing "not from us"
-        (let [new-installation {:identity "not-us" :installationID "does-not-matter"}]
-          (is (not (pairing/handle-bundles-added cofx new-installation))))))))
+  (let [installation-1 {:has-bundle? false
+                        :installation-id "installation-1"}
+        cofx {:db {:account/account {:public-key "us"}
+                   :pairing/installations {"installation-1" installation-1}}}]
+    (testing "new installations"
+      (let [new-installation {:identity "us" :installationID "installation-2"}
+            expected {"installation-1" installation-1
+                      "installation-2" {:has-bundle? true
+                                        :installation-id "installation-2"}}]
+        (is (= expected (get-in (pairing/handle-bundles-added cofx new-installation) [:db :pairing/installations])))))
+    (testing "already existing installation"
+      (let [old-installation {:identity "us" :installationID "installation-1"}]
+        (is (not (pairing/handle-bundles-added cofx old-installation)))))
+    (testing "not from us"
+      (let [new-installation {:identity "not-us" :installationID "does-not-matter"}]
+        (is (not (pairing/handle-bundles-added cofx new-installation)))))))
 
 (deftest has-paired-installations-test
   (testing "no paired devices"

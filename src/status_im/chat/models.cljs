@@ -4,8 +4,10 @@
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
             [status-im.data-store.user-statuses :as user-statuses-store]
+            [status-im.contact-code.core :as contact-code]
             [status-im.i18n :as i18n]
             [status-im.transport.chat.core :as transport.chat]
+            [status-im.transport.utils :as transport.utils]
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.public-chat :as public-chat]
             [status-im.ui.components.colors :as colors]
@@ -27,6 +29,9 @@
    (:group-chat chat))
   ([cofx chat-id]
    (multi-user-chat? (get-chat cofx chat-id))))
+
+(def one-to-one-chat?
+  (complement multi-user-chat?))
 
 (defn public-chat?
   ([chat]
@@ -142,6 +147,8 @@
                (transport.chat/unsubscribe-from-chat % chat-id))
             (deactivate-chat chat-id)
             (clear-history chat-id)
+            #(when (one-to-one-chat? % chat-id)
+               (contact-code/stop-listening % chat-id))
             (navigation/navigate-to-cofx :home {})))
 
 (fx/defn send-messages-seen
@@ -217,10 +224,12 @@
 (fx/defn preload-chat-data
   "Takes chat-id and coeffects map, returns effects necessary when navigating to chat"
   [{:keys [db] :as cofx} chat-id]
-  (fx/merge cofx
-            {:db (-> (assoc db :current-chat-id chat-id)
-                     (set-chat-ui-props {:validation-messages nil}))}
-            (mark-messages-seen chat-id)))
+  (let [chat (get-in db [:chats chat-id])]
+    (fx/merge cofx
+              {:db (-> (assoc db :current-chat-id chat-id)
+                       (set-chat-ui-props {:validation-messages nil}))}
+              (contact-code/listen-to-chat chat-id)
+              (mark-messages-seen chat-id))))
 
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"

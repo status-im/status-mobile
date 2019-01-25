@@ -7,8 +7,11 @@
             [status-im.data-store.messages :as data-store.messages]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.i18n :as i18n]
+            [status-im.transport.utils :as transport.utils]
             [status-im.transport.message.contact :as message.contact]
+            [status-im.transport.message.public-chat :as transport.public-chat]
             [status-im.transport.message.protocol :as protocol]
+            [status-im.contact-code.core :as contact-code]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
@@ -47,16 +50,15 @@
      :address       address
      :fcm-token     fcm-token}))
 
-(fx/defn add-new-contact [{:keys [db]} {:keys [public-key] :as contact}]
-  (let [new-contact (assoc contact
-                           :pending? false
-                           :hide-contact? false
-                           :public-key public-key)]
-    {:db            (-> db
-                        (update-in [:contacts/contacts public-key]
-                                   merge new-contact)
-                        (assoc-in [:contacts/new-identity] ""))
-     :data-store/tx [(contacts-store/save-contact-tx new-contact)]}))
+(fx/defn upsert-contact [{:keys [db] :as cofx}
+                         {:keys [pending?
+                                 public-key] :as contact}]
+  (fx/merge cofx
+            {:db            (-> db
+                                (update-in [:contacts/contacts public-key] merge contact))
+             :data-store/tx [(contacts-store/save-contact-tx contact)]}
+            #(when-not pending?
+               (contact-code/listen-to-chat % public-key))))
 
 (fx/defn send-contact-request
   [{:keys [db] :as cofx} {:keys [public-key pending? dapp?] :as contact}]
@@ -65,11 +67,16 @@
       (protocol/send (message.contact/map->ContactRequestConfirmed (own-info db)) public-key cofx)
       (protocol/send (message.contact/map->ContactRequest (own-info db)) public-key cofx))))
 
-(fx/defn add-contact [{:keys [db] :as cofx} public-key]
+(fx/defn add-contact
+  "Add a contact and set pending to false"
+  [{:keys [db] :as cofx} public-key]
   (when (not= (get-in db [:account/account :public-key]) public-key)
-    (let [contact (build-contact cofx public-key)]
+    (let [contact (-> (build-contact cofx public-key)
+                      (assoc :pending? false
+                             :hide-contact? false))]
       (fx/merge cofx
-                (add-new-contact contact)
+                {:db (assoc-in db [:contacts/new-identity] "")}
+                (upsert-contact contact)
                 (send-contact-request contact)))))
 
 (fx/defn add-contacts-filter [{:keys [db]} public-key action]
@@ -244,10 +251,7 @@
         (when-not (= contact-props
                      (select-keys contact [:public-key :address :photo-path
                                            :name :fcm-token :pending?]))
-          {:db            (update-in db [:contacts/contacts public-key]
-                                     merge contact-props)
-           :data-store/tx [(contacts-store/save-contact-tx
-                            contact-props)]})))))
+          (upsert-contact cofx contact-props))))))
 
 (def receive-contact-request handle-contact-update)
 (def receive-contact-request-confirmation handle-contact-update)

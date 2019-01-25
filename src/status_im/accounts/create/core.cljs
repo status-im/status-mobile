@@ -102,12 +102,15 @@
   [{db :db} input-key text]
   {:db (update db :accounts/create merge {input-key text :error nil})})
 
-(defn account-set-name [{{:accounts/keys [create] :as db} :db :as cofx}]
+(defn account-set-name [{{:accounts/keys [create] :as db} :db now :now :as cofx}]
   (fx/merge cofx
             {:db                                  (assoc db :accounts/create {:show-welcome? true})
              :notifications/request-notifications-permissions nil
              :dispatch                            [:navigate-to :home]}
-            (accounts.update/account-update {:name (:name create)} {})))
+            ;; We set last updated as we are actually changing a field,
+            ;; unlike on recovery where the name is not set
+            (accounts.update/account-update {:last-updated now
+                                             :name (:name create)} {})))
 
 (fx/defn next-step
   [{:keys [db] :as cofx} step password password-confirm]

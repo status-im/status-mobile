@@ -31,6 +31,7 @@
             [status-im.network.core :as network]
             [status-im.notifications.core :as notifications]
             [status-im.pairing.core :as pairing]
+            [status-im.contact-code.core :as contact-code]
             [status-im.privacy-policy.core :as privacy-policy]
             [status-im.protocol.core :as protocol]
             [status-im.qr-scanner.core :as qr-scanner]
@@ -153,6 +154,17 @@
  :accounts.ui/mainnet-warning-shown
  (fn [cofx _]
    (accounts.update/account-update cofx {:mainnet-warning-shown? true} {})))
+
+(handlers/register-handler-fx
+ :accounts.update.callback/published
+ (fn [{:keys [now] :as cofx} _]
+   (accounts.update/account-update cofx {:last-updated now} {})))
+
+(handlers/register-handler-fx
+ :accounts.update.callback/failed-to-publish
+ (fn [{:keys [now] :as cofx} [_ message]]
+   (log/warn "failed to publish account update" message)
+   (accounts.update/account-update cofx {:last-updated now} {})))
 
 (handlers/register-handler-fx
  :accounts.ui/dev-mode-switched
@@ -1582,6 +1594,16 @@
  :set-initial-props
  (fn [cofx [_ initial-props]]
    {:db (assoc (:db cofx) :initial-props initial-props)}))
+
+(handlers/register-handler-fx
+ :contact-code.callback/contact-code-published
+ (fn [cofx arg]
+   (contact-code/published cofx)))
+
+(handlers/register-handler-fx
+ :contact-code.callback/contact-code-publishing-failed
+ (fn [cofx _]
+   (contact-code/publishing-failed cofx)))
 
 (handlers/register-handler-fx
  :pairing.ui/enable-installation-pressed

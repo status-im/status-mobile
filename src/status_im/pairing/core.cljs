@@ -7,11 +7,15 @@
             [status-im.utils.config :as config]
             [status-im.utils.platform :as utils.platform]
             [status-im.chat.models :as models.chat]
+            [status-im.transport.message.public-chat :as transport.public-chat]
             [status-im.accounts.db :as accounts.db]
             [status-im.transport.message.protocol :as protocol]
+            [status-im.transport.utils :as transport.utils]
             [status-im.data-store.installations :as data-store.installations]
             [status-im.native-module.core :as native-module]
             [status-im.utils.identicon :as identicon]
+            [status-im.contact.core :as contact]
+            [status-im.contact-code.core :as contact-code]
             [status-im.data-store.contacts :as data-store.contacts]
             [status-im.data-store.accounts :as data-store.accounts]
             [status-im.transport.message.pairing :as transport.pairing]))
@@ -227,16 +231,17 @@
 
 (defn handle-sync-installation [{:keys [db] :as cofx} {:keys [contacts account chat]} sender]
   (when (= sender (accounts.db/current-public-key cofx))
-    (let [new-contacts (merge-contacts (:contacts/contacts db) (ensure-photo-path contacts))
-          new-account  (merge-account (:account/account db) account)]
-      (fx/merge cofx
-                {:db                 (assoc db
-                                            :contacts/contacts new-contacts
-                                            :account/account new-account)
-                 :data-store/base-tx [(data-store.accounts/save-account-tx new-account)]
-                 :data-store/tx      [(data-store.contacts/save-contacts-tx (vals new-contacts))]}
-                #(when (:public? chat)
-                   (models.chat/start-public-chat % (:chat-id chat) {:dont-navigate? true}))))))
+    (let [new-contacts (vals (merge-contacts (:contacts/contacts db) (ensure-photo-path contacts)))
+          new-account  (merge-account (:account/account db) account)
+          contacts-fx  (mapv contact/upsert-contact new-contacts)]
+      (apply fx/merge
+             cofx
+             (concat
+              [{:db                 (assoc db :account/account new-account)
+                :data-store/base-tx [(data-store.accounts/save-account-tx new-account)]}
+               #(when (:public? chat)
+                  (models.chat/start-public-chat % (:chat-id chat) {:dont-navigate? true}))]
+              contacts-fx)))))
 
 (defn handle-pair-installation [{:keys [db] :as cofx} {:keys [name installation-id device-type]} timestamp sender]
   (when (and (= sender (accounts.db/current-public-key cofx))

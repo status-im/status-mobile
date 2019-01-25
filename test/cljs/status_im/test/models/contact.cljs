@@ -29,7 +29,7 @@
                    :profile-image "image"
                    :address "address"
                    :fcm-token "token"}
-                  {})
+                  {:db {}})
           contact (get-in actual [:db :contacts/contacts public-key])]
       (testing "it stores the contact in the database"
         (is (:data-store/tx actual)))

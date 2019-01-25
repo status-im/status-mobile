@@ -230,3 +230,6 @@
                                         {:type "string[]" :optional true}
                                         :recent-stickers
                                         {:type "string[]" :optional true}}))
+(def v20 (assoc-in v19
+                   [:properties :last-published-contact-code]
+                   {:type :int :default 0}))

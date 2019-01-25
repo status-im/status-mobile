@@ -1,8 +1,45 @@
 (ns status-im.accounts.update.core
   (:require [status-im.data-store.accounts :as accounts-store]
             [status-im.transport.message.protocol :as protocol]
+            [status-im.data-store.transport :as transport-store]
             [status-im.transport.message.contact :as message.contact]
             [status-im.utils.fx :as fx]))
+
+(fx/defn account-update-message [{:keys [db]}]
+  (let [account (:account/account db)
+        fcm-token (get-in db [:notifications :fcm-token])
+        {:keys [name photo-path address]} account]
+    (message.contact/ContactUpdate. name photo-path address fcm-token)))
+
+(fx/defn send-contact-update-fx
+  [{:keys [db] :as cofx} chat-id payload]
+  (when-let [chat (get-in cofx [:db :transport/chats chat-id])]
+    (let [updated-chat  (assoc chat :resend? "contact-update")
+          tx            [(transport-store/save-transport-tx {:chat-id chat-id
+                                                             :chat    updated-chat})]
+          success-event [:transport/contact-message-sent chat-id]]
+      (fx/merge cofx
+                {:db (assoc-in db
+                               [:transport/chats chat-id :resend?]
+                               "contact-update")
+                 :data-store/tx tx}
+                (protocol/send-with-pubkey {:chat-id       chat-id
+                                            :payload       payload
+                                            :success-event success-event})))))
+
+(fx/defn contact-public-keys [{:keys [db]}]
+  (reduce (fn [acc [_ {:keys [public-key dapp? pending?]}]]
+            (if (and (not dapp?)
+                     (not pending?))
+              (conj acc public-key)
+              acc))
+          #{}
+          (:contacts/contacts db)))
+
+(fx/defn send-contact-update [cofx payload]
+  (let [public-keys (contact-public-keys cofx)]
+    ;;NOTE: chats with contacts use public-key as chat-id
+    (map #(send-contact-update-fx % payload) public-keys)))
 
 (fx/defn account-update
   "Takes effects (containing :db) + new account fields, adds all effects necessary for account update.
@@ -18,7 +55,7 @@
     (if (or (:name new-account-fields) (:photo-path new-account-fields))
       (fx/merge cofx
                 fx
-                #(protocol/send (message.contact/ContactUpdate. name photo-path address fcm-token) nil %))
+                #(protocol/send (account-update-message %) nil %))
       fx)))
 
 (fx/defn clean-seed-phrase

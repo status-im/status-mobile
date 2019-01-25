@@ -5,6 +5,8 @@
             [status-im.mailserver.core :as mailserver]
             [status-im.transport.message.core :as message]
             [status-im.transport.partitioned-topic :as transport.topic]
+            [status-im.contact-code.core :as contact-code]
+            [status-im.utils.publisher :as publisher]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
             [taoensso.timbre :as log]
@@ -54,6 +56,8 @@
                                         (assoc chat :chat-id chat-id)))
                                     (:transport/chats db))
                   :on-success #(re-frame/dispatch [::sym-keys-added %])}}
+                (publisher/start-fx)
+                (contact-code/init)
                 (mailserver/connect-to-mailserver)
                 (message/resend-contact-messages [])))))
 
@@ -100,11 +104,15 @@
   It is necessary to remove the filters because status-go there isn't currently a logout feature in status-go
   to clean-up after logout. When logging out of account A and logging in account B, account B would receive
   account A messages without this."
-  [{:keys [db]} callback]
+  [{:keys [db] :as cofx} callback]
   (let [{:transport/keys [filters]} db]
-    {:shh/remove-filters {:filters  (mapcat (fn [[chat-id chat-filters]]
-                                              (map (fn [filter]
-                                                     [chat-id filter])
-                                                   chat-filters))
-                                            filters)
-                          :callback callback}}))
+    (fx/merge
+     cofx
+
+     {:shh/remove-filters {:filters   (mapcat (fn [[chat-id chat-filters]]
+                                                (map (fn [filter]
+                                                       [chat-id filter])
+                                                     chat-filters))
+                                              filters)
+                           :callback callback}}
+     (publisher/stop-fx))))
