@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.profile.contact.views
   (:require [re-frame.core :as re-frame]
+            [clojure.string :as str]
             [status-im.contact.db :as contact.db]
             [status-im.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
@@ -16,7 +17,7 @@
    toolbar/default-nav-back
    [toolbar/content-title ""]])
 
-(defn actions [{:keys [pending? public-key dapp?]}]
+(defn actions [{:keys [pending? public-key dapp? address]}]
   (concat (if (or (nil? pending?) pending?)
             [{:label               (i18n/label :t/add-to-contacts)
               :icon                :icons/add-contact
@@ -34,6 +35,7 @@
             [{:label               (i18n/label :t/send-transaction)
               :icon                :icons/arrow-right
               :action              #(re-frame/dispatch [:profile/send-transaction public-key])
+              :disabled?           (str/blank? address)
               :accessibility-label :send-transaction-button}])
           [{:label               (i18n/label :t/share-profile-link)
             :icon                :icons/share
