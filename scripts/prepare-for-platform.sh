@@ -31,7 +31,7 @@ fi
 
 scripts/run-environment-check.sh $1
 
-echo "Creating link: package.json -> ${PLATFORM_FOLDER}/package.json.orig "
+echo "Creating link: package.json -> ${PLATFORM_FOLDER}/package.json.orig"
 ln -sf ${PLATFORM_FOLDER}/package.json.orig package.json
 
 echo "Creating link: yarn.lock -> ${PLATFORM_FOLDER}/yarn.lock"

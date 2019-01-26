@@ -202,9 +202,10 @@ function load_rvm_if_available() {
 ###############
 
 function load_nvm_if_available() {
-  [ -f ~/.nvm/nvm.sh ] && source ~/.nvm/nvm.sh
+  local nvm_path=${NVM_DIR:-~/.nvm}
+  [ -f ${nvm_path}/nvm.sh ] && chmod +x ${nvm_path}/nvm.sh && source ${nvm_path}/nvm.sh
 }
 
 function nvm_installed() {
-  program_exists "nvm"
+  declare -F nvm &>/dev/null
 }

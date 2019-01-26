@@ -24,13 +24,12 @@ IMAGE_NAME = statusteam/status-build-android:$(IMAGE_TAG)
 
 build: $(ANDROID_NDK_ARCHIVE) $(ANDROID_SDK_ARCHIVE)
 	docker build \
-        --build-arg="BASE_IMAGE_TAG=$(BASE_IMAGE_TAG)" \
-        --build-arg="ANDROID_NDK_VERSION=$(ANDROID_NDK_VERSION)" \
-        --build-arg="ANDROID_SDK_VERSION=$(ANDROID_SDK_VERSION)" \
-        --build-arg="SDK_PLATFORM_VERSION=$(SDK_PLATFORM_VERSION)" \
-        --build-arg="SDK_BUILD_TOOLS_VERSION=$(SDK_BUILD_TOOLS_VERSION)" \
-        --label="commit=$(GIT_COMMIT)" \
-        -t $(IMAGE_NAME) .
+		--build-arg="ANDROID_NDK_VERSION=$(ANDROID_NDK_VERSION)" \
+		--build-arg="ANDROID_SDK_VERSION=$(ANDROID_SDK_VERSION)" \
+		--build-arg="SDK_PLATFORM_VERSION=$(SDK_PLATFORM_VERSION)" \
+		--build-arg="SDK_BUILD_TOOLS_VERSION=$(SDK_BUILD_TOOLS_VERSION)" \
+		--label="commit=$(GIT_COMMIT)" \
+		-t $(IMAGE_NAME) .
 
 $(ANDROID_NDK_ARCHIVE):
 	wget -q "$(ANDROID_NDK_URL)" -O "$(ANDROID_NDK_ARCHIVE)"
@@ -42,11 +41,11 @@ $(ANDROID_SDK_ARCHIVE):
 
 test: ## Run build inside the image as a test
 	docker run -u $(shell id -u):$(shell id -g) \
-        --name android-test --rm \
-        --tmpfs /var/tmp:rw,size=1G,exec,mode=1777 \
-        -v $(GIT_ROOT):/repo:rw \
-        -w /repo $(IMAGE_NAME) \
-        docker/android/build.sh
+		--name android-test --rm \
+		--tmpfs /var/tmp:rw,size=1G,exec,mode=1777 \
+		-v $(GIT_ROOT):/repo:rw \
+		-w /repo $(IMAGE_NAME) \
+		docker/android/build.sh
 
 push: build
 	docker push $(IMAGE_NAME)

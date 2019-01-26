@@ -33,9 +33,9 @@ if [[ -z "${1}" ]]; then usage; fi
 NAME=${1}
 
 getColumn () {
-    local out=$(awk -F';' "/^${NAME};/{print \$${1}}" "${TOOL_VERSIONS_FILE}")
-    [ -z "$out" ] && exit 1
-    echo "$out"
+    local value=$(awk -F';' "/^${NAME};/{print \$${1}}" "${TOOL_VERSIONS_FILE}")
+    [ -z "$value" ] && echo "\nUnexpected missing value for ${NAME} in ${TOOL_VERSIONS_FILE}" && exit 1
+    echo $value
 }
 
 if [[ $CHECKSUM ]]; then

@@ -40,10 +40,14 @@ function install_and_setup_package_manager() {
       cmake
       curl
       g++
+      lib32ncurses5    # required for Android SDK
+      lib32stdc++6     # required for Android SDK
       libssl-dev
       libtool
       make
+      pkg-config       # required to e.g. build watchman
       python-dev
+      rlwrap           # required to use clj
       wget
       unzip
     )
@@ -150,6 +154,7 @@ function install_watchman() {
       local current_dir=$(pwd)
       local clone_path="/tmp/watchman"
 
+      rm -rf $clone_path
       git clone https://github.com/facebook/watchman.git $clone_path
       cd $clone_path
       git checkout v$required_version
@@ -180,9 +185,31 @@ function install_homebrew_if_needed() {
   fi
 }
 
+function export_android_sdk_vars() {
+  local profile
+  local target_path
+  if is_macos; then
+    profile=$HOME/.bash_profile
+  elif is_linux; then
+    profile=$HOME/.bashrc
+  fi
+
+  [ -f $profile ] || touch $profile
+  if ! grep -Fq "export ANDROID_SDK_ROOT=" $profile; then
+    echo "export ANDROID_HOME=\"$1\"" >> $profile && \
+    echo "export ANDROID_SDK_ROOT=\"$1\"" >> $profile && \
+    echo "export PATH=\"$1/tools:$1/tools/bin:\$PATH\"" >> $profile
+  fi
+  export ANDROID_HOME="$1" && \
+  export ANDROID_SDK_ROOT="$1" && \
+  export PATH="$1/tools:$1/tools/bin:$PATH"
+}
+
 function install_android_sdk() {
   if is_macos; then
     brew_cask_install android-sdk
+
+    [ -z "$ANDROID_SDK_ROOT" ] && export_android_sdk_vars /usr/local/share/android-sdk
   elif is_linux; then
     install_android_sdk_linux
   fi
@@ -191,7 +218,33 @@ function install_android_sdk() {
 }
 
 function install_android_sdk_linux() {
-  cecho "@b@yellow[[+ Skipping Android SDK setup, not implemented on Linux]]"
+  if [ -z "$ANDROID_SDK_ROOT" ]; then
+    if grep -Fq "sdk.dir" $_localPropertiesPath; then
+      local _sdkParentDir="$(awk -F'=' "/^sdk.dir=/{print \$2}" "$_localPropertiesPath")"
+      export_android_sdk_vars $_sdkParentDir
+      cecho "@green[[Android SDK already declared.]]"
+    else
+      local required_version=$(toolversion android-sdk)
+      local _sdkParentDir=$HOME/Android/Sdk
+      mkdir -p $_sdkParentDir
+      cecho "@cyan[[Downloading Android SDK.]]"
+
+      downloadUrl . sdk-tools-linux.zip https://dl.google.com/android/repository/sdk-tools-linux-${required_version}.zip && \
+        cecho "@cyan[[Extracting Android SDK to $_sdkParentDir.]]" && \
+        unzip -q -o ./sdk-tools-linux.zip -d "$_sdkParentDir" && \
+        rm -f ./sdk-tools-linux.zip && \
+        _sdkTargetDir="$_sdkParentDir" && \
+        echo "sdk.dir=$_sdkTargetDir" | tee -a $_localPropertiesPath && \
+        export_android_sdk_vars $_sdkParentDir && \
+        cecho "@blue[[Android SDK installation completed in $_sdkTargetDir.]]" || \
+        return 0
+    fi
+  else
+    if ! grep -Fq "sdk.dir" $_localPropertiesPath; then
+      echo "sdk.dir=$ANDROID_SDK_ROOT" | tee -a $_localPropertiesPath
+    fi
+    cecho "@green[[Android SDK already declared.]]"
+  fi
 
   return 1
 }
@@ -243,11 +296,13 @@ function install_nvm() {
   if ! program_version_exists 'nvm' "$required_version"; then
     cecho "@b@blue[[+ Installing nvm $required_version]]"
 
+    # Ensure a profile file exists, otherwise NVM will not add its configuration anywhere
+    # and will therefore be inaccessible
+    [ -f "~/.bash_profile" ] || touch ~/.bash_profile
+
     sudo apt install -y build-essential libssl-dev
     source scripts/3rd-party/nvm/${required_version}/install.sh
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+    load_nvm_if_available
   else
     cecho "+ nvm already installed... skipping."
   fi
@@ -357,7 +412,7 @@ function dependency_setup() {
   echo
 
   cd "$(repo_path)"
-  eval "$@" || (cecho "@b@red[[Error running dependency install]]" && exit 1)
+  eval "$@" || (cecho "@b@red[[Error running dependency install '$@']]" && exit 1)
 
   echo
   echo "  + done"
@@ -370,10 +425,11 @@ function use_android_sdk() {
       echo "sdk.dir=$ANDROID_SDK_ROOT" | tee -a $_localPropertiesPath
     fi
 
-    local ANDROID_BUILD_TOOLS_VERSION=$(toolversion ANDROID_BUILD_TOOLS_VERSION)
-    local ANDROID_PLATFORM_VERSION=$(toolversion ANDROID_PLATFORM_VERSION)
+    local ANDROID_BUILD_TOOLS_VERSION=$(toolversion android-sdk-build-tools)
+    local ANDROID_PLATFORM_VERSION=$(toolversion android-sdk-platform)
     touch ~/.android/repositories.cfg
     echo y | sdkmanager "platform-tools" "build-tools;$ANDROID_BUILD_TOOLS_VERSION" "platforms;$ANDROID_PLATFORM_VERSION"
+    yes | sdkmanager --licenses
   else
     local _docUrl="https://status.im/build_status/"
     cecho "@yellow[[ANDROID_SDK_ROOT environment variable not defined, please install the Android SDK.]]"
@@ -383,22 +439,24 @@ function use_android_sdk() {
 
     exit 1
   fi
+
+  scripts/generate-keystore.sh
 }
 
 function install_android_ndk() {
   if grep -Fq "ndk.dir" $_localPropertiesPath; then
     cecho "@green[[Android NDK already declared.]]"
   else
+    local ANDROID_NDK_VERSION=$(toolversion android-ndk)
     local _ndkParentDir=~/Android/Sdk
     mkdir -p $_ndkParentDir
     cecho "@cyan[[Downloading Android NDK.]]"
 
-    PLATFORM="linux"
-    if [ "$(uname)" == "Darwin" ]; then # we run osx
+    local PLATFORM="linux"
+    if is_macos; then
         PLATFORM="darwin"
     fi
 
-    local ANDROID_NDK_VERSION=$(toolversion ANDROID_NDK_VERSION)
     downloadUrl . android-ndk.zip https://dl.google.com/android/repository/android-ndk-$ANDROID_NDK_VERSION-$PLATFORM-x86_64.zip && \
       cecho "@cyan[[Extracting Android NDK to $_ndkParentDir.]]" && \
       unzip -q -o ./android-ndk.zip -d "$_ndkParentDir" && \
