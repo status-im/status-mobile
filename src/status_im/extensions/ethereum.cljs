@@ -312,8 +312,8 @@
     :else block))
 
 (defn- execute-get-logs [_ {:keys [from to address topics block-hash] :as m}]
-  (let [params [{:from      (ensure-hex-bn from)
-                 :to        (ensure-hex-bn to)
+  (let [params [{:fromBlock      (ensure-hex-bn from)
+                 :toBlock        (ensure-hex-bn to)
                  :address   address
                  :topics    (generate-topic topics)
                  :blockhash block-hash}]]
