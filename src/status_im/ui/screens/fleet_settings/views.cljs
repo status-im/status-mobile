@@ -15,7 +15,7 @@
   [react/view (if platform/desktop?
                 {:style (styles/fleet-icon-container current?)}
                 (styles/fleet-icon-container current?))
-   [vector-icons/icon :icons/fleet
+   [vector-icons/icon :main-icons/fleet
     (if platform/desktop? {:style (styles/fleet-icon current?)}
         (styles/fleet-icon current?))]])
 

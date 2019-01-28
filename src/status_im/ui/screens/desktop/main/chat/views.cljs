@@ -58,7 +58,7 @@
      [react/touchable-highlight
       {:on-press #(show-desktop-menu
                    (get-chat-menu-items group-chat public? chat-id))}
-      [vector-icons/icon :icons/dots-horizontal
+      [vector-icons/icon :main-icons/more
        {:style {:tint-color colors/black
                 :width      24
                 :height     24}}]]]))
@@ -88,10 +88,10 @@
   (views/letsubs [username [:contacts/contact-name-by-identity from]]
     [react/view {:style styles/quoted-message-container}
      [react/view {:style styles/quoted-message-author-container}
-      [icons/icon :icons/reply {:style           (styles/reply-icon outgoing)
-                                :width           16
-                                :height          16
-                                :container-style (when outgoing {:opacity 0.4})}]
+      [icons/icon :main-icons/reply {:style           (styles/reply-icon outgoing)
+                                     :width           16
+                                     :height          16
+                                     :container-style (when outgoing {:opacity 0.4})}]
       [react/text {:style (message.style/quoted-message-author outgoing)}
        (chat-utils/format-reply-author from username current-public-key)]]
      [react/text {:style           (message.style/quoted-message-text outgoing)
@@ -263,7 +263,7 @@
                                                 (.focus @inp-ref)
                                                 (re-frame/dispatch [:chat.ui/send-current-message])))}
        [react/view {:style (styles/send-icon inactive?)}
-        [icons/icon :icons/arrow-left {:style (styles/send-icon-arrow inactive?)}]]])))
+        [icons/icon :main-icons/arrow-left {:style (styles/send-icon-arrow inactive?)}]]])))
 
 (views/defview reply-message [from message-text]
   (views/letsubs [username           [:contacts/contact-name-by-identity from]
@@ -292,7 +292,7 @@
          :on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])
          :accessibility-label :cancel-message-reply}
         [react/view {}
-         [icons/icon :icons/close {:style styles/reply-close-icon}]]]])))
+         [icons/icon :main-icons/close {:style styles/reply-close-icon}]]]])))
 
 (views/defview chat-text-input [chat-id input-text]
   (views/letsubs [inp-ref (atom nil)
@@ -373,7 +373,7 @@
          [react/view {:style styles/chat-profile-row}
           [react/view {:style styles/chat-profile-icon-container
                        :accessibility-label :send-message-link}
-           [vector-icons/icon :icons/chats {:style (styles/chat-profile-icon colors/blue)}]]
+           [vector-icons/icon :main-icons/message {:style (styles/chat-profile-icon colors/blue)}]]
           [react/text {:style (styles/contact-card-text colors/blue)}
            (i18n/label :t/send-message)]]]
         [react/text {:style styles/chat-profile-contact-code} (i18n/label :t/contact-code)]

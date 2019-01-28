@@ -46,7 +46,7 @@
                             nil
                             [toolbar/content-title ""]
                             [toolbar/default-done {:handler             #(re-frame/dispatch [:my-profile/save-profile])
-                                                   :icon                :icons/ok
+                                                   :icon                :main-icons/check
                                                    :icon-opts           {:color colors/blue}
                                                    :accessibility-label :done-button}]])}))
 
@@ -231,7 +231,7 @@
         [react/view {:style styles/advanced-button-row}
          [react/text {:style styles/advanced-button-label}
           (i18n/label :t/wallet-advanced)]
-         [icons/icon (if advanced? :icons/up :icons/down) {:color colors/blue}]]]]]
+         [icons/icon (if advanced? :main-icons/dropdown-up :main-icons/dropdown) {:color colors/blue}]]]]]
      (when advanced?
        [advanced-settings params on-show])]))
 

@@ -80,13 +80,13 @@
            (if dapp?
              [chat-icon.screen/dapp-icon-permission dapp 48]
              [react/view styles/permissions-panel-dapp-icon-container
-              [icons/icon :icons/dapp {:color colors/gray}]])
+              [icons/icon :main-icons/dapp {:color colors/gray}]])
            [react/view {:margin-left 3 :margin-right 3}
             [react/view styles/dot]]
            [react/view {:margin-right 3}
             [react/view styles/dot]]
            [react/view styles/permissions-panel-ok-icon-container
-            [icons/icon :icons/ok styles/permissions-panel-ok-ico]]
+            [icons/icon :main-icons/check styles/permissions-panel-ok-ico]]
            [react/view {:margin-left 3 :margin-right 3}
             [react/view styles/dot]]
            [react/view {:margin-right 3}

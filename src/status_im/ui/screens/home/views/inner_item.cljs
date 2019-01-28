@@ -80,7 +80,7 @@
     [react/view styles/name-view
      (when public-group?
        [react/view styles/public-group-icon-container
-        [vector-icons/icon :icons/public-chat {:color colors/gray}]])
+        [vector-icons/icon :tiny-icons/tiny-public {:color colors/gray}]])
      (when private-group?
        [react/view styles/private-group-icon-container
         [vector-icons/icon :tiny-icons/tiny-group {:color colors/gray}]])
@@ -119,7 +119,7 @@
      (if dapp
        [chat-icon.screen/dapp-icon-browser dapp 40]
        [react/view styles/browser-icon-container
-        [vector-icons/icon :icons/discover {:color colors/gray}]])]
+        [vector-icons/icon :main-icons/browser {:color colors/gray}]])]
     [react/view styles/chat-info-container
      [react/view styles/item-upper-container
       [react/view styles/name-view

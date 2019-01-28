@@ -87,7 +87,7 @@
    [react/view {:style styles/pair-this-device-actions}
     [react/view
      [react/view (styles/pairing-button true)
-      [icons/icon :icons/wnode (icon-style (styles/pairing-button-icon true))]]]
+      [icons/icon :main-icons/wnode (icon-style (styles/pairing-button-icon true))]]]
     [react/view {:style styles/pairing-actions-text}
      [react/view
       [react/text {:style styles/pair-this-device-title}
@@ -99,8 +99,8 @@
   [react/view {:style styles/installation-item}
    [react/view {:style (styles/pairing-button true)}
     [icons/icon (if utils.platform/desktop?
-                  :icons/desktop
-                  :icons/mobile)
+                  :main-icons/desktop
+                  :main-icons/mobile)
      (icon-style (styles/pairing-button-icon true))]]
    [react/view {:style styles/pairing-actions-text}
     [react/view
@@ -123,8 +123,8 @@
     [react/view {:style (styles/pairing-button enabled?)}
      [icons/icon (if (= "desktop"
                         device-type)
-                   :icons/desktop
-                   :icons/mobile)
+                   :main-icons/desktop
+                   :main-icons/mobile)
       (icon-style (styles/pairing-button-icon enabled?))]]
     [react/view {:style styles/pairing-actions-text}
      [react/view

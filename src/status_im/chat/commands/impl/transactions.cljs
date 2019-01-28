@@ -183,7 +183,7 @@
     [react/touchable-highlight {:on-press #(when tx-exists?
                                              (re-frame/dispatch [:show-transaction-details tx-hash]))}
      [react/view transactions-styles/command-send-status-container
-      [vector-icons/icon (if confirmed? :icons/check :icons/dots)
+      [vector-icons/icon (if confirmed? :main-icons/check :main-icons/more)
        {:color           (if outgoing colors/blue-light colors/blue)
         :container-style (transactions-styles/command-send-status-icon outgoing)}]
       [react/view

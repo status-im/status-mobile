@@ -49,7 +49,7 @@
   (views/letsubs []
     [react/view {:style (styles/tooltip-container opacity)}
      [react/view {:style styles/tooltip-icon-text}
-      [vector-icons/icon :icons/check
+      [vector-icons/icon :main-icons/check
        {:style styles/check-icon}]
       [react/text {:style {:font-size 14 :color colors/green}}
        (i18n/label :sharing-copied-to-clipboard)]]
@@ -220,7 +220,7 @@
       (i18n/label :share-contact-code)]]
     [react/view {:style               styles/share-contact-icon-container
                  :accessibility-label :share-my-contact-code-button}
-     [vector-icons/icon :icons/qr {:style {:tint-color colors/blue}}]]]])
+     [vector-icons/icon :main-icons/qr {:style {:tint-color colors/blue}}]]]])
 
 (defn help-item [help-open?]
   [react/touchable-highlight {:style    (styles/adv-settings-row help-open?)
@@ -229,7 +229,7 @@
     [react/text {:style (styles/adv-settings-row-text colors/black)
                  :font  (if help-open? :medium :default)}
      (i18n/label  :t/help-center)]
-    [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]])
+    [vector-icons/icon :main-icons/next {:style {:tint-color colors/gray}}]]])
 
 (defn advanced-settings-item [adv-settings-open?]
   [react/touchable-highlight {:style  (styles/adv-settings-row adv-settings-open?)
@@ -240,7 +240,7 @@
     [react/text {:style (styles/adv-settings-row-text colors/black)
                  :font  (if adv-settings-open? :medium :default)}
      (i18n/label :t/advanced-settings)]
-    [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]])
+    [vector-icons/icon :main-icons/next {:style {:tint-color colors/gray}}]]])
 
 (views/defview profile [{:keys [seed-backed-up? mnemonic] :as user}]
   (views/letsubs [current-view-id [:get :view-id]
@@ -273,7 +273,7 @@
          [react/view {:style styles/adv-settings}
           [react/text {:style (styles/profile-row-text colors/black)}
            (i18n/label :t/devices)]
-          [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]]
+          [vector-icons/icon :main-icons/next {:style {:tint-color colors/gray}}]]]
         (when show-backup-seed?
           [react/touchable-highlight {:style  (styles/profile-row backup-recovery-phrase-open?)
                                       :on-press #(re-frame/dispatch [:navigate-to :backup-recovery-phrase])}

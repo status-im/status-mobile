@@ -62,7 +62,7 @@
       [react/i18n-text {:style (merge wallet.components.styles/label
                                       styles/advanced-label)
                         :key   :wallet-advanced}]
-      [vector-icons/icon (if advanced? :icons/up :icons/down) {:color :white}]]]]
+      [vector-icons/icon (if advanced? :main-icons/dropdown-up :main-icons/dropdown) {:color :white}]]]]
    (when advanced?
      [advanced-cartouche native-currency transaction])])
 
@@ -115,7 +115,7 @@
                                               (= :offline network-status))
                      :accessibility-label :sign-transaction-button}
       (i18n/label sign-label)
-      [vector-icons/icon :icons/forward {:color colors/white}]]]))
+      [vector-icons/icon :main-icons/next {:color colors/white}]]]))
 
 ;; "Sign Transaction >" button
 (defn- sign-transaction-button [amount-error to amount sufficient-funds? sufficient-gas? modal? online?]
@@ -136,7 +136,7 @@
                      :text-style          {:color :white}
                      :accessibility-label :sign-transaction-button}
       (i18n/label :t/transactions-sign-transaction)
-      [vector-icons/icon :icons/forward {:color (if sign-enabled? colors/white colors/white-light-transparent)}]]]))
+      [vector-icons/icon :main-icons/next {:color (if sign-enabled? colors/white colors/white-light-transparent)}]]]))
 
 (defn- render-send-transaction-view [{:keys [modal? transaction scroll advanced? network all-tokens amount-input network-status]}]
   (let [{:keys [amount amount-text amount-error asset-error show-password-input? to to-name sufficient-funds?

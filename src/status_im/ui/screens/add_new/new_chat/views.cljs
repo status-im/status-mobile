@@ -39,7 +39,7 @@
                                   :style               add-new.styles/button-container
                                   :accessibility-label :scan-contact-code-button}
        [react/view
-        [vector-icons/icon :icons/qr {:color colors/blue}]]]]
+        [vector-icons/icon :main-icons/qr {:color colors/blue}]]]]
      [react/text {:style styles/error-message}
       error-message]
      (when (seq contacts)

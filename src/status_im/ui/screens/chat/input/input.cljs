@@ -105,8 +105,8 @@
        {:on-press            #(re-frame/dispatch [:chat.ui/set-command-prefix])
         :accessibility-label :chat-commands-button}
        [react/view
-        [vector-icons/icon :icons/input-commands {:container-style style/input-commands-icon
-                                                  :color           :dark}]]])))
+        [vector-icons/icon :main-icons/commands {:container-style style/input-commands-icon
+                                                 :color           :dark}]]])))
 
 (defview reply-message [from message-text]
   (letsubs [username           [:contacts/contact-name-by-identity from]
@@ -127,8 +127,8 @@
          :on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])
          :accessibility-label :cancel-message-reply}
         [react/view {:style style/cancel-reply-container}
-         [vector-icons/icon :icons/close {:container-style style/cancel-reply-icon
-                                          :color           colors/white}]]]])))
+         [vector-icons/icon :main-icons/close {:container-style style/cancel-reply-icon
+                                               :color           colors/white}]]]])))
 
 (defview input-container []
   (letsubs [margin               [:chats/input-margin]

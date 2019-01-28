@@ -103,7 +103,7 @@
     (if icon-content
       icon-content
       (when (and active? (not hide-arrow?))
-        [vector-icons/icon :icons/forward {:color colors/gray}]))]])
+        [vector-icons/icon :main-icons/next {:color colors/gray}]))]])
 
 (defn settings-switch-item
   [{:keys [label-kw value action-fn active?]

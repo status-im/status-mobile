@@ -31,4 +31,4 @@
        [react/text {:style styles/bottom-tooltip-text} label]
        [react/touchable-highlight {:on-press on-close
                                    :style    styles/close-icon}
-        [vector-icons/icon :icons/close {:color colors/white}]]]]]))
+        [vector-icons/icon :main-icons/close {:color colors/white}]]]]]))

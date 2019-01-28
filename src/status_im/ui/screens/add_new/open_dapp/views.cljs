@@ -57,7 +57,7 @@
        (i18n/label :t/dapp)]]
      [react/view {:margin-top 24}
       [action-button/action-button {:label               (i18n/label :t/open)
-                                    :icon                :icons/address
+                                    :icon                :main-icons/address
                                     :icon-opts           {:color colors/blue}
                                     :accessibility-label :open-dapp-button
                                     :on-press            #(re-frame/dispatch [:browser.ui/open-dapp-button-pressed dapp-url])}]

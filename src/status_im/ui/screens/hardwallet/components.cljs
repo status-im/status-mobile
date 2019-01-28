@@ -81,7 +81,7 @@
 (defn maintain-card [step]
   (let [modal-visible? (reagent/atom false)
         animation-value (animation/create-value 0)
-        ;TODO(dmitryn): make animation smoother
+                                        ;TODO(dmitryn): make animation smoother
         interpolate-fn (fn [output-range]
                          (animation/interpolate animation-value
                                                 {:inputRange  [0 0.25 0.5 0.75 1]
@@ -101,7 +101,7 @@
                                                       (re-frame/dispatch [:hardwallet.ui/get-application-info])
                                                       (reset! modal-visible? true))}
                                         [react/view styles/hardwallet-icon-container
-                                         [vector-icons/icon :icons/hardwallet {:color colors/blue}]
+                                         [vector-icons/icon :main-icons/keycard {:color colors/blue}]
                                          [vector-icons/icon :icons/indicator-small {:color           colors/blue
                                                                                     :container-style (styles/hardwallet-icon-indicator-small-container
                                                                                                       (interpolate-fn [0 0.5 1 0.5 0]))}]

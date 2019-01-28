@@ -39,7 +39,7 @@
                                                              :mailserver.callback/qr-code-scanned])
                               :style    styles/qr-code}
    [react/view
-    [vector-icons/icon :icons/qr {:color colors/blue}]]])
+    [vector-icons/icon :main-icons/qr {:color colors/blue}]]])
 
 (views/defview edit-mailserver []
   (views/letsubs [mailserver [:mailserver.edit/mailserver]

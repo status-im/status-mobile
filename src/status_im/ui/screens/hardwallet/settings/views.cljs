@@ -119,7 +119,7 @@
        (if (zero? puk-retry-counter)
          [card-blocked]
          [react/view
-          [action-row {:icon     :icons/info
+          [action-row {:icon     :main-icons/info
                        :label    :t/help-capitalized
                        :on-press #(.openURL react/linking "https://hardwallet.status.im")}]
           (when pairing
@@ -127,12 +127,12 @@
              [action-row {:icon     :main-icons/add
                           :label    :t/change-pin
                           :on-press #(re-frame/dispatch [:keycard-settings.ui/change-pin-pressed])}]
-             [action-row {:icon     :icons/close
+             [action-row {:icon     :main-icons/close
                           :label    :t/unpair-card
                           :on-press #(re-frame/dispatch [:keycard-settings.ui/unpair-card-pressed])}]])])]
       [react/view {:margin-bottom 20
                    :margin-left   16}
-       [action-row {:icon        :icons/logout
+       [action-row {:icon        :main-icons/logout
                     :color-theme :red
                     :label       :t/reset-card
                     :on-press    #(re-frame/dispatch [:keycard-settings.ui/reset-card-pressed])}]]]]))

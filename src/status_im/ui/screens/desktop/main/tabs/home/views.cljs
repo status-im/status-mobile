@@ -49,7 +49,7 @@
          (when (and group-chat (not public?))
            [icons/icon :tiny-icons/tiny-group])
          (when public?
-           [icons/icon :icons/public-chat])
+           [icons/icon :tiny-icons/tiny-public])
          [react/text {:ellipsize-mode  :tail
                       :number-of-lines 1
                       :style           (styles/chat-name current?)}
@@ -118,7 +118,7 @@
      [action-button/action-button
       {:label               (i18n/label :t/start-new-chat)
        :accessibility-label :start-1-1-chat-button
-       :icon                :icons/newchat
+       :icon                :main-icons/add-contact
        :icon-opts           {:color colors/blue}
        :on-press            #(do
                                (re-frame/dispatch [:set-in [:desktop :popup] nil])
@@ -134,7 +134,7 @@
      [action-button/action-button
       {:label               (i18n/label :t/new-public-group-chat)
        :accessibility-label :join-public-chat-button
-       :icon                :icons/public
+       :icon                :main-icons/public-chat
        :icon-opts           {:color colors/blue}
        :on-press            #(do
                                (re-frame/dispatch [:set-in [:desktop :popup] nil])

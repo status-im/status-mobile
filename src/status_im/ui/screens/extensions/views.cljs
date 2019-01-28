@@ -12,7 +12,7 @@
 
 (def mailserver-icon
   [react/view (styles/mailserver-icon true)
-   [vector-icons/icon :icons/mailserver {:color :white}]])
+   [vector-icons/icon :main-icons/mailserver {:color :white}]])
 
 (defn- render-extension [{:keys [name url active?]}]
   [list/deletable-list-item {:type      :extensions

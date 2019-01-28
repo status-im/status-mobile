@@ -18,8 +18,8 @@
    [toolbar/content-title {:color :white}
     (i18n/label :t/wallet-choose-recipient)]
    [toolbar/actions [{:icon      (if (= :on camera-flashlight)
-                                   :icons/flash-active
-                                   :icons/flash-inactive)
+                                   :main-icons/flash-active
+                                   :main-icons/flash-inactive)
                       :icon-opts {:color :white}
                       :handler   #(re-frame/dispatch [:wallet/toggle-flashlight])}]]])
 

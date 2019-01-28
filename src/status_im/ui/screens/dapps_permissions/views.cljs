@@ -15,7 +15,7 @@
 
 (defn d-icon []
   [react/view styles/icon-container
-   [icons/icon :icons/dapp {:color colors/gray}]])
+   [icons/icon :main-icons/dapp {:color colors/gray}]])
 
 (defn prepare-items [dapps]
   (fn [{:keys [dapp permissions]}]

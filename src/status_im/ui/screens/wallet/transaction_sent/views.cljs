@@ -27,7 +27,7 @@
                 :shadow-color     "rgba(43, 59, 71, 0.12)"
                 :align-items      :center
                 :justify-content  :center}
-    [vi/icon :icons/tiny-check {:color colors/blue}]]])
+    [vi/icon :tiny-icons/tiny-check {:color colors/blue}]]])
 
 (defn- transaction-sent-message []
   [react/view {:align-items :center}

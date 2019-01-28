@@ -24,7 +24,7 @@
   [react/touchable-highlight {:on-press #(re-frame/dispatch
                                           [:extensions.ui/install-extension-button-pressed extension-id])}
    [react/view style/extension-container
-    [icons/icon :icons/info {:color (if outgoing colors/white colors/gray)}]
+    [icons/icon :main-icons/info {:color (if outgoing colors/white colors/gray)}]
     [react/text {:style (style/extension-text outgoing)}
      (i18n/label :to-see-this-message)]
     [react/text {:style (style/extension-install outgoing)}
@@ -70,7 +70,7 @@
   (letsubs [username [:contacts/contact-name-by-identity from]]
     [react/view {:style (style/quoted-message-container outgoing)}
      [react/view {:style style/quoted-message-author-container}
-      [vector-icons/icon :icons/reply {:color (if outgoing colors/wild-blue-yonder colors/gray)}]
+      [vector-icons/icon :main-icons/reply {:color (if outgoing colors/wild-blue-yonder colors/gray)}]
       [react/text {:style (style/quoted-message-author outgoing)}
        (chat.utils/format-reply-author from username current-public-key)]]
      [react/text {:style           (style/quoted-message-text outgoing)
@@ -210,7 +210,7 @@
                                   :not-sent-click
                                   :not-sent-tap))]
     [react/view style/not-sent-icon
-     [vector-icons/icon :icons/warning {:color colors/red}]]]])
+     [vector-icons/icon :main-icons/warning {:color colors/red}]]]])
 
 (defview command-status [{{:keys [network]} :params}]
   (letsubs [current-network [:network-name]]
@@ -219,7 +219,7 @@
        [react/text {:style style/not-sent-text}
         (i18n/label :network-mismatch)]
        [react/view style/not-sent-icon
-        [vector-icons/icon :icons/warning {:color colors/red}]]])))
+        [vector-icons/icon :main-icons/warning {:color colors/red}]]])))
 
 (defn message-delivery-status
   [{:keys [chat-id message-id current-public-key user-statuses content last-outgoing? outgoing message-type] :as message}]

@@ -29,7 +29,7 @@
                                                              :bootnodes.callback/qr-code-scanned])
                               :style    styles/qr-code}
    [react/view
-    [vector-icons/icon :icons/qr {:color colors/blue}]]])
+    [vector-icons/icon :main-icons/qr {:color colors/blue}]]])
 
 (views/defview edit-bootnode []
   (views/letsubs [manage-bootnode [:get-manage-bootnode]

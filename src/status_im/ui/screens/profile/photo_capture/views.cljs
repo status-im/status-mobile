@@ -43,4 +43,4 @@
                                                      (.then image-captured)
                                                      (.catch #(log/debug "Error capturing image: " %)))))}
         [react/view
-         [icons/icon :icons/camera {:color :white}]]]]]]))
+         [icons/icon :main-icons/camera {:color :white}]]]]]]))

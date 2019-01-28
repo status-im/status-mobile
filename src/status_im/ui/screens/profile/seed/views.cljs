@@ -127,7 +127,7 @@
   [react/view {:style styles/finish-container}
    [react/view {:style styles/finish-logo-container}
     [react/view {:style (components.common.styles/logo-container 80 true)}
-     [icons/icon :icons/ok styles/ok-icon]]]
+     [icons/icon :main-icons/check styles/ok-icon]]]
    [react/text {:style styles/finish-label}
     (i18n/label :t/you-are-all-set)]
    [react/text {:style styles/finish-description}

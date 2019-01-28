@@ -19,7 +19,7 @@
 (defn actions [{:keys [pending? public-key]}]
   (concat (if (or (nil? pending?) pending?)
             [{:label               (i18n/label :t/add-to-contacts)
-              :icon                :icons/add-contact
+              :icon                :main-icons/add-contact
               :action              #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])
               :accessibility-label :add-to-contacts-button}]
             [{:label               (i18n/label :t/in-contacts)

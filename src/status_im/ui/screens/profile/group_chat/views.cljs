@@ -34,7 +34,7 @@
    nil
    [toolbar/content-title ""]
    [toolbar/default-done {:handler   #(re-frame/dispatch [:group-chats.ui/save-pressed])
-                          :icon      :icons/ok
+                          :icon      :main-icons/check
                           :icon-opts {:color               colors/blue
                                       :accessibility-label :done-button}}]])
 
@@ -45,11 +45,11 @@
        :icon   :main-icons/add
        :action #(re-frame/dispatch [:navigate-to :add-participants-toggle-list])}])
    [{:label               (i18n/label :t/clear-history)
-     :icon                :icons/close
+     :icon                :main-icons/close
      :action              #(re-frame/dispatch [:chat.ui/clear-history-pressed])
      :accessibility-label :clear-history-button}
     {:label               (i18n/label :t/delete-chat)
-     :icon                :icons/arrow-left
+     :icon                :main-icons/arrow-left
      :action              #(re-frame/dispatch [:group-chats.ui/remove-chat-pressed chat-id])
      :accessibility-label :delete-chat-button}]))
 

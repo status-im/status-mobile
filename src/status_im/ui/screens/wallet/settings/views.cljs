@@ -77,7 +77,7 @@
      nil
      [toolbar/content-wrapper]
      [toolbar/actions
-      [{:icon      :icons/options
+      [{:icon      :main-icons/more
         :icon-opts {:color               colors/white
                     :accessibility-label :options-menu-button}
         :options   (into [{:label  (i18n/label :t/wallet-manage-assets)

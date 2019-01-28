@@ -74,7 +74,7 @@
    [react/view {:flex 1}
     content]])
 
-(defn cartouche [{:keys [disabled? on-press icon icon-opts] :or {icon :icons/forward} :as m} header content]
+(defn cartouche [{:keys [disabled? on-press icon icon-opts] :or {icon :main-icons/next} :as m} header content]
   [react/view {:style styles/cartouche-container}
    [react/text {:style styles/cartouche-header}
     header]
@@ -266,7 +266,7 @@
 (defn recipient-selector [{:keys [name address disabled? contact-only? request? modal?]}]
   [cartouche {:on-press  #(on-choose-recipient contact-only?)
               :disabled? disabled?
-              :icon      :icons/dots-horizontal
+              :icon      :main-icons/more
               :icon-opts {:accessibility-label :choose-contact-button}}
    (i18n/label :t/wallet-choose-recipient)
    [react/view {:accessibility-label :choose-recipient-button}

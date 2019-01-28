@@ -12,12 +12,12 @@
    {:on-press (fn [_]
                 (re-frame/dispatch [:chat.ui/set-chat-ui-props {:show-stickers? (not show-stickers?)}])
                 (react/dismiss-keyboard!))}
-   [vector-icons/icon :icons/stickers {:container-style {:margin 14 :margin-right 6}
-                                       :color           (if show-stickers? colors/blue colors/gray)}]])
+   [vector-icons/icon :main-icons/stickers {:container-style {:margin 14 :margin-right 6}
+                                            :color           (if show-stickers? colors/blue colors/gray)}]])
 
 (defn- no-stickers-yet-panel []
   [react/view {:style {:flex 1 :align-items :center :justify-content :center}}
-   [vector-icons/icon :icons/stickers-big {:color colors/gray}]
+   [vector-icons/icon :stickers-icons/stickers-big {:color colors/gray}]
    [react/text {:style {:margin-top 8 :font-size 17}} (i18n/label :t/you-dont-have-stickers)]
    [react/touchable-highlight {:on-press #(do
                                             (re-frame/dispatch [:stickers/load-packs])
@@ -44,7 +44,7 @@
     (if (seq stickers)
       [stickers-panel (map #(hash-map :uri %) stickers)]
       [react/view {:style {:flex 1 :align-items :center :justify-content :center}}
-       [vector-icons/icon :icons/stickers-big {:color colors/gray}]
+       [vector-icons/icon :stickers-icons/stickers-big {:color colors/gray}]
        [react/text {:style {:margin-top 8 :font-size 17}} (i18n/label :t/recently-used-stickers)]])))
 
 (def icon-size 28)
@@ -79,7 +79,7 @@
        [vector-icons/icon :main-icons/add {:width 20 :height 20 :color colors/white}]]
       [react/view {:width 4}]
       [pack-icon {:id :recent :selected? (or (= :recent selected-pack) (and (nil? selected-pack) (seq installed-packs)))}
-       [vector-icons/icon :icons/clock]]
+       [vector-icons/icon :stickers-icons/recent]]
       ;; TODO make scrollable
       (for [{:keys [id thumbnail]} installed-packs]
         ^{:key id}

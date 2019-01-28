@@ -92,14 +92,14 @@
    [view {:style {:flex-direction :row :margin-vertical 14 :align-items :center}}
     [view {:style {:flex 1}}]
     [text {:style {:color color :font-size 15 :margin-right 5}} "Sign to confirm"]
-    [icon {:key :icons/forward :color color}]])
+    [icon {:key :main-icons/next :color color}]])
 
  views/transaction-failed-panel
  (let [{} properties]
    [view {:style {:flex 1 :background-color "#4360df"}}
     [view {:style {:flex 1 :justify-content :center :align-items :center}}
      [view {:style {:background-color :white :width 56 :height 56 :border-radius 28 :align-items :center :justify-content :center}}
-      [icon {:key :icons/ok :color "#4360df"}]]
+      [icon {:key :main-icons/check :color "#4360df"}]]
      [text {:style {:color :white :font-size 17 :margin-top 16}} "Transaction Failed"]
      [text {:style {:color "rgba(255,255,255,0.6)" :font-size 15 :margin-top 8}} "Sorry :("]
      [view {:style {:height 1 :background-color :white :opacity 0.2}}]
@@ -112,7 +112,7 @@
    [view {:style {:flex 1 :background-color "#4360df"}}
     [view {:style {:flex 1 :justify-content :center :align-items :center :margin-top 200}}
      [view {:style {:background-color :white :width 56 :height 56 :border-radius 28 :align-items :center :justify-content :center}}
-      [icon {:key :icons/ok :color "#4360df"}]]
+      [icon {:key :main-icons/check :color "#4360df"}]]
      [text {:style {:color :white :font-size 17 :margin-top 16}} "Transaction Pending"]
      [text {:style {:color "rgba(255,255,255,0.6)" :font-size 15 :margin-top 8 :margin-horizontal 40}}
       "Your transaction is pending confirmation on the blockchain. You can check its status in your transaction history."]
@@ -126,7 +126,7 @@
    [view {:style {:flex 1 :background-color "#4360df"}}
     [view {:style {:flex 1 :justify-content :center :align-items :center}}
      [view {:style {:background-color :white :width 56 :height 56 :border-radius 28 :align-items :center :justify-content :center}}
-      [icon {:key :icons/ok :color "#4360df"}]]
+      [icon {:key :main-icons/check :color "#4360df"}]]
      [text {:style {:color :white :font-size 17 :margin-top 16}} "Transaction Confirmed"]
      [view {:style {:height 1 :background-color :white :opacity 0.2}}]
      [touchable-opacity {:on-press [store/put {:key "completed?" :value false}]}
@@ -185,7 +185,7 @@
                [text {:style {:margin-left 16 :color :white :font-size 15 :opacity 0.6}} src-symbol]]
               [text {:style {:margin-left 16 :color :white :font-size 15 :opacity 0.6}} "Available: ${balance}"]]
              [text {:style {:flex 1 :color :white :margin-left 12}} "Select token"])
-           [icon {:key :icons/forward :color :white}]]]
+           [icon {:key :main-icons/next :color :white}]]]
          [text {:style {:color :white :font-size 15 :margin-top 28}} "Amount"]
          [view {:style {:flex-direction :row :margin-top 8 :border-radius 8 :height 52 :background-color "rgba(255,255,255,0.1)"
                         :align-items :center :padding-horizontal 14 :margin-bottom 32}}
@@ -206,7 +206,7 @@
               [text {:style {:margin-left 16 :color :white :font-size 15}} tokenname2]
               [text {:style {:margin-left 16 :color :white :font-size 15 :opacity 0.6}} dest-symbol]]
              [text {:style {:flex 1 :color :white :margin-left 12}} "Select token"])
-           [icon {:key :icons/forward :color :white}]]]
+           [icon {:key :main-icons/next :color :white}]]]
          [text {:style {:color :white :opacity 0.6 :font-size 15 :margin-top 28}} "Amount to receive"]
          [view {:style {:flex-direction :row :margin-top 8 :border-radius 8 :height 52 :border-color "rgba(255,255,255,0.1)" :border-width 1
                         :align-items :center :padding-horizontal 14}}

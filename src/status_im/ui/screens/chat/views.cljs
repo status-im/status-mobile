@@ -45,8 +45,8 @@
        [react/touchable-highlight
         {:on-press            #(re-frame/dispatch [:contact.ui/close-contact-pressed contact-identity])
          :accessibility-label :add-to-contacts-close-button}
-        [vector-icons/icon :icons/close {:color           colors/black
-                                         :container-style style/add-contact-close-icon}]]])))
+        [vector-icons/icon :main-icons/close {:color           colors/black
+                                              :container-style style/add-contact-close-icon}]]])))
 
 (defn- on-options [chat-id chat-name group-chat? public?]
   (list-selection/show {:title   chat-name
@@ -64,7 +64,7 @@
         (toolbar/nav-back-count {:home? true}))
       [toolbar-content/toolbar-content-view]
       (when-not modal?
-        [toolbar/actions [{:icon      :icons/options
+        [toolbar/actions [{:icon      :main-icons/more
                            :icon-opts {:color               :black
                                        :accessibility-label :chat-menu-button}
                            :handler   #(on-options chat-id name group-chat public?)}]])]
@@ -113,7 +113,7 @@
                           (not (:dapp? contact)))]
       [react/view style/empty-chat-container
        (when one-to-one
-         [vector-icons/icon :icons/lock])
+         [vector-icons/icon :tiny-icons/tiny-lock])
        [react/text {:style style/empty-chat-text}
         (if one-to-one
           [react/text style/empty-chat-container-one-to-one

@@ -36,7 +36,7 @@
                         :width 34
                         :zIndex 1
                         :background-color colors/blue}}
-    [vector-icons/icon :icons/info {:color colors/white}]]
+    [vector-icons/icon :main-icons/info {:color colors/white}]]
    [react/view
     {:style {:border-color "rgba(255,255,255,0.6)"
              :border-width 1

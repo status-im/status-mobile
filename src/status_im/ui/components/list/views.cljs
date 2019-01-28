@@ -99,7 +99,7 @@
     [touchable-item handler item]))
 
 (def item-icon-forward
-  [item-icon {:icon      :icons/forward
+  [item-icon {:icon      :main-icons/next
               :style     {:width 12}
               :icon-opts {:color colors/white}}])
 
@@ -133,7 +133,7 @@
                    :uppercase?      true}
        (str accessory-value)])
     (when-not hide-chevron?
-      [vector-icons/icon :icons/forward {:color (colors/alpha colors/gray 0.4)}])]])
+      [vector-icons/icon :main-icons/next {:color (colors/alpha colors/gray 0.4)}])]])
 
 (defn- wrap-render-fn [f]
   (fn [data]
@@ -269,4 +269,4 @@
         [react/touchable-highlight {:style    styles/delete-icon-highlight
                                     :on-press on-delete}
          [react/view {:style styles/delete-icon-container}
-          [vector-icons/icon :icons/delete {:color colors/red}]]]]])))
+          [vector-icons/icon :main-icons/delete {:color colors/red}]]]]])))

@@ -18,10 +18,10 @@
                                                 :allowed?       true}
    constants/dapp-permission-contact-code      {:title       (i18n/label :t/wants-to-access-profile)
                                                 :description (i18n/label :t/your-contact-code)
-                                                :icon        :icons/profile-active}
+                                                :icon        :main-icons/profile}
    constants/dapp-permission-web3              {:title       (i18n/label :t/dapp-would-like-to-connect-wallet)
                                                 :description (i18n/label :t/allowing-authorizes-this-dapp)
-                                                :icon        :icons/wallet-active}})
+                                                :icon        :main-icons/wallet}})
 
 (fx/defn permission-yield-control
   [{:keys [db] :as cofx} dapp-name permission message-id params]

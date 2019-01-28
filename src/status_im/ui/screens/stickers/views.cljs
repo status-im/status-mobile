@@ -19,7 +19,7 @@
 
 (defn- installed-icon []
   [react/view styles/installed-icon
-   [icons/icon :icons/ok {:color colors/white :height 20 :width 20}]])
+   [icons/icon :main-icons/check {:color colors/white :height 20 :width 20}]])
 
 (defview price-badge [price id]
   (letsubs [balance [:balance]]

@@ -20,7 +20,7 @@
       description]]]
    [action-button/action-button
     {:label               (i18n/label :t/view-superrare)
-     :icon                :icons/address
+     :icon                :main-icons/address
      :icon-opts           {:color colors/blue}
      :accessibility-label :open-collectible-button
      :on-press            #(re-frame/dispatch [:open-collectible-in-browser

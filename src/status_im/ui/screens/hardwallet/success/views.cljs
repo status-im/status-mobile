@@ -28,9 +28,9 @@
        [react/view styles/hardwallet-card-image-container
         [react/view styles/icon-check-container
          [react/view styles/icon-check-inner-container
-          [vector-icons/icon :icons/check {:color  colors/green
-                                           :width  30
-                                           :height 30}]]]]
+          [vector-icons/icon :main-icons/check {:color  colors/green
+                                                :width  30
+                                                :height 30}]]]]
        [react/view styles/complete-text-container
         [activity-indicator processing?]
         [react/text {:style styles/complete-text}

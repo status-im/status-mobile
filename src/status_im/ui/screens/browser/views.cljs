@@ -35,8 +35,8 @@
      [react/view (styles/toolbar-content false)
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/lock-pressed secure?])}
        (if secure?
-         [icons/icon :icons/lock {:color colors/green}]
-         [icons/icon :icons/lock-opened])]
+         [icons/icon :tiny-icons/tiny-lock {:color colors/green}]
+         [icons/icon :tiny-icons/tiny-lock-broken])]
       (if url-editing?
         [react/text-input {:on-change-text    #(reset! url-text %)
                            :on-blur           #(re-frame/dispatch [:browser.ui/url-input-blured])
@@ -63,7 +63,7 @@
                      (when error?
                        (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
    [toolbar-content url url-original browser url-editing?]
-   [toolbar.view/actions [{:icon      :icons/options
+   [toolbar.view/actions [{:icon      :main-icons/more
                            :icon-opts {:color               :black
                                        :accessibility-label :chat-menu-button}
                            :handler   #(on-options name browser-id)}]]])
@@ -89,20 +89,20 @@
                                :style               (when-not can-go-back? styles/disabled-button)
                                :accessibility-label :previous-page-button}
     [react/view
-     [icons/icon :icons/arrow-left]]]
+     [icons/icon :main-icons/arrow-left]]]
    [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser.ui/next-page-button-pressed])
                                :disabled            (not can-go-forward?)
                                :style               (when-not can-go-forward? styles/disabled-button)
                                :accessibility-label :next-page-button}
     [react/view
-     [icons/icon :icons/arrow-right]]]
+     [icons/icon :main-icons/arrow-right]]]
    [react/touchable-highlight
     {:on-press #(re-frame/dispatch [:browser.ui/open-modal-chat-button-pressed (http/url-host url)])
      :accessibility-label :modal-chat-button}
-    [icons/icon :icons/chats]]
+    [icons/icon :main-icons/message]]
    [react/touchable-highlight {:on-press #(.reload @webview)
                                :accessibility-label :refresh-page-button}
-    [icons/icon :icons/refresh]]])
+    [icons/icon :main-icons/refresh]]])
 
 ;; should-component-update is called only when component's props are changed,
 ;; that's why it can't be used in `browser`, because `url` comes from subs

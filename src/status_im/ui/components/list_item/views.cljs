@@ -39,8 +39,8 @@
             [react/text {:style styles/accessory-text}
              accessory]
             (= :chevron accessory)
-            [icons/icon :icons/forward {:color colors/gray-transparent-40}]
+            [icons/icon :main-icons/next {:color colors/gray-transparent-40}]
             (= :check accessory)
-            [icons/icon :icons/ok {:color colors/gray}]
+            [icons/icon :main-icons/check {:color colors/gray}]
             :else accessory)
           {:key accessory}))]]))

@@ -38,5 +38,5 @@
          [react/animated-view
           {:style               (style/send-message-container spin)
            :accessibility-label :send-message-button}
-          [vi/icon :icons/input-send {:container-style style/send-message-icon
-                                      :color           :white}]])])))
+          [vi/icon :main-icons/arrow-up {:container-style style/send-message-icon
+                                         :color           :white}]])])))

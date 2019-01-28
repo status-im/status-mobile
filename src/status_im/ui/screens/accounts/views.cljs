@@ -24,14 +24,14 @@
                    :numberOfLines 1}
        name]
       (when keycard-instance-uid
-        [icons/icon :icons/hardwallet {:color           colors/blue
-                                       :container-style {:margin-left 7}}])]
+        [icons/icon :main-icons/keycard {:color           colors/blue
+                                         :container-style {:margin-left 7}}])]
      [react/text {:style          styles/account-badge-pub-key-text
                   :ellipsize-mode :middle
                   :numberOfLines  1}
       public-key]]
     [react/view {:flex 1}]
-    [icons/icon :icons/forward {:color (colors/alpha colors/black 0.4)}]]])
+    [icons/icon :main-icons/next {:color (colors/alpha colors/black 0.4)}]]])
 
 (defview accounts []
   (letsubs [accounts [:accounts/accounts]]

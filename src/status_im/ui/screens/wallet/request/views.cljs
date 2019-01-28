@@ -63,7 +63,7 @@
                          :text-style          {:padding-horizontal 0}
                          :accessibility-label :sent-request-button}
           (i18n/label :t/send-request)
-          [vector-icons/icon :icons/forward {:color :white}]]]]])))
+          [vector-icons/icon :main-icons/next {:color :white}]]]]])))
 
 ;; Main screen
 

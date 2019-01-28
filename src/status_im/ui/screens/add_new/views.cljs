@@ -18,7 +18,7 @@
    [action-button/action-button
     {:label               (i18n/label :t/start-new-chat)
      :accessibility-label :start-1-1-chat-button
-     :icon                :icons/newchat
+     :icon                :main-icons/add-contact
      :icon-opts           {:color colors/blue}
      :on-press            #(re-frame/dispatch [:navigate-to :new-chat])}]
    [action-button/action-separator]
@@ -32,14 +32,14 @@
    [action-button/action-button
     {:label               (i18n/label :t/new-public-group-chat)
      :accessibility-label :join-public-chat-button
-     :icon                :icons/public
+     :icon                :main-icons/public-chat
      :icon-opts           {:color colors/blue}
      :on-press            #(re-frame/dispatch [:navigate-to :new-public-chat])}]
    [action-button/action-separator]
    [action-button/action-button
     {:label               (i18n/label :t/open-dapp)
      :accessibility-label :open-dapp-button
-     :icon                :icons/address
+     :icon                :main-icons/address
      :icon-opts           {:color colors/blue}
      :on-press            #(re-frame/dispatch [:navigate-to :open-dapp])}]
    [action-button/action-separator]
@@ -53,7 +53,7 @@
    [action-button/action-button
     {:label               (i18n/label :t/scan-qr)
      :accessibility-label :scan-qr-code-button
-     :icon                :icons/qr
+     :icon                :main-icons/qr
      :icon-opts           {:color colors/blue}
      :on-press            #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
                                                {:toolbar-title (i18n/label :t/scan-qr)}

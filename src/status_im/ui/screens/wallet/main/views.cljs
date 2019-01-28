@@ -30,7 +30,7 @@
     [toolbar/nav-button (action/close-white action/default-handler)]
     [toolbar/content-wrapper]
     [toolbar/actions
-     [{:icon      (if modal-history? :icons/wallet :icons/transaction-history)
+     [{:icon      (if modal-history? :main-icons/wallet :main-icons/two-arrows)
        :icon-opts {:color               :white
                    :accessibility-label (if modal-history? :wallet-modal-button :transaction-history-button)}
        :handler #(re-frame/dispatch [:set-in [:wallet :modal-history?] (not modal-history?)])}]]]])
@@ -60,20 +60,20 @@
                         :key   :wallet-backup-recovery-title}]
       [react/i18n-text {:style styles/backup-seed-phrase-description
                         :key   :wallet-backup-recovery-description}]]
-     [vector-icons/icon :icons/forward {:color :white}]]]])
+     [vector-icons/icon :main-icons/next {:color :white}]]]])
 
 (def actions
   [{:label               (i18n/label :t/wallet-send)
     :accessibility-label :send-transaction-button
-    :icon                :icons/angle-arrow-right
+    :icon                :main-icons/send
     :action              #(re-frame/dispatch [:navigate-to :wallet-send-transaction])}
    {:label               (i18n/label :t/wallet-deposit)
     :accessibility-label :receive-transaction-button
-    :icon                :icons/angle-arrow-left
+    :icon                :main-icons/receive
     :action              #(re-frame/dispatch [:navigate-to :wallet-request-transaction])}
    {:label               (i18n/label :t/transaction-history)
     :accessibility-label :transaction-history-button
-    :icon                :icons/list-page
+    :icon                :main-icons/history
     :action              #(re-frame/dispatch [:navigate-to :transactions-history])}])
 
 (defn- render-asset [currency]
@@ -98,7 +98,7 @@
          (or @asset-value "...")]]])))
 
 (def item-icon-forward
-  [list/item-icon {:icon      :icons/forward
+  [list/item-icon {:icon      :main-icons/next
                    :style     {:width 12}
                    :icon-opts {:color :gray}}])
 
