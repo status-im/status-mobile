@@ -150,7 +150,7 @@
              :photo-path  "contacts://3box"
              :description "Create and manage your Ethereum Profile."}
             {:name        "Aragon"
-             :dapp-url    "https://mainnet.aragon.org/"
+             :dapp-url    "https://aragon.staging.aragonpm.com/#/aracon.aragonid.eth/"
              :photo-path  "contacts://aragon"
              :description "Build unstoppable organizations on Ethereum."}
             {:name        "Civitas"
