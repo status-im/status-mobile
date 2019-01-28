@@ -239,6 +239,13 @@ class CrossIcon(BaseButton):
         self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[1]')
 
 
+class ShowRoots(BaseButton):
+
+    def __init__(self, driver):
+        super(ShowRoots, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('Show roots')
+
+
 class AssetButton(BaseButton):
     def __init__(self, driver, asset_name):
         super(AssetButton, self).__init__(driver)
@@ -279,6 +286,7 @@ class BaseView(object):
         self.confirm_button = ConfirmButton(self.driver)
         self.connection_status = ConnectionStatusText(self.driver)
         self.cross_icon = CrossIcon(self.driver)
+        self.show_roots_button = ShowRoots(self.driver)
 
         self.apps_button = AppsButton(self.driver)
         self.status_app_icon = StatusAppIcon(self.driver)
@@ -489,11 +497,10 @@ class BaseView(object):
         return public_key
 
     def share_via_messenger(self):
-        self.element_by_text('Messenger').click()
+        self.element_by_text('Messages').click()
         self.element_by_text('NEW MESSAGE').click()
-        self.send_as_keyevent('+0')
+        self.send_as_keyevent('+0100100101')
         self.confirm()
-        self.element_by_accessibility_id('Send Message').click()
 
     def reconnect(self):
         connect_status = self.connection_status
@@ -523,9 +530,9 @@ class BaseView(object):
     def toggle_airplane_mode(self):
         # opening android settings
         self.driver.start_activity(app_package='com.android.settings', app_activity='.Settings')
-        more_button = self.element_by_text('More')
-        more_button.wait_for_visibility_of_element()
-        more_button.click()
+        network_and_internet = self.element_by_text('Network & Internet')
+        network_and_internet.wait_for_visibility_of_element()
+        network_and_internet.click()
         airplane_toggle = self.element_by_xpath('//*[@resource-id="android:id/switch_widget"]')
         airplane_toggle.wait_for_visibility_of_element()
         airplane_toggle.click()
