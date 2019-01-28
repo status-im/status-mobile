@@ -82,16 +82,21 @@
   (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))]
     (assoc browser :unsafe? (dependencies/phishing-detect history-host))))
 
+(def ipfs-proto-code "e3")
+(def swarm-proto-code "e4")
+
 (defn resolve-ens-content-callback [hex]
   (let [hash (when hex (multihash/base58 (multihash/create :sha2-256 (subs hex 2))))]
     (if (and hash (not= hash resolver/default-hash))
-      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success "01" hash])
+      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success ipfs-proto-code hash])
       (re-frame/dispatch [:browser.callback/resolve-ens-contenthash]))))
 
 (defn resolve-ens-contenthash-callback [hex]
   (let [proto-code (subs hex 2 4)
-        hash (when hex (multihash/base58 (multihash/create :sha2-256 (subs hex 8))))]
-    (if (and (#{"00" "01"} proto-code) hash (not= hash resolver/default-hash))
+        hash (when hex (multihash/base58 (multihash/create :sha2-256 (subs hex 12))))]
+    ;; We only support IPFS and SWARM
+    ;; TODO Once more implementations / providers are published this will have to be improved
+    (if (and ((#{swarm-proto-code ipfs-proto-code} proto-code) hash (not= hash resolver/default-hash)))
       (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success proto-code hash])
       (re-frame/dispatch [:browser.callback/resolve-ens-multihash-error]))))
 
@@ -172,7 +177,7 @@
   [{:keys [db] :as cofx} proto-code hash]
   (let [current-url (get-current-url (get-current-browser db))
         host (http/url-host current-url)
-        gateways (if (= "00" proto-code) "swarm-gateways.net/bzz:/" "ipfs.infura.io/ipfs/")]
+        gateways (if (= swarm-proto-code proto-code) "swarm-gateways.net/bzz:/" "ipfs.infura.io/ipfs/")]
     (fx/merge cofx
               {:db (-> (update db :browser/options
                                assoc
