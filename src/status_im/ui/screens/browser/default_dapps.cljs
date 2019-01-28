@@ -149,6 +149,10 @@
              :dapp-url    "https://3box.io/"
              :photo-path  "contacts://3box"
              :description "Create and manage your Ethereum Profile."}
+            {:name        "Aragon"
+             :dapp-url    "https://mainnet.aragon.org/"
+             :photo-path  "contacts://aragon"
+             :description "Build unstoppable organizations on Ethereum."}
             {:name        "Civitas"
              :dapp-url    "https://communities.colu.com/"
              :photo-path  "contacts://civitas"
