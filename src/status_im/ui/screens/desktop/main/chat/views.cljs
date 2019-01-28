@@ -29,7 +29,8 @@
                                                               get-chat-menu-items]]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.desktop.main.chat.events :as chat.events]
-            [status-im.ui.screens.chat.message.message :as chat.message]))
+            [status-im.ui.screens.chat.message.message :as chat.message]
+            [status-im.react-native.js-dependencies :as js-dependencies]))
 
 (views/defview toolbar-chat-view [{:keys [chat-id color public-key public? group-chat]
                                    :as current-chat}]
@@ -128,6 +129,37 @@
        (when collapsible?
          [message/expand-button expanded? chat-id message-id])])]])
 
+(defn scalable-image [props]
+  (reagent/create-element
+   js-dependencies/scalable-image
+   (clj->js (merge {:inverted true} props))))
+
+(views/defview image-preview [{url "url"}]
+  [react/view {:style styles/preview-padding}
+   [scalable-image {:width 300 :source {:uri url}}]])
+
+(views/defview site-preview [{title "title" description "description" images "images"}]
+  [react/view {:style styles/preview-padding}
+   [react/view  {:style styles/preview-padding}
+    [react/text {:style styles/preview-title} title]
+    [react/text {:style styles/preview-description} description]]
+   [scalable-image {:width 300 :source {:uri (first images)}}]])
+
+(views/defview link-preview [text]
+  (views/letsubs [data (reagent/atom nil)]
+    {:component-did-mount (fn []
+                            (->
+                             (.getPreview js-dependencies/link-preview text)
+                             (.then #(reset! data (js->clj %)))))}
+    [react/view {:style {:flex-direction :row}}
+     [react/view {:style {:background-color colors/blue :width 2 :margin-right 5}}]
+     (case (get @data "mediaType")
+       "image" [image-preview @data]
+       "article" [site-preview @data]
+       "website" [site-preview @data]
+       "video.other" [site-preview @data]
+       nil)]))
+
 (views/defview photo-placeholder []
   [react/view {:style {:width             40
                        :margin-horizontal 16}}])
@@ -144,18 +176,22 @@
     [react/text {:style styles/system-message-text}
      text]]])
 
-(views/defview message-with-name-and-avatar [text {:keys [from first-in-group? timestamp] :as message}]
-  [react/view
-   (when first-in-group?
-     [react/view {:style {:flex-direction :row :margin-top 24}}
-      [member-photo from]
-      [message-author-name message]
-      [react/view {:style {:flex 1}}]
-      [react/text {:style styles/message-timestamp}
-       (time/timestamp->time timestamp)]])
-   [react/view {:style styles/not-first-in-group-wrapper}
-    [photo-placeholder]
-    [message-without-timestamp text message]]])
+(views/defview message-with-name-and-avatar [text {:keys [from first-in-group? timestamp content] :as message}]
+  (views/letsubs [links-preview-enabled? [:account/desktop-links-preview-enabled?]]
+    [react/view
+     (when first-in-group?
+       [react/view {:style {:flex-direction :row :margin-top 24}}
+        [member-photo from]
+        [message-author-name message]
+        [react/view {:style {:flex 1}}]
+        [react/text {:style styles/message-timestamp}
+         (time/timestamp->time timestamp)]])
+     [react/view {:style styles/not-first-in-group-wrapper}
+      [photo-placeholder]
+      [react/view {:flex 1}
+       [message-without-timestamp text message]
+       (when (and links-preview-enabled? (-> content :metadata :link))
+         [link-preview text])]]]))
 
 (defmulti message (fn [_ _ {:keys [content-type]}] content-type))
 

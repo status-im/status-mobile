@@ -217,7 +217,6 @@
 (def v16 (assoc-in v15
                    [:properties :keycard-instance-uid]
                    {:type :string :optional true}))
-
 (def v17 (update v16 :properties merge {:keycard-pairing
                                         {:type :string :optional true}
                                         :keycard-paired-on
@@ -225,3 +224,7 @@
 (def v18 (assoc-in v17
                    [:properties :installation-name]
                    {:type :string :optional true}))
+
+(def v19 (assoc-in v18
+                   [:properties :desktop-links-preview-enabled?]
+                   {:type :bool :default false}))

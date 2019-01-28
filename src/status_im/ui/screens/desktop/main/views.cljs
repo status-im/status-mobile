@@ -43,6 +43,7 @@
                       :desktop/new-group-chat add-new.views/new-group-chat
                       :qr-code profile.views/qr-code
                       :advanced-settings profile.views/advanced-settings
+                      :chat-settings profile.views/chat-settings
                       :help-center help-center.views/help-center
                       :installations profile.views/installations
                       :chat-profile chat.views/chat-profile

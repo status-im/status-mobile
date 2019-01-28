@@ -281,3 +281,13 @@
 (def quoted-message-author-container
   {:flex-direction  :row
    :align-items     :flex-start})
+
+(def preview-padding
+  {:padding-vertical 3})
+
+(def preview-title
+  {:font-weight :bold
+   :max-width   300})
+
+(def preview-description
+  {:max-width   300})

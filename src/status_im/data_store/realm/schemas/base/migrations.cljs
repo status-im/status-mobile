@@ -199,3 +199,6 @@
 
 (defn v21 [old-realm new-realm]
   (log/debug "migrating base database v21: " old-realm new-realm))
+
+(defn v22 [old-realm new-realm]
+  (log/debug "migrating base database v22: " old-realm new-realm))

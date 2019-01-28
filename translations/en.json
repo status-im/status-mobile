@@ -414,6 +414,7 @@
     "invalid-key-content": "{{message}}\n\nAccount's database can't be encrypted because file is corrupted. There is no way to restore it. If you press \"Cancel\" button, nothing will happen. If you press \"{{erase-accounts-data-button-text}}\" button, account's db will be removed and you will be able to unlock account. All account's data will be lost.",
     "unknown-realm-error-content": "{{message}}\n\nAccount's database can't be opened. Please let us know about this problem at #status public chat. If you press \"Cancel\" button, nothing will happen. If you press \"{{erase-accounts-data-button-text}}\" button, account's db will be removed and you will be able to unlock account. All account's data will be lost.",
     "advanced-settings": "Advanced settings",
+    "chat-settings": "Chat settings",
     "group-info": "Group info",
     "currency-display-name-nio": "Nicaragua Cordoba",
     "incorrect-code": [
@@ -593,6 +594,7 @@
     "change-log-level": "Change log level to {{log-level}}",
     "logging": "Logging",
     "logging-enabled": "Logging enabled?",
+    "links-preview-enabled": "Links preview enabled?",
     "change-logging-enabled": "Are you sure you want to {{enable}} logging?",
     "enable": "enable",
     "disable": "disable",

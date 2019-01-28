@@ -66,21 +66,22 @@
    password
    {:keys [seed-backed-up? login?] :or {login? true}}]
   (let [normalized-address (utils.hex/normalize-hex address)
-        account            {:public-key             pubkey
-                            :installation-id        (or installation-id (get-in db [:accounts/new-installation-id]))
-                            :address                normalized-address
-                            :name                   (gfycat/generate-gfy pubkey)
-                            :status                 status
-                            :signed-up?             true
-                            :desktop-notifications? false
-                            :photo-path             (identicon/identicon pubkey)
-                            :signing-phrase         signing-phrase
-                            :seed-backed-up?        seed-backed-up?
-                            :mnemonic               mnemonic
-                            :keycard-instance-uid   keycard-instance-uid
-                            :keycard-pairing        keycard-pairing
-                            :keycard-paired-on      keycard-paired-on
-                            :settings               (constants/default-account-settings)}]
+        account            {:public-key                     pubkey
+                            :installation-id                (or installation-id (get-in db [:accounts/new-installation-id]))
+                            :address                        normalized-address
+                            :name                           (gfycat/generate-gfy pubkey)
+                            :status                         status
+                            :signed-up?                     true
+                            :desktop-notifications?         false
+                            :desktop-links-preview-enabled? false
+                            :photo-path                     (identicon/identicon pubkey)
+                            :signing-phrase                 signing-phrase
+                            :seed-backed-up?                seed-backed-up?
+                            :mnemonic                       mnemonic
+                            :keycard-instance-uid           keycard-instance-uid
+                            :keycard-pairing                keycard-pairing
+                            :keycard-paired-on              keycard-paired-on
+                            :settings                       (constants/default-account-settings)}]
     (log/debug "account-created")
     (when-not (string/blank? pubkey)
       (fx/merge cofx

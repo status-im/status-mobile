@@ -22,6 +22,12 @@
    public-key))
 
 (re-frame/reg-sub
+ :account/desktop-links-preview-enabled?
+ :<- [:account/account]
+ (fn [{:keys [desktop-links-preview-enabled?]}]
+   desktop-links-preview-enabled?))
+
+(re-frame/reg-sub
  :account/hex-address
  :<- [:account/account]
  (fn [{:keys [address]}]

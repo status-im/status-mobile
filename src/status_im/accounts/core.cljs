@@ -67,6 +67,11 @@
                                   {:desktop-notifications? desktop-notifications?}
                                   {}))
 
+(fx/defn enable-links-preview [cofx desktop-links-preview-enabled?]
+  (accounts.update/account-update cofx
+                                  {:desktop-links-preview-enabled? desktop-links-preview-enabled?}
+                                  {}))
+
 (fx/defn toggle-pfs [{:keys [db] :as cofx} enabled?]
   (let [settings (get-in db [:account/account :settings])
         warning  {:utils/show-popup {:title (i18n/label :t/pfs-warning-title)

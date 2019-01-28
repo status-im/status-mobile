@@ -209,6 +209,24 @@
         installation-name
         installations))]))
 
+(views/defview link-preview-display []
+  (views/letsubs [user [:account/account]]
+    (let [links-preview-enabled?  (get-in user [:desktop-links-preview-enabled?])]
+      [react/view {:style (styles/profile-row false)}
+       [react/text {:style (assoc (styles/profile-row-text colors/black)
+                                  :font-size 14)} (i18n/label :t/links-preview-enabled)]
+       [react/switch {:on-tint-color   colors/blue
+                      :value           links-preview-enabled?
+                      :on-value-change #(re-frame/dispatch [:accounts.ui/links-preview-enabled (not links-preview-enabled?)])}]])))
+
+(views/defview chat-settings []
+  [react/scroll-view
+   [react/text {:style styles/advanced-settings-title
+                :font  :medium}
+    (i18n/label :chat-settings)]
+   [react/view {:style styles/title-separator}]
+   [link-preview-display]])
+
 (views/defview backup-recovery-phrase []
   [profile.recovery/backup-seed])
 
@@ -231,6 +249,15 @@
      (i18n/label  :t/help-center)]
     [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]])
 
+(defn chat-settings-item [chat-settings-open?]
+  [react/touchable-highlight {:style  (styles/profile-row chat-settings-open?)
+                              :on-press #(re-frame/dispatch [:navigate-to (if chat-settings-open? :home :chat-settings)])}
+   [react/view {:style styles/adv-settings}
+    [react/text {:style (styles/profile-row-text colors/black)
+                 :font  (if chat-settings-open? :medium :default)}
+     (i18n/label  :t/chat-settings)]
+    [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]])
+
 (defn advanced-settings-item [adv-settings-open?]
   [react/touchable-highlight {:style  (styles/adv-settings-row adv-settings-open?)
                               :on-press #(do
@@ -246,6 +273,7 @@
   (views/letsubs [current-view-id [:get :view-id]
                   editing?        [:get :my-profile/editing?]] ;; TODO janherich: refactor my-profile, unnecessary complicated structure in db (could be just `:staged-name`/`:editing?` fields in account map) and horrible way to access it woth `:get`/`:set` subs/events
     (let [adv-settings-open?           (= current-view-id :advanced-settings)
+          chat-settings-open?          (= current-view-id :chat-settings)
           help-open?                   (= current-view-id :help-center)
           installations-open?          (= current-view-id :installations)
           backup-recovery-phrase-open? (= current-view-id :backup-recovery-phrase)
@@ -267,6 +295,7 @@
                         :value           notifications?
                         :on-value-change #(re-frame/dispatch [:accounts.ui/notifications-enabled (not notifications?)])}]]
         [advanced-settings-item adv-settings-open?]
+        [chat-settings-item chat-settings-open?]
         [help-item help-open?]
         [react/touchable-highlight {:style  (styles/profile-row installations-open?)
                                     :on-press #(re-frame/dispatch [:navigate-to (if installations-open? :home :installations)])}

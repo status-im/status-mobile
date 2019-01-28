@@ -16,7 +16,7 @@
            {:accounts/login    {:address "7e92236392a850980d00d0cd2a4b92886bd7fe7b", :password "password", :processing true},
             :accounts/accounts {"7e92236392a850980d00d0cd2a4b92886bd7fe7b"
                                 {:address         "7e92236392a850980d00d0cd2a4b92886bd7fe7b", :mnemonic "hello world", :signing-phrase "",
-                                 :signed-up?      true, :name "Dark Woozy Alligatorsnappingturtle", :desktop-notifications? false,
+                                 :signed-up?      true, :name "Dark Woozy Alligatorsnappingturtle", :desktop-notifications? false, :desktop-links-preview-enabled? false,
                                  :settings        {:wallet {:visible-tokens {:testnet #{:STT :HND},
                                                                              :mainnet #{:SNT},
                                                                              :rinkeby #{:MOKSHA :KDO}, :xdai #{}, :poa #{}}}},

@@ -51,6 +51,7 @@
 (spec/def :account/mnemonic (spec/nilable string?))
 (spec/def :account/sharing-usage-data? (spec/nilable boolean?))
 (spec/def :account/desktop-notifications? (spec/nilable boolean?))
+(spec/def :account/desktop-links-preview-enabled? (spec/nilable boolean?))
 (spec/def :account/dev-mode? (spec/nilable boolean?))
 (spec/def :account/seed-backed-up? (spec/nilable boolean?))
 (spec/def :account/installation-id :global/not-empty-string)
@@ -69,6 +70,7 @@
                                                 :account/networks :account/settings :account/mailserver
                                                 :account/last-sign-in :account/sharing-usage-data? :account/dev-mode?
                                                 :account/seed-backed-up? :account/mnemonic :account/desktop-notifications?
+                                                :account/desktop-links-preview-enabled?
                                                 :account/wallet-set-up-passed? :account/last-request
                                                 :account/bootnodes :account/extensions
                                                 :account/mainnet-warning-shown?
