@@ -18,9 +18,7 @@
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def rpc-networks-only? (enabled? (get-config :RPC_NETWORKS_ONLY "1")))
 (def group-chats-publish-to-topic? (enabled? (get-config :GROUP_CHATS_PUBLISH_TO_TOPIC "0")))
-(defn pairing-enabled? [dev-mode?]
-  (and (enabled? (get-config :PAIRING_ENABLED "0"))
-       (or dev-mode? platform/desktop?)))
+(def show-contact-recovery-pop-up? (enabled? (get-config :SHOW_CONTACT_RECOVERY_POPUP)))
 (def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))
 (def mainnet-warning-enabled? (enabled? (get-config :MAINNET_WARNING_ENABLED 0)))
 (def pfs-encryption-enabled? (enabled? (get-config :PFS_ENCRYPTION_ENABLED "0")))

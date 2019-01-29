@@ -203,11 +203,10 @@
                   installation-id   [:pairing/installation-id]
                   installation-name [:pairing/installation-name]]
     [react/scroll-view
-     (when (config/pairing-enabled? true)
-       (installations-section
-        installation-id
-        installation-name
-        installations))]))
+     (installations-section
+      installation-id
+      installation-name
+      installations)]))
 
 (views/defview backup-recovery-phrase []
   [profile.recovery/backup-seed])

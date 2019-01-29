@@ -127,13 +127,11 @@
         {:label-kw     :t/backup-your-recovery-phrase
          :action-fn    #(re-frame/dispatch [:navigate-to :backup-seed])
          :icon-content [components.common/counter {:size 22} 1]}])
-     (when (config/pairing-enabled? dev-mode?)
-       [profile.components/settings-item-separator])
-     (when (config/pairing-enabled? dev-mode?)
-       [profile.components/settings-item
-        {:label-kw            :t/devices
-         :action-fn           #(re-frame/dispatch [:navigate-to :installations])
-         :accessibility-label :pairing-settings-button}])
+     [profile.components/settings-item-separator]
+     [profile.components/settings-item
+      {:label-kw            :t/devices
+       :action-fn           #(re-frame/dispatch [:navigate-to :installations])
+       :accessibility-label :pairing-settings-button}]
      [profile.components/settings-item-separator]
      [profile.components/settings-switch-item
       {:label-kw  :t/web3-opt-in

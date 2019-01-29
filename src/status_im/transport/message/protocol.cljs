@@ -90,8 +90,7 @@
 (defrecord Message [content content-type message-type clock-value timestamp]
   StatusMessage
   (send [this chat-id {:keys [message-id] :as cofx}]
-    (let [dev-mode?          (get-in cofx [:db :account/account :dev-mode?])
-          current-public-key (accounts.db/current-public-key cofx)
+    (let [current-public-key (accounts.db/current-public-key cofx)
           params             {:chat-id       chat-id
                               :payload       this
                               :success-event [:transport/message-sent
@@ -104,8 +103,7 @@
 
         :user-message
         (fx/merge cofx
-                  #(when (config/pairing-enabled? dev-mode?)
-                     (send-direct-message % current-public-key nil this))
+                  (send-direct-message current-public-key nil this)
                   (send-with-pubkey params)))))
   (receive [this chat-id signature _ cofx]
     {:chat-received-message/add-fx

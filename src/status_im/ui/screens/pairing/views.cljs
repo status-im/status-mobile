@@ -140,8 +140,8 @@
      (if utils.platform/ios?
        ;; On IOS switches seems to be broken, they take up value of dev-mode? (so if dev mode is on they all show to be on).
        ;; Replacing therefore with checkbox until I have more time to investigate
-       (checkbox.views/plain-checkbox {:checked? enabled?
-                                       :on-value-change (partial toggle-enabled! installation-id enabled?)})
+       (checkbox.views/checkbox {:checked? enabled?
+                                 :on-value-change (partial toggle-enabled! installation-id enabled?)})
        [react/switch {:on-tint-color   colors/blue
                       :value           enabled?
                       :on-value-change (partial toggle-enabled! installation-id enabled?)}])]]])

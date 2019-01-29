@@ -1568,10 +1568,7 @@
  :contact-recovery.ui/prompt-accepted
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx [_ public-key]]
-   (fx/merge
-    cofx
-    (contact/add-contact public-key)
-    (contact-recovery/prompt-accepted public-key))))
+   (contact-recovery/prompt-accepted cofx public-key)))
 
 (handlers/register-handler-fx
  :contact-recovery.ui/prompt-dismissed
@@ -1579,10 +1576,10 @@
    (contact-recovery/prompt-dismissed cofx public-key)))
 
 (handlers/register-handler-fx
- :contact-recovery.callback/show-contact-recovery-message
+ :contact-recovery.callback/handle-recovery
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx [_ public-key]]
-   (contact-recovery/show-contact-recovery-message cofx public-key)))
+   (contact-recovery/handle-recovery cofx public-key)))
 
 (handlers/register-handler-fx
  :stickers/load-sticker-pack-success

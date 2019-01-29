@@ -86,21 +86,19 @@
      :data-store/tx [(data-store.installations/save updated-installation)]}))
 
 (defn handle-bundles-added [{:keys [db] :as cofx} bundle]
-  (let [dev-mode? (get-in db [:account/account :dev-mode?])]
-    (when (config/pairing-enabled? dev-mode?)
-      (let [installation-id  (:installationID bundle)
-            new-installation {:installation-id installation-id
-                              :has-bundle?     true}]
-        (when
-         (and (= (:identity bundle)
-                 (accounts.db/current-public-key cofx))
-              (not= (get-in db [:account/account :installation-id]) installation-id)
-              (not (get-in db [:pairing/installations installation-id])))
-          (fx/merge cofx
-                    (upsert-installation new-installation)
-                    #(when-not (or (get-in % [:db :pairing/prompt-user-pop-up])
-                                   (= :installations (:view-id db)))
-                       (prompt-user-on-new-installation %))))))))
+  (let [installation-id  (:installationID bundle)
+        new-installation {:installation-id installation-id
+                          :has-bundle?     true}]
+    (when
+     (and (= (:identity bundle)
+             (accounts.db/current-public-key cofx))
+          (not= (get-in db [:account/account :installation-id]) installation-id)
+          (not (get-in db [:pairing/installations installation-id])))
+      (fx/merge cofx
+                (upsert-installation new-installation)
+                #(when-not (or (get-in % [:db :pairing/prompt-user-pop-up])
+                               (= :installations (:view-id db)))
+                   (prompt-user-on-new-installation %))))))
 
 (defn sync-installation-account-message [{:keys [db]}]
   (let [account (-> db
@@ -191,18 +189,15 @@
 (fx/defn send-sync-installation [cofx payload]
   (let [{:keys [web3]} (:db cofx)
         current-public-key (accounts.db/current-public-key cofx)]
-
     {:shh/send-direct-message
-     [{:web3 web3
-       :src current-public-key
-       :dst current-public-key
+     [{:web3    web3
+       :src     current-public-key
+       :dst     current-public-key
        :payload payload}]}))
 
 (fx/defn send-installation-message-fx [cofx payload]
-  (let [dev-mode? (get-in cofx [:db :account/account :dev-mode?])]
-    (when (and (config/pairing-enabled? dev-mode?)
-               (has-paired-installations? cofx))
-      (protocol/send payload nil cofx))))
+  (when (has-paired-installations? cofx)
+    (protocol/send payload nil cofx)))
 
 (fx/defn sync-public-chat [cofx chat-id]
   (let [sync-message (transport.pairing/SyncInstallation. {} {} {:public? true
@@ -230,30 +225,26 @@
              contacts))
 
 (defn handle-sync-installation [{:keys [db] :as cofx} {:keys [contacts account chat]} sender]
-  (let [dev-mode? (get-in db [:account/account :dev-mode?])]
-    (when (and (config/pairing-enabled? dev-mode?)
-               (= sender (accounts.db/current-public-key cofx)))
-      (let [new-contacts (merge-contacts (:contacts/contacts db) (ensure-photo-path contacts))
-            new-account  (merge-account (:account/account db) account)]
-        (fx/merge cofx
-                  {:db                 (assoc db
-                                              :contacts/contacts new-contacts
-                                              :account/account new-account)
-                   :data-store/base-tx [(data-store.accounts/save-account-tx new-account)]
-                   :data-store/tx      [(data-store.contacts/save-contacts-tx (vals new-contacts))]}
-                  #(when (:public? chat)
-                     (models.chat/start-public-chat % (:chat-id chat) {:dont-navigate? true})))))))
+  (when (= sender (accounts.db/current-public-key cofx))
+    (let [new-contacts (merge-contacts (:contacts/contacts db) (ensure-photo-path contacts))
+          new-account  (merge-account (:account/account db) account)]
+      (fx/merge cofx
+                {:db                 (assoc db
+                                            :contacts/contacts new-contacts
+                                            :account/account new-account)
+                 :data-store/base-tx [(data-store.accounts/save-account-tx new-account)]
+                 :data-store/tx      [(data-store.contacts/save-contacts-tx (vals new-contacts))]}
+                #(when (:public? chat)
+                   (models.chat/start-public-chat % (:chat-id chat) {:dont-navigate? true}))))))
 
 (defn handle-pair-installation [{:keys [db] :as cofx} {:keys [name installation-id device-type]} timestamp sender]
-  (let [dev-mode? (get-in db [:account/account :dev-mode?])]
-    (when (and (config/pairing-enabled? dev-mode?)
-               (= sender (accounts.db/current-public-key cofx))
-               (not= (get-in db [:account/account :installation-id]) installation-id))
-      (let [installation {:installation-id   installation-id
-                          :name              name
-                          :device-type       device-type
-                          :last-paired       timestamp}]
-        (upsert-installation cofx installation)))))
+  (when (and (= sender (accounts.db/current-public-key cofx))
+             (not= (get-in db [:account/account :installation-id]) installation-id))
+    (let [installation {:installation-id   installation-id
+                        :name              name
+                        :device-type       device-type
+                        :last-paired       timestamp}]
+      (upsert-installation cofx installation))))
 
 (fx/defn set-name [{:keys [db] :as cofx} installation-name]
   (let [new-account (assoc (get-in cofx [:db :account/account]) :installation-name installation-name)]

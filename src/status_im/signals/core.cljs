@@ -71,6 +71,6 @@
       "mailserver.request.completed" (mailserver/handle-request-completed cofx event)
       "mailserver.request.expired"   (when (accounts.db/logged-in? cofx)
                                        (mailserver/resend-request cofx {:request-id (:hash event)}))
-      "messages.decrypt.failed" (contact-recovery/show-contact-recovery-fx cofx (:sender event))
+      "messages.decrypt.failed" (contact-recovery/handle-contact-recovery-fx cofx (:sender event))
       "discovery.summary"  (summary cofx event)
       (log/debug "Event " type " not handled"))))
