@@ -1,4 +1,4 @@
-.PHONY: react-native test setup
+.PHONY: clean setup react-native test release
 
 help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
@@ -219,12 +219,27 @@ android-ports: ##@other Add proxies to Android Device/Simulator
 android-logcat:
 	adb logcat | grep -e StatusModule -e ReactNativeJS -e StatusNativeLogs
 
-startdev-%:
+_list:
+	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
+
+_unknown-startdev-target-%:
+	@ echo "Unknown target device '$*'. Supported targets:"
+	@ ${MAKE} _list | grep "watch-" | sed s/watch-/startdev-/
+	@ exit 1
+
+_startdev-%:
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
 	$(eval DEVICE := $(word 3, $(subst -, , $@)))
-	${MAKE} prepare-${SYSTEM}
-	if [ -z "$(DEVICE)" ]; then \
-		${MAKE} watch-$(SYSTEM); \
+	${MAKE} prepare-${SYSTEM} || ${MAKE} _unknown-startdev-target-$@
+	@ if [ -z "$(DEVICE)" ]; then \
+		${MAKE} watch-$(SYSTEM) || ${MAKE} _unknown-startdev-target-$@; \
 	else \
-		${MAKE} watch-$(SYSTEM)-$(DEVICE); \
+		${MAKE} watch-$(SYSTEM)-$(DEVICE) || ${MAKE} _unknown-startdev-target-$@; \
 	fi
+
+startdev-android-avd: _startdev-android-avd
+startdev-android-genymotion: _startdev-android-genymotion
+startdev-android-real: _startdev-android-real
+startdev-desktop: _startdev-desktop
+startdev-ios-real: _startdev-ios-real
+startdev-ios-simulator: _startdev-ios-simulator
