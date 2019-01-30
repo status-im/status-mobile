@@ -450,7 +450,6 @@
         "other": "days"
     },
     "request-transaction": "Request transaction",
-    "notifications-new-message-title": "Status",
     "wallet-send": "Send",
     "wallet-deposit": "Deposit",
     "invalid-key-title": "We detected a problem with the encryption key",
@@ -742,7 +741,6 @@
     "view-profile": "View profile",
     "message": "Message",
     "here-is-your-passphrase": "Here is your passphrase, *write this down and keep this safe!* You will need it to recover your account.",
-    "add-mailserver": "Add Mailserver",
     "currency-display-name-ttd": "Trinidad and Tobago Dollar",
     "wallet-assets": "Assets",
     "are-you-sure-description": "You will not be able to see the whole recovery phrase again",
