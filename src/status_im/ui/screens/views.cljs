@@ -1,3 +1,4 @@
+
 (ns status-im.ui.screens.views
   (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
   (:require [re-frame.core :refer [dispatch]]
@@ -68,6 +69,7 @@
             [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.screens.stickers.views :as stickers]
             [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.utils.navigation :as navigation]
             [reagent.core :as reagent]
             [cljs-react-navigation.reagent :as nav-reagent]
@@ -75,7 +77,8 @@
             [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
             [status-im.utils.platform :as platform]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]))
 
 (defn wrap [view-id component]
   (fn []
@@ -380,6 +383,16 @@
 
 (defonce initial-view-id (atom nil))
 
+(views/defview bottom-sheet []
+  (views/letsubs [{:keys [show? view]} [:bottom-sheet]]
+    (let [opts (cond-> {:show?     show?
+                        :on-cancel (fn [])}
+
+                 (= view :mobile-network)
+                 (merge {:content mobile-network-settings/mobile-network-settings-sheet
+                         :content-height 340}))]
+      [bottom-sheet/bottom-sheet opts])))
+
 (defn main []
   (let [view-id        (re-frame/subscribe [:get :view-id])
         main-component (atom nil)]
@@ -418,13 +431,15 @@
       :reagent-render
       (fn []
         (when (and @view-id main-component)
-          [:> @main-component
-           {:ref            (fn [r]
-                              (navigation/set-navigator-ref r)
-                              (when (and
-                                     platform/android?
-                                     (not js/goog.DEBUG)
-                                     (not (contains? #{:intro :login :progress} @view-id)))
-                                (navigation/navigate-to @view-id)))
-            ;; see https://reactnavigation.org/docs/en/state-persistence.html#development-mode
-            :persistenceKey (when js/goog.DEBUG rand-label)}]))})))
+          [react/view {:flex 1}
+           [:> @main-component
+            {:ref            (fn [r]
+                               (navigation/set-navigator-ref r)
+                               (when (and
+                                      platform/android?
+                                      (not js/goog.DEBUG)
+                                      (not (contains? #{:intro :login :progress} @view-id)))
+                                 (navigation/navigate-to @view-id)))
+             ;; see https://reactnavigation.org/docs/en/state-persistence.html#development-mode
+             :persistenceKey (when js/goog.DEBUG rand-label)}]
+           [bottom-sheet]]))})))

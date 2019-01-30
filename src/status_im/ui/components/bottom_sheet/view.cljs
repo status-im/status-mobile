@@ -113,12 +113,13 @@
         {:style (styles/content-container height bottom-value)}
         [react/view styles/content-header
          [react/view styles/handle]]
-        content
+        [react/view {:style {:flex   1
+                             :height height}}
+         [content]]
         [react/view {:style styles/bottom-view}]]])}))
 
 (defn bottom-sheet
-  [{:keys [show? content-height on-cancel]} _]
-  {:pre [(fn? on-cancel) (pos? content-height)]}
+  [{:keys [show? content-height on-cancel]}]
   (let [show-sheet?          (reagent/atom show?)
         total-content-height (+ content-height styles/border-radius
                                 styles/bottom-padding)
@@ -132,15 +133,28 @@
     (reagent.core/create-class
      {:component-will-update
       (fn [this [_ new-args]]
-        (let [old-args  (second (.-argv (.-props this)))
-              old-show? (:show? old-args)
-              new-show? (:show? new-args)]
+        (let [old-args             (second (.-argv (.-props this)))
+              old-show?            (:show? old-args)
+              new-show?            (:show? new-args)
+              old-height           (:content-height old-args)
+              new-height           (:content-height new-args)
+              total-content-height (+ new-height
+                                      styles/border-radius
+                                      styles/bottom-padding)
+              opts'                (assoc opts :height total-content-height)]
+          (when (not= old-height new-height)
+            (animation/set-value bottom-value new-height))
           (cond (and (not old-show?) new-show?)
                 (reset! show-sheet? true)
 
                 (and old-show? (not new-show?) (true? @show-sheet?))
-                (cancel opts))))
+                (cancel opts'))))
       :reagent-render
-      (fn [_ content]
-        (when @show-sheet?
-          [bottom-sheet-view (assoc opts :content content)]))})))
+      (fn [{:keys [content content-height]}]
+        (let [total-content-height (+ content-height
+                                      styles/border-radius
+                                      styles/bottom-padding)]
+          (when @show-sheet?
+            [bottom-sheet-view (assoc opts
+                                      :content content
+                                      :height total-content-height)])))})))

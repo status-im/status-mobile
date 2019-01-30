@@ -15,7 +15,8 @@
             status-im.mailserver.db
             status-im.browser.db
             status-im.ui.screens.add-new.db
-            status-im.ui.screens.add-new.new-public-chat.db))
+            status-im.ui.screens.add-new.new-public-chat.db
+            status-im.ui.components.bottom-sheet.core))
 
 ;; initial state of app-db
 (def app-db {:keyboard-height                    0
@@ -268,7 +269,9 @@
                                 :stickers/packs
                                 :stickers/packs-installed
                                 :stickers/selected-pack
-                                :stickers/recent]
+                                :stickers/recent
+                                :bottom-sheet/show?
+                                :bottom-sheet/view]
                           :opt-un [::modal
                                    ::was-modal?
                                    ::rpc-url
