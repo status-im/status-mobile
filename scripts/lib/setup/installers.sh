@@ -309,29 +309,25 @@ function install_nvm() {
 }
 
 function install_node_via_nvm() {
-  local nvmrc="$(repo_path)/.nvmrc"
   local required_version=$(toolversion node)
 
   cd "$(repo_path)"
 
-  if [ ! -e "$nvmrc" -o "$(nvm version v""$required_version"")" = "N/A" ]; then
+  if [ "$(nvm version v""$required_version"")" = "N/A" ]; then
     cecho "@b@blue[[+ Installing Node $required_version]]"
 
     nvm install $required_version
     nvm alias status-im $required_version
-    echo status-im > "$nvmrc"
-
     nvm use status-im
 
   else
-    local version_alias=$(cat "$nvmrc")
     if [ "$(nvm version status-im)" != "v$required_version" ]; then
       nvm alias status-im $required_version
     fi
-    nvm use $version_alias
+    nvm use status-im
 
     local version=$(node -v)
-    cecho "+ Node already installed ($version_alias $version via NVM)... skipping."
+    cecho "+ Node already installed (status-im $version via NVM)... skipping."
   fi
 }
 
