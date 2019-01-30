@@ -69,13 +69,14 @@
             (navigation/navigate-to-cofx :installations nil)))
 
 (fx/defn prompt-user-on-new-installation [{:keys [db]}]
-  {:db               (assoc-in db [:pairing/prompt-user-pop-up] true)
-   :ui/show-confirmation {:title      (i18n/label :t/pairing-new-installation-detected-title)
-                          :content    (i18n/label :t/pairing-new-installation-detected-content)
-                          :confirm-button-text (i18n/label :t/pairing-go-to-installation)
-                          :cancel-button-text  (i18n/label :t/cancel)
-                          :on-cancel  #(re-frame/dispatch [:pairing.ui/prompt-dismissed])
-                          :on-accept #(re-frame/dispatch [:pairing.ui/prompt-accepted])}})
+  (when-not config/pairing-popup-disabled?
+    {:db               (assoc-in db [:pairing/prompt-user-pop-up] true)
+     :ui/show-confirmation {:title      (i18n/label :t/pairing-new-installation-detected-title)
+                            :content    (i18n/label :t/pairing-new-installation-detected-content)
+                            :confirm-button-text (i18n/label :t/pairing-go-to-installation)
+                            :cancel-button-text  (i18n/label :t/cancel)
+                            :on-cancel  #(re-frame/dispatch [:pairing.ui/prompt-dismissed])
+                            :on-accept #(re-frame/dispatch [:pairing.ui/prompt-accepted])}}))
 
 (fx/defn upsert-installation [{:keys [db]} {:keys [installation-id] :as new-installation}]
   (let [old-installation (get-in db [:pairing/installations installation-id])
