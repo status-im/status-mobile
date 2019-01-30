@@ -200,9 +200,9 @@
       {:label-kw            :t/bootnodes
        :action-fn           #(re-frame/dispatch [:navigate-to :bootnodes-settings])
        :accessibility-label :bootnodes-settings-button}])
-   (when dev-mode?
+   (when (and dev-mode? config/pfs-toggle-visible?)
      [profile.components/settings-item-separator])
-   (when dev-mode?
+   (when (and dev-mode? config/pfs-toggle-visible?)
      [profile.components/settings-switch-item
       {:label-kw  :t/pfs
        :value     (:pfs? settings)

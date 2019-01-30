@@ -74,7 +74,7 @@
   [{:keys [db] :as cofx} {:keys [payload chat-id success-event]}]
   (let [{:keys [web3]} db]
     (let [pfs? (get-in db [:account/account :settings :pfs?])]
-      (if pfs?
+      (if (and config/pfs-toggle-visible? pfs?)
         (send-direct-message cofx
                              chat-id
                              success-event

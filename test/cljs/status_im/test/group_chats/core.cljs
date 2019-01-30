@@ -29,176 +29,174 @@
   (is (= 3 (group-chats/get-last-clock-value {:db {:chats {chat-id {:last-clock-value 3}}}} chat-id))))
 
 (deftest handle-group-membership-update-test
-  (with-redefs [config/group-chats-enabled? true]
-    (testing "a brand new chat"
-      (let [actual   (->
-                      (group-chats/handle-membership-update {:now 0 :db {}} initial-message "payload" admin)
-                      :db
-                      :chats
-                      (get chat-id))]
-        (testing "it creates a new chat"
-          (is actual))
-        (testing "it sets the right chat-name"
-          (is (= "chat-name"
-                 (:name actual))))
-        (testing "it sets the right chat-id"
-          (is (= chat-id
-                 (:chat-id actual))))
-        (testing "it sets the right participants"
-          (is (= #{member-1 member-2 member-3}
-                 (:contacts actual))))
-        (testing "it sets the updates"
-          (is (= (:membership-updates initial-message)
-                 (:membership-updates actual))))
-        (testing "it sets the right admins"
-          (is (= #{admin}
-                 (:admins actual))))
-        (testing "it adds a system message"
-          (is (= 3 (count (:messages actual)))))
-        (testing "it adds the right text"
-          (is (= ["group-chat-created"
-                  "group-chat-member-added"
-                  "group-chat-member-added"]
-                 (map (comp :text :content) (sort-by :clock-value (vals (:messages actual)))))))))
-    (testing "a chat with the wrong id"
-      (let [bad-chat-id (str random-id member-2)
-            actual      (->
-                         (group-chats/handle-membership-update
-                          {:now 0 :db {}}
-                          (assoc initial-message :chat-id bad-chat-id)
-                          "payload"
-                          admin)
-                         :db
-                         :chats
-                         (get bad-chat-id))]
-        (testing "it does not create a chat"
-          (is (not actual)))))
-    (testing "an already existing chat"
-      (let [cofx (assoc
-                  (group-chats/handle-membership-update {:now 0 :db {:account/account {:public-key member-3}}} initial-message "payload" admin)
-                  :now 0)]
-        (testing "the message has already been received"
-          (let [actual (group-chats/handle-membership-update cofx initial-message "payload" admin)]
-            (testing "it noops"
-              (is (=
-                   (get-in cofx [:db :chats chat-id])
-                   (get-in actual [:db :chats chat-id]))))))
-        (testing "a chat we have deleted"
-          (let [after-leaving-cofx (-> (group-chats/handle-membership-update cofx
-                                                                             {:chat-id chat-id
-                                                                              :membership-updates [{:from member-1
-                                                                                                    :events [{:type "chat-created"
-                                                                                                              :clock-value 1
-                                                                                                              :name "group-name"}
-                                                                                                             {:type "admins-added"
-                                                                                                              :clock-value 10
-                                                                                                              :members [member-2]}
-                                                                                                             {:type "admin-removed"
-                                                                                                              :clock-value 11
-                                                                                                              :member member-1}]}
-                                                                                                   {:from member-3
-                                                                                                    :events [{:type "member-removed"
-                                                                                                              :clock-value 12
-                                                                                                              :member member-3}]}]}
-                                                                             "payload"
-                                                                             member-3)
-                                       (assoc-in [:db :chats chat-id :is-active] false))
-                after-been-invited-again-cofx (group-chats/handle-membership-update (assoc after-leaving-cofx :now 0)
-                                                                                    {:chat-id chat-id
-                                                                                     :membership-updates [{:from member-1
-                                                                                                           :events [{:type "chat-created"
-                                                                                                                     :clock-value 1
-                                                                                                                     :name "group-name"}
-                                                                                                                    {:type "admins-added"
-                                                                                                                     :clock-value 10
-                                                                                                                     :members [member-2]}
-                                                                                                                    {:type "admin-removed"
-                                                                                                                     :clock-value 11
-                                                                                                                     :member member-1}]}
-                                                                                                          {:from member-2
-                                                                                                           :events [{:type "members-added"
-                                                                                                                     :clock-value 13
-                                                                                                                     :members [member-3]}]}]}
-                                                                                    "payload"
-                                                                                    member-2)]
+  (testing "a brand new chat"
+    (let [actual   (->
+                    (group-chats/handle-membership-update {:now 0 :db {}} initial-message "payload" admin)
+                    :db
+                    :chats
+                    (get chat-id))]
+      (testing "it creates a new chat"
+        (is actual))
+      (testing "it sets the right chat-name"
+        (is (= "chat-name"
+               (:name actual))))
+      (testing "it sets the right chat-id"
+        (is (= chat-id
+               (:chat-id actual))))
+      (testing "it sets the right participants"
+        (is (= #{member-1 member-2 member-3}
+               (:contacts actual))))
+      (testing "it sets the updates"
+        (is (= (:membership-updates initial-message)
+               (:membership-updates actual))))
+      (testing "it sets the right admins"
+        (is (= #{admin}
+               (:admins actual))))
+      (testing "it adds a system message"
+        (is (= 3 (count (:messages actual)))))
+      (testing "it adds the right text"
+        (is (= ["group-chat-created"
+                "group-chat-member-added"
+                "group-chat-member-added"]
+               (map (comp :text :content) (sort-by :clock-value (vals (:messages actual)))))))))
+  (testing "a chat with the wrong id"
+    (let [bad-chat-id (str random-id member-2)
+          actual      (->
+                       (group-chats/handle-membership-update
+                        {:now 0 :db {}}
+                        (assoc initial-message :chat-id bad-chat-id)
+                        "payload"
+                        admin)
+                       :db
+                       :chats
+                       (get bad-chat-id))]
+      (testing "it does not create a chat"
+        (is (not actual)))))
+  (testing "an already existing chat"
+    (let [cofx (assoc
+                (group-chats/handle-membership-update {:now 0 :db {:account/account {:public-key member-3}}} initial-message "payload" admin)
+                :now 0)]
+      (testing "the message has already been received"
+        (let [actual (group-chats/handle-membership-update cofx initial-message "payload" admin)]
+          (testing "it noops"
+            (is (=
+                 (get-in cofx [:db :chats chat-id])
+                 (get-in actual [:db :chats chat-id]))))))
+      (testing "a chat we have deleted"
+        (let [after-leaving-cofx (-> (group-chats/handle-membership-update cofx
+                                                                           {:chat-id chat-id
+                                                                            :membership-updates [{:from member-1
+                                                                                                  :events [{:type "chat-created"
+                                                                                                            :clock-value 1
+                                                                                                            :name "group-name"}
+                                                                                                           {:type "admins-added"
+                                                                                                            :clock-value 10
+                                                                                                            :members [member-2]}
+                                                                                                           {:type "admin-removed"
+                                                                                                            :clock-value 11
+                                                                                                            :member member-1}]}
+                                                                                                 {:from member-3
+                                                                                                  :events [{:type "member-removed"
+                                                                                                            :clock-value 12
+                                                                                                            :member member-3}]}]}
+                                                                           "payload"
+                                                                           member-3)
+                                     (assoc-in [:db :chats chat-id :is-active] false))
+              after-been-invited-again-cofx (group-chats/handle-membership-update (assoc after-leaving-cofx :now 0)
+                                                                                  {:chat-id chat-id
+                                                                                   :membership-updates [{:from member-1
+                                                                                                         :events [{:type "chat-created"
+                                                                                                                   :clock-value 1
+                                                                                                                   :name "group-name"}
+                                                                                                                  {:type "admins-added"
+                                                                                                                   :clock-value 10
+                                                                                                                   :members [member-2]}
+                                                                                                                  {:type "admin-removed"
+                                                                                                                   :clock-value 11
+                                                                                                                   :member member-1}]}
+                                                                                                        {:from member-2
+                                                                                                         :events [{:type "members-added"
+                                                                                                                   :clock-value 13
+                                                                                                                   :members [member-3]}]}]}
+                                                                                  "payload"
+                                                                                  member-2)]
 
-            (testing "it sets the chat active after been invited again"
-              (is (get-in after-been-invited-again-cofx [:db :chats chat-id :is-active])))))
-        (testing "a new message comes in"
-          (let [actual (group-chats/handle-membership-update cofx
-                                                             {:chat-id chat-id
-                                                              :membership-updates [{:from member-1
-                                                                                    :events [{:type "chat-created"
-                                                                                              :clock-value 1
-                                                                                              :name "group-name"}
-                                                                                             {:type "admins-added"
-                                                                                              :clock-value 10
-                                                                                              :members [member-2]}
-                                                                                             {:type "admin-removed"
-                                                                                              :clock-value 11
-                                                                                              :member member-1}]}
-                                                                                   {:from member-2
-                                                                                    :events [{:type "member-removed"
-                                                                                              :clock-value 12
-                                                                                              :member member-3}
-                                                                                             {:type "members-added"
-                                                                                              :clock-value 12
-                                                                                              :members [member-4]}
-                                                                                             {:type "name-changed"
-                                                                                              :clock-value 13
-                                                                                              :name "new-name"}]}]}
-                                                             "payload"
-                                                             member-3)
-                actual-chat (get-in actual [:db :chats chat-id])]
-            (testing "the chat is updated"
-              (is actual-chat))
-            (testing "admins are updated"
-              (is (= #{member-2} (:admins actual-chat))))
-            (testing "members are updated"
-              (is (= #{member-1 member-2 member-4} (:contacts actual-chat))))
-            (testing "the name is updated"
-              (is (= "new-name" (:name actual-chat))))
-            (testing "it adds a system message"
-              (is (= 7 (count (:messages actual-chat)))))
-            (testing "it sets the right text"
-              (is (= ["group-chat-created"
-                      "group-chat-member-added"
-                      "group-chat-member-added"
-                      "group-chat-admin-added"
-                      "group-chat-member-added"
-                      "group-chat-member-removed"
-                      "group-chat-name-changed"]
-                     (map (comp :text :content) (sort-by :clock-value (vals (:messages actual-chat)))))))))))))
+          (testing "it sets the chat active after been invited again"
+            (is (get-in after-been-invited-again-cofx [:db :chats chat-id :is-active])))))
+      (testing "a new message comes in"
+        (let [actual (group-chats/handle-membership-update cofx
+                                                           {:chat-id chat-id
+                                                            :membership-updates [{:from member-1
+                                                                                  :events [{:type "chat-created"
+                                                                                            :clock-value 1
+                                                                                            :name "group-name"}
+                                                                                           {:type "admins-added"
+                                                                                            :clock-value 10
+                                                                                            :members [member-2]}
+                                                                                           {:type "admin-removed"
+                                                                                            :clock-value 11
+                                                                                            :member member-1}]}
+                                                                                 {:from member-2
+                                                                                  :events [{:type "member-removed"
+                                                                                            :clock-value 12
+                                                                                            :member member-3}
+                                                                                           {:type "members-added"
+                                                                                            :clock-value 12
+                                                                                            :members [member-4]}
+                                                                                           {:type "name-changed"
+                                                                                            :clock-value 13
+                                                                                            :name "new-name"}]}]}
+                                                           "payload"
+                                                           member-3)
+              actual-chat (get-in actual [:db :chats chat-id])]
+          (testing "the chat is updated"
+            (is actual-chat))
+          (testing "admins are updated"
+            (is (= #{member-2} (:admins actual-chat))))
+          (testing "members are updated"
+            (is (= #{member-1 member-2 member-4} (:contacts actual-chat))))
+          (testing "the name is updated"
+            (is (= "new-name" (:name actual-chat))))
+          (testing "it adds a system message"
+            (is (= 7 (count (:messages actual-chat)))))
+          (testing "it sets the right text"
+            (is (= ["group-chat-created"
+                    "group-chat-member-added"
+                    "group-chat-member-added"
+                    "group-chat-admin-added"
+                    "group-chat-member-added"
+                    "group-chat-member-removed"
+                    "group-chat-name-changed"]
+                   (map (comp :text :content) (sort-by :clock-value (vals (:messages actual-chat))))))))))))
 
 (deftest set-up-topic
-  (with-redefs [config/group-chats-enabled? true]
-    (let [cofx {:now 0 :db {:account/account {:public-key admin}}}]
-      (testing "a brand new chat"
-        (let [actual (group-chats/handle-membership-update cofx initial-message "payload" admin)]
-          (testing "it sets up a topic"
-            (is (:shh/add-discovery-filters actual)))))
-      (testing "an existing chat"
-        (let [cofx  (assoc cofx
-                           :db
-                           (:db (group-chats/handle-membership-update cofx initial-message "payload" admin)))
-              new-message {:chat-id chat-id
-                           :membership-updates [{:from member-1
-                                                 :events [{:type "chat-created"
-                                                           :clock-value 1
-                                                           :name "group-name"}
-                                                          {:type "admins-added"
-                                                           :clock-value 10
-                                                           :members [member-2]}
-                                                          {:type "admin-removed"
-                                                           :clock-value 11
-                                                           :member member-1}]}
-                                                {:from member-1
-                                                 :events [{:type "member-removed"
-                                                           :clock-value 12
-                                                           :member member-1}]}]}
-              actual (group-chats/handle-membership-update cofx new-message "payload" admin)]
-          (testing "it removes the topic"
-            (is (:shh/remove-filter actual))))))))
+  (let [cofx {:now 0 :db {:account/account {:public-key admin}}}]
+    (testing "a brand new chat"
+      (let [actual (group-chats/handle-membership-update cofx initial-message "payload" admin)]
+        (testing "it sets up a topic"
+          (is (:shh/add-discovery-filters actual)))))
+    (testing "an existing chat"
+      (let [cofx  (assoc cofx
+                         :db
+                         (:db (group-chats/handle-membership-update cofx initial-message "payload" admin)))
+            new-message {:chat-id chat-id
+                         :membership-updates [{:from member-1
+                                               :events [{:type "chat-created"
+                                                         :clock-value 1
+                                                         :name "group-name"}
+                                                        {:type "admins-added"
+                                                         :clock-value 10
+                                                         :members [member-2]}
+                                                        {:type "admin-removed"
+                                                         :clock-value 11
+                                                         :member member-1}]}
+                                              {:from member-1
+                                               :events [{:type "member-removed"
+                                                         :clock-value 12
+                                                         :member member-1}]}]}
+            actual (group-chats/handle-membership-update cofx new-message "payload" admin)]
+        (testing "it removes the topic"
+          (is (:shh/remove-filter actual)))))))
 
 (deftest build-group-test
   (testing "only adds"

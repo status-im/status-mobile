@@ -44,6 +44,13 @@
    :padding-top        12
    :background-color   :white})
 
+(def info-section
+  {:padding-horizontal 16
+   :padding-top        12})
+
+(def info-section-text
+  {:color colors/blue})
+
 (def pair-this-device-actions
   {:flex           1
    :flex-direction :row})

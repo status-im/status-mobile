@@ -87,6 +87,7 @@
      [pairing.views/edit-installation-name]
      [react/view
       [pairing.views/pair-this-device]
+      [pairing.views/info-section]
       [pairing.views/sync-devices]
       [react/view {:style pairing.styles/installation-list}
        [pairing.views/your-device your-installation-id your-installation-name]
@@ -193,7 +194,7 @@
        [react/view {:style styles/title-separator}]
        [react/text {:style styles/adv-settings-subtitle} (i18n/label :t/pfs)]
        [react/view {:style (styles/profile-row false)}
-        [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :notifications)]
+        [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :t/pfs)]
         [react/switch {:on-tint-color   colors/blue
                        :value           pfs?
                        :on-value-change #(re-frame/dispatch [:accounts.ui/toggle-pfs (not pfs?)])}]]])))

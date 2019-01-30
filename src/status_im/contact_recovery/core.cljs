@@ -13,7 +13,7 @@
    [status-im.contact.core :as models.contact]))
 
 ;; How long do we wait until we process a contact-recovery again?
-(def contact-recovery-interval-ms (* 6 60 60 1000))
+(def contact-recovery-interval-ms (* 60 60 1000))
 
 (defn prompt-dismissed! [public-key]
   (re-frame/dispatch [:contact-recovery.ui/prompt-dismissed public-key]))
@@ -40,10 +40,11 @@
   [now public-key]
   (let [{:keys [timestamp]} (data-store.contact-recovery/get-contact-recovery-by-id public-key)]
     (and timestamp
-         (< contact-recovery-interval-ms (- now timestamp)))))
+         (> contact-recovery-interval-ms (- now timestamp)))))
 
 (defn handle-recovery-fx [now public-key]
-  (when-not (notified-recently? now public-key)
+  (if (notified-recently? now public-key)
+    (prompt-dismissed! public-key)
     (re-frame/dispatch [:contact-recovery.callback/handle-recovery public-key])))
 
 (fx/defn notify-user

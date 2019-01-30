@@ -177,6 +177,11 @@
                     (re-frame/dispatch [:pairing.ui/set-name-pressed @installation-name])
                     (reset! installation-name ""))}]]])
 
+(defn info-section []
+  [react/view {:style styles/info-section}
+   [react/touchable-highlight {:on-press #(.openURL react/linking "https://status.im/tutorials/pairing.html")}
+    [react/text {:style styles/info-section-text} (i18n/label :t/learn-more)]]])
+
 (defn installations-list [installation-id installation-name installations]
   [react/view {:style styles/installation-list}
    [react/view {:style styles/paired-devices-title}
@@ -197,5 +202,6 @@
         [edit-installation-name]
         [react/view
          [pair-this-device]
+         [info-section]
          [installations-list installation-id installation-name installations]])]
      (when (seq installations) [footer syncing])]))
