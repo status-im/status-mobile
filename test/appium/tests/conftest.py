@@ -9,7 +9,7 @@ from tests import test_suite_data, appium_container
 from datetime import datetime
 from os import environ
 from io import BytesIO
-from sauceclient import SauceClient
+from sauceclient import SauceClient, SauceException
 from support.api.jenkins_api import get_jenkins_build_url
 from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
@@ -242,7 +242,7 @@ def update_sauce_jobs(test_name, job_ids, passed):
     for job_id in job_ids.keys():
         try:
             sauce.jobs.update_job(job_id, name=test_name, passed=passed)
-        except RemoteDisconnected:
+        except (RemoteDisconnected, SauceException):
             pass
 
 
