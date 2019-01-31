@@ -40,7 +40,8 @@
               "react-native-fetch-polyfill"
               "text-encoding"
               "js-sha3"
-              "react-navigation"]
+              "react-navigation"
+              "hi-base32"]
 
  ;; Desktop modules
  :desktop-modules ["realm"

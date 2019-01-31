@@ -20,7 +20,8 @@
             [status-im.utils.random :as random]
             [status-im.utils.types :as types]
             [status-im.utils.universal-links.core :as utils.universal-links]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.js-dependencies :as js-dependencies]))
 
 (fx/defn initialize-browsers
   [{:keys [db all-stored-browsers]}]
@@ -177,14 +178,19 @@
   [{:keys [db] :as cofx} proto-code hash]
   (let [current-url (get-current-url (get-current-browser db))
         host (http/url-host current-url)
-        gateways (if (= swarm-proto-code proto-code) "swarm-gateways.net/bzz:/" "ipfs.infura.io/ipfs/")]
+        path  (subs current-url (+ (.indexOf current-url host) (count host)))
+        gateway (if (= ipfs-proto-code proto-code)
+                  (let [base32hash (-> (.encode js-dependencies/hi-base32 (alphabase.base58/decode hash))
+                                       (string/replace #"=" "")
+                                       (string/lower-case))]
+                    (str base32hash ".infura.status.im"))
+                  (str "swarm-gateways.net/bzz:/" hash))]
     (fx/merge cofx
               {:db (-> (update db :browser/options
                                assoc
-                               :url (str "https://" gateways hash
-                                         (subs current-url (+ (.indexOf current-url host) (count host))))
+                               :url (str "https://" gateway path)
                                :resolving? false)
-                       (assoc-in [:browser/options :resolved-ens host] (str gateways hash)))})))
+                       (assoc-in [:browser/options :resolved-ens host] gateway))})))
 
 (fx/defn resolve-ens-multihash-error
   [{:keys [db] :as cofx}]
