@@ -1,7 +1,7 @@
 # This image is only for extracting and cleaning up NDK and SDK
 ARG BASE_IMAGE_TAG
 
-FROM statusteam/status-build-base:1.1.0-${BASE_IMAGE_TAG} AS sdk_and_ndk
+FROM statusteam/status-build-base:${BASE_IMAGE_TAG} AS sdk_and_ndk
 
 ARG ANDROID_NDK_VERSION
 ARG ANDROID_SDK_VERSION
@@ -40,7 +40,7 @@ RUN cd /usr/lib/android-ndk && rm -fr docs tests samples \
  && find sources -mindepth 2 -maxdepth 2 | grep -v 'gnu-libstdc' | xargs rm -fr
 
 ################################################################################
-FROM statusteam/status-build-base:1.1.0-${BASE_IMAGE_TAG}
+FROM statusteam/status-build-base:${BASE_IMAGE_TAG}
 
 ARG ANDROID_NDK_VERSION
 ARG ANDROID_SDK_VERSION

@@ -1,10 +1,10 @@
 ARG BASE_IMAGE_TAG
 
-FROM statusteam/status-build-base:1.1.0-${BASE_IMAGE_TAG} AS qt_build
+FROM statusteam/status-build-base:${BASE_IMAGE_TAG} AS qt_build
 
 ARG QT_VERSION
-ARG RNATIVE_VERSION
 ARG QT_CI_COMMIT
+ARG RNATIVE_VERSION
 
 ENV XDG_RUNTIME_DIR=/tmp/runtime-root
 
@@ -38,7 +38,7 @@ RUN mkdir -p /tmp/qtci \
         '.*\/(qdoc|qgltf|linguist|designer|assistant|qhelpconverter|qmlprofiler)$' -delete \
  && rm -fr ${XDG_RUNTIME_DIR}
 
-FROM statusteam/status-build-base:1.1.0-${BASE_IMAGE_TAG}
+FROM statusteam/status-build-base:${BASE_IMAGE_TAG}
 
 ARG QT_VERSION
 ARG CMAKE_VERSION
@@ -50,19 +50,18 @@ RUN ln -s /opt/qt/mkspecs /usr/local/mkspecs \
 # We have to do this because Jenkins doesn't let us
 # https://issues.jenkins-ci.org/browse/JENKINS-49076
 ARG NODE_VERSION
-ENV PATH=/opt/qt/bin:/home/jenkins/.nvm/versions/node/v${NODE_VERSION}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV PATH=/opt/qt/bin:/home/jenkins/.nvm/versions/node/v${NODE_VERSION}/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 RUN apt-get update \
  && add-apt-repository -y ppa:git-core/ppa \
- && add-apt-repository -y ppa:longsleep/golang-backports \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive \
       apt-get -q -y --no-install-recommends install \
-      golang-go python python3-pip python3-setuptools python3-wheel \
-      apt-transport-https openjdk-8-jdk-headless \
-      extra-cmake-modules build-essential gcc g++ fuse \
-      libx11-xcb1 libxss1 libasound2 libgl-dev libsm6 libxrandr2 python-dev \
-      libjasper-dev libegl1-mesa libxcomposite-dev libxcursor-dev \
+              python python3-pip python3-setuptools python3-wheel \
+              apt-transport-https openjdk-8-jdk-headless \
+              extra-cmake-modules build-essential gcc g++ fuse \
+              libx11-xcb1 libxss1 libasound2 libgl-dev libsm6 libxrandr2 python-dev \
+              libjasper-dev libegl1-mesa libxcomposite-dev libxcursor-dev \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/man
 
@@ -71,6 +70,12 @@ RUN cd /tmp \
  && tar xf cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz --strip 1 -C /usr/local \
  && rm -fr /usr/local/doc/cmake \
  && rm cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+
+ARG GOLANG_VERSION
+RUN cd /tmp \
+ && wget -q https://dl.google.com/go/go${GOLANG_VERSION}.linux-amd64.tar.gz \
+ && tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz \
+ && rm go${GOLANG_VERSION}.linux-amd64.tar.gz
 
 RUN mkdir -p /tmp/react-native-desktop \
  && cd /tmp/react-native-desktop \
@@ -85,6 +90,6 @@ RUN mkdir -p /tmp/react-native-desktop \
  && cd \
  && rm -r /tmp/react-native-desktop
 
-LABEL source="https://github.com/status-im/status-react/tree/develop/desktop/docker" \
+LABEL source="https://github.com/status-im/status-react/tree/develop/docker/linux" \
       description="Image for building Linux Desktop version of Status app." \
       maintainer="jakub@status.im"

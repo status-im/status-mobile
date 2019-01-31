@@ -5,6 +5,7 @@ android-sdk;4333796;aa190cfd7299cd6a1c687355bb2764e4
 clojure_cli;1.9.0.381;
 cmake;3.12.2;
 conan;1.9.0;
+golang;1.10.2;
 leiningen;2.8.1;
 maven;3.5.2;
 node;10.12.0;

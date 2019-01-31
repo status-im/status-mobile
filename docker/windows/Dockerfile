@@ -1,20 +1,22 @@
 ARG BASE_IMAGE_TAG
 
-FROM statusteam/status-build-base:1.1.0-${BASE_IMAGE_TAG}
+FROM statusteam/status-build-base:${BASE_IMAGE_TAG}
 
 ARG RNATIVE_VERSION
 ARG CONAN_VERSION
 ARG CMAKE_VERSION
+ARG GOLANG_VERSION
+ARG NODE_VERSION
+ENV PATH=/home/jenkins/.nvm/versions/node/v${NODE_VERSION}/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 RUN add-apt-repository -y ppa:git-core/ppa \
- && add-apt-repository -y ppa:longsleep/golang-backports \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive \
       apt-get -q -y --no-install-recommends install \
-        nsis fuse golang-go python python3-pip python3-setuptools python3-wheel \
-        apt-transport-https openjdk-8-jdk-headless extra-cmake-modules build-essential \
-        libx11-xcb1 libxss1 libasound2 libgl-dev libsm6 libxrandr2 python-dev \
-        libjasper-dev libegl1-mesa libxcomposite-dev libxcursor-dev \
+              nsis fuse python python3-pip python3-setuptools python3-wheel \
+              apt-transport-https openjdk-8-jdk-headless extra-cmake-modules build-essential \
+              libx11-xcb1 libxss1 libasound2 libgl-dev libsm6 libxrandr2 python-dev \
+              libjasper-dev libegl1-mesa libxcomposite-dev libxcursor-dev \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/man \
  && python3 -m pip install --upgrade pip \
@@ -25,6 +27,11 @@ RUN cd /tmp \
  && tar xf cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz --strip 1 -C /usr/local \
  && rm -fr /usr/local/doc/cmake \
  && rm cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+
+RUN cd /tmp \
+ && wget -q https://dl.google.com/go/go${GOLANG_VERSION}.linux-amd64.tar.gz \
+ && tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz \
+ && rm go${GOLANG_VERSION}.linux-amd64.tar.gz
 
 RUN mkdir -p /tmp/react-native-desktop \
  && cd /tmp/react-native-desktop \
@@ -40,6 +47,6 @@ RUN mkdir -p /tmp/react-native-desktop \
  && cd \
  && rm -r /tmp/react-native-desktop
 
-LABEL source="https://github.com/status-im/status-react/tree/develop/desktop/windows/docker" \
+LABEL source="https://github.com/status-im/status-react/tree/develop/docker/windows" \
       description="Image for building Windows Desktop version of Status app." \
       maintainer="jakub@status.im"

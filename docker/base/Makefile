@@ -9,7 +9,7 @@ IMAGE_TAG = 1.1.0-$(DEPS_HASH)
 IMAGE_NAME = statusteam/status-build-base:$(IMAGE_TAG)
 
 get-image-tag:
-	@echo $(DEPS_HASH)
+	@echo $(IMAGE_TAG)
 
 build: nvm_install.sh
 	docker build \
