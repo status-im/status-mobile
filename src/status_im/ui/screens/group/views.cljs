@@ -108,13 +108,13 @@
     (i18n/label :t/group-chat-no-contacts)]
    [buttons/secondary-button {:on-press handle-invite-friends-pressed} (i18n/label :t/invite-friends)]])
 
-(views/defview bottom-container [{:keys [on-press disabled label]}]
+(views/defview bottom-container [{:keys [on-press disabled label accessibility-label]}]
   [react/view {:style main-tabs.styles/tabs-container}
    [react/view {:style components.styles/flex}]
    [react/view {:style styles/bottom-container}
     [components.common/bottom-button
      {:forward?            true
-      :accessibility-label :next-button
+      :accessibility-label (or accessibility-label :next-button)
       :label               label
       :disabled?           disabled
       :on-press            on-press}]]])
@@ -162,7 +162,8 @@
                           :enable-empty-sections        true}]]]
        [bottom-container {:on-press #(re-frame/dispatch [:group-chats.ui/create-pressed group-name])
                           :disabled (string/blank? group-name)
-                          :label (i18n/label :t/create-group-chat)}]])))
+                          :label (i18n/label :t/create-group-chat)
+                          :accessibility-label :create-group-chat-button}]])))
 
 ;; Add participants to existing group chat
 (views/defview add-participants-toggle-list []

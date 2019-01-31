@@ -47,7 +47,7 @@ class OpenButton(BaseButton):
 class CreateButton(BaseButton):
     def __init__(self, driver):
         super(CreateButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('create-button')
+        self.locator = self.Locator.accessibility_id('create-group-chat-button')
 
     def navigate(self):
         from views.chat_view import ChatView
