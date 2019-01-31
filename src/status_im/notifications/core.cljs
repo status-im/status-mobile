@@ -18,6 +18,7 @@
 (def ^:private pn-message-id-hash-length 10)
 (def ^:private pn-pubkey-hash-length 10)
 (def ^:private pn-pubkey-length 132)
+(def ^:private pull-recent-messages-window (* 15 60))
 
 (when-not platform/desktop?
 
@@ -217,7 +218,7 @@
                (vals (:chats db)))))
 
   (fx/defn handle-on-message
-    [{:keys [db] :as cofx} decoded-payload {:keys [force]}]
+    [{:keys [db now] :as cofx} decoded-payload {:keys [force]}]
     (let [view-id            (:view-id db)
           current-chat-id    (:current-chat-id db)
           app-state          (:app-state db)
@@ -226,17 +227,21 @@
       (log/debug "handle-on-message" "app-state:" app-state
                  "view-id:" view-id "current-chat-id:" current-chat-id
                  "from:" from "force:" force)
-      (when (or force
-                (and
-                 (not= app-state "active")
-                 (show-notification? cofx rehydrated-payload)))
-        {:db
-         (assoc-in db [:push-notifications/stored (:to rehydrated-payload)]
-                   (js/JSON.stringify (clj->js rehydrated-payload)))
-         :notifications/display-notification
-         {:title           (get-contact-name cofx from)
-          :body            (i18n/label :notifications-new-message-body)
-          :decoded-payload rehydrated-payload}})))
+      (merge
+       (when (and (= (.-length from) pn-pubkey-length)
+                  (show-notification? cofx rehydrated-payload))
+         {:dispatch [:mailserver/fetch-history from (- (quot now 1000) pull-recent-messages-window)]})
+       (when (or force
+                 (and
+                  (not= app-state "active")
+                  (show-notification? cofx rehydrated-payload)))
+         {:db
+          (assoc-in db [:push-notifications/stored (:to rehydrated-payload)]
+                    (js/JSON.stringify (clj->js rehydrated-payload)))
+          :notifications/display-notification
+          {:title           (get-contact-name cofx from)
+           :body            (i18n/label :notifications-new-message-body)
+           :decoded-payload rehydrated-payload}}))))
 
   (fx/defn handle-push-notification-open
     [{:keys [db] :as cofx} decoded-payload {:keys [stored?] :as ctx}]

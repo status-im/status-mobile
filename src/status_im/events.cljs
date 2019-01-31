@@ -404,6 +404,11 @@
    (mailserver/check-connection cofx)))
 
 (handlers/register-handler-fx
+ :mailserver/fetch-history
+ (fn [cofx [_ chat-id from-timestamp]]
+   (mailserver/fetch-history cofx chat-id from-timestamp)))
+
+(handlers/register-handler-fx
  :mailserver.callback/generate-mailserver-symkey-success
  (fn [cofx [_ mailserver sym-key-id]]
    (mailserver/add-mailserver-sym-key cofx mailserver sym-key-id)))
@@ -658,7 +663,7 @@
 (handlers/register-handler-fx
  :chat.ui/fetch-history-pressed
  (fn [cofx [_ chat-id]]
-   (mailserver/fetch-history cofx chat-id)))
+   (mailserver/fetch-history cofx chat-id 1)))
 
 (handlers/register-handler-fx
  :chat.ui/remove-chat-pressed
