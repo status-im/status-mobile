@@ -80,7 +80,10 @@
 
 (defn check-if-phishing-url [{:keys [history history-index] :as browser}]
   (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))]
-    (assoc browser :unsafe? (dependencies/phishing-detect history-host))))
+    (if history-host
+      (assoc browser :unsafe? (dependencies/phishing-detect history-host))
+      (assoc browser :web-view-error? true)
+      )))
 
 (def ipfs-proto-code "e3")
 (def swarm-proto-code "e4")
