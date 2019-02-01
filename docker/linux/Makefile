@@ -1,4 +1,5 @@
 __toolversion = $(shell $(GIT_ROOT)/scripts/toolversion $(1))
+__major_version = $(shell echo $(1) | cut -d. -f1,2)
 
 GIT_COMMIT = $(shell git rev-parse --short HEAD)
 GIT_ROOT = $(shell git rev-parse --show-toplevel)
@@ -19,7 +20,6 @@ build: $(QT_ARCHIVE)
 		echo "DEPS_HASH not set"; \
 		exit 1; \
 	fi
-
 	docker build \
 		--build-arg="BASE_IMAGE_TAG=$(BASE_IMAGE_TAG)" \
 		--build-arg="NODE_VERSION=$(call __toolversion, node)" \
@@ -31,7 +31,7 @@ build: $(QT_ARCHIVE)
 		-t $(IMAGE_NAME) .
 
 $(QT_ARCHIVE):
-	wget $(QT_URL)/$(call __major_version__, $(QT_VERSION))/$(QT_VERSION)/$(QT_ARCHIVE)
+	wget $(QT_URL)/$(call __major_version, $(QT_VERSION))/$(QT_VERSION)/$(QT_ARCHIVE)
 	echo "$(QT_MD5SUM)  $(QT_ARCHIVE)" | md5sum --check
 
 push: build
