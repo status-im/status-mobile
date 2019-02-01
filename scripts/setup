@@ -7,6 +7,9 @@
 # Usage: scripts/setup
 ########################################################################
 
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
 _current_dir=$(cd "${BASH_SOURCE%/*}" && pwd)
 source "$_current_dir/lib/setup/path-support.sh"
 
@@ -17,30 +20,58 @@ source_lib "installers.sh"
 
 exit_unless_os_supported
 
-load_nvm_if_available
 load_rvm_if_available
+
+####
+setup_header "Checking prerequisites..."
+
+if program_exists nix; then
+  if [ -z "$IN_NIX_SHELL" ]; then
+    if is_nixos; then
+      cecho "@b@yellow[[All's good, you can run 'make shell' now]]"
+      exit 0
+    else
+      cecho "@b@red[[Please run 'make shell' first]]"
+      exit 1
+    fi
+  fi
+fi
+
+if ! program_exists "curl"; then
+  cecho "@b@yellow[[Please install curl before running setup.]]"
+  exit 1
+fi
+
+if is_linux; then
+  watches=$(cat /proc/sys/fs/inotify/max_user_watches)
+  required_watches=524288
+  if [ $watches -lt $required_watches ]; then
+    cecho "@b@cyan[[fs.inotify.max_user_watches limit is too low ($watches), increasing it]]"
+    echo fs.inotify.max_user_watches=$required_watches | sudo tee -a /etc/sysctl.conf
+    sudo sysctl -p
+  fi
+
+  if [ -f "/etc/arch-release" ]; then
+    # Arch Linux
+    userns=$(sysctl -n kernel.unprivileged_userns_clone)
+    if [ "$userns" != '1' ]; then
+      sudo sysctl kernel.unprivileged_userns_clone=1
+    fi
+  fi
+fi
 
 ####
 setup_header "Installing requirements..."
 
-install_and_setup_package_manager
-install_wget
-install_java8
-install_clojure_cli
-install_leiningen
-install_nsis
-install_node
-install_yarn
-install_watchman
-install_react_native_cli
-install_android_sdk
-install_android_ndk
-install_maven
-install_cocoapods
+install_nix && \
+install_react_native_cli && \
+install_nsis && \
+install_android_sdk && \
+install_android_ndk || \
+exit $?
 
 ####
 echo && setup_header "Installing dependencies..."
 
-dependency_setup make prepare-mobile
-
+dependency_setup make prepare-mobile && \
 setup_complete

@@ -36,7 +36,6 @@ project.xcworkspace
 #
 .idea
 .gradle
-local.properties
 *.iml
 
 # Atom
