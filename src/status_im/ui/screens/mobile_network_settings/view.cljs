@@ -2,66 +2,54 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.screens.mobile-network-settings.style :as styles]
-            [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.i18n :as i18n]
-            [reagent.core :as reagent]
-            [status-im.ui.components.lists.cell.view :as cell]))
+            [re-frame.core :as re-frame]
+            status-im.ui.screens.mobile-network-settings.events
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.screens.profile.components.views :as profile.components]
+            [status-im.utils.platform :as platform]
+            [status-im.ui.screens.mobile-network-settings.sheets :as sheets]))
 
-(defn title []
-  [react/view {:style styles/title}
-   [react/text
-    {:style styles/title-text}
-    (i18n/label :mobile-syncing-sheet-title)]])
-
-(defn details []
+(defn settings-separator []
   [react/view
-   {:style styles/details}
-   [react/text
-    {:style styles/details-text}
-    (i18n/label :mobile-syncing-sheet-details)]])
+   {:style styles/settings-separator}])
 
-(defn separator []
-  [react/view {:style styles/separator}])
+(views/defview mobile-network-settings []
+  (views/letsubs
+    [{:keys [syncing-on-mobile-network?
+             remember-syncing-choice?]}
+     [:get :account/account]]
+    [react/view {:style styles/container}
+     [status-bar/status-bar]
+     [toolbar/simple-toolbar (i18n/label :t/mobile-network-settings)]
+     (when platform/ios?
+       [settings-separator])
+     [react/view {:style styles/switch-container}
+      [profile.components/settings-switch-item
+       {:label-kw  :t/mobile-network-use-mobile
+        :value     syncing-on-mobile-network?
+        :action-fn #(re-frame/dispatch [:mobile-network/set-syncing %])}]]
+     [react/view {:style styles/details}
+      [react/text {:style styles/use-mobile-data-text}
+       (i18n/label :t/mobile-network-use-mobile-data)]]
+     [react/view {:style styles/switch-container}
+      [profile.components/settings-switch-item
+       {:label-kw  :t/mobile-network-ask-me
+        :value     (not remember-syncing-choice?)
+        :action-fn #(re-frame/dispatch [:mobile-network/ask-on-mobile-network? %])}]]
+     [settings-separator]
+     [react/view
+      {:style styles/defaults-container}
+      [react/text
+       {:style    styles/defaults
+        :on-press #(re-frame/dispatch [:mobile-network/restore-defaults])}
+       "Restore Defaults"]]]))
 
-(defn checkbox []
-  (let [checked? (reagent/atom false)]
-    (fn []
-      [react/view
-       {:style styles/checkbox-line-container}
-       [checkbox/checkbox
-        {:checked?        @checked?
-         :style           styles/checkbox
-         :icon-style      styles/checkbox-icon
-         :on-value-change #(swap! checked? not)}]
-       [react/view
-        {:style styles/checkbox-text-container}
-        [react/text {:style styles/checkbox-text}
-         (i18n/label :mobile-network-sheet-remember-choice)]]])))
+(def settings-sheet
+  {:content-height 340
+   :content        sheets/settings-sheet})
 
-(defn settings []
-  [react/view
-   {:style styles/settings-container}
-   [react/text {:style styles/settings-text}
-    (i18n/label :mobile-network-sheet-configure)
-    [react/text {:style styles/settings-link}
-     (str " " (i18n/label :mobile-network-sheet-settings))]]])
-
-(views/defview mobile-network-settings-sheet []
-  [react/view {:style styles/container}
-   [title]
-   [details]
-   [cell/cell
-    {:title   (i18n/label :mobile-network-continue-syncing)
-     :details (i18n/label :mobile-network-continue-syncing-details)
-     :icon    :main-icons/network
-     :style   styles/network-icon}]
-   [cell/cell
-    {:title   (i18n/label :mobile-network-stop-syncing)
-     :details (i18n/label :mobile-network-stop-syncing-details)
-     :icon    :main-icons/cancel
-     :style   styles/cancel-icon}]
-   [separator]
-   [react/view {:flex       1
-                :align-self :stretch}
-    [checkbox]
-    [settings]]])
+(def offline-sheet
+  {:content        sheets/offline-sheet
+   :content-height 180})

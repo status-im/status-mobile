@@ -18,7 +18,8 @@
             [status-im.utils.handlers :as handlers]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.transport.partitioned-topic :as transport.topic]))
+            [status-im.transport.partitioned-topic :as transport.topic]
+            [status-im.ui.screens.mobile-network-settings.utils :as mobile-network-utils]))
 
 ;; How do mailserver work ?
 ;;
@@ -332,21 +333,23 @@
 
 (fx/defn process-next-messages-request
   [{:keys [db now] :as cofx}]
-  (when (and (transport.db/all-filters-added? cofx)
-             (not (:mailserver/current-request db)))
+  (when (and
+         (mobile-network-utils/syncing-allowed? cofx)
+         (transport.db/all-filters-added? cofx)
+         (not (:mailserver/current-request db)))
     (when-let [mailserver (get-mailserver-when-ready cofx)]
       (let [request-to (or (:mailserver/request-to db)
                            (quot now 1000))
-            requests (prepare-messages-requests cofx request-to)
-            web3 (:web3 db)]
+            requests   (prepare-messages-requests cofx request-to)
+            web3       (:web3 db)]
         (if-let [request (first requests)]
-          {:db (assoc db
-                      :mailserver/pending-requests (count requests)
-                      :mailserver/current-request request
-                      :mailserver/request-to request-to)
-           :mailserver/request-messages {:web3     web3
-                                         :mailserver    mailserver
-                                         :request request}}
+          {:db                          (assoc db
+                                               :mailserver/pending-requests (count requests)
+                                               :mailserver/current-request request
+                                               :mailserver/request-to request-to)
+           :mailserver/request-messages {:web3       web3
+                                         :mailserver mailserver
+                                         :request    request}}
           {:db (dissoc db
                        :mailserver/pending-requests
                        :mailserver/request-to)})))))
@@ -475,7 +478,6 @@
         ;; If a cursor is returned, add cursor and fire request again
         (if (seq cursor)
           (when-let [mailserver (get-mailserver-when-ready cofx)]
-
             (let [request-with-cursor (assoc request :cursor cursor)]
               {:db (assoc db :mailserver/current-request request-with-cursor)
                :mailserver/request-messages {:web3 (:web3 db)

@@ -88,7 +88,7 @@
   [{{:keys      [view-id hardwallet
                  initial-props desktop/desktop
                  network-status network peers-count peers-summary device-UUID
-                 push-notifications/stored]
+                 push-notifications/stored network/type]
      :node/keys [status]
      :or        {network (get app-db :network)}} :db}]
   ;TODO remove retrieve-pairing when keycard login will be ready
@@ -102,6 +102,7 @@
                                        :peers-summary (or peers-summary [])
                                        :node/status status
                                        :network network
+                                       :network/type type
                                        :hardwallet hardwallet
                                        :device-UUID device-UUID
                                        :view-id view-id
@@ -188,6 +189,7 @@
                         :accounts/accounts accounts
                         :network-status network-status
                         :network network
+                        :network/type (:network/type db)
                         :chain (ethereum/network->chain-name account-network)
                         :universal-links/url url
                         :peers-summary peers-summary

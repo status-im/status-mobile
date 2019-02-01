@@ -343,6 +343,7 @@
                    :edit-extension             edit-extension
                    :show-extension             show-extension
                    :network-settings           network-settings
+                   :mobile-network-settings          mobile-network-settings/mobile-network-settings
                    :network-details            network-details
                    :edit-network               edit-network
                    :log-level-settings         log-level-settings
@@ -390,11 +391,13 @@
 (views/defview bottom-sheet []
   (views/letsubs [{:keys [show? view]} [:bottom-sheet]]
     (let [opts (cond-> {:show?     show?
-                        :on-cancel (fn [])}
+                        :on-cancel #(re-frame/dispatch [:bottom-sheet/hide])}
 
                  (= view :mobile-network)
-                 (merge {:content mobile-network-settings/mobile-network-settings-sheet
-                         :content-height 340}))]
+                 (merge mobile-network-settings/settings-sheet)
+
+                 (= view :mobile-network-offline)
+                 (merge mobile-network-settings/offline-sheet))]
       [bottom-sheet/bottom-sheet opts])))
 
 (defn main []

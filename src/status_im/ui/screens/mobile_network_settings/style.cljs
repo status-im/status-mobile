@@ -3,94 +3,37 @@
             [status-im.ui.components.styles :as common-styles]))
 
 (def container
-  {:flex        1
-   :align-items :center})
+  {:flex             1
+   :background-color colors/white})
 
-(def title
-  {:height     21
-   :margin-top 8})
-
-(def title-text
-  (merge
-   common-styles/text-title-bold
-   {:color colors/black}))
+(def switch-container
+  {:height           52
+   :background-color colors/white})
 
 (def details
-  {:height        66
-   :width         311
-   :margin-left   32
-   :margin-right  32
-   :margin-top    6
-   :margin-bottom 10})
+  {:margin-right     16
+   :margin-left      16
+   :margin-top       8
+   :margin-bottom    16
+   :background-color colors/white})
 
-(def details-text
+(def use-mobile-data-text
   (merge
    common-styles/text-main
    {:color       colors/gray
-    :text-align  :center
     :line-height 22}))
 
-(def network-icon
-  {:title-color     :blue
-   :icon-color      :blue
-   :icon-background :blue-light})
-
-(def cancel-icon
-  {:title-color     :red
-   :icon-color      :red
-   :icon-background :red-light})
-
-(def separator
-  {:background-color colors/gray-lighter
-   :margin-left      72
-   :align-self       :stretch
+(def settings-separator
+  {:align-self       :stretch
    :height           1
-   :margin-top       8})
+   :background-color colors/gray-lighter})
 
-(def checkbox-line-container
-  {:margin-left    71
-   :margin-top     13
-   :height         29
-   :flex-direction :row
-   :justify-content :center})
-
-(def checkbox
-  {:padding         0
+(def defaults-container
+  {:height          52
    :justify-content :center
-   :align-items     :center
-   :width           18
-   :height          18
-   :border-radius   2
-   :margin-top      6})
+   :padding-left    16})
 
-(def checkbox-icon
-  {:tint-color colors/white})
-
-(def checkbox-text-container
-  {:justify-content  :center
-   :flex             1
-   :margin-left      13})
-
-(def checkbox-text
+(def defaults
   (merge
    common-styles/text-main
-   {:color       colors/black
-    :line-height 19}))
-
-(def settings-container
-  {:margin-left 69
-   :height      44
-   :margin-top  6
-   :align-items :flex-start})
-
-(def settings-text
-  (merge
-   common-styles/text-main
-   {:color       colors/gray
-    :line-height 22}))
-
-(def settings-link
-  (merge
-   common-styles/text-main
-   {:color       colors/blue
-    :line-height 22}))
+   {:color colors/blue}))

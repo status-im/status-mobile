@@ -121,6 +121,10 @@
      [profile.components/settings-item {:label-kw            :t/notifications
                                         :accessibility-label :notifications-button
                                         :action-fn           #(.openURL react/linking "app-settings://notification/status-im")}]
+     [profile.components/settings-item-separator]
+     [profile.components/settings-item {:label-kw            :t/mobile-network-settings
+                                        :accessibility-label :notifications-button
+                                        :action-fn            #(re-frame/dispatch [:navigate-to :mobile-network-settings])}]
      (when show-backup-seed?
        [profile.components/settings-item-separator])
      (when show-backup-seed?

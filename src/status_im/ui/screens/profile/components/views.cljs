@@ -41,7 +41,7 @@
                    :number-of-lines 1}
        name]
       (when (and public-key (not= generated-name name))
-        [react/text {:style styles/profile-three-words
+        [react/text {:style           styles/profile-three-words
                      :number-of-lines 1}
          generated-name])]]))
 

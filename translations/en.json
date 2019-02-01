@@ -923,10 +923,21 @@
     "mobile-syncing-sheet-title": "Sync using the mobile network",
     "mobile-syncing-sheet-details": "Status tends to use a lot of data when syncing chats. You can choose not to sync when on mobile network",
     "mobile-network-continue-syncing": "Continue syncing",
+    "mobile-network-start-syncing": "Start syncing",
     "mobile-network-continue-syncing-details": "You can change this later in settings",
     "mobile-network-stop-syncing": "Stop syncing",
     "mobile-network-stop-syncing-details": "Until connected to wi-fi?",
     "mobile-network-sheet-configure": "You can configure syncing in more \ndetail in",
     "mobile-network-sheet-settings": "settings",
-    "mobile-network-sheet-remember-choice": "Remember my choice"
+    "mobile-network-sheet-remember-choice": "Remember my choice",
+    "mobile-network-sheet-offline": "Offline, waiting for Wi-Fi",
+    "mobile-network-sheet-offline-details": "Syncing using mobile network is off",
+    "waiting-for-wifi": "History syncing offline, waiting for Wi-Fi.",
+    "waiting-for-wifi-change": "Change",
+    "mobile-network-settings": "Message syncing",
+    "mobile-network-use-mobile": "Use mobile data",
+    "mobile-network-use-mobile-details": "Status tends to use a lot of data when syncing chats. You can choose not to sync when on mobile network",
+    "mobile-network-ask-me": "Ask me when on mobile network",
+    "mobile-network-go-to-settings": "Go to settings",
+    "mobile-network-use-mobile-data": "Status tends to use a lot of data when syncing chats. You can choose not to sync when on mobile network"
 }
