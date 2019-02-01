@@ -10,6 +10,10 @@ function is_linux() {
   [[ "$OS" =~ Linux ]]
 }
 
+function is_nixos() {
+  is_linux && [[ "$(uname -v)" == *NixOS* ]]
+}
+
 function exit_unless_os_supported() {
   if ! is_macos && ! is_linux; then
     cecho "@red[[This install script currently supports Mac OS X and Linux \

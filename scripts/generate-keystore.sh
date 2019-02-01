@@ -14,7 +14,7 @@ STATUS_RELEASE_STORE_PASSWORD=$(property_gradle 'STATUS_RELEASE_STORE_PASSWORD')
 STATUS_RELEASE_KEY_ALIAS=$(property_gradle 'STATUS_RELEASE_KEY_ALIAS')
 STATUS_RELEASE_KEY_PASSWORD=$(property_gradle 'STATUS_RELEASE_KEY_PASSWORD')
 
-[[ -e "${STORE_FILE/#\~/$HOME}" ]] && echo "Keystore $STORE_FILE already exists, please manually remove it if you want to regenerate." && exit 0
+[[ -e "$STORE_FILE" ]] && echo "Keystore $STORE_FILE already exists, please manually remove it if you want to regenerate." && exit 0
 
 echo "Generating keystore $STORE_FILE"
 keydirname="$( dirname "$STORE_FILE" )"
