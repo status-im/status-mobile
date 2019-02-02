@@ -2,7 +2,6 @@ package im.status.ethereum;
 
 import android.support.multidex.MultiDexApplication;
 
-import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
 import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
@@ -14,6 +13,7 @@ import com.horcrux.svg.SvgPackage;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.oblador.keychain.KeychainPackage;
 import com.ocetnik.timer.BackgroundTimerPackage;
+import com.reactcommunity.rnlanguages.RNLanguagesPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.rnfs.RNFSPackage;
 
@@ -60,7 +60,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     statusPackage,
                     new RNStatusKeycardPackage(),
                     new RealmReactPackage(),
-                    new RNI18nPackage(),
+                    new RNLanguagesPackage(),
                     new RNCameraPackage(),
                     new RNFSPackage(),
                     new ReactNativeDialogsPackage(),

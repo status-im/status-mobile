@@ -7,6 +7,7 @@
    [clojure.set :as set]
    [status-im.utils.types :as types]))
 
+(set! (.-locale rn-dependencies/i18n) (.-language rn-dependencies/react-native-languages))
 (set! (.-fallbacks rn-dependencies/i18n) true)
 (set! (.-defaultSeparator rn-dependencies/i18n) "/")
 

@@ -240,7 +240,7 @@ dependencies {
     // https://docs.gradle.org/current/userguide/introduction_dependency_management.html#sec:dependency_resolution
     //compile ("com.facebook.react:react-native:0.55.4") { force = true }  // From node_modules
     implementation project(':react-native-android')
-    implementation project(':react-native-i18n')
+    implementation project(':react-native-languages')
     implementation project(':react-native-status')
     implementation project(':react-native-fs')
     implementation project(':react-native-image-crop-picker')

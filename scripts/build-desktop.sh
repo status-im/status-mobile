@@ -22,7 +22,7 @@ else
 fi
 
 external_modules_dir=( \
-  'node_modules/react-native-i18n/desktop' \
+  'node_modules/react-native-languages/desktop' \
   'node_modules/react-native-config/desktop' \
   'node_modules/react-native-fs/desktop' \
   'node_modules/react-native-http-bridge/desktop' \

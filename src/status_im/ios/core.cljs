@@ -6,6 +6,7 @@
             status-im.ui.screens.events
             status-im.ui.screens.subs
             status-im.data-store.core
+            [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.ui.screens.views :as views]
             [status-im.ui.components.react :as react]
             [status-im.notifications.core :as notifications]
@@ -14,6 +15,9 @@
 
 (defn app-state-change-handler [state]
   (dispatch [:app-state-change state]))
+
+(defn on-languages-change [event]
+  (set! (.-locale rn-dependencies/i18n) (.-language event)))
 
 (defn app-root [props]
   (let [keyboard-height (subscribe [:get :keyboard-height])]
@@ -32,14 +36,16 @@
                       #(when-not (= 0 @keyboard-height)
                          (dispatch [:set :keyboard-height 0])))
         (.hide react/splash-screen)
-        (.addEventListener react/app-state "change" app-state-change-handler))
+        (.addEventListener react/app-state "change" app-state-change-handler)
+        (.addEventListener rn-dependencies/react-native-languages "change" on-languages-change))
       :component-did-mount
       (fn [this]
         (dispatch [:set-initial-props (reagent/props this)]))
       :component-will-unmount
       (fn []
         (.stop react/http-bridge)
-        (.removeEventListener react/app-state "change" app-state-change-handler))
+        (.removeEventListener react/app-state "change" app-state-change-handler)
+        (.removeEventListener rn-dependencies/react-native-languages "change" on-languages-change))
       :display-name "root"
       :reagent-render views/main})))
 

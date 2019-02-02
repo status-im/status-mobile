@@ -9,6 +9,7 @@
 (def fs                     #js {})
 (def http-bridge            #js {})
 (def i18n                   #js {:locale "en"})
+(def react-native-languages #js {:language "en", :addEventListener (fn []), :removeEventListener (fn [])})
 (def image-crop-picker      #js {})
 (def image-resizer          #js {})
 (def linear-gradient        #js {})
