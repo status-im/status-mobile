@@ -4,6 +4,7 @@
             [status-im.contact.db :as contact.db]
             [status-im.i18n :as i18n]
             [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.eip55 :as eip55]
             [status-im.utils.ethereum.eip681 :as eip681]
             [status-im.utils.ethereum.ens :as ens]
             [status-im.utils.handlers :as handlers]
@@ -81,8 +82,10 @@
                           :ens-name recipient
                           :cb       #(re-frame/dispatch [:wallet.send/set-recipient %])}}
        (if (ethereum/address? recipient)
-         {:db       (assoc-in db [:wallet :send-transaction :to] recipient)
-          :dispatch [:navigate-back]}
+         (if (eip55/valid-address-checksum? recipient)
+           {:db       (assoc-in db [:wallet :send-transaction :to] recipient)
+            :dispatch [:navigate-back]}
+           {:ui/show-error (i18n/label :t/wallet-invalid-address-checksum {:data recipient})})
          {:ui/show-error (i18n/label :t/wallet-invalid-address {:data recipient})})))))
 
 (handlers/register-handler-fx

@@ -115,6 +115,7 @@
     "empty-chat-description": "There are no messages \nin this chat yet",
     "camera-access-error": "To grant the required camera permission, please go to your system settings and make sure that Status > Camera is selected.",
     "wallet-invalid-address": "Invalid address: \n {{data}}",
+    "wallet-invalid-address-checksum": "Error in address: \n {{data}}",
     "welcome-to-status": "Welcome to Status",
     "cryptokitty-name": "CryptoKitty #{{id}}",
     "address-explication": "Your public key is used to generate your address on Ethereum and is a series of numbers and letters. You can find it easily in your profile",
