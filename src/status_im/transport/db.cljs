@@ -3,6 +3,7 @@
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as s]
             status-im.contact.db
+            [status-im.utils.config :as config]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.constants :as constants]))
 
@@ -127,7 +128,8 @@
         chats   (into #{:discovery-topic}
                       (keys (filter (fn [[chat-id {:keys [topic one-to-one]}]]
                                       (if one-to-one
-                                        chat-id
+                                        (and config/partitioned-topic-enabled?
+                                             chat-id)
                                         topic))
                                     (get db :transport/chats))))]
     (= chats filters)))
