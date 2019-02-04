@@ -66,7 +66,9 @@
              {:options  (cond-> (assoc params :topics [topic])
                           minPow
                           (assoc :minPow minPow))
-              :callback (or callback (partial receive-message chat-id))
+              ;; We don't pass a chat id on discovery-filters as we might receive
+              ;; messages for multiple chats
+              :callback (or callback (partial receive-message nil))
               :chat-id  chat-id}) topics)))))
 
 (fx/defn add-filter
