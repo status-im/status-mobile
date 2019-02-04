@@ -235,7 +235,7 @@
         mailserver-removed?
         (connect-to-mailserver cofx)))))
 
-(def limit 200)
+(def limit 2000)
 
 (defn adjust-request-for-transit-time
   [from]
