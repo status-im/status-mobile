@@ -461,9 +461,11 @@
         (if (seq cursor)
           (when-let [mailserver (get-mailserver-when-ready cofx)]
 
-            {:mailserver/request-messages {:web3 (:web3 db)
-                                           :mailserver    mailserver
-                                           :request (assoc request :cursor cursor)}})
+            (let [request-with-cursor (assoc request :cursor cursor)]
+              {:db (assoc db :mailserver/current-request request-with-cursor)
+               :mailserver/request-messages {:web3 (:web3 db)
+                                             :mailserver    mailserver
+                                             :request request-with-cursor}}))
           (fx/merge cofx
                     {:db (-> db
                              (dissoc :mailserver/current-request)
@@ -552,9 +554,9 @@
               {:db (update db :mailserver/current-request dissoc :attemps)}
               (change-mailserver))
     (when-let [mailserver (get-mailserver-when-ready cofx)]
-      (let [{:keys [topics from to] :as request} (get db :mailserver/current-request)
+      (let [{:keys [topics from to cursor] :as request} (get db :mailserver/current-request)
             web3 (:web3 db)]
-        (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to)
+        (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to "cursor" cursor)
         {:db (update-in db [:mailserver/current-request :attemps] inc)
          :mailserver/request-messages {:web3    web3
                                        :mailserver   mailserver
