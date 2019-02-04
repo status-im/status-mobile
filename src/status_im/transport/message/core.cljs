@@ -43,8 +43,7 @@
                                      (receive-message now-in-s chat-id message))
                                    (js-array->seq js-messages))]
       (apply fx/merge cofx receive-message-fxs))
-    (do (log/error "Something went wrong" js-error js-messages)
-        cofx)))
+    (log/error "Something went wrong" js-error js-messages)))
 
 (fx/defn remove-hash
   [{:keys [db] :as cofx} envelope-hash]
