@@ -163,8 +163,15 @@ def uploadArtifact(path) {
   return "https://${bucket}.${domain}/${getFilename(path)}"
 }
 
+def parentOrCurrentBuild() {
+  def c = currentBuild.rawBuild.getCause(hudson.model.Cause$UpstreamCause)
+  if (c == null) { return currentBuild }
+  return c.getUpstreamRun()
+}
+
 def timestamp() {
-  def now = new Date(currentBuild.timeInMillis)
+  /* we use parent if available to make timestmaps consistent */
+  def now = new Date(parentOrCurrentBuild().timeInMillis)
   return now.format('yyMMdd-HHmmss', TimeZone.getTimeZone('UTC'))
 }
 
