@@ -1,6 +1,5 @@
 (ns status-im.extensions.ethereum
   (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.models.wallet :as models.wallet]
@@ -12,7 +11,6 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.money :as money]
-            [clojure.string :as string]
             [status-im.utils.types :as types]
             [status-im.native-module.core :as status]))
 
@@ -20,13 +18,13 @@
  :extensions/wallet-ui-on-success
  (fn [cofx [_ on-success _ result _]]
    (fx/merge cofx
-             {:dispatch (on-success {:value result})}
+             (when on-success (on-success {:value result}))
              (navigation/navigate-back))))
 
 (handlers/register-handler-fx
  :extensions/wallet-ui-on-failure
  (fn [_ [_ on-failure message]]
-   (when on-failure {:dispatch (on-failure {:value message})})))
+   (when on-failure (on-failure {:value message}))))
 
 (defn- wrap-with-resolution [db arguments address-keyword f]
   "function responsible to resolve ens taken from argument
@@ -85,9 +83,9 @@
 
 (defn- rpc-dispatch [error result f on-success on-failure]
   (when result
-    (re-frame/dispatch (on-success {:value (f result)})))
+    (on-success {:value (f result)}))
   (when (and error on-failure)
-    (re-frame/dispatch (on-failure {:value error}))))
+    (on-failure {:value error})))
 
 (defn- rpc-handler [o f on-success on-failure]
   (let [{:keys [error result]} (types/json->clj o)]
@@ -370,9 +368,9 @@
            network-info (get-in db [:account/account :networks network])
            chain (ethereum/network->chain-keyword network-info)
            registry (get ens/ens-registries chain)]
-       (ens/get-addr web3 registry name #(re-frame/dispatch (on-success {:value %}))))
+       (ens/get-addr web3 registry name #(on-success {:value %})))
      (when on-failure
-       (re-frame/dispatch (on-failure {:value (str "'" name "' is not a valid name")}))))))
+       (on-failure {:value (str "'" name "' is not a valid name")})))))
 
 ;; EXTENSION SIGN -> SIGN MESSAGE
 (handlers/register-handler-fx
@@ -380,7 +378,7 @@
  (fn [{db :db :as cofx} [_ _ {:keys [message data id on-success on-failure]}]]
    (if (and message data)
      (when on-failure
-       {:dispatch (on-failure {:error "only one of :message and :data can be used"})})
+       (on-failure {:error "only one of :message and :data can be used"}))
      (fx/merge cofx
                {:db (assoc-in db [:wallet :send-transaction]
                               {:id                id
@@ -400,7 +398,7 @@
      (status/call-private-rpc payload #(let [{:keys [error result]} (types/json->clj %1)
                                              response (if error {:result result :error error}
                                                           {:result result})]
-                                         (re-frame/dispatch (on-result response)))))))
+                                         (on-result response))))))
 
 ;; poll logs implementation
 (handlers/register-handler-fx

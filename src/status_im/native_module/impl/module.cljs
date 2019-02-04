@@ -1,12 +1,6 @@
 (ns status-im.native-module.impl.module
-  (:require-macros
-   [cljs.core.async.macros :refer [go-loop go]])
   (:require [status-im.ui.components.react :as r]
             [re-frame.core :as re-frame]
-            [taoensso.timbre :as log]
-            [cljs.core.async :as async]
-            [status-im.utils.platform :as p]
-            [status-im.utils.async :as async-util]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [clojure.string :as string]
             [status-im.utils.platform :as platform]))

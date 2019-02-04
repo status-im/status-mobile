@@ -3,6 +3,7 @@
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [clojure.string :as string]
+            [pluto.reader.errors :as errors]
             [status-im.extensions.core :as extensions]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
@@ -23,13 +24,6 @@
     [react/view {:flex 1}
      content]]])
 
-(defn hooks [{:keys [hooks]}]
-  (mapcat (fn [[hook-id values]]
-            (map (fn [[id]]
-                   (str (name hook-id) "." (name id)))
-                 values))
-          hooks))
-
 (views/defview show-extension-base [modal?]
   (views/letsubs [{:keys [extension-data url]} [:get-staged-extension]]
     (let [{:keys [data errors]} extension-data]
@@ -45,15 +39,15 @@
               (i18n/label :t/extensions-disclaimer)]]
             [cartouche {:header (i18n/label :t/identifier)}
              [react/text {:style styles/text}
-              (str (get-in data ['meta :name]))]]
+              (str (get-in data [:meta :name]))]]
             [cartouche {:header (i18n/label :t/name)}
              [react/text {:style styles/text}
-              (str (get-in data ['meta :name]))]]
+              (str (get-in data [:meta :name]))]]
             [cartouche {:header (i18n/label :t/description)}
              [react/text {:style styles/text}
-              (str (get-in data ['meta :description]))]]
+              (str (get-in data [:meta :description]))]]
             [cartouche {:header (i18n/label :t/hooks)}
-             (into [react/view] (for [hook (hooks data)]
+             (into [react/view] (for [hook (keys (:hooks data))]
                                   [react/text {:style styles/text}
                                    (str hook)]))]
             [cartouche {:header (i18n/label :t/permissions)}
@@ -61,9 +55,9 @@
               (i18n/label :t/none)]]
             [cartouche {:header (i18n/label :t/errors)}
              (if errors
-               (into [react/view] (for [error errors]
+               (into [react/view] (for [{::errors/keys [type value]} errors]
                                     [react/text {:style styles/text}
-                                     (str (name (:pluto.reader.errors/type error)) " " (str (:pluto.reader.errors/value error)))]))
+                                     (str (when type (name type)) " " (str value))]))
                [react/text {:style styles/text}
                 (i18n/label :t/none)])]]]
           [react/view styles/bottom-container

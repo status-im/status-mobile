@@ -28,13 +28,13 @@
  :extensions/camera-error
  (fn [cofx [_ error {:keys [on-failure]}]]
    (when on-failure
-     {:dispatch (on-failure {:result error})})))
+     (on-failure {:result error}))))
 
 (handlers/register-handler-fx
  :extensions/camera-picture-taken
  (fn [cofx [_ data {{:keys [on-success]} :data back? :back?}]]
    (fx/merge cofx
-             {:dispatch (on-success {:result data})}
+             (on-success {:result data})
              (when back?
                (navigation/navigate-back)))))
 
@@ -50,7 +50,7 @@
  :extensions/camera-qr-code-scanned
  (fn [cofx [_ _ qr-code {{:keys [on-success]} :data}]]
    (fx/merge cofx
-             {:dispatch (on-success {:result qr-code})}
+             (on-success {:result qr-code})
              (navigation/navigate-back))))
 
 (handlers/register-handler-fx
