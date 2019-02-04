@@ -23,10 +23,9 @@
 
 (defview command-short-preview [message]
   (letsubs [id->command [:chats/id->command]
-            all-contacts [:contacts/contacts]
             {:keys [contacts]} [:chats/current-chat]]
     (when-let [command (commands-receiving/lookup-command-by-ref message id->command)]
-      (commands/generate-short-preview command (commands/add-chat-contacts all-contacts contacts message)))))
+      (commands/generate-short-preview command (commands/add-chat-contacts contacts message)))))
 
 (defn message-content-text [{:keys [content content-type] :as message}]
   [react/view styles/last-message-container

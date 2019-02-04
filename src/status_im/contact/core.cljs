@@ -28,8 +28,10 @@
 
 (defn build-contact [{{:keys [chats] :account/keys [account]
                        :contacts/keys [contacts]} :db} public-key]
-  (cond-> (or (get contacts public-key)
-              (contact.db/public-key->new-contact public-key))
+  (cond-> (assoc (or (get contacts public-key)
+                     (contact.db/public-key->new-contact public-key))
+                 :address (contact.db/public-key->address public-key))
+
     (= public-key (:public-key account)) (assoc :name (:name account))))
 
 (defn- own-info [db]
@@ -124,7 +126,9 @@
                               {:public-key   public-key
                                :photo-path   profile-image
                                :name         name
-                               :address      (or address (:address contact))
+                               :address      (or address
+                                                 (:address contact)
+                                                 (contact.db/public-key->address public-key))
                                :last-updated timestamp-ms
                                   ;;NOTE (yenda) in case of concurrent contact request
                                :pending?     (get contact :pending? true)}

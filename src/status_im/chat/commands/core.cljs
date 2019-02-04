@@ -35,23 +35,22 @@
   [type]
   (keyword (str (protocol/id type) "-button")))
 
-(defn- contact->address [all-contacts pub-key]
-  (get-in all-contacts [pub-key :address]))
+(defn- contact->address [contact]
+  (str "0x" (db/public-key->address contact)))
 
 (defn add-chat-contacts
   "Enrich command-message by adding contact list of the current private or group chat"
-  [all-contacts contacts {:keys [public? group-chat] :as command-message}]
+  [contacts {:keys [public? group-chat] :as command-message}]
   (cond
     public? command-message
-    group-chat (assoc command-message :contacts (map #(contact->address all-contacts %) contacts))
-    :else (assoc command-message :contact (contact->address all-contacts (first contacts)))))
+    group-chat (assoc command-message :contacts (map contact->address contacts))
+    :else (assoc command-message :contact (contact->address (first contacts)))))
 
 (defn enrich-command-message-for-events
   "adds new pairs to command-message to be consumed by extension events"
   [db {:keys [chat-id] :as command-message}]
-  (let [{:keys [contacts public? group-chat]} (get-in db [:chats chat-id])
-        all-contacts (get db :contacts/contacts)]
-    (add-chat-contacts all-contacts contacts (assoc command-message :public? public? :group-chat group-chat))))
+  (let [{:keys [contacts public? group-chat]} (get-in db [:chats chat-id])]
+    (add-chat-contacts contacts (assoc command-message :public? public? :group-chat group-chat))))
 
 (defn generate-short-preview
   "Returns short preview for command"

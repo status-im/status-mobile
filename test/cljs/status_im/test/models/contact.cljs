@@ -118,8 +118,7 @@
                                      :photo-path       "old-image"
                                      :name             "old-name"
                                      :last-updated     0
-                                     :pending?         false
-                                     :address          address}}}})
+                                     :pending?         false}}}})
           contact (get-in actual [:db :contacts/contacts public-key])]
       (testing "it stores the contact in the database"
         (is (:data-store/tx actual)))
