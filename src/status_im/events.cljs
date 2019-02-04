@@ -1382,6 +1382,11 @@
  (fn [cofx [_ host]]
    (browser/open-chat-from-browser cofx host)))
 
+(handlers/register-handler-fx
+ :dapps/revoke-access
+ (fn [cofx [_ dapp]]
+   (browser.permissions/revoke-dapp-permissions cofx dapp)))
+
 ;; group-chats module
 
 (handlers/register-handler-fx

@@ -141,6 +141,11 @@
        :action-fn #(re-frame/dispatch [:accounts.ui/web3-opt-in-mode-switched %])}]
      [profile.components/settings-item-separator]
      [profile.components/settings-item
+      {:label-kw            :t/dapps-permissions
+       :accessibility-label :dapps-permissions-button
+       :action-fn           #(re-frame/dispatch [:navigate-to :dapps-permissions])}]
+     [profile.components/settings-item-separator]
+     [profile.components/settings-item
       {:label-kw            :t/need-help
        :accessibility-label :help-button
        :action-fn           #(re-frame/dispatch [:navigate-to :help-center])}]

@@ -917,5 +917,7 @@
     "mailserver-retry": "Retry",
     "mailserver-pick-another": "Pick another mailserver",
     "mailserver-error-title": "Error connecting to mailserver",
-    "mailserver-error-content": "The mailserver you selected couldn't be reached."
+    "mailserver-error-content": "The mailserver you selected couldn't be reached.",
+    "dapps-permissions": "Dapps permissions",
+    "revoke-access": "Revoke access"
 }

@@ -8,7 +8,8 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.browser.styles :as styles])
+            [status-im.ui.screens.browser.styles :as styles]
+            [status-im.ui.components.colors :as colors])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn hide-panel-anim
@@ -79,7 +80,7 @@
            (if dapp?
              [chat-icon.screen/dapp-icon-permission dapp 48]
              [react/view styles/permissions-panel-dapp-icon-container
-              [react/text {:style styles/permissions-panel-d-label} "Ð"]])
+              [icons/icon :icons/dapp {:color colors/gray}]])
            [react/view {:margin-left 3 :margin-right 3}
             [react/view styles/dot]]
            [react/view {:margin-right 3}

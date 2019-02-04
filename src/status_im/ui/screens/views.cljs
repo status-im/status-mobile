@@ -67,6 +67,7 @@
             [status-im.ui.screens.profile.seed.views :refer [backup-seed]]
             [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.screens.stickers.views :as stickers]
+            [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
             [status-im.utils.navigation :as navigation]
             [reagent.core :as reagent]
             [cljs-react-navigation.reagent :as nav-reagent]
@@ -329,6 +330,8 @@
                    :offline-messaging-settings       offline-messaging-settings
                    :edit-mailserver                  edit-mailserver
                    :help-center                      help-center
+                   :dapps-permissions                dapps-permissions/dapps-permissions
+                   :manage-dapps-permissions         dapps-permissions/manage
                    :extensions-settings              extensions-settings
                    :edit-extension                   edit-extension
                    :show-extension                   show-extension

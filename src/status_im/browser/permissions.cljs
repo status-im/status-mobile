@@ -5,7 +5,8 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.fx :as fx]
             [status-im.qr-scanner.core :as qr-scanner]
-            [status-im.extensions.registry :as extensions.registry]))
+            [status-im.extensions.registry :as extensions.registry]
+            [status-im.ui.screens.navigation :as navigation]))
 
 (declare process-next-permission)
 (declare send-response-to-bridge)
@@ -76,6 +77,13 @@
                                  :permissions (vec allowed-permissions-set)}]
     {:db            (assoc-in db [:dapps/permissions dapp-name] allowed-permissions)
      :data-store/tx [(dapp-permissions/save-dapp-permissions allowed-permissions)]}))
+
+(fx/defn revoke-dapp-permissions
+  [{:keys [db] :as cofx} dapp]
+  (fx/merge cofx
+            {:db            (update-in db [:dapps/permissions] dissoc dapp)
+             :data-store/tx [(dapp-permissions/remove-dapp-permissions dapp)]}
+            (navigation/navigate-back)))
 
 (fx/defn process-next-permission
   "Process next permission by removing it from pending permissions and prompting user

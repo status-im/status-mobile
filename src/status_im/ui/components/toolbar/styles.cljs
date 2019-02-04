@@ -36,6 +36,7 @@
   {:color          colors/black
    :letter-spacing -0.2
    :font-size      17
+   :font-weight    :bold
    :ios            {:text-align     :center
                     :margin-left    15
                     :margin-right   15}

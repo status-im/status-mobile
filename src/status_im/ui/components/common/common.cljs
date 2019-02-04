@@ -95,6 +95,12 @@
                  :style      (merge styles/button-label label-style)}
      label]]])
 
+(defn red-button [props]
+  [react/view {:align-items :center}
+   [button (merge props
+                  {:label-style {:color colors/red :font-size 15}
+                   :button-style {:padding-horizontal 32 :background-color  colors/red-light}})]])
+
 (defn counter
   ([value] (counter nil value))
   ([{:keys [size accessibility-label] :or {size 18}} value]

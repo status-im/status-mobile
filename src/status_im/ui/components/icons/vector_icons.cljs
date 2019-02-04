@@ -108,7 +108,8 @@
      :icons/indicator-big       (js/require "./resources/icons/indicator-big.svg")
      :icons/indicator-middle    (js/require "./resources/icons/indicator-middle.svg")
      :icons/indicator-small     (js/require "./resources/icons/indicator-small.svg")
-     :icons/stickers            (js/require "./resources/icons/stickers.svg")}
+     :icons/stickers            (js/require "./resources/icons/stickers.svg")
+     :icons/dapp                (js/require "./resources/icons/dapp.svg")}
     {:main-icons/add            (components.svg/slurp-svg "./resources/icons/main/add.svg")
      :main-icons/cancel         (components.svg/slurp-svg "./resources/icons/main/cancel.svg")
      :main-icons/group-chat     (components.svg/slurp-svg "./resources/icons/main/group_chat.svg")
@@ -195,7 +196,8 @@
      :icons/indicator-small     (components.svg/slurp-svg "./resources/icons/indicator-small.svg")
      :icons/stickers            (components.svg/slurp-svg "./resources/icons/stickers.svg")
      :icons/stickers-big        (components.svg/slurp-svg "./resources/icons/stickers_big.svg")
-     :icons/clock               (components.svg/slurp-svg "./resources/icons/clock.svg")}))
+     :icons/clock               (components.svg/slurp-svg "./resources/icons/clock.svg")
+     :icons/dapp                (components.svg/slurp-svg "./resources/icons/dapp.svg")}))
 
 (defn normalize-property-name [n]
   (if (= n :icons/options)
