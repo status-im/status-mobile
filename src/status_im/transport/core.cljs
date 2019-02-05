@@ -102,7 +102,7 @@
   account A messages without this."
   [{:keys [db]} callback]
   (let [{:transport/keys [filters]} db]
-    {:shh/remove-filters {:filter   (mapcat (fn [[chat-id chat-filters]]
+    {:shh/remove-filters {:filters  (mapcat (fn [[chat-id chat-filters]]
                                               (map (fn [filter]
                                                      [chat-id filter])
                                                    chat-filters))
