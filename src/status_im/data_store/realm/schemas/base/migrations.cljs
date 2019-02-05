@@ -140,7 +140,12 @@
     (get-in constants/testnet-networks ["rinkeby_rpc" :config :UpstreamConfig :URL])
     rpc-url))
 
-(defn- update-infura-project-id! [network-js]
+(defn transition-poa-rpc-url [rpc-url]
+  (if (= "https://poa.infura.io" rpc-url)
+    (get-in constants/sidechain-networks ["poa_rpc" :config :UpstreamConfig :URL])
+    rpc-url))
+
+(defn- update-rpc-url [network-js transition-func]
   (let [old-config (js->clj
                     (.parse js/JSON
                             (aget network-js "config")))]
@@ -149,23 +154,43 @@
       (let [new-config (update-in
                         old-config
                         ["UpstreamConfig" "URL"]
-                        transition-rpc-url)]
+                        transition-func)]
         (aset network-js
               "config"
               (.stringify js/JSON (clj->js new-config)))))))
 
-(defn- update-infura-project-ids! [networks-js]
+(defn- update-rpc-urls! [networks-js update-func]
   (dotimes [i (.-length networks-js)]
     (let [network-js (aget networks-js i)]
-      (update-infura-project-id! network-js))))
+      (update-func network-js))))
 
-(defn- migrate-infura-project-ids! [realm-js]
+(defn- migrate-rpc-urls! [realm-js migrate-func]
   (let [accounts (.objects realm-js "account")]
     (dotimes [i (.-length accounts)]
       (let [account  (aget accounts i)
             networks (aget account "networks")]
-        (update-infura-project-ids! networks)
+        (migrate-func networks)
         (aset account "networks" networks)))))
+
+;; infura project id update
+(defn- update-infura-project-id! [network-js]
+  (update-rpc-url network-js transition-rpc-url))
+
+(defn- update-infura-project-ids! [networks-js]
+  (update-rpc-urls! networks-js update-infura-project-id!))
+
+(defn- migrate-infura-project-ids! [realm-js]
+  (migrate-rpc-urls! realm-js update-infura-project-ids!))
+
+;; poa network url update
+(defn- update-poa-network-url! [network-js]
+  (update-rpc-url network-js transition-poa-rpc-url))
+
+(defn- update-poa-network-urls! [networks-js]
+  (update-rpc-urls! networks-js update-poa-network-url!))
+
+(defn- migrate-poa-network-urls! [realm-js]
+  (migrate-rpc-urls! realm-js update-poa-network-urls!))
 
 (defn v18 [old-realm new-realm]
   (log/debug "migrating accounts database v18: " old-realm new-realm)
@@ -199,3 +224,7 @@
 
 (defn v21 [old-realm new-realm]
   (log/debug "migrating base database v21: " old-realm new-realm))
+
+(defn v24 [old-realm new-realm]
+  (log/debug "migrating base database v24: " old-realm new-realm)
+  (migrate-poa-network-urls! new-realm))
