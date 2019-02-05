@@ -21,3 +21,6 @@
 
 (def v3 (assoc-in v2 [:properties :name] {:type     :string
                                           :optional true}))
+
+(def v4 (assoc-in v3 [:properties :fcm-token] {:type     :string
+                                               :optional true}))

@@ -2,11 +2,13 @@
  status-im.transport.message.core
   (:require [re-frame.core :as re-frame]
             [status-im.chat.models.message :as models.message]
+            [status-im.utils.config :as config]
             [status-im.data-store.transport :as transport-store]
             [status-im.transport.message.contact :as contact]
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.transit :as transit]
             [status-im.transport.utils :as transport.utils]
+            [status-im.contact.device-info :as device-info]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
@@ -85,11 +87,22 @@
                   (update-resend-contact-message chat-id)))
 
       (when-let [{:keys [from]} (get-in db [:chats chat-id :messages message-id])]
-        (let [{:keys [fcm-token]} (get-in db [:contacts/contacts chat-id])]
+        (let [{:keys [fcm-token]} (get-in db [:contacts/contacts chat-id])
+              ;; We pick the last max-installations devices
+              fcm-tokens
+              (as-> (get-in db [:contacts/contacts chat-id :device-info]) $
+                (vals $)
+                (sort-by :timestamp $)
+                (reverse $)
+                (map :fcm-token $)
+                (into #{} $)
+                (conj $ fcm-token)
+                (filter identity $)
+                (take (inc config/max-installations) $))]
           (fx/merge cofx
                     (remove-hash envelope-hash)
                     (check-confirmations status chat-id message-id)
-                    (models.message/send-push-notification chat-id message-id fcm-token status)))))))
+                    (models.message/send-push-notification chat-id message-id fcm-tokens status)))))))
 
 (fx/defn set-contact-message-envelope-hash
   [{:keys [db] :as cofx} chat-id envelope-hash]
@@ -118,6 +131,7 @@
     {:name          name
      :profile-image photo-path
      :address       address
+     :device-info   (device-info/all {:db db})
      :fcm-token     fcm-token}))
 
 (fx/defn resend-contact-request [cofx own-info chat-id {:keys [sym-key topic]}]

@@ -8,6 +8,9 @@
   (-> contact
       (update :tags #(into #{} %))))
 
+(defn- serialize-contact [contact]
+  (update contact :device-info #(or (vals %) [])))
+
 (re-frame/reg-cofx
  :data-store/get-all-contacts
  (fn [coeffects _]
@@ -22,7 +25,7 @@
   (fn [realm]
     (core/create realm
                  :contact
-                 contact
+                 (serialize-contact contact)
                  true)))
 
 (defn save-contacts-tx
