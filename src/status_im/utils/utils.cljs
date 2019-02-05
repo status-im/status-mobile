@@ -24,20 +24,23 @@
    (show-popup title content on-dismiss)))
 
 (defn show-confirmation
-  [{:keys [title content confirm-button-text on-dismiss on-accept on-cancel cancel-button-text]}]
+  [{:keys [title content confirm-button-text on-dismiss on-accept on-cancel cancel-button-text
+           extra-options]}]
   (.alert (.-Alert rn-dependencies/react-native)
           title
           content
           ;; Styles are only relevant on iOS. On Android first button is 'neutral' and second is 'positive'
           (clj->js
-           (vector (merge {:text                (or cancel-button-text (i18n/label :t/cancel))
-                           :style               "cancel"
-                           :accessibility-label :cancel-button}
-                          (when on-cancel {:onPress on-cancel}))
-                   {:text                (or confirm-button-text (i18n/label :t/ok))
-                    :onPress             on-accept
-                    :style               "default"
-                    :accessibility-label :confirm-button}))
+           (concat
+            (vector (merge {:text                (or cancel-button-text (i18n/label :t/cancel))
+                            :style               "cancel"
+                            :accessibility-label :cancel-button}
+                           (when on-cancel {:onPress on-cancel}))
+                    {:text                (or confirm-button-text (i18n/label :t/ok))
+                     :onPress             on-accept
+                     :style               "default"
+                     :accessibility-label :confirm-button})
+            (or extra-options nil)))
           #js {:cancelable false}))
 
 (re-frame/reg-fx

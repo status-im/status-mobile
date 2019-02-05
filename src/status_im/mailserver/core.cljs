@@ -360,8 +360,22 @@
   "mark mailserver status as `:error` if custom mailserver is used
   otherwise try to reconnect to another mailserver"
   [{:keys [db] :as cofx}]
-  (if (preferred-mailserver-id cofx)
-    {:db (update-mailserver-state db :error)}
+  (if-let [preferred-mailserver (preferred-mailserver-id cofx)]
+    (let [current-fleet (fleet/current-fleet db)]
+      {:db
+       (update-mailserver-state db :error)
+       :ui/show-confirmation
+       {:title               (i18n/label :t/mailserver-error-title)
+        :content             (i18n/label :t/mailserver-error-content)
+        :confirm-button-text (i18n/label :t/mailserver-pick-another)
+        :on-accept           #(re-frame/dispatch
+                               [:navigate-to :offline-messaging-settings])
+        :extra-options       [{:text    (i18n/label :t/mailserver-retry)
+                               :onPress #(re-frame/dispatch
+                                          [:mailserver.ui/connect-confirmed
+                                           current-fleet
+                                           preferred-mailserver])
+                               :style   "default"}]}})
     (let [{:keys [address]} (fetch-current cofx)]
       (fx/merge cofx
                 {:mailserver/remove-peer address}
@@ -383,7 +397,7 @@
         (fx/merge cofx
                   {:db (dissoc db :mailserver/connection-checks)}
                   (when (= :connecting (:mailserver/state db))
-                    (change-mailserver cofx)))
+                    (change-mailserver)))
         {:db (update db :mailserver/connection-checks dec)}))))
 
 (fx/defn reset-request-to
