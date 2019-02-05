@@ -260,10 +260,9 @@
 (def receive-contact-request-confirmation handle-contact-update)
 (def receive-contact-update handle-contact-update)
 
-(fx/defn add-contact-and-open-chat
+(fx/defn open-chat
   [cofx public-key]
   (fx/merge cofx
-            (add-contact public-key)
             (chat.models/start-chat public-key {:navigation-reset? true})))
 
 (fx/defn hide-contact
@@ -283,8 +282,8 @@
       (fx/merge cofx
                 fx
                 (if config/partitioned-topic-enabled?
-                  (add-contacts-filter contact-identity :add-contact-and-open-chat)
-                  (add-contact-and-open-chat contact-identity))))))
+                  (add-contacts-filter contact-identity :open-chat)
+                  (open-chat contact-identity))))))
 
 (fx/defn open-contact-toggle-list
   [{:keys [db :as cofx]}]
@@ -297,4 +296,4 @@
 (fx/defn add-new-identity-to-contacts
   [{{:contacts/keys [new-identity]} :db :as cofx}]
   (when (seq new-identity)
-    (add-contact-and-open-chat cofx new-identity)))
+    (open-chat cofx new-identity)))

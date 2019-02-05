@@ -1542,7 +1542,7 @@
 (handlers/register-handler-fx
  :contact/filters-added
  (fn [cofx [_ contact-identity]]
-   (contact/add-contact-and-open-chat cofx contact-identity)))
+   (contact/open-chat cofx contact-identity)))
 
 (handlers/register-handler-fx
  :contact.ui/start-group-chat-pressed
@@ -1553,7 +1553,7 @@
  :contact.ui/send-message-pressed
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx [_ {:keys [public-key]}]]
-   (contact/add-contact-and-open-chat cofx public-key)))
+   (contact/open-chat cofx public-key)))
 
 (handlers/register-handler-fx
  :contact.ui/contact-code-submitted

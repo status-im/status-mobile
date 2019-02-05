@@ -96,8 +96,8 @@
                   :add-contact
                   (contact/add-contact public-key)
 
-                  :add-contact-and-open-chat
-                  (contact/add-contact-and-open-chat public-key)))]
+                  :open-chat
+                  (contact/open-chat public-key)))]
              filters-fx-fns
              [(mailserver/process-next-messages-request)])))))
 
