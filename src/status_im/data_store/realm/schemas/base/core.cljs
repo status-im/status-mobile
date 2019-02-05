@@ -91,6 +91,8 @@
           extension/v12
           account/v19])
 
+(def v24 v23)
+
 ;; put schemas ordered by version
 (def schemas [{:schema        v1
                :schemaVersion 1
@@ -160,4 +162,7 @@
                :migration     (constantly nil)}
               {:schema        v23
                :schemaVersion 23
-               :migration     (constantly nil)}])
+               :migration     (constantly nil)}
+              {:schema        v24
+               :schemaVersion 24
+               :migration     migrations/v24}])

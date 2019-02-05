@@ -62,7 +62,7 @@
                :config {:NetworkId      (ethereum/chain-keyword->chain-id :poa)
                         :DataDir        "/ethereum/poa_rpc"
                         :UpstreamConfig {:Enabled true
-                                         :URL     "https://poa.infura.io"}}}})
+                                         :URL     "https://core.poa.network"}}}})
 
 (def testnet-networks
   {"testnet"     {:id     "testnet",
