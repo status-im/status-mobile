@@ -901,5 +901,9 @@
     "sticker-market": "Sticker market",
     "you-dont-have-stickers": "You don’t have any stickers yet",
     "get-stickers": "Get Stickers",
-    "recently-used-stickers": "Recently used stickers will appear here"
+    "recently-used-stickers": "Recently used stickers will appear here",
+    "mailserver-retry": "Retry",
+    "mailserver-pick-another": "Pick another mailserver",
+    "mailserver-error-title": "Error connecting to mailserver",
+    "mailserver-error-content": "The mailserver you selected couldn't be reached."
 }
