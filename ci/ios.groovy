@@ -1,4 +1,4 @@
-cmn = load('ci/common.groovy')
+utils = load('ci/utils.groovy')
 
 def plutil(name, value) {
   sh "plutil -replace ${name} -string ${value} ios/StatusIm/Info.plist"
@@ -6,7 +6,7 @@ def plutil(name, value) {
 
 def bundle(type) {
   if (!type) {
-    type = cmn.getBuildType()
+    type = utils.getBuildType()
   }
   def target
   switch (type) {
@@ -16,8 +16,8 @@ def bundle(type) {
     default:            target = 'nightly';
   }
   /* configure build metadata */
-  plutil('CFBundleShortVersionString', cmn.version())
-  plutil('CFBundleVersion', cmn.genBuildNumber())
+  plutil('CFBundleShortVersionString', utils.getVersion('mobile_files'))
+  plutil('CFBundleVersion', utils.genBuildNumber())
   plutil('CFBundleBuildUrl', currentBuild.absoluteUrl)
   /* the dir might not exist */
   sh 'mkdir -p status-e2e'
@@ -34,13 +34,13 @@ def bundle(type) {
   /* rename built file for uploads and archivization */
   def pkg = ''
   if (type == 'release') {
-    pkg = cmn.pkgFilename('release', 'ipa')
+    pkg = utils.pkgFilename('release', 'ipa')
     sh "cp status_appstore/StatusIm.ipa ${pkg}"
   } else if (type == 'e2e') {
-    pkg = cmn.pkgFilename('e2e', 'app.zip')
+    pkg = utils.pkgFilename('e2e', 'app.zip')
     sh "cp status-e2e/StatusIm.app.zip ${pkg}"
   } else if (type != 'testflight') {
-    pkg = cmn.pkgFilename(type, 'ipa')
+    pkg = utils.pkgFilename(type, 'ipa')
     sh "cp status-adhoc/StatusIm.ipa ${pkg}"
   }
   /* necessary for Diawi upload */
@@ -59,11 +59,11 @@ def uploadToDiawi() {
 }
 
 def uploadToSauceLabs() {
-  def changeId = cmn.getParentRunEnv('CHANGE_ID')
+  def changeId = utils.getParentRunEnv('CHANGE_ID')
   if (changeId != null) {
     env.SAUCE_LABS_NAME = "${changeId}.app.zip"
   } else {
-    env.SAUCE_LABS_NAME = "im.status.ethereum-e2e-${cmn.gitCommit()}.app.zip"
+    env.SAUCE_LABS_NAME = "im.status.ethereum-e2e-${utils.gitCommit()}.app.zip"
   }
   withCredentials([
     string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),

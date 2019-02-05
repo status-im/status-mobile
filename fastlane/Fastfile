@@ -195,6 +195,7 @@ platform :ios do
         # Temporary fix for Xcode 10.1
         xcargs: "-UseModernBuildSystem=N",
         export_options: {
+            "UseModernBuildSystem": "N",
             "combileBitcode": true,
             "uploadBitcode": false,
             "ITSAppUsesNonExemptEncryption": false

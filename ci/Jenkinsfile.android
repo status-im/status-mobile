@@ -58,31 +58,32 @@ pipeline {
           /* Necessary to load methods */
           mobile = load 'ci/mobile.groovy'
           cmn    = load 'ci/common.groovy'
-          print "Running ${cmn.getBuildType()} build!"
-          cmn.abortPreviousRunningBuilds()
+          btype  = cmn.utils.getBuildType()
+          print "Running ${btype} build!"
+          cmn.ci.abortPreviousRunningBuilds()
           /* Cleanup and Prep */
-          mobile.prep(cmn.getBuildType())
+          mobile.prep(btype)
         }
       }
     }
     stage('Lint') {
       steps {
-        script { cmn.runLint() }
+        sh 'lein cljfmt check'
       }
     }
     stage('Tests') {
       steps {
-        script { cmn.runTests() }
+        sh 'lein test-cljs'
       }
     }
     stage('Build') {
       steps {
-        script { mobile.leinBuild('android') }
+        sh "lein prod-build-android"
       }
     }
     stage('Bundle') {
       steps {
-        script { apk = mobile.android.bundle(cmn.getBuildType()) }
+        script { apk = mobile.android.bundle(btype) }
       }
     }
     stage('Archive') {
@@ -93,9 +94,9 @@ pipeline {
     stage('Upload') {
       steps {
         script {
-          env.PKG_URL = cmn.uploadArtifact(apk)
+          env.PKG_URL = cmn.utils.uploadArtifact(apk)
           /* build type specific */
-          switch (cmn.getBuildType()) {
+          switch (btype) {
             case 'release':
               mobile.android.uploadToPlayStore(); break;
             case 'nightly':
@@ -108,12 +109,12 @@ pipeline {
     }
     stage('Cleanup') {
       steps {
-        script { cmn.clean() }
+        sh 'make clean'
       }
     }
   }
   post {
-    failure { script { load('ci/common.groovy').notifyPRFailure() } }
-    success { script { load('ci/common.groovy').notifyPRSuccess() } }
+    success { script { load('ci/common.groovy').notifyPR(true) } }
+    failure { script { load('ci/common.groovy').notifyPR(false) } }
   }
 }

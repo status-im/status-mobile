@@ -1,12 +1,13 @@
+utils = load 'ci/utils.groovy'
 cmn = load 'ci/common.groovy'
 
 packageFolder = './StatusImPackage'
 
 def cleanupAndDeps() {
-  cmn.clean()
+  sh 'make clean'
   sh 'cp .env.jenkins .env'
   sh 'lein deps'
-  cmn.installJSDeps('desktop')
+  utils.installJSDeps('desktop')
 }
 
 def buildClojureScript() {
@@ -40,7 +41,7 @@ def uploadArtifact(filename) {
 /* MAIN --------------------------------------------------*/
 
 def prepDeps() {
-  cmn.doGitRebase()
+  utils.doGitRebase()
   cleanupAndDeps()
 }
 
@@ -61,7 +62,7 @@ def bundleWindows(type = 'nightly') {
 
   sh './scripts/build-desktop.sh bundle'
   dir(packageFolder) {
-    pkg = cmn.pkgFilename(type, 'exe')
+    pkg = utils.pkgFilename(type, 'exe')
     sh "mv ../Status-x86_64-setup.exe ${pkg}"
   }
   return "${packageFolder}/${pkg}".drop(2)
@@ -69,17 +70,16 @@ def bundleWindows(type = 'nightly') {
 
 def bundleLinux(type = 'nightly') {
   def pkg
-
   sh './scripts/build-desktop.sh bundle'
   dir(packageFolder) {
-    pkg = cmn.pkgFilename(type, 'AppImage')
+    pkg = utils.pkgFilename(type, 'AppImage')
     sh "mv ../Status-x86_64.AppImage ${pkg}"
   }
   return "${packageFolder}/${pkg}".drop(2)
 }
 
 def bundleMacOS(type = 'nightly') {
-  def pkg = cmn.pkgFilename(type, 'dmg')
+  def pkg = utils.pkgFilename(type, 'dmg')
   sh './scripts/build-desktop.sh bundle'
   dir(packageFolder) {
     withCredentials([

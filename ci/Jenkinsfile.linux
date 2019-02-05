@@ -56,8 +56,9 @@ pipeline {
           /* Necessary to load methods */
           desktop = load 'ci/desktop.groovy'
           cmn     = load 'ci/common.groovy'
-          print "Running ${cmn.getBuildType()} build!"
-          cmn.abortPreviousRunningBuilds()
+          btype   = cmn.utils.getBuildType()
+          print "Running ${btype} build!"
+          cmn.ci.abortPreviousRunningBuilds()
           /* Cleanup and Prep */
           desktop.prepDeps()
         }
@@ -65,12 +66,12 @@ pipeline {
     }
     stage('Lint') {
       steps {
-        script { cmn.runLint() }
+        sh 'lein cljfmt check'
       }
     }
     stage('Tests') {
       steps {
-        script { cmn.runTests() }
+        sh 'lein test-cljs'
       }
     }
     stage('Build') {
@@ -85,7 +86,7 @@ pipeline {
     }
     stage('Bundle') {
       steps {
-        script { app = desktop.bundleLinux(cmn.getBuildType()) }
+        script { app = desktop.bundleLinux(btype) }
       }
     }
     stage('Archive') {
@@ -95,17 +96,17 @@ pipeline {
     }
     stage('Upload') {
       steps {
-        script { env.PKG_URL = cmn.uploadArtifact(app) }
+        script { env.PKG_URL = cmn.utils.uploadArtifact(app) }
       }
     }
     stage('Cleanup') {
       steps {
-        script { cmn.clean() }
+        sh 'make clean'
       }
     }
   }
   post {
-    failure { script { load('ci/common.groovy').notifyPRFailure() } }
-    success { script { load('ci/common.groovy').notifyPRSuccess() } }
+    success { script { load('ci/common.groovy').notifyPR(true) } }
+    failure { script { load('ci/common.groovy').notifyPR(false) } }
   }
 }

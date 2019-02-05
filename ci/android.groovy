@@ -1,10 +1,10 @@
-cmn = load 'ci/common.groovy'
+utils = load 'ci/utils.groovy'
 
 def bundle(type = 'nightly') {
   /* Disable Gradle Daemon https://stackoverflow.com/questions/38710327/jenkins-builds-fail-using-the-gradle-daemon */
   def gradleOpt = "-PbuildUrl='${currentBuild.absoluteUrl}' -Dorg.gradle.daemon=false "
   if (type == 'release') {
-    gradleOpt += "-PreleaseVersion='${cmn.version()}'"
+    gradleOpt += "-PreleaseVersion='${utils.getVersion('mobile_files')}'"
   }
   dir('android') {
     withCredentials([
@@ -21,7 +21,7 @@ def bundle(type = 'nightly') {
       sh "./gradlew assembleRelease ${gradleOpt}"
     }
   }
-  def pkg = cmn.pkgFilename(type, 'apk')
+  def pkg = utils.pkgFilename(type, 'apk')
   sh "cp android/app/build/outputs/apk/release/app-release.apk ${pkg}"
   /* necessary for Diawi upload */
   env.DIAWI_APK = pkg
@@ -38,11 +38,11 @@ def uploadToPlayStore(type = 'nightly') {
 }
 
 def uploadToSauceLabs() {
-  def changeId = cmn.changeId()
+  def changeId = utils.changeId()
   if (changeId != null) {
     env.SAUCE_LABS_NAME = "${changeId}.apk"
   } else {
-    def pkg = cmn.pkgFilename(cmn.getBuildType(), 'apk')
+    def pkg = utils.pkgFilename(utils.getBuildType(), 'apk')
     env.SAUCE_LABS_NAME = "${pkg}"
   }
   withCredentials([

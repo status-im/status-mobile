@@ -1,15 +1,15 @@
-cmn = load 'ci/common.groovy'
 ios = load 'ci/ios.groovy'
+utils = load 'ci/utils.groovy'
 android = load 'ci/android.groovy'
 
 def prep(type = 'nightly') {
   if (type != 'release') {
-    cmn.doGitRebase()
+    utils.doGitRebase()
   }
   /* ensure that we start from a known state */
-  cmn.clean()
+  sh 'make clean'
   /* Run at start to void mismatched numbers */
-  cmn.genBuildNumber()
+  utils.genBuildNumber()
   /* select type of build */
   switch (type) {
     case 'nightly':
@@ -25,10 +25,6 @@ def prep(type = 'nightly') {
   sh 'bundle install --quiet'
   /* node deps, pods, and status-go download */
   sh "make prepare-${env.BUILD_PLATFORM}"
-}
-
-def leinBuild(platform) {
-  sh "lein prod-build-${platform}"
 }
 
 return this

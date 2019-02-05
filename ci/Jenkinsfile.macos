@@ -39,10 +39,11 @@ pipeline {
           /* Necessary to load methods */
           desktop = load 'ci/desktop.groovy'
           cmn     = load 'ci/common.groovy'
-          print "Running ${cmn.getBuildType()} build!"
-          cmn.abortPreviousRunningBuilds()
+          btype   = cmn.utils.getBuildType()
+          print "Running ${btype} build!"
+          cmn.ci.abortPreviousRunningBuilds()
           /* Read the valid NodeJS version */
-          env.NODE_VERSION = cmn.getToolVersion('node')
+          env.NODE_VERSION = cmn.utils.getToolVersion('node')
           /* Cleanup and Prep */
           nvm(env.NODE_VERSION) {
             desktop.prepDeps()
@@ -52,12 +53,12 @@ pipeline {
     }
     stage('Lint') {
       steps { nvm(env.NODE_VERSION) {
-        script { cmn.runLint() }
+        sh 'lein cljfmt check'
       } }
     }
     stage('Tests') {
       steps { nvm(env.NODE_VERSION) {
-        script { cmn.runTests() }
+        sh 'lein test-cljs'
       } }
     }
     stage('Build') {
@@ -72,7 +73,7 @@ pipeline {
     }
     stage('Bundle') {
       steps { nvm(env.NODE_VERSION) {
-        script { dmg = desktop.bundleMacOS(cmn.getBuildType()) }
+        script { dmg = desktop.bundleMacOS(btype) }
       } }
     }
     stage('Archive') {
@@ -82,17 +83,17 @@ pipeline {
     }
     stage('Upload') {
       steps {
-        script { env.PKG_URL = cmn.uploadArtifact(dmg) }
+        script { env.PKG_URL = cmn.utils.uploadArtifact(dmg) }
       }
     }
     stage('Cleanup') {
       steps {
-        script { cmn.clean() }
+        sh 'make clean'
       }
     }
   }
   post {
-    failure { script { load('ci/common.groovy').notifyPRFailure() } }
-    success { script { load('ci/common.groovy').notifyPRSuccess() } }
+    success { script { load('ci/common.groovy').notifyPR(true) } }
+    failure { script { load('ci/common.groovy').notifyPR(false) } }
   }
 }
