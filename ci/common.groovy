@@ -232,7 +232,7 @@ def ghcmgrPostBuild(success) {
       curl --silent --verbose -XPOST --data '${json}' \
         -u '${GHCMGR_USER}:${GHCMGR_PASS}' \
         -H "content-type: application/json" \
-        '${ghcmgrurl}/builds/${changeId}'
+        '${ghcmgrurl}/builds/status-react/${changeId}'
     """
   }
 }
