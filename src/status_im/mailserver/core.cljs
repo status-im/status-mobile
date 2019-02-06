@@ -567,15 +567,15 @@
 (fx/defn resend-request
   [{:keys [db] :as cofx} {:keys [request-id]}]
   (if (<= maximum-number-of-attempts
-          (get-in db [:mailserver/current-request :attemps]))
+          (get-in db [:mailserver/current-request :attempts]))
     (fx/merge cofx
-              {:db (update db :mailserver/current-request dissoc :attemps)}
+              {:db (update db :mailserver/current-request dissoc :attempts)}
               (change-mailserver))
     (if-let [mailserver (get-mailserver-when-ready cofx)]
       (let [{:keys [topics from to cursor limit] :as request} (get db :mailserver/current-request)
             web3 (:web3 db)]
         (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to "cursor" cursor "limit" (decrease-limit))
-        {:db (update-in db [:mailserver/current-request :attemps] inc)
+        {:db (update-in db [:mailserver/current-request :attempts] inc)
          :mailserver/set-limit (decrease-limit)
          :mailserver/request-messages {:web3 web3
                                        :mailserver mailserver
