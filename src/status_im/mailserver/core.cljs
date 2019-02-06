@@ -37,9 +37,13 @@
 (def seven-days (* 7 one-day))
 (def maximum-number-of-attempts 2)
 (def request-timeout 30)
+(def min-limit 200)
+(def max-limit 2000)
+(def default-limit max-limit)
 (def connection-timeout
   "Time after which mailserver connection is considered to have failed"
   10000)
+(def limit (atom default-limit))
 
 (defn connected? [{:keys [db]} id]
   (= (:mailserver/current-id db) id))
@@ -136,6 +140,17 @@
  :mailserver/update-mailservers
  (fn [enodes]
    (update-mailservers! enodes)))
+
+(re-frame/reg-fx
+ :mailserver/set-limit
+ (fn [n]
+   (reset! limit n)))
+
+(defn decrease-limit []
+  (max min-limit (/ @limit 2)))
+
+(defn increase-limit []
+  (min max-limit (* @limit 2)))
 
 (defn mark-trusted-peer! [web3 enode]
   (.markTrustedPeer (transport.utils/shh web3)
@@ -236,8 +251,6 @@
         mailserver-removed?
         (connect-to-mailserver cofx)))))
 
-(def limit 2000)
-
 (defn adjust-request-for-transit-time
   [from]
   (let [ttl               (:ttl protocol/whisper-opts)
@@ -247,10 +260,12 @@
     (log/debug "Adjusting mailserver request" "from:" from "adjusted-from:" adjusted-from)
     adjusted-from))
 
-(defn request-messages! [web3 {:keys [sym-key-id address]} {:keys [topics cursor to from]}]
+(defn request-messages! [web3 {:keys [sym-key-id address]} {:keys [topics cursor to from] :as request}]
   ;; Add some room to from, unless we break day boundaries so that messages that have
   ;; been received after the last request are also fetched
   (let [adjusted-from (adjust-request-for-transit-time from)
+        actual-limit  (or (:limit request)
+                          @limit)
         actual-from   (if (> (- to adjusted-from) one-day)
                         from
                         adjusted-from)]
@@ -258,14 +273,14 @@
               " topics " topics
               " from " actual-from
               " cursor " cursor
-              " limit " limit
+              " limit " actual-limit
               " to   " to)
     (.requestMessages (transport.utils/shh web3)
                       (clj->js {:topics         topics
                                 :mailServerPeer address
                                 :symKeyID       sym-key-id
                                 :timeout        request-timeout
-                                :limit          limit
+                                :limit          actual-limit
                                 :cursor         cursor
                                 :from           actual-from
                                 :to             to})
@@ -497,9 +512,12 @@
   (when (accounts.db/logged-in? cofx)
     (let [error (:errorMessage event)]
       (if (empty? error)
-        (update-mailserver-topics cofx
-                                  {:request-id (:requestID event)
-                                   :cursor     (:cursor event)})
+        (fx/merge
+         cofx
+         {:mailserver/set-limit (increase-limit)}
+         (update-mailserver-topics {:request-id (:requestID event)
+                                    :cursor     (:cursor event)}))
+
         (handle-request-error cofx error)))))
 
 (fx/defn show-request-error-popup
@@ -553,18 +571,21 @@
     (fx/merge cofx
               {:db (update db :mailserver/current-request dissoc :attemps)}
               (change-mailserver))
-    (when-let [mailserver (get-mailserver-when-ready cofx)]
-      (let [{:keys [topics from to cursor] :as request} (get db :mailserver/current-request)
+    (if-let [mailserver (get-mailserver-when-ready cofx)]
+      (let [{:keys [topics from to cursor limit] :as request} (get db :mailserver/current-request)
             web3 (:web3 db)]
-        (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to "cursor" cursor)
+        (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to "cursor" cursor "limit" (decrease-limit))
         {:db (update-in db [:mailserver/current-request :attemps] inc)
-         :mailserver/request-messages {:web3    web3
-                                       :mailserver   mailserver
-                                       :request request}}))))
+         :mailserver/set-limit (decrease-limit)
+         :mailserver/request-messages {:web3 web3
+                                       :mailserver mailserver
+                                       :request (assoc request :limit (decrease-limit))}})
+      {:mailserver/set-limit (decrease-limit)})))
 
 (fx/defn initialize-mailserver
   [cofx custom-mailservers]
   (fx/merge cofx
+            {:mailserver/set-limit default-limit}
             (add-custom-mailservers custom-mailservers)
             (set-current-mailserver)))
 
