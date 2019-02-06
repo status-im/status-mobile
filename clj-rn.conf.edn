@@ -79,7 +79,8 @@
                    "react-native-desktop-notification"
                    "text-encoding"
                    "js-sha3"
-                   "web3-utils"]
+                   "web3-utils"
+                   "hi-base32"]
 
  ;; Resoures
  :resource-dirs ["resources/images"
