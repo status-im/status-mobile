@@ -394,3 +394,69 @@
  :extensions/ethereum-create-filter
  (fn [_ [_ _ {:keys [type] :as m}]]
    (rpc-call (create-filter-method type) (create-filter-arguments type m) abi-spec/hex-to-number m)))
+
+(handlers/register-handler-fx
+ :extensions/shh-post
+ (fn [_ [_ _ {:keys [from to topics payload priority ttl] :as m}]]
+   (let [params [{:from      from
+                  :to        to
+                  :topics    (generate-topic topics)
+                  :payload   payload
+                  :priority  (abi-spec/number-to-hex priority)
+                  :ttl       (abi-spec/number-to-hex ttl)}]]
+     (rpc-call constants/web3-shh-post params #(abi-spec/hex-to-value % "bool") m))))
+
+(handlers/register-handler-fx
+ :extensions/shh-new-identity
+ (fn [_ [_ _ arguments]]
+   (let [params []]
+     (rpc-call constants/web3-shh-new-identity params #(identity  %) arguments))))
+
+(handlers/register-handler-fx
+ :extensions/shh-has-identity
+ (fn [_ [_ _ {:keys [address] :as m}]]
+   ((rpc-call constants/web3-shh-has-identity address #(abi-spec/hex-to-value % "bool") m))))
+
+(handlers/register-handler-fx
+ :extensions/shh-new-group
+ (fn [_ [_ _ arguments]]
+   (let [params []]
+     (rpc-call constants/web3-shh-new-group params #(identity  %) arguments))))
+
+(handlers/register-handler-fx
+ :extensions/shh-add-to-group
+ (fn [_ [_ _ {:keys [address] :as m}]]
+   ((rpc-call constants/web3-shh-add-to-group address #(abi-spec/hex-to-value % "bool") m))))
+
+(handlers/register-handler-fx
+ :extensions/shh-new-filter
+ (fn [_ [_ _ {:keys [to topics] :as m}]]
+   (let [params [{:to        to
+                  :topics    (generate-topic topics)}]]
+     (rpc-call constants/web3-shh-new-filter params abi-spec/hex-to-number m))))
+
+(handlers/register-handler-fx
+ :extensions/shh-uninstall-filter
+ (fn [_ [_ _ {:keys [id] :as m}]]
+   (rpc-call constants/web3-shh-uninstall-filter [(abi-spec/number-to-hex id)] #(abi-spec/hex-to-value % "bool") m)))
+
+(defn- parse-messages [{:keys [hash from to expiry ttl sent topics payload workProved]}]
+  {:hash          hash
+   :from          from
+   :to            to
+   :expiry        (abi-spec/hex-to-number expiry)
+   :ttl           (abi-spec/hex-to-number ttl)
+   :sent          (abi-spec/hex-to-number sent)
+   :topics        topics
+   :payload       payload
+   :workProved    (abi-spec/hex-to-number workProved)})
+
+(handlers/register-handler-fx
+ :extensions/shh-get-filter-changes
+ (fn [_ [_ _ {:keys [id] :as m}]]
+   (rpc-call constants/web3-shh-get-filter-changes [(abi-spec/number-to-hex id)] #(map parse-messages %) m)))
+
+(handlers/register-handler-fx
+ :extensions/shh-get-messages
+ (fn [_ [_ _ {:keys [id] :as m}]]
+   (rpc-call constants/web3-shh-get-messages [(abi-spec/number-to-hex id)] #(map parse-messages %) m)))

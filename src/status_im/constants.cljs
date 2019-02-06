@@ -210,6 +210,16 @@
 (def ^:const web3-uninstall-filter "eth_uninstallFilter")
 (def ^:const web3-get-filter-changes "eth_getFilterChanges")
 
+(def ^:const web3-shh-post "shh_post")
+(def ^:const web3-shh-new-identity "shh_newIdentity")
+(def ^:const web3-shh-has-identity "shh_hasIdentity")
+(def ^:const web3-shh-new-group "shh_newGroup")
+(def ^:const web3-shh-add-to-group "shh_addToGroup")
+(def ^:const web3-shh-new-filter "shh_newFilter")
+(def ^:const web3-shh-uninstall-filter "shh_uninstallFilter")
+(def ^:const web3-shh-get-filter-changes "shh_getFilterChanges")
+(def ^:const web3-shh-get-messages "shh_getMessages")
+
 (def ^:const status-create-address "status_createaddress")
 
 (def ^:const event-transfer-hash
