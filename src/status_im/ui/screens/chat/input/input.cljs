@@ -106,7 +106,7 @@
         :accessibility-label :chat-commands-button}
        [react/view
         [vector-icons/icon :main-icons/commands {:container-style style/input-commands-icon
-                                                 :color           :dark}]]])))
+                                                 :color           colors/gray}]]])))
 
 (defview reply-message [from message-text]
   (letsubs [username           [:contacts/contact-name-by-identity from]

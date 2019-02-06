@@ -1652,7 +1652,7 @@
                                                           [:stickers/load-sticker-pack-success o])
                                  :failure-event-creator (fn [o] nil)})
                       ;;TODO for testing ONLY
-                      ["https://ipfs.infura.io/ipfs/QmbgsCFEz4ubLFzF3SFfCxDEeXeMxe4yypxC3W1Ro9rLXS/"])}))
+                      ["https://ipfs.infura.io/ipfs/QmRKmQjXyqpfznQ9Y9dTnKePJnQxoJATivPbGcCAKRsZJq/"])}))
 
 (handlers/register-handler-fx
  :stickers/select-pack

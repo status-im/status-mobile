@@ -11,10 +11,8 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.utils.money :as money]))
 
-(def thumbnail-icon-size 40)
-
-(defn- thumbnail-icon [uri]
-  [react/image {:style  {:width thumbnail-icon-size :height thumbnail-icon-size :border-radius (/ thumbnail-icon-size 2)}
+(defn- thumbnail-icon [uri size]
+  [react/image {:style  {:width size :height size :border-radius (/ size 2)}
                 :source {:uri uri}}])
 
 (defn- installed-icon []
@@ -39,17 +37,17 @@
                (str price))]]])))
 
 (defn pack-badge [{:keys [name author price thumbnail preview id installed] :as pack}]
-  [react/view {:margin-bottom 27}
-   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :stickers-pack pack])}
-    [react/image {:style {:height 200 :border-radius 20} :source {:uri preview}}]]
-   [react/view {:height 64 :align-items :center :flex-direction :row}
-    [thumbnail-icon thumbnail]
-    [react/view {:padding-horizontal 16 :flex 1}
-     [react/text {:style {:font-size 15}} name]
-     [react/text {:style {:font-size 15 :color colors/gray :margin-top 6}} author]]
-    (if installed
-      [installed-icon]
-      [price-badge price id])]])
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :stickers-pack pack])}
+   [react/view {:margin-bottom 27}
+    [react/image {:style {:height 200 :border-radius 20} :source {:uri preview}}]
+    [react/view {:height 64 :align-items :center :flex-direction :row}
+     [thumbnail-icon thumbnail 40]
+     [react/view {:padding-horizontal 16 :flex 1}
+      [react/text {:style {:font-size 15}} name]
+      [react/text {:style {:font-size 15 :color colors/gray :margin-top 6}} author]]
+     (if installed
+       [installed-icon]
+       [price-badge price id])]]])
 
 (defview packs []
   (letsubs [packs [:stickers/all-packs]]
@@ -67,13 +65,13 @@
 (def sticker-icon-size 60)
 
 (defview pack []
-  (letsubs [{:keys [id name author price thumbnail stickers installed]} [:get-screen-params]]
+  (letsubs [{:keys [id name author price thumbnail stickers installed]} [:stickers/get-current-pack]]
     [react/view styles/screen
      [status-bar/status-bar]
      [react/keyboard-avoiding-view components.styles/flex
       [toolbar/simple-toolbar]
-      [react/view {:height 94 :align-items :center :flex-direction :row :padding-horizontal 16}
-       [thumbnail-icon thumbnail]
+      [react/view {:height 74 :align-items :center :flex-direction :row :padding-horizontal 16}
+       [thumbnail-icon thumbnail 64]
        [react/view {:padding-horizontal 16 :flex 1}
         [react/text {:style {:font-size 22 :font-weight :bold}} name]
         [react/text {:style {:font-size 15 :color colors/gray :margin-top 6}} author]]

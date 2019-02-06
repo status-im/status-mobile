@@ -5,7 +5,8 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.chat.stickers.styles :as styles]))
+            [status-im.ui.screens.chat.stickers.styles :as styles]
+            [status-im.ui.components.animation :as anim]))
 
 (defn button [show-stickers?]
   [react/touchable-highlight
@@ -19,11 +20,12 @@
   [react/view {:style {:flex 1 :align-items :center :justify-content :center}}
    [vector-icons/icon :stickers-icons/stickers-big {:color colors/gray}]
    [react/text {:style {:margin-top 8 :font-size 17}} (i18n/label :t/you-dont-have-stickers)]
-   [react/touchable-highlight {:on-press #(do
-                                            (re-frame/dispatch [:stickers/load-packs])
-                                            (re-frame/dispatch [:navigate-to :stickers]))}
-    [react/text {:style {:margin-top 17 :font-size 15 :color colors/blue}}
-     (i18n/label :t/get-stickers)]]])
+   [react/touchable-opacity {:on-press #(do
+                                          (re-frame/dispatch [:stickers/load-packs])
+                                          (re-frame/dispatch [:navigate-to :stickers]))}
+    [react/view {:margin-top 6 :height 44 :justify-content :center}
+     [react/text {:style {:font-size 15 :color colors/blue}}
+      (i18n/label :t/get-stickers)]]]])
 
 (defn- on-sticker-click [sticker]
   (re-frame/dispatch [:chat.ui/set-chat-ui-props {:show-stickers? false}])
@@ -56,16 +58,27 @@
    [react/view {:style {:align-items :center}}
     [react/view {:style (styles/pack-icon background-color icon-size)}
      icon]
-    [react/view {:style {:margin-bottom 5 :height 2 :width 16
+    [react/view {:style {:margin-bottom 5 :height 2 :width 16 :border-radius 1
                          :background-color (if selected? colors/blue colors/white)}}]]])
 
 (defn pack-for [packs id]
   (some #(when (= id (:id %)) %) packs))
 
+(defn show-panel-anim
+  [bottom-anim-value alpha-value]
+  (anim/start
+   (anim/parallel
+    [(anim/spring bottom-anim-value {:toValue (styles/stickers-panel-height)})
+     (anim/timing alpha-value {:toValue  1
+                               :duration 500})])))
+
 (defview stickers-view []
   (letsubs [selected-pack   [:stickers/selected-pack]
-            installed-packs [:stickers/installed-packs-vals]]
-    [react/view {:style {:background-color :white :height "40%"}}
+            installed-packs [:stickers/installed-packs-vals]
+            bottom-anim-value  (anim/create-value 0)
+            alpha-value        (anim/create-value 0)]
+    {:component-will-mount #(show-panel-anim bottom-anim-value alpha-value)}
+    [react/animated-view {:style {:background-color :white :height bottom-anim-value :opacity alpha-value}}
      (cond
        (= selected-pack :recent) [recent-stickers-panel]
        (not (seq installed-packs)) [no-stickers-yet-panel]
@@ -80,9 +93,9 @@
       [react/view {:width 4}]
       [pack-icon {:id :recent :selected? (or (= :recent selected-pack) (and (nil? selected-pack) (seq installed-packs)))}
        [vector-icons/icon :stickers-icons/recent]]
-      ;; TODO make scrollable
-      (for [{:keys [id thumbnail]} installed-packs]
-        ^{:key id}
-        [pack-icon {:id id :selected? (= id selected-pack)}
-         [react/image {:style {:width icon-size :height icon-size :border-radius (/ icon-size 2)}
-                       :source {:uri thumbnail}}]])]]))
+      [react/scroll-view {:horizontal true}
+       (for [{:keys [id thumbnail]} installed-packs]
+         ^{:key id}
+         [pack-icon {:id id :selected? (= id selected-pack)}
+          [react/image {:style {:width icon-size :height icon-size :border-radius (/ icon-size 2)}
+                        :source {:uri thumbnail}}]])]]]))

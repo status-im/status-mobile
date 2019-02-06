@@ -25,6 +25,13 @@
    (map #(if (get installed (:id %)) (assoc % :installed true) %) (vals packs))))
 
 (re-frame/reg-sub
+ :stickers/get-current-pack
+ :<- [:get-screen-params]
+ :<- [:stickers/all-packs]
+ (fn [[{:keys [id]} packs]]
+   (first (filter #(= (:id %) id) packs))))
+
+(re-frame/reg-sub
  :stickers/recent
  :<- [:account/account]
  (fn [{:keys [recent-stickers]}]
