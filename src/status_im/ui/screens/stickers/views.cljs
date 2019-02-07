@@ -63,12 +63,12 @@
 
 (def sticker-icon-size 60)
 
-(defview pack []
+(defview pack-main [modal?]
   (letsubs [{:keys [id name author price thumbnail stickers installed]} [:stickers/get-current-pack]]
     [react/view styles/screen
      [status-bar/status-bar]
      [react/keyboard-avoiding-view components.styles/flex
-      [toolbar/simple-toolbar]
+      [toolbar/simple-toolbar nil modal?]
       [react/view {:height 74 :align-items :center :flex-direction :row :padding-horizontal 16}
        [thumbnail-icon thumbnail 64]
        [react/view {:padding-horizontal 16 :flex 1}
@@ -84,3 +84,9 @@
            ^{:key uri}
            [react/image {:style (styles/sticker-image sticker-icon-size)
                          :source {:uri uri}}])]]]]]))
+
+(defview pack []
+  [pack-main false])
+
+(defview pack-modal []
+  [pack-main true])

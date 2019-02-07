@@ -148,12 +148,13 @@
                                                             :text    message-text})})))
 
 (fx/defn send-sticker-fx
-  [{:keys [db] :as cofx} uri current-chat-id]
+  [{:keys [db] :as cofx} {:keys [uri pack]} current-chat-id]
   (when-not (string/blank? uri)
     (chat.message/send-message cofx {:chat-id      current-chat-id
                                      :content-type constants/content-type-sticker
                                      :content      (cond-> {:chat-id current-chat-id
                                                             :uri     uri
+                                                            :pack    pack
                                                             :text    "Update to latest version to see a nice sticker here!"})})))
 
 (fx/defn send-current-message

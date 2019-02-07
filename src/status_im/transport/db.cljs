@@ -65,6 +65,7 @@
 (spec/def :message.content/response-to-v2 string?)
 (spec/def :message.content/command-path (spec/tuple string? (spec/coll-of (spec/or :scope keyword? :chat-id string?) :kind set? :min-count 1)))
 (spec/def :message.content/uri (spec/and string? (complement s/blank?)))
+(spec/def :message.content/pack (spec/and string? (complement s/blank?)))
 (spec/def :message.content/params (spec/map-of keyword? any?))
 
 (spec/def ::content-type #{constants/content-type-text constants/content-type-command

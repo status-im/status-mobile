@@ -39,7 +39,7 @@
 (defview recent-stickers-panel []
   (letsubs [stickers [:stickers/recent]]
     (if (seq stickers)
-      [stickers-panel (map #(hash-map :uri %) stickers)]
+      [stickers-panel stickers]
       [react/view {:style {:flex 1 :align-items :center :justify-content :center}}
        [vector-icons/icon :stickers-icons/stickers-big {:color colors/gray}]
        [react/text {:style {:margin-top 8 :font-size 17}} (i18n/label :t/recently-used-stickers)]])))
@@ -55,8 +55,9 @@
     [react/view {:style {:margin-bottom 5 :height 2 :width 16 :border-radius 1
                          :background-color (if selected? colors/blue colors/white)}}]]])
 
-(defn pack-for [packs id]
-  (some #(when (= id (:id %)) %) packs))
+(defn pack-stickers [packs id]
+  (let [{:keys [stickers uri]} (some #(when (= id (:id %)) %) packs)]
+    (map #(assoc % :pack uri) stickers)))
 
 (defn show-panel-anim
   [bottom-anim-value alpha-value]
@@ -83,7 +84,7 @@
        (= selected-pack :recent) [recent-stickers-panel]
        (not (seq installed-packs)) [no-stickers-yet-panel]
        (nil? selected-pack) [recent-stickers-panel]
-       :else [stickers-panel (:stickers (pack-for installed-packs selected-pack))])
+       :else [stickers-panel (pack-stickers installed-packs selected-pack)])
      [react/view {:style {:flex-direction :row :padding-horizontal 4}}
       [pack-icon {:on-press #(do
                                (re-frame/dispatch [:stickers/load-packs])

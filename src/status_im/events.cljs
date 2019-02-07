@@ -793,11 +793,11 @@
 
 (handlers/register-handler-fx
  :chat/send-sticker
- (fn [{{:keys [current-chat-id] :account/keys [account]} :db :as cofx} [_ {:keys [uri]}]]
+ (fn [{{:keys [current-chat-id] :account/keys [account]} :db :as cofx} [_ {:keys [uri] :as sticker}]]
    (fx/merge
     cofx
     (accounts/update-recent-stickers (conj (remove #(= uri %) (:recent-stickers account)) uri))
-    (chat.input/send-sticker-fx uri current-chat-id))))
+    (chat.input/send-sticker-fx sticker current-chat-id))))
 
 (handlers/register-handler-fx
  :chat/disable-cooldown
@@ -1656,9 +1656,8 @@
 
 (handlers/register-handler-fx
  :stickers/load-sticker-pack-success
- (fn [{:keys [db]} [_ edn-string]]
-   (let [{{:keys [id] :as pack} 'meta} (edn/read-string edn-string)]
-     {:db (-> db (assoc-in [:stickers/packs id] (assoc pack :edn edn-string)))})))
+ (fn [cofx [_ edn-string uri open?]]
+   (stickers/load-sticker-pack-success cofx edn-string uri open?)))
 
 (handlers/register-handler-fx
  :stickers/install-pack
@@ -1671,7 +1670,7 @@
    {;;TODO request list of packs from contract
     :http-get-n (mapv (fn [uri] {:url                   uri
                                  :success-event-creator (fn [o]
-                                                          [:stickers/load-sticker-pack-success o])
+                                                          [:stickers/load-sticker-pack-success o uri])
                                  :failure-event-creator (fn [o] nil)})
                       ;;TODO for testing ONLY
                       ["https://ipfs.infura.io/ipfs/QmRKmQjXyqpfznQ9Y9dTnKePJnQxoJATivPbGcCAKRsZJq/"])}))
@@ -1680,3 +1679,8 @@
  :stickers/select-pack
  (fn [{:keys [db]} [_ id]]
    {:db (assoc db :stickers/selected-pack id)}))
+
+(handlers/register-handler-fx
+ :stickers/open-sticker-pack
+ (fn [cofx [_ uri]]
+   (stickers/open-sticker-pack cofx uri)))

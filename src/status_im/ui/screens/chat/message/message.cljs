@@ -144,7 +144,7 @@
 (defmethod message-content constants/content-type-sticker
   [wrapper {:keys [content] :as message}]
   [wrapper message
-   [react/image {:style {:margin 10 :width 100 :height 100}
+   [react/image {:style {:margin 10 :width 140 :height 140}
                  :source {:uri (:uri content)}}]])
 
 (defmethod message-content :default
@@ -275,6 +275,8 @@
 (defn chat-message [{:keys [message-id old-message-id outgoing group-chat modal? current-public-key content-type content] :as message}]
   [react/view
    [react/touchable-highlight {:on-press      (fn [_]
+                                                (when (= content-type constants/content-type-sticker)
+                                                  (re-frame/dispatch [:stickers/open-sticker-pack (:pack content)]))
                                                 (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
                                                                                                 :show-stickers? false}])
                                                 (react/dismiss-keyboard!))

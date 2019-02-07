@@ -154,7 +154,7 @@
                 :hardwallet-setup hardwallet-setup
                 :hardwallet-success hardwallet-success)))
       (cond-> {:headerMode "none"}
-        ; add view-id here if you'd like that view to be first view when app is started
+              ; add view-id here if you'd like that view to be first view when app is started
         (#{:intro :login :progress :accounts} view-id)
         (assoc :initialRouteName (name view-id))))}
     :chat-stack
@@ -163,25 +163,24 @@
       (stack-screens
        {:main-stack
         {:screens
-         (cond->
-          {:home                         (main-tabs/get-main-tab :home)
-           :chat                         chat
-           :profile                      profile.contact/profile
-           :new                          add-new
-           :new-chat                     new-chat
-           :qr-scanner                   qr-scanner
-           :take-picture                 take-picture
-           :new-group                    new-group
-           :add-participants-toggle-list add-participants-toggle-list
-           :contact-toggle-list          contact-toggle-list
-           :group-chat-profile           profile.group-chat/group-chat-profile
-           :new-public-chat              new-public-chat
-           :open-dapp                    open-dapp
-           :dapp-description             dapp-description
-           :browser                      browser
-           :stickers                     stickers/packs
-           :stickers-pack                stickers/pack
-           :login                        login}
+         (cond-> {:home                         (main-tabs/get-main-tab :home)
+                  :chat                         chat
+                  :profile                      profile.contact/profile
+                  :new                          add-new
+                  :new-chat                     new-chat
+                  :qr-scanner                   qr-scanner
+                  :take-picture                 take-picture
+                  :new-group                    new-group
+                  :add-participants-toggle-list add-participants-toggle-list
+                  :contact-toggle-list          contact-toggle-list
+                  :group-chat-profile           profile.group-chat/group-chat-profile
+                  :new-public-chat              new-public-chat
+                  :open-dapp                    open-dapp
+                  :dapp-description             dapp-description
+                  :browser                      browser
+                  :stickers                     stickers/packs
+                  :stickers-pack                stickers/pack
+                  :login                        login}
 
            config/hardwallet-enabled?
            (assoc :hardwallet-connect hardwallet-connect
@@ -198,6 +197,9 @@
 
         :show-extension-modal
         (wrap-modal :show-extension-modal show-extension-modal)
+
+        :stickers-pack-modal
+        (wrap-modal :stickers-pack-modal stickers/pack-modal)
 
         :wallet-send-modal-stack
         {:screens
@@ -324,34 +326,34 @@
        {:screen
         (nav-reagent/stack-navigator
          (stack-screens
-          (cond-> {:my-profile                       (main-tabs/get-main-tab :my-profile)
-                   :contacts-list                    contacts-list
-                   :blocked-users-list               blocked-users-list
-                   :profile-photo-capture            profile-photo-capture
-                   :about-app                        about-app/about-app
-                   :bootnodes-settings               bootnodes-settings
-                   :installations                    installations
-                   :edit-bootnode                    edit-bootnode
-                   :offline-messaging-settings       offline-messaging-settings
-                   :edit-mailserver                  edit-mailserver
-                   :help-center                      help-center
-                   :dapps-permissions                dapps-permissions/dapps-permissions
-                   :manage-dapps-permissions         dapps-permissions/manage
-                   :extensions-settings              extensions-settings
-                   :edit-extension                   edit-extension
-                   :show-extension                   show-extension
-                   :network-settings                 network-settings
-                   :network-details                  network-details
-                   :edit-network                     edit-network
-                   :log-level-settings               log-level-settings
-                   :fleet-settings                   fleet-settings
-                   :currency-settings                currency-settings
-                   :backup-seed                      backup-seed
-                   :login                            login
-                   :create-account                   create-account
-                   :recover                          recover
-                   :accounts                         accounts
-                   :qr-scanner                       qr-scanner}
+          (cond-> {:my-profile                 (main-tabs/get-main-tab :my-profile)
+                   :contacts-list              contacts-list
+                   :blocked-users-list         blocked-users-list
+                   :profile-photo-capture      profile-photo-capture
+                   :about-app                  about-app/about-app
+                   :bootnodes-settings         bootnodes-settings
+                   :installations              installations
+                   :edit-bootnode              edit-bootnode
+                   :offline-messaging-settings offline-messaging-settings
+                   :edit-mailserver            edit-mailserver
+                   :help-center                help-center
+                   :dapps-permissions          dapps-permissions/dapps-permissions
+                   :manage-dapps-permissions   dapps-permissions/manage
+                   :extensions-settings        extensions-settings
+                   :edit-extension             edit-extension
+                   :show-extension             show-extension
+                   :network-settings           network-settings
+                   :network-details            network-details
+                   :edit-network               edit-network
+                   :log-level-settings         log-level-settings
+                   :fleet-settings             fleet-settings
+                   :currency-settings          currency-settings
+                   :backup-seed                backup-seed
+                   :login                      login
+                   :create-account             create-account
+                   :recover                    recover
+                   :accounts                   accounts
+                   :qr-scanner                 qr-scanner}
 
             config/hardwallet-enabled?
             (assoc :hardwallet-authentication-method hardwallet-authentication-method
