@@ -123,7 +123,7 @@
    :color               colors/black
    :margin-horizontal   72
    :height              56
-   :margin-bottom       16
+   :margin-bottom       24
    :text-align-vertical :top
    :padding-horizontal  12
    :padding-vertical    8})
