@@ -64,14 +64,20 @@
 (def number-row
   {:flex            1
    :flex-direction  :row
+   :margin-top      12
    :justify-content :space-around})
+
+(def number-pad
+  {:flex              1
+   :margin-horizontal 20
+   :margin-top        4
+   :justify-content   :space-between})
 
 (def number-container
   {:width             64
    :height            64
    :border-radius     32
    :margin-horizontal 8
-   :margin-vertical   6
    :justify-content   :center
    :align-items       :center
    :background-color  colors/blue-light})
@@ -82,7 +88,7 @@
    :color       colors/blue})
 
 (def snt-amount-container
-  {:margin-vertical   16
+  {:margin-top        16
    :justify-content   :center
    :align-items       :center})
 

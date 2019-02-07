@@ -122,8 +122,7 @@
    elements])
 
 (defview number-pad []
-  [react/view {:style {:flex 1
-                       :justify-content :space-around}}
+  [react/view {:style styles/number-pad}
    (->> (into (vec (range 1 10))
               ["." 0 :remove])
         (map (fn [n] ^{:key n} [number-view n]))
@@ -139,7 +138,7 @@
      [snt-amount-label]
      [react/view {:style {:flex 1}}
       [number-pad]
-      [react/i18n-text {:style (assoc styles/description-label :margin-top 18)
+      [react/i18n-text {:style (assoc styles/description-label :margin-top 24)
                         :key   :tribute-to-talk-set-snt-amount}]]]))
 
 (defview personalized-message []
