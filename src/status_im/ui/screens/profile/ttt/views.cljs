@@ -25,8 +25,8 @@
             [status-im.utils.platform :as platform]))
 
 (defn separator []
-
-  [react/view {:style {:flex 1 :height 1 :background-color colors/gray-lighter}}])
+  [react/view {:style {;:flex 1 
+                       :height 1 :background-color colors/gray-lighter}}])
 
 (defn steps-numbers [editing?]
   {:intro                1
@@ -190,40 +190,49 @@
 
 (defview ttt-enabled-note []
   [react/view {:style styles/enabled-note}
-   [icons/icon :main-icons/info]
+   [icons/icon :main-icons/info {:color colors/gray}]
    [react/view {:style {:margin-left 11}}
     [react/text {:style styles/enabled-note-text}
      (i18n/label :t/tribute-to-talk-enabled)]
-    [react/text {:style {:font-size 15}}
+    [react/text {:style (assoc styles/enabled-note-text :font-weight :normal)}
      (i18n/label :t/tribute-to-talk-add-friends)]]])
 
 (defview edit []
   (letsubs [{:keys [snt-amount message]} [:my-profile/tribute-to-talk]]
     [react/view {:style (assoc styles/intro-container
-                               :margin-horizontal 16)}
-     [react/view {:style {:flex 1}}
+                               :margin-horizontal 0)}
+     [react/view #_{:style {:flex 1}}
       [react/view {:style styles/edit-screen-top-row}
        [react/view {:style {:flex-direction :row
+                            :justify-content :flex-start
                             :align-items :center}}
         [react/view {:style (styles/icon-view colors/blue)}
          [icons/icon :icons/logo {:color colors/white :width 20 :height 20}]]
         [react/view {:style {:margin-left 16}}
-         [react/text {:style styles/current-snt-amount}
-          snt-amount [react/text {:style (assoc styles/current-snt-amount :color colors/gray)} " SNT"]]
+         [react/view {:style {:justify-content :center
+                              :align-items :center}}
+          [react/text {:style styles/current-snt-amount}
+           snt-amount [react/text {:style (assoc styles/current-snt-amount :color colors/gray)} " SNT"]]]
          [snt-asset-value]]]
-       [react/text {:on-press #(do
-                                 (re-frame/dispatch [:set-in [:my-profile/tribute-to-talk :step] :set-snt-amount])
-                                 (re-frame/dispatch [:set :my-profile/editing? true]))
-                    :style styles/edit-label}
-        (i18n/label :t/edit)]]
+       [react/view {:style {:justify-content :center
+                            :align-items :center}}
+        [react/text {:on-press #(do
+                                  (re-frame/dispatch [:set-in [:my-profile/tribute-to-talk :step] :set-snt-amount])
+                                  (re-frame/dispatch [:set :my-profile/editing? true]))
+                     :style styles/edit-label}
+         (i18n/label :t/edit)]]]
       [react/text-input {:style styles/edit-view-message
                          :multiline true
                          :editable false
                          :default-value message}]
-      [react/text {:style {:font-size 15 :color colors/gray :margin-top 16}}
-       (i18n/label :t/tribute-to-talk-you-require-snt)]]
+      [separator]
+      [react/text {:style {:font-size 15
+                           :color colors/gray
+                           :margin-top 16
+                           :margin-horizontal 16
+                           :text-align :center}}
+       (i18n/label :t/tribute-to-talk-you-require-snt)]
 
-     [react/view
       [react/touchable-highlight {:on-press #(do
                                                (re-frame/dispatch [:set-in [:my-profile/tribute-to-talk :snt-amount] nil])
                                                (re-frame/dispatch [:navigate-back]))
@@ -231,8 +240,10 @@
        [react/view {:style {:flex-direction :row}}
         [react/view {:style (styles/icon-view (colors/alpha colors/red 0.1))}
          [icons/icon :main-icons/logout {:color colors/red}]]
-        [react/text {:style styles/remove-text}
-         (i18n/label :t/remove)]]]
+        [react/view  {:style {:justify-content :center
+                              :align-items :center}}
+         [react/text {:style styles/remove-text}
+          (i18n/label :t/remove)]]]]
       [react/text {:style styles/remove-note}
        (i18n/label :t/tribute-to-talk-removing-note)]]
 

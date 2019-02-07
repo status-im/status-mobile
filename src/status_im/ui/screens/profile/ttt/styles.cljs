@@ -104,7 +104,11 @@
 (def edit-view-message
   {:border-radius 8
    :background-color colors/blue-light
-   :margin-horizontal 40
+   :color colors/black
+   :margin-horizontal 72
+   :height 56
+   :margin-bottom 16
+   :text-align-vertical :top
    :padding-horizontal 12
    :padding-vertical 8})
 
@@ -133,19 +137,19 @@
 
 (def current-snt-amount
   {:font-size           28
-   :text-align-vertical :center
    :color               colors/black
    :font-weight         "500"})
 
 (def edit-label
   {:font-size           15
-   :text-align-vertical :center
    :color               colors/blue})
 
 (def enabled-note
   {:border-radius  8
    :border-width   1
    :padding        14
+   :border-color colors/gray-lighter
+   :margin-horizontal 24
    :margin-bottom  50
    :flex-direction :row})
 
@@ -192,6 +196,7 @@
 (def edit-screen-top-row
   {:flex-direction  :row
    :margin-vertical 16
+   :margin-horizontal 16
    :align-items     :center
    :justify-content :space-between})
 
@@ -199,11 +204,11 @@
   {:flex-direction  :row
    :justify-content :flex-start
    :align-self      :flex-start
+   :margin-horizontal 16
    :margin-top      52})
 
 (def remove-text
   {:color               colors/red
-   :text-align-vertical :center
    :margin-left         16
    :font-size           17})
 
@@ -211,10 +216,11 @@
   {:font-size 15
    :color colors/gray
    :text-align :center
-   :margin-top 24})
+   :margin-top 12})
 
 (def enabled-note-text
-  {:font-weight         :bold
-   :font-size           15
-   :text-align-vertical :top})
+  {:color colors/black
+   :line-height 22
+   :font-weight         "500"
+   :font-size           15})
 
