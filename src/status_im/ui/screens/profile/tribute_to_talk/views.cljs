@@ -25,8 +25,7 @@
             [status-im.utils.platform :as platform]))
 
 (defn separator []
-  [react/view {:style {;:flex 1 
-                       :height 1 :background-color colors/gray-lighter}}])
+  [react/view {:style {:height 1 :background-color colors/gray-lighter}}])
 
 (defn steps-numbers [editing?]
   {:intro                1
@@ -42,17 +41,18 @@
                                     (if editing? :edit :intro)]
      :personalized-message         [:set-in [:my-profile/tribute-to-talk :step] :set-snt-amount]
      :finish                       [:set-in [:my-profile/tribute-to-talk :step] :personalized-message])))
+
 (def step-forward-label
-  {:intro :t/get-started
-   :set-snt-amount :t/continue
+  {:intro                :t/get-started
+   :set-snt-amount       :t/continue
    :personalized-message :t/tribute-to-talk-sign-and-set-tribute
-   :finish  :t/ok-got-it})
+   :finish               :t/ok-got-it})
 
 (defn step-forward [step editing?]
   (re-frame/dispatch
    (case step
-     :intro [:set-in [:my-profile/tribute-to-talk :step] :set-snt-amount]
-     :set-snt-amount [:set-in [:my-profile/tribute-to-talk :step] :personalized-message]
+     :intro                [:set-in [:my-profile/tribute-to-talk :step] :set-snt-amount]
+     :set-snt-amount       [:set-in [:my-profile/tribute-to-talk :step] :personalized-message]
      :personalized-message [:set-in [:my-profile/tribute-to-talk :step] (if editing? :edit :finish)]       :finish [:navigate-back])))
 
 (defn intro []
@@ -132,8 +132,7 @@
           [react/text {:style styles/number} numpad-symbol])]])))
 
 (defview number-row [elements]
-  [react/view {:style {:flex 1
-                       :flex-direction :row :justify-content :space-around}}
+  [react/view {:style styles/number-row}
    elements])
 
 (defview number-pad []
@@ -236,17 +235,13 @@
                                   (re-frame/dispatch [:set-in [:my-profile/tribute-to-talk :editing?] true]))
                      :style styles/edit-label}
          (i18n/label :t/edit)]]]
-      [react/text-input {:style styles/edit-view-message
-                         :multiline true
-                         :editable false
-                         :placeholder ""
+      [react/text-input {:style         styles/edit-view-message
+                         :multiline     true
+                         :editable      false
+                         :placeholder   ""
                          :default-value message}]
       [separator]
-      [react/text {:style {:font-size 15
-                           :color colors/gray
-                           :margin-top 16
-                           :margin-horizontal 16
-                           :text-align :center}}
+      [react/text {:style styles/edit-note}
        (i18n/label :t/tribute-to-talk-you-require-snt)]
 
       [react/touchable-highlight {:on-press #(do
@@ -270,10 +265,7 @@
    [react/view {:style {:flex-direction :row
                         :align-items :center}}
     [react/view {:style {:background-color colors/white
-                         ;:width 16 :height 16
-                         :justify-content :center :align-items :center
-                         ;:border-radius 4
-}}
+                         :justify-content :center :align-items :center}}
      [icons/icon :tiny-icons/tribute-to-talk {:color colors/blue}]]
     [react/text {:style {:color colors/gray :font-size 13 :line-height 22 :margin-left 4}}
      (i18n/label :t/tribute-to-talk)]]
@@ -297,26 +289,21 @@
 
    [react/text {:style styles/learn-more-title-text}
     (i18n/label :t/tribute-to-talk)]
-   [react/view {:style {:margin-horizontal 32
-                        :margin-top 12
-                        :margin-bottom 24}}
+   [react/view {:style styles/learn-more-text-container-1}
     [react/text {:style styles/learn-more-text}
      (i18n/label :t/tribute-to-talk-learn-more-1)]]
    [separator]
    [chat-sample]
-   [react/view {:style {:margin-horizontal 32
-                        :margin-top 16
-                        :margin-bottom 32}}
+   [react/view {:style styles/learn-more-text-container-2}
     [react/text {:style styles/learn-more-text}
      (i18n/label :t/tribute-to-talk-learn-more-2)]]
    [react/view {:style (assoc styles/learn-more-section
-                              :flex-direction :row
-                              :align-item :flex-stretch
+                              :flex-direction     :row
+                              :align-item         :flex-stretch
                               :padding-horizontal 16
-                              :padding-vertical 12)}
+                              :padding-vertical   12)}
     [react/view {:style (styles/icon-view colors/blue-light)}
-     [icons/icon :main-icons/add-contact {:color colors/blue :width 20 :height 20}]]
-
+     [icons/icon :main-icons/add-contact {:color colors/blue}]]
     [react/view {:style {:margin-left 16 :justify-content :center}}
      [react/text {:style (assoc styles/learn-more-text :color colors/blue)}
       (i18n/label :t/add-to-contacts)]]]
@@ -325,9 +312,9 @@
      (i18n/label :t/tribute-to-talk-learn-more-3)]]])
 
 (defview tribute-to-talk []
-  (letsubs [current-account [:account/account]
+  (letsubs [current-account           [:account/account]
             {:keys [step snt-amount]} [:my-profile/tribute-to-talk]
-            editing? [:get-in [:my-profile/tribute-to-talk :editing?]]]
+            editing?                  [:get-in [:my-profile/tribute-to-talk :editing?]]]
     [react/keyboard-avoiding-view {:style styles/container}
      [status-bar/status-bar]
      [toolbar/toolbar

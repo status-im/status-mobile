@@ -123,12 +123,12 @@
             :disabled (not active?)})
    [react/view (styles/settings-item subtext)
     (if icon
-      [react/view (styles/settings-item-icon icon-color)
+      [react/view (styles/settings-item-icon icon-color subtext)
        [vector-icons/icon icon {:color icon-color}]]
       [react/image {:source {:uri image-source}
                     :style   styles/big-item-image}])
     (if subtext
-      [react/view {:style {:flex 1}}
+      [react/view {:style {:flex 1 :align-self :flex-start :margin-top 12}}
        [react/view {:style {:flex-direction :row
                             :align-items :center}}
         [react/view {:style styles/new-label}
