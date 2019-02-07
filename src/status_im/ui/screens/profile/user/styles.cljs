@@ -4,34 +4,6 @@
             [status-im.ui.screens.profile.components.styles :as profile.components.styles]
             [status-im.ui.components.styles :as components.styles]))
 
-(def profile-entry-container
-  {:flex-direction :row
-   :flex 1
-   :align-items :center
-   :justify-content :space-between
-   :padding-vertical 12})
-
-(def profile-entry-icon
-  {:width 40
-   :height 40
-   :border-radius 40
-   :margin-left 16
-   ;:margin-top 12
-   :justify-content :center
-   :align-items :center
-   :background-color (colors/alpha colors/blue 0.1)})
-
-(def profile-entry-arrow
-  {;:width 24
-   ;:height 24
-   :margin-right 16})
-
-(def profile-entry-text
-  {:line-height 20
-   :font-size 17
-   :color colors/black
-   :text-align-vertical :center})
-
 (def share-contact-code-container
   {:flex-direction  :row
    :justify-content :center
