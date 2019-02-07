@@ -1,15 +1,11 @@
 (ns status-im.ui.screens.chat.toolbar-content
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [clojure.string :as string]
-            [cljs-time.core :as t]
-            [status-im.ui.components.react :as react]
+  (:require [cljs-time.core :as t]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.screens.chat.styles.main :as st]
-            [status-im.utils.datetime :as time]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.styles :as common.styles]))
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.styles.main :as st]
+            [status-im.utils.datetime :as time])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- online-text [contact chat-id]
   (if contact
