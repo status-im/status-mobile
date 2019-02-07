@@ -521,7 +521,9 @@
                                             :members-joined           (:members-joined new-group)
                                             :contacts                 (:contacts new-group)})
                   (add-system-messages chat-id previous-chat new-group)
-                  (set-up-topic chat-id previous-chat)
+
+                  (when config/group-chats-publish-to-topic?
+                    (set-up-topic chat-id previous-chat))
                   #(when (and message
                               ;; don't allow anything but group messages
                               (instance? protocol/Message message)
