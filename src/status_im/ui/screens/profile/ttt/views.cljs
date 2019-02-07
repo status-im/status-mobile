@@ -83,7 +83,7 @@
                                                 (-> currency :code keyword)
                                                 prices)
                        "0")]
-      [react/text {:style (assoc styles/snt-asset-value :margin-top 6)}
+      [react/text {:style styles/snt-asset-value}
        (str "~" fiat-price " " (:code currency))])))
 
 (defview snt-amount-label []
@@ -176,17 +176,23 @@
      [react/view {:style {:flex 3
                           :justify-content :center
                           :align-items :center}}
-      [react/view {:style (styles/finish-circle colors/green-transparent-10 80)}
-       [react/view {:style (styles/finish-circle colors/white 40)}
-        [icons/icon :main-icons/check {:color colors/green}]]]]
+      [react/view {:style (styles/finish-circle (if amount
+                                                  colors/green-transparent-10
+                                                  colors/gray-lighter) 80)}
+       [react/view {:style (assoc (styles/finish-circle colors/white 40) 
+                                  :elevation 5
+                                  :shadow-offset {:width 0 :height 2}
+                                  :shadow-radius 4
+                                  :shadow-color (colors/alpha "#435971" 0.124066))}
+        [icons/icon :main-icons/check {:color (if amount colors/green colors/gray)}]]]]
      [react/view  {:style {:flex 1
                            :justify-content :center
                            :align-items :center}}
-      [react/text {:style styles/finish-label} (i18n/label :t/you-are-all-set)]
+      [react/text {:style styles/finish-label} (i18n/label (if amount :t/you-are-all-set :t/tribute-to-talk-disabled))]
       [react/text {:style (assoc styles/description-label :margin-top 16)}
-       (i18n/label :t/tribute-to-talk-finish-desc)
-       [react/text {:style (assoc styles/description-label :color colors/black)} amount]
-       " SNT"]]]))
+       (i18n/label (if amount :t/tribute-to-talk-finish-desc :t/tribute-to-talk-disabled-note))
+       (when amount [react/text {:style (assoc styles/description-label :color colors/black)} amount])
+       (when amount " SNT")]]]))
 
 (defview ttt-enabled-note []
   [react/view {:style styles/enabled-note}
@@ -205,10 +211,10 @@
       [react/view {:style styles/edit-screen-top-row}
        [react/view {:style {:flex-direction :row
                             :justify-content :flex-start
-                            :align-items :center}}
+                            :align-items :flex-start}}
         [react/view {:style (styles/icon-view colors/blue)}
          [icons/icon :icons/logo {:color colors/white :width 20 :height 20}]]
-        [react/view {:style {:margin-left 16}}
+        [react/view {:style {:margin-left 16 :justify-content :flex-start}}
          [react/view {:style {:justify-content :center
                               :align-items :center}}
           [react/text {:style styles/current-snt-amount}
@@ -235,7 +241,7 @@
 
       [react/touchable-highlight {:on-press #(do
                                                (re-frame/dispatch [:set-in [:my-profile/tribute-to-talk :snt-amount] nil])
-                                               (re-frame/dispatch [:navigate-back]))
+                                               (re-frame/dispatch [:set-in [:my-profile/tribute-to-talk :step] :finish]))
                                   :style styles/remove-view}
        [react/view {:style {:flex-direction :row}}
         [react/view {:style (styles/icon-view (colors/alpha colors/red 0.1))}
@@ -325,7 +331,7 @@
        (when-not (#{:edit :learn-more} step)
          [react/text {:style styles/step-n}
           (if (= step :finish)
-            (i18n/label :t/completed)
+            (i18n/label (if snt-amount :t/completed :t/disabled))
             (i18n/label :t/step-i-of-n {:step ((steps-numbers editing?) step)
                                         :number (if editing? 2 3)}))])
        (when (= step :learn-more)

@@ -92,6 +92,8 @@
 
 (def snt-asset-value
   {:font-size 15
+   :font-weight "500"
+   :line-height 22
    :color     colors/gray})
 
 (def personalized-message-input
@@ -137,6 +139,7 @@
 
 (def current-snt-amount
   {:font-size           28
+   :line-height         28
    :color               colors/black
    :font-weight         "500"})
 
@@ -197,7 +200,7 @@
   {:flex-direction  :row
    :margin-vertical 16
    :margin-horizontal 16
-   :align-items     :center
+   :align-items     :flex-start
    :justify-content :space-between})
 
 (def remove-view
