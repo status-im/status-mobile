@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.profile.ttt.views
+(ns status-im.ui.screens.profile.tribute-to-talk.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
@@ -19,7 +19,7 @@
             [clojure.string :as string]
             [status-im.utils.config :as config]
             [status-im.utils.utils :as utils]
-            [status-im.ui.screens.profile.ttt.styles :as styles]
+            [status-im.ui.screens.profile.tribute-to-talk.styles :as styles]
             [status-im.i18n :as i18n]
             [status-im.ui.components.styles :as common.styles]
             [status-im.utils.platform :as platform]))
@@ -58,7 +58,7 @@
 (defn intro []
   [react/view {:style styles/intro-container}
    [components.common/image-contain {:container-style styles/intro-image}
-    (:ttt-logo resources/ui)]
+    (:tribute-to-talk resources/ui)]
    [react/view
     [react/i18n-text {:style styles/intro-text
                       :key   :tribute-to-talk}]
@@ -203,7 +203,7 @@
        (when amount [react/text {:style (assoc styles/description-label :color colors/black)} amount])
        (when amount " SNT")]]]))
 
-(defview ttt-enabled-note []
+(defview enabled-note []
   [react/view {:style styles/enabled-note}
    [icons/icon :main-icons/info {:color colors/gray}]
    [react/view {:style {:margin-left 11}}
@@ -263,7 +263,7 @@
       [react/text {:style styles/remove-note}
        (i18n/label :t/tribute-to-talk-removing-note)]]
 
-     [ttt-enabled-note]]))
+     [enabled-note]]))
 
 (defview chat-sample []
   [react/view {:style (assoc styles/learn-more-section :margin-top 24)}
@@ -294,7 +294,7 @@
   [react/scroll-view {:content-container-style styles/learn-more-container}
   ;[react/view {:style styles/learn-more-container}
    [components.common/image-contain {:container-style styles/learn-more-image}
-    (:ttt-logo resources/ui)]
+    (:tribute-to-talk resources/ui)]
 
    [react/text {:style styles/learn-more-title-text}
     (i18n/label :t/tribute-to-talk)]
@@ -329,7 +329,7 @@
   (letsubs [current-account [:account/account]
             {:keys [step snt-amount]} [:my-profile/tribute-to-talk]
             editing? [:get-in [:my-profile/tribute-to-talk :editing?]]]
-    [react/keyboard-avoiding-view {:style styles/ttt-container}
+    [react/keyboard-avoiding-view {:style styles/container}
      [status-bar/status-bar]
      [toolbar/toolbar
       nil

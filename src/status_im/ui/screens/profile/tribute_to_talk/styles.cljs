@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.profile.ttt.styles
+(ns status-im.ui.screens.profile.tribute-to-talk.styles
   (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.components.styles :as common.styles]))
 

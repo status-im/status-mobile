@@ -5,7 +5,7 @@
             [status-im.ui.components.button.view :as button]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.qr-code-viewer.styles :as styles]
-            [status-im.ui.screens.profile.ttt.views :as ttt]
+            [status-im.ui.screens.profile.tribute-to-talk.views :as tr-to-talk]
             [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]))
 
@@ -21,7 +21,7 @@
       [react/view {:style (merge styles/qr-code style)}
        (when snt-amount
          [react/view {:style {:margin-horizontal 16}}
-          [ttt/ttt-enabled-note]])
+          [tr-to-talk/enabled-note]])
        (when width
          (let [size (int (min width styles/qr-code-max-width))]
            [react/view {:style               (styles/qr-code-container size)

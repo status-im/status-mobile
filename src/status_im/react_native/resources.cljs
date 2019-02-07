@@ -65,7 +65,7 @@
    :lock                {:image  (js/require "./resources/images/ui/lock.png")
                          :width  993
                          :height 933}
-   :ttt-logo            {:image (js/require "./resources/images/ui/ttt-logo.png")
+   :tribute-to-talk     {:image (js/require "./resources/images/ui/tribute-to-talk.png")
                          :width  246
                          :height 219}
    :wallet-welcome      (js/require "./resources/images/ui/wallet-welcome.png")

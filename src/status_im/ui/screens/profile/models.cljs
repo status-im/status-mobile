@@ -91,7 +91,7 @@
 
 (defn set-tribute [{:keys [db] :as cofx}]
   (fx/merge cofx
-            {:db (update db :my-profile/tribute-to-talk assoc :enabled true)}
+            {:db (assoc-in db [:my-profile/tribute-to-talk :enabled] true)}
             (accounts.update/clean-seed-phrase)))
 
 (defn copy-to-clipboard! [value]
