@@ -81,32 +81,34 @@
         " SNT"]
        [snt-asset-value]])))
 
+(defn- get-new-snt-amount [snt-amount numpad-symbol]
+  (let [snt-amount  (or snt-amount "0")]
+    (if (= numpad-symbol :remove)
+      (let [len (count snt-amount)
+            s (subs snt-amount 0 (dec len))]
+        (cond-> s
+          ;; Remove both the digit after the dot and the dot itself
+          (string/ends-with? s ".") (subs 0 (- len 2))
+          ;; Set default value if last digit is removed
+          (string/blank? s) (do "0")))
+      (cond
+        ;; Disallow two consecutive dots
+        (and (string/includes? snt-amount ".") (= numpad-symbol "."))
+        snt-amount
+        ;; Disallow more than 2 digits after the dot
+        (and (string/includes? snt-amount ".")
+             (> (count (second (string/split snt-amount #"\."))) 1))
+        snt-amount
+        ;; Replace initial "0" by the first digit
+        (and (= snt-amount "0") (not= numpad-symbol "."))
+        (str numpad-symbol)
+        :else (str snt-amount numpad-symbol)))))
+
 (defview number-view [numpad-symbol]
   (letsubs [snt-amount [:get-in [:my-profile/tribute-to-talk :snt-amount]]]
-    (let [snt-amount (or snt-amount "0")
-          ;; Put some logic in place so that incorrect numbers can not
+    (let [;; Put some logic in place so that incorrect numbers can not
           ;; be entered
-          new-snt-amount (if (= numpad-symbol :remove)
-                           (let [len (count snt-amount)
-                                 s (subs snt-amount 0 (dec len))]
-                             ;; Remove both the digit after the dot and the dot itself
-                             (if (string/ends-with? s ".")
-                               (subs s 0 (- len 2))
-                               s))
-                           (cond (and (string/includes? snt-amount ".") (= numpad-symbol "."))
-                                 ;; Disallow two consecutive dots
-                                 snt-amount
-
-                                 (and (string/includes? snt-amount ".")
-                                      (> (count (second (string/split snt-amount #"\."))) 1))
-                                 ;; Disallow more than 2 digits after the dot
-                                 snt-amount
-
-                                 (and (= snt-amount "0") (not= numpad-symbol "."))
-                                 ;; Replace initial "0" by the first digit
-                                 (str numpad-symbol)
-                                 :else (str snt-amount numpad-symbol)))
-          new-snt-amount (if (string/blank? new-snt-amount) "0" new-snt-amount)]
+          new-snt-amount (get-new-snt-amount snt-amount numpad-symbol)]
       [react/touchable-opacity
        {:on-press #(re-frame/dispatch [:set-in [:my-profile/tribute-to-talk :snt-amount]
                                        new-snt-amount])}
