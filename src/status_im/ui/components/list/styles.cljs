@@ -83,7 +83,7 @@
    :flex-direction     :row
    :align-items        :center
    :background-color   colors/white
-   :height             (if large? 76 52)})
+   :height             (if large? 82 52)})
 
 (defn settings-item-icon [icon-color large?]
   (cond-> {:background-color (colors/alpha icon-color 0.1)
@@ -112,6 +112,7 @@
 (def settings-item-subtext
   {:line-height 22
    :font-size   15
+   :margin-top  6
    :color       colors/gray})
 
 (def settings-item-value
