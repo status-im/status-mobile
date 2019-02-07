@@ -292,7 +292,6 @@
 
 (defview learn-more []
   [react/scroll-view {:content-container-style styles/learn-more-container}
-  ;[react/view {:style styles/learn-more-container}
    [components.common/image-contain {:container-style styles/learn-more-image}
     (:tribute-to-talk resources/ui)]
 
