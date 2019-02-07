@@ -38,7 +38,8 @@
    :align-items        :center})
 
 (def bottom-toolbar
-  {:height 60})
+  {:height        60
+   :margin-bottom 20})
 
 (def step-n
   {:margin-top 5
@@ -95,6 +96,11 @@
    :font-weight "500"
    :line-height 22
    :color       colors/gray})
+
+(def personalized-message-title
+  {:margin-top    24
+   :margin-bottom 10
+   :align-self    :flex-start})
 
 (def personalized-message-input
   {:border-radius       8

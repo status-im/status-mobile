@@ -103,3 +103,22 @@
  (fn [_ [_ value]]
    {:profile/share-profile-link value}))
 
+(handlers/register-handler-fx
+ :tribute-to-talk/step-back
+ (fn [{:keys [db] :as cofx} [_ step editing?]]
+   (case step
+     (:intro :edit)                {:dispatch [:navigate-back]}
+     (:learn-more :set-snt-amount) {:db (assoc-in db [:my-profile/tribute-to-talk :step]
+                                                  (if editing? :edit :intro))}
+     :personalized-message         {:db (assoc-in db [:my-profile/tribute-to-talk :step] :set-snt-amount)}
+     :finish                       {:db (assoc-in db [:my-profile/tribute-to-talk :step] :personalized-message)})))
+
+(handlers/register-handler-fx
+ :tribute-to-talk/step-forward
+ (fn [{:keys [db] :as cofx} [_ step editing?]]
+   (case step
+     :intro                     {:db (assoc-in db [:my-profile/tribute-to-talk :step] :set-snt-amount)}
+     :set-snt-amount            {:db (assoc-in db [:my-profile/tribute-to-talk :step] :personalized-message)}
+     :personalized-message      {:db (assoc-in db [:my-profile/tribute-to-talk :step]
+                                               (if editing? :edit :finish))}
+     :finish {:dispatch [:navigate-back]})))

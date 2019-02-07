@@ -33,27 +33,11 @@
    :personalized-message (if editing? 2 3)
    :finish               3})
 
-(defn step-back [step editing?]
-  (re-frame/dispatch
-   (case step
-     (:intro :edit)                [:navigate-back]
-     (:learn-more :set-snt-amount) [:set-in [:my-profile/tribute-to-talk :step]
-                                    (if editing? :edit :intro)]
-     :personalized-message         [:set-in [:my-profile/tribute-to-talk :step] :set-snt-amount]
-     :finish                       [:set-in [:my-profile/tribute-to-talk :step] :personalized-message])))
-
 (def step-forward-label
   {:intro                :t/get-started
    :set-snt-amount       :t/continue
    :personalized-message :t/tribute-to-talk-sign-and-set-tribute
    :finish               :t/ok-got-it})
-
-(defn step-forward [step editing?]
-  (re-frame/dispatch
-   (case step
-     :intro                [:set-in [:my-profile/tribute-to-talk :step] :set-snt-amount]
-     :set-snt-amount       [:set-in [:my-profile/tribute-to-talk :step] :personalized-message]
-     :personalized-message [:set-in [:my-profile/tribute-to-talk :step] (if editing? :edit :finish)]       :finish [:navigate-back])))
 
 (defn intro []
   [react/view {:style styles/intro-container}
@@ -160,9 +144,7 @@
   (letsubs [{:keys [message]} [:my-profile/tribute-to-talk]]
     [react/scroll-view {:content-container-style (assoc styles/intro-container :margin-horizontal 16
                                                         :justify-content :flex-start)}
-     [react/view {:style {:margin-top 24
-                          :margin-bottom 10
-                          :align-self :flex-start}}
+     [react/view {:style styles/personalized-message-title}
       [react/text {:style (assoc styles/description-label
                                  :color colors/black)}
        (i18n/label :t/personalized-message)
@@ -215,11 +197,11 @@
   (letsubs [{:keys [snt-amount message]} [:my-profile/tribute-to-talk]]
     [react/scroll-view {:content-container-style (assoc styles/intro-container
                                                         :margin-horizontal 0)}
-     [react/view #_{:style {:flex 1}}
+     [react/view
       [react/view {:style styles/edit-screen-top-row}
-       [react/view {:style {:flex-direction :row
+       [react/view {:style {:flex-direction  :row
                             :justify-content :flex-start
-                            :align-items :flex-start}}
+                            :align-items     :flex-start}}
         [react/view {:style (styles/icon-view colors/blue)}
          [icons/icon :icons/logo {:color colors/white :width 20 :height 20}]]
         [react/view {:style {:margin-left 16 :justify-content :flex-start}}
@@ -307,7 +289,7 @@
     [react/view {:style {:margin-left 16 :justify-content :center}}
      [react/text {:style (assoc styles/learn-more-text :color colors/blue)}
       (i18n/label :t/add-to-contacts)]]]
-   [react/view {:style {:margin-top 16 :margin-horizontal 32}}
+   [react/view {:style styles/learn-more-text-container-2}
     [react/text {:style styles/learn-more-text}
      (i18n/label :t/tribute-to-talk-learn-more-3)]]])
 
@@ -320,7 +302,8 @@
      [toolbar/toolbar
       nil
       (when-not (= :finish step)
-        (toolbar/nav-button (actions/back #(step-back step editing?))))
+        (toolbar/nav-button (actions/back #(re-frame/dispatch
+                                            [:tribute-to-talk/step-back step editing?]))))
       [react/view
        [react/text {:style styles/tribute-to-talk}
         (i18n/label :t/tribute-to-talk)]
@@ -335,12 +318,13 @@
           (i18n/label :t/learn-more)])]]
 
      (case step
-       :intro [intro]
-       :set-snt-amount [set-snt-amount]
-       :edit [edit]
-       :learn-more [learn-more]
+       :intro                [intro]
+       :set-snt-amount       [set-snt-amount]
+       :edit                 [edit]
+       :learn-more           [learn-more]
        :personalized-message [personalized-message]
-       :finish [finish])
+       :finish               [finish])
+
      (when-not (#{:learn-more :edit} step)
        [separator]
        [react/view {:style styles/bottom-toolbar}
@@ -348,8 +332,9 @@
                              (or (= "0" snt-amount)
                                  (string/blank? snt-amount)))]
           [components.common/button {:button-style styles/intro-button
-                                     :disabled? disabled?
-                                     :uppercase? false
-                                     :label-style (when disabled? {:color colors/gray})
-                                     :on-press     #(step-forward step editing?)
+                                     :disabled?    disabled?
+                                     :uppercase?   false
+                                     :label-style  (when disabled? {:color colors/gray})
+                                     :on-press     #(re-frame/dispatch
+                                                     [:tribute-to-talk/step-forward step editing?])
                                      :label        (i18n/label (step-forward-label step))}])])]))
