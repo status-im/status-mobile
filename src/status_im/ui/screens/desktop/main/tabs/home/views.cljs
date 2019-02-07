@@ -146,7 +146,7 @@
 (views/defview chat-list-view [loading?]
   (views/letsubs [search-filter       [:search/filter]
                   logging-in?          [:get :accounts/login]
-                  filtered-home-items [:search/filtered-home-items]]
+                  {:keys [all-home-items chats]} [:home-items]]
     {:component-did-mount
      (fn [this]
        (let [[_ loading?] (.. this -props -argv)]
@@ -163,7 +163,7 @@
            [icons/icon :main-icons/add {:style {:tint-color :white}}])]]]]
      [react/scroll-view {:enableArrayScrollingOptimization true}
       [react/view
-       (for [[index chat] (map-indexed vector filtered-home-items)]
+       (for [[index chat] (map-indexed vector (or all-home-items chats))]
          ^{:key (first chat)}
          [chat-list-item chat])]]]))
 
