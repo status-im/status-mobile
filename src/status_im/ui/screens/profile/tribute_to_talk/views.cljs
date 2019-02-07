@@ -25,7 +25,7 @@
             [status-im.utils.platform :as platform]))
 
 (defn separator []
-  [react/view {:style {:height 1 :background-color colors/gray-lighter}}])
+  [react/view {:style styles/separator-style}])
 
 (defn steps-numbers [editing?]
   {:intro                1
@@ -326,7 +326,6 @@
        :finish               [finish])
 
      (when-not (#{:learn-more :edit} step)
-       [separator]
        [react/view {:style styles/bottom-toolbar}
         (let [disabled? (and (= step :set-snt-amount)
                              (or (= "0" snt-amount)

@@ -38,8 +38,10 @@
    :align-items        :center})
 
 (def bottom-toolbar
-  {:height        60
-   :margin-bottom 20})
+  {:height           60
+   :border-top-width 1
+   :border-top-color colors/gray-lighter
+   :margin-bottom    20})
 
 (def step-n
   {:margin-top 5
@@ -248,3 +250,8 @@
    :line-height 22
    :font-weight "500"
    :font-size   15})
+
+(def separator-style
+  {:height           1
+   :background-color colors/gray-lighter
+   :align-self       :stretch})
