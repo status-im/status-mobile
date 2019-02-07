@@ -2,6 +2,7 @@
  status-im.transport.db
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as s]
+            [clojure.set :as sets]
             status-im.contact.db
             [status-im.utils.config :as config]
             [status-im.utils.clocks :as utils.clocks]
@@ -132,4 +133,4 @@
                                              chat-id)
                                         topic))
                                     (get db :transport/chats))))]
-    (= chats filters)))
+    (empty? (sets/difference chats filters))))
