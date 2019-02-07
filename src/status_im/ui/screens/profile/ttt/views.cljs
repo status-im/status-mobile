@@ -105,12 +105,22 @@
           new-snt-amount (if (= numpad-symbol :remove)
                            (let [len (count snt-amount)
                                  s (subs snt-amount 0 (dec len))]
+                             ;; Remove both the digit after the dot and the dot itself
                              (if (string/ends-with? s ".")
                                (subs s 0 (- len 2))
                                s))
                            (cond (and (string/includes? snt-amount ".") (= numpad-symbol "."))
+                                 ;; Disallow two consecutive dots
                                  snt-amount
-                                 (and (= snt-amount "0") (not= numpad-symbol ".")) (str numpad-symbol)
+
+                                 (and (string/includes? snt-amount ".")
+                                      (> (count (second (string/split snt-amount #"\."))) 1))
+                                 ;; Disallow more than 2 digits after the dot
+                                 snt-amount
+
+                                 (and (= snt-amount "0") (not= numpad-symbol "."))
+                                 ;; Replace initial "0" by the first digit
+                                 (str numpad-symbol)
                                  :else (str snt-amount numpad-symbol)))
           new-snt-amount (if (string/blank? new-snt-amount) "0" new-snt-amount)]
       [react/touchable-opacity
@@ -139,8 +149,8 @@
 
 (defview set-snt-amount []
   (letsubs [snt-amount [:get-in [:my-profile/tribute-to-talk :snt-amount]]]
-    [react/view {:style (assoc styles/intro-container :justify-content :flex-start
-                               :align-items :stretch)}
+    [react/scroll-view {:content-container-style (assoc styles/intro-container :justify-content :flex-start
+                                                        :align-items :stretch)}
      [snt-amount-label]
      [react/view {:style {:flex 1}}
       [number-pad]
@@ -148,10 +158,9 @@
                         :key   :tribute-to-talk-set-snt-amount}]]]))
 
 (defview personalized-message []
-  (letsubs [{:keys [message]} [:my-profile/tribute-to-talk]
-            editing?          [:get :my-profile/editing?]]
-    [react/view {:style (assoc styles/intro-container :margin-horizontal 16
-                               :justify-content :flex-start)}
+  (letsubs [{:keys [message]} [:my-profile/tribute-to-talk]]
+    [react/scroll-view {:content-container-style (assoc styles/intro-container :margin-horizontal 16
+                                                        :justify-content :flex-start)}
      [react/view {:style {:margin-top 24
                           :margin-bottom 10
                           :align-self :flex-start}}
@@ -179,7 +188,7 @@
       [react/view {:style (styles/finish-circle (if amount
                                                   colors/green-transparent-10
                                                   colors/gray-lighter) 80)}
-       [react/view {:style (assoc (styles/finish-circle colors/white 40) 
+       [react/view {:style (assoc (styles/finish-circle colors/white 40)
                                   :elevation 5
                                   :shadow-offset {:width 0 :height 2}
                                   :shadow-radius 4
@@ -205,8 +214,8 @@
 
 (defview edit []
   (letsubs [{:keys [snt-amount message]} [:my-profile/tribute-to-talk]]
-    [react/view {:style (assoc styles/intro-container
-                               :margin-horizontal 0)}
+    [react/scroll-view {:content-container-style (assoc styles/intro-container
+                                                        :margin-horizontal 0)}
      [react/view #_{:style {:flex 1}}
       [react/view {:style styles/edit-screen-top-row}
        [react/view {:style {:flex-direction :row
@@ -224,12 +233,13 @@
                             :align-items :center}}
         [react/text {:on-press #(do
                                   (re-frame/dispatch [:set-in [:my-profile/tribute-to-talk :step] :set-snt-amount])
-                                  (re-frame/dispatch [:set :my-profile/editing? true]))
+                                  (re-frame/dispatch [:set-in [:my-profile/tribute-to-talk :editing?] true]))
                      :style styles/edit-label}
          (i18n/label :t/edit)]]]
       [react/text-input {:style styles/edit-view-message
                          :multiline true
                          :editable false
+                         :placeholder ""
                          :default-value message}]
       [separator]
       [react/text {:style {:font-size 15
@@ -318,7 +328,7 @@
 (defview tribute-to-talk []
   (letsubs [current-account [:account/account]
             {:keys [step snt-amount]} [:my-profile/tribute-to-talk]
-            editing? [:get :my-profile/editing?]]
+            editing? [:get-in [:my-profile/tribute-to-talk :editing?]]]
     [react/keyboard-avoiding-view {:style styles/ttt-container}
      [status-bar/status-bar]
      [toolbar/toolbar
