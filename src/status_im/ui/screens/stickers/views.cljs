@@ -55,12 +55,11 @@
      [status-bar/status-bar]
      [react/keyboard-avoiding-view components.styles/flex
       [toolbar/simple-toolbar (i18n/label :t/sticker-market)]
-      [react/view {:style {:padding-top 8 :flex 1}}
-       [react/scroll-view {:keyboard-should-persist-taps :handled :style {:flex 1 :padding 16}}
-        [react/view
-         (for [pack packs]
-           ^{:key pack}
-           [pack-badge pack])]]]]]))
+      [react/scroll-view {:keyboard-should-persist-taps :handled :style {:padding 16}}
+       [react/view
+        (for [pack packs]
+          ^{:key pack}
+          [pack-badge pack])]]]]))
 
 (def sticker-icon-size 60)
 

@@ -272,7 +272,8 @@
 (defn chat-message [{:keys [message-id old-message-id outgoing group-chat modal? current-public-key content-type content] :as message}]
   [react/view
    [react/touchable-highlight {:on-press      (fn [_]
-                                                (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true}])
+                                                (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
+                                                                                                :show-stickers? false}])
                                                 (react/dismiss-keyboard!))
                                :on-long-press #(when (= content-type constants/content-type-text)
                                                  (list-selection/chat-message message-id old-message-id (:text content) (i18n/label :t/message)))}

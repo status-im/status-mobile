@@ -12,7 +12,7 @@
   [react/touchable-highlight
    {:on-press (fn [_]
                 (re-frame/dispatch [:chat.ui/set-chat-ui-props {:show-stickers? (not show-stickers?)}])
-                (react/dismiss-keyboard!))}
+                (js/setTimeout #(react/dismiss-keyboard!) 100))}
    [vector-icons/icon :main-icons/stickers {:container-style {:margin 14 :margin-right 6}
                                             :color           (if show-stickers? colors/blue colors/gray)}]])
 
@@ -27,18 +27,13 @@
      [react/text {:style {:font-size 15 :color colors/blue}}
       (i18n/label :t/get-stickers)]]]])
 
-(defn- on-sticker-click [sticker]
-  (re-frame/dispatch [:chat.ui/set-chat-ui-props {:show-stickers? false}])
-  (re-frame/dispatch [:chat/send-sticker sticker])
-  (react/dismiss-keyboard!))
-
 (defn- stickers-panel [stickers]
   [react/scroll-view {:style {:flex 1} :condtent-container-style {:flex 1}}
    [react/view {:style styles/stickers-panel}
     (for [{:keys [uri] :as sticker} stickers]
       ^{:key uri}
       [react/touchable-highlight {:style    {:height 75 :width 75 :margin 5}
-                                  :on-press #(on-sticker-click sticker)}
+                                  :on-press #(re-frame/dispatch [:chat/send-sticker sticker])}
        [react/image {:style {:resize-mode :cover :width "100%" :height "100%"} :source {:uri uri}}]])]])
 
 (defview recent-stickers-panel []
@@ -52,8 +47,7 @@
 (def icon-size 28)
 
 (defn pack-icon [{:keys [id on-press selected? background-color]
-                  :or   {background-color colors/gray
-                         on-press         #(re-frame/dispatch [:stickers/select-pack id])}} icon]
+                  :or   {on-press         #(re-frame/dispatch [:stickers/select-pack id])}} icon]
   [react/touchable-highlight {:on-press on-press}
    [react/view {:style {:align-items :center}}
     [react/view {:style (styles/pack-icon background-color icon-size)}
@@ -75,10 +69,16 @@
 (defview stickers-view []
   (letsubs [selected-pack   [:stickers/selected-pack]
             installed-packs [:stickers/installed-packs-vals]
+            input-focused?   [:chats/current-chat-ui-prop :input-focused?]
             bottom-anim-value  (anim/create-value 0)
             alpha-value        (anim/create-value 0)]
-    {:component-will-mount #(show-panel-anim bottom-anim-value alpha-value)}
-    [react/animated-view {:style {:background-color :white :height bottom-anim-value :opacity alpha-value}}
+    {:component-will-mount #(if (not input-focused?)
+                              (show-panel-anim bottom-anim-value alpha-value)
+                              (do
+                                (anim/set-value bottom-anim-value (styles/stickers-panel-height))
+                                (anim/set-value alpha-value 1)))}
+    [react/animated-view {:style {:background-color :white :height (if input-focused? 0 bottom-anim-value)
+                                  :opacity alpha-value}}
      (cond
        (= selected-pack :recent) [recent-stickers-panel]
        (not (seq installed-packs)) [no-stickers-yet-panel]
@@ -90,10 +90,11 @@
                                (re-frame/dispatch [:navigate-to :stickers]))
                   :selected? false :background-color colors/blue}
        [vector-icons/icon :main-icons/add {:width 20 :height 20 :color colors/white}]]
-      [react/view {:width 4}]
-      [pack-icon {:id :recent :selected? (or (= :recent selected-pack) (and (nil? selected-pack) (seq installed-packs)))}
-       [vector-icons/icon :stickers-icons/recent]]
-      [react/scroll-view {:horizontal true}
+      [react/view {:width 2}]
+      [react/scroll-view {:horizontal true :style {:padding-left 2}}
+       [pack-icon {:id :recent :selected? (or (= :recent selected-pack) (and (nil? selected-pack) (seq installed-packs)))
+                   :background-color colors/white}
+        [vector-icons/icon :stickers-icons/recent {:color colors/gray}]]
        (for [{:keys [id thumbnail]} installed-packs]
          ^{:key id}
          [pack-icon {:id id :selected? (= id selected-pack)}

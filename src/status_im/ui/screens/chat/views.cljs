@@ -102,7 +102,8 @@
       :preview [react/view style/message-view-preview]}
      [react/touchable-without-feedback
       {:on-press (fn [_]
-                   (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true}])
+                   (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
+                                                                   :show-stickers? false}])
                    (react/dismiss-keyboard!))}
       [react/animated-view {:style (style/message-view-animated opacity)}
        message-view]]]))
