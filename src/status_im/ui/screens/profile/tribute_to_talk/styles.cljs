@@ -54,7 +54,7 @@
    :letter-spacing -0.2
    :text-align     :center})
 
-(def ttt-container
+(def container
   (merge
    common.styles/flex
    {:background-color colors/white}))
