@@ -165,12 +165,15 @@
     (utils/show-popup (i18n/label :t/error)
                       (i18n/label :t/photos-access-error))))
 
-(defn show-image-picker [images-fn]
-  (let [image-picker (.-default image-picker-class)]
-    (-> image-picker
-        (.openPicker (clj->js {:multiple false}))
-        (.then images-fn)
-        (.catch show-access-error))))
+(defn show-image-picker
+  ([images-fn]
+   (show-image-picker images-fn nil))
+  ([images-fn media-type]
+   (let [image-picker (.-default image-picker-class)]
+     (-> image-picker
+         (.openPicker (clj->js {:multiple false :mediaType (or media-type "any")}))
+         (.then images-fn)
+         (.catch show-access-error)))))
 
 ;; Clipboard
 

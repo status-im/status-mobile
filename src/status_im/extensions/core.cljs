@@ -20,6 +20,7 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.fx :as fx]
             status-im.extensions.ethereum
+            status-im.extensions.camera
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.chat.commands.sending :as commands-sending]))
@@ -464,6 +465,16 @@
                  :arguments   {:values    :vector
                                :operation {:one-of #{:plus :minus :times :divide}}
                                :on-result :event}}
+                'camera/picture
+                {:permissions [:read]
+                 :value       :extensions/camera-picture
+                 :arguments   {:on-success  :event
+                               :on-failure? :event}}
+                'camera/qr-code
+                {:permissions [:read]
+                 :value       :extensions/camera-qr-code
+                 :arguments   {:on-success  :event
+                               :on-failure? :event}}
                 'schedule/start
                 {:permissions [:read]
                  :value       :extensions/schedule-start

@@ -18,7 +18,7 @@
                      (on-error :base64 error))]
     (read-file path "base64" on-success on-error)))
 
-(defn img->base64 [path on-success on-error]
+(defn img->base64 [path on-success on-error max-width max-height]
   (let [on-resized (fn [image]
                      (let [path (object/get image "path")]
                        (log/debug "Resized: " path)
@@ -26,4 +26,4 @@
         on-error   (fn [error]
                      (log/debug "Resized error: " error)
                      (on-error :resize error))]
-    (resize path 150 150 on-resized on-error)))
+    (resize path max-width max-height on-resized on-error)))

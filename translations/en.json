@@ -920,6 +920,7 @@
     "mailserver-error-content": "The mailserver you selected couldn't be reached.",
     "dapps-permissions": "Dapps permissions",
     "revoke-access": "Revoke access",
+    "extensions-camera-send-picture": "Send picture",
     "mobile-syncing-sheet-title": "Sync using the mobile network",
     "mobile-syncing-sheet-details": "Status tends to use a lot of data when syncing chats. You can choose not to sync when on mobile network",
     "mobile-network-continue-syncing": "Continue syncing",

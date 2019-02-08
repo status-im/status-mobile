@@ -19,7 +19,8 @@
                         (re-frame/dispatch [callback-event base64]))
            on-error (fn [type error]
                       (.log js/console type error))]
-       (image-processing/img->base64 path on-success on-error)))))
+       (image-processing/img->base64 path on-success on-error 150 150)))
+   "photo"))
 
 (defn send-transaction [chat-id {:keys [db] :as cofx}]
   (let [send-command (get-in db [:id->command ["send" #{:personal-chats}]])]

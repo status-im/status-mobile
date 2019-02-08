@@ -3,11 +3,13 @@
             [status-im.utils.core :as utils]
             [status-im.react-native.js-dependencies :as js-dependencies]))
 
-(defn- callback [options]
+(defn- callback [options on-cancel]
   (fn [index]
-    (when (< index (count options))
+    (if (< index (count options))
       (when-let [handler (:action (nth options index))]
-        (handler)))))
+        (handler))
+      (when on-cancel
+        (on-cancel)))))
 
 (defn- prepare-options [title message options]
   (let [destructive-opt-index (utils/first-index :destructive? options)] ;; TODO Can only be a single destructive?
@@ -18,7 +20,7 @@
                     (when title {:title title})
                     (when message {:message message})))))
 
-(defn show [{:keys [title message options]}]
+(defn show [{:keys [title message options on-cancel]}]
   (.showActionSheetWithOptions (.-ActionSheetIOS js-dependencies/react-native)
                                (prepare-options title message options)
-                               (callback options)))
+                               (callback options on-cancel)))

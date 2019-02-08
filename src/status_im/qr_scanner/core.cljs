@@ -5,16 +5,18 @@
             [status-im.utils.fx :as fx]))
 
 (fx/defn scan-qr-code
-  [{:keys [db]} {:keys [modal?] :as identifier} qr-codes]
+  [{:keys [db]} {:keys [modal? deny-handler] :as identifier} qr-codes]
   {:db                     (assoc db :qr-codes qr-codes)
    :request-permissions-fx {:permissions [:camera]
                             :on-allowed  #(re-frame/dispatch [(if modal? :navigate-to-modal :navigate-to)
                                                               :qr-scanner {:current-qr-context identifier}])
-                            :on-denied   (fn []
-                                           (utils/set-timeout
-                                            #(utils/show-popup (i18n/label :t/error)
-                                                               (i18n/label :t/camera-access-error))
-                                            50))}})
+                            :on-denied   (if (nil? deny-handler)
+                                           (fn []
+                                             (utils/set-timeout
+                                              #(utils/show-popup (i18n/label :t/error)
+                                                                 (i18n/label :t/camera-access-error))
+                                              50))
+                                           #(re-frame/dispatch [deny-handler qr-codes]))}})
 
 (fx/defn set-qr-code
   [{:keys [db]} context data]
