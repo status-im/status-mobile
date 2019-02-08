@@ -115,7 +115,8 @@
    :color       colors/black})
 
 (def bottom-container
-  {:height           60
+  {:height           52
+   :width            "100%"
    :justify-content  :center
    :align-items      :center
    :border-top-width 1
@@ -128,8 +129,7 @@
    :flex-direction   :row
    :width            160
    :height           44
-   :border-radius    10
-   :margin-bottom    14})
+   :border-radius    10})
 
 (def begin-button-container
   {:background-color colors/gray-background
@@ -143,8 +143,7 @@
 
 (def bottom-button-text
   {:font-size      15
-   :color          colors/blue
-   :line-height    20})
+   :color          colors/blue})
 
 (def next-button-container
   {:flex-direction   :row
@@ -313,9 +312,11 @@
    :color      colors/black})
 
 (def enter-pair-code-explanation-text
-  {:font-size   15
-   :padding-top 5
-   :color       colors/gray})
+  {:font-size          15
+   :padding-top        5
+   :text-align         :center
+   :padding-horizontal 60
+   :color              colors/gray})
 
 (def card-is-empty-text
   {:color         colors/black

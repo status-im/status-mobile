@@ -7,9 +7,14 @@
    (get-in db [:hardwallet :setup-step])))
 
 (re-frame/reg-sub
+ :hardwallet-card-state
+ (fn [db]
+   (get-in db [:hardwallet :card-state])))
+
+(re-frame/reg-sub
  :hardwallet-pair-code
  (fn [db]
-   (get-in db [:hardwallet :pair-code])))
+   (get-in db [:hardwallet :secrets :password])))
 
 (re-frame/reg-sub
  :hardwallet-recovery-phrase-word

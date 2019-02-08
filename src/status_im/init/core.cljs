@@ -91,22 +91,20 @@
                  push-notifications/stored network/type]
      :node/keys [status]
      :or        {network (get app-db :network)}} :db}]
-  ;TODO remove retrieve-pairing when keycard login will be ready
-  {:hardwallet/retrieve-pairing nil
-   :db                          (assoc app-db
-                                       :contacts/contacts {}
-                                       :initial-props initial-props
-                                       :desktop/desktop (merge desktop (:desktop/desktop app-db))
-                                       :network-status network-status
-                                       :peers-count (or peers-count 0)
-                                       :peers-summary (or peers-summary [])
-                                       :node/status status
-                                       :network network
-                                       :network/type type
-                                       :hardwallet hardwallet
-                                       :device-UUID device-UUID
-                                       :view-id view-id
-                                       :push-notifications/stored stored)})
+  {:db (assoc app-db
+              :contacts/contacts {}
+              :initial-props initial-props
+              :desktop/desktop (merge desktop (:desktop/desktop app-db))
+              :network-status network-status
+              :peers-count (or peers-count 0)
+              :peers-summary (or peers-summary [])
+              :node/status status
+              :network network
+              :network/type type
+              :hardwallet hardwallet
+              :device-UUID device-UUID
+              :view-id view-id
+              :push-notifications/stored stored)})
 
 (fx/defn initialize-app
   [cofx encryption-key]

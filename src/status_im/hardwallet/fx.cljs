@@ -26,6 +26,10 @@
  card/install-applet-and-init-card)
 
 (re-frame/reg-fx
+ :hardwallet/init-card
+ card/init-card)
+
+(re-frame/reg-fx
  :hardwallet/register-card-events
  card/register-card-events)
 
@@ -72,37 +76,6 @@
 (re-frame/reg-fx
  :hardwallet/get-keys
  card/get-keys)
-
-;TODO remove when keycard login will be ready
-(re-frame/reg-fx
- :hardwallet/persist-pairing
- (fn [pairing]
-   (.. js-dependencies/react-native
-       -AsyncStorage
-       (setItem "status-keycard-pairing"
-                (js/JSON.stringify
-                 #js {"pairing"   pairing
-                      "paired-on" (utils.datetime/timestamp)})))))
-
-;TODO remove when keycard login will be ready
-(re-frame/reg-fx
- :hardwallet/retrieve-pairing
- (fn []
-   (.. js-dependencies/react-native
-       -AsyncStorage
-       (getItem "status-keycard-pairing")
-       (then #(re-frame/dispatch [:hardwallet.callback/on-retrieve-pairing-success
-                                  (-> %
-                                      (js/JSON.parse)
-                                      (js->clj :keywordize-keys true))])))))
-
-;TODO remove when keycard login will be ready
-(re-frame/reg-fx
- :hardwallet/remove-pairing
- (fn []
-   (.. js-dependencies/react-native
-       -AsyncStorage
-       (removeItem "status-keycard-pairing"))))
 
 (re-frame/reg-fx
  :hardwallet/login-with-keycard

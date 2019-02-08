@@ -187,7 +187,7 @@
          :forward?   true}]]]]))
 
 (defn- card-with-button-view
-  [{:keys [text-label button-label button-container-style on-press]}]
+  [{:keys [text-label button-label button-container-style on-press show-icon?]}]
   "Generic view with centered card image and button at the bottom.
   Used by 'Prepare', 'Pair', 'No slots', 'Card is linked' screens"
   [react/view styles/card-with-button-view-container
@@ -195,13 +195,17 @@
     [react/image {:source (:hardwallet-card resources/ui)
                   :style  styles/hardwallet-card-image}]
     [react/view styles/center-text-container
-     [react/text {:style styles/center-text}
+     [react/text {:style (assoc styles/center-text :padding-horizontal 60)}
       (i18n/label text-label)]]]
-   [react/touchable-highlight
-    {:on-press on-press}
-    [react/view (merge styles/bottom-button-container button-container-style)
-     [react/text {:style styles/bottom-button-text}
-      (i18n/label button-label)]]]])
+   [react/view styles/bottom-container
+    [react/touchable-highlight
+     {:on-press on-press}
+     [react/view (merge styles/bottom-button-container button-container-style)
+      [react/text {:style styles/bottom-button-text}
+       (i18n/label button-label)]
+      (when show-icon?
+        [vector-icons/icon :icons/link {:color           colors/blue
+                                        :container-style {:margin-left 5}}])]]]])
 
 (defn begin []
   [react/view styles/card-blank-container
@@ -219,10 +223,11 @@
      [react/text {:style styles/remaining-steps-text}
       (i18n/label :t/remaining-steps)]
      [react/view {:margin-bottom 25}
-      (for [[number text] [["1" (i18n/label :t/initialization-of-the-card)]
-                           ["2" (i18n/label :t/puk-and-pairing-codes-displayed)]
-                           ["3" (i18n/label :t/device-pairing)]
-                           ["4" (i18n/label :t/recovery-phrase)]]]
+      (for [[number text] [["1" (i18n/label :t/create-pin)]
+                           ["2" (i18n/label :t/initialization-of-the-card)]
+                           ["3" (i18n/label :t/puk-and-pairing-codes-displayed)]
+                           ["4" (i18n/label :t/device-pairing)]
+                           ["5" (i18n/label :t/recovery-phrase)]]]
         ^{:key number} [react/view styles/remaining-step-row
                         [react/view styles/remaining-step-row-text
                          [react/text {:style {:color colors/black}}
@@ -238,21 +243,23 @@
         (i18n/label :t/begin-set-up)]]]]]])
 
 (defn pair []
-  [card-with-button-view {:text-label     :t/pair-card-question
-                          :button-label   :t/pair-card
-                          :on-press-event #(re-frame/dispatch [:hardwallet.ui/pair-card-button-pressed])}])
+  [card-with-button-view {:text-label   :t/pair-card-question
+                          :button-label :t/pair-card
+                          :on-press     #(re-frame/dispatch [:hardwallet.ui/pair-card-button-pressed])}])
 
 (defn no-slots []
   [card-with-button-view {:text-label             :t/no-pairing-slots-available
-                          :button-label           :t/help
+                          :button-label           :t/help-capitalized
+                          :show-icon?             true
                           :button-container-style {:background-color colors/white}
-                          :on-press-event         (.openURL react/linking "https://hardwallet.status.im")}])
+                          :on-press               #(.openURL react/linking "https://hardwallet.status.im")}])
 
 (defn card-already-linked []
   [card-with-button-view {:text-label             :t/card-already-linked
-                          :button-label           :t/help
+                          :button-label           :t/help-capitalized
+                          :show-icon?             true
                           :button-container-style {:background-color colors/white}
-                          :on-press-event         (.openURL react/linking "https://hardwallet.status.im")}])
+                          :on-press               #(.openURL react/linking "https://hardwallet.status.im")}])
 
 (defview error []
   (letsubs [error [:hardwallet-setup-error]]
@@ -263,15 +270,20 @@
       [react/view styles/center-text-container
        [react/text {:style styles/center-text}
         (i18n/label :t/something-went-wrong)]
-       [react/text {:style styles/center-text}
-        (str (:code error) "\n" (:error error))]]]
-     [react/touchable-highlight
-      {:on-press #(re-frame/dispatch [:hardwallet.ui/error-button-pressed])}
-      [react/view styles/bottom-button-container
-       [react/text {:style      styles/bottom-button-text
-                    :font       :medium
-                    :uppercase? false}
-        (i18n/label :t/try-again)]]]]))
+       [react/view {:padding-horizontal 20
+                    :margin-top         20}
+        [react/text {:style styles/center-text}
+         (if (map? error)
+           (str (:code error) "\n" (:error error))
+           (str error))]]]]
+     [react/view styles/bottom-container
+      [react/touchable-highlight
+       {:on-press #(re-frame/dispatch [:hardwallet.ui/error-button-pressed])}
+       [react/view styles/bottom-button-container
+        [react/text {:style      styles/bottom-button-text
+                     :font       :medium
+                     :uppercase? false}
+         (i18n/label :t/try-again)]]]]]))
 
 (defn- loading-view [{:keys [title-label text-label estimated-time-seconds step-number]}]
   "Generic view with waiting time estimate and loading indicator.
@@ -293,7 +305,8 @@
 
 (defview preparing []
   (letsubs [progress-bar (atom nil)
-            listener (atom nil)]
+            listener (atom nil)
+            card-state [:hardwallet-card-state]]
     {:component-will-mount (fn []
                              (when @listener
                                (.removeListener @listener)))
@@ -315,10 +328,13 @@
       [react/text {:style styles/estimated-time-text}
        (i18n/label :t/taking-long-hold-phone-connected)]]
      [react/view styles/progress-bar-container
-      [react/progress-bar {:styleAttr     "Horizontal"
-                           :indeterminate false
-                           :progress      0
-                           :ref           #(reset! progress-bar %)}]]]))
+      (if (contains? #{:blank :init} card-state)
+        [react/progress-bar {:styleAttr     "Horizontal"
+                             :indeterminate false
+                             :progress      0
+                             :ref           #(reset! progress-bar %)}]
+        [react/activity-indicator {:animating true
+                                   :size      :large}])]]))
 
 (defn- generating-mnemonic []
   [react/view styles/loading-view-container
@@ -378,7 +394,7 @@
     :no-slots [no-slots]
     :card-already-linked [card-already-linked]
     :pairing [pairing]
-    :pin [pin.views/enter-pin]
+    :pin [pin.views/create-pin]
     :recovery-phrase [recovery-phrase]
     :recovery-phrase-confirm-word1 [recovery-phrase-confirm-word step]
     :recovery-phrase-confirm-word2 [recovery-phrase-confirm-word step]
