@@ -11,7 +11,7 @@
   (when-not (string/blank? name)
     [react/view (:default-chat-icon styles)
      [react/text {:style (:default-chat-icon-text styles)}
-      (string/capitalize (first name))]]))
+      (string/capitalize (second name))]]))
 
 (defn dapp-badge [{:keys [online-view-wrapper online-view online-dot-left online-dot-right]}]
   [react/view online-view-wrapper
