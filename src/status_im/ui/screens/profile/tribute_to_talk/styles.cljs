@@ -181,6 +181,18 @@
   {:flex-grow       1
    :justify-content :flex-start})
 
+(def learn-more-link
+  {:height             52
+   :padding-horizontal 32
+   :margin-bottom      16
+   :align-items        :center
+   :justify-content    :center})
+
+(def learn-more-link-text
+  {:font-size   15
+   :line-height 21
+   :color       colors/blue})
+
 (def learn-more-image
   {:width           120
    :height          110

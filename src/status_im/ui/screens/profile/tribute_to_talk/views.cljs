@@ -48,12 +48,8 @@
                       :key   :tribute-to-talk}]
     [react/i18n-text {:style (assoc styles/description-label :margin-top 12)
                       :key   :tribute-to-talk-desc}]
-    [react/view {:style {:height 52
-                         :padding-horizontal 32
-                         :margin-bottom 16
-                         :align-items :center
-                         :justify-content :center}}
-     [react/text {:style  {:font-size 15 :line-height 21 :color colors/blue}
+    [react/view {:style styles/learn-more-link}
+     [react/text {:style styles/learn-more-link-text
                   :on-press #(re-frame/dispatch [:set-in [:my-profile/tribute-to-talk :step] :learn-more])}
       (i18n/label :t/learn-more)]]]])
 
