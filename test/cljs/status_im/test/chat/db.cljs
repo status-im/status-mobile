@@ -127,6 +127,5 @@
                        2 active-chat-2
                        3 {:is-active false :chat-id 3}}]
     (testing "it returns only chats with is-active"
-      (is (= {1 active-chat-1
-              2 active-chat-2}
-             (s/active-chats {} chats {}))))))
+      (is (= #{1 2}
+             (set (keys (s/active-chats {} chats {}))))))))

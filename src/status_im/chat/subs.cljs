@@ -59,27 +59,6 @@
    (get chat-ui-props id)))
 
 (re-frame/reg-sub
- :chats/current-chat-contact
- :<- [:contacts/contacts]
- :<- [:chats/current-chat-id]
- (fn [[contacts chat-id]]
-   (get contacts chat-id)))
-
-(re-frame/reg-sub
- :chats/current-chat-name
- :<- [:chats/current-chat-contact]
- :<- [:chats/current-chat]
- (fn [[contact chat]]
-   (chat.db/chat-name chat contact)))
-
-(re-frame/reg-sub
- :chats/chat-name
- :<- [:contacts/contacts]
- :<- [::chats]
- (fn [[contacts chats] [_ chat-id]]
-   (chat.db/chat-name (get chats chat-id) (get contacts chat-id))))
-
-(re-frame/reg-sub
  :chats/current-chat-ui-prop
  :<- [:chats/current-chat-ui-props]
  (fn [ui-props [_ prop]]

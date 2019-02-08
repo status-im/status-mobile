@@ -58,12 +58,10 @@
               (i18n/label-pluralize cnt :t/members-active))))]])))
 
 (defview toolbar-content-view []
-  (letsubs [{:keys [group-chat color online contacts
+  (letsubs [{:keys [group-chat color online contacts chat-name
                     public? chat-id] :as chat}    [:chats/current-chat]
-            chat-name                             [:chats/current-chat-name]
             show-actions?                         [:chats/current-chat-ui-prop :show-actions?]
             accounts                              [:accounts/accounts]
-            contact                               [:chats/current-chat-contact]
             sync-state                            [:sync-state]]
     (let [has-subtitle? (or group-chat (not= :done sync-state))]
       [react/view {:style st/toolbar-container}

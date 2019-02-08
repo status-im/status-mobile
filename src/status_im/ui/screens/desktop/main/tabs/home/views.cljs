@@ -19,15 +19,15 @@
             [status-im.ui.components.action-button.action-button :as action-button]
             [status-im.utils.config :as config]))
 
-(views/defview chat-list-item-inner-view [{:keys [chat-id name group-chat
-                                                  color public? public-key
-                                                  timestamp
-                                                  last-message-content
-                                                  last-message-content-type]
-                                           :as chat-item}]
+(views/defview chat-list-item-inner-view
+  [{:keys [chat-id name group-chat
+           color public? public-key
+           timestamp chat-name
+           last-message-content
+           last-message-content-type]
+    :as chat-item}]
   (views/letsubs [photo-path              [:contacts/chat-photo chat-id]
                   unviewed-messages-count [:chats/unviewed-messages-count chat-id]
-                  chat-name               [:chats/chat-name chat-id]
                   current-chat-id         [:chats/current-chat-id]]
     (let [last-message {:content      last-message-content
                         :timestamp    timestamp

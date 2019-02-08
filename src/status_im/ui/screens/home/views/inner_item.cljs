@@ -92,27 +92,28 @@
                    :accessibility-label :chat-name-text}
        chat-name]]]))
 
-(defview home-list-chat-item-inner-view [{:keys [chat-id name color online
-                                                 group-chat public?
-                                                 public-key
-                                                 timestamp
-                                                 last-message-content
-                                                 last-message-content-type]}]
-  (letsubs [chat-name    [:chats/chat-name chat-id]]
-    (let [truncated-chat-name (utils/truncate-str chat-name 30)]
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])}
-       [react/view styles/chat-container
-        [react/view styles/chat-icon-container
-         [chat-icon.screen/chat-icon-view-chat-list chat-id group-chat truncated-chat-name color online false]]
-        [react/view styles/chat-info-container
-         [react/view styles/item-upper-container
-          [chat-list-item-name truncated-chat-name group-chat public? public-key]
-          [react/view styles/message-status-container
-           [message-timestamp timestamp]]]
-         [react/view styles/item-lower-container
-          [message-content-text {:content      last-message-content
-                                 :content-type last-message-content-type}]
-          [unviewed-indicator chat-id]]]]])))
+(defn home-list-chat-item-inner-view
+  [{:keys [chat-id chat-name
+           name color online
+           group-chat public?
+           public-key
+           timestamp
+           last-message-content
+           last-message-content-type]}]
+  (let [truncated-chat-name (utils/truncate-str chat-name 30)]
+    [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])}
+     [react/view styles/chat-container
+      [react/view styles/chat-icon-container
+       [chat-icon.screen/chat-icon-view-chat-list chat-id group-chat truncated-chat-name color online false]]
+      [react/view styles/chat-info-container
+       [react/view styles/item-upper-container
+        [chat-list-item-name truncated-chat-name group-chat public? public-key]
+        [react/view styles/message-status-container
+         [message-timestamp timestamp]]]
+       [react/view styles/item-lower-container
+        [message-content-text {:content      last-message-content
+                               :content-type last-message-content-type}]
+        [unviewed-indicator chat-id]]]]]))
 
 (defn home-list-browser-item-inner-view [{:keys [dapp url name browser-id] :as browser}]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/browser-item-selected browser-id])}

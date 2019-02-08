@@ -1,29 +1,25 @@
 (ns status-im.group-chats.core
   (:refer-clojure :exclude [remove])
-  (:require [clojure.string :as string]
+  (:require [clojure.set :as clojure.set]
             [clojure.spec.alpha :as spec]
-            [clojure.set :as clojure.set]
+            [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
-            [status-im.constants :as constants]
-            [status-im.utils.config :as config]
-            [status-im.utils.clocks :as utils.clocks]
+            [status-im.accounts.db :as accounts.db]
+            [status-im.chat.models :as models.chat]
             [status-im.chat.models.message :as models.message]
             [status-im.contact.core :as models.contact]
             [status-im.contact-code.core :as contact-code]
+            [status-im.group-chats.db :as group-chats.db]
+            [status-im.i18n :as i18n]
             [status-im.native-module.core :as native-module]
-            [status-im.transport.utils :as transport.utils]
-            [status-im.transport.db :as transport.db]
-            [status-im.transport.utils :as transport.utils]
-            [status-im.transport.message.protocol :as protocol]
+            [status-im.transport.chat.core :as transport.chat]
             [status-im.transport.message.group-chat :as message.group-chat]
+            [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.public-chat :as transport.public-chat]
             [status-im.transport.partitioned-topic :as transport.topic]
-            [status-im.transport.chat.core :as transport.chat]
-            [status-im.utils.fx :as fx]
-            [status-im.chat.models :as models.chat]
-            [status-im.accounts.db :as accounts.db]
-            [status-im.transport.message.transit :as transit]))
+            [status-im.utils.clocks :as utils.clocks]
+            [status-im.utils.config :as config]
+            [status-im.utils.fx :as fx]))
 
 ;; Description of the flow:
 ;; the flow is complicated a bit by 2 asynchronous call to status-go, which might make the logic a bit more opaque.
@@ -63,19 +59,8 @@
        first
        :from))
 
-(defn joined-event? [public-key {:keys [members-joined] :as chat}]
-  (contains? members-joined public-key))
-
-(defn joined? [public-key {:keys [group-chat-local-version] :as chat}]
-  ;; We consider group chats with local version of 0 as joined for local events
-  (or (zero? group-chat-local-version)
-      (joined-event? public-key chat)))
-
 (defn creator? [public-key chat]
   (= public-key (extract-creator chat)))
-
-(defn invited? [my-public-key {:keys [contacts]}]
-  (contains? contacts my-public-key))
 
 (defn signature-material
   "Transform an update into a signable string"
@@ -145,7 +130,7 @@
          destinations (map (fn [member]
                              (if (and
                                   config/group-chats-publish-to-topic?
-                                  (joined-event? member chat)
+                                  (group-chats.db/joined-event? member chat)
                                   (not= creator member)
                                   (not= current-public-key member))
                                {:public-key member
@@ -467,23 +452,6 @@
            (membership-changes->system-messages cofx clock-values)
            (models.message/add-system-messages cofx)))))
 
-(defn- unwrap-events
-  "Flatten all events, denormalizing from field"
-  [all-updates]
-  (mapcat
-   (fn [{:keys [events from]}]
-     (map #(assoc % :from from) events))
-   all-updates))
-
-(defn get-inviter-pk [my-public-key {:keys [membership-updates]}]
-  (->> membership-updates
-       unwrap-events
-       (keep (fn [{:keys [from type members]}]
-               (when (and (= type "members-added")
-                          (contains? members my-public-key))
-                 from)))
-       last))
-
 (fx/defn set-up-topic
   "Listen/Tear down the shared topic/contact-codes. Stop listening for members who
   have left the chat"
@@ -491,8 +459,8 @@
   (let [my-public-key (accounts.db/current-public-key cofx)
         new-chat (get-in cofx [:db :chats chat-id])]
     ;; If we left the chat, teardown, otherwise upsert
-    (if (and (joined? my-public-key previous-chat)
-             (not (joined? my-public-key new-chat)))
+    (if (and (group-chats.db/joined? my-public-key previous-chat)
+             (not (group-chats.db/joined? my-public-key new-chat)))
       (apply fx/merge
              cofx
              (conj
@@ -524,7 +492,7 @@
             all-updates (clojure.set/union (set (:membership-updates previous-chat))
                                            (set (:membership-updates membership-update)))
             my-public-key (accounts.db/current-public-key cofx)
-            unwrapped-events (unwrap-events all-updates)
+            unwrapped-events (group-chats.db/unwrap-events all-updates)
             new-group (build-group unwrapped-events)
             member? (contains? (:contacts new-group) my-public-key)]
         (fx/merge cofx
