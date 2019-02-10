@@ -8,14 +8,14 @@
             [status-im.transport.utils :as transport.utils]
             [day8.re-frame.test :refer-macros [run-test-async run-test-sync] :as rf-test]
             [status-im.test.protocol.node :as node]
-            [status-im.transport.message.v1.contact :as transport.contact]
+            [status-im.transport.message.contact :as transport.contact]
             [status-im.test.protocol.utils :as utils]))
 
 ;; NOTE(oskarth): All these tests are evaluated in NodeJS
 
 (nodejs/enable-util-print!)
 
-(def contact-whisper-identity "0x048f7d5d4bda298447bbb5b021a34832509bd1a8dbe4e06f9b7223d00a59b6dc14f6e142b21d3220ceb3155a6d8f40ec115cd96394d3cc7c55055b433a1758dc74")
+(def contact-public-key "0x048f7d5d4bda298447bbb5b021a34832509bd1a8dbe4e06f9b7223d00a59b6dc14f6e142b21d3220ceb3155a6d8f40ec115cd96394d3cc7c55055b433a1758dc74")
 (def rpc-url (aget nodejs/process.env "WNODE_ADDRESS"))
 
 (def Web3 (js/require "web3"))
@@ -33,7 +33,7 @@
            shh  (transport.utils/shh web3)
            from          (create-keys shh)]
        (reset! re-frame.db/app-db {:web3 web3
-                                   :current-public-key from})
+                                   :account/account {:public-key from}})
 
        (rf/reg-fx :data-store/save-chat (constantly nil))
        (rf/reg-fx :data-store/save-message (constantly nil))
@@ -41,11 +41,11 @@
        (rf/reg-fx :data-store.transport/save (constantly nil))
        (rf/reg-fx :data-store/update-message (constantly nil))
 
-       (rf/dispatch [:open-chat-with-contact {:whisper-identity contact-whisper-identity}])
+       (rf/dispatch [:contact.ui/send-message-pressed {:public-key contact-public-key}])
        (rf-test/wait-for [::transport.contact/send-new-sym-key]
                          (rf/dispatch [:set-chat-input-text "test message"])
                          (rf/dispatch [:send-current-message])
-                         (rf-test/wait-for [:update-message-status :protocol/send-status-message-error]
+                         (rf-test/wait-for [:update-message-status :transport/send-status-message-error]
                                            (is true)))))))
 
 (deftest test-whisper-version!

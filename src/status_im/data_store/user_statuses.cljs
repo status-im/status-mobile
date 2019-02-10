@@ -1,16 +1,12 @@
 (ns status-im.data-store.user-statuses
   (:require [clojure.string :as string]
-            [cljs.reader :as reader]
             [re-frame.core :as re-frame]
             [status-im.data-store.realm.core :as core]))
 
-(defn- in-query [message-ids]
-  (string/join " or " (map #(str "message-id=\"" % "\"") message-ids)))
-
 (defn- prepare-statuses [statuses]
-  (reduce (fn [acc {:keys [message-id whisper-identity] :as user-status}]
+  (reduce (fn [acc {:keys [message-id public-key] :as user-status}]
             (assoc-in acc
-                      [message-id whisper-identity]
+                      [message-id public-key]
                       (-> user-status
                           (update :status keyword)
                           (dissoc :status-id))))
@@ -23,7 +19,7 @@
       (.objects "user-status")
       (.filtered (str "chat-id=\"" chat-id "\""
                       (when (seq message-ids)
-                        (str " and (" (in-query message-ids) ")"))))
+                        (str " and (" (core/in-query "message-id" message-ids) ")"))))
       (core/all-clj :user-status)
       prepare-statuses))
 
@@ -32,8 +28,8 @@
  (fn [cofx _]
    (assoc cofx :get-stored-user-statuses get-by-chat-and-messages-ids)))
 
-(defn- compute-status-id [{:keys [message-id whisper-identity]}]
-  (str message-id "-" whisper-identity))
+(defn- compute-status-id [{:keys [message-id public-key]}]
+  (str message-id "-" public-key))
 
 (defn save-status-tx
   "Returns tx function for saving message user status"

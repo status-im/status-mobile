@@ -1,17 +1,14 @@
 (ns status-im.ui.screens.desktop.main.chat.styles
   (:require [status-im.ui.components.colors :as colors]))
 
-(defn message-box [{:keys [outgoing] :as message}]
-  (let [align (if outgoing :flex-end :flex-start)
-        color (if outgoing colors/hawkes-blue colors/white)]
-    {:align-self       align
-     :background-color color
-     :border-radius    8
-     :padding-left     12
-     :padding-right    12
-     :padding-top      10
-     :padding-bottom   10
-     :max-width        340}))
+;; TODO: see how this could be refactored to be
+;; automatically alignde with tabs-height in
+;; status-im.ui.screens.main-tabs.styles
+(def min-input-container-height 67)
+(def max-input-container-height 180)
+(def chat-vertical-padding 16)
+(def min-input-area-height 20)
+(def max-input-area-height (- max-input-container-height (* 2 chat-vertical-padding)))
 
 (defn message-row [{:keys [outgoing first-in-group?] :as message}]
   (let [padding-horizontal (if outgoing :padding-right :padding-left)
@@ -22,45 +19,52 @@
 (def message-row-column
   {:flex-direction :column})
 
-(defn message-timestamp-placeholder []
-  {:color               colors/transparent
-   :font-size           10
-   :align-self          :flex-end
-   :opacity             0.5
-   :text-align          :right
-   :text-align-vertical :center
-   :width               60})
+(def message-timestamp
+  {:color        colors/gray
+   :font-size    10
+   :text-align   :right
+   :margin-right 16
+   :width        60})
 
-(defn message-timestamp []
-  (merge (message-timestamp-placeholder)
-         {:color    colors/gray
-          :position :absolute
-          :bottom   0
-          :right    -5}))
+(def message-command-container
+  {:align-self         :flex-start
+   :border-radius      8
+   :border-color       colors/gray-light
+   :border-width       1
+   :padding-horizontal 12
+   :padding-vertical   10
+   :align-items        :flex-start
+   :width              230})
 
 (def author
-  {:color         colors/gray
-   :font-size     12
-   :margin-left   48
-   :margin-bottom 4})
+  {:color       colors/black
+   :font-weight "500"
+   :font-size   14})
 
-(def chat-box
-  {:height            68
-   :background-color  :white
-   :border-radius     12
-   :margin-horizontal 24
-   :padding-vertical  15})
+(def author-generated
+  {:color       colors/gray
+   :font-size   14})
 
-(def chat-box-inner
-  {:flex-direction  :row
-   :flex            1})
+(defn chat-box [height]
+  {:height            (+ height (* 2 chat-vertical-padding))
+   :min-height        min-input-container-height
+   :max-height        max-input-container-height
+   :padding-vertical  chat-vertical-padding
+   :flex-direction    :row
+   :overflow          :hidden})
 
-(def chat-text-input
-  {:flex 1})
+(defn chat-text-input [container-height]
+  {:height            container-height
+   :min-height        min-input-area-height
+   :max-height        max-input-area-height
+   :margin-left       20
+   :margin-right      22
+   :flex              1
+   :align-self       :center})
 
 (def messages-view
   {:flex             1
-   :background-color colors/gray-lighter})
+   :background-color colors/white})
 
 (def img-container
   {:height          56
@@ -69,10 +73,18 @@
 (def messages-list-vertical-padding 46)
 
 (def photo-style
-  {:border-radius 20
-   :width         40
-   :height        40
-   :margin-right  8})
+  {:border-radius 19
+   :width         38
+   :height        38})
+
+(def member-photo-container
+  {:border-color      colors/gray-light
+   :border-width      1
+   :align-items       :center
+   :justify-content   :center
+   :border-radius     20
+   :width             40
+   :height            40})
 
 (def chat-icon
   {:width         34
@@ -111,8 +123,24 @@
    :color color
    :margin-bottom 4})
 
-(def message-text
-  {:font-size 14})
+(defn message-text [collapsible? outgoing]
+  {:color (if outgoing colors/white colors/black)
+   :font-size 14
+   :margin-bottom (if collapsible? 2 0)})
+
+(defn message-link [outgoing]
+  (assoc (message-text false outgoing)
+         :color (if outgoing colors/white colors/blue)
+         :text-decoration-line :underline))
+
+(def system-message-text
+  {:color colors/black
+   :margin-top -5
+   :font-size 14})
+
+(def message-container
+  {:flex-direction :column
+   :margin-right   16})
 
 (def message-wrapper
   {:flex-direction  :row
@@ -121,15 +149,25 @@
 (def not-first-in-group-wrapper
   {:flex-direction :row})
 
-(def send-icon
-  {:margin-left      16
-   :width            30
-   :height           30
-   :border-radius    15
-   :background-color colors/gray-lighter
+(def send-button
+  {:height           34
+   :width            34
+   :margin-right     24
+   :justify-content  :center
+   :align-items      :center
+   :align-self       :flex-end})
+
+(defn send-icon [not-active?]
+  {:height           34
+   :width            34
+   :border-radius    17
+   :background-color (if not-active? colors/gray-lighter colors/blue)
    :align-items      :center
    :justify-content  :center
    :transform        [{:rotate "90deg"}]})
+
+(defn send-icon-arrow [not-active?]
+  {:tint-color (if not-active? :gray :white)})
 
 (def chat-view
   {:flex             1
@@ -180,3 +218,66 @@
   {:margin-bottom  4
    :font-size      14
    :color          colors/black})
+
+(def reply-wrapper
+  {:flex-direction :column-reverse})
+
+(def reply-photo-style
+  {:width         40
+   :height        40
+   :margin-right  5})
+
+(def reply-container
+  {:flex-direction   :row
+   :align-items      :flex-start
+   :border-width     1
+   :border-radius    10
+   :border-color     colors/gray-light
+   :margin           10})
+
+(def reply-content-container
+  {:flex-direction :column
+   :padding-bottom 10})
+
+(def reply-content-author
+  {:margin-top     5
+   :color          colors/gray
+   :font-size      12
+   :padding-bottom 3})
+
+(def reply-content-message
+  {:padding-left   7
+   :margin-right   50
+   :max-height     140
+   :overflow       :scroll})
+
+(def reply-close-highlight
+  {:position :absolute
+   :z-index  5
+   :top      3
+   :right    8
+   :height   26})
+
+(def reply-close-icon
+  {:border-radius     12
+   :background-color  colors/gray
+   :tint-color        colors/white})
+
+(defn reply-icon [outgoing]
+  {:tint-color (if outgoing colors/white colors/gray)})
+
+(def separator
+  {:height            1
+   :background-color  colors/gray-light})
+
+(def quoted-message-container
+  {:margin        6
+   :margin-left   0
+   :padding       6
+   :border-color  colors/gray-lighter
+   :border-width  1
+   :border-radius 8})
+
+(def quoted-message-author-container
+  {:flex-direction  :row
+   :align-items     :flex-start})

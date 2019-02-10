@@ -19,16 +19,25 @@
 (defn- gen-price-url [fsyms tsyms]
   (str api-url "/pricemultifull?fsyms=" (->url-param-syms fsyms) "&tsyms=" (->url-param-syms tsyms) "&" status-identifier))
 
-(defn- format-price-resp [resp]
-  (into {} (for [[from entries] (:RAW (types/json->clj resp))]
-             {from (into {} (for [[to entry] entries]
-                              {to {:from     (name from)
-                                   :to       (name to)
-                                   :price    (:PRICE entry)
-                                   :last-day (:OPEN24HOUR entry)}}))})))
+(defn- format-price-resp [resp mainnet?]
+  ;;NOTE(this check is to allow value conversion for sidechains with native currencies listed on cryptocompare
+  ;; under a symbol different than display symbol. Specific use case xDAI and POA.
+  (if mainnet?
+    (into {} (for [[from entries] (:RAW (types/json->clj resp))]
+               {from (into {} (for [[to entry] entries]
+                                {to {:from     (name from)
+                                     :to       (name to)
+                                     :price    (:PRICE entry)
+                                     :last-day (:OPEN24HOUR entry)}}))}))
+    (into {} (for [[_ entries] (:RAW (types/json->clj resp))]
+               {:ETH (into {} (for [[to entry] entries]
+                                {to {:from     "ETH"
+                                     :to       (name to)
+                                     :price    (:PRICE entry)
+                                     :last-day (:OPEN24HOUR entry)}}))}))))
 
-(defn get-prices [from to on-success on-error]
+(defn get-prices [from to mainnet? on-success on-error]
   (http/get
    (gen-price-url from to)
-   (fn [resp] (on-success (format-price-resp resp)))
+   (fn [resp] (on-success (format-price-resp resp mainnet?)))
    on-error))

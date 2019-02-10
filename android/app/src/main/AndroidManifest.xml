@@ -21,8 +21,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!-- these permissions should be removed -->
-    <!-- RECORD_AUDIO is pulled in by instabug-reactnative, not needed for status-react -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove"/>
     <!-- React Native unnecessary permissions (https://github.com/facebook/react-native/issues/5886) -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove"/>
 
@@ -77,10 +75,6 @@
                 <data android:scheme="status-im" />
             </intent-filter>
         </activity>
-        <service
-                android:name=".module.StatusService"
-                android:enabled="true"
-                android:exported="true"/>
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
         <service android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService">
           <intent-filter>
@@ -93,6 +87,17 @@
           </intent-filter>
         </service>
         <service android:name="io.invertase.firebase.messaging.RNFirebaseBackgroundMessagingService" />
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:replace="android:authorities">
+            <meta-data
+                tools:replace="android:resource"
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths" />
+        </provider>
     </application>
 
 </manifest>

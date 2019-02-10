@@ -13,13 +13,14 @@
             [status-im.ui.screens.wallet.transactions.styles :as styles]
             [status-im.utils.money :as money]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]))
 
 (defn history-action [filter?]
   (cond->
-   {:icon      :icons/filter
+   {:icon      :main-icons/filter
     :icon-opts {:accessibility-label :filters-button}
-    :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-filter])}
+    :handler   #(re-frame/dispatch [:navigate-to :wallet-transactions-filter])}
     filter? (assoc-in [:icon-opts :overlay-style] styles/corner-dot)))
 
 (defn- all-checked? [filter-data]
@@ -43,19 +44,20 @@
 
 (defn- transaction-type->icon [k]
   (case k
-    :inbound (transaction-icon :icons/arrow-left (colors/alpha colors/green 0.2) colors/green)
-    :outbound (transaction-icon :icons/arrow-right (colors/alpha colors/blue 0.1) colors/blue)
-    :failed (transaction-icon :icons/exclamation-mark colors/gray-light colors/red)
-    (:postponed :pending) (transaction-icon :icons/arrow-right colors/gray-light colors/gray)
+    :inbound (transaction-icon :main-icons/arrow-left (colors/alpha colors/green 0.2) colors/green)
+    :outbound (transaction-icon :main-icons/arrow-right (colors/alpha colors/blue 0.1) colors/blue)
+    :failed (transaction-icon :main-icons/warning colors/gray-light colors/red)
+    (:postponed :pending) (transaction-icon :main-icons/arrow-right colors/gray-light colors/gray)
     (throw (str "Unknown transaction type: " k))))
 
-(defn render-transaction [{:keys [hash from-contact to-contact to from type value time-formatted symbol]} network hide-details?]
+(defn render-transaction [{:keys [hash from-contact to-contact to from type value time-formatted symbol]}
+                          network all-tokens hide-details?]
   (let [[label contact address
          contact-accessibility-label
          address-accessibility-label] (if (inbound? type)
                                         [(i18n/label :t/from) from-contact from :sender-text :sender-address-text]
                                         [(i18n/label :t/to) to-contact to :recipient-name-text :recipient-address-text])
-        {:keys [decimals]}   (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
+        {:keys [decimals] :as token}   (tokens/asset-for all-tokens (ethereum/network->chain-keyword network) symbol)]
     [list/touchable-item #(when-not hide-details? (re-frame/dispatch [:show-transaction-details hash]))
      [react/view {:accessibility-label :transaction-item}
       [list/item
@@ -70,7 +72,7 @@
            (-> value  (money/internal->formatted symbol decimals) money/to-fixed str)]
           " "
           [react/text {:accessibility-label :currency-text}
-           (clojure.string/upper-case (name symbol))]]
+           (wallet.utils/display-symbol token)]]
          [react/text {:style styles/tx-time}
           time-formatted]]
         [react/view {:style styles/address-row}
@@ -86,7 +88,7 @@
                       :accessibility-label address-accessibility-label}
           address]]]
        (when-not hide-details?
-         [list/item-icon {:icon      :icons/forward
+         [list/item-icon {:icon      :main-icons/next
                           :style     {:margin-top 10}
                           :icon-opts (merge styles/forward
                                             {:accessibility-label :show-transaction-button})}])]]]))
@@ -100,11 +102,12 @@
 (defview history-list [& [hide-details?]]
   (letsubs [transactions-history-list [:wallet.transactions/transactions-history-list]
             filter-data               [:wallet.transactions/filters]
-            network                   [:get-current-account-network]]
+            network                   [:account/network]
+            all-tokens                [:wallet/all-tokens]]
     [react/view components.styles/flex
      [list/section-list {:sections        (map #(update-transactions % filter-data) transactions-history-list)
                          :key-fn          :hash
-                         :render-fn       #(render-transaction % network hide-details?)
+                         :render-fn       #(render-transaction % network all-tokens hide-details?)
                          :empty-component [react/i18n-text {:style styles/empty-text
                                                             :key   :transactions-history-empty}]
                          :on-refresh      #(re-frame/dispatch [:update-transactions])
@@ -162,18 +165,19 @@
       (-> amount (money/token->unit (:decimals token)) money/to-fixed str))
     "..."))
 
-(defn details-header [{:keys [value date type symbol token]}]
-  [react/view {:style styles/details-header}
-   [react/view {:style styles/details-header-icon}
-    [list/item-icon (transaction-type->icon type)]]
-   [react/view {:style styles/details-header-infos}
-    [react/text {:style styles/details-header-value}
-     [react/text {:accessibility-label :amount-text}
-      (pretty-print-asset symbol value token)]
-     " "
-     [react/text {:accessibility-label :currency-text}
-      (clojure.string/upper-case (name symbol))]]
-    [react/text {:style styles/details-header-date} date]]])
+(defn details-header [network all-tokens {:keys [value date type symbol token]}]
+  (let [asset (tokens/asset-for all-tokens (ethereum/network->chain-keyword network) symbol)]
+    [react/view {:style styles/details-header}
+     [react/view {:style styles/details-header-icon}
+      [list/item-icon (transaction-type->icon type)]]
+     [react/view {:style styles/details-header-infos}
+      [react/text {:style styles/details-header-value}
+       [react/text {:accessibility-label :amount-text}
+        (pretty-print-asset symbol value token)]
+       " "
+       [react/text {:accessibility-label :currency-text}
+        (wallet.utils/display-symbol asset)]]
+      [react/text {:style styles/details-header-date} date]]]))
 
 (defn progress-bar [progress failed?]
   [react/view {:style styles/progress-bar}
@@ -242,7 +246,9 @@
 (defview transaction-details []
   (letsubs [{:keys [hash url type] :as transaction} [:wallet.transactions/transaction-details]
             confirmations          [:wallet.transactions.details/confirmations]
-            confirmations-progress [:wallet.transactions.details/confirmations-progress]]
+            confirmations-progress [:wallet.transactions.details/confirmations-progress]
+            network                [:account/network]
+            all-tokens             [:wallet/all-tokens]]
     [react/view {:style components.styles/flex}
      [status-bar/status-bar]
      [toolbar/toolbar {}
@@ -250,7 +256,7 @@
       [toolbar/content-title (i18n/label :t/transaction-details)]
       (when transaction [toolbar/actions (details-action hash url)])]
      [react/scroll-view {:style components.styles/main-container}
-      [details-header transaction]
+      [details-header network all-tokens transaction]
       [details-confirmations confirmations confirmations-progress type]
       [react/view {:style styles/details-separator}]
       [details-list transaction]]]))

@@ -1,0 +1,94 @@
+{
+    "fleets": {
+        "eth.beta": {
+            "boot": {
+                "boot-01.ac-cn-hongkong-c.eth.beta": "enode://e8a7c03b58911e98bbd66accb2a55d57683f35b23bf9dfca89e5e244eb5cc3f25018b4112db507faca34fb69ffb44b362f79eda97a669a8df29c72e654416784@47.91.224.35:30404",
+                "boot-01.do-ams3.eth.beta": "enode://436cc6f674928fdc9a9f7990f2944002b685d1c37f025c1be425185b5b1f0900feaf1ccc2a6130268f9901be4a7d252f37302c8335a2c1a62736e9232691cc3a@174.138.105.243:30404",
+                "boot-01.gc-us-central1-a.eth.beta": "enode://7427dfe38bd4cf7c58bb96417806fab25782ec3e6046a8053370022cbaa281536e8d64ecd1b02e1f8f72768e295d06258ba43d88304db068e6f2417ae8bcb9a6@104.154.88.123:30404",
+                "boot-02.ac-cn-hongkong-c.eth.beta": "enode://43947863cfa5aad1178f482ac35a8ebb9116cded1c23f7f9af1a47badfc1ee7f0dd9ec0543417cc347225a6e47e46c6873f647559e43434596c54e17a4d3a1e4@47.52.74.140:30404",
+                "boot-02.do-ams3.eth.beta": "enode://5395aab7833f1ecb671b59bf0521cf20224fe8162fc3d2675de4ee4d5636a75ec32d13268fc184df8d1ddfa803943906882da62a4df42d4fccf6d17808156a87@206.189.243.57:30404",
+                "boot-02.gc-us-central1-a.eth.beta": "enode://ebefab39b69bbbe64d8cd86be765b3be356d8c4b24660f65d493143a0c44f38c85a257300178f7845592a1b0332811542e9a58281c835babdd7535babb64efc1@35.202.99.224:30404"
+            },
+            "mail": {
+                "mail-01.ac-cn-hongkong-c.eth.beta": "enode://da61e9eff86a56633b635f887d8b91e0ff5236bbc05b8169834292e92afb92929dcf6efdbf373a37903da8fe0384d5a0a8247e83f1ce211aa429200b6d28c548@47.91.156.93:30504",
+                "mail-01.do-ams3.eth.beta": "enode://c42f368a23fa98ee546fd247220759062323249ef657d26d357a777443aec04db1b29a3a22ef3e7c548e18493ddaf51a31b0aed6079bd6ebe5ae838fcfaf3a49@206.189.243.162:30504",
+                "mail-01.gc-us-central1-a.eth.beta": "enode://7de99e4cb1b3523bd26ca212369540646607c721ad4f3e5c821ed9148150ce6ce2e72631723002210fac1fd52dfa8bbdf3555e05379af79515e1179da37cc3db@35.188.19.210:30504",
+                "mail-02.ac-cn-hongkong-c.eth.beta": "enode://744098ab6d3308af5cd03920aea60c46d16b2cd3d33bf367cbaf1d01c2fcd066ff8878576d0967897cd7dbb0e63f873cc0b4f7e4b0f1d7222e6b3451a78d9bda@47.89.20.15:30504",
+                "mail-02.do-ams3.eth.beta": "enode://7aa648d6e855950b2e3d3bf220c496e0cae4adfddef3e1e6062e6b177aec93bc6cdcf1282cb40d1656932ebfdd565729da440368d7c4da7dbd4d004b1ac02bf8@206.189.243.169:30504",
+                "mail-02.gc-us-central1-a.eth.beta": "enode://015e22f6cd2b44c8a51bd7a23555e271e0759c7d7f52432719665a74966f2da456d28e154e836bee6092b4d686fe67e331655586c57b718be3997c1629d24167@35.226.21.19:30504",
+                "mail-03.ac-cn-hongkong-c.eth.beta": "enode://74957e361ab290e6af45a124536bc9adee39fbd2f995a77ace6ed7d05d9a1c7c98b78b2df5f8071c439b9c0afe4a69893ede4ad633473f96bc195ddf33f6ce00@47.52.255.195:30504",
+                "mail-03.do-ams3.eth.beta": "enode://8a64b3c349a2e0ef4a32ea49609ed6eb3364be1110253c20adc17a3cebbc39a219e5d3e13b151c0eee5d8e0f9a8ba2cd026014e67b41a4ab7d1d5dd67ca27427@206.189.243.168:30504",
+                "mail-03.gc-us-central1-a.eth.beta": "enode://531e252ec966b7e83f5538c19bf1cde7381cc7949026a6e499b6e998e695751aadf26d4c98d5a4eabfb7cefd31c3c88d600a775f14ed5781520a88ecd25da3c6@35.225.227.79:30504"
+            },
+            "whisper": {
+                "node-01.ac-cn-hongkong-c.eth.beta": "enode://9c2b82304d988cd78bf290a09b6f81c6ae89e71f9c0f69c41d21bd5cabbd1019522d5d73d7771ea933adf0727de5e847c89e751bd807ba1f7f6fc3a0cd88d997@47.52.91.239:30305",
+                "node-01.do-ams3.eth.beta": "enode://66ba15600cda86009689354c3a77bdf1a97f4f4fb3ab50ffe34dbc904fac561040496828397be18d9744c75881ffc6ac53729ddbd2cdbdadc5f45c400e2622f7@206.189.243.176:30305",
+                "node-01.gc-us-central1-a.eth.beta": "enode://0440117a5bc67c2908fad94ba29c7b7f2c1536e96a9df950f3265a9566bf3a7306ea8ab5a1f9794a0a641dcb1e4951ce7c093c61c0d255f4ed5d2ed02c8fce23@35.224.15.65:30305",
+                "node-02.ac-cn-hongkong-c.eth.beta": "enode://a80eb084f6bf3f98bf6a492fd6ba3db636986b17643695f67f543115d93d69920fb72e349e0c617a01544764f09375bb85f452b9c750a892d01d0e627d9c251e@47.89.16.125:30305",
+                "node-02.do-ams3.eth.beta": "enode://4ea35352702027984a13274f241a56a47854a7fd4b3ba674a596cff917d3c825506431cf149f9f2312a293bb7c2b1cca55db742027090916d01529fe0729643b@206.189.243.178:30305",
+                "node-02.gc-us-central1-a.eth.beta": "enode://552942cc4858073102a6bcd0df9fe4de6d9fc52ddf7363e8e0746eba21b0f98fb37e8270bc629f72cfe29e0b3522afaf51e309a05998736e2c0dad5288991148@130.211.215.133:30305",
+                "node-03.ac-cn-hongkong-c.eth.beta": "enode://aa97756bc147d74be6d07adfc465266e17756339d3d18591f4be9d1b2e80b86baf314aed79adbe8142bcb42bc7bc40e83ee3bbd0b82548e595bf855d548906a1@47.52.188.241:30305",
+                "node-03.do-ams3.eth.beta": "enode://ce559a37a9c344d7109bd4907802dd690008381d51f658c43056ec36ac043338bd92f1ac6043e645b64953b06f27202d679756a9c7cf62fdefa01b2e6ac5098e@206.189.243.179:30305",
+                "node-03.gc-us-central1-a.eth.beta": "enode://b33dc678589931713a085d29f9dc0efee1783dacce1d13696eb5d3a546293198470d97822c40b187336062b39fd3464e9807858109752767d486ea699a6ab3de@35.193.151.184:30305",
+                "node-04.ac-cn-hongkong-c.eth.beta": "enode://f34451823b173dc5f2ac0eec1668fdb13dba9452b174249a7e0272d6dce16fb811a01e623300d1b7a67c240ae052a462bff3f60e4a05e4c4bd23cc27dea57051@47.52.173.66:30305",
+                "node-04.do-ams3.eth.beta": "enode://4e0a8db9b73403c9339a2077e911851750fc955db1fc1e09f81a4a56725946884dd5e4d11258eac961f9078a393c45bcab78dd0e3bc74e37ce773b3471d2e29c@206.189.243.171:30305",
+                "node-04.gc-us-central1-a.eth.beta": "enode://eb4cc33c1948b1f4b9cb8157757645d78acd731cc8f9468ad91cef8a7023e9c9c62b91ddab107043aabc483742ac15cb4372107b23962d3bfa617b05583f2260@146.148.66.209:30305",
+                "node-05.ac-cn-hongkong-c.eth.beta": "enode://7c80e37f324bbc767d890e6381854ef9985d33940285413311e8b5927bf47702afa40cd5d34be9aa6183ac467009b9545e24b0d0bc54ef2b773547bb8c274192@47.91.155.62:30305",
+                "node-05.do-ams3.eth.beta": "enode://a8bddfa24e1e92a82609b390766faa56cf7a5eef85b22a2b51e79b333c8aaeec84f7b4267e432edd1cf45b63a3ad0fc7d6c3a16f046aa6bc07ebe50e80b63b8c@206.189.243.172:30305",
+                "node-05.gc-us-central1-a.eth.beta": "enode://c7e00e5a333527c009a9b8f75659d9e40af8d8d896ebaa5dbdd46f2c58fc010e4583813bc7fc6da98fcf4f9ca7687d37ced8390330ef570d30b5793692875083@35.192.123.253:30305",
+                "node-06.ac-cn-hongkong-c.eth.beta": "enode://4b2530d045b1d9e0e45afa7c008292744fe77675462090b4001f85faf03b87aa79259c8a3d6d64f815520ac76944e795cbf32ff9e2ce9ba38f57af00d1cc0568@47.90.29.122:30305",
+                "node-06.do-ams3.eth.beta": "enode://887cbd92d95afc2c5f1e227356314a53d3d18855880ac0509e0c0870362aee03939d4074e6ad31365915af41d34320b5094bfcc12a67c381788cd7298d06c875@206.189.243.177:30305",
+                "node-06.gc-us-central1-a.eth.beta": "enode://2af8f4f7a0b5aabaf49eb72b9b59474b1b4a576f99a869e00f8455928fa242725864c86bdff95638a8b17657040b21771a7588d18b0f351377875f5b46426594@35.232.187.4:30305",
+                "node-07.ac-cn-hongkong-c.eth.beta": "enode://76ee16566fb45ca7644c8dec7ac74cadba3bfa0b92c566ad07bcb73298b0ffe1315fd787e1f829e90dba5cd3f4e0916e069f14e50e9cbec148bead397ac8122d@47.91.226.75:30305",
+                "node-07.do-ams3.eth.beta": "enode://2b01955d7e11e29dce07343b456e4e96c081760022d1652b1c4b641eaf320e3747871870fa682e9e9cfb85b819ce94ed2fee1ac458904d54fd0b97d33ba2c4a4@206.189.240.70:30305",
+                "node-07.gc-us-central1-a.eth.beta": "enode://19872f94b1e776da3a13e25afa71b47dfa99e658afd6427ea8d6e03c22a99f13590205a8826443e95a37eee1d815fc433af7a8ca9a8d0df7943d1f55684045b7@35.238.60.236:30305"
+            },
+            "rendezvous": {
+                "174.138.105.243": "/ip4/174.138.105.243/tcp/30703/ethv4/16Uiu2HAmRHPzF3rQg55PgYPcQkyvPVH9n2hWsYPhUJBZ6kVjJgdV",
+                "206.189.243.57": "/ip4/206.189.243.57/tcp/30703/ethv4/16Uiu2HAmLqTXuY4Sb6G28HNooaFUXUKzpzKXCcgyJxgaEE2i5vnf"
+            }
+        },
+        "eth.staging": {
+            "boot": {
+                "boot-01.ac-cn-hongkong-c.eth.staging": "enode://630b0342ca4e9552f50714b6c8e28d6955bc0fd14e7950f93bc3b2b8cc8c1f3b6d103df66f51a13d773b5db0f130661fb5c7b8fa21c48890c64c79b41a56a490@47.91.229.44:30404",
+                "boot-01.do-ams3.eth.staging": "enode://f79fb3919f72ca560ad0434dcc387abfe41e0666201ebdada8ede0462454a13deb05cda15f287d2c4bd85da81f0eb25d0a486bbbc8df427b971ac51533bd00fe@174.138.107.239:30404"
+            },
+            "mail": {
+                "mail-01.ac-cn-hongkong-c.eth.staging": "enode://b74859176c9751d314aeeffc26ec9f866a412752e7ddec91b19018a18e7cca8d637cfe2cedcb972f8eb64d816fbd5b4e89c7e8c7fd7df8a1329fa43db80b0bfe@47.52.90.156:30504",
+                "mail-01.do-ams3.eth.staging": "enode://69f72baa7f1722d111a8c9c68c39a31430e9d567695f6108f31ccb6cd8f0adff4991e7fdca8fa770e75bc8a511a87d24690cbc80e008175f40c157d6f6788d48@206.189.240.16:30504",
+                "mail-01.gc-us-central1-a.eth.staging": "enode://e4fc10c1f65c8aed83ac26bc1bfb21a45cc1a8550a58077c8d2de2a0e0cd18e40fd40f7e6f7d02dc6cd06982b014ce88d6e468725ffe2c138e958788d0002a7f@35.239.193.41:30504"
+            },
+            "whisper": {
+                "node-01.ac-cn-hongkong-c.eth.staging": "enode://00395686f5954662a3796e170b9e87bbaf68a050d57e9987b78a2292502dae44aae2b8803280a017ec9af9be0b3121db9d6b3693ab3a0451a866bcbedd58fdac@47.52.226.137:30305",
+                "node-01.do-ams3.eth.staging": "enode://914c0b30f27bab30c1dfd31dad7652a46fda9370542aee1b062498b1345ee0913614b8b9e3e84622e84a7203c5858ae1d9819f63aece13ee668e4f6668063989@167.99.19.148:30305",
+                "node-01.gc-us-central1-a.eth.staging": "enode://2d897c6e846949f9dcf10279f00e9b8325c18fe7fa52d658520ad7be9607c83008b42b06aefd97cfe1fdab571f33a2a9383ff97c5909ed51f63300834913237e@35.192.0.86:30305"
+            },
+            "rendezvous": {
+                "35.238.97.234": "/ip4/35.238.97.234/tcp/30703/ethv4/16Uiu2HAm6G9sDMkrB4Xa5EH3Zx2dysCxFgBTSRzghic3Z9tRFRNE",
+                "174.138.107.239": "/ip4/174.138.107.239/tcp/30703/ethv4/16Uiu2HAm8UZXUHEPZrpJbcQ3yVFH6UtKrwsG6jH4ai72PsbLfVFb",
+                "47.91.229.44": "/ip4/47.91.229.44/tcp/30703/ethv4/16Uiu2HAmRnt2Eyoknh3auxh4fJwkRgqkH1gqrWGes8Pk1k3MV4xu"
+            }
+        },
+        "eth.test": {
+            "boot": {
+                "boot-01.ac-cn-hongkong-c.eth.test": "enode://daae2e72820e86e942fa2a8aa7d6e9954d4043a753483d8bd338e16be82cf962392d5c0e1ae57c3d793c3d3dddd8fd58339262e4234dc966f953cd73b535f5fa@47.52.188.149:30404",
+                "boot-01.do-ams3.eth.test": "enode://9e0988575eb7717c25dea72fd11c7b37767dc09c1a7686f7c2ec577d308d24b377ceb675de4317474a1a870e47882732967f4fa785b02ba95d669b31d464dec0@206.189.243.164:30404",
+                "boot-01.gc-us-central1-a.eth.test": "enode://c1e5018887c863d64e431b69bf617561087825430e4401733f5ba77c70db14236df381fefb0ebe1ac42294b9e261bbe233dbdb83e32c586c66ae26c8de70cb4c@35.188.168.137:30404"
+            },
+            "mail": {
+                "mail-01.ac-cn-hongkong-c.eth.test": "enode://954c06603a6e755bffe9992615f4755848bda9aadda74d920aa31d1d8e4f6022dc556dca6768f8a0f9459f57b729509db3c8b3bb80acfbd8a2123087f6cbd7bd@47.52.188.196:30504",
+                "mail-01.do-ams3.eth.test": "enode://e4865fe6c2a9c1a563a6447990d8e9ce672644ae3e08277ce38ec1f1b690eef6320c07a5d60c3b629f5d4494f93d6b86a745a0bf64ab295bbf6579017adc6ed8@206.189.243.161:30504",
+                "mail-01.gc-us-central1-a.eth.test": "enode://707e57453acd3e488c44b9d0e17975371e2f8fb67525eae5baca9b9c8e06c86cde7c794a6c2e36203bf9f56cae8b0e50f3b33c4c2b694a7baeea1754464ce4e3@35.192.229.172:30504"
+            },
+            "whisper": {
+                "node-01.ac-cn-hongkong-c.eth.test": "enode://ad38f94030a846cc7005b7a1f3b6b01bf4ef59d34e8d3d6f4d12df23d14ba8656702a435d34cf4df3b412c0c1923df5adcce8461321a0d8ffb9435b26e572c2a@47.52.255.194:30305",
+                "node-01.do-ams3.eth.test": "enode://1d193635e015918fb85bbaf774863d12f65d70c6977506187ef04420d74ec06c9e8f0dcb57ea042f85df87433dab17a1260ed8dde1bdf9d6d5d2de4b7bf8e993@206.189.243.163:30305",
+                "node-01.gc-us-central1-a.eth.test": "enode://f593a27731bc0f8eb088e2d39222c2d59dfb9bf0b3950d7a828d51e8ab9e08fffbd9916a82fd993c1a080c57c2bd70ed6c36f489a969de697aff93088dbee1a9@35.194.31.108:30305"
+            }
+        }
+    },
+    "meta": {
+        "hostname": "bots-01.gc-us-central1-a.eth.test",
+        "timestamp": "2018-09-03T18:10:52.315172"
+    }
+}

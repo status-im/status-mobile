@@ -15,14 +15,8 @@
    [status-im.ui.components.text-input.view :as text-input]
    [status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles :as styles]))
 
-(defn handle-delete [id]
-  (utils/show-confirmation (i18n/label :t/delete-mailserver-title)
-                           (i18n/label :t/delete-mailserver-are-you-sure)
-                           (i18n/label :t/delete-mailserver)
-                           #(re-frame/dispatch [:delete-mailserver id])))
-
 (defn connect-button [id]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:connect-wnode id])}
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:mailserver.ui/connect-pressed id])}
    [react/view styles/button-container
     [react/view {:style               styles/connect-button
                  :accessibility-label :mailserver-connect-button}
@@ -31,7 +25,7 @@
       (i18n/label :t/connect)]]]])
 
 (defn delete-button [id]
-  [react/touchable-highlight {:on-press #(handle-delete id)}
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:mailserver.ui/delete-pressed id])}
    [react/view styles/button-container
     [react/view {:style               styles/delete-button
                  :accessibility-label :mailserver-delete-button}
@@ -40,20 +34,20 @@
       (i18n/label :t/delete)]]]])
 
 (def qr-code
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:scan-qr-code
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
                                                              {:toolbar-title (i18n/label :t/add-mailserver)}
-                                                             :set-mailserver-from-qr])
+                                                             :mailserver.callback/qr-code-scanned])
                               :style    styles/qr-code}
    [react/view
-    [vector-icons/icon :icons/qr {:color colors/blue}]]])
+    [vector-icons/icon :main-icons/qr {:color colors/blue}]]])
 
 (views/defview edit-mailserver []
-  (views/letsubs [manage-mailserver [:get-manage-mailserver]
-                  connected?        [:get-connected-mailserver]
-                  is-valid?         [:manage-mailserver-valid?]]
-    (let [url  (get-in manage-mailserver [:url :value])
-          id   (get-in manage-mailserver [:id :value])
-          name (get-in manage-mailserver [:name :value])]
+  (views/letsubs [mailserver [:mailserver.edit/mailserver]
+                  connected?        [:mailserver.edit/connected?]
+                  is-valid?         [:mailserver.edit/valid?]]
+    (let [url  (get-in mailserver [:url :value])
+          id   (get-in mailserver [:id :value])
+          name (get-in mailserver [:name :value])]
       [react/view components.styles/flex
        [status-bar/status-bar]
        [react/keyboard-avoiding-view components.styles/flex
@@ -66,7 +60,7 @@
             :style           styles/input
             :container       styles/input-container
             :default-value   name
-            :on-change-text  #(re-frame/dispatch [:mailserver-set-input :name %])
+            :on-change-text  #(re-frame/dispatch [:mailserver.ui/input-changed :name %])
             :auto-focus      true}]
           [text-input/text-input-with-label
            {:label           (i18n/label :t/mailserver-address)
@@ -75,7 +69,7 @@
             :style           styles/input
             :container       styles/input-container
             :default-value   url
-            :on-change-text  #(re-frame/dispatch [:mailserver-set-input :url %])}]
+            :on-change-text  #(re-frame/dispatch [:mailserver.ui/input-changed :url %])}]
           (when (and id
                      (not connected?))
             [react/view
@@ -87,4 +81,4 @@
           {:forward?  true
            :label     (i18n/label :t/save)
            :disabled? (not is-valid?)
-           :on-press  #(re-frame/dispatch [:upsert-mailserver])}]]]])))
+           :on-press  #(re-frame/dispatch [:mailserver.ui/save-pressed])}]]]])))

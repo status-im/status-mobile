@@ -39,11 +39,19 @@ class OpenButton(BaseButton):
         super(OpenButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('open-dapp-button')
 
+    def navigate(self):
+        from views.web_views.base_web_view import BaseWebView
+        return BaseWebView(self.driver)
+
 
 class CreateButton(BaseButton):
     def __init__(self, driver):
         super(CreateButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('create-button')
+        self.locator = self.Locator.accessibility_id('create-group-chat-button')
+
+    def navigate(self):
+        from views.chat_view import ChatView
+        return ChatView(self.driver)
 
 
 class EnterUrlEditbox(BaseEditBox):
@@ -82,3 +90,10 @@ class StartNewChatView(ContactsView):
 
     def get_username_checkbox(self, username: str):
         return UsernameCheckbox(self.driver, username)
+
+    def open_url(self, url):
+        self.open_d_app_button.click()
+        self.enter_url_editbox.click()
+        self.enter_url_editbox.send_keys(url)
+        self.confirm()
+        return self.get_base_web_view()

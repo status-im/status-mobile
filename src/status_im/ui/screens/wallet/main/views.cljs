@@ -3,6 +3,7 @@
   (:require [reagent.core :as reagent]
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.view :as toolbar]
@@ -10,27 +11,17 @@
             [status-im.ui.screens.wallet.onboarding.views :as onboarding.views]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.ui.screens.wallet.main.styles :as styles]
+            [status-im.ui.screens.wallet.settings.views :as settings]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.money :as money]
             [status-im.ui.components.toolbar.actions :as action]
             status-im.ui.screens.wallet.collectibles.etheremon.views
             status-im.ui.screens.wallet.collectibles.cryptostrikers.views
             status-im.ui.screens.wallet.collectibles.cryptokitties.views
+            status-im.ui.screens.wallet.collectibles.superrare.views
+            status-im.ui.screens.wallet.collectibles.kudos.views
             [status-im.ui.components.status-bar.view :as status-bar.view]
-            [status-im.ui.components.text :as text]
-            [status-im.ui.screens.wallet.transactions.views :as transactions.views]
-            [status-im.ui.components.colors :as colors]))
-
-(defn toolbar-view []
-  [toolbar/toolbar {:style wallet.styles/toolbar :flat? true}
-   nil
-   [toolbar/content-wrapper]
-   [toolbar/actions
-    [{:icon      :icons/options
-      :icon-opts {:color               :white
-                  :accessibility-label :options-menu-button}
-      :options   [{:label  (i18n/label :t/wallet-manage-assets)
-                   :action #(re-frame/dispatch [:navigate-to-modal :wallet-settings-assets])}]}]]])
+            [status-im.ui.screens.wallet.transactions.views :as transactions.views]))
 
 (defn toolbar-modal [modal-history?]
   [react/view
@@ -39,7 +30,7 @@
     [toolbar/nav-button (action/close-white action/default-handler)]
     [toolbar/content-wrapper]
     [toolbar/actions
-     [{:icon      (if modal-history? :icons/wallet :icons/transaction-history)
+     [{:icon      (if modal-history? :main-icons/wallet :main-icons/two-arrows)
        :icon-opts {:color               :white
                    :accessibility-label (if modal-history? :wallet-modal-button :transaction-history-button)}
        :handler #(re-frame/dispatch [:set-in [:wallet :modal-history?] (not modal-history?)])}]]]])
@@ -50,12 +41,15 @@
     [react/view {:style styles/total-balance}
      [react/text {:style               styles/total-balance-value
                   :accessibility-label :total-amount-value-text}
+      (when (and
+             (not= "0" value)
+             (not= "..." value))
+        [react/text {:style styles/total-balance-tilde}
+         "~"])
       value]
      [react/text {:style               styles/total-balance-currency
                   :accessibility-label :total-amount-currency-text}
-      (:code currency)]]
-    [react/i18n-text {:style styles/total-value
-                      :key   :wallet-total-value}]]])
+      (:code currency)]]]])
 
 (defn- backup-seed-phrase []
   [react/view styles/section
@@ -66,24 +60,24 @@
                         :key   :wallet-backup-recovery-title}]
       [react/i18n-text {:style styles/backup-seed-phrase-description
                         :key   :wallet-backup-recovery-description}]]
-     [vector-icons/icon :icons/forward {:color :white}]]]])
+     [vector-icons/icon :main-icons/next {:color :white}]]]])
 
 (def actions
-  [{:label               (i18n/label :t/send-transaction)
+  [{:label               (i18n/label :t/wallet-send)
     :accessibility-label :send-transaction-button
-    :icon                :icons/arrow-right
+    :icon                :main-icons/send
     :action              #(re-frame/dispatch [:navigate-to :wallet-send-transaction])}
-   {:label               (i18n/label :t/receive-transaction)
+   {:label               (i18n/label :t/wallet-deposit)
     :accessibility-label :receive-transaction-button
-    :icon                :icons/arrow-left
+    :icon                :main-icons/receive
     :action              #(re-frame/dispatch [:navigate-to :wallet-request-transaction])}
    {:label               (i18n/label :t/transaction-history)
     :accessibility-label :transaction-history-button
-    :icon                :icons/transaction-history
+    :icon                :main-icons/history
     :action              #(re-frame/dispatch [:navigate-to :transactions-history])}])
 
 (defn- render-asset [currency]
-  (fn [{:keys [symbol icon decimals amount]}]
+  (fn [{:keys [symbol symbol-display icon decimals amount] :as token}]
     (let [asset-value (re-frame/subscribe [:asset-value symbol decimals (-> currency :code keyword)])]
       [react/view {:style styles/asset-item-container}
        [list/item
@@ -97,14 +91,15 @@
          [react/text {:style           styles/asset-item-currency
                       :uppercase?      true
                       :number-of-lines 1}
-          (clojure.core/name symbol)]]
+          (wallet.utils/display-symbol token)]]
         [react/text {:style           styles/asset-item-price
                      :uppercase?      true
                      :number-of-lines 1}
          (or @asset-value "...")]]])))
 
 (def item-icon-forward
-  [list/item-icon {:icon      :icons/forward
+  [list/item-icon {:icon      :main-icons/next
+                   :style     {:width 12}
                    :icon-opts {:color :gray}}])
 
 (defn- render-collectible [address-hex {:keys [symbol name icon amount] :as collectible} modal?]
@@ -136,9 +131,12 @@
   (let [{:keys [tokens nfts]} (group-assets assets)]
     [react/view styles/asset-section
      [list/section-list
-      {:default-separator? true
-       :scroll-enabled     false
+      {:scroll-enabled     false
        :key-fn             (comp str :symbol)
+       :render-section-header-fn (fn [{:keys [title data]}]
+                                   (when (not-empty data)
+                                     [react/text {:style styles/asset-section-header}
+                                      title]))
        :sections           [{:title     (i18n/label :t/wallet-assets)
                              :key       :assets
                              :data      tokens
@@ -158,19 +156,19 @@
                   currency        [:wallet/currency]
                   portfolio-value [:portfolio-value]
                   {:keys [modal-history?]} [:get :wallet]
-                  {:keys [seed-backed-up?]} [:get-current-account]
+                  {:keys [seed-backed-up?]} [:account/account]
                   error-message   [:wallet/error-message]
-                  address-hex     [:get-current-account-hex]]
+                  address-hex     [:account/hex-address]]
     [react/view styles/main-section
      (if modal?
        [toolbar-modal modal-history?]
-       [toolbar-view])
+       [settings/toolbar-view])
      (if (and modal? modal-history?)
        [react/view styles/modal-history
         [transactions.views/history-list true]]
        [react/scroll-view {:refresh-control
                            (reagent/as-element
-                            [react/refresh-control {:on-refresh #(re-frame/dispatch [:update-wallet])
+                            [react/refresh-control {:on-refresh #(re-frame/dispatch [:wallet.ui/pull-to-refresh])
                                                     :tint-color :white
                                                     :refreshing false}])}
         (if error-message
@@ -184,9 +182,15 @@
           [backup-seed-phrase])
         (if modal?
           [react/view styles/address-section
-           [text/selectable-text {:value address-hex :style styles/wallet-address}]]
-          [list/action-list actions
-           {:container-style styles/action-section}])
+           [react/text {:style               styles/wallet-address
+                        :accessibility-label :address-text
+                        :selectable          true}
+            address-hex]]
+          [react/view (merge {:background-color colors/blue} styles/action-section)
+           [list/flat-list
+            {:data      actions
+             :key-fn    (fn [_ i] (str i))
+             :render-fn #(list/render-action % {:action-label-style {:font-size 17}})}]])
         [asset-section assets currency address-hex modal?]
         ;; Hack to allow different colors for bottom scroll view (iOS only)
         [react/view {:style styles/scroll-bottom}]])]))
@@ -195,7 +199,7 @@
   [wallet-root true])
 
 (views/defview wallet []
-  (views/letsubs [{:keys [wallet-set-up-passed?]} [:get-current-account]]
+  (views/letsubs [{:keys [wallet-set-up-passed?]} [:account/account]]
     (if (not wallet-set-up-passed?)
       [onboarding.views/onboarding]
       [wallet-root false])))

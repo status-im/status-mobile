@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -9,37 +11,37 @@ PLATFORM_FOLDER=""
 
 #if no arguments passed, inform user about possible ones
 
-if [ $# -eq 0 ]
-  then
-    echo -e "${GREEN}This script should be invoked with platform argument: 'mobile' or 'desktop'${NC}"
-    echo "When called it links"
-    # echo "If invoked with 'mobile' argument it will make a copying: "
-    # echo "package.json.mobile -> package.json"
-    # echo "etc.."
-    exit 1
-  else
-    PLATFORM=$1
-    PLATFORM_FOLDER="${PLATFORM}_files"
+if [ $# -eq 0 ]; then
+  echo -e "${GREEN}This script should be invoked with platform argument: 'android', 'ios' or 'desktop'${NC}"
+  echo "If invoked with 'mobile' argument it will link: "
+  echo "package.json.mobile -> package.json"
+  echo "etc.."
+  exit 1
+else
+  case $1 in
+    android | ios)
+      PLATFORM='mobile'
+      ;;
+    *)
+      PLATFORM=$1
+      ;;
+  esac
+  PLATFORM_FOLDER="${PLATFORM}_files"
 fi
 
+scripts/run-environment-check.sh $1
 
-echo "Creating link: package.json -> ${PLATFORM_FOLDER}/package.json "
-ln -sf  ${PLATFORM_FOLDER}/package.json package.json
+echo "Creating link: package.json -> ${PLATFORM_FOLDER}/package.json.orig"
+ln -sf ${PLATFORM_FOLDER}/package.json.orig package.json
 
-echo "Creating link: package-lock.json -> ${PLATFORM_FOLDER}/package-lock.json"
-ln -sf  ${PLATFORM_FOLDER}/package-lock.json package-lock.json
+echo "Creating link: yarn.lock -> ${PLATFORM_FOLDER}/yarn.lock"
+ln -sf ${PLATFORM_FOLDER}/yarn.lock yarn.lock
 
 echo "Creating link: VERSION -> ${PLATFORM_FOLDER}/VERSION"
-ln -sf  ${PLATFORM_FOLDER}/VERSION VERSION
+ln -sf ${PLATFORM_FOLDER}/VERSION VERSION
 
-if [ "${PLATFORM}" == "mobile" ]
-  then
-    echo -e "Removing .re-natal symlink from root"
-    rm -rf .re-natal
-  else
-    echo "Creating link: .re-natal -> ${PLATFORM_FOLDER}/.re-natal"
-    ln -sf  ${PLATFORM_FOLDER}/.re-natal .re-natal
-fi
+echo "Creating link: .babelrc -> ${PLATFORM_FOLDER}/.babelrc"
+ln -sf ${PLATFORM_FOLDER}/.babelrc .babelrc
 
 
 echo -e "${GREEN}Finished!${NC}"

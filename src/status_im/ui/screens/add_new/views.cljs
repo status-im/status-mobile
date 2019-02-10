@@ -13,50 +13,57 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.utils.config :as config]))
 
-(defn- options-list [{:keys [anon-id]}]
+(defn- options-list [{:keys [dev-mode?]}]
   [react/view action-button.styles/actions-list
    [action-button/action-button
     {:label               (i18n/label :t/start-new-chat)
      :accessibility-label :start-1-1-chat-button
-     :icon                :icons/newchat
+     :icon                :main-icons/add-contact
      :icon-opts           {:color colors/blue}
      :on-press            #(re-frame/dispatch [:navigate-to :new-chat])}]
    [action-button/action-separator]
-   ;; Hide behind flag (false by default), till everything is fixed in group chats
-   (when config/group-chats-enabled?
-     [action-button/action-button
-      {:label               (i18n/label :t/start-group-chat)
-       :accessibility-label :start-group-chat-button
-       :icon                :icons/contacts
-       :icon-opts           {:color colors/blue}
-       :on-press            #(re-frame/dispatch [:open-contact-toggle-list])}])
+   [action-button/action-button
+    {:label               (i18n/label :t/start-group-chat)
+     :accessibility-label :start-group-chat-button
+     :icon                :main-icons/group-chat
+     :icon-opts           {:color colors/blue}
+     :on-press            #(re-frame/dispatch [:contact.ui/start-group-chat-pressed])}]
    [action-button/action-separator]
    [action-button/action-button
     {:label               (i18n/label :t/new-public-group-chat)
      :accessibility-label :join-public-chat-button
-     :icon                :icons/public
+     :icon                :main-icons/public-chat
      :icon-opts           {:color colors/blue}
      :on-press            #(re-frame/dispatch [:navigate-to :new-public-chat])}]
    [action-button/action-separator]
    [action-button/action-button
     {:label               (i18n/label :t/open-dapp)
      :accessibility-label :open-dapp-button
-     :icon                :icons/address
+     :icon                :main-icons/address
      :icon-opts           {:color colors/blue}
      :on-press            #(re-frame/dispatch [:navigate-to :open-dapp])}]
    [action-button/action-separator]
    [action-button/action-button
     {:label               (i18n/label :t/invite-friends)
      :accessibility-label :invite-friends-button
-     :icon                :icons/share
+     :icon                :main-icons/share
      :icon-opts           {:color colors/blue}
-     :on-press            #(list-selection/open-share {:message (i18n/label :t/get-status-at)})}]])
+     :on-press            #(list-selection/open-share {:message (i18n/label :t/get-status-at)})}]
+   [action-button/action-separator]
+   [action-button/action-button
+    {:label               (i18n/label :t/scan-qr)
+     :accessibility-label :scan-qr-code-button
+     :icon                :main-icons/qr
+     :icon-opts           {:color colors/blue}
+     :on-press            #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
+                                               {:toolbar-title (i18n/label :t/scan-qr)}
+                                               :handle-qr-code])}]])
 
 (views/defview add-new []
-  (views/letsubs [account     [:get-current-account]
+  (views/letsubs [account     [:account/account]
                   device-UUID [:get-device-UUID]]
     [react/view {:flex 1 :background-color :white}
      [status-bar/status-bar]
      [toolbar/simple-toolbar (i18n/label :t/new)]
      [common/separator]
-     [options-list (assoc account :anon-id device-UUID)]]))
+     [options-list account]]))

@@ -64,23 +64,12 @@
 (def TestCommandInstance (TestCommand.))
 (def AnotherTestCommandInstance (AnotherTestCommand.))
 
-(deftest index-commands-test
-  (let [fx (core/index-commands #{TestCommandInstance AnotherTestCommandInstance} {:db {}})]
+(deftest load-commands-test
+  (let [fx (core/load-commands {:db {}} #{TestCommandInstance AnotherTestCommandInstance})]
     (testing "Primary composite key index for command is correctly created"
       (is (= TestCommandInstance
              (get-in fx [:db :id->command
                          (core/command-id TestCommandInstance) :type]))))
-    (testing "Suggestions for parameters are injected with correct selection events"
-      (is (= [:set-command-parameter false 0 "first-value"]
-             ((get-in fx [:db :id->command
-                          (core/command-id TestCommandInstance) :params
-                          0 :suggestions])
-              "first-value")))
-      (is (= [:set-command-parameter true 2 "last-value"]
-             ((get-in fx [:db :id->command
-                          (core/command-id TestCommandInstance) :params
-                          2 :suggestions])
-              "last-value"))))
     (testing "Access scope indexes are correctly created"
       (is (contains? (get-in fx [:db :access-scope->command-id #{:personal-chats}])
                      (core/command-id TestCommandInstance)))
@@ -94,7 +83,7 @@
                      (core/command-id AnotherTestCommandInstance))))))
 
 (deftest chat-commands-test
-  (let [fx (core/index-commands #{TestCommandInstance AnotherTestCommandInstance} {:db {}})]
+  (let [fx (core/load-commands {:db {}} #{TestCommandInstance AnotherTestCommandInstance})]
     (testing "That relevant commands are looked up for chat"
       (is (= #{TestCommandInstance AnotherTestCommandInstance}
              (into #{}
@@ -118,61 +107,34 @@
                                        (get-in fx [:db :access-scope->command-id])
                                        {:chat-id "contact"})))))))
 
-(deftest selected-chat-command-test
-  (let [fx       (core/index-commands #{TestCommandInstance AnotherTestCommandInstance} {:db {}})
-        commands (core/chat-commands (get-in fx [:db :id->command])
-                                     (get-in fx [:db :access-scope->command-id])
-                                     {:chat-id    "contact"})]
-    (testing "Text not beggining with the command special charactes `/` is recognised"
-      (is (not (core/selected-chat-command "test-command 1" nil commands))))
-    (testing "Command not matching any available commands is not recognised as well"
-      (is (not (core/selected-chat-command "/another-test-command" nil commands))))
-    (testing "Available correctly entered command is recognised"
-      (is (= TestCommandInstance
-             (get (core/selected-chat-command "/test-command" nil commands) :type))))
-    (testing "Command completion and param position are determined as well"
-      (let [{:keys [current-param-position command-completion]}
-            (core/selected-chat-command "/test-command 1 " 17 commands)]
-        (is (= 1 current-param-position))
-        (is (= :less-then-needed command-completion)))
-      (let [{:keys [current-param-position command-completion]}
-            (core/selected-chat-command "/test-command 1 2 3" 20 commands)]
-        (is (= 2 current-param-position))
-        (is (= :complete command-completion))))))
+(def contacts #{"0x0471b2be1e8b971f75b571ba047baa58e2f40f67dad38f6381b2382df43f7176b1813bf372af4cd8451ed9063213029378b9fbc7db792d496e1a6161c42d999edf"
+                "0x04b790f2c3f4079f35a1fa396465ceb243cc446c9af211d0a1774f869eb9632a67a6e664e24075ec5c5a8a95a509a2a8173dbfeb88af372e784a37fecc1b5c0ba5"
+                "0x04cc3cec3f88dc1a39e224388f0304023fc78c2a7d05e4ebd61638192cc592d2c13d8f081b5d9995dbfcbe45a4ca7eb80d5c505eee660e8fee0df2da222f047287"})
 
-(deftest set-command-parameter-test
-  (testing "Setting command parameter correctly updates the text input"
-    (let [create-cofx (fn [input-text]
-                        {:db {:chats           {"test" {:input-text input-text}}
-                              :current-chat-id "test"}})]
-      (is (= "/test-command first-value "
-             (get-in (core/set-command-parameter
-                      false 0 "first-value"
-                      (create-cofx "/test-command"))
-                     [:db :chats "test" :input-text])))
-      (is (= "/test-command first-value second-value \"last value\""
-             (get-in (core/set-command-parameter
-                      false 1 "second-value"
-                      (create-cofx "/test-command first-value edited \"last value\""))
-                     [:db :chats "test" :input-text])))
-      (is (= "/test-command first-value second-value \"last value\""
-             (get-in (core/set-command-parameter
-                      false 2 "last value"
-                      (create-cofx "/test-command first-value second-value"))
-                     [:db :chats "test" :input-text]))))))
+(def contacts_addresses '("0x5adf1b9e1fa4bd4889fecd598b45079045d98f0e"
+                          "0x21631d18d9681d4ffdd460fc45fa52159fcd95c8"
+                          "0x5541e3be81b76d76cdbf968516caa5a5b773763b"))
 
-(deftest parse-parameters-test
-  (testing "testing that parse-parameters work correctly"
-    (is (= {:first-param  "1"
-            :second-param "2"
-            :last-param   "3"}
-           (core/parse-parameters test-command-parameters "/test-command 1 2 3")))
-    (is (= {:first-param  "1"
-            :second-param "2 2"
-            :last-param   "3"}
-           (core/parse-parameters test-command-parameters "/test-command 1 \"2 2\" 3")))
-    (is (= {:first-param  "1"
-            :second-param "2"}
-           (core/parse-parameters test-command-parameters "/test-command 1 2")))
-    (is (= {}
-           (core/parse-parameters test-command-parameters "/test-command ")))))
+(deftest enrich-command-message-for-events-test-public
+  (let [db {:chats {"1" {:contacts nil :public? true :group-chat false}}}
+        msg {:chat-id "1"}
+        enriched-msg (core/enrich-command-message-for-events db msg)]
+    (testing "command-message correctly (not) enriched - public chat"
+      (is (= enriched-msg
+             (assoc msg :public? true :group-chat false))))))
+
+(deftest enrich-command-message-for-events-test-groupchat
+  (let [db {:chats {"1" {:contacts contacts :public? false :group-chat true}}}
+        msg {:chat-id "1"}
+        enriched-msg (core/enrich-command-message-for-events db msg)]
+    (testing "command-message correctly enriched - group chat"
+      (is (= enriched-msg
+             (assoc msg :public? false :group-chat true :contacts contacts_addresses))))))
+
+(deftest enrich-command-message-for-events-test-1on1-chat
+  (let [db {:chats {"1" {:contacts contacts :public? false :group-chat false}}}
+        msg {:chat-id "1"}
+        enriched-msg (core/enrich-command-message-for-events db msg)]
+    (testing "command-message correctly enriched - 1on1 chat"
+      (is (= enriched-msg
+             (assoc msg :public? false :group-chat false :contact (first contacts_addresses)))))))

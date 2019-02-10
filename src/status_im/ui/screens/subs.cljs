@@ -2,23 +2,36 @@
   (:require [re-frame.core :refer [reg-sub subscribe]]
             [status-im.utils.ethereum.core :as ethereum]
             status-im.chat.subs
+            status-im.contact.subs
+            status-im.search.subs
+            status-im.mailserver.subs
+            status-im.ui.components.connectivity.subs
             status-im.ui.screens.accounts.subs
+            status-im.ui.screens.chat.stickers.subs
+            status-im.ui.screens.extensions.subs
             status-im.ui.screens.home.subs
-            status-im.ui.screens.contacts.subs
             status-im.ui.screens.group.subs
+            status-im.ui.screens.stickers.subs
             status-im.ui.screens.wallet.subs
             status-im.ui.screens.wallet.collectibles.subs
             status-im.ui.screens.wallet.request.subs
             status-im.ui.screens.wallet.send.subs
+            status-im.ui.screens.wallet.settings.subs
             status-im.ui.screens.wallet.transactions.subs
+            status-im.ui.screens.hardwallet.settings.subs
             status-im.ui.screens.network-settings.subs
-            status-im.ui.screens.offline-messaging-settings.subs
+            status-im.ui.screens.log-level-settings.subs
+            status-im.ui.screens.fleet-settings.subs
             status-im.ui.screens.bootnodes-settings.subs
+            status-im.ui.screens.pairing.subs
             status-im.ui.screens.currency-settings.subs
             status-im.ui.screens.browser.subs
             status-im.ui.screens.add-new.new-chat.subs
             status-im.ui.screens.add-new.new-public-chat.subs
-            status-im.ui.screens.profile.subs))
+            status-im.ui.screens.profile.subs
+            status-im.ui.screens.hardwallet.connect.subs
+            status-im.ui.screens.hardwallet.pin.subs
+            status-im.ui.screens.hardwallet.setup.subs))
 
 (reg-sub :get
          (fn [db [_ k]]
@@ -29,7 +42,7 @@
            (get-in db path)))
 
 (reg-sub :network
-         :<- [:get-current-account]
+         :<- [:account/account]
          (fn [current-account]
            (get (:networks current-account) (:network current-account))))
 
@@ -38,28 +51,25 @@
 (reg-sub :sync-state :sync-state)
 (reg-sub :network-status :network-status)
 (reg-sub :peers-count :peers-count)
-(reg-sub :mailserver-status :mailserver-status)
-
-(reg-sub :fetching?
-         (fn [db]
-           (get db :inbox/fetching?)))
-
-(reg-sub :offline?
-         :<- [:network-status]
-         :<- [:sync-state]
-         (fn [[network-status sync-state]]
-           (or (= network-status :offline)
-               (= sync-state :offline))))
+(reg-sub :node-status :node/status)
 
 (reg-sub :disconnected?
          :<- [:peers-count]
          (fn [peers-count]
            (zero? peers-count)))
 
-(reg-sub :mailserver-error?
-         :<- [:mailserver-status]
-         (fn [mailserver-status]
-           (#{:error :disconnected} mailserver-status)))
+(reg-sub :connection-stats
+         (fn [db _]
+           (get-in db [:desktop/desktop :debug-metrics])))
+
+(reg-sub :offline?
+         :<- [:network-status]
+         :<- [:sync-state]
+         :<- [:disconnected?]
+         (fn [[network-status sync-state disconnected?]]
+           (or disconnected?
+               (= network-status :offline)
+               (= sync-state :offline))))
 
 (reg-sub :syncing?
          :<- [:sync-state]
@@ -79,13 +89,9 @@
            (> (count (:navigation-stack db)) 1)))
 
 (reg-sub :delete-swipe-position
-         (fn [db [_ item-id]]
-           (let [item-animation (get-in db [:chat-animations item-id])]
+         (fn [db [_ type item-id]]
+           (let [item-animation (get-in db [:animations type item-id])]
              (if (some? item-animation) (:delete-swiped item-animation) nil))))
-
-(reg-sub :get-current-account-network
-         (fn [{:keys [network] :as db} [_]]
-           (get-in db [:account/account :networks network])))
 
 (reg-sub :dimensions/window
          (fn [db _]
@@ -94,3 +100,7 @@
 (reg-sub :dimensions/window-width
          :<- [:dimensions/window]
          :width)
+
+(reg-sub :initial-props
+         (fn [db _]
+           (get db :initial-props)))

@@ -78,7 +78,7 @@ var figwheelApp = function (platform, devHost) {
                     </ReactNative.View>
                 );
             }
-            return this.state.root;
+            return React.createElement(this.state.root, this.props);
         },
 
         componentDidMount: function () {

@@ -1,4 +1,6 @@
-import pytest
+import time
+from selenium.common.exceptions import TimeoutException
+from support.utilities import generate_timestamp
 from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
@@ -7,13 +9,16 @@ from views.sign_in_view import SignInView
 @marks.chat
 class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
-    @marks.testrail_id(1383)
-    @marks.smoke_1
+    @marks.testrail_id(5313)
+    @marks.critical
     def test_public_chat_messaging(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_1, username_2 = 'user_1', 'user_2'
         home_1, home_2 = device_1.create_user(username=username_1), device_2.create_user(username=username_2)
+        profile_1 = home_1.profile_button.click()
+        default_username_1 = profile_1.default_username_text.text
+        profile_1.home_button.click()
         public_key_2 = home_2.get_public_key()
         home_2.home_button.click()
 
@@ -28,15 +33,17 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_1.send_message_button.click()
 
         chat_2.verify_message_is_under_today_text(message, self.errors)
-        if chat_2.chat_element_by_text(message).username.text != username_1:
-            self.errors.append("Username '%s' is not shown next to the received message" % username_1)
+        full_username = '%s • %s' % (username_1, default_username_1)
+        if chat_2.chat_element_by_text(message).username.text != full_username:
+            self.errors.append("Username '%s' is not shown next to the received message" % full_username)
 
-        if chat_1.element_by_text(username_1).is_element_displayed():
+        if chat_1.element_by_text_part(username_1).is_element_displayed():
             self.errors.append("Username '%s' is shown for the sender" % username_1)
 
         self.verify_no_errors()
 
-    @marks.testrail_id(3706)
+    @marks.testrail_id(5386)
+    @marks.high
     def test_public_chat_clear_history(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -61,15 +68,17 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_1.element_by_text(message_3).is_element_present()
         for message in message_1, message_2:
             if chat_1.element_starts_with_text(message).is_element_present():
-                pytest.fail("Message '%s' is shown, but public chat history has been cleared" % message)
+                chat_1.driver.fail("Message '%s' is shown, but public chat history has been cleared" % message)
         home_1 = chat_1.get_back_to_home_view()
         home_1.relogin()
         home_1.element_by_text('#' + chat_name).click()
         for message in message_1, message_2:
             if chat_1.element_starts_with_text(message).is_element_present():
-                pytest.fail("Message '%s' is shown after re-login, but public chat history has been cleared" % message)
+                chat_1.driver.fail(
+                    "Message '%s' is shown after re-login, but public chat history has been cleared" % message)
 
-    @marks.testrail_id(3729)
+    @marks.testrail_id(5360)
+    @marks.critical
     def test_unread_messages_counter_public_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -105,7 +114,8 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 class TestPublicChatSingleDevice(SingleDeviceTestCase):
 
     @marks.skip
-    @marks.testrail_id(3752)
+    @marks.testrail_id(5392)
+    @marks.high
     def test_send_korean_characters(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -119,3 +129,53 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         if not public_chat.chat_element_by_text(message).is_element_displayed():
             self.errors.append('Message with korean characters is not shown')
         self.verify_no_errors()
+
+    @marks.skip
+    @marks.testrail_id(5336)
+    @marks.medium
+    def test_user_can_interact_with_public_chat(self):
+        signin = SignInView(self.driver)
+        home_view = signin.create_user()
+        chat = home_view.join_public_chat('evripidis-middellijn')
+
+        try:
+            chat.empty_public_chat_message.wait_for_invisibility_of_element()
+        except TimeoutException:
+            self.driver.fail('Empty chat: history is not fetched!')
+
+        # just to generate random text to be sent
+        text = generate_timestamp()
+        chat.send_message(text)
+
+        if not chat.chat_element_by_text(text).is_element_displayed():
+            self.errors.append('User sent message but it did not appear in chat!')
+
+        chat.move_to_messages_by_time_marker('Today')
+        if not chat.element_by_text('Today').is_element_displayed():
+            self.errors.append("'Today' chat marker is not shown")
+        if len(chat.chat_item.find_elements()) <= 1:
+            self.errors.append('No messages fetched for today!')
+
+        chat.move_to_messages_by_time_marker('Yesterday')
+        if not chat.element_by_text('Yesterday').is_element_displayed():
+            self.errors.append("'Yesterday' chat marker is not shown")
+        if len(chat.chat_item.find_elements()) <= 1:
+            self.errors.append('No messages fetched for yesterday!')
+
+        self.verify_no_errors()
+
+    @marks.testrail_id(5675)
+    @marks.high
+    def test_redirect_to_public_chat_tapping_tag_message(self):
+        signin = SignInView(self.driver)
+        home_view = signin.create_user()
+        chat = home_view.join_public_chat('montagne-angerufen')
+        tag_message = '#spectentur'
+        chat.send_message(tag_message)
+        chat.element_starts_with_text(tag_message).click()
+        time.sleep(4)
+        if not chat.user_name_text.text == tag_message:
+            self.driver.fail('Could not redirect a user to a public chat tapping the tag message.')
+        home = chat.get_back_to_home_view()
+        if not home.chat_name_text.text == tag_message:
+            self.driver.fail('Could not find the public chat in user chat list.')

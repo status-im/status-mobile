@@ -1,28 +1,78 @@
 pipeline {
-  agent { label 'linux-new' }
+  agent {
+    /* privileged mode is necessary for fuse */
+    docker {
+      label 'linux-new'
+      /* WARNING: remember to keep this up-to-date with the value in docker/linux/Makefile */
+      image 'statusteam/status-build-linux:1.1.0-2a35dcde'
+      args (
+        "--privileged "+
+        "-v /dev/fuse:/dev/fuse "+
+        "-v /var/tmp/lein:/var/tmp/lein:rw "+
+        "-v /var/tmp/npm:/var/tmp/npm:rw "+
+        "-v /opt/desktop-files:/opt/desktop-files:rw"
+      )
+    }
+  }
+
+  parameters {
+    string(
+      name: 'BUILD_TYPE',
+      description: 'Specify build type. Values: pr / nightly / release',
+      defaultValue: 'pr',
+    )
+  }
 
   options {
+    timestamps()
+    /* Prevent Jenkins jobs from running forever */
+    timeout(time: 40, unit: 'MINUTES')
+    /* Limit builds retained */
     buildDiscarder(logRotator(
       numToKeepStr: '10',
-      daysToKeepStr: '30',
-      artifactNumToKeepStr: '1',
+      daysToKeepStr: '20',
+      artifactNumToKeepStr: '10',
     ))
   }
-  
+
+  /**
+   * WARNING: Jenkins ignores PATH changes in Docker
+   * https://issues.jenkins-ci.org/browse/JENKINS-49076
+   **/
   environment {
+    BUILD_PLATFORM = 'linux'
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
     LC_ALL = 'en_US.UTF-8'
+    NPM_CONFIG_CACHE = '/var/tmp/npm'
+    LEIN_HOME = '/var/tmp/lein'
+    QT_PATH = '/opt/qt'
+    STATUSIM_APPIMAGE_DIR = '/opt/desktop-files'
+    VERBOSE_LEVEL = '3'
   }
-  
+
   stages {
     stage('Prep') {
       steps {
         script {
           /* Necessary to load methods */
           desktop = load 'ci/desktop.groovy'
+          cmn     = load 'ci/common.groovy'
+          print "Running ${cmn.getBuildType()} build!"
+          cmn.abortPreviousRunningBuilds()
+          /* Cleanup and Prep */
           desktop.prepDeps()
         }
+      }
+    }
+    stage('Lint') {
+      steps {
+        script { cmn.runLint() }
+      }
+    }
+    stage('Tests') {
+      steps {
+        script { cmn.runTests() }
       }
     }
     stage('Build') {
@@ -32,16 +82,32 @@ pipeline {
     }
     stage('Compile') {
       steps {
-        script { desktop.compileLinux() }
+        script { desktop.compile() }
       }
     }
     stage('Bundle') {
       steps {
-        script { app = desktop.bundleLinux() }
+        script { app = desktop.bundleLinux(cmn.getBuildType()) }
       }
     }
     stage('Archive') {
-      steps { archiveArtifacts app }
+      steps {
+        archiveArtifacts app
+      }
     }
+    stage('Upload') {
+      steps {
+        script { env.PKG_URL = cmn.uploadArtifact(app) }
+      }
+    }
+    stage('Cleanup') {
+      steps {
+        script { cmn.clean() }
+      }
+    }
+  }
+  post {
+    failure { script { load('ci/common.groovy').notifyPRFailure() } }
+    success { script { load('ci/common.groovy').notifyPRSuccess() } }
   }
 }

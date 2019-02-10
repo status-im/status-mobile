@@ -1,28 +1,36 @@
 apply plugin: 'com.android.library'
 
+def getStatusGoVersion = { ->
+    version = new File('../STATUS_GO_VERSION').text
+    return version.replaceAll("\\s","")
+}
+
 android {
-    compileSdkVersion 24
+    compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 18
-        targetSdkVersion 23
+        minSdkVersion 23
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
 }
 
 dependencies {
-    implementation 'com.facebook.react:react-native:+'
-    implementation 'com.instabug.library:instabug:3+'
-    implementation 'status-im:function:0.0.1'
+    implementation 'com.facebook.react:react-native:+' // from node_modules
+    compile 'com.github.status-im:function:0.0.1'
 
-    String statusGoVersion = 'develop-g19b53030'
+    // WARNING: If you change this, make sure the GitHub release of the .aar exists.
+    // WARNING: status-go is downloaded in Makefile and has a hardcoded version too.
+    String statusGoVersion = getStatusGoVersion()
     final String statusGoGroup = 'status-im', statusGoName = 'status-go'
 
     // Check if the local status-go jar exists, and compile against that if it does
     final String localStatusLibOutputDir = "${rootDir}/../modules/react-native-status/android/libs", localVersion = 'local'
-    if ( new File("${localStatusLibOutputDir}/${statusGoGroup}/${statusGoName}/${localVersion}/${statusGoName}-${localVersion}.aar").exists() ) {
+    final File localFile = new File("${localStatusLibOutputDir}/${statusGoGroup}/${statusGoName}/${localVersion}/${statusGoName}-${localVersion}.aar")
+    if ( localFile.exists() ) {
         // Use the local version
+        logger.warn("Using local build of Android status-go library ${localFile.absolutePath}.")
         statusGoVersion = localVersion
     }
 

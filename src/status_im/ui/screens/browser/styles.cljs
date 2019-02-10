@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.browser.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors])
+  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]]))
 
 (def browser {:flex 1})
 
@@ -11,7 +11,7 @@
    :android         {:padding-bottom 6}})
 
 (def dapp-name-text
-  {:color     colors/text-light-gray
+  {:color     colors/black
    :font-size 16})
 
 (defstyle dapp-text
@@ -19,11 +19,12 @@
    :ios     {:margin-top 4}
    :android {:font-size 13}})
 
-(def toolbar
+(def navbar
   {:background-color   :white
    :height             48
    :flex-direction     :row
    :align-items        :center
+   :justify-content    :space-between
    :padding-horizontal 32})
 
 (def disabled-button
@@ -31,6 +32,9 @@
 
 (def forward-button
   {:margin-left 72})
+
+(def share-button
+  {:margin-right 72})
 
 (def background
   {:flex             1
@@ -40,7 +44,7 @@
 
 (def web-view-loading
   {:flex             1
-   :background-color colors/gray-transparent
+   :background-color colors/gray
    :align-items      :center
    :justify-content  :center
    :position         :absolute

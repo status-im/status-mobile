@@ -15,11 +15,11 @@
 
 (defn- render-row [row _ _]
   [contact-view/contact-view {:contact       row
-                              :on-press      #(re-frame/dispatch [:start-chat (:whisper-identity %) {:navigation-replace? true}])
+                              :on-press      #(re-frame/dispatch [:chat.ui/start-chat (:public-key %) {:navigation-reset? true}])
                               :show-forward? true}])
 
 (views/defview new-chat []
-  (views/letsubs [contacts      [:all-added-people-contacts]
+  (views/letsubs [contacts      [:contacts/active]
                   error-message [:new-identity-error]]
     [react/keyboard-avoiding-view open-dapp.styles/main-container
      [status-bar/status-bar]
@@ -28,18 +28,18 @@
       [react/view add-new.styles/new-chat-input-container
        [react/text-input {:on-change-text      #(re-frame/dispatch [:new-chat/set-new-identity %])
                           :on-submit-editing   #(when-not error-message
-                                                  (re-frame/dispatch [:add-contact-handler]))
+                                                  (re-frame/dispatch [:contact.ui/contact-code-submitted]))
                           :placeholder         (i18n/label :t/enter-contact-code)
                           :style               add-new.styles/input
                           :accessibility-label :enter-contact-code-input
                           :return-key-type     :go}]]
-      [react/touchable-highlight {:on-press            #(re-frame/dispatch [:scan-qr-code
+      [react/touchable-highlight {:on-press            #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
                                                                             {:toolbar-title (i18n/label :t/new-contact)}
-                                                                            :set-contact-identity-from-qr])
+                                                                            :contact/qr-code-scanned])
                                   :style               add-new.styles/button-container
                                   :accessibility-label :scan-contact-code-button}
        [react/view
-        [vector-icons/icon :icons/qr {:color colors/blue}]]]]
+        [vector-icons/icon :main-icons/qr {:color colors/blue}]]]]
      [react/text {:style styles/error-message}
       error-message]
      (when (seq contacts)

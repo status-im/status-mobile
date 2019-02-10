@@ -1,17 +1,25 @@
 (ns status-im.desktop.core
   (:require [reagent.core :as reagent]
+            [re-frame.core :as re-frame]
             status-im.utils.db
             status-im.ui.screens.db
             status-im.ui.screens.events
             status-im.ui.screens.subs
             status-im.data-store.core
+            [reagent.impl.component :as reagent.component]
+            [status-im.ui.components.desktop.shortcuts :as shortcuts]
             [status-im.ui.screens.desktop.views :as views]
             [status-im.core :as core]
-            [status-im.ui.components.react :as react]))
+            [status-im.desktop.deep-links :as deep-links]))
 
-(defn app-root []
+(defn app-root [props]
   (reagent/create-class
-   {:reagent-render views/main}))
+   {:component-did-mount (fn [this]
+                           (re-frame/dispatch [:set-initial-props (reagent/props this)])
+                           (shortcuts/register-default-shortcuts)
+                           (deep-links/add-event-listener))
+    :reagent-render      (fn [props]
+                           views/main)}))
 
 (defn init []
   (core/init app-root))

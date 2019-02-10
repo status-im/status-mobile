@@ -1,29 +1,30 @@
 (ns status-im.ui.screens.db
-  (:require-macros [status-im.utils.db :refer [allowed-keys]])
   (:require [cljs.spec.alpha :as spec]
             [status-im.constants :as constants]
             [status-im.utils.platform :as platform]
             [status-im.utils.dimensions :as dimensions]
+            [status-im.fleet.core :as fleet]
             status-im.transport.db
-            status-im.ui.screens.accounts.db
-            status-im.ui.screens.contacts.db
+            status-im.accounts.db
+            status-im.contact.db
             status-im.ui.screens.qr-scanner.db
             status-im.ui.screens.group.db
             status-im.chat.specs
             status-im.ui.screens.profile.db
             status-im.ui.screens.network-settings.db
-            status-im.ui.screens.offline-messaging-settings.db
-            status-im.ui.screens.browser.db
+            status-im.mailserver.db
+            status-im.browser.db
             status-im.ui.screens.add-new.db
-            status-im.ui.screens.add-new.new-public-chat.db))
+            status-im.ui.screens.add-new.new-public-chat.db
+            status-im.ui.components.bottom-sheet.core))
 
 ;; initial state of app-db
-(def app-db {:current-public-key                 nil
-             :status-module-initialized?         (or platform/ios? js/goog.DEBUG platform/desktop?)
-             :keyboard-height                    0
+(def app-db {:keyboard-height                    0
              :tab-bar-visible?                   true
              :navigation-stack                   '()
              :contacts/contacts                  {}
+             :pairing/installations              {}
+             :contact-recovery/pop-up            #{}
              :qr-codes                           {}
              :group/selected-contacts            #{}
              :chats                              {}
@@ -37,30 +38,42 @@
              :app-state                          "active"
              :wallet.transactions                constants/default-wallet-transactions
              :wallet-selected-asset              {}
+             :wallet/all-tokens                  {}
              :prices                             {}
              :peers-count                        0
              :peers-summary                      []
              :notifications                      {}
+             :semaphores                         #{}
              :network                            constants/default-network
              :networks/networks                  constants/default-networks
-             :inbox/wnodes                       constants/default-wnodes
              :my-profile/editing?                false
              :transport/chats                    {}
+             :transport/filters                  {}
              :transport/message-envelopes        {}
+             :mailserver/mailservers             fleet/default-mailservers
+             :mailserver/topics                  {}
+             :mailserver/pending-requests        0
              :chat/cooldowns                     0
              :chat/cooldown-enabled?             false
              :chat/last-outgoing-message-sent-at 0
              :chat/spam-messages-frequency       0
              :tooltips                           {}
+             :initial-props                      {}
              :desktop/desktop                    {:tab-view-id :home}
              :dimensions/window                  (dimensions/window)
              :push-notifications/stored          {}
-             :push-notifications/initial?        false})
+             :registry                           {}
+             :hardwallet                         {:nfc-supported? false
+                                                  :nfc-enabled?   false
+                                                  :pin            {:original     []
+                                                                   :confirmation []
+                                                                   :current      []
+                                                                   :puk          []
+                                                                   :enter-step   :original}}
+             :chats/loading?                     true})
 
 ;;;;GLOBAL
 
-;;public key of current logged in account
-(spec/def ::current-public-key (spec/nilable string?))
 (spec/def ::was-modal? (spec/nilable boolean?))
 ;;"http://localhost:8545"
 (spec/def ::rpc-url (spec/nilable string?))
@@ -69,8 +82,10 @@
 (spec/def ::web3-node-version (spec/nilable string?))
 ;;object?
 (spec/def ::webview-bridge (spec/nilable any?))
-(spec/def ::status-module-initialized? (spec/nilable boolean?))
-(spec/def ::status-node-started? (spec/nilable boolean?))
+(spec/def :node/status (spec/nilable #{:stopped :starting :started :stopping}))
+(spec/def :node/node-restart? (spec/nilable boolean?))
+(spec/def :node/address (spec/nilable string?))
+
 ;;height of native keyboard if shown
 (spec/def ::keyboard-height (spec/nilable number?))
 (spec/def ::keyboard-max-height (spec/nilable number?))
@@ -78,15 +93,16 @@
 ;;:online - presence of internet connection in the phone
 (spec/def ::network-status (spec/nilable keyword?))
 
-(spec/def ::mailserver-status (spec/nilable keyword?))
-
 (spec/def ::app-state string?)
 
 ;;;;NODE
 
-(spec/def ::sync-listening-started (spec/nilable boolean?))
 (spec/def ::sync-state (spec/nilable #{:pending :in-progress :synced :done :offline}))
 (spec/def ::sync-data (spec/nilable map?))
+
+;; contents of eth_syncing or `nil` if the node isn't syncing now
+(spec/def :node/chain-sync-state (spec/nilable map?))
+(spec/def :node/latest-block-number (spec/nilable number?))
 
 ;;;;NAVIGATION
 
@@ -99,39 +115,47 @@
 (spec/def :navigation/prev-tab-view-id (spec/nilable keyword?))
 (spec/def :navigation/prev-view-id (spec/nilable keyword?))
 ;; navigation screen params
-(spec/def :navigation.screen-params/network-details (allowed-keys :req [:networks/selected-network]))
-(spec/def :navigation.screen-params/browser (spec/nilable string?))
+(spec/def :navigation.screen-params/network-details (spec/keys :req [:networks/selected-network]))
+(spec/def :navigation.screen-params/browser (spec/nilable map?))
 (spec/def :navigation.screen-params.profile-qr-viewer/contact (spec/nilable map?))
 (spec/def :navigation.screen-params.profile-qr-viewer/source (spec/nilable keyword?))
 (spec/def :navigation.screen-params.profile-qr-viewer/value (spec/nilable string?))
-(spec/def :navigation.screen-params/profile-qr-viewer (allowed-keys :opt-un [:navigation.screen-params.profile-qr-viewer/contact
-                                                                             :navigation.screen-params.profile-qr-viewer/source
-                                                                             :navigation.screen-params.profile-qr-viewer/value]))
+(spec/def :navigation.screen-params/profile-qr-viewer (spec/keys :opt-un [:navigation.screen-params.profile-qr-viewer/contact
+                                                                          :navigation.screen-params.profile-qr-viewer/source
+                                                                          :navigation.screen-params.profile-qr-viewer/value]))
 (spec/def :navigation.screen-params.qr-scanner/current-qr-context (spec/nilable any?))
-(spec/def :navigation.screen-params/qr-scanner (allowed-keys :opt-un [:navigation.screen-params.qr-scanner/current-qr-context]))
+(spec/def :navigation.screen-params/qr-scanner (spec/keys :opt-un [:navigation.screen-params.qr-scanner/current-qr-context]))
 (spec/def :navigation.screen-params.group-contacts/show-search? (spec/nilable any?))
-(spec/def :navigation.screen-params/group-contacts (allowed-keys :opt [:group/contact-group-id]
-                                                                 :opt-un [:navigation.screen-params.group-contacts/show-search?]))
+(spec/def :navigation.screen-params/group-contacts (spec/keys :opt [:group/contact-group-id]
+                                                              :opt-un [:navigation.screen-params.group-contacts/show-search?]))
 (spec/def :navigation.screen-params.edit-contact-group/group (spec/nilable any?))
 (spec/def :navigation.screen-params.edit-contact-group/group-type (spec/nilable any?))
-(spec/def :navigation.screen-params/edit-contact-group (allowed-keys :opt-un [:navigation.screen-params.edit-contact-group/group
-                                                                              :navigation.screen-params.edit-contact-group/group-type]))
+(spec/def :navigation.screen-params/edit-contact-group (spec/keys :opt-un [:navigation.screen-params.edit-contact-group/group
+                                                                           :navigation.screen-params.edit-contact-group/group-type]))
 (spec/def :navigation.screen-params.dapp-description/dapp :new/open-dapp)
 (spec/def :navigation.screen-params/dapp-description map?)
 
 (spec/def :navigation.screen-params/collectibles-list map?)
 
-(spec/def :navigation/screen-params (spec/nilable (allowed-keys :opt-un [:navigation.screen-params/network-details
-                                                                         :navigation.screen-params/browser
-                                                                         :navigation.screen-params/profile-qr-viewer
-                                                                         :navigation.screen-params/qr-scanner
-                                                                         :navigation.screen-params/group-contacts
-                                                                         :navigation.screen-params/edit-contact-group
-                                                                         :navigation.screen-params/dapp-description
-                                                                         :navigation.screen-params/collectibles-list])))
+(spec/def :navigation.screen-params/show-extension map?)
+(spec/def :navigation.screen-params/selection-modal-screen map?)
+(spec/def :navigation.screen-params/manage-dapps-permissions map?)
+
+(spec/def :navigation/screen-params (spec/nilable (spec/keys :opt-un [:navigation.screen-params/network-details
+                                                                      :navigation.screen-params/browser
+                                                                      :navigation.screen-params/profile-qr-viewer
+                                                                      :navigation.screen-params/qr-scanner
+                                                                      :navigation.screen-params/group-contacts
+                                                                      :navigation.screen-params/edit-contact-group
+                                                                      :navigation.screen-params/dapp-description
+                                                                      :navigation.screen-params/collectibles-list
+                                                                      :navigation.screen-params/show-extension
+                                                                      :navigation.screen-params/selection-modal-screen
+                                                                      :navigation.screen-params/manage-dapps-permissions])))
 
 (spec/def :desktop/desktop (spec/nilable any?))
 (spec/def ::tooltips (spec/nilable any?))
+(spec/def ::initial-props (spec/nilable any?))
 
 ;;;;NETWORK
 
@@ -139,16 +163,16 @@
 (spec/def ::chain (spec/nilable string?))
 (spec/def ::peers-count (spec/nilable integer?))
 (spec/def ::peers-summary (spec/nilable vector?))
-(spec/def :inbox/fetching? (spec/nilable boolean?))
-(spec/def :inbox/current-id (spec/nilable string?))
 
 (spec/def ::collectible (spec/nilable map?))
 (spec/def ::collectibles (spec/nilable map?))
 
-;;;;NODE
+(spec/def ::extension-url (spec/nilable string?))
+(spec/def :extensions/staged-extension (spec/nilable any?))
+(spec/def :extensions/manage (spec/nilable any?))
+(spec/def ::extensions-store (spec/nilable any?))
 
-(spec/def :node/after-start (spec/nilable vector?))
-(spec/def :node/after-stop (spec/nilable vector?))
+;;;;NODE
 
 (spec/def ::message-envelopes (spec/nilable map?))
 
@@ -164,132 +188,155 @@
 (spec/def :dimensions/window map?)
 
 ;; PUSH NOTIFICATIONS
-
 (spec/def :push-notifications/stored (spec/nilable map?))
-; Shows that push notification used to start the application is processed
-(spec/def :push-notifications/initial? (spec/nilable boolean?))
 
-(spec/def ::db (allowed-keys
-                :opt
-                [:contacts/contacts
-                 :contacts/dapps
-                 :contacts/new-identity
-                 :contacts/new-identity-error
-                 :contacts/identity
-                 :contacts/ui-props
-                 :contacts/list-ui-props
-                 :contacts/click-handler
-                 :contacts/click-action
-                 :contacts/click-params
-                 :commands/stored-command
-                 :group/selected-contacts
-                 :accounts/accounts
-                 :accounts/create
-                 :accounts/recover
-                 :accounts/login
-                 :account/account
-                 :my-profile/profile
-                 :my-profile/default-name
-                 :my-profile/editing?
-                 :my-profile/advanced?
-                 :my-profile/seed
-                 :group-chat-profile/profile
-                 :group-chat-profile/editing?
-                 :networks/selected-network
-                 :networks/networks
-                 :networks/manage
-                 :mailservers/manage
-                 :bootnodes/manage
-                 :node/after-start
-                 :node/after-stop
-                 :inbox/wnodes
-                 :inbox/last-received
-                 :inbox/current-id
-                 :inbox/fetching?
-                 :universal-links/url
-                 :push-notifications/stored
-                 :push-notifications/initial?
-                 :browser/browsers
-                 :browser/options
-                 :new/open-dapp
-                 :navigation/screen-params
-                 :chat/cooldowns
-                 :chat/cooldown-enabled?
-                 :chat/last-outgoing-message-sent-at
-                 :chat/spam-messages-frequency
-                 :transport/message-envelopes
-                 :transport/chats
-                 :transport/discovery-filter
-                 :desktop/desktop
-                 :dimensions/window
-                 :dapps/permissions]
-                :opt-un
-                [::current-public-key
-                 ::modal
-                 ::was-modal?
-                 ::rpc-url
-                 ::tooltips
-                 ::web3
-                 ::web3-node-version
-                 ::webview-bridge
-                 ::status-module-initialized?
-                 ::status-node-started?
-                 ::keyboard-height
-                 ::keyboard-max-height
-                 ::tab-bar-visible?
-                 ::network-status
-                 ::mailserver-status
-                 ::peers-count
-                 ::peers-summary
-                 ::sync-listening-started
-                 ::sync-state
-                 ::sync-data
-                 ::network
-                 ::chain
-                 ::app-state
-                 :navigation/view-id
-                 :navigation/navigation-stack
-                 :navigation/prev-tab-view-id
-                 :navigation/prev-view-id
-                 :qr/qr-codes
-                 :qr/qr-modal
-                 :qr/current-qr-context
-                 :chat/chats
-                 :chat/current-chat-id
-                 :chat/chat-id
-                 :chat/new-chat
-                 :chat/new-chat-name
-                 :chat/chat-animations
-                 :chat/chat-ui-props
-                 :chat/chat-list-ui-props
-                 :chat/layout-height
-                 :chat/message-data
-                 :chat/message-status
-                 :chat/selected-participants
-                 :chat/chat-loaded-callbacks
-                 :chat/public-group-topic
-                 :chat/public-group-topic-error
-                 :chat/messages
-                 :chat/message-groups
-                 :chat/message-statuses
-                 :chat/not-loaded-message-ids
-                 :chat/last-clock-value
-                 :chat/loaded-chats
-                 :chat/bot-db
-                 :chat/id->command
-                 :chat/access-scope->command-id
-                 :discoveries/discoveries
-                 :discoveries/discover-search-tags
-                 :discoveries/discover-current-dapp
-                 :discoveries/tags
-                 :discoveries/current-tag
-                 :discoveries/request-discoveries-timer
-                 :wallet/wallet
-                 :wallet/wallet.transactions
-                 :wallet/wallet-selected-asset
-                 :prices/prices
-                 :prices/prices-loading?
-                 :notifications/notifications
-                 ::device-UUID
-                 ::collectible
-                 ::collectibles]))
+(spec/def ::semaphores set?)
+
+(spec/def ::hardwallet (spec/nilable map?))
+
+(spec/def :stickers/packs (spec/nilable map?))
+(spec/def :stickers/packs-installed (spec/nilable map?))
+(spec/def :stickers/selected-pack (spec/nilable any?))
+(spec/def :stickers/recent (spec/nilable vector?))
+
+(spec/def ::db (spec/keys :opt [:contacts/contacts
+                                :contacts/dapps
+                                :contacts/new-identity
+                                :contacts/new-identity-error
+                                :contacts/identity
+                                :contacts/ui-props
+                                :contacts/list-ui-props
+                                :contacts/click-handler
+                                :contacts/click-action
+                                :contacts/click-params
+                                :pairing/installations
+                                :commands/stored-command
+                                :group/selected-contacts
+                                :accounts/accounts
+                                :accounts/create
+                                :accounts/recover
+                                :accounts/login
+                                :account/account
+                                :my-profile/profile
+                                :my-profile/default-name
+                                :my-profile/editing?
+                                :my-profile/advanced?
+                                :my-profile/seed
+                                :group-chat-profile/profile
+                                :group-chat-profile/editing?
+                                :networks/selected-network
+                                :networks/networks
+                                :networks/manage
+                                :bootnodes/manage
+                                :extensions/staged-extension
+                                :extensions/manage
+                                :node/status
+                                :node/restart?
+                                :node/address
+                                :node/chain-sync-state
+                                :node/latest-block-number
+                                :universal-links/url
+                                :push-notifications/stored
+                                :browser/browsers
+                                :browser/options
+                                :new/open-dapp
+                                :navigation/screen-params
+                                :chat/cooldowns
+                                :chat/cooldown-enabled?
+                                :chat/last-outgoing-message-sent-at
+                                :chat/spam-messages-frequency
+                                :transport/message-envelopes
+                                :transport/chats
+                                :transport/filters
+                                :mailserver.edit/mailserver
+                                :mailserver/mailservers
+                                :mailserver/current-id
+                                :mailserver/state
+                                :mailserver/topics
+                                :mailserver/pending-requests
+                                :mailserver/current-request
+                                :mailserver/connection-checks
+                                :mailserver/request-to
+                                :mailserver/request-error
+                                :desktop/desktop
+                                :dimensions/window
+                                :dapps/permissions
+                                :wallet/all-tokens
+                                :ui/contact
+                                :ui/search
+                                :ui/chat
+                                :chats/loading?
+                                :stickers/packs
+                                :stickers/packs-installed
+                                :stickers/selected-pack
+                                :stickers/recent
+                                :bottom-sheet/show?
+                                :bottom-sheet/view]
+                          :opt-un [::modal
+                                   ::was-modal?
+                                   ::rpc-url
+                                   ::tooltips
+                                   ::initial-props
+                                   ::web3
+                                   ::web3-node-version
+                                   ::webview-bridge
+                                   ::keyboard-height
+                                   ::keyboard-max-height
+                                   ::tab-bar-visible?
+                                   ::network-status
+                                   ::peers-count
+                                   ::peers-summary
+                                   ::sync-state
+                                   ::sync-data
+                                   ::network
+                                   ::chain
+                                   ::app-state
+                                   ::semaphores
+                                   ::hardwallet
+                                   :navigation/view-id
+                                   :navigation/navigation-stack
+                                   :navigation/prev-tab-view-id
+                                   :navigation/prev-view-id
+                                   :qr/qr-codes
+                                   :qr/qr-modal
+                                   :qr/current-qr-context
+                                   :chat/chats
+                                   :chat/current-chat-id
+                                   :chat/chat-id
+                                   :chat/new-chat
+                                   :chat/new-chat-name
+                                   :chat/animations
+                                   :chat/chat-ui-props
+                                   :chat/chat-list-ui-props
+                                   :chat/layout-height
+                                   :chat/message-data
+                                   :chat/message-status
+                                   :chat/selected-participants
+                                   :chat/public-group-topic
+                                   :chat/public-group-topic-error
+                                   :chat/messages
+                                   :chat/message-groups
+                                   :chat/message-statuses
+                                   :chat/referenced-messages
+                                   :chat/last-clock-value
+                                   :chat/loaded-chats
+                                   :chat/bot-db
+                                   :chat/id->command
+                                   :chat/access-scope->command-id
+                                   :discoveries/discoveries
+                                   :discoveries/discover-search-tags
+                                   :discoveries/discover-current-dapp
+                                   :discoveries/tags
+                                   :discoveries/current-tag
+                                   :discoveries/request-discoveries-timer
+                                   :wallet/wallet
+                                   :wallet/wallet.transactions
+                                   :wallet/wallet-selected-asset
+                                   :prices/prices
+                                   :prices/prices-loading?
+                                   :notifications/notifications
+                                   ::device-UUID
+                                   ::collectible
+                                   ::collectibles
+                                   ::extensions-store
+                                   :registry/registry]))

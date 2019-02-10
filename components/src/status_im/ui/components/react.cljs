@@ -7,11 +7,12 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.platform :as platform]
             [status-im.i18n :as i18n]
-            [status-im.react-native.js-dependencies :as js-dependencies]))
+            [status-im.react-native.js-dependencies :as js-dependencies]
+            [status-im.ui.components.colors :as colors]))
 
 (defn get-react-property [name]
   (if js-dependencies/react-native
-    (object/get js-dependencies/react-native name)
+    (or (object/get js-dependencies/react-native name) {})
     #js {}))
 
 (defn adapt-class [class]
@@ -35,6 +36,7 @@
 (def net-info (get-react-property "NetInfo"))
 (def view (get-class "View"))
 (def safe-area-view (get-class "SafeAreaView"))
+(def progress-bar (get-class "ProgressBarAndroid"))
 
 (def status-bar (get-class (if platform/desktop? "View" "StatusBar")))
 
@@ -46,7 +48,20 @@
 
 (def text-class (get-class "Text"))
 (def text-input-class (get-class "TextInput"))
-(def image (get-class "Image"))
+(def image-class (get-class "Image"))
+(def picker-class (get-class "Picker"))
+(def picker-item-class (adapt-class (.-Item (get-react-property "Picker"))))
+
+(defn valid-source? [source]
+  (or (not (map? source))
+      (not (contains? source :uri))
+      (and (contains? source :uri)
+           (:uri source))))
+
+(defn image [{:keys [source] :as props}]
+  (when (valid-source? source)
+    [image-class props]))
+
 (def switch (get-class "Switch"))
 (def check-box (get-class "CheckBox"))
 
@@ -65,20 +80,22 @@
 (def dimensions (.-Dimensions js-dependencies/react-native))
 (def keyboard (.-Keyboard js-dependencies/react-native))
 (def linking (.-Linking js-dependencies/react-native))
+(def desktop-notification (.-DesktopNotification (.-NativeModules js-dependencies/react-native)))
 
 (def slider (get-class "Slider"))
 ;; Accessor methods for React Components
 
-(defn add-font-style [style-key {:keys [font] :as opts :or {font :default}}]
-  (let [font (get-in platform/platform-specific [:fonts (keyword font)])
-        style (get opts style-key)]
+(def default-font {:font-family "Inter UI"})
+
+(defn add-font-style [style-key opts]
+  (let [style (get opts style-key)]
     (-> opts
         (dissoc :font)
-        (assoc style-key (merge style font)))))
+        (assoc style-key (merge default-font style)))))
 
-(defn transform-to-uppercase [{:keys [uppercase? force-uppercase?] :as opts} ts]
+(defn transform-to-uppercase [{:keys [uppercase? force-uppercase?]} ts]
   (if (or force-uppercase? (and uppercase? platform/android?))
-    (vec (map string/upper-case ts))
+    (vec (map #(when % (string/upper-case %)) ts))
     ts))
 
 (defn text
@@ -90,22 +107,19 @@
         (concat [text-class (add-font-style :style opts)])
         (vec))))
 
-(defn text-input [{:keys [font style] :as opts
-                   :or   {font :default}} text]
-  (let [font (get-in platform/platform-specific [:fonts (keyword font)])]
-    [text-input-class (merge
-                       {:underline-color-android :transparent
-                        :placeholder-text-color  styles/text2-color
-                        :placeholder             (i18n/label :t/type-a-message)
-                        :value                   text}
-                       (-> opts
-                           (dissoc :font)
-                           (assoc :style (merge style font))))]))
+(defn text-input [{:keys [style] :as opts} text]
+  [text-input-class (merge
+                     {:underline-color-android :transparent
+                      :placeholder-text-color  colors/text-gray
+                      :placeholder             (i18n/label :t/type-a-message)
+                      :value                   text}
+                     (-> opts
+                         (dissoc :font)
+                         (assoc :style (merge default-font style))))])
 
 (defn i18n-text
   [{:keys [style key]}]
-  (let [default-style {:letter-spacing -0.2
-                       :font-size      14}]
+  (let [default-style {:font-size 14}]
     [text {:style (merge default-style style)} (i18n/label key)]))
 
 (defn icon
@@ -130,6 +144,17 @@
 
 (defn list-item [component]
   (reagent/as-element component))
+
+(defn value->picker-item [{:keys [value label]}]
+  [picker-item-class {:value (or value "") :label (or label value "")}])
+
+(defn picker [{:keys [style on-change selected enabled data]}]
+  (into
+    [picker-class (merge (when style {:style style})
+                         (when enabled {:enabled enabled})
+                         (when on-change {:on-value-change on-change})
+                         (when selected {:selected-value selected}))]
+    (map value->picker-item data)))
 
 ;; Image picker
 
@@ -224,50 +249,61 @@
 
 (defmethod create-main-screen-view :iphone-x [current-view]
   (fn [props & children]
-    (let [props    (merge props
-                          {:background-color
-                           (case current-view
-                             (:wallet
-                              :wallet-send-transaction
-                              :wallet-transaction-sent
-                              :wallet-request-transaction
-                              :wallet-send-assets
-                              :wallet-request-assets
-                              :choose-recipient
-                              :recent-recipients
-                              :wallet-send-transaction-modal
-                              :wallet-transaction-sent-modal
-                              :wallet-send-transaction-request
-                              :wallet-transaction-fee
-                              :wallet-sign-message-modal
-                              :contact-code)      styles/color-blue4
-                             (:qr-viewer
-                              :recipient-qr-code) "#2f3031"
-                             (:accounts :login
-                                        :wallet-transactions-filter) styles/color-white
-                             :transparent)})
-          children (cond-> children
-                     (#{:wallet
-                        :recent-recipients
-                        :wallet-send-assets
-                        :wallet-request-assets} current-view)
-                     (conj [view {:background-color styles/color-white
-                                  :position         :absolute
-                                  :bottom           0
-                                  :right            0
-                                  :left             0
-                                  :height           100
-                                  :z-index          -1000}]))]
+    (let [props             (merge props
+                                   {:background-color
+                                    (case current-view
+                                      (:wallet
+                                       :wallet-send-transaction
+                                       :wallet-transaction-sent
+                                       :wallet-request-transaction
+                                       :wallet-send-transaction-chat
+                                       :wallet-send-assets
+                                       :wallet-request-assets
+                                       :choose-recipient
+                                       :recent-recipients
+                                       :wallet-send-transaction-modal
+                                       :wallet-transaction-sent-modal
+                                       :wallet-send-transaction-request
+                                       :wallet-transaction-fee
+                                       :wallet-sign-message-modal
+                                       :contact-code
+                                       :wallet-onboarding-setup
+                                       :wallet-settings-assets
+                                       :wallet-modal
+                                       :wallet-onboarding-setup-modal
+                                       :wallet-settings-hook)
+                                      colors/blue
+
+                                      (:qr-viewer
+                                       :recipient-qr-code)
+                                      "#2f3031"
+
+                                      colors/white)})
+          bottom-background (when (#{:wallet
+                                     :recent-recipients
+                                     :wallet-send-assets
+                                     :wallet-request-assets
+                                     :wallet-settings-assets
+                                     :wallet-modal} current-view)
+                              [view {:background-color colors/white
+                                     :position         :absolute
+                                     :bottom           0
+                                     :right            0
+                                     :left             0
+                                     :height           100
+                                     :z-index          -1000}])
+          children (conj children bottom-background)]
       (apply vector safe-area-view props children))))
 
 (defmethod create-main-screen-view :default [_]
   view)
 
 (views/defview main-screen-modal-view [current-view & components]
-  (views/letsubs [signing? [:get-in [:wallet :send-transaction :show-password-input?]]]
+  (views/letsubs []
     (let [main-screen-view (create-main-screen-view current-view)]
       [main-screen-view styles/flex
-       [keyboard-avoiding-view {:flex 1 :flex-direction :column}
-        (apply vector view styles/flex components)
-        (when (and platform/iphone-x? (not signing?))
-          [view {:flex 0 :height 34}])]])))
+       [(if (= current-view :chat-modal)
+          view
+          keyboard-avoiding-view)
+        {:flex 1 :flex-direction :column}
+        (apply vector view styles/flex components)]])))

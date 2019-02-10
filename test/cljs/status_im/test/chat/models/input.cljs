@@ -11,33 +11,13 @@
   (is (= "test" (input/text->emoji "test")))
   (is (= "word1 \uD83D\uDC4D word2" (input/text->emoji "word1 :+1: word2"))))
 
-(deftest starts-as-command?
-  (is (not (input/starts-as-command? nil)))
-  (is (not (input/text-ends-with-space? "")))
-  (is (not (input/text-ends-with-space? "word1 word2 word3")))
-  (is (input/text-ends-with-space? "word1 word2 ")))
-
-(deftest split-command-args
-  (is (nil? (input/split-command-args nil)))
-  (is (= [""] (input/split-command-args "")))
-  (is (= ["@browse" "google.com"] (input/split-command-args "@browse google.com")))
-  (is (= ["@browse" "google.com"] (input/split-command-args "  @browse   google.com  ")))
-  (is (= ["/send" "1.0" "John Doe"] (input/split-command-args "/send 1.0 \"John Doe\"")))
-  (is (= ["/send" "1.0" "John Doe"] (input/split-command-args "/send     1.0     \"John     Doe\"   "))))
-
-(deftest join-command-args
-  (is (nil? (input/join-command-args nil)))
-  (is (= "" (input/join-command-args [""])))
-  (is (= "/send 1.0 \"John Doe\"" (input/join-command-args ["/send" "1.0" "John Doe"]))))
-
 (deftest process-cooldown-fx
   (let [db {:current-chat-id              "chat"
             :chats                        {"chat" {:public? true}}
             :chat/cooldowns               0
             :chat/spam-messages-frequency 0
             :chat/cooldown-enabled?       false}]
-    (with-redefs [datetime/timestamp (constantly 1527675198542)
-                  config/spam-button-detection-enabled? true]
+    (with-redefs [datetime/timestamp (constantly 1527675198542)]
       (testing "no spamming detected"
         (let [expected {:db (assoc db :chat/last-outgoing-message-sent-at 1527675198542)}
               actual (input/process-cooldown {:db db})]
@@ -62,7 +42,7 @@
                                                       :chat/spam-messages-frequency 0
                                                       :chat/cooldown-enabled? true)
                         :show-cooldown-warning nil
-                        :dispatch-later        [{:dispatch [:disable-cooldown]
+                        :dispatch-later        [{:dispatch [:chat/disable-cooldown]
                                                  :ms       (constants/cooldown-periods-ms 1)}]}
               actual (input/process-cooldown {:db db})]
           (is (= expected actual))))
@@ -78,7 +58,7 @@
                                                       :chat/spam-messages-frequency 0
                                                       :chat/cooldown-enabled? true)
                         :show-cooldown-warning nil
-                        :dispatch-later        [{:dispatch [:disable-cooldown]
+                        :dispatch-later        [{:dispatch [:chat/disable-cooldown]
                                                  :ms       (constants/cooldown-periods-ms 2)}]}
               actual (input/process-cooldown {:db db})]
           (is (= expected actual))))
@@ -94,7 +74,7 @@
                                                       :chat/spam-messages-frequency 0
                                                       :chat/cooldown-enabled? true)
                         :show-cooldown-warning nil
-                        :dispatch-later        [{:dispatch [:disable-cooldown]
+                        :dispatch-later        [{:dispatch [:chat/disable-cooldown]
                                                  :ms       (constants/cooldown-periods-ms 3)}]}
               actual (input/process-cooldown {:db db})]
           (is (= expected actual)))))))

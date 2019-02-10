@@ -1,83 +1,109 @@
 (ns status-im.data-store.messages
-  (:require [cljs.reader :as reader]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
+            [clojure.set :as clojure.set]
+            [clojure.string :as string]
             [status-im.constants :as constants]
             [status-im.data-store.realm.core :as core]
-            [status-im.utils.core :as utils]))
+            [status-im.utils.core :as utils]
+            [status-im.js-dependencies :as dependencies]))
 
-(defn- command-type?
-  [type]
-  (contains?
-   #{constants/content-type-command constants/content-type-command-request}
-   type))
+(defn- transform-message [{:keys [content] :as message}]
+  (when-let [parsed-content (utils/safe-read-message-content content)]
+    (-> message
+        (update :message-type keyword)
+        (assoc :content parsed-content))))
 
-(defn- transform-message [{:keys [content-type] :as message}]
-  (cond-> (update message :message-type keyword)
-    (command-type? content-type)
-    (update :content reader/read-string)))
+(defn- exclude-messages [query message-ids]
+  (let [string-queries (map #(str "message-id != \"" % "\"") message-ids)]
+    (core/filtered query (string/join " AND " string-queries))))
 
 (defn- get-by-chat-id
   ([chat-id]
-   (get-by-chat-id chat-id 0))
-  ([chat-id from]
-   (let [messages (-> (core/get-by-field @core/account-realm :message :chat-id chat-id)
-                      (core/sorted :timestamp :desc)
-                      (core/page from (+ from constants/default-number-of-messages))
-                      (core/all-clj :message))]
-     (map transform-message messages))))
+   (get-by-chat-id chat-id nil))
+  ([chat-id {:keys [last-clock-value message-ids]}]
+   (let [messages (cond-> (core/get-by-field @core/account-realm :message :chat-id chat-id)
+                    :always (core/multi-field-sorted [["clock-value" true] ["message-id" true]])
+                    last-clock-value    (core/filtered (str "clock-value <= \"" last-clock-value "\""))
+                    (seq message-ids)   (exclude-messages message-ids)
+                    :always (core/page 0  constants/default-number-of-messages)
+                    :always (core/all-clj :message))
+         clock-value (-> messages last :clock-value)
+         new-message-ids (->> messages
+                              (filter #(= clock-value (:clock-value %)))
+                              (map :message-id)
+                              (into #{}))]
+     {:all-loaded? (> constants/default-number-of-messages (count messages))
+      ;; We paginate using clock-value + message-id to break ties, we need
+      ;; to exclude previously loaded messages with identical clock value
+      ;; otherwise we might fetch exactly the same page if all the messages
+      ;; in a page have the same clock-value. The initial idea was to use a
+      ;; cursor clock-value-message-id but realm does not support </> operators
+      ;; on strings
+      :pagination-info {:last-clock-value clock-value
+                        :message-ids (if (= clock-value last-clock-value)
+                                       (clojure.set/union message-ids new-message-ids)
+                                       new-message-ids)}
+      :messages    (keep transform-message messages)})))
 
-;; TODO janherich: define as cofx once debug handlers are refactored
-(defn get-log-messages
-  [chat-id]
-  (->> (get-by-chat-id chat-id 0)
-       (filter #(= (:content-type %) constants/content-type-log-message))
-       (map #(select-keys % [:content :timestamp]))))
+(defn get-message-id-by-old [old-message-id]
+  (when-let
+   [js-message (core/single
+                (core/get-by-field
+                 @core/account-realm
+                 :message :old-message-id old-message-id))]
+    (aget js-message "message-id")))
+
+(defn- get-references-by-ids
+  [message-ids]
+  (when (seq message-ids)
+    (keep (fn [{:keys [response-to response-to-v2]}]
+            (when-let [js-message
+                       (if response-to-v2
+                         (.objectForPrimaryKey @core/account-realm "message" response-to-v2)
+                         (core/single (core/get-by-field
+                                       @core/account-realm
+                                       :message :old-message-id response-to)))]
+              (when-let [deserialized-message (-> js-message
+                                                  (core/realm-obj->clj :message)
+                                                  transform-message)]
+                [(or response-to-v2 response-to) deserialized-message])))
+          message-ids)))
 
 (def default-values
-  {:to             nil})
+  {:to nil})
 
 (re-frame/reg-cofx
  :data-store/get-messages
  (fn [cofx _]
    (assoc cofx :get-stored-messages get-by-chat-id)))
 
+(defn- sha3 [s]
+  (.sha3 dependencies/Web3.prototype s))
+
 (re-frame/reg-cofx
- :data-store/message-ids
+ :data-store/get-referenced-messages
  (fn [cofx _]
-   (assoc cofx :stored-message-ids (let [chat-id->message-id (volatile! {})]
-                                     (-> @core/account-realm
-                                         (.objects "message")
-                                         (.map (fn [msg _ _]
-                                                 (vswap! chat-id->message-id
-                                                         #(update %
-                                                                  (aget msg "chat-id")
-                                                                  (fnil conj #{})
-                                                                  (aget msg "message-id"))))))
-                                     @chat-id->message-id))))
+   (assoc cofx :get-referenced-messages get-references-by-ids)))
+
+(defn get-user-messages
+  [public-key]
+  (.reduce (core/get-by-field @core/account-realm
+                              :message :from public-key)
+           (fn [acc message-object _ _]
+             (conj acc
+                   {:message-id (aget message-object "message-id")
+                    :chat-id (aget message-object "chat-id")}))
+           []))
 
 (re-frame/reg-cofx
- :data-store/unviewed-messages
- (fn [{:keys [db] :as cofx} _]
-   (assoc cofx
-          :stored-unviewed-messages
-          (into {}
-                (map (fn [[chat-id user-statuses]]
-                       [chat-id (into #{} (map :message-id) user-statuses)]))
-                (group-by :chat-id
-                          (-> @core/account-realm
-                              (core/get-by-fields
-                               :user-status
-                               :and {:whisper-identity (:current-public-key db)
-                                     :status           "received"})
-                              (core/all-clj :user-status)))))))
+ :data-store/get-user-messages
+ (fn [cofx _]
+   (assoc cofx :get-user-messages get-user-messages)))
 
-(defn- prepare-content [content]
+(defn prepare-content [content]
   (if (string? content)
     content
-    (pr-str
-     ;; TODO janherich: this is ugly and not systematic, define something like `:not-persisent`
-     ;; option for command params instead
-     (update content :params dissoc :password :password-confirmation))))
+    (pr-str content)))
 
 (defn- prepare-message [message]
   (utils/update-if-present message :content prepare-content))
@@ -101,17 +127,14 @@
       (core/delete realm message)
       (core/delete realm (core/get-by-field realm :user-status :message-id message-id)))))
 
-(defn delete-messages-tx
+(defn delete-chat-messages-tx
   "Returns tx function for deleting messages with user statuses for given chat-id"
   [chat-id]
   (fn [realm]
     (core/delete realm (core/get-by-field realm :message :chat-id chat-id))
     (core/delete realm (core/get-by-field realm :user-status :chat-id chat-id))))
 
-(defn hide-messages-tx
-  "Returns tx function for hiding messages for given chat-id"
-  [chat-id]
-  (fn [realm]
-    (.map (core/get-by-field realm :message :chat-id chat-id)
-          (fn [msg _ _]
-            (aset msg "show?" false)))))
+(defn message-exists? [message-id]
+  (if @core/account-realm
+    (not (nil? (.objectForPrimaryKey @core/account-realm "message" message-id)))
+    false))

@@ -16,7 +16,7 @@
 (reg-sub
  :selected-contacts-count
  :<- [:get :group/selected-contacts]
- :<- [:get-contacts]
+ :<- [:contacts/contacts]
  (fn [[selected-contacts contacts]]
    (count (filter-selected-contacts selected-contacts contacts))))
 
@@ -26,12 +26,12 @@
  (fn [selected-participants]
    (count selected-participants)))
 
-(defn filter-contacts [selected-contacts added-contacts]
-  (filter #(selected-contacts (:whisper-identity %)) added-contacts))
+(defn filter-contacts [selected-contacts active-contacts]
+  (filter #(selected-contacts (:public-key %)) active-contacts))
 
 (reg-sub
  :selected-group-contacts
  :<- [:get :group/selected-contacts]
- :<- [:all-added-contacts]
- (fn [[selected-contacts added-contacts]]
-   (filter-contacts selected-contacts added-contacts)))
+ :<- [:contacts/active]
+ (fn [[selected-contacts active-contacts]]
+   (filter-contacts selected-contacts active-contacts)))

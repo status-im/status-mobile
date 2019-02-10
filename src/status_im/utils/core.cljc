@@ -1,5 +1,7 @@
 (ns status-im.utils.core
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [cljs.tools.reader.edn :as edn]
+            [taoensso.timbre :as log]))
 
 (defn truncate-str
   "Given string and max threshold, trims the string to threshold length with `...`
@@ -36,16 +38,6 @@
 (defn hash-tag? [s]
   (= \# (first s)))
 
-(defn wrap-call-once!
-  "Returns a version of provided function that will be called only the first time wrapping function is called. Returns nil."
-  [f]
-  (let [called? (volatile! false)]
-    (fn [& args]
-      (when-not @called?
-        (vreset! called? true)
-        (apply f args)
-        nil))))
-
 (defn update-if-present
   "Like regular `clojure.core/update` but returns original map if update key is not present"
   [m k f & args]
@@ -55,7 +47,7 @@
 
 (defn map-values
   "Efficiently apply function to all map values"
-  [m f]
+  [f m]
   (into {}
         (map (fn [[k v]]
                [k (f v)]))
@@ -67,3 +59,15 @@
   (if (every? map? maps)
     (apply merge-with deep-merge maps)
     (last maps)))
+
+(defn index-by
+  "Given a collection and a unique key function, returns a map that indexes the collection.
+  Similar to group-by except that the map values are single objects (depends on key uniqueness)."
+  [key coll]
+  (into {} (map #(vector (key %) %) coll)))
+
+(defn safe-read-message-content [content]
+  (try
+    (edn/read-string content)
+    (catch :default e
+      (log/warn "failed to transform message with " e))))

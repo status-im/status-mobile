@@ -31,7 +31,7 @@
                              icon-opts)]])
 
 (defview nav-button-with-count [props]
-  (letsubs [unread-messages-number [:get-chats-unread-messages-number]]
+  (letsubs [unread-messages-number [:chats/unread-messages-number]]
     (let [unread-messages? (pos? unread-messages-number)]
       [react/view {:flex-direction :row}
        [nav-button (assoc props :unread-messages? unread-messages?)]
@@ -53,6 +53,7 @@
    (nav-text (merge props styles/item-text-white-background) text)))
 
 (def default-nav-back [nav-button actions/default-back])
+(def default-nav-close [nav-button actions/default-close])
 
 (defn nav-back-count
   ([]
@@ -68,7 +69,7 @@
      [nav-text props
       (i18n/label :t/done)]]
     [react/view
-     [nav-button (merge props {:icon (or icon :icons/close)})]]))
+     [nav-button (merge props {:icon (or icon :main-icons/close)})]]))
 
 ;; Content
 
@@ -81,10 +82,12 @@
   ([title-style title]
    (content-title title-style title nil nil))
   ([title-style title subtitle-style subtitle]
+   (content-title title-style title subtitle-style subtitle nil))
+  ([title-style title subtitle-style subtitle additional-text-props]
    [react/view {:style styles/toolbar-title-container}
-    [react/text {:style (merge styles/toolbar-title-text title-style)
-                 :font  :toolbar-title}
-     title]
+    [react/text (merge {:style (merge styles/toolbar-title-text title-style)
+                        :font :toolbar-title :numberOfLines 1 :ellipsizeMode :tail}
+                       additional-text-props) title]
     (when subtitle
       [react/text {:style subtitle-style}
        subtitle])]))
@@ -158,4 +161,5 @@
 (defn simple-toolbar
   "A simple toolbar composed of a nav-back item and a single line title."
   ([] (simple-toolbar nil))
-  ([title] (toolbar nil default-nav-back [content-title title])))
+  ([title] (simple-toolbar title false))
+  ([title modal?] (toolbar nil (if modal? default-nav-close default-nav-back) [content-title title])))

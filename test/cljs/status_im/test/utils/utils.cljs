@@ -1,21 +1,22 @@
 (ns status-im.test.utils.utils
   (:require [cljs.test :refer-macros [deftest is]]
-            [status-im.utils.core :as u]))
-
-(deftest wrap-as-call-once-test
-  (let [count (atom 0)]
-    (letfn [(inc-count [] (swap! count inc))]
-      (let [f (u/wrap-call-once! inc-count)]
-        (is (nil? (f)))
-        (is (= 1 @count))
-        (is (nil? (f)))
-        (is (= 1 @count))))))
+            [status-im.utils.core :as u]
+            [status-im.utils.utils :as uu]))
 
 (deftest truncate-str-test
   (is (= (u/truncate-str "Long string" 7) "Long...")) ; threshold is less then string length
   (is (= (u/truncate-str "Long string" 7 true) "Lo...ng")) ; threshold is less then string length (truncate middle)
   (is (= (u/truncate-str "Long string" 11) "Long string")) ; threshold is the same as string length
   (is (= (u/truncate-str "Long string" 20) "Long string"))) ; threshold is more then string length
+
+(deftest unread-messages-count-test
+  (is (= (uu/unread-messages-count 2) "2"))
+  (is (= (uu/unread-messages-count 12) "12"))
+  (is (= (uu/unread-messages-count 400) "400"))
+  (is (= (uu/unread-messages-count 1220) "1K+"))
+  (is (= (uu/unread-messages-count 4353) "4K+"))
+  (is (= (uu/unread-messages-count 4999) "4K+"))
+  (is (= (uu/unread-messages-count 11000) "10K+")))
 
 (deftest clean-text-test
   (is (= (u/clean-text "Hello! \n\r") "Hello!")
@@ -39,9 +40,9 @@
   (is (= {:a 0} (u/update-if-present {:a 0} :b inc))))
 
 (deftest map-values-test
-  (is (= {} (u/map-values {} inc)))
-  (is (= {:a 1} (u/map-values {:a 0} inc)))
-  (is (= {:a 1 :b 2} (u/map-values {:a 0 :b 1} inc))))
+  (is (= {} (u/map-values inc {})))
+  (is (= {:a 1} (u/map-values inc {:a 0})))
+  (is (= {:a 1 :b 2} (u/map-values inc {:a 0 :b 1}))))
 
 (deftest deep-merge-test
   (is (= {} (u/deep-merge {} {})))

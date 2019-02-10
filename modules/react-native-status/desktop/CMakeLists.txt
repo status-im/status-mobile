@@ -11,9 +11,6 @@ set(REACT_NATIVE_DESKTOP_EXTERNAL_MODULES_SRC ${REACT_NATIVE_DESKTOP_EXTERNAL_MO
 
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
-if (WIN32 AND NOT CUSTOM_STATUSGO_BUILD_DIR_PATH)
-  set(CUSTOM_STATUSGO_BUILD_DIR_PATH "C:/srd-build/StatusGo")
-endif()
 if (CUSTOM_STATUSGO_BUILD_DIR_PATH)
   set(StatusGo_ROOT ${CUSTOM_STATUSGO_BUILD_DIR_PATH})
 else()
@@ -27,19 +24,17 @@ set(StatusGo_STATIC_LIB
 
 include_directories(${StatusGo_INCLUDE_DIR})
 
-if (WIN32)
-  set(CONFIGURE_SCRIPT build-status-go.bat)
-else()
-  set(CONFIGURE_SCRIPT build-status-go.sh)
-endif()
+set(CONFIGURE_SCRIPT build-status-go.sh)
+
+file(STRINGS "../../../STATUS_GO_VERSION" STATUS_GO_VERSION)
 
 ExternalProject_Add(StatusGo_ep
   PREFIX ${StatusGo_PREFIX}
   SOURCE_DIR ${StatusGo_SOURCE_DIR}
-  GIT_REPOSITORY https://github.com/status-im/status-go.git
-  GIT_TAG develop-g19b53030
+  URL https://status-go.ams3.digitaloceanspaces.com/status-go-desktop-${STATUS_GO_VERSION}.zip
+      https://github.com/status-im/status-go/archive/${STATUS_GO_VERSION}.zip
   BUILD_BYPRODUCTS ${StatusGo_STATIC_LIB}
-  CONFIGURE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/${CONFIGURE_SCRIPT} ${GO_ROOT_PATH} ${StatusGo_ROOT} ${StatusGo_SOURCE_DIR}
+  CONFIGURE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/${CONFIGURE_SCRIPT} ${CMAKE_SYSTEM_NAME} ${GO_ROOT_PATH} ${StatusGo_ROOT} ${StatusGo_SOURCE_DIR} ${CMAKE_C_COMPILER} ${CMAKE_CXX_COMPILER}
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
 )
@@ -52,7 +47,7 @@ if (APPLE)
                          "-framework IOKit"
                          "-framework Security" pthread)
 elseif (WIN32)
-  set(STATUSGO_DEPS_LIBS -lWinMM -lWS2_32 -lsetupapi)
+  set(STATUSGO_DEPS_LIBS -lwinmm -lws2_32 -lsetupapi)
 else()
   set(STATUSGO_DEPS_LIBS pthread)
 endif()

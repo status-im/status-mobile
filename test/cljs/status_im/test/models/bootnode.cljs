@@ -1,6 +1,6 @@
 (ns status-im.test.models.bootnode
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.models.bootnode :as model]))
+            [status-im.bootnodes.core :as model]))
 
 (def bootnode-id "1da276e34126e93babf24ec88aac1a7602b4cbb2e11b0961d0ab5e989ca9c261aa7f7c1c85f15550a5f1e5a5ca2305b53b9280cf5894d5ecf7d257b173136d40")
 (def host "167.99.209.61:30504")
@@ -16,7 +16,7 @@
                                                  :chain   "mainnet_rpc"
                                                  :id      "someid"}}}
           actual       (model/upsert
-                        {:random-id "some-id"
+                        {:random-id-generator   (constantly "some-id")
                          :db {:bootnodes/manage new-bootnode
                               :network          "mainnet_rpc"
                               :account/account  {}}})]
@@ -30,7 +30,7 @@
                                             :chain   "mainnet_rpc"
                                             :id      "a"}}}
           actual       (model/upsert
-                        {:random-id "some-id"
+                        {:random-id-generator   (constantly "some-id")
                          :db {:bootnodes/manage new-bootnode
                               :network          "mainnet_rpc"
                               :account/account  {:bootnodes
@@ -46,20 +46,20 @@
     (testing "correct name"
       (is (= {:db {:bootnodes/manage {:name {:value "value"
                                              :error false}}}}
-             (model/set-input :name "value" {}))))
+             (model/set-input {:db {}} :name "value"))))
     (testing "blank name"
       (is (= {:db {:bootnodes/manage {:name {:value ""
                                              :error true}}}}
-             (model/set-input :name "" {})))))
+             (model/set-input {:db {}} :name "")))))
   (testing "it validates bootnode url"
     (testing "correct url"
       (is (= {:db {:bootnodes/manage {:url {:value valid-bootnode-address
                                             :error false}}}}
-             (model/set-input :url valid-bootnode-address {}))))
+             (model/set-input {:db {}} :url valid-bootnode-address))))
     (testing "broken url"
       (is (= {:db {:bootnodes/manage {:url {:value "broken"
                                             :error true}}}}
-             (model/set-input :url "broken" {}))))))
+             (model/set-input {:db {}} :url "broken"))))))
 
 (deftest edit-bootnode
   (let [db {:network "mainnet_rpc"
@@ -71,7 +71,7 @@
                     :address valid-bootnode-address}}}}}
         cofx {:db db}]
     (testing "when no id is given"
-      (let [actual (model/edit nil cofx)]
+      (let [actual (model/edit cofx nil)]
         (testing "it resets :bootnodes/manage"
           (is (= {:id   {:value nil
                          :error false}
@@ -85,7 +85,7 @@
                  (-> actual :dispatch))))))
     (testing "when an id is given"
       (testing "when the bootnode is in the list"
-        (let [actual (model/edit "a" cofx)]
+        (let [actual (model/edit cofx "a")]
           (testing "it populates the fields with the correct values"
             (is (= {:id   {:value "a"
                            :error false}
@@ -98,7 +98,7 @@
             (is (= [:navigate-to :edit-bootnode]
                    (-> actual :dispatch))))))
       (testing "when the bootnode is not in the list"
-        (let [actual (model/edit "not-existing" cofx)]
+        (let [actual (model/edit cofx "not-existing")]
           (testing "it populates the fields with the correct values"
             (is (= {:id   {:value nil
                            :error false}
@@ -118,7 +118,7 @@
                                                    {"a" {:id      "a"
                                                          :name    "name"
                                                          :address "enode://old-id:old-password@url:port"}}}}}}]
-      (is (model/fetch "a" cofx)))))
+      (is (model/fetch cofx "a")))))
 
 (deftest custom-bootnodes-in-use?
   (testing "is on the same network"
@@ -149,9 +149,9 @@
                                                          :address "enode://old-id:old-password@url:port"}}}
                                        :settings {:bootnodes
                                                   {"mainnnet_rpc" true}}}}}
-          actual (model/delete "b" cofx)]
+          actual (model/delete cofx "b")]
       (testing "it does not removes the bootnode"
-        (is (model/fetch "a" actual)))))
+        (is (model/fetch actual "a")))))
   (testing "existing bootnode"
     (let [cofx {:db {:network "mainnet_rpc"
                      :account/account {:bootnodes {"mainnet_rpc"
@@ -160,8 +160,9 @@
                                                          :address "enode://old-id:old-password@url:port"}}}
                                        :settings {:bootnodes
                                                   {"mainnnet_rpc" true}}}}}
-          actual (model/delete "a" cofx)]
+          actual (model/delete cofx "a")]
+
       (testing "it removes the bootnode"
-        (is (not (model/fetch "a" actual))))
+        (is (not (model/fetch actual "a"))))
       (testing "it updates the db"
         (is (= 1 (count (:data-store/base-tx actual))))))))

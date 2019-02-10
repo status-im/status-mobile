@@ -3,11 +3,15 @@ import pytest
 pr = pytest.mark.pr
 testrail_case_id = pytest.mark.testrail_case_id
 testrail_id = pytest.mark.testrail_id  # atomic tests
-smoke_1 = pytest.mark.smoke_1
+critical = pytest.mark.critical
+high = pytest.mark.high
+medium = pytest.mark.medium
+low = pytest.mark.low
 
 account = pytest.mark.account
-all = pytest.mark.all
+upgrade = pytest.mark.upgrade
 api = pytest.mark.api
+all = pytest.mark.all
 chat = pytest.mark.chat
 chat_management = pytest.mark.chat_management
 dapps = pytest.mark.dapps
@@ -18,3 +22,6 @@ wallet_modal = pytest.mark.wallet_modal
 sign_in = pytest.mark.sign_in
 skip = pytest.mark.skip
 logcat = pytest.mark.logcat
+
+
+battery_consumption = pytest.mark.battery_consumption

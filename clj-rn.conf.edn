@@ -2,14 +2,16 @@
 
  :run-options {:android {"appIdSuffix" "debug"}}
 
- :figwheel-bridge "figwheel-bridge.js"
+ :figwheel-bridge "./figwheel-bridge.js"
  ;; JS modules
  :js-modules ["realm"
-              "react-native-i18n"
+              "react-native-languages"
+              "i18n-js"
               "realm/react-native"
               "dismissKeyboard"
               "react-native-splash-screen"
               "react-native-status"
+              "react-native-status-keycard"
               "react-native-camera"
               "react-native-qrcode"
               "identicon.js"
@@ -22,10 +24,11 @@
               "react-native-firebase"
               "homoglyph-finder"
               "web3"
+              "web3-utils"
               "chance"
-              "instabug-reactnative"
               "react-native-http-bridge"
               "emojilib"
+              "eth-phishing-detect"
               "react-native-config"
               "react-native-svg"
               "react-native-keychain"
@@ -36,26 +39,70 @@
               "react-native/Libraries/vendor/emitter/EventEmitter"
               "react-native-background-timer"
               "react-native-fetch-polyfill"
-              "react-native-testfairy"]
+              "text-encoding"
+              "js-sha3"
+              "react-navigation"
+              "hi-base32"]
+
+ ;; Desktop modules
+ :desktop-modules ["realm"
+                   "react-native-languages"
+                   "i18n-js"
+                   "realm/react-native"
+                   "dismissKeyboard"
+                   "react-native-splash-screen"
+                   "react-native-status"
+                   "react-native-qrcode"
+                   "identicon.js"
+                   "react-native-fs"
+                   "react-native-dialogs"
+                   "react-native-image-crop-picker"
+                   "react-native-securerandom"
+                   "react-native-webview-bridge"
+                   "homoglyph-finder"
+                   "web3"
+                   "chance"
+                   "react-native-http-bridge"
+                   "emojilib"
+                   "eth-phishing-detect"
+                   "react-native-config"
+                   "react-native-svg"
+                   "react-native-keychain"
+                   "rn-snoopy"
+                   "rn-snoopy/stream/bars"
+                   "rn-snoopy/stream/filter"
+                   "rn-snoopy/stream/buffer"
+                   "react-native/Libraries/vendor/emitter/EventEmitter"
+                   "react-native-fetch-polyfill"
+                   "react-native-desktop-linking"
+                   "react-native-desktop-menu"
+                   "react-native-desktop-config"
+                   "react-native-desktop-shortcuts"
+                   "react-native-desktop-notification"
+                   "text-encoding"
+                   "js-sha3"
+                   "web3-utils"
+                   "hi-base32"]
 
  ;; Resoures
- :resource-dirs ["resources/images"]
+ :resource-dirs ["resources/images"
+                 "resources/icons"]
 
  :figwheel-options {:nrepl-port 7888
                     :nrepl-middleware ["cider.nrepl/cider-middleware"
                                        "refactor-nrepl.middleware/wrap-refactor"
-                                       "cemerick.piggieback/wrap-cljs-repl"]}
+                                       "cider.piggieback/wrap-cljs-repl"]}
 
  :builds [{:id           :desktop
-           :source-paths ["react-native/src" "src" "env/dev"]
-           :compiler     {:output-to     "target/ios/desktop.js"
+           :source-paths ["react-native/src/desktop" "src" "env/dev"]
+           :compiler     {:output-to     "target/desktop/app.js"
                           :main          "env.desktop.main"
                           :output-dir    "target/desktop"
                           :npm-deps      false
                           :optimizations :none}
            :figwheel     true}
           {:id           :ios
-           :source-paths ["react-native/src" "src" "env/dev"]
+           :source-paths ["react-native/src/mobile" "src" "env/dev"]
            :compiler     {:output-to     "target/ios/app.js"
                           :main          "env.ios.main"
                           :output-dir    "target/ios"
@@ -63,7 +110,7 @@
                           :optimizations :none}
            :figwheel     true}
           {:id               :android
-           :source-paths     ["react-native/src" "src" "env/dev"]
+           :source-paths     ["react-native/src/mobile" "src" "env/dev"]
            :compiler         {:output-to     "target/android/app.js"
                               :main          "env.android.main"
                               :output-dir    "target/android"

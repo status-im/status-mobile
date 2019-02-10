@@ -21,8 +21,21 @@
 (def mobile? (not= os "desktop"))
 (def iphone-x? (and ios? (ios/iphone-x-dimensions?)))
 
+(def isMacOs? (when platform (.-isMacOs platform)))
+(def isNix? (when platform (or (.-isLinux platform) (.-isUnix platform))))
+(def isWin? (when platform (.-isWin platform)))
+
 (def platform-specific
   (cond
     android? android/platform-specific
     ios? ios/platform-specific
-    :else (desktop/platform-specific (if platform (.-isMacOs platform) true))))
+    :else desktop/platform-specific))
+
+(defn no-backup-directory []
+  (cond
+    android? (str (.-DocumentDirectoryPath rn-dependencies/fs)
+                  "/../no_backup")
+    ios?          (.-LibraryDirectoryPath rn-dependencies/fs)))
+
+(defn android-version>= [v]
+  (and android? (>= version v)))

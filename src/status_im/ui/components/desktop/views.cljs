@@ -5,13 +5,14 @@
    [status-im.ui.components.action-button.styles :as st]
    [status-im.ui.components.styles :as common]
    [status-im.ui.components.checkbox.styles :as checkbox.styles]
-   [status-im.ui.components.react :as react]))
+   [status-im.ui.components.react :as react]
+   [status-im.ui.components.colors :as colors]))
 
 (defn checkbox [{:keys [on-value-change checked?]}]
   [react/touchable-highlight {:style checkbox.styles/wrapper :on-press #(do (when on-value-change (on-value-change (not checked?))))}
    [react/view {:style (checkbox.styles/icon-check-container checked?)}
     (when checked?
-      [icons/icon :icons/ok {:style checkbox.styles/check-icon}])]])
+      [icons/icon :main-icons/check {:style checkbox.styles/check-icon}])]])
 
 ;; TODO copy-pate with minimum modifications of status-react components
 
@@ -33,10 +34,10 @@
    :height           52
    :justify-content  :center
    :align-items      :center
-   :background-color common/color-light-blue})
+   :background-color colors/blue})
 
 (def sticky-button-label-style
-  {:color          common/color-white
+  {:color          colors/white
    :font-size      17
    :line-height    20
    :letter-spacing -0.2})
@@ -81,5 +82,5 @@
   [react/view {:style {:position :absolute :left 32 :top 32 :z-index 1000}}
    [react/touchable-highlight {:on-press on-press}
     [react/view {:style {:flex-direction :row :align-items :center}}
-     [icons/icon :icons/back {:color :white}]
+     [icons/icon :main-icons/back {:color :white}]
      [react/text {:style {:margin-left 16 :font-size 15 :color :white}} "Back"]]]])

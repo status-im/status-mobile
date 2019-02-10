@@ -74,7 +74,7 @@ import com.android.build.OutputFile
  * ]
  */
 project.ext.react = [
-        nodeExecutableAndArgs: ["node", "--max-old-space-size=4096"],
+        nodeExecutableAndArgs: ["node", "--max-old-space-size=8192"],
         entryFile: "index.android.js"
 ]
 
@@ -98,7 +98,7 @@ def enableProguardInReleaseBuilds = false
 def getVersionCode = { ->
     new ByteArrayOutputStream().withStream { stdOut ->
         exec {
-            commandLine "sh", "../../scripts/build_no.sh"
+            commandLine "bash", "../../scripts/build_no.sh"
             standardOutput = stdOut
             errorOutput = System.err
         }
@@ -116,19 +116,43 @@ def getVersionName = { ->
     }
 }
 
+def getBuildUrl = { ->
+    new ByteArrayOutputStream().withStream { stdOut ->
+        if (project.hasProperty("buildUrl")) {
+            return project.buildUrl
+        }
+        return 'Local Build'
+    }
+}
+
+/* check if environment variable exists for given variable name first */
+def getEnvOrConfig = { varName ->
+    def val = System.getenv(varName) ? System.getenv(varName) : project.property(varName)
+    return val
+}
+
 android {
-    compileSdkVersion 27
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
+
 
     defaultConfig {
         applicationId "im.status.ethereum"
         minSdkVersion 23
-        targetSdkVersion 27
+        targetSdkVersion 26
         multiDexEnabled true
         versionCode getVersionCode()
         versionName getVersionName()
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86"
         }
+    }
+    /**
+     * Arbitrary project metadata
+     * https://docs.gradle.org/current/dsl/org.gradle.api.plugins.ExtraPropertiesExtension.html
+     **/
+    project.ext {
+        buildUrl = getBuildUrl()
     }
     /**
     * Fix for: (https://github.com/ReactiveX/RxJava/issues/4445)
@@ -149,14 +173,15 @@ android {
     }
     dexOptions {
         jumboMode true
-        javaMaxHeapSize "4g"
+        javaMaxHeapSize "8g"
     }
     signingConfigs {
         release {
-            storeFile file(STATUS_RELEASE_STORE_FILE.replaceAll("~", System.properties['user.home']))
-            storePassword STATUS_RELEASE_STORE_PASSWORD
-            keyAlias STATUS_RELEASE_KEY_ALIAS
-            keyPassword STATUS_RELEASE_KEY_PASSWORD
+            /* environment variables take precedence over gradle.properties file */
+            storeFile     file(getEnvOrConfig('STATUS_RELEASE_STORE_FILE').replaceAll("~", System.properties['user.home']))
+            storePassword getEnvOrConfig('STATUS_RELEASE_STORE_PASSWORD')
+            keyAlias      getEnvOrConfig('STATUS_RELEASE_KEY_ALIAS')
+            keyPassword   getEnvOrConfig('STATUS_RELEASE_KEY_PASSWORD')
         }
     }
     splits {
@@ -201,40 +226,45 @@ configurations.all {
 }
 
 dependencies {
-    implementation project(':react-native-firebase')
     implementation project(':react-native-background-timer')
     implementation project(':react-native-svg')
     implementation 'com.android.support:multidex:1.0.2'
     implementation project(':react-native-http-bridge')
-    implementation project(':instabug-reactnative')
     implementation project(':react-native-splash-screen')
     implementation project(':react-native-image-resizer')
     implementation project(':react-native-dialogs')
     implementation project(':realm')
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.android.support:appcompat-v7:26.1.0"
+    implementation "com.android.support:appcompat-v7:27.1.0"
     // Force using exact RN version instead of relying on gradle dependency resolution
     // https://docs.gradle.org/current/userguide/introduction_dependency_management.html#sec:dependency_resolution
     //compile ("com.facebook.react:react-native:0.55.4") { force = true }  // From node_modules
     implementation project(':react-native-android')
-    implementation project(':react-native-i18n')
-    implementation project(':react-native-camera')
+    implementation project(':react-native-languages')
     implementation project(':react-native-status')
     implementation project(':react-native-fs')
     implementation project(':react-native-image-crop-picker')
     implementation project(':react-native-securerandom')
     implementation project(':react-native-webview-bridge')
     implementation project(':react-native-config')
-    implementation 'com.google.android.gms:play-services-base:15.0.0'
-    implementation 'com.google.firebase:firebase-core:15.0.2' //this decides your firebase SDK version
-    implementation 'com.google.firebase:firebase-messaging:15.0.2'
-    implementation project(':react-native-testfairy')
+    implementation project(':react-native-firebase')
+    compile ('com.google.android.gms:play-services-base:16.0.1') {
+        force = true
+    }
+    compile (project(':react-native-camera')) {
+        exclude group: "com.google.android.gms"
+        compile 'com.android.support:exifinterface:27.+'
+    }
+    implementation project(':react-native-status-keycard')
+    implementation 'com.google.firebase:firebase-core:16.0.3' //this decides your firebase SDK version
+    implementation 'com.google.firebase:firebase-messaging:17.1.0'
     implementation project(':react-native-keychain')
-    implementation project(':instabug-reactnative')
 
-    implementation 'status-im:function:0.0.1'
+    compile 'com.github.status-im:function:0.0.1'
     implementation fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
+    compile 'com.facebook.fresco:animated-gif:1.9.0'
 }
+
 // Run this once to be able to run the application with BUCK
 // puts all compile dependencies into folder libs for BUCK to use
 task copyDownloadableDepsToLibs(type: Copy) {
@@ -261,3 +291,4 @@ preBuild.dependsOn hemroidBuild
 
 // Must be at bottom to avoid dependency collision
 apply plugin: "com.google.gms.google-services"
+com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true

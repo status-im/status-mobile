@@ -75,6 +75,8 @@
 (defn- ->timestamp-bid []
   (* (utils.datetime/timestamp) post-id-digits))
 
+(defn max-timestamp []
+  (* (+ one-month-in-ms (utils.datetime/timestamp)) post-id-digits))
 ; The timestamp has an upper limit of Number.MAX_SAFE_INTEGER
 ; A malicious client could send a crafted message with timestamp = Number.MAX_SAFE_INTEGER
 ; which effectively would DoS the chat, as any new message would get
@@ -82,8 +84,11 @@
 ; We should never receive messages from untrusted peers with a timestamp greater
 ; then now + 20s.
 ; We cap the timestamp to time now + 1 month to give some room for trusted peers
-(defn- safe-timestamp [t]
-  (min t (* (+ one-month-in-ms (utils.datetime/timestamp)) post-id-digits)))
+(defn safe-timestamp [t]
+  (min t (max-timestamp)))
+
+(defn safe-timestamp? [t]
+  (<= t (max-timestamp)))
 
 (defn send [local-clock]
   (inc (max local-clock (->timestamp-bid))))

@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "nativePackage": true,
+  "name": "react-native-desktop-menu",
+  "version": "1.0.0",
+  "description": "Native popup and context menus for Desktop",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": ""
+}

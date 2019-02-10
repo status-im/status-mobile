@@ -2,12 +2,13 @@
 
 buildscript {
     repositories {
+        flatDir { dirs "libs", "${rootDir}/app/libs" }
         google()
         jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
-        classpath 'com.google.gms:google-services:3.0.0'
+        classpath 'com.google.gms:google-services:4.1.0'
         classpath 'de.undercouch:gradle-download-task:3.1.2'
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -18,13 +19,12 @@ buildscript {
 allprojects {
     repositories {
         mavenLocal()
+        google()
         jcenter()
         maven { url "$rootDir/../node_modules/react-native/android" }
         maven { url "$rootDir/../modules/react-native-status/android/libs" }
-        // for geth
-        flatDir { dirs 'libs' }
-        maven { url "http://139.162.11.12:8081/artifactory/libs-release-local" }
+        // for geth, function, and status-go
+        flatDir { dirs "libs", "${rootDir}/app/libs" }
         maven { url "https://jitpack.io" }
-        google()
     }
 }

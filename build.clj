@@ -22,6 +22,14 @@
                         :output-dir    "target/android"
                         :npm-deps false
                         :optimizations :none}
+     :warning-handlers '[status-im.utils.build/warning-handler]}
+    :desktop
+    {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/desktop" "src"]
+     :compiler         {:output-to     "target/desktop/app.js"
+                        :main          "env.desktop.main"
+                        :output-dir    "target/desktop"
+                        :npm-deps false
+                        :optimizations :none}
      :warning-handlers '[status-im.utils.build/warning-handler]}}
 
    :prod
@@ -41,6 +49,18 @@
     {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod"]
      :compiler         {:output-to          "index.android.js"
                         :output-dir         "target/android-prod"
+                        :static-fns         true
+                        :optimize-constants true
+                        :optimizations      :simple
+                        :closure-defines    {"goog.DEBUG" false}
+                        :parallel-build     false
+                        :elide-asserts      true
+                        :language-in        :ecmascript5}
+     :warning-handlers '[status-im.utils.build/warning-handler]}
+    :desktop
+    {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/desktop" "src" "env/prod"]
+     :compiler         {:output-to          "index.desktop.js"
+                        :output-dir         "target/desktop-prod"
                         :static-fns         true
                         :optimize-constants true
                         :optimizations      :simple
@@ -204,12 +224,20 @@
 
 ;;; :watch task
 
-(defn hawk-handler
+(defn hawk-handler-resources
   [ctx e]
   (let [path "src/status_im/utils/js_resources.cljs"
         js-resourced (slurp path)]
     (spit path (str js-resourced " ;;"))
     (spit path js-resourced))
+  ctx)
+
+(defn hawk-handler-translations
+  [ctx e]
+  (let [path "src/status_im/i18n.cljs"
+        i18n (slurp path)]
+    (spit path (str i18n " ;;"))
+    (spit path i18n))
   ctx)
 
 (defmethod task "watch" [[_ & args]]
@@ -221,7 +249,8 @@
     (let [options (main/parse-cli-options args main/watch-task-options)]
       (clj-rn/watch (assoc options :start-cljs-repl false))
       (rfs/-main)
-      (hawk/watch! [{:paths ["resources"] :handler hawk-handler}])
+      (hawk/watch! [{:paths ["resources"] :handler hawk-handler-resources}
+                    {:paths ["translations"] :handler hawk-handler-translations}])
       (when (:start-cljs-repl options) (ra/cljs-repl)))))
 
 ;;; Help

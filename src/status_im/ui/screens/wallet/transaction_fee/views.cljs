@@ -14,32 +14,29 @@
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.utils.money :as money]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]))
 
-(defn return-to-transaction [modal?]
-  (if modal?
-    ;;TODO(andrey) artificial navigation stack for modals (should be reworked)
-    (re-frame/dispatch [:navigate-to-modal :wallet-send-transaction-modal])
-    (act/default-handler)))
-
-(defn- toolbar [modal? title]
+(defn- toolbar [title]
   [toolbar/toolbar {:style wallet.styles/toolbar}
-   [toolbar/nav-button (act/close-white #(return-to-transaction modal?))]
+   [toolbar/nav-button (act/close-white act/default-handler)]
    [toolbar/content-title {:color :white} title]])
 
 (defview transaction-fee []
   (letsubs [send-transaction            [:wallet.send/transaction]
-            network                     [:get-current-account-network]
+            network                     [:account/network]
             {gas-edit       :gas
              max-fee        :max-fee
-             gas-price-edit :gas-price} [:wallet/edit]]
-    (let [modal?         (:id send-transaction)
-          {:keys [amount symbol]} send-transaction
-          gas            (:value gas-edit)
-          gas-price      (:value gas-price-edit)
-          {:keys [decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
+             gas-price-edit :gas-price} [:wallet/edit]
+            all-tokens                  [:wallet/all-tokens]]
+    (let [{:keys [amount symbol]} send-transaction
+          gas                (:value gas-edit)
+          gas-price          (:value gas-price-edit)
+          chain              (ethereum/network->chain-keyword network)
+          native-currency    (tokens/native-currency chain)
+          {:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)]
       [components/simple-screen {:status-bar-type :modal-wallet}
-       [toolbar modal? (i18n/label :t/wallet-transaction-fee)]
+       [toolbar (i18n/label :t/wallet-transaction-fee)]
        [react/view components.styles/flex
         [react/view {:flex-direction :row}
 
@@ -52,7 +49,7 @@
                                       :default-value       gas
                                       :accessibility-label :gas-limit-input})]]]
           (when (:invalid? gas-edit)
-            [tooltip/tooltip (i18n/label :t/invalid-number)])]
+            [tooltip/tooltip (i18n/label :t/invalid-number) styles/gas-input-error-tooltip])]
 
          [react/view styles/gas-container-wrapper
           [components/cartouche {}
@@ -65,9 +62,11 @@
             [components/cartouche-secondary-text
              (i18n/label :t/gwei)]]]
           (when (:invalid? gas-price-edit)
-            [tooltip/tooltip (i18n/label (if (= :invalid-number (:invalid? gas-price-edit))
-                                           :t/invalid-number
-                                           :t/wallet-send-min-wei))])]]
+            [tooltip/tooltip
+             (i18n/label (if (= :invalid-number (:invalid? gas-price-edit))
+                           :t/invalid-number
+                           :t/wallet-send-min-wei))
+             styles/gas-input-error-tooltip])]]
 
         [react/view styles/transaction-fee-info
          [react/view styles/transaction-fee-info-icon
@@ -82,12 +81,12 @@
           [react/view {:accessibility-label :amount-input}
            [components/cartouche-text-content
             (str (money/to-fixed (money/internal->formatted amount symbol decimals)))
-            (name symbol)]]]
+            (wallet.utils/display-symbol token)]]]
          [components/cartouche {:disabled? true}
           (i18n/label :t/wallet-transaction-total-fee)
           [react/view {:accessibility-label :total-fee-input}
            [components/cartouche-text-content
-            (str max-fee " " (i18n/label :t/eth))]]]]
+            (str max-fee " " (wallet.utils/display-symbol native-currency))]]]]
 
         [bottom-buttons/bottom-buttons styles/fee-buttons
          [button/button {:on-press            #(re-frame/dispatch [:wallet.send/reset-gas-default])
@@ -96,7 +95,7 @@
          [button/button {:on-press            #(do (re-frame/dispatch [:wallet.send/set-gas-details
                                                                        (:value-number gas-edit)
                                                                        (:value-number gas-price-edit)])
-                                                   (return-to-transaction modal?))
+                                                   (act/default-handler))
                          :accessibility-label :done-button
                          :disabled?           (or (:invalid? gas-edit)
                                                   (:invalid? gas-price-edit))}

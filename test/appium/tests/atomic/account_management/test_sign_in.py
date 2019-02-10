@@ -1,7 +1,6 @@
 import pytest
-import random
 
-from tests import marks, common_password
+from tests import marks, common_password, unique_password
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -10,8 +9,8 @@ from views.sign_in_view import SignInView
 @marks.sign_in
 class TestSignIn(SingleDeviceTestCase):
 
-    @marks.testrail_id(1381)
-    @marks.smoke_1
+    @marks.testrail_id(5312)
+    @marks.critical
     def test_login_with_new_account(self):
         sign_in = SignInView(self.driver)
         username = 'test_user'
@@ -26,7 +25,8 @@ class TestSignIn(SingleDeviceTestCase):
             self.errors.append('User is not logged in')
         self.verify_no_errors()
 
-    @marks.testrail_id(2169)
+    @marks.testrail_id(5463)
+    @marks.medium
     def test_login_with_incorrect_password(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
@@ -39,33 +39,28 @@ class TestSignIn(SingleDeviceTestCase):
         sign_in.find_full_text('Wrong password')
 
     @marks.logcat
-    @marks.testrail_id(3768)
+    @marks.testrail_id(5415)
+    @marks.critical
     def test_password_in_logcat_sign_in(self):
         sign_in = SignInView(self.driver)
-        password = random.randint(100000, 1000000)
-        sign_in.create_user(password=password)
+        sign_in.create_user(password=unique_password)
         profile = sign_in.profile_button.click()
         profile.logout()
         sign_in.sign_in()
-        sign_in.check_no_values_in_logcat(password=password)
+        sign_in.check_no_values_in_logcat(password=unique_password)
 
 
 @marks.all
 @marks.sign_in
 class TestSignInOffline(MultipleDeviceTestCase):
 
-    @marks.testrail_case_id(3740)
-    @marks.testrail_id(1432)
+    @marks.testrail_id(5327)
+    @marks.critical
     def test_offline_login(self):
-        self.create_drivers(1, offline_mode=True)
-        driver = self.drivers[0]
-        sign_in = SignInView(driver)
+        self.create_drivers(1)
+        sign_in = SignInView(self.drivers[0])
         sign_in.create_user()
-
-        driver.close_app()
-        driver.set_network_connection(1)  # airplane mode
-
-        driver.launch_app()
+        sign_in.toggle_airplane_mode()
         sign_in.accept_agreements()
         home = sign_in.sign_in()
         home.home_button.wait_for_visibility_of_element()

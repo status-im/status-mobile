@@ -2,95 +2,113 @@ pipeline {
   agent { label 'master' }
 
   options {
+    timestamps()
     disableConcurrentBuilds()
+    /* Prevent Jenkins jobs from running forever */
+    timeout(time: 45, unit: 'MINUTES')
+    /* Limit builds retained */
     buildDiscarder(logRotator(
       numToKeepStr: '10',
       daysToKeepStr: '30',
       artifactNumToKeepStr: '10',
     ))
   }
-  
+
+
   stages {
-    stage('Tag') {
+    stage('Prep') {
       steps { script {
-        common = load('ci/common.groovy')
-        /* to avoid missing build tag parallel builds */
-        print "Build Number: ${common.tagBuild()}"
+        println "Current JOB: ${env.JOB_NAME}"
+        /* load common lib */
+        cmn = load('ci/common.groovy')
+        /* just for a shorter access */
+        btype = cmn.getBuildType() 
       } }
     }
     stage('Build') {
       parallel {
         stage('MacOS') { steps { script {
-          osx = common.buildBranch('status-react/combined/desktop-macos')
+          osx = cmn.buildBranch('status-react/combined/desktop-macos')
         } } }
         stage('Linux') { steps { script {
-          nix = common.buildBranch('status-react/combined/desktop-linux')
+          nix = cmn.buildBranch('status-react/combined/desktop-linux')
+        } } }
+        stage('Windows') { steps { script {
+          win = cmn.buildBranch('status-react/combined/desktop-windows')
         } } }
         stage('iOS') { steps { script {
-          ios = common.buildBranch('status-react/combined/mobile-ios')
+          ios = cmn.buildBranch('status-react/combined/mobile-ios')
+        } } }
+        stage('iOS e2e') { steps { script {
+          iose2e = cmn.buildBranch('status-react/combined/mobile-ios-e2e')
         } } }
         stage('Android') { steps { script {
-          dro = common.buildBranch('status-react/combined/mobile-android')
+          apk = cmn.buildBranch('status-react/combined/mobile-android')
         } } }
         stage('Android e2e') { steps { script {
-          e2e = common.buildBranch('status-react/combined/mobile-android', 'e2e')
+          apke2e = cmn.buildBranch('status-react/combined/mobile-android-e2e')
         } } }
       }
     }
     stage('Archive') {
       steps { script {
         sh('rm -f pkg/*')
-        common.copyArts('status-react/combined/desktop-macos', osx.number)
-        common.copyArts('status-react/combined/desktop-linux', nix.number)
-        common.copyArts('status-react/combined/mobile-android', dro.number)
-        common.copyArts('status-react/combined/mobile-android', e2e.number)
-        archiveArtifacts('pkg/*')
+        if (btype != 'release') {
+          cmn.copyArts('status-react/combined/desktop-macos', osx.number)
+          cmn.copyArts('status-react/combined/desktop-linux', nix.number)
+          cmn.copyArts('status-react/combined/desktop-windows', win.number)
+        }
+        cmn.copyArts('status-react/combined/mobile-ios', ios.number)
+        cmn.copyArts('status-react/combined/mobile-ios-e2e', iose2e.number)
+        cmn.copyArts('status-react/combined/mobile-android', apk.number)
+        cmn.copyArts('status-react/combined/mobile-android-e2e', apke2e.number)
+        dir('pkg') {
+          /* generate sha256 checksums for upload */
+          sh "sha256sum * | tee ${cmn.pkgFilename(btype, 'sha256')}"
+          archiveArtifacts('*')
+        }
       } }
     }
     stage('Upload') {
-      when { expression { params.BUILD_TYPE == 'nightly' } }
       steps { script {
-        def pkg = "StatusIm-${GIT_COMMIT.take(6)}"
-        e2eUrl = common.uploadArtifact('pkg', "${pkg}-e2e.apk")
-        apkUrl = common.uploadArtifact('pkg', "${pkg}.apk")
-        dmgUrl = common.uploadArtifact('pkg', "${pkg}.dmg")
-        appUrl = common.uploadArtifact('pkg', "${pkg}.AppImage")
-        /* special case for iOS Diawi link */
-        ipaUrl = ios.getEnvironment().DIAWI_URL
+        /* object for easier URLs handling */
+        urls = [
+          /* mobile */
+          Apk: cmn.pkgUrl(apk), Apke2e: cmn.pkgUrl(apke2e),
+          iOS: cmn.pkgUrl(ios), iOSe2e: cmn.pkgUrl(iose2e),
+          /* desktop */
+          App: cmn.pkgUrl(nix), Mac: cmn.pkgUrl(osx), Win: cmn.pkgUrl(win),
+          /* upload the sha256 checksums file too */
+          SHA: cmn.uploadArtifact(cmn.pkgFind('sha256')),
+        ]
+        /* add URLs to the build description */
+        cmn.setBuildDesc(urls)
+        /* Create latest.json with newest nightly URLs */
+        if (btype == 'nightly') {
+          cmn.updateLatestNightlies(urls)
+        }
       } }
     }
-    stage('Notify') {
-      steps {
-        slackSend(
-          message: (
-            "Build success! "+
-            "<${currentBuild.absoluteUrl}|${currentBuild.displayName}> "+
-            "(${currentBuild.durationString})\n"+
-            (params.BUILD_TYPE == 'nightly' ?
-              "E2E: ${e2eUrl}\n"+
-              "APK: ${apkUrl}\n"+
-              "IPA: ${ipaUrl}\n"+
-              "DMG: ${dmgUrl}\n"+
-              "APP: ${appUrl}\n"
-            : '')
-          ),
-          color: 'good'
-        )
-      }
+    stage('Notify') { when { expression { env.CHANGE_ID != null } }
+      steps { script {
+        cmn.gitHubNotifyFull(urls)
+      } }
     }
     stage('Publish') {
-      when { expression { params.BUILD_TYPE == 'nightly' } }
-      steps {
+      when { expression { btype == 'nightly' } }
+      steps { script {
+        build('misc/status.im')
+      } }
+    }
+    stage('Run e2e') {
+      when { expression { btype == 'nightly' } }
+      steps { script {
+        e2eApk = cmn.getEnv(apke2e, 'SAUCE_URL')
         build(
-          job: 'misc/status-im.github.io-update_env',
-          parameters: [
-            [name: 'APK_URL', value: apkUrl, $class: 'StringParameterValue'],
-            [name: 'IOS_URL', value: ipaUrl, $class: 'StringParameterValue'],
-            [name: 'DMG_URL', value: dmgUrl, $class: 'StringParameterValue'],
-            [name: 'NIX_URL', value: appUrl, $class: 'StringParameterValue']
-          ]
+          job: 'end-to-end-tests/status-app-nightly', wait: false,
+          parameters: [string(name: 'apk', value: "--apk=${e2eApk}")]
         )
-      }
+      } }
     }
   }
 }

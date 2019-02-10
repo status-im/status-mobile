@@ -1,73 +1,119 @@
 pipeline {
-  agent { label 'macos' }
+  agent { 
+    docker {
+      label 'linux'
+      /* WARNING: remember to keep this up-to-date with the value in docker/android/Makefile */
+      image 'statusteam/status-build-android:1.1.0-16a42e06'
+      args (
+        "-v /home/jenkins/tmp:/var/tmp:rw "+
+        "-v /home/jenkins/status-im.keystore:/tmp/status-im.keystore:ro"
+      )
+    }
+  }
 
   options {
+    timestamps()
+    /* Prevent Jenkins jobs from running forever */
+    timeout(time: 35, unit: 'MINUTES')
+    /* Limit builds retained */
     buildDiscarder(logRotator(
       numToKeepStr: '10',
-      daysToKeepStr: '30',
-      artifactNumToKeepStr: '6',
+      daysToKeepStr: '20',
+      artifactNumToKeepStr: '10',
     ))
   }
-  
+
+  parameters {
+    string(
+      name: 'BUILD_TYPE',
+      description: 'Specify build type. Values: pr / e2e / nightly / release',
+      defaultValue: 'pr',
+    )
+  }
+
   environment {
-    LANG = 'en_US.UTF-8'
+    BUILD_PLATFORM = 'android'
+    LANG     = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
-    LC_ALL = 'en_US.UTF-8'
+    LC_ALL   = 'en_US.UTF-8'
     FASTLANE_DISABLE_COLORS = 1
     REALM_DISABLE_ANALYTICS = 1
-    ANDROID_HOME = '/usr/local/share/android-sdk'
-    ANDROID_SDK_ROOT = '/usr/local/share/android-sdk'
-    ANDROID_NDK = '/Users/jenkins/android-ndk-r10e'
-    ANDROID_NDK_HOME = '/Users/jenkins/android-ndk-r10e'
+    /* since we are mounting it we need to specify location */
+    STATUS_RELEASE_STORE_FILE = '/tmp/status-im.keystore'
+    ANDROID_HOME      = '/usr/lib/android-sdk'
+    ANDROID_SDK_ROOT  = '/usr/lib/android-sdk'
+    ANDROID_NDK       = '/usr/lib/android-ndk'
+    ANDROID_NDK_HOME  = '/usr/lib/android-ndk'
+    /* We use EXECUTOR_NUMBER to avoid multiple instances clashing */
+    LEIN_HOME         = "/var/tmp/lein-${EXECUTOR_NUMBER}"
+    YARN_CACHE_FOLDER = "/var/tmp/yarn-${EXECUTOR_NUMBER}"
+    BUNDLE_PATH       = "/var/tmp/bundle-${EXECUTOR_NUMBER}"
+    GRADLE_USER_HOME  = "/var/tmp/gradle-${EXECUTOR_NUMBER}"
   }
-  
+
   stages {
     stage('Prep') {
       steps {
         script {
-          print "Running ${params.BUILD_TYPE} build!"
           /* Necessary to load methods */
           mobile = load 'ci/mobile.groovy'
-          mobile.prep(params.BUILD_TYPE)
+          cmn    = load 'ci/common.groovy'
+          print "Running ${cmn.getBuildType()} build!"
+          cmn.abortPreviousRunningBuilds()
+          /* Cleanup and Prep */
+          mobile.prep(cmn.getBuildType())
         }
+      }
+    }
+    stage('Lint') {
+      steps {
+        script { cmn.runLint() }
       }
     }
     stage('Tests') {
       steps {
-        script { mobile.runTests() }
+        script { cmn.runTests() }
       }
     }
     stage('Build') {
       steps {
-        script { mobile.leinBuild() }
+        script { mobile.leinBuild('android') }
       }
     }
-    stage('Compile') {
+    stage('Bundle') {
       steps {
-        script { apk = mobile.android.compile(params.BUILD_TYPE) }
+        script { apk = mobile.android.bundle(cmn.getBuildType()) }
       }
     }
     stage('Archive') {
       steps {
-        script { archiveArtifacts apk }
+        archiveArtifacts apk
       }
     }
     stage('Upload') {
-      when { expression { params.BUILD_TYPE == 'release' } }
       steps {
-        script { mobile.android.uploadToPlayStore() }
+        script {
+          env.PKG_URL = cmn.uploadArtifact(apk)
+          /* build type specific */
+          switch (cmn.getBuildType()) {
+            case 'release':
+              mobile.android.uploadToPlayStore(); break;
+            case 'nightly':
+              env.DIAWI_URL = mobile.android.uploadToDiawi(); break;
+            case 'e2e':
+              env.SAUCE_URL = mobile.android.uploadToSauceLabs()
+          }
+        }
       }
     }
-    stage('Run e2e') {
-      when { expression { params.BUILD_TYPE == 'e2e' } }
-      steps { script {
-        mobile.android.uploadToDiawi()
-        apk = mobile.android.uploadToSauceLabs() 
-        build(
-          job: 'end-to-end-tests/status-app-nightly', wait: false,
-          parameters: [string(name: 'apk', value: "--apk=${apk}")]
-        )
-      } }
+    stage('Cleanup') {
+      steps {
+        script { cmn.clean() }
+      }
     }
+  }
+  post {
+    failure { script { load('ci/common.groovy').notifyPRFailure() } }
+    success { script { load('ci/common.groovy').notifyPRSuccess() } }
   }
 }

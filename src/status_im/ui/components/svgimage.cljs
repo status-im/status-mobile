@@ -39,7 +39,7 @@
 (defn svgimage [{:keys [style source]}]
   (let [width (reagent/atom nil)
         {:keys [uri k] :or {k 1}} source]
-    (when (http/url-sanitized? uri)
+    (when (and source uri (http/url-sanitized? uri))
       (fn []
         [react/view {:style     style
                      :on-layout #(reset! width (-> % .-nativeEvent .-layout .-width))}
@@ -50,4 +50,5 @@
            :bounces                     false
            :scales-page-to-fit          platform/android?
            :style                       {:width @width :height (* @width k) :background-color :transparent}
+           :origin-whitelist             #js ["*"]
            :source                      {:html (html uri @width (* @width k))}}]]))))

@@ -1,4 +1,3 @@
-from tests import info
 import time
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from views.base_element import BaseButton, BaseText, BaseElement
@@ -32,7 +31,7 @@ class ChatElement(BaseButton):
         super(ChatElement, self).__init__(driver)
         self.username = username_part
         self.locator = self.Locator.xpath_selector(
-            "//*[@content-desc='chat-item'][.//*[starts-with(@text,'%s')]]" % self.username)
+            "//*[@content-desc='chat-name-text'][starts-with(@text,'%s')]/.." % self.username)
 
     def navigate(self):
         from views.chat_view import ChatView
@@ -45,7 +44,7 @@ class ChatElement(BaseButton):
         return self.navigate()
 
     def find_element(self):
-        info('Looking for %s' % self.name)
+        self.driver.info('Looking for %s' % self.name)
         for i in range(2):
             try:
                 return super(ChatElement, self).find_element()
@@ -53,7 +52,7 @@ class ChatElement(BaseButton):
                 if i == 0:
                     HomeView(self.driver).reconnect()
                 else:
-                    e.msg = 'Unable to find chat with user %s' % self.username
+                    e.msg = 'Device %s: Unable to find chat with user %s' % (self.driver.number, self.username)
                     raise e
 
     @property
@@ -61,7 +60,7 @@ class ChatElement(BaseButton):
         class DeleteButton(BaseButton):
             def __init__(self, driver, parent_locator: str):
                 super(DeleteButton, self).__init__(driver)
-                locator_str = "/android.view.ViewGroup/*[@content-desc='icon']"
+                locator_str = "/../../android.view.ViewGroup/*[@content-desc='icon']"
                 self.locator = self.Locator.xpath_selector(parent_locator + locator_str)
 
         return DeleteButton(self.driver, self.locator.value)
@@ -108,11 +107,11 @@ class HomeView(BaseView):
         self.chat_url_text = ChatUrlText(self.driver)
 
     def wait_for_syncing_complete(self):
-        info('Waiting for syncing complete:')
+        self.driver.info('Waiting for syncing complete:')
         while True:
             try:
                 sync = self.find_text_part('Syncing', 10)
-                info(sync.text)
+                self.driver.info(sync.text)
             except TimeoutException:
                 break
 
@@ -121,8 +120,9 @@ class HomeView(BaseView):
 
     def add_contact(self, public_key):
         start_new_chat = self.plus_button.click()
-        start_new_chat.start_new_chat_button.click()
-        start_new_chat.public_key_edit_box.set_value(public_key)
+        start_new_chat.start_new_chat_button.click_until_presence_of_element(start_new_chat.public_key_edit_box)
+        start_new_chat.public_key_edit_box.click()
+        start_new_chat.public_key_edit_box.send_keys(public_key)
         one_to_one_chat = self.get_chat_view()
         start_new_chat.confirm_until_presence_of_element(one_to_one_chat.chat_message_input)
         return one_to_one_chat
@@ -144,12 +144,32 @@ class HomeView(BaseView):
         start_new_chat.next_button.click()
         start_new_chat.chat_name_editbox.send_keys(group_chat_name)
         start_new_chat.create_button.click()
+        from views.chat_view import ChatView
+        return ChatView(self.driver)
 
     def join_public_chat(self, chat_name: str):
         start_new_chat = self.plus_button.click()
         start_new_chat.join_public_chat_button.click()
-        start_new_chat.chat_name_editbox.set_value(chat_name)
+        start_new_chat.chat_name_editbox.click()
+        start_new_chat.chat_name_editbox.send_keys(chat_name)
         time.sleep(2)
         chat_view = self.get_chat_view()
         start_new_chat.confirm_until_presence_of_element(chat_view.chat_message_input)
         return chat_view
+
+    def open_status_test_dapp(self, allow_all=True):
+        profile_view = self.profile_button.click()
+        profile_view.advanced_button.click()
+        profile_view.debug_mode_toggle.click()
+        home_view = profile_view.home_button.click()
+        start_new_chat_view = home_view.plus_button.click()
+        start_new_chat_view.open_d_app_button.click()
+        start_new_chat_view.status_test_dapp_button.scroll_to_element()
+        status_test_dapp = start_new_chat_view.status_test_dapp_button.click()
+        start_new_chat_view.open_button.click()
+        for _ in range(2):
+            if allow_all:
+                status_test_dapp.allow_button.click()
+            else:
+                status_test_dapp.deny_button.click()
+        return status_test_dapp

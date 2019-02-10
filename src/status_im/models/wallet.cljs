@@ -1,12 +1,17 @@
 (ns status-im.models.wallet
-  (:require [status-im.utils.money :as money]
-            [status-im.i18n :as i18n]
-            [status-im.utils.ethereum.core :as ethereum]
+  (:require [clojure.set :as set]
             [status-im.constants :as constants]
-            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.i18n :as i18n]
+            [status-im.transport.utils :as transport.utils]
             [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.hex :as utils.hex]
-            [status-im.transport.utils :as transport.utils]))
+            [status-im.utils.core :as utils.core]
+            [status-im.utils.money :as money]
+            [status-im.utils.fx :as fx]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.utils.config :as config]))
 
 (def min-gas-price-wei (money/bignumber 1))
 
@@ -15,7 +20,8 @@
 (defmethod invalid-send-parameter? :gas-price [_ value]
   (cond
     (not value) :invalid-number
-    (< (money/->wei :gwei value) min-gas-price-wei) :not-enough-wei))
+    (.lt (money/->wei :gwei value) min-gas-price-wei) :not-enough-wei
+    (-> (money/->wei :gwei value) .decimalPlaces pos?) :invalid-number))
 
 (defmethod invalid-send-parameter? :default [_ value]
   (when (or (not value)
@@ -60,7 +66,7 @@
   {:db (update-in db [:wallet :edit] build-edit key value)})
 
 ;; DAPP TRANSACTION -> SEND TRANSACTION
-(defn prepare-dapp-transaction [{{:keys [id method params]} :payload :as queued-transaction} contacts]
+(defn prepare-dapp-transaction [{{:keys [id method params]} :payload message-id :message-id} contacts]
   (let [{:keys [to value data gas gasPrice nonce]} (first params)
         contact (get contacts (utils.hex/normalize-hex to))]
     (cond-> {:id               (str id)
@@ -69,17 +75,18 @@
                                    contact)
              :symbol           :ETH
              :method           method
-             :dapp-transaction queued-transaction
              :to               to
              :amount           (money/bignumber (or value 0))
              :gas              (cond
                                  gas
                                  (money/bignumber gas)
-                                 value
+                                 (and value (empty? data))
                                  (money/bignumber 21000))
              :gas-price        (when gasPrice
                                  (money/bignumber gasPrice))
-             :data             data}
+             :data             data
+             :on-result        [:wallet.dapp/transaction-on-result message-id]
+             :on-error         [:wallet.dapp/transaction-on-error message-id]}
       nonce
       (assoc :nonce nonce))))
 
@@ -107,35 +114,42 @@
         [first_param second_param]
         [second_param first_param]))))
 
-(defn web3-error-callback [fx {:keys [webview-bridge]} {:keys [message-id]} message]
-  (assoc fx :send-to-bridge-fx [{:type      constants/web3-send-async-callback
-                                 :messageId message-id
-                                 :error     message}
-                                webview-bridge]))
+(defn web3-error-callback [fx {:keys [webview-bridge]} message-id message]
+  (assoc fx :browser/send-to-bridge {:message {:type      constants/web3-send-async-callback
+                                               :messageId message-id
+                                               :error     message}
+                                     :webview webview-bridge}))
 
 (defn dapp-complete-transaction [id result method message-id webview]
-  (cond-> {:send-to-bridge-fx [{:type      constants/web3-send-async-callback
-                                :messageId message-id
-                                :result    {:jsonrpc "2.0"
-                                            :id      (int id)
-                                            :result  result}}
-                               webview]
+  (cond-> {:browser/send-to-bridge {:message {:type      constants/web3-send-async-callback
+                                              :messageId message-id
+                                              :result    {:jsonrpc "2.0"
+                                                          :id      (int id)
+                                                          :result  result}}
+                                    :webview webview}
            :dispatch          [:navigate-back]}
 
-    (= method constants/web3-send-transaction)
-    (assoc :dispatch-later [{:ms 400 :dispatch [:navigate-to-modal :wallet-transaction-sent-modal]}])))
+    (= method constants/web3-personal-sign)
+    (assoc :dispatch [:navigate-back])
 
-(defn discard-transaction
+    (= method constants/web3-send-transaction)
+    (assoc :dispatch [:navigate-to-clean :wallet-transaction-sent])))
+
+(fx/defn discard-transaction
   [{:keys [db]}]
-  (let [{:keys [dapp-transaction]} (get-in db [:wallet :send-transaction])]
-    (cond-> {:db (assoc-in db [:wallet :send-transaction] {})}
-      dapp-transaction
-      (web3-error-callback db dapp-transaction "discarded"))))
+  (let [{:keys [on-error]} (get-in db [:wallet :send-transaction])]
+    (merge {:db (update db :wallet
+                        assoc
+                        :send-transaction {}
+                        :transactions-queue nil)}
+           (when on-error
+             {:dispatch (conj on-error "transaction was cancelled by user")}))))
 
 (defn prepare-unconfirmed-transaction [db now hash]
-  (let [transaction (get-in db [:wallet :send-transaction])]
+  (let [transaction (get-in db [:wallet :send-transaction])
+        all-tokens  (:wallet/all-tokens db)]
     (let [chain (:chain db)
-          token (tokens/symbol->token (keyword chain) (:symbol transaction))]
+          token (tokens/symbol->token all-tokens (keyword chain) (:symbol transaction))]
       (-> transaction
           (assoc :confirmations "0"
                  :timestamp (str now)
@@ -147,8 +161,8 @@
           (update :gas-price str)
           (dissoc :message-id :id :gas)))))
 
-(defn handle-transaction-error [db {:keys [code message]}]
-  (let [{:keys [dapp-transaction]} (get-in db [:wallet :send-transaction])]
+(defn handle-transaction-error [{:keys [db]} {:keys [code message]}]
+  (let [{:keys [on-error]} (get-in db [:wallet :send-transaction])]
     (case code
 
       ;;WRONG PASSWORD
@@ -156,16 +170,85 @@
       {:db (-> db
                (assoc-in [:wallet :send-transaction :wrong-password?] true))}
 
-      (cond-> {:db (-> db
-                       navigation/navigate-back
-                       (assoc-in [:wallet :transactions-queue] nil)
-                       (assoc-in [:wallet :send-transaction] {}))
-               :wallet/show-transaction-error message}
-
-        dapp-transaction
-        (web3-error-callback db dapp-transaction message)))))
+      (fx/merge {:db (-> db
+                         (assoc-in [:wallet :transactions-queue] nil)
+                         (assoc-in [:wallet :send-transaction] {}))}
+                {:wallet/show-transaction-error message}
+                (navigation/navigate-back)
+                (when on-error
+                  {:dispatch (conj on-error message)})))))
 
 (defn transform-data-for-message [{:keys [method] :as transaction}]
   (cond-> transaction
     (= method constants/web3-personal-sign)
     (update :data transport.utils/to-utf8)))
+
+(defn clear-error-message [db error-type]
+  (update-in db [:wallet :errors] dissoc error-type))
+
+(defn tokens-symbols [visible-token-symbols all-tokens chain]
+  (set/difference (set visible-token-symbols) (set (map :symbol (tokens/nfts-for all-tokens chain)))))
+
+(fx/defn initialize-tokens
+  [{:keys [db]}]
+  (let [network-id (get-in db [:account/account :network])
+        network    (get-in db [:account/account :networks network-id])
+        chain      (ethereum/network->chain-keyword network)]
+    (merge
+     {:db (assoc db :wallet/all-tokens
+                 (utils.core/map-values #(utils.core/index-by :address %) tokens/all-default-tokens))}
+     (when config/erc20-contract-warnings-enabled?
+       {:wallet/validate-tokens {:web3   (:web3 db)
+                                 :tokens (get tokens/all-default-tokens chain)}}))))
+
+(fx/defn update-wallet
+  [{{:keys [web3 network network-status] {:keys [address settings]} :account/account :as db} :db}]
+  (let [all-tokens  (:wallet/all-tokens db)
+        network     (get-in db [:account/account :networks network])
+        chain       (ethereum/network->chain-keyword network)
+        mainnet?    (= :mainnet chain)
+        assets      (get-in settings [:wallet :visible-tokens chain])
+        tokens      (tokens-symbols (get-in settings [:wallet :visible-tokens chain]) all-tokens chain)
+        currency-id (or (get-in settings [:wallet :currency]) :usd)
+        currency    (get constants/currencies currency-id)]
+    (when (not= network-status :offline)
+      {:get-balance        {:web3          web3
+                            :account-id    address
+                            :success-event :update-balance-success
+                            :error-event   :update-balance-fail}
+       :get-tokens-balance {:web3          web3
+                            :account-id    address
+                            :symbols       assets
+                            :chain         chain
+                            :all-tokens    all-tokens
+                            :success-event :update-token-balance-success
+                            :error-event   :update-token-balance-fail}
+       :get-prices         {:from          (if mainnet?
+                                             (conj tokens "ETH")
+                                             [(-> (tokens/native-currency chain)
+                                                  (wallet.utils/exchange-symbol))])
+                            :to            [(:code currency)]
+                            :mainnet?      mainnet?
+                            :success-event :update-prices-success
+                            :error-event   :update-prices-fail}
+       :db                 (-> db
+                               (clear-error-message :prices-update)
+                               (clear-error-message :balance-update)
+                               (assoc-in [:wallet :balance-loading?] true)
+                               (assoc :prices-loading? true))})))
+
+(defn open-modal-wallet-for-transaction [db transaction tx-object]
+  (let [{:keys [gas gas-price]} transaction
+        {:keys [wallet-set-up-passed?]} (:account/account db)]
+    {:db         (-> db
+                     (assoc-in [:wallet :send-transaction] transaction)
+                     (assoc-in [:wallet :send-transaction :original-gas] gas))
+     :dispatch-n [[:update-wallet]
+                  (when-not gas
+                    [:wallet/update-estimated-gas tx-object])
+                  (when-not gas-price
+                    [:wallet/update-gas-price])
+                  [:navigate-to
+                   (if wallet-set-up-passed?
+                     :wallet-send-modal-stack
+                     :wallet-send-modal-stack-with-onboarding)]]}))

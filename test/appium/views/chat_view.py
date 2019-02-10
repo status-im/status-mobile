@@ -1,11 +1,12 @@
 import time
 
-import pytest
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-from tests import info
-from views.base_element import BaseButton, BaseEditBox, BaseText
+
+from tests import common_password
+from views.base_element import BaseButton, BaseEditBox, BaseText, BaseElement
 from views.base_view import BaseView, ProgressBar
-from views.profile_view import ProfilePictureElement, PublicKeyText
+from views.profile_view import ProfilePictureElement, ProfileAddressText
+from views.start_new_chat_view import StartNewChatView
 
 
 class ChatMessageInput(BaseEditBox):
@@ -18,6 +19,15 @@ class AddToContacts(BaseButton):
     def __init__(self, driver):
         super(AddToContacts, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('add-to-contacts-button')
+
+
+class AddGroupChatMembersButton(BaseButton):
+    def __init__(self, driver):
+        super(AddGroupChatMembersButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Add members']")
+
+    def navigate(self):
+        return StartNewChatView(self.driver)
 
 
 class UserNameText(BaseText):
@@ -38,11 +48,21 @@ class SendCommand(BaseButton):
         super(SendCommand, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('send-button')
 
+    def click(self):
+        self.wait_for_element().click()
+        self.driver.info('Tap on %s' % self.name)
+        return self.navigate()
+
 
 class RequestCommand(BaseButton):
     def __init__(self, driver):
         super(RequestCommand, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('request-button')
+
+    def click(self):
+        self.wait_for_element().click()
+        self.driver.info('Tap on %s' % self.name)
+        return self.navigate()
 
 
 class AssetCommand(BaseButton):
@@ -76,6 +96,16 @@ class ClearHistoryButton(BaseButton):
     def __init__(self, driver):
         super(ClearHistoryButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="Clear history"]')
+
+
+class GroupInfoButton(BaseButton):
+
+    def __init__(self, driver):
+        super(GroupInfoButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="Group info"]')
+
+    def navigate(self):
+        return GroupChatInfoView(self.driver)
 
 
 class LeaveChatButton(BaseButton):
@@ -170,6 +200,12 @@ class ProfileSendTransactionButton(BaseButton):
         self.locator = self.Locator.accessibility_id('send-transaction-button')
 
 
+class JoinChatButton(BaseButton):
+    def __init__(self, driver):
+        super(JoinChatButton, self).__init__(driver)
+        self.locator = self.Locator.text_part_selector('JOIN GROUP')
+
+
 class ChatElementByText(BaseText):
     def __init__(self, driver, text):
         super(ChatElementByText, self).__init__(driver)
@@ -178,7 +214,7 @@ class ChatElementByText(BaseText):
             "//*[starts-with(@text,'%s')]/ancestor::android.view.ViewGroup[@content-desc='chat-item']" % text)
 
     def find_element(self):
-        info("Looking for message with text '%s'" % self.message_text)
+        self.driver.info("Looking for message with text '%s'" % self.message_text)
         for _ in range(2):
             try:
                 return super(ChatElementByText, self).find_element()
@@ -234,6 +270,31 @@ class ChatElementByText(BaseText):
         return element.is_element_displayed(wait_time)
 
 
+class EmptyPublicChatMessage(BaseText):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.text_part_selector("There are no messages")
+
+
+class ChatItem(BaseElement):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="chat-item"]')
+
+
+class HistoryTimeMarker(BaseText):
+    def __init__(self, driver, marker='Today'):
+        super().__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="%s"]' % marker)
+
+
+class GroupChatInfoView(BaseView):
+    def __init__(self, driver):
+        super(GroupChatInfoView, self).__init__(driver)
+
+        self.add_members = AddGroupChatMembersButton(self.driver)
+
+
 class ChatView(BaseView):
     def __init__(self, driver):
         super(ChatView, self).__init__(driver)
@@ -242,6 +303,8 @@ class ChatView(BaseView):
         self.add_to_contacts = AddToContacts(self.driver)
         self.user_name_text = UserNameText(self.driver)
         self.no_messages_in_chat = NoMessagesInChatText(self.driver)
+        self.empty_public_chat_message = EmptyPublicChatMessage(self.driver)
+        self.chat_item = ChatItem(self.driver)
 
         self.commands_button = CommandsButton(self.driver)
         self.send_command = SendCommand(self.driver)
@@ -251,9 +314,11 @@ class ChatView(BaseView):
         self.members_button = MembersButton(self.driver)
         self.delete_chat_button = DeleteChatButton(self.driver)
         self.clear_history_button = ClearHistoryButton(self.driver)
+        self.group_info = GroupInfoButton(self.driver)
         self.clear_button = ClearButton(self.driver)
         self.leave_chat_button = LeaveChatButton(self.driver)
         self.leave_button = LeaveButton(self.driver)
+        self.join_chat_button = JoinChatButton(self.driver)
 
         self.chat_settings = ChatSettings(self.driver)
         self.view_profile_button = ViewProfileButton(self.driver)
@@ -269,14 +334,14 @@ class ChatView(BaseView):
         self.contact_profile_picture = ProfilePictureElement(self.driver)
         self.profile_send_message = ProfileSendMessageButton(self.driver)
         self.profile_send_transaction = ProfileSendTransactionButton(self.driver)
-        self.public_key_text = PublicKeyText(self.driver)
+        self.profile_address_text = ProfileAddressText(self.driver)
 
     def wait_for_syncing_complete(self):
-        info('Waiting for syncing complete:')
+        self.driver.info('Waiting for syncing complete:')
         while True:
             try:
                 sync = self.find_text_part('Syncing', 10)
-                info(sync.text)
+                self.driver.info(sync.text)
             except TimeoutException:
                 break
 
@@ -303,7 +368,7 @@ class ChatView(BaseView):
             errors.append('Not received messages from user %s: "%s"' % (username, ', '.join(
                 [i for i in list(set(expected_messages) - set(received_messages))])))
 
-    def send_funds_to_request(self, amount, sender_password, wallet_set_up=False):
+    def send_funds_to_request(self, amount, sender_password=common_password, wallet_set_up=False):
         gas_popup = self.element_by_text_part('Specify amount')
         send_request_button = self.chat_element_by_text(amount).send_request_button
         send_request_button.click_until_presence_of_element(gas_popup)
@@ -327,7 +392,7 @@ class ChatView(BaseView):
         self.clear_history_button.click()
         self.clear_button.click()
 
-    def send_transaction_in_1_1_chat(self, asset, amount, password, wallet_set_up=False):
+    def send_transaction_in_1_1_chat(self, asset, amount, password=common_password, wallet_set_up=False, **kwargs):
         self.commands_button.click()
         self.send_command.click()
         self.asset_by_name(asset).click()
@@ -340,12 +405,13 @@ class ChatView(BaseView):
             wallet_view.yes_button.click()
         else:
             self.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
-        send_transaction_view.sign_transaction(password)
-        chat_elem = self.chat_element_by_text(amount)
-        chat_elem.wait_for_visibility_of_element()
-        chat_elem.progress_bar.wait_for_invisibility_of_element(20)
-        if chat_elem.status.text not in ('Sent', 'Delivered', 'Seen'):
-            pytest.fail('Sent transaction message was not sent')
+        if kwargs.get('sign_transaction', True):
+            send_transaction_view.sign_transaction(password)
+            chat_elem = self.chat_element_by_text(amount)
+            chat_elem.wait_for_visibility_of_element()
+            chat_elem.progress_bar.wait_for_invisibility_of_element(20)
+            if chat_elem.status.text not in ('Sent', 'Delivered', 'Seen'):
+                self.driver.fail('Sent transaction message was not sent')
 
     def send_transaction_in_group_chat(self, amount, password, recipient):
         self.commands_button.click()
@@ -360,6 +426,16 @@ class ChatView(BaseView):
         send_transaction_view.find_full_text(amount)
         self.find_full_text('to  ' + recipient['username'], 10)
 
+    def add_members_to_group_chat(self, user_names_to_add: list):
+        self.chat_options.click()
+        group_info_view = self.group_info.click()
+        add_members_view = group_info_view.add_members.click()
+        for user_name in user_names_to_add:
+            user_contact = add_members_view.get_username_checkbox(user_name)
+            user_contact.scroll_to_element()
+            user_contact.click()
+        add_members_view.add_button.click()
+
     def request_transaction_in_1_1_chat(self, asset, amount):
         self.commands_button.click()
         self.request_command.click()
@@ -368,7 +444,7 @@ class ChatView(BaseView):
         self.send_message_button.click()
 
     def chat_element_by_text(self, text):
-        info("Looking for a message by text: '%s'" % text)
+        self.driver.info("Looking for a message by text: '%s'" % text)
         return ChatElementByText(self.driver, text)
 
     def verify_message_is_under_today_text(self, text, errors):
@@ -381,7 +457,10 @@ class ChatView(BaseView):
         if message_location < today_location + today_height:
             errors.append("Message '%s' is not under 'Today' text" % text)
 
-    def asset_by_name(self, asset_name):
-        element = BaseButton(self.driver)
-        element.locator = element.Locator.text_selector(asset_name)
-        return element
+    def send_message(self, message: str = 'test message'):
+        self.chat_message_input.send_keys(message)
+        self.send_message_button.click()
+
+    def move_to_messages_by_time_marker(self, marker='Today'):
+        self.driver.info("Moving to messages by time marker: '%s'" % marker)
+        HistoryTimeMarker(self.driver, marker).scroll_to_element(depth=50, direction='up')

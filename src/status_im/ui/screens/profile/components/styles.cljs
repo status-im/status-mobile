@@ -15,23 +15,31 @@
    :justify-content :center})
 
 (defstyle profile-name-text
-  {:padding-vertical 14
+  {:padding-vertical 8
    :font-size        15
    :text-align       :center
-   :ios              {:letter-spacing -0.2}
-   :android          {:color colors/black}})
+   :font-weight      :bold
+   :color            colors/black})
+
+(defstyle profile-three-words
+  {:font-size   12
+   :text-align  :center
+   :color       colors/gray})
 
 (defstyle profile-name-input-text
-  {:font-size  15
-   :text-align :center
-   :flex       1
-   :ios        {:letter-spacing      -0.2
-                :height              46
-                :border-bottom-width 1
-                :border-bottom-color colors/gray-light}
-   :android    {:color               colors/black
-                :border-bottom-width 2
-                :border-bottom-color colors/blue}})
+  {:font-size   15
+   :text-align  :center
+   :flex        1
+   :desktop     {:height 20
+                 :width 200}
+   :ios         {:letter-spacing      -0.2
+                 :margin-top          1
+                 :height              45
+                 :border-bottom-width 1
+                 :border-bottom-color colors/gray-light}
+   :android     {:color               colors/black
+                 :border-bottom-width 2
+                 :border-bottom-color colors/blue}})
 
 (def profile-header-name-container
   {:flex            1
@@ -50,6 +58,15 @@
    :background-color   colors/white
    :height             52})
 
+(def settings-item-icon
+  {:background-color colors/blue-light
+   :width            34
+   :height           34
+   :border-radius    34
+   :margin-right     16
+   :justify-content  :center
+   :align-items      :center})
+
 (def settings-item-text-wrapper
   {:flex             1
    :flex-direction   :row
@@ -62,6 +79,9 @@
 
 (def settings-item-destructive
   {:color colors/red})
+
+(def settings-item-disabled
+  {:color colors/gray})
 
 (def settings-item-value
   {:flex          1
@@ -90,4 +110,4 @@
 
 (def profile-form
   {:background-color colors/white
-   :padding          16})
+   :padding-vertical 16})

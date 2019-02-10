@@ -4,14 +4,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [0.9.26 - Unreleased]
+## [0.9.28 - Unreleased]
+### Added
+- Allow numbers in chat topics
+### Fixed
+Fix app freeze on recover with wrong password
+### Changed
+
+## [0.9.27]
+### Added
+- Added BRLN coin #5582
+- Added SuperRare token support #5496
+- Setting to remember login passwords iOS
+- ENS username resolution in Chat for stateofus.eth usernames (testnet only)
+
+### Fixed
+- Improve contact code validation #5612 #5613
+- Frequent logouts on iOS
+- Peepeth incompatibilities on Android #5726
+- Realm vulnerability PR
+- Fixed how node version is shown on the about screen #5688
+- Transaction fixes #5694 #5709
+
+### Changed
+- Updated Bounties.network address
+- Update status-go to v0.13.1
+
+## [0.9.26]
 ### Added
 - Allow user to remove custom avatar
 ### Fixed
 
 ### Changed
+- Improved validation in account recovery. We now show a warning if any words are not from our mnemonic dictionary.
 
-## [0.9.25 - Unreleased]
+## [0.9.25]
 ### Added
 - Add MOKSHA token on Rinkeby
 
@@ -29,7 +56,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added dismiss button to "Add to contacts" bar
 
 ### Fixed
-- Partially fixed issue with 0 fiat in main Wallet screen. We are now explicitly showing an error when app can't fetch 
+- Partially fixed issue with 0 fiat in main Wallet screen. We are now explicitly showing an error when app can't fetch
 asset prices, instead of silently failing.
 
 ### Changed

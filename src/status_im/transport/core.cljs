@@ -1,38 +1,61 @@
 (ns ^{:doc "API to init and stop whisper messaging"}
  status-im.transport.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [status-im.data-store.transport :as transport-store]
-            [status-im.transport.handlers :as transport.handlers]
-            [status-im.transport.inbox :as inbox]
-            status-im.transport.filters
-            [status-im.transport.utils :as transport.utils]
+  (:require status-im.transport.filters
+            [re-frame.core :as re-frame]
+            [status-im.mailserver.core :as mailserver]
+            [status-im.transport.message.core :as message]
+            [status-im.transport.partitioned-topic :as transport.topic]
+            [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            status-im.transport.shh
+            [status-im.utils.config :as config]))
 
-(defn init-whisper
+(defn get-public-key-topics [chats]
+  (keep (fn [[chat-id {:keys [topic sym-key one-to-one]}]]
+          (cond (and (not sym-key) topic)
+                {:topic   topic
+                 :chat-id chat-id}
+
+                ;; we have to listen the topic to which we are going to send
+                ;; a message, otherwise the message will not match bloom
+                (and config/partitioned-topic-enabled? one-to-one)
+                {:topic   (transport.topic/partitioned-topic-hash chat-id)
+                 :chat-id chat-id
+                 :minPow 1
+                 :callback (constantly nil)}))
+        chats))
+
+(fx/defn init-whisper
   "Initialises whisper protocol by:
   - adding fixed shh discovery filter
   - restoring existing symetric keys along with their unique filters
-  - (optionally) initializing offline inboxing"
-  [current-account-id {:keys [db web3] :as cofx}]
-  (log/debug :init-whisper)
+  - (optionally) initializing mailserver"
+  [{:keys [db web3] :as cofx}]
   (when-let [public-key (get-in db [:account/account :public-key])]
-    (let [sym-key-added-callback (fn [chat-id sym-key sym-key-id]
-                                   (re-frame/dispatch [::sym-key-added {:chat-id    chat-id
-                                                                        :sym-key    sym-key
-                                                                        :sym-key-id sym-key-id}]))
-          topic (transport.utils/get-topic constants/contact-discovery)]
-      (handlers-macro/merge-fx cofx
-                               {:shh/add-discovery-filter {:web3           web3
-                                                           :private-key-id public-key
-                                                           :topic topic}
-                                :shh/restore-sym-keys {:web3       web3
-                                                       :transport  (:transport/chats db)
-                                                       :on-success sym-key-added-callback}}
-                               (inbox/connect-to-mailserver)
-                               (transport.handlers/resend-contact-messages)))))
+    (let [public-key-topics (get-public-key-topics (:transport/chats db))
+          discovery-topics (transport.topic/discovery-topics public-key)]
+      (fx/merge cofx
+                {:shh/add-discovery-filters
+                 {:web3           web3
+                  :private-key-id public-key
+                  :topics         (concat public-key-topics
+                                          (map
+                                           (fn [discovery-topic]
+                                             {:topic   discovery-topic
+                                              :chat-id :discovery-topic})
+                                           discovery-topics))}
+
+                 :shh/restore-sym-keys-batch
+                 {:web3       web3
+                  :transport  (keep (fn [[chat-id {:keys [topic sym-key]
+                                                   :as   chat}]]
+                                      (when (and topic sym-key)
+                                        (assoc chat :chat-id chat-id)))
+                                    (:transport/chats db))
+                  :on-success #(re-frame/dispatch [::sym-keys-added %])}}
+                (mailserver/connect-to-mailserver)
+                (message/resend-contact-messages [])))))
 
 ;;TODO (yenda) remove once go implements persistence
 ;;Since symkeys are not persisted, we restore them via add sym-keys,
@@ -40,17 +63,28 @@
 ;;it saves the sym-key-id in app-db to send messages later
 ;;and starts a filter to receive messages
 (handlers/register-handler-fx
- ::sym-key-added
- (fn [{:keys [db]} [_ {:keys [chat-id sym-key sym-key-id]}]]
+ ::sym-keys-added
+ (fn [{:keys [db]} [_ keys]]
+   (log/debug "PERF" ::sym-keys-added (count keys))
    (let [web3 (:web3 db)
-         {:keys [topic] :as chat} (get-in db [:transport/chats chat-id])]
-     {:db (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
-      :data-store/tx   [(transport-store/save-transport-tx {:chat-id chat-id
-                                                            :chat    (assoc chat :sym-key-id sym-key-id)})]
-      :shh/add-filter {:web3       web3
-                       :sym-key-id sym-key-id
-                       :topic      topic
-                       :chat-id    chat-id}})))
+         chats (:transport/chats db)
+         {:keys [updated-chats filters]}
+         (reduce
+          (fn [{:keys [updated-chats filters]} chat]
+            (let [{:keys [chat-id sym-key-id]} chat
+                  {:keys [topic one-to-one]} (get updated-chats chat-id)]
+              {:updated-chats (assoc-in updated-chats
+                                        [chat-id :sym-key-id] sym-key-id)
+               :filters       (conj filters {:sym-key-id sym-key-id
+                                             :topic      topic
+                                             :chat-id    chat-id
+                                             :one-to-one one-to-one})}))
+          {:updated-chats chats
+           :filters       []}
+          keys)]
+     {:db              (assoc db :transport/chats updated-chats)
+      :shh/add-filters {:web3    web3
+                        :filters filters}})))
 
 ;;TODO (yenda) uncomment and rework once go implements persistence
 #_(doseq [[chat-id {:keys [sym-key-id topic] :as chat}] transport]
@@ -61,13 +95,16 @@
                            (fn [js-error js-message]
                              (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message chat-id])))))
 
-(defn stop-whisper
+(fx/defn stop-whisper
   "Stops whisper protocol by removing all existing shh filters
   It is necessary to remove the filters because status-go there isn't currently a logout feature in status-go
   to clean-up after logout. When logging out of account A and logging in account B, account B would receive
   account A messages without this."
-  [{:keys [db]}]
-  (let [{:transport/keys [chats discovery-filter]} db
-        chat-filters                               (mapv :filter (vals chats))
-        all-filters                                (conj chat-filters discovery-filter)]
-    {:shh/remove-filters all-filters}))
+  [{:keys [db]} callback]
+  (let [{:transport/keys [filters]} db]
+    {:shh/remove-filters {:filters  (mapcat (fn [[chat-id chat-filters]]
+                                              (map (fn [filter]
+                                                     [chat-id filter])
+                                                   chat-filters))
+                                            filters)
+                          :callback callback}}))

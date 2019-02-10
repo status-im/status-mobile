@@ -1,65 +1,101 @@
 pipeline {
-  agent { label 'fastlane' }
+  agent { label 'macos' }
 
   parameters {
-    booleanParam(
-      name: 'RUN_E2E',
-      defaultValue: false,
-      description: 'If true triggers end-to-end tests.'
+    string(
+      name: 'BUILD_TYPE',
+      description: 'Specify build type. Values: pr / e2e / nightly / release',
+      defaultValue: 'pr',
     )
   }
 
   options {
+    timestamps()
+    /* Prevent Jenkins jobs from running forever */
+    timeout(time: 45, unit: 'MINUTES')
+    /* Limit builds retained */
     buildDiscarder(logRotator(
       numToKeepStr: '10',
-      daysToKeepStr: '30',
-      artifactNumToKeepStr: '1',
+      daysToKeepStr: '20',
+      artifactNumToKeepStr: '10',
     ))
   }
-  
+
   environment {
+    BUILD_PLATFORM = 'ios'
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
     LC_ALL = 'en_US.UTF-8'
     FASTLANE_DISABLE_COLORS=1
     REALM_DISABLE_ANALYTICS=1
+    BUNDLE_PATH = "${HOME}/.bundle"
   }
-  
+
   stages {
     stage('Prep') {
       steps {
-        script {
-          print "Running ${params.BUILD_TYPE} build!"
+        script { 
           /* Necessary to load methods */
           mobile = load 'ci/mobile.groovy'
-          mobile.prep(params.BUILD_TYPE)
+          cmn    = load 'ci/common.groovy'
+          print "Running ${cmn.getBuildType()} build!"
+          cmn.abortPreviousRunningBuilds()
+          /* Read the valid NodeJS version */
+          env.NODE_VERSION = cmn.getToolVersion('node')
+          /* Cleanup and Prep */
+          nvm(env.NODE_VERSION) {
+            mobile.prep(cmn.getBuildType())
+          }
         }
       }
     }
+    stage('Lint') {
+      steps {nvm(env.NODE_VERSION) {
+        script { cmn.runLint() }
+      } }
+    }
     stage('Tests') {
-      steps {
-        script { mobile.runTests() }
-      }
+      steps { nvm(env.NODE_VERSION) {
+        script { cmn.runTests() }
+      } }
     }
     stage('Build') {
-      steps {
-        script { mobile.leinBuild() }
-      }
+      steps { nvm(env.NODE_VERSION) {
+        script { mobile.leinBuild('ios') }
+      } }
     }
-    stage('Compile') {
-      steps {
-        script { api = mobile.ios.compile(params.BUILD_TYPE) }
-      }
+    stage('Bundle') {
+      steps { nvm(env.NODE_VERSION) {
+        script { api = mobile.ios.bundle(cmn.getBuildType()) }
+      } }
     }
     stage('Archive') {
       steps {
-        script { archiveArtifacts api }
+        archiveArtifacts api
       }
     }
     stage('Upload') {
+      when { expression { cmn.getBuildType() != 'release' } }
       steps {
-        script { env.DIAWI_URL = mobile.ios.uploadToDiawi() }
+        script {
+          /* e2e builds get tested in SauceLabs */
+          if (cmn.getBuildType() == 'e2e') {
+            env.SAUCE_URL = mobile.ios.uploadToSauceLabs()
+            env.PKG_URL = cmn.uploadArtifact(api)
+          } else {
+            env.PKG_URL = mobile.ios.uploadToDiawi()
+          }
+        }
       }
     }
+    stage('Cleanup') {
+      steps {
+        script { cmn.clean() }
+      }
+    }
+  }
+  post {
+    failure { script { load('ci/common.groovy').notifyPRFailure() } }
+    success { script { load('ci/common.groovy').notifyPRSuccess() } }
   }
 }

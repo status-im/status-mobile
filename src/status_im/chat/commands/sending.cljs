@@ -2,77 +2,50 @@
   (:require [status-im.constants :as constants]
             [status-im.chat.commands.protocol :as protocol]
             [status-im.chat.commands.core :as commands]
-            [status-im.chat.models :as chat-model]
-            [status-im.chat.models.input :as input-model]
-            [status-im.chat.models.message :as message-model]
-            [status-im.utils.handlers-macro :as handlers-macro]))
-
-;; TODO(janherich) remove after couple of releases when danger of messages
-;; with old command references will be low
-(defn- new->old
-  [path parameter-map]
-  (get {["send" #{:personal-chats}]    {:content {:command-ref ["transactor" :command 83 "send"]
-                                                  :command "send"
-                                                  :bot "transactor"
-                                                  :command-scope-bitmask 83}
-                                        :content-type constants/content-type-command}
-        ["request" #{:personal-chats}] {:content {:command-ref ["transactor" :command 83 "request"]
-                                                  :request-command-ref ["transactor" :command 83 "send"]
-                                                  :command "request"
-                                                  :request-command "send"
-                                                  :bot "transactor"
-                                                  :command-scope-bitmask 83
-                                                  :prefill [(get parameter-map :asset)
-                                                            (get parameter-map :amount)]}
-                                        :content-type constants/content-type-command-request}}
-       path))
+            [status-im.chat.commands.input :as commands.input]
+            [status-im.chat.models :as chat]
+            [status-im.chat.models.message :as chat.message]
+            [status-im.utils.fx :as fx]))
 
 (defn- create-command-message
   "Create message map from chat-id, command & input parameters"
   [chat-id type parameter-map cofx]
-  (let [command-path               (commands/command-id type)
-        ;; TODO(janherich) this is just for backward compatibility, can be removed later
-        {:keys [content content-type]} (new->old command-path parameter-map)]
+  (let [command-path      (commands/command-id type)
+        new-parameter-map (and (satisfies? protocol/EnhancedParameters type)
+                               (protocol/enhance-send-parameters type parameter-map cofx))
+        params            (merge (or new-parameter-map parameter-map)
+                                 (when (satisfies? protocol/Extension type)
+                                   {:extension-id (protocol/extension-id type)}))]
     {:chat-id      chat-id
-     :content-type content-type
-     :content      (merge {:command-path command-path
-                           :params       (if (satisfies? protocol/EnhancedParameters type)
-                                           (protocol/enhance-parameters type parameter-map cofx)
-                                           parameter-map)}
-                          content)}))
+     :content-type constants/content-type-command
+     :content      {:chat-id      chat-id
+                    :command-path command-path
+                    :params       params}}))
 
-(defn validate-and-send
+(fx/defn validate-and-send
   "Validates and sends command in current chat"
-  [input-text {:keys [type params] :as command} {:keys [db now random-id] :as cofx}]
+  [{:keys [db] :as cofx} input-text {:keys [type params]} custom-params]
   (let [chat-id       (:current-chat-id db)
-        parameter-map (commands/parse-parameters params input-text)]
+        parameter-map (merge (commands.input/parse-parameters params input-text) custom-params)]
     (if-let [validation-error (protocol/validate type parameter-map cofx)]
       ;; errors during validation
-      {:db (chat-model/set-chat-ui-props db {:validation-messages  validation-error
-                                             :sending-in-progress? false})}
-      ;; no errors, define clean-up effects which will have to be performed in all cases
-      (let [cleanup-fx (handlers-macro/merge-fx cofx
-                                                {:db (chat-model/set-chat-ui-props
-                                                      db {:sending-in-progress? false})}
-                                                (input-model/set-chat-input-text nil))]
+      {:db (chat/set-chat-ui-props db {:validation-messages validation-error})}
+      ;; no errors
+      (let [command-message (commands/enrich-command-message-for-events db (create-command-message chat-id type parameter-map cofx))]
         (if (satisfies? protocol/Yielding type)
           ;; yield control implemented, don't send the message
-          (handlers-macro/merge-fx cofx
-                                   cleanup-fx
-                                   (protocol/yield-control type parameter-map))
+          (protocol/yield-control type command-message cofx)
           ;; no yield control, proceed with sending the command message
-          (let [command-message (create-command-message chat-id type parameter-map cofx)]
-            (handlers-macro/merge-fx cofx
-                                     cleanup-fx
-                                     (protocol/on-send type command-message)
-                                     (input-model/set-chat-input-metadata nil)
-                                     (message-model/send-message command-message))))))))
+          (fx/merge cofx
+                    #(protocol/on-send type command-message %)
+                    (commands.input/set-command-reference nil)
+                    (chat.message/send-message command-message)))))))
 
-(defn send
+(fx/defn send
   "Sends command with given parameters in particular chat"
-  [chat-id {:keys [type]} parameter-map cofx]
+  [{:keys [db] :as cofx} chat-id {:keys [type]} parameter-map]
   (let [command-message (create-command-message chat-id type parameter-map cofx)]
-    (handlers-macro/merge-fx cofx
-                             (protocol/on-send type command-message)
-                             (input-model/set-chat-input-metadata nil)
-                             (message-model/send-message command-message))))
+    (fx/merge cofx
+              #(protocol/on-send type (commands/enrich-command-message-for-events db command-message) %)
+              (commands.input/set-command-reference nil)
+              (chat.message/send-message command-message))))

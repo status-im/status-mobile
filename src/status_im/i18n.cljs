@@ -1,132 +1,28 @@
 (ns status-im.i18n
+  (:require-macros [status-im.i18n :as i18n])
   (:require
    [cljs.spec.alpha :as spec]
    [status-im.react-native.js-dependencies :as rn-dependencies]
-   [status-im.translations.af :as af]
-   [status-im.translations.ar :as ar]
-   [status-im.translations.bel :as be]
-   [status-im.translations.cs :as cs]
-   [status-im.translations.da :as da]
-   [status-im.translations.de :as de]
-   [status-im.translations.de-ch :as de-ch]
-   [status-im.translations.el :as el]
-   [status-im.translations.en :as en]
-   [status-im.translations.es :as es]
-   [status-im.translations.es-ar :as es-ar]
-   [status-im.translations.es-mx :as es-mx]
-   [status-im.translations.fi :as fi]
-   [status-im.translations.fr :as fr]
-   [status-im.translations.fr-ch :as fr-ch]
-   [status-im.translations.fy :as fy]
-   [status-im.translations.he :as he]
-   [status-im.translations.hi :as hi]
-   [status-im.translations.hu :as hu]
-   [status-im.translations.id :as id]
-   [status-im.translations.it :as it]
-   [status-im.translations.it-ch :as it-ch]
-   [status-im.translations.ja :as ja]
-   [status-im.translations.ko :as ko]
-   [status-im.translations.la :as la]
-   [status-im.translations.lt :as lt]
-   [status-im.translations.lv :as lv]
-   [status-im.translations.ms :as ms]
-   [status-im.translations.nb :as nb]
-   [status-im.translations.ne :as ne]
-   [status-im.translations.nl :as nl]
-   [status-im.translations.pl :as pl]
-   [status-im.translations.pt-br :as pt-br]
-   [status-im.translations.pt-pt :as pt-pt]
-   [status-im.translations.ro :as ro]
-   [status-im.translations.ru :as ru]
-   [status-im.translations.sl :as sl]
-   [status-im.translations.sr-rs-cyrl :as sr-rs-cyrl]
-   [status-im.translations.sr-rs-latn :as sr-rs-latn]
-   [status-im.translations.sv :as sv]
-   [status-im.translations.sw :as sw]
-   [status-im.translations.th :as th]
-   [status-im.translations.tr :as tr]
-   [status-im.translations.uk :as uk]
-   [status-im.translations.ur :as ur]
-   [status-im.translations.vi :as vi]
-   [status-im.translations.zh-hans :as zh-hans]
-   [status-im.translations.zh-hant :as zh-hant]
-   [status-im.translations.zh-hant-tw :as zh-hant-tw]
-   [status-im.translations.zh-hant-sg :as zh-hant-sg]
-   [status-im.translations.zh-hant-hk :as zh-hant-hk]
-   [status-im.translations.zh-wuu :as zh-wuu]
-   [status-im.translations.zh-yue :as zh-yue]
-   [status-im.utils.js-resources :refer [default-contacts]]
-   [taoensso.timbre :as log]
    [clojure.string :as string]
-   [clojure.set :as set]))
+   [clojure.set :as set]
+   [status-im.utils.types :as types]))
 
+(set! (.-locale rn-dependencies/i18n) (.-language rn-dependencies/react-native-languages))
 (set! (.-fallbacks rn-dependencies/i18n) true)
 (set! (.-defaultSeparator rn-dependencies/i18n) "/")
 
 ;; translations
-#_(def translations-by-locale {:af          af/translations
-                               :ar          ar/translations
-                               :be          be/translations
-                               :cs          cs/translations
-                               :da          da/translations
-                               :de          de/translations
-                               :de-ch       de-ch/translations
-                               :el          el/translations
-                               :en          en/translations
-                               :es          es/translations
-                               :es-ar       es-ar/translations
-                               :es-mx       es-mx/translations
-                               :fi          fi/translations
-                               :fr          fr/translations
-                               :fr-ch       fr-ch/translations
-                               :fy          fy/translations
-                               :he          he/translations
-                               :hi          hi/translations
-                               :hu          hu/translations
-                               :id          id/translations
-                               :it          it/translations
-                               :it-ch       it-ch/translations
-                               :ja          ja/translations
-                               :ko          ko/translations
-                               :la          la/translations
-                               :lt          lt/translations
-                               :lv          lv/translations
-                               :ms          ms/translations
-                               :nb          nb/translations
-                               :ne          ne/translations
-                               :nl          nl/translations
-                               :pl          pl/translations
-                               :pt-br       pt-br/translations
-                               :pt-pt       pt-pt/translations
-                               :ro          ro/translations
-                               :ru          ru/translations
-                               :sl          sl/translations
-                               :sr          sr-rs-cyrl/translations
-                               :sr-RS_#Latn sr-rs-latn/translations
-                               :sr-RS_#Cyrl sr-rs-cyrl/translations
-                               :sv          sv/translations
-                               :sw          sw/translations
-                               :th          th/translations
-                               :tr          tr/translations
-                               :uk          uk/translations
-                               :ur          ur/translations
-                               :vi          vi/translations
-                               :zh          zh-hans/translations
-                               :zh-hans     zh-hans/translations
-                               :zh-hans-cn  zh-hans/translations
-                               :zh-hans-mo  zh-hans/translations
-                               :zh-hant     zh-hant/translations
-                               :zh-hant-tw  zh-hant-tw/translations
-                               :zh-hant-sg  zh-hant-sg/translations
-                               :zh-hant-hk  zh-hant-hk/translations
-                               :zh-hant-cn  zh-hant/translations
-                               :zh-hant-mo  zh-hant/translations
-                               :zh-wuu      zh-wuu/translations
-                               :zh-yue      zh-yue/translations})
-(def translations-by-locale {:en          en/translations}) ; Temporarily disable all languages except English
+(def translations-by-locale
+  (->> (i18n/translations [:en :es_419 :fa :ko :ms :pl :ru :zh_Hans_CN])
+       (map (fn [[k t]]
+              (let [k' (-> (name k)
+                           (string/replace "_" "-")
+                           keyword)]
+                [k' (types/json->clj t)])))
+       (into {})))
 
 ;; english as source of truth
-(def labels (set (keys en/translations)))
+(def labels (set (keys (:en translations-by-locale))))
 
 (spec/def ::label labels)
 (spec/def ::labels (spec/coll-of ::label :kind set? :into #{}))
@@ -169,12 +65,12 @@
     :datetime-ago-format :close-app-button :block :camera-access-error
     :wallet-invalid-address :address-explication :remove
     :transactions-delete-content :transactions-unsigned-empty
-    :transaction-moved-text :add-members :sign-later-title :sharing-cancel
+    :transaction-moved-text :add-members :sign-later-title
     :yes :dapps :popular-tags :network-settings :twelve-words-in-correct-order
     :transaction-moved-title :photos-access-error :hash
     :removed-from-chat :done :remove-from-contacts :delete-chat :new-group-chat
     :edit-chats :wallet :wallet-exchange :wallet-request :sign-in
-    :datetime-yesterday :create-new-account :sign-in-to-status :dapp-profile
+    :datetime-yesterday :create-new-account :sign-in-to-status :save-password :save-password-unavailable :dapp-profile
     :sign-later-text :datetime-ago :no-hashtags-discovered-body :contacts
     :search-chat :got-it :delete-group-confirmation :public-chats
     :not-applicable :move-to-internal-failure-message :active-online
@@ -211,7 +107,7 @@
     :add-network :unknown-status-go-error :contacts-group-new-chat :and-you
     :wallets :clear-history :wallet-choose-from-contacts
     :signing-phrase-description :no-contacts :here-is-your-signing-phrase
-    :soon :close-app-content :status-sent :status-prompt :testfairy-title
+    :soon :close-app-content :status-sent :status-prompt
     :delete-contact-confirmation :datetime-today :add-a-status
     :web-view-error :notifications-title :error :transactions-sign-transaction
     :edit-contacts :more :cancel :no-statuses-found :can-not-add-yourself
@@ -221,8 +117,9 @@
     :public-chat-user-count :eth :transactions-history :not-implemented
     :new-contact :datetime-second :status-failed :is-typing :recover
     :suggestions-commands :nonce :new-network :contact-already-added :datetime-minute
-    :browsing-open-in-web-browser :delete-group-prompt :wallet-total-value
-    :wallet-insufficient-funds :edit-profile :active-unknown :testfairy-message
+    :browsing-open-in-ios-web-browser :browsing-open-in-android-web-browser
+    :delete-group-prompt :wallet-total-value
+    :wallet-insufficient-funds :edit-profile :active-unknown
     :search-tags :transaction-failed :public-key :error-processing-json
     :status-seen :transactions-filter-tokens :status-delivered :profile
     :wallet-choose-recipient :no-statuses-discovered :none :removed :empty-topic
@@ -382,12 +279,6 @@
 
 (def locale
   (.-locale rn-dependencies/i18n))
-
-(defn get-contact-translated [contact-id key fallback]
-  (let [translation #(get-in default-contacts [(keyword contact-id) key (keyword %)])]
-    (or (translation locale)
-        (translation (subs locale 0 2))
-        fallback)))
 
 (defn format-currency
   ([value currency-code]

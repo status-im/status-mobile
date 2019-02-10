@@ -2,37 +2,92 @@ if(typeof StatusHttpProvider === "undefined"){
 var callbackId = 0;
 var callbacks = {};
 
+function bridgeSend(data){
+    WebViewBridge.send(JSON.stringify(data));
+}
+
+function sendAPIrequest(permission, params) {
+    var messageId = callbackId++;
+    var params = params || {};
+
+    bridgeSend({
+        type: 'api-request',
+        permission: permission,
+        messageId: messageId,
+        params: params,
+        host: window.location.hostname
+    });
+
+    return new Promise(function (resolve, reject) {
+        params['resolve'] = resolve;
+        params['reject'] = reject;
+        callbacks[messageId] = params;
+    });
+}
+
+function qrCodeResponse(data, callback){
+    var result = data.data;
+    var regex = new RegExp(callback.regex);
+    if (!result) {
+        if (callback.reject) {
+            callback.reject(new Error("Cancelled"));
+        }
+    }
+    else if (regex.test(result)) {
+        if (callback.resolve) {
+            callback.resolve(result);
+        }
+    } else {
+        if (callback.reject) {
+            callback.reject(new Error("Doesn't match"));
+        }
+    }
+}
+
 WebViewBridge.onMessage = function (message) {
     data = JSON.parse(message);
+    var id = data.messageId;
+    var callback = callbacks[id];
 
-    if (data.type === "navigate-to-blank")
-        window.location.href = "about:blank";
-
-    else if (data.type === "status-api-success")
-    {
-        if (data.keys == 'WEB3')
-        {
-            window.dispatchEvent(new CustomEvent('ethereumprovider', { detail: { ethereum: new StatusHttpProvider("")} }));
-        }
-        else
-        {
-            window.STATUS_API = data.data;
-            window.postMessage({ type: 'STATUS_API_SUCCESS', permissions: data.keys }, "*");
+    if (callback) {
+        if (data.type === "api-response") {
+            if (data.permission == 'qr-code'){
+                qrCodeResponse(data, callback);
+            } else if (data.isAllowed) {
+                callback.resolve(data.data);
+            } else {
+                callback.reject(new Error("Denied"));
+            }
+        } else if (data.type === "web3-send-async-callback") {
+            var id = data.messageId;
+            var callback = callbacks[id];
+            if (callback) {
+                if (callback.results) {
+                    callback.results.push(data.error || data.result);
+                    if (callback.results.length == callback.num)
+                        callback.callback(undefined, callback.results);
+                } else {
+                    callback.callback(data.error, data.result);
+                }
+            }
         }
     }
+};
 
-    else if (data.type === "web3-send-async-callback")
-    {
-        var id = data.messageId;
-        if (callbacks[id]) {
-            callbacks[id](data.error, data.result);
-        }
-    }
+var StatusAPI = function () {};
+
+StatusAPI.prototype.getContactCode = function () {
+    return sendAPIrequest('contact-code');
+};
+
+StatusAPI.prototype.installExtension = function (uri) {
+    return sendAPIrequest('install-extension', {uri: uri});
 };
 
 var StatusHttpProvider = function () {};
 
 StatusHttpProvider.prototype.isStatus = true;
+StatusHttpProvider.prototype.status = new StatusAPI();
 StatusHttpProvider.prototype.isConnected = function () { return true; };
 
 function web3Response (payload, result){
@@ -76,11 +131,34 @@ StatusHttpProvider.prototype.sendAsync = function (payload, callback) {
     }
     else {
         var messageId = callbackId++;
-        callbacks[messageId] = callback;
-        WebViewBridge.send(JSON.stringify({type:      'web3-send-async',
-                                           messageId: messageId,
-                                           payload:   payload}));
+
+        if (Array.isArray(payload))
+        {
+            callbacks[messageId] = {num:      payload.length,
+                                    results:  [],
+                                    callback: callback};
+            for (var i in payload) {
+                bridgeSend({type:      'web3-send-async',
+                            messageId: messageId,
+                            payload:   payload[i]});
+            }
+        }
+        else
+        {
+            callbacks[messageId] = {callback: callback};
+            bridgeSend({type:      'web3-send-async',
+                        messageId: messageId,
+                        payload:   payload});
+        }
     }
+};
+
+StatusHttpProvider.prototype.enable = function () {
+    return new Promise(function (resolve, reject) { setTimeout(resolve, 1000);});
+};
+
+StatusHttpProvider.prototype.scanQRCode = function (regex) {
+    return sendAPIrequest('qr-code', {regex: regex});
 };
 }
 
@@ -89,7 +167,8 @@ if (typeof web3 === "undefined") {
     //why do we need this condition?
     if (protocol == "https:" || protocol == "http:") {
         console.log("StatusHttpProvider");
-        web3 = new Web3(new StatusHttpProvider());
-        web3.eth.defaultAccount = currentAccountAddress; // currentAccountAddress - injected from status-react
+        ethereum = new StatusHttpProvider();
+        web3 = new Web3(ethereum);
+        web3.eth.defaultAccount = currentAccountAddress;
     }
 }

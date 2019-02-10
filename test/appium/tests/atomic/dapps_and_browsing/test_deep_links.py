@@ -9,7 +9,8 @@ from views.sign_in_view import SignInView
 
 class TestDeepLinks(SingleDeviceTestCase):
 
-    @marks.testrail_id(3781)
+    @marks.testrail_id(5396)
+    @marks.high
     def test_open_public_chat_using_deep_link(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -18,7 +19,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         chat_name = sign_in_view.get_public_chat_name()
         sign_in_view.send_as_keyevent('https://get.status.im/chat/public/%s' % chat_name)
         sign_in_view.confirm()
-        open_button = sign_in_view.element_by_text('Open in Status')
+        open_button = sign_in_view.element_by_xpath('//*[@text="Open in Status"] | //*[@content-desc="Open in Status"]')
         open_button.wait_for_visibility_of_element()
         open_button.click()
         sign_in_view.sign_in()

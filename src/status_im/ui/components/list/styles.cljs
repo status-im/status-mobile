@@ -3,8 +3,9 @@
   (:require [status-im.ui.components.colors :as colors]))
 
 (def item
-  {:flex-direction :row
-   :justify-content :center})
+  {:flex-direction     :row
+   :justify-content    :center
+   :padding-horizontal 16})
 
 (def item-content-view
   {:flex            1
@@ -22,8 +23,7 @@
    :color       colors/black})
 
 (def primary-text
-  (merge primary-text-base
-         {:padding-top 12}))
+  primary-text-base)
 
 (def primary-text-only
   (merge primary-text-base
@@ -37,8 +37,16 @@
 (def image-size 40)
 
 (def item-image
-  {:width  image-size
-   :height image-size})
+  {:width         image-size
+   :height        image-size})
+
+(def big-item-image
+  {:width         image-size
+   :height        image-size
+   :margin-right  16
+   :border-radius 40
+   :border-color  (colors/alpha colors/gray 0.1)
+   :border-width  1})
 
 (def icon-size 24)
 (def icon-wrapper-size (+ icon-size (* 2 8)))
@@ -53,22 +61,52 @@
   {:width  icon-size
    :height icon-size})
 
-(def horizontal-margin 12)
-(def vertical-margin 12)
-
 (def left-item-wrapper
   {:justify-content :center
-   :margin-left     horizontal-margin
-   :margin-vertical vertical-margin})
+   :margin-vertical 12})
 
 (def content-item-wrapper
   {:flex              1
    :justify-content   :center
-   :margin-horizontal horizontal-margin})
+   :margin-horizontal 16})
 
 (def right-item-wrapper
-  {:justify-content :center
-   :margin-right    12})
+  {:justify-content :center})
+
+(def settings-item-separator
+  {:margin-left 16})
+
+(def settings-item
+  {:padding-left 16
+   :padding-right 8
+   :flex               1
+   :flex-direction     :row
+   :align-items        :center
+   :background-color   colors/white
+   :height             52})
+
+(defn settings-item-icon [icon-color]
+  {:background-color (colors/alpha icon-color 0.1)
+   :width            40
+   :height           40
+   :border-radius    40
+   :margin-right     16
+   :justify-content  :center
+   :align-items      :center})
+
+(defn settings-item-text
+  [color]
+  {:flex 1
+   :flex-wrap :nowrap
+   :font-size 17
+   :color color})
+
+(def settings-item-value
+  {:flex-wrap     :nowrap
+   :text-align    :right
+   :padding-right 10
+   :font-size     15
+   :color         colors/gray})
 
 (def base-separator
   {:height           1
@@ -77,7 +115,7 @@
 (def separator
   (merge
    base-separator
-   {:margin-left 70}))
+   {:margin-left 64}))
 
 (defstyle list-header-footer-spacing
   {:android {:background-color colors/white
@@ -98,7 +136,7 @@
   {:background-color colors/blue})
 
 (def action
-  {:background-color colors/white-transparent
+  {:background-color colors/white-light-transparent
    :border-radius    50})
 
 (def action-disabled
@@ -113,7 +151,7 @@
 (def action-separator
   {:height           1
    :background-color colors/white-light-transparent
-   :margin-left      70})
+   :margin-left      64})
 
 (def list-with-label-wrapper
   {:margin-top        26
@@ -121,3 +159,19 @@
 
 (def label
   {:color colors/gray})
+
+(def delete-button-width 100)
+
+(def delete-icon-highlight
+  {:position         :absolute
+   :top              0
+   :bottom           0
+   :right            -800
+   :width            800
+   :background-color colors/red-light})
+
+(def delete-icon-container
+  {:flex            1
+   :width           delete-button-width
+   :justify-content :center
+   :align-items     :center})

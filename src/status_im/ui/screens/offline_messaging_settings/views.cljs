@@ -12,47 +12,40 @@
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.screens.offline-messaging-settings.styles :as styles]))
 
-(defn- wnode-icon [connected?]
+(defn- mailserver-icon [connected?]
   [react/view (if platform/desktop?
-                {:style (styles/wnode-icon-container connected?)}
-                (styles/wnode-icon-container connected?))
-   [vector-icons/icon :icons/wnode
-    (if platform/desktop? {:style (styles/wnode-icon connected?)}
-        (styles/wnode-icon connected?))]])
+                {:style (styles/mailserver-icon-container connected?)}
+                (styles/mailserver-icon-container connected?))
+   [vector-icons/icon :main-icons/mailserver
+    (if platform/desktop? {:style (styles/mailserver-icon connected?)}
+        (styles/mailserver-icon connected?))]])
 
-(defn connect-to-mailserver [id]
-  (re-frame/dispatch [:connect-wnode id]))
-
-(defn navigate-to-add-mailserver [wnode-id]
-  (re-frame/dispatch [:edit-mailserver wnode-id]))
-
-(defn render-row [current-wnode-id]
+(defn render-row [current-mailserver-id]
   (fn [{:keys [name id user-defined]}]
-    (let [connected? (= id current-wnode-id)]
+    (let [connected? (= id current-mailserver-id)]
       [react/touchable-highlight
        {:on-press            #(if user-defined
-                                (navigate-to-add-mailserver id)
-                                (connect-to-mailserver id))
+                                (re-frame/dispatch [:mailserver.ui/user-defined-mailserver-selected id])
+                                (re-frame/dispatch [:mailserver.ui/default-mailserver-selected id]))
         :accessibility-label :mailserver-item}
-       [react/view styles/wnode-item
-        [wnode-icon connected?]
-        [react/view styles/wnode-item-inner
-         [react/text {:style styles/wnode-item-name-text}
+       [react/view styles/mailserver-item
+        [mailserver-icon connected?]
+        [react/view styles/mailserver-item-inner
+         [react/text {:style styles/mailserver-item-name-text}
           name]]]])))
 
 (views/defview offline-messaging-settings []
-  (views/letsubs [current-wnode-id [:settings/current-wnode]
-                  wnodes           [:settings/network-wnodes]]
+  (views/letsubs [current-mailserver-id [:mailserver/current-id]
+                  mailservers           [:mailserver/fleet-mailservers]]
     [react/view {:flex 1}
      [status-bar/status-bar]
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/offline-messaging-settings)]
-      (when config/add-custom-mailservers-enabled?
-        [toolbar/actions
-         [(toolbar.actions/add false (partial navigate-to-add-mailserver nil))]])]
+      [toolbar/actions
+       [(toolbar.actions/add false #(re-frame/dispatch [:mailserver.ui/add-pressed]))]]]
      [react/view styles/wrapper
-      [list/flat-list {:data               (vals wnodes)
+      [list/flat-list {:data               (vals mailservers)
                        :default-separator? false
-                       :key-fn             :id
-                       :render-fn          (render-row current-wnode-id)}]]]))
+                       :key-fn             :name
+                       :render-fn          (render-row current-mailserver-id)}]]]))

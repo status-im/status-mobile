@@ -12,7 +12,7 @@
    :border-bottom-width (if active? 2 1)
    :border-bottom-color (if active?
                           colors/blue
-                          colors/gray-transparent)})
+                          colors/gray)})
 
 (def tabs-container
   {:flex-direction :row
@@ -29,10 +29,6 @@
 (def transactions
   {:flex             1
    :background-color :white})
-
-(def tab-unsigned-transactions-count
-  (merge (tab-title false)
-         {:color colors/gray}))
 
 (def forward
   {:color colors/gray})
@@ -51,7 +47,7 @@
    :android         {:padding-top 14}})
 
 (def amount-text
-  {:color colors/text})
+  {:color colors/black})
 
 (def tx-amount
   {:flex-grow    1
@@ -88,36 +84,11 @@
   (merge address-item
          {:flex-shrink 1}))
 
-(def action-buttons
-  {:flex             1
-   :flex-direction   :row
-   :padding-vertical 12})
-
 (def sign-all-view
   {:flex              1
    :flex-direction    :column
    :justify-content   :center
-   :background-color  colors/gray-transparent})
-
-(def sign-all-popup
-  {:align-self        :flex-start
-   :background-color  colors/white
-   :margin-horizontal 12
-   :border-radius     8})
-
-(def sign-all-popup-text
-  {:margin-top        8
-   :margin-horizontal 12})
-
-(def sign-all-actions
-  {:flex-direction    :row
-   :justify-content   :space-between
-   :margin-horizontal 12
-   :margin-vertical   20})
-
-(def sign-all-input
-  {:width  150
-   :height 38})
+   :background-color  colors/gray})
 
 (def sign-all-done
   {:position :absolute
@@ -226,7 +197,7 @@
    :width            4
    :height           4
    :border-radius    2
-   :background-color colors/cyan})
+   :background-color colors/blue})
 
 (def filter-container
   {:flex 1})

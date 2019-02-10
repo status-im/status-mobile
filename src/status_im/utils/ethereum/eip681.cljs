@@ -18,8 +18,9 @@
 (def parameter-separator "&")
 (def key-value-separator "=")
 
+;;TODO(goranjovic) - rewrite all of these with something more readable than regex
 (def uri-pattern (re-pattern (str scheme scheme-separator "([^" query-separator "]*)(?:\\" query-separator "(.*))?")))
-(def authority-path-pattern (re-pattern (str "^([^" chain-id-separator function-name-separator "]*)(?:" chain-id-separator "(\\d))?(?:" function-name-separator "(\\w*))?")))
+(def authority-path-pattern (re-pattern (str "^([^" chain-id-separator function-name-separator "]*)(?:" chain-id-separator "(\\d+))?(?:" function-name-separator "(\\w*))?")))
 (def key-value-format (str "([^" parameter-separator key-value-separator "]+)"))
 (def query-pattern (re-pattern (str key-value-format key-value-separator key-value-format)))
 
@@ -64,7 +65,7 @@
           n (money/bignumber (string/replace s "ETH" ""))]
       (if eth? (.times n 1e18) n))))
 
-(defn extract-request-details [{:keys [value address chain-id function-name function-arguments]}]
+(defn extract-request-details [{:keys [value address chain-id function-name function-arguments]} all-tokens]
   "Return a map encapsulating request details (with keys `value`, `address` and `symbol`) from a parsed URI.
    Supports ethereum and erc20 token."
   (when address
@@ -75,7 +76,7 @@
        :address address}
       "transfer"
       {:value   (money/bignumber (:uint256 function-arguments))
-       :symbol  (:symbol (tokens/address->token (ethereum/chain-id->chain-keyword chain-id) address))
+       :symbol  (:symbol (tokens/address->token all-tokens (ethereum/chain-id->chain-keyword chain-id) address))
        :address (:address function-arguments)}
       nil)))
 
@@ -103,8 +104,8 @@
 
 (defn generate-erc20-uri
   "Generate a EIP 681 URI encapsulating ERC20 token transfer"
-  [address {:keys [symbol value chain-id] :as m}]
-  (when-let [token (tokens/symbol->token (if chain-id (ethereum/chain-id->chain-keyword chain-id) :mainnet) symbol)]
+  [address {:keys [symbol value chain-id] :as m} all-tokens]
+  (when-let [token (tokens/symbol->token all-tokens (if chain-id (ethereum/chain-id->chain-keyword chain-id) :mainnet) symbol)]
     (generate-uri (:address token)
                   (merge (dissoc m :value :symbol)
                          {:function-name      "transfer"

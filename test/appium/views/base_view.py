@@ -5,7 +5,7 @@ import base64
 import pytest
 import re
 import zbarlight
-from tests import info, common_password, test_fairy_warning_text
+from tests import common_password
 from eth_keys import datatypes
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 from PIL import Image
@@ -22,7 +22,7 @@ class BackButton(BaseButton):
     def click(self, times_to_click: int = 1):
         for _ in range(times_to_click):
             self.find_element().click()
-            info('Tap on %s' % self.name)
+            self.driver.info('Tap on %s' % self.name)
         return self.navigate()
 
 
@@ -35,7 +35,7 @@ class AllowButton(BaseButton):
         try:
             for _ in range(3):
                 self.find_element().click()
-                info('Tap on %s' % self.name)
+                self.driver.info('Tap on %s' % self.name)
         except NoSuchElementException:
             pass
 
@@ -55,7 +55,7 @@ class DeleteButton(BaseButton):
 class YesButton(BaseButton):
     def __init__(self, driver):
         super(YesButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='YES']")
+        self.locator = self.Locator.xpath_selector("//*[@text='YES' or @text='GOT IT']")
 
 
 class NoButton(BaseButton):
@@ -114,7 +114,7 @@ class WalletButton(TabButton):
         return WalletView(self.driver)
 
     def click(self):
-        info('Tap on %s' % self.name)
+        self.driver.info('Tap on %s' % self.name)
         from views.wallet_view import SetUpButton, SendTransactionButton
         for _ in range(3):
             self.find_element().click()
@@ -133,8 +133,8 @@ class ProfileButton(TabButton):
         return ProfileView(self.driver)
 
     def click(self):
-        from views.profile_view import ShareMyContactKeyButton
-        self.click_until_presence_of_element(ShareMyContactKeyButton(self.driver))
+        from views.profile_view import ShareMyProfileButton
+        self.click_until_presence_of_element(ShareMyProfileButton(self.driver))
         return self.navigate()
 
 
@@ -150,6 +150,13 @@ class NextButton(BaseButton):
         super(NextButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
             "//android.widget.TextView[@text='NEXT']")
+
+
+class AddButton(BaseButton):
+    def __init__(self, driver):
+        super(AddButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//android.widget.TextView[@text='ADD']")
 
 
 class DoneButton(BaseButton):
@@ -179,7 +186,7 @@ class SendMessageButton(BaseButton):
 
     def click(self):
         self.find_element().click()
-        info('Tap on %s' % self.name)
+        self.driver.info('Tap on %s' % self.name)
 
 
 class ConnectionStatusText(BaseText):
@@ -187,13 +194,6 @@ class ConnectionStatusText(BaseText):
         super(ConnectionStatusText, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
             "//*[@content-desc='connection-status-text']/android.widget.TextView")
-
-
-class TestFairyWarning(BaseText):
-    def __init__(self, driver):
-        super(TestFairyWarning, self).__init__(driver)
-        self.locator = self.Locator.text_selector(test_fairy_warning_text)
-        self.is_shown = bool()
 
 
 class OkContinueButton(BaseButton):
@@ -225,7 +225,7 @@ class ProgressBar(BaseElement):
 class WalletModalButton(BaseButton):
     def __init__(self, driver):
         super(WalletModalButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('wallet-modal-button')
+        self.locator = self.Locator.xpath_selector("//*[@text='View my wallet']")
 
     def navigate(self):
         from views.wallet_view import WalletView
@@ -237,6 +237,21 @@ class CrossIcon(BaseButton):
     def __init__(self, driver):
         super(CrossIcon, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[1]')
+
+
+class AssetButton(BaseButton):
+    def __init__(self, driver, asset_name):
+        super(AssetButton, self).__init__(driver)
+        self.asset_name = asset_name
+        self.locator = self.Locator.text_selector(self.asset_name)
+
+    @property
+    def name(self):
+        return self.asset_name + self.__class__.__name__
+
+    def click(self):
+        self.wait_for_element().click()
+        self.driver.info('Tap on %s' % self.name)
 
 
 class BaseView(object):
@@ -255,6 +270,7 @@ class BaseView(object):
         self.continue_button = ContinueButton(self.driver)
         self.ok_button = OkButton(self.driver)
         self.next_button = NextButton(self.driver)
+        self.add_button = AddButton(self.driver)
         self.save_button = SaveButton(self.driver)
         self.done_button = DoneButton(self.driver)
         self.delete_button = DeleteButton(self.driver)
@@ -266,8 +282,6 @@ class BaseView(object):
 
         self.apps_button = AppsButton(self.driver)
         self.status_app_icon = StatusAppIcon(self.driver)
-
-        self.test_fairy_warning = TestFairyWarning(self.driver)
 
         self.wallet_modal_button = WalletModalButton(self.driver)
 
@@ -299,7 +313,7 @@ class BaseView(object):
         raise TimeoutError('Logcat is empty')
 
     def confirm(self):
-        info("Tap 'Confirm' on native keyboard")
+        self.driver.info("Tap 'Confirm' on native keyboard")
         self.driver.press_keycode(66)
 
     def confirm_until_presence_of_element(self, desired_element, attempts=3):
@@ -307,26 +321,26 @@ class BaseView(object):
         while not desired_element.is_element_present(1) and counter <= attempts:
             try:
                 self.confirm()
-                info('Wait for %s' % desired_element.name)
+                self.driver.info('Wait for %s' % desired_element.name)
                 desired_element.wait_for_element(5)
                 return
             except TimeoutException:
                 counter += 1
 
     def click_system_back_button(self):
-        info('Click system back button')
+        self.driver.info('Click system back button')
         self.driver.press_keycode(4)
 
     def cut_text(self):
-        info('Cut text')
+        self.driver.info('Cut text')
         self.driver.press_keycode(277)
 
     def copy_text(self):
-        info('Copy text')
+        self.driver.info('Copy text')
         self.driver.press_keycode(278)
 
     def paste_text(self):
-        info('Paste text')
+        self.driver.info('Paste text')
         self.driver.press_keycode(279)
 
     def send_as_keyevent(self, string):
@@ -339,58 +353,60 @@ class BaseView(object):
                 'k': 39, 'l': 40, 'm': 41, 'n': 42, 'o': 43, 'p': 44, 'q': 45, 'r': 46, 's': 47, 't': 48,
                 'u': 49, 'v': 50, 'w': 51, 'x': 52, 'y': 53, 'z': 54}
         time.sleep(3)
-        info("Enter '%s' using native keyboard" % string)
+        self.driver.info("Enter '%s' using native keyboard" % string)
         for i in string:
-            if type(keys[i]) is list:
+            if i.isalpha() and i.isupper():
+                keycode, metastate = keys[i.lower()], 64  # META_SHIFT_LEFT_ON Constant Value: 64. Example: i='n' -> 'N'
+            elif type(keys[i]) is list:
                 keycode, metastate = keys[i][0], keys[i][1]
             else:
                 keycode, metastate = keys[i], None
             self.driver.press_keycode(keycode=keycode, metastate=metastate)
 
     def find_full_text(self, text, wait_time=60):
-        info("Looking for full text: '%s'" % text)
+        self.driver.info("Looking for full text: '%s'" % text)
         element = BaseElement(self.driver)
         element.locator = element.Locator.text_selector(text)
         return element.wait_for_element(wait_time)
 
     def find_text_part(self, text, wait_time=60):
-        info("Looking for a text part: '%s'" % text)
+        self.driver.info("Looking for a text part: '%s'" % text)
         element = BaseElement(self.driver)
         element.locator = element.Locator.text_part_selector(text)
         return element.wait_for_element(wait_time)
 
     def element_by_text(self, text, element_type='button'):
-        info("Looking for an element by text: '%s'" % text)
+        self.driver.info("Looking for an element by text: '%s'" % text)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.text_selector(text)
         return element
 
     def element_by_text_part(self, text, element_type='button'):
-        info("Looking for an element by text part: '%s'" % text)
+        self.driver.info("Looking for an element by text part: '%s'" % text)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.text_part_selector(text)
         return element
 
     def element_starts_with_text(self, text, element_type='base'):
-        info("Looking for full text: '%s'" % text)
+        self.driver.info("Looking for full text: '%s'" % text)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % text)
         return element
 
     def wait_for_element_starts_with_text(self, text, wait_time=60):
-        info("Looking for full text: '%s'" % text)
+        self.driver.info("Looking for full text: '%s'" % text)
         element = BaseElement(self.driver)
         element.locator = element.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % text)
         return element.wait_for_element(wait_time)
 
     def element_by_accessibility_id(self, accessibility_id, element_type='button'):
-        info("Looking for an element by accessibility id: '%s'" % accessibility_id)
+        self.driver.info("Looking for an element by accessibility id: '%s'" % accessibility_id)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.accessibility_id(accessibility_id)
         return element
 
     def element_by_xpath(self, xpath, element_type='button'):
-        info("Looking for an element by xpath: '%s'" % xpath)
+        self.driver.info("Looking for an element by xpath: '%s'" % xpath)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.xpath_selector(xpath)
         return element
@@ -455,7 +471,7 @@ class BaseView(object):
                 self.back_button.click()
             except (NoSuchElementException, TimeoutException):
                 counter += 1
-        return self.get_home_view()
+        return self.home_button.click()
 
     def relogin(self, password=common_password):
         self.get_back_to_home_view()
@@ -466,7 +482,7 @@ class BaseView(object):
 
     def get_public_key(self):
         profile_view = self.profile_button.click()
-        profile_view.share_my_contact_key_button.click()
+        profile_view.share_my_profile_button.click()
         profile_view.public_key_text.wait_for_visibility_of_element()
         public_key = profile_view.public_key_text.text
         profile_view.cross_icon.click()
@@ -492,7 +508,7 @@ class BaseView(object):
                         connect_status.wait_for_invisibility_of_element()
                     except TimeoutException as e:
                         if i == 2:
-                            e.msg = "Can't reconnect to mail server after 3 attempts"
+                            e.msg = "Device %s: Can't reconnect to mail server after 3 attempts" % self.driver.number
                             raise e
 
     def check_no_values_in_logcat(self, **kwargs):
@@ -500,3 +516,18 @@ class BaseView(object):
         for key, value in kwargs.items():
             if re.findall('\W%s$|\W%s\W' % (value, value), logcat):
                 pytest.fail('%s in logcat!!!' % key.capitalize(), pytrace=False)
+
+    def asset_by_name(self, asset_name):
+        return AssetButton(self.driver, asset_name)
+
+    def toggle_airplane_mode(self):
+        # opening android settings
+        self.driver.start_activity(app_package='com.android.settings', app_activity='.Settings')
+        more_button = self.element_by_text('More')
+        more_button.wait_for_visibility_of_element()
+        more_button.click()
+        airplane_toggle = self.element_by_xpath('//*[@resource-id="android:id/switch_widget"]')
+        airplane_toggle.wait_for_visibility_of_element()
+        airplane_toggle.click()
+        # opening Status app
+        self.driver.start_activity(app_package='im.status.ethereum', app_activity='.MainActivity')

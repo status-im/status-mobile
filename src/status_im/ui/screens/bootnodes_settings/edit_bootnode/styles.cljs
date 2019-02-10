@@ -51,3 +51,8 @@
 (defstyle delete-button
   (assoc button
          :background-color colors/red))
+
+(def container
+  (merge
+   styles/flex
+   {:background-color colors/white}))

@@ -7,5 +7,5 @@ def get_ethereum_price_in_usd() -> float:
 
 
 def get_token_info(address: str):
-    url = 'http://api.ethplorer.io/getTokenInfo/%s?apiKey=freekey' % address
+    url = 'https://api.ethplorer.io/getTokenInfo/%s?apiKey=freekey' % address
     return requests.request('GET', url).json()

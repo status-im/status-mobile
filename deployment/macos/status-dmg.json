@@ -1,0 +1,18 @@
+{
+  "title": "Status",
+  "background": "dmg-background.png",
+  "contents": [
+    {
+      "x": 385,
+      "y": 235,
+      "type": "link",
+      "path": "/Applications"
+    },
+    {
+      "x": 170,
+      "y": 236,
+      "type": "file",
+      "path": "../../StatusImPackage/Status.app"
+    }
+  ]
+}

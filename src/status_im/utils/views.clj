@@ -45,7 +45,10 @@
                        rest-body)
         [subs component-map body] (case (count rest-body')
                                     1 [nil {} (first rest-body')]
-                                    2 [(first rest-body') {} (second rest-body')]
+                                    2 (let [first-element (first rest-body')]
+                                        (if (map? first-element)
+                                          [nil first-element (second rest-body')]
+                                          [(first rest-body') {} (second rest-body')]))
                                     3 rest-body')
         [subs-bindings vars-bindings] (prepare-subs subs)]
     `(do

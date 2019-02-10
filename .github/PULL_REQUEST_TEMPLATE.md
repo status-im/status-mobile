@@ -16,8 +16,36 @@ fixes #...
 <!-- (Specify if something in particular should be looked at, or ignored, during review) -->
 
 ### Testing notes (optional):
-<!-- (Specify if something specific has to be tested, for example upgrade paths) -->
+<!-- (Specify which platforms should be tested) -->
+#### Platforms (optional)
+- Android
+- iOS
+- macOS
+- Linux
+- Windows
 
+<!-- (Specify if some specific areas has to be tested, for example 1-1 chats) -->
+#### Areas that maybe impacted (optional)
+**Functional**
+- 1-1 chats
+- public chats
+- group chats
+- wallet / transactions
+- dapps / app browsing
+- account recovery
+- new account
+- user profile updates
+- networks
+- mailservers
+- fleet
+- bootnodes
+
+**Non-functional**
+- battery performance
+- CPU performance / speed of the app
+- network consumption
+
+<!-- (Specify exact steps to test if there are such) -->
 ### Steps to test:
 - Open Status
 - ...

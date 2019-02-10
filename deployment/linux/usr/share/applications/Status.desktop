@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Status
+Comment=Status Desktop
+Exec=Status
+Icon=Status
+Categories=Network;

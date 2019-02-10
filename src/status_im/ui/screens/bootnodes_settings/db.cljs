@@ -1,5 +1,4 @@
 (ns status-im.ui.screens.bootnodes-settings.db
-  (:require-macros [status-im.utils.db :refer [allowed-keys]])
   (:require
    [clojure.string :as string]
    [cljs.spec.alpha :as spec]))
@@ -10,9 +9,9 @@
 (spec/def :bootnode/name ::not-blank-string)
 (spec/def :bootnode/id ::not-blank-string)
 (spec/def :bootnode/chain ::not-blank-string)
-(spec/def :bootnode/bootnode (allowed-keys :req-un [:bootnode/chain
-                                                    :bootnode/address
-                                                    :bootnode/name
-                                                    :bootnode/id]))
+(spec/def :bootnode/bootnode (spec/keys :req-un [:bootnode/chain
+                                                 :bootnode/address
+                                                 :bootnode/name
+                                                 :bootnode/id]))
 
 (spec/def :bootnodes/bootnodes (spec/nilable (spec/map-of :bootnode/id (spec/map-of :bootnode/id :bootnode/bootnode))))

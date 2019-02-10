@@ -27,26 +27,15 @@
                       :input-placeholder (i18n/label :t/name-placeholder)
                       :input-description (i18n/label :t/name-description)}})
 
-(defn next-step [step password password-confirm]
-  (case step
-    :enter-password (re-frame/dispatch [:set-in [:accounts/create :step] :confirm-password])
-    :confirm-password (if (= password password-confirm)
-                        (re-frame/dispatch [:create-account])
-                        (re-frame/dispatch [:set-in [:accounts/create :error] (i18n/label :t/password_error1)]))
-    :enter-name (re-frame/dispatch [:account-set-name])))
-
-(defn step-back [step]
-  (case step
-    :enter-password (re-frame/dispatch [:navigate-back])
-    :confirm-password (re-frame/dispatch [:reset-account-creation])))
-
-(defview input [step error]
+(defview input [next-enabled? {:keys [step error password password-confirm]}]
   [text-input/text-input-with-label
-   {:label             (get-in steps [step :input-label])
-    :placeholder       (get-in steps [step :input-placeholder])
-    :on-change-text    #(re-frame/dispatch [:account-set-input-text (get-in steps [step :input-key]) %])
-    :secure-text-entry (boolean (#{:enter-password :confirm-password} step))
-    :error             error}])
+   (cond-> {:label             (get-in steps [step :input-label])
+            :placeholder       (get-in steps [step :input-placeholder])
+            :on-change-text    #(re-frame/dispatch [:accounts.create.ui/input-text-changed (get-in steps [step :input-key]) %])
+            :secure-text-entry (boolean (#{:enter-password :confirm-password} step))
+            :auto-focus        true
+            :error             error}
+     next-enabled? (assoc :on-submit-editing #(re-frame/dispatch [:accounts.create.ui/next-step-pressed step password password-confirm])))])
 
 (defview create-account []
   (letsubs [step [:get-in [:accounts/create :step]]
@@ -67,14 +56,18 @@
      (when (#{:enter-password :confirm-password :enter-name} step)
        [react/view components.styles/flex
         [toolbar/toolbar {:flat? true} (when (#{:enter-password :confirm-password} step)
-                                         (toolbar/nav-button (actions/back #(step-back step)))) nil]
+                                         (toolbar/nav-button (actions/back #(re-frame/dispatch [:accounts.create.ui/step-back-pressed step])))) nil]
         [react/view {:style styles/logo-container}
          [components.common/logo styles/logo]]
         ^{:key (str "step" step)}
         [react/view components.styles/flex
          [react/view {:style                       styles/input-container
                       :important-for-accessibility :no-hide-descendants}
-          [input step error]
+          [input next-enabled?
+           {:step             step
+            :error            error
+            :password         password
+            :password-confirm password-confirm}]
           [react/text {:style styles/input-description}
            (get-in steps [step :input-description])]]
          [react/view {:style components.styles/flex}]
@@ -83,4 +76,4 @@
           [components.common/bottom-button
            {:forward?  true
             :disabled? (not next-enabled?)
-            :on-press  #(next-step step password password-confirm)}]]]])]))
+            :on-press  #(re-frame/dispatch [:accounts.create.ui/next-step-pressed step password password-confirm])}]]]])]))

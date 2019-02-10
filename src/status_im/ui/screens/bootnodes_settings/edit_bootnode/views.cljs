@@ -14,14 +14,8 @@
    [status-im.ui.components.text-input.view :as text-input]
    [status-im.ui.screens.bootnodes-settings.edit-bootnode.styles :as styles]))
 
-(defn handle-delete [id]
-  (utils/show-confirmation (i18n/label :t/delete-bootnode-title)
-                           (i18n/label :t/delete-bootnode-are-you-sure)
-                           (i18n/label :t/delete-bootnode)
-                           #(re-frame/dispatch [:delete-bootnode id])))
-
 (defn delete-button [id]
-  [react/touchable-highlight {:on-press #(handle-delete id)}
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:bootnodes.ui/delete-pressed id])}
    [react/view styles/button-container
     [react/view {:style               styles/delete-button
                  :accessibility-label :bootnode-delete-button}
@@ -30,12 +24,12 @@
       (i18n/label :t/delete)]]]])
 
 (def qr-code
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:scan-qr-code
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
                                                              {:toolbar-title (i18n/label :t/add-bootnode)}
-                                                             :set-bootnode-from-qr])
+                                                             :bootnodes.callback/qr-code-scanned])
                               :style    styles/qr-code}
    [react/view
-    [vector-icons/icon :icons/qr {:color colors/blue}]]])
+    [vector-icons/icon :main-icons/qr {:color colors/blue}]]])
 
 (views/defview edit-bootnode []
   (views/letsubs [manage-bootnode [:get-manage-bootnode]
@@ -43,7 +37,7 @@
     (let [url  (get-in manage-bootnode [:url :value])
           id   (get-in manage-bootnode [:id :value])
           name (get-in manage-bootnode [:name :value])]
-      [react/view components.styles/flex
+      [react/view styles/container
        [status-bar/status-bar]
        [react/keyboard-avoiding-view components.styles/flex
         [toolbar/simple-toolbar (i18n/label (if id :t/bootnode-details :t/add-bootnode))]
@@ -55,7 +49,7 @@
             :style           styles/input
             :container       styles/input-container
             :default-value   name
-            :on-change-text  #(re-frame/dispatch [:bootnode-set-input :name %])
+            :on-change-text  #(re-frame/dispatch [:bootnodes.ui/input-changed :name %])
             :auto-focus      true}]
           [text-input/text-input-with-label
            {:label           (i18n/label :t/bootnode-address)
@@ -64,7 +58,7 @@
             :style           styles/input
             :container       styles/input-container
             :default-value   url
-            :on-change-text  #(re-frame/dispatch [:bootnode-set-input :url %])}]
+            :on-change-text  #(re-frame/dispatch [:bootnodes.ui/input-changed :url %])}]
           (when id
             [delete-button id])]]
         [react/view styles/bottom-container
@@ -73,4 +67,4 @@
           {:forward?  true
            :label     (i18n/label :t/save)
            :disabled? (not is-valid?)
-           :on-press  #(re-frame/dispatch [:save-new-bootnode])}]]]])))
+           :on-press  #(re-frame/dispatch [:bootnodes.ui/save-pressed])}]]]])))

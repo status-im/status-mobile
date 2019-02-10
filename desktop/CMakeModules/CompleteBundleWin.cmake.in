@@ -1,0 +1,61 @@
+# windeployqt should be used here, but since we get the `Not implemented` error from it, we're trying to manually copy artifacts to output directory
+set(TARGET_DIR "${@APP_NAME@_BINARY_DIR}")
+
+##########################################################################################################
+#
+# NOTE: Remember to reflect any changes on the setup generation procedure in /deployment/windows/nsis/setup.nsi
+#
+##########################################################################################################
+
+set(qtmodules Core Quick QuickTemplates2 QuickControls2 WebSockets Widgets Gui Network Svg Qml Concurrent)
+if(USE_QTWEBKIT)
+  set(qtmodules ${qtmodules} Multimedia WebKit WebKitWidgets WebChannel)
+
+  add_custom_command(TARGET @APP_NAME@ POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          "@CONAN_BIN_DIRS_QT5-MXE@/QtWebProcess.exe"
+          ${TARGET_DIR})
+endif()
+foreach(qtmodule ${qtmodules})
+  message(STATUS "Copying ${qtmodule} module to ${TARGET_DIR}")
+  file(COPY "@CONAN_BIN_DIRS_QT5-MXE@/Qt5${qtmodule}.dll" DESTINATION "${TARGET_DIR}")
+endforeach(qtmodule ${qtmodules})
+if(EXISTS "@QTROOT@/translations")
+  message(STATUS "Copying translations module to ${TARGET_DIR}")
+  file(COPY "@QTROOT@/translations" DESTINATION "${TARGET_DIR}")
+endif()
+
+set(qtplugindirs "bearer" "platforms" "styles" "iconengines" "imageformats")
+foreach(qtplugindir ${qtplugindirs})
+  message(STATUS "Copying plugin ${qtplugindir} to ${TARGET_DIR}/${qtplugindir}")
+  file(COPY "@CONAN_BIN_DIRS_QT5-MXE@/../plugins/${qtplugindir}/" DESTINATION "${TARGET_DIR}/${qtplugindir}")
+endforeach()
+
+set(qtqmldirs "QtQuick" "QtQuick.2" "QtGraphicalEffects" "QtWebSockets" "QtQml")
+if(USE_QTWEBKIT)
+  set(qtqmldirs ${qtqmldirs} "QtWebKit" "QtWebChannel")
+endif()
+foreach(qtqmldir ${qtqmldirs})
+  message(STATUS "Copying QML dir for ${qtqmldir} to ${TARGET_DIR}/${qtqmldir}")
+  file(COPY "@CONAN_BIN_DIRS_QT5-MXE@/../qml/${qtqmldir}/" DESTINATION "${TARGET_DIR}/${qtqmldir}")
+endforeach()
+
+set(deps_qt5 "libpng16-16" "libharfbuzz-0" "zlib1" "libpcre2-16-0"
+             "libpcre-1" "libcrypto-1_1-x64" "libssl-1_1-x64" "libfreetype-6"
+             "libglib-2.0-0" "libstdc++-6" "libbz2" "libintl-8" "libiconv-2"
+             "icuin56" "icuuc56" "icudt56" "libjpeg-9" "libsqlite3-0" "libwebp-5" "libgcc_s_seh-1")
+set(TOOLCHAIN_BINDIRS "@CONAN_BIN_DIRS_MXETOOLCHAIN-X86_64-W64-MINGW32@")
+separate_arguments(TOOLCHAIN_BINDIRS)
+foreach(lib ${deps_qt5})
+  foreach(bindir ${TOOLCHAIN_BINDIRS})
+    set(lib_full_path "${bindir}/${lib}.dll")
+    if(EXISTS "${lib_full_path}")
+      break()
+    endif()
+  endforeach()
+  if(NOT EXISTS "${lib_full_path}")
+    set(lib_full_path "@CONAN_BIN_DIRS_QT5-MXE@/${lib}.dll")
+  endif()
+  message(STATUS "Copying ${lib_full_path} to ${TARGET_DIR}")
+  file(COPY ${lib_full_path} DESTINATION ${TARGET_DIR})
+endforeach(lib ${deps_qt5})

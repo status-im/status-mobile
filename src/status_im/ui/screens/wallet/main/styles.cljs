@@ -26,7 +26,7 @@
    :align-items      :center
    :border-radius    8
    :margin           16
-   :background-color colors/black-darker-transparent
+   :background-color colors/black-transparent
    :padding-top      10
    :padding-bottom   10
    :padding-left     14
@@ -42,31 +42,33 @@
 
 (def backup-seed-phrase-description
   {:line-height 20
-   :color       colors/white-lighter-transparent})
+   :color       colors/white-transparent})
 
 (def total-balance-container
   {:align-items     :center
-   :justify-content :center})
+   :justify-content :center
+   :padding-top     49
+   :padding-bottom  38})
 
 (def total-balance
   {:flex-direction :row})
 
 (def total-balance-value
-  {:font-size 37
-   :color     colors/white})
+  {:font-size   32
+   :font-weight :bold
+   :color       colors/white})
 
-(def total-value
+(def total-balance-tilde
   {:color colors/white-transparent})
 
 (defstyle total-balance-currency
-  {:font-size   37
-   :margin-left 9
-   :color       colors/white-lighter-transparent
-   :android     {:letter-spacing 1.5}
-   :ios         {:letter-spacing 1.16}})
+  {:font-size   32
+   :font-weight :bold
+   :margin-left 6
+   :color       colors/white-transparent})
 
 (def snackbar-container
-  {:background-color colors/gray-notifications})
+  {:background-color colors/gray})
 
 (def snackbar-text
   {:color             colors/white
@@ -97,8 +99,16 @@
 
 (def asset-section
   {:flex             1
-   :padding-top      16
+   :padding-top      5
+   :padding-bottom   20
    :background-color colors/white})
+
+(def asset-section-header
+  {:font-size     15
+   :color         colors/gray
+   :margin-left   16
+   :margin-top    7
+   :margin-bottom 3})
 
 (def asset-item-container
   {:flex            1

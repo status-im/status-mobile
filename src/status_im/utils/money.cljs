@@ -80,8 +80,10 @@
   (when bn
     (.toNumber bn)))
 
-(defn wei->str [unit n]
-  (str (to-fixed (wei-> unit n)) " " (string/upper-case (name unit))))
+(defn wei->str
+  ([unit n display-unit]
+   (str (to-fixed (wei-> unit n)) " " display-unit))
+  ([unit n] (wei->str unit n (string/upper-case (name unit)))))
 
 (defn wei->ether [n]
   (wei-> :eth n))
@@ -92,11 +94,13 @@
 
 (defn token->unit [n decimals]
   (when-let [bn (bignumber n)]
-    (.dividedBy bn (bignumber (from-decimal decimals)))))
+    (when-let [d (from-decimal decimals)]
+      (.dividedBy bn (bignumber d)))))
 
 (defn unit->token [n decimals]
   (when-let [bn (bignumber n)]
-    (.times bn (bignumber (from-decimal decimals)))))
+    (when-let [d (from-decimal decimals)]
+      (.times bn (bignumber d)))))
 
 ;;NOTE(goranjovic) - We have two basic representations of values that refer to cryptocurrency amounts: formatted and
 ;; internal. Formatted representation is the one we show on screens and include in reports, whereas internal

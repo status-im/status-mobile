@@ -118,8 +118,15 @@ if (process.argv.indexOf('--pipe') != -1) {
   console.log = console.error
   rnUbuntuServer(process.stdin, process.stdout);
 } else {
+  var port = process.env['REACT_SERVER_PORT'] || 5000;
+  process.argv.forEach((val, index) => {
+    if (val == '--port') {
+      port = process.argv[++index];
+    }
+  });
+
   var server = net.createServer((sock) => {
     DEBUG && console.error("-- Connection from RN client");
     rnUbuntuServer(sock, sock);
-  }).listen(5000, function() { console.error("-- Server starting") });
+  }).listen(port, function() { console.error("-- Server starting") });
 }

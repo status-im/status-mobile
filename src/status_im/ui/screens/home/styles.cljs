@@ -1,16 +1,14 @@
 (ns status-im.ui.screens.home.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as component.styles]
-            [status-im.ui.components.colors :as colors]))
-
-(def delete-button-width 100)
+  (:require [status-im.ui.components.colors :as colors]))
 
 (defn toolbar []
   {:background-color colors/white})
 
-(def chat-separator-item
-  {:border-bottom-width 1
-   :border-bottom-color component.styles/color-gray5})
+(defstyle sync-wrapper
+  {:flex-direction :row})
+
+(defstyle sync-info {:margin-horizontal 15})
 
 (defstyle chat-container
   {:flex-direction   :row
@@ -69,9 +67,12 @@
    :flex           1
    :margin-right   4})
 
-(def name-text
-  {:color     component.styles/text1-color
-   :font-size 16})
+(defstyle name-text
+  {:color   colors/text
+   :android {:font-size 16
+             :height    26}
+   :ios     {:font-size 17
+             :height    26}})
 
 (defstyle private-group-icon-container
   {:width        20
@@ -87,7 +88,7 @@
   {:flex-shrink 1})
 
 (defstyle last-message-text
-  {:color   component.styles/text4-color
+  {:color   colors/text-gray
    :android {:font-size 14
              :height    24}
    :ios     {:font-size 15
@@ -105,18 +106,10 @@
    :height       16})
 
 (defstyle datetime-text
-  {:color   component.styles/text4-color
-   :android {:font-size 14}
+  {:color   colors/text-gray
+   :android {:font-size 12}
    :desktop {:font-size 14}
-   :ios     {:font-size 15}})
-
-(def new-messages-container
-  {:min-width          22
-   :height             22
-   :padding-horizontal 8
-   :margin-left        15
-   :background-color   component.styles/new-messages-count-color
-   :border-radius      50})
+   :ios     {:font-size 12}})
 
 (defstyle new-messages-text
   {:left       0
@@ -128,13 +121,6 @@
 
 (def container
   {:flex 1})
-
-(def native-button-offset 16)
-
-(def create-icon
-  {:font-size 20
-   :height    22
-   :color     colors/white})
 
 (def group-icon
   {:margin-top   8
@@ -189,20 +175,6 @@
    :icon-size 17
    :shadow?   false})
 
-(def delete-icon-highlight
-  {:position         :absolute
-   :top              0
-   :bottom           0
-   :right            -800
-   :width            800
-   :background-color colors/red-light})
-
-(def delete-icon-container
-  {:flex            1
-   :width           delete-button-width
-   :justify-content :center
-   :align-items     :center})
-
 (def action-button-container
   {:position :absolute
    :bottom   16
@@ -215,3 +187,6 @@
    :border-radius    28
    :align-items      :center
    :justify-content  :center})
+
+(def spinner-container
+  {:margin-right 10})

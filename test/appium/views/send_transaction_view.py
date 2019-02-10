@@ -1,4 +1,5 @@
-from views.base_element import BaseText
+from tests import common_password
+from views.base_element import BaseText, BaseElement
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView, OkButton, ProgressBar
 
@@ -89,12 +90,6 @@ class SelectAssetButton(BaseButton):
         self.locator = self.Locator.accessibility_id('choose-asset-button')
 
 
-class AssetButton(BaseButton):
-    def __init__(self, driver, asset_name):
-        super(AssetButton, self).__init__(driver)
-        self.locator = self.Locator.text_part_selector(asset_name)
-
-
 class ErrorDialog(BaseView):
     def __init__(self, driver):
         super(ErrorDialog, self).__init__(driver)
@@ -142,6 +137,23 @@ class ShareButton(BaseButton):
         self.locator = self.Locator.accessibility_id('share-button')
 
 
+class OnboardingMessage(BaseElement):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.text_selector('Set up your wallet')
+
+
+class NotEnoughEthForGas(BaseText):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.text_selector('Not enough ETH for gas')
+
+
+class ValidationWarnings(object):
+    def __init__(self, driver):
+        self.not_enough_eth_for_gas = NotEnoughEthForGas(driver)
+
+
 class SendTransactionView(BaseView):
     def __init__(self, driver):
         super(SendTransactionView, self).__init__(driver)
@@ -174,12 +186,19 @@ class SendTransactionView(BaseView):
         self.share_button = ShareButton(self.driver)
         self.progress_bar = ProgressBar(self.driver)
 
-    def sign_transaction(self, sender_password):
+        self.onboarding_message = OnboardingMessage(self.driver)
+        self.validation_warnings = ValidationWarnings(self.driver)
+
+    def complete_onboarding(self):
+        if self.onboarding_message.is_element_displayed():
+            from views.wallet_view import WalletView
+            wallet_view = WalletView(self.driver)
+            wallet_view.done_button.click()
+            self.yes_button.click()
+
+    def sign_transaction(self, sender_password: str = common_password):
         self.sign_transaction_button.click_until_presence_of_element(self.enter_password_input)
         self.enter_password_input.send_keys(sender_password)
         self.sign_transaction_button.click_until_presence_of_element(self.progress_bar)
         self.progress_bar.wait_for_invisibility_of_element(60)
         self.got_it_button.click()
-
-    def asset_by_name(self, asset_name):
-        return AssetButton(self.driver, asset_name)

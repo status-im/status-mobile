@@ -8,8 +8,8 @@
   [rn/touchable-highlight (merge {:on-press on-press}
                                  (when accessibility-label
                                    {:accessibility-label accessibility-label}))
-   [rn/view st/action-button
-    [rn/view (st/action-button-icon-container cyrcle-color)
+   [rn/view {:style st/action-button}
+    [rn/view {:style (st/action-button-icon-container cyrcle-color)}
      [vi/icon icon icon-opts]]
     [rn/view st/action-button-label-container
      [rn/text {:style (merge st/action-button-label label-style)}

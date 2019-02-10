@@ -7,6 +7,7 @@
             [status-im.ui.components.common.common :as common]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
+            [status-im.utils.gfycat.core :as gfy]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.screens.profile.components.styles :as styles]))
 
@@ -16,6 +17,7 @@
   [react/view
    [react/text-input
     (merge {:style               styles/profile-name-input-text
+            :font                :medium
             :placeholder         ""
             :default-value       name
             :auto-focus          true
@@ -29,14 +31,19 @@
     (list-selection/show {:title   (i18n/label :t/image-source-title)
                           :options options})))
 
-(defn- profile-header-display [{:keys [name] :as contact}]
-  [react/view styles/profile-header-display
-   [chat-icon.screen/my-profile-icon {:account contact
-                                      :edit?   false}]
-   [react/view styles/profile-header-name-container
-    [react/text {:style           styles/profile-name-text
-                 :number-of-lines 1}
-     name]]])
+(defn- profile-header-display [{:keys [name public-key] :as contact}]
+  (let [generated-name (when public-key (gfy/generate-gfy public-key))]
+    [react/view styles/profile-header-display
+     [chat-icon.screen/my-profile-icon {:account contact
+                                        :edit?   false}]
+     [react/view styles/profile-header-name-container
+      [react/text {:style           styles/profile-name-text
+                   :number-of-lines 1}
+       name]
+      (when (and public-key (not= generated-name name))
+        [react/text {:style styles/profile-three-words
+                     :number-of-lines 1}
+         generated-name])]]))
 
 (defn- profile-header-edit [{:keys [name group-chat] :as contact}
                             icon-options on-change-text-event allow-icon-change?]
@@ -67,7 +74,7 @@
 
 (defn settings-item
   [{:keys [item-text label-kw value action-fn active? destructive? hide-arrow?
-           accessibility-label icon-content]
+           accessibility-label icon icon-content]
     :or   {value "" active? true}}]
   [react/touchable-highlight
    (cond-> {:on-press action-fn
@@ -75,9 +82,17 @@
      accessibility-label
      (assoc :accessibility-label accessibility-label))
    [react/view styles/settings-item
+    (when icon
+      [react/view styles/settings-item-icon
+       [vector-icons/icon icon {:color colors/blue}]])
     [react/view styles/settings-item-text-wrapper
-     [react/text {:style           (merge styles/settings-item-text
-                                          (when destructive? styles/settings-item-destructive))
+     [react/text {:style (merge styles/settings-item-text
+                                (when destructive?
+                                  styles/settings-item-destructive)
+                                (when-not active?
+                                  styles/settings-item-disabled)
+                                (when icon
+                                  {:font-size 17}))
                   :number-of-lines 1}
       (or item-text (i18n/label label-kw))]
      (when-not (string/blank? value)
@@ -88,13 +103,15 @@
     (if icon-content
       icon-content
       (when (and active? (not hide-arrow?))
-        [vector-icons/icon :icons/forward {:color colors/gray}]))]])
+        [vector-icons/icon :main-icons/next {:color colors/gray}]))]])
 
-(defn settings-switch-item [{:keys [label-kw value action-fn active?] :or {active? true}}]
+(defn settings-switch-item
+  [{:keys [label-kw value action-fn active?]
+    :or {active? true}}]
   [react/view styles/settings-item
    [react/view styles/settings-item-text-wrapper
     [react/i18n-text {:style styles/settings-item-text :key label-kw}]]
    [react/switch {:on-tint-color   colors/blue
-                  :value           value
+                  :value           (boolean value)
                   :on-value-change action-fn
                   :disabled        (not active?)}]])

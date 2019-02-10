@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.chat.views.photos :as photos]
+            [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.accounts.styles :as styles]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.status-bar.view :as status-bar]
@@ -14,23 +14,27 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.privacy-policy.views :as privacy-policy]))
 
-(defn account-view [{:keys [address photo-path name public-key]}]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-login address photo-path name])}
+(defn account-view [{:keys [address photo-path name public-key keycard-instance-uid]}]
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:accounts.login.ui/account-selected address photo-path name])}
    [react/view styles/account-view
     [photos/photo photo-path {:size styles/account-image-size}]
     [react/view styles/account-badge-text-view
-     [react/text {:style         styles/account-badge-text
-                  :numberOfLines 1}
-      name]
+     [react/view {:flex-direction :row}
+      [react/text {:style         styles/account-badge-text
+                   :numberOfLines 1}
+       name]
+      (when keycard-instance-uid
+        [icons/icon :main-icons/keycard {:color           colors/blue
+                                         :container-style {:margin-left 7}}])]
      [react/text {:style          styles/account-badge-pub-key-text
                   :ellipsize-mode :middle
                   :numberOfLines  1}
       public-key]]
     [react/view {:flex 1}]
-    [icons/icon :icons/forward {:color (colors/alpha colors/gray-icon 0.4)}]]])
+    [icons/icon :main-icons/next {:color (colors/alpha colors/black 0.4)}]]])
 
 (defview accounts []
-  (letsubs [accounts [:get-accounts]]
+  (letsubs [accounts [:accounts/accounts]]
     [react/view styles/accounts-view
      [status-bar/status-bar]
      [toolbar/toolbar nil nil
@@ -42,10 +46,10 @@
                         :render-fn (fn [account] [account-view account])
                         :separator [react/view {:height 12}]}]]
       [react/view
-       [components.common/button {:on-press #(re-frame/dispatch [:navigate-to :create-account])
+       [components.common/button {:on-press #(re-frame/dispatch [:accounts.create.ui/create-new-account-button-pressed])
                                   :label    (i18n/label :t/create-new-account)}]
        [react/view styles/bottom-button-container
-        [components.common/button {:on-press    #(re-frame/dispatch [:navigate-to :recover])
+        [components.common/button {:on-press    #(re-frame/dispatch [:accounts.recover.ui/recover-account-button-pressed])
                                    :label       (i18n/label :t/add-existing-account)
                                    :background? false}]]
        [privacy-policy/privacy-policy-button]]]]))

@@ -31,6 +31,11 @@
    :align-items     :center
    :flex            1})
 
+(def profile-edit
+  {:margin-top         24
+   :padding-horizontal 24
+   :align-items        :flex-end})
+
 (def profile-photo
   {:border-radius 100
    :width         100
@@ -38,6 +43,16 @@
 
 (def profile-user-name
   {:font-size   18})
+
+(def profile-three-words
+  {:font-size   14})
+
+(def profile-editing-user-name
+  (merge profile-user-name
+         {:height           20
+          :width            80
+          :background-color colors/gray-lighter
+          :align-items      :flex-end}))
 
 (def share-contact-code
   {:flex-direction    :row
@@ -84,13 +99,13 @@
 (def close-icon
   {:height       24
    :width        24
-   :tint-color   colors/gray-icon})
+   :tint-color   colors/black})
 
 (def check-icon
   {:height       16
    :width        16
    :margin-right 8
-   :tint-color   colors/tooltip-green-text})
+   :tint-color   colors/green})
 
 (def qr-code-title
   {:font-size     20
@@ -148,12 +163,46 @@
   {:margin        24
    :font-size     20})
 
+(def adv-settings-subtitle
+  {:margin-left   24
+   :margin-bottom 10
+   :font-weight   :bold
+   :font-size 16})
+
+(def connection-stats-title
+  (merge adv-settings-subtitle
+         {:font-size 14}))
+
+(def connection-stats-entry
+  {:margin-left   24
+   :margin-bottom 10})
+
 (def title-separator
   {:height            1
+   :margin-top        16
+   :margin-bottom     8
    :background-color  colors/gray-light})
 
-(def mailserver-title
-  {:margin-left      24
-   :margin-top       36
-   :margin-bottom    16
-   :font-size        16})
+(defn adv-settings-row-text [color]
+  {:color       color
+   :font-size   14})
+
+(defn adv-settings-row [active?]
+  {:justify-content    :space-between
+   :flex-direction     :row
+   :padding-horizontal 24
+   :height             56
+   :align-self         :stretch
+   :align-items        :center
+   :background-color   (if active? colors/gray-lighter colors/white)})
+
+(def pair-button
+  {:margin-left 32})
+
+(defn connection-circle [disconnected?]
+  {:background-color (if disconnected? colors/red colors/green)
+   :margin-left  24
+   :margin-right 16
+   :width 16
+   :height 16
+   :border-radius 16})

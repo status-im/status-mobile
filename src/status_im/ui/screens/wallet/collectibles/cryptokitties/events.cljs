@@ -18,7 +18,7 @@
                       ids)}))
 
 ;; TODO(andrey) Each HTTP call will return up to 100 kitties. Maybe we need to implement some kind of paging later
-(defmethod collectibles/load-collectibles-fx ck [_ _ items-number address]
+(defmethod collectibles/load-collectibles-fx ck [_ _ _ items-number address _]
   {:http-get {:url                   (str "https://api.cryptokitties.co/kitties?offset=0&limit="
                                           items-number
                                           "&owner_wallet_address="

@@ -4,7 +4,7 @@
 
 (def strikers :STRK)
 
-(defmethod collectibles/load-collectible-fx strikers [_ id]
+(defmethod collectibles/load-collectible-fx strikers [_ _ id]
   {:http-get {:url                   (str "https://us-central1-cryptostrikers-prod.cloudfunctions.net/cards/" id)
               :success-event-creator (fn [o]
                                        [:load-collectible-success strikers {id (http/parse-payload o)}])

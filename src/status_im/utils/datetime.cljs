@@ -1,5 +1,6 @@
 (ns status-im.utils.datetime
-  (:require [cljs-time.core :as t :refer [date-time plus days hours before?]]
+  (:require [re-frame.core :as re-frame]
+            [cljs-time.core :as t :refer [date-time plus days hours before?]]
             [cljs-time.coerce :refer [from-long to-long from-date]]
             [cljs-time.format :refer [formatters
                                       formatter
@@ -46,7 +47,7 @@
     fromdev
     (is24Hour-locsym locsym)))
 
-;; time formats 
+;; time formats
 (defn- short-time-format [locsym] (if (is24Hour locsym) "HH:mm" "h:mm a"))
 (defn- time-format [locsym] (if (is24Hour locsym) "HH:mm:ss" "h:mm:ss a"))
 
@@ -123,9 +124,11 @@
     (label :t/datetime-ago-format {:ago (label :t/datetime-ago)
                                    :number diff
                                    :time-intervals name})))
+(defn seconds-ago [time]
+  (t/in-seconds (t/interval time (t/now))))
 
 (defn time-ago [time]
-  (let [diff (t/in-seconds (t/interval time (t/now)))]
+  (let [diff (seconds-ago time)]
     (if (< diff 60)
       (label :t/active-online)
       (let [unit (first (drop-while #(and (>= diff (:limit %))
@@ -141,6 +144,14 @@
 
 (defn timestamp []
   (inst-ms (js/Date.)))
+
+(defn timestamp->year-month-day-date [ms]
+  (unparse (:year-month-day formatters) (to-date ms)))
+
+(re-frame/reg-cofx
+ :now
+ (fn [coeffects _]
+   (assoc coeffects :now (timestamp))))
 
 (defn format-date [format date]
   (let [local (plus (from-date date) time-zone-offset)]

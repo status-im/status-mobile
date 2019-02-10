@@ -4,7 +4,7 @@
 
 (def emona :EMONA)
 
-(defmethod collectibles/load-collectible-fx emona [_ id]
+(defmethod collectibles/load-collectible-fx emona [_ _ id]
   {:http-get {:url                   (str "https://www.etheremon.com/api/monster/get_data?monster_ids=" id)
               :success-event-creator (fn [o]
                                        [:load-collectible-success emona (:data (http/parse-payload o))])

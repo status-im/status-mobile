@@ -1,19 +1,22 @@
 (ns status-im.ui.screens.add-new.new-public-chat.view
-  (:require-macros [status-im.utils.views :as views])
-  (:require [re-frame.core :as re-frame]
+  (:require [cljs.spec.alpha :as spec]
+            [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.screens.add-new.styles :as add-new.styles]
-            [status-im.ui.screens.add-new.new-public-chat.styles :as styles]
-            [status-im.ui.screens.add-new.new-public-chat.db :as v]
-            [status-im.ui.components.text-input.view :as text-input.view]
-            status-im.utils.db
             [status-im.ui.components.styles :as common.styles]
-            [cljs.spec.alpha :as spec]
-            [status-im.ui.components.tooltip.views :as tooltip]))
+            [status-im.ui.components.text-input.view :as text-input.view]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.ui.screens.add-new.new-public-chat.db :as db]
+            [status-im.ui.screens.add-new.new-public-chat.styles :as styles]
+            [status-im.ui.screens.add-new.styles :as add-new.styles]
+            status-im.utils.db
+            [status-im.utils.types :as types])
+  (:require-macros
+   [status-im.utils.slurp :refer [slurp]]
+   [status-im.utils.views :as views]))
 
 (defn- chat-name-input [topic error]
   [react/view
@@ -22,12 +25,9 @@
     [react/view common.styles/flex
      [text-input.view/text-input-with-label
       {:container           styles/input-container
-       :on-change-text      #(do
-                               (re-frame/dispatch [:set :public-group-topic-error (when-not (spec/valid? ::v/topic %)
-                                                                                    (i18n/label :t/topic-name-error))])
-                               (re-frame/dispatch [:set :public-group-topic %]))
-       :on-submit-editing   #(when (and topic (spec/valid? ::v/topic topic))
-                               (re-frame/dispatch [:create-new-public-chat topic]))
+       :on-change-text      #(re-frame/dispatch [:set :public-group-topic %])
+       :on-submit-editing   #(when (db/valid-topic? topic)
+                               (re-frame/dispatch [:chat.ui/start-public-chat topic {:navigation-reset? true}]))
        :auto-capitalize     :none
        :auto-focus          false
        :accessibility-label :chat-name-input
@@ -44,21 +44,23 @@
     (first topic)]])
 
 (defn- render-topic [topic]
-  [react/touchable-highlight {:on-press            #(re-frame/dispatch [:create-new-public-chat topic])
+  [react/touchable-highlight {:on-press            #(re-frame/dispatch [:chat.ui/start-public-chat
+                                                                        topic
+                                                                        {:navigation-reset? true}])
                               :accessibility-label :chat-item}
    [react/view
     [list/item
      [public-chat-icon topic]
      [list/item-primary-only
       topic]
-     [list/item-icon {:icon      :icons/forward
+     [list/item-icon {:icon      :main-icons/next
                       :icon-opts {:color :gray}}]]]])
 
-(def default-public-chats ["status" "status 中文" "status 日本語" "status 한국어" "status по-русски" "status español" "status فارسی" "cryptostrikers" "dapps" "ethereum" "openbounty"])
+(def default-public-chats (types/json->clj (slurp "resources/default_public_chats.json")))
 
 (views/defview new-public-chat []
   (views/letsubs [topic [:get :public-group-topic]
-                  error [:get :public-group-topic-error]]
+                  error [:public-chat.new/topic-error-message]]
     [react/keyboard-avoiding-view styles/group-container
      [status-bar/status-bar]
      [toolbar/simple-toolbar

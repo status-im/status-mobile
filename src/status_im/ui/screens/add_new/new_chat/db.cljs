@@ -1,16 +1,19 @@
 (ns status-im.ui.screens.add-new.new-chat.db
   (:require [status-im.utils.hex :as hex]
+            [status-im.utils.platform :as platform]
             [status-im.i18n :as i18n]
             [cljs.spec.alpha :as spec]
             [clojure.string :as string]))
 
-(defn validate-pub-key [whisper-identity {:keys [address public-key]}]
-  (cond
-    (string/blank? whisper-identity)
-    (i18n/label :t/use-valid-contact-code)
-    (#{(hex/normalize-hex address) (hex/normalize-hex public-key)}
-     (hex/normalize-hex whisper-identity))
-    (i18n/label :t/can-not-add-yourself)
+(defn own-public-key?
+  [{:account/keys [account]} public-key]
+  (= (:public-key account) public-key))
 
-    (not (spec/valid? :global/public-key whisper-identity))
-    (i18n/label :t/use-valid-contact-code)))
+(defn validate-pub-key [db public-key]
+  (cond
+    (not (spec/valid? :global/public-key public-key))
+    (i18n/label (if platform/desktop?
+                  :t/use-valid-contact-code-desktop
+                  :t/use-valid-contact-code))
+    (own-public-key? db public-key)
+    (i18n/label :t/can-not-add-yourself)))

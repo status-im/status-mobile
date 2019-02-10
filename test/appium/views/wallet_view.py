@@ -1,4 +1,3 @@
-from tests import info
 import time
 from views.base_view import BaseView
 from views.base_element import BaseButton, BaseText
@@ -80,6 +79,10 @@ class SendTransactionRequestButton(BaseButton):
         super(SendTransactionRequestButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('sent-transaction-request-button')
 
+    def navigate(self):
+        from views.send_transaction_view import SendTransactionView
+        return SendTransactionView(self.driver)
+
 
 class OptionsButton(BaseButton):
     def __init__(self, driver):
@@ -126,8 +129,7 @@ class SetUpButton(BaseButton):
 class SignInPhraseText(BaseText):
     def __init__(self, driver):
         super(SignInPhraseText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//*[contains(@text,'phrase')]/preceding-sibling::*[1]/android.widget.TextView")
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="signing-phrase"]//android.widget.TextView')
 
     @property
     def list(self):
@@ -144,6 +146,12 @@ class AssetTextElement(BaseText):
         self.locator = self.Locator.accessibility_id('%s-asset-value-text' % asset_name.lower())
 
 
+class CollectibleTextElement(BaseText):
+    def __init__(self, driver, collectible_name):
+        super().__init__(driver)
+        self.locator = self.Locator.accessibility_id('%s-collectible-value-text' % collectible_name.lower())
+
+
 class AssetCheckBox(BaseButton):
     def __init__(self, driver, asset_name):
         super(AssetCheckBox, self).__init__(driver)
@@ -152,7 +160,7 @@ class AssetCheckBox(BaseButton):
 
     def click(self):
         self.scroll_to_element().click()
-        info('Click %s asset checkbox' % self.asset_name)
+        self.driver.info('Click %s asset checkbox' % self.asset_name)
 
 
 class TotalAmountText(BaseText):
@@ -228,21 +236,21 @@ class WalletView(BaseView):
         if percentage_diff > 2:
             errors.append('Difference between current (%s) and expected (%s) USD balance > 2%%!!' % (usd, expected_usd))
         else:
-            info('Current USD balance %s is ok' % usd)
+            self.driver.info('Current USD balance %s is ok' % usd)
 
     def wait_balance_changed_on_wallet_screen(self, expected_balance=0.1, wait_time=300):
         counter = 0
         while True:
             if counter >= wait_time:
-                info('Balance is not changed during %s seconds!' % wait_time)
+                self.driver.info('Balance is not changed during %s seconds!' % wait_time)
                 return
             elif self.get_eth_value() != expected_balance:
                 counter += 10
                 time.sleep(10)
                 self.swipe_down()
-                info('Waiting %s seconds for ETH update' % counter)
+                self.driver.info('Waiting %s seconds for ETH update' % counter)
             else:
-                info('Transaction received, balance updated!')
+                self.driver.info('Transaction received, balance updated!')
                 return
 
     def get_sign_in_phrase(self):
@@ -266,3 +274,61 @@ class WalletView(BaseView):
 
     def asset_checkbox_by_name(self, asset_name):
         return AssetCheckBox(self.driver, asset_name)
+
+    def send_transaction(self, **kwargs):
+        send_transaction_view = self.send_transaction_button.click()
+        send_transaction_view.select_asset_button.click()
+        asset_name = kwargs.get('asset_name', 'ETHro').upper()
+        asset_button = send_transaction_view.asset_by_name(asset_name)
+        send_transaction_view.select_asset_button.click_until_presence_of_element(asset_button)
+        asset_button.click()
+        send_transaction_view.amount_edit_box.click()
+
+        transaction_amount = str(kwargs.get('amount', send_transaction_view.get_unique_amount()))
+
+        send_transaction_view.amount_edit_box.set_value(transaction_amount)
+        send_transaction_view.confirm()
+        send_transaction_view.chose_recipient_button.click()
+
+        recipient = kwargs.get('recipient')
+
+        if '0x' in recipient:
+            send_transaction_view.enter_recipient_address_button.click()
+            send_transaction_view.enter_recipient_address_input.set_value(recipient)
+            send_transaction_view.done_button.click()
+        else:
+            send_transaction_view.recent_recipients_button.click()
+            recent_recipient = send_transaction_view.element_by_text(recipient)
+            send_transaction_view.recent_recipients_button.click_until_presence_of_element(recent_recipient)
+            recent_recipient.click()
+        if kwargs.get('sign_transaction', True):
+            send_transaction_view.sign_transaction()
+
+    def receive_transaction(self, **kwargs):
+        self.receive_transaction_button.click()
+        send_transaction_view = self.send_transaction_request.click()
+        send_transaction_view.select_asset_button.click()
+        asset_name = kwargs.get('asset_name', 'ETHro').upper()
+        asset_button = send_transaction_view.asset_by_name(asset_name)
+        send_transaction_view.select_asset_button.click_until_presence_of_element(asset_button)
+        asset_button.click()
+        send_transaction_view.amount_edit_box.click()
+
+        transaction_amount = str(kwargs.get('amount')) if kwargs.get('amount') else \
+            send_transaction_view.get_unique_amount()
+
+        send_transaction_view.amount_edit_box.set_value(transaction_amount)
+        send_transaction_view.confirm()
+        send_transaction_view.chose_recipient_button.click()
+
+        recipient = kwargs.get('recipient')
+        send_transaction_view.recent_recipients_button.click()
+        recent_recipient = send_transaction_view.element_by_text(recipient)
+        send_transaction_view.recent_recipients_button.click_until_presence_of_element(recent_recipient)
+        recent_recipient.click()
+        self.send_request_button.click()
+
+    def collectible_amount_by_name(self, name):
+        elm = CollectibleTextElement(self.driver, name)
+        elm.scroll_to_element()
+        return elm.text

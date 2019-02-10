@@ -1,6 +1,6 @@
 (ns status-im.test.models.network
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.models.network :as model]))
+            [status-im.network.core :as model]))
 
 (deftest valid-rpc-url-test
   (testing "nil?"
@@ -20,7 +20,7 @@
   (testing "an https url"
     (is (model/valid-rpc-url? "https://valid.something.else")))
   (testing "a fully qualified url"
-    (is (model/valid-rpc-url? "https://mainnet.infura.io:6523/z6GCTmjdP3FETEJmMBI4")))
+    (is (model/valid-rpc-url? "https://mainnet.infura.io:6523/v3/f315575765b14720b32382a61a89341a")))
   (testing "an ip address"
     (is (model/valid-rpc-url? "https://192.168.1.1")))
   (testing "localhost"
@@ -31,7 +31,7 @@
     (is (model/valid-rpc-url? "https://valid.something.else:65323"))))
 
 (deftest new-network-test
-  (let [actual (model/new-network {:random-id "random-id"}
+  (let [actual (model/new-network "random-id"
                                   "network-name"
                                   "upstream-url"
                                   :mainnet
@@ -45,7 +45,7 @@
            actual))))
 
 (deftest new-network-id-test
-  (let [actual (model/new-network {:random-id "random-id"}
+  (let [actual (model/new-network "random-id"
                                   "network-name"
                                   "upstream-url"
                                   :mainnet
@@ -80,24 +80,27 @@
 
 (deftest set-input-test
   (testing "it updates and validate a field"
-    (is (= {:db {:networks/manage {:url   {:value "http://valid.com"
-                                           :error false}
-                                   :name  {:value ""
-                                           :error true}
-                                   :chain {:value "mainnet"
-                                           :error false}}}}
-           (model/set-input :url "http://valid.com"
-                            {:db {:networks/manage {:url   {:value "something"
+    (is (= {:db {:networks/manage {:url        {:value "http://valid.com"
+                                                :error false}
+                                   :name       {:value ""
+                                                :error true}
+                                   :chain      {:value "mainnet"
+                                                :error false}
+                                   :network-id {:value nil
+                                                :error false}}}}
+           (model/set-input {:db {:networks/manage {:url   {:value "something"
                                                             :error true}
                                                     :name  {:value ""
                                                             :error false}
                                                     :chain {:value "mainnet"
-                                                            :error false}}}})))))
+                                                            :error false}}}}
+                            :url "http://valid.com")))))
 
 (deftest save
   (testing "it does not save a network with an invalid url"
-    (is (nil? (model/save {:random-id "random"
+    (is (nil? (model/save {:random-id-generator  (constantly "random")
                            :db {:networks/manage {:url {:value "wrong"}
                                                   :chain {:value "1"}
                                                   :name {:value "empty"}}
-                                :account/account {}}})))))
+                                :account/account {}}}
+                          {})))))

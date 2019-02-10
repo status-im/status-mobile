@@ -1,18 +1,7 @@
 (ns ^{:doc "Utils for transport layer"}
  status-im.transport.utils
-  (:require [cljs-time.coerce :refer [to-long]]
-            [cljs-time.core :refer [now]]
-            [clojure.string :as string]
-            [status-im.js-dependencies :as dependencies]
-            [status-im.data-store.transport :as transport-store]))
-
-(defn unsubscribe-from-chat
-  "Unsubscribe from chat on transport layer"
-  [chat-id {:keys [db]}]
-  (let [filter (get-in db [:transport/chats chat-id :filter])]
-    {:db                (update db :transport/chats dissoc chat-id)
-     :data-store/tx     [(transport-store/delete-transport-tx chat-id)]
-     :shh/remove-filter filter}))
+  (:require [clojure.string :as string]
+            [status-im.js-dependencies :as dependencies]))
 
 (defn from-utf8 [s]
   (.fromUtf8 dependencies/Web3.prototype s))
@@ -28,10 +17,18 @@
 (defn sha3 [s]
   (.sha3 dependencies/Web3.prototype s))
 
-(defn message-id
-  "Get a message-id"
+(defn old-message-id
   [message]
   (sha3 (pr-str message)))
+
+(defn system-message-id
+  [{:keys [from chat-id clock-value]}]
+  (sha3 (str from chat-id clock-value)))
+
+(defn message-id
+  "Get a message-id"
+  [from raw-payload]
+  (sha3 (str from (sha3 raw-payload))))
 
 (defn get-topic
   "Get the topic of a group chat or public chat from the chat-id"

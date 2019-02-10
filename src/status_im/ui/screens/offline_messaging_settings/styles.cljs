@@ -7,10 +7,10 @@
   {:flex             1
    :background-color :white})
 
-(def wnode-item-inner
+(def mailserver-item-inner
   {:padding-horizontal 16})
 
-(defstyle wnode-item
+(defstyle mailserver-item
   {:flex-direction     :row
    :background-color   :white
    :align-items        :center
@@ -18,7 +18,7 @@
    :ios                {:height 64}
    :android            {:height 56}})
 
-(defstyle wnode-item-name-text
+(defstyle mailserver-item-name-text
   {:color   colors/black
    :ios     {:font-size      17
              :letter-spacing -0.2
@@ -26,7 +26,7 @@
    :desktop {:font-size 16}
    :android {:font-size 16}})
 
-(defstyle wnode-item-connected-text
+(defstyle mailserver-item-connected-text
   {:color   colors/gray
    :ios     {:font-size      14
              :margin-top     6
@@ -34,7 +34,7 @@
    :android {:font-size  12
              :margin-top 2}})
 
-(defn wnode-icon-container [connected?]
+(defn mailserver-icon-container [connected?]
   {:width            40
    :height           40
    :border-radius    20
@@ -44,5 +44,5 @@
    :align-items      :center
    :justify-content  :center})
 
-(defn wnode-icon [connected?]
+(defn mailserver-icon [connected?]
   (hash-map (if platform/desktop? :tint-color :color) (if connected? :white :gray)))

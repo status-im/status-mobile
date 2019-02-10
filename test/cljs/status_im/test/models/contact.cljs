@@ -1,6 +1,6 @@
 (ns status-im.test.models.contact
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.models.contact :as model]))
+            [status-im.contact.core :as model]))
 
 (def public-key "0x04fcf40c526b09ff9fb22f4a5dbd08490ef9b64af700870f8a0ba2133f4251d5607ed83cd9047b8c2796576bc83fa0de23a13a4dced07654b8ff137fe744047917")
 (def address "71adb0644e2b590e37dafdfea8bd58f0c7668c7f")
@@ -34,8 +34,7 @@
       (testing "it stores the contact in the database"
         (is (:data-store/tx actual)))
       (testing "it adds a new contact with pending? true"
-        (is (=  {:whisper-identity public-key
-                 :public-key       public-key
+        (is (=  {:public-key       public-key
                  :photo-path       "image"
                  :name             "name"
                  :last-updated     1000
@@ -52,8 +51,7 @@
                      :address "new-address"
                      :fcm-token "new-token"}
                     {:db {:contacts/contacts
-                          {public-key {:whisper-identity public-key
-                                       :public-key       public-key
+                          {public-key {:public-key       public-key
                                        :photo-path       "old-image"
                                        :name             "old-name"
                                        :last-updated     0
@@ -64,8 +62,7 @@
         (testing "it stores the contact in the database"
           (is (:data-store/tx actual)))
         (testing "it updates the contact leaving pending unchanged"
-          (is (=  {:whisper-identity public-key
-                   :public-key       public-key
+          (is (=  {:public-key       public-key
                    :photo-path       "new-image"
                    :name             "new-name"
                    :last-updated     1000
@@ -81,8 +78,7 @@
                      :address "new-address"
                      :fcm-token "new-token"}
                     {:db {:contacts/contacts
-                          {public-key {:whisper-identity public-key
-                                       :public-key       public-key
+                          {public-key {:public-key       public-key
                                        :photo-path       "old-image"
                                        :name             "old-name"
                                        :last-updated     1000
@@ -101,8 +97,7 @@
                      :address "new-address"
                      :fcm-token "new-token"}
                     {:db {:contacts/contacts
-                          {public-key {:whisper-identity public-key
-                                       :public-key       public-key
+                          {public-key {:public-key       public-key
                                        :photo-path       "old-image"
                                        :name             "old-name"
                                        :last-updated     1000
@@ -119,8 +114,7 @@
                   {:name "new-name"
                    :profile-image "new-image"}
                   {:db {:contacts/contacts
-                        {public-key {:whisper-identity public-key
-                                     :public-key       public-key
+                        {public-key {:public-key       public-key
                                      :photo-path       "old-image"
                                      :name             "old-name"
                                      :last-updated     0
@@ -129,8 +123,7 @@
       (testing "it stores the contact in the database"
         (is (:data-store/tx actual)))
       (testing "it updates the contact leaving pending unchanged"
-        (is (=  {:whisper-identity public-key
-                 :public-key       public-key
+        (is (=  {:public-key       public-key
                  :photo-path       "new-image"
                  :name             "new-name"
                  :last-updated     1000
@@ -138,4 +131,4 @@
                  :address          address} contact)))))
   (testing "the message is coming from us"
     (testing "it does not update contacts"
-      (is (nil? (model/handle-contact-update "me" 1 {} {:db {:current-public-key "me"}}))))))
+      (is (nil? (model/handle-contact-update "me" 1 {} {:db {:account/account {:public-key "me"}}}))))))

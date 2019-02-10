@@ -1,19 +1,21 @@
-import pytest
-import sys
+import asyncio
+import logging
 import re
 import subprocess
-import asyncio
-
-from support.message_reliability_report import create_one_to_one_chat_report, create_public_chat_report
-from support.api.network_api import NetworkApi
-from os import environ
-from appium import webdriver
+import sys
 from abc import ABCMeta, abstractmethod
-from selenium.common.exceptions import WebDriverException
-from tests import test_suite_data, start_threads, marks
+from os import environ
+
+import pytest
+from appium import webdriver
 from appium.webdriver.common.mobileby import MobileBy
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import WebDriverException
+
+from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
+from support.message_reliability_report import create_one_to_one_chat_report, create_public_chat_report
+from tests import test_suite_data, start_threads, appium_container
 
 
 class AbstractTestCase:
@@ -59,7 +61,7 @@ class AbstractTestCase:
         desired_caps['build'] = pytest.config.getoption('build')
         desired_caps['name'] = test_suite_data.current_test.name
         desired_caps['platformName'] = 'Android'
-        desired_caps['appiumVersion'] = '1.7.2'
+        desired_caps['appiumVersion'] = '1.9.1'
         desired_caps['platformVersion'] = '7.1'
         desired_caps['deviceName'] = 'Android GoogleAPI Emulator'
         desired_caps['deviceOrientation'] = "portrait"
@@ -70,6 +72,7 @@ class AbstractTestCase:
         desired_caps['setWebContentDebuggingEnabled'] = True
         desired_caps['ignoreUnimportantViews'] = False
         desired_caps['enableNotificationListener'] = True
+        desired_caps['maxDuration'] = 1800
         return desired_caps
 
     def update_capabilities_sauce_lab(self, new_capabilities: dict):
@@ -80,11 +83,16 @@ class AbstractTestCase:
     @property
     def capabilities_local(self):
         desired_caps = dict()
-        desired_caps['app'] = pytest.config.getoption('apk')
+        if pytest.config.getoption('docker'):
+            # apk is in shared volume directory
+            apk = '/root/shared_volume/%s' % pytest.config.getoption('apk')
+        else:
+            apk = pytest.config.getoption('apk')
+        desired_caps['app'] = apk
         desired_caps['deviceName'] = 'nexus_5'
         desired_caps['platformName'] = 'Android'
-        desired_caps['appiumVersion'] = '1.7.2'
-        desired_caps['platformVersion'] = '7.1'
+        desired_caps['appiumVersion'] = '1.9.1'
+        desired_caps['platformVersion'] = pytest.config.getoption('platform_version')
         desired_caps['newCommandTimeout'] = 600
         desired_caps['fullReset'] = False
         desired_caps['unicodeKeyboard'] = True
@@ -106,12 +114,12 @@ class AbstractTestCase:
 
     @property
     def implicitly_wait(self):
-        return 2
+        return 5
 
     errors = []
 
     network_api = NetworkApi()
-    github_report = GithubHtmlReport(sauce_username, sauce_access_key)
+    github_report = GithubHtmlReport()
 
     def verify_no_errors(self):
         if self.errors:
@@ -132,18 +140,39 @@ class AbstractTestCase:
                                                                        % self.get_alert_text(driver)
 
 
+class Driver(webdriver.Remote):
+
+    @property
+    def number(self):
+        return test_suite_data.current_test.testruns[-1].jobs[self.session_id]
+
+    def info(self, text: str):
+        if "Base" not in text:
+            text = 'Device %s: %s' % (self.number, text)
+            logging.info(text)
+            test_suite_data.current_test.testruns[-1].steps.append(text)
+
+    def fail(self, text: str):
+        pytest.fail('Device %s: %s' % (self.number, text))
+
+
 class SingleDeviceTestCase(AbstractTestCase):
 
-    def setup_method(self, method):
-        capabilities = {'local': {'executor': self.executor_local,
-                                  'capabilities': self.capabilities_local},
-                        'sauce': {'executor': self.executor_sauce_lab,
-                                  'capabilities': self.capabilities_sauce_lab}}
+    def setup_method(self, method, **kwargs):
+        if pytest.config.getoption('docker'):
+            appium_container.start_appium_container(pytest.config.getoption('docker_shared_volume'))
+            appium_container.connect_device(pytest.config.getoption('device_ip'))
 
-        self.driver = webdriver.Remote(capabilities[self.environment]['executor'],
-                                       capabilities[self.environment]['capabilities'])
+        (executor, capabilities) = (self.executor_sauce_lab, self.capabilities_sauce_lab) if \
+            self.environment == 'sauce' else (self.executor_local, self.capabilities_local)
+        for key, value in kwargs.items():
+            capabilities[key] = value
+        self.driver = Driver(executor, capabilities)
+        test_suite_data.current_test.testruns[-1].jobs[self.driver.session_id] = 1
         self.driver.implicitly_wait(self.implicitly_wait)
-        test_suite_data.current_test.testruns[-1].jobs.append(self.driver.session_id)
+
+        if pytest.config.getoption('docker'):
+            appium_container.reset_battery_stats()
 
     def teardown_method(self, method):
         if self.environment == 'sauce':
@@ -151,6 +180,8 @@ class SingleDeviceTestCase(AbstractTestCase):
         try:
             self.add_alert_text_to_report(self.driver)
             self.driver.quit()
+            if pytest.config.getoption('docker'):
+                appium_container.stop_container()
         except (WebDriverException, AttributeError):
             pass
         finally:
@@ -165,9 +196,9 @@ class LocalMultipleDeviceTestCase(AbstractTestCase):
     def create_drivers(self, quantity):
         capabilities = self.add_local_devices_to_capabilities()
         for driver in range(quantity):
-            self.drivers[driver] = webdriver.Remote(self.executor_local, capabilities[driver])
+            self.drivers[driver] = Driver(self.executor_local, capabilities[driver])
+            test_suite_data.current_test.testruns[-1].jobs[self.drivers[driver].session_id] = driver + 1
             self.drivers[driver].implicitly_wait(self.implicitly_wait)
-            test_suite_data.current_test.testruns[-1].jobs.append(self.drivers[driver].session_id)
 
     def teardown_method(self, method):
         for driver in self.drivers:
@@ -193,14 +224,14 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
         if offline_mode:
             capabilities['platformVersion'] = '6.0'
         self.drivers = self.loop.run_until_complete(start_threads(quantity,
-                                                                  webdriver.Remote,
+                                                                  Driver,
                                                                   self.drivers,
                                                                   self.executor_sauce_lab,
                                                                   self.update_capabilities_sauce_lab(capabilities)))
         for driver in range(quantity):
+            test_suite_data.current_test.testruns[-1].jobs[self.drivers[driver].session_id] = driver + 1
             self.drivers[driver].implicitly_wait(
                 custom_implicitly_wait if custom_implicitly_wait else self.implicitly_wait)
-            test_suite_data.current_test.testruns[-1].jobs.append(self.drivers[driver].session_id)
 
     def teardown_method(self, method):
         for driver in self.drivers:
@@ -222,27 +253,4 @@ environment = LocalMultipleDeviceTestCase if pytest.config.getoption('env') == '
 
 
 class MultipleDeviceTestCase(environment):
-
-    def setup_method(self, method):
-        super(MultipleDeviceTestCase, self).setup_method(method)
-        self.senders = dict()
-
-    def teardown_method(self, method):
-        for user in self.senders:
-            self.network_api.faucet(address=self.senders[user]['address'])
-        super(MultipleDeviceTestCase, self).teardown_method(method)
-
-
-class MessageReliabilityTestCase(MultipleDeviceTestCase):
-
-    def setup_method(self, method):
-        super(MessageReliabilityTestCase, self).setup_method(method)
-        self.one_to_one_chat_data = dict()
-        self.public_chat_data = dict()
-
-    def teardown_method(self, method):
-        if self.one_to_one_chat_data:
-            create_one_to_one_chat_report(self.one_to_one_chat_data)
-        if self.public_chat_data:
-            create_public_chat_report(self.public_chat_data)
-        super(MultipleDeviceTestCase, self).teardown_method(method)
+    pass

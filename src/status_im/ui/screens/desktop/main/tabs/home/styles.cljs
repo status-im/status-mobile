@@ -30,12 +30,11 @@
    :margin-right  16})
 
 (def unread-messages-icon
-  {:position         :absolute
-   :width            22
-   :height           22
-   :border-radius    22
-   :left             28
-   :top              10
+  {:padding-left     6
+   :padding-right    6
+   :margin-top       2
+   :height           15
+   :border-radius    8
    :justify-content  :center
    :align-items      :center
    :background-color colors/blue})
@@ -57,12 +56,16 @@
   {:flex             1
    :padding-vertical 16})
 
-(def chat-name
-  {:font-size  14})
+(defn chat-name [current?]
+  {:font-size  14
+   :font-weight (if current?
+                  :bold
+                  :normal)})
 
 (def chat-last-message
-  {:color     colors/gray
-   :font-size 14})
+  {:color      colors/gray
+   :font-size  14
+   :max-height 20})
 
 (def timestamp
   {:justify-content :flex-start
@@ -86,3 +89,19 @@
 (def topic-text
   {:font-size 25.6
    :color     colors/white})
+
+(def popup-shaddow
+  {:background-color colors/black-transparent
+   :border-radius    10
+   :margin-top       60
+   :margin-left      120})
+
+(def popup
+  {:background-color colors/white
+   :padding-right    15
+   :padding-vertical 10
+   :margin-top       1
+   :margin-bottom    4
+   :margin-left      3
+   :margin-right     3
+   :border-radius    10})

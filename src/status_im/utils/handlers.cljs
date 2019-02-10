@@ -1,10 +1,9 @@
 (ns status-im.utils.handlers
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
-            [re-frame.core :refer [reg-event-db reg-event-fx] :as re-frame]
+            [re-frame.core :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
-            [status-im.utils.instabug :as instabug]
-            [status-im.models.account :as models.account]
+            [status-im.accounts.db :as accounts.db]
             [cljs.core.async :as async]
             [taoensso.timbre :as log]))
 
@@ -22,9 +21,7 @@
 
 (defn- pretty-print-event [ctx]
   (let [[first second] (get-coeffect ctx :event)]
-    (if (or (string? second) (keyword? second) (boolean? second))
-      (str first " " second)
-      first)))
+    first))
 
 (def debug-handlers-names
   "Interceptor which logs debug information to js/console for each event."
@@ -43,7 +40,7 @@
    :id     :logged-in
    :before (fn logged-in-before
              [context]
-             (when (models.account/logged-in? (:coeffects context))
+             (when (accounts.db/logged-in? (:coeffects context))
                context))))
 
 (defn- check-spec-msg-path-problem [problem]
@@ -92,35 +89,42 @@
          (throw (ex-info (check-spec-msg event-id new-db) {})))
        context))))
 
-(defn register-handler
-  ([name handler] (register-handler name nil handler))
-  ([name middleware handler]
-   (reg-event-db name [debug-handlers-names (when js/goog.DEBUG check-spec) middleware] handler)))
-
 (def default-interceptors
   [debug-handlers-names
-   (when js/goog.DEBUG check-spec)
+   (when js/goog.DEBUG
+     check-spec)
    (re-frame/inject-cofx :now)])
 
-(defn register-handler-db
-  ([name handler] (register-handler-db name nil handler))
-  ([name interceptors handler]
-   (reg-event-db name [default-interceptors interceptors] handler)))
+(defn- parse-json
+  ;; NOTE(dmitryn) Expects JSON response like:
+  ;; {"error": "msg"} or {"result": true}
+  [s]
+  (try
+    (let [res (-> s
+                  js/JSON.parse
+                  (js->clj :keywordize-keys true))]
+      ;; NOTE(dmitryn): AddPeer() may return {"error": ""}
+      ;; assuming empty error is a success response
+      ;; by transforming {"error": ""} to {:result true}
+      (if (and (:error res)
+               (= (:error res) ""))
+        {:result true}
+        res))
+    (catch :default e
+      {:error (.-message e)})))
+
+(defn response-handler [success-fn error-fn]
+  (fn handle-response
+    ([response]
+     (let [{:keys [error result]} (parse-json response)]
+       (handle-response error result)))
+    ([error result]
+     (if error
+       (error-fn error)
+       (success-fn result)))))
 
 (defn register-handler-fx
-  ([name handler] (register-handler-fx name nil handler))
+  ([name handler]
+   (register-handler-fx name nil handler))
   ([name interceptors handler]
-   (reg-event-fx name [default-interceptors interceptors] handler)))
-
-(defn get-hashtags [status]
-  (if status
-    (let [hashtags (map #(keyword (string/lower-case (subs % 1)))
-                        (re-seq #"#[^ !?,;:.]+" status))]
-      (set (or hashtags [])))
-    #{}))
-
-(defn identities [contacts]
-  (->> (map second contacts)
-       (remove (fn [{:keys [dapp? pending?]}]
-                 (or pending? dapp?)))
-       (map :whisper-identity)))
+   (re-frame/reg-event-fx name [default-interceptors interceptors] handler)))
