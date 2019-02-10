@@ -13,3 +13,13 @@
  :show-profile-desktop
  (fn [cofx [_ identity]]
    (show-profile-desktop identity cofx)))
+
+(handlers/register-handler-fx
+ :desktop/insert-emoji
+ (fn [{{:keys [desktop current-chat-id chats] :as db} :db} [_ emoji]]
+   (let [inp-txt (get-in chats [current-chat-id :input-text])
+         input (:input-ref desktop)
+         sel (:input-selection desktop)
+         new-text (if sel (str (subs inp-txt 0 sel) emoji (subs inp-txt sel)) (str inp-txt emoji))]
+     (when input (.setNativeProps input (clj->js {:text new-text})))
+     {:db (assoc-in db [:chats current-chat-id :input-text] new-text)})))
