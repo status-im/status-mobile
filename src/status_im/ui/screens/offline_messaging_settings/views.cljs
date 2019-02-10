@@ -16,7 +16,7 @@
   [react/view (if platform/desktop?
                 {:style (styles/mailserver-icon-container connected?)}
                 (styles/mailserver-icon-container connected?))
-   [vector-icons/icon :icons/mailserver
+   [vector-icons/icon :main-icons/mailserver
     (if platform/desktop? {:style (styles/mailserver-icon connected?)}
         (styles/mailserver-icon connected?))]])
 

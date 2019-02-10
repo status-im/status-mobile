@@ -18,7 +18,9 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.utils.platform :as platform]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.config :as config]
+            [status-im.ui.screens.chat.stickers.views :as stickers]))
 
 (defview basic-text-input [{:keys [set-container-width-fn height single-line-input?]}]
   (letsubs [{:keys [input-text]} [:chats/current-chat]
@@ -32,6 +34,7 @@
        :editable               (not cooldown-enabled?)
        :blur-on-submit         false
        :on-focus               #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused?    true
+                                                                                :show-stickers?    false
                                                                                 :messages-focused? false}])
        :on-blur                #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused? false}])
        :on-submit-editing      #(when single-line-input?
@@ -102,8 +105,8 @@
        {:on-press            #(re-frame/dispatch [:chat.ui/set-command-prefix])
         :accessibility-label :chat-commands-button}
        [react/view
-        [vector-icons/icon :icons/input-commands {:container-style style/input-commands-icon
-                                                  :color           :dark}]]])))
+        [vector-icons/icon :main-icons/commands {:container-style style/input-commands-icon
+                                                 :color           colors/gray}]]])))
 
 (defview reply-message [from message-text]
   (letsubs [username           [:contacts/contact-name-by-identity from]
@@ -124,13 +127,14 @@
          :on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])
          :accessibility-label :cancel-message-reply}
         [react/view {:style style/cancel-reply-container}
-         [vector-icons/icon :icons/close {:container-style style/cancel-reply-icon
-                                          :color           colors/white}]]]])))
+         [vector-icons/icon :main-icons/close {:container-style style/cancel-reply-icon
+                                               :color           colors/white}]]]])))
 
 (defview input-container []
   (letsubs [margin               [:chats/input-margin]
             {:keys [input-text]} [:chats/current-chat]
-            result-box           [:chats/current-chat-ui-prop :result-box]]
+            result-box           [:chats/current-chat-ui-prop :result-box]
+            show-stickers?       [:chats/current-chat-ui-prop :show-stickers?]]
     (let [single-line-input? (:singleLineInput result-box)]
       [react/view {:style     (style/root margin)
                    :on-layout #(let [h (-> (.-nativeEvent %)
@@ -141,6 +145,8 @@
        [reply-message-view]
        [react/view {:style style/input-container}
         [input-view {:single-line-input? single-line-input?}]
+        (when (and config/stickers-enabled? (string/blank? input-text))
+          [stickers/button show-stickers?])
         (if (string/blank? input-text)
           [commands-button]
           [send-button/send-button-view])]])))

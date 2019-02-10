@@ -7,11 +7,14 @@
             [status-im.ui.screens.chat.message.message :as message]
             [taoensso.timbre :as log]
             [reagent.core :as reagent]
+            [status-im.chat.models :as models.chat]
+            [status-im.group-chats.core :as models.group-chats]
             [status-im.ui.screens.chat.utils :as chat-utils]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.constants :as constants]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.datetime :as time]
+            [status-im.utils.core :as core-utils]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.connectivity.view :as connectivity]
@@ -21,7 +24,9 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.desktop.main.chat.styles :as styles]
             [status-im.contact.db :as contact.db]
-            [status-im.ui.components.popup-menu.views :as popup-menu]
+            [status-im.ui.screens.chat.views :as views.chat]
+            [status-im.ui.components.popup-menu.views :refer [show-desktop-menu
+                                                              get-chat-menu-items]]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.desktop.main.chat.events :as chat.events]
             [status-im.ui.screens.chat.message.message :as chat.message]))
@@ -51,9 +56,9 @@
              [react/text {:style styles/public-chat-text}
               (i18n/label :t/public-chat)])]]
      [react/touchable-highlight
-      {:on-press #(popup-menu/show-desktop-menu
-                   (popup-menu/get-chat-menu-items group-chat public? chat-id))}
-      [vector-icons/icon :icons/dots-horizontal
+      {:on-press #(show-desktop-menu
+                   (get-chat-menu-items group-chat public? chat-id))}
+      [vector-icons/icon :main-icons/more
        {:style {:tint-color colors/black
                 :width      24
                 :height     24}}]]]))
@@ -83,36 +88,45 @@
   (views/letsubs [username [:contacts/contact-name-by-identity from]]
     [react/view {:style styles/quoted-message-container}
      [react/view {:style styles/quoted-message-author-container}
-      [icons/icon :icons/reply {:style           (styles/reply-icon outgoing)
-                                :width           16
-                                :height          16
-                                :container-style (when outgoing {:opacity 0.4})}]
+      [icons/icon :main-icons/reply {:style           (styles/reply-icon outgoing)
+                                     :width           16
+                                     :height          16
+                                     :container-style (when outgoing {:opacity 0.4})}]
       [react/text {:style (message.style/quoted-message-author outgoing)}
        (chat-utils/format-reply-author from username current-public-key)]]
      [react/text {:style           (message.style/quoted-message-text outgoing)
                   :number-of-lines 5}
-      text]]))
+      (core-utils/truncate-str text constants/chars-collapse-threshold)]]))
 
 (defn- message-sent? [user-statuses current-public-key]
   (not= (get-in user-statuses [current-public-key :status]) :not-sent))
 
 (views/defview message-without-timestamp
-  [text {:keys [message-id content current-public-key user-statuses] :as message} style]
+  [text {:keys [chat-id message-id old-message-id content group-chat expanded? current-public-key user-statuses] :as message} style]
   [react/view {:flex 1 :margin-vertical 5}
-   [react/touchable-highlight {:on-press #(if (= "right" (.-button (.-nativeEvent %)))
-                                            (do (utils/show-popup "" "Message copied to clipboard")
-                                                (react/copy-to-clipboard text))
-                                            (when (message-sent? user-statuses current-public-key)
-                                              (re-frame/dispatch [:chat.ui/reply-to-message message-id])))}
-    [react/view {:style styles/message-container}
-     (when (:response-to content)
-       [quoted-message (:response-to content) false current-public-key])
-     [react/text {:style           (styles/message-text false)
-                  :selectable      true
-                  :selection-color colors/blue-light}
-      (if-let [render-recipe (:render-recipe content)]
-        (chat-utils/render-chunks render-recipe message)
-        (:text content))]]]])
+   [react/touchable-highlight {:on-press (fn [arg]
+                                           (when (= "right" (.-button (.-nativeEvent arg)))
+                                             (show-desktop-menu
+                                              [{:text (i18n/label :t/sharing-copy-to-clipboard)
+                                                :on-select #(do (utils/show-popup "" "Message copied to clipboard") (react/copy-to-clipboard text))}
+                                               {:text (i18n/label :t/message-reply)
+                                                :on-select #(when (message-sent? user-statuses current-public-key)
+                                                              (re-frame/dispatch [:chat.ui/reply-to-message message-id old-message-id]))}])))}
+    (let [collapsible? (and (:should-collapse? content) group-chat)
+          char-limit (if (and collapsible? (not expanded?))
+                       constants/chars-collapse-threshold constants/desktop-msg-chars-hard-limit)
+          message-text (core-utils/truncate-str (:text content) char-limit)]
+      [react/view {:style styles/message-container}
+       (when (:response-to content)
+         [quoted-message (:response-to content) false current-public-key])
+       [react/text {:style           (styles/message-text collapsible? false)
+                    :selectable      true
+                    :selection-color colors/blue-light}
+        (if-let [render-recipe (:render-recipe content)]
+          (chat-utils/render-chunks-desktop char-limit render-recipe message-text)
+          message-text)]
+       (when collapsible?
+         [message/expand-button expanded? chat-id message-id])])]])
 
 (views/defview photo-placeholder []
   [react/view {:style {:width             40
@@ -171,8 +185,6 @@
     ^{:key (str "datemark" message-id)}
     [message.datemark/chat-datemark value]
     (when (contains? constants/desktop-content-types content-type)
-      (when (nil? message-id)
-        (log/debug "nil?" message))
       (reagent.core/create-class
        {:component-did-mount
         #(when (and message-id
@@ -180,9 +192,10 @@
                     (not outgoing)
                     (not= :seen message-status)
                     (not= :seen (keyword (get-in user-statuses [current-public-key :status]))))
-           (re-frame/dispatch [:send-seen! {:chat-id    chat-id
-                                            :from       from
-                                            :message-id message-id}]))
+           ;;TODO(rasom): revisit this when seen messages will be reimplemented
+           #_(re-frame/dispatch [:send-seen! {:chat-id    chat-id
+                                              :from       from
+                                              :message-id message-id}]))
         :reagent-render
         (fn []
           ^{:key (str "message" message-id)}
@@ -202,8 +215,12 @@
                   current-public-key [:account/public-key]
                   messages-to-load (reagent/atom load-step)
                   chat-id* (reagent/atom nil)]
-    {:component-did-update #(load-more (count messages) messages-to-load)
-     :component-did-mount  #(load-more (count messages) messages-to-load)}
+    {:component-did-update #(if (:messages-initialized? (second (.-argv (.-props %1))))
+                              (load-more (count messages) messages-to-load)
+                              (re-frame/dispatch [:chat.ui/load-more-messages]))
+     :component-did-mount  #(if (:messages-initialized? (second (.-argv (.-props %1))))
+                              (load-more (count messages) messages-to-load)
+                              (re-frame/dispatch [:chat.ui/load-more-messages]))}
     (let [scroll-ref (atom nil)
           scroll-timer (atom nil)
           scroll-height (atom nil)
@@ -232,13 +249,12 @@
             [message (:text content) (= from current-public-key)
              (assoc message-obj :group-chat group-chat
                     :current-public-key current-public-key)]))]]
-       [connectivity/error-view]])))
+       [connectivity/connectivity-view]])))
 
-(views/defview send-button [inp-ref network-status]
+(views/defview send-button [inp-ref disconnected?]
   (views/letsubs [{:keys [input-text]} [:chats/current-chat]]
     (let [empty? (= "" input-text)
-          offline? (= :offline network-status)
-          inactive? (or empty? offline?)]
+          inactive? (or empty? disconnected?)]
       [react/touchable-highlight {:style    styles/send-button
                                   :disabled inactive?
                                   :on-press (fn []
@@ -247,7 +263,7 @@
                                                 (.focus @inp-ref)
                                                 (re-frame/dispatch [:chat.ui/send-current-message])))}
        [react/view {:style (styles/send-icon inactive?)}
-        [icons/icon :icons/arrow-left {:style (styles/send-icon-arrow inactive?)}]]])))
+        [icons/icon :main-icons/arrow-left {:style (styles/send-icon-arrow inactive?)}]]])))
 
 (views/defview reply-message [from message-text]
   (views/letsubs [username           [:contacts/contact-name-by-identity from]
@@ -276,11 +292,11 @@
          :on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])
          :accessibility-label :cancel-message-reply}
         [react/view {}
-         [icons/icon :icons/close {:style styles/reply-close-icon}]]]])))
+         [icons/icon :main-icons/close {:style styles/reply-close-icon}]]]])))
 
 (views/defview chat-text-input [chat-id input-text]
   (views/letsubs [inp-ref (atom nil)
-                  network-status [:network-status]]
+                  disconnected? [:disconnected?]]
     {:component-will-update
      (fn [e [_ new-chat-id new-input-text]]
        (let [[_ old-chat-id] (.. e -props -argv)]
@@ -301,7 +317,7 @@
                           :default-value          input-text
                           :on-content-size-change #(set-container-height-fn (.-height (.-contentSize (.-nativeEvent %))))
                           :submit-shortcut        {:key "Enter"}
-                          :on-submit-editing      #(when (= :online network-status)
+                          :on-submit-editing      #(when-not disconnected?
                                                      (.clear @inp-ref)
                                                      (.focus @inp-ref)
                                                      (re-frame/dispatch [:chat.ui/send-current-message]))
@@ -309,14 +325,23 @@
                                                     (let [native-event (.-nativeEvent e)
                                                           text         (.-text native-event)]
                                                       (re-frame/dispatch [:chat.ui/set-chat-input-text text])))}]
-       [send-button inp-ref network-status]])))
+       [send-button inp-ref disconnected?]])))
+
+(defn not-joined-group-chat? [chat current-public-key]
+  (and (models.chat/group-chat? chat)
+       (models.group-chats/invited? current-public-key chat)
+       (not (models.group-chats/joined? current-public-key chat))))
 
 (views/defview chat-view []
-  (views/letsubs [{:keys [input-text chat-id] :as current-chat} [:chats/current-chat]]
+  (views/letsubs [{:keys [input-text chat-id] :as current-chat} [:chats/current-chat]
+                  current-public-key [:account/public-key]]
+
     [react/view {:style styles/chat-view}
      [toolbar-chat-view current-chat]
      [react/view {:style styles/separator}]
-     [messages-view current-chat]
+     (if (not-joined-group-chat? current-chat current-public-key)
+       [views.chat/group-chat-join-section current-public-key current-chat]
+       [messages-view current-chat])
      [react/view {:style styles/separator}]
      [reply-message-view]
      [chat-text-input chat-id input-text]]))
@@ -335,12 +360,12 @@
            [react/view {:style styles/chat-profile-row}
             [react/view {:style styles/chat-profile-icon-container
                          :accessibility-label :add-contact-link}
-             [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/blue)}]]
+             [vector-icons/icon :main-icons/add {:style (styles/chat-profile-icon colors/blue)}]]
             [react/text {:style (styles/contact-card-text colors/blue)} (i18n/label :t/add-to-contacts)]]]
           [react/view {:style styles/chat-profile-row}
            [react/view {:style styles/chat-profile-icon-container
                         :accessibility-label :add-contact-link}
-            [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/gray)}]]
+            [vector-icons/icon :main-icons/add {:style (styles/chat-profile-icon colors/gray)}]]
            [react/text {:style (styles/contact-card-text colors/gray)} (i18n/label :t/in-contacts)]])
         [react/touchable-highlight
          {:on-press #(re-frame/dispatch
@@ -348,7 +373,7 @@
          [react/view {:style styles/chat-profile-row}
           [react/view {:style styles/chat-profile-icon-container
                        :accessibility-label :send-message-link}
-           [vector-icons/icon :icons/chats {:style (styles/chat-profile-icon colors/blue)}]]
+           [vector-icons/icon :main-icons/message {:style (styles/chat-profile-icon colors/blue)}]]
           [react/text {:style (styles/contact-card-text colors/blue)}
            (i18n/label :t/send-message)]]]
         [react/text {:style styles/chat-profile-contact-code} (i18n/label :t/contact-code)]

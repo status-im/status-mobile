@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "nativePackage": true,
+  "name": "react-native-desktop-config",
+  "version": "1.0.0",
+  "description": "Configuration backend for Desktop",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": ""
+}

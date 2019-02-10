@@ -18,7 +18,7 @@
                       :bounces                      false
                       :content-container-style      styles/container}
    [react/view styles/container-root-view
-    [vector-icons/icon :icons/info {:color colors/red}]
+    [vector-icons/icon :main-icons/info {:color colors/red}]
     [react/text {:style styles/title-text}
      (i18n/label :t/browsing-site-blocked-title)]
     [react/text {:style styles/description-text}

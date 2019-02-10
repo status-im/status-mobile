@@ -152,6 +152,13 @@ class NextButton(BaseButton):
             "//android.widget.TextView[@text='NEXT']")
 
 
+class AddButton(BaseButton):
+    def __init__(self, driver):
+        super(AddButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//android.widget.TextView[@text='ADD']")
+
+
 class DoneButton(BaseButton):
     def __init__(self, driver):
         super(DoneButton, self).__init__(driver)
@@ -263,6 +270,7 @@ class BaseView(object):
         self.continue_button = ContinueButton(self.driver)
         self.ok_button = OkButton(self.driver)
         self.next_button = NextButton(self.driver)
+        self.add_button = AddButton(self.driver)
         self.save_button = SaveButton(self.driver)
         self.done_button = DoneButton(self.driver)
         self.delete_button = DeleteButton(self.driver)

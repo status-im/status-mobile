@@ -1,61 +1,68 @@
 package im.status.ethereum.module;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.*;
-import android.view.WindowManager;
-import android.text.TextUtils;
+import android.os.Build;
+import android.os.Environment;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
+import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebStorage;
 
-import com.facebook.react.bridge.*;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.github.status_im.status_go.Statusgo;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.FileInputStream;
 import java.io.OutputStream;
-import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.json.JSONObject;
-import org.json.JSONException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Nullable;
 
-class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ConnectorHandler {
+class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventListener, StatusNodeEventHandler {
 
     private static final String TAG = "StatusModule";
-
-    private final static int TESTNET_NETWORK_ID = 3;
-
-    private HashMap<String, Callback> callbacks = new HashMap<>();
+    private static final String logsZipFileName = "Status-debug-logs.zip";
+    private static final String gethLogFileName = "geth.log";
+    private static final String statusLogFileName = "Status.log";
 
     private static StatusModule module;
-    private ServiceConnector status = null;
-    private ExecutorService executor = null;
-    private boolean debug;
-    private boolean devCluster;
     private ReactApplicationContext reactContext;
+    private boolean rootedDevice;
 
-    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster) {
+    StatusModule(ReactApplicationContext reactContext, boolean rootedDevice) {
         super(reactContext);
-        if (executor == null) {
-            executor = Executors.newCachedThreadPool();
-        }
-        this.debug = debug;
-        this.devCluster = devCluster;
         this.reactContext = reactContext;
+        this.rootedDevice = rootedDevice;
         reactContext.addLifecycleEventListener(this);
     }
 
@@ -65,29 +72,14 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @Override
-    public void onHostResume() {  // Actvity `onResume`
+    public void onHostResume() {  // Activity `onResume`
         module = this;
-        Activity currentActivity = getCurrentActivity();
-        if (currentActivity == null) {
-            Log.d(TAG, "On host Activity doesn't exist");
-            return;
-        }
-
-        if (status == null) {
-            status = new ServiceConnector(currentActivity, StatusService.class);
-            status.registerHandler(this);
-        }
-
-        status.bindService();
-
-        signalEvent("{\"type\":\"module.initialized\"}");
+        StatusService.INSTANCE.setSignalEventListener(this);
     }
 
     @Override
     public void onHostPause() {
-        if (status != null) {
-            status.unbindService();
-        }
+
     }
 
     @Override
@@ -96,28 +88,32 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     private boolean checkAvailability() {
-
-        Activity currentActivity = getCurrentActivity();
-        if (currentActivity == null) {
-            Log.d(TAG, "Activity doesn't exist");
-            return false;
+        if (getCurrentActivity() != null) {
+            return true;
         }
 
-        return true;
+        Log.d(TAG, "Activity doesn't exist");
+        return false;
+
     }
 
-
-    void signalEvent(String jsonEvent) {
-        Log.d(TAG, "Signal event: " + jsonEvent);
+    @Override
+    public void handleEvent(String jsonEvent) {
+        Log.d(TAG, "[handleEvent] event: " + jsonEvent);
         WritableMap params = Arguments.createMap();
         params.putString("jsonEvent", jsonEvent);
         this.getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);
     }
 
-    private static String prepareLogsFile() {
-        String gethLogFileName = "geth.log";
-        File pubDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File logFile = new File(pubDirectory, gethLogFileName);
+    private File getLogsFile() {
+        final File pubDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        final File logFile = new File(pubDirectory, gethLogFileName);
+
+        return logFile;
+    }
+
+    private String prepareLogsFile(final Context context) {
+        final File logFile = getLogsFile();
 
         try {
             logFile.setReadable(true);
@@ -149,7 +145,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         // retrieve parameters from app config, that will be applied onto the Go-side config later on
         final String absDataDirPath = pathCombine(absRootDirPath, jsonConfig.getString("DataDir"));
         final Boolean logEnabled = jsonConfig.getBoolean("LogEnabled");
-        final String gethLogFilePath = logEnabled ? prepareLogsFile() : null;
+        final Context context = this.getReactApplicationContext();
+        final String gethLogFilePath = logEnabled ? prepareLogsFile(context) : null;
 
         jsonConfig.put("DataDir", absDataDirPath);
         jsonConfig.put("KeyStoreDir", absKeystoreDirPath);
@@ -253,7 +250,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             else {
                 Log.e(TAG, "StartNode failed: " + res);
             }
-            status.sendMessage();
         } catch (JSONException e) {
             Log.e(TAG, "updateConfig failed: " + e.getMessage());
             System.exit(1);
@@ -344,6 +340,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     public void startNode(final String config) {
         Log.d(TAG, "startNode");
         if (!checkAvailability()) {
+            Log.e(TAG, "[startNode] Activity doesn't exist, cannot start node");
             return;
         }
 
@@ -392,6 +389,51 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void verify(final String address, final String password, final Callback callback) {
+        Log.d(TAG, "verify");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Activity currentActivity = getCurrentActivity();
+
+        final String absRootDirPath = currentActivity.getApplicationInfo().dataDir;
+        final String newKeystoreDir = pathCombine(absRootDirPath, "keystore");
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String result = Statusgo.VerifyAccountPassword(newKeystoreDir, address, password);
+
+                callback.invoke(result);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void loginWithKeycard(final String whisperPrivateKey, final String encryptionPublicKey, final Callback callback) {
+        Log.d(TAG, "loginWithKeycard");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                  String result = Statusgo.LoginWithKeycard(whisperPrivateKey, encryptionPublicKey);
+
+                  callback.invoke(result);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
     public void createAccount(final String password, final Callback callback) {
         Log.d(TAG, "createAccount");
         if (!checkAvailability()) {
@@ -412,8 +454,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void notifyUsers(final String message, final String payloadJSON, final String tokensJSON, final Callback callback) {
-        Log.d(TAG, "notifyUsers");
+    public void sendDataNotification(final String dataPayloadJSON, final String tokensJSON, final Callback callback) {
+        Log.d(TAG, "sendDataNotification");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -422,13 +464,163 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Runnable r = new Runnable() {
                 @Override
                 public void run() {
-                    String res = Statusgo.NotifyUsers(message, payloadJSON, tokensJSON);
+                    String res = Statusgo.SendDataNotification(dataPayloadJSON, tokensJSON);
 
                     callback.invoke(res);
                 }
             };
 
         StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    private Boolean zip(File[] _files, File zipFile, Stack<String> errorList) {
+        final int BUFFER = 0x8000;
+
+		try {
+			BufferedInputStream origin = null;
+			FileOutputStream dest = new FileOutputStream(zipFile);
+			ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
+			byte data[] = new byte[BUFFER];
+
+			for (int i = 0; i < _files.length; i++) {
+                final File file = _files[i];
+                if (file == null || !file.exists()) {
+                    continue;
+                }
+
+                Log.v("Compress", "Adding: " + file.getAbsolutePath());
+                try {
+                    FileInputStream fi = new FileInputStream(file);
+                    origin = new BufferedInputStream(fi, BUFFER);
+
+                    ZipEntry entry = new ZipEntry(file.getName());
+                    out.putNextEntry(entry);
+                    int count;
+
+                    while ((count = origin.read(data, 0, BUFFER)) != -1) {
+                        out.write(data, 0, count);
+                    }
+                    origin.close();
+                } catch (IOException e) {
+                    Log.e(TAG, e.getMessage());
+                    errorList.push(e.getMessage());
+                }
+			}
+
+            out.close();
+            
+            return true;
+		} catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            e.printStackTrace();
+            return false;
+		}
+    }
+
+    private void dumpAdbLogsTo(final FileOutputStream statusLogStream) throws IOException {
+        final String filter = "logcat -d -b main ReactNativeJS:D StatusModule:D StatusService:D StatusNativeLogs:D *:S";
+        final java.lang.Process p = Runtime.getRuntime().exec(filter);
+        final java.io.BufferedReader in = new java.io.BufferedReader(new java.io.InputStreamReader(p.getInputStream()));
+        final java.io.BufferedWriter out = new java.io.BufferedWriter(new java.io.OutputStreamWriter(statusLogStream));
+        String line;
+        while ((line = in.readLine()) != null) {
+            out.write(line);
+            out.newLine();
+        }
+        out.close();
+        in.close();
+    }
+
+    private void showErrorMessage(final String message) {
+        final Activity activity = getCurrentActivity();
+
+        new AlertDialog.Builder(activity)
+                       .setTitle("Error")
+                       .setMessage(message)
+                       .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                           public void onClick(final DialogInterface dialog, final int id) {
+                               dialog.dismiss();
+                           }
+                       }).show();
+    }
+    
+    @ReactMethod
+    public void sendLogs(final String dbJson) {
+        Log.d(TAG, "sendLogs");
+        if (!checkAvailability()) {
+            return;
+        }
+
+        final Context context = this.getReactApplicationContext();
+        final File logsTempDir = new File(context.getCacheDir(), "logs"); // This path needs to be in sync with android/app/src/main/res/xml/file_provider_paths.xml
+        logsTempDir.mkdir();
+
+        final File dbFile = new File(logsTempDir, "db.json");
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(dbFile));
+            outputStreamWriter.write(dbJson);
+            outputStreamWriter.close();
+        }
+        catch (IOException e) {
+            Log.e(TAG, "File write failed: " + e.toString());
+            showErrorMessage(e.getLocalizedMessage());
+        }
+
+        final File zipFile = new File(logsTempDir, logsZipFileName);
+        final File statusLogFile = new File(logsTempDir, statusLogFileName);
+        final File gethLogFile = getLogsFile();
+
+        try {
+            if (zipFile.exists() || zipFile.createNewFile()) {
+                final long usableSpace = zipFile.getUsableSpace();
+                if (usableSpace < 20 * 1024 * 1024) {
+                    final String message = String.format("Insufficient space available on device (%s) to write logs.\nPlease free up some space.", android.text.format.Formatter.formatShortFileSize(context, usableSpace));
+                    Log.e(TAG, message);
+                    showErrorMessage(message);
+                    return;
+                }
+            }
+            
+            dumpAdbLogsTo(new FileOutputStream(statusLogFile));
+        
+            final Stack<String> errorList = new Stack<String>();
+            final Boolean zipped = zip(new File[] {dbFile, gethLogFile, statusLogFile}, zipFile, errorList);
+            if (zipped && zipFile.exists()) {
+                Log.d(TAG, "Sending " + zipFile.getAbsolutePath() + " file through share intent");
+
+                final String providerName = context.getPackageName() + ".provider";
+                final Activity activity = getCurrentActivity();
+                zipFile.setReadable(true, false);
+                final Uri dbJsonURI = FileProvider.getUriForFile(activity, providerName, zipFile);
+
+                Intent intentShareFile = new Intent(Intent.ACTION_SEND);
+
+                intentShareFile.setType("application/json");
+                intentShareFile.putExtra(Intent.EXTRA_STREAM, dbJsonURI);
+
+                SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                dateFormatGmt.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+                intentShareFile.putExtra(Intent.EXTRA_SUBJECT, "Status.im logs");
+                intentShareFile.putExtra(Intent.EXTRA_TEXT,
+                    String.format("Logs from %s GMT\n\nThese logs have been generated automatically by the user's request for debugging purposes.\n\n%s",
+                                  dateFormatGmt.format(new java.util.Date()),
+                                  errorList));
+
+                activity.startActivity(Intent.createChooser(intentShareFile, "Share Debug Logs"));
+            } else {
+                Log.d(TAG, "File " + zipFile.getAbsolutePath() + " does not exist");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            showErrorMessage(e.getLocalizedMessage());
+            e.printStackTrace();
+            return;
+        }
+        finally {
+            dbFile.delete();
+            statusLogFile.delete();
+            zipFile.deleteOnExit();
+        }
     }
 
     @ReactMethod
@@ -598,28 +790,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         }
     }
 
-    @Override
-    public boolean handleMessage(Message message) {
-
-        Log.d(TAG, "Received message: " + message.toString());
-        Bundle bundle = message.getData();
-
-        String event = bundle.getString("event");
-        signalEvent(event);
-
-        return true;
-    }
-
-    @Override
-    public void onConnectorConnected() {
-
-    }
-
-    @Override
-    public void onConnectorDisconnected() {
-
-    }
-
     @ReactMethod
     public void callRPC(final String payload, final Callback callback) {
         Runnable r = new Runnable() {
@@ -662,7 +832,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Log.d(TAG, "AppStateChange: " + type);
         Statusgo.AppStateChange(type);
     }
-    
+
     private static String uniqueID = null;
     private static final String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
 
@@ -766,6 +936,26 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     StatusThreadPoolExecutor.getInstance().execute(r);
   }
 
+  @ReactMethod
+  public void updateMailservers(final String enodes, final Callback callback) {
+    Log.d(TAG, "updateMailservers");
+    if (!checkAvailability()) {
+      callback.invoke(false);
+      return;
+    }
+
+    Runnable r = new Runnable() {
+      @Override
+      public void run() {
+        String res = Statusgo.UpdateMailservers(enodes);
+
+        callback.invoke(res);
+      }
+    };
+
+    StatusThreadPoolExecutor.getInstance().execute(r);
+  }
+
   @Override
   public @Nullable
   Map<String, Object> getConstants() {
@@ -773,5 +963,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     constants.put("is24Hour", this.is24Hour());
     return constants;
+  }
+
+  @ReactMethod
+  public void isDeviceRooted(final Callback callback) {
+    callback.invoke(rootedDevice);
   }
 }

@@ -66,6 +66,33 @@
 
 (def v17 v16)
 
+;; should go through migration of Infura project IDs from old format to new
+(def v18 v17)
+
+(def v19 [network/v1
+          bootnode/v4
+          extension/v12
+          account/v16])
+
+(def v20 v19)
+
+(def v21 [network/v1
+          bootnode/v4
+          extension/v12
+          account/v17])
+
+(def v22 [network/v1
+          bootnode/v4
+          extension/v12
+          account/v18])
+
+(def v23 [network/v1
+          bootnode/v4
+          extension/v12
+          account/v19])
+
+(def v24 v23)
+
 ;; put schemas ordered by version
 (def schemas [{:schema        v1
                :schemaVersion 1
@@ -117,4 +144,25 @@
                :migration     migrations/v16}
               {:schema        v17
                :schemaVersion 17
-               :migration     migrations/v17}])
+               :migration     migrations/v17}
+              {:schema        v18
+               :schemaVersion 18
+               :migration     migrations/v18}
+              {:schema        v19
+               :schemaVersion 19
+               :migration     migrations/v19}
+              {:schema        v20
+               :schemaVersion 20
+               :migration     migrations/v20}
+              {:schema        v21
+               :schemaVersion 21
+               :migration     migrations/v21}
+              {:schema        v22
+               :schemaVersion 22
+               :migration     (constantly nil)}
+              {:schema        v23
+               :schemaVersion 23
+               :migration     (constantly nil)}
+              {:schema        v24
+               :schemaVersion 24
+               :migration     migrations/v24}])

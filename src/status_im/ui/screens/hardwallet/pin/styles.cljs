@@ -2,10 +2,15 @@
   (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.ui.components.colors :as colors]))
 
+(def container
+  {:flex             1
+   :background-color colors/white})
+
 (defstyle pin-container
   {:flex            1
    :flex-direction  :column
    :justify-content :space-between
+   :padding-bottom  10
    :ios             {:margin-top 30}})
 
 (defstyle error-container

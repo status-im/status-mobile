@@ -87,10 +87,12 @@
 
 (fx/defn reply-to-message
   "Sets reference to previous chat message and focuses on input"
-  [{:keys [db] :as cofx} message-id]
+  [{:keys [db] :as cofx} message-id old-message-id]
   (let [current-chat-id (:current-chat-id db)]
     (fx/merge cofx
-              {:db (assoc-in db [:chats current-chat-id :metadata :responding-to-message] message-id)}
+              {:db (assoc-in db [:chats current-chat-id :metadata :responding-to-message]
+                             {:message-id     message-id
+                              :old-message-id old-message-id})}
               (chat-input-focus :input-ref))))
 
 (fx/defn cancel-message-reply
@@ -121,15 +123,17 @@
   "no command detected, when not empty, proceed by sending text message without command processing"
   [input-text current-chat-id {:keys [db] :as cofx}]
   (when-not (string/blank? input-text)
-    (let [reply-to-message (get-in db [:chats current-chat-id :metadata :responding-to-message])]
+    (let [{:keys [message-id old-message-id]}
+          (get-in db [:chats current-chat-id :metadata :responding-to-message])]
       (fx/merge cofx
                 {:db (assoc-in db [:chats current-chat-id :metadata :responding-to-message] nil)}
                 (chat.message/send-message {:chat-id      current-chat-id
                                             :content-type constants/content-type-text
                                             :content      (cond-> {:chat-id current-chat-id
                                                                    :text    input-text}
-                                                            reply-to-message
-                                                            (assoc :response-to reply-to-message))})
+                                                            message-id
+                                                            (assoc :response-to old-message-id
+                                                                   :response-to-v2 message-id))})
                 (commands.input/set-command-reference nil)
                 (set-chat-input-text nil)
                 (process-cooldown)))))
@@ -142,6 +146,15 @@
                                      :content-type constants/content-type-text
                                      :content      (cond-> {:chat-id current-chat-id
                                                             :text    message-text})})))
+
+(fx/defn send-sticker-fx
+  [{:keys [db] :as cofx} uri current-chat-id]
+  (when-not (string/blank? uri)
+    (chat.message/send-message cofx {:chat-id      current-chat-id
+                                     :content-type constants/content-type-sticker
+                                     :content      (cond-> {:chat-id current-chat-id
+                                                            :uri     uri
+                                                            :text    "Update to latest version to see a nice sticker here!"})})))
 
 (fx/defn send-current-message
   "Sends message from current chat input"

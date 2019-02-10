@@ -19,15 +19,27 @@
             [status-im.utils.priority-map :refer [empty-message-map]]
             [status-im.utils.utils :as utils]))
 
-(defn multi-user-chat? [cofx chat-id]
-  (get-in cofx [:db :chats chat-id :group-chat]))
+(defn- get-chat [cofx chat-id]
+  (get-in cofx [:db :chats chat-id]))
 
-(defn group-chat? [cofx chat-id]
-  (and (multi-user-chat? cofx chat-id)
-       (not (get-in cofx [:db :chats chat-id :public?]))))
+(defn multi-user-chat?
+  ([chat]
+   (:group-chat chat))
+  ([cofx chat-id]
+   (multi-user-chat? (get-chat cofx chat-id))))
 
-(defn public-chat? [cofx chat-id]
-  (get-in cofx [:db :chats chat-id :public?]))
+(defn public-chat?
+  ([chat]
+   (:public? chat))
+  ([cofx chat-id]
+   (public-chat? (get-chat cofx chat-id))))
+
+(defn group-chat?
+  ([chat]
+   (and (multi-user-chat? chat)
+        (not (public-chat? chat))))
+  ([cofx chat-id]
+   (group-chat? (get-chat cofx chat-id))))
 
 (defn set-chat-ui-props
   "Updates ui-props in active chat by merging provided kvs into them"
@@ -100,12 +112,14 @@
                                      deleted-at-clock-value
                                      (utils.clocks/send 0))]
     {:db            (update-in db [:chats chat-id] merge
-                               {:messages           empty-message-map
-                                :message-groups         {}
-                                :unviewed-messages-count 0
-                                :deleted-at-clock-value last-message-clock-value})
+                               {:messages                  empty-message-map
+                                :message-groups            {}
+                                :last-message-content      nil
+                                :last-message-content-type nil
+                                :unviewed-messages-count   0
+                                :deleted-at-clock-value    last-message-clock-value})
      :data-store/tx [(chats-store/clear-history-tx chat-id last-message-clock-value)
-                     (messages-store/delete-messages-tx chat-id)]}))
+                     (messages-store/delete-chat-messages-tx chat-id)]}))
 
 (fx/defn deactivate-chat
   [{:keys [db now] :as cofx} chat-id]
@@ -195,7 +209,8 @@
                                         updated-statuses)
                  :data-store/tx [(user-statuses-store/save-statuses-tx updated-statuses)]}
                 (update-chats-unviewed-messages-count {:chat-id chat-id})
-                (send-messages-seen chat-id loaded-unviewed-ids)
+                ;;TODO(rasom): uncomment when seen messages will be revisited
+                #_(send-messages-seen chat-id loaded-unviewed-ids)
                 (when platform/desktop?
                   (update-dock-badge-label))))))
 
@@ -240,10 +255,11 @@
 
 (fx/defn start-public-chat
   "Starts a new public chat"
-  [cofx topic opts]
+  [cofx topic {:keys [dont-navigate?] :as opts}]
   (fx/merge cofx
             (add-public-chat topic)
-            (navigate-to-chat topic opts)
+            #(when-not dont-navigate?
+               (navigate-to-chat % topic opts))
             (public-chat/join-public-chat topic)
             (when platform/desktop?
               (desktop.events/change-tab :home))))

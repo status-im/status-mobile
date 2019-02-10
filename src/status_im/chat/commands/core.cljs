@@ -6,6 +6,7 @@
             [status-im.chat.constants :as chat.constants]
             [status-im.chat.commands.protocol :as protocol]
             [status-im.chat.commands.impl.transactions :as transactions]
+            [status-im.contact.db :as db]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.fx :as fx]))
 
@@ -33,6 +34,23 @@
   "Returns accessibility button label for command, derived from its id"
   [type]
   (keyword (str (protocol/id type) "-button")))
+
+(defn- contact->address [contact]
+  (str "0x" (db/public-key->address contact)))
+
+(defn add-chat-contacts
+  "Enrich command-message by adding contact list of the current private or group chat"
+  [contacts {:keys [public? group-chat] :as command-message}]
+  (cond
+    public? command-message
+    group-chat (assoc command-message :contacts (map contact->address contacts))
+    :else (assoc command-message :contact (contact->address (first contacts)))))
+
+(defn enrich-command-message-for-events
+  "adds new pairs to command-message to be consumed by extension events"
+  [db {:keys [chat-id] :as command-message}]
+  (let [{:keys [contacts public? group-chat]} (get-in db [:chats chat-id])]
+    (add-chat-contacts contacts (assoc command-message :public? public? :group-chat group-chat))))
 
 (defn generate-short-preview
   "Returns short preview for command"
@@ -114,17 +132,17 @@
 (def command-hook
   "Hook for extensions"
   {:properties
-   {:description?  :string
-    :scope         #{:personal-chats :public-chats}
-    :short-preview :view
-    :preview       :view
-    :on-send?      :event
-    :on-receive?   :event
-    :on-send-sync? :event
-    :parameters?    [{:id           :keyword
-                      :type         {:one-of #{:text :phone :password :number}}
-                      :placeholder  :string
-                      :suggestions? :view}]}
+   {:description?   :string
+    :scope          #{:personal-chats :public-chats :group-chats}
+    :short-preview? :view
+    :preview?       :view
+    :on-send?       :event
+    :on-receive?    :event
+    :on-send-sync?  :event
+    :parameters?     [{:id           :keyword
+                       :type         {:one-of #{:text :phone :password :number}}
+                       :placeholder  :string
+                       :suggestions? :view}]}
    :hook
    (reify hooks/Hook
      (hook-in [_ id {extension-id :id} {:keys [description scope parameters preview short-preview
@@ -138,8 +156,8 @@
                              (validate [_ _ _])
                              (on-send [_ command-message _] (when on-send {:dispatch (on-send command-message)}))
                              (on-receive [_ command-message _] (when on-receive {:dispatch (on-receive command-message)}))
-                             (short-preview [_ props] (short-preview props))
-                             (preview [_ props] (preview props))
+                             (short-preview [_ props] (when short-preview (short-preview props)))
+                             (preview [_ props] (when preview (preview props)))
                              protocol/Yielding
                              (yield-control [_ props _] {:dispatch (on-send-sync props)})
                              protocol/Extension
@@ -152,8 +170,8 @@
                              (validate [_ _ _])
                              (on-send [_ command-message _] (when on-send {:dispatch (on-send command-message)}))
                              (on-receive [_ command-message _] (when on-receive {:dispatch (on-receive command-message)}))
-                             (short-preview [_ props] (short-preview props))
-                             (preview [_ props] (preview props))
+                             (short-preview [_ props] (when short-preview (short-preview props)))
+                             (preview [_ props] (when preview (preview props)))
                              protocol/Extension
                              (extension-id [_] extension-id)))]
          (load-commands cofx [new-command])))

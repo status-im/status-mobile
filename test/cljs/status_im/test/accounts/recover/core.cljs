@@ -95,29 +95,24 @@
          (models/validate-password {:db {:accounts/recover {:password "thisisapaswoord"}}}))))
 
 (deftest recover-account
-  (let [new-cofx (models/recover-account {:db {:accounts/recover
+  (let [new-cofx (models/recover-account {:random-guid-generator (constantly "random")
+                                          :db {:accounts/recover
                                                {:passphrase "game buzz method pretty zeus fat quit display velvet unveil marine crater"
                                                 :password   "thisisapaswoord"}}})]
-    (is (= {:accounts/recover {:passphrase  "game buzz method pretty zeus fat quit display velvet unveil marine crater"
-                               :password    "thisisapaswoord"
-                               :processing? true}}
-           (:db new-cofx)))
-    (is (= security/MaskedData
-           (-> new-cofx :accounts.recover/recover-account first type)))
-    (is (= "thisisapaswoord" (-> new-cofx :accounts.recover/recover-account second)))))
+    (is (contains? new-cofx :node/start))
+    (is (= "random" (get-in new-cofx [:db :accounts/new-installation-id])))
+    (is (= :recover-account (get-in new-cofx [:db :node/on-ready])))))
 
 (deftest recover-account-with-checks
-  (let [new-cofx (models/recover-account-with-checks {:db {:accounts/recover
+  (let [new-cofx (models/recover-account-with-checks {:random-guid-generator (constantly "random")
+                                                      :db {:accounts/recover
                                                            {:passphrase "game buzz method pretty olympic fat quit display velvet unveil marine crater"
                                                             :password   "thisisapaswoord"}}})]
-    (is (= {:accounts/recover {:passphrase  "game buzz method pretty olympic fat quit display velvet unveil marine crater"
-                               :password    "thisisapaswoord"
-                               :processing? true}}
-           (:db new-cofx)))
-    (is (= security/MaskedData
-           (-> new-cofx :accounts.recover/recover-account first type)))
-    (is (= "thisisapaswoord" (-> new-cofx :accounts.recover/recover-account second))))
-  (let [new-cofx (models/recover-account-with-checks {:db {:accounts/recover
+    (is (contains? new-cofx :node/start))
+    (is (= "random" (get-in new-cofx [:db :accounts/new-installation-id])))
+    (is (= :recover-account (get-in new-cofx [:db :node/on-ready]))))
+  (let [new-cofx (models/recover-account-with-checks {:random-guid-generator (constantly "random")
+                                                      :db {:accounts/recover
                                                            {:passphrase "game buzz method pretty zeus fat quit display velvet unveil marine crater"
                                                             :password   "thisisapaswoord"}}})]
     (is (= (i18n/label :recovery-typo-dialog-title) (-> new-cofx :ui/show-confirmation :title)))

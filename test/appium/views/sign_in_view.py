@@ -64,7 +64,8 @@ class AddExistingAccountButton(RecoverAccessButton):
 class ConfirmPasswordInput(BaseEditBox):
     def __init__(self, driver):
         super(ConfirmPasswordInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Confirm']")
+        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Confirm']"
+                                                   "/following-sibling::android.view.ViewGroup/android.widget.EditText")
 
 
 class NameInput(BaseEditBox):
@@ -138,18 +139,6 @@ class SignInView(BaseView):
         recover_access_view.send_as_keyevent(password)
         recover_access_view.sign_in_button.click_until_presence_of_element(recover_access_view.home_button)
         return self.get_home_view()
-
-    def open_status_test_dapp(self):
-        profile_view = self.profile_button.click()
-        profile_view.advanced_button.click()
-        profile_view.debug_mode_toggle.click()
-        home_view = profile_view.home_button.click()
-        start_new_chat_view = home_view.plus_button.click()
-        start_new_chat_view.open_d_app_button.click()
-        start_new_chat_view.status_test_dapp_button.scroll_to_element()
-        status_test_daap = start_new_chat_view.status_test_dapp_button.click()
-        start_new_chat_view.open_button.click()
-        return status_test_daap
 
     def sign_in(self, password=common_password):
         if self.ok_button.is_element_displayed():

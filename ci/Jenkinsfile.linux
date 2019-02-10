@@ -3,26 +3,35 @@ pipeline {
     /* privileged mode is necessary for fuse */
     docker {
       label 'linux-new'
-      image 'statusteam/linux-desktop-ubuntu:qt-5.11.2'
+      /* WARNING: remember to keep this up-to-date with the value in docker/linux/Makefile */
+      image 'statusteam/status-build-linux:1.1.0-2a35dcde'
       args (
         "--privileged "+
         "-v /dev/fuse:/dev/fuse "+
         "-v /var/tmp/lein:/var/tmp/lein:rw "+
         "-v /var/tmp/npm:/var/tmp/npm:rw "+
-        "-v /opt/StatusImAppImage_20181113.zip:/opt/StatusImAppImage.zip:ro"
+        "-v /opt/desktop-files:/opt/desktop-files:rw"
       )
     }
+  }
+
+  parameters {
+    string(
+      name: 'BUILD_TYPE',
+      description: 'Specify build type. Values: pr / nightly / release',
+      defaultValue: 'pr',
+    )
   }
 
   options {
     timestamps()
     /* Prevent Jenkins jobs from running forever */
-    timeout(time: 35, unit: 'MINUTES')
+    timeout(time: 40, unit: 'MINUTES')
     /* Limit builds retained */
     buildDiscarder(logRotator(
-      numToKeepStr: '60',
-      daysToKeepStr: '30',
-      artifactNumToKeepStr: '60',
+      numToKeepStr: '10',
+      daysToKeepStr: '20',
+      artifactNumToKeepStr: '10',
     ))
   }
 
@@ -38,7 +47,8 @@ pipeline {
     NPM_CONFIG_CACHE = '/var/tmp/npm'
     LEIN_HOME = '/var/tmp/lein'
     QT_PATH = '/opt/qt'
-    STATUSIM_APPIMAGE = '/opt/StatusImAppImage.zip'
+    STATUSIM_APPIMAGE_DIR = '/opt/desktop-files'
+    VERBOSE_LEVEL = '3'
   }
 
   stages {
@@ -48,7 +58,9 @@ pipeline {
           /* Necessary to load methods */
           desktop = load 'ci/desktop.groovy'
           cmn     = load 'ci/common.groovy'
-          sh 'env'
+          print "Running ${cmn.getBuildType()} build!"
+          cmn.abortPreviousRunningBuilds()
+          /* Cleanup and Prep */
           desktop.prepDeps()
         }
       }
@@ -79,7 +91,23 @@ pipeline {
       }
     }
     stage('Archive') {
-      steps { archiveArtifacts app }
+      steps {
+        archiveArtifacts app
+      }
     }
+    stage('Upload') {
+      steps {
+        script { env.PKG_URL = cmn.uploadArtifact(app) }
+      }
+    }
+    stage('Cleanup') {
+      steps {
+        script { cmn.clean() }
+      }
+    }
+  }
+  post {
+    failure { script { load('ci/common.groovy').notifyPRFailure() } }
+    success { script { load('ci/common.groovy').notifyPRSuccess() } }
   }
 }

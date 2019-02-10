@@ -1,5 +1,5 @@
+import time
 from selenium.common.exceptions import TimeoutException
-
 from support.utilities import generate_timestamp
 from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
@@ -130,6 +130,7 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
             self.errors.append('Message with korean characters is not shown')
         self.verify_no_errors()
 
+    @marks.skip
     @marks.testrail_id(5336)
     @marks.medium
     def test_user_can_interact_with_public_chat(self):
@@ -172,12 +173,9 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         tag_message = '#spectentur'
         chat.send_message(tag_message)
         chat.element_starts_with_text(tag_message).click()
-        chat.empty_public_chat_message.wait_for_visibility_of_element()
-
+        time.sleep(4)
         if not chat.user_name_text.text == tag_message:
             self.driver.fail('Could not redirect a user to a public chat tapping the tag message.')
-
         home = chat.get_back_to_home_view()
-
         if not home.chat_name_text.text == tag_message:
             self.driver.fail('Could not find the public chat in user chat list.')

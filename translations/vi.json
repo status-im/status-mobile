@@ -167,7 +167,8 @@
         "one": "phút",
         "other": "phút"
     },
-    "browsing-open-in-web-browser": "Mở trong trình duyệt web",
+    "browsing-open-in-android-web-browser": "Mở trong trình duyệt web",
+    "browsing-open-in-ios-web-browser": "Mở trong trình duyệt web",
     "delete-group-prompt": "Điều này sẽ không ảnh hưởng đến danh bạ",
     "edit-profile": "Chỉnh sửa hồ sơ",
     "active-unknown": "Không rõ",

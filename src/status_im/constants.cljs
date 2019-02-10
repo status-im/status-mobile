@@ -7,6 +7,7 @@
 (def ethereum-rpc-url "http://localhost:8545")
 
 (def content-type-text "text/plain")
+(def content-type-sticker "sticker")
 (def content-type-status "status")
 (def content-type-command "command")
 (def content-type-command-request "command-request")
@@ -17,6 +18,7 @@
 
 (def min-password-length 6)
 (def max-chat-name-length 20)
+(def max-group-chat-participants 10)
 (def response-suggesstion-resize-duration 100)
 (def default-number-of-messages 20)
 (def blocks-per-hour 120)
@@ -46,7 +48,7 @@
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
                            :DataDir        "/ethereum/mainnet_rpc"
                            :UpstreamConfig {:Enabled true
-                                            :URL     "https://mainnet.infura.io/z6GCTmjdP3FETEJmMBI4"}}}})
+                                            :URL     "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a"}}}})
 
 (def sidechain-networks
   {"xdai_rpc" {:id     "xdai_rpc",
@@ -60,7 +62,7 @@
                :config {:NetworkId      (ethereum/chain-keyword->chain-id :poa)
                         :DataDir        "/ethereum/poa_rpc"
                         :UpstreamConfig {:Enabled true
-                                         :URL     "https://poa.infura.io"}}}})
+                                         :URL     "https://core.poa.network"}}}})
 
 (def testnet-networks
   {"testnet"     {:id     "testnet",
@@ -73,7 +75,7 @@
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
                            :DataDir        "/ethereum/testnet_rpc"
                            :UpstreamConfig {:Enabled true
-                                            :URL     "https://ropsten.infura.io/z6GCTmjdP3FETEJmMBI4"}}}
+                                            :URL     "https://ropsten.infura.io/v3/f315575765b14720b32382a61a89341a"}}}
    "rinkeby"     {:id     "rinkeby",
                   :name   "Rinkeby",
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
@@ -84,7 +86,7 @@
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
                            :DataDir        "/ethereum/rinkeby_rpc"
                            :UpstreamConfig {:Enabled true
-                                            :URL     "https://rinkeby.infura.io/z6GCTmjdP3FETEJmMBI4"}}}})
+                                            :URL     "https://rinkeby.infura.io/v3/f315575765b14720b32382a61a89341a"}}}})
 
 (defn network-enabled? [network]
   (let [rpc-network? (get-in (val network) [:config :UpstreamConfig :Enabled])
@@ -101,11 +103,12 @@
                    (merge testnet-networks mainnet-networks sidechain-networks))))
 
 (defn default-account-settings []
-  {:wallet {:visible-tokens {:testnet #{:STT :HND}
-                             :mainnet #{:SNT}
-                             :rinkeby #{:MOKSHA :KDO}
-                             :xdai    #{}
-                             :poa     #{}}}})
+  {:web3-opt-in? true
+   :wallet       {:visible-tokens {:testnet #{:STT :HND}
+                                   :mainnet #{:SNT}
+                                   :rinkeby #{:MOKSHA :KDO}
+                                   :xdai    #{}
+                                   :poa     #{}}}})
 
 (def currencies
   {:aed {:id :aed :code "AED" :display-name (i18n/label :t/currency-display-name-aed) :symbol "د.إ"}
@@ -201,6 +204,13 @@
 (def ^:const web3-personal-sign "personal_sign")
 (def ^:const web3-get-logs "eth_getLogs")
 (def ^:const web3-transaction-receipt "eth_getTransactionReceipt")
+(def ^:const web3-new-filter "eth_newFilter")
+(def ^:const web3-new-pending-transaction-filter "eth_newPendingTransactionFilter")
+(def ^:const web3-new-block-filter "eth_newBlockFilter")
+(def ^:const web3-uninstall-filter "eth_uninstallFilter")
+(def ^:const web3-get-filter-changes "eth_getFilterChanges")
+
+(def ^:const status-create-address "status_createaddress")
 
 (def ^:const event-transfer-hash
   (ethereum/sha3 "Transfer(address,address,uint256)"))
@@ -216,15 +226,23 @@
 
 (def ^:const lines-collapse-threshold 20)
 (def ^:const chars-collapse-threshold 600)
+(def ^:const desktop-msg-chars-hard-limit 10000)
 
 (def ^:const dapp-permission-contact-code "contact-code")
 (def ^:const dapp-permission-web3 "web3")
 (def ^:const dapp-permission-qr-code "qr-code")
+(def ^:const dapp-permission-install-extension "install-extension")
 (def ^:const api-response "api-response")
 (def ^:const api-request "api-request")
 (def ^:const history-state-changed "history-state-changed")
+(def ^:const debug-metrics "debug_metrics")
 (def ^:const web3-send-async "web3-send-async")
 (def ^:const web3-send-async-read-only "web3-send-async-read-only")
 (def ^:const web3-send-async-callback "web3-send-async-callback")
 (def ^:const scan-qr-code "scan-qr-code")
 (def ^:const scan-qr-code-callback "scan-qr-code-callback")
+
+;;ipfs
+(def ^:const ipfs-add-url "https://ipfs.infura.io:5001/api/v0/add")
+(def ^:const ipfs-add-param-name "extension.event.edn")
+(def ^:const ipfs-cat-url "https://ipfs.infura.io/ipfs/")

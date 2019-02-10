@@ -266,7 +266,8 @@
         "one": "Minute",
         "other": "Minuten"
     },
-    "browsing-open-in-web-browser": "In Webbrowser öffnen",
+    "browsing-open-in-android-web-browser": "In Webbrowser öffnen",
+    "browsing-open-in-ios-web-browser": "In Webbrowser öffnen",
     "delete-group-prompt": "Deine Kontakte bleiben hiervon unbeeinflusst",
     "wallet-insufficient-funds": "Unzureichendes Kapital",
     "edit-profile": "Profil bearbeiten",

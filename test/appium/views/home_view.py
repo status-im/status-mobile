@@ -121,7 +121,8 @@ class HomeView(BaseView):
     def add_contact(self, public_key):
         start_new_chat = self.plus_button.click()
         start_new_chat.start_new_chat_button.click_until_presence_of_element(start_new_chat.public_key_edit_box)
-        start_new_chat.public_key_edit_box.set_value(public_key)
+        start_new_chat.public_key_edit_box.click()
+        start_new_chat.public_key_edit_box.send_keys(public_key)
         one_to_one_chat = self.get_chat_view()
         start_new_chat.confirm_until_presence_of_element(one_to_one_chat.chat_message_input)
         return one_to_one_chat
@@ -143,17 +144,20 @@ class HomeView(BaseView):
         start_new_chat.next_button.click()
         start_new_chat.chat_name_editbox.send_keys(group_chat_name)
         start_new_chat.create_button.click()
+        from views.chat_view import ChatView
+        return ChatView(self.driver)
 
     def join_public_chat(self, chat_name: str):
         start_new_chat = self.plus_button.click()
         start_new_chat.join_public_chat_button.click()
-        start_new_chat.chat_name_editbox.set_value(chat_name)
+        start_new_chat.chat_name_editbox.click()
+        start_new_chat.chat_name_editbox.send_keys(chat_name)
         time.sleep(2)
         chat_view = self.get_chat_view()
         start_new_chat.confirm_until_presence_of_element(chat_view.chat_message_input)
         return chat_view
 
-    def open_status_test_dapp(self):
+    def open_status_test_dapp(self, allow_all=True):
         profile_view = self.profile_button.click()
         profile_view.advanced_button.click()
         profile_view.debug_mode_toggle.click()
@@ -163,4 +167,9 @@ class HomeView(BaseView):
         start_new_chat_view.status_test_dapp_button.scroll_to_element()
         status_test_dapp = start_new_chat_view.status_test_dapp_button.click()
         start_new_chat_view.open_button.click()
+        for _ in range(2):
+            if allow_all:
+                status_test_dapp.allow_button.click()
+            else:
+                status_test_dapp.deny_button.click()
         return status_test_dapp

@@ -14,7 +14,7 @@
 
 (defn- network-icon [connected? size]
   [react/view (styles/network-icon connected? size)
-   [vector-icons/icon :icons/network {:color (if connected? :white :gray)}]])
+   [vector-icons/icon :main-icons/network {:color (if connected? :white :gray)}]])
 
 (defn network-badge [& [{:keys [name connected?]}]]
   [react/view styles/network-badge

@@ -6,18 +6,18 @@ def getStatusGoVersion = { ->
 }
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 18
-        targetSdkVersion 23
+        minSdkVersion 23
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
 }
 
 dependencies {
-    implementation 'com.facebook.react:react-native:+'
+    implementation 'com.facebook.react:react-native:+' // from node_modules
     compile 'com.github.status-im:function:0.0.1'
 
     // WARNING: If you change this, make sure the GitHub release of the .aar exists.

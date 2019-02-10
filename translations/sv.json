@@ -270,7 +270,8 @@
         "one": "minut",
         "other": "minuter"
     },
-    "browsing-open-in-web-browser": "Öppna in webbläsare",
+    "browsing-open-in-android-web-browser": "Öppna in webbläsare",
+    "browsing-open-in-ios-web-browser": "Öppna in webbläsare",
     "delete-group-prompt": "Detta påverkar inte dina kontakter",
     "wallet-insufficient-funds": "Otillräckligt kapital",
     "edit-profile": "Redigera profil",

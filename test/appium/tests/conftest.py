@@ -9,7 +9,8 @@ from tests import test_suite_data, appium_container
 from datetime import datetime
 from os import environ
 from io import BytesIO
-from sauceclient import SauceClient
+from sauceclient import SauceClient, SauceException
+from support.api.jenkins_api import get_jenkins_build_url
 from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
 from support.testrail_report import TestrailReport
@@ -39,7 +40,7 @@ def pytest_addoption(parser):
                      help='Specify environment: local/sauce/api')
     parser.addoption('--platform_version',
                      action='store',
-                     default='7.1',
+                     default='8.0',
                      help='Android device platform version')
     parser.addoption('--log',
                      action='store',
@@ -57,36 +58,22 @@ def pytest_addoption(parser):
                      action='store',
                      default='ropsten',
                      help='string; ropsten or rinkeby')
-
-    # message reliability
-
     parser.addoption('--rerun_count',
                      action='store',
                      default=0,
                      help='How many times tests should be re-run if failed')
+    parser.addoption("--run_testrail_ids",
+                     action="store",
+                     metavar="NAME",
+                     default=None,
+                     help="only run tests matching the environment NAME.")
+
+    # chat bot
+
     parser.addoption('--messages_number',
                      action='store',
                      default=20,
                      help='Messages number')
-    parser.addoption('--message_wait_time',
-                     action='store',
-                     default=20,
-                     help='Max time to wait for a message to be received')
-    parser.addoption('--participants_number',
-                     action='store',
-                     default=5,
-                     help='Public chat participants number')
-    parser.addoption('--chat_name',
-                     action='store',
-                     default=None,
-                     help='Public chat name')
-    parser.addoption('--user_public_key',
-                     action='store',
-                     default=None,
-                     help='Public key of user for 1-1 chat')
-
-    # chat bot
-
     parser.addoption('--public_keys',
                      action='store',
                      default='',
@@ -148,6 +135,8 @@ def is_uploaded():
 
 
 def pytest_configure(config):
+    config.addinivalue_line("markers", "testrail_id(name): empty")
+
     if config.getoption('log'):
         import logging
         logging.basicConfig(level=logging.INFO)
@@ -155,14 +144,21 @@ def pytest_configure(config):
         test_suite_data.apk_name = ([i for i in [i for i in config.getoption('apk').split('/')
                                                  if '.apk' in i]])[0]
         if is_master(config):
+            pr_number = config.getoption('pr_number')
             if config.getoption('testrail_report'):
-                pr_number = config.getoption('pr_number')
                 if pr_number:
                     run_number = len(testrail_report.get_runs(pr_number)) + 1
                     run_name = 'PR-%s run #%s' % (pr_number, run_number)
                 else:
                     run_name = test_suite_data.apk_name
                 testrail_report.add_run(run_name)
+            if pr_number:
+                from github import Github
+                repo = Github(github_token).get_user('status-im').get_repo('status-react')
+                pull = repo.get_pull(int(pr_number))
+                pull.get_commits()[0].create_status(state='pending', context='Mobile e2e tests',
+                                                    description='e2e tests are running',
+                                                    target_url=get_jenkins_build_url(pr_number))
             if config.getoption('env') == 'sauce':
                 if not is_uploaded():
                     if 'http' in config.getoption('apk'):
@@ -187,7 +183,15 @@ def pytest_unconfigure(config):
             from github import Github
             repo = Github(github_token).get_user('status-im').get_repo('status-react')
             pull = repo.get_pull(int(config.getoption('pr_number')))
-            pull.create_issue_comment(github_report.build_html_report(testrail_report.run_id))
+            comment = pull.create_issue_comment(github_report.build_html_report(testrail_report.run_id))
+            if not testrail_report.is_run_successful():
+                pull.get_commits()[0].create_status(state='failure', context='Mobile e2e tests',
+                                                    description='Failure - e2e tests are failed',
+                                                    target_url=comment.html_url)
+            else:
+                pull.get_commits()[0].create_status(state='success', context='Mobile e2e tests',
+                                                    description='Success - e2e tests are passed',
+                                                    target_url=comment.html_url)
 
 
 def should_save_device_stats(config):
@@ -238,17 +242,22 @@ def update_sauce_jobs(test_name, job_ids, passed):
     for job_id in job_ids.keys():
         try:
             sauce.jobs.update_job(job_id, name=test_name, passed=passed)
-        except RemoteDisconnected:
+        except (RemoteDisconnected, SauceException):
             pass
 
 
-def get_testrail_case_id(obj):
-    testrail_id = obj.get_marker('testrail_id')
+def get_testrail_case_id(item):
+    testrail_id = item.get_closest_marker('testrail_id')
     if testrail_id:
         return testrail_id.args[0]
 
 
 def pytest_runtest_setup(item):
+    testrail_id = [mark.args[0] for mark in item.iter_markers(name='testrail_id')][0]
+    run_testrail_ids = item.config.getoption("run_testrail_ids")
+    if run_testrail_ids:
+        if str(testrail_id) not in run_testrail_ids:
+            pytest.skip("test requires testrail case id %s" % testrail_id)
     test_suite_data.set_current_test(item.name, testrail_case_id=get_testrail_case_id(item))
     test_suite_data.current_test.create_new_testrun()
 

@@ -51,7 +51,7 @@
     [react/view
      [react/view styles/network-container
       [react/view styles/network-icon
-       [vector-icons/icon :icons/network {:color :white}]]
+       [vector-icons/icon :main-icons/network {:color :white}]]
       [react/text {:style (styles/network-text text-color)}
        (cond (ethereum/testnet? network-id)
              (i18n/label :t/testnet-text {:testnet (get-in ethereum/chains [(ethereum/chain-id->chain-keyword network-id) :name] "Unknown")})
@@ -68,14 +68,25 @@
    [react/view {:style (styles/logo-container size shadow?)}
     [icons/icon :icons/logo (styles/logo icon-size)]]))
 
-(defn bottom-button [{:keys [label disabled? on-press forward?]}]
+(defn bottom-button [{:keys [accessibility-label
+                             label
+                             disabled?
+                             on-press
+                             forward?
+                             back?
+                             uppercase?]
+                      :or {uppercase? true}}]
   [react/touchable-highlight {:on-press on-press :disabled disabled?}
    [react/view (styles/bottom-button disabled?)
+    (when back?
+      [icons/icon :main-icons/back {:color colors/blue
+                                    :container-style {:align-self :baseline}}])
     [react/text {:style      styles/bottom-button-label
-                 :uppercase? true}
+                 :accessibility-label accessibility-label
+                 :uppercase? uppercase?}
      (or label (i18n/label :t/next))]
     (when forward?
-      [icons/icon :icons/forward {:color colors/blue}])]])
+      [icons/icon :main-icons/next {:color colors/blue}])]])
 
 (defn button [{:keys [on-press label background? uppercase? button-style label-style] :or {background? true uppercase? true}}]
   [react/touchable-highlight {:on-press on-press}
@@ -83,6 +94,12 @@
     [react/text {:uppercase? uppercase?
                  :style      (merge styles/button-label label-style)}
      label]]])
+
+(defn red-button [props]
+  [react/view {:align-items :center}
+   [button (merge props
+                  {:label-style {:color colors/red :font-size 15}
+                   :button-style {:padding-horizontal 32 :background-color  colors/red-light}})]])
 
 (defn counter
   ([value] (counter nil value))

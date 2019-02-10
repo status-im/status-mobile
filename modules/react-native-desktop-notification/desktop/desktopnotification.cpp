@@ -105,12 +105,12 @@ QList<ModuleMethod *> DesktopNotification::methodsToExport() {
 
 QVariantMap DesktopNotification::constantsToExport() { return QVariantMap(); }
 
-void DesktopNotification::sendNotification(QString title, QString body, bool prioritary) {
+void DesktopNotification::displayNotification(QString title, QString body, bool prioritary) {
   Q_D(DesktopNotification);
-  qCDebug(NOTIFICATION) << "::sendNotification";
+  qCDebug(NOTIFICATION) << "::displayNotification";
 
   if (m_appHasFocus) {
-      qCDebug(NOTIFICATION) << "Not sending notification since an application window is active";
+      qCDebug(NOTIFICATION) << "Not displaying notification since an application window is active";
       return;
   }
 

@@ -11,24 +11,12 @@
    :align-items     :center
    :justify-content :space-between})
 
-(def hardwallet-card-image-container
-  {:margin-top 120})
-
 (def hardwallet-card-image
   {:width  255
    :height 160})
 
-(def hardwallet-card-image-small
-  {:width        44
-   :height       28
-   :position     :absolute
-   :left         58
-   :top          13
-   :z-index      1
-   :margin-right 20})
-
-(def status-hardwallet-text-container
-  {:margin-top 30})
+(def turn-nfc-text-container
+  {:margin-top 55})
 
 (def status-hardwallet-text
   {:font-size   22
@@ -52,43 +40,36 @@
    :border-radius    10
    :margin-bottom    20})
 
-(def nfc-enabled-container
-  {:flex-direction  :row
-   :justify-content :space-between
-   :align-items     :center})
+(def phone-nfc-on-image
+  {:width  401
+   :height 250})
 
-(def phone-nfc-image
-  {:width       54
-   :height      72
-   :z-index     2
-   :margin-left 20
-   :margin-top  8
-   :align-items :baseline})
+(def phone-nfc-off-image
+  {:width  301
+   :height 180})
 
 (def hold-card-text
-  {:width          186
-   :text-align     :center
-   :font-size      14
-   :color          colors/blue
-   :line-height    20
-   :text-transform :uppercase
-   :margin-right   40})
+  {:width        186
+   :text-align   :center
+   :font-size    14
+   :line-height  20
+   :margin-right 40})
+
+(def nfc-enabled-container
+  {:flex-direction  :column
+   :justify-content :space-between
+   :align-items     :center
+   :margin-top      50})
 
 (def nfc-disabled-container
-  {:flex-direction  :row
+  {:flex-direction  :column
    :justify-content :space-between
-   :align-items     :center})
+   :align-items     :center
+   :margin-top      120})
 
 (def nfc-icon
   {:margin-left 52
    :margin-top  22})
-
-(def nfc-disabled-actions-container
-  {:flex-direction  :column
-   :align-items     :center
-   :justify-content :space-between
-   :margin-right    100
-   :margin-top      20})
 
 (def turn-nfc-text
   {:text-transform :uppercase
@@ -97,5 +78,25 @@
    :color          colors/gray})
 
 (def go-to-settings-text
-  {:color colors/gray})
+  {:text-align  :center
+   :padding-top 9
+   :color       colors/gray})
 
+(def bottom-container
+  {:height           52
+   :justify-content  :center
+   :border-top-width 1
+   :border-color     colors/gray-light})
+
+(def product-info-container
+  {:flex-direction  :row
+   :align-items     :center
+   :justify-content :center})
+
+(def product-info-text
+  {:text-align :center
+   :font-size  15
+   :color      colors/blue})
+
+(def external-link-icon
+  {:margin-left 5})

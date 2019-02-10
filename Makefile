@@ -1,10 +1,10 @@
-.PHONY: react-native test setup
+.PHONY: clean setup react-native test release
 
 help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
 DO_SPACE_URL = https://status-go.ams3.digitaloceanspaces.com
-GITHUB_URL = https://github.com/status-im/status-go/releases/download
+GITHUB_URL = https://github.com/status-im/status-go/releases
 RCTSTATUS_DIR = modules/react-native-status/ios/RCTStatus
 ANDROID_LIBS_DIR = android/app/libs
 STATUS_GO_VER = $(shell cat STATUS_GO_VERSION)
@@ -35,6 +35,8 @@ HELP_FUN = \
 			   print "\n"; \
 		   }
 
+__toolversion = $(shell $(GIT_ROOT)/scripts/toolversion $(1))
+
 # Main targets
 
 clean: ##@prepare Remove all output folders
@@ -55,10 +57,15 @@ $(STATUS_GO_IOS_ARCH):
 	if [ $$? -ne 0 ]; then \
 		echo "Failed to download from DigitalOcean Bucket, checking GitHub..."; \
 		curl --fail --silent --location \
-			"$(GITHUB_URL)/$(STATUS_GO_VER)/status-go-ios.zip" \
+			"$(GITHUB_URL)/download/$(STATUS_GO_VER)/status-go-ios.zip" \
 			--output "$(STATUS_GO_IOS_ARCH)"; \
 		if [ $$? -ne 0 ]; then \
 			echo "Failed to download from GitHub!"; \
+			echo "Please check the contents of your STATUS_GO_VERSION are correct."; \
+			echo "Verify the version has been uploaded:"; \
+			echo " * $(DO_SPACE_URL)/index.html"; \
+			echo " * $(GITHUB_URL)"; \
+			exit 1; \
 		fi \
 	fi
 
@@ -209,13 +216,30 @@ android-ports: ##@other Add proxies to Android Device/Simulator
 	adb reverse tcp:4567 tcp:4567
 	adb forward tcp:5561 tcp:5561
 
+android-logcat:
+	adb logcat | grep -e StatusModule -e ReactNativeJS -e StatusNativeLogs
 
-startdev-%:
+_list:
+	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
+
+_unknown-startdev-target-%:
+	@ echo "Unknown target device '$*'. Supported targets:"
+	@ ${MAKE} _list | grep "watch-" | sed s/watch-/startdev-/
+	@ exit 1
+
+_startdev-%:
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
 	$(eval DEVICE := $(word 3, $(subst -, , $@)))
-	${MAKE} prepare-${SYSTEM}
-	if [ -z "$(DEVICE)" ]; then \
-		${MAKE} watch-$(SYSTEM); \
+	${MAKE} prepare-${SYSTEM} || ${MAKE} _unknown-startdev-target-$@
+	@ if [ -z "$(DEVICE)" ]; then \
+		${MAKE} watch-$(SYSTEM) || ${MAKE} _unknown-startdev-target-$@; \
 	else \
-		${MAKE} watch-$(SYSTEM)-$(DEVICE); \
+		${MAKE} watch-$(SYSTEM)-$(DEVICE) || ${MAKE} _unknown-startdev-target-$@; \
 	fi
+
+startdev-android-avd: _startdev-android-avd
+startdev-android-genymotion: _startdev-android-genymotion
+startdev-android-real: _startdev-android-real
+startdev-desktop: _startdev-desktop
+startdev-ios-real: _startdev-ios-real
+startdev-ios-simulator: _startdev-ios-simulator

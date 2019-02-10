@@ -263,7 +263,8 @@
         "one": "minut",
         "other": "minuta"
     },
-    "browsing-open-in-web-browser": "Otvori u internet pretraživaču",
+    "browsing-open-in-android-web-browser": "Otvori u internet pretraživaču",
+    "browsing-open-in-ios-web-browser": "Otvori u internet pretraživaču",
     "delete-group-prompt": "Ovo neće uticati na vaše kontakte",
     "wallet-insufficient-funds": "Nedovoljno sredstava",
     "edit-profile": "Ažurirajte profil",

@@ -1,24 +1,26 @@
-common = load('ci/common.groovy')
+cmn = load('ci/common.groovy')
 
 def plutil(name, value) {
   sh "plutil -replace ${name} -string ${value} ios/StatusIm/Info.plist"
 }
 
-def compile(type = 'nightly') {
-  def target = 'nightly'
-
-  if (type == 'release') {
-      target = 'adhoc'
+def bundle(type) {
+  if (!type) {
+    type = cmn.getBuildType()
   }
-  
-  if (type == 'testflight') {
-      target = 'release'
+  def target
+  switch (type) {
+    case 'release':     target = 'release'; break;
+    case 'testflight':  target = 'release'; break;
+    case 'e2e':         target = 'e2e';     break;
+    default:            target = 'nightly';
   }
-
   /* configure build metadata */
-  plutil('CFBundleShortVersionString', common.version())
-  plutil('CFBundleVersion', common.buildNumber())
+  plutil('CFBundleShortVersionString', cmn.version())
+  plutil('CFBundleVersion', cmn.genBuildNumber())
   plutil('CFBundleBuildUrl', currentBuild.absoluteUrl)
+  /* the dir might not exist */
+  sh 'mkdir -p status-e2e'
   /* build the actual app */
   withCredentials([
     string(credentialsId: 'SLACK_URL', variable: 'SLACK_URL'),
@@ -29,12 +31,19 @@ def compile(type = 'nightly') {
   ]) {
     sh "bundle exec fastlane ios ${target}"
   }
-  if (type != 'testflight') {
-      def pkg = common.pkgFilename(type, 'ipa')
-      sh "cp status-adhoc/StatusIm.ipa ${pkg}"
-      return pkg
+  /* rename built file for uploads and archivization */
+  def pkg = ''
+  if (type == 'release') {
+    pkg = cmn.pkgFilename('release', 'ipa')
+    sh "cp status_appstore/StatusIm.ipa ${pkg}"
+  } else if (type == 'e2e') {
+    pkg = cmn.pkgFilename('e2e', 'app.zip')
+    sh "cp status-e2e/StatusIm.app.zip ${pkg}"
+  } else if (type != 'testflight') {
+    pkg = cmn.pkgFilename(type, 'ipa')
+    sh "cp status-adhoc/StatusIm.ipa ${pkg}"
   }
-  return ''
+  return pkg
 }
 
 def uploadToDiawi() {
@@ -45,6 +54,22 @@ def uploadToDiawi() {
   }
   diawiUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
   return diawiUrl
+}
+
+def uploadToSauceLabs() {
+  def changeId = cmn.getParentRunEnv('CHANGE_ID')
+  if (changeId != null) {
+    env.SAUCE_LABS_NAME = "${changeId}.app.zip"
+  } else {
+    env.SAUCE_LABS_NAME = "im.status.ethereum-e2e-${cmn.gitCommit()}.app.zip"
+  }
+  withCredentials([
+    string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
+    string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
+  ]) {
+    sh 'bundle exec fastlane ios saucelabs'
+  }
+  return env.SAUCE_LABS_NAME
 }
 
 return this

@@ -2,8 +2,9 @@ import pytest
 
 from tests import marks
 from tests.base_test_case import SingleDeviceTestCase
-from tests.users import wallet_users
+from tests.users import wallet_users, basic_user
 from views.sign_in_view import SignInView
+
 
 @marks.wallet_modal
 class TestWalletModal(SingleDeviceTestCase):
@@ -67,6 +68,67 @@ class TestWalletModal(SingleDeviceTestCase):
             self.errors.append('Transaction history button is not visible in wallet modal')
         self.verify_no_errors()
 
+    @marks.testrail_id(5692)
+    @marks.high
+    def test_wallet_modal_1_1_chat(self):
+        user = wallet_users['C']
+        recipient_address = basic_user['public_key']
+        sign_in = SignInView(self.driver)
+        sign_in.recover_access(user['passphrase'])
+        wallet = sign_in.wallet_button.click()
+        wallet.set_up_wallet()
+        usd_value = wallet.get_usd_total_value()
+        eth_value = wallet.get_eth_value()
+        stt_value = wallet.get_stt_value()
+        home = wallet.home_button.click()
+        chat = home.add_contact(recipient_address)
+        chat.chat_options.click()
+        wallet_modal = chat.wallet_modal_button.click()
+        if wallet_modal.address_text.text != '0x' + user['address']:
+            self.errors.append('Wallet address is not shown in wallet modal')
+        modal_usd_value = wallet_modal.get_usd_total_value()
+        if modal_usd_value > usd_value * 1.001 or modal_usd_value < usd_value * 0.999:
+            self.errors.append('Total value in USD is not correct in wallet modal')
+        if wallet_modal.get_eth_value() != eth_value:
+            self.errors.append('ETH value is not correct in wallet modal')
+        if wallet_modal.get_stt_value() != stt_value:
+            self.errors.append('STT value is not correct in wallet modal')
+        if not wallet_modal.transaction_history_button.is_element_displayed():
+            self.errors.append('Transaction history button is not visible in wallet modal')
+        self.verify_no_errors()
+
+    @marks.testrail_id(5693)
+    @marks.high
+    def test_wallet_modal_group_chat(self):
+        user = wallet_users['D']
+        recipient_address = basic_user['public_key']
+        recipient_name = basic_user['username']
+        sign_in = SignInView(self.driver)
+        sign_in.recover_access(user['passphrase'])
+        wallet = sign_in.wallet_button.click()
+        wallet.set_up_wallet()
+        usd_value = wallet.get_usd_total_value()
+        eth_value = wallet.get_eth_value()
+        stt_value = wallet.get_stt_value()
+        home = wallet.home_button.click()
+        private_chat = home.add_contact(recipient_address)
+        home = private_chat.get_back_to_home_view()
+        group_chat = home.create_group_chat([recipient_name], 'wallet-modal')
+        group_chat.chat_options.click()
+        wallet_modal = group_chat.wallet_modal_button.click()
+        if wallet_modal.address_text.text != '0x' + user['address']:
+            self.errors.append('Wallet address is not shown in wallet modal')
+        modal_usd_value = wallet_modal.get_usd_total_value()
+        if modal_usd_value > usd_value * 1.001 or modal_usd_value < usd_value * 0.999:
+            self.errors.append('Total value in USD is not correct in wallet modal')
+        if wallet_modal.get_eth_value() != eth_value:
+            self.errors.append('ETH value is not correct in wallet modal')
+        if wallet_modal.get_stt_value() != stt_value:
+            self.errors.append('STT value is not correct in wallet modal')
+        if not wallet_modal.transaction_history_button.is_element_displayed():
+            self.errors.append('Transaction history button is not visible in wallet modal')
+        self.verify_no_errors()
+
     @marks.testrail_id(5400)
     @marks.high
     def test_wallet_modal_transaction_history(self):
@@ -111,7 +173,6 @@ class TestWalletModal(SingleDeviceTestCase):
         if not wallet_modal.usd_total_value.is_element_displayed():
             pytest.fail("Wallet modal was not opened")
 
-
     @marks.testrail_id(5484)
     @marks.low
     def test_close_wallet_modal_via_closs_icon(self):
@@ -126,7 +187,6 @@ class TestWalletModal(SingleDeviceTestCase):
         wallet_modal.cross_icon.click()
         if not web_view.browser_previous_page_button.is_element_displayed():
             pytest.fail('Modal wallet was not closed')
-
 
     @marks.testrail_id(5483)
     @marks.low

@@ -153,7 +153,15 @@
           (let [cofx {:db {:account/account new-account}}
                 sync-message    {:account old-account}]
             (is (= new-account (get-in (pairing/handle-sync-installation cofx sync-message "us")
-                                       [:db :account/account])))))))))
+                                       [:db :account/account])))))))
+    (testing "syncing public chats"
+      (let [cofx {:db {:account/account {:public-key "us"}}}]
+        (testing "a new chat"
+          (let [sync-message {:chat {:public? true
+                                     :chat-id "status"
+                                     :is-active true}}]
+            (is (get-in (pairing/handle-sync-installation cofx sync-message "us")
+                        [:db :chats "status"]))))))))
 
 (deftest handle-pair-installation-test
   (with-redefs [config/pairing-enabled? (constantly true)]
@@ -163,12 +171,14 @@
                                              "2" {:has-bundle? false
                                                   :installation-id "2"}}}}
           pair-message {:device-type "ios"
+                        :name "name"
                         :installation-id "1"}]
       (testing "not coming from us"
         (is (not (pairing/handle-pair-installation cofx pair-message 1 "not-us"))))
       (testing "coming from us"
         (is (= {"1" {:has-bundle? true
                      :installation-id "1"
+                     :name "name"
                      :last-paired 1
                      :device-type "ios"}
                 "2"  {:has-bundle? false
@@ -183,6 +193,9 @@
                                        :name "name"
                                        :photo-path "photo-path"
                                        :last-updated 1}
+                     :chats             {"status" {:public? true
+                                                   :is-active true
+                                                   :chat-id "status"}}
                      :contacts/contacts {"contact-1" {:name "contact-1"
                                                       :public-key "contact-1"}
                                          "contact-2" {:name "contact-2"
@@ -201,12 +214,14 @@
                                                                        :public-key "contact-3"}
                                                           "contact-4" {:name "contact-4"
                                                                        :public-key "contact-4"}}
-                                                         nil)
+                                                         {} {})
                     (transport.pairing/SyncInstallation. {"contact-5" {:name "contact-5"
-                                                                       :public-key "contact-5"}} nil)
+                                                                       :public-key "contact-5"}} {} {})
                     (transport.pairing/SyncInstallation. {} {:photo-path "photo-path"
                                                              :name "name"
-                                                             :last-updated 1})]]
+                                                             :last-updated 1} {})
+                    (transport.pairing/SyncInstallation. {} {} {:public? true
+                                                                :chat-id "status"})]]
       (is (= expected (pairing/sync-installation-messages cofx))))))
 
 (deftest handle-bundles-added-test

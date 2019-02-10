@@ -8,7 +8,8 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.browser.styles :as styles])
+            [status-im.ui.screens.browser.styles :as styles]
+            [status-im.ui.components.colors :as colors])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn hide-panel-anim
@@ -30,7 +31,7 @@
 (defn permission-details [requested-permission]
   (get browser.permissions/supported-permissions requested-permission))
 
-(views/defview permissions-panel [{:keys [dapp? dapp]} {:keys [dapp-name]}]
+(views/defview permissions-panel [[dapp? dapp] {:keys [dapp-name]}]
   (views/letsubs [bottom-anim-value  (anim/create-value -354)
                   alpha-value        (anim/create-value 0)
                   current-permission (reagent/atom nil)
@@ -79,13 +80,13 @@
            (if dapp?
              [chat-icon.screen/dapp-icon-permission dapp 48]
              [react/view styles/permissions-panel-dapp-icon-container
-              [react/text {:style styles/permissions-panel-d-label} "Ð"]])
+              [icons/icon :main-icons/dapp {:color colors/gray}]])
            [react/view {:margin-left 3 :margin-right 3}
             [react/view styles/dot]]
            [react/view {:margin-right 3}
             [react/view styles/dot]]
            [react/view styles/permissions-panel-ok-icon-container
-            [icons/icon :icons/ok styles/permissions-panel-ok-ico]]
+            [icons/icon :main-icons/check styles/permissions-panel-ok-ico]]
            [react/view {:margin-left 3 :margin-right 3}
             [react/view styles/dot]]
            [react/view {:margin-right 3}

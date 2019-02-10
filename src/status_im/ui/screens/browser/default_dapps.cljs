@@ -5,7 +5,7 @@
 (def all
   [{:title (i18n/label :t/default-dapps-exchanges)
     :data  [{:name        "Airswap"
-             :dapp-url    "https://www.airswap.io/trade"
+             :dapp-url    "https://instant.airswap.io/"
              :photo-path  "contacts://airswap"
              :description "Meet the future of trading."}
             {:name        "Bancor"
@@ -47,7 +47,11 @@
             {:name        "EasyTrade"
              :dapp-url    "https://easytrade.io"
              :photo-path  "contacts://easytrade"
-             :description "One exchange for every token"}]}
+             :description "One exchange for every token"}
+            {:name        "slow.trade"
+             :dapp-url    "https://slow.trade/"
+             :photo-path  "contacts://slowtrade"
+             :description "Trade fairly priced crypto assets on the first platform built with the DutchX protocol."}]}
    {:title (i18n/label :t/default-dapps-marketplaces)
     :data  [{:name        "blockimmo"
              :dapp-url    "https://blockimmo.ch"
@@ -102,6 +106,14 @@
              :dapp-url    "https://cryptotakeovers.com/"
              :photo-path  "contacts://cryptotakeovers"
              :description "Predict and conquer the world. Make a crypto fortune."}
+            {:name        "Decentraland"
+             :dapp-url    "https://market.decentraland.org/"
+             :photo-path  "contacts://decentraland"
+             :description "Decentraland is a virtual reality platform powered by the Ethereum blockchain."}
+            {:name        "Dragonereum"
+             :dapp-url    "https://dapp.dragonereum.io"
+             :photo-path  "contacts://dragonereum"
+             :description "Own and trade dragons, fight with other players."}
             {:name        "Etherbots"
              :dapp-url    "https://etherbots.io/"
              :photo-path  "contacts://etherbots"
@@ -137,7 +149,15 @@
              :photo-path  "contacts://livepeer"
              :description "Decentralized video broadcasting"}]}
    {:title (i18n/label :t/default-dapps-social-utilities)
-    :data  [{:name        "Civitas"
+    :data  [{:name        "3Box"
+             :dapp-url    "https://3box.io/"
+             :photo-path  "contacts://3box"
+             :description "Create and manage your Ethereum Profile."}
+            {:name        "Aragon"
+             :dapp-url    "https://mainnet.aragon.org/"
+             :photo-path  "contacts://aragon"
+             :description "Build unstoppable organizations on Ethereum."}
+            {:name        "Civitas"
              :dapp-url    "https://communities.colu.com/"
              :photo-path  "contacts://civitas"
              :description "Blockchain-powered local communities"}

@@ -8,11 +8,13 @@
             [status-im.chat.commands.impl.transactions :as transactions]
             [status-im.ui.components.button.view :as button]
             [status-im.ui.components.checkbox.view :as checkbox]
+            [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.wallet.settings.views :as settings]
             [status-im.i18n :as i18n]
             [status-im.utils.money :as money]
+            [status-im.constants :as constants]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.handlers :as handlers]
@@ -88,7 +90,7 @@
  :<- [:balance]
  (fn [[all-tokens network balance] [_ _ {token :token}]]
    (let [{:keys [decimals]} (get-token-for network all-tokens token)
-         value (get balance (keyword token))]
+         value (or (get balance (keyword token)) (money/bignumber 0))]
      {:value        (money/token->unit value decimals)
       :value-in-wei value})))
 
@@ -96,20 +98,26 @@
  :extensions.wallet/token
  :<- [:wallet/all-tokens]
  :<- [:network]
- (fn [[all-tokens network] [_ _ {token :token amount :amount}]]
+ (fn [[all-tokens network] [_ _ {token :token amount :amount amount-in-wei :amount-in-wei}]]
    (let [{:keys [decimals] :as m} (get-token-for network all-tokens token)]
      (merge m
-            (when amount {:amount (money/unit->token amount decimals)})))))
+            (when amount {:amount-in-wei (money/unit->token amount decimals)})
+            (when amount-in-wei {:amount (money/token->unit amount-in-wei decimals)})))))
+
+(defn normalize-token [m]
+  (update m :symbol name))
 
 (re-frame/reg-sub
  :extensions.wallet/tokens
  :<- [:wallet/all-tokens]
+ :<- [:wallet/visible-tokens-symbols]
  :<- [:network]
- (fn [[all-tokens network] [_ _ {filter-vector :filter}]]
-   (let [tokens (tokens/sorted-tokens-for all-tokens (ethereum/network->chain-keyword network))]
-     (if (= :all (first filter-vector))
-       tokens
-       (filter #((set filter-vector) (:symbol %)) tokens)))))
+ (fn [[all-tokens visible-tokens-symbols network] [_ _ {filter-vector :filter visible :visible}]]
+   (let [tokens (map normalize-token (filter #(and (not (:nft? %)) (if visible (contains? visible-tokens-symbols (:symbol %)) true))
+                                             (tokens/sorted-tokens-for all-tokens (ethereum/network->chain-keyword network))))]
+     (if filter-vector
+       (filter #((set filter-vector) (:symbol %)) tokens)
+       tokens))))
 
 (re-frame/reg-sub
  :store/get
@@ -149,6 +157,11 @@
  :store/clear
  (fn [{:keys [db]} [_ {id :id} {:keys [key]}]]
    {:db (update-in db [:extensions/store id] dissoc key)}))
+
+(handlers/register-handler-fx
+ :store/clear-all
+ (fn [{:keys [db]} [_ {id :id} _]]
+   {:db (update db :extensions/store dissoc id)}))
 
 (defn- json? [res]
   (when-let [type (get-in res [:headers "content-type"])]
@@ -195,7 +208,7 @@
 (re-frame/reg-event-fx
  :ipfs/cat
  (fn [_ [_ _ {:keys [hash on-success on-failure]}]]
-   {:http-raw-get (merge {:url (str "https://ipfs.infura.io/ipfs/" hash)
+   {:http-raw-get (merge {:url (str constants/ipfs-cat-url hash)
                           :success-event-creator
                           (fn [{:keys [status body]}]
                             (if (= 200 status)
@@ -205,6 +218,29 @@
                          (when on-failure
                            {:failure-event-creator on-failure})
                          {:timeout-ms 5000})}))
+
+(defn- parse-ipfs-add-response [res]
+  (let [{:keys [Name Hash Size]} (parse-json res)]
+    {:name Name
+     :hash Hash
+     :size Size}))
+
+(re-frame/reg-event-fx
+ :ipfs/add
+ (fn [_ [_ _ {:keys [value on-success on-failure]}]]
+   (let [formdata (doto (js/FormData.)
+                    (.append constants/ipfs-add-param-name value))]
+     {:http-raw-post (merge {:url  constants/ipfs-add-url
+                             :body formdata
+                             :success-event-creator
+                             (fn [{:keys [status body]}]
+                               (if (= 200 status)
+                                 (on-success {:value (parse-ipfs-add-response body)})
+                                 (when on-failure
+                                   (on-failure {:value status}))))}
+                            (when on-failure
+                              {:failure-event-creator on-failure})
+                            {:timeout-ms 5000})})))
 
 (re-frame/reg-event-fx
  :http/post
@@ -245,6 +281,15 @@
      (when-let [command (last (first (filter #(= (ffirst %) (name hook-id)) (:id->command db))))]
        (commands-sending/send cofx current-chat-id command params)))))
 
+(handlers/register-handler-fx
+ :extensions/show-selection-screen
+ (fn [cofx [_ _ {:keys [on-select] :as params}]]
+   (navigation/navigate-to-cofx cofx
+                                :selection-modal-screen
+                                (assoc params :on-select #(do
+                                                            (re-frame/dispatch [:navigate-back])
+                                                            (re-frame/dispatch (on-select %)))))))
+
 (defn operation->fn [k]
   (case k
     :plus   +
@@ -266,19 +311,34 @@
   [button/secondary-button (merge {:disabled? (or (when (contains? m :enabled) (or (nil? enabled) (false? enabled))) disabled)}
                                   (when on-click {:on-press #(re-frame/dispatch (on-click {}))})) label])
 
-(defn input [{:keys [keyboard-type style on-change placeholder]}]
+(defn on-input-change-text [on-change value]
+  (re-frame/dispatch (on-change {:value value})))
+
+(defn- on-input-change-text-delay [current on-change value delay]
+  ;; If an input change handler has been already scheduled cancel it.
+  (when-let [id @current]
+    (js/clearTimeout id))
+  (reset! current (js/setTimeout #(on-input-change-text on-change value) delay)))
+
+(defn input [{:keys [keyboard-type style on-change change-delay placeholder placeholder-text-color selection-color]}]
   [react/text-input (merge {:placeholder placeholder}
+                           (when placeholder-text-color {:placeholder-text-color placeholder-text-color})
+                           (when selection-color {:selection-color selection-color})
                            (when style {:style style})
                            (when keyboard-type {:keyboard-type keyboard-type})
                            (when on-change
-                             {:on-change-text #(re-frame/dispatch (on-change {:value %}))}))])
+                             {:on-change-text
+                              (if change-delay
+                                (let [current (atom nil)]
+                                  #(on-input-change-text-delay current on-change % change-delay))
+                                #(on-input-change-text on-change %))}))])
 
 (defn touchable-opacity [{:keys [style on-press]} & children]
   (into [react/touchable-opacity (merge (when on-press {:on-press #(re-frame/dispatch (on-press {}))})
                                         (when style {:style style}))] children))
 
-(defn image [{:keys [uri style]}]
-  [react/image (merge {:style (merge {:width 100 :height 100} style)} {:source {:uri uri}})])
+(defn image [{:keys [source uri style]}]
+  [react/image (merge {:style (merge {:width 100 :height 100} style)} {:source (if source source {:uri uri})})])
 
 (defn link [{:keys [uri]}]
   [react/text
@@ -311,39 +371,57 @@
 (defn picker [{:keys [style on-change selected enabled data]}]
   [react/picker {:style style :on-change #(re-frame/dispatch (on-change {:value %})) :selected selected :enabled enabled :data data}])
 
+(defn- wrap-text-child [o]
+  (if (ifn? o) o (str o)))
+
 (defn text [o & children]
   (if (map? o)
-    [react/text o children]
-    (into [react/text {} o] children)))
+    (into [react/text o] (map wrap-text-child children))
+    (into [react/text {} o] (map wrap-text-child children))))
 
 (defn- wrap-view-child [child]
   (if (vector? child) child [text {} child]))
 
-(defn view [o & children]
+(defn abstract-view [type o & children]
   (if (map? o)
-    (into [react/view o] (map wrap-view-child children))
-    (into [react/view {} (wrap-view-child o)] (map wrap-view-child children))))
+    (into [type o] (map wrap-view-child children))
+    (into [type {} (wrap-view-child o)] (map wrap-view-child children))))
+
+(defn view [o & children]
+  (apply abstract-view react/view o children))
+
+(defn scroll-view [o & children]
+  (apply abstract-view react/scroll-view o children))
+
+(defn keyboard-avoiding-view [o & children]
+  (apply abstract-view react/keyboard-avoiding-view o children))
+
+(defn icon [{:keys [key] :as o}]
+  [icons/icon key o])
 
 (def capacities
-  {:components {'view               {:value view}
-                'text               {:value text}
-                'touchable-opacity  {:value touchable-opacity :properties {:on-press :event}}
-                'image              {:value image :properties {:uri :string}}
-                'input              {:value input :properties {:on-change :event :placeholder :string :keyboard-type :keyword}}
-                'button             {:value button :properties {:enabled :boolean :disabled :boolean :on-click :event}}
-                'link               {:value link :properties {:uri :string}}
-                'list               {:value list :properties {:data :vector :item-view :view :key? :keyword}}
-                'checkbox           {:value checkbox :properties {:on-change :event :checked :boolean}}
-                'activity-indicator {:value activity-indicator :properties {:animating :boolean :color :string :size :keyword :hides-when-stopped :boolean}}
-                'picker             {:value picker :properties {:on-change :event :selected :string :enabled :boolean :data :vector}}
-                'nft-token-viewer   {:value transactions/nft-token :properties {:token :string}}
-                'transaction-status {:value transactions/transaction-status :properties {:outgoing :string :tx-hash :string}}}
+  {:components {'view                   {:value view}
+                'scroll-view            {:value scroll-view :properties {:keyboard-should-persist-taps :keyword :content-container-style :map}}
+                'keyboard-avoiding-view {:value react/keyboard-avoiding-view}
+                'text                   {:value text}
+                'touchable-opacity      {:value touchable-opacity :properties {:on-press :event}}
+                'icon                   {:value icon :properties {:key :keyword :color :any}}
+                'image                  {:value image :properties {:uri :string :source :string}}
+                'input                  {:value input :properties {:on-change :event :placeholder :string :keyboard-type :keyword :change-delay? :number :placeholder-text-color :any :selection-color :any}}
+                'button                 {:value button :properties {:enabled :boolean :disabled :boolean :on-click :event}}
+                'link                   {:value link :properties {:uri :string}}
+                'list                   {:value list :properties {:data :vector :item-view :view :key? :keyword}}
+                'checkbox               {:value checkbox :properties {:on-change :event :checked :boolean}}
+                'activity-indicator     {:value activity-indicator :properties {:animating :boolean :color :string :size :keyword :hides-when-stopped :boolean}}
+                'picker                 {:value picker :properties {:on-change :event :selected :string :enabled :boolean :data :vector}}
+                'nft-token-viewer       {:value transactions/nft-token :properties {:token :string}}
+                'transaction-status     {:value transactions/transaction-status :properties {:outgoing :string :tx-hash :string}}}
    :queries    {'identity            {:value :extensions/identity :arguments {:value :map}}
                 'store/get           {:value :store/get :arguments {:key :string}}
                 'wallet/collectibles {:value :get-collectible-token :arguments {:token :string :symbol :string}}
                 'wallet/balance      {:value :extensions.wallet/balance :arguments {:token :string}}
-                'wallet/token        {:value :extensions.wallet/token :arguments {:token :string :amount? :numeric}}
-                'wallet/tokens       {:value :extensions.wallet/tokens :arguments {:filter :vector}}}
+                'wallet/token        {:value :extensions.wallet/token :arguments {:token :string :amount? :number :amount-in-wei? :number}}
+                'wallet/tokens       {:value :extensions.wallet/tokens :arguments {:filter? :vector :visible? :boolean}}}
    :events     {'identity
                 {:permissions [:read]
                  :value       :extensions/identity-event
@@ -352,6 +430,10 @@
                 {:permissions [:read]
                  :value       :alert
                  :arguments   {:value :string}}
+                'selection-screen
+                {:permissions [:read]
+                 :value       :extensions/show-selection-screen
+                 :arguments   {:items :vector :on-select :event :render :view :title :string :extractor-key :keyword}}
                 'chat.command/set-parameter
                 {:permissions [:read]
                  :value       :extensions.chat.command/set-parameter
@@ -379,8 +461,8 @@
                 'arithmetic
                 {:permissions [:read]
                  :value       :extensions/arithmetic
-                 :arguments   {:values    #{:plus :minus :times :divide}
-                               :operation :keyword
+                 :arguments   {:values    :vector
+                               :operation {:one-of #{:plus :minus :times :divide}}
                                :on-result :event}}
                 'schedule/start
                 {:permissions [:read]
@@ -418,6 +500,9 @@
                 {:permissions [:read]
                  :value       :store/clear
                  :arguments   {:key :string}}
+                'store/clear-all
+                {:permissions [:read]
+                 :value       :store/clear-all}
                 'http/get
                 {:permissions [:read]
                  :value       :http/get
@@ -439,50 +524,178 @@
                  :arguments   {:hash        :string
                                :on-success  :event
                                :on-failure? :event}}
+                'ipfs/add
+                {:permissions [:read]
+                 :value       :ipfs/add
+                 :arguments   {:value       :string
+                               :on-success  :event
+                               :on-failure? :event}}
                 'ethereum/transaction-receipt
                 {:permissions [:read]
                  :value       :extensions/ethereum-transaction-receipt
-                 :arguments   {:value     :string
-                               :on-result :event}}
+                 :arguments   {:value       :string
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum/await-transaction-receipt
+                {:permissions [:read]
+                 :value       :extensions/ethereum-await-transaction-receipt
+                 :arguments   {:value       :string
+                               :interval    :number
+                               :on-success  :event
+                               :on-failure? :event}}
                 'ethereum/sign
                 {:permissions [:read]
                  :value       :extensions/ethereum-sign
-                 :arguments   {:message?   :string
-                               :data?      :string
-                               :on-result  :event}}
+                 :arguments   {:message?    :string
+                               :data?       :string
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum/create-address
+                {:permissions [:read]
+                 :value       :extensions/ethereum-create-address
+                 :arguments   {:on-result  :event}}
                 'ethereum/send-transaction
                 {:permissions [:read]
                  :value       :extensions/ethereum-send-transaction
-                 :arguments   {:to         :string
-                               :gas?       :string
-                               :gas-price? :string
-                               :value?     :string
-                               :method?    :string
-                               :params?    :vector
-                               :nonce?     :string
-                               :on-result :event}}
+                 :arguments   {:to          :string
+                               :gas?        :string
+                               :gas-price?  :string
+                               :value?      :string
+                               :method?     :string
+                               :params?     :vector
+                               :nonce?      :string
+                               :on-success  :event
+                               :on-failure? :event}}
                 'ethereum/logs
                 {:permissions [:read]
                  :value       :extensions/ethereum-logs
-                 :arguments   {:fromBlock? :string
-                               :toBlock?   :string
-                               :address?   :vector
-                               :topics?    :vector
-                               :blockhash? :string
-                               :on-result :event}}
-                'ethereum/resolve-ens
+                 :arguments   {:from?       :string
+                               :to?         :string
+                               :address?    :vector
+                               :topics?     :vector
+                               :block-hash? :string
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum/create-filter
+                {:permissions [:read]
+                 :value       :extensions/ethereum-create-filter
+                 :arguments   {:type        {:one-of #{:filter :block :pending-transaction}}
+                               :from?       :string
+                               :to?         :string
+                               :address?    :vector
+                               :topics?     :vector
+                               :block-hash? :string
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum/logs-changes
+                {:permissions [:read]
+                 :value       :extensions/ethereum-logs-changes
+                 :arguments   {:id :string}}
+                'ethereum/cancel-filter
+                {:permissions [:read]
+                 :value       :extensions/ethereum-cancel-filter
+                 :arguments   {:id  :string}}
+                'ethereum.ens/resolve
                 {:permissions [:read]
                  :value       :extensions/ethereum-resolve-ens
-                 :arguments   {:name       :string
-                               :on-result :event}}
+                 :arguments   {:name        :string
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum.erc20/total-supply
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc20-total-supply
+                 :arguments   {:contract     :string
+                               :on-success   :event
+                               :on-failure?  :event}}
+                'ethereum.erc20/balance-of
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc20-balance-of
+                 :arguments   {:contract     :string
+                               :token-owner  :string
+                               :on-success   :event
+                               :on-failure?  :event}}
+                'ethereum.erc20/transfer
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc20-transfer
+                 :arguments   {:contract    :string
+                               :to          :string
+                               :value       :number
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum.erc20/transfer-from
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc20-transfer-from
+                 :arguments   {:contract    :string
+                               :from        :string
+                               :to          :string
+                               :value       :number
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum.erc20/approve
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc20-approve
+                 :arguments   {:contract    :string
+                               :spender     :string
+                               :value       :number
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum.erc20/allowance
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc20-allowance
+                 :arguments   {:contract     :string
+                               :token-owner  :string
+                               :spender      :string
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum.erc721/owner-of
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc721-owner-of
+                 :arguments   {:contract    :string
+                               :token-id    :string
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum.erc721/is-approved-for-all
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc721-is-approved-for-all
+                 :arguments   {:contract    :string
+                               :owner       :string
+                               :operator    :string
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum.erc721/get-approved
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc721-get-approved
+                 :arguments   {:contract    :string
+                               :token-id    :string
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum.erc721/set-approval-for-all
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc721-set-approval-for-all
+                 :arguments   {:contract    :string
+                               :operator    :string
+                               :approved    :boolean
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum.erc721/safe-transfer-from
+                {:permissions [:read]
+                 :value       :extensions/ethereum-erc721-safe-transfer-from
+                 :arguments   {:contract    :string
+                               :from        :string
+                               :to          :string
+                               :token-id    :string
+                               :data?       :string
+                               :on-success  :event
+                               :on-failure? :event}}
                 'ethereum/call
                 {:permissions [:read]
                  :value       :extensions/ethereum-call
-                 :arguments   {:to         :string
-                               :method     :string
-                               :params?    :vector
-                               :outputs?   :vector
-                               :on-result  :event}}}
+                 :arguments   {:to          :string
+                               :method      :string
+                               :params?     :vector
+                               :outputs?    :vector
+                               :on-success  :event
+                               :on-failure? :event}}}
    :hooks      {:chat.command    commands/command-hook
                 :wallet.settings settings/hook}})
 
@@ -497,15 +710,21 @@
     {:errors [{:type type :value value}]}))
 
 (def uri-prefix "https://get.status.im/extension/")
+(def link-prefix "status-im://extension/")
 
 (defn valid-uri? [s]
   (boolean
    (when s
-     (re-matches (re-pattern (str "^" uri-prefix "\\w+@.+")) (string/trim s)))))
+     (let [s' (string/trim s)]
+       (or
+        (re-matches (re-pattern (str "^" uri-prefix "\\w+@.+")) s')
+        (re-matches (re-pattern (str "^" link-prefix "\\w+@.+")) s'))))))
 
 (defn url->uri [s]
   (when s
-    (string/replace s uri-prefix "")))
+    (-> s
+        (string/replace uri-prefix "")
+        (string/replace link-prefix ""))))
 
 (defn load-from [url f]
   (when-let [uri (url->uri url)]

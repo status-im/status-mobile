@@ -183,7 +183,7 @@
     [react/touchable-highlight {:on-press #(when tx-exists?
                                              (re-frame/dispatch [:show-transaction-details tx-hash]))}
      [react/view transactions-styles/command-send-status-container
-      [vector-icons/icon (if confirmed? :icons/check :icons/dots)
+      [vector-icons/icon (if confirmed? :main-icons/check :main-icons/more)
        {:color           (if outgoing colors/blue-light colors/blue)
         :container-style (transactions-styles/command-send-status-icon outgoing)}]
       [react/view
@@ -294,7 +294,7 @@
   (preview [_ command-message]
     (send-preview command-message))
   protocol/Yielding
-  (yield-control [_ {:keys [amount asset]} {:keys [db] :as cofx}]
+  (yield-control [_ {{{amount :amount asset :asset} :params} :content} {:keys [db] :as cofx}]
     ;; Prefill wallet and navigate there
     (let [recipient-contact     (get-in db [:contacts/contacts (:current-chat-id db)])
           sender-account        (:account/account db)
@@ -395,7 +395,6 @@
 (defview request-preview
   [{:keys [message-id content outgoing timestamp timestamp-str group-chat]}]
   (letsubs [id->command         [:chats/id->command]
-            status-initialized? [:get :status-module-initialized?]
             network             [:network-name]
             prices              [:prices]]
     (let [{:keys [amount asset fiat-amount currency answered?] request-network :network} (:params content)
@@ -440,7 +439,6 @@
                                  [react/text {:style (transactions-styles/command-request-button-text answered?)}
                                   (i18n/label (if answered? :command-button-sent :command-button-send))]]])]]
       (if (and (not network-mismatch?)
-               status-initialized?
                (not outgoing)
                (not answered?))
         [react/touchable-highlight

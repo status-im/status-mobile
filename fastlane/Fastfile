@@ -27,9 +27,9 @@ end
 # uploads `file` to sauce labs (overwrites if there is anoter file from the
 # same commit)
 def upload_to_saucelabs(file)
-    username = ENV["SAUCE_USERNAME"]
     key = ENV["SAUCE_ACCESS_KEY"]
-    unique_name = ENV["SAUCE_LABS_APK"]
+    username = ENV["SAUCE_USERNAME"]
+    unique_name = ENV["SAUCE_LABS_NAME"]
 
     url = "https://saucelabs.com/rest/v1/storage/" + username + '/' + unique_name + "?overwrite=true"
 
@@ -53,11 +53,14 @@ end
 
 # builds an ios app with ad-hoc configuration and put it
 # to "status-adhoc" output folder
-def build_ios_adhoc
+# `readonly`:
+#    if true  - only fetch existing certificates and profiles, don't upgrade from AppStoreConnect
+#    if false - read list of devices from AppStoreConnect, and upgrade the provisioning profiles from it
+def build_ios_adhoc(readonly)
     match(
         type: "adhoc",
         force_for_new_devices: true,
-        readonly: true,
+        readonly: readonly,
         keychain_name: "login.keychain"
     )
 
@@ -71,6 +74,50 @@ def build_ios_adhoc
     )
 end
 
+# builds an ios app with e2e configuration and put it
+# to "status-e2e" output folder
+def build_ios_e2e
+
+    # determine a simulator SDK installed
+    showsdks_output = sh('xcodebuild', '-showsdks')
+    simulator_sdk = showsdks_output.scan(/iphonesimulator\d\d?\.\d\d?/).first
+
+    match(
+        type: "adhoc",
+        force_for_new_devices: true,
+        readonly: true,
+        keychain_name: "login.keychain"
+    )
+
+
+    build_ios_app(
+        # Creating a build for the iOS Simulator
+        # 1. https://medium.com/rocket-fuel/fastlane-to-the-simulator-87549b2601b9
+        sdk: simulator_sdk,
+        destination: "generic/platform=iOS Simulator",
+        # 2. fixing compilations issues as stated in https://stackoverflow.com/a/20505258
+        #    it looks like i386 isn't supported by React Native
+        xcargs: "ARCHS=\"x86_64\" ONLY_ACTIVE_ARCH=NO",
+        # 3. directory where to up StatusIm.app
+        derived_data_path: "status-e2e",
+        output_name: "StatusIm.app",
+        # -------------------------------------
+        # Normal stuff
+        scheme: "StatusIm",
+        workspace: "ios/StatusIm.xcworkspace",
+        configuration: "Release",
+        # Simulator apps can't be archived...
+        skip_archive: true,
+        # ...and we don't need an .ipa file for them, because we use .app directly
+        skip_package_ipa: true
+    )
+
+    zip(
+        path: "status-e2e/Build/Products/Release-iphonesimulator/StatusIm.app",
+        output_path: "status-e2e/StatusIm.app.zip",
+        verbose: false,
+    )
+end
 
 def upload_to_diawi(source)
     diawi(
@@ -84,31 +131,40 @@ end
 
 platform :ios do
   desc "`fastlane ios adhoc` - ad-hoc lane for iOS."
-  desc "This lane is used PRs, Releases, etc."
+  desc "This lane is used for PRs, Releases, etc."
   desc "It creates an .ipa that can be used by a list of devices, registeded in the App Store Connect."
   desc "This .ipa is ready to be distibuted through diawi.com"
   lane :adhoc do
     unlock_keychain_if_needed
-    build_ios_adhoc
+    build_ios_adhoc(true)
+  end
+
+  desc "`fastlane ios e2e` - e2e lane for iOS."
+  desc "This lane is used for SauceLabs end-to-end testing."
+  desc "It creates an .app that can be used inside of a iPhone simulator."
+  lane :e2e do
+    unlock_keychain_if_needed
+    build_ios_e2e
   end
 
   desc "`fastlane ios pr` - makes a new pr build"
   desc "This lane builds a new adhoc build and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
   lane :pr do
-    adhoc
+    unlock_keychain_if_needed
+    build_ios_adhoc(false)
   end
 
   desc "`fastlane ios nightly` - makes a new nightly"
   desc "This lane builds a new nightly and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
   lane :nightly do
-    adhoc
+    unlock_keychain_if_needed
+    build_ios_adhoc(false)
   end
 
   desc "`fastlane ios release` builds a release & uploads it to TestFlight"
   lane :release do
     match(
         type: "appstore",
-        force_for_new_devices: true,
         readonly: true,
         keychain_name: "login.keychain"
     )
@@ -147,6 +203,19 @@ platform :ios do
   desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
   lane :upload_diawi do
     upload_to_diawi("status-adhoc/StatusIm.ipa")
+  end
+
+  desc "`fastlane ios saucelabs` - upload .app to sauce labs"
+  desc "also notifies in a GitHub comments"
+  desc "expects to have an .apk prepared: `android/app/build/outputs/apk/release/app-release.apk`"
+  desc "expects to have a saucelabs access key as SAUCE_ACCESS_KEY env variable"
+  desc "expects to have a saucelabs username token as SAUCE_USERNAME env variable"
+  desc "expects to have a saucelabs destination name as SAUCE_LABS_NAME env variable"
+  desc "will fails if file isn't there"
+  lane :saucelabs do
+    upload_to_saucelabs(
+        "status-e2e/StatusIm.app.zip"
+    )
   end
 
   desc "This fastlane step cleans up XCode DerivedData folder"
@@ -204,7 +273,7 @@ platform :android do
   desc "expects to have an .apk prepared: `android/app/build/outputs/apk/release/app-release.apk`"
   desc "expects to have a saucelabs access key as SAUCE_ACCESS_KEY env variable"
   desc "expects to have a saucelabs username token as SAUCE_USERNAME env variable"
-  desc "expects to have a saucelabs destination name as SAUCE_LABS_APK env variable"
+  desc "expects to have a saucelabs destination name as SAUCE_LABS_NAME env variable"
   desc "will fails if file isn't there"
   lane :saucelabs do
     upload_to_saucelabs(

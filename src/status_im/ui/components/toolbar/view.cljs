@@ -69,7 +69,7 @@
      [nav-text props
       (i18n/label :t/done)]]
     [react/view
-     [nav-button (merge props {:icon (or icon :icons/close)})]]))
+     [nav-button (merge props {:icon (or icon :main-icons/close)})]]))
 
 ;; Content
 

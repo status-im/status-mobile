@@ -167,7 +167,8 @@
         "one": "perc",
         "other": "perc"
     },
-    "browsing-open-in-web-browser": "Megnyitás új böngészőben",
+    "browsing-open-in-android-web-browser": "Megnyitás új böngészőben",
+    "browsing-open-in-ios-web-browser": "Megnyitás új böngészőben",
     "delete-group-prompt": "Nem lesz hatással a névjegyekre",
     "edit-profile": "Profil szerkesztése",
     "active-unknown": "Ismeretlen",

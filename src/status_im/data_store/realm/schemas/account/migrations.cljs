@@ -3,7 +3,12 @@
             [cljs.reader :as reader]
             [status-im.chat.models.message-content :as message-content]
             [status-im.transport.utils :as transport.utils]
-            [cljs.tools.reader.edn :as edn]))
+            [cljs.tools.reader.edn :as edn]
+            [clojure.string :as string]
+            [status-im.constants :as constants]
+            [cognitect.transit :as transit]
+            [status-im.js-dependencies :as dependencies]
+            [status-im.utils.clocks :as utils.clocks]))
 
 (defn v1 [old-realm new-realm]
   (log/debug "migrating v1 account database: " old-realm new-realm))
@@ -159,77 +164,9 @@
 (defn v24 [old-realm new-realm]
   (log/debug "migrating v24 account database"))
 
-(defn v25 [old-realm new-realm]
-  (log/debug "migrating v25 account database")
-  (let [new-messages (.objects new-realm "message")
-        user-statuses (.objects new-realm "user-status")
-        old-ids->new-ids (volatile! {})
-        updated-messages-ids (volatile! #{})
-        updated-message-statuses-ids (volatile! #{})
-        messages-to-be-deleted (volatile! [])
-        statuses-to-be-deleted (volatile! [])]
-    (dotimes [i (.-length new-messages)]
-      (let [message (aget new-messages i)
-            message-id (aget message "message-id")
-            from (aget message "from")
-            chat-id (aget message "chat-id")
-            clock-value (aget message "clock-value")
-            new-message-id (transport.utils/message-id
-                            {:from        from
-                             :chat-id     chat-id
-                             :clock-value clock-value})]
-        (vswap! old-ids->new-ids assoc message-id new-message-id)))
-
-    (dotimes [i (.-length new-messages)]
-      (let [message (aget new-messages i)
-            old-message-id (aget message "message-id")
-            content (edn/read-string (aget message "content"))
-            response-to (:response-to content)
-            new-message-id (get @old-ids->new-ids old-message-id)]
-        (if (contains? @updated-messages-ids new-message-id)
-          (vswap! messages-to-be-deleted conj message)
-          (do
-            (vswap! updated-messages-ids conj new-message-id)
-            (aset message "message-id" new-message-id)
-            (when (and response-to (get @old-ids->new-ids response-to))
-              (let [new-content (assoc content :response-to
-                                       (get @old-ids->new-ids response-to))]
-                (aset message "content" (prn-str new-content))))))))
-
-    (doseq [message @messages-to-be-deleted]
-      (.delete new-realm message))
-
-    (dotimes [i (.-length user-statuses)]
-      (let [user-status (aget user-statuses i)
-            message-id     (aget user-status "message-id")
-            new-message-id (get @old-ids->new-ids message-id)
-            public-key     (aget user-status "public-key")
-            new-status-id (str new-message-id "-" public-key)]
-        (if (contains? @updated-message-statuses-ids new-status-id)
-          (vswap! statuses-to-be-deleted conj user-status)
-          (do
-            (vswap! updated-message-statuses-ids conj new-status-id)
-            (aset user-status "status-id" new-status-id)
-            (aset user-status "message-id" new-message-id)))))
-
-    (doseq [status @statuses-to-be-deleted]
-      (.delete new-realm status))))
+(defn v25 [old-realm new-realm])
 
 (defn v26 [old-realm new-realm]
-  (let [user-statuses (.objects new-realm "user-status")]
-    (dotimes [i (.-length user-statuses)]
-      (let [user-status   (aget user-statuses i)
-            status-id     (aget user-status "message-id")
-            message-id    (aget user-status "message-id")
-            public-key    (aget user-status "public-key")
-            new-status-id (str message-id "-" public-key)]
-        (when (and (= "-" (last status-id)))
-          (if (.objectForPrimaryKey
-               new-realm
-               "user-status"
-               new-status-id)
-            (.delete new-realm user-status)
-            (aset user-status "status-id" new-status-id))))))
   (let [chats (.objects new-realm "chat")]
     (dotimes [i (.-length chats)]
       (let [chat                (aget chats i)
@@ -240,3 +177,186 @@
                                                     "status = \"received\""))
                                     (.-length))]
         (aset chat "unviewed-messages-count" user-statuses-count)))))
+
+;; Message record's interface was
+;; copied from status-im.transport.message.protocol
+;; to ensure that any further changes to this record will not
+;; affect migrations
+(defrecord Message [content content-type message-type clock-value timestamp])
+
+(defn replace-ns [str-message]
+  (string/replace-first
+   str-message
+   "status-im.data-store.realm.schemas.account.migrations"
+   "status-im.transport.message.protocol"))
+
+(defn sha3 [s]
+  (.sha3 dependencies/Web3.prototype s))
+
+(defn old-message-id
+  "Calculates the same `message-id` as was used in `0.9.31`"
+  [message]
+  (sha3 (replace-ns (pr-str message))))
+
+;; The code below copied from status-im.transport.message.transit
+;; in order to make sure that future changes will not have any impact
+;; on migrations
+(defn- new->legacy-command-data [{:keys [command-path params] :as content}]
+  (get {["send" #{:personal-chats}]    [{:command-ref ["transactor" :command 83 "send"]
+                                         :command "send"
+                                         :bot "transactor"
+                                         :command-scope-bitmask 83}
+                                        constants/content-type-command]
+        ["request" #{:personal-chats}] [{:command-ref ["transactor" :command 83 "request"]
+                                         :request-command-ref ["transactor" :command 83 "send"]
+                                         :command "request"
+                                         :request-command "send"
+                                         :bot "transactor"
+                                         :command-scope-bitmask 83
+                                         :prefill [(get params :asset)
+                                                   (get params :amount)]}
+                                        constants/content-type-command-request]}
+       command-path))
+
+(deftype MessageHandler []
+  Object
+  (tag [this v] "c4")
+  (rep [this {:keys [content content-type message-type clock-value timestamp]}]
+    (condp = content-type
+      constants/content-type-text ;; append new content add the end, still pass content the old way at the old index
+      #js [(:text content) content-type message-type clock-value timestamp content]
+      constants/content-type-command ;; handle command compatibility issues
+      (let [[legacy-content legacy-content-type] (new->legacy-command-data content)]
+        #js [(merge content legacy-content) (or legacy-content-type content-type) message-type clock-value timestamp])
+      ;; no need for legacy conversions for rest of the content types
+      #js [content content-type message-type clock-value timestamp])))
+
+(def writer (transit/writer :json
+                            {:handlers
+                             {Message (MessageHandler.)}}))
+
+(defn serialize
+  "Serializes a record implementing the StatusMessage protocol using the custom writers"
+  [o]
+  (transit/write writer o))
+
+(defn raw-payload
+  [message]
+  (transport.utils/from-utf8 (serialize message)))
+
+(defn v27 [old-ream new-realm]
+  (let [messages (.objects new-realm "message")
+        user-statuses (.objects new-realm "user-status")
+        old-ids->new-ids (volatile! {})
+        messages-to-be-deleted (volatile! [])
+        statuses-to-be-deleted (volatile! [])]
+    (dotimes [i (.-length messages)]
+      (let [message         (aget messages i)
+            prev-message-id (aget message "message-id")
+            content         (-> (aget message "content")
+                                edn/read-string
+                                (dissoc :should-collapse? :metadata :render-recipe))
+            content-type    (aget message "content-type")
+            message-type    (keyword
+                             (aget message "message-type"))
+            clock-value     (aget message "clock-value")
+            from            (aget message "from")
+            timestamp       (aget message "timestamp")
+            message-record  (Message. content content-type message-type
+                                      clock-value timestamp)
+            old-message-id  (old-message-id message-record)
+            raw-payload     (raw-payload message-record)
+            message-id      (transport.utils/message-id from raw-payload)
+            raw-payload-hash (transport.utils/sha3 raw-payload)]
+        (vswap! old-ids->new-ids assoc prev-message-id message-id)
+        (if (.objectForPrimaryKey
+             new-realm
+             "message"
+             message-id)
+          (vswap! messages-to-be-deleted conj message)
+          (do
+            (aset message "message-id" message-id)
+            (aset message "raw-payload-hash" raw-payload-hash)
+            (aset message "old-message-id" old-message-id)))))
+
+    (doseq [message @messages-to-be-deleted]
+      (.delete new-realm message))
+
+    (dotimes [i (.-length user-statuses)]
+      (let [user-status (aget user-statuses i)
+            message-id     (aget user-status "message-id")
+            new-message-id (get @old-ids->new-ids message-id)
+            public-key     (aget user-status "public-key")
+            new-status-id (str new-message-id "-" public-key)]
+        (if (.objectForPrimaryKey
+             new-realm
+             "user-status"
+             new-status-id)
+          (vswap! statuses-to-be-deleted conj user-status)
+          (when (contains? @old-ids->new-ids message-id)
+            (aset user-status "status-id" new-status-id)
+            (aset user-status "message-id" new-message-id)))))
+
+    (doseq [status @statuses-to-be-deleted]
+      (.delete new-realm status))))
+
+(defn get-last-message [realm chat-id]
+  (->
+   (.objects realm "message")
+   (.filtered (str "chat-id=\"" chat-id "\""))
+   (.sorted "timestamp" true)
+   (aget 0)))
+
+(defn v28 [old-realm new-realm])
+
+(defn get-last-clock-value [realm chat-id]
+  (if-let [last-message
+           (-> (.objects realm "message")
+               (.filtered (str "chat-id=\"" chat-id "\""))
+               (.sorted "clock-value" true)
+               (aget 0))]
+    (->
+     last-message
+     (aget "clock-value")
+     (utils.clocks/safe-timestamp))
+    0))
+
+(defn v29 [old-realm new-realm]
+  (let [chats (.objects new-realm "chat")]
+    (dotimes [i (.-length chats)]
+      (let [chat (aget chats i)
+            chat-id (aget chat "chat-id")]
+        (when-let [last-clock-value (get-last-clock-value new-realm chat-id)]
+          (aset chat "last-clock-value" last-clock-value))))))
+
+(defn v30 [old-realm new-realm]
+  (let [chats (.objects new-realm "chat")]
+    (dotimes [i (.-length chats)]
+      (let [chat (aget chats i)
+            chat-id (aget chat "chat-id")]
+        (when-let [last-message (get-last-message new-realm chat-id)]
+          (let [content (aget last-message "content")
+                content-type (aget last-message "content-type")]
+            (aset chat "last-message-content" content)
+            (aset chat "last-message-content-type" content-type)))))))
+
+(defn v34 [old-realm new-realm]
+  (let [chats (.objects new-realm "chat")]
+    (dotimes [i (.-length chats)]
+      (let [chat (aget chats i)
+            chat-id (aget chat "chat-id")]
+        (aset chat "group-chat-local-version" 0)))))
+
+(defn one-to-one? [chat-id]
+  (re-matches #"^0x[0-9a-fA-F]+$" chat-id))
+
+(defn v35 [old-realm new-realm]
+  (log/debug "migrating transport chats")
+  (let [old-chats (.objects old-realm "transport")
+        new-chats (.objects new-realm "transport")]
+    (dotimes [i (.-length old-chats)]
+      (let [old-chat (aget old-chats i)
+            new-chat (aget new-chats i)
+            chat-id  (aget old-chat "chat-id")]
+        (when (one-to-one? chat-id)
+          (aset new-chat "one-to-one" true))))))

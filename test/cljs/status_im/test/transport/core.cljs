@@ -1,21 +1,32 @@
 (ns status-im.test.transport.core
   (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.utils.fx :as fx]
             [status-im.protocol.core :as protocol]
             [status-im.transport.core :as transport]
             [status-im.transport.message.core :as message]))
 
 (deftest init-whisper
   (let [cofx {:db {:account/account {:public-key "1"}
-                   :transport/chats {"1" {:topic "topic-1"}
+                   :transport/chats {"1" {:topic   "topic-1"
+                                          :sym-key "sk1"}
                                      "2" {}
-                                     "3" {:topic "topic-3"}}
-                   :semaphores #{}}}]
-    (testing "it adds the discover filter"
-      (is (= {:web3 nil :private-key-id "1" :topic "0xf8946aac"}
-             (:shh/add-discovery-filter (transport/init-whisper cofx "user-address")))))
+                                     "3" {:topic   "topic-3"
+                                          :sym-key "sk3"}
+                                     "4" {:topic "topic-4"}}
+                   :semaphores      #{}}}]
+    (testing "it adds the discover filters"
+      (is (= {:web3 nil :private-key-id "1" :topics '({:topic   "topic-4"
+                                                       :chat-id "4"}
+                                                      {:topic   "0x2af2e6e7"
+                                                       :chat-id :discovery-topic}
+                                                      {:topic   "0xf8946aac"
+                                                       :chat-id :discovery-topic})}
+             (:shh/add-discovery-filters (transport/init-whisper cofx)))))
+
     (testing "it restores the sym-keys"
-      (is (= [["1" {:topic "topic-1"}] ["3" {:topic "topic-3"}]]
-             (-> (transport/init-whisper cofx  "user-address") :shh/restore-sym-keys :transport))))
+      (is (= [{:topic "topic-1", :sym-key "sk1", :chat-id "1"}
+              {:topic "topic-3", :sym-key "sk3", :chat-id "3"}]
+             (-> (transport/init-whisper cofx) :shh/restore-sym-keys-batch :transport))))
     (testing "custom mailservers"
       (let [ms-1            {:id "1"
                              :fleet :eth.beta
@@ -48,7 +59,7 @@
                                     ms-3])]
         (is (= expected-mailservers
                (-> (get-in
-                    (protocol/initialize-protocol cofx-with-ms "user-address")
+                    (protocol/initialize-protocol cofx-with-ms)
                     [:db :mailserver/mailservers])
                    (update-in [:eth.beta "1"] dissoc :generating-sym-key?)
                    (update-in [:eth.beta "2"] dissoc :generating-sym-key?)
@@ -74,3 +85,71 @@
     (let [actual (message/receive-whisper-messages {:db {}} nil messages sig)]
       (testing "it add an fx for the message"
         (is (:chat-received-message/add-fx actual))))))
+
+(deftest message-envelopes
+  (let [chat-id "chat-id"
+        from "from"
+        message-id "message-id"
+        initial-cofx {:db {:chats {chat-id {:messages {message-id {:from from}}}}}}]
+
+    (testing "a single envelope message"
+      (let [cofx (message/set-message-envelope-hash initial-cofx chat-id message-id :message-type "hash-1" 1)]
+        (testing "it sets the message-infos"
+          (is (= {:chat-id chat-id
+                  :message-id message-id
+                  :message-type :message-type}
+                 (get-in cofx [:db :transport/message-envelopes "hash-1"]))))
+        (testing "the message is sent"
+          (is (= :sent
+
+                 (get-in
+                  (message/update-envelope-status cofx "hash-1" :sent)
+                  [:db :chats chat-id :message-statuses message-id from :status]))))
+
+        (testing "the message is not sent"
+          (is (= :not-sent
+                 (get-in
+                  (message/update-envelope-status cofx "hash-1" :not-sent)
+                  [:db :chats chat-id :message-statuses message-id from :status]))))))
+    (testing "multi envelope message"
+      (testing "only inserts"
+        (let [cofx (fx/merge
+                    initial-cofx
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-1" 3)
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-2" 3)
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-3" 3))]
+          (testing "it sets the message count"
+            (is (= {:pending-confirmations 3}
+                   (get-in cofx [:db :transport/message-ids->confirmations message-id]))))))
+      (testing "message sent correctly"
+        (let [cofx (fx/merge
+                    initial-cofx
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-1" 3)
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-2" 3)
+                    (message/update-envelope-status "hash-1" :sent)
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-3" 3)
+                    (message/update-envelope-status "hash-2" :sent)
+                    (message/update-envelope-status "hash-3" :sent))]
+          (testing "it removes the confirmations"
+            (is (not (get-in cofx [:db :transport/message-ids->confirmations message-id]))))
+          (testing "the message is sent"
+            (is (= :sent
+                   (get-in
+                    cofx
+                    [:db :chats chat-id :message-statuses message-id from :status]))))))
+      (testing "message not sent"
+        (let [cofx (fx/merge
+                    initial-cofx
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-1" 3)
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-2" 3)
+                    (message/update-envelope-status "hash-1" :sent)
+                    (message/set-message-envelope-hash chat-id message-id :message-type "hash-3" 3)
+                    (message/update-envelope-status "hash-2" :not-sent)
+                    (message/update-envelope-status "hash-3" :sent))]
+          (testing "it removes the confirmations"
+            (is (not (get-in cofx [:db :transport/message-ids->confirmations message-id]))))
+          (testing "the message is sent"
+            (is (= :not-sent
+                   (get-in
+                    cofx
+                    [:db :chats chat-id :message-statuses message-id from :status])))))))))

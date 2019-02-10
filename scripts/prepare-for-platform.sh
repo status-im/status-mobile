@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -29,13 +31,17 @@ fi
 
 scripts/run-environment-check.sh $1
 
-echo "Creating link: package.json -> ${PLATFORM_FOLDER}/package.json.orig "
-ln -sf  ${PLATFORM_FOLDER}/package.json.orig package.json
+echo "Creating link: package.json -> ${PLATFORM_FOLDER}/package.json.orig"
+ln -sf ${PLATFORM_FOLDER}/package.json.orig package.json
 
 echo "Creating link: yarn.lock -> ${PLATFORM_FOLDER}/yarn.lock"
-ln -sf  ${PLATFORM_FOLDER}/yarn.lock yarn.lock
+ln -sf ${PLATFORM_FOLDER}/yarn.lock yarn.lock
 
 echo "Creating link: VERSION -> ${PLATFORM_FOLDER}/VERSION"
-ln -sf  ${PLATFORM_FOLDER}/VERSION VERSION
+ln -sf ${PLATFORM_FOLDER}/VERSION VERSION
+
+echo "Creating link: .babelrc -> ${PLATFORM_FOLDER}/.babelrc"
+ln -sf ${PLATFORM_FOLDER}/.babelrc .babelrc
+
 
 echo -e "${GREEN}Finished!${NC}"

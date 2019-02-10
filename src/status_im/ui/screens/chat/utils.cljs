@@ -3,6 +3,8 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
             [status-im.i18n :as i18n]
+            [status-im.constants :as constants]
+            [status-im.utils.core :as core-utils]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
             [status-im.utils.http :as http]))
@@ -49,3 +51,26 @@
                    [react/text (into {:key idx} (lookup-props text-chunk message kind))
                     text-chunk]))
                render-recipe))
+
+(defn render-chunks-desktop [limit render-recipe message]
+  "This fn is only needed as a temporary hack
+  until rn-desktop supports text/number-of-lines property"
+  (->> render-recipe
+       (map vector (range))
+       (reduce (fn [[total-length acc] [idx [text-chunk kind]]]
+                 (if (<= limit total-length)
+                   (reduced [total-length acc])
+                   (let [chunk-len (count text-chunk)
+                         cut-chunk-len (min chunk-len (- limit total-length))
+                         cut-chunk (if (= chunk-len cut-chunk-len)
+                                     text-chunk
+                                     (core-utils/truncate-str text-chunk cut-chunk-len))]
+                     [(+ total-length cut-chunk-len)
+                      (conj acc
+                            (if (= :text kind)
+                              cut-chunk
+                              [react/text (into {:key idx} (lookup-props text-chunk message kind))
+                               cut-chunk]))])))
+               [0 []])
+       second
+       seq))

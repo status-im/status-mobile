@@ -265,7 +265,8 @@
         "one": "minuto",
         "other": "minuti"
     },
-    "browsing-open-in-web-browser": "Apri nel web browser",
+    "browsing-open-in-android-web-browser": "Apri nel web browser",
+    "browsing-open-in-ios-web-browser": "Apri nel web browser",
     "delete-group-prompt": "Questo non intaccherà i tuoi contatti",
     "wallet-insufficient-funds": "Fondi insufficienti",
     "edit-profile": "Modifica profilo",

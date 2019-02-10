@@ -6,6 +6,7 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.connectivity.view :as connectivity]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.utils.platform :as platform]
@@ -16,7 +17,7 @@
             [status-im.ui.components.react :as components]
             [status-im.utils.utils :as utils]))
 
-(defn- toolbar [show-welcome? show-sync-state sync-state latest-block-number]
+(defn- toolbar [show-welcome? show-sync-state sync-state latest-block-number logged-in?]
   (when-not (and show-welcome?
                  platform/android?)
     [toolbar/toolbar nil nil
@@ -34,17 +35,26 @@
                    (str "not syncing")))]]]
          [toolbar/content-wrapper
           [components.common/logo styles/toolbar-logo]]))
-     [toolbar/actions
-      (when platform/ios?
+     (cond
+       (and platform/ios?
+            logged-in?)
+       [toolbar/actions
         [(-> (toolbar.actions/add true #(re-frame/dispatch [:navigate-to :new]))
-             (assoc-in [:icon-opts :accessibility-label] :new-chat-button))])]]))
+             (assoc-in [:icon-opts :accessibility-label] :new-chat-button))]]
+       platform/ios?
+       [react/view {:style styles/spinner-container}
+        [components/activity-indicator {:color colors/blue
+                                        :animating true}]])]))
 
-(defn- home-action-button []
+(defn- home-action-button [logged-in?]
   [react/view styles/action-button-container
    [react/touchable-highlight {:accessibility-label :new-chat-button
-                               :on-press            #(re-frame/dispatch [:navigate-to :new])}
+                               :on-press            (when logged-in? #(re-frame/dispatch [:navigate-to :new]))}
     [react/view styles/action-button
-     [icons/icon :icons/add {:color :white}]]]])
+     (if-not logged-in?
+       [components/activity-indicator {:color :white
+                                       :animating true}]
+       [icons/icon :main-icons/add {:color :white}])]]])
 
 (defn home-list-item [[home-item-id home-item]]
   (let [delete-action   (if (:chat-id home-item)
@@ -90,6 +100,7 @@
 (views/defview home [loading?]
   (views/letsubs [show-welcome? [:get-in [:accounts/create :show-welcome?]]
                   view-id [:get :view-id]
+                  logging-in? [:get :accounts/login]
                   sync-state [:chain-sync-state]
                   latest-block-number [:latest-block-number]
                   rpc-network? [:current-network-uses-rpc?]
@@ -99,30 +110,25 @@
        (let [[_ loading?] (.. this -props -argv)]
          (when loading?
            (utils/set-timeout
-            #(re-frame/dispatch [:init-chats])
-            100))))
-
-     :component-did-update
-     (fn [this [_ old-loading?]]
-       (let [[_ loading?] (.. this -props -argv)]
-         (when (and (false? loading?)
-                    (true? old-loading?))
-           (re-frame/dispatch [:load-chats-messages]))))}
+            #(re-frame/dispatch [:init-rest-of-chats])
+            100))))}
     [react/view styles/container
-     [toolbar show-welcome? (and network-initialized? (not rpc-network?)) sync-state latest-block-number]
+     [toolbar show-welcome? (and network-initialized? (not rpc-network?)) sync-state latest-block-number (not logging-in?)]
      (cond show-welcome?
            [welcome view-id]
            loading?
            [react/view {:style {:flex            1
                                 :justify-content :center
                                 :align-items     :center}}
-            [components/activity-indicator {:animating true}]]
+            [connectivity/connectivity-view]
+            [components/activity-indicator {:flex 1
+                                            :animating true}]]
            :else
-           [chats-list])
+           [react/view {:style {:flex 1}}
+            [connectivity/connectivity-view]
+            [chats-list]])
      (when platform/android?
-       [home-action-button])
-     (when-not show-welcome?
-       [connectivity/error-view])]))
+       [home-action-button (not logging-in?)])]))
 
 (views/defview home-wrapper []
   (views/letsubs [loading? [:get :chats/loading?]]

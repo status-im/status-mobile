@@ -38,16 +38,19 @@ public:
     Q_INVOKABLE void startNode(QString configString);
     Q_INVOKABLE void stopNode();
     Q_INVOKABLE void createAccount(QString password, double callbackId);
-    Q_INVOKABLE void notifyUsers(QString token, QString payloadJSON, QString tokensJSON, double callbackId);
+    Q_INVOKABLE void sendDataNotification(QString dataPayloadJSON, QString tokensJSON, double callbackId);
+    Q_INVOKABLE void sendLogs(QString dbJSON);
     Q_INVOKABLE void addPeer(QString enode, double callbackId);
     Q_INVOKABLE void recoverAccount(QString passphrase, QString password, double callbackId);
     Q_INVOKABLE void login(QString address, QString password, double callbackId);
+    Q_INVOKABLE void verify(QString address, QString password, double callbackId);
     Q_INVOKABLE void sendTransaction(QString txArgsJSON, QString password, double callbackId);
     Q_INVOKABLE void signMessage(QString rpcParams, double callbackId);
     Q_INVOKABLE void signGroupMembership(QString content, double callbackId);
     Q_INVOKABLE void extractGroupMembershipSignatures(QString signatures, double callbackId);
     Q_INVOKABLE void enableInstallation(QString installationId, double callbackId);
     Q_INVOKABLE void disableInstallation(QString installationId, double callbackId);
+    Q_INVOKABLE void updateMailservers(QString enodes, double callbackId);
 
     Q_INVOKABLE void setAdjustResize();
     Q_INVOKABLE void setAdjustPan();
@@ -75,6 +78,7 @@ private:
     void logStatusGoResult(const char* methodName, const char* result);
 
     QScopedPointer<RCTStatusPrivate> d_ptr;
+    QString d_gethLogFilePath;
 };
 
 #endif // RCTSTATUS_H

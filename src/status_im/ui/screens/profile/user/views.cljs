@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
+            [status-im.ui.components.list.views :as list.views]
             [status-im.i18n :as i18n]
             [status-im.ui.components.action-button.styles :as action-button.styles]
             [status-im.ui.components.button.view :as button]
@@ -45,7 +46,7 @@
                             nil
                             [toolbar/content-title ""]
                             [toolbar/default-done {:handler             #(re-frame/dispatch [:my-profile/save-profile])
-                                                   :icon                :icons/ok
+                                                   :icon                :main-icons/check
                                                    :icon-opts           {:color colors/blue}
                                                    :accessibility-label :done-button}]])}))
 
@@ -77,7 +78,7 @@
     [button/button-with-icon
      {:on-press            #(list-selection/open-share {:message link})
       :label               (i18n/label :t/share-link)
-      :icon                :icons/share
+      :icon                :main-icons/share
       :accessibility-label :share-my-contact-code-button
       :style               styles/share-link-button}]))
 
@@ -98,7 +99,9 @@
                                                         :source  source
                                                         :value   value}]))
 
-(defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} {:keys [settings]} currency]
+(defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]}
+                            {:keys [dev-mode?
+                                    settings]} currency logged-in?]
   (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
     [react/view
      [profile.components/settings-title (i18n/label :t/settings)]
@@ -111,6 +114,10 @@
                                         :action-fn           #(re-frame/dispatch [:navigate-to :currency-settings])
                                         :accessibility-label :currency-button}]
      [profile.components/settings-item-separator]
+     (when config/hardwallet-enabled?
+       [profile.components/settings-item {:label-kw            :t/status-keycard
+                                          :accessibility-label :keycard-button
+                                          :action-fn           #(re-frame/dispatch [:profile.ui/keycard-settings-button-pressed])}])
      [profile.components/settings-item {:label-kw            :t/notifications
                                         :accessibility-label :notifications-button
                                         :action-fn           #(.openURL react/linking "app-settings://notification/status-im")}]
@@ -119,13 +126,24 @@
      (when show-backup-seed?
        [profile.components/settings-item
         {:label-kw     :t/backup-your-recovery-phrase
+         :accessibility-label :back-up-recovery-phrase-button
          :action-fn    #(re-frame/dispatch [:navigate-to :backup-seed])
          :icon-content [components.common/counter {:size 22} 1]}])
      [profile.components/settings-item-separator]
+     [profile.components/settings-item
+      {:label-kw            :t/devices
+       :action-fn           #(re-frame/dispatch [:navigate-to :installations])
+       :accessibility-label :pairing-settings-button}]
+     [profile.components/settings-item-separator]
      [profile.components/settings-switch-item
       {:label-kw  :t/web3-opt-in
-       :value     (:web3-opt-in? settings)
+       :value     (or (nil? (:web3-opt-in? settings)) (:web3-opt-in? settings))
        :action-fn #(re-frame/dispatch [:accounts.ui/web3-opt-in-mode-switched %])}]
+     [profile.components/settings-item-separator]
+     [profile.components/settings-item
+      {:label-kw            :t/dapps-permissions
+       :accessibility-label :dapps-permissions-button
+       :action-fn           #(re-frame/dispatch [:navigate-to :dapps-permissions])}]
      [profile.components/settings-item-separator]
      [profile.components/settings-item
       {:label-kw            :t/need-help
@@ -143,6 +161,7 @@
                                           :accessibility-label :log-out-button
                                           :destructive?        true
                                           :hide-arrow?         true
+                                          :active?             logged-in?
                                           :action-fn           #(re-frame/dispatch [:accounts.logout.ui/logout-pressed])}]]]]))
 
 (defview advanced-settings [{:keys [network networks dev-mode? settings]} on-show]
@@ -169,6 +188,13 @@
     {:label-kw            :t/log-level
      :action-fn           #(re-frame/dispatch [:navigate-to :log-level-settings])
      :accessibility-label :log-level-settings-button}]
+   (when (and dev-mode? (not platform/ios?))
+     [react/view styles/my-profile-settings-send-logs-wrapper
+      [react/view styles/my-profile-settings-send-logs
+       [profile.components/settings-item {:label-kw            :t/send-logs
+                                          :destructive?        true
+                                          :hide-arrow?         true
+                                          :action-fn           #(re-frame/dispatch [:logging.ui/send-logs-pressed])}]]])
    [profile.components/settings-item-separator]
    [profile.components/settings-item
     {:label-kw            :t/fleet
@@ -181,13 +207,13 @@
       {:label-kw            :t/bootnodes
        :action-fn           #(re-frame/dispatch [:navigate-to :bootnodes-settings])
        :accessibility-label :bootnodes-settings-button}])
-   (when (config/pairing-enabled? dev-mode?)
+   (when (and dev-mode? config/pfs-toggle-visible?)
      [profile.components/settings-item-separator])
-   (when (config/pairing-enabled? dev-mode?)
-     [profile.components/settings-item
-      {:label-kw            :t/devices
-       :action-fn           #(re-frame/dispatch [:navigate-to :installations])
-       :accessibility-label :pairing-settings-button}])
+   (when (and dev-mode? config/pfs-toggle-visible?)
+     [profile.components/settings-switch-item
+      {:label-kw  :t/pfs
+       :value     (:pfs? settings)
+       :action-fn #(re-frame/dispatch [:accounts.ui/toggle-pfs %])}])
    [profile.components/settings-item-separator]
    [profile.components/settings-switch-item
     {:label-kw  :t/dev-mode
@@ -205,16 +231,37 @@
         [react/view {:style styles/advanced-button-row}
          [react/text {:style styles/advanced-button-label}
           (i18n/label :t/wallet-advanced)]
-         [icons/icon (if advanced? :icons/up :icons/down) {:color colors/blue}]]]]]
+         [icons/icon (if advanced? :main-icons/dropdown-up :main-icons/dropdown) {:color colors/blue}]]]]]
      (when advanced?
        [advanced-settings params on-show])]))
+
+(defn share-profile-item
+  [{:keys [public-key photo-path] :as current-account}]
+  [list.views/big-list-item
+   {:text            (i18n/label :t/share-my-profile)
+    :icon                :main-icons/share
+    :accessibility-label :share-my-profile-button
+    :action-fn           #(re-frame/dispatch [:navigate-to :profile-qr-viewer
+                                              {:contact current-account
+                                               :source  :public-key
+                                               :value   public-key}])}])
+
+(defn contacts-list-item [active-contacts-count]
+  [list.views/big-list-item
+   {:text            (i18n/label :t/contacts)
+    :icon                :main-icons/in-contacts
+    :accessibility-label :notifications-button
+    :accessory-value     active-contacts-count
+    :action-fn           #(re-frame/dispatch [:navigate-to :contacts-list])}])
 
 (defview my-profile []
   (letsubs [{:keys [public-key photo-path] :as current-account} [:account/account]
             editing?        [:get :my-profile/editing?]
             changed-account [:get :my-profile/profile]
             currency        [:wallet/currency]
-            scroll          (reagent/atom nil)]
+            login-data      [:get :accounts/login]
+            scroll          (reagent/atom nil)
+            active-contacts-count [:contacts/active-count]]
     (let [shown-account    (merge current-account changed-account)
           ;; We scroll on the component once rendered. setTimeout is necessary,
           ;; likely to allow the animation to finish.
@@ -242,15 +289,9 @@
                                    (profile-icon-options-ext)
                                    profile-icon-options)
            :on-change-text-event :my-profile/update-name}]]
-        [react/view (merge action-button.styles/actions-list
-                           styles/share-contact-code-container)
-         [button/secondary-button {:on-press            #(re-frame/dispatch [:navigate-to :profile-qr-viewer
-                                                                             {:contact current-account
-                                                                              :source  :public-key
-                                                                              :value   public-key}])
-                                   :style styles/share-contact-code-button
-                                   :accessibility-label :share-my-profile-button}
-          (i18n/label :t/share-my-profile)]]
+        [share-profile-item (dissoc current-account :mnemonic)]
+        [contacts-list-item active-contacts-count]
         [react/view styles/my-profile-info-container
-         [my-profile-settings current-account shown-account currency]]
-        [advanced shown-account on-show-advanced]]])))
+         [my-profile-settings current-account shown-account currency (nil? login-data)]]
+        (when (nil? login-data)
+          [advanced shown-account on-show-advanced])]])))

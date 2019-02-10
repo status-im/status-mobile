@@ -21,17 +21,6 @@
        (i18n/label :mainnet-is-default-alert-text)
        #(re-frame/dispatch [:accounts.ui/mainnet-warning-shown])))))
 
-(fx/defn show-desktop-alpha-release-warning [{:keys [db]}]
-  (let [enter-name-screen? (= :enter-name (get-in db [:accounts/create :step]))
-        shown? (get-in db [:account/account :desktop-alpha-release-warning-shown?])]
-    (when (and platform/desktop?
-               (not shown?)
-               (not enter-name-screen?))
-      (utils/show-popup
-       nil
-       (i18n/label :desktop-alpha-release-warning)
-       #(re-frame/dispatch [:accounts.ui/desktop-alpha-release-warning-shown])))))
-
 (defn- chat-send? [transaction]
   (and (seq transaction)
        (not (:in-progress? transaction))
@@ -64,7 +53,7 @@
     (if dev-mode?
       {:extensions/load {:extensions extensions
                          :follow-up  :extensions/add-to-registry}}
-      {:dispatch [:extensions/update-hooks extensions]})))
+      {:dispatch [:extensions/disable-all-hooks extensions]})))
 
 (fx/defn switch-dev-mode [cofx dev-mode?]
   (fx/merge cofx
@@ -78,8 +67,28 @@
                                   {:desktop-notifications? desktop-notifications?}
                                   {}))
 
+(fx/defn toggle-pfs [{:keys [db] :as cofx} enabled?]
+  (let [settings (get-in db [:account/account :settings])
+        warning  {:utils/show-popup {:title (i18n/label :t/pfs-warning-title)
+                                     :content (i18n/label :t/pfs-warning-content)}}]
+
+    (fx/merge cofx
+              (when enabled? warning)
+              (accounts.update/update-settings (assoc settings :pfs? enabled?)
+                                               {}))))
+
 (fx/defn switch-web3-opt-in-mode [{:keys [db] :as cofx} opt-in]
   (let [settings (get-in db [:account/account :settings])]
     (accounts.update/update-settings cofx
                                      (assoc settings :web3-opt-in? opt-in)
                                      {})))
+
+(fx/defn update-recent-stickers [cofx stickers]
+  (accounts.update/account-update cofx
+                                  {:recent-stickers stickers}
+                                  {}))
+
+(fx/defn update-stickers [cofx stickers]
+  (accounts.update/account-update cofx
+                                  {:stickers stickers}
+                                  {}))

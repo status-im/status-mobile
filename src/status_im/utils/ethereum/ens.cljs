@@ -73,6 +73,11 @@
                                        (namehash ens-name))
                  (fn [_ address] (cb (ethereum/hex->address address)))))
 
+(defn contenthash [web3 resolver ens-name cb]
+  (ethereum/call web3
+                 (ethereum/call-params resolver "contenthash(bytes32)" (namehash ens-name))
+                 (fn [_ hash] (cb hash))))
+
 (defn content [web3 resolver ens-name cb]
   (ethereum/call web3
                  (ethereum/call-params resolver "content(bytes32)" (namehash ens-name))

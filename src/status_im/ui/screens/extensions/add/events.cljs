@@ -15,13 +15,13 @@
 
 (handlers/register-handler-fx
  :extensions/stage
- (fn [cofx [_ _ extension-data]]
-   (extensions.registry/stage-extension cofx extension-data false)))
+ (fn [cofx [_ url extension-data]]
+   (extensions.registry/stage-extension cofx url extension-data false)))
 
 (handlers/register-handler-fx
  :extensions/stage-modal
- (fn [cofx [_ _ extension-data]]
-   (extensions.registry/stage-extension cofx extension-data true)))
+ (fn [cofx [_ url extension-data]]
+   (extensions.registry/stage-extension cofx url extension-data true)))
 
 (handlers/register-handler-fx
  :extensions/add-to-registry
@@ -29,8 +29,8 @@
    (extensions.registry/add-to-registry cofx extension-key data active?)))
 
 (handlers/register-handler-fx
- :extensions/update-hooks
+ :extensions/disable-all-hooks
  (fn [cofx [_ extensions]]
-   (apply fx/merge cofx (map (fn [{:keys [url]}]
-                               (extensions.registry/update-hooks cofx url))
+   (apply fx/merge cofx (map (fn [{:keys [id]}]
+                               (extensions.registry/disable-hooks cofx id))
                              extensions))))

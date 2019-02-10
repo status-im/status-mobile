@@ -1,10 +1,12 @@
 (ns status-im.data-store.chats
   (:require [goog.object :as object]
-            [cljs.core.async :as async]
             [re-frame.core :as re-frame]
             [status-im.utils.ethereum.core :as utils.ethereum]
             [status-im.utils.clocks :as utils.clocks]
-            [status-im.data-store.realm.core :as core]))
+            [status-im.data-store.realm.core :as core]
+            [status-im.data-store.messages :as messages]
+            [status-im.utils.core :as utils]
+            [cljs.tools.reader.edn :as edn]))
 
 (defn remove-empty-vals
   "Remove key/value when empty seq or nil"
@@ -45,40 +47,38 @@
                :signature signature
                :chat-id chat-id}))))
 
-(defn- get-last-clock-value [chat-id]
-  (-> (core/get-by-field @core/account-realm
-                         :message :chat-id chat-id)
-      (core/sorted :clock-value :desc)
-      (core/single-clj :message)
-      :clock-value
-      (utils.clocks/safe-timestamp)))
-
 (defn- normalize-chat [{:keys [chat-id] :as chat}]
   (-> chat
       (update :admins   #(into #{} %))
       (update :contacts #(into #{} %))
+      (update :members-joined #(into #{} %))
       (update :tags #(into #{} %))
       (update :membership-updates  (partial unmarshal-membership-updates chat-id))
-      ;; We cap the clock value to a safe value in case the db has been polluted
-      (assoc :last-clock-value (get-last-clock-value chat-id))))
+      (update :last-clock-value utils.clocks/safe-timestamp)
+      (update :last-message-content utils/safe-read-message-content)))
 
 (re-frame/reg-cofx
  :data-store/all-chats
  (fn [cofx _]
-   (assoc cofx :all-stored-chats (map normalize-chat
-                                      (-> @core/account-realm
-                                          (core/get-all :chat)
-                                          (core/sorted :timestamp :desc)
-                                          (core/all-clj :chat))))))
+   (assoc cofx :get-all-stored-chats
+          (fn [from to]
+            (map normalize-chat
+                 (-> @core/account-realm
+                     (core/get-all :chat)
+                     (core/sorted :timestamp :desc)
+                     (core/page from to)
+                     (core/all-clj :chat)))))))
 
 (defn save-chat-tx
   "Returns tx function for saving chat"
-  [{:keys [chat-id] :as chat}]
+  [chat]
   (fn [realm]
     (core/create
      realm
      :chat
-     (update chat :membership-updates marshal-membership-updates)
+     (-> chat
+         (update :membership-updates marshal-membership-updates)
+         (utils/update-if-present :last-message-content messages/prepare-content))
      true)))
 
 ;; Only used in debug mode
@@ -97,6 +97,8 @@
   (fn [realm]
     (let [chat (get-chat-by-id chat-id realm)]
       (doto chat
+        (aset "last-message-content" nil)
+        (aset "last-message-content-type" nil)
         (aset "deleted-at-clock-value" deleted-at-clock-value)))))
 
 (defn deactivate-chat-tx

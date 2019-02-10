@@ -21,7 +21,7 @@
 
 (spec/def :request/from pos-int?)
 (spec/def :request/to pos-int?)
-(spec/def :request/attemps int?)
+(spec/def :request/attempts int?)
 (spec/def :request/cursor :global/not-empty-string)
 
 (spec/def :mailserver.topic/last-request pos-int?)
@@ -38,5 +38,6 @@
 (spec/def :mailserver/connection-checks pos-int?)
 (spec/def :mailserver/topics (spec/map-of :global/not-empty-string :mailserver/topic))
 (spec/def :mailserver/current-request (spec/keys :req-un [:request/from :request/to ::topics]
-                                                 :opt-un [:request/attemps]))
+                                                 :opt-un [:request/attempts]))
 (spec/def :mailserver/pending-requests integer?)
+(spec/def :mailserver/request-error string?)

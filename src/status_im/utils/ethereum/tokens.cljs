@@ -512,6 +512,13 @@
                     :name     "KudosToken"
                     :address  "0x93bb0afbd0627bbd3a6c72bc318341d3a22e254a"}])
 
+   :xdai
+   (resolve-icons :xdai
+                  [{:name     "buffiDai"
+                    :symbol   :BUFF
+                    :decimals 18
+                    :address  "0x3e50bf6703fc132a94e4baff068db2055655f11b"}])
+
    :custom []})
 
 (defn tokens-for

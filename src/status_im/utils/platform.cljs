@@ -36,3 +36,6 @@
     android? (str (.-DocumentDirectoryPath rn-dependencies/fs)
                   "/../no_backup")
     ios?          (.-LibraryDirectoryPath rn-dependencies/fs)))
+
+(defn android-version>= [v]
+  (and android? (>= version v)))

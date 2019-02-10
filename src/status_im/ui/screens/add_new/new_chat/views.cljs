@@ -19,7 +19,7 @@
                               :show-forward? true}])
 
 (views/defview new-chat []
-  (views/letsubs [contacts      [:contacts/all-added-people-contacts]
+  (views/letsubs [contacts      [:contacts/active]
                   error-message [:new-identity-error]]
     [react/keyboard-avoiding-view open-dapp.styles/main-container
      [status-bar/status-bar]
@@ -39,7 +39,7 @@
                                   :style               add-new.styles/button-container
                                   :accessibility-label :scan-contact-code-button}
        [react/view
-        [vector-icons/icon :icons/qr {:color colors/blue}]]]]
+        [vector-icons/icon :main-icons/qr {:color colors/blue}]]]]
      [react/text {:style styles/error-message}
       error-message]
      (when (seq contacts)

@@ -266,7 +266,8 @@
         "one": "分鐘",
         "other": "分鐘"
     },
-    "browsing-open-in-web-browser": "在網路瀏覽器中開啟",
+    "browsing-open-in-android-web-browser": "在網路瀏覽器中開啟",
+    "browsing-open-in-ios-web-browser": "在網路瀏覽器中開啟",
     "delete-group-prompt": "這不會影響你的聯絡人",
     "wallet-insufficient-funds": "資金不足",
     "edit-profile": "編輯個人資料",

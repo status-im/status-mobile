@@ -9,6 +9,7 @@
             [status-im.chat.commands.receiving :as commands-receiving]
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.components.popup-menu.views :as desktop.pop-up]
             [status-im.constants :as constants]
             [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.utils.identicon :as identicon]
@@ -16,13 +17,14 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.chat.commands.protocol :as protocol]))
+            [status-im.chat.commands.protocol :as protocol]
+            [status-im.extensions.core :as extensions]))
 
 (defn install-extension-message [extension-id outgoing]
   [react/touchable-highlight {:on-press #(re-frame/dispatch
                                           [:extensions.ui/install-extension-button-pressed extension-id])}
    [react/view style/extension-container
-    [icons/icon :icons/info {:color (if outgoing colors/white colors/gray)}]
+    [icons/icon :main-icons/info {:color (if outgoing colors/white colors/gray)}]
     [react/text {:style (style/extension-text outgoing)}
      (i18n/label :to-see-this-message)]
     [react/text {:style (style/extension-install outgoing)}
@@ -30,16 +32,19 @@
 
 (defview message-content-command
   [command-message]
-  (letsubs [id->command [:chats/id->command]]
+  (letsubs [id->command [:chats/id->command]
+            {:keys [contacts]} [:chats/current-chat]]
     (let [{:keys [type] :as command} (commands-receiving/lookup-command-by-ref command-message id->command)
           extension-id (get-in command-message [:content :params :extension-id])]
-      (if (and platform/mobile? extension-id (or (not type) (and type (satisfies? protocol/Extension type)
-                                                                 (not= extension-id (protocol/extension-id type)))))
+      (if (and platform/mobile? extension-id
+               (extensions/valid-uri? extension-id)
+               (or (not type) (and type (satisfies? protocol/Extension type)
+                                   (not= extension-id (protocol/extension-id type)))))
         ;; Show install message only for mobile and if message contains extension id and there is no extension installed
         ;; or installed extension has differen extension id
         [install-extension-message extension-id (:outgoing command-message)]
         (if command
-          (commands/generate-preview command command-message)
+          (commands/generate-preview command (commands/add-chat-contacts contacts command-message))
           [react/text (str "Unhandled command: " (-> command-message :content :command-path first))])))))
 
 (defview message-timestamp [t justify-timestamp? outgoing command? content]
@@ -65,7 +70,7 @@
   (letsubs [username [:contacts/contact-name-by-identity from]]
     [react/view {:style (style/quoted-message-container outgoing)}
      [react/view {:style style/quoted-message-author-container}
-      [vector-icons/icon :icons/reply {:color (if outgoing colors/wild-blue-yonder colors/gray)}]
+      [vector-icons/icon :main-icons/reply {:color (if outgoing colors/wild-blue-yonder colors/gray)}]
       [react/text {:style (style/quoted-message-author outgoing)}
        (chat.utils/format-reply-author from username current-public-key)]]
      [react/text {:style           (style/quoted-message-text outgoing)
@@ -78,7 +83,7 @@
                 :font  :default}
     (:text content)]])
 
-(defn- expand-button [expanded? chat-id message-id]
+(defn expand-button [expanded? chat-id message-id]
   [react/text {:style    style/message-expand-button
                :on-press #(re-frame/dispatch [:chat.ui/message-expand-toggled chat-id message-id])}
    (i18n/label (if expanded? :show-less :show-more))])
@@ -132,6 +137,12 @@
   [wrapper message]
   [wrapper message [emoji-message message]])
 
+(defmethod message-content constants/content-type-sticker
+  [wrapper {:keys [content] :as message}]
+  [wrapper message
+   [react/image {:style {:margin 10 :width 100 :height 100}
+                 :source {:uri (:uri content)}}]])
+
 (defmethod message-content :default
   [wrapper {:keys [content-type] :as message}]
   [wrapper message
@@ -177,24 +188,29 @@
    [react/activity-indicator {:animating true}]])
 
 (defn message-not-sent-text [chat-id message-id]
-  [react/touchable-highlight {:on-press (fn [] (if platform/ios?
+  [react/touchable-highlight {:on-press (fn [] (cond
+                                                 platform/ios?
                                                  (action-sheet/show {:title   (i18n/label :message-not-sent)
                                                                      :options [{:label  (i18n/label :resend-message)
                                                                                 :action #(re-frame/dispatch [:chat.ui/resend-message chat-id message-id])}
                                                                                {:label        (i18n/label :delete-message)
                                                                                 :destructive? true
                                                                                 :action       #(re-frame/dispatch [:chat.ui/delete-message chat-id message-id])}]})
+                                                 platform/desktop?
+                                                 (desktop.pop-up/show-desktop-menu
+                                                  (desktop.pop-up/get-message-menu-items chat-id message-id))
+
+                                                 :else
                                                  (re-frame/dispatch
                                                   [:chat.ui/show-message-options {:chat-id    chat-id
                                                                                   :message-id message-id}])))}
    [react/view style/not-sent-view
     [react/text {:style style/not-sent-text}
      (i18n/message-status-label (if platform/desktop?
-                                  :not-sent-without-tap
-                                  :not-sent))]
-    (when-not platform/desktop?
-      [react/view style/not-sent-icon
-       [vector-icons/icon :icons/warning {:color colors/red}]])]])
+                                  :not-sent-click
+                                  :not-sent-tap))]
+    [react/view style/not-sent-icon
+     [vector-icons/icon :main-icons/warning {:color colors/red}]]]])
 
 (defview command-status [{{:keys [network]} :params}]
   (letsubs [current-network [:network-name]]
@@ -203,7 +219,7 @@
        [react/text {:style style/not-sent-text}
         (i18n/label :network-mismatch)]
        [react/view style/not-sent-icon
-        [vector-icons/icon :icons/warning {:color colors/red}]]])))
+        [vector-icons/icon :main-icons/warning {:color colors/red}]]])))
 
 (defn message-delivery-status
   [{:keys [chat-id message-id current-public-key user-statuses content last-outgoing? outgoing message-type] :as message}]
@@ -253,13 +269,13 @@
    [react/view (style/delivery-status outgoing)
     [message-delivery-status message]]])
 
-(defn chat-message [{:keys [message-id outgoing group-chat modal? current-public-key content-type content] :as message}]
+(defn chat-message [{:keys [message-id old-message-id outgoing group-chat modal? current-public-key content-type content] :as message}]
   [react/view
    [react/touchable-highlight {:on-press      (fn [_]
                                                 (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true}])
                                                 (react/dismiss-keyboard!))
                                :on-long-press #(when (= content-type constants/content-type-text)
-                                                 (list-selection/chat-message message-id (:text content) (i18n/label :t/message)))}
+                                                 (list-selection/chat-message message-id old-message-id (:text content) (i18n/label :t/message)))}
     [react/view {:accessibility-label :chat-item}
      (let [incoming-group (and group-chat (not outgoing))]
        [message-content message-body (merge message

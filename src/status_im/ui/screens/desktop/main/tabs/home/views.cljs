@@ -19,17 +19,22 @@
             [status-im.ui.components.action-button.action-button :as action-button]
             [status-im.utils.config :as config]))
 
-(views/defview chat-list-item-inner-view [{:keys [chat-id name group-chat color public? public-key] :as chat-item}]
+(views/defview chat-list-item-inner-view [{:keys [chat-id name group-chat
+                                                  color public? public-key
+                                                  timestamp
+                                                  last-message-content
+                                                  last-message-content-type]
+                                           :as chat-item}]
   (views/letsubs [photo-path              [:contacts/chat-photo chat-id]
                   unviewed-messages-count [:chats/unviewed-messages-count chat-id]
                   chat-name               [:chats/chat-name chat-id]
-                  current-chat-id         [:chats/current-chat-id]
-                  {:keys [content] :as last-message} [:chats/last-message chat-id]]
-    (let [name (or chat-name
+                  current-chat-id         [:chats/current-chat-id]]
+    (let [last-message {:content      last-message-content
+                        :timestamp    timestamp
+                        :content-type last-message-content-type}
+          name (or chat-name
                    (gfycat/generate-gfy public-key))
-          [unviewed-messages-label large?] (if (< 9 unviewed-messages-count)
-                                             ["9+" true]
-                                             [unviewed-messages-count false])
+          [unviewed-messages-label large?] [(utils/unread-messages-count unviewed-messages-count) true]
           current? (= current-chat-id chat-id)]
       [react/view {:style (styles/chat-list-item current?)}
        [react/view {:style styles/img-container}
@@ -38,16 +43,13 @@
            [react/text {:style styles/topic-text}
             (string/capitalize (second name))]]
           [react/image {:style styles/chat-icon
-                        :source {:uri photo-path}}])
-        (when (pos? unviewed-messages-count)
-          [react/view {:style styles/unread-messages-icon}
-           [react/text {:style (styles/unread-messages-text large?)} unviewed-messages-label]])]
+                        :source {:uri photo-path}}])]
        [react/view {:style styles/chat-name-last-msg-box}
         [react/view {:style styles/chat-name-box}
          (when (and group-chat (not public?))
-           [icons/icon :icons/group-chat])
+           [icons/icon :tiny-icons/tiny-group])
          (when public?
-           [icons/icon :icons/public-chat])
+           [icons/icon :tiny-icons/tiny-public])
          [react/text {:ellipsize-mode  :tail
                       :number-of-lines 1
                       :style           (styles/chat-name current?)}
@@ -57,10 +59,13 @@
                      :style           styles/chat-last-message}
          (if (= constants/content-type-command (:content-type last-message))
            [chat-item/command-short-preview last-message]
-           (or (:text content)
+           (or (:text last-message-content)
                (i18n/label :no-messages-yet)))]]
        [react/view {:style styles/timestamp}
-        [chat-item/message-timestamp (:timestamp last-message)]]])))
+        [chat-item/message-timestamp (:timestamp last-message)]
+        (when (pos? unviewed-messages-count)
+          [react/view {:style styles/unread-messages-icon}
+           [react/text {:style (styles/unread-messages-text large?)} unviewed-messages-label]])]])))
 
 (defn chat-list-item [[chat-id
                        {:keys [group-chat public?] :as chat}]]
@@ -113,7 +118,7 @@
      [action-button/action-button
       {:label               (i18n/label :t/start-new-chat)
        :accessibility-label :start-1-1-chat-button
-       :icon                :icons/newchat
+       :icon                :main-icons/add-contact
        :icon-opts           {:color colors/blue}
        :on-press            #(do
                                (re-frame/dispatch [:set-in [:desktop :popup] nil])
@@ -121,7 +126,7 @@
      [action-button/action-button
       {:label               (i18n/label :t/start-group-chat)
        :accessibility-label :start-group-chat-button
-       :icon                :icons/contacts
+       :icon                :main-icons/group-chat
        :icon-opts           {:color colors/blue}
        :on-press            #(do
                                (re-frame/dispatch [:set-in [:desktop :popup] nil])
@@ -129,7 +134,7 @@
      [action-button/action-button
       {:label               (i18n/label :t/new-public-group-chat)
        :accessibility-label :join-public-chat-button
-       :icon                :icons/public
+       :icon                :main-icons/public-chat
        :icon-opts           {:color colors/blue}
        :on-press            #(do
                                (re-frame/dispatch [:set-in [:desktop :popup] nil])
@@ -137,36 +142,27 @@
 
 (views/defview chat-list-view [loading?]
   (views/letsubs [search-filter       [:search/filter]
+                  logging-in?          [:get :accounts/login]
                   filtered-home-items [:search/filtered-home-items]]
     {:component-did-mount
      (fn [this]
        (let [[_ loading?] (.. this -props -argv)]
          (when loading?
-           (re-frame/dispatch [:init-chats]))))
-
-     :component-did-update
-     (fn [this [_ old-loading?]]
-       (let [[_ loading?] (.. this -props -argv)]
-         (when (and (false? loading?)
-                    (true? old-loading?))
-           (re-frame/dispatch [:load-chats-messages]))))}
+           (re-frame/dispatch [:init-rest-of-chats]))))}
     [react/view {:style styles/chat-list-view}
      [react/view {:style styles/chat-list-header}
       [search-input search-filter]
       [react/view
-       [react/touchable-highlight {:on-press #(re-frame/dispatch [:set-in [:desktop :popup] popup])}
+       [react/touchable-highlight {:on-press (when-not logging-in? #(re-frame/dispatch [:set-in [:desktop :popup] popup]))}
         [react/view {:style styles/add-new}
-         [icons/icon :icons/add {:style {:tint-color :white}}]]]]]
-     (if loading?
-       [react/view {:style {:flex            1
-                            :justify-content :center
-                            :align-items     :center}}
-        [components/activity-indicator {:animating true}]]
-       [react/scroll-view {:enableArrayScrollingOptimization true}
-        [react/view
-         (for [[index chat] (map-indexed vector filtered-home-items)]
-           ^{:key (first chat)}
-           [chat-list-item chat])]])]))
+         (if logging-in?
+           [components/activity-indicator {:animating true :color :white}]
+           [icons/icon :main-icons/add {:style {:tint-color :white}}])]]]]
+     [react/scroll-view {:enableArrayScrollingOptimization true}
+      [react/view
+       (for [[index chat] (map-indexed vector filtered-home-items)]
+         ^{:key (first chat)}
+         [chat-list-item chat])]]]))
 
 (views/defview chat-list-view-wrapper []
   (views/letsubs [loading? [:get :chats/loading?]]

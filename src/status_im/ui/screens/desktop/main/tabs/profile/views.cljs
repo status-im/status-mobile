@@ -7,6 +7,8 @@
             [status-im.utils.utils :as utils]
             [status-im.ui.components.colors :as colors]
             [status-im.i18n :as i18n]
+            [status-im.utils.logging.core :as logging]
+            [status-im.utils.platform :as platform]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [taoensso.timbre :as log]
             [status-im.utils.gfycat.core :as gfy]
@@ -15,6 +17,7 @@
             [status-im.ui.screens.pairing.views :as pairing.views]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.screens.desktop.main.tabs.profile.styles :as styles]
+            [status-im.ui.screens.pairing.styles :as pairing.styles]
             [status-im.ui.screens.profile.user.views :as profile]
             [status-im.ui.screens.profile.seed.views :as profile.recovery]
             [status-im.ui.components.common.common :as components.common]))
@@ -46,7 +49,7 @@
   (views/letsubs []
     [react/view {:style (styles/tooltip-container opacity)}
      [react/view {:style styles/tooltip-icon-text}
-      [vector-icons/icon :icons/check
+      [vector-icons/icon :main-icons/check
        {:style styles/check-icon}]
       [react/text {:style {:font-size 14 :color colors/green}}
        (i18n/label :sharing-copied-to-clipboard)]]
@@ -76,13 +79,22 @@
         [react/text {:style styles/qr-code-copy-text}
          (i18n/label :copy-qr)]]]]]))
 
-(defn installations-section [installations]
+(defn installations-section [your-installation-id
+                             your-installation-name
+                             installations]
   [react/view
-   [react/view {:style styles/title-separator}]
-   [react/text {:style styles/mailserver-title} (i18n/label :devices)]
-   [pairing.views/pair-this-device]
-   [pairing.views/sync-devices]
-   [pairing.views/installations-list installations]])
+   (if (string/blank? your-installation-name)
+     [pairing.views/edit-installation-name]
+     [react/view
+      [pairing.views/pair-this-device]
+      [pairing.views/info-section]
+      [pairing.views/sync-devices]
+      [react/view {:style pairing.styles/installation-list}
+       [pairing.views/your-device your-installation-id your-installation-name]
+       (for [installation installations]
+         ^{:key (:installation-id installation)}
+         [react/view {:style {:margin-bottom 10}}
+          (pairing.views/render-row installation)])]])])
 
 (defn connection-status
   "generates a composite message of the current connection state given peer and mailserver statuses"
@@ -99,31 +111,103 @@
       (and peers-disconnected? searching?)               "Disconnected and searching"
       :else                                              "Disconnected")))
 
+(defn connection-statistics-display
+  [{:keys [mailserver-request-process-time
+           mailserver-request-errors
+           les-packets-in
+           les-packets-out
+           p2p-inbound-traffic
+           p2p-outbound-traffic]}]
+  [react/view {:style {:flex-direction :row}}
+   [react/view
+    [react/text {:style styles/connection-stats-title}
+     "Mailserver requests"]
+    [react/text {:style styles/connection-stats-entry}
+     (str "errors " mailserver-request-errors)]
+    [react/text {:style styles/connection-stats-entry}
+     (str "process time " mailserver-request-process-time)]]
+   [react/view
+    [react/text {:style styles/connection-stats-title}
+     "p2p traffic"]
+    [react/text {:style styles/connection-stats-entry}
+     (str "inbound " p2p-inbound-traffic)]
+    [react/text {:style styles/connection-stats-entry}
+     (str "outbound " p2p-outbound-traffic)]]
+   [react/view
+    [react/text {:style styles/connection-stats-title}
+     "LES packets"]
+    [react/text {:style styles/connection-stats-entry}
+     (str "inbound " les-packets-in)]
+    [react/text {:style styles/connection-stats-entry}
+     (str "outbound " les-packets-out)]]])
+
+(views/defview logging-display []
+  (views/letsubs [logging-enabled [:settings/logging-enabled]]
+    [react/view
+     [react/view {:style (styles/adv-settings-row false)}
+      [react/text {:style (assoc (styles/adv-settings-row-text colors/black)
+                                 :font-size 14)} (i18n/label :t/logging-enabled)]
+      [react/switch {:on-tint-color   colors/blue
+                     :value           logging-enabled
+                     :on-value-change #(re-frame/dispatch [:log-level.ui/logging-enabled (not logging-enabled)])}]]
+     [react/view {:style (styles/adv-settings-row false)}
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:logging.ui/send-logs-pressed])}
+       [react/text {:style (styles/adv-settings-row-text colors/red)}
+        (i18n/label :t/send-logs)]]]]))
+
 (views/defview advanced-settings []
-  (views/letsubs [installations    [:pairing/installations]
-                  current-mailserver-id [:mailserver/current-id]
+  (views/letsubs [current-mailserver-id [:mailserver/current-id]
+                  {:keys [settings]}    [:account/account]
                   mailservers           [:mailserver/fleet-mailservers]
                   mailserver-state      [:mailserver/state]
                   node-status           [:node-status]
                   peers-count           [:peers-count]
+                  connection-stats      [:connection-stats]
                   disconnected          [:disconnected?]]
     (let [render-fn (offline-messaging.views/render-row current-mailserver-id)
-          connection-message      (connection-status peers-count node-status mailserver-state disconnected)]
+          pfs? (:pfs? settings)
+          connection-message (connection-status peers-count node-status mailserver-state disconnected)]
       [react/scroll-view
        [react/text {:style styles/advanced-settings-title
                     :font  :medium}
         (i18n/label :advanced-settings)]
-       [react/view
-        [react/text {:style styles/connection-message-text} connection-message]]
+
        [react/view {:style styles/title-separator}]
-       [react/text {:style styles/mailserver-title} (i18n/label :offline-messaging)]
+       [react/text {:style styles/adv-settings-subtitle} "Connections"]
+       [react/view {:style {:flex-direction :row
+                            :margin-bottom 8}}
+        [react/view {:style (styles/connection-circle disconnected)}]
+        [react/text connection-message]]
+       (connection-statistics-display connection-stats)
+
+       [react/view {:style styles/title-separator}]
+       [react/text {:style styles/adv-settings-subtitle} (i18n/label :offline-messaging)]
        [react/view
         (for [mailserver (vals mailservers)]
           ^{:key (:id mailserver)}
           [react/view {:style {:margin-vertical 8}}
            [render-fn mailserver]])]
-       (when (config/pairing-enabled? true)
-         (installations-section installations))])))
+       [react/view {:style styles/title-separator}]
+       [react/text {:style styles/adv-settings-subtitle} (i18n/label :t/logging)]
+       [logging-display]
+
+       [react/view {:style styles/title-separator}]
+       [react/text {:style styles/adv-settings-subtitle} (i18n/label :t/pfs)]
+       [react/view {:style (styles/profile-row false)}
+        [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :t/pfs)]
+        [react/switch {:on-tint-color   colors/blue
+                       :value           pfs?
+                       :on-value-change #(re-frame/dispatch [:accounts.ui/toggle-pfs (not pfs?)])}]]])))
+
+(views/defview installations []
+  (views/letsubs [installations     [:pairing/installations]
+                  installation-id   [:pairing/installation-id]
+                  installation-name [:pairing/installation-name]]
+    [react/scroll-view
+     (installations-section
+      installation-id
+      installation-name
+      installations)]))
 
 (views/defview backup-recovery-phrase []
   [profile.recovery/backup-seed])
@@ -136,14 +220,34 @@
       (i18n/label :share-contact-code)]]
     [react/view {:style               styles/share-contact-icon-container
                  :accessibility-label :share-my-contact-code-button}
-     [vector-icons/icon :icons/qr {:style {:tint-color colors/blue}}]]]])
+     [vector-icons/icon :main-icons/qr {:style {:tint-color colors/blue}}]]]])
+
+(defn help-item [help-open?]
+  [react/touchable-highlight {:style    (styles/adv-settings-row help-open?)
+                              :on-press #(re-frame/dispatch [:navigate-to (if help-open? :home :help-center)])}
+   [react/view {:style styles/adv-settings}
+    [react/text {:style (styles/adv-settings-row-text colors/black)
+                 :font  (if help-open? :medium :default)}
+     (i18n/label  :t/help-center)]
+    [vector-icons/icon :main-icons/next {:style {:tint-color colors/gray}}]]])
+
+(defn advanced-settings-item [adv-settings-open?]
+  [react/touchable-highlight {:style  (styles/adv-settings-row adv-settings-open?)
+                              :on-press #(do
+                                           (re-frame/dispatch [:navigate-to (if adv-settings-open? :home :advanced-settings)])
+                                           (re-frame/dispatch [:load-debug-metrics]))}
+   [react/view {:style styles/adv-settings}
+    [react/text {:style (styles/adv-settings-row-text colors/black)
+                 :font  (if adv-settings-open? :medium :default)}
+     (i18n/label :t/advanced-settings)]
+    [vector-icons/icon :main-icons/next {:style {:tint-color colors/gray}}]]])
 
 (views/defview profile [{:keys [seed-backed-up? mnemonic] :as user}]
   (views/letsubs [current-view-id [:get :view-id]
-                  nightly-version [:get-in [:desktop/desktop :nightly-version]]
                   editing?        [:get :my-profile/editing?]] ;; TODO janherich: refactor my-profile, unnecessary complicated structure in db (could be just `:staged-name`/`:editing?` fields in account map) and horrible way to access it woth `:get`/`:set` subs/events
-    (let [{:keys [url commit]}         nightly-version
-          adv-settings-open?           (= current-view-id :advanced-settings)
+    (let [adv-settings-open?           (= current-view-id :advanced-settings)
+          help-open?                   (= current-view-id :help-center)
+          installations-open?          (= current-view-id :installations)
           backup-recovery-phrase-open? (= current-view-id :backup-recovery-phrase)
           notifications?               (get-in user [:desktop-notifications?])
           show-backup-seed?            (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
@@ -162,13 +266,14 @@
          [react/switch {:on-tint-color   colors/blue
                         :value           notifications?
                         :on-value-change #(re-frame/dispatch [:accounts.ui/notifications-enabled (not notifications?)])}]]
-        [react/touchable-highlight {:style  (styles/profile-row adv-settings-open?)
-                                    :on-press #(re-frame/dispatch [:navigate-to (if adv-settings-open? :home :advanced-settings)])}
+        [advanced-settings-item adv-settings-open?]
+        [help-item help-open?]
+        [react/touchable-highlight {:style  (styles/profile-row installations-open?)
+                                    :on-press #(re-frame/dispatch [:navigate-to (if installations-open? :home :installations)])}
          [react/view {:style styles/adv-settings}
-          [react/text {:style (styles/profile-row-text colors/black)
-                       :font  (if adv-settings-open? :medium :default)}
-           (i18n/label :t/advanced-settings)]
-          [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]]
+          [react/text {:style (styles/profile-row-text colors/black)}
+           (i18n/label :t/devices)]
+          [vector-icons/icon :main-icons/next {:style {:tint-color colors/gray}}]]]
         (when show-backup-seed?
           [react/touchable-highlight {:style  (styles/profile-row backup-recovery-phrase-open?)
                                       :on-press #(re-frame/dispatch [:navigate-to :backup-recovery-phrase])}
@@ -180,14 +285,7 @@
         [react/view {:style (styles/profile-row false)}
          [react/touchable-highlight {:on-press #(re-frame/dispatch [:accounts.logout.ui/logout-confirmed])}
           [react/text {:style (styles/profile-row-text colors/red)} (i18n/label :t/logout)]]
-         [react/view [react/text {:style (styles/profile-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]
-        (when (and url commit (not= (subs build/commit-sha 0 6) commit))
-          [react/view {:style {:margin-top 20}}
-           [react/touchable-highlight {:on-press #(.openURL react/linking url)}
-            [react/view {:style styles/share-contact-code}
-             [react/view {:style styles/share-contact-code-text-container}
-              [react/text {:style styles/share-contact-code-text}
-               (str "Download latest " commit)]]]]])]])))
+         [react/view [react/text {:style (styles/profile-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]]])))
 
 (views/defview profile-data []
   (views/letsubs

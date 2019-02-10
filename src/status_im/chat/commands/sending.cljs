@@ -31,11 +31,11 @@
       ;; errors during validation
       {:db (chat/set-chat-ui-props db {:validation-messages validation-error})}
       ;; no errors
-      (if (satisfies? protocol/Yielding type)
-        ;; yield control implemented, don't send the message
-        (protocol/yield-control type parameter-map cofx)
-        ;; no yield control, proceed with sending the command message
-        (let [command-message (create-command-message chat-id type parameter-map cofx)]
+      (let [command-message (commands/enrich-command-message-for-events db (create-command-message chat-id type parameter-map cofx))]
+        (if (satisfies? protocol/Yielding type)
+          ;; yield control implemented, don't send the message
+          (protocol/yield-control type command-message cofx)
+          ;; no yield control, proceed with sending the command message
           (fx/merge cofx
                     #(protocol/on-send type command-message %)
                     (commands.input/set-command-reference nil)
@@ -43,9 +43,9 @@
 
 (fx/defn send
   "Sends command with given parameters in particular chat"
-  [cofx chat-id {:keys [type]} parameter-map]
+  [{:keys [db] :as cofx} chat-id {:keys [type]} parameter-map]
   (let [command-message (create-command-message chat-id type parameter-map cofx)]
     (fx/merge cofx
-              #(protocol/on-send type command-message %)
+              #(protocol/on-send type (commands/enrich-command-message-for-events db command-message) %)
               (commands.input/set-command-reference nil)
               (chat.message/send-message command-message))))

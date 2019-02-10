@@ -13,8 +13,8 @@
             [status-im.data-store.realm.schemas.account.request :as request]
             [status-im.data-store.realm.schemas.account.membership-update :as membership-update]
             [status-im.data-store.realm.schemas.account.installation :as installation]
-            [status-im.data-store.realm.schemas.account.migrations :as migrations]
-            [taoensso.timbre :as log]))
+            [status-im.data-store.realm.schemas.account.contact-recovery :as contact-recovery]
+            [status-im.data-store.realm.schemas.account.migrations :as migrations]))
 
 (def v1 [chat/v1
          transport/v1
@@ -278,6 +278,141 @@
           browser/v8
           dapp-permissions/v9])
 
+(def v27 [chat/v9
+          transport/v7
+          contact/v3
+          message/v9
+          mailserver/v11
+          mailserver-topic/v1
+          user-status/v2
+          membership-update/v1
+          installation/v2
+          local-storage/v1
+          browser/v8
+          dapp-permissions/v9])
+
+(def v28 [chat/v10
+          transport/v7
+          contact/v3
+          message/v9
+          mailserver/v11
+          mailserver-topic/v1
+          user-status/v2
+          membership-update/v1
+          installation/v2
+          local-storage/v1
+          browser/v8
+          dapp-permissions/v9])
+
+(def v29 [chat/v11
+          transport/v7
+          contact/v3
+          message/v9
+          mailserver/v11
+          mailserver-topic/v1
+          user-status/v2
+          membership-update/v1
+          installation/v2
+          local-storage/v1
+          browser/v8
+          dapp-permissions/v9])
+
+(def v30 [chat/v12
+          transport/v7
+          contact/v3
+          message/v9
+          mailserver/v11
+          mailserver-topic/v1
+          user-status/v2
+          membership-update/v1
+          installation/v2
+          local-storage/v1
+          browser/v8
+          dapp-permissions/v9])
+
+(def v31 [chat/v13
+          transport/v7
+          contact/v3
+          message/v9
+          mailserver/v11
+          mailserver-topic/v1
+          user-status/v2
+          membership-update/v1
+          installation/v2
+          local-storage/v1
+          browser/v8
+          dapp-permissions/v9])
+
+(def v32 [chat/v13
+          transport/v7
+          contact/v3
+          message/v9
+          mailserver/v11
+          mailserver-topic/v1
+          user-status/v2
+          membership-update/v1
+          installation/v2
+          local-storage/v1
+          browser/v8
+          dapp-permissions/v9
+          contact-recovery/v1])
+
+(def v33 [chat/v13
+          transport/v7
+          contact/v3
+          message/v9
+          mailserver/v11
+          mailserver-topic/v1
+          user-status/v2
+          membership-update/v1
+          installation/v3
+          local-storage/v1
+          browser/v8
+          dapp-permissions/v9
+          contact-recovery/v1])
+
+(def v34 [chat/v14
+          transport/v7
+          contact/v3
+          message/v9
+          mailserver/v11
+          mailserver-topic/v1
+          user-status/v2
+          membership-update/v1
+          installation/v3
+          local-storage/v1
+          browser/v8
+          dapp-permissions/v9
+          contact-recovery/v1])
+
+(def v35 [chat/v14
+          transport/v8
+          contact/v3
+          message/v9
+          mailserver/v11
+          mailserver-topic/v1
+          user-status/v2
+          membership-update/v1
+          installation/v3
+          local-storage/v1
+          browser/v8
+          dapp-permissions/v9
+          contact-recovery/v1])
+
+(def v36 [chat/v14
+          transport/v8
+          contact/v4
+          message/v9
+          mailserver/v11
+          mailserver-topic/v1
+          user-status/v2
+          membership-update/v1
+          installation/v3
+          local-storage/v1
+          browser/v8
+          dapp-permissions/v9
+          contact-recovery/v1])
+
 ;; put schemas ordered by version
 (def schemas [{:schema        v1
                :schemaVersion 1
@@ -356,4 +491,34 @@
                :migration     migrations/v25}
               {:schema        v26
                :schemaVersion 26
-               :migration     migrations/v26}])
+               :migration     migrations/v26}
+              {:schema        v27
+               :schemaVersion 27
+               :migration     migrations/v27}
+              {:schema        v28
+               :schemaVersion 28
+               :migration     migrations/v28}
+              {:schema        v29
+               :schemaVersion 29
+               :migration     migrations/v29}
+              {:schema        v30
+               :schemaVersion 30
+               :migration     migrations/v30}
+              {:schema        v31
+               :schemaVersion 31
+               :migration     (constantly nil)}
+              {:schema        v32
+               :schemaVersion 32
+               :migration     (constantly nil)}
+              {:schema        v33
+               :schemaVersion 33
+               :migration     (constantly nil)}
+              {:schema        v34
+               :schemaVersion 34
+               :migration     migrations/v34}
+              {:schema        v35
+               :schemaVersion 35
+               :migration     migrations/v35}
+              {:schema        v36
+               :schemaVersion 36
+               :migration     (constantly nil)}])

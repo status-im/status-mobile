@@ -14,11 +14,14 @@
    :ethcro             (js/require "./resources/images/contacts/ethcro.png")
    :easytrade          (js/require "./resources/images/contacts/easytrade.png")
    :dBay               (js/require "./resources/images/contacts/dBay.png")
+
+   :dragonereum        (js/require "./resources/images/contacts/dragonereum.png")
    :name-bazaar        (js/require "./resources/images/contacts/name-bazaar.png")
    :cryptographics     (js/require "./resources/images/contacts/cryptographics.png")
    :cryptopunks        (js/require "./resources/images/contacts/cryptopunks.png")
    :cryptotakeovers    (js/require "./resources/images/contacts/cryptotakeovers.png")
    :cryptokitties      (js/require "./resources/images/contacts/cryptokitties.png")
+   :decentraland       (js/require "./resources/images/contacts/decentraland.png")
    :etheremon          (js/require "./resources/images/contacts/etheremon.png")
    :cryptostrikers     (js/require "./resources/images/contacts/cryptostrikers.png")
    :oasis-direct       (js/require "./resources/images/contacts/oasis-direct.png")
@@ -45,6 +48,9 @@
    :smartz             (js/require "./resources/images/contacts/smartz.png")
    :snt-voting         (js/require "./resources/images/contacts/snt-voting.png")
    :superrare          (js/require "./resources/images/contacts/superrare.png")
+   :3box               (js/require "./resources/images/contacts/3Box.png")
+   :aragon             (js/require "./resources/images/contacts/aragon.png")
+   :slowtrade          (js/require "./resources/images/contacts/slowtrade.png")
 
    :ddex               (js/require "./resources/images/contacts/ddex.png")
    :emoon              (js/require "./resources/images/contacts/emoon.png")
@@ -53,13 +59,18 @@
    :console            (js/require "./resources/images/contacts/console.png")})
 
 (def ui
-  {:empty-hashtags  (js/require "./resources/images/ui/empty-hashtags.png")
-   :empty-recent    (js/require "./resources/images/ui/empty-recent.png")
-   :analytics-image (js/require "./resources/images/ui/analytics-image.png")
-   :welcome-image   (js/require "./resources/images/ui/welcome-image.png")
-   :lock            {:image  (js/require "./resources/images/ui/lock.png")
-                     :width  993
-                     :height 933}
-   :wallet-welcome  (js/require "./resources/images/ui/wallet-welcome.png")
-   :hardwallet-card (js/require "./resources/images/ui/hardwallet-card.png")
-   :phone-nfc       (js/require "./resources/images/ui/phone-nfc.png")})
+  {:empty-hashtags      (js/require "./resources/images/ui/empty-hashtags.png")
+   :empty-recent        (js/require "./resources/images/ui/empty-recent.png")
+   :analytics-image     (js/require "./resources/images/ui/analytics-image.png")
+   :welcome-image       (js/require "./resources/images/ui/welcome-image.png")
+   :lock                {:image  (js/require "./resources/images/ui/lock.png")
+                         :width  993
+                         :height 933}
+   :wallet-welcome      (js/require "./resources/images/ui/wallet-welcome.png")
+   :hardwallet-card     (js/require "./resources/images/ui/hardwallet-card.png")
+   :secret-keys         (js/require "./resources/images/ui/secret-keys.png")
+   :keycard-lock        (js/require "./resources/images/ui/keycard-lock.png")
+   :hold-card-animation (js/require "./resources/images/ui/hold-card-animation.png")
+   :warning-sign        (js/require "./resources/images/ui/warning-sign.png")
+   :phone-nfc-on        (js/require "./resources/images/ui/phone-nfc-on.png")
+   :phone-nfc-off       (js/require "./resources/images/ui/phone-nfc-off.png")})

@@ -22,10 +22,12 @@
 ;; BLACK
 (def black "#000000") ;; Used as the default text color
 (def black-transparent (alpha black 0.1)) ;; Used as background color for rounded button on dark background and as background color for containers like "Backup seed phrase"
+(def black-transparent-40 (alpha black 0.4))
 (def gray-light black-transparent) ;; Used as divider color
 
 ;; DARK GREY
 (def gray "#939ba1") ;; Dark grey, used as a background for a light foreground and as section header and secondary text color
+(def gray-transparent-40 (alpha gray 0.4))
 ;; LIGHT GREY
 (def gray-lighter "#eef2f5")  ;; Light Grey, used as a background or shadow
 
@@ -37,9 +39,11 @@
 
 ;; RED
 (def red "#ff2d55") ;; Used to highlight errors or "dangerous" actions
+(def red-transparent-10 (alpha red 0.1))
 
 ;; GREEN
 (def green "#44d058") ;; icon for successful inboud transaction
+(def green-transparent-10 (alpha green 0.1)) ;; icon for successful inboud transaction
 
 (def chat-colors ["#fa6565"
                   "#7cda00"

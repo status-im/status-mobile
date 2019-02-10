@@ -233,4 +233,34 @@
    :text-align     :center})
 
 (def empty-chat-text-name
-  {:color colors/black})
+  {:margin-bottom 5
+   :color         colors/black})
+
+(def join-button
+  {:margin-top    24
+   :margin-bottom 15})
+
+(def group-chat-icon
+  {:color       colors/white
+   :font-size   40
+   :font-weight :bold
+   :line-height 55})
+
+(def group-chat-join-footer
+  {:position        :absolute
+   :justify-content :center
+   :margin-bottom   30
+   :bottom          0})
+
+(def group-chat-join-name
+  {:color       :black
+   :font-weight :bold
+   :font-size   22})
+
+(def group-chat-join-container
+  {:flex            1
+   :align-items     :center
+   :justify-content :center})
+
+(def decline-chat
+  {:color colors/blue})

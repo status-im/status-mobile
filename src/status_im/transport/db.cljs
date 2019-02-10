@@ -3,7 +3,9 @@
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as s]
             status-im.contact.db
-            [status-im.utils.clocks :as utils.clocks]))
+            [status-im.utils.config :as config]
+            [status-im.utils.clocks :as utils.clocks]
+            [status-im.constants :as constants]))
 
 ;; required
 (spec/def ::ack (spec/coll-of string? :kind vector?))
@@ -28,18 +30,19 @@
 (spec/def :transport/chat (spec/keys :req-un [::ack ::seen ::pending-ack ::pending-send ::topic]
                                      :opt-un [::sym-key-id ::sym-key ::resend?]))
 (spec/def :transport/chats (spec/map-of :global/not-empty-string :transport/chat))
-(spec/def :transport/filters (spec/map-of :transport/filter-id :transport/filter))
+(spec/def :transport/filters (spec/map-of :transport/filter-id (spec/coll-of :transport/filter)))
 
 (defn create-chat
   "Initialize datastructure for chat representation at the transport level
   Currently only :topic is actually used"
-  [{:keys [topic resend? now]}]
-  {:ack                   []
-   :seen                  []
-   :pending-ack           []
-   :pending-send          []
-   :resend?               resend?
-   :topic                 topic})
+  [{:keys [topic resend? one-to-one now]}]
+  {:ack          []
+   :seen         []
+   :pending-ack  []
+   :pending-send []
+   :one-to-one   (boolean one-to-one)
+   :resend?      resend?
+   :topic        topic})
 
 (spec/def ::profile-image :contact/photo-path)
 
@@ -58,10 +61,13 @@
 
 (spec/def :message.content/text (spec/and string? (complement s/blank?)))
 (spec/def :message.content/response-to string?)
+(spec/def :message.content/response-to-v2 string?)
 (spec/def :message.content/command-path (spec/tuple string? (spec/coll-of (spec/or :scope keyword? :chat-id string?) :kind set? :min-count 1)))
+(spec/def :message.content/uri (spec/and string? (complement s/blank?)))
 (spec/def :message.content/params (spec/map-of keyword? any?))
 
-(spec/def ::content-type #{"text/plain" "command" "command-request"})
+(spec/def ::content-type #{constants/content-type-text constants/content-type-command
+                           constants/content-type-command-request constants/content-type-sticker})
 (spec/def ::message-type #{:group-user-message :public-group-user-message :user-message})
 (spec/def ::clock-value (spec/and pos-int?
                                   utils.clocks/safe-timestamp?))
@@ -94,15 +100,21 @@
                                            :req-opt [:message.content/response-to]))
 (spec/def :message.command/content (spec/keys :req-un [:message.content/command-path :message.content/params]))
 
+(spec/def :message.sticker/content (spec/keys :req-un [:message.content/uri]))
+
 (defmulti content-type :content-type)
 
-(defmethod content-type "command" [_]
+(defmethod content-type constants/content-type-command [_]
   (spec/merge :message/message-common
               (spec/keys :req-un [:message.command/content])))
 
-(defmethod content-type "command-request" [_]
+(defmethod content-type constants/content-type-command-request [_]
   (spec/merge :message/message-common
               (spec/keys :req-un [:message.command/content])))
+
+(defmethod content-type constants/content-type-sticker [_]
+  (spec/merge :message/message-common
+              (spec/keys :req-un [:message.sticker/content])))
 
 (defmethod content-type :default [_]
   (spec/merge :message/message-common
@@ -113,6 +125,11 @@
 (defn all-filters-added?
   [{:keys [db]}]
   (let [filters (set (keys (get db :transport/filters)))
-        chats (into #{:discovery-topic}
-                    (keys (filter #(:topic (val %)) (get db :transport/chats))))]
+        chats   (into #{:discovery-topic}
+                      (keys (filter (fn [[chat-id {:keys [topic one-to-one]}]]
+                                      (if one-to-one
+                                        (and config/partitioned-topic-enabled?
+                                             chat-id)
+                                        topic))
+                                    (get db :transport/chats))))]
     (= chats filters)))

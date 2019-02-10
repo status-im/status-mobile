@@ -4,6 +4,8 @@
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.contact.core :as models.contact]
+            [status-im.chat.models :as models.chat]
+            [status-im.group-chats.core :as models.group-chats]
             [status-im.ui.screens.chat.styles.main :as style]
             [status-im.utils.platform :as platform]
             [status-im.ui.screens.chat.input.input :as input]
@@ -12,8 +14,10 @@
             [status-im.ui.screens.chat.message.message :as message]
             [status-im.ui.screens.chat.message.options :as message-options]
             [status-im.ui.screens.chat.message.datemark :as message-datemark]
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.screens.chat.toolbar-content :as toolbar-content]
             [status-im.ui.components.animation :as animation]
+            [status-im.ui.components.button.view :as buttons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
@@ -23,7 +27,8 @@
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.toolbar.actions :as toolbar.actions]))
+            [status-im.ui.components.toolbar.actions :as toolbar.actions]
+            [status-im.ui.screens.chat.stickers.views :as stickers]))
 
 (defview add-contact-bar [contact-identity]
   (letsubs [{:keys [hide-contact?] :as contact} [:contacts/contact-by-identity]]
@@ -35,13 +40,13 @@
         {:on-press            #(re-frame/dispatch [:contact.ui/add-to-contact-pressed contact-identity])
          :accessibility-label :add-to-contacts-button}
         [react/view style/add-contact-center
-         [vector-icons/icon :icons/add {:color colors/blue}]
+         [vector-icons/icon :main-icons/add {:color colors/blue}]
          [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]]
        [react/touchable-highlight
-        {:on-press            #(re-frame/dispatch [:contacts.ui/close-contact-pressed contact-identity])
+        {:on-press            #(re-frame/dispatch [:contact.ui/close-contact-pressed contact-identity])
          :accessibility-label :add-to-contacts-close-button}
-        [vector-icons/icon :icons/close {:color           colors/black
-                                         :container-style style/add-contact-close-icon}]]])))
+        [vector-icons/icon :main-icons/close {:color           colors/black
+                                              :container-style style/add-contact-close-icon}]]])))
 
 (defn- on-options [chat-id chat-name group-chat? public?]
   (list-selection/show {:title   chat-name
@@ -59,11 +64,13 @@
         (toolbar/nav-back-count {:home? true}))
       [toolbar-content/toolbar-content-view]
       (when-not modal?
-        [toolbar/actions [{:icon      :icons/options
+        [toolbar/actions [{:icon      :main-icons/more
                            :icon-opts {:color               :black
                                        :accessibility-label :chat-menu-button}
                            :handler   #(on-options chat-id name group-chat public?)}]])]
-     (when-not (or public? group-chat) [add-contact-bar (first contacts)])]))
+     [connectivity/connectivity-view]
+     (when-not (or public? group-chat)
+       [add-contact-bar (first contacts)])]))
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))
 
@@ -106,7 +113,7 @@
                           (not (:dapp? contact)))]
       [react/view style/empty-chat-container
        (when one-to-one
-         [vector-icons/icon :icons/lock])
+         [vector-icons/icon :tiny-icons/tiny-lock])
        [react/text {:style style/empty-chat-text}
         (if one-to-one
           [react/text style/empty-chat-container-one-to-one
@@ -114,14 +121,59 @@
            [react/text {:style style/empty-chat-text-name} (:name contact)]]
           (i18n/label :t/empty-chat-description))]])))
 
-(defview messages-view [group-chat modal?]
+(defn join-chat-button [chat-id]
+  [buttons/secondary-button {:style style/join-button
+                             :on-press #(re-frame/dispatch [:group-chats.ui/join-pressed chat-id])}
+   (i18n/label :t/join-group-chat)])
+
+(defn decline-chat [chat-id]
+  [react/touchable-highlight
+   {:on-press
+    #(re-frame/dispatch [:group-chats.ui/remove-chat-confirmed chat-id])}
+   [react/text {:style style/decline-chat}
+    (i18n/label :t/group-chat-decline-invitation)]])
+
+(defview group-chat-join-section [my-public-key {:keys [name
+                                                        group-chat
+                                                        color
+                                                        chat-id] :as chat}]
+  (letsubs [contact [:contacts/contact-by-identity (models.group-chats/get-inviter-pk my-public-key chat)]]
+    [react/view style/empty-chat-container
+     [react/view {:style {:margin-bottom 170}}
+      [chat-icon.screen/profile-icon-view nil name color false 100 {:default-chat-icon-text style/group-chat-icon}]]
+     [react/view {:style style/group-chat-join-footer}
+      [react/view {:style style/group-chat-join-container}
+       [react/view
+        [react/text {:style style/group-chat-join-name} name]]
+       [react/text {:style style/empty-chat-text}
+        [react/text style/empty-chat-container-one-to-one
+         (i18n/label :t/join-group-chat-description {:username (:name contact)
+                                                     :group-name name})]]
+       [join-chat-button chat-id]
+       [decline-chat chat-id]]]]))
+
+(defview messages-view [{:keys [group-chat] :as chat} modal?]
   (letsubs [messages           [:chats/current-chat-messages-stream]
-            chat               [:chats/current-chat]
             current-public-key [:account/public-key]]
-    {:component-did-mount #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
-                                                                           :input-focused? false}])}
-    (if (empty? messages)
+    {:component-did-mount
+     (fn [args]
+       (when-not (:messages-initialized? (second (.-argv (.-props args))))
+         (re-frame/dispatch [:chat.ui/load-more-messages]))
+       (re-frame/dispatch [:chat.ui/set-chat-ui-props
+                           {:messages-focused? true
+                            :input-focused?    false}]))}
+    (cond
+
+      (and (models.chat/group-chat? chat)
+           (models.group-chats/invited? current-public-key chat)
+           (not (models.group-chats/joined? current-public-key chat)))
+      [group-chat-join-section current-public-key chat]
+
+      (and (empty? messages)
+           (:messages-initialized? chat))
       [empty-chat-container chat]
+
+      :else
       [list/flat-list {:data                      messages
                        :key-fn                    #(or (:message-id %) (:value %))
                        :render-fn                 (fn [message]
@@ -134,11 +186,21 @@
                        :enableEmptySections       true
                        :keyboardShouldPersistTaps :handled}])))
 
+(defview messages-view-wrapper [modal?]
+  (letsubs [chat               [:chats/current-chat]]
+    [messages-view chat modal?]))
+
+(defn show-input-container? [my-public-key current-chat]
+  (or (not (models.chat/group-chat? current-chat))
+      (models.group-chats/joined? my-public-key current-chat)))
+
 (defview chat-root [modal?]
-  (letsubs [{:keys [group-chat public?]} [:chats/current-chat]
-            show-bottom-info?            [:chats/current-chat-ui-prop :show-bottom-info?]
-            show-message-options?        [:chats/current-chat-ui-prop :show-message-options?]
-            current-view                 [:get :view-id]]
+  (letsubs [{:keys [public?] :as current-chat} [:chats/current-chat]
+            my-public-key                      [:account/public-key]
+            show-bottom-info?                  [:chats/current-chat-ui-prop :show-bottom-info?]
+            show-message-options?              [:chats/current-chat-ui-prop :show-message-options?]
+            show-stickers?                     [:chats/current-chat-ui-prop :show-stickers?]
+            current-view                       [:get :view-id]]
     ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
     ;; more details here: https://github.com/facebook/react-native/issues/11071
     [react/scroll-view {:scroll-enabled               false
@@ -151,14 +213,16 @@
       [chat-toolbar public? modal?]
       (if (or (= :chat current-view) modal?)
         [messages-view-animation
-         [messages-view group-chat modal?]]
+         [messages-view-wrapper modal?]]
         [react/view style/message-view-preview])
-      [input/container]
+      (when (show-input-container? my-public-key current-chat)
+        [input/container])
+      (when show-stickers?
+        [stickers/stickers-view])
       (when show-bottom-info?
         [bottom-info/bottom-info-view])
       (when show-message-options?
-        [message-options/view])
-      [connectivity/error-view {:top (get platform/platform-specific :status-bar-default-height)}]]]))
+        [message-options/view])]]))
 
 (defview chat []
   [chat-root false])

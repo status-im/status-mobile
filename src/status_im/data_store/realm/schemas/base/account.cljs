@@ -213,3 +213,20 @@
                    {:type :bool :default false}))
 
 (def v15 (update v14 :properties dissoc :email))
+
+(def v16 (assoc-in v15
+                   [:properties :keycard-instance-uid]
+                   {:type :string :optional true}))
+
+(def v17 (update v16 :properties merge {:keycard-pairing
+                                        {:type :string :optional true}
+                                        :keycard-paired-on
+                                        {:type :int :optional true}}))
+(def v18 (assoc-in v17
+                   [:properties :installation-name]
+                   {:type :string :optional true}))
+
+(def v19 (update v18 :properties merge {:stickers
+                                        {:type "string[]" :optional true}
+                                        :recent-stickers
+                                        {:type "string[]" :optional true}}))

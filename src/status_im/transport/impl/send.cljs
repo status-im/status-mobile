@@ -31,10 +31,12 @@
                         (select-keys
                          (get-in cofx [:db :contacts/contacts])
                          [chat-id])
+                        nil
                         nil)]
       (fx/merge cofx
-                (protocol/init-chat {:chat-id chat-id
-                                     :resend? "contact-request"})
+                (protocol/init-chat {:chat-id    chat-id
+                                     :one-to-one true
+                                     :resend?    "contact-request"})
                 (protocol/send-with-pubkey {:chat-id chat-id
                                             :payload this
                                             :success-event [:transport/contact-message-sent chat-id]})
@@ -47,12 +49,14 @@
                         (select-keys
                          (get-in cofx [:db :contacts/contacts])
                          [chat-id])
+                        nil
                         nil)
           success-event [:transport/contact-message-sent chat-id]
           chat         (get-in db [:transport/chats chat-id])
           updated-chat (if chat
                          (assoc chat :resend? "contact-request-confirmation")
-                         (transport.db/create-chat {:resend? "contact-request-confirmation"}))]
+                         (transport.db/create-chat {:resend?    "contact-request-confirmation"
+                                                    :one-to-one true}))]
       (fx/merge cofx
                 {:db            (assoc-in db
                                           [:transport/chats chat-id] updated-chat)

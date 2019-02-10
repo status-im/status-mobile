@@ -1,0 +1,12 @@
+patch-package
+--- a/node_modules/metro-config/src/defaults/defaults.js
++++ b/node_modules/metro-config/src/defaults/defaults.js
+@@ -47,7 +47,7 @@ exports.sourceExts = ["js", "json", "ts", "tsx"];
+ 
+ exports.moduleSystem = require.resolve("metro/src/lib/polyfills/require.js");
+ 
+-exports.platforms = ["ios", "android", "windows", "web"];
++exports.platforms = ["ios", "android", "windows", "web", "desktop"];
+ 
+ exports.providesModuleNodeModules = ["react-native", "react-native-windows"];
+ 

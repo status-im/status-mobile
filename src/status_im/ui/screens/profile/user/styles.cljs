@@ -38,6 +38,14 @@
 (defstyle my-profile-settings-logout
   {:min-width       "50%"})
 
+(defstyle my-profile-settings-send-logs-wrapper
+  {:flex-direction  :row
+   :justify-content :space-between
+   :align-items     :center})
+
+(defstyle my-profile-settings-send-logs
+  {:min-width       "50%"})
+
 (def advanced-button
   {:margin-top    16
    :margin-bottom 12})

@@ -167,7 +167,8 @@
         "one": "minuut",
         "other": "minute"
     },
-    "browsing-open-in-web-browser": "Maak oop in webblaaier",
+    "browsing-open-in-android-web-browser": "Maak oop in webblaaier",
+    "browsing-open-in-ios-web-browser": "Maak oop in webblaaier",
     "delete-group-prompt": "Dit sal nie kontakte affekteer nie",
     "edit-profile": "Redigeer profiel",
     "active-unknown": "Onbekend",

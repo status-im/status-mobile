@@ -47,7 +47,7 @@
     [contact-inner-view {:contact contact :info info :style style :props inner-props}]
     (when show-forward?
       [react/view styles/forward-btn
-       [vector-icons/icon :icons/forward]])
+       [vector-icons/icon :main-icons/next]])
     (when (and extended? (not (empty? extend-options)))
       (if platform/desktop?
         (desktop-extended-options extend-options)
@@ -56,13 +56,14 @@
                                                                                  :title   extend-title})
                                      :accessibility-label :menu-option}
           [react/view styles/more-btn
-           [vector-icons/icon :icons/options {:accessibility-label :options}]]]]))]])
+           [vector-icons/icon :main-icons/more {:accessibility-label :options}]]]]))]])
 
-(views/defview toggle-contact-view [{:keys [public-key] :as contact} selected-key on-toggle-handler]
+(views/defview toggle-contact-view [{:keys [public-key] :as contact} selected-key on-toggle-handler disabled?]
   (views/letsubs [checked [selected-key public-key]]
     [react/view {:accessibility-label :contact-item}
      [list/list-item-with-checkbox
       {:checked?        checked
+       :disabled?       disabled?
        :on-value-change #(on-toggle-handler checked public-key)
        :plain-checkbox? true}
       [react/view styles/contact-container

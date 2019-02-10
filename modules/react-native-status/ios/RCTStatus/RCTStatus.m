@@ -183,16 +183,25 @@ RCT_EXPORT_METHOD(createAccount:(NSString *)password
 }
 
 ////////////////////////////////////////////////////////////////////
-#pragma mark - NotifyUsers method
-//////////////////////////////////////////////////////////////////// notifyUsers
-RCT_EXPORT_METHOD(notifyUsers:(NSString *)message
-                  payloadJSON:(NSString *)payloadJSON
+#pragma mark - SendDataNotification method
+//////////////////////////////////////////////////////////////////// sendDataNotification
+RCT_EXPORT_METHOD(sendDataNotification:(NSString *)dataPayloadJSON
                   tokensJSON:(NSString *)tokensJSON
                   callback:(RCTResponseSenderBlock)callback) {
-    char * result = NotifyUsers((char *) [message UTF8String], (char *) [payloadJSON UTF8String], (char *) [tokensJSON UTF8String]);
+    char * result = SendDataNotification((char *) [dataPayloadJSON UTF8String], (char *) [tokensJSON UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
 #if DEBUG
-    NSLog(@"NotifyUsers() method called");
+    NSLog(@"SendDataNotification() method called");
+#endif
+}
+
+////////////////////////////////////////////////////////////////////
+#pragma mark - SendLogs method
+//////////////////////////////////////////////////////////////////// sendLogs
+RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson) {
+    // TODO: Implement SendLogs for iOS
+#if DEBUG
+    NSLog(@"SendLogs() method called, not implemented");
 #endif
 }
 
@@ -203,6 +212,16 @@ RCT_EXPORT_METHOD(addPeer:(NSString *)enode
   callback(@[[NSString stringWithUTF8String: result]]);
 #if DEBUG
   NSLog(@"AddPeer() method called");
+#endif
+}
+
+//////////////////////////////////////////////////////////////////// updateMailservers
+RCT_EXPORT_METHOD(updateMailservers:(NSString *)enodes
+                  callback:(RCTResponseSenderBlock)callback) {
+  char * result = UpdateMailservers((char *) [enodes UTF8String]);
+  callback(@[[NSString stringWithUTF8String: result]]);
+#if DEBUG
+  NSLog(@"UpdateMailservers() method called");
 #endif
 }
 
@@ -225,6 +244,25 @@ RCT_EXPORT_METHOD(login:(NSString *)address
     NSLog(@"Login() method called");
 #endif
     char * result = Login((char *) [address UTF8String], (char *) [password UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
+}
+
+//////////////////////////////////////////////////////////////////// login
+RCT_EXPORT_METHOD(verify:(NSString *)address
+                  password:(NSString *)password
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"VerifyAccountPassword() method called");
+#endif
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl =[[fileManager
+                      URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
+                     lastObject];
+    NSURL *absKeystoreUrl = [rootUrl URLByAppendingPathComponent:@"keystore"];
+    
+    char * result = VerifyAccountPassword((char *) [absKeystoreUrl.path UTF8String],
+                                          (char *) [address UTF8String],
+                                          (char *) [password UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
 }
 

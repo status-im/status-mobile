@@ -86,14 +86,14 @@
 (deftype SyncInstallationHandler []
   Object
   (tag [this v] "p1")
-  (rep [this {:keys [contacts account]}]
-    #js [contacts account]))
+  (rep [this {:keys [contacts account chat]}]
+    #js [contacts account chat]))
 
 (deftype PairInstallationHandler []
   Object
   (tag [this v] "p2")
-  (rep [this {:keys [installation-id device-type]}]
-    #js [installation-id device-type]))
+  (rep [this {:keys [name installation-id device-type]}]
+    #js [installation-id device-type name]))
 
 (def writer (transit/writer :json
                             {:handlers
@@ -154,10 +154,10 @@
                                      (contact/ContactUpdate. name profile-image address fcm-token))
                               "g5" (fn [[chat-id membership-updates message]]
                                      (group-chat/GroupMembershipUpdate. chat-id membership-updates message))
-                              "p1" (fn [[contacts account]]
-                                     (pairing/SyncInstallation. contacts account))
-                              "p2" (fn [[installation-id device-type]]
-                                     (pairing/PairInstallation. installation-id device-type))}}))
+                              "p1" (fn [[contacts account chat]]
+                                     (pairing/SyncInstallation. contacts account chat))
+                              "p2" (fn [[installation-id device-type name]]
+                                     (pairing/PairInstallation. installation-id device-type name))}}))
 
 (defn serialize
   "Serializes a record implementing the StatusMessage protocol using the custom writers"

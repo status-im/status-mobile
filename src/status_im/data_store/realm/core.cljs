@@ -133,15 +133,25 @@
   (when realm
     (.close realm)))
 
+(defonce schema-migration-log (atom {}))
+
+(defn migration-log [k v]
+  (swap! schema-migration-log assoc k v))
+
 (defn- migrate-schemas
   "Apply migrations in sequence and open database with the last schema"
   [file-name schemas encryption-key current-version]
+  (reset! schema-migration-log {})
+  (migration-log :initial-version current-version)
+  (migration-log :current-version current-version)
+  (migration-log :last-version (:schemaVersion (last schemas)))
   (log/info "migrate schemas" current-version)
   (when (pos? current-version)
     (doseq [schema schemas
-            :when (> (:schemaVersion schema) current-version)
-            :let [migrated-realm (open-realm schema file-name encryption-key)]]
-      (close migrated-realm)))
+            :when (> (:schemaVersion schema) current-version)]
+      (migration-log :current-version (:schemaVersion schema))
+      (let [migrated-realm (open-realm schema file-name encryption-key)]
+        (close migrated-realm))))
   (open-realm (last schemas) file-name encryption-key))
 
 (defn keccak512-array [key]
@@ -245,6 +255,16 @@
                   #(re-encrypt-realm file-name old-key new-key on-success on-error))
                  (catch on-error)))))))))
 
+(defn db-exists? [address]
+  (js/Promise.
+   (fn [on-success on-error]
+     (.. (fs/file-exists? (get-account-db-path address))
+         (then (fn [db-exists?]
+                 (if db-exists?
+                   (on-success)
+                   (on-error {:message "Account's database doesn't exist."
+                              :error   :database-does-not-exist}))))))))
+
 (defn open-account [address password encryption-key]
   (let [path (get-account-db-path address)
         account-db-key (db-encryption-key password encryption-key)]
@@ -258,7 +278,8 @@
          (on-success)
          (catch :default e
            (on-error {:message (str e)
-                      :error   :migrations-failed})))))))
+                      :error   :migrations-failed
+                      :details @schema-migration-log})))))))
 
 (declare realm-obj->clj)
 
@@ -286,8 +307,11 @@
                                        false
                                        true)))
 
+(defn multi-field-sorted [results fields]
+  (.sorted results (clj->js fields)))
+
 (defn page [results from to]
-  (js/Array.prototype.slice.call results from to))
+  (js/Array.prototype.slice.call results from (or to -1)))
 
 (defn filtered [results filter-query]
   (.filtered results filter-query))

@@ -223,3 +223,31 @@
                       :tags                    {:type "string[]"}
                       :unviewed-messages-count {:type    :int
                                                 :default 0}}})
+
+(def v10
+  (update v9 :properties merge
+          {:last-message-content {:type     :string
+                                  :optional true}
+           :last-message-type    {:type     :string
+                                  :optional true}}))
+
+(def v11
+  (update v10 :properties merge
+          {:last-clock-value {:type     :int
+                              :optional true}}))
+(def v12
+  (-> v11
+      (update :properties merge
+              {:last-message-content-type
+               {:type     :string
+                :optional true}})
+      (update :properties dissoc :last-message-type)))
+
+(def v13
+  (update v12 :properties assoc
+          :members-joined         {:type "string[]"}))
+
+(def v14
+  (update v13 :properties assoc
+          :group-chat-local-version {:type :int
+                                     :optional true}))

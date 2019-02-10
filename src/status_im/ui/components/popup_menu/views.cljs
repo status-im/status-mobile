@@ -19,6 +19,8 @@
            :on-select #(re-frame/dispatch [:show-group-chat-profile])})
         {:text (i18n/label :t/clear-history)
          :on-select #(re-frame/dispatch [:chat.ui/clear-history-pressed])}
+        {:text (i18n/label :t/fetch-history)
+         :on-select #(re-frame/dispatch [:chat.ui/fetch-history-pressed chat-id])}
         {:text (i18n/label :t/delete-chat)
          :on-select #(re-frame/dispatch [(if (and group-chat (not public?))
                                            :group-chats.ui/remove-chat-pressed
@@ -26,3 +28,8 @@
                                          chat-id])}]
        (remove nil?)))
 
+(defn get-message-menu-items [chat-id message-id]
+  [{:text (i18n/label :t/resend-message)
+    :on-select #(re-frame/dispatch [:chat.ui/resend-message chat-id message-id])}
+   {:text (i18n/label :t/delete-message)
+    :on-select #(re-frame/dispatch [:chat.ui/delete-message chat-id message-id])}])

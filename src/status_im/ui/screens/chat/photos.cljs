@@ -4,20 +4,12 @@
             [status-im.ui.screens.chat.styles.photos :as style]
             [status-im.utils.identicon :as identicon]
             [clojure.string :as string]
-            [status-im.react-native.resources :as resources]))
-
-(defn- source [photo-path]
-  (if (and (not (string/blank? photo-path))
-           (string/starts-with? photo-path "contacts://"))
-    (->> (string/replace photo-path #"contacts://" "")
-         (keyword)
-         (get resources/contacts))
-    {:uri photo-path}))
+            [status-im.utils.image :as utils.image]))
 
 (defn photo [photo-path {:keys [size
                                 accessibility-label]}]
   [react/view {:style (style/photo-container size)}
-   [react/image {:source              (source photo-path)
+   [react/image {:source              (utils.image/source photo-path)
                  :style               (style/photo size)
                  :accessibility-label (or accessibility-label :chat-icon)}]
    [react/view {:style (style/photo-border size)}]])

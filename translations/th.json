@@ -167,7 +167,8 @@
         "one": "นาที",
         "other": "นาที"
     },
-    "browsing-open-in-web-browser": "เปิดในเว็บเบราว์เซอร์",
+    "browsing-open-in-android-web-browser": "เปิดในเว็บเบราว์เซอร์",
+    "browsing-open-in-ios-web-browser": "เปิดในเว็บเบราว์เซอร์",
     "delete-group-prompt": "การดำเนินการนี้จะไม่ส่งผลต่อรายชื่อติดต่อ",
     "edit-profile": "แก้ไขโปรไฟล์",
     "active-unknown": "ไม่ทราบ",

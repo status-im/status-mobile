@@ -1,22 +1,28 @@
 (ns status-im.accounts.logout.core
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.init.core :as init]
             [status-im.transport.core :as transport]
-            [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
-            [status-im.models.transactions :as transactions]))
+            [status-im.models.transactions :as transactions]
+            [status-im.node.core :as node]
+            [status-im.init.core :as init]))
 
 (fx/defn logout
   [{:keys [db] :as cofx}]
-  (let [{:transport/keys [chats]} db]
-    (fx/merge cofx
-              {:keychain/clear-user-password (get-in db [:account/account :address])
-               :dev-server/stop              nil}
-              (transactions/stop-sync)
-              (navigation/navigate-to-clean :login {})
-              (transport/stop-whisper)
-              (init/initialize-keychain))))
+  (fx/merge cofx
+            {:keychain/clear-user-password (get-in db [:account/account :address])
+             :dev-server/stop              nil}
+            (transactions/stop-sync)
+            (transport/stop-whisper
+             #(re-frame/dispatch [:accounts.logout/filters-removed]))))
+
+(fx/defn leave-account
+  [cofx]
+  (fx/merge
+   cofx
+   (init/initialize-app-db)
+   (init/load-accounts-and-initialize-views)
+   (node/stop)))
 
 (fx/defn show-logout-confirmation [_]
   {:ui/show-confirmation

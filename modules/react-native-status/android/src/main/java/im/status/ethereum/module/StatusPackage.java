@@ -14,12 +14,10 @@ import im.status.ethereum.function.Function;
 
 public class StatusPackage implements ReactPackage {
 
-    private boolean debug;
-    private boolean devCluster;
+    private boolean rootedDevice;
 
-    public StatusPackage (boolean debug, boolean devCluster) {
-        this.debug = debug;
-        this.devCluster = devCluster;
+    public StatusPackage(boolean rootedDevice) {
+        this.rootedDevice = rootedDevice;
     }
 
     @Override
@@ -27,13 +25,9 @@ public class StatusPackage implements ReactPackage {
         List<NativeModule> modules = new ArrayList<>();
         System.loadLibrary("statusgoraw");
         System.loadLibrary("statusgo");
-        modules.add(new StatusModule(reactContext, this.debug, this.devCluster));
+        modules.add(new StatusModule(reactContext, this.rootedDevice));
 
         return modules;
-    }
-
-    public List<Class<? extends JavaScriptModule>> createJSModules() {
-        return Collections.emptyList();
     }
 
     @Override

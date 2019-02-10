@@ -18,23 +18,12 @@
 (spec/def :contact/status (spec/nilable string?))
 (spec/def :contact/fcm-token (spec/nilable string?))
 (spec/def :contact/description (spec/nilable string?))
-
 (spec/def :contact/last-updated (spec/nilable int?))
 (spec/def :contact/last-online (spec/nilable int?))
 (spec/def :contact/pending? boolean?)
-(spec/def :contact/unremovable? boolean?)
 (spec/def :contact/hide-contact? boolean?)
-
-(spec/def :contact/dapp? boolean?)
-(spec/def :contact/dapp-url (spec/nilable string?))
-(spec/def :contact/dapp-hash (spec/nilable int?))
-(spec/def :contact/bot-url (spec/nilable string?))
-(spec/def :contact/command (spec/nilable (spec/map-of int? map?)))
-(spec/def :contact/response (spec/nilable (spec/map-of int? map?)))
-(spec/def :contact/subscriptions (spec/nilable map?))
-;;true when contact added using status-dev-cli
-(spec/def :contact/debug? boolean?)
 (spec/def :contact/tags (spec/coll-of string? :kind set?))
+(spec/def :contact/blocked? boolean?)
 
 (spec/def :contact/contact (spec/keys  :req-un [:contact/name]
                                        :opt-un [:contact/public-key
@@ -45,17 +34,9 @@
                                                 :contact/last-online
                                                 :contact/pending?
                                                 :contact/hide-contact?
-                                                :contact/unremovable?
-                                                :contact/dapp?
-                                                :contact/dapp-url
-                                                :contact/dapp-hash
-                                                :contact/bot-url
-                                                :contact/command
-                                                :contact/response
-                                                :contact/debug?
-                                                :contact/subscriptions
                                                 :contact/fcm-token
                                                 :contact/description
+                                                :contact/blocked?
                                                 :contact/tags]))
 
 ;;Contact list ui props
@@ -87,6 +68,12 @@
    :photo-path (identicon/identicon public-key)
    :public-key public-key})
 
+(defn public-key->contact
+  [contacts public-key]
+  (when public-key
+    (get contacts public-key
+         (public-key->new-contact public-key))))
+
 (defn public-key->address [public-key]
   (let [length (count public-key)
         normalized-key (case length
@@ -113,6 +100,13 @@
                      (clojure.string/lower-case name2))))
         (vals contacts)))
 
+(defn active
+  [contacts]
+  (->> contacts
+       (remove (fn [[_ {:keys [pending? hide-contact? blocked?]}]]
+                 (or pending? hide-contact? blocked?)))
+       sort-contacts))
+
 (defn filter-dapps
   [v dev-mode?]
   (remove #(when-not dev-mode? (true? (:developer? %))) v))
@@ -128,7 +122,7 @@
     (query-fn (comp participant-set :public-key) (vals all-contacts))))
 
 (defn get-all-contacts-in-group-chat
-  [members contacts current-account]
+  [members admins contacts current-account]
   (let [current-account-contact (-> current-account
                                     (select-keys [:name :photo-path :public-key]))
         all-contacts            (assoc contacts (:public-key current-account-contact) current-account-contact)]
@@ -136,4 +130,15 @@
          (map #(or (get all-contacts %)
                    (public-key->new-contact %)))
          (remove :dapp?)
-         (sort-by (comp clojure.string/lower-case :name)))))
+         (sort-by (comp clojure.string/lower-case :name))
+         (map #(if (admins (:public-key %))
+                 (assoc % :admin? true)
+                 %)))))
+
+(defn get-blocked-contacts
+  [contacts]
+  (into #{} (map :public-key (filter :blocked? contacts))))
+
+(defn blocked?
+  [db contact]
+  (get-in db [:contacts/contacts contact :blocked?]))

@@ -1,3 +1,4 @@
+
 (ns status-im.ui.screens.views
   (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
   (:require [re-frame.core :refer [dispatch]]
@@ -20,9 +21,9 @@
 
             [status-im.ui.screens.qr-scanner.views :refer [qr-scanner]]
 
-            [status-im.ui.screens.group.views :refer [new-group]]
-            [status-im.ui.screens.group.add-contacts.views :refer [contact-toggle-list
-                                                                   add-participants-toggle-list]]
+            [status-im.ui.screens.group.views :refer [new-group
+                                                      contact-toggle-list
+                                                      add-participants-toggle-list]]
             [status-im.ui.screens.profile.user.views :as profile.user]
             [status-im.ui.screens.profile.contact.views :as profile.contact]
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
@@ -39,10 +40,11 @@
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
             [status-im.ui.screens.wallet.transaction-sent.views :refer [transaction-sent transaction-sent-modal]]
             [status-im.ui.screens.wallet.components.views :refer [contact-code recent-recipients recipient-qr-code]]
+            [status-im.ui.screens.contacts-list.views :refer [contacts-list blocked-users-list]]
             [status-im.ui.screens.network-settings.views :refer [network-settings]]
             [status-im.ui.screens.network-settings.network-details.views :refer [network-details]]
             [status-im.ui.screens.network-settings.edit-network.views :refer [edit-network]]
-            [status-im.ui.screens.extensions.views :refer [extensions-settings]]
+            [status-im.ui.screens.extensions.views :refer [extensions-settings selection-modal-screen]]
             [status-im.ui.screens.log-level-settings.views :refer [log-level-settings]]
             [status-im.ui.screens.fleet-settings.views :refer [fleet-settings]]
             [status-im.ui.screens.offline-messaging-settings.views :refer [offline-messaging-settings]]
@@ -52,6 +54,7 @@
             [status-im.ui.screens.pairing.views :refer [installations]]
             [status-im.ui.screens.bootnodes-settings.edit-bootnode.views :refer [edit-bootnode]]
             [status-im.ui.screens.currency-settings.views :refer [currency-settings]]
+            [status-im.ui.screens.hardwallet.settings.views :refer [keycard-settings reset-card]]
             [status-im.ui.screens.help-center.views :refer [help-center]]
             [status-im.ui.screens.browser.views :refer [browser]]
             [status-im.ui.screens.add-new.open-dapp.views :refer [open-dapp dapp-description]]
@@ -59,10 +62,14 @@
             [status-im.ui.screens.accounts.create.views :refer [create-account]]
             [status-im.ui.screens.hardwallet.authentication-method.views :refer [hardwallet-authentication-method]]
             [status-im.ui.screens.hardwallet.connect.views :refer [hardwallet-connect]]
+            [status-im.ui.screens.hardwallet.pin.views :refer [enter-pin]]
             [status-im.ui.screens.hardwallet.setup.views :refer [hardwallet-setup]]
             [status-im.ui.screens.hardwallet.success.views :refer [hardwallet-success]]
             [status-im.ui.screens.profile.seed.views :refer [backup-seed]]
             [status-im.ui.screens.about-app.views :as about-app]
+            [status-im.ui.screens.stickers.views :as stickers]
+            [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.utils.navigation :as navigation]
             [reagent.core :as reagent]
             [cljs-react-navigation.reagent :as nav-reagent]
@@ -70,7 +77,8 @@
             [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
             [status-im.utils.platform :as platform]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]))
 
 (defn wrap [view-id component]
   (fn []
@@ -81,7 +89,7 @@
         {:on-will-focus
          (fn []
            (log/debug :on-will-focus view-id)
-           (re-frame/dispatch [:set :view-id view-id]))}]])))
+           (re-frame/dispatch [:screens/on-will-focus view-id]))}]])))
 
 (defn wrap-modal [modal-view component]
   (fn []
@@ -141,10 +149,12 @@
          config/hardwallet-enabled?
          (assoc :hardwallet-authentication-method hardwallet-authentication-method
                 :hardwallet-connect hardwallet-connect
+                :enter-pin enter-pin
                 :hardwallet-setup hardwallet-setup
                 :hardwallet-success hardwallet-success)))
       (cond-> {:headerMode "none"}
-        (#{:intro :login} view-id)
+        ; add view-id here if you'd like that view to be first view when app is started
+        (#{:intro :login :progress :accounts} view-id)
         (assoc :initialRouteName (name view-id))))}
     :chat-stack
     {:screen
@@ -152,21 +162,28 @@
       (stack-screens
        {:main-stack
         {:screens
-         {:home                         (main-tabs/get-main-tab :home)
-          :chat                         chat
-          :profile                      profile.contact/profile
-          :new                          add-new
-          :new-chat                     new-chat
-          :qr-scanner                   qr-scanner
-          :new-group                    new-group
-          :add-participants-toggle-list add-participants-toggle-list
-          :contact-toggle-list          contact-toggle-list
-          :group-chat-profile           profile.group-chat/group-chat-profile
-          :new-public-chat              new-public-chat
-          :open-dapp                    open-dapp
-          :dapp-description             dapp-description
-          :browser                      browser
-          :login                        login}
+         (cond->
+          {:home                         (main-tabs/get-main-tab :home)
+           :chat                         chat
+           :profile                      profile.contact/profile
+           :new                          add-new
+           :new-chat                     new-chat
+           :qr-scanner                   qr-scanner
+           :new-group                    new-group
+           :add-participants-toggle-list add-participants-toggle-list
+           :contact-toggle-list          contact-toggle-list
+           :group-chat-profile           profile.group-chat/group-chat-profile
+           :new-public-chat              new-public-chat
+           :open-dapp                    open-dapp
+           :dapp-description             dapp-description
+           :browser                      browser
+           :stickers                     stickers/packs
+           :stickers-pack                stickers/pack
+           :login                        login}
+
+           config/hardwallet-enabled?
+           (assoc :hardwallet-connect hardwallet-connect
+                  :enter-pin enter-pin))
          :config
          {:headerMode       "none"
           :initialRouteName "home"}}
@@ -243,16 +260,47 @@
            :unsigned-transactions        wallet-transactions/transactions
            :transactions-history         wallet-transactions/transactions
            :wallet-transaction-details   wallet-transactions/transaction-details
-           :login                        login})
+           :login                        login
+           :wallet-settings-hook         wallet-settings/settings-hook})
          {:headerMode       "none"
           :initialRouteName "wallet"})}
+
+       :selection-modal-screen
+       {:screen (nav-reagent/stack-screen
+                 (wrap-modal :selection-modal-screen selection-modal-screen))}
+
+       :wallet-send-modal-stack
+       {:screen
+        (nav-reagent/stack-navigator (stack-screens {:wallet-send-transaction-modal
+                                                     [:modal send-transaction-modal]
+
+                                                     :wallet-transaction-sent
+                                                     [:modal transaction-sent-modal]
+
+                                                     :wallet-transaction-fee
+                                                     [:modal wallet.transaction-fee/transaction-fee]})
+                                     {:headerMode       "none"
+                                      :initialRouteName "wallet-send-transaction-modal"})}
+
+       :wallet-send-modal-stack-with-onboarding
+       {:screen
+        (nav-reagent/stack-navigator (stack-screens {:wallet-onboarding-setup-modal
+                                                     [:modal wallet.onboarding/modal]
+
+                                                     :wallet-send-transaction-modal
+                                                     [:modal send-transaction-modal]
+
+                                                     :wallet-transaction-sent
+                                                     [:modal transaction-sent-modal]
+
+                                                     :wallet-transaction-fee
+                                                     [:modal wallet.transaction-fee/transaction-fee]})
+                                     {:headerMode       "none"
+                                      :initialRouteName "wallet-send-modal-stack-with-onboarding"})}
+
        :wallet-settings-assets
        {:screen (nav-reagent/stack-screen
                  (wrap-modal :wallet-settings-assets wallet-settings/manage-assets))}
-
-       :wallet-settings-hook
-       {:screen (nav-reagent/stack-screen
-                 (wrap-modal :wallet-settings-assets wallet-settings/settings-hook))}
 
        :wallet-transaction-fee
        {:screen (nav-reagent/stack-screen
@@ -275,6 +323,8 @@
         (nav-reagent/stack-navigator
          (stack-screens
           (cond-> {:my-profile                       (main-tabs/get-main-tab :my-profile)
+                   :contacts-list                    contacts-list
+                   :blocked-users-list               blocked-users-list
                    :profile-photo-capture            profile-photo-capture
                    :about-app                        about-app/about-app
                    :bootnodes-settings               bootnodes-settings
@@ -283,6 +333,8 @@
                    :offline-messaging-settings       offline-messaging-settings
                    :edit-mailserver                  edit-mailserver
                    :help-center                      help-center
+                   :dapps-permissions                dapps-permissions/dapps-permissions
+                   :manage-dapps-permissions         dapps-permissions/manage
                    :extensions-settings              extensions-settings
                    :edit-extension                   edit-extension
                    :show-extension                   show-extension
@@ -303,7 +355,10 @@
             (assoc :hardwallet-authentication-method hardwallet-authentication-method
                    :hardwallet-connect hardwallet-connect
                    :hardwallet-setup hardwallet-setup
-                   :hardwallet-success hardwallet-success)))
+                   :hardwallet-success hardwallet-success
+                   :keycard-settings keycard-settings
+                   :reset-card reset-card
+                   :enter-pin enter-pin)))
          {:headerMode       "none"
           :initialRouteName "my-profile"})}
        :profile-qr-viewer
@@ -327,6 +382,16 @@
 (defonce rand-label (rand/id))
 
 (defonce initial-view-id (atom nil))
+
+(views/defview bottom-sheet []
+  (views/letsubs [{:keys [show? view]} [:bottom-sheet]]
+    (let [opts (cond-> {:show?     show?
+                        :on-cancel (fn [])}
+
+                 (= view :mobile-network)
+                 (merge {:content mobile-network-settings/mobile-network-settings-sheet
+                         :content-height 340}))]
+      [bottom-sheet/bottom-sheet opts])))
 
 (defn main []
   (let [view-id        (re-frame/subscribe [:get :view-id])
@@ -366,13 +431,15 @@
       :reagent-render
       (fn []
         (when (and @view-id main-component)
-          [:> @main-component
-           {:ref            (fn [r]
-                              (navigation/set-navigator-ref r)
-                              (when (and
-                                     platform/android?
-                                     (not js/goog.DEBUG)
-                                     (not (contains? #{:intro :login} @view-id)))
-                                (navigation/navigate-to @view-id)))
-            ;; see https://reactnavigation.org/docs/en/state-persistence.html#development-mode
-            :persistenceKey (when js/goog.DEBUG rand-label)}]))})))
+          [react/view {:flex 1}
+           [:> @main-component
+            {:ref            (fn [r]
+                               (navigation/set-navigator-ref r)
+                               (when (and
+                                      platform/android?
+                                      (not js/goog.DEBUG)
+                                      (not (contains? #{:intro :login :progress} @view-id)))
+                                 (navigation/navigate-to @view-id)))
+             ;; see https://reactnavigation.org/docs/en/state-persistence.html#development-mode
+             :persistenceKey (when js/goog.DEBUG rand-label)}]
+           [bottom-sheet]]))})))

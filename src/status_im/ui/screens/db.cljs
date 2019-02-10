@@ -15,15 +15,16 @@
             status-im.mailserver.db
             status-im.browser.db
             status-im.ui.screens.add-new.db
-            status-im.ui.screens.add-new.new-public-chat.db))
+            status-im.ui.screens.add-new.new-public-chat.db
+            status-im.ui.components.bottom-sheet.core))
 
 ;; initial state of app-db
-(def app-db {:status-module-initialized?         (or platform/ios? js/goog.DEBUG platform/desktop?)
-             :keyboard-height                    0
+(def app-db {:keyboard-height                    0
              :tab-bar-visible?                   true
              :navigation-stack                   '()
              :contacts/contacts                  {}
              :pairing/installations              {}
+             :contact-recovery/pop-up            #{}
              :qr-codes                           {}
              :group/selected-contacts            #{}
              :chats                              {}
@@ -66,6 +67,8 @@
                                                   :nfc-enabled?   false
                                                   :pin            {:original     []
                                                                    :confirmation []
+                                                                   :current      []
+                                                                   :puk          []
                                                                    :enter-step   :original}}
              :chats/loading?                     true})
 
@@ -79,7 +82,6 @@
 (spec/def ::web3-node-version (spec/nilable string?))
 ;;object?
 (spec/def ::webview-bridge (spec/nilable any?))
-(spec/def ::status-module-initialized? (spec/nilable boolean?))
 (spec/def :node/status (spec/nilable #{:stopped :starting :started :stopping}))
 (spec/def :node/node-restart? (spec/nilable boolean?))
 (spec/def :node/address (spec/nilable string?))
@@ -136,6 +138,8 @@
 (spec/def :navigation.screen-params/collectibles-list map?)
 
 (spec/def :navigation.screen-params/show-extension map?)
+(spec/def :navigation.screen-params/selection-modal-screen map?)
+(spec/def :navigation.screen-params/manage-dapps-permissions map?)
 
 (spec/def :navigation/screen-params (spec/nilable (spec/keys :opt-un [:navigation.screen-params/network-details
                                                                       :navigation.screen-params/browser
@@ -145,7 +149,9 @@
                                                                       :navigation.screen-params/edit-contact-group
                                                                       :navigation.screen-params/dapp-description
                                                                       :navigation.screen-params/collectibles-list
-                                                                      :navigation.screen-params/show-extension])))
+                                                                      :navigation.screen-params/show-extension
+                                                                      :navigation.screen-params/selection-modal-screen
+                                                                      :navigation.screen-params/manage-dapps-permissions])))
 
 (spec/def :desktop/desktop (spec/nilable any?))
 (spec/def ::tooltips (spec/nilable any?))
@@ -162,7 +168,8 @@
 (spec/def ::collectibles (spec/nilable map?))
 
 (spec/def ::extension-url (spec/nilable string?))
-(spec/def ::staged-extension (spec/nilable any?))
+(spec/def :extensions/staged-extension (spec/nilable any?))
+(spec/def :extensions/manage (spec/nilable any?))
 (spec/def ::extensions-store (spec/nilable any?))
 
 ;;;;NODE
@@ -185,7 +192,12 @@
 
 (spec/def ::semaphores set?)
 
-(spec/def ::hardwallet map?)
+(spec/def ::hardwallet (spec/nilable map?))
+
+(spec/def :stickers/packs (spec/nilable map?))
+(spec/def :stickers/packs-installed (spec/nilable map?))
+(spec/def :stickers/selected-pack (spec/nilable any?))
+(spec/def :stickers/recent (spec/nilable vector?))
 
 (spec/def ::db (spec/keys :opt [:contacts/contacts
                                 :contacts/dapps
@@ -216,6 +228,7 @@
                                 :networks/networks
                                 :networks/manage
                                 :bootnodes/manage
+                                :extensions/staged-extension
                                 :extensions/manage
                                 :node/status
                                 :node/restart?
@@ -244,6 +257,7 @@
                                 :mailserver/current-request
                                 :mailserver/connection-checks
                                 :mailserver/request-to
+                                :mailserver/request-error
                                 :desktop/desktop
                                 :dimensions/window
                                 :dapps/permissions
@@ -251,7 +265,13 @@
                                 :ui/contact
                                 :ui/search
                                 :ui/chat
-                                :chats/loading?]
+                                :chats/loading?
+                                :stickers/packs
+                                :stickers/packs-installed
+                                :stickers/selected-pack
+                                :stickers/recent
+                                :bottom-sheet/show?
+                                :bottom-sheet/view]
                           :opt-un [::modal
                                    ::was-modal?
                                    ::rpc-url
@@ -260,7 +280,6 @@
                                    ::web3
                                    ::web3-node-version
                                    ::webview-bridge
-                                   ::status-module-initialized?
                                    ::keyboard-height
                                    ::keyboard-max-height
                                    ::tab-bar-visible?
@@ -319,6 +338,5 @@
                                    ::device-UUID
                                    ::collectible
                                    ::collectibles
-                                   ::staged-extension
                                    ::extensions-store
                                    :registry/registry]))

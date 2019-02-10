@@ -38,7 +38,9 @@ set -e
 
 echo -e "\n### Storing original keychain search list..."
 ORIG_KEYCHAIN_LIST="$(security list-keychains \
-  | grep -v "/Library/Keychains/System.keychain" | xargs)"
+  | grep -v "/Library/Keychains/System.keychain" \
+  | grep -v "/private/var/folders" \
+  | xargs)"
 
 echo -e "\n### Creating ramdisk..."
 RAMDISK="$(hdiutil attach -nomount ram://20480 | tr -d '[:blank:]')"
@@ -65,8 +67,8 @@ function clean_up {
   security list-keychains -s $ORIG_KEYCHAIN_LIST
   security list-keychains
 
-  echo -e "\n### Wiping keychain file..."
-  rm -P "$KEYCHAIN"
+  echo -e "\n### Delete keychain file..."
+  security delete-keychain "$KEYCHAIN"
 
   echo -e "\n### Destroying ramdisk..."
   diskutil umount force "$RAMDISK"
@@ -75,7 +77,7 @@ function clean_up {
   exit $STATUS
 }
 
-trap clean_up EXIT
+trap clean_up ERR EXIT
 
 echo -e "\n### Formatting and mounting ramdisk..."
 newfs_hfs "$RAMDISK"
@@ -99,9 +101,9 @@ echo -e "\n### Signing object..."
 # If `OBJECT` is a directory, we assume it's an app
 # bundle, otherwise we consider it to be a dmg.
 if [ -d "$OBJECT" ]; then
-  codesign --sign "$DEV_ID" --deep --force --verbose=4 "$OBJECT"
+  codesign --sign "$DEV_ID" --keychain "$KEYCHAIN" --deep --force --verbose=4 "$OBJECT"
 else
-  codesign --sign "$DEV_ID" --force --verbose=4 "$OBJECT"
+  codesign --sign "$DEV_ID" --keychain "$KEYCHAIN" --force --verbose=4 "$OBJECT"
 fi
 
 echo -e "\n### Verifying signature..."

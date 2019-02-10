@@ -1,4 +1,5 @@
 import logging
+
 try:
     import org.sikuli.script.SikulixForJython
     from sikuli import *
@@ -28,7 +29,11 @@ class BaseView(object):
         super(BaseView, self).__init__()
         self.home_button = BaseElement(IMAGES_PATH + '/home_button.png')
         self.profile_button = ProfileButton()
-        self.back_button = BaseElement(IMAGES_PATH + '/back_button.png')
+        self.back_button = BaseElement(IMAGES_PATH + '/back_button.png', x=10, y=20, w=50, h=50)
+        self.ok_button = BaseElement(IMAGES_PATH + '/ok_button.png')
+        self.next_button = BaseElement(IMAGES_PATH + '/next_button.png')
+        self.done_button = BaseElement(IMAGES_PATH + '/done_button.png')
+        self.yes_button = BaseElement(IMAGES_PATH + '/yes_button.png')
 
     def find_text(self, expected_text):
         logging.info("Find text '%s'" % expected_text)

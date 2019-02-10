@@ -18,7 +18,8 @@
             [cljs.spec.alpha :as spec]
             [status-im.utils.platform :as platform]
             [status-im.accounts.db :as db]
-            [status-im.utils.security :as security]))
+            [status-im.utils.security :as security]
+            [status-im.utils.keychain.core :as keychain]))
 
 (defn login-toolbar [can-navigate-back?]
   [toolbar/toolbar
@@ -38,7 +39,9 @@
     (string/starts-with? error "there is no running node")
     :t/node-unavailable
 
-    (string/starts-with? error "cannot retrieve a valid key")
+    (or
+     (string/starts-with? error "cannot retrieve a valid key")
+     (string/starts-with? error "could not decrypt key"))
     :t/wrong-password
 
     :else
@@ -53,9 +56,10 @@
      name]]])
 
 (defview login []
-  (letsubs [{:keys [address photo-path name password error processing save-password? can-save-password?]} [:get :accounts/login]
+  (letsubs [{:keys [photo-path name error processing save-password? can-save-password?]} [:get :accounts/login]
             can-navigate-back? [:can-navigate-back?]
-            password-text-input (atom nil)]
+            password-text-input (atom nil)
+            sign-in-enabled? [:sign-in-enabled?]]
     [react/keyboard-avoiding-view {:style ast/accounts-view}
      [status-bar/status-bar]
      [login-toolbar can-navigate-back?]
@@ -70,22 +74,30 @@
           :placeholder       (i18n/label :t/password)
           :ref               #(reset! password-text-input %)
           :auto-focus        true
-          :on-submit-editing #(login-account @password-text-input)
+          :on-submit-editing (when sign-in-enabled?
+                               #(login-account @password-text-input))
           :on-change-text    #(do
                                 (re-frame/dispatch [:set-in [:accounts/login :password]
                                                     (security/mask-data %)])
                                 (re-frame/dispatch [:set-in [:accounts/login :error] ""]))
           :secure-text-entry true
           :error             (when (not-empty error) (i18n/label (error-key error)))}]]
-       (when platform/ios?
+
+       (when-not platform/desktop?
+         ;; saving passwords is unavailable on Desktop
          [react/view {:style styles/save-password-checkbox-container}
-          [profile.components/settings-switch-item
-           {:label-kw (if can-save-password?
-                        :t/save-password
-                        :t/save-password-unavailable)
-            :active? can-save-password?
-            :value save-password?
-            :action-fn #(re-frame/dispatch [:set-in [:accounts/login :save-password?] %])}]])]]
+          (if (and platform/android? (not can-save-password?))
+            ;; on Android, there is much more reasons for the password save to be unavailable,
+            ;; so we don't show the checkbox whatsoever but put a label explaining why it happenned.
+            [react/i18n-text {:style styles/save-password-unavailable-android
+                              :key :save-password-unavailable-android}]
+            [profile.components/settings-switch-item
+             {:label-kw  (if can-save-password?
+                           :t/save-password
+                           :t/save-password-unavailable)
+              :active?   can-save-password?
+              :value     save-password?
+              :action-fn #(re-frame/dispatch [:set-in [:accounts/login :save-password?] %])}])])]]
      (when processing
        [react/view styles/processing-view
         [components/activity-indicator {:animating true}]
@@ -100,5 +112,5 @@
         [components.common/bottom-button
          {:forward?  true
           :label     (i18n/label :t/sign-in)
-          :disabled? (not (spec/valid? ::db/password (security/safe-unmask-data password)))
+          :disabled? (not sign-in-enabled?)
           :on-press  #(login-account @password-text-input)}]])]))

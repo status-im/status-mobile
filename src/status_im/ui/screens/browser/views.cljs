@@ -20,7 +20,8 @@
             [status-im.ui.screens.wallet.actions :as wallet.actions]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.http :as http]
-            [status-im.utils.js-resources :as js-res])
+            [status-im.utils.js-resources :as js-res]
+            [status-im.ui.components.connectivity.view :as connectivity])
   (:require-macros
    [status-im.utils.slurp :refer [slurp]]
    [status-im.utils.views :as views]))
@@ -34,8 +35,8 @@
      [react/view (styles/toolbar-content false)
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/lock-pressed secure?])}
        (if secure?
-         [icons/icon :icons/lock {:color colors/green}]
-         [icons/icon :icons/lock-opened])]
+         [icons/icon :tiny-icons/tiny-lock {:color colors/green}]
+         [icons/icon :tiny-icons/tiny-lock-broken])]
       (if url-editing?
         [react/text-input {:on-change-text    #(reset! url-text %)
                            :on-blur           #(re-frame/dispatch [:browser.ui/url-input-blured])
@@ -62,7 +63,7 @@
                      (when error?
                        (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
    [toolbar-content url url-original browser url-editing?]
-   [toolbar.view/actions [{:icon      :icons/options
+   [toolbar.view/actions [{:icon      :main-icons/more
                            :icon-opts {:color               :black
                                        :accessibility-label :chat-menu-button}
                            :handler   #(on-options name browser-id)}]]])
@@ -88,33 +89,31 @@
                                :style               (when-not can-go-back? styles/disabled-button)
                                :accessibility-label :previous-page-button}
     [react/view
-     [icons/icon :icons/arrow-left]]]
+     [icons/icon :main-icons/arrow-left]]]
    [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser.ui/next-page-button-pressed])
                                :disabled            (not can-go-forward?)
                                :style               (when-not can-go-forward? styles/disabled-button)
                                :accessibility-label :next-page-button}
     [react/view
-     [icons/icon :icons/arrow-right]]]
+     [icons/icon :main-icons/arrow-right]]]
    [react/touchable-highlight
     {:on-press #(re-frame/dispatch [:browser.ui/open-modal-chat-button-pressed (http/url-host url)])
      :accessibility-label :modal-chat-button}
-    [icons/icon :icons/chats]]
+    [icons/icon :main-icons/message]]
    [react/touchable-highlight {:on-press #(.reload @webview)
                                :accessibility-label :refresh-page-button}
-    [icons/icon :icons/refresh]]])
+    [icons/icon :main-icons/refresh]]])
 
 ;; should-component-update is called only when component's props are changed,
 ;; that's why it can't be used in `browser`, because `url` comes from subs
 (views/defview browser-component
   [{:keys [webview error? url browser browser-id unsafe? can-go-back?
-           can-go-forward? url-editing? resolving? network-id address url-original
-           show-permission show-tooltip opt-in? loading? dapp? rpc-url name]}]
+           can-go-forward? resolving? network-id address url-original
+           show-permission show-tooltip opt-in? dapp? rpc-url name]}]
   {:should-component-update (fn [_ _ args]
                               (let [[_ props] args]
                                 (not (nil? (:url props)))))}
-  [react/view styles/browser
-   [status-bar/status-bar]
-   [toolbar error? url url-original browser browser-id url-editing?]
+  [react/view {:flex 1}
    [react/view components.styles/flex
     (if unsafe?
       [site-blocked.views/view {:can-go-back? can-go-back?
@@ -142,12 +141,9 @@
                                                        (ethereum/normalized-address address)
                                                        (str network-id)))
                                                     (get-inject-js url))
-        :injected-java-script                  js-res/webview-js}])
-    (when (or loading? resolving?)
-      [react/view styles/web-view-loading
-       [react/activity-indicator {:animating true}]])]
+        :injected-java-script                  js-res/webview-js}])]
    [navigation url-original webview can-go-back? can-go-forward?]
-   [permissions.views/permissions-panel browser show-permission]
+   [permissions.views/permissions-panel [(:dapp? browser) (:dapp browser)] show-permission]
    (when show-tooltip
      [tooltip/bottom-tooltip-info
       (if (= show-tooltip :secure)
@@ -156,7 +152,8 @@
       #(re-frame/dispatch [:browser.ui/close-tooltip-pressed])])])
 
 (views/defview browser []
-  (views/letsubs [webview    (atom nil)
+  (views/letsubs [webview (atom nil)
+                  width (reagent/atom nil)
                   {:keys [address settings]} [:account/account]
                   {:keys [browser-id dapp? name unsafe?] :as browser} [:get-current-browser]
                   {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:get :browser/options]
@@ -165,24 +162,27 @@
     (let [can-go-back?    (browser/can-go-back? browser)
           can-go-forward? (browser/can-go-forward? browser)
           url-original    (browser/get-current-url browser)
-          opt-in?         (:web3-opt-in? settings)]
-      [browser-component {:webview         webview
-                          :dapp?           dapp?
-                          :error?          error?
-                          :url             url
-                          :url-original    url-original
-                          :browser         browser
-                          :browser-id      browser-id
-                          :unsafe?         unsafe?
-                          :can-go-back?    can-go-back?
-                          :can-go-forward? can-go-forward?
-                          :url-editing?    url-editing?
-                          :resolving?      resolving?
-                          :network-id      network-id
-                          :address         address
-                          :show-permission show-permission
-                          :show-tooltip    show-tooltip
-                          :opt-in?         opt-in?
-                          :loading?        loading?
-                          :rpc-url         rpc-url
-                          :name            name}])))
+          opt-in?         (or (nil? (:web3-opt-in? settings)) (:web3-opt-in? settings))]
+      [react/view {:style styles/browser :on-layout #(reset! width (.-width (.-layout (.-nativeEvent %))))}
+       [status-bar/status-bar]
+       [toolbar error? url url-original browser browser-id url-editing?]
+       (when (and loading? (not (nil? @width)))
+         [connectivity/loading-indicator @width])
+       [browser-component {:webview         webview
+                           :dapp?           dapp?
+                           :error?          error?
+                           :url             url
+                           :url-original    url-original
+                           :browser         browser
+                           :browser-id      browser-id
+                           :unsafe?         unsafe?
+                           :can-go-back?    can-go-back?
+                           :can-go-forward? can-go-forward?
+                           :resolving?      resolving?
+                           :network-id      network-id
+                           :address         address
+                           :show-permission show-permission
+                           :show-tooltip    show-tooltip
+                           :opt-in?         opt-in?
+                           :rpc-url         rpc-url
+                           :name            name}]])))

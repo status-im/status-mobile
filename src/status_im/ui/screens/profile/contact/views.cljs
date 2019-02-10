@@ -16,27 +16,26 @@
    toolbar/default-nav-back
    [toolbar/content-title ""]])
 
-(defn actions [{:keys [pending? public-key dapp?]}]
+(defn actions [{:keys [pending? public-key]}]
   (concat (if (or (nil? pending?) pending?)
             [{:label               (i18n/label :t/add-to-contacts)
-              :icon                :icons/add-contact
+              :icon                :main-icons/add-contact
               :action              #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])
               :accessibility-label :add-to-contacts-button}]
             [{:label               (i18n/label :t/in-contacts)
-              :icon                :icons/in-contacts
+              :icon                :main-icons/in-contacts
               :disabled?           true
               :accessibility-label :in-contacts-button}])
           [{:label               (i18n/label :t/send-message)
-            :icon                :icons/chats
+            :icon                :main-icons/message
             :action              #(re-frame/dispatch [:contact.ui/send-message-pressed {:public-key public-key}])
-            :accessibility-label :start-conversation-button}]
-          (when-not dapp?
-            [{:label               (i18n/label :t/send-transaction)
-              :icon                :icons/arrow-right
-              :action              #(re-frame/dispatch [:profile/send-transaction public-key])
-              :accessibility-label :send-transaction-button}])
-          [{:label               (i18n/label :t/share-profile-link)
-            :icon                :icons/share
+            :accessibility-label :start-conversation-button}
+           {:label               (i18n/label :t/send-transaction)
+            :icon                :main-icons/send
+            :action              #(re-frame/dispatch [:profile/send-transaction public-key])
+            :accessibility-label :send-transaction-button}
+           {:label               (i18n/label :t/share-profile-link)
+            :icon                :main-icons/share
             :action              #(re-frame/dispatch [:profile/share-profile-link public-key])
             :accessibility-label :share-profile-link}]))
 
@@ -61,6 +60,22 @@
   [react/view
    [profile-info-contact-code-item public-key]])
 
+(defn block-contact-action [{:keys [blocked? public-key]}]
+  [list/render-action
+   {:label               (if blocked?
+                           (i18n/label :t/unblock-contact)
+                           (i18n/label :t/block-contact))
+    :icon                :main-icons/cancel
+    :action              (if blocked?
+                           #(re-frame/dispatch [:contact.ui/unblock-contact-pressed public-key])
+                           #(re-frame/dispatch [:contact.ui/block-contact-pressed public-key]))
+    :accessibility-label (if blocked?
+                           :unblock-contact
+                           :block-contact)}
+   {:action-style           styles/block-action
+    :action-label-style     styles/block-action-label
+    :icon-opts              styles/block-action-icon-opts}])
+
 (defview profile []
   (letsubs [identity        [:contacts/current-contact-identity]
             maybe-contact   [:contacts/current-contact]]
@@ -80,5 +95,7 @@
           :action-label-style     styles/action-label
           :action-separator-style styles/action-separator
           :icon-opts              styles/action-icon-opts}]
+        [react/view {:style {:height 16}}]
+        [block-contact-action contact]
         [react/view styles/contact-profile-info-container
          [profile-info contact]]]])))

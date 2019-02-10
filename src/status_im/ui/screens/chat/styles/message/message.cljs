@@ -29,13 +29,11 @@
   (let [align (if outgoing :flex-end :flex-start)
         direction (if outgoing :row-reverse :row)]
     (merge {:flex-direction direction
-            :width          230
             :padding-top    (message-padding-top message)
             :align-self     align
             :align-items    align}
            (when display-photo?
-             {:padding-right 8
-              :padding-left  8}))))
+             {:padding-left  8}))))
 
 (def message-timestamp
   {:font-size      10
@@ -66,8 +64,11 @@
    :font-size   12
    :color       colors/text-gray})
 
-(defn group-message-wrapper [message]
+(defn group-message-wrapper [{:keys [outgoing] :as message}]
   (merge {:flex-direction :column}
+         (if outgoing
+           {:margin-left 64}
+           {:margin-right 64})
          (last-message-padding message)))
 
 (defn timestamp-content-wrapper [{:keys [outgoing]}]
@@ -76,13 +77,13 @@
 (defn group-message-view
   [outgoing message-type]
   (let [align (if outgoing :flex-end :flex-start)]
-    {:flex-direction :column
-     :width          (if (= :system-message message-type)
-                       300
-                       230)
-     :padding-left   8
-     :padding-right  8
-     :align-items    align}))
+    (merge {:flex 1
+            :flex-direction :column
+            :max-width      320
+            :align-items    align}
+           (if outgoing
+             {:margin-right 8}
+             {:margin-left 8}))))
 
 (defn delivery-status [outgoing]
   (if outgoing
@@ -211,4 +212,3 @@
 (defn extension-install [outgoing]
   {:font-size 12
    :color     (if outgoing colors/white colors/blue)})
-

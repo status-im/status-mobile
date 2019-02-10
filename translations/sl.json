@@ -167,7 +167,8 @@
         "one": "minuta",
         "other": "minut"
     },
-    "browsing-open-in-web-browser": "Odpri v spletnem brskalniku",
+    "browsing-open-in-android-web-browser": "Odpri v spletnem brskalniku",
+    "browsing-open-in-ios-web-browser": "Odpri v spletnem brskalniku",
     "delete-group-prompt": "To ne bo vplivalo na stike",
     "edit-profile": "Uredi profil",
     "active-unknown": "Neznano",

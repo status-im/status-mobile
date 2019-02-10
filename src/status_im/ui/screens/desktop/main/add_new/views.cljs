@@ -26,7 +26,7 @@
 
 (views/defview new-one-to-one []
   (views/letsubs [new-contact-identity [:get :contacts/new-identity]
-                  contacts             [:contacts/all-added-people-contacts]
+                  contacts             [:contacts/active]
                   chat-error           [:new-identity-error]]
     {:component-will-unmount #(re-frame/dispatch [:new-chat/set-new-identity nil])}
     [react/view {:style styles/new-view}
@@ -45,6 +45,7 @@
          (when show-error-tooltip?
            [error-tooltip chat-error])
          [react/text-input {:placeholder       "name.stateofus.eth"
+                            :auto-focus        true
                             :flex              1
                             :selection-color   colors/blue
                             :font              :default
@@ -108,6 +109,7 @@
            [error-tooltip topic-error])
 
          [react/text-input {:flex            1
+                            :auto-focus      true
                             :font            :default
                             :selection-color colors/blue
                             :placeholder     ""

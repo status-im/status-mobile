@@ -282,7 +282,8 @@
         "one": "λεπτό",
         "other": "λεπτά"
     },
-    "browsing-open-in-web-browser": "Ανοίξτε στο πρόγραμμα περιήγησης ιστού",
+    "browsing-open-in-android-web-browser": "Ανοίξτε στο πρόγραμμα περιήγησης ιστού",
+    "browsing-open-in-ios-web-browser": "Ανοίξτε στο πρόγραμμα περιήγησης ιστού",
     "delete-group-prompt": "Αυτό δε θα επηρεάσει τις επαφές σας",
     "wallet-insufficient-funds": "Ανεπαρκείς πόροι",
     "edit-profile": "Επεξεργασία προφίλ",

@@ -57,8 +57,7 @@
   (let [initial-props @(re-frame/subscribe [:initial-props])
         status-node-port (get initial-props :STATUS_NODE_PORT)]
     (cond-> (assoc config
-                   :Name "StatusIM"
-                   :BackupDisabledDataDir (utils.platform/no-backup-directory))
+                   :Name "StatusIM")
       config/dev-build?
       (assoc :ListenAddr ":30304"
              :DataDir (str (:DataDir config) "_dev"))
@@ -72,19 +71,26 @@
   [limit nodes]
   (take limit (shuffle nodes)))
 
+(defn get-log-level
+  [account-settings]
+  (or (:log-level account-settings)
+      (if utils.platform/desktop? ""
+          config/log-level-status-go)))
+
 (defn- get-account-node-config [db address]
   (let [accounts (get db :accounts/accounts)
         current-fleet-key (fleet/current-fleet db address)
         current-fleet (get fleet/fleets current-fleet-key)
         rendezvous-nodes (pick-nodes 3 (vals (:rendezvous current-fleet)))
-        {:keys [network
-                installation-id
-                settings
-                bootnodes
-                networks]} (get accounts address)
+        {:keys [network installation-id settings bootnodes networks]}
+        (merge
+         {:network         config/default-network
+          :networks        (:networks/networks db)
+          :settings        (constants/default-account-settings)
+          :installation-id (get db :accounts/new-installation-id)}
+         (get accounts address))
         use-custom-bootnodes (get-in settings [:bootnodes network])
-        log-level (or (:log-level settings)
-                      config/log-level-status-go)]
+        log-level (get-log-level settings)]
     (cond-> (get-in networks [network :config])
       :always
       (get-base-node-config)
@@ -100,18 +106,15 @@
                              :RendezvousNodes    rendezvous-nodes})
 
       :always
-      (assoc :WhisperConfig         {:Enabled true
-                                     :LightClient true
-                                     :MinimumPoW 0.001
-                                     :EnableNTPSync true}
-             :RequireTopics         (get-topics network)
-             :InstallationID        installation-id
-             :PFSEnabled            (or config/pfs-encryption-enabled?
-                                        ;; We don't check dev-mode? here as
-                                        ;; otherwise we would have to restart the node
-                                        ;; when the user enables it
-                                        config/group-chats-enabled?
-                                        (config/pairing-enabled? true)))
+      (assoc :WhisperConfig           {:Enabled true
+                                       :LightClient true
+                                       :MinimumPoW 0.001
+                                       :EnableNTPSync true}
+             :ShhextConfig        {:BackupDisabledDataDir (utils.platform/no-backup-directory)
+                                   :InstallationID          installation-id
+                                   :MailServerConfirmations config/mailserver-confirmations-enabled?
+                                   :PFSEnabled              true}
+             :RequireTopics           (get-topics network))
 
       (and
        config/bootnodes-settings-enabled?
@@ -121,9 +124,14 @@
       :always
       (add-log-level log-level))))
 
-(defn get-node-config [db network]
+(defn get-verify-account-config
+  "Is used when the node has to be started before
+  `VerifyAccountPassword` call."
+  [db network]
   (-> (get-in (:networks/networks db) [network :config])
       (get-base-node-config)
+
+      (assoc :ShhextConfig {:BackupDisabledDataDir (utils.platform/no-backup-directory)})
       (assoc :PFSEnabled false
              :NoDiscovery true)
       (add-log-level config/log-level-status-go)))
@@ -145,9 +153,9 @@
   (let [network     (if address
                       (get-account-network db address)
                       (:network db))
-        node-config (if address
-                      (get-account-node-config db address)
-                      (get-node-config db network))
+        node-config (if (= (:node/on-ready db) :verify-account)
+                      (get-verify-account-config db network)
+                      (get-account-node-config db address))
         node-config-json (types/clj->json node-config)]
     (log/info "Node config: " node-config-json)
     {:db        (assoc db
@@ -155,7 +163,7 @@
                        :node/status :starting)
      :node/start node-config-json}))
 
-(defn stop
+(fx/defn stop
   [{:keys [db]}]
   {:db        (assoc db :node/status :stopping)
    :node/stop nil})
@@ -164,11 +172,8 @@
   [{{:node/keys [status] :as db} :db :as cofx} address]
   (let [restart {:db (assoc db :node/restart? true :node/address address)}]
     (case status
-      :started (stop cofx)
-      :starting (do
-                  (when utils.platform/desktop?
-                    (status/stop-node))
-                  restart)
+      :started nil
+      :starting restart
       :stopping restart
       (start cofx address))))
 
@@ -176,6 +181,11 @@
  :node/start
  (fn [config]
    (status/start-node config)))
+
+(re-frame/reg-fx
+ :node/ready
+ (fn [config]
+   (status/node-ready)))
 
 (re-frame/reg-fx
  :node/stop

@@ -173,7 +173,8 @@
         "one": "minūte",
         "other": "minūtes"
     },
-    "browsing-open-in-web-browser": "Atvert pārlūkprogrammā",
+    "browsing-open-in-android-web-browser": "Atvert pārlūkprogrammā",
+    "browsing-open-in-ios-web-browser": "Atvert pārlūkprogrammā",
     "delete-group-prompt": "Tas neietikmēs kontaktus",
     "edit-profile": "Rediģēt profilu",
     "active-unknown": "Nezināms",

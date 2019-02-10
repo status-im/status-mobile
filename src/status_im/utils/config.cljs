@@ -17,19 +17,21 @@
 
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def rpc-networks-only? (enabled? (get-config :RPC_NETWORKS_ONLY "1")))
-(def group-chats-enabled? (enabled? (get-config :GROUP_CHATS_ENABLED "0")))
-(defn pairing-enabled? [dev-mode?]
-  (and (enabled? (get-config :PAIRING_ENABLED "0"))
-       (or dev-mode? platform/desktop?)))
+(def group-chats-publish-to-topic? (enabled? (get-config :GROUP_CHATS_PUBLISH_TO_TOPIC "0")))
+(def show-contact-recovery-pop-up? (enabled? (get-config :SHOW_CONTACT_RECOVERY_POPUP)))
+(def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))
 (def mainnet-warning-enabled? (enabled? (get-config :MAINNET_WARNING_ENABLED 0)))
 (def pfs-encryption-enabled? (enabled? (get-config :PFS_ENCRYPTION_ENABLED "0")))
-(def in-app-notifications-enabled? (enabled? (get-config :IN_APP_NOTIFICATIONS_ENABLED 0)))
+(def pairing-popup-disabled? (enabled? (get-config :PAIRING_POPUP_DISABLED "0")))
+(def pfs-toggle-visible? (enabled? (get-config :PFS_TOGGLE_VISIBLE "0")))
 (def cached-webviews-enabled? (enabled? (get-config :CACHED_WEBVIEWS_ENABLED 0)))
 (def rn-bridge-threshold-warnings-enabled? (enabled? (get-config :RN_BRIDGE_THRESHOLD_WARNINGS 0)))
 (def extensions-enabled? (enabled? (get-config :EXTENSIONS 0)))
+(def stickers-enabled? (enabled? (get-config :STICKERS_ENABLED 0)))
 (def hardwallet-enabled? (enabled? (get-config :HARDWALLET_ENABLED 0)))
 (def dev-build? (enabled? (get-config :DEV_BUILD 0)))
 (def erc20-contract-warnings-enabled? (enabled? (get-config :ERC20_CONTRACT_WARNINGS)))
+(def partitioned-topic-enabled? (enabled? (get-config :PARTITIONED_TOPIC "0")))
 
 ;; CONFIG VALUES
 (def log-level

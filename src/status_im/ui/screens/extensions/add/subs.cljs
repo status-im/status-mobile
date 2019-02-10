@@ -9,4 +9,4 @@
 (re-frame/reg-sub
  :get-staged-extension
  (fn [db]
-   (:staged-extension db)))
+   (:extensions/staged-extension db)))

@@ -1,16 +1,17 @@
 (ns status-im.utils.navigation
-  (:require [status-im.react-native.js-dependencies :as js-dependencies]))
+  (:require [status-im.react-native.js-dependencies :as js-dependencies]
+            [status-im.utils.platform :as platform]))
 
 (def navigation-actions
-  (when (not status-im.utils.platform/desktop?)
+  (when (not platform/desktop?)
     (.-NavigationActions js-dependencies/react-navigation)))
 
 (def navigation-events
-  (when (not status-im.utils.platform/desktop?)
+  (when (not platform/desktop?)
     (.-NavigationEvents js-dependencies/react-navigation)))
 
 (def stack-actions
-  (when (not status-im.utils.platform/desktop?)
+  (when (not platform/desktop?)
     (.-StackActions js-dependencies/react-navigation)))
 
 (def navigator-ref (atom nil))
@@ -20,7 +21,7 @@
 
 (defn can-be-called? []
   (and @navigator-ref
-       (not status-im.utils.platform/desktop?)))
+       (not platform/desktop?)))
 
 (defn navigate-to [route]
   (when (can-be-called?)

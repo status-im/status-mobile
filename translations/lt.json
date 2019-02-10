@@ -266,7 +266,8 @@
         "one": "minutė",
         "other": "minutės"
     },
-    "browsing-open-in-web-browser": "Atverti naršyklėje",
+    "browsing-open-in-android-web-browser": "Atverti naršyklėje",
+    "browsing-open-in-ios-web-browser": "Atverti naršyklėje",
     "delete-group-prompt": "Tai neįtakos jūsų kontaktų",
     "wallet-insufficient-funds": "Nepakankamos lėšos",
     "edit-profile": "Redaguoti profilį",

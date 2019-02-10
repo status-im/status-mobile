@@ -20,7 +20,7 @@
   (testing "an https url"
     (is (model/valid-rpc-url? "https://valid.something.else")))
   (testing "a fully qualified url"
-    (is (model/valid-rpc-url? "https://mainnet.infura.io:6523/z6GCTmjdP3FETEJmMBI4")))
+    (is (model/valid-rpc-url? "https://mainnet.infura.io:6523/v3/f315575765b14720b32382a61a89341a")))
   (testing "an ip address"
     (is (model/valid-rpc-url? "https://192.168.1.1")))
   (testing "localhost"

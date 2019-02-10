@@ -53,7 +53,7 @@
      [public-chat-icon topic]
      [list/item-primary-only
       topic]
-     [list/item-icon {:icon      :icons/forward
+     [list/item-icon {:icon      :main-icons/next
                       :icon-opts {:color :gray}}]]]])
 
 (def default-public-chats (types/json->clj (slurp "resources/default_public_chats.json")))

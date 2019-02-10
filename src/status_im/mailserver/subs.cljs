@@ -12,20 +12,34 @@
    (get db :mailserver/pending-requests)))
 
 (re-frame/reg-sub
- :mailserver/fetching?
+ :mailserver/connecting?
  :<- [:mailserver/state]
- :<- [:mailserver/pending-requests]
- (fn [[state pending-requests]]
-   (when (and pending-requests
-              (= state :connected)
-              (pos-int? pending-requests))
-     pending-requests)))
+ (fn [state]
+   (#{:connecting :added} state)))
 
 (re-frame/reg-sub
- :mailserver/error
+ :mailserver/connection-error?
  :<- [:mailserver/state]
  (fn [state]
    (#{:error :disconnected} state)))
+
+(re-frame/reg-sub
+ :mailserver/request-error?
+ (fn [db]
+   (get db :mailserver/request-error)))
+
+(re-frame/reg-sub
+ :mailserver/fetching?
+ :<- [:mailserver/state]
+ :<- [:mailserver/pending-requests]
+ :<- [:mailserver/connecting?]
+ :<- [:mailserver/connection-error?]
+ :<- [:mailserver/request-error?]
+ (fn [[state pending-requests connecting? connection-error? request-error?]]
+   (and pending-requests
+        (= state :connected)
+        (pos-int? pending-requests)
+        (not (or connecting? connection-error? request-error?)))))
 
 (re-frame/reg-sub
  :mailserver/current-id

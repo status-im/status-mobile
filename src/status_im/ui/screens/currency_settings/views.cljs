@@ -21,7 +21,7 @@
         [react/text {:style styles/currency-name-text}
          (str display-name " (" code ")")]
         (when selected?
-          [vector-icons/icon :icons/ok {:color :active}])]])))
+          [vector-icons/icon :main-icons/check {:color :active}])]])))
 
 (views/defview currency-settings []
   (views/letsubs [currency-id [:wallet.settings/currency]]

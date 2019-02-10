@@ -29,7 +29,6 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
         self.driver.reset()
         sign_in.accept_agreements()
         sign_in.recover_access(passphrase=' '.join(recovery_phrase.values()))
-        home.connection_status.wait_for_invisibility_of_element(30)
         home.wallet_button.click()
         wallet.set_up_wallet()
         address2 = wallet.get_wallet_address()

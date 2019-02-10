@@ -4,37 +4,49 @@
             [status-im.init.core :as init]
             [status-im.node.core :as node]
             [status-im.pairing.core :as pairing]
+            [status-im.contact-recovery.core :as contact-recovery]
             [status-im.mailserver.core :as mailserver]
             [status-im.transport.message.core :as transport.message]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.security :as security]
+            [status-im.hardwallet.core :as hardwallet]))
 
 (fx/defn status-node-started
   [{db :db :as cofx}]
-  (let [{:node/keys [restart? address]} db
-        can-login? (and (not restart?)
-                        (:password (accounts.db/credentials cofx)))]
+  (let [{:node/keys [restart? address on-ready]
+         :accounts/keys [create]} db]
     (fx/merge cofx
-              {:db (-> db
-                       (assoc :node/status :started)
-                       (dissoc :node/restart? :node/address))}
+              {:db         (-> db
+                               (assoc :node/status :started)
+                               (dissoc :node/restart? :node/address))
+               :node/ready nil}
 
               (when restart?
                 (node/initialize address))
-              (when can-login?
-                (accounts.login/login)))))
+              (case on-ready
+                :login
+                (accounts.login/login)
+                :verify-account
+                (let [{:keys [address password]} (accounts.db/credentials cofx)]
+                  (fn [_]
+                    {:accounts.login/verify
+                     [address password (:realm-error db)]}))
+                :create-account
+                (fn [_]
+                  {:accounts.create/create-account (:password create)})
+                :recover-account
+                (fn [{:keys [db]}]
+                  (let [{:keys [password passphrase]} (:accounts/recover db)]
+                    {:accounts.recover/recover-account
+                     [(security/mask-data passphrase) password]}))
+                :create-keycard-account
+                (hardwallet/create-keycard-account)))))
 
 (fx/defn status-node-stopped
-  [{db :db :as cofx}]
-  (let [{:keys [address]} (accounts.db/credentials cofx)]
-    (fx/merge cofx
-              {:db (assoc db :node/status :stopped)}
-              (node/start address))))
-
-(fx/defn status-module-initialized [{:keys [db]}]
-  {:db                             (assoc db :status-module-initialized? true)
-   :init/status-module-initialized nil})
+  [{db :db}]
+  {:db (assoc db :node/status :stopped)})
 
 (fx/defn summary
   [{:keys [db] :as cofx} peers-summary]
@@ -53,14 +65,12 @@
     (case type
       "node.ready"         (status-node-started cofx)
       "node.stopped"       (status-node-stopped cofx)
-      "module.initialized" (status-module-initialized cofx)
       "envelope.sent"      (transport.message/update-envelope-status cofx (:hash event) :sent)
-      "envelope.expired"   (transport.message/update-envelope-status cofx (:hash event) :sent)
+      "envelope.expired"   (transport.message/update-envelope-status cofx (:hash event) :not-sent)
       "bundles.added"      (pairing/handle-bundles-added cofx event)
-      "mailserver.request.completed" (when (accounts.db/logged-in? cofx)
-                                       (mailserver/update-mailserver-topics cofx {:request-id (:requestID event)
-                                                                                  :cursor     (:cursor event)}))
+      "mailserver.request.completed" (mailserver/handle-request-completed cofx event)
       "mailserver.request.expired"   (when (accounts.db/logged-in? cofx)
                                        (mailserver/resend-request cofx {:request-id (:hash event)}))
+      "messages.decrypt.failed" (contact-recovery/handle-contact-recovery-fx cofx (:sender event))
       "discovery.summary"  (summary cofx event)
       (log/debug "Event " type " not handled"))))

@@ -3,7 +3,6 @@
             [status-im.accounts.db :as accounts.db]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.models :as chat-model]
-            [status-im.constants :as constants]
             [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.utils.datetime :as time]
             [status-im.utils.fx :as fx]
@@ -36,20 +35,18 @@
                db
                (group-by (comp time/day-relative :timestamp) messages))})
 
-(fx/defn group-messages
-  [{:keys [db]}]
-  (reduce-kv (fn [fx chat-id {:keys [messages]}]
-               (group-chat-messages fx chat-id (vals messages)))
-             {:db db}
-             (:chats db)))
-
 (defn- get-referenced-ids
-  "Takes map of message-id->messages and returns set of message ids which are referenced by the original messages,
-  excluding any message id, which is already in the original map"
+  "Takes map of `message-id->messages` and returns set of maps of
+  `{:response-to old-message-id :response-to-v2 message-id}`,
+   excluding any `message-id` which is already in the original map"
   [message-id->messages]
   (into #{}
-        (comp (keep (comp :response-to :content))
-              (filter #(not (contains? message-id->messages %))))
+        (comp (keep (fn [{:keys [content]}]
+                      (let [response-to-id
+                            (select-keys content [:response-to :response-to-v2])]
+                        (when (some (complement nil?) (vals response-to-id))
+                          response-to-id))))
+              (remove #(some message-id->messages (vals %))))
         (vals message-id->messages)))
 
 (defn get-unviewed-messages-ids
@@ -62,70 +59,25 @@
          message-id)))
    statuses))
 
-(fx/defn load-chats-messages
-  [{:keys [db get-stored-messages get-stored-user-statuses get-referenced-messages]
-    :as cofx}]
-  (let [chats (:chats db)
-        public-key (accounts.db/current-public-key cofx)]
-    (fx/merge
-     cofx
-     {:db (assoc
-           db :chats
-           (reduce
-            (fn [chats chat-id]
-              (let [chat-messages         (index-messages (get-stored-messages chat-id))
-                    message-ids           (keys chat-messages)
-                    statuses              (get-stored-user-statuses chat-id message-ids)
-                    unviewed-messages-ids (get-unviewed-messages-ids statuses public-key)]
-                (update
-                 chats
-                 chat-id
-                 assoc
-
-                 :messages chat-messages
-                 :message-statuses statuses
-                 :loaded-unviewed-messages-ids unviewed-messages-ids
-                 :referenced-messages (into {}
-                                            (map (juxt :message-id identity)
-                                                 (get-referenced-messages
-                                                  (get-referenced-ids chat-messages)))))))
-            chats
-            (keys chats)))}
-     (group-messages))))
-
 (fx/defn initialize-chats
-  "Initialize all persisted chats on startup"
-  [{:keys [db default-dapps all-stored-chats] :as cofx}]
-  (let [chats (reduce (fn [acc {:keys [chat-id] :as chat}]
-                        (assoc acc chat-id chat))
+  "Initialize persisted chats on startup"
+  [{:keys [db default-dapps get-all-stored-chats] :as cofx}
+   {:keys [from to] :or {from 0 to nil}}]
+  (let [old-chats (:chats db)
+        chats (reduce (fn [acc {:keys [chat-id] :as chat}]
+                        (assoc acc chat-id
+                               (assoc chat
+                                      :messages-initialized? false
+                                      :referenced-messages {}
+                                      :messages empty-message-map)))
                       {}
-                      all-stored-chats)]
+                      (get-all-stored-chats from to))
+        chats (merge old-chats chats)]
     (fx/merge cofx
               {:db (assoc db
                           :chats chats
                           :contacts/dapps default-dapps)}
               (commands/load-commands commands/register))))
-
-(fx/defn initialize-pending-messages
-  "Change status of own messages which are still in `sending` status to `not-sent`
-  (If signal from status-go has not been received)"
-  [{:keys [db] :as cofx}]
-  (let [me               (accounts.db/current-public-key cofx)
-        pending-statuses (->> (vals (:chats db))
-                              (mapcat :message-statuses)
-                              (mapcat (fn [[_ user-id->status]]
-                                        (filter (comp (partial = :sending) :status)
-                                                (get user-id->status me)))))
-        updated-statuses (map #(assoc % :status :not-sent) pending-statuses)]
-    {:data-store/tx [(user-statuses-store/save-statuses-tx updated-statuses)]
-     :db            (reduce
-                     (fn [acc {:keys [chat-id message-id status public-key]}]
-                       (assoc-in acc
-                                 [:chats chat-id :message-status message-id
-                                  public-key :status]
-                                 status))
-                     db
-                     updated-statuses)}))
 
 (defn load-more-messages
   "Loads more messages for current chat"
@@ -134,23 +86,31 @@
     get-stored-user-statuses :get-stored-user-statuses
     get-referenced-messages :get-referenced-messages :as cofx}]
   (when-not (get-in db [:chats current-chat-id :all-loaded?])
-    (let [loaded-count        (count (get-in db [:chats current-chat-id :messages]))
-          new-messages        (get-stored-messages current-chat-id loaded-count)
-          indexed-messages    (index-messages new-messages)
-          referenced-messages (index-messages
-                               (get-referenced-messages (get-referenced-ids indexed-messages)))
-          new-message-ids     (keys indexed-messages)
-          new-statuses        (get-stored-user-statuses current-chat-id new-message-ids)
-          public-key          (accounts.db/current-public-key cofx)
-          loaded-unviewed-messages (get-unviewed-messages-ids new-statuses public-key)]
+    (let [previous-pagination-info   (get-in db [:chats current-chat-id :pagination-info])
+          {:keys [messages
+                  pagination-info
+                  all-loaded?]}      (get-stored-messages current-chat-id previous-pagination-info)
+          already-loaded-messages    (get-in db [:chats current-chat-id :messages])
+          ;; We remove those messages that are already loaded, as we might get some duplicates
+          new-messages               (remove (comp already-loaded-messages :message-id)
+                                             messages)
+          indexed-messages           (index-messages new-messages)
+          referenced-messages        (into empty-message-map
+                                           (get-referenced-messages (get-referenced-ids indexed-messages)))
+          new-message-ids            (keys indexed-messages)
+          new-statuses               (get-stored-user-statuses current-chat-id new-message-ids)
+          public-key                 (accounts.db/current-public-key cofx)
+          loaded-unviewed-messages   (get-unviewed-messages-ids new-statuses public-key)]
       (fx/merge cofx
                 {:db (-> db
+                         (assoc-in [:chats current-chat-id :messages-initialized?] true)
                          (update-in [:chats current-chat-id :messages] merge indexed-messages)
                          (update-in [:chats current-chat-id :message-statuses] merge new-statuses)
                          (update-in [:chats current-chat-id :referenced-messages]
                                     #(into (apply dissoc % new-message-ids) referenced-messages))
+                         (assoc-in [:chats current-chat-id :pagination-info] pagination-info)
                          (assoc-in [:chats current-chat-id :all-loaded?]
-                                   (> constants/default-number-of-messages (count new-messages))))}
+                                   all-loaded?))}
                 (chat-model/update-chats-unviewed-messages-count
                  {:chat-id                          current-chat-id
                   :new-loaded-unviewed-messages-ids loaded-unviewed-messages})

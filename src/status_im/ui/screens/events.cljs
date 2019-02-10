@@ -32,11 +32,7 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.http :as http]
             [status-im.utils.utils :as utils]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.platform :as platform]
-            [taoensso.timbre :as log]
-            [clojure.string :as str]
-            [status-im.utils.types :as types]))
+            [status-im.utils.fx :as fx]))
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
@@ -76,6 +72,18 @@
 (re-frame/reg-fx
  :http-post
  http-post)
+
+(defn- http-raw-post [{:keys [url body response-validator success-event-creator failure-event-creator timeout-ms opts]}]
+  (let [on-success #(re-frame/dispatch (success-event-creator %))
+        on-error   #(re-frame/dispatch (failure-event-creator %))
+        all-opts   (assoc opts
+                          :valid-response? response-validator
+                          :timeout-ms      timeout-ms)]
+    (http/raw-post url body on-success on-error all-opts)))
+
+(re-frame/reg-fx
+ :http-raw-post
+ http-raw-post)
 
 (re-frame/reg-fx
  :request-permissions-fx
@@ -161,10 +169,14 @@
    {:db (assoc db :dimensions/window (dimensions/window dimensions))}))
 
 (handlers/register-handler-fx
- :fetch-desktop-version-success
- (fn [{:keys [db]} [_ result]]
-   (when (and result (not (str/blank? result)) (or platform/isMacOs? platform/isNix?))
-     (when-let [url (get (types/json->clj result) (if platform/isMacOs? :MAC :APP))]
-       (let [dt     (- (count url) (if platform/isMacOs? 12 17))
-             commit (subs url (- dt 6) dt)]
-         {:db (assoc-in db [:desktop/desktop :nightly-version] {:url url :commit commit})})))))
+ :screens/on-will-focus
+ (fn [{:keys [db] :as cofx} [_ view-id]]
+   (fx/merge cofx
+             {:db (assoc db :view-id view-id)}
+             #(case view-id
+                :keycard-settings (hardwallet/settings-screen-did-load %)
+                :reset-card (hardwallet/reset-card-screen-did-load %)
+                :enter-pin (hardwallet/enter-pin-screen-did-load %)
+                :hardwallet-connect (hardwallet/hardwallet-connect-screen-did-load %)
+                :accounts (hardwallet/accounts-screen-did-load %)
+                nil))))

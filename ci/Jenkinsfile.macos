@@ -1,15 +1,23 @@
 pipeline {
   agent { label 'macos' }
 
+  parameters {
+    string(
+      name: 'BUILD_TYPE',
+      description: 'Specify build type. Values: pr / nightly / release',
+      defaultValue: 'pr',
+    )
+  }
+
   options {
     timestamps()
     /* Prevent Jenkins jobs from running forever */
     timeout(time: 25, unit: 'MINUTES')
     /* Limit builds retained */
     buildDiscarder(logRotator(
-      numToKeepStr: '60',
-      daysToKeepStr: '30',
-      artifactNumToKeepStr: '60',
+      numToKeepStr: '10',
+      daysToKeepStr: '20',
+      artifactNumToKeepStr: '10',
     ))
   }
 
@@ -20,6 +28,8 @@ pipeline {
     LC_ALL = 'en_US.UTF-8'
     QT_PATH = '/usr/local/opt/qt'
     PATH = "/usr/local/opt/qt/bin:${env.PATH}"
+    MACDEPLOYQT = '/usr/local/opt/qt/bin/macdeployqt'
+    VERBOSE_LEVEL = '3'
   }
 
   stages {
@@ -29,24 +39,31 @@ pipeline {
           /* Necessary to load methods */
           desktop = load 'ci/desktop.groovy'
           cmn     = load 'ci/common.groovy'
-          desktop.prepDeps()
+          print "Running ${cmn.getBuildType()} build!"
+          cmn.abortPreviousRunningBuilds()
+          /* Read the valid NodeJS version */
+          env.NODE_VERSION = cmn.getToolVersion('node')
+          /* Cleanup and Prep */
+          nvm(env.NODE_VERSION) {
+            desktop.prepDeps()
+          }
         }
       }
     }
     stage('Lint') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { cmn.runLint() }
-      }
+      } }
     }
     stage('Tests') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { cmn.runTests() }
-      }
+      } }
     }
     stage('Build') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { desktop.buildClojureScript() }
-      }
+      } }
     }
     stage('Compile') {
       steps {
@@ -54,12 +71,28 @@ pipeline {
       }
     }
     stage('Bundle') {
-      steps {
+      steps { nvm(env.NODE_VERSION) {
         script { dmg = desktop.bundleMacOS(cmn.getBuildType()) }
-      }
+      } }
     }
     stage('Archive') {
-      steps { archiveArtifacts dmg }
+      steps {
+        archiveArtifacts dmg
+      }
     }
+    stage('Upload') {
+      steps {
+        script { env.PKG_URL = cmn.uploadArtifact(dmg) }
+      }
+    }
+    stage('Cleanup') {
+      steps {
+        script { cmn.clean() }
+      }
+    }
+  }
+  post {
+    failure { script { load('ci/common.groovy').notifyPRFailure() } }
+    success { script { load('ci/common.groovy').notifyPRSuccess() } }
   }
 }

@@ -20,6 +20,8 @@
   "
   (:require-macros [status-im.utils.views :as views])
   (:require [reagent.core :as reagent]
+            [clojure.string :as string]
+            [status-im.i18n :as i18n]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.colors :as colors]
@@ -97,9 +99,41 @@
     [touchable-item handler item]))
 
 (def item-icon-forward
-  [item-icon {:icon      :icons/forward
+  [item-icon {:icon      :main-icons/next
               :style     {:width 12}
               :icon-opts {:color colors/white}}])
+
+(defn big-list-item
+  [{:keys [text text-color value action-fn active? destructive? hide-chevron?
+           accessory-value text-color
+           accessibility-label icon icon-color image-source icon-content]
+    :or   {icon-color colors/blue
+           text-color colors/black
+           value ""
+           active? true}}]
+  {:pre [(or icon image-source)
+         (and action-fn text)
+         (or (nil? accessibility-label) (keyword? accessibility-label))]}
+  [react/touchable-highlight
+   (cond-> {:on-press action-fn
+            :accessibility-label accessibility-label
+            :disabled (not active?)})
+   [react/view styles/settings-item
+    (if icon
+      [react/view (styles/settings-item-icon icon-color)
+       [vector-icons/icon icon {:color icon-color}]]
+      [react/image {:source {:uri image-source}
+                    :style   styles/big-item-image}])
+    [react/text {:style (styles/settings-item-text text-color)
+                 :number-of-lines 1}
+     text]
+    (when accessory-value
+      [react/text {:style           styles/settings-item-value
+                   :number-of-lines 1
+                   :uppercase?      true}
+       (str accessory-value)])
+    (when-not hide-chevron?
+      [vector-icons/icon :main-icons/next {:color (colors/alpha colors/gray 0.4)}])]])
 
 (defn- wrap-render-fn [f]
   (fn [data]
@@ -235,4 +269,4 @@
         [react/touchable-highlight {:style    styles/delete-icon-highlight
                                     :on-press on-delete}
          [react/view {:style styles/delete-icon-container}
-          [vector-icons/icon :icons/delete {:color colors/red}]]]]])))
+          [vector-icons/icon :main-icons/delete {:color colors/red}]]]]])))

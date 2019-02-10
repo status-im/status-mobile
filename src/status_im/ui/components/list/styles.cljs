@@ -37,8 +37,16 @@
 (def image-size 40)
 
 (def item-image
-  {:width  image-size
-   :height image-size})
+  {:width         image-size
+   :height        image-size})
+
+(def big-item-image
+  {:width         image-size
+   :height        image-size
+   :margin-right  16
+   :border-radius 40
+   :border-color  (colors/alpha colors/gray 0.1)
+   :border-width  1})
 
 (def icon-size 24)
 (def icon-wrapper-size (+ icon-size (* 2 8)))
@@ -64,6 +72,41 @@
 
 (def right-item-wrapper
   {:justify-content :center})
+
+(def settings-item-separator
+  {:margin-left 16})
+
+(def settings-item
+  {:padding-left 16
+   :padding-right 8
+   :flex               1
+   :flex-direction     :row
+   :align-items        :center
+   :background-color   colors/white
+   :height             52})
+
+(defn settings-item-icon [icon-color]
+  {:background-color (colors/alpha icon-color 0.1)
+   :width            40
+   :height           40
+   :border-radius    40
+   :margin-right     16
+   :justify-content  :center
+   :align-items      :center})
+
+(defn settings-item-text
+  [color]
+  {:flex 1
+   :flex-wrap :nowrap
+   :font-size 17
+   :color color})
+
+(def settings-item-value
+  {:flex-wrap     :nowrap
+   :text-align    :right
+   :padding-right 10
+   :font-size     15
+   :color         colors/gray})
 
 (def base-separator
   {:height           1

@@ -167,7 +167,8 @@
         "one": "मिनट",
         "other": "मिनट"
     },
-    "browsing-open-in-web-browser": "वेब ब्राउज़र में खोलें",
+    "browsing-open-in-android-web-browser": "वेब ब्राउज़र में खोलें",
+    "browsing-open-in-ios-web-browser": "वेब ब्राउज़र में खोलें",
     "delete-group-prompt": "इससे संपर्क प्रभावित नहीं होंगे",
     "edit-profile": "प्रोफाइल का संपादन करें",
     "active-unknown": "अनजान",

@@ -36,17 +36,23 @@ void ReportPublisher::submit() {
 void ReportPublisher::restartAndQuit() {
   QString appPath = m_crashedExecutablePath;
 
-#ifdef Q_OS_MACOS
+#if defined(Q_OS_MACOS) || defined(Q_OS_LINUX)
   QFileInfo crashedExecutableFileInfo(m_crashedExecutablePath);
   QString fullPath = crashedExecutableFileInfo.dir().absolutePath();
+  #ifdef Q_OS_MACOS
   const QString bundleExtension = QStringLiteral(".app");
+  const QString cmdTemplate = QStringLiteral("open \"%1\"");
+  #else
+  const QString bundleExtension = QStringLiteral(".AppImage");
+  const QString cmdTemplate = QStringLiteral("\"%1\"");
+  #endif
   if (fullPath.contains(bundleExtension)) {
     appPath = fullPath.left(fullPath.indexOf(bundleExtension) +
                             bundleExtension.size());
   }
-  QString cmd = QString("open %1").arg(appPath);
+  QString cmd = QString(cmdTemplate).arg(appPath);
 #else
-  QString cmd = appPath;
+  QString cmd = QString("\"%1\"").arg(appPath);;
 #endif
 
   QProcess::startDetached(cmd);
@@ -61,8 +67,8 @@ void ReportPublisher::showDirectory() {
   if (!m_logFilesPrepared) {
     m_logFilesPrepared = prepareReportFiles(dataStoragePath);
   }
-  QDesktopServices::openUrl(
-      QUrl("file://" + dataStoragePath, QUrl::TolerantMode));
+
+  QDesktopServices::openUrl(QUrl::fromLocalFile(dataStoragePath));
 }
 
 bool ReportPublisher::prepareReportFiles(QString reportDirPath) {
@@ -101,5 +107,5 @@ QString ReportPublisher::resolveDataStoragePath() {
   if (!dir.exists()) {
     dir.mkpath(".");
   }
-  return dataStoragePath;
+  return dir.path();
 }

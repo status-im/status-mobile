@@ -167,7 +167,8 @@
         "one": "minuto",
         "other": "minuti"
     },
-    "browsing-open-in-web-browser": "Apri nel browser",
+    "browsing-open-in-android-web-browser": "Apri nel browser",
+    "browsing-open-in-ios-web-browser": "Apri nel browser",
     "delete-group-prompt": "Questo non intaccherà i contatti",
     "edit-profile": "Modifica profilo",
     "active-unknown": "Sconosciuto",

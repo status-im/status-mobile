@@ -173,7 +173,8 @@
         "one": "分钟",
         "other": "分钟"
     },
-    "browsing-open-in-web-browser": "在网络浏览器中打开",
+    "browsing-open-in-android-web-browser": "在网络浏览器中打开",
+    "browsing-open-in-ios-web-browser": "在网络浏览器中打开",
     "delete-group-prompt": "這不會影響聯絡人",
     "edit-profile": "编辑个人资料",
     "active-unknown": "未知",

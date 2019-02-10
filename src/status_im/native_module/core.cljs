@@ -6,7 +6,14 @@
 (defn start-node [config]
   (native-module/start-node config))
 
+(def node-started (atom false))
+
+(defn node-ready []
+  (reset! node-started true)
+  (native-module/node-ready))
+
 (defn stop-node []
+  (reset! node-started false)
   (native-module/stop-node))
 
 (defn create-account [password callback]
@@ -18,6 +25,13 @@
 (defn login [address password callback]
   (native-module/login address password callback))
 
+(defn verify [address password callback]
+  (native-module/verify address password callback))
+
+(defn login-with-keycard
+  [{:keys [whisper-private-key encryption-public-key on-result]}]
+  (native-module/login-with-keycard whisper-private-key encryption-public-key on-result))
+
 (defn set-soft-input-mode [mode]
   (native-module/set-soft-input-mode mode))
 
@@ -25,10 +39,12 @@
   (native-module/clear-web-data))
 
 (defn call-rpc [payload callback]
-  (native-module/call-rpc payload callback))
+  (when @node-started
+    (native-module/call-rpc payload callback)))
 
 (defn call-private-rpc [payload callback]
-  (native-module/call-private-rpc payload callback))
+  (when @node-started
+    (native-module/call-private-rpc payload callback)))
 
 (defn sign-message [rpcParams callback]
   (native-module/sign-message rpcParams callback))
@@ -36,11 +52,11 @@
 (defn send-transaction [rpcParams password callback]
   (native-module/send-transaction rpcParams password callback))
 
-(defn module-initialized! []
-  (native-module/module-initialized!))
+(defn send-data-notification [m callback]
+  (native-module/send-data-notification m callback))
 
-(defn notify-users [m callback]
-  (native-module/notify-users m callback))
+(defn send-logs [dbJson]
+  (native-module/send-logs dbJson))
 
 (defn add-peer [enode callback]
   (native-module/add-peer enode callback))
@@ -67,3 +83,7 @@
 (def enable-installation native-module/enable-installation)
 
 (def disable-installation native-module/disable-installation)
+
+(def update-mailservers native-module/update-mailservers)
+
+(def rooted-device? native-module/rooted-device?)

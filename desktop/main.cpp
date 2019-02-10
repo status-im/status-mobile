@@ -1,4 +1,3 @@
-
 /**
  * Copyright (C) 2016, Canonical Ltd.
  * All rights reserved.
@@ -29,6 +28,7 @@
 
 #include "exceptionglobalhandler.h"
 
+#include "appconfig.h"
 Q_DECLARE_LOGGING_CATEGORY(JSSERVER)
 Q_DECLARE_LOGGING_CATEGORY(STATUS)
 Q_LOGGING_CATEGORY(JSSERVER, "jsserver")
@@ -46,12 +46,6 @@ QProcess *g_nodeJsServerProcess = nullptr;
 const int MAIN_WINDOW_WIDTH = 1024;
 const int MAIN_WINDOW_HEIGHT = 768;
 const QString CRASH_REPORT_EXECUTABLE = QStringLiteral("reportApp");
-const QString CRASH_REPORT_EXECUTABLE_RELATIVE_PATH =
-#ifdef Q_OS_WIN
-    QStringLiteral("");
-#else
-    QStringLiteral("/../reportApp");
-#endif
 
 const char *ENABLE_LOG_FILE_ENV_VAR_NAME = "STATUS_LOG_FILE_ENABLED";
 const char *LOG_FILE_PATH_ENV_VAR_NAME = "STATUS_LOG_PATH";
@@ -214,8 +208,7 @@ QString getDataStoragePath() {
   QString dataStoragePath;
   if (!statusDataDir.isEmpty()) {
     dataStoragePath = statusDataDir;
-  }
-  else {
+  } else {
     dataStoragePath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
   }
   QDir dir(dataStoragePath);
@@ -227,7 +220,6 @@ QString getDataStoragePath() {
 
 void renameRealmDirs() {
   QDir dataDir(getDataStoragePath());
-  qCDebug(STATUS) << "### path: " << getDataStoragePath();
 
   if (dataDir.exists("default.realmaccounts")) {
     dataDir.mkdir("default.realm");
@@ -246,6 +238,9 @@ int main(int argc, char **argv) {
 
   QCoreApplication::setApplicationName("Status");
 
+  // Init AppConfig
+  AppConfig::inst().getValue(AppConfig::LOGGING_ENABLED);
+
   QString appPath = QCoreApplication::applicationDirPath();
   QString dataStoragePath = getDataStoragePath();
 #ifdef BUILD_FOR_BUNDLE
@@ -253,7 +248,6 @@ int main(int argc, char **argv) {
     killZombieJsServer();
   }
 #else
-  appPath.append(CRASH_REPORT_EXECUTABLE_RELATIVE_PATH);
   dataStoragePath = "";
 #endif
 
@@ -265,12 +259,12 @@ int main(int argc, char **argv) {
   Q_INIT_RESOURCE(react_resources);
 
   loadFontsFromResources();
-
-  QLoggingCategory::setFilterRules(QStringLiteral("UIManager=false\nFlexbox=false\nViewManager=false\nNetworking=false\nWebSocketModule=false"));
-
   if (redirectLogIntoFile()) {
     qInstallMessageHandler(saveMessage);
   }
+
+  //qCDebug(STATUS) << "###STATUS_NO_LOGGING";
+
 
 #ifdef BUILD_FOR_BUNDLE
   if (!runNodeJsServer()) {
@@ -364,6 +358,9 @@ QString getLogFilePath() {
 
 void writeLogsToFile() {
   QMutexLocker locker(&consoleOutputMutex);
+  if(consoleOutputStrings.isEmpty())
+    return;
+
   QFile logFile(getLogFilePath());
   if (logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
     for (QString message : consoleOutputStrings) {
@@ -441,6 +438,7 @@ bool runNodeJsServer() {
       QStringList arguments = (QStringList() << "--port" << port);
       g_nodeJsServerProcess->setArguments(arguments);
   }
+  qputenv("REALM_DISABLE_ANALYTICS", "1");
   QObject::connect(g_nodeJsServerProcess, &QProcess::errorOccurred,
                    [=](QProcess::ProcessError) {
                      qCWarning(JSSERVER) << "process name: "
@@ -529,6 +527,7 @@ void appendConsoleString(const QString &msg) {
 
 void saveMessage(QtMsgType type, const QMessageLogContext &context,
                  const QString &msg) {
+
   Q_UNUSED(context);
   QByteArray localMsg = msg.toLocal8Bit();
   QString message = localMsg + "\n";
@@ -559,3 +558,4 @@ void saveMessage(QtMsgType type, const QMessageLogContext &context,
 }
 
 #include "main.moc"
+

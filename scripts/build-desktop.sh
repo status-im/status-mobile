@@ -15,8 +15,14 @@ if [ -z $TARGET_SYSTEM_NAME ]; then
 fi
 WINDOWS_CROSSTOOLCHAIN_PKG_NAME='mxetoolchain-x86_64-w64-mingw32'
 
+if [ -z $STATUS_NO_LOGGING ]; then
+  COMPILE_FLAGS="-DCMAKE_CXX_FLAGS:='-DBUILD_FOR_BUNDLE=1'"
+else
+  COMPILE_FLAGS="-DCMAKE_CXX_FLAGS:=-DBUILD_FOR_BUNDLE=1 -DSTATUS_NO_LOGGING=1"
+fi
+
 external_modules_dir=( \
-  'node_modules/react-native-i18n/desktop' \
+  'node_modules/react-native-languages/desktop' \
   'node_modules/react-native-config/desktop' \
   'node_modules/react-native-fs/desktop' \
   'node_modules/react-native-http-bridge/desktop' \
@@ -27,6 +33,8 @@ external_modules_dir=( \
   'node_modules/google-breakpad' \
   'modules/react-native-desktop-linking/desktop' \
   'modules/react-native-desktop-menu/desktop' \
+  'modules/react-native-desktop-config/desktop' \
+  'modules/react-native-desktop-shortcuts/desktop' \
   'modules/react-native-desktop-notification/desktop' \
 )
 
@@ -35,6 +43,10 @@ external_fonts=( \
   '../../../../../resources/fonts/Inter-UI-Medium.otf' \
   '../../../../../resources/fonts/Inter-UI-Regular.otf' \
 )
+
+source "$SCRIPTPATH/lib/setup/path-support.sh"
+
+source_lib "packages.sh"
 
 function is_macos() {
   [[ "$OS" =~ Darwin ]]
@@ -46,11 +58,6 @@ function is_linux() {
 
 function is_windows_target() {
   [[ "$TARGET_SYSTEM_NAME" =~ Windows ]]
-}
-
-function program_exists() {
-  local program=$1
-  command -v "$program" >/dev/null 2>&1
 }
 
 function joinPath() {
@@ -71,8 +78,11 @@ function joinExistingPath() {
 
 STATUSREACTPATH="$(cd "$SCRIPTPATH" && cd '..' && pwd)"
 WORKFOLDER="$(joinExistingPath "$STATUSREACTPATH" 'StatusImPackage')"
-DEPLOYQT="$(joinPath . 'linuxdeployqt-continuous-x86_64.AppImage')"
-APPIMAGETOOL="$(joinPath . 'appimagetool-x86_64.AppImage')"
+DEPLOYQTFNAME='linuxdeployqt-continuous-x86_64_20181215.AppImage'
+APPIMAGETOOLFNAME='appimagetool-x86_64_20181109.AppImage'
+DEPLOYQT=$(joinPath . "$DEPLOYQTFNAME")
+APPIMAGETOOL=$(joinPath . "$APPIMAGETOOLFNAME")
+STATUSIM_APPIMAGE_ARCHIVE="StatusImAppImage_20181208.zip"
 
 function init() {
   if [ -z $STATUSREACTPATH ]; then
@@ -116,7 +126,7 @@ function init() {
         fi
 
         echo "${RED}Conan package manager not found. Installing...${NC}"
-        pip3 install conan==1.9.0
+        pip3 install conan==$(toolversion conan)
       fi
 
       conan remote add --insert 0 -f status-im https://conan.status.im
@@ -199,14 +209,14 @@ function compile() {
             -DEXTERNAL_MODULES_DIR="$EXTERNAL_MODULES_DIR" \
             -DDESKTOP_FONTS="$DESKTOP_FONTS" \
             -DJS_BUNDLE_PATH="$JS_BUNDLE_PATH" \
-            -DCMAKE_CXX_FLAGS:='-DBUILD_FOR_BUNDLE=1' || exit 1
+            $COMPILE_FLAGS || exit 1
     else
       cmake -Wno-dev \
             -DCMAKE_BUILD_TYPE=Release \
             -DEXTERNAL_MODULES_DIR="$EXTERNAL_MODULES_DIR" \
             -DDESKTOP_FONTS="$DESKTOP_FONTS" \
             -DJS_BUNDLE_PATH="$JS_BUNDLE_PATH" \
-            -DCMAKE_CXX_FLAGS:='-DBUILD_FOR_BUNDLE=1' || exit 1
+            $COMPILE_FLAGS || exit 1
     fi
     make -S -j5 || exit 1
   popd
@@ -270,14 +280,15 @@ function bundleLinux() {
 
   # invoke linuxdeployqt to create Status.AppImage
   echo "Creating AppImage..."
-
   pushd $WORKFOLDER
     rm -rf StatusImAppImage*
     # TODO this needs to be fixed: status-react/issues/5378
-    if [ -z $STATUSIM_APPIMAGE ]; then
-      STATUSIM_APPIMAGE=./StatusImAppImage.zip
-      [ -f $STATUSIM_APPIMAGE ] || wget https://desktop-app-files.ams3.digitaloceanspaces.com/StatusImAppImage_20181113.zip -O StatusImAppImage.zip
+    if [ -z $STATUSIM_APPIMAGE_DIR ]; then
+      STATUSIM_APPIMAGE="./${STATUSIM_APPIMAGE_ARCHIVE}"
+    else
+      STATUSIM_APPIMAGE="${STATUSIM_APPIMAGE_DIR}/${STATUSIM_APPIMAGE_ARCHIVE}"
     fi
+    [ -f $STATUSIM_APPIMAGE ] || wget "https://desktop-app-files.ams3.digitaloceanspaces.com/${STATUSIM_APPIMAGE_ARCHIVE}" -O $STATUSIM_APPIMAGE
     unzip "$STATUSIM_APPIMAGE" -d .
     rm -rf AppDir
     mkdir AppDir
@@ -287,57 +298,45 @@ function bundleLinux() {
   usrBinPath=$(joinPath "$WORKFOLDER" "AppDir/usr/bin")
   cp -r ./deployment/linux/usr $WORKFOLDER/AppDir
   cp ./.env $usrBinPath
-  cp ./desktop/bin/Status $usrBinPath
-  cp ./desktop/bin/reportApp $usrBinPath
+  cp ./desktop/bin/Status ./desktop/bin/reportApp $usrBinPath
   
   if [ ! -f $DEPLOYQT ]; then
-    wget --output-document="$DEPLOYQT" --show-progress -q https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
+    wget --output-document="$DEPLOYQT" --show-progress "https://desktop-app-files.ams3.digitaloceanspaces.com/$DEPLOYQTFNAME" # Versioned from https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
     chmod a+x $DEPLOYQT
   fi
 
   if [ ! -f $APPIMAGETOOL ]; then
-    wget --output-document="$APPIMAGETOOL" --show-progress -q https://github.com/AppImage/AppImageKit/releases/download/10/appimagetool-x86_64.AppImage
+    wget --output-document="$APPIMAGETOOL" --show-progress "https://desktop-app-files.ams3.digitaloceanspaces.com/$APPIMAGETOOLFNAME" # Versioned from https://github.com/AppImage/AppImageKit/releases/download/10/appimagetool-x86_64.AppImage
     chmod a+x $APPIMAGETOOL
   fi
 
-  rm -f Application-x86_64.AppImage
-  rm -f Status-x86_64.AppImage
+  rm -f Application-x86_64.AppImage Status-x86_64.AppImage
 
   [ $VERBOSE_LEVEL -ge 1 ] && ldd $(joinExistingPath "$usrBinPath" 'Status') 
-  $DEPLOYQT \
-    $(joinExistingPath "$usrBinPath" 'reportApp') \
-    -verbose=$VERBOSE_LEVEL -always-overwrite -no-strip -no-translations -qmake="$(joinExistingPath "${QTBIN}" 'qmake')" \
-    -qmldir="$STATUSREACTPATH/desktop/reportApp"
-
   desktopFilePath="$(joinExistingPath "$WORKFOLDER" 'AppDir/usr/share/applications/Status.desktop')"
+  pushd $WORKFOLDER
+    [ $VERBOSE_LEVEL -ge 1 ] && ldd $usrBinPath/Status
+    cp -r assets/share/assets $usrBinPath
+    cp -rf StatusImAppImage/* $usrBinPath
+    rm -f $usrBinPath/Status.AppImage
+  popd
+
   $DEPLOYQT \
     $desktopFilePath \
     -verbose=$VERBOSE_LEVEL -always-overwrite -no-strip \
     -no-translations -bundle-non-qt-libs \
     -qmake="$qmakePath" \
+    -executable="$(joinExistingPath "$usrBinPath" 'reportApp')" \
+    -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'node_modules/react-native')" \
+    -qmldir="$STATUSREACTPATH/desktop/reportApp" \
     -extra-plugins=imageformats/libqsvg.so \
-    -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'node_modules/react-native')"
+    -appimage
 
   pushd $WORKFOLDER
-    [ $VERBOSE_LEVEL -ge 1 ] && ldd AppDir/usr/bin/Status
-    cp -r assets/share/assets AppDir/usr/bin
-    cp -rf StatusImAppImage/* AppDir/usr/bin
-    rm -f AppDir/usr/bin/Status.AppImage
-  popd
-
-  $DEPLOYQT \
-    $desktopFilePath \
-    -verbose=$VERBOSE_LEVEL -appimage -qmake="$qmakePath"
-  pushd $WORKFOLDER
-    [ $VERBOSE_LEVEL -ge 1 ] && ldd AppDir/usr/bin/Status
-    cp -r assets/share/assets AppDir/usr/bin
-    cp -rf StatusImAppImage/* AppDir/usr/bin
-    rm -f AppDir/usr/bin/Status.AppImage
-  popd
-  $APPIMAGETOOL \
-    "$WORKFOLDER/AppDir"
-  pushd $WORKFOLDER
-    [ $VERBOSE_LEVEL -ge 1 ] && ldd AppDir/usr/bin/Status
+    [ $VERBOSE_LEVEL -ge 1 ] && ldd $usrBinPath/Status
+    rm -f $usrBinPath/Status.AppImage
+    $APPIMAGETOOL ./AppDir
+    [ $VERBOSE_LEVEL -ge 1 ] && ldd $usrBinPath/Status
     rm -rf Status.AppImage
   popd
 

@@ -7,6 +7,7 @@
    [clojure.set :as set]
    [status-im.utils.types :as types]))
 
+(set! (.-locale rn-dependencies/i18n) (.-language rn-dependencies/react-native-languages))
 (set! (.-fallbacks rn-dependencies/i18n) true)
 (set! (.-defaultSeparator rn-dependencies/i18n) "/")
 
@@ -116,7 +117,8 @@
     :public-chat-user-count :eth :transactions-history :not-implemented
     :new-contact :datetime-second :status-failed :is-typing :recover
     :suggestions-commands :nonce :new-network :contact-already-added :datetime-minute
-    :browsing-open-in-web-browser :delete-group-prompt :wallet-total-value
+    :browsing-open-in-ios-web-browser :browsing-open-in-android-web-browser
+    :delete-group-prompt :wallet-total-value
     :wallet-insufficient-funds :edit-profile :active-unknown
     :search-tags :transaction-failed :public-key :error-processing-json
     :status-seen :transactions-filter-tokens :status-delivered :profile

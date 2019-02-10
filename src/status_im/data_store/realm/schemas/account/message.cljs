@@ -51,3 +51,14 @@
                                          :default 0}
                       :show?            {:type    :bool
                                          :default true}}})
+
+(def v8
+  (-> v7
+      (assoc-in [:properties :old-message-id]
+                {:type    :string
+                 :indexed true})))
+
+(def v9
+  (-> v8
+      (assoc-in [:properties :raw-payload-hash]
+                {:type :string})))

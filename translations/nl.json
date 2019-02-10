@@ -172,7 +172,8 @@
         "one": "minuut",
         "other": "minuten"
     },
-    "browsing-open-in-web-browser": "Open in een web browser",
+    "browsing-open-in-android-web-browser": "Open in een web browser",
+    "browsing-open-in-ios-web-browser": "Open in een web browser",
     "delete-group-prompt": "This will not affect contacts",
     "edit-profile": "Bewerk profiel",
     "active-unknown": "Onbekend",

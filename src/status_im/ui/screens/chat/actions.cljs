@@ -26,6 +26,10 @@
   {:label  (i18n/label :t/clear-history)
    :action #(re-frame/dispatch [:chat.ui/clear-history-pressed])})
 
+(defn fetch-history [chat-id]
+  {:label  (i18n/label :t/fetch-history)
+   :action #(re-frame/dispatch [:chat.ui/fetch-history-pressed chat-id])})
+
 (defn- delete-chat [chat-id group?]
   {:label  (i18n/label :t/delete-chat)
    :action #(re-frame/dispatch [(if group?
@@ -37,18 +41,21 @@
   [view-my-wallet
    (view-profile chat-id)
    (clear-history)
+   (fetch-history chat-id)
    (delete-chat chat-id false)])
 
 (defn- group-chat-actions [chat-id]
   [view-my-wallet
    (group-info chat-id)
    (clear-history)
+   (fetch-history chat-id)
    (delete-chat chat-id true)])
 
 (defn- public-chat-actions [chat-id]
   [view-my-wallet
    (share-chat chat-id)
    (clear-history)
+   (fetch-history chat-id)
    (delete-chat chat-id false)])
 
 (defn actions [group-chat? chat-id public?]

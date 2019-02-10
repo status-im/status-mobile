@@ -61,7 +61,7 @@ class AbstractTestCase:
         desired_caps['build'] = pytest.config.getoption('build')
         desired_caps['name'] = test_suite_data.current_test.name
         desired_caps['platformName'] = 'Android'
-        desired_caps['appiumVersion'] = '1.7.2'
+        desired_caps['appiumVersion'] = '1.9.1'
         desired_caps['platformVersion'] = '7.1'
         desired_caps['deviceName'] = 'Android GoogleAPI Emulator'
         desired_caps['deviceOrientation'] = "portrait"
@@ -72,6 +72,7 @@ class AbstractTestCase:
         desired_caps['setWebContentDebuggingEnabled'] = True
         desired_caps['ignoreUnimportantViews'] = False
         desired_caps['enableNotificationListener'] = True
+        desired_caps['maxDuration'] = 1800
         return desired_caps
 
     def update_capabilities_sauce_lab(self, new_capabilities: dict):
@@ -90,7 +91,7 @@ class AbstractTestCase:
         desired_caps['app'] = apk
         desired_caps['deviceName'] = 'nexus_5'
         desired_caps['platformName'] = 'Android'
-        desired_caps['appiumVersion'] = '1.7.2'
+        desired_caps['appiumVersion'] = '1.9.1'
         desired_caps['platformVersion'] = pytest.config.getoption('platform_version')
         desired_caps['newCommandTimeout'] = 600
         desired_caps['fullReset'] = False
@@ -157,14 +158,15 @@ class Driver(webdriver.Remote):
 
 class SingleDeviceTestCase(AbstractTestCase):
 
-    def setup_method(self, method, max_duration=1800):
+    def setup_method(self, method, **kwargs):
         if pytest.config.getoption('docker'):
             appium_container.start_appium_container(pytest.config.getoption('docker_shared_volume'))
             appium_container.connect_device(pytest.config.getoption('device_ip'))
 
         (executor, capabilities) = (self.executor_sauce_lab, self.capabilities_sauce_lab) if \
             self.environment == 'sauce' else (self.executor_local, self.capabilities_local)
-        capabilities['maxDuration'] = max_duration
+        for key, value in kwargs.items():
+            capabilities[key] = value
         self.driver = Driver(executor, capabilities)
         test_suite_data.current_test.testruns[-1].jobs[self.driver.session_id] = 1
         self.driver.implicitly_wait(self.implicitly_wait)
@@ -252,18 +254,3 @@ environment = LocalMultipleDeviceTestCase if pytest.config.getoption('env') == '
 
 class MultipleDeviceTestCase(environment):
     pass
-
-
-class MessageReliabilityTestCase(MultipleDeviceTestCase):
-
-    def setup_method(self, method):
-        super(MessageReliabilityTestCase, self).setup_method(method)
-        self.one_to_one_chat_data = dict()
-        self.public_chat_data = dict()
-
-    def teardown_method(self, method):
-        if self.one_to_one_chat_data:
-            create_one_to_one_chat_report(self.one_to_one_chat_data)
-        if self.public_chat_data:
-            create_public_chat_report(self.public_chat_data)
-        super(MultipleDeviceTestCase, self).teardown_method(method)

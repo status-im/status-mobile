@@ -14,6 +14,10 @@ macro(import_qt_modules)
 
     #message("${mod}_INCLUDE_DIRS: include_directories(${${mod}_INCLUDE_DIRS})")
     include_directories(${${mod}_INCLUDE_DIRS})
+    if (${COMP} STREQUAL "Quick")
+      # We need to include the private headers for QZipWriter. If in the future we can't use that class anymore, we can always resort to the QuaZIP OSS library
+      include_directories(${${mod}_PRIVATE_INCLUDE_DIRS})
+    endif()
 
     list(APPEND QT5_LIBRARIES ${${mod}_LIBRARIES})
     list(APPEND QT5_CFLAGS ${${mod}_EXECUTABLE_COMPILE_FLAGS})

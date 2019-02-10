@@ -2,6 +2,7 @@
 
 buildscript {
     repositories {
+        flatDir { dirs "libs", "${rootDir}/app/libs" }
         google()
         jcenter()
     }

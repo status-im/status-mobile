@@ -12,11 +12,14 @@
 
 (fx/defn receive-message
   [cofx now-in-s filter-chat-id js-message]
-  (let [{:keys [payload sig timestamp ttl]} (js->clj js-message :keywordize-keys true)
+  (let [blocked-contacts (get-in cofx [:db :contacts/blocked] #{})
+        {:keys [payload sig timestamp ttl]} (js->clj js-message :keywordize-keys true)
         status-message (-> payload
                            transport.utils/to-utf8
                            transit/deserialize)]
-    (when (and sig status-message)
+    (when (and sig
+               status-message
+               (not (blocked-contacts sig)))
       (try
         (when-let [valid-message (protocol/validate status-message)]
           (fx/merge (assoc cofx :js-obj js-message)
@@ -43,8 +46,7 @@
                                      (receive-message now-in-s chat-id message))
                                    (js-array->seq js-messages))]
       (apply fx/merge cofx receive-message-fxs))
-    (do (log/error "Something went wrong" js-error js-messages)
-        cofx)))
+    (log/error "Something went wrong" js-error js-messages)))
 
 (fx/defn remove-hash
   [{:keys [db] :as cofx} envelope-hash]
@@ -57,6 +59,20 @@
     {:db            (assoc-in db [:transport/chats chat-id :resend?] nil)
      :data-store/tx [(transport-store/save-transport-tx {:chat-id chat-id
                                                          :chat    updated-chat})]}))
+(fx/defn check-confirmations [{:keys [db] :as cofx} status chat-id message-id]
+  (when-let [{:keys [pending-confirmations not-sent]}
+             (get-in db [:transport/message-ids->confirmations message-id])]
+    (if (zero? (dec pending-confirmations))
+      (fx/merge cofx
+                {:db (update db :transport/message-ids->confirmations dissoc message-id)}
+                (models.message/update-message-status chat-id message-id (if not-sent
+                                                                           :not-sent
+                                                                           status)))
+      (let [confirmations {:pending-confirmations (dec pending-confirmations)
+                           :not-sent  (or not-sent
+                                          (= :not-sent status))}]
+        {:db (assoc-in db [:transport/message-ids->confirmations message-id] confirmations)}))))
+
 (fx/defn update-envelope-status
   [{:keys [db] :as cofx} envelope-hash status]
   (let [{:keys [chat-id message-type message-id]}
@@ -72,8 +88,8 @@
         (let [{:keys [fcm-token]} (get-in db [:contacts/contacts chat-id])]
           (fx/merge cofx
                     (remove-hash envelope-hash)
-                    (models.message/update-message-status chat-id message-id status)
-                    (models.message/send-push-notification fcm-token status)))))))
+                    (check-confirmations status chat-id message-id)
+                    (models.message/send-push-notification chat-id message-id fcm-token status)))))))
 
 (fx/defn set-contact-message-envelope-hash
   [{:keys [db] :as cofx} chat-id envelope-hash]
@@ -82,18 +98,19 @@
                   :message-type :contact-message})})
 
 (fx/defn set-message-envelope-hash
-  "message-type is used for tracking
-   TODO (cammellos): For group messages it returns multiple hashes, for now
-   we naively assume that if one is sent the batch is ok"
-  [{:keys [db] :as cofx} chat-id message-id message-type envelope-hash-js]
+  "message-type is used for tracking"
+  [{:keys [db] :as cofx} chat-id message-id message-type envelope-hash-js messages-count]
   (let [envelope-hash (js->clj envelope-hash-js)
         hash (if (vector? envelope-hash)
                (last envelope-hash)
                envelope-hash)]
-    {:db (assoc-in db [:transport/message-envelopes hash]
-                   {:chat-id      chat-id
-                    :message-id   message-id
-                    :message-type message-type})}))
+    {:db (-> db
+             (assoc-in [:transport/message-envelopes hash]
+                       {:chat-id      chat-id
+                        :message-id   message-id
+                        :message-type message-type})
+             (update-in [:transport/message-ids->confirmations message-id]
+                        #(or % {:pending-confirmations messages-count})))}))
 
 (defn- own-info [db]
   (let [{:keys [name photo-path address]} (:account/account db)
@@ -135,7 +152,6 @@
       (apply fx/merge cofx resend-contact-message-fxs))))
 
 (re-frame/reg-fx
- ;; TODO(janherich): this should be called after `:data-store/tx` actually
  :transport/confirm-messages-processed
  (fn [messages]
    (let [{:keys [web3]} (first messages)

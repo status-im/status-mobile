@@ -5,16 +5,20 @@
             status-im.contact.subs
             status-im.search.subs
             status-im.mailserver.subs
+            status-im.ui.components.connectivity.subs
             status-im.ui.screens.accounts.subs
+            status-im.ui.screens.chat.stickers.subs
             status-im.ui.screens.extensions.subs
             status-im.ui.screens.home.subs
             status-im.ui.screens.group.subs
+            status-im.ui.screens.stickers.subs
             status-im.ui.screens.wallet.subs
             status-im.ui.screens.wallet.collectibles.subs
             status-im.ui.screens.wallet.request.subs
             status-im.ui.screens.wallet.send.subs
             status-im.ui.screens.wallet.settings.subs
             status-im.ui.screens.wallet.transactions.subs
+            status-im.ui.screens.hardwallet.settings.subs
             status-im.ui.screens.network-settings.subs
             status-im.ui.screens.log-level-settings.subs
             status-im.ui.screens.fleet-settings.subs
@@ -53,6 +57,10 @@
          :<- [:peers-count]
          (fn [peers-count]
            (zero? peers-count)))
+
+(reg-sub :connection-stats
+         (fn [db _]
+           (get-in db [:desktop/desktop :debug-metrics])))
 
 (reg-sub :offline?
          :<- [:network-status]

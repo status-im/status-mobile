@@ -9,15 +9,6 @@
    (:contacts/dapps db)))
 
 (re-frame/reg-sub
- ::all-added-contacts
- :<- [:contacts/contacts]
- (fn [contacts]
-   (->> contacts
-        (remove (fn [[_ {:keys [pending? hide-contact?]}]]
-                  (or pending? hide-contact?)))
-        (contact.db/sort-contacts))))
-
-(re-frame/reg-sub
  ::query-current-chat-contacts
  :<- [:chats/current-chat]
  :<- [:contacts/contacts]
@@ -30,6 +21,33 @@
    (get db :contacts/contacts)))
 
 (re-frame/reg-sub
+ :contacts/active
+ :<- [:contacts/contacts]
+ (fn [contacts]
+   (contact.db/active contacts)))
+
+(re-frame/reg-sub
+ :contacts/active-count
+ :<- [:contacts/active]
+ (fn [active-contacts]
+   (count active-contacts)))
+
+(re-frame/reg-sub
+ :contacts/blocked
+ :<- [:contacts/contacts]
+ (fn [contacts]
+   (->> contacts
+        (filter (fn [[_ {:keys [blocked?]}]]
+                  blocked?))
+        (contact.db/sort-contacts))))
+
+(re-frame/reg-sub
+ :contacts/blocked-count
+ :<- [:contacts/blocked]
+ (fn [blocked-contacts]
+   (count blocked-contacts)))
+
+(re-frame/reg-sub
  :contacts/current-contact-identity
  (fn [db]
    (get db :contacts/identity)))
@@ -40,12 +58,6 @@
  :<- [:contacts/current-contact-identity]
  (fn [[contacts identity]]
    (contacts identity)))
-
-(re-frame/reg-sub
- :contacts/all-added-people-contacts
- :<- [::all-added-contacts]
- (fn [contacts]
-   (remove :dapp? contacts)))
 
 (re-frame/reg-sub
  :contacts/all-dapps
@@ -102,8 +114,8 @@
  :<- [:chats/current-chat]
  :<- [:contacts/contacts]
  :<- [:account/account]
- (fn [[{:keys [contacts]} all-contacts current-account]]
-   (contact.db/get-all-contacts-in-group-chat contacts all-contacts current-account)))
+ (fn [[{:keys [contacts admins]} all-contacts current-account]]
+   (contact.db/get-all-contacts-in-group-chat contacts admins all-contacts current-account)))
 
 (re-frame/reg-sub
  :contacts/contacts-by-chat

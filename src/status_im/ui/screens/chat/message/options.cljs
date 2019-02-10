@@ -26,12 +26,12 @@
        [react/view options.styles/title
         [react/i18n-text {:style options.styles/title-text :key :message-not-sent}]]
        [action-item {:label    :resend-message
-                     :icon     :icons/refresh
+                     :icon     :main-icons/refresh
                      :on-press #(do
                                   (close-message-options-fn)
                                   (re-frame/dispatch [:chat.ui/resend-message chat-id message-id]))}]
        [action-item {:label    :delete-message
-                     :icon     :icons/delete
+                     :icon     :main-icons/delete
                      :style    {:color colors/red}
                      :on-press #(do
                                   (close-message-options-fn)

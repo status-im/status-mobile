@@ -17,12 +17,18 @@
 (defn sha3 [s]
   (.sha3 dependencies/Web3.prototype s))
 
+(defn old-message-id
+  [message]
+  (sha3 (pr-str message)))
+
+(defn system-message-id
+  [{:keys [from chat-id clock-value]}]
+  (sha3 (str from chat-id clock-value)))
+
 (defn message-id
   "Get a message-id"
-  [{:keys [from chat-id clock-value] :as m}]
-  {:pre [(not (nil? from))
-         (not (nil? chat-id))]}
-  (sha3 (str from chat-id clock-value)))
+  [from raw-payload]
+  (sha3 (str from (sha3 raw-payload))))
 
 (defn get-topic
   "Get the topic of a group chat or public chat from the chat-id"

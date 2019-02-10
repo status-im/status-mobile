@@ -24,21 +24,34 @@
    (show-popup title content on-dismiss)))
 
 (defn show-confirmation
-  [{:keys [title content confirm-button-text on-accept on-cancel cancel-button-text]}]
+  [{:keys [title content confirm-button-text on-dismiss on-accept on-cancel cancel-button-text
+           extra-options]}]
   (.alert (.-Alert rn-dependencies/react-native)
           title
           content
           ;; Styles are only relevant on iOS. On Android first button is 'neutral' and second is 'positive'
           (clj->js
-           (vector (merge {:text                (or cancel-button-text (i18n/label :t/cancel))
-                           :style               "cancel"
-                           :accessibility-label :cancel-button}
-                          (when on-cancel {:onPress on-cancel}))
-                   {:text                (or confirm-button-text (i18n/label :t/ok))
-                    :onPress             on-accept
-                    :style               "default"
-                    :accessibility-label :confirm-button})
-           #js {:cancelable false})))
+           (concat
+            (vector (merge {:text                (or cancel-button-text (i18n/label :t/cancel))
+                            :style               "cancel"
+                            :accessibility-label :cancel-button}
+                           (when on-cancel {:onPress on-cancel}))
+                    {:text                (or confirm-button-text (i18n/label :t/ok))
+                     :onPress             on-accept
+                     :style               "default"
+                     :accessibility-label :confirm-button})
+            (or extra-options nil)))
+          #js {:cancelable false}))
+
+(re-frame/reg-fx
+ :utils/show-confirmation
+ (fn [{:keys [title content confirm-button-text on-accept on-cancel cancel-button-text]}]
+   (show-confirmation {:title title
+                       :content content
+                       :confirm-button-text confirm-button-text
+                       :cancel-button-text cancel-button-text
+                       :on-accept on-accept
+                       :on-cancel on-cancel})))
 
 (defn show-question
   ([title content on-accept]
@@ -59,6 +72,18 @@
 
 (defn set-timeout [cb ms]
   (.setTimeout rn-dependencies/background-timer cb ms))
+
+(defn unread-messages-count
+  "display actual # if less than 1K, round to the lowest thousand if between 1 and 10K, otherwise 10K+ for anything larger"
+  [messages-count]
+  (let [round-to-lowest-single-thousand #(-> %
+                                             (/ 1000)
+                                             (Math/floor)
+                                             (str "K+"))]
+    (cond
+      (< messages-count 1000)        (str messages-count)
+      (<= 1000 messages-count 10000) (round-to-lowest-single-thousand messages-count)
+      (> messages-count 10000)       "10K+")))
 
 ;; same as re-frame dispatch-later but using background timer for long
 ;; running timeouts

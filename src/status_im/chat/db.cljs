@@ -21,11 +21,7 @@
 (defn active-chats
   [contacts chats {:keys [dev-mode?]}]
   (reduce (fn [acc [chat-id {:keys [group-chat public? is-active] :as chat}]]
-            (if (and is-active
-                     ;; not a group chat
-                     (or (not (and group-chat (not public?)))
-                         ;; if it's a group chat
-                         utils.config/group-chats-enabled?))
+            (if is-active
               (assoc acc chat-id (if-let [contact (get contacts chat-id)]
                                    (-> chat
                                        (assoc :name (:name contact))
@@ -60,10 +56,11 @@
                          :type  :datemark})
                   (map (fn [{:keys [message-id timestamp-str]}]
                          (let [{:keys [content] :as message} (get messages message-id)
-                               quote (some-> (:response-to content)
+                               {:keys [response-to response-to-v2]} content
+                               quote (some-> (or response-to-v2 response-to)
                                              (quoted-message-data messages referenced-messages))]
                            (cond-> (-> message
-                                       (update :content dissoc :response-to)
+                                       (update :content dissoc :response-to :response-to-v2)
                                        (assoc :datemark      datemark
                                               :timestamp-str timestamp-str
                                               :user-statuses (get message-statuses message-id)))

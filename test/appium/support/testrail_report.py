@@ -102,6 +102,16 @@ class TestrailReport(BaseTestReport):
                     else devices + test_steps}
             self.post(method, data=data)
 
+    def get_run_results(self):
+        return self.get('get_results_for_run/%s' % self.run_id)
+
+    def is_run_successful(self):
+        for test in self.get_run_results():
+            if test['status_id'] != 1:
+                return False
+        else:
+            return True
+
     def get_test_result_link(self, test_run_id, test_case_id):
         try:
             test_id = self.get('get_results_for_case/%s/%s' % (test_run_id, test_case_id))[0]['test_id']
