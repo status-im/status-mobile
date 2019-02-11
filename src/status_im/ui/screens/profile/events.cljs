@@ -68,11 +68,6 @@
  (fn [cofx _]
    (profile.models/finish cofx)))
 
-(handlers/register-handler-fx
- :my-profile/set-tribute
- (fn [cofx _]
-   (profile.models/set-tribute cofx)))
-
 (re-frame/reg-fx
  :copy-to-clipboard
  (fn [value]
@@ -115,10 +110,27 @@
 
 (handlers/register-handler-fx
  :tribute-to-talk/step-forward
- (fn [{:keys [db] :as cofx} [_ step editing?]]
+ (fn [{:keys [db] :as cofx} [_ {:keys [step editing?] :as tr-settings}]]
    (case step
      :intro                     {:db (assoc-in db [:my-profile/tribute-to-talk :step] :set-snt-amount)}
      :set-snt-amount            {:db (assoc-in db [:my-profile/tribute-to-talk :step] :personalized-message)}
      :personalized-message      {:db (assoc-in db [:my-profile/tribute-to-talk :step]
-                                               (if editing? :edit :finish))}
+                                               (if editing? :edit :finish))
+                                 :dispatch [:accounts.ui/set-tribute-to-talk
+                                            (select-keys tr-settings [:snt-amount :message])]}
      :finish {:dispatch [:navigate-back]})))
+
+(handlers/register-handler-fx
+ :tribute-to-talk/start-editing
+ (fn [{:keys [db]}]
+   {:db (-> db
+            (assoc-in [:my-profile/tribute-to-talk :step] :set-snt-amount)
+            (assoc-in [:my-profile/tribute-to-talk :editing?] true))}))
+
+(handlers/register-handler-fx
+ :tribute-to-talk/remove
+ (fn [{:keys [db]}]
+   {:db (-> db
+            (assoc-in [:my-profile/tribute-to-talk :snt-amount] nil)
+            (assoc-in [:my-profile/tribute-to-talk :step] :finish))
+    :dispatch [:accounts.ui/remove-tribute-to-talk]}))

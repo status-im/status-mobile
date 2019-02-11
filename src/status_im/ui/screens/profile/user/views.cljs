@@ -258,7 +258,7 @@
     :accessory-value     active-contacts-count
     :action-fn           #(re-frame/dispatch [:navigate-to :contacts-list])}])
 
-(defn tribute-to-talk-item [snt-amount]
+(defn tribute-to-talk-item [snt-amount seen?]
   [list.views/big-list-item
    (cond->
     {:text                (i18n/label :t/tribute-to-talk)
@@ -267,7 +267,7 @@
      :action-fn           #(re-frame/dispatch [:navigate-to :tribute-to-talk])}
      snt-amount
      (assoc :accessory-value (str snt-amount " SNT"))
-     (not snt-amount)
+     (not seen?)
      (assoc :subtext (i18n/label :t/tribute-to-talk-desc)))])
 
 (defview my-profile []
@@ -278,7 +278,8 @@
             login-data      [:get :accounts/login]
             scroll          (reagent/atom nil)
             active-contacts-count [:contacts/active-count]
-            snt-amount     [:get-in [:my-profile/tribute-to-talk :snt-amount]]]
+            {tr-to-talk-seen? :seen?
+             snt-amount :snt-amount} [:settings/tribute-to-talk]]
     (let [shown-account    (merge current-account changed-account)
           ;; We scroll on the component once rendered. setTimeout is necessary,
           ;; likely to allow the animation to finish.
@@ -308,7 +309,7 @@
            :on-change-text-event :my-profile/update-name}]]
         [share-profile-item (dissoc current-account :mnemonic)]
         [contacts-list-item active-contacts-count]
-        [tribute-to-talk-item snt-amount]
+        [tribute-to-talk-item snt-amount tr-to-talk-seen?]
         [react/view styles/my-profile-info-container
          [my-profile-settings current-account shown-account currency (nil? login-data)]]
         (when (nil? login-data)

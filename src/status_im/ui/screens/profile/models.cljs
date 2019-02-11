@@ -89,11 +89,6 @@
             {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
             (accounts.update/clean-seed-phrase)))
 
-(defn set-tribute [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (assoc-in db [:my-profile/tribute-to-talk :enabled] true)}
-            (accounts.update/clean-seed-phrase)))
-
 (defn copy-to-clipboard! [value]
   (react/copy-to-clipboard value))
 

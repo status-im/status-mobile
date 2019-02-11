@@ -41,6 +41,27 @@
             (wallet.settings.models/wallet-autoconfig-tokens)
             (accounts.update/account-update {:wallet-set-up-passed? true} {})))
 
+(fx/defn set-tribute-to-talk-seen
+  [{:keys [db] :as cofx}]
+  (let [settings (get-in db [:account/account :settings])]
+    (fx/merge cofx
+              (accounts.update/update-settings
+               (assoc-in settings [:tribute-to-talk :seen?] true) {}))))
+
+(fx/defn set-tribute-to-talk
+  [{:keys [db] :as cofx} tr-settings]
+  (let [settings (get-in db [:account/account :settings])]
+    (fx/merge cofx
+              (accounts.update/update-settings
+               (update settings :tribute-to-talk merge tr-settings) {}))))
+
+(fx/defn remove-tribute-to-talk
+  [{:keys [db] :as cofx}]
+  (let [settings (get-in db [:account/account :settings])]
+    (fx/merge cofx
+              (accounts.update/update-settings
+               (assoc settings :tribute-to-talk {:seen? true}) {}))))
+
 (fx/defn update-dev-server-state
   [_ dev-mode?]
   (if dev-mode?

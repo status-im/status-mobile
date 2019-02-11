@@ -209,9 +209,7 @@
          [snt-asset-value]]]
        [react/view {:style {:justify-content :center
                             :align-items :center}}
-        [react/text {:on-press #(do
-                                  (re-frame/dispatch [:set-in [:my-profile/tribute-to-talk :step] :set-snt-amount])
-                                  (re-frame/dispatch [:set-in [:my-profile/tribute-to-talk :editing?] true]))
+        [react/text {:on-press #(re-frame/dispatch [:tribute-to-talk/start-editing])
                      :style styles/edit-label}
          (i18n/label :t/edit)]]]
       [react/text-input {:style         styles/edit-view-message
@@ -223,9 +221,7 @@
       [react/text {:style styles/edit-note}
        (i18n/label :t/tribute-to-talk-you-require-snt)]
 
-      [react/touchable-highlight {:on-press #(do
-                                               (re-frame/dispatch [:set-in [:my-profile/tribute-to-talk :snt-amount] nil])
-                                               (re-frame/dispatch [:set-in [:my-profile/tribute-to-talk :step] :finish]))
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:tribute-to-talk/remove])
                                   :style styles/remove-view}
        [react/view {:style {:flex-direction :row}}
         [react/view {:style (styles/icon-view (colors/alpha colors/red 0.1))}
@@ -292,9 +288,9 @@
 
 (defview tribute-to-talk []
   (letsubs [current-account           [:account/account]
-            {:keys [step snt-amount]} [:my-profile/tribute-to-talk]
-            editing?                  [:get-in [:my-profile/tribute-to-talk :editing?]]]
+            {:keys [step snt-amount editing?] :as tr-settings} [:my-profile/tribute-to-talk]]
     [react/keyboard-avoiding-view {:style styles/container}
+     (re-frame/dispatch [:accounts.ui/tribute-to-talk-seen])
      [status-bar/status-bar]
      [toolbar/toolbar
       nil
@@ -332,5 +328,5 @@
                                      :uppercase?   false
                                      :label-style  (when disabled? {:color colors/gray})
                                      :on-press     #(re-frame/dispatch
-                                                     [:tribute-to-talk/step-forward step editing?])
+                                                     [:tribute-to-talk/step-forward tr-settings])
                                      :label        (i18n/label (step-forward-label step))}])])]))

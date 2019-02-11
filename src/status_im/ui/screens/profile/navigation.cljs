@@ -11,9 +11,12 @@
 
 (defmethod navigation/preload-data! :tribute-to-talk
   [db [_ _]]
-  (if (-> db :my-profile/tribute-to-talk :snt-amount)
-    (assoc-in db [:my-profile/tribute-to-talk :step] :edit)
-    (assoc db :my-profile/tribute-to-talk {:step :intro})))
+  (let [tr-settings (get-in db [:account/account :settings :tribute-to-talk])]
+    (assoc db :my-profile/tribute-to-talk
+           (if (:snt-amount tr-settings)
+             (assoc tr-settings :step :edit
+                    :editing? true)
+             {:step :intro}))))
 
 (defmethod navigation/unload-data! :my-profile
   [db]

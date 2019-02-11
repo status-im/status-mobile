@@ -1698,3 +1698,19 @@
  :stickers/open-sticker-pack
  (fn [cofx [_ uri]]
    (stickers/open-sticker-pack cofx uri)))
+
+;; Tribute to Talk
+(handlers/register-handler-fx
+ :accounts.ui/tribute-to-talk-seen
+ (fn [cofx _]
+   (accounts/set-tribute-to-talk-seen cofx)))
+
+(handlers/register-handler-fx
+ :accounts.ui/set-tribute-to-talk
+ (fn [cofx [_ settings]]
+   (accounts/set-tribute-to-talk cofx settings)))
+
+(handlers/register-handler-fx
+ :accounts.ui/remove-tribute-to-talk
+ (fn [cofx _]
+   (accounts/remove-tribute-to-talk cofx)))
