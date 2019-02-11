@@ -55,7 +55,13 @@ class DeleteButton(BaseButton):
 class YesButton(BaseButton):
     def __init__(self, driver):
         super(YesButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='YES' or @text='GOT IT']")
+        self.locator = self.Locator.xpath_selector("//*[@text='YES']")
+
+
+class GotItButton(BaseButton):
+    def __init__(self, driver):
+        super(GotItButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='GOT IT']")
 
 
 class NoButton(BaseButton):
@@ -149,7 +155,7 @@ class NextButton(BaseButton):
     def __init__(self, driver):
         super(NextButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            "//android.widget.TextView[@text='NEXT']")
+            "//android.widget.TextView[@text='NEXT' or @text='Next']")
 
 
 class AddButton(BaseButton):
@@ -213,7 +219,7 @@ class DiscardButton(BaseButton):
 class ConfirmButton(BaseButton):
     def __init__(self, driver):
         super(ConfirmButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='CONFIRM']")
+        self.locator = self.Locator.xpath_selector("//*[@text='CONFIRM' or @text='Confirm']")
 
 
 class ProgressBar(BaseElement):
@@ -287,6 +293,7 @@ class BaseView(object):
         self.connection_status = ConnectionStatusText(self.driver)
         self.cross_icon = CrossIcon(self.driver)
         self.show_roots_button = ShowRoots(self.driver)
+        self.got_it_button = GotItButton(self.driver)
 
         self.apps_button = AppsButton(self.driver)
         self.status_app_icon = StatusAppIcon(self.driver)

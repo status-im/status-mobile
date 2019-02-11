@@ -136,8 +136,11 @@ class AbstractTestCase:
 
     def add_alert_text_to_report(self, driver):
         if self.is_alert_present(driver):
-            test_suite_data.current_test.testruns[-1].error += ", also Unexpected Alert is shown: '%s'" \
+            try:
+                test_suite_data.current_test.testruns[-1].error += ", also Unexpected Alert is shown: '%s'" \
                                                                        % self.get_alert_text(driver)
+            except TypeError:
+                pass
 
 
 class Driver(webdriver.Remote):

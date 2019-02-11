@@ -22,8 +22,8 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.assets_button.click()
         send_transaction_view = status_test_dapp.request_stt_button.click()
         wallet_view = send_transaction_view.get_wallet_view()
-        wallet_view.done_button.click()
-        wallet_view.yes_button.click()
+        for _ in range(2):
+            wallet_view.got_it_button.click()
         send_transaction_view.sign_transaction()
         self.network_api.verify_balance_is_updated(initial_balance, address)
 

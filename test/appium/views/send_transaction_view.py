@@ -75,12 +75,12 @@ class ScanQRCodeButton(BaseButton):
 class EnterRecipientAddressInput(BaseEditBox):
     def __init__(self, driver):
         super(EnterRecipientAddressInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Enter recipient address']")
+        self.locator = self.Locator.accessibility_id("recipient-address-input")
 
 
-class RecentRecipientsButton(BaseButton):
+class ContactsButton(BaseButton):
     def __init__(self, driver):
-        super(RecentRecipientsButton, self).__init__(driver)
+        super(ContactsButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Contacts']")
 
 
@@ -156,6 +156,12 @@ class NotEnoughEthForGas(BaseText):
         self.locator = self.Locator.text_selector('Not enough ETH for gas')
 
 
+class SendButton(BaseButton):
+    def __init__(self, driver):
+        super(SendButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Send']")
+
+
 class ValidationWarnings(object):
     def __init__(self, driver):
         self.not_enough_eth_for_gas = NotEnoughEthForGas(driver)
@@ -170,7 +176,7 @@ class SendTransactionView(BaseView):
         self.scan_qr_code_button = ScanQRCodeButton(self.driver)
         self.enter_recipient_address_input = EnterRecipientAddressInput(self.driver)
         self.first_recipient_button = FirstRecipient(self.driver)
-        self.recent_recipients_button = RecentRecipientsButton(self.driver)
+        self.contacts_button = ContactsButton(self.driver)
         self.amount_edit_box = AmountEditBox(self.driver)
 
         self.advanced_button = AdvancedButton(self.driver)
@@ -183,6 +189,7 @@ class SendTransactionView(BaseView):
         self.cancel_button = CancelButton(self.driver)
         self.sign_transaction_button = SignTransactionButton(self.driver)
         self.sign_in_phrase_text = SignInPhraseText(self.driver)
+        self.send_button = SendButton(self.driver)
         self.password_input = PasswordInput(self.driver)
         self.enter_password_input = EnterPasswordInput(self.driver)
         self.got_it_button = GotItButton(self.driver)
@@ -205,11 +212,15 @@ class SendTransactionView(BaseView):
             self.yes_button.click()
 
     def sign_transaction(self, sender_password: str = common_password):
-        self.sign_transaction_button.click_until_presence_of_element(self.enter_password_input)
+        self.confirm_button.click()
         self.enter_password_input.send_keys(sender_password)
-        self.sign_transaction_button.click_until_presence_of_element(self.got_it_button)
-        self.progress_bar.wait_for_invisibility_of_element(20)
+        self.send_button.click()
         self.got_it_button.click()
+
+    def select_token(self, token_text):
+        for text in 'Ropsten Ether', token_text:
+            button = self.element_by_text(text)
+            button.click()
 
     def get_transaction_fee_total(self):
         return float(self.transaction_fee_total_value.text.split()[0])

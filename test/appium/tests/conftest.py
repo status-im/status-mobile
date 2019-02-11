@@ -40,7 +40,7 @@ def pytest_addoption(parser):
                      help='Specify environment: local/sauce/api')
     parser.addoption('--platform_version',
                      action='store',
-                     default='8.0',
+                     default='7.1',
                      help='Android device platform version')
     parser.addoption('--log',
                      action='store',
