@@ -69,7 +69,7 @@
                                        :accessibility-label :chat-menu-button}
                            :handler   #(on-options chat-id name group-chat public?)}]])]
      [connectivity/connectivity-view]
-     (when-not (or public? group-chat)
+     (when (and (not group-chat) (first contacts))
        [add-contact-bar (first contacts)])]))
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))
