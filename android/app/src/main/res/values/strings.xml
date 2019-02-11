@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Status</string>
     <string name="root_warning">Your phone appears to be ROOTED, by pressing CONTINUE you understand and accept the risks in using this software.</string>
     <string name="root_okay">Continue</string>
     <string name="root_cancel">Exit</string>

@@ -5,8 +5,10 @@ apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.grad
 import com.android.build.OutputFile
 
 /**
- * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
- * and bundleReleaseJsAndAssets).
+ * The react.gradle file registers a task for each build variant:
+ * - bundlePrJsAndAssets
+ * - bundleDebugJsAndAssets
+ * - bundleReleaseJsAndAssets
  * These basically call `react-native bundle` with the correct arguments during the Android build
  * cycle. By default, bundleDebugJsAndAssets is skipped, as in debug/dev mode we prefer to load the
  * bundle directly from the development server. Below you can see all the possible configurations
@@ -74,8 +76,9 @@ import com.android.build.OutputFile
  * ]
  */
 project.ext.react = [
-        nodeExecutableAndArgs: ["node", "--max-old-space-size=8192"],
-        entryFile: "index.android.js"
+    nodeExecutableAndArgs: ["node", "--max-old-space-size=8192"],
+    entryFile: "index.android.js",
+    bundleInPr: true,
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -202,6 +205,13 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             signingConfig signingConfigs.release
+        }
+        pr {
+            initWith release
+            applicationIdSuffix ".pr"
+            versionNameSuffix ".pr"
+            resValue "string", "app_name", "Status PR"
+            matchingFallbacks = ["debug", "release"]
         }
     }
     // applicationVariants are e.g. debug, release

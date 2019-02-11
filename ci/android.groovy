@@ -3,9 +3,16 @@ cmn = load 'ci/common.groovy'
 def bundle(type = 'nightly') {
   /* Disable Gradle Daemon https://stackoverflow.com/questions/38710327/jenkins-builds-fail-using-the-gradle-daemon */
   def gradleOpt = "-PbuildUrl='${currentBuild.absoluteUrl}' -Dorg.gradle.daemon=false "
-  if (type == 'release') {
+  def target = "release"
+
+  if (type in ['pr', 'e2e']) {
+    /* PR builds shouldn't replace normal releases */
+    target = 'pr'
+  } else if (type == 'release') {
     gradleOpt += "-PreleaseVersion='${cmn.version()}'"
   }
+  env.APK_PATH = "android/app/build/outputs/apk/${target}/app-${target}.apk"
+
   dir('android') {
     withCredentials([
       string(
@@ -18,11 +25,11 @@ def bundle(type = 'nightly') {
         passwordVariable: 'STATUS_RELEASE_KEY_PASSWORD'
       )
     ]) {
-      sh "./gradlew assembleRelease ${gradleOpt}"
+      sh "./gradlew assemble${target.capitalize()} ${gradleOpt}"
     }
   }
   def pkg = cmn.pkgFilename(type, 'apk')
-  sh "cp android/app/build/outputs/apk/release/app-release.apk ${pkg}"
+  sh "cp ${env.APK_PATH} ${pkg}"
   return pkg
 }
 
