@@ -153,7 +153,7 @@
 
 (views/defview browser []
   (views/letsubs [webview (atom nil)
-                  width (reagent/atom nil)
+                  window-width [:dimensions/window-width]
                   {:keys [address settings]} [:account/account]
                   {:keys [browser-id dapp? name unsafe?] :as browser} [:get-current-browser]
                   {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:get :browser/options]
@@ -163,11 +163,12 @@
           can-go-forward? (browser/can-go-forward? browser)
           url-original    (browser/get-current-url browser)
           opt-in?         (or (nil? (:web3-opt-in? settings)) (:web3-opt-in? settings))]
-      [react/view {:style styles/browser :on-layout #(reset! width (.-width (.-layout (.-nativeEvent %))))}
+      [react/view {:style styles/browser}
        [status-bar/status-bar]
        [toolbar error? url url-original browser browser-id url-editing?]
-       (when (and loading? (not (nil? @width)))
-         [connectivity/loading-indicator @width])
+       [react/view
+        (when loading?
+          [connectivity/loading-indicator window-width])]
        [browser-component {:webview         webview
                            :dapp?           dapp?
                            :error?          error?
