@@ -4,20 +4,20 @@
             [status-im.utils.platform]
             [status-im.ui.components.colors :as colors]))
 
-(defstyle contact-inner-container
-  {:flex             1
-   :flex-direction   :row
-   :align-items      :center
-   :padding-left     16
-   :background-color colors/white
-   :android          {:height 56}
-   :ios              {:height 63}})
+(def contact-container-to-refactor
+  {:flex-direction :row
+   :justify-content :center
+   :align-items :center
+   :padding-horizontal 16})
+
+(def info-container-to-refactor
+  {:flex        1
+   :flex-direction  :column
+   :margin-left 16
+   :justify-content :center})
 
 (def info-container
   {:flex            1
-   :flex-direction  :column
-   :margin-left     16
-   :margin-right    5
    :justify-content :center})
 
 (defstyle name-text
@@ -30,11 +30,6 @@
   {:margin-top 1
    :font-size  12
    :color      colors/text-gray})
-
-(def contact-container
-  {:flex-direction   :row
-   :align-items      :center
-   :background-color colors/white})
 
 (def forward-btn
   {:opacity         0.4

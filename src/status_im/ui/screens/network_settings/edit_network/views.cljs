@@ -19,10 +19,9 @@
                :testnet (i18n/label :t/ropsten-network)
                :rinkeby (i18n/label :t/rinkeby-network)
                :custom (i18n/label :t/custom))]
-    [list/list-item-with-checkbox
+    [list/list-item-with-radio-button
      {:checked?        (= (get-in manage-network [:chain :value]) type)
-      :on-value-change #(re-frame/dispatch [:network.ui/input-changed :chain type])
-      :plain-checkbox? true}
+      :on-value-change #(re-frame/dispatch [:network.ui/input-changed :chain type])}
      [list/item
       nil [list/item-primary-only name]]]))
 

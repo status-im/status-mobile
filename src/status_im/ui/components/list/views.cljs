@@ -87,16 +87,19 @@
   [& children]
   (into [react/view {:style styles/item-content-view}] (keep identity children)))
 
-(defn item-checkbox
-  [{:keys [style] :as props}]
-  [react/view {:style (merge style styles/item-checkbox)}
-   [checkbox/checkbox props]])
+(defn list-item-with-checkbox
+  [{:keys [on-value-change style checked?] :as props} item]
+  [react/touchable-highlight {:on-press #(on-value-change (not checked?))}
+   (conj item
+         [react/view {:style (merge style styles/item-checkbox)}
+          [checkbox/checkbox props]])])
 
-(defn list-item-with-checkbox [{:keys [on-value-change checked? plain-checkbox?] :as props} item]
-  (let [handler  #(on-value-change (not checked?))
-        checkbox [(if plain-checkbox? checkbox/plain-checkbox item-checkbox) props]
-        item     (conj item checkbox)]
-    [touchable-item handler item]))
+(defn list-item-with-radio-button
+  [{:keys [on-value-change style checked?] :as props} item]
+  [react/touchable-highlight {:on-press #(on-value-change (not checked?))}
+   (conj item
+         [react/view {:style (merge style styles/item-checkbox)}
+          [checkbox/radio-button props]])])
 
 (def item-icon-forward
   [item-icon {:icon      :main-icons/next

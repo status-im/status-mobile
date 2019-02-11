@@ -20,31 +20,26 @@
              [react/view {}
               [react/text {} label]]]))])
 
-(defn- contact-inner-view
-  ([{:keys [info style props] {:keys [public-key name dapp?] :as contact} :contact}]
-   [react/view (merge styles/contact-inner-container style)
-    [react/view
-     [chat-icon/contact-icon-contacts-tab contact]]
-    [react/view styles/info-container
+(defn contact-view
+  [{:keys [style contact extended? on-press extend-options extend-title
+           info show-forward? accessibility-label inner-props]
+    {:keys [public-key name]} :contact
+    :or   {accessibility-label :contact-item}}]
+  [react/touchable-highlight (merge {:accessibility-label accessibility-label}
+                                    (when-not extended?
+                                      {:on-press (when on-press #(on-press contact))}))
+   [react/view styles/contact-container-to-refactor
+    [chat-icon/contact-icon-contacts-tab contact]
+    [react/view styles/info-container-to-refactor
      [react/text (merge {:style           styles/name-text
                          :number-of-lines 1}
-                        (when dapp? {:accessibility-label :dapp-name})
-                        props)
+                        inner-props)
       (if (string/blank? name)
         (gfycat/generate-gfy public-key)
         (or name (i18n/label :t/chat-name)))]
      (when info
        [react/text {:style styles/info-text}
-        info])]]))
-
-(defn contact-view [{:keys [style contact extended? on-press extend-options extend-title info show-forward?
-                            accessibility-label inner-props]
-                     :or   {accessibility-label :contact-item}}]
-  [react/touchable-highlight (merge {:accessibility-label accessibility-label}
-                                    (when-not extended?
-                                      {:on-press (when on-press #(on-press contact))}))
-   [react/view styles/contact-container
-    [contact-inner-view {:contact contact :info info :style style :props inner-props}]
+        info])]
     (when show-forward?
       [react/view styles/forward-btn
        [vector-icons/icon :main-icons/next]])
@@ -58,13 +53,19 @@
           [react/view styles/more-btn
            [vector-icons/icon :main-icons/more {:accessibility-label :options}]]]]))]])
 
-(views/defview toggle-contact-view [{:keys [public-key] :as contact} selected-key on-toggle-handler disabled?]
+(views/defview toggle-contact-view
+  [{:keys [public-key name] :as contact} selected-key on-toggle-handler disabled?]
   (views/letsubs [checked [selected-key public-key]]
     [react/view {:accessibility-label :contact-item}
      [list/list-item-with-checkbox
       {:checked?        checked
        :disabled?       disabled?
-       :on-value-change #(on-toggle-handler checked public-key)
-       :plain-checkbox? true}
-      [react/view styles/contact-container
-       [contact-inner-view {:contact contact}]]]]))
+       :on-value-change #(on-toggle-handler checked public-key)}
+      [list/item
+       [chat-icon/contact-icon-contacts-tab contact]
+       [react/view styles/info-container
+        [react/text {:style           styles/name-text
+                     :number-of-lines 1}
+         (if (string/blank? name)
+           (gfycat/generate-gfy public-key)
+           (or name (i18n/label :t/chat-name)))]]]]]))

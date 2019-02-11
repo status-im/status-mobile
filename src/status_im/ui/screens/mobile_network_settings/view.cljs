@@ -32,8 +32,7 @@
         {:checked?        @checked?
          :style           styles/checkbox
          :icon-style      styles/checkbox-icon
-         :on-value-change #(swap! checked? not)
-         :native?         false}]
+         :on-value-change #(swap! checked? not)}]
        [react/view
         {:style styles/checkbox-text-container}
         [react/text {:style styles/checkbox-text}
