@@ -74,10 +74,7 @@
          (last-message-padding message)))
 
 (defn timestamp-content-wrapper [outgoing message-type]
-  {:flex-direction (if outgoing :row-reverse :row)
-   :width          (if (= :system-message message-type)
-                     300
-                     230)})
+  {:flex-direction (if outgoing :row-reverse :row)})
 
 (defn group-message-view
   [outgoing message-type]
