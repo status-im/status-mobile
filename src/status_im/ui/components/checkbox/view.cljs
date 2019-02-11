@@ -26,7 +26,7 @@
                                         (when on-value-change {:on-press #(on-value-change (not checked?))}))
        [react/view {}
         (when checked?
-          [react/icon :check_on check-icon])]])))
+          [react/icon :tiny-icons/tiny-check check-icon])]])))
 
 (defn checkbox [props]
   [checkbox-generic props false])
