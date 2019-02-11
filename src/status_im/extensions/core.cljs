@@ -605,16 +605,18 @@
                 'ethereum/transaction-receipt
                 {:permissions [:read]
                  :value       :extensions/ethereum-transaction-receipt
-                 :arguments   {:value       :string
-                               :on-success  :event
-                               :on-failure? :event}}
+                 :arguments   {:value        :string
+                               :topics-hints :vector
+                               :on-success   :event
+                               :on-failure?  :event}}
                 'ethereum/await-transaction-receipt
                 {:permissions [:read]
                  :value       :extensions/ethereum-await-transaction-receipt
-                 :arguments   {:value       :string
-                               :interval    :number
-                               :on-success  :event
-                               :on-failure? :event}}
+                 :arguments   {:value        :string
+                               :interval     :number
+                               :topics-hints :vector
+                               :on-success   :event
+                               :on-failure?  :event}}
                 'ethereum/sign
                 {:permissions [:read]
                  :value       :extensions/ethereum-sign
@@ -662,7 +664,8 @@
                 'ethereum/logs-changes
                 {:permissions [:read]
                  :value       :extensions/ethereum-logs-changes
-                 :arguments   {:id :string}}
+                 :arguments   {:id           :string
+                               :topics-hints :vector}}
                 'ethereum/cancel-filter
                 {:permissions [:read]
                  :value       :extensions/ethereum-cancel-filter

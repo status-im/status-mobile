@@ -234,19 +234,60 @@
                         :on-failure on-failure}]
      (wrap-with-resolution db json-rpc-args :to execute-send-transaction))))
 
-(defn- parse-log [{:keys [address transactionHash blockHash transactionIndex topics blockNumber logIndex removed data]}]
-  (merge {:data    data
+(defn- event-topic-enc [event params]
+  (let [eventid (str event "(" (string/join "," params) ")")]
+    (abi-spec/sha3 eventid)))
+
+; Return a vector without indexed elements
+(defn- get-no-indexed [X indexed]
+  (as-> (into [] (take (count X) (range))) $
+    (zipmap $ X)
+    (into [] (vals (apply dissoc $ indexed)))))
+
+; Return a vector with indexed elements
+(defn- get-indexed [X indexed]
+  (let [keys (into [] (take (count X) (range)))]
+    (mapv #((zipmap keys X) %) indexed)))
+
+; Return the hint with the specified event (Topic0) from a vector of event hints given by the user
+(defn- get-hint [hints first-topic]
+  (as-> hints $
+    (mapv #(event-topic-enc (% :event) (% :params)) $)
+    (.indexOf $ first-topic)
+    (get hints $)))
+
+; Return a map with all data params decoded
+(defn- decode-data [data hint]
+  (let [indexes (hint :indexed)
+        params (get-no-indexed (hint :params) indexes)
+        names (mapv keyword (get-no-indexed (hint :names) indexes))  ; Exclude indexed params and names from decode in data, these are decoded in topics
+        data-values (mapv (partial apply str) (partition 64 (string/replace-first data #"0x" "")))]
+    (zipmap names (mapv abi-spec/hex-to-value data-values params))))
+
+; This assumes that Topic 0 is filtered and return a map with all topics decoded
+(defn- decode-topics [topics hint]
+  (zipmap [:topic1 :topic2 :topic3] (mapv abi-spec/hex-to-value topics (get-indexed (hint :params) (hint :indexed))))) ; Solidity indexed event params may number up to 3 (max 4 Topics)
+
+; Flatten the input of event provided by an developer of extensions and return a 1 depth vector
+(defn- flatten-input [input]
+  (into [] (flatten input)))
+
+(defn parse-log [events-hints {:keys [address transactionHash blockHash transactionIndex topics blockNumber logIndex removed data]}]
+  (merge {:data data
           :topics  topics
           :address address
           :removed removed}
-        ;; TODO parse data and topics, filter useless solidity first topic, aggregate as events ?
+
+         ; filter useless topic 0 and decode topics
+         (when (and topics (seq events-hints)) {:topics (decode-topics (filterv #(not (= (first topics) %)) topics) (get-hint events-hints (first topics)))})
+         (when (and data (seq events-hints)) {:data (decode-data data (get-hint events-hints (first topics)))})
          (when logIndex {:log-index (abi-spec/hex-to-number logIndex)})
          (when transactionIndex {:transaction-index (abi-spec/hex-to-number transactionIndex)})
          (when transactionHash {:transaction-hash transactionHash})
          (when blockHash {:block-hash blockHash})
          (when blockNumber {:block-number (abi-spec/hex-to-number blockNumber)})))
 
-(defn- parse-receipt [m]
+(defn- parse-receipt [events-hints m]
   (when m
     (let [{:keys [status transactionHash transactionIndex blockHash blockNumber from to cumulativeGasUsed gasUsed contractAddress logs logsBloom]} m]
       {:status              (= 1 (abi-spec/hex-to-number status))
@@ -259,26 +300,22 @@
        :cumulative-gas-used (abi-spec/hex-to-number cumulativeGasUsed)
        :gas-used            (abi-spec/hex-to-number gasUsed)
        :contract-address    contractAddress
-       :logs                (map parse-log logs)
+       :logs                (map #(parse-log events-hints %) logs)
        :logs-bloom          logsBloom})))
 
 (handlers/register-handler-fx
  :extensions/ethereum-transaction-receipt
  (fn [_ [_ _ {:keys [value] :as m}]]
-   (rpc-call constants/web3-transaction-receipt [value] parse-receipt m)))
+   (rpc-call constants/web3-transaction-receipt [value] #(parse-receipt (flatten-input (:topics-hints m)) %) m)))
 
 (handlers/register-handler-fx
  :extensions/ethereum-await-transaction-receipt
  (fn [_ [_ _ {:keys [value interval on-success] :as m}]]
    (let [id            (atom nil)
          new-on-success (fn [o] (js/clearInterval @id) (on-success o))]
-     (reset! id (js/setInterval #(rpc-call constants/web3-transaction-receipt [value] parse-receipt
+     (reset! id (js/setInterval #(rpc-call constants/web3-transaction-receipt [value] (fn [result] (parse-receipt (flatten-input (:topics-hints m)) result))
                                            (assoc m :on-success new-on-success)) interval))
      nil)))
-
-(defn- event-topic-enc [event params]
-  (let [eventid (str event "(" (string/join "," params) ")")]
-    (abi-spec/sha3 eventid)))
 
 (defn- types-mapping [type]
   (cond
@@ -317,7 +354,8 @@
                  :address   address
                  :topics    (generate-topic topics)
                  :blockhash block-hash}]]
-    (rpc-call constants/web3-get-logs params #(map parse-log %) m)))
+
+    (rpc-call constants/web3-get-logs params (fn [results] (map #(parse-log (flatten-input (:topics m)) %) results)) m))) ; Get event-hints from the topics input given by the user
 
 (handlers/register-handler-fx
  :extensions/ethereum-logs
@@ -368,7 +406,7 @@
 (handlers/register-handler-fx
  :extensions/ethereum-logs-changes
  (fn [_ [_ _ {:keys [id] :as m}]]
-   (rpc-call constants/web3-get-filter-changes [(abi-spec/number-to-hex id)] #(map parse-log %) m)))
+   (rpc-call constants/web3-get-filter-changes [(abi-spec/number-to-hex id)] (fn [results] (map #(parse-log (flatten-input (:topics-hints m)) %) results)) m)))
 
 (handlers/register-handler-fx
  :extensions/ethereum-cancel-filter
