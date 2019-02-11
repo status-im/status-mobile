@@ -394,8 +394,6 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
 
         if not send_transaction_view.element_by_text(recipient['username']).is_element_displayed():
             self.errors.append('Recipient name is not shown')
-        if not send_transaction_view.element_by_text('0x' + recipient['address']).is_element_displayed():
-            self.errors.append('Recipient address is not shown')
         if not send_transaction_view.element_by_text('ETHro').is_element_displayed():
             self.errors.append("Asset field doesn't contain 'ETHro' text")
         if not send_transaction_view.element_by_text(amount).is_element_displayed():
