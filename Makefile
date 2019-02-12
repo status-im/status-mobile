@@ -77,7 +77,7 @@ $(STATUS_GO_DRO_ARCH):
 	if [ $$? -ne 0 ]; then \
 		echo "Failed to download from DigitalOcean Bucket, checking GitHub..."; \
 		curl --fail --silent --location \
-			"$(GITHUB_URL)/download/$(STATUS_GO_VER)/status-go-android.aar" \
+			"$(GITHUB_URL)/$(STATUS_GO_VER)/status-go-android.aar" \
 			--output "$(STATUS_GO_DRO_ARCH)"; \
 		if [ $$? -ne 0 ]; then \
 			echo "Failed to download from GitHub!"; \

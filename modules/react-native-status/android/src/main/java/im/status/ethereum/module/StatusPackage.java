@@ -5,12 +5,12 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
+import com.github.status_im.status_go.Statusgo;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import im.status.ethereum.function.Function;
-import statusgo.Statusgo;
 
 public class StatusPackage implements ReactPackage {
 
@@ -22,8 +22,12 @@ public class StatusPackage implements ReactPackage {
 
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        NativeModule statusModule = new StatusModule(reactContext, this.rootedDevice);
-        return Collections.singletonList(statusModule);
+        List<NativeModule> modules = new ArrayList<>();
+        System.loadLibrary("statusgoraw");
+        System.loadLibrary("statusgo");
+        modules.add(new StatusModule(reactContext, this.rootedDevice));
+
+        return modules;
     }
 
     @Override
@@ -35,7 +39,7 @@ public class StatusPackage implements ReactPackage {
         return new Function<String, String>() {
             @Override
             public String apply(String payload) {
-                return Statusgo.callRPC(payload);
+                return Statusgo.CallRPC(payload);
             }
         };
     }

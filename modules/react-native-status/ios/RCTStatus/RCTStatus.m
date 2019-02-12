@@ -2,7 +2,7 @@
 #import "ReactNativeConfig.h"
 #import "React/RCTBridge.h"
 #import "React/RCTEventDispatcher.h"
-#import "Statusgo/Statusgo.h"
+#import <Statusgo/Statusgo.h>
 
 @interface NSDictionary (BVJSONString)
 -(NSString*) bv_jsonStringWithPrettyPrint:(BOOL) prettyPrint;
@@ -45,18 +45,9 @@
 }
 @end
 
+static bool isStatusInitialized;
 static RCTBridge *bridge;
-
-@implementation Status
-
-- (instancetype)init {
-    self = [super init];
-    if (!self) {
-        return nil;
-    }
-    // Subscribing to the signals from Status-Go
-    StatusgoSetMobileSignalHandler(self);
-    return self;
+@implementation Status{
 }
 
 -(RCTBridge *)bridge
@@ -69,25 +60,6 @@ static RCTBridge *bridge;
     bridge = newBridge;
 }
 
-- (void)handleSignal:(NSString *)signal
-{
-    if(!signal){
-#if DEBUG
-        NSLog(@"SignalEvent nil");
-#endif
-        return;
-    }
-
-#if DEBUG
-    NSLog(@"[handleSignal] Received an event from Status-Go: %@", signal);
-#endif
-    [bridge.eventDispatcher sendAppEventWithName:@"gethEvent"
-                                            body:@{@"jsonEvent": signal}];
-
-    return;
-}
-
-
 RCT_EXPORT_MODULE();
 
 ////////////////////////////////////////////////////////////////////
@@ -97,7 +69,6 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
 #if DEBUG
     NSLog(@"StartNode() method called");
 #endif
-
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error = nil;
     NSURL *rootUrl =[[fileManager
@@ -163,8 +134,8 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                    ^(void)
                    {
-                       NSString *res = StatusgoStartNode(resultingConfig);
-                       NSLog(@"StartNode result %@", res);
+                       char *res = StartNode((char *) [resultingConfig UTF8String]);
+                       NSLog(@"StartNode result %@", [NSString stringWithUTF8String: res]);
                    });
 }
 
@@ -194,8 +165,8 @@ RCT_EXPORT_METHOD(stopNode) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                    ^(void)
                    {
-                       NSString *res = StatusgoStopNode();
-                       NSLog(@"StopNode result %@", res);
+                       char *res = StopNode();
+                       NSLog(@"StopNode result %@", [NSString stringWithUTF8String: res]);
                    });
 }
 
@@ -207,8 +178,8 @@ RCT_EXPORT_METHOD(createAccount:(NSString *)password
 #if DEBUG
     NSLog(@"CreateAccount() method called");
 #endif
-    NSString *result = StatusgoCreateAccount(password);
-    callback(@[result]);
+    char * result = CreateAccount((char *) [password UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -217,8 +188,8 @@ RCT_EXPORT_METHOD(createAccount:(NSString *)password
 RCT_EXPORT_METHOD(sendDataNotification:(NSString *)dataPayloadJSON
                   tokensJSON:(NSString *)tokensJSON
                   callback:(RCTResponseSenderBlock)callback) {
-    NSString* result = StatusgoSendDataNotification(dataPayloadJSON, tokensJSON);
-    callback(@[result]);
+    char * result = SendDataNotification((char *) [dataPayloadJSON UTF8String], (char *) [tokensJSON UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
 #if DEBUG
     NSLog(@"SendDataNotification() method called");
 #endif
@@ -237,8 +208,8 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson) {
 //////////////////////////////////////////////////////////////////// addPeer
 RCT_EXPORT_METHOD(addPeer:(NSString *)enode
                   callback:(RCTResponseSenderBlock)callback) {
-  NSString *result = StatusgoAddPeer(enode);
-  callback(@[result]);
+  char * result = AddPeer((char *) [enode UTF8String]);
+  callback(@[[NSString stringWithUTF8String: result]]);
 #if DEBUG
   NSLog(@"AddPeer() method called");
 #endif
@@ -247,8 +218,8 @@ RCT_EXPORT_METHOD(addPeer:(NSString *)enode
 //////////////////////////////////////////////////////////////////// updateMailservers
 RCT_EXPORT_METHOD(updateMailservers:(NSString *)enodes
                   callback:(RCTResponseSenderBlock)callback) {
-  NSString* result = StatusgoUpdateMailservers(enodes);
-  callback(@[result]);
+  char * result = UpdateMailservers((char *) [enodes UTF8String]);
+  callback(@[[NSString stringWithUTF8String: result]]);
 #if DEBUG
   NSLog(@"UpdateMailservers() method called");
 #endif
@@ -261,8 +232,8 @@ RCT_EXPORT_METHOD(recoverAccount:(NSString *)passphrase
 #if DEBUG
     NSLog(@"RecoverAccount() method called");
 #endif
-    NSString *result = StatusgoRecoverAccount(password, passphrase);
-    callback(@[result]);
+    char * result = RecoverAccount((char *) [password UTF8String], (char *) [passphrase UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
 }
 
 //////////////////////////////////////////////////////////////////// login
@@ -272,8 +243,8 @@ RCT_EXPORT_METHOD(login:(NSString *)address
 #if DEBUG
     NSLog(@"Login() method called");
 #endif
-    NSString *result = StatusgoLogin(address, password);
-    callback(@[result]);
+    char * result = Login((char *) [address UTF8String], (char *) [password UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
 }
 
 //////////////////////////////////////////////////////////////////// login
@@ -289,8 +260,10 @@ RCT_EXPORT_METHOD(verify:(NSString *)address
                      lastObject];
     NSURL *absKeystoreUrl = [rootUrl URLByAppendingPathComponent:@"keystore"];
     
-    NSString *result = StatusgoVerifyAccountPassword(absKeystoreUrl.path, address, password);
-    callback(@[result]);
+    char * result = VerifyAccountPassword((char *) [absKeystoreUrl.path UTF8String],
+                                          (char *) [address UTF8String],
+                                          (char *) [password UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -302,8 +275,8 @@ RCT_EXPORT_METHOD(sendTransaction:(NSString *)txArgsJSON
 #if DEBUG
     NSLog(@"SendTransaction() method called");
 #endif
-    NSString *result = StatusgoSendTransaction(txArgsJSON, password);
-    callback(@[result]);
+    char * result = SendTransaction((char *) [txArgsJSON UTF8String], (char *) [password UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -314,8 +287,8 @@ RCT_EXPORT_METHOD(signMessage:(NSString *)message
 #if DEBUG
     NSLog(@"SignMessage() method called");
 #endif
-    NSString *result = StatusgoSignMessage(message);
-    callback(@[result]);
+    char * result = SignMessage((char *) [message UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -326,8 +299,8 @@ RCT_EXPORT_METHOD(signGroupMembership:(NSString *)content
 #if DEBUG
     NSLog(@"SignGroupMembership() method called");
 #endif
-    NSString *result = StatusgoSignGroupMembership(content);
-    callback(@[result]);
+    char * result = SignGroupMembership((char *) [content UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -338,8 +311,8 @@ RCT_EXPORT_METHOD(extractGroupMembershipSignatures:(NSString *)content
 #if DEBUG
     NSLog(@"ExtractGroupMembershipSignatures() method called");
 #endif
-    NSString *result = StatusgoExtractGroupMembershipSignatures(content);
-    callback(@[result]);
+    char * result = ExtractGroupMembershipSignatures((char *) [content UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -350,8 +323,8 @@ RCT_EXPORT_METHOD(enableInstallation:(NSString *)content
 #if DEBUG
     NSLog(@"EnableInstallation() method called");
 #endif
-    NSString *result = StatusgoEnableInstallation(content);
-    callback(@[result]);
+    char * result = EnableInstallation((char *) [content UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -362,8 +335,8 @@ RCT_EXPORT_METHOD(disableInstallation:(NSString *)content
 #if DEBUG
     NSLog(@"DisableInstallation() method called");
 #endif
-    NSString *result = StatusgoDisableInstallation(content);
-    callback(@[result]);
+    char * result = DisableInstallation((char *) [content UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -410,9 +383,9 @@ RCT_EXPORT_METHOD(clearStorageAPIs) {
 RCT_EXPORT_METHOD(callRPC:(NSString *)payload
                   callback:(RCTResponseSenderBlock)callback) {
     dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *result = StatusgoCallRPC(payload);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            callback(@[result]);
+        char * result = CallRPC((char *) [payload UTF8String]);
+        dispatch_async( dispatch_get_main_queue(), ^{
+            callback(@[[NSString stringWithUTF8String: result]]);
         });
     });
 }
@@ -420,9 +393,9 @@ RCT_EXPORT_METHOD(callRPC:(NSString *)payload
 RCT_EXPORT_METHOD(callPrivateRPC:(NSString *)payload
                   callback:(RCTResponseSenderBlock)callback) {
     dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *result = StatusgoCallPrivateRPC(payload);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            callback(@[result]);
+        char * result = CallPrivateRPC((char *) [payload UTF8String]);
+        dispatch_async( dispatch_get_main_queue(), ^{
+            callback(@[[NSString stringWithUTF8String: result]]);
         });
     });
 }
@@ -437,14 +410,14 @@ RCT_EXPORT_METHOD(connectionChange:(NSString *)type
 #if DEBUG
     NSLog(@"ConnectionChange() method called");
 #endif
-    StatusgoConnectionChange(type, isExpensive ? 1 : 0);
+    ConnectionChange((char *) [type UTF8String], isExpensive? 1 : 0);
 }
 
 RCT_EXPORT_METHOD(appStateChange:(NSString *)type) {
 #if DEBUG
     NSLog(@"AppStateChange() method called");
 #endif
-    StatusgoAppStateChange(type);
+    AppStateChange((char *) [type UTF8String]);
 }
 
 RCT_EXPORT_METHOD(getDeviceUUID:(RCTResponseSenderBlock)callback) {
@@ -454,6 +427,26 @@ RCT_EXPORT_METHOD(getDeviceUUID:(RCTResponseSenderBlock)callback) {
     NSString* Identifier = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
 
     callback(@[Identifier]);
+}
+
++ (void)signalEvent:(const char *) signal
+{
+    if(!signal){
+#if DEBUG
+        NSLog(@"SignalEvent nil");
+#endif
+        return;
+    }
+
+    NSString *sig = [NSString stringWithUTF8String:signal];
+#if DEBUG
+    NSLog(@"SignalEvent");
+    NSLog(sig);
+#endif
+    [bridge.eventDispatcher sendAppEventWithName:@"gethEvent"
+                                            body:@{@"jsonEvent": sig}];
+
+    return;
 }
 
 - (bool) is24Hour
