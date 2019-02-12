@@ -84,7 +84,9 @@
      (when private-group?
        [react/view styles/private-group-icon-container
         [vector-icons/icon :tiny-icons/tiny-group {:color colors/gray}]])
-     [react/view {:flex-shrink 1}
+     [react/view {:flex-shrink 1
+                  :align-items :center
+                  :justify-content :center}
       [react/text {:style               styles/name-text
                    :number-of-lines     1
                    :accessibility-label :chat-name-text}

@@ -75,13 +75,13 @@
              :height    26}})
 
 (defstyle private-group-icon-container
-  {:width        20
-   :height       12
+  {:align-items :center
+   :justify-content :center
    :margin-right 6})
 
 (defstyle public-group-icon-container
-  {:width        20
-   :height       12
+  {:align-items :center
+   :justify-content :center
    :margin-right 6})
 
 (def last-message-container
