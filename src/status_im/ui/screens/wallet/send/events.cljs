@@ -18,7 +18,8 @@
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.config :as config]))
 
 ;;;; FX
 
@@ -165,7 +166,12 @@
      (fx/merge cofx
                #(when send-command?
                   (commands-sending/send % chat-id send-command? params))
-               (navigation/navigate-to-clean :wallet-transaction-sent {})))))
+               (navigation/navigate-to-clean
+                (if (or (= (:view-id db) :wallet-send-transaction)
+                        (not config/new-routing-enabled?))
+                  :wallet-transaction-sent
+                  :wallet-transaction-sent-modal)
+                {})))))
 
 (defn set-and-validate-amount-db [db amount symbol decimals]
   (let [{:keys [value error]} (wallet.db/parse-amount amount decimals)]

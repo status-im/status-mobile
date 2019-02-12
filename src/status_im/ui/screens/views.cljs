@@ -79,7 +79,8 @@
             [taoensso.timbre :as log]
             [status-im.utils.platform :as platform]
             [status-im.utils.config :as config]
-            [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]))
+            [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
+            [status-im.ui.screens.routing.core :as routing]))
 
 (defn wrap [view-id component]
   (fn []
@@ -375,14 +376,10 @@
                         "chat-stack"
                         "intro-login-stack")}))
 
-(defn get-main-component [view-id]
-  (case view-id
-    :new-group new-group
-    :add-participants-toggle-list add-participants-toggle-list
-    :contact-toggle-list contact-toggle-list
-    :group-chat-profile profile.group-chat/group-chat-profile
-    :contact-code contact-code
-    [react/view [react/text (str "Unknown view: " view-id)]]))
+(def get-main-component
+  (if config/new-routing-enabled?
+    routing/get-main-component
+    get-main-component2))
 
 (defonce rand-label (rand/id))
 
@@ -416,7 +413,7 @@
                    (or
                     js/goog.DEBUG
                     (not @main-component)))
-          (reset! main-component (get-main-component2
+          (reset! main-component (get-main-component
                                   (if js/goog.DEBUG
                                     @initial-view-id
                                     @view-id)))))
@@ -427,7 +424,7 @@
         (when-not @initial-view-id
           (reset! initial-view-id @view-id))
         (when (and @initial-view-id (not @main-component))
-          (reset! main-component (get-main-component2
+          (reset! main-component (get-main-component
                                   (if js/goog.DEBUG
                                     @initial-view-id
                                     @view-id))))
