@@ -1,0 +1,15 @@
+//
+//  Release.xcconfig
+//  StatusIm
+//
+//  Created by administrator on 12/02/2019.
+//  Copyright © 2019 Facebook. All rights reserved.
+//
+
+// Public name of the App
+CUSTOM_PRODUCT_NAME = Status
+// Unique App identifier
+BUNDLE_IDENTIFIER = im.status.ethereum
+BUNDLE_ID_SUFFIX = 
+// Which profile match uses to sign App
+PROVISIONING_PROFILE_SPECIFIER = match AdHoc im.status.ethereum

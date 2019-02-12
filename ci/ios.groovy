@@ -2,9 +2,7 @@ nix = load('ci/nix.groovy')
 utils = load('ci/utils.groovy')
 
 def plutil(name, value) {
-  return """
-  plutil -replace ${name} -string ${value} ios/StatusIm/Info.plist;
-"""
+  return "plutil -replace ${name} -string ${value} ios/StatusIm/Info.plist;"
 }
 
 def bundle() {
@@ -14,7 +12,7 @@ def bundle() {
     case 'release':     target = 'release'; break;
     case 'testflight':  target = 'release'; break;
     case 'e2e':         target = 'e2e';     break;
-    default:            target = 'nightly';
+    default:            target = 'pr';
   }
   /* configure build metadata */
   nix.shell(
