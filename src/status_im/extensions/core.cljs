@@ -125,6 +125,18 @@
  (fn [db [_ {id :id} {:keys [key]}]]
    (get-in db [:extensions/store id key])))
 
+(defn- ->contact [{:keys [photo-path address name public-key]}]
+  {:photo      photo-path
+   :name       name
+   :address    (str "0x" address)
+   :public-key public-key})
+
+(re-frame/reg-sub
+ :extensions.contacts/all
+ :<- [:contacts/active]
+ (fn [[contacts] _]
+   (map #(update % :address ->contact))))
+
 (defn- empty-value? [o]
   (cond
     (seqable? o) (empty? o)
@@ -419,6 +431,7 @@
                 'transaction-status     {:value transactions/transaction-status :properties {:outgoing :string :tx-hash :string}}}
    :queries    {'identity            {:value :extensions/identity :arguments {:value :map}}
                 'store/get           {:value :store/get :arguments {:key :string}}
+                'contacts/all        {:value :extensions.contacts/all} ;; :photo :name :address :public-key
                 'wallet/collectibles {:value :get-collectible-token :arguments {:token :string :symbol :string}}
                 'wallet/balance      {:value :extensions.wallet/balance :arguments {:token :string}}
                 'wallet/token        {:value :extensions.wallet/token :arguments {:token :string :amount? :number :amount-in-wei? :number}}
@@ -575,7 +588,7 @@
                                :method?     :string
                                :params?     :vector
                                :nonce?      :string
-                               :on-success  :event
+                               :on-success? :event
                                :on-failure? :event}}
                 'ethereum/logs
                 {:permissions [:read]

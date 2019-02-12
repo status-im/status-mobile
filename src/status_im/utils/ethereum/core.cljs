@@ -136,7 +136,9 @@
   (.getGasPrice (.-eth web3) cb))
 
 (defn estimate-gas-web3 [web3 obj cb]
-  (.estimateGas (.-eth web3) obj cb))
+  (try
+    (.estimateGas (.-eth web3) obj cb)
+    (catch :default _)))
 
 (defn estimate-gas [symbol]
   (if (tokens/ethereum? symbol)

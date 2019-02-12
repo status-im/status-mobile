@@ -18,7 +18,9 @@
   "Hook for extensions"
   {:properties
    {:label     :string
-    :view      :view}
+    :view      :view
+    :on-open?  :event
+    :on-close? :event}
    :hook
    (reify hooks/Hook
      (hook-in [_ id _ {:keys [label view _]} {:keys [db]}]
@@ -55,24 +57,33 @@
                        :key-fn    (comp str :symbol)
                        :render-fn #(render-token % visible-tokens)}]]]))
 
+(defn- create-payload [address]
+  {:address (ethereum/normalized-address address)})
+
 (defview settings-hook []
-  (letsubs [{:keys [label view]} [:get-screen-params :wallet-settings-hook]
-            {address :address} [:account/account]]
+  (letsubs [{:keys [label view on-close]} [:get-screen-params :wallet-settings-hook]
+            {address :address}   [:account/account]]
     [react/keyboard-avoiding-view {:style {:flex 1 :background-color colors/blue}}
      [status-bar/status-bar {:type :wallet}]
      [toolbar/toolbar {:style wallet.styles/toolbar}
-      [toolbar/nav-button (actions/back-white #(do (re-frame/dispatch [:update-wallet])
+      [toolbar/nav-button (actions/back-white #(do (when on-close
+                                                     (on-close (create-payload address)))
+                                                   (re-frame/dispatch [:update-wallet])
                                                    (re-frame/dispatch [:navigate-back])))]
       [toolbar/content-title {:color colors/white}
        label]]
-     [view {:address (ethereum/normalized-address address)}]]))
+     [view (create-payload address)]]))
 
-(defn- setting->action [{:keys [label] :as m}]
+(defn- setting->action [address {:keys [label on-open] :as m}]
   {:label  label
-   :action #(re-frame/dispatch [:navigate-to :wallet-settings-hook m])})
+   :action #(do
+              (when on-open
+                (on-open address))
+              (re-frame/dispatch [:navigate-to :wallet-settings-hook m]))})
 
 (defview toolbar-view []
-  (letsubs [settings [:wallet/settings]]
+  (letsubs [settings           [:wallet/settings]
+            {address :address} [:account/account]]
     [toolbar/toolbar {:style wallet.styles/toolbar :flat? true}
      nil
      [toolbar/content-wrapper]
@@ -82,4 +93,4 @@
                     :accessibility-label :options-menu-button}
         :options   (into [{:label  (i18n/label :t/wallet-manage-assets)
                            :action #(re-frame/dispatch [:navigate-to :wallet-settings-assets])}]
-                         (map setting->action settings))}]]]))
+                         (map #(setting->action address %) settings))}]]]))
