@@ -63,7 +63,7 @@
 
 (defn- http-post [{:keys [url data response-validator success-event-creator failure-event-creator timeout-ms opts]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
-        on-error   #(re-frame/dispatch (failure-event-creator %))
+        on-error   (when failure-event-creator #(re-frame/dispatch (failure-event-creator %)))
         all-opts   (assoc opts
                           :valid-response? response-validator
                           :timeout-ms      timeout-ms)]
@@ -75,7 +75,7 @@
 
 (defn- http-raw-post [{:keys [url body response-validator success-event-creator failure-event-creator timeout-ms opts]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
-        on-error   #(re-frame/dispatch (failure-event-creator %))
+        on-error   (when failure-event-creator #(re-frame/dispatch (failure-event-creator %)))
         all-opts   (assoc opts
                           :valid-response? response-validator
                           :timeout-ms      timeout-ms)]

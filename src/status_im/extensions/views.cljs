@@ -12,16 +12,12 @@
             [status-im.ui.screens.profile.photo-capture.styles :as styles]
             [status-im.utils.image-processing :as image-processing]))
 
-;; ensure photo taken or picked are not too big
-(def max-width 1024)
-(def max-height 1024)
+(def default-max-size 1024)
 
 (defn- process-image-and-finish [path context]
-  (let [on-success (fn [base64]
-                     (re-frame/dispatch [:extensions/camera-picture-taken base64 context]))
-        on-error   (fn [type error]
-                     (re-frame/dispatch [:extensions/camera-error error context]))]
-    (image-processing/img->base64 path on-success on-error max-width max-height)))
+  (let [on-success #(re-frame/dispatch [:extensions/camera-picture-taken % context])
+        on-error   #(re-frame/dispatch [:extensions/camera-error %2 context])]
+    (image-processing/img->base64 path on-success on-error default-max-size default-max-size)))
 
 (defview take-picture []
   (letsubs [context [:get-screen-params]
@@ -64,6 +60,6 @@
              {:label  (i18n/label :t/image-source-make-photo)
               :action (fn []
                         (re-frame/dispatch [:request-permissions {:permissions [:camera :write-external-storage]
-                                                                  :on-allowed  #(re-frame/dispatch [:navigate-to :take-picture context])
+                                                                  :on-allowed  #(re-frame/dispatch [:navigate-to :take-picture (merge context {:back? true})])
                                                                   :on-denied   #(re-frame/dispatch [:extensions/camera-denied context])}]))}]
    :on-cancel #(re-frame/dispatch [:extensions/camera-cancel context])})

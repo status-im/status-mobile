@@ -67,7 +67,7 @@
      [status-bar/status-bar {:type :wallet}]
      [toolbar/toolbar {:style wallet.styles/toolbar}
       [toolbar/nav-button (actions/back-white #(do (when on-close
-                                                     (on-close (create-payload address)))
+                                                     (re-frame/dispatch (on-close (create-payload address))))
                                                    (re-frame/dispatch [:update-wallet])
                                                    (re-frame/dispatch [:navigate-back])))]
       [toolbar/content-title {:color colors/white}
@@ -78,7 +78,7 @@
   {:label  label
    :action #(do
               (when on-open
-                (on-open address))
+                (re-frame/dispatch (on-open address)))
               (re-frame/dispatch [:navigate-to :wallet-settings-hook m]))})
 
 (defview toolbar-view []

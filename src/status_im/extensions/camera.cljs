@@ -32,10 +32,11 @@
 
 (handlers/register-handler-fx
  :extensions/camera-picture-taken
- (fn [cofx [_ base64 {{:keys [on-success]} :data}]]
+ (fn [cofx [_ data {{:keys [on-success]} :data back? :back?}]]
    (fx/merge cofx
-             {:dispatch (on-success {:result base64})}
-             (navigation/navigate-back))))
+             {:dispatch (on-success {:result data})}
+             (when back?
+               (navigation/navigate-back)))))
 
 (handlers/register-handler-fx
  :extensions/camera-picture
