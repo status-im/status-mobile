@@ -226,15 +226,12 @@ end
 
 
 platform :android do
-  # Optional env variables
-  APK_PATH = ENV["APK_PATH"] || "android/app/build/outputs/apk/release/app-release.apk"
-
   desc "Deploy a new internal build to Google Play"
   desc "expects GOOGLE_PLAY_JSON_KEY environment variable"
   lane :nightly do
     upload_to_play_store(
       track: "internal",
-      apk: APK_PATH,
+      apk: "android/app/build/outputs/apk/release/app-release.apk",
       json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"]
     )
 
@@ -245,7 +242,7 @@ platform :android do
   lane :release do
     upload_to_play_store(
       track: "alpha",
-      apk: APK_PATH,
+      apk: "android/app/build/outputs/apk/release/app-release.apk",
       json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"]
     )
   end
@@ -269,7 +266,7 @@ platform :android do
   desc "---"
   desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
   lane :upload_diawi do
-    upload_to_diawi(APK_PATH)
+    upload_to_diawi("android/app/build/outputs/apk/release/app-release.apk")
   end
 
   desc "`fastlane android saucelabs` - upload .apk to sauce labs"
@@ -280,7 +277,7 @@ platform :android do
   desc "will fails if file isn't there"
   lane :saucelabs do
     upload_to_saucelabs(
-        APK_PATH
+        "android/app/build/outputs/apk/release/app-release.apk"
     )
   end
 end
