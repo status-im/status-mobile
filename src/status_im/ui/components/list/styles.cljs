@@ -112,7 +112,6 @@
 (def settings-item-subtext
   {:line-height 22
    :font-size   15
-   :margin-top  6
    :color       colors/gray})
 
 (def settings-item-value
@@ -127,6 +126,7 @@
    :border-radius    4
    :justify-content  :center
    :align-items      :center
+   :height           16
    :margin-right     6})
 
 (def new-label-text

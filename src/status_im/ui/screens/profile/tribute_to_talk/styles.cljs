@@ -25,7 +25,7 @@
    :line-height 28})
 
 (def description-label
-  {:line-height    21
+  {:line-height    22
    :font-size      15
    :text-align     :center
    :color          colors/gray})
@@ -50,10 +50,10 @@
    :color      colors/gray})
 
 (def tribute-to-talk
-  {:font-weight    :bold
+  {:font-weight    "500"
+   :line-height    22
    :font-size      15
    :color          colors/black
-   :letter-spacing -0.2
    :text-align     :center})
 
 (def container
@@ -64,13 +64,15 @@
 (def number-row
   {:flex            1
    :flex-direction  :row
-   :margin-top      12
-   :justify-content :space-around})
+   :justify-content :space-between})
 
 (def number-pad
   {:flex              1
-   :margin-horizontal 20
-   :margin-top        4
+   :align-self        :center
+   ;:margin-horizontal 60
+   :width             (+ 256 16)
+   :height            (+ 328 12)
+   :margin-top        10
    :justify-content   :space-between})
 
 (def number-container
@@ -78,6 +80,7 @@
    :height            64
    :border-radius     32
    :margin-horizontal 8
+   :margin-vertical   6
    :justify-content   :center
    :align-items       :center
    :background-color  colors/blue-light})
@@ -114,15 +117,17 @@
   {:border-radius       8
    :background-color    colors/gray-lighter
    :text-align-vertical :top
+   :font-size           15
+   :line-height         22
    :padding-horizontal  16
-   :padding-vertical    17})
+   :padding-vertical    16})
 
 (def edit-view-message
   {:border-radius       8
    :background-color    colors/blue-light
    :color               colors/black
    :margin-horizontal   72
-   :height              56
+   ;:height              56
    :margin-bottom       24
    :text-align-vertical :top
    :padding-horizontal  12
@@ -142,6 +147,13 @@
    :border-radius    radius
    :justify-content  :center
    :align-items      :center})
+
+(def finish-circle-with-shadow
+  (assoc (finish-circle colors/white 40)
+         :elevation     5
+         :shadow-offset {:width 0 :height 2}
+         :shadow-radius 4
+         :shadow-color  (colors/alpha "#435971" 0.124066)))
 
 (defn icon-view [color]
   {:background-color color
@@ -237,6 +249,17 @@
    :width              222
    :margin-top         4
    :border-radius      8})
+
+(def pay-to-chat-container
+  {:justify-content :center
+   :align-items     :center
+   :height          44})
+
+(def pay-to-chat-text
+  {:font-size   15
+   :color       colors/blue
+   :line-height 22
+   :font-weight "500"})
 
 (def edit-screen-top-row
   {:flex-direction    :row

@@ -132,9 +132,9 @@
     [react/scroll-view {:content-container-style (assoc styles/intro-container :justify-content :flex-start
                                                         :align-items :stretch)}
      [snt-amount-label]
-     [react/view {:style {:flex 1}}
-      [number-pad]
-      [react/i18n-text {:style (assoc styles/description-label :margin-top 24)
+     [number-pad]
+     [react/view {:style {:margin-top 18 :justify-content :flex-start}}
+      [react/i18n-text {:style styles/description-label
                         :key   :tribute-to-talk-set-snt-amount}]]]))
 
 (defview personalized-message []
@@ -166,11 +166,7 @@
       [react/view {:style (styles/finish-circle (if amount
                                                   colors/green-transparent-10
                                                   colors/gray-lighter) 80)}
-       [react/view {:style (assoc (styles/finish-circle colors/white 40)
-                                  :elevation 5
-                                  :shadow-offset {:width 0 :height 2}
-                                  :shadow-radius 4
-                                  :shadow-color (colors/alpha "#435971" 0.124066))}
+       [react/view {:style styles/finish-circle-with-shadow}
         [icons/icon :main-icons/check {:color (if amount colors/green colors/gray)}]]]]
      [react/view  {:style {:flex 1
                            :justify-content :center
@@ -212,11 +208,12 @@
         [react/text {:on-press #(re-frame/dispatch [:tribute-to-talk/start-editing])
                      :style styles/edit-label}
          (i18n/label :t/edit)]]]
-      [react/text-input {:style         styles/edit-view-message
-                         :multiline     true
-                         :editable      false
-                         :placeholder   ""
-                         :default-value message}]
+      (when-not (string/blank? message)
+        [react/text-input {:style         styles/edit-view-message
+                           :multiline     true
+                           :editable      false
+                           :placeholder   ""
+                           :default-value message}])
       [separator]
       [react/text {:style styles/edit-note}
        (i18n/label :t/tribute-to-talk-you-require-snt)]
@@ -253,8 +250,8 @@
     [react/text {:style {:font-size 12 :color colors/black}}
      "~3.48"
      [react/text {:style {:font-size 12 :color colors/gray}} " USD"]]
-    [react/view {:style {:align-items :center :margin-top 19}}
-     [react/text {:style {:font-size 15 :color colors/blue}}
+    [react/view {:style styles/pay-to-chat-container}
+     [react/text {:style styles/pay-to-chat-text}
       (i18n/label :t/pay-to-chat)]]]])
 
 (defview learn-more []
@@ -289,44 +286,46 @@
 (defview tribute-to-talk []
   (letsubs [current-account           [:account/account]
             {:keys [step snt-amount editing?] :as tr-settings} [:my-profile/tribute-to-talk]]
-    [react/keyboard-avoiding-view {:style styles/container}
-     (re-frame/dispatch [:accounts.ui/tribute-to-talk-seen])
-     [status-bar/status-bar]
-     [toolbar/toolbar
-      nil
-      (when-not (= :finish step)
-        (toolbar/nav-button (actions/back #(re-frame/dispatch
-                                            [:tribute-to-talk/step-back step editing?]))))
-      [react/view
-       [react/text {:style styles/tribute-to-talk}
-        (i18n/label :t/tribute-to-talk)]
-       (when-not (#{:edit :learn-more} step)
-         [react/text {:style styles/step-n}
-          (if (= step :finish)
-            (i18n/label (if snt-amount :t/completed :t/disabled))
-            (i18n/label :t/step-i-of-n {:step ((steps-numbers editing?) step)
-                                        :number (if editing? 2 3)}))])
-       (when (= step :learn-more)
-         [react/text {:style styles/step-n}
-          (i18n/label :t/learn-more)])]]
+    [react/safe-area-view {:style {:flex 1}}
+     [react/keyboard-avoiding-view {:style styles/container}
+      (re-frame/dispatch [:accounts.ui/tribute-to-talk-seen])
+      [status-bar/status-bar]
+      [toolbar/toolbar
+       nil
+       (when-not (= :finish step)
+         (toolbar/nav-button (actions/back #(re-frame/dispatch
+                                             [:tribute-to-talk/step-back step editing?]))))
+       [react/view
+        [react/text {:style styles/tribute-to-talk}
+         (i18n/label :t/tribute-to-talk)]
+        (when-not (#{:edit :learn-more} step)
+          [react/text {:style styles/step-n}
+           (if (= step :finish)
+             (i18n/label (if snt-amount :t/completed :t/disabled))
+             (i18n/label :t/step-i-of-n {:step ((steps-numbers editing?) step)
+                                         :number (if editing? 2 3)}))])
+        (when (= step :learn-more)
+          [react/text {:style styles/step-n}
+           (i18n/label :t/learn-more)])]]
 
-     (case step
-       :intro                [intro]
-       :set-snt-amount       [set-snt-amount]
-       :edit                 [edit]
-       :learn-more           [learn-more]
-       :personalized-message [personalized-message]
-       :finish               [finish])
+      (case step
+        :intro                [intro]
+        :set-snt-amount       [set-snt-amount]
+        :edit                 [edit]
+        :learn-more           [learn-more]
+        :personalized-message [personalized-message]
+        :finish               [finish])
 
-     (when-not (#{:learn-more :edit} step)
-       [react/view {:style styles/bottom-toolbar}
-        (let [disabled? (and (= step :set-snt-amount)
-                             (or (= "0" snt-amount)
-                                 (string/blank? snt-amount)))]
-          [components.common/button {:button-style styles/intro-button
-                                     :disabled?    disabled?
-                                     :uppercase?   false
-                                     :label-style  (when disabled? {:color colors/gray})
-                                     :on-press     #(re-frame/dispatch
-                                                     [:tribute-to-talk/step-forward tr-settings])
-                                     :label        (i18n/label (step-forward-label step))}])])]))
+      (when-not (#{:learn-more :edit} step)
+        [react/view {:style styles/bottom-toolbar}
+         (let [disabled? (and (= step :set-snt-amount)
+                              (or (string/blank? snt-amount)
+                                  (= "0" snt-amount)
+                                  (string/ends-with? snt-amount ".")))]
+           [components.common/button {:button-style styles/intro-button
+                                      :disabled?    disabled?
+                                      :uppercase?   false
+                                      :label-style  (when disabled? {:color colors/gray})
+                                      :on-press     #(re-frame/dispatch
+                                                      [:tribute-to-talk/step-forward tr-settings])
+                                      :label        (i18n/label (step-forward-label step))}])])]]))
