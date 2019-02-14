@@ -167,8 +167,7 @@
                #(when send-command?
                   (commands-sending/send % chat-id send-command? params))
                (navigation/navigate-to-clean
-                (if (or (= (:view-id db) :wallet-send-transaction)
-                        (not config/new-routing-enabled?))
+                (if (= (:view-id db) :wallet-send-transaction)
                   :wallet-transaction-sent
                   :wallet-transaction-sent-modal)
                 {})))))
