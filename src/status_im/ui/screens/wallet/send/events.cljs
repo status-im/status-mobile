@@ -133,7 +133,10 @@
          {:keys [payload message-id] :as queued-transaction} (last transactions-queue)
          {:keys [method params id]} payload
          db' (update-in db [:wallet :transactions-queue] drop-last)]
-     (when (and (not (= :wallet-transaction-sent (:view-id db))) (not (:id send-transaction)) queued-transaction)
+     (when (and (not (contains? #{:wallet-transaction-sent
+                                  :wallet-transaction-sent-modal}
+                                (:view-id db)))
+                (not (:id send-transaction)) queued-transaction)
        (cond
 
          ;;SEND TRANSACTION
