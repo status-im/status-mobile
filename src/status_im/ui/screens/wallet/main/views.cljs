@@ -67,7 +67,7 @@
     :accessibility-label :send-transaction-button
     :icon                :main-icons/send
     :action              #(re-frame/dispatch [:navigate-to :wallet-send-transaction])}
-   {:label               (i18n/label :t/wallet-deposit)
+   {:label               (i18n/label :t/receive)
     :accessibility-label :receive-transaction-button
     :icon                :main-icons/receive
     :action              #(re-frame/dispatch [:navigate-to :wallet-request-transaction])}
