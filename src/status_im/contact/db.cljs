@@ -63,17 +63,6 @@
 (spec/def :contact/new-tag string?)
 (spec/def :ui/contact (spec/keys :opt [:contact/new-tag]))
 
-(defn public-key->new-contact [public-key]
-  {:name       (gfycat/generate-gfy public-key)
-   :photo-path (identicon/identicon public-key)
-   :public-key public-key})
-
-(defn public-key->contact
-  [contacts public-key]
-  (when public-key
-    (get contacts public-key
-         (public-key->new-contact public-key))))
-
 (defn public-key->address [public-key]
   (let [length (count public-key)
         normalized-key (case length
@@ -83,6 +72,18 @@
                          nil)]
     (when normalized-key
       (subs (.sha3 js-dependencies/Web3.prototype normalized-key #js {:encoding "hex"}) 26))))
+
+(defn public-key->new-contact [public-key]
+  {:name       (gfycat/generate-gfy public-key)
+   :address    (public-key->address public-key)
+   :photo-path (identicon/identicon public-key)
+   :public-key public-key})
+
+(defn public-key->contact
+  [contacts public-key]
+  (when public-key
+    (get contacts public-key
+         (public-key->new-contact public-key))))
 
 (defn- contact-by-address [[_ contact] address]
   (when (ethereum/address= (:address contact) address)

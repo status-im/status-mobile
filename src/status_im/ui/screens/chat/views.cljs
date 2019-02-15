@@ -67,9 +67,9 @@
                                        :accessibility-label :chat-menu-button}
                            :handler   #(on-options chat-id chat-name group-chat public?)}]])]
      [connectivity/connectivity-view]
-     (when (and contact
+     (when (and (not group-chat)
                 (models.contact/can-add-to-contacts? contact))
-       [add-contact-bar (:public-key contact)])]))
+       [add-contact-bar chat-id])]))
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))
 
