@@ -23,7 +23,8 @@
             status-im.extensions.camera
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.chat.commands.sending :as commands-sending]))
+            [status-im.chat.commands.sending :as commands-sending]
+            [status-im.browser.core :as browser]))
 
 (re-frame/reg-fx
  ::identity-event
@@ -320,6 +321,11 @@
  (fn [_ [_ _ m]]
    {::arithmetic m}))
 
+(handlers/register-handler-fx
+ :extensions/open-url
+ (fn [cofx [_ _ {:keys [url]}]]
+   (browser/open-url cofx url)))
+
 (defn button [{:keys [on-click enabled disabled] :as m} label]
   [button/secondary-button (merge {:disabled? (or (when (contains? m :enabled) (or (nil? enabled) (false? enabled))) disabled)}
                                   (when on-click {:on-press #(re-frame/dispatch (on-click {}))})) label])
@@ -478,6 +484,10 @@
                  :arguments   {:values    :vector
                                :operation {:one-of #{:plus :minus :times :divide}}
                                :on-result :event}}
+                'browser/open-url
+                {:permissions [:read]
+                 :value       :extensions/open-url
+                 :arguments   {:url :string}}
                 'camera/picture
                 {:permissions [:read]
                  :value       :extensions/camera-picture
