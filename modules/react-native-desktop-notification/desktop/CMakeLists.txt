@@ -42,6 +42,14 @@ set(SnoreNotifyBackendSettings_STATIC_LIB ${SN_PREFIX}/lib${SN_LIBPATHSUFFIX}/${
 set(SnoreNotifySettings_STATIC_LIB ${SN_PREFIX}/lib${SN_LIBPATHSUFFIX}/${CMAKE_STATIC_LIBRARY_PREFIX}snoresettings-qt5${CMAKE_STATIC_LIBRARY_SUFFIX})
 set(SnoreNotify_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${SN_PREFIX} -DSNORE_STATIC=ON -DBUILD_daemon=OFF -DBUILD_settings=OFF
                            -DBUILD_snoresend=OFF ${SnoreNotify_CMAKE_ARGS})
+set(SnoreNotify_CMAKE_ARGS ${SnoreNotify_CMAKE_ARGS}
+                           "-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}"
+                           "-DCMAKE_C_COMPILER_AR=${CMAKE_C_COMPILER_AR}"
+                           "-DCMAKE_C_COMPILER_RANLIB=${CMAKE_C_COMPILER_RANLIB}"
+                           "-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"
+                           "-DCMAKE_CXX_COMPILER_AR=${CMAKE_CXX_COMPILER_AR}"
+                           "-DCMAKE_CXX_COMPILER_RANLIB=${CMAKE_CXX_COMPILER_RANLIB}"
+                           "-DCMAKE_LINKER=${CMAKE_LINKER}")
 if (CMAKE_CROSSCOMPILING)
   set(SnoreNotify_CMAKE_ARGS ${SnoreNotify_CMAKE_ARGS}
                             "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}"
@@ -53,13 +61,6 @@ if (CMAKE_CROSSCOMPILING)
                             "-DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}"
                             "-DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}"
                             "-DCMAKE_AR=${CMAKE_AR}"
-                            "-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}"
-                            "-DCMAKE_C_COMPILER_AR=${CMAKE_C_COMPILER_AR}"
-                            "-DCMAKE_C_COMPILER_RANLIB=${CMAKE_C_COMPILER_RANLIB}"
-                            "-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"
-                            "-DCMAKE_CXX_COMPILER_AR=${CMAKE_CXX_COMPILER_AR}"
-                            "-DCMAKE_CXX_COMPILER_RANLIB=${CMAKE_CXX_COMPILER_RANLIB}"
-                            "-DCMAKE_LINKER=${CMAKE_LINKER}"
                             "-DCMAKE_RC_COMPILER=${CMAKE_RC_COMPILER}"
                             "-DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS}"
                             "-DCMAKE_COMPILER_PREFIX=${CMAKE_COMPILER_PREFIX}"

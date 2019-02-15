@@ -38,17 +38,6 @@ function install_nix() {
   fi
 }
 
-function install_nsis() {
-  ! is_linux && return 0
-
-  # NSIS (Nullsoft Scriptable Install System) is a professional open source system to create Windows installers. It is designed to be as small and flexible as possible and is therefore very suitable for internet distribution.
-  if program_exists "apt"; then
-    apt_install "nsis"
-  else
-    echo "nsis is not supported in this Linux distro. Generating Windows setup executables will not be possible"
-  fi
-}
-
 function install_android_sdk() {
   if [ -d "$ANDROID_SDK_ROOT" ]; then
     cecho "@green[[Android SDK already installed.]]"

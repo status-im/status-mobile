@@ -68,6 +68,7 @@ if [[ $on_device == 1 ]]; then
   adb shell "cd $app_path && REACT_SERVER_HOST=$react_host ./@APP_NAME@ --host $react_host $args -- --desktop_file_hint=/usr/share/applications/webbrowser-app.desktop"
 else
 # Run app locally
-  @CMAKE_BINARY_DIR@/bin/@APP_NAME@ $args
+  # Note: Needed to add QT_XCB_GL_INTEGRATION=none when migrating to Nix, since running the app in debug mode inside Nix shell was failing at run time with "qt.glx: qglx_findConfig: Failed to finding matching FBConfig (1 1 1 0)\nCould not initialize GLX"
+  QT_XCB_GL_INTEGRATION=none @CMAKE_BINARY_DIR@/bin/@APP_NAME@ $args
 fi
 

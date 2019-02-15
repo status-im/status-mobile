@@ -20,8 +20,6 @@ source_lib "installers.sh"
 
 exit_unless_os_supported
 
-load_rvm_if_available
-
 ####
 setup_header "Checking prerequisites..."
 
@@ -64,7 +62,6 @@ fi
 setup_header "Installing requirements..."
 
 install_nix && \
-install_nsis && \
 install_android_sdk && \
 install_android_ndk || \
 exit $?
