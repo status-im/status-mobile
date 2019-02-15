@@ -27,6 +27,7 @@
                                 :fleet-settings
                                 :currency-settings
                                 :backup-seed
+                                :tribute-to-talk
                                 :qr-scanner]
 
                          config/hardwallet-enabled?
