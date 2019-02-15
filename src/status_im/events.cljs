@@ -17,7 +17,6 @@
             [status-im.chat.models.message :as chat.message]
             [status-im.contact.core :as contact]
             [status-im.contact-recovery.core :as contact-recovery]
-            [status-im.data-store.core :as data-store]
             [status-im.extensions.core :as extensions]
             [status-im.extensions.registry :as extensions.registry]
             [status-im.fleet.core :as fleet]
@@ -39,7 +38,6 @@
             [status-im.signals.core :as signals]
             [status-im.transport.message.core :as transport.message]
             [status-im.ui.screens.currency-settings.models :as currency-settings.models]
-            [status-im.chat.models.message :as models.message]
             [status-im.node.core :as node]
             [status-im.web3.core :as web3]
             [status-im.ui.screens.navigation :as navigation]
@@ -47,13 +45,13 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]
-            [status-im.utils.datetime :as time]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.models.loading :as chat-loading]
             [status-im.node.core :as node]
-            [cljs.reader :as edn]
             [status-im.stickers.core :as stickers]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [status-im.constants :as constants]
+            [status-im.utils.ethereum.core :as ethereum]))
 
 ;; init module
 
@@ -1670,8 +1668,8 @@
 
 (handlers/register-handler-fx
  :stickers/load-sticker-pack-success
- (fn [cofx [_ edn-string uri open?]]
-   (stickers/load-sticker-pack-success cofx edn-string uri open?)))
+ (fn [cofx [_ edn-string id price open?]]
+   (stickers/load-sticker-pack-success cofx edn-string id price open?)))
 
 (handlers/register-handler-fx
  :stickers/install-pack
@@ -1680,14 +1678,13 @@
 
 (handlers/register-handler-fx
  :stickers/load-packs
- (fn [_ _]
-   {;;TODO request list of packs from contract
-    :http-get-n (mapv (fn [uri] {:url                   uri
-                                 :success-event-creator (fn [o]
-                                                          [:stickers/load-sticker-pack-success o uri])
-                                 :failure-event-creator (fn [o] nil)})
-                      ;;TODO for testing ONLY
-                      ["https://ipfs.infura.io/ipfs/QmRKmQjXyqpfznQ9Y9dTnKePJnQxoJATivPbGcCAKRsZJq/"])}))
+ (fn [cofx _]
+   (stickers/load-packs cofx)))
+
+(handlers/register-handler-fx
+ :stickers/load-pack
+ (fn [cofx [_ proto-code hash id price open?]]
+   (stickers/load-pack cofx proto-code hash id price open?)))
 
 (handlers/register-handler-fx
  :stickers/select-pack
@@ -1696,5 +1693,35 @@
 
 (handlers/register-handler-fx
  :stickers/open-sticker-pack
- (fn [cofx [_ uri]]
-   (stickers/open-sticker-pack cofx uri)))
+ (fn [cofx [_ id]]
+   (stickers/open-sticker-pack cofx id)))
+
+(handlers/register-handler-fx
+ :stickers/buy-pack
+ (fn [cofx [_ id price]]
+   (stickers/approve-pack cofx id price)))
+
+(handlers/register-handler-fx
+ :stickers/buy-token
+ (fn [cofx [_ id]]
+   (stickers/buy-token cofx id)))
+
+(handlers/register-handler-fx
+ :stickers/get-owned-packs
+ (fn [cofx _]
+   (stickers/get-owned-pack cofx)))
+
+(handlers/register-handler-fx
+ :stickers/pack-owned
+ (fn [cofx [_ id]]
+   (stickers/pack-owned cofx id)))
+
+(handlers/register-handler-fx
+ :stickers/pending-pack
+ (fn [cofx [_ id]]
+   (stickers/pending-pack cofx id)))
+
+(handlers/register-handler-fx
+ :stickers/pending-timout
+ (fn [cofx _]
+   (stickers/pending-timeout cofx)))

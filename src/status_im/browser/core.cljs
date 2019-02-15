@@ -83,13 +83,10 @@
   (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))]
     (cond-> browser history-host (assoc :unsafe? (dependencies/phishing-detect history-host)))))
 
-(def ipfs-proto-code "e3")
-(def swarm-proto-code "e4")
-
 (defn resolve-ens-content-callback [hex]
   (let [hash (when hex (multihash/base58 (multihash/create :sha2-256 (subs hex 2))))]
     (if (and hash (not= hash resolver/default-hash))
-      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success ipfs-proto-code hash])
+      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success constants/ipfs-proto-code hash])
       (re-frame/dispatch [:browser.callback/resolve-ens-contenthash]))))
 
 (defn resolve-ens-contenthash-callback [hex]
@@ -97,7 +94,7 @@
         hash (when hex (multihash/base58 (multihash/create :sha2-256 (subs hex 12))))]
     ;; We only support IPFS and SWARM
     ;; TODO Once more implementations / providers are published this will have to be improved
-    (if (and ((#{swarm-proto-code ipfs-proto-code} proto-code) hash (not= hash resolver/default-hash)))
+    (if (and ((#{constants/swarm-proto-code constants/ipfs-proto-code} proto-code) hash (not= hash resolver/default-hash)))
       (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success proto-code hash])
       (re-frame/dispatch [:browser.callback/resolve-ens-multihash-error]))))
 
@@ -179,7 +176,7 @@
   (let [current-url (get-current-url (get-current-browser db))
         host (http/url-host current-url)
         path  (subs current-url (+ (.indexOf current-url host) (count host)))
-        gateway (if (= ipfs-proto-code proto-code)
+        gateway (if (= constants/ipfs-proto-code proto-code)
                   (let [base32hash (-> (.encode js-dependencies/hi-base32 (alphabase.base58/decode hash))
                                        (string/replace #"=" "")
                                        (string/lower-case))]

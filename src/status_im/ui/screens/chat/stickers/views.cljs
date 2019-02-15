@@ -55,9 +55,9 @@
     [react/view {:style {:margin-bottom 5 :height 2 :width 16 :border-radius 1
                          :background-color (if selected? colors/blue colors/white)}}]]])
 
-(defn pack-stickers [packs id]
-  (let [{:keys [stickers uri]} (some #(when (= id (:id %)) %) packs)]
-    (map #(assoc % :pack uri) stickers)))
+(defn pack-stickers [packs pack-id]
+  (let [{:keys [stickers id]} (some #(when (= pack-id (:id %)) %) packs)]
+    (map #(assoc % :pack id) stickers)))
 
 (defn show-panel-anim
   [bottom-anim-value alpha-value]

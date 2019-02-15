@@ -63,6 +63,8 @@
              :dimensions/window                  (dimensions/window)
              :push-notifications/stored          {}
              :registry                           {}
+             :stickers/packs-owned               #{}
+             :stickers/packs-pendning            #{}
              :hardwallet                         {:nfc-supported? false
                                                   :nfc-enabled?   false
                                                   :pin            {:original     []
@@ -195,6 +197,8 @@
 (spec/def ::hardwallet (spec/nilable map?))
 
 (spec/def :stickers/packs (spec/nilable map?))
+(spec/def :stickers/packs-owned (spec/nilable set?))
+(spec/def :stickers/packs-pendning (spec/nilable set?))
 (spec/def :stickers/packs-installed (spec/nilable map?))
 (spec/def :stickers/selected-pack (spec/nilable any?))
 (spec/def :stickers/recent (spec/nilable vector?))
@@ -270,6 +274,8 @@
                                 :stickers/packs-installed
                                 :stickers/selected-pack
                                 :stickers/recent
+                                :stickers/packs-owned
+                                :stickers/packs-pendning
                                 :bottom-sheet/show?
                                 :bottom-sheet/view]
                           :opt-un [::modal

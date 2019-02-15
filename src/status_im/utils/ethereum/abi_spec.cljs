@@ -2,7 +2,6 @@
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
             [status-im.js-dependencies :as dependencies]))
-
 ;; Utility functions for encoding
 
 (def utils dependencies/web3-utils)
@@ -330,7 +329,7 @@
     (conj (butlast (:coll (reduce offset-reducer {:cnt 0 :coll []} lengths))) 0)))
 
 (defn hex-to-bytes [hex]
-  (let [len (* (.toNumber (.toBN utils (subs hex 0 64))) 2)]
+  (let [len (* (hex-to-number (subs hex 0 64)) 2)]
     (substr hex 64 len)))
 
 (defn dyn-hex-to-value [hex type]

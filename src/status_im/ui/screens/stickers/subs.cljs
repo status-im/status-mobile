@@ -21,8 +21,15 @@
  :stickers/all-packs
  :<- [:stickers/packs]
  :<- [:stickers/installed-packs]
- (fn [[packs installed]]
-   (map #(if (get installed (:id %)) (assoc % :installed true) %) (vals packs))))
+ :<- [:get :stickers/packs-owned]
+ :<- [:get :stickers/packs-pendning]
+ (fn [[packs installed owned pending]]
+   (map (fn [{:keys [id] :as pack}]
+          (cond-> pack
+            (get installed id) (assoc :installed true)
+            (get owned id) (assoc :owned true)
+            (get pending id) (assoc :pending true)))
+        (vals packs))))
 
 (re-frame/reg-sub
  :stickers/get-current-pack
@@ -32,9 +39,9 @@
    (first (filter #(= (:id %) id) packs))))
 
 (defn find-pack-id-for-uri [sticker-uri packs]
-  (some (fn [{:keys [stickers uri]}]
+  (some (fn [{:keys [stickers id]}]
           (when (some #(= sticker-uri (:uri %)) stickers)
-            uri))
+            id))
         packs))
 
 (re-frame/reg-sub
