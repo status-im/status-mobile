@@ -34,5 +34,6 @@ dependencies {
         statusGoVersion = localVersion
     }
 
+    implementation project(':react-native-webview')
     implementation(group: statusGoGroup, name: statusGoName, version: statusGoVersion, ext: 'aar')
 }

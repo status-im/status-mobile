@@ -32,6 +32,11 @@
             android:theme="@style/AppTheme"
             android:name=".MainApplication"
             android:largeHeap="true">
+      <!--
+       Enable Google safe browsing. Supposedly on by default: https://developer.android.com/guide/webapps/managing-webview#safe-browsing
+       -->
+      <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing"
+                 android:value="true" />
       <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
       <meta-data
         android:name="com.google.firebase.messaging.default_notification_icon"

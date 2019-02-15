@@ -119,29 +119,27 @@
       [site-blocked.views/view {:can-go-back? can-go-back?
                                 :site         browser-id}]
       [components.webview-bridge/webview-bridge
-       {:dapp?                                 dapp?
-        :dapp-name                             name
-        :ref                                   #(do
+       {:ref                                   #(do
                                                   (reset! webview %)
                                                   (re-frame/dispatch [:set :webview-bridge %]))
         :source                                (when (and url (not resolving?)) {:uri url})
         :java-script-enabled                   true
         :bounces                               false
-        :local-storage-enabled                 true
         :render-error                          web-view-error
         :on-navigation-state-change            #(re-frame/dispatch [:browser/navigation-state-changed % error?])
-        :on-bridge-message                     #(re-frame/dispatch [:browser/bridge-message-received %])
+        :on-message                            #(re-frame/dispatch [:browser/bridge-message-received %])
         :on-load                               #(re-frame/dispatch [:browser/loading-started])
         :on-error                              #(re-frame/dispatch [:browser/error-occured])
-        :injected-on-start-loading-java-script (str (when-not opt-in? js-res/web3)
-                                                    (if opt-in?
-                                                      (js-res/web3-opt-in-init (str network-id))
-                                                      (js-res/web3-init
-                                                       rpc-url
-                                                       (ethereum/normalized-address address)
-                                                       (str network-id)))
-                                                    (get-inject-js url))
-        :injected-java-script                  js-res/webview-js}])]
+        :injected-java-script                 (str (when-not opt-in? js-res/web3)
+                                                   (if opt-in?
+                                                     (js-res/web3-opt-in-init (str network-id))
+                                                     (js-res/web3-init
+                                                      rpc-url
+                                                      (ethereum/normalized-address address)
+                                                      (str network-id)))
+                                                   (get-inject-js url)
+                                                   ";true")}])];; TODO must return true
+   ;; TODO Still needed? js-res/webview-js
    [navigation url-original webview can-go-back? can-go-forward?]
    [permissions.views/permissions-panel [(:dapp? browser) (:dapp browser)] show-permission]
    (when show-tooltip

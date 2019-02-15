@@ -215,7 +215,7 @@ public class MainActivity extends ReactActivity
         }
         if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             // Permission has been granted. Start camera preview Activity.
-            com.github.alinz.reactnativewebviewbridge.WebViewBridgeManager.grantAccess(requestCode);
+        //    com.github.alinz.reactnativewebviewbridge.WebViewBridgeManager.grantAccess(requestCode);
         }
     }
 }

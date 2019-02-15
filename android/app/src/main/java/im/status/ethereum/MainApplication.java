@@ -8,7 +8,6 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.github.alinz.reactnativewebviewbridge.WebViewBridgePackage;
 import com.horcrux.svg.SvgPackage;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.oblador.keychain.KeychainPackage;
@@ -45,8 +44,6 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
 
         @Override
         protected List<ReactPackage> getPackages() {
-            StatusPackage statusPackage = new StatusPackage(RootUtil.isDeviceRooted());
-            Function<String, String> callRPC = statusPackage.getCallRPC();
             return Arrays.asList(
                     new MainReactPackage(),
                     new RNFirebasePackage(),
@@ -57,7 +54,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new SvgPackage(),
                     new HttpServerReactPackage(),
                     new SplashScreenReactPackage(),
-                    statusPackage,
+                    new StatusPackage(RootUtil.isDeviceRooted()),
                     new RNStatusKeycardPackage(),
                     new RealmReactPackage(),
                     new RNLanguagesPackage(),
@@ -66,7 +63,6 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new ReactNativeDialogsPackage(),
                     new ImageResizerPackage(),
                     new PickerPackage(),
-                    new WebViewBridgePackage(BuildConfig.DEBUG_WEBVIEW == "1", callRPC),
                     new ReactNativeConfigPackage(),
                     new KeychainPackage());
         }
