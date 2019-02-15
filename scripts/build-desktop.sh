@@ -15,12 +15,6 @@ if [ -z $TARGET_SYSTEM_NAME ]; then
 fi
 WINDOWS_CROSSTOOLCHAIN_PKG_NAME='mxetoolchain-x86_64-w64-mingw32'
 
-if [ -z $STATUS_NO_LOGGING ]; then
-  COMPILE_FLAGS="-DCMAKE_CXX_FLAGS:='-DBUILD_FOR_BUNDLE=1'"
-else
-  COMPILE_FLAGS="-DCMAKE_CXX_FLAGS:=-DBUILD_FOR_BUNDLE=1 -DSTATUS_NO_LOGGING=1"
-fi
-
 external_modules_dir=( \
   'node_modules/react-native-languages/desktop' \
   'node_modules/react-native-config/desktop' \
@@ -76,19 +70,20 @@ function joinExistingPath() {
   fi
 }
 
+function join { local IFS="$1"; shift; echo "$*"; }
+
+CMAKE_EXTRA_FLAGS=$'-DCMAKE_CXX_FLAGS:=\'-DBUILD_FOR_BUNDLE=1\''
+[ -n $STATUS_NO_LOGGING ] && CMAKE_EXTRA_FLAGS="$CMAKE_EXTRA_FLAGS -DSTATUS_NO_LOGGING=1"
+if is_windows_target; then
+  CMAKE_EXTRA_FLAGS="$CMAKE_EXTRA_FLAGS -DCMAKE_TOOLCHAIN_FILE='Toolchain-Ubuntu-mingw64.cmake'"
+  CMAKE_EXTRA_FLAGS="$CMAKE_EXTRA_FLAGS -DCMAKE_C_COMPILER='x86_64-w64-mingw32.shared-gcc'"
+  CMAKE_EXTRA_FLAGS="$CMAKE_EXTRA_FLAGS -DCMAKE_CXX_COMPILER='x86_64-w64-mingw32.shared-g++'"
+  CMAKE_EXTRA_FLAGS="$CMAKE_EXTRA_FLAGS -DCMAKE_RC_COMPILER='x86_64-w64-mingw32.shared-windres'"
+fi
+
 STATUSREACTPATH="$(cd "$SCRIPTPATH" && cd '..' && pwd)"
 WORKFOLDER="$(joinExistingPath "$STATUSREACTPATH" 'StatusImPackage')"
-DEPLOYQTFNAME='linuxdeployqt-continuous-x86_64_20181215.AppImage'
-APPIMAGETOOLFNAME='appimagetool-x86_64_20190221.AppImage'
-DEPLOYQT=$(joinPath . "$DEPLOYQTFNAME")
-APPIMAGETOOL=$(joinPath . "$APPIMAGETOOLFNAME")
 STATUSIM_APPIMAGE_ARCHIVE="StatusImAppImage_20181208.zip"
-
-APPIMAGE_OPTIONS=""
-if [[ ! -c /dev/fuse ]]; then # doesn't exist when run under docker
-    # We extract it to avoid having to use fuse and privileged mode in docker
-    APPIMAGE_OPTIONS="--appimage-extract-and-run"
-fi
 
 function init() {
   if [ -z $STATUSREACTPATH ]; then
@@ -103,36 +98,14 @@ function init() {
     fi
   fi
 
-  if is_macos; then
-    if [ -z $MACDEPLOYQT ]; then
-      set +e
-      MACDEPLOYQT=$(which macdeployqt)
-      if [ -z $MACDEPLOYQT ]; then
-        echo "${RED}MACDEPLOYQT environment variable is not defined and macdeployqt executable not found in path!${NC}"
-        exit 1
-      fi
-      set -e
-    fi
-
-    DEPLOYQT="$MACDEPLOYQT"
-  elif is_linux; then
+  if is_linux; then
     rm -rf ./desktop/toolchain/
     # TODO: Use Conan for Linux and MacOS builds too
     if is_windows_target; then
-      if ! program_exists 'python3'; then
-        echo "${RED}python3 prerequisite is missing. Exiting.${NC}"
-        exit 1
-      fi
-
       export PATH=$STATUSREACTPATH:$PATH
       if ! program_exists 'conan'; then
-        if ! program_exists 'pip3'; then
-          echo "${RED}pip3 package manager not found. Exiting.${NC}"
-          exit 1
-        fi
-
-        echo "${RED}Conan package manager not found. Installing...${NC}"
-        pip3 install conan==$(toolversion conan)
+        echo "${RED}Conan package manager not found. Exiting...${NC}"
+        exit 1
       fi
 
       conan remote add --insert 0 -f status-im https://conan.status.im
@@ -197,24 +170,13 @@ function compile() {
         fi
         export PATH=$bin_dir:$PATH
       done <<< "$bin_dirs"
-      cmake -Wno-dev \
-            -DCMAKE_TOOLCHAIN_FILE='Toolchain-Ubuntu-mingw64.cmake' \
-            -DCMAKE_C_COMPILER='x86_64-w64-mingw32.shared-gcc' \
-            -DCMAKE_CXX_COMPILER='x86_64-w64-mingw32.shared-g++' \
-            -DCMAKE_RC_COMPILER='x86_64-w64-mingw32.shared-windres' \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DEXTERNAL_MODULES_DIR="$EXTERNAL_MODULES_DIR" \
-            -DDESKTOP_FONTS="$DESKTOP_FONTS" \
-            -DJS_BUNDLE_PATH="$JS_BUNDLE_PATH" \
-            $COMPILE_FLAGS || exit 1
-    else
-      cmake -Wno-dev \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DEXTERNAL_MODULES_DIR="$EXTERNAL_MODULES_DIR" \
-            -DDESKTOP_FONTS="$DESKTOP_FONTS" \
-            -DJS_BUNDLE_PATH="$JS_BUNDLE_PATH" \
-            $COMPILE_FLAGS || exit 1
     fi
+    cmake -Wno-dev \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DEXTERNAL_MODULES_DIR="$EXTERNAL_MODULES_DIR" \
+          -DDESKTOP_FONTS="$DESKTOP_FONTS" \
+          -DJS_BUNDLE_PATH="$JS_BUNDLE_PATH" \
+          $CMAKE_EXTRA_FLAGS || exit 1
     make -S -j5 || exit 1
   popd
 }
@@ -268,6 +230,42 @@ function bundleWindows() {
            ./deployment/windows/nsis/setup.nsi
 }
 
+if is_linux; then
+  #
+  # getRecursiveDependencies will use ldd to go through the dependencies of a library,
+  # and output those which are ELF binaries
+  #
+  declare -A treated_libs=()
+  declare -A treated_package_dirs=()
+  function getRecursiveDependencies() {
+    local args=("$@")
+    local root_lib=(${args[0]})
+    treated_libs["$root_lib"]=1
+    if program_exists 'realpath'; then
+      root_lib=$(realpath -m "$root_lib" 2> /dev/null)
+    fi
+    echo $root_lib
+
+    [ -x $root_lib ] || return
+
+    local nix_package_dep_libs=($(ldd $root_lib | grep '=>' | awk -F'=>' -F ' ' "/^.*/{print \$3}"))
+    [ ${#nix_package_dep_libs[@]} -eq 0 ] && return
+
+    local nix_package_dep_libs_dirs=$(echo ${nix_package_dep_libs[@]} | xargs dirname | xargs realpath | sort -u | uniq | grep "^/nix")
+    for packageLibDir in $nix_package_dep_libs_dirs; do
+      if ! [ ${treated_package_dirs[$packageLibDir]} ]; then
+        treated_package_dirs["$packageLibDir"]=1
+        for lib in $(ls $packageLibDir/*.so* | xargs realpath | sort | uniq); do
+          local type=$(file $lib | awk -F':' "/^.*/{print \$2}" | awk -F' ' "/^.*/{print \$1}")
+          if [ $type == 'ELF' ]; then
+            [ ${treated_libs[$lib]} ] || getRecursiveDependencies "$lib"
+          fi
+        done
+      fi
+    done
+  }
+fi
+
 function bundleLinux() {
   local QTBIN=$(joinExistingPath "$QT_PATH" 'gcc_64/bin')
   if [ ! -d "$QTBIN" ]; then
@@ -292,24 +290,14 @@ function bundleLinux() {
   popd
 
   qmakePath="$(joinExistingPath "${QTBIN}" 'qmake')"
-  usrBinPath=$(joinPath "$WORKFOLDER" "AppDir/usr/bin")
+  usrBinPath="$(joinPath "$WORKFOLDER" "AppDir/usr/bin")"
   cp -r ./deployment/linux/usr $WORKFOLDER/AppDir
   cp ./.env $usrBinPath
   cp ./desktop/bin/Status ./desktop/bin/reportApp $usrBinPath
-  
-  if [ ! -f $DEPLOYQT ]; then
-    wget --output-document="$DEPLOYQT" --show-progress "https://desktop-app-files.ams3.digitaloceanspaces.com/$DEPLOYQTFNAME" # Versioned from https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
-    chmod a+x $DEPLOYQT
-  fi
-
-  if [ ! -f $APPIMAGETOOL ]; then
-    wget --output-document="$APPIMAGETOOL" --show-progress "https://desktop-app-files.ams3.digitaloceanspaces.com/$APPIMAGETOOLFNAME" # Versioned from https://github.com/AppImage/AppImageKit/releases/download/10/appimagetool-x86_64.AppImage
-    chmod a+x $APPIMAGETOOL
-  fi
 
   rm -f Application-x86_64.AppImage Status-x86_64.AppImage
 
-  [ $VERBOSE_LEVEL -ge 1 ] && ldd $(joinExistingPath "$usrBinPath" 'Status') 
+  [ $VERBOSE_LEVEL -ge 1 ] && ldd $(joinExistingPath "$usrBinPath" 'Status')
   desktopFilePath="$(joinExistingPath "$WORKFOLDER" 'AppDir/usr/share/applications/Status.desktop')"
   pushd $WORKFOLDER
     cp -r assets/share/assets $usrBinPath
@@ -317,7 +305,17 @@ function bundleLinux() {
     rm -f $usrBinPath/Status.AppImage
   popd
 
-  $DEPLOYQT $APPIMAGE_OPTIONS \
+  # Tell linuxdeployqt about all the different lib folders in Nix's store 
+  local all_deps=($(getRecursiveDependencies "$usrBinPath/Status"))
+  local unique_folders=($(echo "${all_deps[@]}" | xargs dirname | sort -u -r | uniq | grep "/nix"))
+
+  if [ ${#unique_folders[@]} -gt 0 ]; then
+    # Ensure the binary isn't using the interpreter in Nix's store
+    patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 "$usrBinPath/Status"
+  fi
+
+  LD_LIBRARY_PATH="$(join : ${unique_folders[@]})" \
+  linuxdeployqt \
     $desktopFilePath \
     -verbose=$VERBOSE_LEVEL -always-overwrite -no-strip \
     -no-translations -bundle-non-qt-libs \
@@ -330,7 +328,11 @@ function bundleLinux() {
 
   pushd $WORKFOLDER
     rm -f $usrBinPath/Status.AppImage
-    $APPIMAGETOOL $APPIMAGE_OPTIONS ./AppDir
+    appimagetool ./AppDir
+    if [ ${#unique_folders[@]} -gt 0 ]; then
+      # Ensure the AppImage isn't using the interpreter in Nix's store
+      patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 ./Status-x86_64.AppImage
+    fi
     [ $VERBOSE_LEVEL -ge 1 ] && ldd $usrBinPath/Status
     rm -rf Status.AppImage
   popd
@@ -339,36 +341,191 @@ function bundleLinux() {
   echo ""
 }
 
-function bundleMacOS() {
-  # download prepared package with mac bundle files (it contains qt libraries, icon)
-  echo "Downloading skeleton of mac bundle..."
+if is_macos; then
+  function getQtFullOutPathFromNixStore() {
+    local qtFullDerivationPath=$(nix show-derivation -f $STATUSREACTPATH/default.nix | jq -r '.[] | .inputDrvs | 'keys' | .[]' | grep qt-full)
 
+    echo $(nix show-derivation $qtFullDerivationPath | jq -r '.[] | .outputs.out.path')
+  }
+
+  function getQtBaseBinPathFromNixStore() {
+    local qtFullDerivationPath=$(nix show-derivation -f $STATUSREACTPATH/default.nix | jq -r '.[] | .inputDrvs | 'keys' | .[]' | grep qt-full)
+    local qtBaseDerivationPath=$(nix show-derivation $qtFullDerivationPath | jq -r '.[] | .inputDrvs | 'keys' | .[]' | grep qtbase)
+
+    echo $(nix show-derivation $qtBaseDerivationPath | jq -r '.[] | .outputs.bin.path')
+  }
+
+  function copyDylibNixDependenciesToPackage() {
+    local dylib="$1"
+    local contentsDir="$2"
+    local frameworksDir="$contentsDir/Frameworks"
+    local exeDir="$contentsDir/MacOS"
+
+    # Walk through the dependencies of $dylib
+    local dependencies=$(otool -L "$dylib" | grep -E "\s+/nix/" | awk -F "(" '{print $1}' | xargs)
+    local moduleDirPath=$(basename $dylib)
+    for depDylib in $dependencies; do
+      local targetDepDylib=$(joinPath "$frameworksDir" "$(basename $depDylib)")
+      # Copy any dependencies that: are not in the Frameworks directory, do not already exist in /usr/lib and are not a Qt5 module (will be handled by macdeployqt anyway)
+      if [ ! -f "$targetDepDylib" ] && [[ "$(basename $targetDepDylib)" != "libQt5"* ]] && [ ! -f "/usr/lib/$(basename $depDylib)" ]; then
+        [ $VERBOSE_LEVEL -ge 1 ] && echo "  Copying $depDylib to $frameworksDir..."
+        cp -a -L "$depDylib" "$frameworksDir"
+        chmod 0755 "$targetDepDylib"
+
+        copyDylibNixDependenciesToPackage "$depDylib" "$contentsDir"
+      fi
+    done
+  }
+
+  function copyQtPlugInToPackage() {
+    local qtPath="$1"
+    local pluginName="$2"
+    local contentsPath="$3"
+    local filter=""
+    local targetPath="$contentsPath/PlugIns"
+    local pluginTargetPath="$targetPath/$pluginName"
+
+    [ "$pluginName" == 'platforms' ] && filter='libqcocoa.dylib'
+
+    mkdir -p $pluginTargetPath
+    local qtLibPath=$(find $qtPath/lib -maxdepth 1 -name qt-*)
+    local srcPath=$(readlink -f "$qtLibPath/plugins/$pluginName")
+    echo "Copying $srcPath to $targetPath"
+    if [ -z "$filter" ]; then
+      cp -a -f -L "$srcPath" "$targetPath"
+    else
+      cp -f $(readlink -f "$srcPath/$filter") "$pluginTargetPath"
+    fi
+    chmod 755 $pluginTargetPath
+    chmod 755 $pluginTargetPath/*
+
+    for dylib in `find $pluginTargetPath -name *.dylib`; do
+      copyDylibNixDependenciesToPackage "$dylib" "$contentsPath"
+    done
+  }
+
+  function fixupRPathsInDylib() {
+    local dylib="$1"
+    local contentsDir="$2"
+    local frameworksDir="$contentsDir/Frameworks"
+    local exeDir="$contentsDir/MacOS"
+
+    [ $VERBOSE_LEVEL -ge 1 ] && echo "Checking rpaths in ${dylib}"
+  
+    # Walk through the dependencies of $dylib
+    local dependencies=$(otool -L "$dylib" | grep -E "\s+/nix/" | sed "s|@executable_path|$exeDir|" | awk -F "(" '{print $1}' | xargs)
+    local moduleDirPath=$(dirname $dylib)
+    for depDylib in $dependencies; do
+      # Fix rpath and copy library to target
+      local replacementTargetPath=""
+      local framework=$(echo $depDylib | sed -E "s|^\/nix\/.+\/Library\/Frameworks\/(.+)\.framework\/\1$|\1|" 2> /dev/null)
+      if [ -n "$framework" ] && [ "$framework" != "$depDylib" ]; then
+        # Handle macOS framework
+        local targetDepDylib=$(joinExistingPath "/System/Library/Frameworks" "${framework}.framework/${framework}")
+
+        if [ ! -f "$targetDepDylib" ]; then
+          echo -e "${RED}FATAL: system framework not found: ${targetDepDylib}${NC}"
+          exit 1
+        fi
+
+        # Change dependency rpath in $dylib to point to $targetDepDylib
+        replacementTargetPath=$targetDepDylib
+      else
+        # Handle other libraries
+        local targetDepDylib=$(joinPath "$frameworksDir" "$(basename $depDylib)")
+
+        if [ ! -f "$targetDepDylib" ]; then
+          echo -e "${RED}FATAL: macdeployqt should have copied the dependency to ${targetDepDylib}${NC}"
+          exit 1
+        fi
+
+        # Change dependency rpath in $dylib to point to $replacementTargetPath
+        local replacementPath=""
+        local targetDepModuleDirPath=$(dirname $targetDepDylib)
+        if [[ $targetDepModuleDirPath -ef $moduleDirPath ]]; then
+          replacementPath="@loader_path"
+        else
+          replacementPath="@executable_path/$(realpath --relative-to="$exeDir" "$targetDepModuleDirPath")"
+        fi
+        local modulePathRegExp="($(pwd)/)?$moduleDirPath"
+        replacementTargetPath=$(echo $targetDepDylib | sed -E "s|$modulePathRegExp|$replacementPath|")
+      fi
+
+      if [ -n "$replacementTargetPath" ]; then
+        [ $VERBOSE_LEVEL -ge 1 ] && echo "Updating $dylib to point to $replacementTargetPath"
+        install_name_tool -change "$depDylib" "$replacementTargetPath" "$dylib"
+      fi
+    done
+  }
+
+  function fixupRemainingRPaths() {
+    local searchRootPath="$1"
+    local contentsDir="$2"
+
+    for dylib in `find $searchRootPath -name *.dylib`; do
+      fixupRPathsInDylib "$dylib" "$contentsDir"
+
+      # Sanity check for absolute paths
+      local dependencies=$(otool -L "$dylib" | grep -E "\s+${STATUSREACTPATH}")
+      if [ -n "$dependencies" ]; then
+        echo "Absolute path detected in dependencies of $dylib. Aborting..."
+        echo "${dependencies[@]}"
+        exit 1
+      fi
+    done
+  }
+fi
+
+function bundleMacOS() {
   pushd $WORKFOLDER
+    # download prepared package with mac bundle files (it contains qt libraries, icon)
+    echo "Downloading skeleton of mac bundle..."
+
     rm -rf Status.app
     # TODO this needs to be fixed: status-react/issues/5378
     [ -f ./Status.app.zip ] || curl -L -o Status.app.zip https://desktop-app-files.ams3.digitaloceanspaces.com/Status_20181113.app.zip
     echo -e "${GREEN}Downloading done.${NC}"
     echo ""
     unzip ./Status.app.zip
-    cp -r assets/share/assets Status.app/Contents/Resources
-    ln -sf ../Resources/assets ../Resources/ubuntu-server ../Resources/node_modules Status.app/Contents/MacOS
-    chmod +x Status.app/Contents/Resources/ubuntu-server
-    cp ../desktop/bin/Status Status.app/Contents/MacOS/Status
-    cp ../desktop/bin/reportApp Status.app/Contents/MacOS
-    cp ../.env Status.app/Contents/Resources
-    ln -sf ../Resources/.env Status.app/Contents/MacOS/.env
-    cp -f ../deployment/macos/qt-reportApp.conf Status.app/Contents/Resources
-    ln -sf ../Resources/qt-reportApp.conf Status.app/Contents/MacOS/qt.conf
-    install_name_tool -add_rpath "@executable_path/../Frameworks" \
-                      -delete_rpath "${QT_PATH}/lib" \
-                      'Status.app/Contents/MacOS/reportApp'
-    install_name_tool -add_rpath "@executable_path/../Frameworks" \
-                      -delete_rpath "${QT_PATH}/lib" \
-                      'Status.app/Contents/MacOS/Status'
-    cp -f ../deployment/macos/Info.plist Status.app/Contents
-    cp -f ../deployment/macos/status-icon.icns Status.app/Contents/Resources
-    $DEPLOYQT Status.app -verbose=$VERBOSE_LEVEL \
-      -qmldir="$STATUSREACTPATH/node_modules/react-native/ReactQt/runtime/src/qml/"
+
+    local contentsPath='Status.app/Contents'
+    local usrBinPath=$(joinExistingPath "$WORKFOLDER" "$contentsPath/MacOS")
+
+    cp -r assets/share/assets $contentsPath/Resources
+    ln -sf ../Resources/assets ../Resources/ubuntu-server ../Resources/node_modules $usrBinPath
+    chmod +x $contentsPath/Resources/ubuntu-server
+    cp ../desktop/bin/Status $usrBinPath/Status
+    cp ../desktop/bin/reportApp $usrBinPath
+    cp ../.env $contentsPath/Resources
+    ln -sf ../Resources/.env $usrBinPath/.env
+    cp -f ../deployment/macos/qt-reportApp.conf $contentsPath/Resources
+    ln -sf ../Resources/qt-reportApp.conf $usrBinPath/qt.conf
+    cp -f ../deployment/macos/Info.plist $contentsPath
+    cp -f ../deployment/macos/status-icon.icns $contentsPath/Resources
+
+    local qtbaseplugins=(bearer platforms printsupport styles)
+    local qtfullplugins=(iconengines imageformats webview)
+    if program_exists nix && [ -n "$IN_NIX_SHELL" ]; then
+      # Since in the Nix qt.full package the different Qt modules are spread across several directories,
+      # macdeployqt cannot find some qtbase plugins, so we copy them in its place
+      local qtbaseBinPath=$(getQtBaseBinPathFromNixStore)
+      local qtfullOutPath=$(getQtFullOutPathFromNixStore)
+      mkdir -p "$contentsPath/PlugIns"
+      for plugin in ${qtbaseplugins[@]}; do copyQtPlugInToPackage "$qtbaseBinPath" "$plugin" "$contentsPath"; done
+      for plugin in ${qtfullplugins[@]}; do copyQtPlugInToPackage "$qtfullOutPath" "$plugin" "$contentsPath"; done
+    fi
+
+    macdeployqt Status.app \
+      -verbose=$VERBOSE_LEVEL \
+      -executable="$(joinExistingPath "$usrBinPath" 'reportApp')" \
+      -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'node_modules/react-native')" \
+      -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'desktop/reportApp')"
+
+    # macdeployqt doesn't fix rpaths for all the libraries (although it copies them all), so we'll just walk through them and update rpaths to not point to /nix
+    echo "Fixing remaining rpaths in modules..."
+    fixupRemainingRPaths "$contentsPath/Frameworks" "$contentsPath"
+    fixupRemainingRPaths "$contentsPath/PlugIns" "$contentsPath"
+    echo "Done fixing rpaths in modules"
     rm -f Status.app.zip
   popd
 

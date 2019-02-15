@@ -7,11 +7,11 @@ if [ "$1" = 'Windows' ]; then
   export GOOS=windows
   export GOARCH=amd64
   export CGO_ENABLED=1
-  export CC=$5
-  export CC_FOR_TARGET=$5
-  export CXX_FOR_TARGET=$6
 fi
- 
+export CC=$5
+export CC_FOR_TARGET=$5
+export CXX_FOR_TARGET=$6
+
 cd $4/lib
 go get ./
 cd ..

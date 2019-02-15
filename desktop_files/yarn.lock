@@ -7071,9 +7071,9 @@ react-native-invertible-scroll-view@1.1.0:
     react-clone-referenced-element "^1.0.1"
     react-native-scrollable-mixin "^1.0.1"
 
-"react-native-keychain@git+https://github.com/status-im/react-native-keychain.git#v.3.0.0-2-status":
+"react-native-keychain@git+https://github.com/status-im/react-native-keychain.git#v.3.0.0-3-status":
   version "3.0.0-rc.3"
-  resolved "git+https://github.com/status-im/react-native-keychain.git#ce6cec62222713f2cec7798b69c4fae6b493832f"
+  resolved "git+https://github.com/status-im/react-native-keychain.git#25a76813def48ba9bf0fd1b3dd1e915d002b55dd"
 
 "react-native-languages@git+https://github.com/status-im/react-native-languages.git#v0.1.1-status":
   version "3.0.2"
