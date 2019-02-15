@@ -264,11 +264,12 @@
     {:text                (i18n/label :t/tribute-to-talk)
      :icon                :main-icons/tribute-to-talk
      :accessibility-label :notifications-button
-     :subtext             (i18n/label :t/tribute-to-talk-desc)
      :new?                (not seen?)
      :action-fn           #(re-frame/dispatch [:navigate-to :tribute-to-talk])}
      snt-amount
-     (assoc :accessory-value (str snt-amount " SNT")))])
+     (assoc :accessory-value (str snt-amount " SNT"))
+     (not (and seen? snt-amount))
+     (assoc :subtext      (i18n/label :t/tribute-to-talk-desc)))])
 
 (defview my-profile []
   (letsubs [{:keys [public-key photo-path] :as current-account} [:account/account]

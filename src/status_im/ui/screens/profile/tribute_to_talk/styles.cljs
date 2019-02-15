@@ -40,8 +40,7 @@
 (def bottom-toolbar
   {:height           60
    :border-top-width 1
-   :border-top-color colors/gray-lighter
-   :margin-bottom    20})
+   :border-top-color colors/gray-lighter})
 
 (def step-n
   {:margin-top 5
@@ -64,7 +63,7 @@
 (def number-row
   {:flex            1
    :flex-direction  :row
-   :justify-content :space-between})
+   :justify-content :space-around})
 
 (def number-pad
   {:flex              1
@@ -73,7 +72,7 @@
    :width             (+ 256 16)
    :height            (+ 328 12)
    :margin-top        10
-   :justify-content   :space-between})
+   :justify-content   :space-around})
 
 (def number-container
   {:width             64
@@ -245,7 +244,7 @@
 (def chat-sample-bubble
   {:background-color   colors/blue-light
    :padding-horizontal 12
-   :padding-vertical   8
+   :padding-top        8
    :width              222
    :margin-top         4
    :border-radius      8})

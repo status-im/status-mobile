@@ -128,10 +128,8 @@
       [react/image {:source {:uri image-source}
                     :style   styles/big-item-image}])
     (if subtext
-      [react/view {:style {:flex 1 :align-self :flex-start :margin-top 12}}
-       [react/view {:style {:flex-direction :row
-                            :height 18
-                            :align-items :center}}
+      [react/view {:style styles/settings-item-text-container}
+       [react/view {:style styles/settings-item-main-text-container}
         (when new?
           [react/view {:style styles/new-label}
            [react/text {:style styles/new-label-text}

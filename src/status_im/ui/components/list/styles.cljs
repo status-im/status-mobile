@@ -103,6 +103,16 @@
    :font-size   17
    :color       color})
 
+(def settings-item-text-container
+  {:flex       1
+   :align-self :flex-start
+   :margin-top 12})
+
+(def settings-item-main-text-container
+  {:flex-direction :row
+   :height         18
+   :align-items    :center})
+
 (defn settings-item-text-new [color]
   (assoc (settings-item-text color)
          :font-weight "500"
@@ -112,6 +122,7 @@
 (def settings-item-subtext
   {:line-height 22
    :font-size   15
+   :margin-top  2
    :color       colors/gray})
 
 (def settings-item-value
