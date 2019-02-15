@@ -8,7 +8,7 @@
   [{:keys [db]} {:keys [modal?] :as identifier} qr-codes]
   {:db                     (assoc db :qr-codes qr-codes)
    :request-permissions-fx {:permissions [:camera]
-                            :on-allowed  #(re-frame/dispatch [(if modal? :navigate-to-modal :navigate-to)
+                            :on-allowed  #(re-frame/dispatch [(if modal? :navigate-to-modal :navigate-to-clean)
                                                               :qr-scanner {:current-qr-context identifier}])
                             :on-denied   (fn []
                                            (utils/set-timeout

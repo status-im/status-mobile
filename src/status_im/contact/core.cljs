@@ -272,7 +272,7 @@
     (if (some? validation-result)
       {:utils/show-popup {:title (i18n/label :t/unable-to-read-this-code)
                           :content validation-result
-                          :on-dismiss #(re-frame/dispatch [:navigate-to-clean :home])}}
+                          :on-dismiss #(re-frame/dispatch [:navigate-to-clean :qr-scanner])}}
       (fx/merge cofx
                 fx
                 (if config/partitioned-topic-enabled?
