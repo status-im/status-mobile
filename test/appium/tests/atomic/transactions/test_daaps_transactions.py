@@ -288,9 +288,15 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction_view.sign_transaction_button.click()
         if send_transaction_view.enter_password_input.is_element_displayed():
             self.errors.append('sending all available ETH (no funds to pay gas)')
-
         send_transaction_view.amount_edit_box.clear()
-        send_transaction_view.amount_edit_box.set_value('0.099979000000000001')
+
+        # Because tx gas price may change we calculate eth value according to current gas fee value
+        send_transaction_view.advanced_button.click()
+        transaction_fee_total = send_transaction_view.get_transaction_fee_total()
+        eth_available_for_tx = str(0.1 - transaction_fee_total)
+        wei = '0.000000000000000001'
+        eth_value_plus_one_wei = ''.join([eth_available_for_tx, wei[len(eth_available_for_tx):]])
+        send_transaction_view.amount_edit_box.set_value(eth_value_plus_one_wei)
         send_transaction_view.confirm()
 
         # Check whether sending big amount of ETH triggers the warning (no funds to pay gas)
@@ -303,7 +309,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
             self.errors.append('sending big amount of ETH (no funds to pay gas)')
 
         send_transaction_view.amount_edit_box.clear()
-        send_transaction_view.amount_edit_box.set_value('0.099979')
+        send_transaction_view.amount_edit_box.set_value(eth_available_for_tx)
         send_transaction_view.confirm()
 
         # Check whether sending normal amount of ETH does not trigger the warning

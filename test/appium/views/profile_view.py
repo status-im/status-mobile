@@ -271,8 +271,7 @@ class RopstenChainButton(BaseButton):
 
     def __init__(self, driver):
         super(RopstenChainButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//*[contains(@text,'Ropsten test network')]/following-sibling::android.widget.CheckBox[1]")
+        self.locator = self.Locator.xpath_selector("//*[contains(@text,'Ropsten test network')]")
 
 
 class SpecifyNameInput(BaseEditBox):
