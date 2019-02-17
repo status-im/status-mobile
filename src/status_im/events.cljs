@@ -1463,8 +1463,8 @@
 
 (handlers/register-handler-fx
  :group-chats.callback/extract-signature-success
- (fn [cofx [_ group-update raw-payload sender-signature]]
-   (group-chats/handle-membership-update cofx group-update raw-payload sender-signature)))
+ (fn [cofx [_ group-update message-info sender-signature]]
+   (group-chats/handle-membership-update cofx group-update message-info sender-signature)))
 
 ;; profile module
 

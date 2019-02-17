@@ -152,8 +152,8 @@
 
 (fx/defn handle-membership-update-received
   "Extract signatures in status-go and act if successful"
-  [cofx membership-update signature raw-payload]
-  {:group-chats/extract-membership-signature [[membership-update raw-payload signature]]})
+  [cofx membership-update signature message-info]
+  {:group-chats/extract-membership-signature [[membership-update message-info signature]]})
 
 (defn chat->group-update
   "Transform a chat in a GroupMembershipUpdate"
@@ -180,21 +180,21 @@
 
 (defn handle-extract-signature-response
   "Callback to dispatch on extract signature response"
-  [payload raw-payload sender-signature response-js]
+  [payload message-info sender-signature response-js]
   (let [{:keys [error identities]} (parse-response response-js)]
     (if error
       (re-frame/dispatch [:group-chats.callback/extract-signature-failed  error])
       (re-frame/dispatch [:group-chats.callback/extract-signature-success
-                          (add-identities payload identities) raw-payload sender-signature]))))
+                          (add-identities payload identities) message-info sender-signature]))))
 
 (defn sign-membership [{:keys [chat-id events] :as payload}]
   (native-module/sign-group-membership (signature-material chat-id events)
                                        (partial handle-sign-response payload)))
 
-(defn extract-membership-signature [payload raw-payload sender]
+(defn extract-membership-signature [payload message-info sender]
   (native-module/extract-group-membership-signatures
    (signature-pairs payload)
-   (partial handle-extract-signature-response payload raw-payload sender)))
+   (partial handle-extract-signature-response payload message-info sender)))
 
 (defn- members-added-event [last-clock-value members]
   {:type "members-added"
@@ -484,7 +484,7 @@
   [cofx {:keys [chat-id
                 message
                 membership-updates] :as membership-update}
-   raw-payload
+   {:keys [raw-payload dedup-id]}
    sender-signature]
   (let [dev-mode? (get-in cofx [:db :account/account :dev-mode?])]
     (when (valid-chat-id? chat-id (extract-creator membership-update))
@@ -515,7 +515,9 @@
                               (instance? protocol/Message message)
                               (= :group-user-message (:message-type message)))
                      (protocol/receive message chat-id sender-signature nil
-                                       (assoc % :js-obj #js {:payload raw-payload}))))))))
+                                       (assoc %
+                                              :dedup-id dedup-id
+                                              :js-obj #js {:payload raw-payload}))))))))
 
 (defn handle-sign-success
   "Upsert chat and send signed payload to group members"

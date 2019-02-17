@@ -1,6 +1,7 @@
 (ns ^{:doc "Definition of the StatusMessage protocol"}
  status-im.transport.message.core
   (:require [re-frame.core :as re-frame]
+            [goog.object :as o]
             [status-im.chat.models.message :as models.message]
             [status-im.utils.config :as config]
             [status-im.data-store.transport :as transport-store]
@@ -12,10 +13,28 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
+(defn unwrap-message
+  "Extract message from new payload {:id some-id :message some-message}
+  or old (just plain message)"
+  [js-message]
+  (let [clj-message (js->clj js-message :keywordize-keys true)
+        {:keys [message id]} clj-message]
+    {:message (or message clj-message)
+     :raw-payload (if message
+                    (o/get js-message "message")
+                    js-message)
+     :id id}))
+
 (fx/defn receive-message
+  "Receive message handles a new status-message.
+  dedup-id is passed by status-go and is used to deduplicate messages at that layer.
+  Once a message has been successfuly processed, that id needs to be sent back
+  in order to stop receiving that message"
   [cofx now-in-s filter-chat-id js-message]
   (let [blocked-contacts (get-in cofx [:db :contacts/blocked] #{})
-        {:keys [payload sig timestamp ttl]} (js->clj js-message :keywordize-keys true)
+        {{:keys [payload sig timestamp ttl]} :message
+         dedup-id :id
+         raw-payload :raw-payload} (unwrap-message js-message)
         status-message (-> payload
                            transport.utils/to-utf8
                            transit/deserialize)]
@@ -24,7 +43,7 @@
                (not (blocked-contacts sig)))
       (try
         (when-let [valid-message (protocol/validate status-message)]
-          (fx/merge (assoc cofx :js-obj js-message)
+          (fx/merge (assoc cofx :js-obj raw-payload :dedup-id dedup-id)
                     #(protocol/receive valid-message
                                        (or
                                         filter-chat-id
@@ -173,8 +192,14 @@
                           (keep :js-obj)
                           (apply array))]
      (when (pos? (.-length js-messages))
-       (.confirmMessagesProcessed (transport.utils/shh web3)
-                                  js-messages
-                                  (fn [err resp]
-                                    (when err
-                                      (log/info "Confirming messages processed failed"))))))))
+       (if (string? (first js-messages))
+         (.confirmMessagesProcessedByID (transport.utils/shh web3)
+                                        js-messages
+                                        (fn [err resp]
+                                          (when err
+                                            (log/warn "Confirming messages processed failed" err))))
+         (.confirmMessagesProcessed (transport.utils/shh web3)
+                                    js-messages
+                                    (fn [err resp]
+                                      (when err
+                                        (log/warn "Confirming messages processed failed" err)))))))))
