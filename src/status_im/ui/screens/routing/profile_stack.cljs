@@ -27,10 +27,6 @@
                                 :fleet-settings
                                 :currency-settings
                                 :backup-seed
-                                :login
-                                :create-account
-                                :recover
-                                :accounts
                                 :qr-scanner]
 
                          config/hardwallet-enabled?

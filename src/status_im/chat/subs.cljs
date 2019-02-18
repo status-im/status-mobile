@@ -6,7 +6,8 @@
             [status-im.chat.constants :as chat.constants]
             [status-im.chat.db :as chat.db]
             [status-im.models.transactions :as transactions]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.bottom-bar.styles :as tabs-styles]))
 
 (re-frame/reg-sub ::chats :chats)
 (re-frame/reg-sub ::access-scope->command-id :access-scope->command-id)
@@ -75,8 +76,11 @@
  :<- [:get :keyboard-height]
  (fn [kb-height]
    (cond
-     (and platform/iphone-x? (> kb-height 0)) (- kb-height 34)
-     platform/ios? kb-height
+     (and platform/iphone-x? (> kb-height 0))
+     (- kb-height 34 tabs-styles/tabs-height)
+     platform/ios? (- kb-height (if (> kb-height 0)
+                                  tabs-styles/tabs-height
+                                  0))
      :default 0)))
 
 (re-frame/reg-sub

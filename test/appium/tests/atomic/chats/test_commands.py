@@ -25,7 +25,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         device_1_wallet_view = device_1_home.wallet_button.click()
         device_1_wallet_view.set_up_wallet()
-        device_1_wallet_view.get_back_to_home_view()
+        device_1_wallet_view.home_button.click()
 
         public_key = device_2_home.get_public_key()
         device_2_profile = device_2_home.get_profile_view()

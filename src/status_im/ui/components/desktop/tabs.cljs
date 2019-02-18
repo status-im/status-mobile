@@ -5,7 +5,7 @@
             [taoensso.timbre :as log]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.main-tabs.styles :as tabs.styles])
+            [status-im.ui.components.bottom-bar.styles :as tabs.styles])
   (:require-macros [status-im.utils.views :as views]))
 
 ;;TODO copy-pate with minimum modifications of status-react tabs

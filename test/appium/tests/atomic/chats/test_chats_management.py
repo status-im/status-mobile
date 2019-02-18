@@ -174,11 +174,11 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         username = chat_element.username.text
         chat_element.member_photo.click()
         for element in [chat_1.contact_profile_picture,
+                        chat_1.element_by_text(username, 'text'),
                         chat_1.add_to_contacts,
                         chat_1.profile_send_message,
                         chat_1.profile_send_transaction,
-                        chat_1.profile_address_text,
-                        chat_1.element_by_text(username, 'text')]:
+                        chat_1.profile_address_text]:
             if not element.scroll_to_element():
                 self.errors.append('%s is not visible' % element.name)
         chat_1.add_to_contacts.click()

@@ -22,7 +22,6 @@
                         :unsigned-transactions
                         :transactions-history
                         :wallet-transaction-details
-                        :login
                         :wallet-settings-hook]
               :config  {:initialRouteName :wallet}}
              :selection-modal-screen

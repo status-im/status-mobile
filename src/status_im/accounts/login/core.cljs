@@ -254,7 +254,7 @@
               {:db (assoc-in db [:accounts/login :password] password)}
               (navigation/navigate-to-cofx :progress nil)
               (user-login false))
-    (navigation/navigate-to-clean cofx :login nil)))
+    (navigation/navigate-to-cofx cofx :login nil)))
 
 (re-frame/reg-fx
  :accounts.login/login
