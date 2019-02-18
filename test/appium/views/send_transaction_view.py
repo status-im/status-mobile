@@ -207,8 +207,8 @@ class SendTransactionView(BaseView):
     def sign_transaction(self, sender_password: str = common_password):
         self.sign_transaction_button.click_until_presence_of_element(self.enter_password_input)
         self.enter_password_input.send_keys(sender_password)
-        self.sign_transaction_button.click_until_presence_of_element(self.progress_bar)
-        self.progress_bar.wait_for_invisibility_of_element(60)
+        self.sign_transaction_button.click_until_presence_of_element(self.got_it_button)
+        self.progress_bar.wait_for_invisibility_of_element(20)
         self.got_it_button.click()
 
     def get_transaction_fee_total(self):
