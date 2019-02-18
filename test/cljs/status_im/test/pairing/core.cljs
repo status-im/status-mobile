@@ -168,7 +168,7 @@
                                          :photo-path "generated")
                       "contact-5" (assoc local-contact-5 :device-info nil)}]
         (testing "not coming from us"
-          (is (not (pairing/handle-sync-installation cofx sync-message "not-us"))))
+          (is (not (:db (pairing/handle-sync-installation cofx sync-message "not-us")))))
         (testing "coming from us"
           (is (= expected (get-in
                            (pairing/handle-sync-installation cofx sync-message "us")
@@ -212,7 +212,7 @@
                       :name "name"
                       :installation-id "1"}]
     (testing "not coming from us"
-      (is (not (pairing/handle-pair-installation cofx pair-message 1 "not-us"))))
+      (is (not (:db (pairing/handle-pair-installation cofx pair-message 1 "not-us")))))
     (testing "coming from us"
       (is (= {"1" {:has-bundle? true
                    :installation-id "1"

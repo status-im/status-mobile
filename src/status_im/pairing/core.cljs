@@ -35,6 +35,11 @@
         device-type     utils.platform/os]
     (protocol/send (transport.pairing/PairInstallation. installation-id device-type installation-name fcm-token) nil cofx)))
 
+(fx/defn confirm-message-processed
+  [{:keys [db]} raw-message]
+  {:transport/confirm-messages-processed [{:web3 (:web3 db)
+                                           :js-obj raw-message}]})
+
 (defn has-paired-installations? [cofx]
   (->>
    (get-in cofx [:db :pairing/installations])
@@ -86,13 +91,15 @@
                             :on-cancel  #(re-frame/dispatch [:pairing.ui/prompt-dismissed])
                             :on-accept #(re-frame/dispatch [:pairing.ui/prompt-accepted])}}))
 
-(fx/defn upsert-installation [{:keys [db]} {:keys [installation-id] :as new-installation}]
-  (let [old-installation (get-in db [:pairing/installations installation-id])
+(fx/defn upsert-installation [{:keys [db] :as cofx} {:keys [installation-id] :as new-installation}]
+  (let [success-event [:message/messages-persisted [(or (:dedup-id cofx) (:js-obj cofx))]]
+        old-installation (get-in db [:pairing/installations installation-id])
         updated-installation (merge old-installation new-installation)]
     {:db (assoc-in db
                    [:pairing/installations installation-id]
                    updated-installation)
-     :data-store/tx [(data-store.installations/save updated-installation)]}))
+     :data-store/tx [{:transaction (data-store.installations/save updated-installation)
+                      :success-event success-event}]}))
 
 (defn handle-bundles-added [{:keys [db] :as cofx} bundle]
   (let [installation-id  (:installationID bundle)
@@ -234,31 +241,37 @@
              contacts))
 
 (defn handle-sync-installation [{:keys [db] :as cofx} {:keys [contacts account chat]} sender]
-  (when (= sender (accounts.db/current-public-key cofx))
-    (let [new-contacts (vals (merge-contacts (:contacts/contacts db) (ensure-photo-path contacts)))
-          new-account  (merge-account (:account/account db) account)
-          contacts-fx  (mapv contact/upsert-contact new-contacts)]
+  (if (= sender (accounts.db/current-public-key cofx))
+    (let [success-event [:message/messages-persisted [(or (:dedup-id cofx) (:js-obj cofx))]]
+          new-contacts  (vals (merge-contacts (:contacts/contacts db) (ensure-photo-path contacts)))
+          new-account   (merge-account (:account/account db) account)
+          contacts-fx   (mapv contact/upsert-contact new-contacts)]
       (apply fx/merge
              cofx
              (concat
               [{:db                 (assoc db :account/account new-account)
-                :data-store/base-tx [(data-store.accounts/save-account-tx new-account)]}
+                :data-store/base-tx [{:transaction   (data-store.accounts/save-account-tx new-account)
+                                      :success-event success-event}]}
                #(when (:public? chat)
                   (models.chat/start-public-chat % (:chat-id chat) {:dont-navigate? true}))]
-              contacts-fx)))))
+              contacts-fx)))
+    (confirm-message-processed cofx (or (:dedup-id cofx)
+                                        (:js-obj cofx)))))
 
 (defn handle-pair-installation [{:keys [db] :as cofx} {:keys [name
                                                               fcm-token
                                                               installation-id
                                                               device-type]} timestamp sender]
-  (when (and (= sender (accounts.db/current-public-key cofx))
-             (not= (get-in db [:account/account :installation-id]) installation-id))
+  (if (and (= sender (accounts.db/current-public-key cofx))
+           (not= (get-in db [:account/account :installation-id]) installation-id))
     (let [installation {:installation-id   installation-id
                         :name              name
                         :fcm-token         fcm-token
                         :device-type       device-type
                         :last-paired       timestamp}]
-      (upsert-installation cofx installation))))
+      (upsert-installation cofx installation))
+    (confirm-message-processed cofx (or (:dedup-id cofx)
+                                        (:js-obj cofx)))))
 
 (fx/defn set-name [{:keys [db] :as cofx} installation-name]
   (let [new-account (assoc (get-in cofx [:db :account/account]) :installation-name installation-name)]
