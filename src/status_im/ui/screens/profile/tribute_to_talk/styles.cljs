@@ -260,6 +260,11 @@
    :line-height 22
    :font-weight "500"})
 
+(def edit-container
+  {:align-items       :center
+   :justify-content   :space-between
+   :flex-grow         1})
+
 (def edit-screen-top-row
   {:flex-direction    :row
    :margin-vertical   16

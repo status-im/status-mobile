@@ -188,8 +188,7 @@
 
 (defview edit []
   (letsubs [{:keys [snt-amount message]} [:my-profile/tribute-to-talk]]
-    [react/scroll-view {:content-container-style (assoc styles/intro-container
-                                                        :margin-horizontal 0)}
+    [react/scroll-view {:content-container-style styles/edit-container}
      [react/view
       [react/view {:style styles/edit-screen-top-row}
        [react/view {:style {:flex-direction  :row
