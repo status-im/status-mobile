@@ -212,5 +212,5 @@ class SendTransactionView(BaseView):
         self.got_it_button.click()
 
     def get_transaction_fee_total(self):
-        return float(self.transaction_fee_total_value.text.split()[0])
+        return self.transaction_fee_total_value.text.split()[0]
 

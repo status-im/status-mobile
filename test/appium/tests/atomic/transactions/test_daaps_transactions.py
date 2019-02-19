@@ -5,6 +5,7 @@ from tests.base_test_case import SingleDeviceTestCase
 from tests.users import transaction_senders, transaction_recipients, basic_user
 from views.send_transaction_view import SendTransactionView
 from views.sign_in_view import SignInView
+from decimal import Decimal
 
 
 class TestTransactionDApp(SingleDeviceTestCase):
@@ -335,7 +336,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         # Because tx gas price may change we calculate eth value according to current gas fee value
         send_transaction_view.advanced_button.click()
         transaction_fee_total = send_transaction_view.get_transaction_fee_total()
-        eth_available_for_tx = str(0.1 - transaction_fee_total)
+        eth_available_for_tx = str(Decimal('0.1') - Decimal(transaction_fee_total))
         wei = '0.000000000000000001'
         eth_value_plus_one_wei = ''.join([eth_available_for_tx, wei[len(eth_available_for_tx):]])
         send_transaction_view.amount_edit_box.set_value(eth_value_plus_one_wei)
