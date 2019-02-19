@@ -165,21 +165,12 @@ function buildClojureScript() {
   echo ""
 
   # Add path to javascript bundle to package.json
-  jsBundleLine="\"desktopJSBundlePath\": \"$WORKFOLDER/Status.jsbundle\""
-  jsPackagePath=$(joinExistingPath "$STATUSREACTPATH" 'desktop_files/package.json.orig')
-  if grep -Fq "$jsBundleLine" "$jsPackagePath"; then
-    echo -e "${GREEN}Found line in package.json.${NC}"
-  else
-    # Add line to package.json just before "dependencies" line
-    if is_macos; then
-      sed -i '' -e "/\"dependencies\":/i\\
- \  $jsBundleLine," "$jsPackagePath"
-    else
-      sed -i -- "/\"dependencies\":/i\  $jsBundleLine," "$jsPackagePath"
-    fi
-    echo -e "${YELLOW}Added 'desktopJSBundlePath' line to $jsPackagePath:${NC}"
-    echo ""
-  fi
+  local jsBundleLine="\"desktopJSBundlePath\": \"$WORKFOLDER/Status.jsbundle\""
+  local jsPackagePath=$(joinExistingPath "$STATUSREACTPATH" 'desktop_files/package.json.orig')
+  local tmp=$(mktemp)
+  jq ".=(. + {$jsBundleLine})" "$jsPackagePath" > "$tmp" && mv "$tmp" "$jsPackagePath"
+  echo -e "${YELLOW}Added 'desktopJSBundlePath' line to $jsPackagePath:${NC}"
+  echo ""
 }
 
 function compile() {
