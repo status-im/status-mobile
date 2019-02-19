@@ -424,6 +424,11 @@
    (log/error "Error on mark-trusted-peer: " error)
    (mailserver/check-connection cofx)))
 
+(handlers/register-handler-fx
+ :mailserver.callback/request-error
+ (fn [cofx [_ error]]
+   (mailserver/handle-request-error cofx error)))
+
 ;; network module
 
 (handlers/register-handler-fx

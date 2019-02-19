@@ -288,7 +288,9 @@
                       (fn [error request-id]
                         (if-not error
                           (log/info "mailserver: messages request success for topic " topics "from" from "to" to)
-                          (log/error "mailserver: messages request error for topic " topics ": " error))))))
+                          (do
+                            (log/error "mailserver: messages request error for topic " topics ": " error)
+                            (re-frame/dispatch [:mailserver.callback/request-error (i18n/label :t/mailserver-request-error-title)])))))))
 
 (re-frame/reg-fx
  :mailserver/request-messages
