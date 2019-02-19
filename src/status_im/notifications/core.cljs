@@ -96,9 +96,8 @@
     Returns original value if not a hash (e.g. already a public key)."
     (if (and contact-pubkey-or-hash
              (= (count contact-pubkey-or-hash) pn-pubkey-hash-length))
-      (if-let
-       [account-pubkey (hash->pubkey contact-pubkey-or-hash
-                                     (-> db :accounts/accounts vals))]
+      (if-let [account-pubkey (hash->pubkey contact-pubkey-or-hash
+                                            (-> db :accounts/accounts vals))]
         account-pubkey
         (if (accounts.db/logged-in? cofx)
           ;; TODO: for simplicity we're doing a linear lookup of the contacts,
@@ -228,7 +227,7 @@
                  "view-id:" view-id "current-chat-id:" current-chat-id
                  "from:" from "force:" force)
       (merge
-       (when (and (= (.-length from) pn-pubkey-length)
+       (when (and (= (count from) pn-pubkey-length)
                   (show-notification? cofx rehydrated-payload))
          {:dispatch [:mailserver/fetch-history from (- (quot now 1000) pull-recent-messages-window)]})
        (when (or force
