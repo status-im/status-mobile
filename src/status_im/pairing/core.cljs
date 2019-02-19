@@ -3,7 +3,6 @@
             [clojure.string :as string]
             [status-im.i18n :as i18n]
             [status-im.utils.fx :as fx]
-            [status-im.contact.device-info :as device-info]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
             [status-im.utils.platform :as utils.platform]
@@ -22,6 +21,7 @@
             [status-im.transport.message.pairing :as transport.pairing]))
 
 (def contact-batch-n 4)
+(def max-installations 2)
 
 (defn- parse-response [response-js]
   (-> response-js
@@ -29,11 +29,10 @@
       (js->clj :keywordize-keys true)))
 
 (defn pair-installation [cofx]
-  (let [fcm-token         (get-in cofx [:db :notifications :fcm-token])
-        installation-name (get-in cofx [:db :account/account :installation-name])
+  (let [installation-name (get-in cofx [:db :account/account :installation-name])
         installation-id (get-in cofx [:db :account/account :installation-id])
         device-type     utils.platform/os]
-    (protocol/send (transport.pairing/PairInstallation. installation-id device-type installation-name fcm-token) nil cofx)))
+    (protocol/send (transport.pairing/PairInstallation. installation-id device-type installation-name) nil cofx)))
 
 (defn has-paired-installations? [cofx]
   (->>
@@ -52,9 +51,6 @@
   (let [[old-contact new-contact] (sort-by :last-updated [remote local])]
     (-> local
         (merge new-contact)
-        (assoc :device-info (device-info/merge-info (:last-updated new-contact)
-                                                    (:device-info old-contact)
-                                                    (vals (:device-info new-contact))))
         (assoc :pending? (boolean
                           (and (:pending? local true)
                                (:pending? remote true)))))))
@@ -141,13 +137,13 @@
             [(sync-installation-account-message cofx)]
             (chats->sync-installation-messages cofx))))
 
-(fx/defn enable [{:keys [db]} installation-id]
+(defn enable [{:keys [db]} installation-id]
   {:db (assoc-in db
                  [:pairing/installations installation-id :enabled?]
                  true)
    :data-store/tx [(data-store.installations/enable installation-id)]})
 
-(fx/defn disable [{:keys [db]} installation-id]
+(defn disable [{:keys [db]} installation-id]
   {:db (assoc-in db
                  [:pairing/installations installation-id :enabled?]
                  false)
@@ -178,7 +174,7 @@
                                       (partial handle-disable-installation-response installation-id)))
 
 (defn enable-fx [cofx installation-id]
-  (if (< (count (filter :enabled? (get-in cofx [:db :pairing/installations]))) config/max-installations)
+  (if (< (count (filter :enabled? (get-in cofx [:db :pairing/installations]))) max-installations)
     {:pairing/enable-installation installation-id}
     {:utils/show-popup {:title (i18n/label :t/pairing-maximum-number-reached-title)
 
@@ -247,15 +243,11 @@
                   (models.chat/start-public-chat % (:chat-id chat) {:dont-navigate? true}))]
               contacts-fx)))))
 
-(defn handle-pair-installation [{:keys [db] :as cofx} {:keys [name
-                                                              fcm-token
-                                                              installation-id
-                                                              device-type]} timestamp sender]
+(defn handle-pair-installation [{:keys [db] :as cofx} {:keys [name installation-id device-type]} timestamp sender]
   (when (and (= sender (accounts.db/current-public-key cofx))
              (not= (get-in db [:account/account :installation-id]) installation-id))
     (let [installation {:installation-id   installation-id
                         :name              name
-                        :fcm-token         fcm-token
                         :device-type       device-type
                         :last-paired       timestamp}]
       (upsert-installation cofx installation))))

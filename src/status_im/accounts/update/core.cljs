@@ -1,23 +1,15 @@
 (ns status-im.accounts.update.core
-  (:require
-   [status-im.contact.device-info :as device-info]
-   [status-im.data-store.accounts :as accounts-store]
-   [status-im.data-store.transport :as transport-store]
-   [status-im.transport.message.protocol :as protocol]
-   [status-im.transport.message.contact :as message.contact]
-   [status-im.utils.fx :as fx]))
+  (:require [status-im.data-store.accounts :as accounts-store]
+            [status-im.transport.message.protocol :as protocol]
+            [status-im.data-store.transport :as transport-store]
+            [status-im.transport.message.contact :as message.contact]
+            [status-im.utils.fx :as fx]))
 
-(fx/defn account-update-message [{:keys [db] :as cofx}]
+(fx/defn account-update-message [{:keys [db]}]
   (let [account (:account/account db)
         fcm-token (get-in db [:notifications :fcm-token])
         {:keys [name photo-path address]} account]
-    (message.contact/ContactUpdate. name photo-path address fcm-token (device-info/all cofx))))
-
-(fx/defn send-account-update [cofx]
-  (protocol/send
-   (account-update-message cofx)
-   nil
-   cofx))
+    (message.contact/ContactUpdate. name photo-path address fcm-token)))
 
 (fx/defn send-contact-update-fx
   [{:keys [db] :as cofx} chat-id payload]
@@ -55,6 +47,7 @@
   [{:keys [db] :as cofx} new-account-fields {:keys [success-event]}]
   (let [current-account (:account/account db)
         new-account     (merge current-account new-account-fields)
+        fcm-token       (get-in db [:notifications :fcm-token])
         fx              {:db                 (assoc db :account/account new-account)
                          :data-store/base-tx [{:transaction (accounts-store/save-account-tx new-account)
                                                :success-event success-event}]}
@@ -62,7 +55,7 @@
     (if (or (:name new-account-fields) (:photo-path new-account-fields))
       (fx/merge cofx
                 fx
-                #(send-account-update %))
+                #(protocol/send (account-update-message %) nil %))
       fx)))
 
 (fx/defn clean-seed-phrase

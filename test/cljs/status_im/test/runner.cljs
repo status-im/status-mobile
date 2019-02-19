@@ -1,7 +1,6 @@
 (ns status-im.test.runner
   (:require [doo.runner :refer-macros [doo-tests]]
             [status-im.test.contacts.db]
-            [status-im.test.contacts.device-info]
             [status-im.test.data-store.chats]
             [status-im.test.data-store.core]
             [status-im.test.data-store.realm.core]
@@ -77,7 +76,6 @@
  'status-im.test.utils.async
  'status-im.test.chat.db
  'status-im.test.contacts.db
- 'status-im.test.contacts.device-info
  'status-im.test.chat.models
  'status-im.test.init.core
  'status-im.test.data-store.chats

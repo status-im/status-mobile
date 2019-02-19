@@ -1638,16 +1638,12 @@
 (handlers/register-handler-fx
  :pairing.callback/enable-installation-success
  (fn [cofx [_ installation-id]]
-   (fx/merge cofx
-             (pairing/enable installation-id)
-             (accounts.update/send-account-update))))
+   (pairing/enable cofx installation-id)))
 
 (handlers/register-handler-fx
  :pairing.callback/disable-installation-success
  (fn [cofx [_ installation-id]]
-   (fx/merge cofx
-             (pairing/disable installation-id)
-             (accounts.update/send-account-update))))
+   (pairing/disable cofx installation-id)))
 
 ;; Contact recovery module
 

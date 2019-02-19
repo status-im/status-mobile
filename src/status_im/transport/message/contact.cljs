@@ -4,19 +4,19 @@
             [status-im.transport.message.protocol :as protocol]
             [status-im.utils.fx :as fx]))
 
-(defrecord ContactRequest [name profile-image address fcm-token device-info]
+(defrecord ContactRequest [name profile-image address fcm-token]
   protocol/StatusMessage
   (validate [this]
     (when (spec/valid? :message/contact-request this)
       this)))
 
-(defrecord ContactRequestConfirmed [name profile-image address fcm-token device-info]
+(defrecord ContactRequestConfirmed [name profile-image address fcm-token]
   protocol/StatusMessage
   (validate [this]
     (when (spec/valid? :message/contact-request-confirmed this)
       this)))
 
-(defrecord ContactUpdate [name profile-image address fcm-token device-info]
+(defrecord ContactUpdate [name profile-image address fcm-token]
   protocol/StatusMessage
   (validate [this]
     (when (spec/valid? :message/contact-update this)

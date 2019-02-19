@@ -2,9 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.accounts.db :as accounts.db]
             [status-im.chat.models :as chat.models]
-            [clojure.set :as clojure.set]
             [status-im.contact.db :as contact.db]
-            [status-im.contact.device-info :as device-info]
             [status-im.data-store.contacts :as contacts-store]
             [status-im.data-store.messages :as data-store.messages]
             [status-im.data-store.chats :as data-store.chats]
@@ -50,7 +48,6 @@
     {:name          name
      :profile-image photo-path
      :address       address
-     :device-info   (device-info/all {:db db})
      :fcm-token     fcm-token}))
 
 (fx/defn upsert-contact [{:keys [db] :as cofx}
@@ -221,7 +218,7 @@
 (defn handle-contact-update
   [public-key
    timestamp
-   {:keys [name profile-image address fcm-token device-info] :as m}
+   {:keys [name profile-image address fcm-token] :as m}
    {{:contacts/keys [contacts] :as db} :db :as cofx}]
   ;; We need to convert to timestamp ms as before we were using now in ms to
   ;; set last updated
@@ -246,15 +243,15 @@
                                :address      (or address
                                                  (:address contact)
                                                  (contact.db/public-key->address public-key))
-                               :device-info  (device-info/merge-info
-                                              timestamp
-                                              (:device-info contact)
-                                              device-info)
                                :last-updated timestamp-ms
-                                ;;NOTE (yenda) in case of concurrent contact request
+                                  ;;NOTE (yenda) in case of concurrent contact request
                                :pending?     (get contact :pending? true)}
                                fcm-token (assoc :fcm-token fcm-token))]
-        (upsert-contact cofx contact-props)))))
+        ;;NOTE (yenda) only update if there is changes to the contact
+        (when-not (= contact-props
+                     (select-keys contact [:public-key :address :photo-path
+                                           :name :fcm-token :pending?]))
+          (upsert-contact cofx contact-props))))))
 
 (def receive-contact-request handle-contact-update)
 (def receive-contact-request-confirmation handle-contact-update)

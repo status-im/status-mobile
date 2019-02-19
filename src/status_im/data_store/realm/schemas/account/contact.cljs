@@ -93,7 +93,3 @@
                       :description      {:type :string :optional true}
                       :public-key       :string
                       :tags             {:type     "string[]"}}})
-
-(def v5 (assoc-in v4 [:properties :device-info]
-                  {:type       :list
-                   :objectType :contact-device-info}))
