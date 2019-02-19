@@ -71,7 +71,7 @@
   "Returns tx function for deleting user messages"
   [{:keys [public-key] :as contact} messages-ids]
   (fn [realm]
-    (core/create realm :contact contact true)
+    (core/create realm :contact (serialize-contact contact) true)
     (when-let [user-messages
                (get-messages-by-messages-ids messages-ids)]
       (core/delete realm user-messages))
