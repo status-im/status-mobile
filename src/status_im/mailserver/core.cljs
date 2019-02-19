@@ -552,17 +552,15 @@
                  :data-store/tx [(data-store.mailservers/save-mailserver-topic-tx
                                   {:topic topic
                                    :mailserver-topic mailserver-topic})]}))))
-
 (fx/defn fetch-history
-  [{:keys [db] :as cofx} chat-id from-timestamp]
-  (log/debug "fetch-history" "chat-id:" chat-id "from-timestamp:" from-timestamp)
+  [{:keys [db] :as cofx} chat-id]
   (let [public-key (accounts.db/current-public-key cofx)
         topic  (or (get-in db [:transport/chats chat-id :topic])
                    (transport.topic/public-key->discovery-topic-hash public-key))
         {:keys [chat-ids last-request] :as current-mailserver-topic}
         (get-in db [:mailserver/topics topic] {:chat-ids #{}})]
     (let [mailserver-topic (-> current-mailserver-topic
-                               (assoc :last-request (min from-timestamp last-request)))]
+                               (assoc :last-request 1))]
       (fx/merge cofx
                 {:db (assoc-in db [:mailserver/topics topic] mailserver-topic)
                  :data-store/tx [(data-store.mailservers/save-mailserver-topic-tx
