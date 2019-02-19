@@ -107,6 +107,12 @@
    :line-height 22
    :color       colors/gray})
 
+(def personalized-message-container
+  {:flex-grow         1
+   :align-items       :center
+   :margin-horizontal 16
+   :justify-content   :flex-start})
+
 (def personalized-message-title
   {:margin-top    24
    :margin-bottom 10
@@ -126,7 +132,6 @@
    :background-color    colors/blue-light
    :color               colors/black
    :margin-horizontal   72
-   ;:height              56
    :margin-bottom       24
    :text-align-vertical :top
    :padding-horizontal  12

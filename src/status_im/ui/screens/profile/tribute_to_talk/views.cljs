@@ -139,8 +139,7 @@
 
 (defview personalized-message []
   (letsubs [{:keys [message]} [:my-profile/tribute-to-talk]]
-    [react/scroll-view {:content-container-style (assoc styles/intro-container :margin-horizontal 16
-                                                        :justify-content :flex-start)}
+    [react/scroll-view {:content-container-style styles/personalized-message-container}
      [react/view {:style styles/personalized-message-title}
       [react/text {:style (assoc styles/description-label
                                  :color colors/black)}
