@@ -32,6 +32,7 @@
 (def dev-build? (enabled? (get-config :DEV_BUILD 0)))
 (def erc20-contract-warnings-enabled? (enabled? (get-config :ERC20_CONTRACT_WARNINGS)))
 (def partitioned-topic-enabled? (enabled? (get-config :PARTITIONED_TOPIC "0")))
+(def tr-to-talk-enabled? (enabled? (get-config :TRIBUTE_TO_TALK 0)))
 
 ;; CONFIG VALUES
 (def log-level

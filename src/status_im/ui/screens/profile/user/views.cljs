@@ -310,7 +310,8 @@
            :on-change-text-event :my-profile/update-name}]]
         [share-profile-item (dissoc current-account :mnemonic)]
         [contacts-list-item active-contacts-count]
-        [tribute-to-talk-item snt-amount tr-to-talk-seen?]
+        (when config/tr-to-talk-enabled?
+          [tribute-to-talk-item snt-amount tr-to-talk-seen?])
         [react/view styles/my-profile-info-container
          [my-profile-settings current-account shown-account currency (nil? login-data)]]
         (when (nil? login-data)
