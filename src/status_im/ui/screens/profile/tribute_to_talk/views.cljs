@@ -207,11 +207,9 @@
                      :style styles/edit-label}
          (i18n/label :t/edit)]]]
       (when-not (string/blank? message)
-        [react/text-input {:style         styles/edit-view-message
-                           :multiline     true
-                           :editable      false
-                           :placeholder   ""
-                           :default-value message}])
+        [react/view {:style styles/edit-view-message-container}
+         [react/text {:style styles/edit-view-message}
+          message]])
       [separator]
       [react/text {:style styles/edit-note}
        (i18n/label :t/tribute-to-talk-you-require-snt)]

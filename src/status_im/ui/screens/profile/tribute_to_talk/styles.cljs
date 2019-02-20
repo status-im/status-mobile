@@ -127,15 +127,21 @@
    :padding-horizontal  16
    :padding-vertical    16})
 
-(def edit-view-message
+(def edit-view-message-container
   {:border-radius       8
    :background-color    colors/blue-light
-   :color               colors/black
    :margin-horizontal   72
    :margin-bottom       24
-   :text-align-vertical :top
+   :justify-content     :flex-start
+   :align-items         :flex-start
+   :align-self          :center
    :padding-horizontal  12
    :padding-vertical    8})
+
+(def edit-view-message
+  {:color               colors/black
+   :line-height         22
+   :font-size           15})
 
 (def finish-label
   {:font-size   22
