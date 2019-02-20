@@ -25,10 +25,10 @@
    :line-height 28})
 
 (def description-label
-  {:line-height    22
-   :font-size      15
-   :text-align     :center
-   :color          colors/gray})
+  {:line-height       22
+   :font-size         15
+   :text-align        :center
+   :color             colors/gray})
 
 (def intro-button
   {:margin-vertical    8
@@ -49,40 +49,49 @@
    :color      colors/gray})
 
 (def tribute-to-talk
-  {:font-weight    "500"
-   :line-height    22
-   :font-size      15
-   :color          colors/black
-   :text-align     :center})
+  {:font-weight "500"
+   :line-height 22
+   :font-size   15
+   :color       colors/black
+   :text-align  :center})
 
 (def container
-  (merge
-   common.styles/flex
-   {:background-color colors/white}))
+  {:flex             1
+   :background-color colors/white})
+
+(def set-snt-amount-container
+  {:flex             1
+   :flex-direction   :column
+   :background-color colors/white})
+
+(defn horizontal-separator
+  [min-height max-height]
+  {:flex       1
+   :min-height min-height
+   :max-height max-height})
 
 (def number-row
-  {:flex            1
-   :flex-direction  :row
-   :justify-content :space-around})
+  {:flex-direction :row})
 
 (def number-pad
-  {:flex              1
-   :align-self        :center
-   ;:margin-horizontal 60
-   :width             (+ 256 16)
-   :height            (+ 328 12)
-   :margin-top        10
-   :justify-content   :space-around})
+  {:flex          1
+   :align-items   :center
+   :margin-bottom 24
+   :min-height    292
+   :max-height    328})
 
 (def number-container
-  {:width             64
-   :height            64
-   :border-radius     32
-   :margin-horizontal 8
-   :margin-vertical   6
-   :justify-content   :center
-   :align-items       :center
-   :background-color  colors/blue-light})
+  {:width            64
+   :height           64
+   :border-radius    32
+   :justify-content  :center
+   :align-items      :center
+   :background-color colors/blue-light})
+
+(def vertical-number-separator
+  {:flex      1
+   :min-width 16
+   :max-width 32})
 
 (def number
   {:line-height 28
@@ -90,7 +99,7 @@
    :color       colors/blue})
 
 (def snt-amount-container
-  {:margin-top        16
+  {:margin-horizontal 16
    :justify-content   :center
    :align-items       :center})
 

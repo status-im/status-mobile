@@ -77,7 +77,10 @@
         " SNT"]
        [snt-asset-value]])))
 
-(defn- get-new-snt-amount [snt-amount numpad-symbol]
+(defn- get-new-snt-amount
+  [snt-amount numpad-symbol]
+  ;; TODO: Put some logic in place so that incorrect numbers can not
+  ;; be entered
   (let [snt-amount  (or snt-amount "0")]
     (if (= numpad-symbol :remove)
       (let [len (count snt-amount)
@@ -100,42 +103,46 @@
         (str numpad-symbol)
         :else (str snt-amount numpad-symbol)))))
 
-(defview number-view [numpad-symbol]
-  (letsubs [snt-amount [:get-in [:my-profile/tribute-to-talk :snt-amount]]]
-    (let [;; Put some logic in place so that incorrect numbers can not
-          ;; be entered
-          new-snt-amount (get-new-snt-amount snt-amount numpad-symbol)]
-      [react/touchable-opacity
-       {:on-press #(re-frame/dispatch [:set-in [:my-profile/tribute-to-talk :snt-amount]
-                                       new-snt-amount])}
-       [react/view {:style styles/number-container}
-        (if (= numpad-symbol :remove)
-          [icons/icon :main-icons/backspace {:color colors/blue}]
-          [react/text {:style styles/number} numpad-symbol])]])))
+(defn number-view
+  [numpad-symbol {:keys [on-press]}]
+  [react/touchable-opacity
+   {:on-press #(on-press numpad-symbol)}
+   [react/view {:style styles/number-container}
+    (if (= numpad-symbol :remove)
+      [icons/icon :main-icons/backspace {:color colors/blue}]
+      [react/text {:style styles/number} numpad-symbol])]])
 
-(defview number-row [elements]
+(defview number-row
+  [[left middle right] opts]
   [react/view {:style styles/number-row}
-   elements])
+   [number-view left opts]
+   [react/view {:style styles/vertical-number-separator}]
+   [number-view middle opts]
+   [react/view {:style styles/vertical-number-separator}]
+   [number-view right opts]])
 
-(defview number-pad []
+(defview number-pad
+  [opts]
   [react/view {:style styles/number-pad}
-   (->> (into (vec (range 1 10))
-              ["." 0 :remove])
-        (map (fn [n] ^{:key n} [number-view n]))
-        (partition 3)
-        (mapv (fn [elements]
-                ^{:key elements} [number-row elements]))
-        seq)])
+   [number-row [1 2 3] opts]
+   [react/view {:style (styles/horizontal-separator 12 24)}]
+   [number-row [4 5 6] opts]
+   [react/view {:style (styles/horizontal-separator 12 24)}]
+   [number-row [7 8 9] opts]
+   [react/view {:style (styles/horizontal-separator 12 24)}]
+   [number-row ["." 0 :remove] opts]])
 
 (defview set-snt-amount []
   (letsubs [snt-amount [:get-in [:my-profile/tribute-to-talk :snt-amount]]]
-    [react/scroll-view {:content-container-style (assoc styles/intro-container :justify-content :flex-start
-                                                        :align-items :stretch)}
+    [react/scroll-view {:content-container-style  styles/set-snt-amount-container}
+     [react/view {:style (styles/horizontal-separator 16 32)}]
      [snt-amount-label]
-     [number-pad]
-     [react/view {:style {:margin-top 18 :justify-content :flex-start}}
-      [react/i18n-text {:style styles/description-label
-                        :key   :tribute-to-talk-set-snt-amount}]]]))
+     [react/view {:style (styles/horizontal-separator 16 40)}]
+     [number-pad {:on-press (fn [numpad-symbol]
+                              (re-frame/dispatch [:set-in [:my-profile/tribute-to-talk :snt-amount]
+                                                  (get-new-snt-amount snt-amount numpad-symbol)]))}]
+     [react/i18n-text {:style (assoc styles/description-label :margin-horizontal 16)
+                       :key   :tribute-to-talk-set-snt-amount}]]))
 
 (defview personalized-message []
   (letsubs [{:keys [message]} [:my-profile/tribute-to-talk]]
