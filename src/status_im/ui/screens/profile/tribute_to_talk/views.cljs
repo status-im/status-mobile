@@ -282,8 +282,8 @@
 (defview tribute-to-talk []
   (letsubs [current-account           [:account/account]
             {:keys [step snt-amount editing?] :as tr-settings} [:my-profile/tribute-to-talk]]
-    [react/safe-area-view {:style {:flex 1}}
-     [react/keyboard-avoiding-view {:style styles/container}
+    [react/keyboard-avoiding-view {:style styles/container}
+     [react/safe-area-view {:style {:flex 1}}
       (re-frame/dispatch [:accounts.ui/tribute-to-talk-seen])
       [status-bar/status-bar]
       [toolbar/toolbar
