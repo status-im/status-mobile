@@ -360,3 +360,12 @@
             chat-id  (aget old-chat "chat-id")]
         (when (one-to-one? chat-id)
           (aset new-chat "one-to-one" true))))))
+
+(defn v38 [old-realm new-realm]
+  (log/debug "migrating chats v38")
+  (let [chats (.objects new-realm "chat")]
+    (dotimes [i (.-length chats)]
+      (let [chat (aget chats i)
+            chat-id (aget chat "chat-id")]
+        (when-let [last-clock-value (get-last-clock-value new-realm chat-id)]
+          (aset chat "last-clock-value" last-clock-value))))))

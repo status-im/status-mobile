@@ -63,6 +63,37 @@
         (testing "it marks it as sent"
           (is (= :sent status)))))))
 
+(deftest receive-many-clock-value
+  (let [db {:account/account {:public-key "me"}
+            :view-id :chat
+            :current-chat-id "chat-id"
+            :chats {"chat-id" {:last-clock-value 10
+                               :messages {}}}}]
+    (testing "a message with a higher clock value"
+      (let [actual (message/receive-many {:db db}
+                                         [{:from "chat-id"
+                                           :message-type :user-message
+                                           :timestamp 0
+                                           :message-id "id"
+                                           :chat-id "chat-id"
+                                           :content "b"
+                                           :clock-value 12}])
+            chat-clock-value (get-in actual [:db :chats "chat-id" :last-clock-value])]
+        (testing "it sets last-clock-value"
+          (is (= 12 chat-clock-value)))))
+    (testing "a message with a lower clock value"
+      (let [actual (message/receive-many {:db db}
+                                         [{:from "chat-id"
+                                           :message-type :user-message
+                                           :timestamp 0
+                                           :message-id "id"
+                                           :chat-id "chat-id"
+                                           :content "b"
+                                           :clock-value 2}])
+            chat-clock-value (get-in actual [:db :chats "chat-id" :last-clock-value])]
+        (testing "it sets last-clock-value"
+          (is (= 10 chat-clock-value)))))))
+
 (deftest receive-group-chats
   (let [cofx                 {:db {:chats {"chat-id" {:contacts #{"present"}
                                                       :members-joined #{"a"}}}

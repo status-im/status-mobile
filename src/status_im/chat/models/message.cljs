@@ -111,7 +111,7 @@
 (fx/defn add-message
   [{:keys [db] :as cofx}
    {{:keys [chat-id message-id clock-value timestamp from] :as message} :message
-    :keys [current-chat? batch? last-clock-value dedup-id raw-message]}]
+    :keys [current-chat? batch? dedup-id raw-message]}]
   (let [current-public-key (accounts.db/current-public-key cofx)
         prepared-message (-> message
                              (prepare-message chat-id current-chat?)
@@ -126,11 +126,7 @@
               {:db            (cond->
                                (-> db
                                    (update-in [:chats chat-id :messages] assoc message-id prepared-message)
-                                   (update-in [:chats chat-id :last-clock-value]
-                                              (fn [old-clock-value]
-                                                (or last-clock-value
-                                                    (utils.clocks/receive clock-value
-                                                                          old-clock-value)))))
+                                   (update-in [:chats chat-id :last-clock-value] (partial utils.clocks/receive clock-value)))
 
                                 (and (not current-chat?)
                                      (not= from current-public-key))
@@ -280,8 +276,7 @@
     (chat-model/upsert-chat
      {:chat-id                   chat-id
       :last-message-content      content
-      :last-message-content-type content-type
-      :last-clock-value          clock-value})))
+      :last-message-content-type content-type})))
 
 (fx/defn update-last-messages
   [{:keys [db] :as cofx} chat-ids]
@@ -378,8 +373,7 @@
                 :last-clock-value          (:clock-value message)})
               (add-message {:batch?           false
                             :message          message-with-id
-                            :current-chat?    true
-                            :last-clock-value (:clock-value message)})
+                            :current-chat?    true})
               (add-own-status chat-id message-id :sending)
               (send chat-id message-id wrapped-record))))
 

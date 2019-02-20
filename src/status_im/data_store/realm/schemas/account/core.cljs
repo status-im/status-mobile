@@ -429,6 +429,8 @@
           contact-device-info/v1
           contact-recovery/v1])
 
+(def v38 v37)
+
 ;; put schemas ordered by version
 (def schemas [{:schema        v1
                :schemaVersion 1
@@ -540,4 +542,7 @@
                :migration     (constantly nil)}
               {:schema        v37
                :schemaVersion 37
-               :migration     (constantly nil)}])
+               :migration     (constantly nil)}
+              {:schema        v38
+               :schemaVersion 38
+               :migration     migrations/v38}])
