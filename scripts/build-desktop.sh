@@ -62,7 +62,7 @@ function is_windows_target() {
 
 function joinPath() {
   if program_exists 'realpath'; then
-    realpath -m "$1/$2"
+    realpath -m "$1/$2" 2> /dev/null
   else
     echo "$1/$2" | tr -s /
   fi
@@ -70,7 +70,7 @@ function joinPath() {
 
 function joinExistingPath() {
   if program_exists 'realpath'; then
-    realpath "$1/$2"
+    realpath "$1/$2" 2> /dev/null
   else
     echo "$1/$2" | tr -s /
   fi
@@ -306,7 +306,6 @@ function bundleLinux() {
   [ $VERBOSE_LEVEL -ge 1 ] && ldd $(joinExistingPath "$usrBinPath" 'Status') 
   desktopFilePath="$(joinExistingPath "$WORKFOLDER" 'AppDir/usr/share/applications/Status.desktop')"
   pushd $WORKFOLDER
-    [ $VERBOSE_LEVEL -ge 1 ] && ldd $usrBinPath/Status
     cp -r assets/share/assets $usrBinPath
     cp -rf StatusImAppImage/* $usrBinPath
     rm -f $usrBinPath/Status.AppImage
@@ -319,12 +318,11 @@ function bundleLinux() {
     -qmake="$qmakePath" \
     -executable="$(joinExistingPath "$usrBinPath" 'reportApp')" \
     -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'node_modules/react-native')" \
-    -qmldir="$STATUSREACTPATH/desktop/reportApp" \
+    -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'desktop/reportApp')" \
     -extra-plugins=imageformats/libqsvg.so \
     -appimage
 
   pushd $WORKFOLDER
-    [ $VERBOSE_LEVEL -ge 1 ] && ldd $usrBinPath/Status
     rm -f $usrBinPath/Status.AppImage
     $APPIMAGETOOL ./AppDir
     [ $VERBOSE_LEVEL -ge 1 ] && ldd $usrBinPath/Status
