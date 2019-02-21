@@ -79,10 +79,16 @@ function joinExistingPath() {
 STATUSREACTPATH="$(cd "$SCRIPTPATH" && cd '..' && pwd)"
 WORKFOLDER="$(joinExistingPath "$STATUSREACTPATH" 'StatusImPackage')"
 DEPLOYQTFNAME='linuxdeployqt-continuous-x86_64_20181215.AppImage'
-APPIMAGETOOLFNAME='appimagetool-x86_64_20181109.AppImage'
+APPIMAGETOOLFNAME='appimagetool-x86_64_20190221.AppImage'
 DEPLOYQT=$(joinPath . "$DEPLOYQTFNAME")
 APPIMAGETOOL=$(joinPath . "$APPIMAGETOOLFNAME")
 STATUSIM_APPIMAGE_ARCHIVE="StatusImAppImage_20181208.zip"
+
+APPIMAGE_OPTIONS=""
+if [[ ! -c /dev/fuse ]]; then # doesn't exist when run under docker
+    # We extract it to avoid having to use fuse and privileged mode in docker
+    APPIMAGE_OPTIONS="--appimage-extract-and-run"
+fi
 
 function init() {
   if [ -z $STATUSREACTPATH ]; then
@@ -311,7 +317,7 @@ function bundleLinux() {
     rm -f $usrBinPath/Status.AppImage
   popd
 
-  $DEPLOYQT \
+  $DEPLOYQT $APPIMAGE_OPTIONS \
     $desktopFilePath \
     -verbose=$VERBOSE_LEVEL -always-overwrite -no-strip \
     -no-translations -bundle-non-qt-libs \
@@ -324,7 +330,7 @@ function bundleLinux() {
 
   pushd $WORKFOLDER
     rm -f $usrBinPath/Status.AppImage
-    $APPIMAGETOOL ./AppDir
+    $APPIMAGETOOL $APPIMAGE_OPTIONS ./AppDir
     [ $VERBOSE_LEVEL -ge 1 ] && ldd $usrBinPath/Status
     rm -rf Status.AppImage
   popd
