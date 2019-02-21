@@ -86,8 +86,8 @@
                                          0]})}]}}
    [react/safe-area-view [tabs tab]]])
 
-(def disappearance-duration 150)
-(def appearance-duration 100)
+(def disappearance-duration 350)
+(def appearance-duration 350)
 
 (defn bottom-bar [_]
   (let [keyboard-shown? (reagent/atom false)
