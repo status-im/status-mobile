@@ -473,7 +473,7 @@
         "other": "contacts"
     },
     "recipient-code": "Enter recipient address",
-    "mainnet-is-default-alert-text": "Thanks for choosing Status! We are now in Beta, which means new installs are automatically connected to the Mainnet. If you upgraded, you may still need to switch networks, which you can do easily by navigating to your Profile -> Advanced Mode -> Switch Developer Mode on -> Choose your network. Now just have fun! Browse DApps, exchange assets, start your own #chats, and message your friends, all from the world's first decentralized, mobile client for Ethereum.\n\nPlease note that this is a beta release and we advise you that using this app should be done for testing purposes only and you assume the full responsibility for all risks concerning your data and funds.",
+    "mainnet-is-default-alert-text": "Status is in Beta and on the Ethereum Mainnet. Use it wisely. Don't store more crypto than you need for testing and only share data with people you trust. By using the app you assume full responsibility for all risks concerning your data and funds.",
     "fleet": "Fleet",
     "unsigned-transaction-expired": "Unsigned transaction expired",
     "status-sending": "Sending...",
