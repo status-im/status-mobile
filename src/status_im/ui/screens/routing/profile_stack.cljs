@@ -26,6 +26,7 @@
                                 :log-level-settings
                                 :fleet-settings
                                 :currency-settings
+                                :mobile-network-settings
                                 :backup-seed
                                 :qr-scanner]
 

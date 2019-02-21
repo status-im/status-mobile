@@ -54,7 +54,8 @@
    [status-im.ui.screens.profile.seed.views :as profile.seed]
    [status-im.ui.screens.about-app.views :as about-app]
    [status-im.ui.screens.stickers.views :as stickers]
-   [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]))
+   [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
+   [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]))
 
 (def all-screens
   {:login                            login/login
@@ -139,7 +140,8 @@
    :currency-settings                currency-settings/currency-settings
    :backup-seed                      profile.seed/backup-seed
    :reset-card                       hardwallet.settings/reset-card
-   :keycard-settings                 hardwallet.settings/keycard-settings})
+   :keycard-settings                 hardwallet.settings/keycard-settings
+   :mobile-network-settings          mobile-network-settings/mobile-network-settings})
 
 (defn get-screen [screen]
   (get all-screens screen #(throw (str "Screen " screen " is not defined."))))
