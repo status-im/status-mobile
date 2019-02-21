@@ -98,31 +98,19 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         send_transaction_view = chat_1.get_send_transaction_view()
         chat_1.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
 
-        send_transaction_view.chose_recipient_button.find_element().click()
-        if send_transaction_view.recent_recipients_button.is_element_displayed():
-            self.errors.append('Recipient field is editable')
-            send_transaction_view.click_system_back_button()
+        # send_transaction_view.advanced_button.click()
+        # send_transaction_view.transaction_fee_button.click()
+        # gas_limit = '25000'
+        # send_transaction_view.gas_limit_input.clear()
+        # send_transaction_view.gas_limit_input.set_value(gas_limit)
+        # gas_price = '1'
+        # send_transaction_view.gas_price_input.clear()
+        # send_transaction_view.gas_price_input.set_value(gas_price)
+        # send_transaction_view.total_fee_input.click()
+        # if send_transaction_view.total_fee_input.text != '%s ETHro' % (d(gas_limit) * d(gas_price) / d(1000000000)):
+        #     self.errors.append('Gas limit and/or gas price fields were not edited')
+        # send_transaction_view.done_button.click()
 
-        send_transaction_view.select_asset_button.click()
-        if not send_transaction_view.chose_recipient_button.is_element_displayed():
-            self.errors.append('Asset field is editable')
-            send_transaction_view.back_button.click()
-
-        if send_transaction_view.amount_edit_box.is_element_displayed():
-            self.errors.append('Amount field is editable')
-
-        send_transaction_view.advanced_button.click()
-        send_transaction_view.transaction_fee_button.click()
-        gas_limit = '25000'
-        send_transaction_view.gas_limit_input.clear()
-        send_transaction_view.gas_limit_input.set_value(gas_limit)
-        gas_price = '1'
-        send_transaction_view.gas_price_input.clear()
-        send_transaction_view.gas_price_input.set_value(gas_price)
-        send_transaction_view.total_fee_input.click()
-        if send_transaction_view.total_fee_input.text != '%s ETHro' % (d(gas_limit) * d(gas_price) / d(1000000000)):
-            self.errors.append('Gas limit and/or gas price fields were not edited')
-        send_transaction_view.done_button.click()
         send_transaction_view.sign_transaction()
 
         if not chat_1.chat_element_by_text(amount).is_element_displayed():
@@ -202,7 +190,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         send_transaction_device_1.confirm()
         send_transaction_device_1.chose_recipient_button.click()
         sender_button = send_transaction_device_1.element_by_text(sender['username'])
-        send_transaction_device_1.recent_recipients_button.click_until_presence_of_element(sender_button)
+        send_transaction_device_1.contacts_button.click_until_presence_of_element(sender_button)
         sender_button.click()
         wallet_1.send_request_button.click()
 
@@ -382,7 +370,6 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         wallet = home.wallet_button.click()
         wallet.set_up_wallet()
         wallet.home_button.click()
-
         chat = home.add_contact(recipient['public_key'])
         amount = chat.get_unique_amount()
         chat.commands_button.click()
@@ -391,13 +378,10 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         chat.send_as_keyevent(amount)
         send_transaction_view = chat.get_send_transaction_view()
         chat.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
-
-        if not send_transaction_view.element_by_text(recipient['username']).is_element_displayed():
-            self.errors.append('Recipient name is not shown')
-        if not send_transaction_view.element_by_text('ETHro').is_element_displayed():
-            self.errors.append("Asset field doesn't contain 'ETHro' text")
-        if not send_transaction_view.element_by_text(amount).is_element_displayed():
-            self.errors.append('Amount is not visible')
+        if not send_transaction_view.element_by_text('0x%s' % recipient['address'].lower()).is_element_displayed():
+            self.errors.append('Recipient address is not shown')
+        if not send_transaction_view.element_by_text('%s ETHro' % amount).is_element_displayed():
+            self.errors.append("Asset field doesn't contain '%s ETHro' text" % amount)
         self.verify_no_errors()
 
     @marks.testrail_id(5377)

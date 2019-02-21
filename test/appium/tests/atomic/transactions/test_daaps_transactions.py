@@ -28,6 +28,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         self.network_api.verify_balance_is_updated(initial_balance, address)
 
     @marks.testrail_id(5342)
+    @marks.skip
     @marks.critical
     def test_sign_message_from_daap(self):
         password = 'password_for_daap'
