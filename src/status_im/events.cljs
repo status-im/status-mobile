@@ -372,6 +372,11 @@
    (mailserver/set-url-from-qr cofx url)))
 
 (handlers/register-handler-fx
+ :mailserver.callback/resend-request
+ (fn [cofx [_ request]]
+   (mailserver/resend-request cofx request)))
+
+(handlers/register-handler-fx
  :mailserver.ui/connect-pressed
  (fn [cofx [_  mailserver-id]]
    (mailserver/show-connection-confirmation cofx mailserver-id)))
