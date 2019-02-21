@@ -25,8 +25,19 @@
    :android (create-status-bar-style {:translucent?     true
                                       :bar-style        "dark-content"})})
 
+(defstyle status-bar-main-main
+  {:ios     (create-status-bar-style {:background-color colors/white
+                                      :bar-style        "default"})
+   :android (create-status-bar-style {:background-color colors/black
+                                      :bar-style        "light-content"})})
+
 (def view-main
   (create-view-style {:background-color colors/white}))
+
+(defstyle view-modal-main
+  {:ios     (create-view-style {:background-color colors/white})
+   :android (create-view-style {:background-color colors/black
+                                :height           0})})
 
 ;; :transparent
 (defstyle status-bar-transparent

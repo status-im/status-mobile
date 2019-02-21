@@ -139,7 +139,7 @@
 (defview filter-history []
   (letsubs [filter-data [:wallet.transactions/filters]]
     [react/view styles/filter-container
-     [status-bar/status-bar {:type :modal-white}]
+     [status-bar/status-bar {:type :modal-main}]
      [toolbar/toolbar {}
       [toolbar/nav-clear-text {:accessibility-label :done-button} (i18n/label :t/done)]
       [toolbar/content-title (i18n/label :t/transactions-filter-title)]

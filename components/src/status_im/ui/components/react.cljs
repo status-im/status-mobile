@@ -38,6 +38,7 @@
 (def safe-area-view (get-class "SafeAreaView"))
 (def progress-bar (get-class "ProgressBarAndroid"))
 
+(def status-bar-class (when-not platform/desktop? (get-react-property "StatusBar")))
 (def status-bar (get-class (if platform/desktop? "View" "StatusBar")))
 
 (def scroll-view (get-class "ScrollView"))

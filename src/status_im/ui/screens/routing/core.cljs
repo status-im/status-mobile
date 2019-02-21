@@ -13,7 +13,22 @@
    [status-im.ui.screens.routing.chat-stack :as chat-stack]
    [status-im.ui.screens.routing.wallet-stack :as wallet-stack]
    [status-im.ui.screens.routing.profile-stack :as profile-stack]
-   [status-im.ui.components.bottom-bar.core :as bottom-bar]))
+   [status-im.ui.components.bottom-bar.core :as bottom-bar]
+   [status-im.ui.components.status-bar.view :as status-bar]))
+
+(defn navigation-events [view-id modal?]
+  [:> navigation/navigation-events
+   {:on-will-focus
+    (fn []
+      (log/debug :on-will-focus view-id)
+      (when modal?
+        (status-bar/set-status-bar view-id))
+      (re-frame/dispatch [:screens/on-will-focus view-id]))
+    :on-did-focus
+    (fn []
+      (log/debug :on-did-focus view-id)
+      (when-not modal?
+        (status-bar/set-status-bar view-id)))}])
 
 (defn wrap [view-id component]
   "Wraps screen with main view and adds navigation-events component"
@@ -21,11 +36,7 @@
     (let [main-view (react/create-main-screen-view view-id)]
       [main-view common-styles/flex
        [component]
-       [:> navigation/navigation-events
-        {:on-will-focus
-         (fn []
-           (log/debug :on-will-focus view-id)
-           (re-frame/dispatch [:screens/on-will-focus view-id]))}]])))
+       [navigation-events view-id false]])))
 
 (defn wrap-modal [modal-view component]
   "Wraps modal screen with necessary styling and adds :on-request-close handler
@@ -47,9 +58,11 @@
                                :else
                                (re-frame/dispatch [:navigate-back])))}
         [react/main-screen-modal-view modal-view
-         [component]]]]
+         [component]]
+        [navigation-events modal-view true]]]
       [react/main-screen-modal-view modal-view
-       [component]])))
+       [component]
+       [navigation-events modal-view true]])))
 
 (defn prepare-config [config]
   (-> config
