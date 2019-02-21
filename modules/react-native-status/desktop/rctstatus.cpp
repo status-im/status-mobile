@@ -111,7 +111,8 @@ void RCTStatus::startNode(QString configString) {
     configJSON["KeyStoreDir"] = rootDir.absoluteFilePath("keystore");
     configJSON["LogFile"] = d_gethLogFilePath;
 
-    shhextConfig["BackupDisabledDataDir"] = absDataDirPath;
+    shhextConfig["BackupDisabledDataDir"] = rootDirPath;
+
     configJSON["ShhExtConfig"] = shhextConfig;
 
     const QJsonDocument& updatedJsonDoc = QJsonDocument::fromVariant(configJSON);
