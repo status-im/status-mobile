@@ -121,7 +121,11 @@
             {:name        "CryptoStrikers"
              :dapp-url    "https://www.cryptostrikers.com/"
              :photo-path  "contacts://cryptostrikers"
-             :description "The Beautiful (card) Game"}]}
+             :description "The Beautiful (card) Game"}
+      	    {:name        "Etherman"
+	     :dapp-url    "https://www.etherman.app"
+	     :photo-path  "contacts://etherman"
+             :description "Bomberman on Ethereum"}]}
    {:title (i18n/label :t/default-dapps-social-networks)
     :data  [{:name        "Cent"
              :dapp-url    "https://beta.cent.co/"
