@@ -17,7 +17,6 @@
 
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def rpc-networks-only? (enabled? (get-config :RPC_NETWORKS_ONLY "1")))
-(def group-chats-publish-to-topic? (enabled? (get-config :GROUP_CHATS_PUBLISH_TO_TOPIC "0")))
 (def show-contact-recovery-pop-up? (enabled? (get-config :SHOW_CONTACT_RECOVERY_POPUP)))
 (def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))
 (def mainnet-warning-enabled? (enabled? (get-config :MAINNET_WARNING_ENABLED 0)))

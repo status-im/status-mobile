@@ -128,15 +128,8 @@
          ;; We check that it has explicitly joined, regardless of the local
          ;; version of the group chat, for backward compatibility
          destinations (map (fn [member]
-                             (if (and
-                                  config/group-chats-publish-to-topic?
-                                  (group-chats.db/joined-event? member chat)
-                                  (not= creator member)
-                                  (not= current-public-key member))
-                               {:public-key member
-                                :chat chat-id}
-                               {:public-key member
-                                :chat       (transport.topic/public-key->discovery-topic member)}))
+                             {:public-key member
+                              :chat chat-id})
                            members)]
      (fx/merge
       cofx
@@ -463,10 +456,8 @@
              (not (group-chats.db/joined? my-public-key new-chat)))
       (apply fx/merge
              cofx
-             (conj
-              (map #(contact-code/stop-listening %)
-                   (:members new-chat))
-              (transport.chat/unsubscribe-from-chat chat-id)))
+             (map #(contact-code/stop-listening %)
+                  (:members new-chat)))
       (apply fx/merge
              cofx
              (concat
@@ -474,8 +465,7 @@
                    (:members new-chat))
               (map #(contact-code/stop-listening %)
                    (clojure.set/difference (:members previous-chat)
-                                           (:members new-chat)))
-              [(transport.public-chat/join-group-chat chat-id)])))))
+                                           (:members new-chat))))))))
 
 (fx/defn handle-membership-update
   "Upsert chat and receive message if valid"
@@ -508,8 +498,7 @@
                                             :contacts                 (:contacts new-group)})
                   (add-system-messages chat-id previous-chat new-group)
 
-                  (when config/group-chats-publish-to-topic?
-                    (set-up-topic chat-id previous-chat))
+                  (set-up-topic chat-id previous-chat)
                   #(when (and message
                               ;; don't allow anything but group messages
                               (instance? protocol/Message message)
