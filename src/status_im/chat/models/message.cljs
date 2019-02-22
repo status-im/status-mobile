@@ -17,6 +17,7 @@
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.transit :as transit]
             [status-im.transport.utils :as transport.utils]
+            [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.ui.components.react :as react]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.datetime :as time]
@@ -473,6 +474,7 @@
                                                        :whisper-timestamp (quot now 1000)
                                                        :clock-value (utils.clocks/send
                                                                      last-clock-value))
+                                                (tribute-to-talk/add-transaction-hash db)
                                                 (add-message-type chat))]
     (upsert-and-send cofx message-data)))
 

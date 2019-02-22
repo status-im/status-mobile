@@ -3,17 +3,32 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.accounts.update.core :as accounts.update]
+            [status-im.contact.core :as contact]
             [status-im.contact.db :as contact.db]
             [status-im.ethereum.contracts :as contracts]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.ipfs.core :as ipfs]
+            [status-im.ethereum.tokens :as tokens]
+            [status-im.ethereum.transactions.core :as transactions]
             [status-im.tribute-to-talk.db :as tribute-to-talk.db]
+            [status-im.tribute-to-talk.whitelist :as whitelist]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.contenthash :as contenthash]
             [status-im.utils.fx :as fx]
+            [status-im.utils.money :as money]
             [status-im.wallet.core :as wallet]
+            [status-im.wallet.db :as wallet.db]
             [taoensso.timbre :as log]))
+
+(defn add-transaction-hash
+  [message db]
+  (let [to (get-in message [:content :chat-id])
+        tribute-transaction-hash
+        (get-in db [:contacts/contacts to :tribute-to-talk :transaction-hash])]
+    (if tribute-transaction-hash
+      (assoc-in message
+                [:content :tribute-transaction]
+                tribute-transaction-hash)
+      message)))
 
 (fx/defn update-settings
   [{:keys [db] :as cofx} {:keys [snt-amount message update] :as new-settings}]
@@ -30,12 +45,13 @@
                                    (and (contains? new-settings :update)
                                         (nil? update))
                                    (dissoc :update))]
-    (accounts.update/update-settings
-     cofx
-     (-> account-settings
-         (assoc-in [:tribute-to-talk chain-keyword]
-                   tribute-to-talk-settings))
-     {})))
+    (fx/merge cofx
+              (accounts.update/update-settings
+               (-> account-settings
+                   (assoc-in [:tribute-to-talk chain-keyword]
+                             tribute-to-talk-settings))
+               {})
+              (whitelist/enable-whitelist))))
 
 (fx/defn mark-ttt-as-seen
   [{:keys [db] :as cofx}]
@@ -43,6 +59,7 @@
     (update-settings cofx {:seen? true})))
 
 (fx/defn open-settings
+  {:events [:tribute-to-talk.ui/menu-item-pressed]}
   [{:keys [db] :as cofx}]
   (let [settings (tribute-to-talk.db/get-settings db)
         updated-settings (:update settings)]
@@ -59,25 +76,53 @@
                  (:snt-amount settings)
                  (merge {:step :edit
                          :editing? true}
-                        (update settings :snt-amount tribute-to-talk.db/from-wei))
+                        (update settings :snt-amount  tribute-to-talk.db/from-wei))
                  :else
-                 {:step :intro})))))
+                 {:step :intro
+                  :snt-amount "0"})))))
 
 (fx/defn set-step
   [{:keys [db]} step]
   {:db (assoc-in db [:navigation/screen-params :tribute-to-talk :step] step)})
 
-(fx/defn set-step-finish
+(fx/defn set-tribute-signing-flow
+  [{:keys [db] :as cofx} tribute]
+  (if-let [contract (contracts/get-address db :status/tribute-to-talk)]
+    (wallet/eth-transaction-call
+     cofx
+     {:contract contract
+      :method "setTribute(uint256)"
+      :params [tribute]
+      :on-result [:tribute-to-talk.callback/set-tribute-transaction-sent]
+      :on-error [:tribute-to-talk.callback/set-tribute-transaction-failed]})
+    {:db (assoc-in db
+                   [:navigation/screen-params :tribute-to-talk :state]
+                   :transaction-failed)}))
+
+(fx/defn remove
+  {:events [:tribute-to-talk.ui/remove-pressed]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
-            {:db (assoc-in db [:navigation/screen-params :tribute-to-talk :state] :signing)}
-            (set-step :finish)))
+            {:db (assoc-in db [:navigation/screen-params :tribute-to-talk]
+                           {:step :finish
+                            :state :disabled})}
+            (set-tribute-signing-flow 0)))
+
+(fx/defn set-step-finish
+  [{:keys [db] :as cofx}]
+  (let [tribute (get-in db [:navigation/screen-params :tribute-to-talk :snt-amount])]
+    (fx/merge cofx
+              {:db (assoc-in db [:navigation/screen-params :tribute-to-talk :state] :signing)}
+              (set-tribute-signing-flow (tribute-to-talk.db/to-wei tribute))
+              (set-step :finish))))
 
 (fx/defn open-learn-more
+  {:events [:tribute-to-talk.ui/learn-more-pressed]}
   [cofx]
   (set-step cofx :learn-more))
 
 (fx/defn step-back
+  {:events [:tribute-to-talk.ui/step-back-pressed]}
   [cofx]
   (let [{:keys [step editing?]}
         (get-in cofx [:db :navigation/screen-params :tribute-to-talk])]
@@ -90,31 +135,11 @@
                        :edit
                        :intro))
 
-      :personalized-message
-      (set-step cofx :set-snt-amount)
-
       :finish
-      (set-step cofx :personalized-message))))
-
-(fx/defn upload-manifest
-  [cofx]
-  (let [{:keys [message snt-amount]}
-        (get-in cofx [:db :navigation/screen-params :tribute-to-talk])
-        manifest {:tribute-to-talk
-                  {:message message
-                   :snt-amount (tribute-to-talk.db/to-wei snt-amount)}}]
-    (ipfs/add cofx
-              {:value (js/JSON.stringify
-                       (clj->js manifest))
-               :on-success
-               (fn [response]
-                 [:tribute-to-talk.callback/manifest-uploaded
-                  (:hash response)])
-               :on-failure
-               (fn [error]
-                 [:tribute-to-talk.callback/manifest-upload-failed error])})))
+      (set-step cofx :set-snt-amount))))
 
 (fx/defn step-forward
+  {:events [:tribute-to-talk.ui/step-forward-pressed]}
   [cofx]
   (let [{:keys [step editing?]}
         (get-in cofx [:db :navigation/screen-params :tribute-to-talk])]
@@ -123,12 +148,7 @@
       (set-step cofx :set-snt-amount)
 
       :set-snt-amount
-      (set-step cofx :personalized-message)
-
-      :personalized-message
-      (fx/merge cofx
-                (set-step-finish)
-                (upload-manifest))
+      (set-step-finish cofx)
 
       :finish
       (navigation/navigate-back cofx))))
@@ -154,161 +174,219 @@
         (and (string/includes? snt-amount ".")
              (> (count (second (string/split snt-amount #"\."))) 1))
         snt-amount
+        ;; Disallow values larger or equal to 1 million
+        (>= (js/parseFloat (str snt-amount numpad-symbol))
+            tribute-to-talk.db/max-snt-amount)
+        snt-amount
         ;; Replace initial "0" by the first digit
         (and (= snt-amount "0") (not= numpad-symbol "."))
         (str numpad-symbol)
         :else (str snt-amount numpad-symbol)))))
 
 (fx/defn update-snt-amount
+  {:events [:tribute-to-talk.ui/numpad-key-pressed]}
   [{:keys [db]} numpad-symbol]
   {:db (update-in db
                   [:navigation/screen-params :tribute-to-talk :snt-amount]
                   #(get-new-snt-amount % numpad-symbol))})
 
-(fx/defn update-message
-  [{:keys [db]} message]
-  {:db (assoc-in db
-                 [:navigation/screen-params :tribute-to-talk :message]
-                 message)})
-
 (fx/defn start-editing
+  {:events [:tribute-to-talk.ui/edit-pressed]}
   [{:keys [db]}]
   {:db (assoc-in db
                  [:navigation/screen-params :tribute-to-talk :step]
                  :set-snt-amount)})
 
-(fx/defn fetch-manifest
-  [{:keys [db] :as cofx} identity contenthash]
-  (contenthash/cat cofx
-                   {:contenthash contenthash
-                    :on-failure
-                    (fn [error]
-                      (re-frame/dispatch
-                       (if (= 503 error)
-                         [:tribute-to-talk.callback/fetch-manifest-failure
-                          identity contenthash]
-                         [:tribute-to-talk.callback/no-manifest-found identity])))
-                    :on-success
-                    (fn [manifest-json]
-                      (let [manifest (js->clj (js/JSON.parse manifest-json)
-                                              :keywordize-keys true)]
-                        (re-frame/dispatch
-                         [:tribute-to-talk.callback/fetch-manifest-success
-                          identity manifest])))}))
+(fx/defn on-check-tribute-success
+  {:events [:tribute-to-talk.callback/check-tribute-success]}
+  [cofx public-key tribute-to-talk]
+  (let [tribute-to-talk (when (tribute-to-talk.db/valid? tribute-to-talk)
+                          tribute-to-talk)]
+    (if-let [me? (= public-key
+                    (get-in cofx [:db :account/account :public-key]))]
+      (update-settings cofx tribute-to-talk)
+      (contact/set-tribute cofx public-key tribute-to-talk))))
+
+(fx/defn on-no-tribute-found
+  {:events [:tribute-to-talk.callback/no-tribute-found]}
+  [cofx public-key]
+  (if-let [me? (= public-key
+                  (get-in cofx [:db :account/account :public-key]))]
+    (update-settings cofx nil)
+    (contact/set-tribute cofx public-key nil)))
 
 (re-frame/reg-fx
- :tribute-to-talk/get-manifest
+ :tribute-to-talk/get-tribute
  (fn [{:keys [contract address on-success]}]
    (json-rpc/eth-call
     {:contract contract
-     :method "getManifest(address)"
+     :method "getTribute(address)"
      :params [address]
-     :outputs ["bytes"]
+     :outputs ["uint256"]
      :on-success on-success})))
 
-(fx/defn check-manifest
+(fx/defn check-tribute
   [{:keys [db] :as cofx} public-key]
-  (if-let [contract (contracts/get-address db :status/tribute-to-talk)]
-    (let [address (contact.db/public-key->address public-key)]
-      {:tribute-to-talk/get-manifest
-       {:contract contract
-        :address  address
-        :on-success
-        (fn [[contenthash]]
-          (re-frame/dispatch
-           (if contenthash
-             [:tribute-to-talk.callback/check-manifest-success
-              public-key
-              contenthash]
-             [:tribute-to-talk.callback/no-manifest-found public-key])))}})
-    ;; update settings if checking own manifest or do nothing otherwise
-    (when-let [me? (= identity
-                      (get-in cofx [:db :account/account :public-key]))]
-      (update-settings cofx nil))))
-
-(fx/defn check-own-manifest
-  [cofx]
-  (check-manifest cofx (get-in cofx [:db :account/account :public-key])))
-
-(fx/defn set-manifest-signing-flow
-  [{:keys [db] :as cofx} hash]
-  (let [contenthash (when hash
-                      (contenthash/encode {:hash hash
-                                           :namespace :ipfs}))]
+  (when (and (not (get-in db [:chats public-key :group-chat]))
+             (not (get-in db [:contacts/contacts public-key :tribute-to-talk
+                              :transaction-hash]))
+             (not (whitelist/whitelisted?
+                   (get-in db [:contacts/contacts public-key]))))
     (if-let [contract (contracts/get-address db :status/tribute-to-talk)]
-      (wallet/eth-transaction-call
-       cofx
-       {:contract contract
-        :method "setManifest(bytes)"
-        :params [contenthash]
-        :on-result [:tribute-to-talk.callback/set-manifest-transaction-completed]
-        :on-error [:tribute-to-talk.callback/set-manifest-transaction-failed]})
-      {:db (assoc-in db
-                     [:navigation/screen-params :tribute-to-talk :state]
-                     :transaction-failed)})))
+      (let [address (ethereum/public-key->address public-key)]
+        {:tribute-to-talk/get-tribute
+         {:contract contract
+          :address  address
+          :on-success
+          (fn [[tribute]]
+            (re-frame/dispatch
+             (if (pos? tribute)
+               [:tribute-to-talk.callback/check-tribute-success
+                public-key
+                {:snt-amount (str tribute)}]
+               [:tribute-to-talk.callback/no-tribute-found public-key])))}})
+      ;; update settings if checking own manifest or do nothing otherwise
+      (if-let [me? (= public-key
+                      (get-in cofx [:db :account/account :public-key]))]
 
-(fx/defn remove
-  [{:keys [db] :as cofx}]
+        (fx/merge cofx
+                  {:db (assoc-in db
+                                 [:navigation/screen-params :tribute-to-talk :unavailable?]
+                                 true)}
+                  (update-settings nil))
+        (contact/set-tribute cofx public-key nil)))))
+
+(fx/defn check-own-tribute
+  [cofx]
+  (check-tribute cofx (get-in cofx [:db :account/account :public-key])))
+
+(fx/defn pay-tribute
+  {:events [:tribute-to-talk.ui/on-pay-to-chat-pressed]}
+  [{:keys [db] :as cofx} public-key]
+  (let [{:keys [name address public-key tribute-to-talk] :as recipient-contact}
+        (get-in db [:contacts/contacts public-key])
+        {:keys [snt-amount]} tribute-to-talk
+        symbol               (ethereum/snt-symbol db)
+        wallet-balance       (get-in db [:wallet :balance symbol]
+                                     (money/bignumber 0))
+        amount-text          (str (tribute-to-talk.db/from-wei snt-amount))]
+    (wallet/eth-transaction-call
+     cofx
+     {:contract (contracts/get-address db :status/snt)
+      :method   "transfer(address,uint256)"
+      :params   [address snt-amount]
+      :details  {:to-name     name
+                 :public-key  public-key
+                 :from-chat?  true
+                 :asset       symbol
+                 :amount-text amount-text
+                 :sufficient-funds?
+                 (money/sufficient-funds? snt-amount wallet-balance)
+                 :send-transaction-message? true}
+      :on-result [:tribute-to-talk.callback/pay-tribute-transaction-sent
+                  public-key]})))
+
+(defn tribute-transaction-trigger
+  [db {:keys [block error?]}]
+  (let [current-block (get db :ethereum/current-block)
+        transaction-block (or block
+                              current-block)]
+    (or error?
+        (pos? (- current-block
+                 (js/parseInt transaction-block))))))
+
+(fx/defn on-pay-tribute-transaction-triggered
+  [{:keys [db] :as cofx}
+   public-key
+   {:keys [error? transfer symbol] :as transaction}]
+  (when (and transfer
+             (= symbol (ethereum/snt-symbol db))
+             (not error?))
+    (whitelist/mark-tribute-paid cofx public-key)))
+
+(fx/defn on-pay-tribute-transaction-sent
+  {:events [:tribute-to-talk.callback/pay-tribute-transaction-sent]}
+  [{:keys [db] :as cofx} public-key id transaction-hash method]
   (fx/merge cofx
-            {:db (assoc-in db [:navigation/screen-params :tribute-to-talk]
-                           {:step :finish
-                            :state :disabled})}
-            (set-manifest-signing-flow nil)))
+            {:db (assoc-in db [:contacts/contacts public-key
+                               :tribute-to-talk :transaction-hash]
+                           transaction-hash)}
+            (navigation/navigate-to-clean :wallet-transaction-sent-modal {})
+            (transactions/watch-transaction
+             transaction-hash
+             {:trigger-fn
+              tribute-transaction-trigger
+              :on-trigger
+              #(on-pay-tribute-transaction-triggered public-key %)})))
 
-(fx/defn check-set-manifest-transaction
-  [{:keys [db] :as cofx}]
-  (let [transaction (get-in (tribute-to-talk.db/get-settings db) [:update :transaction])]
-    (when transaction
-      (let [confirmed? (pos? (js/parseInt
-                              (get-in cofx [:db :wallet :transactions
-                                            transaction :confirmations]
-                                      0)))
-            ;;TODO support failed transactions
-            failed? false]
-        (cond
-          failed?
-          (fx/merge cofx
-                    {:db (assoc-in db [:navigation/screen-params :tribute-to-talk :state] :transaction-failed)}
-                    (update-settings {:update nil}))
+(fx/defn on-set-tribute-transaction-triggered
+  [{:keys [db] :as cofx}
+   tribute
+   {:keys [error?] :as transaction}]
+  (if error?
+    (fx/merge cofx
+              {:db (assoc-in db [:navigation/screen-params
+                                 :tribute-to-talk :state]
+                             :transaction-failed)}
+              (update-settings {:update nil}))
+    (fx/merge cofx
+              {:db (assoc-in db [:navigation/screen-params
+                                 :tribute-to-talk :state]
+                             (if tribute
+                               :completed
+                               :disabled))}
+              (check-own-tribute)
+              (update-settings {:update nil}))))
 
-          confirmed?
-          (fx/merge cofx
-                    {:db (assoc-in db [:navigation/screen-params :tribute-to-talk :state] :completed)}
-                    check-own-manifest
-                    (update-settings {:update nil}))
-
-          (not confirmed?)
-          {:dispatch-later [{:ms       10000
-                             :dispatch [:tribute-to-talk/check-set-manifest-transaction-timeout]}]})))))
-
-(fx/defn on-set-manifest-transaction-completed
-  [{:keys [db] :as cofx} transaction-hash]
+(fx/defn on-set-tribute-transaction-sent
+  {:events [:tribute-to-talk.callback/set-tribute-transaction-sent]}
+  [{:keys [db] :as cofx} id transaction-hash method]
   (let [{:keys [snt-amount message]} (get-in db [:navigation/screen-params
                                                  :tribute-to-talk])]
     (fx/merge cofx
-              {:db (assoc-in db [:navigation/screen-params :tribute-to-talk :state] :pending)}
+              {:db (assoc-in db [:navigation/screen-params
+                                 :tribute-to-talk :state]
+                             :pending)}
               (navigation/navigate-to-clean :wallet-transaction-sent-modal {})
               (update-settings {:update {:transaction transaction-hash
                                          :snt-amount  snt-amount
                                          :message     message}})
-              check-set-manifest-transaction)))
+              (transactions/watch-transaction
+               transaction-hash
+               {:trigger-fn
+                tribute-transaction-trigger
+                :on-trigger
+                #(on-set-tribute-transaction-triggered snt-amount %)}))))
 
-(fx/defn on-set-manifest-transaction-failed
+(fx/defn on-set-tribute-transaction-failed
+  {:events [:tribute-to-talk.callback/set-tribute-transaction-failed]}
   [{:keys [db] :as cofx} error]
-  (log/error :set-manifest-transaction-failed error)
+  (log/error :set-tribute-transaction-failed error)
   {:db (assoc-in db
                  [:navigation/screen-params :tribute-to-talk :state]
                  :transaction-failed)})
 
-(fx/defn on-manifest-upload-failed
-  [{:keys [db] :as cofx} error]
-  (log/error :upload-manifest-failed error)
-  {:db (assoc-in db
-                 [:navigation/screen-params :tribute-to-talk :state]
-                 :transaction-failed)})
+(fx/defn watch-set-tribute-transaction
+  "check if there is a pending transaction to set the tribute and
+   add a watch on that transaction
+   if there is a transaction check if the trigger is valid already"
+  [{:keys [db] :as cofx}]
+  (when-let [tribute-update (get (tribute-to-talk.db/get-settings db)
+                                 :update)]
+    (let [{:keys [transaction snt-amount]} tribute-update]
+      (fx/merge cofx
+                (transactions/watch-transaction
+                 transaction
+                 {:trigger-fn
+                  tribute-transaction-trigger
+                  :on-trigger
+                  #(on-set-tribute-transaction-triggered snt-amount %)})
+                (when-let [transaction (get-in db [:wallet :transactions
+                                                   transaction])]
+                  (transactions/check-transaction transaction))))))
 
 (fx/defn init
   [cofx]
   (fx/merge cofx
-            check-own-manifest
-            check-set-manifest-transaction))
+            (check-own-tribute)
+            (watch-set-tribute-transaction)))

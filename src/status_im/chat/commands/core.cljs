@@ -3,7 +3,7 @@
             [status-im.chat.constants :as chat.constants]
             [status-im.chat.commands.protocol :as protocol]
             [status-im.chat.commands.impl.transactions :as transactions]
-            [status-im.contact.db :as db]
+            [status-im.ethereum.core :as ethereum]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.fx :as fx]))
 
@@ -33,7 +33,7 @@
   (keyword (str (protocol/id type) "-button")))
 
 (defn- contact->address [contact]
-  (str "0x" (db/public-key->address contact)))
+  (str "0x" (ethereum/public-key->address contact)))
 
 (defn add-chat-contacts
   "Enrich command-message by adding contact list of the current private or group chat"

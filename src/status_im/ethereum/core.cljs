@@ -70,6 +70,11 @@
         network    (get-in db [:account/account :networks network-id])]
     (network->chain-keyword network)))
 
+(defn snt-symbol [db]
+  (case (chain-keyword db)
+    :mainnet :SNT
+    :STT))
+
 (defn sha3
   ([s]
    (.sha3 (dependencies/web3-prototype) (str s)))
@@ -88,3 +93,16 @@
   (and address1 address2
        (= (normalized-address address1)
           (normalized-address address2))))
+
+(defn public-key->address [public-key]
+  (let [length (count public-key)
+        normalized-key (case length
+                         132 (subs public-key 4)
+                         130 (subs public-key 2)
+                         128 public-key
+                         nil)]
+    (when normalized-key
+      (subs (.sha3 (dependencies/web3-prototype)
+                   normalized-key
+                   #js {:encoding "hex"})
+            26))))

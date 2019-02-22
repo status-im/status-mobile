@@ -1,16 +1,17 @@
 (ns status-im.chat.models
   (:require [re-frame.core :as re-frame]
             [status-im.accounts.db :as accounts.db]
+            [status-im.contact-code.core :as contact-code]
+            [status-im.contact.core :as contact.core]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
             [status-im.data-store.user-statuses :as user-statuses-store]
-            [status-im.contact-code.core :as contact-code]
-            [taoensso.timbre :as log]
             [status-im.i18n :as i18n]
+            [status-im.mailserver.core :as mailserver]
             [status-im.transport.chat.core :as transport.chat]
-            [status-im.transport.utils :as transport.utils]
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.public-chat :as public-chat]
+            [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.desktop.events :as desktop.events]
             [status-im.ui.components.react :as react]
@@ -23,7 +24,8 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.config :as config]
             [status-im.mailserver.core :as mailserver]
-            [status-im.transport.partitioned-topic :as transport.topic]))
+            [status-im.transport.partitioned-topic :as transport.topic]
+            [taoensso.timbre :as log]))
 
 (defn- get-chat [cofx chat-id]
   (get-in cofx [:db :chats chat-id]))
@@ -267,7 +269,8 @@
                      (set-chat-ui-props {:validation-messages nil}))}
             (contact-code/listen-to-chat chat-id)
             (when platform/desktop?
-              (mark-messages-seen chat-id))))
+              (mark-messages-seen chat-id))
+            (tribute-to-talk/check-tribute chat-id)))
 
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
@@ -345,3 +348,11 @@
 (re-frame/reg-fx
  :set-dock-badge-label
  set-dock-badge-label)
+
+(fx/defn show-profile
+  {:events [:chat.ui/show-profile]}
+  [cofx identity]
+  (fx/merge (assoc-in cofx [:db :contacts/identity] identity)
+            (contact.core/create-contact identity)
+            (tribute-to-talk/check-tribute identity)
+            (navigation/navigate-to-cofx :profile nil)))

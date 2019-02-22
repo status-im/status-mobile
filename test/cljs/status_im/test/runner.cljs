@@ -43,6 +43,9 @@
             [status-im.test.search.core]
             [status-im.test.sign-in.flow]
             [status-im.test.transport.core]
+            [status-im.test.tribute-to-talk.core]
+            [status-im.test.tribute-to-talk.db]
+            [status-im.test.tribute-to-talk.whitelist]
             [status-im.test.ui.screens.add-new.models]
             [status-im.test.ui.screens.currency-settings.models]
             [status-im.test.ui.screens.wallet.db]
@@ -119,6 +122,9 @@
  'status-im.test.search.core
  'status-im.test.sign-in.flow
  'status-im.test.transport.core
+ 'status-im.test.tribute-to-talk.core
+ 'status-im.test.tribute-to-talk.db
+ 'status-im.test.tribute-to-talk.whitelist
  'status-im.test.ui.screens.add-new.models
  'status-im.test.ui.screens.currency-settings.models
  'status-im.test.ui.screens.wallet.db

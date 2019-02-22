@@ -83,7 +83,8 @@
       :style               styles/share-link-button}]))
 
 (defview qr-viewer []
-  (letsubs [{:keys [value contact]} [:qr-modal]]
+  (letsubs [{:keys [value contact]} [:qr-modal]
+            ttt-enabled? [:tribute-to-talk/enabled?]]
     [react/view styles/qr-code-viewer
      [status-bar/status-bar {:type :modal-white}]
      [qr-viewer-toolbar (:name contact) value]
@@ -92,7 +93,8 @@
        {:style         styles/qr-code
         :value         value
         :hint          (i18n/label :t/qr-code-public-key-hint)
-        :legend        (str value)}
+        :legend        (str value)
+        :show-tribute-to-talk-warning? ttt-enabled?}
        (when-not platform/desktop?
          {:footer-button qr-code-share-button}))]]))
 
@@ -284,36 +286,14 @@
     :accessory-value     active-contacts-count
     :action-fn           #(re-frame/dispatch [:navigate-to :contacts-list])}])
 
-(defn tribute-to-talk-item [state snt-amount seen?]
+(defn tribute-to-talk-item
+  [opts]
   [list.views/big-list-item
-   (cond-> {:text                (i18n/label :t/tribute-to-talk)
-            :accessibility-label :notifications-button
-            :new?                (not seen?)
-            :action-fn           #(re-frame/dispatch
-                                   [:tribute-to-talk.ui/menu-item-pressed])}
-     (and (not (and seen?
-                    snt-amount
-                    (#{:signing :pending :transaction-failed} state))))
-     (assoc :subtext (i18n/label :t/tribute-to-talk-desc))
-
-     (#{:signing :pending} state)
-     (assoc :activity-indicator {:animating true
-                                 :color colors/blue}
-            :subtext (case state
-                       :pending (i18n/label :t/pending-confirmation)
-                       :signing (i18n/label :t/waiting-to-sign)))
-
-     (= state :transaction-failed)
-     (assoc :icon :main-icons/warning
-            :icon-color colors/red
-            :subtext (i18n/label :t/transaction-failed))
-
-     (not (#{:signing :pending :transaction-failed} state))
-     (assoc :icon :main-icons/tribute-to-talk)
-
-     (and (= state :completed)
-          (not-empty snt-amount))
-     (assoc :accessory-value (str snt-amount " SNT")))])
+   (merge {:text                (i18n/label :t/tribute-to-talk)
+           :accessibility-label :notifications-button
+           :action-fn           #(re-frame/dispatch
+                                  [:tribute-to-talk.ui/menu-item-pressed])}
+          opts)])
 
 (defview extensions-settings []
   (letsubs [{:keys [label view on-close]} [:get-screen-params :my-profile-ext-settings]]
@@ -332,9 +312,7 @@
             login-data      [:accounts/login]
             scroll          (reagent/atom nil)
             active-contacts-count [:contacts/active-count]
-            {tribute-to-talk-seen? :seen?
-             snt-amount :snt-amount
-             tribute-to-talk-state :state} [:tribute-to-talk/ui]]
+            tribute-to-talk [:tribute-to-talk/profile]]
     (let [shown-account    (merge current-account changed-account)
           ;; We scroll on the component once rendered. setTimeout is necessary,
           ;; likely to allow the animation to finish.
@@ -367,11 +345,8 @@
             :on-change-text-event :my-profile/update-name}]]
          [share-profile-item (dissoc current-account :mnemonic)]
          [contacts-list-item active-contacts-count]
-         (when config/tr-to-talk-enabled?
-           [tribute-to-talk-item
-            tribute-to-talk-state
-            snt-amount
-            tribute-to-talk-seen?])
+         (when tribute-to-talk
+           [tribute-to-talk-item tribute-to-talk])
          [my-profile-settings current-account shown-account currency (nil? login-data) extensions]
          (when (nil? login-data)
            [advanced shown-account on-show-advanced])]]])))

@@ -1,23 +1,23 @@
 (ns status-im.data-store.realm.schemas.account.core
-  (:require [status-im.data-store.realm.schemas.account.chat :as chat]
-            [status-im.data-store.realm.schemas.account.transport :as transport]
-            [status-im.data-store.realm.schemas.account.transport-inbox-topic :as transport-inbox-topic]
-            [status-im.data-store.realm.schemas.account.mailserver-topic :as mailserver-topic]
+  (:require [status-im.data-store.realm.schemas.account.browser :as browser]
+            [status-im.data-store.realm.schemas.account.chat :as chat]
+            [status-im.data-store.realm.schemas.account.chat-requests-range :as chat-requests-range]
             [status-im.data-store.realm.schemas.account.contact :as contact]
-            [status-im.data-store.realm.schemas.account.message :as message]
-            [status-im.data-store.realm.schemas.account.user-status :as user-status]
             [status-im.data-store.realm.schemas.account.contact-device-info :as contact-device-info]
+            [status-im.data-store.realm.schemas.account.contact-recovery :as contact-recovery]
+            [status-im.data-store.realm.schemas.account.dapp-permissions :as dapp-permissions]
+            [status-im.data-store.realm.schemas.account.installation :as installation]
             [status-im.data-store.realm.schemas.account.local-storage :as local-storage]
             [status-im.data-store.realm.schemas.account.mailserver :as mailserver]
-            [status-im.data-store.realm.schemas.account.browser :as browser]
-            [status-im.data-store.realm.schemas.account.dapp-permissions :as dapp-permissions]
-            [status-im.data-store.realm.schemas.account.request :as request]
-            [status-im.data-store.realm.schemas.account.membership-update :as membership-update]
-            [status-im.data-store.realm.schemas.account.installation :as installation]
-            [status-im.data-store.realm.schemas.account.contact-recovery :as contact-recovery]
             [status-im.data-store.realm.schemas.account.mailserver-requests-gap :as mailserver-requests-gap]
+            [status-im.data-store.realm.schemas.account.mailserver-topic :as mailserver-topic]
+            [status-im.data-store.realm.schemas.account.membership-update :as membership-update]
+            [status-im.data-store.realm.schemas.account.message :as message]
             [status-im.data-store.realm.schemas.account.migrations :as migrations]
-            [status-im.data-store.realm.schemas.account.chat-requests-range :as chat-requests-range]))
+            [status-im.data-store.realm.schemas.account.request :as request]
+            [status-im.data-store.realm.schemas.account.transport :as transport]
+            [status-im.data-store.realm.schemas.account.transport-inbox-topic :as transport-inbox-topic]
+            [status-im.data-store.realm.schemas.account.user-status :as user-status]))
 
 (def v1 [chat/v1
          transport/v1
@@ -512,6 +512,23 @@
           contact-recovery/v1
           mailserver-requests-gap/v1])
 
+(def v44 [chat/v15
+          chat-requests-range/v1
+          transport/v8
+          contact/v8
+          message/v10
+          mailserver/v11
+          mailserver-topic/v2
+          user-status/v2
+          membership-update/v1
+          installation/v3
+          local-storage/v1
+          browser/v8
+          dapp-permissions/v9
+          contact-device-info/v1
+          contact-recovery/v1
+          mailserver-requests-gap/v1])
+
 ;; put schemas ordered by version
 (def schemas [{:schema        v1
                :schemaVersion 1
@@ -641,4 +658,7 @@
                :migration     migrations/v42}
               {:schema        v43
                :schemaVersion 43
+               :migration     (constantly nil)}
+              {:schema        v44
+               :schemaVersion 44
                :migration     (constantly nil)}])

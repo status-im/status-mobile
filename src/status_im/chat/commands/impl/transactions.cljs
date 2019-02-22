@@ -305,9 +305,9 @@
   protocol/Yielding
   (yield-control [_ {{{amount :amount asset :asset} :params} :content} {:keys [db] :as cofx}]
     ;; Prefill wallet and navigate there
-    (let [recipient-contact     (or
-                                 (get-in db [:contacts/contacts (:current-chat-id db)])
-                                 (db.contact/public-key->new-contact (:current-chat-id db)))
+    (let [recipient-contact (or
+                             (get-in db [:contacts/contacts (:current-chat-id db)])
+                             (db.contact/public-key->new-contact (:current-chat-id db)))
 
           sender-account        (:account/account db)
           chain                 (keyword (:chain db))

@@ -79,7 +79,7 @@ A whitelists B if:
 
 The tribute payment is a regular SNT transaction greater or equal to the value of the snt-amount key in the manifest.
 
-The id of the transaction is sent along messages in the payload top level `:tribute-tx-id` key as long as the sender isn't sure that he is whitelisted by the recipient (see `whitelisting rules` above).
+The id of the transaction is sent along messages in the payload top level `:tribute-transaction` key as long as the sender isn't sure that he is whitelisted by the recipient (see `whitelisting rules` above).
 
 The UI in status app waits for 1 confirmation on chain before allowing the user to send a message to ensure the recipient will see the payment and not ignore the message.
 

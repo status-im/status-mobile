@@ -2,6 +2,7 @@
   (:require [cljs.spec.alpha :as spec]
             [status-im.ethereum.core :as ethereum]
             [status-im.js-dependencies :as js-dependencies]
+            [status-im.tribute-to-talk.db :as tribute-to-talk.db]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
             status-im.utils.db))
@@ -10,29 +11,33 @@
 
 ;;Contact
 
-(spec/def :contact/public-key :global/not-empty-string)
-(spec/def :contact/name :global/not-empty-string)
 (spec/def :contact/address (spec/nilable :global/address))
-(spec/def :contact/photo-path (spec/nilable string?))
 (spec/def :contact/fcm-token (spec/nilable string?))
-(spec/def :contact/last-updated (spec/nilable int?))
 (spec/def :contact/last-online (spec/nilable int?))
+(spec/def :contact/last-updated (spec/nilable int?))
+(spec/def :contact/name :global/not-empty-string)
+(spec/def :contact/public-key :global/not-empty-string)
+(spec/def :contact/photo-path (spec/nilable string?))
 
-(spec/def :contact/tags (spec/coll-of string? :kind set?))
 ;; contact/blocked: the user is blocked
 ;; contact/added: the user was added to the contacts and a contact request was sent
 ;; contact/request-received: the user sent a contact request
 (spec/def :contact/system-tags (spec/coll-of keyword? :kind set?))
+(spec/def :contact/tags (spec/coll-of string? :kind set?))
+(spec/def :contact/tribute (spec/nilable int?))
+(spec/def :contact/tribute-transaction (spec/nilable string?))
 
-(spec/def :contact/contact (spec/keys  :req-un [:contact/public-key
+(spec/def :contact/contact (spec/keys  :req-un [:contact/address
                                                 :contact/name
-                                                :contact/address
                                                 :contact/photo-path
+                                                :contact/public-key
                                                 :contact/system-tags]
-                                       :opt-un [:contact/last-updated
+                                       :opt-un [:contact/fcm-token
                                                 :contact/last-online
-                                                :contact/fcm-token
-                                                :contact/tags]))
+                                                :contact/last-updated
+                                                :contact/tags
+                                                :contact/tribute
+                                                :contact/tribute-transaction]))
 
 ;;Contact list ui props
 (spec/def :contact-list-ui/edit? boolean?)
@@ -58,19 +63,9 @@
 (spec/def :contact/new-tag string?)
 (spec/def :ui/contact (spec/keys :opt [:contact/new-tag]))
 
-(defn public-key->address [public-key]
-  (let [length (count public-key)
-        normalized-key (case length
-                         132 (subs public-key 4)
-                         130 (subs public-key 2)
-                         128 public-key
-                         nil)]
-    (when normalized-key
-      (subs (.sha3 (js-dependencies/web3-prototype) normalized-key #js {:encoding "hex"}) 26))))
-
 (defn public-key->new-contact [public-key]
   {:name        (gfycat/generate-gfy public-key)
-   :address     (public-key->address public-key)
+   :address     (ethereum/public-key->address public-key)
    :photo-path  (identicon/identicon public-key)
    :public-key  public-key
    :system-tags #{}})
@@ -168,12 +163,17 @@
    (active? (get-in db [:contacts/contacts public-key]))))
 
 (defn enrich-contact
-  [{:keys [system-tags] :as contact}]
-  (assoc contact
-         :pending? (pending? contact)
-         :blocked? (blocked? contact)
-         :active? (active? contact)
-         :added? (contains? system-tags :contact/added)))
+  [{:keys [system-tags tribute-to-talk] :as contact}]
+  (let [tribute (:snt-amount tribute-to-talk)
+        tribute-status (tribute-to-talk.db/tribute-status contact)
+        tribute-label (tribute-to-talk.db/status-label tribute-status tribute)]
+    (-> contact
+        (assoc-in [:tribute-to-talk :tribute-status] tribute-status)
+        (assoc-in [:tribute-to-talk :tribute-label] tribute-label)
+        (assoc :pending? (pending? contact)
+               :blocked? (blocked? contact)
+               :active? (active? contact)
+               :added? (contains? system-tags :contact/added)))))
 
 (defn enrich-contacts
   [contacts]

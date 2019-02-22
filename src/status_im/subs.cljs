@@ -8,6 +8,7 @@
             [status-im.chat.commands.input :as commands.input]
             [status-im.chat.constants :as chat.constants]
             [status-im.chat.db :as chat.db]
+            [status-im.chat.models :as chat.models]
             [status-im.constants :as constants]
             [status-im.contact.db :as contact.db]
             [status-im.ethereum.tokens :as tokens]
@@ -15,8 +16,13 @@
             [status-im.ethereum.transactions.etherscan :as transactions.etherscan]
             [status-im.ethereum.core :as ethereum]
             [status-im.fleet.core :as fleet]
+            [status-im.group-chats.db :as group-chats.db]
             [status-im.i18n :as i18n]
+            [status-im.tribute-to-talk.core :as tribute-to-talk]
+            [status-im.tribute-to-talk.db :as tribute-to-talk.db]
+            [status-im.tribute-to-talk.whitelist :as whitelist]
             [status-im.ui.components.bottom-bar.styles :as tabs.styles]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.toolbar.styles :as toolbar.styles]
             [status-im.ui.screens.add-new.new-public-chat.db :as db]
             [status-im.ui.screens.chat.stickers.styles :as stickers.styles]
@@ -34,7 +40,6 @@
             [status-im.utils.universal-links.core :as links]
             [status-im.wallet.core :as wallet]
             [status-im.wallet.db :as wallet.db]
-            status-im.tribute-to-talk.subs
             status-im.ui.screens.hardwallet.connect.subs
             status-im.ui.screens.hardwallet.settings.subs
             status-im.ui.screens.hardwallet.pin.subs
@@ -473,16 +478,103 @@
  (fn [[contacts chats account]]
    (chat.db/active-chats contacts chats account)))
 
+(defn enrich-current-one-to-one-chat
+  [{:keys [contact] :as current-chat} my-public-key ttt-settings
+   chain-keyword prices currency]
+  (let [{:keys [tribute-to-talk]} contact
+        {:keys [disabled? snt-amount message]} tribute-to-talk
+        whitelisted-by? (whitelist/whitelisted-by? contact)
+        loading?        (and (not whitelisted-by?)
+                             (not tribute-to-talk))
+        show-input?     (or whitelisted-by?
+                            disabled?)
+        token           (case chain-keyword
+                          :mainnet :SNT
+                          :STT)
+        tribute-status  (if loading?
+                          :loading
+                          (tribute-to-talk.db/tribute-status contact))
+        tribute-label   (tribute-to-talk.db/status-label tribute-status snt-amount)]
+
+    (cond-> (assoc current-chat
+                   :tribute-to-talk/tribute-status tribute-status
+                   :tribute-to-talk/tribute-label tribute-label)
+
+      (#{:required :pending :paid} tribute-status)
+      (assoc :tribute-to-talk/snt-amount
+             (tribute-to-talk.db/from-wei snt-amount)
+             :tribute-to-talk/message
+             message
+             :tribute-to-talk/fiat-amount   (if snt-amount
+                                              (money/fiat-amount-value
+                                               snt-amount
+                                               token
+                                               (-> currency :code keyword)
+                                               prices)
+                                              "0")
+             :tribute-to-talk/fiat-currency (:code currency)
+             :tribute-to-talk/token         (str " " (name token)))
+
+      (tribute-to-talk.db/enabled? ttt-settings)
+      (assoc :tribute-to-talk/received? (tribute-to-talk.db/tribute-received?
+                                         contact))
+
+      (= tribute-status :required)
+      (assoc :tribute-to-talk/on-share-my-profile
+             #(re-frame/dispatch
+               [:profile/share-profile-link my-public-key]))
+
+      show-input?
+      (assoc :show-input? true))))
+
+(defn enrich-current-chat
+  [{:keys [messages chat-id might-have-join-time-messages?] :as chat}
+   ranges height input-height]
+  (assoc chat
+         :height height
+         :input-height input-height
+         :range
+         (get ranges chat-id)
+         :intro-status
+         (if might-have-join-time-messages?
+           :loading
+           (if (empty? messages)
+             :empty
+             :messages))))
+
 (re-frame/reg-sub
  :chats/current-chat
  :<- [:chats/active-chats]
  :<- [:chats/current-chat-id]
- (fn [[chats current-chat-id]]
-   (let [current-chat (get chats current-chat-id)
-         messages     (:messages current-chat)]
-     (if (empty? messages)
-       (assoc current-chat :universal-link (links/generate-link :public-chat :external current-chat-id))
-       current-chat))))
+ :<- [:account/public-key]
+ :<- [:mailserver/ranges]
+ :<- [:chats/content-layout-height]
+ :<- [:chats/current-chat-ui-prop :input-height]
+ :<- [:tribute-to-talk/settings]
+ :<- [:ethereum/chain-keyword]
+ :<- [:prices]
+ :<- [:wallet/currency]
+ (fn [[chats current-chat-id my-public-key ranges height
+       input-height ttt-settings chain-keyword prices currency]]
+   (let [{:keys [group-chat contact messages]
+          :as current-chat}
+         (get chats current-chat-id)]
+     (when current-chat
+       (cond-> (enrich-current-chat current-chat ranges height input-height)
+         (empty? messages)
+         (assoc :universal-link
+                (links/generate-link :public-chat :external current-chat-id))
+
+         (chat.models/public-chat? current-chat)
+         (assoc :show-input? true)
+
+         (and (chat.models/group-chat? current-chat)
+              (group-chats.db/joined? my-public-key current-chat))
+         (assoc :show-input? true)
+
+         (not group-chat)
+         (enrich-current-one-to-one-chat my-public-key ttt-settings
+                                         chain-keyword prices currency))))))
 
 (re-frame/reg-sub
  :chats/current-chat-message
@@ -1218,12 +1310,6 @@
    (:send-transaction wallet)))
 
 (re-frame/reg-sub
- :wallet.send/symbol
- :<- [::send-transaction]
- (fn [send-transaction]
-   (:symbol send-transaction)))
-
-(re-frame/reg-sub
  :wallet.send/advanced?
  :<- [::send-transaction]
  (fn [send-transaction]
@@ -1271,10 +1357,12 @@
     edit)))
 
 (defn check-sufficient-funds
-  [transaction balance symbol amount]
-  (assoc transaction :sufficient-funds?
-         (or (nil? amount)
-             (money/sufficient-funds? amount (get balance symbol)))))
+  [{:keys [sufficient-funds?] :as transaction} balance symbol amount]
+  (cond-> transaction
+    (nil? sufficient-funds?)
+    (assoc :sufficient-funds?
+           (or (nil? amount)
+               (money/sufficient-funds? amount (get balance symbol))))))
 
 (defn check-sufficient-gas
   [transaction balance symbol amount]
@@ -1691,3 +1779,99 @@
  :<- [:search/filter]
  (fn [[chats search-filter]]
    (apply-filter search-filter chats extract-chat-attributes)))
+
+;; TRIBUTE TO TALK
+(re-frame/reg-sub
+ :tribute-to-talk/settings
+ :<- [:account-settings]
+ :<- [:ethereum/chain-keyword]
+ (fn [[settings chain-keyword]]
+   (get-in settings [:tribute-to-talk chain-keyword])))
+
+(re-frame/reg-sub
+ :tribute-to-talk/screen-params
+ :<- [:screen-params]
+ (fn [screen-params]
+   (get screen-params :tribute-to-talk)))
+
+(re-frame/reg-sub
+ :tribute-to-talk/profile
+ :<- [:tribute-to-talk/settings]
+ :<- [:tribute-to-talk/screen-params]
+ (fn [[{:keys [seen? snt-amount]}
+       {:keys [state unavailable?]}]]
+   (let [state (or state (if snt-amount :completed :disabled))
+         snt-amount (tribute-to-talk.db/from-wei snt-amount)]
+     (when config/tr-to-talk-enabled?
+       (if unavailable?
+         {:subtext "Change network to enable Tribute to Talk"
+          :active? false
+          :icon :main-icons/tribute-to-talk
+          :icon-color colors/gray}
+         (cond-> {:new? (not seen?)}
+           (and (not (and seen?
+                          snt-amount
+                          (#{:signing :pending :transaction-failed :completed} state))))
+           (assoc :subtext (i18n/label :t/tribute-to-talk-desc))
+
+           (#{:signing :pending} state)
+           (assoc :activity-indicator {:animating true
+                                       :color colors/blue}
+                  :subtext (case state
+                             :pending (i18n/label :t/pending-confirmation)
+                             :signing (i18n/label :t/waiting-to-sign)))
+
+           (= state :transaction-failed)
+           (assoc :icon :main-icons/warning
+                  :icon-color colors/red
+                  :subtext (i18n/label :t/transaction-failed))
+
+           (not (#{:signing :pending :transaction-failed} state))
+           (assoc :icon :main-icons/tribute-to-talk)
+
+           (and (= state :completed)
+                (not-empty snt-amount))
+           (assoc :accessory-value (str snt-amount " SNT"))))))))
+
+(re-frame/reg-sub
+ :tribute-to-talk/enabled?
+ :<- [:tribute-to-talk/settings]
+ (fn [settings]
+   (tribute-to-talk.db/enabled? settings)))
+
+(re-frame/reg-sub
+ :tribute-to-talk/settings-ui
+ :<- [:tribute-to-talk/settings]
+ :<- [:tribute-to-talk/screen-params]
+ :<- [:prices]
+ :<- [:wallet/currency]
+ (fn [[{:keys [seen? snt-amount message]
+        :as settings}
+       {:keys [step editing? state error]
+        :or {step :intro}
+        screen-snt-amount :snt-amount
+        screen-message :message} prices currency]]
+   (let [fiat-value (if snt-amount
+                      (money/fiat-amount-value
+                       snt-amount
+                       :SNT
+                       (-> currency :code keyword)
+                       prices)
+                      "0")]
+     (cond-> {:seen? seen?
+              :snt-amount (tribute-to-talk.db/from-wei snt-amount)
+              :message message
+              :enabled? (tribute-to-talk.db/enabled? settings)
+              :error error
+              :step step
+              :state (or state (if snt-amount :completed :disabled))
+              :editing? editing?
+              :fiat-value (str "~" fiat-value " " (:code currency))}
+
+       (= step :set-snt-amount)
+       (assoc :snt-amount (str screen-snt-amount)
+              :disable-button?
+              (boolean (and (= step :set-snt-amount)
+                            (or (string/blank? screen-snt-amount)
+                                (#{"0" "0.0" "0.00"} screen-snt-amount)
+                                (string/ends-with? screen-snt-amount ".")))))))))

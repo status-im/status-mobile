@@ -1,20 +1,20 @@
 (ns status-im.ui.screens.home.views.inner-item
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [re-frame.core :as re-frame]
-            [clojure.string :as str]
-            [status-im.constants :as constants]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.receiving :as commands-receiving]
+            [status-im.constants :as constants]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.utils.core :as utils]
-            [status-im.i18n :as i18n]
-            [status-im.utils.datetime :as time]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.list.views :as list]))
+            [status-im.utils.datetime :as time])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview command-short-preview [message]
   (letsubs [id->command [:chats/id->command]
@@ -38,7 +38,7 @@
      [react/image {:style {:margin 2 :width 30 :height 30}
                    :source {:uri (:uri content)}}]
 
-     (str/blank? (:text content))
+     (string/blank? (:text content))
      [react/text {:style styles/last-message-text}
       ""]
 
@@ -111,6 +111,10 @@
         [react/view styles/message-status-container
          [message-timestamp timestamp]]]
        [react/view styles/item-lower-container
-        [message-content-text {:content      last-message-content
-                               :content-type last-message-content-type}]
+        (let [{:keys [tribute-status tribute-label]} (:tribute-to-talk contact)]
+          (if (or group-chat
+                  (#{:none :paid} tribute-status))
+            [message-content-text {:content      last-message-content
+                                   :content-type last-message-content-type}]
+            [react/text {:style styles/last-message-text} tribute-label]))
         [unviewed-indicator chat-id]]]]]))

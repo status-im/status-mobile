@@ -3,7 +3,6 @@
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
-            [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as icons]
@@ -19,36 +18,35 @@
 
 (defn steps-numbers [editing?]
   {:intro                1
-   :set-snt-amount       (if editing? 1 2)
-   :personalized-message (if editing? 2 3)})
+   :set-snt-amount       (if editing? 1 2)})
 
 (def step-forward-label
   {:intro                :t/get-started
    :set-snt-amount       :t/continue
-   :personalized-message :t/tribute-to-talk-sign-and-set-tribute
    :finish               :t/ok-got-it})
 
 (defn intro
   []
-  [react/view {:style styles/intro-container}
-   [react/view {:style {:flex       1
-                        :min-height 32}}]
+  [(react/scroll-view)
+   [react/view {:style styles/intro-container}
+    [react/view {:style {:flex       1
+                         :min-height 32}}]
 
-   [react/image {:source (resources/get-image :tribute-to-talk)
-                 :style styles/intro-image}]
-   [react/view {:style {:flex       1
-                        :min-height 32}}]
+    [react/image {:source (resources/get-image :tribute-to-talk)
+                  :style styles/intro-image}]
+    [react/view {:style {:flex       1
+                         :min-height 32}}]
 
-   [react/view
-    [react/i18n-text {:style styles/intro-text
-                      :key   :tribute-to-talk}]
-    [react/i18n-text {:style (assoc styles/description-label :margin-top 12)
-                      :key   :tribute-to-talk-desc}]
-    [react/view {:style styles/learn-more-link}
-     [react/text {:style styles/learn-more-link-text
-                  :on-press #(re-frame/dispatch
-                              [:tribute-to-talk.ui/learn-more-pressed])}
-      (i18n/label :t/learn-more)]]]])
+    [react/view
+     [react/i18n-text {:style styles/intro-text
+                       :key   :tribute-to-talk}]
+     [react/i18n-text {:style (assoc styles/description-label :margin-top 12)
+                       :key   :tribute-to-talk-desc}]
+     [react/view {:style styles/learn-more-link}
+      [react/text {:style styles/learn-more-link-text
+                   :on-press #(re-frame/dispatch
+                               [:tribute-to-talk.ui/learn-more-pressed])}
+       (i18n/label :t/learn-more)]]]]])
 
 (defn snt-asset-value
   [fiat-value]
@@ -106,26 +104,6 @@
                              [:tribute-to-talk.ui/numpad-key-pressed numpad-symbol]))}]
    [react/i18n-text {:style (assoc styles/description-label :margin-horizontal 16)
                      :key   :tribute-to-talk-set-snt-amount}]])
-
-(defn personalized-message
-  [message]
-  [(react/scroll-view)
-   {:content-container-style styles/personalized-message-container}
-   [react/view {:style styles/personalized-message-title}
-    [react/nested-text {:style {:text-align :center}}
-     (i18n/label :t/personalized-message)
-     [{:style styles/description-label} (str " (" (i18n/label :t/optional) ")")]]]
-   [react/text-input
-    (cond-> {:style (assoc styles/personalized-message-input :height 144
-                           :align-self :stretch)
-             :multiline true
-             :on-change-text #(re-frame/dispatch
-                               [:tribute-to-talk.ui/message-changed %1])
-             :placeholder (i18n/label :t/tribute-to-talk-message-placeholder)}
-      (not (string/blank? message))
-      (assoc :default-value message))]
-   [react/text {:style (assoc styles/description-label :margin-top 16 :margin-horizontal 32)}
-    (i18n/label :t/tribute-to-talk-you-can-leave-a-message)]])
 
 (defn finish
   [snt-amount state]
@@ -218,7 +196,7 @@
     (i18n/label :t/tribute-to-talk-add-friends)]])
 
 (defn edit
-  [snt-amount message fiat-value]
+  [snt-amount fiat-value]
   [(react/scroll-view) {:content-container-style styles/edit-container}
    [react/view {:style styles/edit-screen-top-row}
     [react/view {:style {:flex-direction  :row
@@ -239,12 +217,6 @@
                              [:tribute-to-talk.ui/edit-pressed])
                  :style styles/edit-label}
      (i18n/label :t/edit)]]
-   (when-not (string/blank? message)
-     [react/view {:flex-direction :row
-                  :margin-bottom  16}
-      [react/view {:style styles/edit-view-message-container}
-       [react/text message]]
-      [react/view {:flex 1}]])
    [separator]
    [react/text {:style styles/edit-note}
     (i18n/label :t/tribute-to-talk-you-require-snt)]
@@ -265,43 +237,43 @@
                 :min-height 24}]
    [enabled-note]])
 
-(defn pay-to-chat-message [{:keys [snt-amount fiat-amount fiat-currency
-                                   personalized-message style public-key tribute-status]}]
+(defn pay-to-chat-message
+  [{:keys [snt-amount style public-key tribute-status
+           tribute-label fiat-amount fiat-currency token]}]
   [react/view {:style style}
    [react/view {:style {:flex-direction :row
                         :align-items :center}}
     [react/view {:style {:background-color colors/white
-                         :justify-content :center :align-items :center}}
+                         :justify-content :center
+                         :align-items :center}}
      [icons/icon :tiny-icons/tribute-to-talk {:color colors/blue}]]
     [react/text {:style {:color       colors/gray
                          :font-size   13
                          :margin-left 4}}
      (i18n/label :t/tribute-to-talk)]]
-   (when-not (string/blank? personalized-message)
-     [react/view {:style styles/chat-sample-bubble}
-      [react/text (i18n/label :t/tribute-to-talk-sample-text)]])
-   [react/view {:style styles/chat-sample-bubble}
-    ;;TODO replace hardcoded values
-    [react/nested-text {:style {:font-size 22}}
-     (str snt-amount)
-     [{:style {:font-size 22 :color colors/gray}} " SNT"]]
-    [react/nested-text
-     {:style {:font-size 12}}
-     (str "~" fiat-amount)
-     [{:style {:font-size 12 :color colors/gray}} (str " " fiat-currency)]]
-    [react/view {:style styles/pay-to-chat-container}
-     (if (or (nil? public-key) (= tribute-status :required))
-       [react/text (cond-> {:style styles/pay-to-chat-text}
-                     public-key
-                     (assoc :on-press #(re-frame/dispatch [:tribute-to-talk.ui/on-pay-to-chat-pressed
-                                                           public-key])))
-        (i18n/label :t/pay-to-chat)]
-       [react/view {:style {:flex-direction :row}}
-        [react/view {:style (styles/payment-status-icon (= tribute-status :pending))}
-         [icons/icon (if (= tribute-status :pending) :tiny-icons/tiny-pending :tiny-icons/tiny-check)
-          {:color (if (= tribute-status :pending) colors/black colors/white)}]]
-        [react/text {:style styles/payment-status-text}
-         nil]])]]])
+   (when snt-amount
+     [react/view {:style styles/pay-to-chat-bubble}
+      [react/nested-text {:style {:font-size 22}}
+       (str snt-amount)
+       [{:style {:font-size 22 :color colors/gray}} token]]
+      [react/nested-text
+       {:style {:font-size 12}}
+       (str "~" fiat-amount)
+       [{:style {:font-size 12 :color colors/gray}}
+        (str " " fiat-currency)]]
+      (if (or (nil? public-key) (= tribute-status :required))
+        [react/view {:style styles/pay-to-chat-container}
+         [react/text (cond-> {:style styles/pay-to-chat-text}
+                       public-key
+                       (assoc :on-press
+                              #(re-frame/dispatch [:tribute-to-talk.ui/on-pay-to-chat-pressed
+                                                   public-key])))
+          (i18n/label :t/pay-to-chat)]]
+        [react/view {:style styles/pay-to-chat-container}
+         [react/view {:style (styles/payment-status-icon (= tribute-status :pending))}
+          [icons/icon (if (= tribute-status :pending) :tiny-icons/tiny-pending :tiny-icons/tiny-check)
+           {:color (if (= tribute-status :pending) colors/black colors/white)}]]
+         [react/text {:style styles/payment-status-text} tribute-label]])])])
 
 (defn learn-more [owner?]
   [react/view {:flex 1}
@@ -323,17 +295,19 @@
                       :t/tribute-to-talk-paywall-learn-more-1))]]
     [separator]
     [pay-to-chat-message {:snt-amount 1000
-                          :fiat-amount 3.48
-                          :fiat-currency (i18n/label :t/usd-currency)
-                          :personalized-message (i18n/label :t/tribute-to-talk-sample-text)
-                          :style (assoc styles/learn-more-section :margin-top 24)}]
+                          :token " SNT"
+                          :fiat-currency "USD"
+                          :fiat-amount "5"
+                          :style (assoc styles/learn-more-section
+                                        :align-items :flex-start
+                                        :margin-top 24)}]
     [react/view {:style styles/learn-more-text-container-2}
      [react/text {:style styles/learn-more-text}
       (i18n/label (if owner? :t/tribute-to-talk-learn-more-2
                       :t/tribute-to-talk-paywall-learn-more-2))]]
     [react/view {:style (assoc styles/learn-more-section
                                :flex-direction     :row
-                               :align-item         :flex-stretch
+                               :align-items        :stretch
                                :padding-horizontal 16
                                :padding-vertical   12)}
      [react/view {:style (styles/icon-view colors/blue-light)}
@@ -347,9 +321,9 @@
                       :t/tribute-to-talk-paywall-learn-more-3))]]]])
 
 (defview tribute-to-talk []
-  (letsubs [{:keys [step snt-amount editing? message
+  (letsubs [{:keys [step snt-amount editing?
                     fiat-value disable-button? state]}
-            [:tribute-to-talk/ui]]
+            [:tribute-to-talk/settings-ui]]
     [react/keyboard-avoiding-view {:style styles/container}
      [(react/safe-area-view) {:style {:flex 1}}
       [status-bar/status-bar]
@@ -380,9 +354,8 @@
       (case step
         :intro                [intro]
         :set-snt-amount       [set-snt-amount snt-amount]
-        :edit                 [edit snt-amount message fiat-value]
+        :edit                 [edit snt-amount fiat-value]
         :learn-more           [learn-more step]
-        :personalized-message [personalized-message message]
         :finish               [finish snt-amount state])
 
       (when-not (#{:learn-more :edit} step)
