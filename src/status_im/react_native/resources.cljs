@@ -36,6 +36,7 @@
    :blockimmo          (js/require "./resources/images/contacts/blockimmo.png")
    :cryptocribs        (js/require "./resources/images/contacts/cryptocribs.png")
    :cryptofighters     (js/require "./resources/images/contacts/cryptofighters.png")
+   :etherman           (js/require "./resources/images/contacts/etherman.png")
    :airswap            (js/require "./resources/images/contacts/airswap.png")
    :civitas            (js/require "./resources/images/contacts/civitas.png")
    :dai                (js/require "./resources/images/contacts/dai.png")
