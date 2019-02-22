@@ -9,14 +9,9 @@
         message (i18n/label :t/share-dapp-text {:link link})]
     (list-selection/open-share {:message message})))
 
-(def open-wallet
-  {:label  (i18n/label :t/view-my-wallet)
-   :action #(re-frame/dispatch  [:navigate-to :wallet-modal])})
-
 (defn share [browser-id]
   {:label  (i18n/label :t/share-link)
    :action #(share-link browser-id)})
 
 (defn actions [browser-id]
-  [open-wallet
-   (share browser-id)])
+  [(share browser-id)])

@@ -4,10 +4,6 @@
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.utils.universal-links.core :as universal-links]))
 
-(def view-my-wallet
-  {:label  (i18n/label :t/view-my-wallet)
-   :action #(re-frame/dispatch [:navigate-to :wallet-modal])})
-
 (defn view-profile [chat-id]
   {:label  (i18n/label :t/view-profile)
    :action #(re-frame/dispatch [:chat.ui/show-profile chat-id])})
@@ -38,22 +34,19 @@
                                 chat-id])})
 
 (defn- chat-actions [chat-id]
-  [view-my-wallet
-   (view-profile chat-id)
+  [(view-profile chat-id)
    (clear-history)
    (fetch-history chat-id)
    (delete-chat chat-id false)])
 
 (defn- group-chat-actions [chat-id]
-  [view-my-wallet
-   (group-info chat-id)
+  [(group-info chat-id)
    (clear-history)
    (fetch-history chat-id)
    (delete-chat chat-id true)])
 
 (defn- public-chat-actions [chat-id]
-  [view-my-wallet
-   (share-chat chat-id)
+  [(share-chat chat-id)
    (clear-history)
    (fetch-history chat-id)
    (delete-chat chat-id false)])

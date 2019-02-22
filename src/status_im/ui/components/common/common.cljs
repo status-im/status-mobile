@@ -103,7 +103,7 @@
   ([value] (counter nil value))
   ([{:keys [size accessibility-label] :or {size 18}} value]
    (let [more-than-9 (> value 9)]
-     [react/view {:style (styles/counter-container size more-than-9)}
+     [react/view {:style (styles/counter-container size)}
       [react/text (cond-> {:style (styles/counter-label size)
                            :font  :toolbar-title}
                     accessibility-label

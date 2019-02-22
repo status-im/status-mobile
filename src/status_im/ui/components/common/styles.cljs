@@ -147,8 +147,8 @@
    :text-align     :center
    :color          colors/blue})
 
-(defn counter-container [size more-than-nine]
-  {:width            (if more-than-nine (+ 2 size) size)
+(defn counter-container [size]
+  {:width            size
    :height           size
    :border-radius    (/ size 2)
    :background-color colors/blue

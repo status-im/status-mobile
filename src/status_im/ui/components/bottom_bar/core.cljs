@@ -1,5 +1,4 @@
 (ns status-im.ui.components.bottom-bar.core
-  (:require-macros [status-im.utils.views :as views])
   (:require
    [status-im.ui.components.animation :as animation]
    [status-im.ui.components.bottom-bar.styles :as tabs.styles]
@@ -9,7 +8,6 @@
    [status-im.ui.components.icons.vector-icons :as vector-icons]
    [status-im.ui.components.common.common :as components.common]
    [status-im.i18n :as i18n]
-   [status-im.ui.components.styles :as common.styles]
    [re-frame.core :as re-frame]))
 
 (defn animate
@@ -24,66 +22,67 @@
     callback)))
 
 (def tabs-list-data
-  [{:view-id             :chat-stack
-    :content             {:title (i18n/label :t/home)
-                          :icon  :main-icons/home}
+  [{:nav-stack           :chat-stack
+    :content             {:title (i18n/label :t/chats)
+                          :icon  :main-icons/message}
     :count-subscription  :chats/unread-messages-number
     :accessibility-label :home-tab-button}
-   {:view-id             :wallet-stack
+   #_{:nav-stack           :dapp-stack
+      :content             {:title (i18n/label :t/dapp)
+                            :icon  :main-icons/dapp}
+      ;;:count-subscription  :chats/unread-messages-number
+      :accessibility-label :dapp-tab-button}
+   {:nav-stack           :wallet-stack
     :content             {:title (i18n/label :t/wallet)
                           :icon  :main-icons/wallet}
     :count-subscription  :get-wallet-unread-messages-number
     :accessibility-label :wallet-tab-button}
-   {:view-id             :profile-stack
+   {:nav-stack           :profile-stack
     :content             {:title (i18n/label :t/profile)
-                          :icon  :main-icons/profile}
+                          :icon  :main-icons/user-profile}
     :count-subscription  :get-profile-unread-messages-number
     :accessibility-label :profile-tab-button}])
 
-(defn- tab-content [{:keys [title icon]}]
-  (fn [active? count]
-    [react/view {:style tabs.styles/tab-container}
-     [react/view
-      [vector-icons/icon icon (tabs.styles/tab-icon active?)]]
-     [react/view
-      [react/text {:style (tabs.styles/tab-title active?)}
-       title]]
-     (when (pos? count)
-       [react/view tabs.styles/counter-container
-        [react/view tabs.styles/counter
-         [components.common/counter count]]])]))
-
-(def tabs-list (map #(update % :content tab-content) tabs-list-data))
-
-(views/defview tab [view-id content active? accessibility-label count-subscription]
-  (views/letsubs [count [count-subscription]]
+(defn new-tab
+  [{:keys [icon label active? nav-stack
+           accessibility-label count-subscription]}]
+  (let [count (when count-subscription
+                (re-frame/subscribe [count-subscription]))]
     [react/touchable-highlight
-     (cond-> {:style    common.styles/flex
-              :disabled active?
-              :on-press #(re-frame/dispatch [:navigate-to-tab view-id])}
-       accessibility-label
-       (assoc :accessibility-label accessibility-label))
+     {:style               tabs.styles/touchable-container
+      :disabled            active?
+      :on-press            #(re-frame/dispatch [:navigate-to nav-stack])
+      :accessibility-label accessibility-label}
      [react/view
-      [content active? count]]]))
+      {:style tabs.styles/new-tab-container}
+      [react/view
+       {:style tabs.styles/icon-container}
+       [vector-icons/icon icon (tabs.styles/icon active?)]
+       (when (pos? (if count @count 0))
+         [react/view tabs.styles/counter
+          [components.common/counter @count]])]
+      [react/view {:style tabs.styles/tab-title-container}
+       [react/text {:style (tabs.styles/new-tab-title active?)}
+        label]]]]))
 
 (defn tabs [current-view-id]
-  [react/view {:style tabs.styles/tabs-container}
-   (for [{:keys [content view-id accessibility-label count-subscription]} tabs-list]
-     ^{:key view-id} [tab view-id content (= view-id current-view-id) accessibility-label count-subscription])])
+  [react/view
+   {:style tabs.styles/new-tabs-container}
+   [react/view {:style tabs.styles/tabs}
+    (for [{:keys                [nav-stack accessibility-label count-subscription]
+           {:keys [icon title]} :content} tabs-list-data]
+      ^{:key nav-stack}
+      [new-tab
+       {:icon                icon
+        :label               title
+        :accessibility-label accessibility-label
+        :count-subscription  count-subscription
+        :active?             (= current-view-id nav-stack)
+        :nav-stack           nav-stack}])]])
 
 (defn tabs-animation-wrapper [visible? keyboard-shown? tab]
   [react/animated-view
-   {:style {:height    tabs.styles/tabs-height
-            :bottom    0
-            :left      0
-            :right     0
-            :position  (when keyboard-shown? :absolute)
-            :transform [{:translateY
-                         (animation/interpolate
-                          visible?
-                          {:inputRange  [0 1]
-                           :outputRange [tabs.styles/tabs-height
-                                         0]})}]}}
+   {:style (tabs.styles/animated-container visible? keyboard-shown?)}
    [react/safe-area-view [tabs tab]]])
 
 (def disappearance-duration 150)
