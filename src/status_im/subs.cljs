@@ -22,6 +22,12 @@
             [status-im.chat.commands.input :as commands.input]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.constants :as chat.constants]
+            [status-im.chat.models :as chat.models]
+
+            [status-im.group-chats.db :as group-chats.db]
+
+            [status-im.tribute-to-talk.core :as tribute-to-talk]
+            [status-im.tribute-to-talk.db :as tribute-to-talk.db]
 
             [status-im.ui.components.toolbar.styles :as toolbar.styles]
             [status-im.ui.components.bottom-bar.styles :as tabs.styles]
@@ -460,16 +466,80 @@
  (fn [[contacts chats account]]
    (chat.db/active-chats contacts chats account)))
 
+(defn enrich-current-one-to-one-chat
+  [{:keys [contact] :as current-chat} my-public-key ttt-settings]
+  (let [{:keys [tribute-to-talk]} contact
+        {:keys [disabled? snt-amount message]} tribute-to-talk
+        whitelisted-by? (tribute-to-talk.db/whitelisted-by? contact)
+        loading?        (and (not whitelisted-by?)
+                             (not tribute-to-talk))
+        show-input?     (or whitelisted-by?
+                            disabled?)
+        tribute-status  (if loading?
+                          :loading
+                          (tribute-to-talk/tribute-status contact))]
+    (cond-> (assoc current-chat :tribute-to-talk/tribute-status tribute-status)
+
+      (#{:required :pending :paid} tribute-status)
+      (assoc :tribute-to-talk/snt-amount
+             (tribute-to-talk.db/from-wei snt-amount)
+             :tribute-to-talk/message
+             message)
+
+      (tribute-to-talk.db/enabled? ttt-settings)
+      (assoc :tribute-to-talk/my-message (:message ttt-settings)
+             :tribute-to-talk/received?  (tribute-to-talk/tribute-received? contact))
+
+      (= tribute-status :required)
+      (assoc :tribute-to-talk/on-share-my-profile
+             #(re-frame/dispatch
+               [:profile/share-profile-link my-public-key]))
+
+      show-input?
+      (assoc :show-input? true))))
+
+(defn enrich-current-chat
+  [{:keys [messages chat-id might-have-join-time-messages?] :as chat}
+   ranges height input-height]
+  (assoc chat
+         :height height
+         :input-height input-height
+         :range
+         (get ranges chat-id)
+         :intro-status
+         (if might-have-join-time-messages?
+           :loading
+           (if (empty? messages)
+             :empty
+             :messages))))
+
 (re-frame/reg-sub
  :chats/current-chat
  :<- [:chats/active-chats]
  :<- [:chats/current-chat-id]
- (fn [[chats current-chat-id]]
-   (let [current-chat (get chats current-chat-id)
-         messages     (:messages current-chat)]
-     (if (empty? messages)
-       (assoc current-chat :universal-link (links/generate-link :public-chat :external current-chat-id))
-       current-chat))))
+ :<- [:account/public-key]
+ :<- [:mailserver/ranges]
+ :<- [:chats/content-layout-height]
+ :<- [:chats/current-chat-ui-prop :input-height]
+ :<- [:tribute-to-talk/settings]
+ (fn [[chats current-chat-id my-public-key ranges height input-height ttt-settings]]
+   (let [{:keys [group-chat contact messages]
+          :as current-chat}
+         (get chats current-chat-id)]
+     (cond-> (enrich-current-chat current-chat ranges height input-height)
+       (empty? messages)
+       (assoc :universal-link
+              (links/generate-link :public-chat :external current-chat-id))
+
+       (chat.models/public-chat? current-chat)
+       (assoc :show-input? true)
+
+       (and (chat.models/group-chat? current-chat)
+            (group-chats.db/joined? my-public-key current-chat))
+       (assoc :show-input? true)
+
+       (not group-chat)
+       (enrich-current-one-to-one-chat my-public-key ttt-settings)))))
 
 (re-frame/reg-sub
  :chats/current-chat-message
@@ -1212,10 +1282,12 @@
     send-transaction
     edit)))
 
-(defn check-sufficient-funds [transaction balance symbol amount]
-  (assoc transaction :sufficient-funds?
-         (or (nil? amount)
-             (money/sufficient-funds? amount (get balance symbol)))))
+(defn check-sufficient-funds [{:keys [sufficient-funds?] :as transaction} balance symbol amount]
+  (cond-> transaction
+    (nil? sufficient-funds?)
+    (assoc :sufficient-funds?
+           (or (nil? amount)
+               (money/sufficient-funds? amount (get balance symbol))))))
 
 (defn check-sufficient-gas [transaction balance symbol amount]
   (assoc transaction :sufficient-gas?

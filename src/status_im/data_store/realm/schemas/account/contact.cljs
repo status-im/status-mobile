@@ -128,3 +128,5 @@
                       :system-tags      {:type "string[]"}
                       :device-info      {:type       :list
                                          :objectType :contact-device-info}}})
+
+(def v8 (assoc-in v7 [:properties :tribute-to-talk] {:type :string :optional true}))

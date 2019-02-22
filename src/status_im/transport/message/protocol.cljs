@@ -4,8 +4,9 @@
             [status-im.accounts.db :as accounts.db]
             [status-im.chat.core :as chat]
             [status-im.transport.db :as transport.db]
-            [status-im.transport.utils :as transport.utils]
             [status-im.transport.partitioned-topic :as transport.topic]
+            [status-im.transport.utils :as transport.utils]
+            [status-im.tribute-to-talk.db :as tribute-to-talk]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
@@ -114,19 +115,24 @@
                   (send-direct-message current-public-key nil this)
                   (send-with-pubkey params)))))
   (receive [this chat-id signature timestamp cofx]
-    {:chat-received-message/add-fx
-     [(assoc (into {} this)
-             :old-message-id (transport.utils/old-message-id this)
-             :message-id (transport.utils/message-id
-                          signature
-                          (.-payload (:js-obj cofx)))
-             :chat-id chat-id
-             :whisper-timestamp timestamp
-             :raw-payload-hash (transport.utils/sha3
-                                (.-payload (:js-obj cofx)))
-             :from signature
-             :dedup-id (:dedup-id cofx)
-             :js-obj (:js-obj cofx))]})
+    (let [received-message-fx {:chat-received-message/add-fx
+                               [(assoc (into {} this)
+                                       :old-message-id (transport.utils/old-message-id this)
+                                       :message-id (transport.utils/message-id
+                                                    signature
+                                                    (.-payload (:js-obj cofx)))
+                                       :chat-id chat-id
+                                       :whisper-timestamp timestamp
+                                       :raw-payload-hash (transport.utils/sha3
+                                                          (.-payload (:js-obj cofx)))
+                                       :from signature
+                                       :dedup-id (:dedup-id cofx)
+                                       :js-obj (:js-obj cofx))]}]
+      (tribute-to-talk/filter-message cofx
+                                      received-message-fx
+                                      message-type
+                                      (get-in this [:content :tribute-tx-id])
+                                      signature)))
   (validate [this]
     (if (spec/valid? :message/message this)
       this

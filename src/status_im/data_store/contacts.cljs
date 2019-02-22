@@ -1,10 +1,14 @@
 (ns status-im.data-store.contacts
   (:require [re-frame.core :as re-frame]
+            [cljs.tools.reader.edn :as edn]
+            [taoensso.timbre :as log]
             [status-im.data-store.realm.core :as core]))
 
 (defn- deserialize-contact [contact]
+  (log/info "#deserialize" (:tribute-to-talk contact))
   (-> contact
       (update :tags #(into #{} %))
+      (update :tribute-to-talk edn/read-string)
       (update :system-tags
               #(reduce (fn [acc s]
                          (conj acc (keyword (subs s 1))))
@@ -14,7 +18,8 @@
 (defn- serialize-contact [contact]
   (-> contact
       (update :device-info #(or (vals %) []))
-      (update :system-tags #(mapv str %))))
+      (update :system-tags #(mapv str %))
+      (update :tribute-to-talk pr-str)))
 
 (re-frame/reg-cofx
  :data-store/get-all-contacts

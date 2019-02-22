@@ -42,6 +42,7 @@
             [status-im.transport.core :as transport]
             [status-im.transport.message.core :as transport.message]
             [status-im.tribute-to-talk.core :as tribute-to-talk]
+            [status-im.tribute-to-talk.db :as tribute-to-talk.db]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
@@ -857,8 +858,10 @@
 (handlers/register-handler-fx
  :chat.ui/show-profile
  (fn [cofx [_ identity]]
-   (navigation/navigate-to-cofx
-    (assoc-in cofx [:db :contacts/identity] identity) :profile nil)))
+   (fx/merge (assoc-in cofx [:db :contacts/identity] identity)
+             (contact/create-contact identity)
+             (tribute-to-talk/check-manifest identity)
+             (navigation/navigate-to-cofx :profile nil))))
 
 (handlers/register-handler-fx
  :chat.ui/set-chat-input-text
@@ -1917,29 +1920,47 @@
    (tribute-to-talk/remove cofx)))
 
 (handlers/register-handler-fx
+ :tribute-to-talk.ui/on-tribute-transaction-sent
+ (fn [cofx [_ public-key id result method]]
+   (tribute-to-talk/on-tribute-transaction-sent cofx public-key result)))
+
+(handlers/register-handler-fx
  :tribute-to-talk.callback/check-manifest-success
- (fn [cofx  [_ identity contenthash]]
-   (tribute-to-talk/fetch-manifest cofx identity contenthash)))
+ (fn [cofx  [_ public-key contenthash]]
+   (tribute-to-talk/fetch-manifest cofx public-key contenthash)))
 
 (handlers/register-handler-fx
  :tribute-to-talk.callback/no-manifest-found
- (fn [cofx  [_ identity]]
-   (tribute-to-talk/update-settings cofx nil)))
+ (fn [cofx  [_ public-key]]
+   (if-let [me? (= public-key
+                   (get-in cofx [:db :account/account :public-key]))]
+     (tribute-to-talk/update-settings cofx nil)
+     (contact/set-tribute cofx public-key nil))))
 
 (handlers/register-handler-fx
  :tribute-to-talk.callback/fetch-manifest-success
- (fn [cofx  [_ identity {:keys [tribute-to-talk]}]]
-   (tribute-to-talk/update-settings cofx tribute-to-talk)))
+ (fn [cofx  [_ public-key {:keys [tribute-to-talk]}]]
+   (let [tribute-to-talk (when (tribute-to-talk.db/valid? tribute-to-talk)
+                           tribute-to-talk)]
+     (if-let [me? (= public-key
+                     (get-in cofx [:db :account/account :public-key]))]
+       (tribute-to-talk/update-settings cofx tribute-to-talk)
+       (contact/set-tribute cofx public-key tribute-to-talk)))))
 
 (handlers/register-handler-fx
  :tribute-to-talk.callback/fetch-manifest-failure
- (fn [cofx  [_ identity contenthash]]
-   (tribute-to-talk/fetch-manifest cofx identity contenthash)))
+ (fn [cofx  [_ public-key contenthash]]
+   (tribute-to-talk/fetch-manifest cofx public-key contenthash)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.ui/on-pay-to-chat-pressed
+ (fn [{:keys [db] :as cofx}  [_ public-key]]
+   (tribute-to-talk/pay-tribute cofx public-key)))
 
 (handlers/register-handler-fx
  :tribute-to-talk.ui/check-manifest
- (fn [{:keys [db] :as cofx}  [_ identity]]
-   (tribute-to-talk/check-manifest cofx identity)))
+ (fn [{:keys [db] :as cofx}  [_ public-key]]
+   (tribute-to-talk/check-manifest cofx public-key)))
 
 (handlers/register-handler-fx
  :tribute-to-talk.callback/manifest-uploaded
@@ -1967,6 +1988,11 @@
  :tribute-to-talk/check-set-manifest-transaction-timeout
  (fn [cofx _]
    (tribute-to-talk/check-set-manifest-transaction cofx)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk/check-pay-tribute-tx-timeout
+ (fn [cofx [_ public-key]]
+   (tribute-to-talk/check-pay-tribute-tx cofx public-key)))
 
 ;; bottom-sheet events
 (handlers/register-handler-fx

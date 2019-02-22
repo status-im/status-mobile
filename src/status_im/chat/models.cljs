@@ -1,15 +1,17 @@
 (ns status-im.chat.models
   (:require [re-frame.core :as re-frame]
             [status-im.accounts.db :as accounts.db]
+            [status-im.contact-code.core :as contact-code]
+            [status-im.contact.core :as contact.core]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
             [status-im.data-store.user-statuses :as user-statuses-store]
-            [status-im.contact-code.core :as contact-code]
             [status-im.i18n :as i18n]
+            [status-im.mailserver.core :as mailserver]
             [status-im.transport.chat.core :as transport.chat]
-            [status-im.transport.utils :as transport.utils]
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.public-chat :as public-chat]
+            [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.desktop.events :as desktop.events]
             [status-im.ui.components.react :as react]
@@ -19,9 +21,7 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
             [status-im.utils.priority-map :refer [empty-message-map]]
-            [status-im.utils.utils :as utils]
-            [status-im.mailserver.core :as mailserver]
-            [status-im.transport.partitioned-topic :as transport.topic]))
+            [status-im.utils.utils :as utils]))
 
 (defn- get-chat [cofx chat-id]
   (get-in cofx [:db :chats chat-id]))
@@ -259,7 +259,10 @@
                      (set-chat-ui-props {:validation-messages nil}))}
             (contact-code/listen-to-chat chat-id)
             (when platform/desktop?
-              (mark-messages-seen chat-id))))
+              (mark-messages-seen chat-id))
+            #_(when (one-to-one-chat? % chat-id)
+                (contact.core/create-contact % chat-id))
+            (tribute-to-talk/check-manifest chat-id)))
 
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"

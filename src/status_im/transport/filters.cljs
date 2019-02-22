@@ -1,13 +1,13 @@
 (ns ^{:doc "API for whisper filters"}
  status-im.transport.filters
   (:require [re-frame.core :as re-frame]
+            [status-im.chat.models :as chat]
+            [status-im.contact.core :as contact]
             [status-im.mailserver.core :as mailserver]
             [status-im.transport.utils :as utils]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
-            [status-im.transport.partitioned-topic :as transport.topic]
-            [taoensso.timbre :as log]
-            [status-im.contact.core :as contact]))
+            [taoensso.timbre :as log]))
 
 (defn- receive-message [chat-id js-error js-message]
   (re-frame/dispatch [:transport/messages-received js-error js-message chat-id]))
@@ -97,7 +97,7 @@
                   (contact/add-contact public-key)
 
                   :open-chat
-                  (contact/open-chat public-key)))]
+                  (chat/start-chat public-key {:navigation-reset? true})))]
              filters-fx-fns
              [(mailserver/process-next-messages-request)])))))
 
