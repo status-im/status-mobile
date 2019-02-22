@@ -1,63 +1,82 @@
 (ns status-im.ui.screens.routing.screens
-  (:require
-   [status-im.ui.screens.accounts.login.views :as login]
-   [status-im.ui.screens.accounts.recover.views :as recover]
-   [status-im.ui.screens.accounts.views :as accounts]
-   [status-im.ui.screens.progress.views :as progress]
-   [status-im.ui.screens.chat.views :as chat]
-   [status-im.ui.screens.add-new.views :as add-new]
-   [status-im.ui.screens.add-new.new-chat.views :as new-chat]
-   [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
-   [status-im.ui.screens.qr-scanner.views :as qr-scanner]
-   [status-im.ui.screens.group.views :as group]
-   [status-im.ui.screens.profile.user.views :as profile.user]
-   [status-im.ui.screens.profile.contact.views :as profile.contact]
-   [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
-   [status-im.ui.screens.profile.photo-capture.views :as photo-capture]
-   [status-im.extensions.capacities.camera.views :as extensions.camera.views]
-   [status-im.ui.screens.wallet.main.views :as wallet.main]
-   [status-im.ui.screens.wallet.collectibles.views :as collectibles]
-   [status-im.ui.screens.wallet.send.views :as send]
-   [status-im.ui.screens.wallet.sign-message.views :as sign-message]
-   [status-im.ui.screens.wallet.request.views :as request]
-   [status-im.ui.screens.wallet.components.views :as wallet.components]
-   [status-im.ui.screens.wallet.onboarding.views :as wallet.onboarding]
-   [status-im.ui.screens.wallet.transaction-fee.views :as wallet.transaction-fee]
-   [status-im.ui.screens.wallet.settings.views :as wallet-settings]
-   [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
-   [status-im.ui.screens.wallet.transaction-sent.views :as transaction-sent]
-   [status-im.ui.screens.contacts-list.views :as contacts-list]
-   [status-im.ui.screens.network-settings.views :as network-settings]
-   [status-im.ui.screens.network-settings.network-details.views :as network-details]
-   [status-im.ui.screens.network-settings.edit-network.views :as edit-network]
-   [status-im.ui.screens.extensions.views :as screens.extensions]
-   [status-im.ui.screens.log-level-settings.views :as log-level-settings]
-   [status-im.ui.screens.fleet-settings.views :as fleet-settings]
-   [status-im.ui.screens.offline-messaging-settings.views :as offline-messaging-settings]
-   [status-im.ui.screens.offline-messaging-settings.edit-mailserver.views :as edit-mailserver]
-   [status-im.ui.screens.extensions.add.views :as extensions.add]
-   [status-im.ui.screens.bootnodes-settings.views :as bootnodes-settings]
-   [status-im.ui.screens.pairing.views :as pairing]
-   [status-im.ui.screens.bootnodes-settings.edit-bootnode.views :as edit-bootnode]
-   [status-im.ui.screens.currency-settings.views :as currency-settings]
-   [status-im.ui.screens.hardwallet.settings.views :as hardwallet.settings]
-   [status-im.ui.screens.help-center.views :as help-center]
-   [status-im.ui.screens.browser.views :as browser]
-   [status-im.ui.screens.browser.open-dapp.views :as open-dapp]
-   [status-im.ui.screens.intro.views :as intro]
-   [status-im.ui.screens.accounts.create.views :as accounts.create]
-   [status-im.ui.screens.hardwallet.authentication-method.views :as hardwallet.authentication]
-   [status-im.ui.screens.hardwallet.connect.views :as hardwallet.connect]
-   [status-im.ui.screens.hardwallet.pin.views :as hardwallet.pin]
-   [status-im.ui.screens.hardwallet.setup.views :as hardwallet.setup]
-   [status-im.ui.screens.hardwallet.success.views :as hardwallet.success]
-   [status-im.ui.screens.profile.seed.views :as profile.seed]
-   [status-im.ui.screens.profile.tribute-to-talk.views :as tr-to-talk]
-   [status-im.ui.screens.about-app.views :as about-app]
-   [status-im.ui.screens.stickers.views :as stickers]
-   [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
-   [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
-   [status-im.ui.screens.home.views :as home]))
+  (:require [status-im.extensions.capacities.camera.views
+             :as
+             extensions.camera.views]
+            [status-im.ui.screens.about-app.views :as about-app]
+            [status-im.ui.screens.accounts.create.views :as accounts.create]
+            [status-im.ui.screens.accounts.login.views :as login]
+            [status-im.ui.screens.accounts.recover.views :as recover]
+            [status-im.ui.screens.accounts.views :as accounts]
+            [status-im.ui.screens.add-new.new-chat.views :as new-chat]
+            [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
+            [status-im.ui.screens.add-new.views :as add-new]
+            [status-im.ui.screens.bootnodes-settings.edit-bootnode.views
+             :as
+             edit-bootnode]
+            [status-im.ui.screens.bootnodes-settings.views :as bootnodes-settings]
+            [status-im.ui.screens.browser.open-dapp.views :as open-dapp]
+            [status-im.ui.screens.browser.views :as browser]
+            [status-im.ui.screens.chat.views :as chat]
+            [status-im.ui.screens.contacts-list.views :as contacts-list]
+            [status-im.ui.screens.currency-settings.views :as currency-settings]
+            [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
+            [status-im.ui.screens.extensions.add.views :as extensions.add]
+            [status-im.ui.screens.extensions.views :as screens.extensions]
+            [status-im.ui.screens.fleet-settings.views :as fleet-settings]
+            [status-im.ui.screens.group.views :as group]
+            [status-im.ui.screens.hardwallet.authentication-method.views
+             :as
+             hardwallet.authentication]
+            [status-im.ui.screens.hardwallet.connect.views :as hardwallet.connect]
+            [status-im.ui.screens.hardwallet.pin.views :as hardwallet.pin]
+            [status-im.ui.screens.hardwallet.settings.views :as hardwallet.settings]
+            [status-im.ui.screens.hardwallet.setup.views :as hardwallet.setup]
+            [status-im.ui.screens.hardwallet.success.views :as hardwallet.success]
+            [status-im.ui.screens.help-center.views :as help-center]
+            [status-im.ui.screens.home.views :as home]
+            [status-im.ui.screens.intro.views :as intro]
+            [status-im.ui.screens.log-level-settings.views :as log-level-settings]
+            [status-im.ui.screens.mobile-network-settings.view
+             :as
+             mobile-network-settings]
+            [status-im.ui.screens.network-settings.edit-network.views
+             :as
+             edit-network]
+            [status-im.ui.screens.network-settings.network-details.views
+             :as
+             network-details]
+            [status-im.ui.screens.network-settings.views :as network-settings]
+            [status-im.ui.screens.offline-messaging-settings.edit-mailserver.views
+             :as
+             edit-mailserver]
+            [status-im.ui.screens.offline-messaging-settings.views
+             :as
+             offline-messaging-settings]
+            [status-im.ui.screens.pairing.views :as pairing]
+            [status-im.ui.screens.profile.contact.views :as profile.contact]
+            [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
+            [status-im.ui.screens.profile.photo-capture.views :as photo-capture]
+            [status-im.ui.screens.profile.seed.views :as profile.seed]
+            [status-im.ui.screens.profile.tribute-to-talk.views :as tr-to-talk]
+            [status-im.ui.screens.profile.user.views :as profile.user]
+            [status-im.ui.screens.progress.views :as progress]
+            [status-im.ui.screens.qr-scanner.views :as qr-scanner]
+            [status-im.ui.screens.stickers.views :as stickers]
+            [status-im.ui.screens.wallet.collectibles.views :as collectibles]
+            [status-im.ui.screens.wallet.components.views :as wallet.components]
+            [status-im.ui.screens.wallet.main.views :as wallet.main]
+            [status-im.ui.screens.wallet.onboarding.views :as wallet.onboarding]
+            [status-im.ui.screens.wallet.request.views :as request]
+            [status-im.ui.screens.wallet.send.views :as send]
+            [status-im.ui.screens.wallet.settings.views :as wallet-settings]
+            [status-im.ui.screens.wallet.sign-message.views :as sign-message]
+            [status-im.ui.screens.wallet.transaction-fee.views
+             :as
+             wallet.transaction-fee]
+            [status-im.ui.screens.wallet.transaction-sent.views
+             :as
+             transaction-sent]
+            [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]))
 
 (def all-screens
   {:login                            login/login
@@ -89,6 +108,7 @@
    :stickers                         stickers/packs
    :stickers-pack                    stickers/pack
    :stickers-pack-modal              [:modal stickers/pack-modal]
+   :tribute-learn-more               [:modal tr-to-talk/learn-more]
    :chat-modal                       [:modal chat/chat-modal]
    :show-extension-modal             [:modal extensions.add/show-extension-modal]
    :wallet-send-transaction-modal    [:modal send/send-transaction-modal]

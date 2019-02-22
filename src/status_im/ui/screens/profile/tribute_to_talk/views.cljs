@@ -3,6 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
+            [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as icons]
@@ -19,8 +20,7 @@
 (defn steps-numbers [editing?]
   {:intro                1
    :set-snt-amount       (if editing? 1 2)
-   :personalized-message (if editing? 2 3)
-   :finish               3})
+   :personalized-message (if editing? 2 3)})
 
 (def step-forward-label
   {:intro                :t/get-started
@@ -58,10 +58,10 @@
 (defn snt-amount-label
   [snt-amount fiat-value]
   [react/view {:style styles/snt-amount-container}
-   [react/text {:style styles/snt-amount-label
-                :number-of-lines 1
-                :ellipsize-mode :middle}
-    [react/text {:style styles/snt-amount} (or snt-amount "0")]
+   [react/nested-text {:style styles/snt-amount-label
+                       :number-of-lines 1
+                       :ellipsize-mode :middle}
+    [{:style styles/snt-amount} (or snt-amount "0")]
     " SNT"]
    [snt-asset-value fiat-value]])
 
@@ -112,10 +112,9 @@
   [react/scroll-view
    {:content-container-style styles/personalized-message-container}
    [react/view {:style styles/personalized-message-title}
-    [react/text {:style {:text-align :center}}
+    [react/nested-text {:style {:text-align :center}}
      (i18n/label :t/personalized-message)
-     [react/text {:style styles/description-label}
-      (str " (" (i18n/label :t/optional) ")")]]]
+     [{:style styles/description-label} (str " (" (i18n/label :t/optional) ")")]]]
    [react/text-input
     (cond-> {:style (assoc styles/personalized-message-input :height 144
                            :align-self :stretch)
@@ -129,19 +128,46 @@
     (i18n/label :t/tribute-to-talk-you-can-leave-a-message)]])
 
 (defn finish
-  [snt-amount]
+  [snt-amount state]
   [react/view {:style styles/intro-container}
    [react/view {:style {:flex       1
                         :min-height 32}}]
    [react/view {:style {:justify-content :center
                         :align-items :center}}
-    [react/view {:style (styles/finish-circle (if snt-amount
-                                                colors/green-transparent-10
-                                                colors/gray-lighter) 80)}
+    [react/view {:style (styles/finish-circle
+                         (case state
+                           :completed
+                           colors/green-transparent-10
+                           :disabled
+                           colors/gray-lighter
+                           :pending
+                           colors/gray-lighter
+                           :signing
+                           colors/gray-lighter
+                           :transaction-failed
+                           colors/red-transparent-10)
+                         80)}
      [react/view {:style styles/finish-circle-with-shadow}
-      [icons/icon :main-icons/check {:color (if snt-amount
-                                              colors/green
-                                              colors/gray)}]]]]
+      (if (#{:signing :pending} state)
+        [react/activity-indicator {:animating true
+                                   :size      :large
+                                   :color colors/gray}]
+        [icons/icon (case state
+                      :completed :main-icons/check
+                      :disabled :main-icons/cancel
+                      :transaction-failed :main-icons/warning)
+         {:width 48 :height 48
+          :color (case state
+                   :completed
+                   colors/green
+                   :disabled
+                   colors/gray
+                   :pending
+                   colors/gray
+                   :signing
+                   colors/gray
+                   :transaction-failed
+                   colors/red)}])]]]
 
    [react/view {:style {:flex       1
                         :min-height 32}}]
@@ -149,17 +175,35 @@
                          :align-items     :center
                          :margin-bottom   32}}
     [react/text {:style styles/finish-label}
-     (i18n/label (if snt-amount
+     (i18n/label (case state
+                   :completed
                    :t/you-are-all-set
-                   :t/tribute-to-talk-disabled))]
-    (if snt-amount
-      [react/text {:style (assoc styles/description-label :margin-top 16)}
+                   :disabled
+                   :t/tribute-to-talk-disabled
+                   :pending
+                   :t/tribute-to-talk-pending
+                   :signing
+                   :t/tribute-to-talk-signing
+                   :transaction-failed
+                   :t/transaction-failed))]
+    (case state
+      :completed
+      [react/nested-text {:style (assoc styles/description-label :margin-top 16)}
        (i18n/label :t/tribute-to-talk-finish-desc)
-       [react/text {:style {:text-align :center}}
-        snt-amount]
+       [{:style {:color colors/black
+                 :font-weight "600"}} snt-amount]
        " SNT"]
+      :disabled
       [react/text {:style (assoc styles/description-label :margin-top 16)}
-       (i18n/label :t/tribute-to-talk-disabled-note)])]])
+       (i18n/label :t/tribute-to-talk-disabled-note)]
+      :pending
+      [react/text {:style (assoc styles/description-label :margin-top 16)}
+       (i18n/label :t/tribute-to-talk-pending-note)]
+      :signing
+      nil
+      :transaction-failed
+      [react/text {:style (assoc styles/description-label :margin-top 16)}
+       (i18n/label :t/tribute-to-talk-transaction-failed-note)])]])
 
 (defn enabled-note
   []
@@ -185,10 +229,10 @@
      [react/view {:style {:margin-left 16 :justify-content :flex-start}}
       [react/view {:style {:justify-content :center
                            :align-items :center}}
-       [react/text {:style styles/current-snt-amount}
+       [react/nested-text {:style styles/current-snt-amount}
         snt-amount
-        [react/text {:style (assoc styles/current-snt-amount
-                                   :color colors/gray)} " SNT"]]]
+        [{:style (assoc styles/current-snt-amount :color colors/gray)}
+         " SNT"]]]
       [snt-asset-value fiat-value]]]
     [react/view {:flex 1}]
     [react/text {:on-press #(re-frame/dispatch
@@ -221,8 +265,9 @@
                 :min-height 24}]
    [enabled-note]])
 
-(defn chat-sample []
-  [react/view {:style (assoc styles/learn-more-section :margin-top 24)}
+(defn pay-to-chat-message [{:keys [snt-amount fiat-amount fiat-currency
+                                   personalized-message style public-key tribute-status]}]
+  [react/view {:style style}
    [react/view {:style {:flex-direction :row
                         :align-items :center}}
     [react/view {:style {:background-color colors/white
@@ -232,50 +277,79 @@
                          :font-size   13
                          :margin-left 4}}
      (i18n/label :t/tribute-to-talk)]]
+   (when-not (string/blank? personalized-message)
+     [react/view {:style styles/chat-sample-bubble}
+      [react/text (i18n/label :t/tribute-to-talk-sample-text)]])
    [react/view {:style styles/chat-sample-bubble}
-    [react/text (i18n/label :t/tribute-to-talk-sample-text)]]
-   [react/view {:style (assoc styles/chat-sample-bubble :width 141)}
     ;;TODO replace hardcoded values
-    [react/text {:style {:font-size 22}} "1000"
-     [react/text {:style {:font-size 22 :color colors/gray}} " SNT"]]
-    [react/text {:style {:font-size 12}}
-     "~3.48"
-     [react/text {:style {:font-size 12 :color colors/gray}} " USD"]]
+    [react/nested-text {:style {:font-size 22}}
+     (str snt-amount)
+     [{:style {:font-size 22 :color colors/gray}} " SNT"]]
+    [react/nested-text
+     {:style {:font-size 12}}
+     (str "~" fiat-amount)
+     [{:style {:font-size 12 :color colors/gray}} (str " " fiat-currency)]]
     [react/view {:style styles/pay-to-chat-container}
-     [react/text {:style styles/pay-to-chat-text}
-      (i18n/label :t/pay-to-chat)]]]])
+     (if (or (nil? public-key) (= tribute-status :required))
+       [react/text (cond-> {:style styles/pay-to-chat-text}
+                     public-key
+                     (assoc :on-press #(re-frame/dispatch [:tribute-to-talk.ui/on-pay-to-chat-pressed
+                                                           public-key])))
+        (i18n/label :t/pay-to-chat)]
+       [react/view {:style {:flex-direction :row}}
+        [react/view {:style (styles/payment-status-icon (= tribute-status :pending))}
+         [icons/icon (if (= tribute-status :pending) :tiny-icons/tiny-pending :tiny-icons/tiny-check)
+          {:color (if (= tribute-status :pending) colors/black colors/white)}]]
+        [react/text {:style styles/payment-status-text}
+         nil]])]]])
 
-(defn learn-more []
-  [react/scroll-view {:content-container-style styles/learn-more-container}
-   [react/image {:source (:tribute-to-talk resources/ui)
-                 :style styles/learn-more-image}]
-   [react/text {:style styles/learn-more-title-text}
-    (i18n/label :t/tribute-to-talk)]
-   [react/view {:style styles/learn-more-text-container-1}
-    [react/text {:style styles/learn-more-text}
-     (i18n/label :t/tribute-to-talk-learn-more-1)]]
-   [separator]
-   [chat-sample]
-   [react/view {:style styles/learn-more-text-container-2}
-    [react/text {:style styles/learn-more-text}
-     (i18n/label :t/tribute-to-talk-learn-more-2)]]
-   [react/view {:style (assoc styles/learn-more-section
-                              :flex-direction     :row
-                              :align-item         :flex-stretch
-                              :padding-horizontal 16
-                              :padding-vertical   12)}
-    [react/view {:style (styles/icon-view colors/blue-light)}
-     [icons/icon :main-icons/add-contact {:color colors/blue}]]
-    [react/view {:style {:margin-left 16 :justify-content :center}}
-     [react/text {:style (assoc styles/learn-more-text :color colors/blue)}
-      (i18n/label :t/add-to-contacts)]]]
-   [react/view {:style styles/learn-more-text-container-2}
-    [react/text {:style styles/learn-more-text}
-     (i18n/label :t/tribute-to-talk-learn-more-3)]]])
+(defn learn-more [owner?]
+  [react/view {:flex 1}
+   (when-not owner?
+     [toolbar/toolbar nil toolbar/default-nav-close
+      [react/view
+       [react/text {:style styles/tribute-to-talk}
+        (i18n/label :t/tribute-to-talk)]
+       [react/text {:style styles/step-n}
+        (i18n/label :t/learn-more)]]])
+   [react/scroll-view {:content-container-style styles/learn-more-container}
+    [react/image {:source (:tribute-to-talk resources/ui)
+                  :style styles/learn-more-image}]
+    [react/text {:style styles/learn-more-title-text}
+     (i18n/label :t/tribute-to-talk)]
+    [react/view {:style styles/learn-more-text-container-1}
+     [react/text {:style styles/learn-more-text}
+      (i18n/label (if owner? :t/tribute-to-talk-learn-more-1
+                      :t/tribute-to-talk-paywall-learn-more-1))]]
+    [separator]
+    [pay-to-chat-message {:snt-amount 1000
+                          :fiat-amount 3.48
+                          :fiat-currency (i18n/label :t/usd-currency)
+                          :personalized-message (i18n/label :t/tribute-to-talk-sample-text)
+                          :style (assoc styles/learn-more-section :margin-top 24)}]
+    [react/view {:style styles/learn-more-text-container-2}
+     [react/text {:style styles/learn-more-text}
+      (i18n/label (if owner? :t/tribute-to-talk-learn-more-2
+                      :t/tribute-to-talk-paywall-learn-more-2))]]
+    [react/view {:style (assoc styles/learn-more-section
+                               :flex-direction     :row
+                               :align-item         :flex-stretch
+                               :padding-horizontal 16
+                               :padding-vertical   12)}
+     [react/view {:style (styles/icon-view colors/blue-light)}
+      [icons/icon :main-icons/add-contact {:color colors/blue}]]
+     [react/view {:style {:margin-left 16 :justify-content :center}}
+      [react/text {:style (assoc styles/learn-more-text :color colors/blue)}
+       (i18n/label (if owner? :t/add-to-contacts :t/share-profile))]]]
+    [react/view {:style styles/learn-more-text-container-2}
+     [react/text {:style styles/learn-more-text}
+      (i18n/label (if owner? :t/tribute-to-talk-learn-more-3
+                      :t/tribute-to-talk-paywall-learn-more-3))]]]])
 
 (defview tribute-to-talk []
   (letsubs [current-account           [:account/account]
-            {:keys [step snt-amount editing? message fiat-value disabled?]}
+            {:keys [step snt-amount editing? message
+                    fiat-value disable-button? state]}
             [:tribute-to-talk/ui]]
     [react/keyboard-avoiding-view {:style styles/container}
      [react/safe-area-view {:style {:flex 1}}
@@ -292,7 +366,12 @@
         (when-not (#{:edit :learn-more} step)
           [react/text {:style styles/step-n}
            (if (= step :finish)
-             (i18n/label (if snt-amount :t/completed :t/disabled))
+             (i18n/label (case state
+                           :completed :t/completed
+                           :pending :t/pending
+                           :signing :t/signing
+                           :transaction-failed :t/transaction-failed
+                           :disabled :t/disabled))
              (i18n/label :t/step-i-of-n {:step ((steps-numbers editing?) step)
                                          :number (if editing? 2 3)}))])
         (when (= step :learn-more)
@@ -303,15 +382,15 @@
         :intro                [intro]
         :set-snt-amount       [set-snt-amount snt-amount]
         :edit                 [edit snt-amount message fiat-value]
-        :learn-more           [learn-more]
+        :learn-more           [learn-more step]
         :personalized-message [personalized-message message]
-        :finish               [finish snt-amount])
+        :finish               [finish snt-amount state])
 
       (when-not (#{:learn-more :edit} step)
         [react/view {:style styles/bottom-toolbar}
          [components.common/button {:button-style styles/intro-button
-                                    :disabled?    disabled?
-                                    :label-style  (when disabled? {:color colors/gray})
+                                    :disabled?    disable-button?
+                                    :label-style  (when disable-button? {:color colors/gray})
                                     :on-press     #(re-frame/dispatch
                                                     [:tribute-to-talk.ui/step-forward-pressed])
                                     :label        (i18n/label (step-forward-label step))}]])]]))

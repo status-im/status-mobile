@@ -90,6 +90,7 @@
        {:container-style        styles/action-container
         :action-style           styles/action
         :action-label-style     styles/action-label
+        :action-subtext-style   styles/action-subtext
         :action-separator-style styles/action-separator
         :icon-opts              styles/action-icon-opts}]
       [react/view {:style {:height 16}}]

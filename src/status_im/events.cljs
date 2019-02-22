@@ -8,15 +8,17 @@
             [status-im.accounts.update.core :as accounts.update]
             [status-im.bootnodes.core :as bootnodes]
             [status-im.browser.core :as browser]
-            [status-im.node.core :as node]
             [status-im.browser.permissions :as browser.permissions]
+            [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.input :as commands.input]
+            [status-im.chat.db :as chat.db]
             [status-im.chat.models :as chat]
             [status-im.chat.models.input :as chat.input]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.chat.models.message :as chat.message]
-            [status-im.contact.core :as contact]
+            [status-im.contact-code.core :as contact-code]
             [status-im.contact-recovery.core :as contact-recovery]
+            [status-im.contact.core :as contact]
             [status-im.extensions.core :as extensions]
             [status-im.extensions.registry :as extensions.registry]
             [status-im.fleet.core :as fleet]
@@ -24,38 +26,36 @@
             [status-im.hardwallet.core :as hardwallet]
             [status-im.i18n :as i18n]
             [status-im.init.core :as init]
-            [status-im.utils.logging.core :as logging]
             [status-im.log-level.core :as log-level]
             [status-im.mailserver.core :as mailserver]
             [status-im.network.core :as network]
+            [status-im.node.core :as node]
             [status-im.notifications.core :as notifications]
             [status-im.pairing.core :as pairing]
-            [status-im.contact-code.core :as contact-code]
             [status-im.privacy-policy.core :as privacy-policy]
             [status-im.protocol.core :as protocol]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.search.core :as search]
             [status-im.signals.core :as signals]
-            [status-im.transport.message.core :as transport.message]
-            [status-im.transport.core :as transport]
-            [status-im.ui.screens.currency-settings.models :as currency-settings.models]
-            [status-im.tribute-to-talk.core :as tribute-to-talk]
-            [status-im.node.core :as node]
-            [status-im.web3.core :as web3]
-            [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.handlers :as handlers]
-            [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]
-            [status-im.chat.commands.core :as commands]
-            [status-im.chat.models.loading :as chat-loading]
-            [status-im.node.core :as node]
             [status-im.stickers.core :as stickers]
-            [status-im.utils.config :as config]
+            [status-im.transport.core :as transport]
+            [status-im.transport.message.core :as transport.message]
+            [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.ui.components.react :as react]
+            [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
+            [status-im.ui.screens.currency-settings.models
+             :as
+             currency-settings.models]
+            [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.build :as build]
-            [status-im.chat.db :as chat.db]))
+            [status-im.utils.config :as config]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.logging.core :as logging]
+            [status-im.utils.utils :as utils]
+            [status-im.web3.core :as web3]
+            [taoensso.timbre :as log]))
 
 ;; init module
 
@@ -108,7 +108,7 @@
    (log/debug "PERF" :init-rest-of-chats (.now js/Date))
    (fx/merge cofx
              {:db (assoc db :chats/loading? false)}
-             (chat-loading/initialize-chats {:from 10}))))
+             (chat.loading/initialize-chats {:from 10}))))
 
 (defn account-change-success
   [{:keys [db] :as cofx} [_ address nodes]]
@@ -122,7 +122,7 @@
        (node/initialize (get-in db [:accounts/login :address])))
      (init/initialize-account address)
      (mailserver/initialize-ranges)
-     (chat-loading/initialize-chats {:to 10}))))
+     (chat.loading/initialize-chats {:to 10}))))
 
 (handlers/register-handler-fx
  :init.callback/account-change-success
@@ -1656,6 +1656,11 @@
  (fn [cofx [_ chat-id envelope-hash]]
    (transport.message/set-contact-message-envelope-hash cofx chat-id envelope-hash)))
 
+(handlers/register-handler-fx
+ :transport.callback/node-info-fetched
+ (fn [cofx [_ node-info]]
+   (transport/set-node-info cofx node-info)))
+
 ;; contact module
 
 (handlers/register-handler-fx
@@ -1686,13 +1691,24 @@
 (handlers/register-handler-fx
  :contact/qr-code-scanned
  [(re-frame/inject-cofx :random-id-generator)]
- (fn [cofx [_ _ contact-identity]]
-   (contact/handle-qr-code cofx contact-identity)))
+ (fn [{:keys [db] :as cofx}  [_ _ contact-identity]]
+   (let [current-account (:account/account db)
+         fx              {:db (assoc db :contacts/new-identity contact-identity)}
+         validation-result (new-chat.db/validate-pub-key db contact-identity)]
+     (if (some? validation-result)
+       {:utils/show-popup {:title (i18n/label :t/unable-to-read-this-code)
+                           :content validation-result
+                           :on-dismiss #(re-frame/dispatch [:navigate-to-clean :home])}}
+       (fx/merge cofx
+                 fx
+                 (if config/partitioned-topic-enabled?
+                   (contact/add-contacts-filter contact-identity :open-chat)
+                   (chat/start-chat contact-identity {:navigation-reset? true})))))))
 
 (handlers/register-handler-fx
  :contact/filters-added
  (fn [cofx [_ contact-identity]]
-   (contact/open-chat cofx contact-identity)))
+   (chat/start-chat cofx contact-identity {:navigation-reset? true})))
 
 (handlers/register-handler-fx
  :contact.ui/start-group-chat-pressed
@@ -1703,13 +1719,13 @@
  :contact.ui/send-message-pressed
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx [_ {:keys [public-key]}]]
-   (contact/open-chat cofx public-key)))
+   (chat/start-chat cofx public-key {:navigation-reset? true})))
 
 (handlers/register-handler-fx
  :contact.ui/contact-code-submitted
  [(re-frame/inject-cofx :random-id-generator)]
- (fn [cofx _]
-   (contact/add-new-identity-to-contacts cofx)))
+ (fn [{{:contacts/keys [new-identity]} :db :as cofx} _]
+   (chat/start-chat cofx new-identity {:navigation-reset? true})))
 
 ;; search module
 
@@ -1858,11 +1874,6 @@
  (fn [cofx _]
    (stickers/pending-timeout cofx)))
 
-(handlers/register-handler-fx
- :transport.callback/node-info-fetched
- (fn [cofx [_ node-info]]
-   (transport/set-node-info cofx node-info)))
-
 ;; Tribute to Talk
 (handlers/register-handler-fx
  :tribute-to-talk.ui/menu-item-pressed
@@ -1904,6 +1915,59 @@
  (fn [cofx _]
    (tribute-to-talk/remove cofx)))
 
+(handlers/register-handler-fx
+ :tribute-to-talk.callback/check-manifest-success
+ (fn [cofx  [_ identity contenthash]]
+   (tribute-to-talk/fetch-manifest cofx identity contenthash)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.callback/no-manifest-found
+ (fn [cofx  [_ identity]]
+   (tribute-to-talk/update-settings cofx nil)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.callback/fetch-manifest-success
+ (fn [cofx  [_ identity {:keys [tribute-to-talk]}]]
+   (tribute-to-talk/update-settings cofx tribute-to-talk)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.callback/fetch-manifest-failure
+ (fn [cofx  [_ identity contenthash]]
+   (tribute-to-talk/fetch-manifest cofx identity contenthash)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.ui/check-manifest
+ (fn [{:keys [db] :as cofx}  [_ identity]]
+   (tribute-to-talk/check-manifest cofx identity)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.callback/manifest-uploaded
+ (fn [cofx [_ hash]]
+   (tribute-to-talk/set-manifest-signing-flow cofx hash)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.callback/manifest-upload-failed
+ (fn [cofx [_ error]]
+   (tribute-to-talk/on-manifest-upload-failed cofx error)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.callback/set-manifest-transaction-completed
+ (fn [cofx [_ id transaction-hash method]]
+   (tribute-to-talk/on-set-manifest-transaction-completed cofx
+                                                          transaction-hash)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.callback/set-manifest-transaction-failed
+ (fn [cofx [_ error]]
+   (tribute-to-talk/on-set-manifest-transaction-failed cofx
+                                                       error)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk/check-set-manifest-transaction-timeout
+ (fn [cofx _]
+   (tribute-to-talk/check-set-manifest-transaction cofx)))
+
+;; bottom-sheet events
 (handlers/register-handler-fx
  :bottom-sheet/show-sheet
  (fn [cofx [_ view]]

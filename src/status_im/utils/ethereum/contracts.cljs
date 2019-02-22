@@ -7,7 +7,16 @@
             [status-im.utils.money :as money]))
 
 (def contracts
-  {:status/tribute-to-talk
+  {:status/snt
+   {:address
+    {:mainnet "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
+     :testnet "0xc55cf4b03948d7ebc8b9e8bad92643703811d162"
+     :rinkeby nil}
+    :methods
+    {:erc20/transfer
+     {:signature "transfer(address,uint256)"
+      :write? true}}}
+   :status/tribute-to-talk
    {:address
     {:mainnet nil
      :testnet "0x3da3fc53e24707f36c5b4433b442e896c4955f0e"
@@ -40,7 +49,8 @@
                   callback)))
 
 (fx/defn call
-  [{:keys [db] :as cofx} {:keys [contract method params callback on-result on-error details]}]
+  [{:keys [db] :as cofx}
+   {:keys [contract method params callback on-result on-error details]}]
   (let [chain-keyword (-> (get-in db [:account/account :networks (:network db)])
                           ethereum/network->chain-keyword)
         contract-address (get-in contracts [contract :address chain-keyword])]

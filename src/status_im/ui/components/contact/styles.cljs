@@ -1,8 +1,5 @@
 (ns status-im.ui.components.contact.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as common]
-            [status-im.utils.platform]
-            [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def contact-container-to-refactor
   {:flex-direction :row

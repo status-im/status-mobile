@@ -1,33 +1,30 @@
 (ns status-im.ui.screens.profile.user.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [re-frame.core :as re-frame]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.ui.components.list.views :as list.views]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.action-button.styles :as action-button.styles]
             [status-im.ui.components.button.view :as button]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.common.styles :as common.styles]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.list.views :as list.views]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
-            [status-im.ui.components.toolbar.styles :as toolbar.styles]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.screens.profile.components.styles
+             :as
+             profile.components.styles]
             [status-im.ui.screens.profile.components.views :as profile.components]
-            [status-im.ui.screens.profile.components.styles :as profile.components.styles]
             [status-im.ui.screens.profile.user.styles :as styles]
-            [status-im.utils.build :as build]
             [status-im.utils.config :as config]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]
-            [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.common.common :as components.common]
             [status-im.utils.identicon :as identicon]
-            [clojure.string :as string]
-            [status-im.utils.universal-links.core :as universal-links]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.universal-links.core :as universal-links]
+            [status-im.utils.utils :as utils])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn my-profile-toolbar []
   [toolbar/toolbar
@@ -277,18 +274,36 @@
     :accessory-value     active-contacts-count
     :action-fn           #(re-frame/dispatch [:navigate-to :contacts-list])}])
 
-(defn tribute-to-talk-item [snt-amount seen?]
+(defn tribute-to-talk-item [state snt-amount seen?]
   [list.views/big-list-item
    (cond-> {:text                (i18n/label :t/tribute-to-talk)
-            :icon                :main-icons/tribute-to-talk
             :accessibility-label :notifications-button
             :new?                (not seen?)
             :action-fn           #(re-frame/dispatch
                                    [:tribute-to-talk.ui/menu-item-pressed])}
-     snt-amount
-     (assoc :accessory-value (str snt-amount " SNT"))
-     (not (and seen? snt-amount))
-     (assoc :subtext (i18n/label :t/tribute-to-talk-desc)))])
+     (and (not (and seen?
+                    snt-amount
+                    (#{:signing :pending :transaction-failed} state))))
+     (assoc :subtext (i18n/label :t/tribute-to-talk-desc))
+
+     (#{:signing :pending} state)
+     (assoc :activity-indicator {:animating true
+                                 :color colors/blue}
+            :subtext (case state
+                       :pending (i18n/label :t/pending-confirmation)
+                       :signing (i18n/label :t/waiting-to-sign)))
+
+     (= state :transaction-failed)
+     (assoc :icon :main-icons/warning
+            :icon-color colors/red
+            :subtext (i18n/label :t/transaction-failed))
+
+     (not (#{:signing :pending :transaction-failed} state))
+     (assoc :icon :main-icons/tribute-to-talk)
+
+     (and (= state :completed)
+          (not-empty snt-amount))
+     (assoc :accessory-value (str snt-amount " SNT")))])
 
 (defview extensions-settings []
   (letsubs [{:keys [label view on-close]} [:get-screen-params :my-profile-ext-settings]]
@@ -308,7 +323,8 @@
             scroll          (reagent/atom nil)
             active-contacts-count [:contacts/active-count]
             {tribute-to-talk-seen? :seen?
-             snt-amount :snt-amount} [:tribute-to-talk/settings]]
+             snt-amount :snt-amount
+             tribute-to-talk-state :state} [:tribute-to-talk/ui]]
     (let [shown-account    (merge current-account changed-account)
           ;; We scroll on the component once rendered. setTimeout is necessary,
           ;; likely to allow the animation to finish.
@@ -342,7 +358,10 @@
          [share-profile-item (dissoc current-account :mnemonic)]
          [contacts-list-item active-contacts-count]
          (when config/tr-to-talk-enabled?
-           [tribute-to-talk-item snt-amount tribute-to-talk-seen?])
+           [tribute-to-talk-item
+            tribute-to-talk-state
+            snt-amount
+            tribute-to-talk-seen?])
          [my-profile-settings current-account shown-account currency (nil? login-data) extensions]
          (when (nil? login-data)
            [advanced shown-account on-show-advanced])]]])))

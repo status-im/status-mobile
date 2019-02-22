@@ -14,9 +14,9 @@
                           :success-event-creator
                           (fn [{:keys [status body]}]
                             (if (= 200 status)
-                              (on-success {:value body})
+                              (on-success body)
                               (when on-failure
-                                (on-failure {:value status}))))}
+                                (on-failure status))))}
                    on-failure
                    (assoc :failure-event-creator on-failure))})
 
@@ -40,8 +40,8 @@
                              :success-event-creator
                              (fn [{:keys [status body]}]
                                (if (= 200 status)
-                                 (on-success {:value (parse-ipfs-add-response body)})
+                                 (on-success (parse-ipfs-add-response body))
                                  (when on-failure
-                                   (on-failure {:value status}))))}
+                                   (on-failure status))))}
                       on-failure
                       (assoc :failure-event-creator on-failure))}))
