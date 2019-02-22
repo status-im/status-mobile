@@ -19,7 +19,8 @@
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [status-im.transport.utils :as transport.utils]))
 
 ;;;; FX
 
@@ -74,15 +75,14 @@
 ;; SIGN MESSAGE
 (handlers/register-handler-fx
  :wallet/sign-message
- (fn [{db :db} _]
-   (let [{:keys [data from password]} (get-in db [:wallet :send-transaction])]
-     {:db            (assoc-in db [:wallet :send-transaction :in-progress?] true)
-      ::sign-message {:params       {:data     data
+ (fn [_ [_ screen-params]]
+   (let [{:keys [data from password]} screen-params]
+     {::sign-message {:params       {:data     data
                                      :password (security/safe-unmask-data password)
                                      :account  from}
-                      :on-completed #(re-frame/dispatch [::transaction-completed (types/json->clj %)])}})))
+                      :on-completed #(re-frame/dispatch [::sign-message-completed screen-params (types/json->clj %)])}})))
 
-;; SEND TRANSACTION (SIGN MESSAGE) CALLBACK
+;; SEND TRANSACTION CALLBACK
 (handlers/register-handler-fx
  ::transaction-completed
  (fn [{:keys [db now] :as cofx} [_ {:keys [result error]}]]
@@ -105,6 +105,18 @@
                                                             :asset   (name symbol)
                                                             :amount  amount-text
                                                             :tx-hash result}]}))))))
+
+;; SIGN MESSAGE CALLBACK
+(handlers/register-handler-fx
+ ::sign-message-completed
+ (fn [{:keys [db now] :as cofx} [_ {:keys [on-result id method]} {:keys [result error]}]]
+   (let [db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
+     (if error
+       ;; ERROR
+       (models.wallet/handle-transaction-error (assoc cofx :db db') error)
+       ;; RESULT
+       (if on-result
+         {:dispatch (conj on-result id result method)})))))
 
 ;; DISCARD TRANSACTION
 (handlers/register-handler-fx
@@ -148,14 +160,14 @@
          (= method constants/web3-personal-sign)
          (let [[address data] (models.wallet/normalize-sign-message-params params)]
            (if (and address data)
-             (let [db'' (assoc-in db' [:wallet :send-transaction]
-                                  {:id               (str (or id message-id))
-                                   :from             address
-                                   :data             data
-                                   :on-result        [:wallet.dapp/transaction-on-result message-id]
-                                   :on-error         [:wallet.dapp/transaction-on-error message-id]
-                                   :method           method})]
-               (navigation/navigate-to-cofx {:db db''} :wallet-sign-message-modal nil))
+             (let [screen-params {:id           (str (or id message-id))
+                                  :from         address
+                                  :data         data
+                                  :decoded-data (transport.utils/to-utf8 data)
+                                  :on-result    [:wallet.dapp/transaction-on-result message-id]
+                                  :on-error     [:wallet.dapp/transaction-on-error message-id]
+                                  :method       method}]
+               (navigation/navigate-to-cofx {:db db'} :wallet-sign-message-modal screen-params))
              {:db db'})))))))
 
 (handlers/register-handler-fx

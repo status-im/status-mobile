@@ -178,11 +178,6 @@
                 (when on-error
                   {:dispatch (conj on-error message)})))))
 
-(defn transform-data-for-message [{:keys [method] :as transaction}]
-  (cond-> transaction
-    (= method constants/web3-personal-sign)
-    (update :data transport.utils/to-utf8)))
-
 (defn clear-error-message [db error-type]
   (update-in db [:wallet :errors] dissoc error-type))
 

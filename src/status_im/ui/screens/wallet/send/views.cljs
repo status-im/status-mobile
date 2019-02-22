@@ -238,30 +238,3 @@
         [toolbar true (i18n/label :t/send-transaction)]
         [react/i18n-text {:style styles/empty-text
                           :key   :unsigned-transaction-expired}]]])))
-
-;; SIGN MESSAGE FROM DAPP
-(defview sign-message-modal []
-  (letsubs [{:keys [data in-progress?]} [:wallet.send/transaction]
-            network-status [:network-status]]
-    [wallet.components/simple-screen {:status-bar-type :modal-wallet}
-     [toolbar true (i18n/label :t/sign-message)]
-     [react/view components.styles/flex
-      [react/scroll-view
-       (when (= network-status :offline)
-         [wallet.main.views/snackbar :t/error-cant-sign-message-offline])
-       [react/view styles/send-transaction-form
-        [wallet.components/cartouche {:disabled? true}
-         (i18n/label :t/message)
-         [components/amount-input
-          {:disabled?     true
-           :input-options {:multiline true
-                           :height    100}
-           :amount-text   data}
-          nil]]]]
-      [enter-password-buttons false
-       #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
-       #(re-frame/dispatch [:wallet/sign-message])
-       :t/transactions-sign]
-      [password-input-panel :t/signing-message-phrase-description false]
-      (when in-progress?
-        [react/view styles/processing-view])]]))

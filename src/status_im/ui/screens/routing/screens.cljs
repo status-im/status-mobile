@@ -18,6 +18,7 @@
    [status-im.ui.screens.wallet.main.views :as wallet.main]
    [status-im.ui.screens.wallet.collectibles.views :as collectibles]
    [status-im.ui.screens.wallet.send.views :as send]
+   [status-im.ui.screens.wallet.sign-message.views :as sign-message]
    [status-im.ui.screens.wallet.request.views :as request]
    [status-im.ui.screens.wallet.components.views :as wallet.components]
    [status-im.ui.screens.wallet.onboarding.views :as wallet.onboarding]
@@ -96,7 +97,7 @@
    :wallet-transaction-sent-modal    [:modal transaction-sent/transaction-sent-modal]
    :wallet-transaction-fee           [:modal wallet.transaction-fee/transaction-fee]
    :wallet-onboarding-setup-modal    [:modal wallet.onboarding/modal]
-   :wallet-sign-message-modal        [:modal send/sign-message-modal]
+   :wallet-sign-message-modal        [:modal sign-message/sign-message-modal]
    :wallet                           wallet.main/wallet
    :collectibles-list                collectibles/collectibles-list
    :wallet-onboarding-setup          wallet.onboarding/screen
