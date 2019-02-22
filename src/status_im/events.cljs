@@ -37,6 +37,7 @@
             [status-im.search.core :as search]
             [status-im.signals.core :as signals]
             [status-im.transport.message.core :as transport.message]
+            [status-im.transport.core :as transport]
             [status-im.ui.screens.currency-settings.models :as currency-settings.models]
             [status-im.node.core :as node]
             [status-im.web3.core :as web3]
@@ -1723,3 +1724,8 @@
  :stickers/pending-timout
  (fn [cofx _]
    (stickers/pending-timeout cofx)))
+
+(handlers/register-handler-fx
+ :transport.callback/node-info-fetched
+ (fn [cofx [_ node-info]]
+   (transport/set-node-info cofx node-info)))

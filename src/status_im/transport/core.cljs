@@ -2,6 +2,7 @@
  status-im.transport.core
   (:require status-im.transport.filters
             [re-frame.core :as re-frame]
+            [status-im.native-module.core :as status]
             [status-im.mailserver.core :as mailserver]
             [status-im.transport.message.core :as message]
             [status-im.transport.partitioned-topic :as transport.topic]
@@ -28,6 +29,23 @@
                  :callback (constantly nil)}))
         chats))
 
+(defn set-node-info [{:keys [db]} node-info]
+  {:db (assoc db :node-info node-info)})
+
+(defn fetch-node-info []
+  (let [args    {:jsonrpc "2.0"
+                 :id      2
+                 :method  "admin_nodeInfo"}
+        payload (.stringify js/JSON (clj->js args))]
+    (status/call-private-rpc payload
+                             (handlers/response-handler #(re-frame/dispatch [:transport.callback/node-info-fetched %])
+                                                        #(log/error "node-info: failed error" %)))))
+
+(re-frame/reg-fx
+ ::fetch-node-info
+ (fn []
+   (fetch-node-info)))
+
 (fx/defn init-whisper
   "Initialises whisper protocol by:
   - adding fixed shh discovery filter
@@ -48,6 +66,7 @@
                                               :chat-id :discovery-topic})
                                            discovery-topics))}
 
+                 ::fetch-node-info []
                  :shh/restore-sym-keys-batch
                  {:web3       web3
                   :transport  (keep (fn [[chat-id {:keys [topic sym-key]
