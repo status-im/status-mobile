@@ -35,6 +35,11 @@
  (fn [_ [_ _ m]]
    {::identity-event m}))
 
+(re-frame/reg-event-fx
+ :chat/send-message
+ (fn [cofx [_ message-text {:keys [to value] :as arguments}]]
+   (chat.input/send-plain-text-message-fx (assoc cofx :now (datetime/timestamp)) value to)))
+
 (re-frame/reg-fx
  ::alert
  (fn [value] (js/alert value)))
@@ -474,6 +479,10 @@
                 {:permissions [:read]
                  :value       :extensions.chat.command/send-message
                  :arguments   {:params :map}}
+                'chat/send-message
+                {:permissions [:read]
+                 :value       :chat/send-message
+                 :arguments   {:to :string :value :string}}
                 'log
                 {:permissions [:read]
                  :value       :log
