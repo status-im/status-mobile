@@ -78,12 +78,12 @@ pipeline {
       when { expression { cmn.getBuildType() != 'release' } }
       steps {
         script {
+          env.PKG_URL = cmn.uploadArtifact(api)
           /* e2e builds get tested in SauceLabs */
           if (cmn.getBuildType() == 'e2e') {
             env.SAUCE_URL = mobile.ios.uploadToSauceLabs()
-            env.PKG_URL = cmn.uploadArtifact(api)
           } else {
-            env.PKG_URL = mobile.ios.uploadToDiawi()
+            env.DIAWI_URL = mobile.ios.uploadToDiawi()
           }
         }
       }

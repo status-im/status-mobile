@@ -258,22 +258,6 @@ def gitHubNotify(message) {
   }
 }
 
-def gitHubNotifyFull(urls) {
-  def msg = "#### :white_check_mark: "
-  msg += "[${env.JOB_NAME}${currentBuild.displayName}](${currentBuild.absoluteUrl}) "
-  msg += "CI BUILD SUCCESSFUL in ${buildDuration()} (${GIT_COMMIT.take(8)})\n"
-  msg += '| | | | | |\n'
-  msg += '|-|-|-|-|-|\n'
-  msg += "| [Android](${urls.Apk}) ([e2e](${urls.Apke2e})) "
-  msg += "| [iOS](${urls.iOS}) ([e2e](${urls.iOSe2e})) |"
-  if (urls.Mac != null) {
-    msg += " [MacOS](${urls.Mac}) | [AppImage](${urls.App}) | [Windows](${urls.Win}) |"
-  } else {
-    msg += " ~~MacOS~~ | ~~AppImage~~ | ~~Windows~~~ |"
-  }
-  gitHubNotify(msg)
-}
-
 def gitHubNotifyPRFailure() {
   def d = ":small_orange_diamond:"
   def msg = "#### :x: "
@@ -343,20 +327,21 @@ def setBuildDesc(Map links) {
   currentBuild.description = desc
 }
 
-def updateLatestNightlies(urls) {
+def updateBucketJSON(urls, fileName) {
   /* latest.json has slightly different key names */
-  def latest = [
+  def content = [
+    DIAWI: urls.Diawi,
     APK: urls.Apk, IOS: urls.iOS,
     APP: urls.App, MAC: urls.Mac,
     WIN: urls.Win, SHA: urls.SHA
   ]
-  def latestFile = pwd() + '/' + 'pkg/latest.json'
+  def filePath = "${pwd()}/pkg/${fileName}"
   /* it might not exist */
   sh 'mkdir -p pkg'
-  def latestJson = new JsonBuilder(latest).toPrettyString()
-  println "latest.json:\n${latestJson}"
-  new File(latestFile).write(latestJson)
-  return uploadArtifact(latestFile)
+  def contentJson = new JsonBuilder(content).toPrettyString()
+  println "${fileName}:\n${contentJson}"
+  new File(filePath).write(contentJson)
+  return uploadArtifact(filePath)
 }
 
 def getParentRunEnv(name) {

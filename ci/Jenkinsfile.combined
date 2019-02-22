@@ -76,6 +76,7 @@ pipeline {
           /* mobile */
           Apk: cmn.pkgUrl(apk), Apke2e: cmn.pkgUrl(apke2e),
           iOS: cmn.pkgUrl(ios), /*iOSe2e: cmn.pkgUrl(iose2e),*/
+          Diawi: getEnv(ios, 'DIAWI_URL'),
           /* desktop */
           App: cmn.pkgUrl(nix), Mac: cmn.pkgUrl(osx), Win: cmn.pkgUrl(win),
           /* upload the sha256 checksums file too */
@@ -83,15 +84,12 @@ pipeline {
         ]
         /* add URLs to the build description */
         cmn.setBuildDesc(urls)
-        /* Create latest.json with newest nightly URLs */
-        if (btype == 'nightly') {
-          cmn.updateLatestNightlies(urls)
+        /* Create JSON file with newest build URLs */
+        switch (btype) {
+          /* legacy naming, should have named it nightly.json */
+          case 'nightly': cmn.updateBucketJSON(urls, 'latest.json'); break
+          case 'release': cmn.updateBucketJSON(urls, 'release.json'); break
         }
-      } }
-    }
-    stage('Notify') { when { expression { env.CHANGE_ID != null } }
-      steps { script {
-        cmn.gitHubNotifyFull(urls)
       } }
     }
     stage('Publish') {
