@@ -1,29 +1,34 @@
 (ns status-im.chat.commands.impl.transactions
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
-            [reagent.core :as reagent]
             [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.chat.commands.impl.transactions.styles
+             :as
+             transactions-styles]
             [status-im.chat.commands.protocol :as protocol]
-            [status-im.chat.commands.impl.transactions.styles :as transactions-styles]
-            [status-im.data-store.messages :as messages-store]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.animation :as animation]
-            [status-im.ui.components.svgimage :as svgimage]
-            [status-im.i18n :as i18n]
             [status-im.contact.db :as db.contact]
+            [status-im.data-store.messages :as messages-store]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.animation :as animation]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.svgimage :as svgimage]
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.ui.screens.wallet.choose-recipient.events
+             :as
+             choose-recipient.events]
+            [status-im.ui.screens.wallet.db :as wallet.db]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.utils.datetime :as datetime]
+            [status-im.utils.ethereum.contracts :as contracts]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.screens.wallet.db :as wallet.db]
-            [status-im.ui.screens.wallet.choose-recipient.events :as choose-recipient.events]
-            [status-im.ui.screens.navigation :as navigation]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]))
+            [status-im.utils.platform :as platform])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 ;; common `send/request` functionality
 
@@ -294,38 +299,58 @@
   protocol/Yielding
   (yield-control [_ {{{amount :amount asset :asset} :params} :content} {:keys [db] :as cofx}]
     ;; Prefill wallet and navigate there
-    (let [recipient-contact     (or
-                                 (get-in db [:contacts/contacts (:current-chat-id db)])
-                                 (db.contact/public-key->new-contact (:current-chat-id db)))
+    (if (= asset "STT")
+      (let [{:keys [name address public-key tribute] :as recipient-contact}
+            (or
+             (get-in db [:contacts/contacts (:current-chat-id db)])
+             (db.contact/public-key->new-contact (:current-chat-id db)))
+            chain              (keyword (:chain db))
+            symbol             :STT
+            all-tokens         (:wallet/all-tokens db)
+            {:keys [decimals]} (tokens/asset-for all-tokens chain symbol)
+            {:keys [value]}    (wallet.db/parse-amount amount decimals)
+            internal-value     (money/formatted->internal value symbol decimals)]
+        (contracts/call cofx
+                        {:contract :status/snt
+                         :method   :erc20/transfer
+                         :params   [address internal-value]
+                         :details  {:to-name     name
+                                    :public-key  public-key
+                                    :from-chat?  true
+                                    :symbol      symbol
+                                    :amount-text amount}}))
+      (let [recipient-contact     (or
+                                   (get-in db [:contacts/contacts (:current-chat-id db)])
+                                   (db.contact/public-key->new-contact (:current-chat-id db)))
 
-          sender-account        (:account/account db)
-          chain                 (keyword (:chain db))
-          symbol-param          (keyword asset)
-          all-tokens            (:wallet/all-tokens db)
-          {:keys [symbol decimals]} (tokens/asset-for all-tokens chain symbol-param)
-          {:keys [value error]}     (wallet.db/parse-amount amount decimals)
-          next-view-id              (if (:wallet-set-up-passed? sender-account)
-                                      :wallet-send-modal-stack
-                                      :wallet-send-modal-stack-with-onboarding)]
-      (fx/merge cofx
-                {:db (-> db
-                         (assoc-in [:navigation/screen-params :wallet-send-modal-stack :modal?] true)
-                         (update-in [:wallet :send-transaction]
-                                    assoc
-                                    :amount (money/formatted->internal value symbol decimals)
-                                    :amount-text amount
-                                    :amount-error error)
-                         (choose-recipient.events/fill-request-details
-                          (transaction-details recipient-contact symbol) false)
-                         (update-in [:wallet :send-transaction]
-                                    dissoc :id :password :wrong-password?))
+            sender-account        (:account/account db)
+            chain                 (keyword (:chain db))
+            symbol-param          (keyword asset)
+            all-tokens            (:wallet/all-tokens db)
+            {:keys [symbol decimals]} (tokens/asset-for all-tokens chain symbol-param)
+            {:keys [value error]}     (wallet.db/parse-amount amount decimals)
+            next-view-id              (if (:wallet-set-up-passed? sender-account)
+                                        :wallet-send-modal-stack
+                                        :wallet-send-modal-stack-with-onboarding)]
+        (fx/merge cofx
+                  {:db (-> db
+                           (assoc-in [:navigation/screen-params :wallet-send-modal-stack :modal?] true)
+                           (update-in [:wallet :send-transaction]
+                                      assoc
+                                      :amount (money/formatted->internal value symbol decimals)
+                                      :amount-text amount
+                                      :amount-error error)
+                           (choose-recipient.events/fill-request-details
+                            (transaction-details recipient-contact symbol) false)
+                           (update-in [:wallet :send-transaction]
+                                      dissoc :id :password :wrong-password?))
                  ;; TODO(janherich) - refactor wallet send events, updating gas price
                  ;; is generic thing which shouldn't be defined in wallet.send, then
                  ;; we can include the utility helper without running into circ-dep problem
-                 :update-gas-price {:web3          (:web3 db)
-                                    :success-event :wallet/update-gas-price-success
-                                    :edit?         false}}
-                (navigation/navigate-to-cofx next-view-id {}))))
+                   :update-gas-price {:web3          (:web3 db)
+                                      :success-event :wallet/update-gas-price-success
+                                      :edit?         false}}
+                  (navigation/navigate-to-cofx next-view-id {})))))
   protocol/EnhancedParameters
   (enhance-send-parameters [_ parameters cofx]
     (-> parameters

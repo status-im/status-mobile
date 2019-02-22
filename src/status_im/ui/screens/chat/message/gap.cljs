@@ -20,13 +20,12 @@
 
 (views/defview gap
   [{:keys [gaps first-gap?]} idx list-ref]
-  (views/letsubs [in-progress? [:chats/fetching-gap-in-progress?
+  (views/letsubs [{:keys [range intro-status]} [:chats/current-chat]
+                  in-progress? [:chats/fetching-gap-in-progress?
                                 (if first-gap?
                                   [:first-gap]
                                   (:ids gaps))]
-                  connected?   [:mailserver/connected?]
-                  range        [:chats/range]
-                  intro-status [:chats/current-chat-intro-status]]
+                  connected?   [:mailserver/connected?]]
     (let [ids            (:ids gaps)
           intro-loading? (= intro-status :loading)]
       (when-not (and first-gap? intro-loading?)
@@ -51,4 +50,3 @@
                     "\n"
                     (i18n/label :t/load-messages-before
                                 {:date date})))])])]]]))))
-

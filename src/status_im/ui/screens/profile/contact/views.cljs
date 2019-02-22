@@ -3,6 +3,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
+            [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.profile.components.styles :as profile.components.styles]
@@ -16,26 +17,29 @@
    toolbar/default-nav-back
    [toolbar/content-title ""]])
 
-(defn actions [{:keys [public-key added?]}]
-  (concat (if added?
-            [{:label               (i18n/label :t/in-contacts)
-              :icon                :main-icons/in-contacts
-              :disabled?           true
-              :accessibility-label :in-contacts-button}]
-            [{:label               (i18n/label :t/add-to-contacts)
-              :icon                :main-icons/add-contact
-              :action              #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])
-              :accessibility-label :add-to-contacts-button}])
-          [{:label               (i18n/label :t/send-message)
-            :icon                :main-icons/message
-            :action              #(re-frame/dispatch [:contact.ui/send-message-pressed {:public-key public-key}])
-            :accessibility-label :start-conversation-button}
-           {:label               (i18n/label :t/send-transaction)
-            :icon                :main-icons/send
-            :action              #(re-frame/dispatch [:profile/send-transaction public-key])
-            :accessibility-label :send-transaction-button}]
-          (when-not platform/desktop?
-            [{:label               (i18n/label :t/share-profile-link)
+(defn actions [{:keys [public-key added? tribute-to-talk] :as contact}]
+  (let [tribute-status (tribute-to-talk/tribute-status contact)
+        tribute (get-in contact [:tribute-to-talk :snt-amount])]
+    (concat (if added?
+              [{:label               (i18n/label :t/in-contacts)
+                :icon                :main-icons/in-contacts
+                :disabled?           true
+                :accessibility-label :in-contacts-button}]
+              [{:label               (i18n/label :t/add-to-contacts)
+                :icon                :main-icons/add-contact
+                :action              #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])
+                :accessibility-label :add-to-contacts-button}])
+            [(cond-> {:label               (i18n/label :t/send-message)
+                      :icon                :main-icons/message
+                      :action              #(re-frame/dispatch [:contact.ui/send-message-pressed {:public-key public-key}])
+                      :accessibility-label :start-conversation-button}
+               (not (#{:none :paid} tribute-status))
+               (assoc :subtext (tribute-to-talk/status-label tribute-status tribute)))
+             {:label               (i18n/label :t/send-transaction)
+              :icon                :main-icons/send
+              :action              #(re-frame/dispatch [:profile/send-transaction public-key])
+              :accessibility-label :send-transaction-button}
+             {:label               (i18n/label :t/share-profile-link)
               :icon                :main-icons/share
               :action              #(re-frame/dispatch [:profile/share-profile-link public-key])
               :accessibility-label :share-profile-link}])))

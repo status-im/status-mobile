@@ -1,13 +1,11 @@
 (ns status-im.ui.screens.wallet.send.events
   (:require [re-frame.core :as re-frame]
             [status-im.chat.commands.sending :as commands-sending]
-            [status-im.chat.models.message :as models.message]
-            [status-im.chat.models :as chat.models]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
-            [status-im.models.transactions :as wallet.transactions]
             [status-im.models.wallet :as models.wallet]
             [status-im.native-module.core :as status]
+            [status-im.transport.utils :as transport.utils]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.utils.ethereum.core :as ethereum]
@@ -18,10 +16,7 @@
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]
-            [status-im.utils.config :as config]
-            [status-im.transport.utils :as transport.utils]
-            [status-im.hardwallet.core :as hardwallet]))
+            [status-im.utils.utils :as utils]))
 
 ;;;; FX
 
@@ -37,8 +32,11 @@
 (re-frame/reg-fx
  ::send-transaction
  (fn [[params all-tokens symbol chain on-completed masked-password]]
-   (case symbol
-     :ETH (send-ethers params on-completed masked-password)
+   (if (or (= symbol :ETH)
+           (and (= symbol :STT)
+                (:data params)
+                (= "0x0" (:value params))))
+     (send-ethers params on-completed masked-password)
      (send-tokens all-tokens symbol chain params on-completed masked-password))))
 
 (re-frame/reg-fx

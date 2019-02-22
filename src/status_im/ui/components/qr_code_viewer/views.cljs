@@ -13,12 +13,12 @@
 
 (defview qr-code-viewer-component [{:keys [style hint-style footer-style footer-button value hint legend]}]
   (letsubs  [{:keys [width]} [:dimensions/window]
-             {:keys [disabled?]} [:tribute-to-talk/ui]]
+             ttt-enabled? [:tribute-to-talk/enabled?]]
     [react/scroll-view {:content-container-style {:align-items       :center
                                                   :margin-top        16
                                                   :justify-content   :center}
                         :style (merge {:flex 1} style)}
-     (when-not disabled?
+     (when ttt-enabled?
        [react/view {:style {:margin-horizontal 16}}
         [tr-to-talk/enabled-note]])
      (when width
