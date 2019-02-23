@@ -28,9 +28,8 @@
    :font-size      16})
 
 (defstyle actions-list
-  {:background-color colors/white
-   :android          {:padding-top    8
-                      :padding-bottom 8}})
+  {:android {:padding-top    8
+             :padding-bottom 8}})
 
 (def action-button-label-disabled
   (merge action-button-label

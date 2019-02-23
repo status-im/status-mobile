@@ -129,8 +129,7 @@
    :android         {:margin-bottom 3}
    :ios             {:margin-bottom 10}})
 
-(def section-header-container
-  {:background-color colors/white})
+(def section-header-container {})
 
 (def action-list
   {:background-color colors/blue})

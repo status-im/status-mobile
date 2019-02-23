@@ -181,7 +181,6 @@
   {:flex-direction      :row
    :align-items         :center
    :height              36
-   :background-color    :white
    :border-bottom-width 1
    :border-color        colors/gray-lighter
    :justify-content     :space-between})

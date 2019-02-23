@@ -29,7 +29,7 @@
              :color     colors/black}})
 
 (def action-container
-  {:background-color colors/white})
+  {:background-color nil})
 
 (def action
   {:background-color (colors/alpha colors/blue 0.1)
@@ -61,5 +61,4 @@
          {:color colors/gray}))
 
 (defstyle contact-profile-info-container
-  {:padding-top      26
-   :background-color colors/white})
+  {:padding-top 26})

@@ -9,14 +9,12 @@
 
 (def group-container
   {:flex             1
-   :flex-direction   :column
-   :background-color colors/white})
+   :flex-direction   :column})
 
 (def contact
   {:padding-left 0})
 
-(def contacts-list
-  {:background-color colors/white})
+(def contacts-list {})
 
 (def no-contact-text
   {:margin-bottom     20

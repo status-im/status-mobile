@@ -62,7 +62,7 @@
 (views/defview add-new []
   (views/letsubs [account     [:account/account]
                   device-UUID [:get-device-UUID]]
-    [react/view {:flex 1 :background-color :white}
+    [react/view {:flex 1}
      [status-bar/status-bar]
      [toolbar/simple-toolbar (i18n/label :t/new)]
      [common/separator]

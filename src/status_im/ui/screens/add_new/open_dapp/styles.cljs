@@ -2,8 +2,7 @@
   (:require [status-im.ui.components.colors :as colors]))
 
 (def main-container
-  {:flex             1
-   :background-color colors/white})
+  {:flex 1})
 
 (def gray-label
   {:color          colors/gray})

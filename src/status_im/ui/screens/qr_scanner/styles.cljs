@@ -3,8 +3,7 @@
             [status-im.ui.components.toolbar.styles :as toolbar.styles]))
 
 (def barcode-scanner-container
-  {:flex             1
-   :background-color :white})
+  {:flex 1})
 
 (def barcode-scanner
   {:flex 1})

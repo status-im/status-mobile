@@ -9,8 +9,7 @@
 (def max-input-height (* 5 min-input-height))
 
 (defnstyle root [margin-bottom]
-  {:background-color colors/white
-   :margin-bottom    margin-bottom
+  {:margin-bottom    margin-bottom
    :flex-direction   :column
    :border-top-width border-height
    :border-top-color colors/gray-light
