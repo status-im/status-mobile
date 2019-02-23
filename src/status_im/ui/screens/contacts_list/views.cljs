@@ -18,12 +18,10 @@
 (defview contacts-list []
   (letsubs [blocked-contacts-count [:contacts/blocked-count]
             contacts      [:contacts/active]]
-    [react/view {:flex 1
-                 :background-color colors/white}
+    [react/view {:flex 1}
      [status-bar/status-bar]
      [toolbar.view/simple-toolbar (i18n/label :t/contacts)]
-     [react/scroll-view {:style {:background-color colors/white
-                                 :padding-top 16}}
+     [react/scroll-view {:style {:padding-top 16}}
       [list.views/big-list-item
        {:text                (i18n/label :t/blocked-users)
         :icon                :main-icons/cancel

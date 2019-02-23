@@ -14,7 +14,6 @@
 (def tabs-container
   {:flex-direction   :row
    :height           tabs-height
-   :background-color colors/white
    :border-top-width 1
    :border-top-color colors/black-transparent})
 

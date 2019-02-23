@@ -33,7 +33,7 @@
 
 (defn- toolbar [modal? title]
   (let [action (if modal? actions/close-white actions/back-white)]
-    [toolbar/toolbar {:style wallet.styles/toolbar}
+    [toolbar/toolbar {:style {}}
      [toolbar/nav-button (action (if modal?
                                    #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
                                    #(actions/default-handler)))]

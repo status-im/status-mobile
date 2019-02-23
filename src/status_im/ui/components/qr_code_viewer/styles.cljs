@@ -10,10 +10,10 @@
 (def qr-code-max-width 208)
 (def qr-code-padding 16)
 
-(defn qr-code-container [width]
+(defn qr-code-container [width background-color]
   {:align-self       :center
    :width            (+ width qr-code-padding qr-code-padding)
-   :background-color colors/white
+   :background-color background-color
    :border-color     colors/gray-light
    :border-width     1
    :border-radius    8

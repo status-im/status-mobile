@@ -4,8 +4,7 @@
             [status-im.ui.components.styles :as components.styles]))
 
 (def wrapper
-  {:flex             1
-   :background-color :white})
+  {:flex 1})
 
 (defstyle badge-name-text
   {:color   colors/black
@@ -116,7 +115,6 @@
 
 (defstyle network-item
   {:flex-direction     :row
-   :background-color   :white
    :align-items        :center
    :padding-horizontal 16
    :ios                {:height 64}

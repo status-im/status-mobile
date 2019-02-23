@@ -56,7 +56,7 @@
 (defn toolbar []
   ^{:key "toolbar"}
   [wallet.components/toolbar
-   {}
+   {:style {:background-color nil}}
    (actions/back-white #(re-frame/dispatch [:wallet-setup-navigate-back]))
    (i18n/label :t/wallet-set-up-title)])
 

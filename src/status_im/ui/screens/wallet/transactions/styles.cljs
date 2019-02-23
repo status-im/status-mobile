@@ -56,10 +56,10 @@
    :font-size    17})
 
 (def tx-time
-  {:flex-grow   1
-   :font-size   14
-   :text-align  :right
-   :color       colors/blue})
+  {:flex-grow  1
+   :font-size  14
+   :text-align :right
+   :color      colors/blue})
 
 (def address-row
   {:flex-direction :row
@@ -85,10 +85,10 @@
          {:flex-shrink 1}))
 
 (def sign-all-view
-  {:flex              1
-   :flex-direction    :column
-   :justify-content   :center
-   :background-color  colors/gray})
+  {:flex             1
+   :flex-direction   :column
+   :justify-content  :center
+   :background-color colors/gray})
 
 (def sign-all-done
   {:position :absolute
@@ -203,5 +203,4 @@
   {:flex 1})
 
 (def transactions-view
-  {:flex             1
-   :background-color :white})
+  {:flex 1})

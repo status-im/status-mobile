@@ -32,7 +32,7 @@
                                       :bar-style        "light-content"})})
 
 (def view-main
-  (create-view-style {:background-color colors/white}))
+  (create-view-style {:background-color nil}))
 
 (defstyle view-modal-main
   {:ios     (create-view-style {:background-color colors/white})
@@ -59,7 +59,7 @@
 
 ;; :modal-white
 (defstyle status-bar-modal-white
-  {:ios     (create-status-bar-style {:background-color colors/white
+  {:ios     (create-status-bar-style {:background-color nil
                                       :bar-style        "default"})
    :android (create-status-bar-style {:background-color colors/black
                                       :bar-style        "light-content"})})
@@ -116,5 +116,5 @@
                                       :bar-style        "dark-content"})})
 
 (defstyle view-default
-  (create-view-style {:background-color colors/white
+  (create-view-style {:background-color nil
                       :elevation        elevation}))

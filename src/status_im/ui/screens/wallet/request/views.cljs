@@ -21,7 +21,8 @@
             [status-im.utils.ethereum.eip681 :as eip681]
             [status-im.utils.utils :as utils]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]))
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.ui.components.colors :as colors]))
 
 ;; Request screen
 
@@ -77,7 +78,7 @@
   (views/letsubs [address-hex [:account/hex-address]
                   chain-id    [:get-network-id]]
     [wallet.components/simple-screen
-     [wallet.components/toolbar {}
+     [wallet.components/toolbar {:style {:background-color nil}}
       wallet.components/default-action
       (i18n/label :t/receive)
       [toolbar/actions [{:icon      :main-icons/share
@@ -87,9 +88,10 @@
      [react/view {:flex 1}
       [common/network-info {:text-color :white}]
       [qr-code-viewer/qr-code-viewer
-       {:hint-style    styles/hint
-        :footer-style  styles/footer
-        :footer-button send-transaction-request-button
-        :value         (eip681/generate-uri address-hex {:chain-id chain-id})
-        :hint          (i18n/label :t/request-qr-legend)
-        :legend        address-hex}]]]))
+       {:background-color colors/white
+        :hint-style       styles/hint
+        :footer-style     styles/footer
+        :footer-button    send-transaction-request-button
+        :value            (eip681/generate-uri address-hex {:chain-id chain-id})
+        :hint             (i18n/label :t/request-qr-legend)
+        :legend           address-hex}]]]))

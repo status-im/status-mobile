@@ -3,13 +3,11 @@
   (:require [status-im.ui.components.colors :as colors]))
 
 (def wrapper
-  {:flex             1
-   :background-color :white})
+  {:flex             1})
 
 (defstyle currency-item
   {:flex-direction     :row
    :justify-content    :space-between
-   :background-color   :white
    :align-items        :center
    :padding-horizontal 16
    :ios                {:height 64}

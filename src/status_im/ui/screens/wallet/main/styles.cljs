@@ -6,7 +6,7 @@
 
 (defstyle main-section
   {:flex    1
-   :android {:background-color colors/white}
+   ;;:android {:background-color colors/white}
    :ios     {:background-color colors/blue}})
 
 (defstyle scroll-bottom
@@ -98,10 +98,9 @@
 ;; Assets section
 
 (def asset-section
-  {:flex             1
-   :padding-top      5
-   :padding-bottom   20
-   :background-color colors/white})
+  {:flex           1
+   :padding-top    5
+   :padding-bottom 20})
 
 (def asset-section-header
   {:font-size     15

@@ -16,6 +16,7 @@
           :wallet styles/view-wallet
           :wallet-tab styles/view-wallet-tab
           styles/view-default)]
+    (println :FOO type)
     [react/view {:style (cond-> view-style flat? (assoc :elevation 0))}]))
 
 (defn get-config [view-id]

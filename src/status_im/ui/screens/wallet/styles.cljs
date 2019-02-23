@@ -18,5 +18,4 @@
            {:opacity 0.4})))
 
 (def wallet-modal-container
-  {:flex             1
-   :background-color colors/blue})
+  {:flex 1})

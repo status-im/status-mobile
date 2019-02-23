@@ -6,20 +6,23 @@
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.qr-code-viewer.styles :as styles]
             [status-im.ui.components.react :as react]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.colors :as colors]))
 
 (defn qr-code [props]
   (reagent/create-element
    rn-dependencies/qr-code
    (clj->js (merge {:inverted true} props))))
 
-(defn qr-code-viewer [{:keys [style hint-style footer-style footer-button value hint legend]}]
+(defn qr-code-viewer [{:keys [style hint-style footer-style footer-button
+                              value hint legend background-color]}]
+  (println :FOO background-color)
   (if value
     (let [{:keys [width]} @(re-frame/subscribe [:dimensions/window])]
       [react/view {:style (merge styles/qr-code style)}
        (when width
          (let [size (int (min width styles/qr-code-max-width))]
-           [react/view {:style               (styles/qr-code-container size)
+           [react/view {:style               (styles/qr-code-container size background-color)
                         :accessibility-label :qr-code-image}
             [qr-code {:value value
                       :size  size}]]))

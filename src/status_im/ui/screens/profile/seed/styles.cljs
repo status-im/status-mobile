@@ -156,6 +156,4 @@
    :color      colors/gray})
 
 (def backup-seed-container
-  (merge
-   common.styles/flex
-   {:background-color colors/white}))
+  common.styles/flex)

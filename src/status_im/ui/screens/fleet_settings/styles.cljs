@@ -4,15 +4,13 @@
   (:require-macros [status-im.utils.styles :refer [defstyle]]))
 
 (def wrapper
-  {:flex             1
-   :background-color :white})
+  {:flex 1})
 
 (def fleet-item-inner
   {:padding-horizontal 16})
 
 (defstyle fleet-item
   {:flex-direction     :row
-   :background-color   :white
    :align-items        :center
    :padding-horizontal 16
    :ios                {:height 64}

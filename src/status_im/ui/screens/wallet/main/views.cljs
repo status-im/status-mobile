@@ -186,7 +186,7 @@
                         :accessibility-label :address-text
                         :selectable          true}
             address-hex]]
-          [react/view (merge {:background-color colors/blue} styles/action-section)
+          [react/view styles/action-section
            [list/flat-list
             {:data      actions
              :key-fn    (fn [_ i] (str i))

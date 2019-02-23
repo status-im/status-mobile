@@ -88,11 +88,11 @@
      [status-bar/status-bar {:type :modal-white}]
      [qr-viewer-toolbar (:name contact) value]
      [qr-code-viewer/qr-code-viewer
-      {:style         styles/qr-code
-       :footer-button qr-code-share-button
-       :value         value
-       :hint          (i18n/label :t/qr-code-public-key-hint)
-       :legend        (str value)}]]))
+      {:style            styles/qr-code
+       :footer-button    qr-code-share-button
+       :value            value
+       :hint             (i18n/label :t/qr-code-public-key-hint)
+       :legend           (str value)}]]))
 
 (defn- show-qr [contact source value]
   #(re-frame/dispatch [:navigate-to :profile-qr-viewer {:contact contact
@@ -295,7 +295,6 @@
            :on-change-text-event :my-profile/update-name}]]
         [share-profile-item (dissoc current-account :mnemonic)]
         [contacts-list-item active-contacts-count]
-        [react/view styles/my-profile-info-container
-         [my-profile-settings current-account shown-account currency (nil? login-data)]]
+        [my-profile-settings current-account shown-account currency (nil? login-data)]
         (when (nil? login-data)
           [advanced shown-account on-show-advanced])]])))

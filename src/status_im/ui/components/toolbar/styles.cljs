@@ -14,7 +14,7 @@
    :flex-direction   :row
    :align-items      :center
    :justify-content  :space-between
-   :background-color (or background-color toolbar-background)
+   ;;:background-color (or background-color toolbar-background)
    :elevation        (if flat? 0 2)
    :android          {:height 55}
    :ios              {:height 56}})

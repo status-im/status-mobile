@@ -7,8 +7,7 @@
   {:flex 1})
 
 (def chat-view
-  {:flex             1
-   :background-color colors/white})
+  {:flex 1})
 
 (def toolbar-container
   {:flex           1

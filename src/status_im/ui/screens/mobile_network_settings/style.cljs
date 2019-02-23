@@ -3,19 +3,16 @@
             [status-im.ui.components.styles :as common-styles]))
 
 (def container
-  {:flex             1
-   :background-color colors/white})
+  {:flex 1})
 
 (def switch-container
-  {:height           52
-   :background-color colors/white})
+  {:height           52})
 
 (def details
   {:margin-right     16
    :margin-left      16
    :margin-top       8
-   :margin-bottom    16
-   :background-color colors/white})
+   :margin-bottom    16})
 
 (def use-mobile-data-text
   (merge

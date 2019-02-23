@@ -5,8 +5,7 @@
   {:flex 1})
 
 (def main-container
-  {:background-color colors/white
-   :flex             1})
+  {:flex 1})
 
 (def modal
   {:position :absolute

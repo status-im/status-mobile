@@ -3,15 +3,13 @@
   (:require-macros [status-im.utils.styles :refer [defstyle]]))
 
 (def wrapper
-  {:flex             1
-   :background-color :white})
+  {:flex             1})
 
 (def bootnode-item-inner
   {:padding-horizontal 16})
 
 (defstyle bootnode-item
   {:flex-direction     :row
-   :background-color   :white
    :align-items        :center
    :padding-horizontal 16
    :ios                {:height 64}
@@ -26,5 +24,4 @@
 
 (defstyle switch-container
   {:height           50
-   :background-color colors/white
    :padding-left     15})
