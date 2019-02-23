@@ -16,7 +16,6 @@
 
 (defn qr-code-viewer [{:keys [style hint-style footer-style footer-button
                               value hint legend background-color]}]
-  (println :FOO background-color)
   (if value
     (let [{:keys [width]} @(re-frame/subscribe [:dimensions/window])]
       [react/view {:style (merge styles/qr-code style)}
