@@ -78,7 +78,7 @@
                               (do
                                 (anim/set-value bottom-anim-value (styles/stickers-panel-height))
                                 (anim/set-value alpha-value 1)))}
-    [react/animated-view {:style {:background-color :white :height (if input-focused? 0 bottom-anim-value)
+    [react/animated-view {:style {:height (if input-focused? 0 bottom-anim-value)
                                   :opacity alpha-value}}
      (cond
        (= selected-pack :recent) [recent-stickers-panel]
