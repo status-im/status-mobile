@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.routing.screens
   (:require
-   [status-im.ui.screens.main-tabs.views :as main-tabs]
    [status-im.ui.screens.accounts.login.views :as login]
    [status-im.ui.screens.accounts.recover.views :as recover]
    [status-im.ui.screens.accounts.views :as accounts]
@@ -55,7 +54,8 @@
    [status-im.ui.screens.about-app.views :as about-app]
    [status-im.ui.screens.stickers.views :as stickers]
    [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
-   [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]))
+   [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
+   [status-im.ui.screens.home.views :as home]))
 
 (def all-screens
   {:login                            login/login
@@ -69,7 +69,7 @@
    :enter-pin                        hardwallet.pin/enter-pin
    :hardwallet-setup                 hardwallet.setup/hardwallet-setup
    :hardwallet-success               hardwallet.success/hardwallet-success
-   :home                             (main-tabs/get-main-tab :home)
+   :home                             home/home-wrapper
    :chat                             chat/chat
    :profile                          profile.contact/profile
    :new                              add-new/add-new
@@ -96,7 +96,7 @@
    :wallet-transaction-fee           [:modal wallet.transaction-fee/transaction-fee]
    :wallet-onboarding-setup-modal    [:modal wallet.onboarding/modal]
    :wallet-sign-message-modal        [:modal send/sign-message-modal]
-   :wallet                           (main-tabs/get-main-tab :wallet)
+   :wallet                           wallet.main/wallet
    :collectibles-list                collectibles/collectibles-list
    :wallet-onboarding-setup          wallet.onboarding/screen
    :wallet-send-transaction-chat     send/send-transaction
@@ -116,7 +116,7 @@
    :selection-modal-screen           [:modal screens.extensions/selection-modal-screen]
    :wallet-settings-assets           [:modal wallet-settings/manage-assets]
    :wallet-transactions-filter       [:modal wallet-transactions/filter-history]
-   :my-profile                       (main-tabs/get-main-tab :my-profile)
+   :my-profile                       profile.user/my-profile
    :contacts-list                    contacts-list/contacts-list
    :blocked-users-list               contacts-list/blocked-users-list
    :profile-photo-capture            photo-capture/profile-photo-capture
