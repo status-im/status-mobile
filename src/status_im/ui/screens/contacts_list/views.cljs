@@ -37,12 +37,10 @@
 
 (defview blocked-users-list []
   (letsubs [blocked-contacts [:contacts/blocked]]
-    [react/view {:flex 1
-                 :background-color colors/white}
+    [react/view {:flex 1}
      [status-bar/status-bar]
      [toolbar.view/simple-toolbar (i18n/label :t/blocked-users)]
-     [react/scroll-view {:style {:background-color colors/white
-                                 :padding-vertical 8}}
+     [react/scroll-view {:style {:padding-vertical 8}}
       [list.views/flat-list
        {:data                      blocked-contacts
         :key-fn                    :address

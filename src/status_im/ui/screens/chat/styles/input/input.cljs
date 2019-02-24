@@ -12,8 +12,7 @@
   {:margin-bottom    margin-bottom
    :flex-direction   :column
    :border-top-width border-height
-   :border-top-color colors/gray-light
-   :elevation        2})
+   :border-top-color colors/gray-light})
 
 (def reply-message
   {:flex-direction :row

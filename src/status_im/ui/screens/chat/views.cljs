@@ -210,10 +210,8 @@
                   :on-layout (fn [e]
                                (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
       [chat-toolbar public? modal?]
-      (if (or (= :chat current-view) modal?)
-        [messages-view-animation
-         [messages-view-wrapper modal?]]
-        [react/view style/message-view-preview])
+      [messages-view-animation
+       [messages-view-wrapper modal?]]
       (when (show-input-container? my-public-key current-chat)
         [input/container])
       (when show-stickers?
