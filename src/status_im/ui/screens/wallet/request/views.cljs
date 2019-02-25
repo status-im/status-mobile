@@ -21,7 +21,9 @@
             [status-im.utils.ethereum.eip681 :as eip681]
             [status-im.utils.utils :as utils]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]))
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.components.list.styles :as list.styles]))
 
 ;; Request screen
 
@@ -29,7 +31,8 @@
   ;; TODO(jeluard) both send and request flows should be merged
   (views/letsubs [network                                           [:account/network]
                   {:keys [to to-name public-key]}                   [:wallet.send/transaction]
-                  {:keys [amount amount-error amount-text symbol]}  [:wallet.request/transaction]
+                  {:keys [amount amount-error amount-text symbol
+                          to to-name public-key]}                   [:wallet.request/transaction]
                   network-status                                    [:network-status]
                   all-tokens                                        [:wallet/all-tokens]
                   scroll                                            (atom nil)]
@@ -43,8 +46,7 @@
           [components/recipient-selector {:contact-only? true
                                           :address       to
                                           :name          to-name
-                                          :request?      true
-                                          :modal?        false}]
+                                          :request?      true}]
           [components/asset-selector {:disabled? false
                                       :type      :request
                                       :symbol    symbol}]

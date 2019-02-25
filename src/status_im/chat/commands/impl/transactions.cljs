@@ -318,7 +318,7 @@
                                     :amount-text amount
                                     :amount-error error)
                          (choose-recipient.events/fill-request-details
-                          (transaction-details recipient-contact symbol))
+                          (transaction-details recipient-contact symbol) false)
                          (update-in [:wallet :send-transaction]
                                     dissoc :id :password :wrong-password?))
                  ;; TODO(janherich) - refactor wallet send events, updating gas price

@@ -197,8 +197,8 @@
                      :accessibility-label (if request? :contact-address-text :recipient-address-text)}
          (ethereum/normalized-address address)]]])))
 
-(defn render-contact [contact]
-  [list/touchable-item #(re-frame/dispatch [:wallet/fill-request-from-contact contact])
+(defn render-contact [contact request?]
+  [list/touchable-item #(re-frame/dispatch [:wallet/fill-request-from-contact contact request?])
    [list/item
     [photos/photo (:photo-path contact) {:size list.styles/image-size}]
     [list/item-content
@@ -209,13 +209,14 @@
       (ethereum/normalized-address (:address contact))]]]])
 
 (views/defview recent-recipients []
-  (views/letsubs [contacts [:contacts/active]]
+  (views/letsubs [contacts           [:contacts/active]
+                  {:keys [request?]} [:get-screen-params :recent-recipients]]
     [simple-screen
      [toolbar (i18n/label :t/recipient)]
      [react/view styles/recent-recipients
       [list/flat-list {:data      contacts
                        :key-fn    :address
-                       :render-fn render-contact}]]]))
+                       :render-fn #(render-contact % request?)}]]]))
 
 (defn contact-code []
   (let [content (reagent/atom nil)]
@@ -250,11 +251,11 @@
                                                                                      (i18n/label :t/camera-access-error)))
                                                            50)}]))
 
-(defn- on-choose-recipient [contact-only?]
+(defn- on-choose-recipient [contact-only? request?]
   (list-selection/show {:title   (i18n/label :t/wallet-choose-recipient)
                         :options (concat
                                   [{:label  (i18n/label :t/recent-recipients)
-                                    :action #(re-frame/dispatch [:navigate-to :recent-recipients])}]
+                                    :action #(re-frame/dispatch [:navigate-to :recent-recipients {:request? request?}])}]
                                   (when-not contact-only?
                                     [{:label  (i18n/label :t/scan-qr)
                                       :action request-camera-permissions}
@@ -262,7 +263,7 @@
                                       :action #(re-frame/dispatch [:navigate-to :contact-code])}]))}))
 
 (defn recipient-selector [{:keys [name address disabled? contact-only? request? modal?]}]
-  [cartouche {:on-press  #(on-choose-recipient contact-only?)
+  [cartouche {:on-press  #(on-choose-recipient contact-only? request?)
               :disabled? disabled?
               :icon      :main-icons/more
               :icon-opts {:accessibility-label :choose-contact-button}}
