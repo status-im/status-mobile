@@ -201,8 +201,19 @@
 
 (defn login-only-events [cofx address stored-pns]
   (fx/merge cofx
-            {:notifications/request-notifications-permissions nil}
-            (navigation/navigate-to-cofx :home nil)
+            (cond->
+             {:notifications/request-notifications-permissions nil}
+
+              platform/ios?
+              ;; on ios navigation state might be not initialized yet when
+              ;; navigate-to call happens.
+              ;; That's why it should be delayed a bit.
+              ;; TODO(rasom): revisit this later and find better solution
+              (assoc :dispatch-later
+                     [{:ms       1
+                       :dispatch [:navigate-to :home]}]))
+            (when-not platform/ios?
+              (navigation/navigate-to-cofx :home nil))
             (notifications/process-stored-event address stored-pns)
             (when platform/desktop?
               (chat-model/update-dock-badge-label))))
