@@ -4,8 +4,7 @@
             [status-im.ui.components.colors :as colors]))
 
 (def accounts-view
-  {:flex             1
-   :background-color colors/white})
+  {:flex 1})
 
 (def accounts-container
   {:flex               1

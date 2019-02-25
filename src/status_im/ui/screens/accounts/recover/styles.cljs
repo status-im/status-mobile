@@ -3,8 +3,7 @@
   (:require [status-im.ui.components.colors :as colors]))
 
 (def screen-container
-  {:flex             1
-   :background-color colors/white})
+  {:flex 1})
 
 (defstyle inputs-container
   {:margin  16

@@ -2,22 +2,23 @@
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.colors :as colors]))
 
-(def toolbar-background colors/white)
-
 (def toolbar-height 56)
 (def toolbar-icon-width 24)
 (def toolbar-icon-height 24)
 (def toolbar-icon-spacing 24)
 
 (defnstyle toolbar [background-color flat?]
-  {:flex             0
-   :flex-direction   :row
-   :align-items      :center
-   :justify-content  :space-between
-   :background-color (or background-color toolbar-background)
-   :elevation        (if flat? 0 2)
-   :android          {:height 55}
-   :ios              {:height 56}})
+  (cond->
+   {:flex            0
+    :flex-direction  :row
+    :align-items     :center
+    :justify-content :space-between
+    :elevation       (if flat? 0 2)
+    :android         {:height 55}
+    :ios             {:height 56}}
+
+    background-color
+    (assoc :background-color background-color)))
 
 (def toolbar-nav-actions-container
   {:flex-direction :row

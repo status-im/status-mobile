@@ -116,5 +116,4 @@
                                       :bar-style        "dark-content"})})
 
 (defstyle view-default
-  (create-view-style {:background-color colors/white
-                      :elevation        elevation}))
+  (create-view-style {}))
