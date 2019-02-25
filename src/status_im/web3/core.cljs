@@ -57,10 +57,12 @@
       -version
       (getNode
        (fn [err resp]
-         (when-not err
-           (cb resp))))))
+         (if-not err
+           (cb resp)
+           (log/warn (str "unable to obtain web3 version:" err)))))))
 
 (defn fetch-node-version-callback
   [resp {:keys [db]}]
-  (when-let [node-version (second (re-find #"StatusIM/v(.*)/.*/.*" resp))]
-    {:db (assoc db :web3-node-version node-version)}))
+  (if-let [node-version (second (re-find #"StatusIM/v(.*)/.*/.*" resp))]
+    {:db (assoc db :web3-node-version node-version)}
+    (log/warn (str "unexpected web3 version format: " "'" resp "'"))))
