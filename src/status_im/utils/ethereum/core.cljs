@@ -48,6 +48,10 @@
   (when s
     (.isAddress dependencies/Web3.prototype s)))
 
+(defn address->checksum [s]
+  (when s
+    (.toChecksumAddress dependencies/Web3.prototype s)))
+
 (defn network->chain-id [network]
   (get-in network [:config :NetworkId]))
 
