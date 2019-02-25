@@ -53,6 +53,9 @@
   (testing "status-im://blah"
     (testing "it returns true"
       (is (links/universal-link? "status-im://blah"))))
+  (testing "status-im://blah"
+    (testing "it returns true"
+      (is (links/deep-link? "status-im://blah"))))
   (testing "http://get.status.im/blah"
     (testing "it returns true"
       (is (links/universal-link? "http://get.status.im/blah"))))
@@ -70,7 +73,10 @@
       (is (not (links/universal-link? "https://not.status.im/blah")))))
   (testing "https://not.status.im/blah"
     (testing "it returns false"
-      (is (not (links/universal-link? "https://not.status.im/blah"))))))
+      (is (not (links/universal-link? "https://not.status.im/blah")))))
+  (testing "http://get.status.im/blah"
+    (testing "it returns false"
+      (is (not (links/deep-link? "http://get.status.im/blah"))))))
 
 (deftest process-stored-event
   (testing "the url is in the database"

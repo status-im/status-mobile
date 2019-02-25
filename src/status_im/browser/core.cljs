@@ -212,11 +212,6 @@
     (utils.universal-links/handle-url cofx link)
     {:browser/show-browser-selection link}))
 
-(fx/defn handle-universal-link
-  [cofx link]
-  (when (utils.universal-links/universal-link? link)
-    (utils.universal-links/handle-url cofx link)))
-
 (fx/defn update-browser-on-nav-change
   [cofx url error?]
   (let [browser (get-current-browser (:db cofx))
@@ -228,7 +223,6 @@
         (fx/merge cofx
                   (update-browser-history browser resolved-url)
                   (handle-pdf url)
-                  (handle-universal-link url)
                   (resolve-url {:error? error? :resolved-url (when resolved-ens url)}))))))
 
 (fx/defn update-browser-name
@@ -239,24 +233,29 @@
 
 (fx/defn navigation-state-changed
   [cofx event error?]
-  (let [{:strs [url loading title]} (js->clj event)]
-    (fx/merge cofx
-              (update-browser-option :loading? loading)
-              (update-browser-name title)
-              (update-browser-on-nav-change url error?))))
+  (let [{:strs [url loading title]} (js->clj event)
+        deep-link? (utils.universal-links/deep-link? url)]
+    (if (utils.universal-links/universal-link? url)
+      (when-not (and deep-link? platform/ios?) ;; ios webview handles this
+        (utils.universal-links/handle-url cofx url))
+      (fx/merge cofx
+                (update-browser-option :loading? loading)
+                (update-browser-name title)
+                (update-browser-on-nav-change url error?)))))
 
 (fx/defn open-url-in-current-browser
   "Opens a url in the current browser, which mean no new entry is added to the home page
   and history of the current browser is updated so that the user can navigate back to the
   origin url"
-  ;; TODO(yenda) is that desirable ?
   [cofx url]
   (let [browser (get-current-browser (:db cofx))
         normalized-url (http/normalize-and-decode-url url)]
-    (fx/merge cofx
-              (update-browser-option :url-editing? false)
-              (update-browser-history browser normalized-url)
-              (resolve-url nil))))
+    (if (utils.universal-links/universal-link? normalized-url)
+      (utils.universal-links/handle-url cofx normalized-url)
+      (fx/merge cofx
+                (update-browser-option :url-editing? false)
+                (update-browser-history browser normalized-url)
+                (resolve-url nil)))))
 
 (fx/defn open-url
   "Opens a url in the browser. If a host can be extracted from the url and
@@ -268,12 +267,14 @@
         browser {:browser-id    (or host (random/id))
                  :history-index 0
                  :history       [normalized-url]}]
-    (fx/merge cofx
-              {:db (assoc db :browser/options
-                          {:browser-id (:browser-id browser)})}
-              (navigate-to-browser)
-              (update-browser browser)
-              (resolve-url nil))))
+    (if (utils.universal-links/universal-link? normalized-url)
+      (utils.universal-links/handle-url cofx normalized-url)
+      (fx/merge cofx
+                {:db (assoc db :browser/options
+                            {:browser-id (:browser-id browser)})}
+                (navigate-to-browser)
+                (update-browser browser)
+                (resolve-url nil)))))
 
 (fx/defn open-existing-browser
   "Opens an existing browser with it's history"
