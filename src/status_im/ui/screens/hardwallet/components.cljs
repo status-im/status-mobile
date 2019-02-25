@@ -49,7 +49,7 @@
                                    :number    4
                                    :next-step :recovery-phrase}
    :card-ready                    {:label     :t/pairing
-                                   :number    5
+                                   :number    4
                                    :next-step :recovery-phrase}
    :generating-mnemonic           {:label  :t/recovery-phrase
                                    :number 5}

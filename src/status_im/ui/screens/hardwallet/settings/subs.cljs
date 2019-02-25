@@ -6,15 +6,18 @@
 (re-frame/reg-sub
  :keycard-paired-on
  (fn [db]
-   (some-> (or
-            (get-in db [:hardwallet :secrets :paired-on])
-            (get-in db [:account/account :keycard-paired-on]))
+   (some-> (get-in db [:account/account :keycard-paired-on])
            (utils.datetime/timestamp->year-month-day-date))))
 
 (re-frame/reg-sub
  :keycard-pairing
  (fn [db]
    (core/get-pairing db)))
+
+(re-frame/reg-sub
+ :keycard-account-pairing
+ (fn [db]
+   (get-in db [:account/account :keycard-pairing])))
 
 (re-frame/reg-sub
  :hardwallet/pin-retry-counter

@@ -11,7 +11,8 @@
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.fx :as fx]
-            [status-im.node.core :as node]))
+            [status-im.node.core :as node]
+            [clojure.string :as str]))
 
 (defn check-password-errors [password]
   (cond (string/blank? password) :required-field
@@ -67,12 +68,25 @@
 (fx/defn validate-recover-result
   [{:keys [db] :as cofx} {:keys [error pubkey address]} password]
   (if (empty? error)
-    (let [account {:pubkey     pubkey
-                   :address    address
-                   :photo-path (identicon/identicon pubkey)
-                   :mnemonic   ""}]
-      (accounts.create/on-account-created
-       cofx account password {:seed-backed-up? true}))
+    (let [account-address (-> address
+                              (str/lower-case)
+                              (str/replace-first "0x" ""))
+          keycard-account? (boolean (get-in db [:accounts/accounts account-address :keycard-instance-uid]))]
+      (if keycard-account?
+        ;; trying to recover account created with keycard
+        {:db        (-> db
+                        (update :accounts/recover assoc
+                                :processing? false
+                                :passphrase-error :recover-keycard-account-not-supported)
+                        (update :accounts/recover dissoc
+                                :passphrase-valid?))
+         :node/stop nil}
+        (let [account {:pubkey     pubkey
+                       :address    address
+                       :photo-path (identicon/identicon pubkey)
+                       :mnemonic   ""}]
+          (accounts.create/on-account-created
+           cofx account password {:seed-backed-up? true}))))
     {:db        (-> db
                     (update :accounts/recover assoc
                             :processing? false

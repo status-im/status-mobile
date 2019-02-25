@@ -5845,9 +5845,9 @@ react-native-splash-screen@3.1.1:
   resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.1.1.tgz#1a4e46c9fdce53ff52af2a2cb4181788c4e30b30"
   integrity sha512-PU2YocOSGbLjL9Vgcq/cwMNuHHKNjjuPpa1IPMuWo+6EB/fSZ5VOmxSa7+eucQe3631s3NhGuk3eHKahU03a4Q==
 
-"react-native-status-keycard@git+https://github.com/status-im/react-native-status-keycard.git#v2.3.7":
-  version "2.3.7"
-  resolved "git+https://github.com/status-im/react-native-status-keycard.git#9e6df66bfd9288584031cff5455445230059720b"
+"react-native-status-keycard@git+https://github.com/status-im/react-native-status-keycard.git#v2.3.8":
+  version "2.3.8"
+  resolved "git+https://github.com/status-im/react-native-status-keycard.git#e0448b0960a5b4041d2a04dda55bb39e2aa6b191"
 
 react-native-svg@6.5.2:
   version "6.5.2"

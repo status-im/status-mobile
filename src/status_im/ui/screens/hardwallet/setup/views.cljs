@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.hardwallet.setup.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [goog.functions :refer [debounce]]
             [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.ui.screens.profile.seed.views :as seed.views]
             [status-im.ui.screens.hardwallet.components :as components]
@@ -16,7 +17,8 @@
             [status-im.i18n :as i18n]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.screens.hardwallet.setup.styles :as styles]))
+            [status-im.ui.screens.hardwallet.setup.styles :as styles]
+            [status-im.utils.security :as security]))
 
 (defonce event-emitter (.-DeviceEventEmitter js-dependencies/react-native))
 
@@ -71,24 +73,27 @@
           :uppercase? false
           :forward?   true}]]]]]))
 
-(defn card-ready []
-  [react/view styles/card-ready-container
-   [react/view styles/card-ready-inner-container
-    [react/view (assoc styles/center-container :margin-top 68)
-     [react/text {:style styles/center-title-text}
-      (i18n/label :t/card-is-paired)]
-     [react/text {:style styles/estimated-time-text}
-      (i18n/label :t/next-step-generating-mnemonic)]]
-    [react/view]
-    [react/view styles/next-button-container
-     [react/view components.styles/flex]
-     [react/view {:margin-right 20}
-      [components.common/bottom-button
-       {:on-press   #(re-frame/dispatch [:hardwallet.ui/card-ready-next-button-pressed])
-        :uppercase? false
-        :forward?   true}]]]]])
+(defview card-ready []
+  (letsubs [flow [:hardwallet-flow]]
+    [react/view styles/card-ready-container
+     [react/view styles/card-ready-inner-container
+      [react/view (assoc styles/center-container :margin-top 68)
+       [react/text {:style styles/center-title-text}
+        (i18n/label :t/card-is-paired)]
+       [react/text {:style styles/estimated-time-text}
+        (if (= flow :create)
+          (i18n/label :t/next-step-generating-mnemonic)
+          (i18n/label :t/next-step-entering-mnemonic))]]
+      [react/view]
+      [react/view styles/next-button-container
+       [react/view components.styles/flex]
+       [react/view {:margin-right 20}
+        [components.common/bottom-button
+         {:on-press   #(re-frame/dispatch [:hardwallet.ui/card-ready-next-button-pressed])
+          :uppercase? false
+          :forward?   true}]]]]]))
 
-(defview recovery-phrase []
+(defview display-recovery-phrase []
   (letsubs [mnemonic [:hardwallet-mnemonic]]
     (let [mnemonic-vec (vec (map-indexed vector (clojure.string/split mnemonic #" ")))]
       [react/view styles/card-ready-container
@@ -98,21 +103,22 @@
                       :number-of-lines 2
                       :font            :bold}
           (i18n/label :t/your-recovery-phrase)]
-         [react/view {:style {:margin-top        17
-                              :margin-bottom     16
-                              :margin-horizontal 16
-                              :flex-direction    :row
-                              :border-radius     8
-                              :background-color  colors/white
-                              :border-width      1
-                              :border-color      colors/gray-lighter}}
-          [seed.views/six-words (subvec mnemonic-vec 0 6)]
-          [react/view {:style {:width            1
-                               :background-color colors/gray-lighter}}]
-          [seed.views/six-words (subvec mnemonic-vec 6 12)]]
-         [react/view styles/recovery-phrase-description
-          [react/text {:style styles/recovery-phrase-description-text}
-           (i18n/label :t/your-recovery-phrase-description)]]]]
+         [react/view
+          [react/view {:style {:margin-top        17
+                               :margin-bottom     16
+                               :margin-horizontal 16
+                               :flex-direction    :row
+                               :border-radius     8
+                               :background-color  colors/white
+                               :border-width      1
+                               :border-color      colors/gray-lighter}}
+           [seed.views/six-words (subvec mnemonic-vec 0 6)]
+           [react/view {:style {:width            1
+                                :background-color colors/gray-lighter}}]
+           [seed.views/six-words (subvec mnemonic-vec 6 12)]]
+          [react/view styles/recovery-phrase-description
+           [react/text {:style styles/recovery-phrase-description-text}
+            (i18n/label :t/your-recovery-phrase-description)]]]]]
        [react/view styles/next-button-container
         [react/view components.styles/flex]
         [react/view {:margin-right 20}
@@ -161,6 +167,51 @@
           :uppercase? false
           :forward?   true}]]])))
 
+(defview enter-recovery-phrase []
+  (letsubs [width [:dimensions/window-width]
+            recovered-account [:get-recover-account]]
+    (let [{:keys [passphrase passphrase-valid? passphrase-error passphrase-warning]} recovered-account
+          disabled? (not passphrase-valid?)
+          validate-passphrase (debounce
+                               #(re-frame/dispatch [:accounts.recover.ui/passphrase-input-blured])
+                               1000)]
+      [react/view styles/enter-pair-code-container
+       [react/view styles/enter-pair-code-title-container
+        [react/view
+         [react/text {:style           styles/center-title-text
+                      :number-of-lines 2}
+          (i18n/label :t/your-recovery-phrase)]
+         [react/view (styles/enter-pair-code-input-container width)
+          [text-input/text-input-with-label
+           {:style               {:flex                1
+                                  :text-align-vertical :top}
+            :height              92
+            :accessibility-label :enter-12-words
+            :placeholder         (i18n/label :t/enter-12-words)
+            :multiline           true
+            :default-value       passphrase
+            :auto-correct        false
+            :on-change-text      #(do
+                                    (re-frame/dispatch [:accounts.recover.ui/passphrase-input-changed (security/mask-data %)])
+                                    (validate-passphrase))
+            :error               (cond passphrase-error (i18n/label passphrase-error)
+                                       passphrase-warning (i18n/label passphrase-warning))}]]]]
+       [react/view styles/next-button-container
+        [react/view components.styles/flex]
+        [react/view {:margin-right 20}
+         [components.common/bottom-button
+          {:on-press   #(re-frame/dispatch [:hardwallet.ui/recovery-phrase-next-button-pressed])
+           :label      (i18n/label :t/next)
+           :disabled?  disabled?
+           :uppercase? false
+           :forward?   true}]]]])))
+
+(defview recovery-phrase []
+  (letsubs [flow [:hardwallet-flow]]
+    (if (= flow :create)
+      (display-recovery-phrase)
+      (enter-recovery-phrase))))
+
 (defview enter-pair-code []
   (letsubs [pair-code [:hardwallet-pair-code]
             width [:dimensions/window-width]]
@@ -174,9 +225,8 @@
         (i18n/label :t/enter-pair-code-description)]]
       [react/view (styles/enter-pair-code-input-container width)
        [text-input/text-input-with-label
-        {:on-change-text    #(re-frame/dispatch [:hardwallet.ui/pair-code-input-changed %])
-         :secure-text-entry true
-         :placeholder       ""}]]]
+        {:on-change-text #(re-frame/dispatch [:hardwallet.ui/pair-code-input-changed %])
+         :placeholder    ""}]]]
      [react/view styles/next-button-container
       [react/view components.styles/flex]
       [react/view {:margin-right 20}
