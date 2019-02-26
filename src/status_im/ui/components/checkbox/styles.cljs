@@ -9,8 +9,8 @@
    :align-items     :center
    :justify-content :center
    :border-radius   2
-   :width           24
-   :height          24})
+   :width           18
+   :height          18})
 
 (defn icon-radio-container [checked?]
   (merge (icon-check-container checked?)

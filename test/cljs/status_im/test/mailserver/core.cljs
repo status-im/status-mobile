@@ -28,6 +28,32 @@
     :enode "enode://0f7c65277f916ff4379fe520b875082a56e587eb3ce1c1567d9ff94206bdb05ba167c52272f20f634cd1ebdec5d9dfeb393018bfde1595d8e64a717c8b46692f@203.136.241.111:40404"
     :name "Geth/v1.7.2-stable/linux-amd64/go1.9.1"}])
 
+(deftest change-mailserver
+  (testing "we are offline"
+    (testing "it does not change mailserver"
+      (is (not (mailserver/change-mailserver {:db {:peers-count 0}})))))
+  (testing "we are online"
+    (testing "there's a preferred mailserver"
+      (testing "it shows the popup"
+        (is (:ui/show-confirmation (mailserver/change-mailserver
+                                    {:db {:account/account {:settings
+                                                            {:fleet :beta
+                                                             :mailserver {:beta "id"}}}
+                                          :peers-count 1}})))))
+    (testing "there's not a preferred mailserver"
+      (testing "it changes the mailserver"
+        (is (= :a
+               (get-in
+                (mailserver/change-mailserver
+                 {:db {:mailserver/mailservers {:beta {:a "b"}}
+                       :account/account {:settings
+                                         {:fleet :beta}}
+                       :peers-count 1}})
+                [:db :mailserver/current-id]))))
+      (testing "it does not show the popup"
+        (is (not (:ui/show-confirmation (mailserver/change-mailserver
+                                         {:db {:peers-count 1}}))))))))
+
 (deftest test-registered-peer?
   (testing "Peer is registered"
     (is (mailserver/registered-peer? peers enode)))

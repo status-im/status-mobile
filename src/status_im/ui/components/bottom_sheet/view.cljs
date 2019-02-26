@@ -2,7 +2,8 @@
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.bottom-sheet.styles :as styles]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [re-frame.core :as re-frame]))
 
 (def initial-animation-duration 300)
 (def release-animation-duration 150)
@@ -99,6 +100,7 @@
     :reagent-render
     (fn [{:keys [opacity-value bottom-value
                  height content on-cancel]
+          :or   {on-cancel #(re-frame/dispatch [:bottom-sheet/hide])}
           :as   opts}]
       [react/view
        (merge
@@ -142,12 +144,12 @@
                                       styles/border-radius
                                       styles/bottom-padding)
               opts'                (assoc opts :height total-content-height)]
-          (when (not= old-height new-height)
+          (when (and new-show? (not= old-height new-height))
             (animation/set-value bottom-value new-height))
           (cond (and (not old-show?) new-show?)
                 (reset! show-sheet? true)
 
-                (and old-show? (not new-show?) (true? @show-sheet?))
+                (and old-show? (false? new-show?) (true? @show-sheet?))
                 (cancel opts'))))
       :reagent-render
       (fn [{:keys [content content-height]}]

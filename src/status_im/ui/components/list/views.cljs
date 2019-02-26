@@ -12,7 +12,7 @@
 
   [flat-list {:data [{:title  \"\" :subtitle \"\"}] :render-fn render}]
 
-  [section-list {:sections [{:title :key :unik :data {:title  \"\" :subtitle \"\"}}] :render-fn render}]
+  [section-list {:sections [{:title \"\" :key :unik :data {:title  \"\" :subtitle \"\"}}] :render-fn render}]
 
   or with a per-section `render-fn`
 
@@ -87,16 +87,19 @@
   [& children]
   (into [react/view {:style styles/item-content-view}] (keep identity children)))
 
-(defn item-checkbox
-  [{:keys [style] :as props}]
-  [react/view {:style (merge style styles/item-checkbox)}
-   [checkbox/checkbox props]])
+(defn list-item-with-checkbox
+  [{:keys [on-value-change style checked?] :as props} item]
+  [react/touchable-highlight {:on-press #(on-value-change (not checked?))}
+   (conj item
+         [react/view {:style (merge style styles/item-checkbox)}
+          [checkbox/checkbox props]])])
 
-(defn list-item-with-checkbox [{:keys [on-value-change checked? plain-checkbox?] :as props} item]
-  (let [handler  #(on-value-change (not checked?))
-        checkbox [(if plain-checkbox? checkbox/plain-checkbox item-checkbox) props]
-        item     (conj item checkbox)]
-    [touchable-item handler item]))
+(defn list-item-with-radio-button
+  [{:keys [on-value-change style checked?] :as props} item]
+  [react/touchable-highlight {:on-press #(on-value-change (not checked?))}
+   (conj item
+         [react/view {:style (merge style styles/item-checkbox)}
+          [checkbox/radio-button props]])])
 
 (def item-icon-forward
   [item-icon {:icon      :main-icons/next
@@ -115,9 +118,9 @@
          (and action-fn text)
          (or (nil? accessibility-label) (keyword? accessibility-label))]}
   [react/touchable-highlight
-   (cond-> {:on-press action-fn
-            :accessibility-label accessibility-label
-            :disabled (not active?)})
+   {:on-press action-fn
+    :accessibility-label accessibility-label
+    :disabled (not active?)}
    [react/view styles/settings-item
     (if icon
       [react/view (styles/settings-item-icon icon-color)
@@ -215,12 +218,16 @@
 
 (defn section-list
   "A wrapper for SectionList.
+   To render something on empty sections, use renderSectionFooter and conditionaly
+   render on empty data
    See https://facebook.github.io/react-native/docs/sectionlist.html"
-  [{:keys [sections render-section-header-fn] :as props
+  [{:keys [sections render-section-header-fn render-section-footer-fn] :as props
     :or {render-section-header-fn default-render-section-header}}]
   [section-list-class
    (merge (base-list-props props)
           props
+          (when render-section-footer-fn
+            {:renderSectionFooter (wrap-render-section-header-fn render-section-footer-fn)})
           {:sections            (clj->js (map wrap-per-section-render-fn sections))
            :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)})])
 

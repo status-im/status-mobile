@@ -6,5 +6,6 @@
 
         <item name="colorControlNormal">@color/primary</item>
         <item name="colorControlActivated">@color/primary</item>
+        <item name="android:windowBackground">@color/background</item>
     </style>
 </resources>

@@ -69,23 +69,24 @@
         (log/debug :shh/post-success))
       (re-frame/dispatch [error-event err resp]))))
 
+(defn send-direct-message! [web3 direct-message success-event error-event count]
+  (.. web3
+      -shh
+      (sendDirectMessage
+       (clj->js (update direct-message :payload (comp transport.utils/from-utf8
+                                                      transit/serialize)))
+       (handle-response success-event error-event count))))
+
 (re-frame/reg-fx
  :shh/send-direct-message
  (fn [post-calls]
    (doseq [{:keys [web3 payload src dst success-event error-event]
             :or   {error-event :transport/send-status-message-error}} post-calls]
-     (let [chat           (transport.topic/public-key->discovery-topic dst)
-           direct-message (clj->js {:pubKey dst
-                                    :sig src
-                                    :chat chat
-                                    :payload (-> payload
-                                                 transit/serialize
-                                                 transport.utils/from-utf8)})]
-       (.. web3
-           -shh
-           (sendDirectMessage
-            direct-message
-            (handle-response success-event error-event 1)))))))
+     (let [direct-message {:pubKey dst
+                           :sig src
+                           :chat (transport.topic/public-key->discovery-topic dst)
+                           :payload payload}]
+       (send-direct-message! web3 direct-message success-event error-event 1)))))
 
 (re-frame/reg-fx
  :shh/send-pairing-message
@@ -123,21 +124,24 @@
               message
               (handle-response success-event error-event (count dsts)))))))))
 
+(defn send-public-message! [web3 message success-event error-event]
+  (.. web3
+      -shh
+      (sendPublicMessage
+       (clj->js message)
+       (handle-response success-event error-event 1))))
+
 (re-frame/reg-fx
  :shh/send-public-message
  (fn [post-calls]
    (doseq [{:keys [web3 payload src chat success-event error-event]
             :or   {error-event :transport/send-status-message-error}} post-calls]
-     (let [message (clj->js {:chat chat
-                             :sig src
-                             :payload (-> payload
-                                          transit/serialize
-                                          transport.utils/from-utf8)})]
-       (.. web3
-           -shh
-           (sendPublicMessage
-            message
-            (handle-response success-event error-event 1)))))))
+     (let [message {:chat chat
+                    :sig src
+                    :payload (-> payload
+                                 transit/serialize
+                                 transport.utils/from-utf8)}]
+       (send-public-message! web3 message success-event error-event)))))
 
 (re-frame/reg-fx
  :shh/post

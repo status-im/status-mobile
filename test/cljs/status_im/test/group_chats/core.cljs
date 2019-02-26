@@ -169,35 +169,6 @@
                     "group-chat-name-changed"]
                    (map (comp :text :content) (sort-by :clock-value (vals (:messages actual-chat))))))))))))
 
-(deftest set-up-topic
-  (let [cofx {:now 0 :db {:account/account {:public-key admin}}}]
-    (testing "a brand new chat"
-      (let [actual (group-chats/handle-membership-update cofx initial-message "payload" admin)]
-        (testing "it sets up a topic"
-          (is (:shh/add-discovery-filters actual)))))
-    (testing "an existing chat"
-      (let [cofx  (assoc cofx
-                         :db
-                         (:db (group-chats/handle-membership-update cofx initial-message "payload" admin)))
-            new-message {:chat-id chat-id
-                         :membership-updates [{:from member-1
-                                               :events [{:type "chat-created"
-                                                         :clock-value 1
-                                                         :name "group-name"}
-                                                        {:type "admins-added"
-                                                         :clock-value 10
-                                                         :members [member-2]}
-                                                        {:type "admin-removed"
-                                                         :clock-value 11
-                                                         :member member-1}]}
-                                              {:from member-1
-                                               :events [{:type "member-removed"
-                                                         :clock-value 12
-                                                         :member member-1}]}]}
-            actual (group-chats/handle-membership-update cofx new-message "payload" admin)]
-        (testing "it removes the topic"
-          (is (:shh/remove-filters actual)))))))
-
 (deftest build-group-test
   (testing "only adds"
     (let [events [{:type    "chat-created"

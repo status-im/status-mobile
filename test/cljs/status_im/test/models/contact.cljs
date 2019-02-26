@@ -28,8 +28,10 @@
                   {:name "name"
                    :profile-image "image"
                    :address "address"
+                   :device-info [{:id "1"
+                                  :fcm-token "token-1"}]
                    :fcm-token "token"}
-                  {})
+                  {:db {}})
           contact (get-in actual [:db :contacts/contacts public-key])]
       (testing "it stores the contact in the database"
         (is (:data-store/tx actual)))
@@ -39,6 +41,9 @@
                  :name             "name"
                  :last-updated     1000
                  :pending?         true
+                 :device-info      {"1" {:id "1"
+                                         :timestamp 1
+                                         :fcm-token "token-1"}}
                  :fcm-token        "token"
                  :address          "address"} contact)))))
   (testing "the contact is already in contacts"
@@ -48,6 +53,10 @@
                     1
                     {:name "new-name"
                      :profile-image "new-image"
+                     :device-info [{:id "2"
+                                    :fcm-token "token-2"}
+                                   {:id "3"
+                                    :fcm-token "token-3"}]
                      :address "new-address"
                      :fcm-token "new-token"}
                     {:db {:contacts/contacts
@@ -55,6 +64,12 @@
                                        :photo-path       "old-image"
                                        :name             "old-name"
                                        :last-updated     0
+                                       :device-info      {"1" {:id "1"
+                                                               :timestamp 0
+                                                               :fcm-token "token-1"}
+                                                          "2" {:id "2"
+                                                               :timestamp 0
+                                                               :fcm-token "token-2"}}
                                        :pending?         false
                                        :fcm-token        "old-token"
                                        :address          "old-address"}}}})
@@ -66,6 +81,15 @@
                    :photo-path       "new-image"
                    :name             "new-name"
                    :last-updated     1000
+                   :device-info      {"1" {:id "1"
+                                           :fcm-token "token-1"
+                                           :timestamp 0}
+                                      "2" {:id "2"
+                                           :fcm-token "token-2"
+                                           :timestamp 1}
+                                      "3" {:id "3"
+                                           :fcm-token "token-3"
+                                           :timestamp 1}}
                    :pending?         false
                    :fcm-token        "new-token"
                    :address          "new-address"} contact)))))
@@ -116,6 +140,8 @@
                   {:db {:contacts/contacts
                         {public-key {:public-key       public-key
                                      :photo-path       "old-image"
+                                     :device-info      {"1" {:id "1"
+                                                             :fcm-token "token-1"}}
                                      :name             "old-name"
                                      :last-updated     0
                                      :pending?         false}}}})
@@ -126,6 +152,8 @@
         (is (=  {:public-key       public-key
                  :photo-path       "new-image"
                  :name             "new-name"
+                 :device-info      {"1" {:id "1"
+                                         :fcm-token "token-1"}}
                  :last-updated     1000
                  :pending?         false
                  :address          address} contact)))))

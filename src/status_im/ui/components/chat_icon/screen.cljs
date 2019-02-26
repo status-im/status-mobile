@@ -1,16 +1,25 @@
 (ns status-im.ui.components.chat-icon.screen
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
-            [status-im.ui.components.react :as react]
+            [re-frame.core :as re-frame.core]
             [status-im.ui.components.chat-icon.styles :as styles]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.photos :as photos])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn default-chat-icon [name styles]
   (when-not (string/blank? name)
     [react/view (:default-chat-icon styles)
      [react/text {:style (:default-chat-icon-text styles)}
-      (string/capitalize (first name))]]))
+      ;; TODO: for now we check if the first letter is a #
+      ;; which means it is most likely a public chat and
+      ;; use the second letter if that is the case
+      ;; a broader refactoring should clean up upstream params
+      ;; for default-chat-icon
+      (string/capitalize (if (and (= "#" (first name))
+                                  (< 1 (count name)))
+                           (second name)
+                           (first name)))]]))
 
 (defn dapp-badge [{:keys [online-view-wrapper online-view online-dot-left online-dot-right]}]
   [react/view online-view-wrapper
@@ -27,14 +36,15 @@
        [react/view pending-outer-circle
         [react/view pending-inner-circle]]])))
 
-(defview chat-icon-view [chat-id _group-chat name _online styles & [hide-dapp?]]
-  (letsubs [photo-path [:contacts/chat-photo chat-id]
-            dapp?      [:get-in [:contacts/contacts chat-id :dapp?]]]
+(defn chat-icon-view
+  [chat-id _group-chat name _online styles & [hide-dapp?]]
+  (let [photo-path (re-frame.core/subscribe [:contacts/chat-photo chat-id])
+        dapp?      (re-frame.core/subscribe [:get-in [:contacts/contacts chat-id :dapp?]])]
     [react/view (:container styles)
-     (if-not (string/blank? photo-path)
-       [photos/photo photo-path styles]
+     (if-not (string/blank? @photo-path)
+       [photos/photo @photo-path styles]
        [default-chat-icon name styles])
-     (when (and dapp? (not hide-dapp?))
+     (when (and @dapp? (not hide-dapp?))
        [dapp-badge styles])
      [pending-contact-badge chat-id styles]]))
 

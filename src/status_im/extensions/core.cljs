@@ -20,9 +20,11 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.fx :as fx]
             status-im.extensions.ethereum
+            status-im.extensions.camera
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.chat.commands.sending :as commands-sending]))
+            [status-im.chat.commands.sending :as commands-sending]
+            [status-im.browser.core :as browser]))
 
 (re-frame/reg-fx
  ::identity-event
@@ -123,6 +125,18 @@
  :store/get
  (fn [db [_ {id :id} {:keys [key]}]]
    (get-in db [:extensions/store id key])))
+
+(defn- ->contact [{:keys [photo-path address name public-key]}]
+  {:photo      photo-path
+   :name       name
+   :address    (str "0x" address)
+   :public-key public-key})
+
+(re-frame/reg-sub
+ :extensions.contacts/all
+ :<- [:contacts/active]
+ (fn [[contacts] _]
+   (map #(update % :address ->contact))))
 
 (defn- empty-value? [o]
   (cond
@@ -307,6 +321,11 @@
  (fn [_ [_ _ m]]
    {::arithmetic m}))
 
+(handlers/register-handler-fx
+ :extensions/open-url
+ (fn [cofx [_ _ {:keys [url]}]]
+   (browser/open-url cofx url)))
+
 (defn button [{:keys [on-click enabled disabled] :as m} label]
   [button/secondary-button (merge {:disabled? (or (when (contains? m :enabled) (or (nil? enabled) (false? enabled))) disabled)}
                                   (when on-click {:on-press #(re-frame/dispatch (on-click {}))})) label])
@@ -418,6 +437,7 @@
                 'transaction-status     {:value transactions/transaction-status :properties {:outgoing :string :tx-hash :string}}}
    :queries    {'identity            {:value :extensions/identity :arguments {:value :map}}
                 'store/get           {:value :store/get :arguments {:key :string}}
+                'contacts/all        {:value :extensions.contacts/all} ;; :photo :name :address :public-key
                 'wallet/collectibles {:value :get-collectible-token :arguments {:token :string :symbol :string}}
                 'wallet/balance      {:value :extensions.wallet/balance :arguments {:token :string}}
                 'wallet/token        {:value :extensions.wallet/token :arguments {:token :string :amount? :number :amount-in-wei? :number}}
@@ -464,6 +484,20 @@
                  :arguments   {:values    :vector
                                :operation {:one-of #{:plus :minus :times :divide}}
                                :on-result :event}}
+                'browser/open-url
+                {:permissions [:read]
+                 :value       :extensions/open-url
+                 :arguments   {:url :string}}
+                'camera/picture
+                {:permissions [:read]
+                 :value       :extensions/camera-picture
+                 :arguments   {:on-success  :event
+                               :on-failure? :event}}
+                'camera/qr-code
+                {:permissions [:read]
+                 :value       :extensions/camera-qr-code
+                 :arguments   {:on-success  :event
+                               :on-failure? :event}}
                 'schedule/start
                 {:permissions [:read]
                  :value       :extensions/schedule-start
@@ -564,7 +598,7 @@
                                :method?     :string
                                :params?     :vector
                                :nonce?      :string
-                               :on-success  :event
+                               :on-success? :event
                                :on-failure? :event}}
                 'ethereum/logs
                 {:permissions [:read]
@@ -695,7 +729,59 @@
                                :params?     :vector
                                :outputs?    :vector
                                :on-success  :event
-                               :on-failure? :event}}}
+                               :on-failure? :event}}
+                'ethereum/shh_post
+                {:permissions [:read]
+                 :value       :extensions/shh-post
+                 :arguments   {:from?       :string
+                               :to?         :string
+                               :topics      :vector
+                               :payload     :string
+                               :priority    :string
+                               :ttl         :string
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum/shh-new-identity
+                {:permissions [:read]
+                 :value       :extensions/shh-new-identity
+                 :arguments   {:on-success  :event
+                               :on-failure? :event}}
+                'ethereum/shh-has-identity
+                {:permissions [:read]
+                 :value       :extensions/shh-has-identity
+                 :arguments   {:address     :string
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum/shh-new-group
+                {:permissions [:read]
+                 :value       :extensions/shh-new-group
+                 :arguments   {:on-success  :event
+                               :on-failure? :event}}
+                'ethereum/shh-add-to-group
+                {:permissions [:read]
+                 :value       :extensions/shh-add-to-group
+                 :arguments   {:address     :string
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum/shh_new-filter
+                {:permissions [:read]
+                 :value       :extensions/shh-new-filter
+                 :arguments   {:to?         :string
+                               :topics      :vector
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ethereum/shh-uninstall-filter
+                {:permissions [:read]
+                 :value       :extensions/shh-uninstall-filter
+                 :arguments   {:id  :string}}
+                'ethereum/shh-get-filter-changes
+                {:permissions [:read]
+                 :value       :extensions/shh-get-filter-changes
+                 :arguments   {:id :string}}
+                'ethereum/shh-get-messages
+                {:permissions [:read]
+                 :value       :extensions/shh-get-messages
+                 :arguments   {:id :string}}}
    :hooks      {:chat.command    commands/command-hook
                 :wallet.settings settings/hook}})
 

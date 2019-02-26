@@ -5,6 +5,7 @@ from tests.base_test_case import SingleDeviceTestCase
 from tests.users import transaction_senders, transaction_recipients, basic_user
 from views.send_transaction_view import SendTransactionView
 from views.sign_in_view import SignInView
+from decimal import Decimal
 
 
 class TestTransactionDApp(SingleDeviceTestCase):
@@ -60,6 +61,48 @@ class TestTransactionDApp(SingleDeviceTestCase):
                     'Call contract set function', 'Call function 2 times in a row':
             if not status_test_dapp.element_by_text(text).is_element_displayed(120):
                 pytest.fail('Contract was not created')
+
+    @marks.testrail_id(5743)
+    @marks.high
+    def test_send_two_transactions_in_batch_in_dapp(self):
+        sender = transaction_senders['W']
+        sign_in_view = SignInView(self.driver)
+        home_view = sign_in_view.recover_access(sender['passphrase'])
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        status_test_dapp = home_view.open_status_test_dapp()
+        status_test_dapp.wait_for_d_aap_to_load()
+        status_test_dapp.transactions_button.click()
+        send_transaction_view = status_test_dapp.send_two_tx_in_batch_button.click()
+        send_transaction_view.sign_transaction()
+
+        # Check that second 'Send transaction' screen appears
+        if not send_transaction_view.element_by_text('SIGN TRANSACTION').is_element_displayed(10):
+            pytest.fail('Second send transaction screen did not appear!')
+
+        send_transaction_view.sign_transaction()
+
+
+    @marks.testrail_id(5744)
+    @marks.high
+    def test_send_two_transactions_one_after_another_in_dapp(self):
+        sender = transaction_senders['Z']
+        sign_in_view = SignInView(self.driver)
+        home_view = sign_in_view.recover_access(sender['passphrase'])
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        status_test_dapp = home_view.open_status_test_dapp()
+        status_test_dapp.wait_for_d_aap_to_load()
+        status_test_dapp.transactions_button.click()
+        send_transaction_view = status_test_dapp.send_two_tx_one_by_one_button.click()
+        send_transaction_view.sign_transaction()
+
+        # Check that second 'Send transaction' screen appears
+        if not send_transaction_view.element_by_text('SIGN TRANSACTION').is_element_displayed(20):
+            pytest.fail('Second send transaction screen did not appear!')
+
+        send_transaction_view.sign_transaction()
+
 
     @marks.logcat
     @marks.testrail_id(5418)
@@ -288,9 +331,15 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction_view.sign_transaction_button.click()
         if send_transaction_view.enter_password_input.is_element_displayed():
             self.errors.append('sending all available ETH (no funds to pay gas)')
-
         send_transaction_view.amount_edit_box.clear()
-        send_transaction_view.amount_edit_box.set_value('0.099979000000000001')
+
+        # Because tx gas price may change we calculate eth value according to current gas fee value
+        send_transaction_view.advanced_button.click()
+        transaction_fee_total = send_transaction_view.get_transaction_fee_total()
+        eth_available_for_tx = str(Decimal('0.1') - Decimal(transaction_fee_total))
+        wei = '0.000000000000000001'
+        eth_value_plus_one_wei = ''.join([eth_available_for_tx, wei[len(eth_available_for_tx):]])
+        send_transaction_view.amount_edit_box.set_value(eth_value_plus_one_wei)
         send_transaction_view.confirm()
 
         # Check whether sending big amount of ETH triggers the warning (no funds to pay gas)
@@ -303,7 +352,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
             self.errors.append('sending big amount of ETH (no funds to pay gas)')
 
         send_transaction_view.amount_edit_box.clear()
-        send_transaction_view.amount_edit_box.set_value('0.099979')
+        send_transaction_view.amount_edit_box.set_value(eth_available_for_tx)
         send_transaction_view.confirm()
 
         # Check whether sending normal amount of ETH does not trigger the warning

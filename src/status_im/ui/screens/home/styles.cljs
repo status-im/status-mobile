@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.home.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.utils.platform :as platform]))
 
 (defn toolbar []
   {:background-color colors/white})
@@ -75,13 +76,13 @@
              :height    26}})
 
 (defstyle private-group-icon-container
-  {:width        20
-   :height       12
+  {:align-items :center
+   :justify-content :center
    :margin-right 6})
 
 (defstyle public-group-icon-container
-  {:width        20
-   :height       12
+  {:align-items :center
+   :justify-content :center
    :margin-right 6})
 
 (def last-message-container
@@ -93,6 +94,40 @@
              :height    24}
    :ios     {:font-size 15
              :height    24}})
+
+(def search-input-height 56)
+
+(def search-container
+  {:height             search-input-height
+   :flex-direction     :row
+   :padding-horizontal 16
+   :background-color   colors/white
+   :align-items        :center
+   :justify-content    :center})
+
+(def search-input-container
+  {:background-color colors/gray-lighter
+   :flex             1
+   :flex-direction   :row
+   :height           36
+   :align-items      :center
+   :justify-content  :center
+   :border-radius    8})
+
+(def search-input
+  (merge {:flex        1
+          :font-size   15}
+         (when platform/android?
+           {:line-height 22
+            :margin      0
+            :padding     0})))
+
+(def filter-section-title
+  {:font-size     15
+   :margin-left   16
+   :margin-top    14
+   :margin-bottom 4
+   :color         colors/gray})
 
 (def status-container
   {:flex-direction :row

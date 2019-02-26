@@ -51,6 +51,8 @@
 (reg-sub :sync-state :sync-state)
 (reg-sub :network-status :network-status)
 (reg-sub :peers-count :peers-count)
+(reg-sub :about-app/node-info :node-info)
+(reg-sub :peers-summary :peers-summary)
 (reg-sub :node-status :node/status)
 
 (reg-sub :disconnected?

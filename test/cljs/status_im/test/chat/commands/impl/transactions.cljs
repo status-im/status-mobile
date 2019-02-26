@@ -4,13 +4,15 @@
             [status-im.chat.commands.impl.transactions :as transactions]
             [status-im.chat.commands.protocol :as protocol]))
 
+(def public-key "0x04f96bc2229a0ba4125815451e47491d9ab923b8b03f205f6ff11d731c0f5759079c1aa0f3b73233c114372695c30a8e20ce18f73fafa23f924736cc39e726c3de")
+(def address "f86b3cefae5851c19abfc48b7fb034b1dfa70b52")
 (def cofx {:db {:account/account   {:settings              {:wallet {:visible-tokens {:mainnet #{:SNT}}}}
                                     :wallet-set-up-passed? true}
                 :chain             "mainnet"
-                :current-chat-id   "recipient"
-                :contacts/contacts {"recipient" {:name             "Recipient"
-                                                 :address          "0xAA"
-                                                 :public-key "0xBB"}}
+                :current-chat-id   public-key
+                :contacts/contacts {public-key {:name       "Recipient"
+                                                :address    address
+                                                :public-key public-key}}
                 :wallet/all-tokens {:mainnet {"0x744d70fdbe2ba4cf95131626614a1763df805b9e" {:address  "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
                                                                                             :name     "Status Network Token"
                                                                                             :symbol   :SNT
@@ -43,6 +45,18 @@
     (let [fx (protocol/yield-control personal-send-command {:content {:params {:asset "ETH" :amount "0.01"}}} cofx)]
       (is (= (get-in fx [:db :wallet :send-transaction :amount-text]) "0.01"))
       (is (= (get-in fx [:db :wallet :send-transaction :symbol]) :ETH)))))
+
+(deftest from-contacts
+  (testing "the user is in our contacts"
+    (let [fx (protocol/yield-control personal-send-command {:content {:params {:asset "ETH" :amount "0.01"}}} cofx)]
+      (is (= (get-in fx [:db :wallet :send-transaction :to]) address))
+      (is (= (get-in fx [:db :wallet :send-transaction :to-name] "Recipient")))
+      (is (= (get-in fx [:db :wallet :send-transaction :public-key]) public-key)))
+    (testing "the user is not in our contacts"
+      (let [fx (protocol/yield-control personal-send-command {:content {:params {:asset "ETH" :amount "0.01"}}} (update-in cofx [:db :contacts/contacts] dissoc public-key))]
+        (is (= (get-in fx [:db :wallet :send-transaction :to]) address))
+        (is (= (get-in fx [:db :wallet :send-transaction :to-name]) "Plump Nippy Blobfish"))
+        (is (= (get-in fx [:db :wallet :send-transaction :public-key]) public-key))))))
 
 ;; testing the `/request` command
 

@@ -5,7 +5,8 @@
  :figwheel-bridge "./figwheel-bridge.js"
  ;; JS modules
  :js-modules ["realm"
-              "react-native-i18n"
+              "react-native-languages"
+              "i18n-js"
               "realm/react-native"
               "dismissKeyboard"
               "react-native-splash-screen"
@@ -45,7 +46,8 @@
 
  ;; Desktop modules
  :desktop-modules ["realm"
-                   "react-native-i18n"
+                   "react-native-languages"
+                   "i18n-js"
                    "realm/react-native"
                    "dismissKeyboard"
                    "react-native-splash-screen"

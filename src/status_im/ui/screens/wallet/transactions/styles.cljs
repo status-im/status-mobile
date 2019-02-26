@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.transactions.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.screens.main-tabs.styles :as tabs.styles]))
+            [status-im.ui.components.bottom-bar.styles :as tabs.styles]))
 
 (defnstyle tab [active?]
   {:flex                1

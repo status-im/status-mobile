@@ -88,24 +88,23 @@
   [{{:keys      [view-id hardwallet
                  initial-props desktop/desktop
                  network-status network peers-count peers-summary device-UUID
-                 push-notifications/stored]
+                 push-notifications/stored network/type]
      :node/keys [status]
      :or        {network (get app-db :network)}} :db}]
-  ;TODO remove retrieve-pairing when keycard login will be ready
-  {:hardwallet/retrieve-pairing nil
-   :db                          (assoc app-db
-                                       :contacts/contacts {}
-                                       :initial-props initial-props
-                                       :desktop/desktop (merge desktop (:desktop/desktop app-db))
-                                       :network-status network-status
-                                       :peers-count (or peers-count 0)
-                                       :peers-summary (or peers-summary [])
-                                       :node/status status
-                                       :network network
-                                       :hardwallet hardwallet
-                                       :device-UUID device-UUID
-                                       :view-id view-id
-                                       :push-notifications/stored stored)})
+  {:db (assoc app-db
+              :contacts/contacts {}
+              :initial-props initial-props
+              :desktop/desktop (merge desktop (:desktop/desktop app-db))
+              :network-status network-status
+              :peers-count (or peers-count 0)
+              :peers-summary (or peers-summary [])
+              :node/status status
+              :network network
+              :network/type type
+              :hardwallet hardwallet
+              :device-UUID device-UUID
+              :view-id view-id
+              :push-notifications/stored stored)})
 
 (fx/defn initialize-app
   [cofx encryption-key]
@@ -188,6 +187,7 @@
                         :accounts/accounts accounts
                         :network-status network-status
                         :network network
+                        :network/type (:network/type db)
                         :chain (ethereum/network->chain-name account-network)
                         :universal-links/url url
                         :peers-summary peers-summary
@@ -201,8 +201,19 @@
 
 (defn login-only-events [cofx address stored-pns]
   (fx/merge cofx
-            {:notifications/request-notifications-permissions nil}
-            (navigation/navigate-to-cofx :home nil)
+            (cond->
+             {:notifications/request-notifications-permissions nil}
+
+              platform/ios?
+              ;; on ios navigation state might be not initialized yet when
+              ;; navigate-to call happens.
+              ;; That's why it should be delayed a bit.
+              ;; TODO(rasom): revisit this later and find better solution
+              (assoc :dispatch-later
+                     [{:ms       1
+                       :dispatch [:navigate-to :home]}]))
+            (when-not platform/ios?
+              (navigation/navigate-to-cofx :home nil))
             (notifications/process-stored-event address stored-pns)
             (when platform/desktop?
               (chat-model/update-dock-badge-label))))

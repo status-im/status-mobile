@@ -1,6 +1,5 @@
-(ns status-im.ui.screens.main-tabs.styles
-  (:require [status-im.ui.components.styles :as styles]
-            [status-im.ui.components.colors :as colors]
+(ns status-im.ui.components.bottom-bar.styles
+  (:require [status-im.ui.components.colors :as colors]
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.styles :refer [defnstyle]]))
 

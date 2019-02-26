@@ -111,7 +111,7 @@
 (fx/defn add-message
   [{:keys [db] :as cofx}
    {{:keys [chat-id message-id clock-value timestamp from] :as message} :message
-    :keys [current-chat? batch? last-clock-value raw-message]}]
+    :keys [current-chat? batch? dedup-id raw-message]}]
   (let [current-public-key (accounts.db/current-public-key cofx)
         prepared-message (-> message
                              (prepare-message chat-id current-chat?)
@@ -126,11 +126,7 @@
               {:db            (cond->
                                (-> db
                                    (update-in [:chats chat-id :messages] assoc message-id prepared-message)
-                                   (update-in [:chats chat-id :last-clock-value]
-                                              (fn [old-clock-value]
-                                                (or last-clock-value
-                                                    (utils.clocks/receive clock-value
-                                                                          old-clock-value)))))
+                                   (update-in [:chats chat-id :last-clock-value] (partial utils.clocks/receive clock-value)))
 
                                 (and (not current-chat?)
                                      (not= from current-public-key))
@@ -138,9 +134,9 @@
                                            (fnil conj #{}) message-id))
                :data-store/tx [(merge
                                 {:transaction (messages-store/save-message-tx prepared-message)}
-                                (when raw-message
+                                (when (or dedup-id raw-message)
                                   {:success-event
-                                   [:message/messages-persisted [raw-message]]}))]}
+                                   [:message/messages-persisted [(or dedup-id raw-message)]]}))]}
               (when (and platform/desktop?
                          (not batch?)
                          (not (system-message? prepared-message)))
@@ -173,7 +169,7 @@
 (fx/defn add-received-message
   [{:keys [db] :as cofx}
    old-id->message
-   {:keys [from message-id chat-id js-obj content] :as raw-message}]
+   {:keys [from message-id chat-id js-obj content dedup-id] :as raw-message}]
   (let [{:keys [web3 current-chat-id view-id]} db
         current-public-key            (accounts.db/current-public-key cofx)
         current-chat?                 (and (or (= :chat view-id)
@@ -189,6 +185,7 @@
     (fx/merge cofx
               (add-message {:batch?       true
                             :message      message
+                            :dedup-id     dedup-id
                             :current-chat current-chat?
                             :raw-message  js-obj})
               ;; Checking :outgoing here only works for now as we don't have a :seen
@@ -279,8 +276,7 @@
     (chat-model/upsert-chat
      {:chat-id                   chat-id
       :last-message-content      content
-      :last-message-content-type content-type
-      :last-clock-value          clock-value})))
+      :last-message-content-type content-type})))
 
 (fx/defn update-last-messages
   [{:keys [db] :as cofx} chat-ids]
@@ -377,19 +373,18 @@
                 :last-clock-value          (:clock-value message)})
               (add-message {:batch?           false
                             :message          message-with-id
-                            :current-chat?    true
-                            :last-clock-value (:clock-value message)})
+                            :current-chat?    true})
               (add-own-status chat-id message-id :sending)
               (send chat-id message-id wrapped-record))))
 
-(fx/defn send-push-notification [cofx chat-id message-id fcm-token status]
-  (log/debug "#6772 - send-push-notification" message-id fcm-token)
-  (when (and fcm-token (= status :sent))
+(fx/defn send-push-notification [cofx chat-id message-id fcm-tokens status]
+  (log/debug "#6772 - send-push-notification" message-id fcm-tokens)
+  (when (and (seq fcm-tokens) (= status :sent))
     (let [payload {:from (accounts.db/current-public-key cofx)
                    :to chat-id
                    :id message-id}]
       {:send-notification {:data-payload (notifications/encode-notification-payload payload)
-                           :tokens       [fcm-token]}})))
+                           :tokens       fcm-tokens}})))
 
 (fx/defn update-message-status [{:keys [db]} chat-id message-id status]
   (let [from           (get-in db [:chats chat-id :messages message-id :from])

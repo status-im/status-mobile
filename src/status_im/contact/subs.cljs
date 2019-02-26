@@ -69,16 +69,6 @@
         dapps)))
 
 (re-frame/reg-sub
- :contacts/contact-by-identity
- :<- [:contacts/contacts]
- :<- [:chats/current-chat]
- (fn [[all-contacts {:keys [contacts]}] [_ identity]]
-   (let [identity' (or identity (first contacts))]
-     (or
-      (get all-contacts identity')
-      (contact.db/public-key->new-contact identity')))))
-
-(re-frame/reg-sub
  :contacts/dapps-by-name
  :<- [:contacts/all-dapps]
  (fn [dapps]

@@ -18,7 +18,8 @@
             [status-im.utils.handlers :as handlers]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.transport.partitioned-topic :as transport.topic]))
+            [status-im.transport.partitioned-topic :as transport.topic]
+            [status-im.ui.screens.mobile-network-settings.utils :as mobile-network-utils]))
 
 ;; How do mailserver work ?
 ;;
@@ -39,6 +40,7 @@
 (def request-timeout 30)
 (def min-limit 200)
 (def max-limit 2000)
+(def backoff-interval-ms 3000)
 (def default-limit max-limit)
 (def connection-timeout
   "Time after which mailserver connection is considered to have failed"
@@ -287,7 +289,10 @@
                       (fn [error request-id]
                         (if-not error
                           (log/info "mailserver: messages request success for topic " topics "from" from "to" to)
-                          (log/error "mailserver: messages request error for topic " topics ": " error))))))
+                          (do
+                            (log/error "mailserver: messages request error for topic " topics ": " error)
+                            (utils/set-timeout #(re-frame/dispatch [:mailserver.callback/resend-request {:request-id "failed-request"}])
+                                               backoff-interval-ms)))))))
 
 (re-frame/reg-fx
  :mailserver/request-messages
@@ -332,21 +337,23 @@
 
 (fx/defn process-next-messages-request
   [{:keys [db now] :as cofx}]
-  (when (and (transport.db/all-filters-added? cofx)
-             (not (:mailserver/current-request db)))
+  (when (and
+         (mobile-network-utils/syncing-allowed? cofx)
+         (transport.db/all-filters-added? cofx)
+         (not (:mailserver/current-request db)))
     (when-let [mailserver (get-mailserver-when-ready cofx)]
       (let [request-to (or (:mailserver/request-to db)
                            (quot now 1000))
-            requests (prepare-messages-requests cofx request-to)
-            web3 (:web3 db)]
+            requests   (prepare-messages-requests cofx request-to)
+            web3       (:web3 db)]
         (if-let [request (first requests)]
-          {:db (assoc db
-                      :mailserver/pending-requests (count requests)
-                      :mailserver/current-request request
-                      :mailserver/request-to request-to)
-           :mailserver/request-messages {:web3     web3
-                                         :mailserver    mailserver
-                                         :request request}}
+          {:db                          (assoc db
+                                               :mailserver/pending-requests (count requests)
+                                               :mailserver/current-request request
+                                               :mailserver/request-to request-to)
+           :mailserver/request-messages {:web3       web3
+                                         :mailserver mailserver
+                                         :request    request}}
           {:db (dissoc db
                        :mailserver/pending-requests
                        :mailserver/request-to)})))))
@@ -376,27 +383,28 @@
   "mark mailserver status as `:error` if custom mailserver is used
   otherwise try to reconnect to another mailserver"
   [{:keys [db] :as cofx}]
-  (if-let [preferred-mailserver (preferred-mailserver-id cofx)]
-    (let [current-fleet (fleet/current-fleet db)]
-      {:db
-       (update-mailserver-state db :error)
-       :ui/show-confirmation
-       {:title               (i18n/label :t/mailserver-error-title)
-        :content             (i18n/label :t/mailserver-error-content)
-        :confirm-button-text (i18n/label :t/mailserver-pick-another)
-        :on-accept           #(re-frame/dispatch
-                               [:navigate-to :offline-messaging-settings])
-        :extra-options       [{:text    (i18n/label :t/mailserver-retry)
-                               :onPress #(re-frame/dispatch
-                                          [:mailserver.ui/connect-confirmed
-                                           current-fleet
-                                           preferred-mailserver])
-                               :style   "default"}]}})
-    (let [{:keys [address]} (fetch-current cofx)]
-      (fx/merge cofx
-                {:mailserver/remove-peer address}
-                (set-current-mailserver)
-                (connect-to-mailserver)))))
+  (when-not (zero? (:peers-count db))
+    (if-let [preferred-mailserver (preferred-mailserver-id cofx)]
+      (let [current-fleet (fleet/current-fleet db)]
+        {:db
+         (update-mailserver-state db :error)
+         :ui/show-confirmation
+         {:title               (i18n/label :t/mailserver-error-title)
+          :content             (i18n/label :t/mailserver-error-content)
+          :confirm-button-text (i18n/label :t/mailserver-pick-another)
+          :on-accept           #(re-frame/dispatch
+                                 [:navigate-to :offline-messaging-settings])
+          :extra-options       [{:text    (i18n/label :t/mailserver-retry)
+                                 :onPress #(re-frame/dispatch
+                                            [:mailserver.ui/connect-confirmed
+                                             current-fleet
+                                             preferred-mailserver])
+                                 :style   "default"}]}})
+      (let [{:keys [address]} (fetch-current cofx)]
+        (fx/merge cofx
+                  {:mailserver/remove-peer address}
+                  (set-current-mailserver)
+                  (connect-to-mailserver))))))
 
 (fx/defn check-connection
   "connection-checks counter is used to prevent changing
@@ -475,7 +483,6 @@
         ;; If a cursor is returned, add cursor and fire request again
         (if (seq cursor)
           (when-let [mailserver (get-mailserver-when-ready cofx)]
-
             (let [request-with-cursor (assoc request :cursor cursor)]
               {:db (assoc db :mailserver/current-request request-with-cursor)
                :mailserver/request-messages {:web3 (:web3 db)
@@ -548,15 +555,17 @@
                  :data-store/tx [(data-store.mailservers/save-mailserver-topic-tx
                                   {:topic topic
                                    :mailserver-topic mailserver-topic})]}))))
+
 (fx/defn fetch-history
-  [{:keys [db] :as cofx} chat-id]
+  [{:keys [db] :as cofx} chat-id from-timestamp]
+  (log/debug "fetch-history" "chat-id:" chat-id "from-timestamp:" from-timestamp)
   (let [public-key (accounts.db/current-public-key cofx)
         topic  (or (get-in db [:transport/chats chat-id :topic])
                    (transport.topic/public-key->discovery-topic-hash public-key))
         {:keys [chat-ids last-request] :as current-mailserver-topic}
         (get-in db [:mailserver/topics topic] {:chat-ids #{}})]
     (let [mailserver-topic (-> current-mailserver-topic
-                               (assoc :last-request 1))]
+                               (assoc :last-request (min from-timestamp last-request)))]
       (fx/merge cofx
                 {:db (assoc-in db [:mailserver/topics topic] mailserver-topic)
                  :data-store/tx [(data-store.mailservers/save-mailserver-topic-tx
@@ -566,16 +575,17 @@
 
 (fx/defn resend-request
   [{:keys [db] :as cofx} {:keys [request-id]}]
-  (if (<= maximum-number-of-attempts
-          (get-in db [:mailserver/current-request :attemps]))
+  (if (and (:mailserver/current-request db)
+           (<= maximum-number-of-attempts
+               (get-in db [:mailserver/current-request :attempts])))
     (fx/merge cofx
-              {:db (update db :mailserver/current-request dissoc :attemps)}
+              {:db (update db :mailserver/current-request dissoc :attempts)}
               (change-mailserver))
     (if-let [mailserver (get-mailserver-when-ready cofx)]
       (let [{:keys [topics from to cursor limit] :as request} (get db :mailserver/current-request)
             web3 (:web3 db)]
         (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to "cursor" cursor "limit" (decrease-limit))
-        {:db (update-in db [:mailserver/current-request :attemps] inc)
+        {:db (update-in db [:mailserver/current-request :attempts] inc)
          :mailserver/set-limit (decrease-limit)
          :mailserver/request-messages {:web3 web3
                                        :mailserver mailserver

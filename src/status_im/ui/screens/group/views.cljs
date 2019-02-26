@@ -4,7 +4,7 @@
             [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.main-tabs.styles :as main-tabs.styles]
+            [status-im.ui.components.bottom-bar.styles :as main-tabs.styles]
             [status-im.ui.components.styles :as components.styles]
             [status-im.constants :as constants]
             [status-im.utils.platform :as utils.platform]

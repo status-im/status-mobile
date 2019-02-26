@@ -83,7 +83,7 @@
    :flex-direction     :row
    :align-items        :center
    :background-color   colors/white
-   :height             52})
+   :height             64})
 
 (defn settings-item-icon [icon-color]
   {:background-color (colors/alpha icon-color 0.1)

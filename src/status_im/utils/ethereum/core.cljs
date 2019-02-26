@@ -48,6 +48,10 @@
   (when s
     (.isAddress dependencies/Web3.prototype s)))
 
+(defn address->checksum [s]
+  (when s
+    (.toChecksumAddress dependencies/Web3.prototype s)))
+
 (defn network->chain-id [network]
   (get-in network [:config :NetworkId]))
 
@@ -136,7 +140,9 @@
   (.getGasPrice (.-eth web3) cb))
 
 (defn estimate-gas-web3 [web3 obj cb]
-  (.estimateGas (.-eth web3) obj cb))
+  (try
+    (.estimateGas (.-eth web3) obj cb)
+    (catch :default _)))
 
 (defn estimate-gas [symbol]
   (if (tokens/ethereum? symbol)

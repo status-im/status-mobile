@@ -24,6 +24,11 @@
 
 (def utils dependencies/web3-utils)
 
+(def snt-contracts
+  {:mainnet "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
+   :testnet "0xc55cF4B03948D7EBc8b9E8BAD92643703811d162"
+   :rinkeby nil})
+
 (def abi
   (clj->js
    [{:constant        true

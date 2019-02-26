@@ -6,8 +6,6 @@ pipeline {
       /* WARNING: remember to keep this up-to-date with the value in docker/linux/Makefile */
       image 'statusteam/status-build-linux:1.1.0-2a35dcde'
       args (
-        "--privileged "+
-        "-v /dev/fuse:/dev/fuse "+
         "-v /var/tmp/lein:/var/tmp/lein:rw "+
         "-v /var/tmp/npm:/var/tmp/npm:rw "+
         "-v /opt/desktop-files:/opt/desktop-files:rw"

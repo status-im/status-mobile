@@ -68,7 +68,7 @@ class TestChatManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5304)
     @marks.critical
-    def test_add_contact_by_pasting_public_key(self):
+    def test_open_chat_by_pasting_public_key(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
         public_key = basic_user['public_key']
@@ -87,10 +87,8 @@ class TestChatManagement(SingleDeviceTestCase):
             pytest.fail('Public key is not pasted from clipboard')
         start_new_chat.confirm()
         start_new_chat.get_back_to_home_view()
-        home.plus_button.click()
-        start_new_chat.start_new_chat_button.click()
-        if not start_new_chat.element_by_text(basic_user['username']).is_element_displayed():
-            pytest.fail("List of contacts doesn't contain added user")
+        if not home.get_chat_with_user(basic_user['username']).is_element_present():
+            pytest.fail("No chat open in home view")
 
     @marks.testrail_id(5387)
     @marks.high
@@ -176,11 +174,11 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         username = chat_element.username.text
         chat_element.member_photo.click()
         for element in [chat_1.contact_profile_picture,
+                        chat_1.element_by_text(username, 'text'),
                         chat_1.add_to_contacts,
                         chat_1.profile_send_message,
                         chat_1.profile_send_transaction,
-                        chat_1.profile_address_text,
-                        chat_1.element_by_text(username, 'text')]:
+                        chat_1.profile_address_text]:
             if not element.scroll_to_element():
                 self.errors.append('%s is not visible' % element.name)
         chat_1.add_to_contacts.click()

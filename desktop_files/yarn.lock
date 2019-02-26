@@ -4481,6 +4481,11 @@ http-signature@~1.2.0:
     jsprim "^1.2.2"
     sshpk "^1.7.0"
 
+i18n-js@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/i18n-js/-/i18n-js-3.1.0.tgz#4ec474b2b7ba8175284a0003804c7bf713991919"
+  integrity sha512-xkpkBgf7anfmoRnJFdTqSQuv3phuP2DHEakWbNJUQMZxaLf146dcYWscOyN6wlG6R2WgS6AE7y664yiAaXXDwg==
+
 iconv-lite@0.4.23:
   version "0.4.23"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.23.tgz#297871f63be507adcfbfca715d0cd0eed84e9a63"
@@ -7203,10 +7208,6 @@ react-native-http-bridge@0.6.1:
     Base64 "~0.2.0"
     inherits "~2.0.1"
 
-"react-native-i18n@git+https://github.com/status-im/react-native-i18n.git#v0.0.8-desktop":
-  version "0.0.8"
-  resolved "git+https://github.com/status-im/react-native-i18n.git#e4361722d5fcaaa52d561d948dc7ed2a5e709d38"
-
 react-native-image-crop-picker@0.18.1:
   version "0.18.1"
   resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.18.1.tgz#ebdbe72def5afb6c69aa6e2ad72fd3a7de8ee408"
@@ -7230,6 +7231,10 @@ react-native-invertible-scroll-view@1.1.0:
 "react-native-keychain@git+https://github.com/status-im/react-native-keychain.git#v.3.0.0-2-status":
   version "3.0.0-rc.3"
   resolved "git+https://github.com/status-im/react-native-keychain.git#ce6cec62222713f2cec7798b69c4fae6b493832f"
+
+"react-native-languages@git+https://github.com/status-im/react-native-languages.git#v0.1.1-status":
+  version "3.0.2"
+  resolved "git+https://github.com/status-im/react-native-languages.git#60338ff3040b8af68d33233aebeb36db4d31aed0"
 
 react-native-level-fs@3.0.0:
   version "3.0.0"
@@ -9113,9 +9118,9 @@ web3-utils@1.0.0-beta.36:
     underscore "1.8.3"
     utf8 "2.1.1"
 
-"web3@git+https://github.com/status-im/web3.js.git#0.20.1-status":
+"web3@git+https://github.com/status-im/web3.js.git#0.20.2-status":
   version "0.20.1"
-  resolved "git+https://github.com/status-im/web3.js.git#dad342dc95f7d5a888411ed57c9618937e2b6ebd"
+  resolved "git+https://github.com/status-im/web3.js.git#958dbabff2c77615e23f5de678a6fae0b0d70147"
   dependencies:
     bignumber.js "git+https://github.com/status-im/bignumber.js.git#v4.0.2-status"
     crypto-js "^3.1.4"

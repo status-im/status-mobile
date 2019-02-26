@@ -19,7 +19,8 @@
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
             [status-im.utils.fx :as fx]
-            [status-im.node.core :as node]))
+            [status-im.node.core :as node]
+            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]))
 
 (defn get-signing-phrase [cofx]
   (assoc cofx :signing-phrase (signing-phrase/generate)))
@@ -80,7 +81,9 @@
                             :keycard-instance-uid   keycard-instance-uid
                             :keycard-pairing        keycard-pairing
                             :keycard-paired-on      keycard-paired-on
-                            :settings               (constants/default-account-settings)}]
+                            :settings               (constants/default-account-settings)
+                            :syncing-on-mobile-network? false
+                            :remember-syncing-choice? false}]
     (log/debug "account-created")
     (when-not (string/blank? pubkey)
       (fx/merge cofx
@@ -102,12 +105,16 @@
   [{db :db} input-key text]
   {:db (update db :accounts/create merge {input-key text :error nil})})
 
-(defn account-set-name [{{:accounts/keys [create] :as db} :db :as cofx}]
+(defn account-set-name [{{:accounts/keys [create] :as db} :db now :now :as cofx}]
   (fx/merge cofx
             {:db                                  (assoc db :accounts/create {:show-welcome? true})
              :notifications/request-notifications-permissions nil
              :dispatch                            [:navigate-to :home]}
-            (accounts.update/account-update {:name (:name create)} {})))
+            ;; We set last updated as we are actually changing a field,
+            ;; unlike on recovery where the name is not set
+            (accounts.update/account-update {:last-updated now
+                                             :name (:name create)} {})
+            (mobile-network/on-network-status-change)))
 
 (fx/defn next-step
   [{:keys [db] :as cofx} step password password-confirm]

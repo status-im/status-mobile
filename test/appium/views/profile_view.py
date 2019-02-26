@@ -271,8 +271,7 @@ class RopstenChainButton(BaseButton):
 
     def __init__(self, driver):
         super(RopstenChainButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//*[contains(@text,'Ropsten test network')]/following-sibling::android.widget.CheckBox[1]")
+        self.locator = self.Locator.xpath_selector("//*[contains(@text,'Ropsten test network')]")
 
 
 class SpecifyNameInput(BaseEditBox):
@@ -495,9 +494,10 @@ class ProfileView(BaseView):
         self.network_settings_button.scroll_to_element()
         self.network_settings_button.click()
         self.plus_button.click_until_presence_of_element(self.ropsten_chain_button)
-        self.ropsten_chain_button.click()
         self.custom_network_url.send_keys('https://ropsten.infura.io/v3/f315575765b14720b32382a61a89341a')
         self.specify_name_input.send_keys('custom_ropsten')
+        self.ropsten_chain_button.click()
+        self.ropsten_chain_button.click()
         self.save_button.click()
         self.element_by_text_part('custom_ropsten').click_until_presence_of_element(self.connect_button)
         self.connect_button.click()
@@ -530,10 +530,11 @@ class ProfileView(BaseView):
         self.edit_picture_button.click()
         self.profile_picture.template = file_name
         self.select_from_gallery_button.click()
-        if self.allow_button.is_element_displayed(sec=10):
+        if self.allow_button.is_element_displayed(sec=5):
             self.allow_button.click()
         picture = self.element_by_text(file_name)
         if not picture.is_element_displayed(2):
+            self.show_roots_button.click()
             for element_text in 'Images', 'DCIM':
                 self.element_by_text(element_text).click()
         picture.click()

@@ -1,15 +1,11 @@
 (ns status-im.ui.screens.chat.toolbar-content
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [clojure.string :as string]
-            [cljs-time.core :as t]
-            [status-im.ui.components.react :as react]
+  (:require [cljs-time.core :as t]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.screens.chat.styles.main :as st]
-            [status-im.utils.datetime :as time]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.styles :as common.styles]))
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.styles.main :as st]
+            [status-im.utils.datetime :as time])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- online-text [contact chat-id]
   (if contact
@@ -62,12 +58,10 @@
               (i18n/label-pluralize cnt :t/members-active))))]])))
 
 (defview toolbar-content-view []
-  (letsubs [{:keys [group-chat color online contacts
+  (letsubs [{:keys [group-chat color online contacts chat-name
                     public? chat-id] :as chat}    [:chats/current-chat]
-            chat-name                             [:chats/current-chat-name]
             show-actions?                         [:chats/current-chat-ui-prop :show-actions?]
             accounts                              [:accounts/accounts]
-            contact                               [:chats/current-chat-contact]
             sync-state                            [:sync-state]]
     (let [has-subtitle? (or group-chat (not= :done sync-state))]
       [react/view {:style st/toolbar-container}

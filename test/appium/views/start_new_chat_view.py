@@ -63,7 +63,7 @@ class EnterUrlEditbox(BaseEditBox):
 class UsernameCheckbox(BaseButton):
     def __init__(self, driver, username):
         super(UsernameCheckbox, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='%s']/../../android.widget.CheckBox" % username)
+        self.locator = self.Locator.xpath_selector("//*[@text='%s']" % username)
 
 
 class InviteFriendsButton(BaseButton):

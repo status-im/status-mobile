@@ -8,7 +8,7 @@
 
 (def chat-view
   {:flex             1
-   :background-color colors/gray-lighter})
+   :background-color colors/white})
 
 (def toolbar-container
   {:flex           1
@@ -179,11 +179,13 @@
   {:color "#888888"})
 
 (def add-contact
-  {:flex-direction   :row
-   :align-items      :center
-   :height           36
-   :background-color :white
-   :justify-content  :space-between})
+  {:flex-direction      :row
+   :align-items         :center
+   :height              36
+   :background-color    :white
+   :border-bottom-width 1
+   :border-color        colors/gray-lighter
+   :justify-content     :space-between})
 
 (def add-contact-left
   {:width       24

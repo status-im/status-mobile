@@ -156,7 +156,7 @@ class AssetCheckBox(BaseButton):
     def __init__(self, driver, asset_name):
         super(AssetCheckBox, self).__init__(driver)
         self.asset_name = asset_name
-        self.locator = self.Locator.xpath_selector("//*[@text='%s']/../android.widget.CheckBox" % self.asset_name)
+        self.locator = self.Locator.xpath_selector("//*[@text='%s']" % self.asset_name)
 
     def click(self):
         self.scroll_to_element().click()

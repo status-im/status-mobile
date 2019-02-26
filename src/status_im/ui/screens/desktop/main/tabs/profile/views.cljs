@@ -231,6 +231,15 @@
      (i18n/label  :t/help-center)]
     [vector-icons/icon :main-icons/next {:style {:tint-color colors/gray}}]]])
 
+(defn about-app-item [open?]
+  [react/touchable-highlight {:style    (styles/adv-settings-row open?)
+                              :on-press #(re-frame/dispatch [:navigate-to (if open? :home :about-app)])}
+   [react/view {:style styles/adv-settings}
+    [react/text {:style (styles/adv-settings-row-text colors/black)
+                 :font  (if open? :medium :default)}
+     (i18n/label  :t/about-app)]
+    [vector-icons/icon :main-icons/next {:style {:tint-color colors/gray}}]]])
+
 (defn advanced-settings-item [adv-settings-open?]
   [react/touchable-highlight {:style  (styles/adv-settings-row adv-settings-open?)
                               :on-press #(do
@@ -246,6 +255,7 @@
   (views/letsubs [current-view-id [:get :view-id]
                   editing?        [:get :my-profile/editing?]] ;; TODO janherich: refactor my-profile, unnecessary complicated structure in db (could be just `:staged-name`/`:editing?` fields in account map) and horrible way to access it woth `:get`/`:set` subs/events
     (let [adv-settings-open?           (= current-view-id :advanced-settings)
+          about-app-open?              (= current-view-id :about-app)
           help-open?                   (= current-view-id :help-center)
           installations-open?          (= current-view-id :installations)
           backup-recovery-phrase-open? (= current-view-id :backup-recovery-phrase)
@@ -268,6 +278,7 @@
                         :on-value-change #(re-frame/dispatch [:accounts.ui/notifications-enabled (not notifications?)])}]]
         [advanced-settings-item adv-settings-open?]
         [help-item help-open?]
+        [about-app-item about-app-open?]
         [react/touchable-highlight {:style  (styles/profile-row installations-open?)
                                     :on-press #(re-frame/dispatch [:navigate-to (if installations-open? :home :installations)])}
          [react/view {:style styles/adv-settings}

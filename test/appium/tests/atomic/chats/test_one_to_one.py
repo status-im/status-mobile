@@ -5,7 +5,7 @@ import emoji
 from datetime import datetime
 from selenium.common.exceptions import TimeoutException
 from tests import marks, get_current_time
-from tests.users import transaction_senders, transaction_recipients
+from tests.users import transaction_senders, transaction_recipients, basic_user
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -251,27 +251,16 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5374)
     @marks.high
-    def test_message_marked_as_sent_and_seen_1_1_chat(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        username_1 = 'user_%s' % get_current_time()
-        device_1_home, device_2_home = device_1.create_user(username=username_1), device_2.create_user()
-        device_2_public_key = device_2_home.get_public_key()
-        device_2_home.home_button.click()
-
-        device_1_chat = device_1_home.add_contact(device_2_public_key)
-
+    def test_message_marked_as_sent_in_1_1_chat(self):
+        self.create_drivers(1)
+        sign_in_view = SignInView(self.drivers[0])
+        home_view = sign_in_view.create_user()
+        chat_view = home_view.add_contact(basic_user['public_key'])
         message = 'test message'
-        device_1_chat.chat_message_input.send_keys(message)
-        device_1_chat.send_message_button.click()
-        if device_1_chat.chat_element_by_text(message).status.text != 'Sent':
+        chat_view.chat_message_input.send_keys(message)
+        chat_view.send_message_button.click()
+        if chat_view.chat_element_by_text(message).status.text != 'Sent':
             self.errors.append("'Sent' status is not shown under the sent text message")
-
-        device_2_chat = device_2_home.get_chat_with_user(username_1).click()
-        device_2_chat.chat_element_by_text(message).wait_for_visibility_of_element()
-
-        if device_1_chat.chat_element_by_text(message).status.text != 'Seen':
-            self.errors.append("'Seen' status is not shown under the text message which was read by a receiver")
         self.verify_no_errors()
 
     @marks.testrail_id(5362)

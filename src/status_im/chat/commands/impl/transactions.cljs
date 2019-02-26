@@ -14,6 +14,7 @@
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.svgimage :as svgimage]
             [status-im.i18n :as i18n]
+            [status-im.contact.db :as db.contact]
             [status-im.constants :as constants]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
@@ -183,7 +184,7 @@
     [react/touchable-highlight {:on-press #(when tx-exists?
                                              (re-frame/dispatch [:show-transaction-details tx-hash]))}
      [react/view transactions-styles/command-send-status-container
-      [vector-icons/icon (if confirmed? :main-icons/check :main-icons/more)
+      [vector-icons/icon (if confirmed? :tiny-icons/tiny-check :tiny-icons/tiny-pending)
        {:color           (if outgoing colors/blue-light colors/blue)
         :container-style (transactions-styles/command-send-status-icon outgoing)}]
       [react/view
@@ -296,7 +297,10 @@
   protocol/Yielding
   (yield-control [_ {{{amount :amount asset :asset} :params} :content} {:keys [db] :as cofx}]
     ;; Prefill wallet and navigate there
-    (let [recipient-contact     (get-in db [:contacts/contacts (:current-chat-id db)])
+    (let [recipient-contact     (or
+                                 (get-in db [:contacts/contacts (:current-chat-id db)])
+                                 (db.contact/public-key->new-contact (:current-chat-id db)))
+
           sender-account        (:account/account db)
           chain                 (keyword (:chain db))
           symbol-param          (keyword asset)

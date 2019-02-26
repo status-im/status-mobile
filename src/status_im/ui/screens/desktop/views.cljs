@@ -43,6 +43,7 @@
                        :desktop/new-group-chat
                        :desktop/new-public-chat
                        :advanced-settings
+                       :about-app
                        :help-center
                        :installations
                        :chat

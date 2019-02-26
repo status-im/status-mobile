@@ -112,6 +112,13 @@ class TransactionFeeButton(BaseButton):
         self.locator = self.Locator.accessibility_id('transaction-fee-button')
 
 
+class TransactionFeeTotalValue(BaseButton):
+    def __init__(self, driver):
+        super(TransactionFeeTotalValue, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@content-desc='transaction-fee-button']"
+                                                   "/android.widget.TextView[1]")
+
+
 class GasLimitInput(BaseEditBox):
     def __init__(self, driver):
         super(GasLimitInput, self).__init__(driver)
@@ -168,6 +175,7 @@ class SendTransactionView(BaseView):
 
         self.advanced_button = AdvancedButton(self.driver)
         self.transaction_fee_button = TransactionFeeButton(self.driver)
+        self.transaction_fee_total_value = TransactionFeeTotalValue(self.driver)
         self.gas_limit_input = GasLimitInput(self.driver)
         self.gas_price_input = GasPriceInput(self.driver)
         self.total_fee_input = TotalFeeInput(self.driver)
@@ -199,6 +207,10 @@ class SendTransactionView(BaseView):
     def sign_transaction(self, sender_password: str = common_password):
         self.sign_transaction_button.click_until_presence_of_element(self.enter_password_input)
         self.enter_password_input.send_keys(sender_password)
-        self.sign_transaction_button.click_until_presence_of_element(self.progress_bar)
-        self.progress_bar.wait_for_invisibility_of_element(60)
+        self.sign_transaction_button.click_until_presence_of_element(self.got_it_button)
+        self.progress_bar.wait_for_invisibility_of_element(20)
         self.got_it_button.click()
+
+    def get_transaction_fee_total(self):
+        return self.transaction_fee_total_value.text.split()[0]
+

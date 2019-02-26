@@ -19,15 +19,15 @@
             [status-im.ui.components.action-button.action-button :as action-button]
             [status-im.utils.config :as config]))
 
-(views/defview chat-list-item-inner-view [{:keys [chat-id name group-chat
-                                                  color public? public-key
-                                                  timestamp
-                                                  last-message-content
-                                                  last-message-content-type]
-                                           :as chat-item}]
+(views/defview chat-list-item-inner-view
+  [{:keys [chat-id name group-chat
+           color public? public-key
+           timestamp chat-name
+           last-message-content
+           last-message-content-type]
+    :as chat-item}]
   (views/letsubs [photo-path              [:contacts/chat-photo chat-id]
                   unviewed-messages-count [:chats/unviewed-messages-count chat-id]
-                  chat-name               [:chats/chat-name chat-id]
                   current-chat-id         [:chats/current-chat-id]]
     (let [last-message {:content      last-message-content
                         :timestamp    timestamp
@@ -54,13 +54,16 @@
                       :number-of-lines 1
                       :style           (styles/chat-name current?)}
           name]]
-        [react/text {:ellipsize-mode  :tail
-                     :number-of-lines 1
-                     :style           styles/chat-last-message}
-         (if (= constants/content-type-command (:content-type last-message))
-           [chat-item/command-short-preview last-message]
-           (or (:text last-message-content)
-               (i18n/label :no-messages-yet)))]]
+        (if (and (:uri (:content last-message) (= constants/content-type-sticker (:content-type last-message))))
+          [react/image {:style {:margin 2 :width 30 :height 30}
+                        :source {:uri (:uri (:content last-message))}}]
+          [react/text {:ellipsize-mode  :tail
+                       :number-of-lines 1
+                       :style           styles/chat-last-message}
+           (if (= constants/content-type-command (:content-type last-message))
+             [chat-item/command-short-preview last-message]
+             (or (:text last-message-content)
+                 (i18n/label :no-messages-yet)))])]
        [react/view {:style styles/timestamp}
         [chat-item/message-timestamp (:timestamp last-message)]
         (when (pos? unviewed-messages-count)
@@ -143,7 +146,7 @@
 (views/defview chat-list-view [loading?]
   (views/letsubs [search-filter       [:search/filter]
                   logging-in?          [:get :accounts/login]
-                  filtered-home-items [:search/filtered-home-items]]
+                  {:keys [all-home-items chats]} [:home-items]]
     {:component-did-mount
      (fn [this]
        (let [[_ loading?] (.. this -props -argv)]
@@ -160,7 +163,7 @@
            [icons/icon :main-icons/add {:style {:tint-color :white}}])]]]]
      [react/scroll-view {:enableArrayScrollingOptimization true}
       [react/view
-       (for [[index chat] (map-indexed vector filtered-home-items)]
+       (for [[index chat] (map-indexed vector (or all-home-items chats))]
          ^{:key (first chat)}
          [chat-list-item chat])]]]))
 

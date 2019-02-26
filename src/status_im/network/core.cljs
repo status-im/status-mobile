@@ -13,7 +13,7 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.http :as http]
             [status-im.utils.types :as types]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
+            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]))
 
 (def url-regex
   #"https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z]{2,6})?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)")
@@ -238,14 +238,12 @@
                           :content (not-supported-warning fleet)}})))
 
 (fx/defn handle-network-status-change
-  [cofx {:keys [type] :as data}]
+  [{:keys [db] :as cofx} {:keys [type] :as data}]
   (fx/merge
    cofx
-   {:network/notify-status-go data}
-   (if (= type "cellular")
-     (bottom-sheet/show-bottom-sheet
-      {:view :mobile-network})
-     (bottom-sheet/hide-bottom-sheet))))
+   {:db                       (assoc db :network/type type)
+    :network/notify-status-go data}
+   (mobile-network/on-network-status-change)))
 
 (re-frame/reg-fx
  :network/listen-to-network-status

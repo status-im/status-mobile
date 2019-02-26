@@ -15,8 +15,8 @@
    :align-items         :center
    :height              item-height
    :padding-horizontal  14
-   :border-bottom-color colors/gray-light
-   :border-bottom-width border-height})
+   :border-top-color colors/gray-light
+   :border-top-width border-height})
 
 (def item-suggestion-name
   {:color     colors/black

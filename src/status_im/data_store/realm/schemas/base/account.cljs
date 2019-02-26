@@ -230,3 +230,12 @@
                                         {:type "string[]" :optional true}
                                         :recent-stickers
                                         {:type "string[]" :optional true}}))
+
+(def v20 (assoc-in v19
+                   [:properties :last-published-contact-code]
+                   {:type :int :default 0}))
+
+(def v21 (update v20 :properties merge
+                 {:syncing-on-mobile-network? {:type :bool :default false}
+                  :remember-syncing-choice?   {:type :bool :default false}}))
+

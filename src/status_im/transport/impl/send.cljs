@@ -2,6 +2,7 @@
   (:require [status-im.group-chats.core :as group-chats]
             [status-im.utils.fx :as fx]
             [status-im.pairing.core :as pairing]
+            [status-im.accounts.update.core :as accounts.update]
             [status-im.data-store.transport :as transport-store]
             [status-im.transport.db :as transport.db]
             [status-im.transport.message.pairing :as transport.pairing]
@@ -67,33 +68,10 @@
                                             :success-event success-event})
                 (pairing/send-installation-message-fx sync-message)))))
 
-(fx/defn send-contact-update
-  [{:keys [db] :as cofx} chat-id payload]
-  (when-let [chat (get-in cofx [:db :transport/chats chat-id])]
-    (let [updated-chat  (assoc chat :resend? "contact-update")
-          tx            [(transport-store/save-transport-tx {:chat-id chat-id
-                                                             :chat    updated-chat})]
-          success-event [:transport/contact-message-sent chat-id]]
-      (fx/merge cofx
-                {:db (assoc-in db
-                               [:transport/chats chat-id :resend?]
-                               "contact-update")
-                 :data-store/tx tx}
-                (protocol/send-with-pubkey {:chat-id       chat-id
-                                            :payload       payload
-                                            :success-event success-event})))))
 (extend-type transport.contact/ContactUpdate
   protocol/StatusMessage
   (send [this _ {:keys [db] :as cofx}]
-    (let [contact-public-keys (reduce (fn [acc [_ {:keys [public-key dapp? pending?]}]]
-                                        (if (and (not dapp?)
-                                                 (not pending?))
-                                          (conj acc public-key)
-                                          acc))
-                                      #{}
-                                      (:contacts/contacts db))
-          ;;NOTE: chats with contacts use public-key as chat-id
-          send-contact-update-fxs (map #(send-contact-update % this) contact-public-keys)
+    (let [send-contact-update-fxs (accounts.update/send-contact-update cofx this)
           sync-message            (pairing/sync-installation-account-message cofx)
           fxs                     (conj send-contact-update-fxs
                                         (pairing/send-installation-message-fx sync-message))]

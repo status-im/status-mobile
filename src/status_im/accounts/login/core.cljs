@@ -16,7 +16,8 @@
             [status-im.models.wallet :as models.wallet]
             [status-im.models.transactions :as transactions]
             [status-im.i18n :as i18n]
-            [status-im.node.core :as node]))
+            [status-im.node.core :as node]
+            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]))
 
 (defn login! [address password]
   (status/login address password #(re-frame/dispatch [:accounts.login.callback/login-success %])))
@@ -87,7 +88,8 @@
         error   (:error data)
         success (empty? error)
         {:keys [address password save-password?]}
-        (accounts.db/credentials cofx)]
+        (accounts.db/credentials cofx)
+        network-type (:network/type db)]
     ;; check if logged into account
     (when address
       (if success
@@ -108,6 +110,7 @@
          (fn [_]
            (when save-password?
              {:keychain/save-user-password [address password]}))
+         (mobile-network/on-network-status-change)
          (protocol/initialize-protocol)
          (universal-links/process-stored-event)
          #(when-not platform/desktop?
@@ -251,7 +254,7 @@
               {:db (assoc-in db [:accounts/login :password] password)}
               (navigation/navigate-to-cofx :progress nil)
               (user-login false))
-    (navigation/navigate-to-clean cofx :login nil)))
+    (navigation/navigate-to-cofx cofx :login nil)))
 
 (re-frame/reg-fx
  :accounts.login/login

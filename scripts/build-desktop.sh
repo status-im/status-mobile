@@ -22,7 +22,7 @@ else
 fi
 
 external_modules_dir=( \
-  'node_modules/react-native-i18n/desktop' \
+  'node_modules/react-native-languages/desktop' \
   'node_modules/react-native-config/desktop' \
   'node_modules/react-native-fs/desktop' \
   'node_modules/react-native-http-bridge/desktop' \
@@ -62,7 +62,7 @@ function is_windows_target() {
 
 function joinPath() {
   if program_exists 'realpath'; then
-    realpath -m "$1/$2"
+    realpath -m "$1/$2" 2> /dev/null
   else
     echo "$1/$2" | tr -s /
   fi
@@ -70,7 +70,7 @@ function joinPath() {
 
 function joinExistingPath() {
   if program_exists 'realpath'; then
-    realpath "$1/$2"
+    realpath "$1/$2" 2> /dev/null
   else
     echo "$1/$2" | tr -s /
   fi
@@ -79,10 +79,16 @@ function joinExistingPath() {
 STATUSREACTPATH="$(cd "$SCRIPTPATH" && cd '..' && pwd)"
 WORKFOLDER="$(joinExistingPath "$STATUSREACTPATH" 'StatusImPackage')"
 DEPLOYQTFNAME='linuxdeployqt-continuous-x86_64_20181215.AppImage'
-APPIMAGETOOLFNAME='appimagetool-x86_64_20181109.AppImage'
+APPIMAGETOOLFNAME='appimagetool-x86_64_20190221.AppImage'
 DEPLOYQT=$(joinPath . "$DEPLOYQTFNAME")
 APPIMAGETOOL=$(joinPath . "$APPIMAGETOOLFNAME")
 STATUSIM_APPIMAGE_ARCHIVE="StatusImAppImage_20181208.zip"
+
+APPIMAGE_OPTIONS=""
+if [[ ! -c /dev/fuse ]]; then # doesn't exist when run under docker
+    # We extract it to avoid having to use fuse and privileged mode in docker
+    APPIMAGE_OPTIONS="--appimage-extract-and-run"
+fi
 
 function init() {
   if [ -z $STATUSREACTPATH ]; then
@@ -165,21 +171,12 @@ function buildClojureScript() {
   echo ""
 
   # Add path to javascript bundle to package.json
-  jsBundleLine="\"desktopJSBundlePath\": \"$WORKFOLDER/Status.jsbundle\""
-  jsPackagePath=$(joinExistingPath "$STATUSREACTPATH" 'desktop_files/package.json.orig')
-  if grep -Fq "$jsBundleLine" "$jsPackagePath"; then
-    echo -e "${GREEN}Found line in package.json.${NC}"
-  else
-    # Add line to package.json just before "dependencies" line
-    if is_macos; then
-      sed -i '' -e "/\"dependencies\":/i\\
- \  $jsBundleLine," "$jsPackagePath"
-    else
-      sed -i -- "/\"dependencies\":/i\  $jsBundleLine," "$jsPackagePath"
-    fi
-    echo -e "${YELLOW}Added 'desktopJSBundlePath' line to $jsPackagePath:${NC}"
-    echo ""
-  fi
+  local jsBundleLine="\"desktopJSBundlePath\": \"$WORKFOLDER/Status.jsbundle\""
+  local jsPackagePath=$(joinExistingPath "$STATUSREACTPATH" 'desktop_files/package.json.orig')
+  local tmp=$(mktemp)
+  jq ".=(. + {$jsBundleLine})" "$jsPackagePath" > "$tmp" && mv "$tmp" "$jsPackagePath"
+  echo -e "${YELLOW}Added 'desktopJSBundlePath' line to $jsPackagePath:${NC}"
+  echo ""
 }
 
 function compile() {
@@ -315,27 +312,25 @@ function bundleLinux() {
   [ $VERBOSE_LEVEL -ge 1 ] && ldd $(joinExistingPath "$usrBinPath" 'Status') 
   desktopFilePath="$(joinExistingPath "$WORKFOLDER" 'AppDir/usr/share/applications/Status.desktop')"
   pushd $WORKFOLDER
-    [ $VERBOSE_LEVEL -ge 1 ] && ldd $usrBinPath/Status
     cp -r assets/share/assets $usrBinPath
     cp -rf StatusImAppImage/* $usrBinPath
     rm -f $usrBinPath/Status.AppImage
   popd
 
-  $DEPLOYQT \
+  $DEPLOYQT $APPIMAGE_OPTIONS \
     $desktopFilePath \
     -verbose=$VERBOSE_LEVEL -always-overwrite -no-strip \
     -no-translations -bundle-non-qt-libs \
     -qmake="$qmakePath" \
     -executable="$(joinExistingPath "$usrBinPath" 'reportApp')" \
     -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'node_modules/react-native')" \
-    -qmldir="$STATUSREACTPATH/desktop/reportApp" \
+    -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'desktop/reportApp')" \
     -extra-plugins=imageformats/libqsvg.so \
     -appimage
 
   pushd $WORKFOLDER
-    [ $VERBOSE_LEVEL -ge 1 ] && ldd $usrBinPath/Status
     rm -f $usrBinPath/Status.AppImage
-    $APPIMAGETOOL ./AppDir
+    $APPIMAGETOOL $APPIMAGE_OPTIONS ./AppDir
     [ $VERBOSE_LEVEL -ge 1 ] && ldd $usrBinPath/Status
     rm -rf Status.AppImage
   popd

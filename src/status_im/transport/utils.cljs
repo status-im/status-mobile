@@ -46,3 +46,6 @@
       (get 0 "")
       (string/split "@")
       (get 0)))
+
+(defn extract-url-components [address]
+  (rest (re-matches #"enode://(.*?)@(.*):(.*)" address)))

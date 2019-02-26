@@ -2,13 +2,18 @@
   (:require [re-frame.core :as re-frame]
             [status-im.accounts.db :as accounts.db]
             [status-im.chat.models :as chat.models]
+            [clojure.set :as clojure.set]
             [status-im.contact.db :as contact.db]
+            [status-im.contact.device-info :as device-info]
             [status-im.data-store.contacts :as contacts-store]
             [status-im.data-store.messages :as data-store.messages]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.i18n :as i18n]
+            [status-im.transport.utils :as transport.utils]
             [status-im.transport.message.contact :as message.contact]
+            [status-im.transport.message.public-chat :as transport.public-chat]
             [status-im.transport.message.protocol :as protocol]
+            [status-im.contact-code.core :as contact-code]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
@@ -45,18 +50,18 @@
     {:name          name
      :profile-image photo-path
      :address       address
+     :device-info   (device-info/all {:db db})
      :fcm-token     fcm-token}))
 
-(fx/defn add-new-contact [{:keys [db]} {:keys [public-key] :as contact}]
-  (let [new-contact (assoc contact
-                           :pending? false
-                           :hide-contact? false
-                           :public-key public-key)]
-    {:db            (-> db
-                        (update-in [:contacts/contacts public-key]
-                                   merge new-contact)
-                        (assoc-in [:contacts/new-identity] ""))
-     :data-store/tx [(contacts-store/save-contact-tx new-contact)]}))
+(fx/defn upsert-contact [{:keys [db] :as cofx}
+                         {:keys [pending?
+                                 public-key] :as contact}]
+  (fx/merge cofx
+            {:db            (-> db
+                                (update-in [:contacts/contacts public-key] merge contact))
+             :data-store/tx [(contacts-store/save-contact-tx contact)]}
+            #(when-not pending?
+               (contact-code/listen-to-chat % public-key))))
 
 (fx/defn send-contact-request
   [{:keys [db] :as cofx} {:keys [public-key pending? dapp?] :as contact}]
@@ -65,11 +70,16 @@
       (protocol/send (message.contact/map->ContactRequestConfirmed (own-info db)) public-key cofx)
       (protocol/send (message.contact/map->ContactRequest (own-info db)) public-key cofx))))
 
-(fx/defn add-contact [{:keys [db] :as cofx} public-key]
+(fx/defn add-contact
+  "Add a contact and set pending to false"
+  [{:keys [db] :as cofx} public-key]
   (when (not= (get-in db [:account/account :public-key]) public-key)
-    (let [contact (build-contact cofx public-key)]
+    (let [contact (-> (build-contact cofx public-key)
+                      (assoc :pending? false
+                             :hide-contact? false))]
       (fx/merge cofx
-                (add-new-contact contact)
+                {:db (assoc-in db [:contacts/new-identity] "")}
+                (upsert-contact contact)
                 (send-contact-request contact)))))
 
 (fx/defn add-contacts-filter [{:keys [db]} public-key action]
@@ -211,7 +221,7 @@
 (defn handle-contact-update
   [public-key
    timestamp
-   {:keys [name profile-image address fcm-token] :as m}
+   {:keys [name profile-image address fcm-token device-info] :as m}
    {{:contacts/keys [contacts] :as db} :db :as cofx}]
   ;; We need to convert to timestamp ms as before we were using now in ms to
   ;; set last updated
@@ -236,27 +246,23 @@
                                :address      (or address
                                                  (:address contact)
                                                  (contact.db/public-key->address public-key))
+                               :device-info  (device-info/merge-info
+                                              timestamp
+                                              (:device-info contact)
+                                              device-info)
                                :last-updated timestamp-ms
-                                  ;;NOTE (yenda) in case of concurrent contact request
+                                ;;NOTE (yenda) in case of concurrent contact request
                                :pending?     (get contact :pending? true)}
                                fcm-token (assoc :fcm-token fcm-token))]
-        ;;NOTE (yenda) only update if there is changes to the contact
-        (when-not (= contact-props
-                     (select-keys contact [:public-key :address :photo-path
-                                           :name :fcm-token :pending?]))
-          {:db            (update-in db [:contacts/contacts public-key]
-                                     merge contact-props)
-           :data-store/tx [(contacts-store/save-contact-tx
-                            contact-props)]})))))
+        (upsert-contact cofx contact-props)))))
 
 (def receive-contact-request handle-contact-update)
 (def receive-contact-request-confirmation handle-contact-update)
 (def receive-contact-update handle-contact-update)
 
-(fx/defn add-contact-and-open-chat
+(fx/defn open-chat
   [cofx public-key]
   (fx/merge cofx
-            (add-contact public-key)
             (chat.models/start-chat public-key {:navigation-reset? true})))
 
 (fx/defn hide-contact
@@ -276,8 +282,8 @@
       (fx/merge cofx
                 fx
                 (if config/partitioned-topic-enabled?
-                  (add-contacts-filter contact-identity :add-contact-and-open-chat)
-                  (add-contact-and-open-chat contact-identity))))))
+                  (add-contacts-filter contact-identity :open-chat)
+                  (open-chat contact-identity))))))
 
 (fx/defn open-contact-toggle-list
   [{:keys [db :as cofx]}]
@@ -290,4 +296,4 @@
 (fx/defn add-new-identity-to-contacts
   [{{:contacts/keys [new-identity]} :db :as cofx}]
   (when (seq new-identity)
-    (add-contact-and-open-chat cofx new-identity)))
+    (open-chat cofx new-identity)))

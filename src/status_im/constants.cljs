@@ -70,6 +70,11 @@
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
                            :DataDir        "/ethereum/testnet"
                            :LightEthConfig {:Enabled true}}}
+   "testnet_ulc" {:id     "testnet_ulc",
+                  :name   "Ropsten ULC",
+                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
+                           :DataDir        "/ethereum/testnet_ulc"
+                           :LightEthConfig {:Enabled true :ULC true}}}
    "testnet_rpc" {:id     "testnet_rpc",
                   :name   "Ropsten with upstream RPC",
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
@@ -210,6 +215,16 @@
 (def ^:const web3-uninstall-filter "eth_uninstallFilter")
 (def ^:const web3-get-filter-changes "eth_getFilterChanges")
 
+(def ^:const web3-shh-post "shh_post")
+(def ^:const web3-shh-new-identity "shh_newIdentity")
+(def ^:const web3-shh-has-identity "shh_hasIdentity")
+(def ^:const web3-shh-new-group "shh_newGroup")
+(def ^:const web3-shh-add-to-group "shh_addToGroup")
+(def ^:const web3-shh-new-filter "shh_newFilter")
+(def ^:const web3-shh-uninstall-filter "shh_uninstallFilter")
+(def ^:const web3-shh-get-filter-changes "shh_getFilterChanges")
+(def ^:const web3-shh-get-messages "shh_getMessages")
+
 (def ^:const status-create-address "status_createaddress")
 
 (def ^:const event-transfer-hash
@@ -246,3 +261,6 @@
 (def ^:const ipfs-add-url "https://ipfs.infura.io:5001/api/v0/add")
 (def ^:const ipfs-add-param-name "extension.event.edn")
 (def ^:const ipfs-cat-url "https://ipfs.infura.io/ipfs/")
+
+(def ^:const ipfs-proto-code "e3")
+(def ^:const swarm-proto-code "e4")

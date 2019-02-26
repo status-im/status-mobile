@@ -2,6 +2,7 @@
  status-im.transport.db
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as s]
+            [clojure.set :as sets]
             status-im.contact.db
             [status-im.utils.config :as config]
             [status-im.utils.clocks :as utils.clocks]
@@ -64,6 +65,7 @@
 (spec/def :message.content/response-to-v2 string?)
 (spec/def :message.content/command-path (spec/tuple string? (spec/coll-of (spec/or :scope keyword? :chat-id string?) :kind set? :min-count 1)))
 (spec/def :message.content/uri (spec/and string? (complement s/blank?)))
+(spec/def :message.content/pack (spec/and string? (complement s/blank?)))
 (spec/def :message.content/params (spec/map-of keyword? any?))
 
 (spec/def ::content-type #{constants/content-type-text constants/content-type-command
@@ -132,4 +134,4 @@
                                              chat-id)
                                         topic))
                                     (get db :transport/chats))))]
-    (= chats filters)))
+    (empty? (sets/difference chats filters))))

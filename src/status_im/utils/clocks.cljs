@@ -94,6 +94,5 @@
   (inc (max local-clock (->timestamp-bid))))
 
 (defn receive [message-clock local-clock]
-  (-> (+ 1000 (max (or message-clock 0) (or local-clock 0)))
-      safe-timestamp
-      inc))
+  (-> (max (or message-clock 0) (or local-clock 0))
+      safe-timestamp))

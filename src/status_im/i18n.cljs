@@ -7,6 +7,7 @@
    [clojure.set :as set]
    [status-im.utils.types :as types]))
 
+(set! (.-locale rn-dependencies/i18n) (.-language rn-dependencies/react-native-languages))
 (set! (.-fallbacks rn-dependencies/i18n) true)
 (set! (.-defaultSeparator rn-dependencies/i18n) "/")
 
@@ -62,7 +63,7 @@
     :chat-settings :offline :update-status :invited :chat-send-eth :address
     :new-public-group-chat :datetime-hour :wallet-settings
     :datetime-ago-format :close-app-button :block :camera-access-error
-    :wallet-invalid-address :address-explication :remove
+    :wallet-invalid-address :wallet-invalid-address-checksum :address-explication :remove
     :transactions-delete-content :transactions-unsigned-empty
     :transaction-moved-text :add-members :sign-later-title
     :yes :dapps :popular-tags :network-settings :twelve-words-in-correct-order

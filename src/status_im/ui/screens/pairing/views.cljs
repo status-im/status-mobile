@@ -5,7 +5,7 @@
             [reagent.core :as reagent]
             [clojure.string :as string]
             [status-im.utils.config :as config]
-            [status-im.ui.screens.main-tabs.styles :as main-tabs.styles]
+            [status-im.ui.components.bottom-bar.styles :as main-tabs.styles]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.screens.home.styles :as home.styles]

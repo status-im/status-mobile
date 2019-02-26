@@ -25,7 +25,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         device_1_wallet_view = device_1_home.wallet_button.click()
         device_1_wallet_view.set_up_wallet()
-        device_1_wallet_view.get_back_to_home_view()
+        device_1_wallet_view.home_button.click()
 
         public_key = device_2_home.get_public_key()
         device_2_profile = device_2_home.get_profile_view()
@@ -394,8 +394,6 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
 
         if not send_transaction_view.element_by_text(recipient['username']).is_element_displayed():
             self.errors.append('Recipient name is not shown')
-        if not send_transaction_view.element_by_text('0x' + recipient['address']).is_element_displayed():
-            self.errors.append('Recipient address is not shown')
         if not send_transaction_view.element_by_text('ETHro').is_element_displayed():
             self.errors.append("Asset field doesn't contain 'ETHro' text")
         if not send_transaction_view.element_by_text(amount).is_element_displayed():

@@ -67,7 +67,7 @@
     :accessibility-label :send-transaction-button
     :icon                :main-icons/send
     :action              #(re-frame/dispatch [:navigate-to :wallet-send-transaction])}
-   {:label               (i18n/label :t/wallet-deposit)
+   {:label               (i18n/label :t/receive)
     :accessibility-label :receive-transaction-button
     :icon                :main-icons/receive
     :action              #(re-frame/dispatch [:navigate-to :wallet-request-transaction])}
@@ -160,6 +160,8 @@
                   error-message   [:wallet/error-message]
                   address-hex     [:account/hex-address]]
     [react/view styles/main-section
+     (when-not modal?
+       [status-bar.view/status-bar {:type :wallet-tab}])
      (if modal?
        [toolbar-modal modal-history?]
        [settings/toolbar-view])

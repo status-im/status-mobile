@@ -20,7 +20,7 @@
                      (re-frame/dispatch [:navigate-back]))
         on-error   (fn [type error]
                      (log/debug type error))]
-    (image-processing/img->base64 path on-success on-error)))
+    (image-processing/img->base64 path on-success on-error 150 150)))
 
 (defn profile-photo-capture []
   (let [camera-ref (reagent/atom nil)]

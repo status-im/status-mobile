@@ -121,6 +121,10 @@
      [profile.components/settings-item {:label-kw            :t/notifications
                                         :accessibility-label :notifications-button
                                         :action-fn           #(.openURL react/linking "app-settings://notification/status-im")}]
+     [profile.components/settings-item-separator]
+     [profile.components/settings-item {:label-kw            :t/mobile-network-settings
+                                        :accessibility-label :notifications-button
+                                        :action-fn            #(re-frame/dispatch [:navigate-to :mobile-network-settings])}]
      (when show-backup-seed?
        [profile.components/settings-item-separator])
      (when show-backup-seed?
@@ -273,25 +277,27 @@
                              (js/setTimeout
                               #(.scrollToEnd @scroll {:animated false})
                               300))]
-      [react/view profile.components.styles/profile
-       (if editing?
-         [my-profile-edit-toolbar on-show-edit]
-         [my-profile-toolbar])
-       [react/scroll-view {:ref                          #(reset! scroll %)
-                           :keyboard-should-persist-taps :handled}
-        [react/view profile.components.styles/profile-form
-         [profile.components/profile-header
-          {:contact              current-account
-           :edited-contact       changed-account
-           :editing?             editing?
-           :allow-icon-change?   true
-           :options              (if (not= (identicon/identicon public-key) photo-path)
-                                   (profile-icon-options-ext)
-                                   profile-icon-options)
-           :on-change-text-event :my-profile/update-name}]]
-        [share-profile-item (dissoc current-account :mnemonic)]
-        [contacts-list-item active-contacts-count]
-        [react/view styles/my-profile-info-container
-         [my-profile-settings current-account shown-account currency (nil? login-data)]]
-        (when (nil? login-data)
-          [advanced shown-account on-show-advanced])]])))
+      [react/view {:flex 1}
+       [status-bar/status-bar {:type :main}]
+       [react/view profile.components.styles/profile
+        (if editing?
+          [my-profile-edit-toolbar on-show-edit]
+          [my-profile-toolbar])
+        [react/scroll-view {:ref                          #(reset! scroll %)
+                            :keyboard-should-persist-taps :handled}
+         [react/view profile.components.styles/profile-form
+          [profile.components/profile-header
+           {:contact              current-account
+            :edited-contact       changed-account
+            :editing?             editing?
+            :allow-icon-change?   true
+            :options              (if (not= (identicon/identicon public-key) photo-path)
+                                    (profile-icon-options-ext)
+                                    profile-icon-options)
+            :on-change-text-event :my-profile/update-name}]]
+         [share-profile-item (dissoc current-account :mnemonic)]
+         [contacts-list-item active-contacts-count]
+         [react/view styles/my-profile-info-container
+          [my-profile-settings current-account shown-account currency (nil? login-data)]]
+         (when (nil? login-data)
+           [advanced shown-account on-show-advanced])]]])))

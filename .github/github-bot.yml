@@ -10,6 +10,7 @@ project-board:
 automated-tests:
   repo-full-name: 'status-im/status-react'
   job-full-name: 'end-to-end-tests/status-app-end-to-end-tests'
+  kickoff-column-name: 'REVIEW'
 
 github-team:
   slug: 'clojure'

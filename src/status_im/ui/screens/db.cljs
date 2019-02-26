@@ -41,6 +41,7 @@
              :wallet/all-tokens                  {}
              :prices                             {}
              :peers-count                        0
+             :node-info                          {}
              :peers-summary                      []
              :notifications                      {}
              :semaphores                         #{}
@@ -63,6 +64,8 @@
              :dimensions/window                  (dimensions/window)
              :push-notifications/stored          {}
              :registry                           {}
+             :stickers/packs-owned               #{}
+             :stickers/packs-pendning            #{}
              :hardwallet                         {:nfc-supported? false
                                                   :nfc-enabled?   false
                                                   :pin            {:original     []
@@ -162,6 +165,7 @@
 (spec/def ::network (spec/nilable string?))
 (spec/def ::chain (spec/nilable string?))
 (spec/def ::peers-count (spec/nilable integer?))
+(spec/def ::node-info (spec/nilable map?))
 (spec/def ::peers-summary (spec/nilable vector?))
 
 (spec/def ::collectible (spec/nilable map?))
@@ -195,6 +199,8 @@
 (spec/def ::hardwallet (spec/nilable map?))
 
 (spec/def :stickers/packs (spec/nilable map?))
+(spec/def :stickers/packs-owned (spec/nilable set?))
+(spec/def :stickers/packs-pendning (spec/nilable set?))
 (spec/def :stickers/packs-installed (spec/nilable map?))
 (spec/def :stickers/selected-pack (spec/nilable any?))
 (spec/def :stickers/recent (spec/nilable vector?))
@@ -270,6 +276,8 @@
                                 :stickers/packs-installed
                                 :stickers/selected-pack
                                 :stickers/recent
+                                :stickers/packs-owned
+                                :stickers/packs-pendning
                                 :bottom-sheet/show?
                                 :bottom-sheet/view]
                           :opt-un [::modal
@@ -285,6 +293,7 @@
                                    ::tab-bar-visible?
                                    ::network-status
                                    ::peers-count
+                                   ::node-info
                                    ::peers-summary
                                    ::sync-state
                                    ::sync-data

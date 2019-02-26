@@ -3,7 +3,7 @@ basic_user['passphrase'] = "tree weekend ceiling awkward universe pyramid glimps
 basic_user['username'] = "Little Weighty Iberianmole"
 basic_user['public_key'] = "0x040d3400f0ba80b2f6017a9021a66e042abc33cf7051ddf98a24a815c93d6c052ce2b7873d799f096325" \
                            "9f41c5a1bf08133dd4f3fe63ea1cceaa1e86ebc4bc42c9"
-basic_user['address'] = "f184747445c3b85ceb147dfb136067cb93d95f1d"
+basic_user['address'] = "f184747445c3B85CEb147DfB136067CB93d95F1D"
 
 wallet_users = dict()
 
@@ -231,6 +231,13 @@ transaction_senders['Y']['username'] = "Lighthearted Empty Longspur"
 transaction_senders['Y']['address'] = "0x2a5ed44a7092404ae08369ffde6e54ce47e3761c"
 transaction_senders['Y']['public_key'] = "0x04a6515d7f2a1659948429487ba3b747cc1860c29e304a5482492226ab65056c1c6ba6a" \
                                          "5def258316d22882e43dd2b1b98b0f8d2488a7a5a967ac6d86c2a1088e2"
+
+transaction_senders['Z'] = dict()
+transaction_senders['Z']['passphrase'] = "congress club image core lens hope clever transfer tiny true alien favorite"
+transaction_senders['Z']['username'] = "Plastic Alienated Neonblueguppy"
+transaction_senders['Z']['address'] = "29ff033fa04f5ba4192823ddbf23f8397809995c"
+transaction_senders['Z']['public_key'] = "0x04c731338a65f130b04c727c4135d0a6e2e9d0df180390d57156fdcc7b541b0681e4be56" \
+                                         "d48186c36892a97c627899520b9b89bc6c1521d6c89746f5419460ea9b"
 
 transaction_recipients = dict()
 

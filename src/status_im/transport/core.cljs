@@ -2,9 +2,12 @@
  status-im.transport.core
   (:require status-im.transport.filters
             [re-frame.core :as re-frame]
+            [status-im.native-module.core :as status]
             [status-im.mailserver.core :as mailserver]
             [status-im.transport.message.core :as message]
             [status-im.transport.partitioned-topic :as transport.topic]
+            [status-im.contact-code.core :as contact-code]
+            [status-im.utils.publisher :as publisher]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
             [taoensso.timbre :as log]
@@ -26,6 +29,23 @@
                  :callback (constantly nil)}))
         chats))
 
+(defn set-node-info [{:keys [db]} node-info]
+  {:db (assoc db :node-info node-info)})
+
+(defn fetch-node-info []
+  (let [args    {:jsonrpc "2.0"
+                 :id      2
+                 :method  "admin_nodeInfo"}
+        payload (.stringify js/JSON (clj->js args))]
+    (status/call-private-rpc payload
+                             (handlers/response-handler #(re-frame/dispatch [:transport.callback/node-info-fetched %])
+                                                        #(log/error "node-info: failed error" %)))))
+
+(re-frame/reg-fx
+ ::fetch-node-info
+ (fn []
+   (fetch-node-info)))
+
 (fx/defn init-whisper
   "Initialises whisper protocol by:
   - adding fixed shh discovery filter
@@ -46,6 +66,7 @@
                                               :chat-id :discovery-topic})
                                            discovery-topics))}
 
+                 ::fetch-node-info []
                  :shh/restore-sym-keys-batch
                  {:web3       web3
                   :transport  (keep (fn [[chat-id {:keys [topic sym-key]
@@ -54,6 +75,8 @@
                                         (assoc chat :chat-id chat-id)))
                                     (:transport/chats db))
                   :on-success #(re-frame/dispatch [::sym-keys-added %])}}
+                (publisher/start-fx)
+                (contact-code/init)
                 (mailserver/connect-to-mailserver)
                 (message/resend-contact-messages [])))))
 
@@ -100,11 +123,15 @@
   It is necessary to remove the filters because status-go there isn't currently a logout feature in status-go
   to clean-up after logout. When logging out of account A and logging in account B, account B would receive
   account A messages without this."
-  [{:keys [db]} callback]
+  [{:keys [db] :as cofx} callback]
   (let [{:transport/keys [filters]} db]
-    {:shh/remove-filters {:filters  (mapcat (fn [[chat-id chat-filters]]
-                                              (map (fn [filter]
-                                                     [chat-id filter])
-                                                   chat-filters))
-                                            filters)
-                          :callback callback}}))
+    (fx/merge
+     cofx
+
+     {:shh/remove-filters {:filters   (mapcat (fn [[chat-id chat-filters]]
+                                                (map (fn [filter]
+                                                       [chat-id filter])
+                                                     chat-filters))
+                                              filters)
+                           :callback callback}}
+     (publisher/stop-fx))))

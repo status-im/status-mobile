@@ -40,17 +40,18 @@
                [{:name             "Snappy Impressive Leonberger"
                  :photo-path       "generated"
                  :admin?           true
-                 :public-key "0x04fcf40c526b09ff9fb22f4a5dbd08490ef9b64af700870f8a0ba2133f4251d5607ed83cd9047b8c2796576bc83fa0de23a13a4dced07654b8ff137fe744047917"}
+                 :address          "71adb0644e2b590e37dafdfea8bd58f0c7668c7f"
+                 :public-key       "0x04fcf40c526b09ff9fb22f4a5dbd08490ef9b64af700870f8a0ba2133f4251d5607ed83cd9047b8c2796576bc83fa0de23a13a4dced07654b8ff137fe744047917"}
                 {:name             "User A"
                  :photo-path       "photo2"
                  :public-key "0x048a2f8b80c60f89a91b4c1316e56f75b087f446e7b8701ceca06a40142d8efe1f5aa36bd0fee9e248060a8d5207b43ae98bef4617c18c71e66f920f324869c09f"}
                 {:description      nil
                  :last-updated     0
                  :hide-contact?    false
-                 :address          "eca8218b5ebeb2c47ba94c1b6e0a779d78fff7bc"
                  :name             "User B"
                  :fcm-token        nil
                  :photo-path       "photo1"
+                 :address          "eca8218b5ebeb2c47ba94c1b6e0a779d78fff7bc"
                  :status           nil
                  :blocked?         false
                  :pending?         true

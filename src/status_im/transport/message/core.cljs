@@ -1,19 +1,40 @@
 (ns ^{:doc "Definition of the StatusMessage protocol"}
  status-im.transport.message.core
   (:require [re-frame.core :as re-frame]
+            [goog.object :as o]
             [status-im.chat.models.message :as models.message]
+            [status-im.utils.config :as config]
             [status-im.data-store.transport :as transport-store]
             [status-im.transport.message.contact :as contact]
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.transit :as transit]
             [status-im.transport.utils :as transport.utils]
+            [status-im.contact.device-info :as device-info]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
+(defn unwrap-message
+  "Extract message from new payload {:id some-id :message some-message}
+  or old (just plain message)"
+  [js-message]
+  (let [clj-message (js->clj js-message :keywordize-keys true)
+        {:keys [message id]} clj-message]
+    {:message (or message clj-message)
+     :raw-payload (if message
+                    (o/get js-message "message")
+                    js-message)
+     :id id}))
+
 (fx/defn receive-message
+  "Receive message handles a new status-message.
+  dedup-id is passed by status-go and is used to deduplicate messages at that layer.
+  Once a message has been successfuly processed, that id needs to be sent back
+  in order to stop receiving that message"
   [cofx now-in-s filter-chat-id js-message]
   (let [blocked-contacts (get-in cofx [:db :contacts/blocked] #{})
-        {:keys [payload sig timestamp ttl]} (js->clj js-message :keywordize-keys true)
+        {{:keys [payload sig timestamp ttl]} :message
+         dedup-id :id
+         raw-payload :raw-payload} (unwrap-message js-message)
         status-message (-> payload
                            transport.utils/to-utf8
                            transit/deserialize)]
@@ -22,7 +43,7 @@
                (not (blocked-contacts sig)))
       (try
         (when-let [valid-message (protocol/validate status-message)]
-          (fx/merge (assoc cofx :js-obj js-message)
+          (fx/merge (assoc cofx :js-obj raw-payload :dedup-id dedup-id)
                     #(protocol/receive valid-message
                                        (or
                                         filter-chat-id
@@ -85,11 +106,22 @@
                   (update-resend-contact-message chat-id)))
 
       (when-let [{:keys [from]} (get-in db [:chats chat-id :messages message-id])]
-        (let [{:keys [fcm-token]} (get-in db [:contacts/contacts chat-id])]
+        (let [{:keys [fcm-token]} (get-in db [:contacts/contacts chat-id])
+              ;; We pick the last max-installations devices
+              fcm-tokens
+              (as-> (get-in db [:contacts/contacts chat-id :device-info]) $
+                (vals $)
+                (sort-by :timestamp $)
+                (reverse $)
+                (map :fcm-token $)
+                (into #{} $)
+                (conj $ fcm-token)
+                (filter identity $)
+                (take (inc config/max-installations) $))]
           (fx/merge cofx
                     (remove-hash envelope-hash)
                     (check-confirmations status chat-id message-id)
-                    (models.message/send-push-notification chat-id message-id fcm-token status)))))))
+                    (models.message/send-push-notification chat-id message-id fcm-tokens status)))))))
 
 (fx/defn set-contact-message-envelope-hash
   [{:keys [db] :as cofx} chat-id envelope-hash]
@@ -118,6 +150,7 @@
     {:name          name
      :profile-image photo-path
      :address       address
+     :device-info   (device-info/all {:db db})
      :fcm-token     fcm-token}))
 
 (fx/defn resend-contact-request [cofx own-info chat-id {:keys [sym-key topic]}]
@@ -159,8 +192,14 @@
                           (keep :js-obj)
                           (apply array))]
      (when (pos? (.-length js-messages))
-       (.confirmMessagesProcessed (transport.utils/shh web3)
-                                  js-messages
-                                  (fn [err resp]
-                                    (when err
-                                      (log/info "Confirming messages processed failed"))))))))
+       (if (string? (first js-messages))
+         (.confirmMessagesProcessedByID (transport.utils/shh web3)
+                                        js-messages
+                                        (fn [err resp]
+                                          (when err
+                                            (log/warn "Confirming messages processed failed" err))))
+         (.confirmMessagesProcessed (transport.utils/shh web3)
+                                    js-messages
+                                    (fn [err resp]
+                                      (when err
+                                        (log/warn "Confirming messages processed failed" err)))))))))

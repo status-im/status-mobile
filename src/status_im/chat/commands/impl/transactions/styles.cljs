@@ -80,13 +80,13 @@
 
 (defn command-amount-currency-separator [outgoing]
   {:opacity 0
-   :color   (if outgoing colors/blue colors/white)})
+   :color   (if outgoing colors/blue colors/blue-light)})
 
 (defn command-send-currency-text [outgoing]
   {:font-size      22
    :margin-left    4
    :letter-spacing 1
-   :color          (if outgoing colors/white-transparent colors/blue-light)})
+   :color          (if outgoing colors/white-transparent colors/gray)})
 
 (defn command-request-currency-text [outgoing]
   {:font-size      22
@@ -142,7 +142,7 @@
 (defn command-request-message-view [outgoing]
   {:border-radius    14
    :padding-vertical 4
-   :background-color (if outgoing colors/blue colors/white)})
+   :background-color (if outgoing colors/blue colors/blue-light)})
 
 (defn command-request-header-text [outgoing]
   {:font-size 12

@@ -18,6 +18,7 @@
 (def ^:private pn-message-id-hash-length 10)
 (def ^:private pn-pubkey-hash-length 10)
 (def ^:private pn-pubkey-length 132)
+(def ^:private pull-recent-messages-window (* 15 60))
 
 (when-not platform/desktop?
 
@@ -79,11 +80,14 @@
   (def group-id "im.status.ethereum.MESSAGE")
   (def icon "ic_stat_status_notification")
 
+  (defn- hash->contact [hash-or-pubkey accounts]
+    (let [hash (anonymize-pubkey hash-or-pubkey)]
+      (->> accounts
+           (filter #(= (anonymize-pubkey (:public-key %)) hash))
+           first)))
+
   (defn- hash->pubkey [hash accounts]
-    (:public-key
-     (first
-      (filter #(= (anonymize-pubkey (:public-key %)) hash)
-              accounts))))
+    (:public-key (hash->contact hash accounts)))
 
   (defn lookup-contact-pubkey-from-hash
     [{:keys [db] :as cofx} contact-pubkey-or-hash]
@@ -92,9 +96,8 @@
     Returns original value if not a hash (e.g. already a public key)."
     (if (and contact-pubkey-or-hash
              (= (count contact-pubkey-or-hash) pn-pubkey-hash-length))
-      (if-let
-       [account-pubkey (hash->pubkey contact-pubkey-or-hash
-                                     (vals (:accounts/accounts db)))]
+      (if-let [account-pubkey (hash->pubkey contact-pubkey-or-hash
+                                            (-> db :accounts/accounts vals))]
         account-pubkey
         (if (accounts.db/logged-in? cofx)
           ;; TODO: for simplicity we're doing a linear lookup of the contacts,
@@ -143,6 +146,11 @@
      :to   (lookup-contact-pubkey-from-hash cofx to)
      ;; TODO: Rehydrate message id
      :id   id})
+
+  (defn- get-contact-name [{:keys [db] :as cofx} from]
+    (if (accounts.db/logged-in? cofx)
+      (:name (hash->contact from (-> db :contacts/contacts vals)))
+      (anonymize-pubkey from)))
 
   (defn- build-notification [{:keys [title body decoded-payload]}]
     (let [native-notification
@@ -209,7 +217,7 @@
                (vals (:chats db)))))
 
   (fx/defn handle-on-message
-    [{:keys [db] :as cofx} decoded-payload {:keys [force]}]
+    [{:keys [db now] :as cofx} decoded-payload {:keys [force]}]
     (let [view-id            (:view-id db)
           current-chat-id    (:current-chat-id db)
           app-state          (:app-state db)
@@ -218,17 +226,21 @@
       (log/debug "handle-on-message" "app-state:" app-state
                  "view-id:" view-id "current-chat-id:" current-chat-id
                  "from:" from "force:" force)
-      (when (or force
-                (and
-                 (not= app-state "active")
-                 (show-notification? cofx rehydrated-payload)))
-        {:db
-         (assoc-in db [:push-notifications/stored (:to rehydrated-payload)]
-                   (js/JSON.stringify (clj->js rehydrated-payload)))
-         :notifications/display-notification
-         {:title           (i18n/label :notifications-new-message-title)
-          :body            (i18n/label :notifications-new-message-body)
-          :decoded-payload rehydrated-payload}})))
+      (merge
+       (when (and (= (count from) pn-pubkey-length)
+                  (show-notification? cofx rehydrated-payload))
+         {:dispatch [:mailserver/fetch-history from (- (quot now 1000) pull-recent-messages-window)]})
+       (when (or force
+                 (and
+                  (not= app-state "active")
+                  (show-notification? cofx rehydrated-payload)))
+         {:db
+          (assoc-in db [:push-notifications/stored (:to rehydrated-payload)]
+                    (js/JSON.stringify (clj->js rehydrated-payload)))
+          :notifications/display-notification
+          {:title           (get-contact-name cofx from)
+           :body            (i18n/label :notifications-new-message-body)
+           :decoded-payload rehydrated-payload}}))))
 
   (fx/defn handle-push-notification-open
     [{:keys [db] :as cofx} decoded-payload {:keys [stored?] :as ctx}]

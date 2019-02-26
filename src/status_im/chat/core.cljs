@@ -4,7 +4,7 @@
 
 ;; Seen messages
 (fx/defn receive-seen
-  [{:keys [db js-obj]} chat-id sender {:keys [message-ids]}]
+  [{:keys [db js-obj dedup-id]} chat-id sender {:keys [message-ids]}]
   (when-let [seen-messages-ids (-> (get-in db [:chats chat-id :messages])
                                    (select-keys message-ids)
                                    keys)]
@@ -21,4 +21,4 @@
                               db
                               statuses)
        :data-store/tx [{:transaction (user-statuses-store/save-statuses-tx statuses)
-                        :success-event [:message/messages-persisted [js-obj]]}]})))
+                        :success-event [:message/messages-persisted [(or dedup-id js-obj)]]}]})))

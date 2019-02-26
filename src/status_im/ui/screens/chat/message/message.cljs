@@ -47,17 +47,21 @@
           (commands/generate-preview command (commands/add-chat-contacts contacts command-message))
           [react/text (str "Unhandled command: " (-> command-message :content :command-path first))])))))
 
-(defview message-timestamp [t justify-timestamp? outgoing command? content]
+(defview message-timestamp [t justify-timestamp? outgoing command? content content-type]
   (when-not command?
-    [react/text {:style (style/message-timestamp-text justify-timestamp? outgoing (:rtl? content))} t]))
+    [react/text {:style (style/message-timestamp-text
+                         justify-timestamp?
+                         outgoing
+                         (:rtl? content)
+                         (= content-type constants/content-type-emoji))} t]))
 
 (defn message-view
-  [{:keys [timestamp-str outgoing content] :as message} message-content {:keys [justify-timestamp?]}]
+  [{:keys [timestamp-str outgoing content content-type] :as message} message-content {:keys [justify-timestamp?]}]
   [react/view (style/message-view message)
    message-content
    [message-timestamp timestamp-str justify-timestamp? outgoing (or (get content :command-path)
                                                                     (get content :command-ref))
-    content]])
+    content content-type]])
 
 (defn timestamp-with-padding
   "We can't use CSS as nested Text element don't accept margins nor padding
@@ -70,9 +74,9 @@
   (letsubs [username [:contacts/contact-name-by-identity from]]
     [react/view {:style (style/quoted-message-container outgoing)}
      [react/view {:style style/quoted-message-author-container}
-      [vector-icons/icon :main-icons/reply {:color (if outgoing colors/wild-blue-yonder colors/gray)}]
-      [react/text {:style (style/quoted-message-author outgoing)}
-       (chat.utils/format-reply-author from username current-public-key)]]
+      [vector-icons/icon :tiny-icons/tiny-reply {:color (if outgoing colors/wild-blue-yonder colors/gray)}]
+      (chat.utils/format-reply-author from username current-public-key (partial style/quoted-message-author outgoing))]
+
      [react/text {:style           (style/quoted-message-text outgoing)
                   :number-of-lines 5}
       text]]))
@@ -140,7 +144,7 @@
 (defmethod message-content constants/content-type-sticker
   [wrapper {:keys [content] :as message}]
   [wrapper message
-   [react/image {:style {:margin 10 :width 100 :height 100}
+   [react/image {:style {:margin 10 :width 140 :height 140}
                  :source {:uri (:uri content)}}]])
 
 (defmethod message-content :default
@@ -241,8 +245,7 @@
 
 (defview message-author-name [from message-username]
   (letsubs [username [:contacts/contact-name-by-identity from]]
-    [react/text {:style style/message-author-name}
-     (chat.utils/format-author from (or username message-username))]))
+    (chat.utils/format-author from (or username message-username) style/message-author-name)))
 
 (defn message-body
   [{:keys [last-in-group?
@@ -264,7 +267,7 @@
     [react/view (style/group-message-view outgoing message-type)
      (when display-username?
        [message-author-name from username])
-     [react/view {:style (style/timestamp-content-wrapper message)}
+     [react/view {:style (style/timestamp-content-wrapper outgoing message-type)}
       content]]]
    [react/view (style/delivery-status outgoing)
     [message-delivery-status message]]])
@@ -272,7 +275,10 @@
 (defn chat-message [{:keys [message-id old-message-id outgoing group-chat modal? current-public-key content-type content] :as message}]
   [react/view
    [react/touchable-highlight {:on-press      (fn [_]
-                                                (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true}])
+                                                (when (= content-type constants/content-type-sticker)
+                                                  (re-frame/dispatch [:stickers/open-sticker-pack (:pack content)]))
+                                                (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
+                                                                                                :show-stickers? false}])
                                                 (react/dismiss-keyboard!))
                                :on-long-press #(when (= content-type constants/content-type-text)
                                                  (list-selection/chat-message message-id old-message-id (:text content) (i18n/label :t/message)))}

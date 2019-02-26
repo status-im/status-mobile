@@ -96,8 +96,8 @@
                   :add-contact
                   (contact/add-contact public-key)
 
-                  :add-contact-and-open-chat
-                  (contact/add-contact-and-open-chat public-key)))]
+                  :open-chat
+                  (contact/open-chat public-key)))]
              filters-fx-fns
              [(mailserver/process-next-messages-request)])))))
 
@@ -108,8 +108,9 @@
 
 (re-frame/reg-fx
  :shh/remove-filter
- (fn [{:keys [filter] :as params}]
-   (when filter (remove-filter! params))))
+ (fn [filters]
+   (doseq [{:keys [filter] :as params} filters]
+     (when filter (remove-filter! params)))))
 
 (re-frame/reg-fx
  :shh/remove-filters

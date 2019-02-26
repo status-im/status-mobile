@@ -25,20 +25,20 @@
 (deftype ContactRequestHandler []
   Object
   (tag [this v] "c2")
-  (rep [this {:keys [name profile-image address fcm-token]}]
-    #js [name profile-image address fcm-token]))
+  (rep [this {:keys [name profile-image address fcm-token device-info]}]
+    #js [name profile-image address fcm-token device-info]))
 
 (deftype ContactRequestConfirmedHandler []
   Object
   (tag [this v] "c3")
-  (rep [this {:keys [name profile-image address fcm-token]}]
-    #js [name profile-image address fcm-token]))
+  (rep [this {:keys [name profile-image address fcm-token device-info]}]
+    #js [name profile-image address fcm-token device-info]))
 
 (deftype ContactUpdateHandler []
   Object
   (tag [this v] "c6")
-  (rep [this {:keys [name profile-image address fcm-token]}]
-    #js [name profile-image address fcm-token]))
+  (rep [this {:keys [name profile-image address fcm-token device-info]}]
+    #js [name profile-image address fcm-token device-info]))
 
 ;; It's necessary to support old clients understanding only older, verbose command content (`release/0.9.25` and older)
 (defn- new->legacy-command-data [{:keys [command-path params] :as content}]
@@ -92,8 +92,8 @@
 (deftype PairInstallationHandler []
   Object
   (tag [this v] "p2")
-  (rep [this {:keys [name installation-id device-type]}]
-    #js [installation-id device-type name]))
+  (rep [this {:keys [name installation-id device-type fcm-token]}]
+    #js [installation-id device-type name fcm-token]))
 
 (def writer (transit/writer :json
                             {:handlers
@@ -139,10 +139,10 @@
 ;; Here we only need to call the record with the arguments parsed from the clojure datastructures
 (def reader (transit/reader :json
                             {:handlers
-                             {"c2" (fn [[name profile-image address fcm-token]]
-                                     (contact/ContactRequest. name profile-image address fcm-token))
-                              "c3" (fn [[name profile-image address fcm-token]]
-                                     (contact/ContactRequestConfirmed. name profile-image address fcm-token))
+                             {"c2" (fn [[name profile-image address fcm-token device-info]]
+                                     (contact/ContactRequest. name profile-image address fcm-token device-info))
+                              "c3" (fn [[name profile-image address fcm-token device-info]]
+                                     (contact/ContactRequestConfirmed. name profile-image address fcm-token device-info))
                               "c4" (fn [[legacy-content content-type message-type clock-value timestamp content]]
                                      (let [[new-content new-content-type] (legacy->new-message-data (or content legacy-content) content-type)]
                                        (protocol/Message. new-content new-content-type message-type clock-value timestamp)))
@@ -150,14 +150,14 @@
                                      (protocol/Message. content content-type message-type clock-value timestamp))
                               "c5" (fn [message-ids]
                                      (protocol/MessagesSeen. message-ids))
-                              "c6" (fn [[name profile-image address fcm-token]]
-                                     (contact/ContactUpdate. name profile-image address fcm-token))
+                              "c6" (fn [[name profile-image address fcm-token device-info]]
+                                     (contact/ContactUpdate. name profile-image address fcm-token device-info))
                               "g5" (fn [[chat-id membership-updates message]]
                                      (group-chat/GroupMembershipUpdate. chat-id membership-updates message))
                               "p1" (fn [[contacts account chat]]
                                      (pairing/SyncInstallation. contacts account chat))
-                              "p2" (fn [[installation-id device-type name]]
-                                     (pairing/PairInstallation. installation-id device-type name))}}))
+                              "p2" (fn [[installation-id device-type name fcm-token]]
+                                     (pairing/PairInstallation. installation-id device-type name fcm-token))}}))
 
 (defn serialize
   "Serializes a record implementing the StatusMessage protocol using the custom writers"

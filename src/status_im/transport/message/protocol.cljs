@@ -118,6 +118,7 @@
              :raw-payload-hash (transport.utils/sha3
                                 (.-payload (:js-obj cofx)))
              :from signature
+             :dedup-id (:dedup-id cofx)
              :js-obj (:js-obj cofx))]})
   (validate [this]
     (if (spec/valid? :message/message this)

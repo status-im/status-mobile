@@ -1,6 +1,7 @@
 (ns status-im.test.runner
   (:require [doo.runner :refer-macros [doo-tests]]
             [status-im.test.contacts.db]
+            [status-im.test.contacts.device-info]
             [status-im.test.data-store.chats]
             [status-im.test.data-store.core]
             [status-im.test.data-store.realm.core]
@@ -37,6 +38,7 @@
             [status-im.test.utils.utils]
             [status-im.test.utils.money]
             [status-im.test.utils.clocks]
+            [status-im.test.utils.ethereum.eip55]
             [status-im.test.utils.ethereum.eip681]
             [status-im.test.utils.ethereum.core]
             [status-im.test.utils.ethereum.abi-spec]
@@ -58,6 +60,7 @@
             [status-im.test.accounts.recover.core]
             [status-im.test.hardwallet.core]
             [status-im.test.contact-recovery.core]
+            [status-im.test.contact-code.core]
             [status-im.test.ui.screens.currency-settings.models]
             [status-im.test.ui.screens.wallet.db]
             [status-im.test.sign-in.flow]))
@@ -74,6 +77,7 @@
  'status-im.test.utils.async
  'status-im.test.chat.db
  'status-im.test.contacts.db
+ 'status-im.test.contacts.device-info
  'status-im.test.chat.models
  'status-im.test.init.core
  'status-im.test.data-store.chats
@@ -107,6 +111,7 @@
  'status-im.test.utils.utils
  'status-im.test.utils.money
  'status-im.test.utils.clocks
+ 'status-im.test.utils.ethereum.eip55
  'status-im.test.utils.ethereum.eip681
  'status-im.test.utils.ethereum.core
  'status-im.test.utils.ethereum.mnemonic
@@ -129,6 +134,7 @@
  'status-im.test.ui.screens.wallet.db
  'status-im.test.browser.core
  'status-im.test.contact-recovery.core
+ 'status-im.test.contact-code.core
  'status-im.test.extensions.ethereum
  'status-im.test.browser.permissions
  'status-im.test.sign-in.flow)

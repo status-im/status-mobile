@@ -16,7 +16,9 @@ fi
 set -euf
 
 # Ensure we start with a clean state, so as to e.g., not reuse old native status-go bindings 
-make clean
+if [ -z $DONT_CLEAN ] ; then
+  make clean
+fi
 
 for platform in "$@"; do
     case $platform in
@@ -75,7 +77,7 @@ for platform in "$@"; do
         target=$STATUS_REACT_HOME/modules/react-native-status/android/libs/status-im/status-go/local
         [ -d $target ] || mkdir -p $target
         # Copy over framework:
-        cp -R $STATUS_GO_HOME/build/bin/statusgo-android-16.aar $target/status-go-local.aar
+        cp -R $STATUS_GO_HOME/build/bin/statusgo.aar $target/status-go-local.aar
 
         # It might also be a good idea to print something custom so you can easily tell
         # the difference between an old and new version of status-go.
