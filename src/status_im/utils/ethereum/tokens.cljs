@@ -514,7 +514,11 @@
                    {:symbol   :KDO
                     :nft?     true
                     :name     "KudosToken"
-                    :address  "0x93bb0afbd0627bbd3a6c72bc318341d3a22e254a"}])
+                    :address  "0x93bb0afbd0627bbd3a6c72bc318341d3a22e254a"}
+                   {:symbol   :WIBB
+                    :name     "WIBB"
+                    :address  "0x7d4ccf6af2f0fdad48ee7958bcc28bdef7b732c7"
+                    :decimals 18}])
 
    :xdai
    (resolve-icons :xdai
