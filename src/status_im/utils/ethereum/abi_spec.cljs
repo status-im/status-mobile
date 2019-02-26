@@ -388,5 +388,6 @@
         (hex-to-value val type)))))
 
 (defn decode [bytes types]
-  (let [offsets (get-offsets types)]
-    (map (dec-type bytes) offsets types)))
+  (when-not (empty? bytes)
+    (let [offsets (get-offsets types)]
+      (map (dec-type bytes) offsets types))))
