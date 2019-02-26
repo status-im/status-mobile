@@ -158,3 +158,10 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
         recover_access_view.send_as_keyevent(capitalized_passphrase)
         if recover_access_view.passphrase_input.text != passphrase:
             self.driver.fail('Upper case was not replaced by lower case!')
+
+    @marks.testrail_id(5719)
+    @marks.medium
+    def test_special_characters_in_password_when_recover_account(self):
+        sign_in = SignInView(self.driver)
+        sign_in.recover_access(passphrase=basic_user['passphrase'], password=basic_user['special_chars_password'])
+        sign_in.relogin(password=basic_user['special_chars_password'])

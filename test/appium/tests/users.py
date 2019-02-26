@@ -4,6 +4,7 @@ basic_user['username'] = "Little Weighty Iberianmole"
 basic_user['public_key'] = "0x040d3400f0ba80b2f6017a9021a66e042abc33cf7051ddf98a24a815c93d6c052ce2b7873d799f096325" \
                            "9f41c5a1bf08133dd4f3fe63ea1cceaa1e86ebc4bc42c9"
 basic_user['address'] = "f184747445c3B85CEb147DfB136067CB93d95F1D"
+basic_user['special_chars_password'] = " !\"#$Á%Ö&'()*+Í, -./:ä;<=>?@[\\]^_`{|}~ "
 
 wallet_users = dict()
 
