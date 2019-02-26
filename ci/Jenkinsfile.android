@@ -3,7 +3,7 @@ pipeline {
     docker {
       label 'linux'
       /* WARNING: remember to keep this up-to-date with the value in docker/android/Makefile */
-      image 'statusteam/status-build-android:1.1.0-16a42e06'
+      image 'statusteam/status-build-android:1.1.1-cd1596b3'
       args (
         "-v /home/jenkins/tmp:/var/tmp:rw "+
         "-v /home/jenkins/status-im.keystore:/tmp/status-im.keystore:ro"

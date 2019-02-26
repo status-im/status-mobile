@@ -15,4 +15,5 @@ qtci;55ffd9f225708b3aa1443851cfa8dead2c1f9959;
 react_native_cli;2.0.1;
 react_native_desktop;v0.56.1_4;
 watchman;4.9.0;
+windows_base_image;20181113;2d1a92dbef85bab94d8f7e571a5e0d10
 yarn;1.13.0;

@@ -24,7 +24,8 @@ RUN mkdir /var/tmp/npm /var/tmp/lein \
  && curl -sL https://deb.nodesource.com/setup_10.x | bash - \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get -q -y --no-install-recommends install \
-      file jq git wget zip unzip s3cmd build-essential nodejs locales \
+      file autoconf automake libtool build-essential \
+      jq git wget zip unzip s3cmd nodejs locales \
       ca-certificates oracle-java8-installer oracle-java8-set-default \
  && locale-gen ${LANG} \
  && npm install -g yarn@${YARN_VERSION} \
@@ -32,10 +33,10 @@ RUN mkdir /var/tmp/npm /var/tmp/lein \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/man
 
 # These are the UID and GID values used by Jenkins
-RUN addgroup --gid 1002 jenkins \
+RUN addgroup --gid 1001 jenkins \
  && adduser --shell /bin/bash \
       --disabled-password --gecos "" \
-      --uid 1001 --gid 1002 jenkins \
+      --uid 1001 --gid 1001 jenkins \
  && su jenkins -c "git config --global user.email 'jenkins'" \
  && su jenkins -c "git config --global user.name 'jenkins@status.im'"
 
@@ -51,6 +52,8 @@ RUN su -l jenkins -c \
     . ${NVM_DIR}/nvm.sh && \
     nvm install ${NODE_VERSION} && \
     nvm alias default ${NODE_VERSION}"
+
+WORKDIR /home/jenkins
 
 LABEL source="https://github.com/status-im/status-react/tree/develop/docker/base" \
       description="Base Image used for building Status app." \

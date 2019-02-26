@@ -7,6 +7,7 @@ ARG CONAN_VERSION
 ARG CMAKE_VERSION
 ARG GOLANG_VERSION
 ARG NODE_VERSION
+ARG WIN_BASE_IMAGE_VERSION
 ENV PATH=/home/jenkins/.nvm/versions/node/v${NODE_VERSION}/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 RUN add-apt-repository -y ppa:git-core/ppa \
@@ -46,6 +47,9 @@ RUN mkdir -p /tmp/react-native-desktop \
  && npm install -g --prefix /usr/local \
  && cd \
  && rm -r /tmp/react-native-desktop
+
+ADD ./StatusIm-Windows-base-image_${WIN_BASE_IMAGE_VERSION}.zip /opt/StatusIm-Windows-base-image.zip
+ENV STATUSIM_WINDOWS_BASEIMAGE_ZIP=/opt/StatusIm-Windows-base-image.zip
 
 LABEL source="https://github.com/status-im/status-react/tree/develop/docker/windows" \
       description="Image for building Windows Desktop version of Status app." \

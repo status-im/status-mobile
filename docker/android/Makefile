@@ -23,7 +23,7 @@ DEPS_HASH = $(shell $(GIT_ROOT)/scripts/gen-deps-hash.sh -b $(BASE_IMAGE_TAG) \
 					-d android-sdk \
 					-d android-sdk-platform \
 					-d android-sdk-build-tools)
-IMAGE_TAG = 1.1.0-$(DEPS_HASH)
+IMAGE_TAG = 1.1.1-$(DEPS_HASH)
 IMAGE_NAME = statusteam/status-build-android:$(IMAGE_TAG)
 
 build: $(ANDROID_NDK_ARCHIVE) $(ANDROID_SDK_ARCHIVE)

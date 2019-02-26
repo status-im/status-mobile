@@ -12,7 +12,7 @@ QT_URL = https://download.qt.io/archive/qt
 # WARNING: Remember to update `ci/Jenkinsfile.*` with the same IMAGE_TAG value
 BASE_IMAGE_TAG = $(shell cd $(GIT_ROOT)/docker/base && make get-image-tag)
 DEPS_HASH = $(shell $(GIT_ROOT)/scripts/gen-deps-hash.sh -b $(BASE_IMAGE_TAG) -d cmake -d golang -d node -d qt -d qtci -d react_native_desktop)
-IMAGE_TAG = 1.1.0-$(DEPS_HASH)
+IMAGE_TAG = 1.1.1-$(DEPS_HASH)
 IMAGE_NAME = statusteam/status-build-linux:$(IMAGE_TAG)
 
 build: $(QT_ARCHIVE)

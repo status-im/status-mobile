@@ -4,13 +4,12 @@ pipeline {
     docker {
       label 'linux-new'
       /* WARNING: remember to keep this up-to-date with the value in docker/windows/Makefile */
-      image 'statusteam/status-build-windows:1.1.0-fb116054'
+      image 'statusteam/status-build-windows:1.1.1-67cf7368'
       args (
         "--privileged "+
         "-v /dev/fuse:/dev/fuse "+
         "-v /var/tmp/lein:/var/tmp/lein:rw "+
-        "-v /var/tmp/npm:/var/tmp/npm:rw "+
-        "-v /opt/StatusIm-Windows-base-image_20181113.zip:/opt/StatusIm-Windows-base-image.zip:ro"
+        "-v /var/tmp/npm:/var/tmp/npm:rw "
       )
     }
   }
@@ -50,7 +49,6 @@ pipeline {
     CONAN_PRINT_RUN_COMMANDS = '1'
     CONAN_SYSREQUIRES_MODE = 'disabled'
     CONAN_SYSREQUIRES_SUDO = '0'
-    STATUSIM_WINDOWS_BASEIMAGE_ZIP = '/opt/StatusIm-Windows-base-image.zip'
     VERBOSE_LEVEL = '3'
   }
 

@@ -2,9 +2,9 @@ pipeline {
   agent {
     /* privileged mode is necessary for fuse */
     docker {
-      label 'linux-new'
+      label 'linux'
       /* WARNING: remember to keep this up-to-date with the value in docker/linux/Makefile */
-      image 'statusteam/status-build-linux:1.1.0-2a35dcde'
+      image 'statusteam/status-build-linux:1.1.1-8e5f6658'
       args (
         "-v /var/tmp/lein:/var/tmp/lein:rw "+
         "-v /var/tmp/npm:/var/tmp/npm:rw "+
