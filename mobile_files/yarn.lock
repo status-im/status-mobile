@@ -6058,9 +6058,9 @@ react-native-tab-view@^1.0.0:
     ip-regex "^1.0.3"
     util "^0.10.3"
 
-"react-native-webview-bridge@git+https://github.com/status-im/react-native-webview-bridge.git#0.33.16-4":
+"react-native-webview-bridge@git+https://github.com/status-im/react-native-webview-bridge.git#v0.33.16-6":
   version "0.33.16"
-  resolved "git+https://github.com/status-im/react-native-webview-bridge.git#db39ab2719dd0e0d33324643820619f3e75960b4"
+  resolved "git+https://github.com/status-im/react-native-webview-bridge.git#4d9a7e7fd5319c3c2b494426c4ede3ac94135a87"
   dependencies:
     invariant "2.2.0"
     keymirror "0.1.1"
