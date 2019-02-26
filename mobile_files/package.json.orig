@@ -59,7 +59,7 @@
     "react-native-svg": "6.5.2",
     "react-native-tcp": "git+https://github.com/status-im/react-native-tcp.git#v3.3.0-1-status",
     "react-native-udp": "git+https://github.com/status-im/react-native-udp.git#2.3.1-1",
-    "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#0.33.16-4",
+    "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#v0.33.16-6",
     "react-navigation": "^2.12.1",
     "react-navigation-stack": "git+https://github.com/status-im/react-navigation-stack.git#0.7.0",
     "realm": "2.21.0",
