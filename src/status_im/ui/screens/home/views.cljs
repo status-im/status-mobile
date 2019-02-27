@@ -232,7 +232,6 @@
                            (not (:show? @search-input-state)))
                   {:on-start-should-set-responder-capture
                    (fn [event]
-                     (println :start)
                      (let [current-position (.-pageY (.-nativeEvent event))
                            current-timestamp (.-timestamp (.-nativeEvent event))]
                        (reset! previous-touch
