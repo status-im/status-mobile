@@ -434,6 +434,11 @@
  (fn [cofx [_ error]]
    (mailserver/handle-request-error cofx error)))
 
+(handlers/register-handler-fx
+ :mailserver.callback/request-success
+ (fn [cofx [_ request-id]]
+   (mailserver/handle-request-success cofx request-id)))
+
 ;; network module
 
 (handlers/register-handler-fx
