@@ -40,7 +40,6 @@ def uploadArtifact(filename) {
 /* MAIN --------------------------------------------------*/
 
 def prepDeps() {
-  cmn.doGitRebase()
   cleanupAndDeps()
 }
 
