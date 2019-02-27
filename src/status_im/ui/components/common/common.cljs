@@ -1,16 +1,13 @@
 (ns status-im.ui.components.common.common
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [reagent.core :as reagent]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.styles :as styles]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.utils.platform :as platform])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn top-shadow []
   (when platform/android?
@@ -66,7 +63,7 @@
   ([] (logo nil))
   ([{:keys [size icon-size shadow?] :or {shadow? true}}]
    [react/view {:style (styles/logo-container size shadow?)}
-    [icons/icon :icons/logo (styles/logo icon-size)]]))
+    [vector-icons/icon :icons/logo (styles/logo icon-size)]]))
 
 (defn bottom-button [{:keys [accessibility-label
                              label
@@ -79,14 +76,14 @@
   [react/touchable-highlight {:on-press on-press :disabled disabled?}
    [react/view (styles/bottom-button disabled?)
     (when back?
-      [icons/icon :main-icons/back {:color colors/blue
-                                    :container-style {:align-self :baseline}}])
+      [vector-icons/icon :main-icons/back {:color colors/blue
+                                           :container-style {:align-self :baseline}}])
     [react/text {:style      styles/bottom-button-label
                  :accessibility-label accessibility-label
                  :uppercase? uppercase?}
      (or label (i18n/label :t/next))]
     (when forward?
-      [icons/icon :main-icons/next {:color colors/blue}])]])
+      [vector-icons/icon :main-icons/next {:color colors/blue}])]])
 
 (defn button [{:keys [on-press label background? uppercase? button-style label-style] :or {background? true uppercase? true}}]
   [react/touchable-highlight {:on-press on-press}
