@@ -19,7 +19,7 @@
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.money :as money]
             [status-im.utils.types :as types]
-            [status-im.notifications.core :as notifications]
+            [status-im.models.notifications :as models.notifications]
             [status-im.transport.utils :as transport.utils]
             [status-im.transport.message.protocol :as protocol]
             [status-im.data-store.messages :as messages-store]
@@ -383,7 +383,7 @@
     (let [payload {:from (accounts.db/current-public-key cofx)
                    :to chat-id
                    :id message-id}]
-      {:send-notification {:data-payload (notifications/encode-notification-payload payload)
+      {:send-notification {:data-payload (notifications.models/encode-notification-payload payload)
                            :tokens       fcm-tokens}})))
 
 (fx/defn update-message-status [{:keys [db]} chat-id message-id status]

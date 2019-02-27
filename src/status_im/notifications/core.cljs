@@ -2,12 +2,13 @@
   (:require [goog.object :as object]
             [re-frame.core :as re-frame]
             [status-im.react-native.js-dependencies :as rn]
-            [status-im.js-dependencies :as dependencies]
             [taoensso.timbre :as log]
             [status-im.i18n :as i18n]
             [status-im.accounts.db :as accounts.db]
+            [status-im.accounts.login.core :as accounts.login]
             [status-im.contact.db :as contact.db]
             [status-im.chat.models :as chat-model]
+            [status-im.models.notifications :as models.notifications]
             [status-im.utils.platform :as platform]
             [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]))
@@ -15,9 +16,6 @@
 ;; Work in progress namespace responsible for push notifications and interacting
 ;; with Firebase Cloud Messaging.
 
-(def ^:private pn-message-id-hash-length 10)
-(def ^:private pn-pubkey-hash-length 10)
-(def ^:private pn-pubkey-length 132)
 (def ^:private pull-recent-messages-window (* 15 60))
 
 (when-not platform/desktop?
@@ -37,38 +35,6 @@
            (log/debug "notifications-denied")
            (re-frame/dispatch [:notifications.callback/request-notifications-permissions-denied {}]))))))
 
-(defn valid-notification-payload?
-  [{:keys [from to]}]
-  (and from to
-       (or
-        ;; is it full pubkey?
-        (and (= (.-length from) pn-pubkey-length)
-             (= (.-length to) pn-pubkey-length))
-        ;; partially deanonymized
-        (and (= (.-length from) pn-pubkey-hash-length)
-             (= (.-length to) pn-pubkey-length))
-        ;; or is it an anonymized pubkey hash (v2 payload)?
-        (and (= (.-length from) pn-pubkey-hash-length)
-             (= (.-length to) pn-pubkey-hash-length)))))
-
-(defn sha3 [s]
-  (.sha3 dependencies/Web3.prototype s))
-
-(defn anonymize-pubkey
-  [pubkey]
-  "Anonymize a public key, if needed, by hashing it and taking the first 4 bytes"
-  (if (= (count pubkey) pn-pubkey-hash-length)
-    pubkey
-    (apply str (take pn-pubkey-hash-length (sha3 pubkey)))))
-
-(defn encode-notification-payload
-  [{:keys [from to id] :as payload}]
-  (if (valid-notification-payload? payload)
-    {:msg-v2 (js/JSON.stringify #js {:from (anonymize-pubkey from)
-                                     :to   (anonymize-pubkey to)
-                                     :id   (apply str (take pn-message-id-hash-length id))})}
-    (throw (str "Invalid push notification payload" payload))))
-
 (when platform/desktop?
   (defn handle-initial-push-notification [] ())) ;; no-op
 
@@ -80,31 +46,22 @@
   (def group-id "im.status.ethereum.MESSAGE")
   (def icon "ic_stat_status_notification")
 
-  (defn- hash->contact [hash-or-pubkey accounts]
-    (let [hash (anonymize-pubkey hash-or-pubkey)]
-      (->> accounts
-           (filter #(= (anonymize-pubkey (:public-key %)) hash))
-           first)))
-
-  (defn- hash->pubkey [hash accounts]
-    (:public-key (hash->contact hash accounts)))
-
   (defn lookup-contact-pubkey-from-hash
     [{:keys [db] :as cofx} contact-pubkey-or-hash]
     "Tries to deanonymize a given contact pubkey hash by looking up the
     full pubkey (if db is unlocked) in :contacts/contacts.
     Returns original value if not a hash (e.g. already a public key)."
     (if (and contact-pubkey-or-hash
-             (= (count contact-pubkey-or-hash) pn-pubkey-hash-length))
-      (if-let [account-pubkey (hash->pubkey contact-pubkey-or-hash
-                                            (-> db :accounts/accounts vals))]
+             (= (count contact-pubkey-or-hash) models.notifications/pn-pubkey-hash-length))
+      (if-let [account-pubkey (models.notifications/hash->pubkey contact-pubkey-or-hash
+                                                                 (-> db :accounts/accounts vals))]
         account-pubkey
         (if (accounts.db/logged-in? cofx)
           ;; TODO: for simplicity we're doing a linear lookup of the contacts,
           ;; but we might want to build a map of hashed pubkeys to pubkeys
           ;; for this purpose
-          (hash->pubkey contact-pubkey-or-hash
-                        (contact.db/active (:contacts/contacts db)))
+          (models.notifications/hash->pubkey contact-pubkey-or-hash
+                                             (contact.db/active (:contacts/contacts db)))
           (do
             (log/warn "failed to lookup contact from hash, not logged in")
             contact-pubkey-or-hash)))
@@ -130,7 +87,7 @@
         (let [payload (if msg-v2-json
                         (parse-notification-v2-payload msg-v2-json)
                         (parse-notification-v1-payload (object/get data-js "msg")))]
-          (if (valid-notification-payload? payload)
+          (if (models.notifications/valid-notification-payload? payload)
             payload
             (log/warn "failed to retrieve notification payload from"
                       (js/JSON.stringify data-js))))
@@ -146,11 +103,6 @@
      :to   (lookup-contact-pubkey-from-hash cofx to)
      ;; TODO: Rehydrate message id
      :id   id})
-
-  (defn- get-contact-name [{:keys [db] :as cofx} from]
-    (if (accounts.db/logged-in? cofx)
-      (:name (hash->contact from (-> db :contacts/contacts vals)))
-      (anonymize-pubkey from)))
 
   (defn- build-notification [{:keys [title body decoded-payload]}]
     (let [native-notification
@@ -209,7 +161,7 @@
   (defn- show-notification?
     "Ignore push notifications from unknown contacts or removed chats"
     [{:keys [db] :as cofx} {:keys [from] :as rehydrated-payload}]
-    (and (valid-notification-payload? rehydrated-payload)
+    (and (models.notifications/valid-notification-payload? rehydrated-payload)
          (accounts.db/logged-in? cofx)
          (some #(= (:public-key %) from)
                (contact.db/active (:contacts/contacts db)))
@@ -227,18 +179,15 @@
                  "view-id:" view-id "current-chat-id:" current-chat-id
                  "from:" from "force:" force)
       (merge
-       (when (and (= (count from) pn-pubkey-length)
+       (when (and (= (count from) models.notifications/pn-pubkey-length)
                   (show-notification? cofx rehydrated-payload))
          {:dispatch [:mailserver/fetch-history from (- (quot now 1000) pull-recent-messages-window)]})
        (when (or force
                  (and
                   (not= app-state "active")
                   (show-notification? cofx rehydrated-payload)))
-         {:db
-          (assoc-in db [:push-notifications/stored (:to rehydrated-payload)]
-                    (js/JSON.stringify (clj->js rehydrated-payload)))
-          :notifications/display-notification
-          {:title           (get-contact-name cofx from)
+         {:notifications/display-notification
+          {:title           (models.notifications/get-contact-name cofx from)
            :body            (i18n/label :notifications-new-message-body)
            :decoded-payload rehydrated-payload}}))))
 
@@ -254,6 +203,7 @@
                  "rehydrated-payload:" rehydrated-payload "stored?:" stored?)
       (if (= to current-public-key)
         (fx/merge cofx
+                  (accounts.login/login)
                   {:db (update db :push-notifications/stored dissoc to)}
                   (chat-model/navigate-to-chat from nav-opts))
         {:db (assoc-in db [:push-notifications/stored to]
@@ -339,7 +289,7 @@
             current-address        (:address current-account)
             current-account-pubkey (:public-key current-account)
             stored-pn-val-json     (or (get stored-pns current-account-pubkey)
-                                       (get stored-pns (anonymize-pubkey current-account-pubkey)))
+                                       (get stored-pns (models.notifications/anonymize-pubkey current-account-pubkey)))
             stored-pn-payload      (if (= (first stored-pn-val-json) \{)
                                      (js->clj (js/JSON.parse stored-pn-val-json) :keywordize-keys true)
                                      {:from stored-pn-val-json
