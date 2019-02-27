@@ -191,9 +191,6 @@
   {:opacity opacity
    :flex    1})
 
-(def empty-chat-container-one-to-one
-  {:margin-top 10})
-
 (def empty-chat-container
   {:flex             1
    :flex-direction   :column
@@ -202,17 +199,53 @@
    :padding-vertical 50
    :margin-right     6})
 
-(def empty-chat-text
-  {:color      colors/gray
-   :width      280
-   :text-align :center})
+(defn intro-header-container
+  [height status no-messages]
+  (let [adjusted-height (if (< height 280) 324 height)]
+    (if (or no-messages (= status (or :loading :empty)))
+      {:flex               1
+       :flex-direction     :column
+       :justify-content    :center
+       :align-items        :center
+       :height             adjusted-height
+       :padding-horizontal 32}
+      {:flex               1
+       :flex-direction     :column
+       :justify-content    :center
+       :align-items        :center
+       :padding-horizontal 32})))
 
-(def empty-chat-text-name
-  {:margin-bottom 5})
+(defn intro-header-icon [diameter color]
+  {:width            diameter
+   :height           diameter
+   :align-items      :center
+   :justify-content  :center
+   :border-radius    (/ diameter 2)
+   :background-color color})
 
-(def join-button
-  {:margin-top    24
-   :margin-bottom 15})
+(def intro-header-icon-text
+  {:color       colors/white
+   :font-size   52
+   :font-weight "700"
+   :opacity     0.8
+   :line-height 72})
+
+(def intro-header-chat-name
+  {:font-size     22
+   :font-weight   "700"
+   :line-height   28
+   :margin-bottom 8
+   :color         colors/black})
+
+(def intro-header-description-container
+  {:flex-wrap      :wrap
+   :align-items    :flex-start
+   :flex-direction :row})
+
+(def intro-header-description
+  {:color         colors/gray
+   :line-height   22
+   :text-align    :center})
 
 (def group-chat-icon
   {:color       colors/white
@@ -220,18 +253,20 @@
    :font-weight "700"})
 
 (def group-chat-join-footer
-  {:position        :absolute
-   :justify-content :center
-   :margin-bottom   30
-   :bottom          0})
-
-(def group-chat-join-name
-  {:typography :header})
+  {:flex            1
+   :justify-content :center})
 
 (def group-chat-join-container
   {:flex            1
    :align-items     :center
    :justify-content :center})
 
+(def group-chat-join-name
+  {:typography :header})
+
+(def join-button
+  {:margin-bottom 15})
+
 (def decline-chat
-  {:color colors/blue})
+  {:color colors/blue
+   :margin-bottom 40})

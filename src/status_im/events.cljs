@@ -730,6 +730,11 @@
    {:db (chat/set-chat-ui-props db kvs)}))
 
 (handlers/register-handler-fx
+ :chat.ui/join-time-messages-checked
+ (fn [{:keys [db]} [_ chat-id]]
+   {:db (chat/join-time-messages-checked db chat-id)}))
+
+(handlers/register-handler-fx
  :chat.ui/show-message-details
  (fn [{:keys [db]} [_ details]]
    {:db (chat/set-chat-ui-props db {:show-bottom-info? true

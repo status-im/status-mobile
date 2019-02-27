@@ -56,6 +56,22 @@
   [{:keys [current-chat-id] :as db} ui-element]
   (update-in db [:chat-ui-props current-chat-id ui-element] not))
 
+(defn join-time-messages-checked
+  "The key :might-have-join-time-messages? in public chats signals that
+  the public chat is freshly (re)created and requests for messages to the
+  mailserver for the topic has not completed yet. Likewise, the key
+  :join-time-mail-request-id is associated a little bit after, to signal that
+  the request to mailserver was a success. When request is signalled complete
+  by mailserver, corresponding event :chat.ui/join-time-messages-checked
+  dissociates these two fileds via this function, thereby signalling that the
+  public chat is not fresh anymore."
+  [{:keys [chats] :as db} chat-id]
+  (if (:might-have-join-time-messages? (get chats chat-id))
+    (-> db
+        (update-in [:chats chat-id] dissoc :join-time-mail-request-id)
+        (update-in [:chats chat-id] dissoc :might-have-join-time-messages?))
+    db))
+
 (defn- create-new-chat
   [chat-id {:keys [db now]}]
   (let [name (get-in db [:contacts/contacts chat-id :name])]
@@ -84,14 +100,15 @@
   "Adds new public group chat to db & realm"
   [cofx topic]
   (upsert-chat cofx
-               {:chat-id                      topic
-                :is-active                    true
-                :name                         topic
-                :group-chat                   true
-                :contacts                     #{}
-                :public?                      true
-                :unviewed-messages-count      0
-                :loaded-unviewed-messages-ids #{}}))
+               {:chat-id                        topic
+                :is-active                      true
+                :name                           topic
+                :group-chat                     true
+                :contacts                       #{}
+                :public?                        true
+                :might-have-join-time-messages? true
+                :unviewed-messages-count        0
+                :loaded-unviewed-messages-ids   #{}}))
 
 (fx/defn add-group-chat
   "Adds new private group chat to db & realm"

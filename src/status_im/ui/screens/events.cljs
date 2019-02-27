@@ -121,6 +121,12 @@
    {:db (assoc db k v)}))
 
 (handlers/register-handler-fx
+ :set-once
+ (fn [{:keys [db]} [_ k v]]
+   (when-not (get db k)
+     {:db (assoc db k v)})))
+
+(handlers/register-handler-fx
  :set-in
  (fn [{:keys [db]} [_ path v]]
    {:db (assoc-in db path v)}))

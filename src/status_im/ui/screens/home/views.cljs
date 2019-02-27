@@ -118,7 +118,11 @@
                               (when loading? (utils/set-timeout #(re-frame/dispatch [:init-rest-of-chats]) 100))))}
     [react/view {:flex 1}
      [status-bar/status-bar {:type :main}]
-     [react/keyboard-avoiding-view {:style {:flex 1}}
+     [react/keyboard-avoiding-view {:style     {:flex 1}
+                                    :on-layout (fn [e]
+                                                 (re-frame/dispatch
+                                                  [:set-once :content-layout-height
+                                                   (-> e .-nativeEvent .-layout .-height)]))}
       [toolbar/toolbar nil nil [toolbar/content-title (i18n/label :t/chat)]]
       [les-debug-info]
       (cond loading?

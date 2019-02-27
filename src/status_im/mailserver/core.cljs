@@ -277,9 +277,26 @@
     (log/debug "Adjusting mailserver request" "from:" from "adjusted-from:" adjusted-from)
     adjusted-from))
 
-(fx/defn handle-request-success [{:keys [db]} {:keys [request-id]}]
+(defn chats->never-synced-public-chats [chats]
+  (into {} (filter (fn [[k v]] (:might-have-join-time-messages? v)) chats)))
+
+(fx/defn handle-request-success [{{:keys [chats] :as db} :db}
+                                 {:keys [request-id topics]}]
   (when (:mailserver/current-request db)
-    {:db (assoc-in db [:mailserver/current-request :request-id] request-id)}))
+    (let [by-topic-never-synced-chats        (reduce-kv
+                                              #(assoc %1 (transport.utils/get-topic %2) %3)
+                                              {}
+                                              (chats->never-synced-public-chats chats))
+          never-synced-chats-in-this-request (select-keys by-topic-never-synced-chats (vec topics))]
+      (if (seq never-synced-chats-in-this-request)
+        {:db (-> db
+                 ((fn [db] (reduce
+                            (fn [db chat]
+                              (assoc-in db [:chats (:chat-id chat) :join-time-mail-request-id] request-id))
+                            db
+                            (vals never-synced-chats-in-this-request))))
+                 (assoc-in [:mailserver/current-request :request-id] request-id))}
+        {:db (assoc-in db [:mailserver/current-request :request-id] request-id)}))))
 
 (defn request-messages! [web3 {:keys [sym-key-id address]} {:keys [topics cursor to from] :as request}]
   ;; Add some room to from, unless we break day boundaries so that messages that have
@@ -304,7 +321,7 @@
                         (if-not error
                           (do
                             (log/info "mailserver: messages request success for topic " topics "from" from "to" to)
-                            (re-frame/dispatch [:mailserver.callback/request-success {:request-id request-id}]))
+                            (re-frame/dispatch [:mailserver.callback/request-success {:request-id request-id :topics topics}]))
                           (do
                             (log/error "mailserver: messages request error for topic " topics ": " error)
                             (utils/set-timeout #(re-frame/dispatch [:mailserver.callback/resend-request {:request-id nil}])
@@ -521,22 +538,47 @@
 (fx/defn handle-request-error
   [{:keys [db]} error]
   {:db (-> db
-           (assoc :mailserver/request-error error)
+           (assoc  :mailserver/request-error error)
            (dissoc :mailserver/current-request
                    :mailserver/pending-requests))})
 
 (fx/defn handle-request-completed
-  [cofx event]
+  [{{:keys [chats] :as db} :db :as cofx}
+   {:keys [requestID lastEnvelopeHash cursor errorMessage] :as event}]
   (when (accounts.db/logged-in? cofx)
-    (let [error (:errorMessage event)]
-      (if (empty? error)
-        (fx/merge
-         cofx
-         {:mailserver/increase-limit []}
-         (update-mailserver-topics {:request-id (:requestID event)
-                                    :cursor     (:cursor event)}))
-
-        (handle-request-error cofx error)))))
+    (if (empty? errorMessage)
+      (let [never-synced-chats-in-request
+            (->> (chats->never-synced-public-chats chats)
+                 (filter (fn [[k v]] (= requestID (:join-time-mail-request-id v))))
+                 keys)]
+        (if (seq never-synced-chats-in-request)
+          (if (= lastEnvelopeHash
+                 "0x0000000000000000000000000000000000000000000000000000000000000000")
+            (fx/merge
+             cofx
+             {:mailserver/increase-limit []
+              :dispatch-n                (map
+                                          #(identity [:chat.ui/join-time-messages-checked %])
+                                          never-synced-chats-in-request)}
+             (update-mailserver-topics {:request-id requestID
+                                        :cursor     cursor}))
+            (fx/merge
+             cofx
+             {:mailserver/increase-limit []
+              :dispatch-later            (vec
+                                          (map
+                                           #(identity
+                                             {:ms       1000
+                                              :dispatch [:chat.ui/join-time-messages-checked %]})
+                                           never-synced-chats-in-request))}
+             (update-mailserver-topics {:request-id requestID
+                                        :cursor     cursor})))
+          (fx/merge
+           cofx
+           {:mailserver/increase-limit []}
+           (update-mailserver-topics {:request-id requestID
+                                      :cursor     cursor}))))
+      (handle-request-error cofx errorMessage))))
 
 (fx/defn show-request-error-popup
   [{:keys [db]}]

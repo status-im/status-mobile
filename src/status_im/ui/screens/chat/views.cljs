@@ -44,26 +44,25 @@
   (list-selection/show {:title   chat-name
                         :options (actions/actions group-chat? chat-id public?)}))
 
-(defview chat-toolbar [public? modal?]
-  (letsubs [{:keys [chat-name group-chat chat-id contact]} [:chats/current-chat]]
-    [react/view
-     [status-bar/status-bar (when modal? {:type :modal-white})]
-     [toolbar/toolbar
-      {:chat? true}
-      (if modal?
-        [toolbar/nav-button
-         (toolbar.actions/close toolbar.actions/default-handler)]
-        toolbar/nav-back-home)
-      [toolbar-content/toolbar-content-view]
-      (when-not modal?
-        [toolbar/actions [{:icon      :main-icons/more
-                           :icon-opts {:color               :black
-                                       :accessibility-label :chat-menu-button}
-                           :handler   #(on-options chat-id chat-name group-chat public?)}]])]
-     [connectivity/connectivity-view]
-     (when (and (not group-chat)
-                (not (contact.db/added? contact)))
-       [add-contact-bar chat-id])]))
+(defn chat-toolbar [{:keys [chat-name group-chat chat-id contact]} public? modal?]
+  [react/view
+   [status-bar/status-bar (when modal? {:type :modal-white})]
+   [toolbar/toolbar
+    {:chat? true}
+    (if modal?
+      [toolbar/nav-button
+       (toolbar.actions/close toolbar.actions/default-handler)]
+      toolbar/nav-back-home)
+    [toolbar-content/toolbar-content-view]
+    (when-not modal?
+      [toolbar/actions [{:icon      :main-icons/more
+                         :icon-opts {:color               :black
+                                     :accessibility-label :chat-menu-button}
+                         :handler   #(on-options chat-id chat-name group-chat public?)}]])]
+   [connectivity/connectivity-view]
+   (when (and (not group-chat)
+              (not (contact.db/added? contact)))
+     [add-contact-bar chat-id])])
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))
 
@@ -101,22 +100,6 @@
       [react/animated-view {:style (style/message-view-animated opacity)}
        message-view]]]))
 
-(defn empty-chat-container
-  []
-  [react/view style/empty-chat-container
-   [react/text {:style style/empty-chat-text}
-    (i18n/label :t/empty-chat-description)]])
-
-(defn empty-chat-container-one-to-one
-  [contact-name]
-  [react/view style/empty-chat-container
-   [vector-icons/icon :tiny-icons/tiny-lock]
-   [react/nested-text {:style style/empty-chat-text}
-    [{:style style/empty-chat-container-one-to-one}
-     (i18n/label :t/empty-chat-description-one-to-one)]
-    [{:style style/empty-chat-text-name}
-     contact-name]]])
-
 (defn join-chat-button [chat-id]
   [buttons/secondary-button {:style style/join-button
                              :on-press #(re-frame/dispatch [:group-chats.ui/join-pressed chat-id])}
@@ -129,6 +112,14 @@
    [react/text {:style style/decline-chat}
     (i18n/label :t/group-chat-decline-invitation)]])
 
+(defn group-chat-footer
+  [chat-id]
+  [react/view {:style style/group-chat-join-footer}
+   [react/view {:style style/group-chat-join-container}
+    [join-chat-button chat-id]
+    [decline-chat chat-id]]])
+
+;; TODO this is now used only in Desktop - unnecessary for mobile
 (defn group-chat-join-section
   [inviter-name {:keys [name group-chat color chat-id]}]
   [react/view style/empty-chat-container
@@ -138,15 +129,95 @@
     [react/view {:style style/group-chat-join-container}
      [react/view
       [react/text {:style style/group-chat-join-name} name]]
-     [react/text {:style style/empty-chat-text}
-      [react/text style/empty-chat-container-one-to-one
-       (i18n/label :t/join-group-chat-description {:username inviter-name
-                                                   :group-name name})]]
+     [react/text {:style style/intro-header-description}
+      (i18n/label :t/join-group-chat-description {:username inviter-name
+                                                  :group-name name})]
      [join-chat-button chat-id]
      [decline-chat chat-id]]]])
 
+;; TODO refactor this big view into chunks
+(defview chat-intro-header-container
+  [{:keys [group-chat name pending-invite-inviter-name
+           inviter-name color chat-id chat-name public?
+           universal-link]} no-messages]
+  (letsubs [intro-status [:chats/current-chat-intro-status]
+            height       [:chats/content-layout-height]
+            input-height [:chats/current-chat-ui-prop :input-height]]
+    (let [icon-text  (if public? chat-id name)
+          intro-name (if public? chat-name name)]
+      ;; TODO This when check ought to be unnecessary but for now it prevents
+      ;; jerky motion when fresh chat is created, when input-height can be null
+      ;; affecting the calculation of content-layout-height to be briefly adjusted
+      (when (or input-height pending-invite-inviter-name)
+        [react/touchable-without-feedback
+         {:style    {:flex        1
+                     :align-items :flex-start}
+          :on-press (fn [_]
+                      (re-frame/dispatch
+                       [:chat.ui/set-chat-ui-props {:messages-focused? true
+                                                    :show-stickers?    false}])
+                      (react/dismiss-keyboard!))}
+         [react/view
+          (style/intro-header-container height intro-status no-messages)
+          ;; Icon section
+          [react/view {:style {:margin-top    42
+                               :margin-bottom 24}}
+           [chat-icon.screen/chat-intro-icon-view
+            icon-text chat-id
+            {:default-chat-icon      (style/intro-header-icon 120 color)
+             :default-chat-icon-text style/intro-header-icon-text
+             :size                   120}]]
+          ;; Chat title section
+          [react/text {:style style/intro-header-chat-name} intro-name]
+          ;; Description section
+          (if group-chat
+            (cond
+              (= intro-status :loading)
+              [react/view {:style (merge style/intro-header-description-container
+                                         {:margin-bottom 36
+                                          :height        44})}
+               [react/text {:style style/intro-header-description}
+                (i18n/label :t/loading)]
+               [react/activity-indicator {:animating true
+                                          :size      :small
+                                          :color     colors/gray}]]
+
+              (= intro-status :empty)
+              (when public?
+                [react/nested-text {:style (merge style/intro-header-description
+                                                  {:margin-bottom 36})}
+                 (i18n/label :t/empty-chat-description-public)
+                 [{:style    {:color colors/blue}
+                   :on-press #(list-selection/open-share
+                               {:message
+                                (i18n/label
+                                 :t/share-public-chat-text {:link universal-link})})}
+                  (i18n/label :t/empty-chat-description-public-share-this)]])
+
+              (= intro-status :messages)
+              (when (not public?)
+                (if pending-invite-inviter-name
+                  [react/nested-text {:style style/intro-header-description}
+                   [{:style {:color :black}} pending-invite-inviter-name]
+                   (i18n/label :t/join-group-chat-description
+                               {:username   ""
+                                :group-name intro-name})]
+                  (if (not= inviter-name "Unknown")
+                    [react/nested-text {:style style/intro-header-description}
+                     (i18n/label :t/joined-group-chat-description
+                                 {:username   ""
+                                  :group-name intro-name})
+                     [{:style {:color :black}} inviter-name]]
+                    [react/text {:style style/intro-header-description}
+                     (i18n/label :t/created-group-chat-description
+                                 {:group-name intro-name})]))))
+            [react/nested-text {:style (merge style/intro-header-description
+                                              {:margin-bottom 36})}
+             (i18n/label :t/empty-chat-description-one-to-one)
+             [{} intro-name]])]]))))
+
 (defview messages-view
-  [{:keys [group-chat name pending-invite-inviter-name messages-initialized?] :as chat}
+  [{:keys [group-chat chat-id pending-invite-inviter-name] :as chat}
    modal?]
   (letsubs [messages           [:chats/current-chat-messages-stream]
             current-public-key [:account/public-key]]
@@ -157,63 +228,63 @@
        (re-frame/dispatch [:chat.ui/set-chat-ui-props
                            {:messages-focused? true
                             :input-focused?    false}]))}
-    (cond
-      pending-invite-inviter-name
-      [group-chat-join-section pending-invite-inviter-name chat]
-
-      (and (empty? messages)
-           messages-initialized?)
-      (if group-chat
-        [empty-chat-container]
-        [empty-chat-container-one-to-one name])
-
-      :else
-      [list/flat-list {:data                      messages
-                       :key-fn                    #(or (:message-id %) (:value %))
-                       :render-fn                 (fn [message]
-                                                    [message-row {:group-chat         group-chat
-                                                                  :modal?             modal?
-                                                                  :current-public-key current-public-key
-                                                                  :row                message}])
-                       :inverted                  true
-                       :onEndReached              #(re-frame/dispatch [:chat.ui/load-more-messages])
-                       :enableEmptySections       true
-                       :keyboardShouldPersistTaps :handled}])))
-
-(defview messages-view-wrapper [modal?]
-  (letsubs [chat               [:chats/current-chat]]
-    [messages-view chat modal?]))
+    (let [no-messages (empty? messages)
+          flat-list-conf
+          {:data                      messages
+           :footer                    [chat-intro-header-container chat no-messages]
+           :key-fn                    #(or (:message-id %) (:value %))
+           :render-fn                 (fn [message]
+                                        [message-row
+                                         {:group-chat         group-chat
+                                          :modal?             modal?
+                                          :current-public-key current-public-key
+                                          :row                message}])
+           :inverted                  true
+           :onEndReached              #(re-frame/dispatch
+                                        [:chat.ui/load-more-messages])
+           :enableEmptySections       true
+           :keyboardShouldPersistTaps :handled}
+          group-header {:header [group-chat-footer chat-id]}]
+      (if pending-invite-inviter-name
+        [list/flat-list (merge flat-list-conf group-header)]
+        [list/flat-list flat-list-conf]))))
 
 (defn show-input-container? [my-public-key current-chat]
   (or (not (models.chat/group-chat? current-chat))
       (group-chats.db/joined? my-public-key current-chat)))
 
 (defview chat-root [modal?]
-  (letsubs [{:keys [public?] :as current-chat} [:chats/current-chat]
-            my-public-key                      [:account/public-key]
-            show-bottom-info?                  [:chats/current-chat-ui-prop :show-bottom-info?]
-            show-message-options?              [:chats/current-chat-ui-prop :show-message-options?]
-            show-stickers?                     [:chats/current-chat-ui-prop :show-stickers?]]
-    ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
-    ;; more details here: https://github.com/facebook/react-native/issues/11071
-    [react/scroll-view {:scroll-enabled               false
-                        :style                        style/scroll-root
-                        :content-container-style      style/scroll-root
-                        :keyboard-should-persist-taps :handled}
-     [react/view {:style     style/chat-view
-                  :on-layout (fn [e]
-                               (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
-      [chat-toolbar public? modal?]
-      [messages-view-animation
-       [messages-view-wrapper modal?]]
-      (when (show-input-container? my-public-key current-chat)
-        [input/container])
-      (when show-stickers?
-        [stickers/stickers-view])
-      (when show-bottom-info?
-        [bottom-info/bottom-info-view])
-      (when show-message-options?
-        [message-options/view])]]))
+  (letsubs [{:keys [public? chat-id] :as current-chat} [:chats/current-chat]
+            current-chat-id                            [:chats/current-chat-id]
+            my-public-key                              [:account/public-key]
+            show-bottom-info?                          [:chats/current-chat-ui-prop :show-bottom-info?]
+            show-message-options?                      [:chats/current-chat-ui-prop :show-message-options?]
+            show-stickers?                             [:chats/current-chat-ui-prop :show-stickers?]]
+    ;; this check of current-chat-id is necessary only because in a fresh public chat creation sometimes
+    ;; this component renders before current-chat-id is set to current chat-id. Hence further down in sub
+    ;; components (e.g. chat-toolbar) there can be a brief visual inconsistancy like showing 'add contact'
+    ;; in public chat
+    (when (= chat-id current-chat-id)
+      ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
+      ;; more details here: https://github.com/facebook/react-native/issues/11071
+      [react/scroll-view {:scroll-enabled               false
+                          :style                        style/scroll-root
+                          :content-container-style      style/scroll-root
+                          :keyboard-should-persist-taps :handled}
+       [react/view {:style     style/chat-view
+                    :on-layout (fn [e]
+                                 (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
+        [chat-toolbar current-chat public? modal?]
+        [messages-view-animation
+         [messages-view current-chat modal?]]
+        (when (show-input-container? my-public-key current-chat)
+          [input/container])
+        (when show-stickers?
+          [stickers/stickers-view])
+        (when show-bottom-info?
+          [bottom-info/bottom-info-view])
+        (when show-message-options?
+          [message-options/view])]])))
 
 (defview chat []
   [chat-root false])

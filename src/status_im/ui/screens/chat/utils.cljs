@@ -47,7 +47,7 @@
                                                  colors/blue
                                                  (if outgoing colors/white colors/blue))
                          :text-decoration-line :underline}
-              :on-press #(re-frame/dispatch [:chat.ui/start-public-chat (subs text 1)])})})
+              :on-press #(re-frame/dispatch [:chat.ui/start-public-chat (subs text 1) {:navigation-reset? true}])})})
 
 (defn- lookup-props [text-chunk message kind]
   (let [prop    (get styling->prop kind)
