@@ -198,7 +198,8 @@
             my-public-key                      [:account/public-key]
             show-bottom-info?                  [:chats/current-chat-ui-prop :show-bottom-info?]
             show-message-options?              [:chats/current-chat-ui-prop :show-message-options?]
-            show-stickers?                     [:chats/current-chat-ui-prop :show-stickers?]]
+            show-stickers?                     [:chats/current-chat-ui-prop :show-stickers?]
+            current-view                       [:get :view-id]]
     ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
     ;; more details here: https://github.com/facebook/react-native/issues/11071
     [react/scroll-view {:scroll-enabled               false
@@ -209,8 +210,10 @@
                   :on-layout (fn [e]
                                (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
       [chat-toolbar public? modal?]
-      [messages-view-animation
-       [messages-view-wrapper modal?]]
+      (if (or (= :chat current-view) modal?)
+        [messages-view-animation
+         [messages-view-wrapper modal?]]
+        [react/view style/message-view-preview])
       (when (show-input-container? my-public-key current-chat)
         [input/container])
       (when show-stickers?
