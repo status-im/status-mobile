@@ -89,6 +89,8 @@ prepare-ios: $(STATUS_GO_IOS_ARCH) ##@prepare Install and prepare iOS-specific d
 	yarn install --frozen-lockfile
 	unzip -q -o "$(STATUS_GO_IOS_ARCH)" -d "$(RCTSTATUS_DIR)"
 ifeq ($(OS),Darwin)
+	# CocoaPods are trash and can't handle other pod instances running at the same time
+	./scripts/wait-for.sh pod 240
 	cd ios && pod install
 endif
 
