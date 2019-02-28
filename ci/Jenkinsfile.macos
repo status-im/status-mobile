@@ -45,6 +45,7 @@ pipeline {
           /* Read the valid NodeJS version */
           env.NODE_VERSION = cmn.utils.getToolVersion('node')
           /* Cleanup and Prep */
+          cmn.prepNixEnvironment()
           nvm(env.NODE_VERSION) {
             desktop.prepDeps()
           }
@@ -53,12 +54,12 @@ pipeline {
     }
     stage('Lint') {
       steps { nvm(env.NODE_VERSION) {
-        sh 'lein cljfmt check'
+        script { cmn.utils.nix_sh('lein cljfmt check') }
       } }
     }
     stage('Tests') {
       steps { nvm(env.NODE_VERSION) {
-        sh 'lein test-cljs'
+        script { cmn.utils.nix_sh('lein test-cljs') }
       } }
     }
     stage('Build') {
@@ -72,9 +73,9 @@ pipeline {
       }
     }
     stage('Bundle') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {
         script { dmg = desktop.bundleMacOS(btype) }
-      } }
+      }
     }
     stage('Archive') {
       steps {

@@ -1,7 +1,7 @@
 utils = load('ci/utils.groovy')
 
 def plutil(name, value) {
-  sh "plutil -replace ${name} -string ${value} ios/StatusIm/Info.plist"
+  utils.nix_sh "plutil -replace ${name} -string ${value} ios/StatusIm/Info.plist"
 }
 
 def bundle(type) {
@@ -51,7 +51,7 @@ def uploadToDiawi() {
   withCredentials([
     string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
   ]) {
-    sh 'bundle exec fastlane ios upload_diawi'
+    utils.nix_sh 'bundle exec fastlane ios upload_diawi'
   }
   diawiUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
   return diawiUrl
@@ -68,7 +68,7 @@ def uploadToSauceLabs() {
     string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
     string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
   ]) {
-    sh 'bundle exec fastlane ios saucelabs'
+    utils.nix_sh 'bundle exec fastlane ios saucelabs'
   }
   return env.SAUCE_LABS_NAME
 }

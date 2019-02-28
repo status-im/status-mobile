@@ -42,4 +42,14 @@ def notifyPR(success) {
   }
 }
 
+def prepNixEnvironment() {
+  if (env.TARGET_PLATFORM == 'linux' || env.TARGET_PLATFORM == 'windows' || env.TARGET_PLATFORM == 'android') {
+    def glibcLocales = sh(
+      returnStdout: true,
+      script: ". ~/.nix-profile/etc/profile.d/nix.sh && nix-build --no-out-link '<nixpkgs>' -A glibcLocales"
+    ).trim()
+    env.LOCALE_ARCHIVE_2_27 = "${glibcLocales}/lib/locale/locale-archive"
+  }
+}
+
 return this
