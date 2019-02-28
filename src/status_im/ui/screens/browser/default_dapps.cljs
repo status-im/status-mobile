@@ -47,7 +47,11 @@
             {:name        "slow.trade"
              :dapp-url    "https://slow.trade/"
              :photo-path  "contacts://slowtrade"
-             :description "Trade fairly priced crypto assets on the first platform built with the DutchX protocol."}]}
+             :description "Trade fairly priced crypto assets on the first platform built with the DutchX protocol."}
+            {:name        "Uniswap"
+             :dapp-url    "https://uniswap.exchange/"
+             :photo-path  "contacts://uniswap"
+             :description "The Uniswap protocol provides an interface for seamless exchange of ERC20 tokens, and a formalized model for pooling liquidity reserves."}]}
    {:title (i18n/label :t/default-dapps-marketplaces)
     :data  [{:name        "blockimmo"
              :dapp-url    "https://blockimmo.ch"
