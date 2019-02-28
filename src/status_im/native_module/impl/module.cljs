@@ -100,9 +100,17 @@
   (when (and @node-started status)
     (.signMessage status rpcParams callback)))
 
+(defn hash-transaction [rpcParams callback]
+  (when (and @node-started status)
+    (.hashTransaction status rpcParams callback)))
+
 (defn send-transaction [rpcParams password callback]
   (when (and @node-started status)
     (.sendTransaction status rpcParams password callback)))
+
+(defn send-transaction-with-signature [rpcParams sig callback]
+  (when (and @node-started status)
+    (.sendTransactionWithSignature status rpcParams sig callback)))
 
 (defn close-application []
   (.closeApplication status))

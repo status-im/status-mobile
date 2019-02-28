@@ -52,6 +52,12 @@
 (defn send-transaction [rpcParams password callback]
   (native-module/send-transaction rpcParams password callback))
 
+(defn hash-transaction [rpcParams callback]
+  (native-module/hash-transaction rpcParams callback))
+
+(defn send-transaction-with-signature [rpcParams sig callback]
+  (native-module/send-transaction-with-signature rpcParams sig callback))
+
 (defn send-data-notification [m callback]
   (native-module/send-data-notification m callback))
 

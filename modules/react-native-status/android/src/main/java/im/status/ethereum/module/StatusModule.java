@@ -668,6 +668,44 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void hashTransaction(final String txArgsJSON, final Callback callback) {
+        Log.d(TAG, "hashTransaction");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.hashTransaction(txArgsJSON);
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void sendTransactionWithSignature(final String txArgsJSON, final String signature, final Callback callback) {
+        Log.d(TAG, "sendTransactionWithSignature");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.sendTransactionWithSignature(txArgsJSON, signature);
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
     public void sendTransaction(final String txArgsJSON, final String password, final Callback callback) {
         Log.d(TAG, "sendTransaction");
         if (!checkAvailability()) {
