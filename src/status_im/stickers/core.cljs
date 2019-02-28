@@ -73,25 +73,17 @@
          (when on-result {:on-result on-result})
          tx))
 
-(fx/defn buy-token [{{:keys [network] :as db} :db} pack-id]
-  (let [network   (get-in db [:account/account :networks network])
-        address   (ethereum/normalized-address (get-in db [:account/account :address]))
-        tx-object {:to   (get ethereum.stickers/contracts (ethereum/network->chain-keyword network))
-                   :data (abi-spec/encode "buyToken(uint256,address)" [pack-id address])}]
-    (models.wallet/open-modal-wallet-for-transaction
-     db
-     (prepare-transaction "buy" tx-object [:stickers/pending-pack pack-id])
-     tx-object)))
-
 (fx/defn approve-pack [{db :db} pack-id price]
   (let [network           (get-in db [:account/account :networks (:network db)])
+        address           (ethereum/normalized-address (get-in db [:account/account :address]))
         chain             (ethereum/network->chain-keyword network)
         stickers-contract (get ethereum.stickers/contracts chain)
+        data              (abi-spec/encode "buyToken(uint256,address)" [pack-id address])
         tx-object         {:to   (get erc20/snt-contracts chain)
-                           :data (abi-spec/encode "approve(address,uint256)" [stickers-contract price])}]
+                           :data (abi-spec/encode "approveAndCall(address,uint256,bytes)" [stickers-contract price data])}]
     (models.wallet/open-modal-wallet-for-transaction
      db
-     (prepare-transaction "approve" tx-object [:stickers/buy-token pack-id])
+     (prepare-transaction "approve" tx-object [:stickers/pending-pack pack-id])
      tx-object)))
 
 (fx/defn pending-pack [{{:keys [web3 network] :as db} :db :as cofx} id]

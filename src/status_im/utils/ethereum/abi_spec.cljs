@@ -96,9 +96,7 @@
         encoded-value  (if encoded-value?
                          (subs value 2)
                          (from-utf8 value))]
-    (str (when dynamic? (enc {:type :int :value (if encoded-value?
-                                                  (count encoded-value)
-                                                  (/ (count encoded-value) 2))}))
+    (str (when dynamic? (enc {:type :int :value (/ (count encoded-value) 2)}))
          (right-pad encoded-value))))
 
 ;; string: enc(X) = enc(enc_utf8(X)), i.e. X is utf-8 encoded and this

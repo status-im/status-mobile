@@ -1717,11 +1717,6 @@
    (stickers/approve-pack cofx id price)))
 
 (handlers/register-handler-fx
- :stickers/buy-token
- (fn [cofx [_ id]]
-   (stickers/buy-token cofx id)))
-
-(handlers/register-handler-fx
  :stickers/get-owned-packs
  (fn [cofx _]
    (stickers/get-owned-pack cofx)))

@@ -4,7 +4,7 @@
 
 (def contracts
   {:mainnet nil
-   :testnet "0x82694E3DeabE4D6f4e6C180Fe6ad646aB8EF53ae"
+   :testnet "0x39d16CdB56b5a6a89e1A397A13Fe48034694316E"
    :rinkeby nil})
 
 (defn pack-count [web3 contract cb]
