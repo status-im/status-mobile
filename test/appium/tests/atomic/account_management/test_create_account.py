@@ -2,6 +2,7 @@ import pytest
 from tests import marks, common_password, get_current_time, unique_password
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
+from tests.users import basic_user
 
 
 @marks.all
@@ -90,3 +91,10 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.create_user(password=unique_password)
         sign_in.check_no_values_in_logcat(password=unique_password)
+
+    @marks.testrail_id(5718)
+    @marks.medium
+    def test_special_characters_in_password_when_creating_new_account(self):
+        sign_in = SignInView(self.driver)
+        sign_in.create_user(password=basic_user['special_chars_password'])
+        sign_in.relogin(password=basic_user['special_chars_password'])

@@ -51,6 +51,7 @@
    [status-im.ui.screens.hardwallet.setup.views :as hardwallet.setup]
    [status-im.ui.screens.hardwallet.success.views :as hardwallet.success]
    [status-im.ui.screens.profile.seed.views :as profile.seed]
+   [status-im.ui.screens.profile.tribute-to-talk.views :as tr-to-talk]
    [status-im.ui.screens.about-app.views :as about-app]
    [status-im.ui.screens.stickers.views :as stickers]
    [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
@@ -139,6 +140,7 @@
    :fleet-settings                   fleet-settings/fleet-settings
    :currency-settings                currency-settings/currency-settings
    :backup-seed                      profile.seed/backup-seed
+   :tribute-to-talk                  tr-to-talk/tribute-to-talk
    :reset-card                       hardwallet.settings/reset-card
    :keycard-settings                 hardwallet.settings/keycard-settings
    :mobile-network-settings          mobile-network-settings/mobile-network-settings})

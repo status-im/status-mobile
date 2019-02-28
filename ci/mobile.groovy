@@ -2,39 +2,10 @@ cmn = load 'ci/common.groovy'
 ios = load 'ci/ios.groovy'
 android = load 'ci/android.groovy'
 
-def wait(lockFile) {
-  /* Crude wait for a lock file to disappear */
-  def maxAttempts = 20
-  def success = false
-  for (i = 0; i <= maxAttempts; i++) {
-    rval = fileExists(lockFile)
-    if (!rval) {
-      return
-    }
-    sleep 10
-  }
-  error("Failed to acquire lock: ${lockFile}")
-}
-
-def podUpdate() {
-  /**
-   * This is awful BUT multiple jobs running on the same host can
-   * clash when trying to update the CocoaPods maste repo.
-   * We could set CP_REPOS_DIR, but the would result in
-   * multiple ~3GB directories all over the place and would be slow.
-   **/
-  def lockFile = "${env.HOME}/.cocoapods.lock"
-  try {
-    wait(lockFile)
-    sh "touch ${lockFile}"
-    sh 'pod update --silent --no-ansi'
-  } finally {
-    sh "rm -f ${lockFile}"
-  }
-}
-
 def prep(type = 'nightly') {
-  cmn.doGitRebase()
+  if (type != 'release') {
+    cmn.doGitRebase()
+  }
   /* ensure that we start from a known state */
   cmn.clean()
   /* Run at start to void mismatched numbers */
@@ -52,21 +23,8 @@ def prep(type = 'nightly') {
   }
   /* install ruby dependencies */
   sh 'bundle install --quiet'
-  /* node deps and status-go download */
+  /* node deps, pods, and status-go download */
   sh "make prepare-${env.BUILD_PLATFORM}"
-  /* generate ios/StatusIm.xcworkspace */
-  if (env.BUILD_PLATFORM == 'ios') {
-    dir('ios') {
-      try {
-         sh 'pod install --silent'
-      } catch (Exception ex) {
-         println "pod installation failed, trying to upgrade the repo"
-         /* only if pod install fails, we try to upgrade the repo */
-         podUpdate()
-         sh 'pod install --silent'
-      }
-    }
-  }
 }
 
 def leinBuild(platform) {

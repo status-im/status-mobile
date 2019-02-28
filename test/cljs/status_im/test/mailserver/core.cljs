@@ -339,6 +339,42 @@
                                      [{:id "mailserver-id" :enode "enode://mailserver-id@ip"}]
                                      [])))
 
+(deftest test-resend-request
+  (testing "there's no current request"
+    (is (not (mailserver/resend-request {:db {}} {}))))
+  (testing "there's a current request"
+    (testing "it reached the maximum number of attempts"
+      (testing "it changes mailserver"
+        (is (= :connecting
+               (get-in (mailserver/resend-request
+                        {:db {:mailserver/current-request
+                              {:attempts mailserver/maximum-number-of-attempts}}}
+                        {})
+                       [:db :mailserver/state])))))
+    (testing "it did not reach the maximum number of attempts"
+      (testing "it reached the maximum number of attempts"
+        (testing "it decrease the limit")
+        (is (= {:mailserver/set-limit 1000} (mailserver/resend-request {:db {:mailserver/current-request
+                                                                             {}}}
+                                                                       {})))))))
+
+(deftest test-resend-request-request-id
+  (testing "request-id passed is nil"
+    (testing "it resends the request"
+      (is (mailserver/resend-request {:db {:mailserver/current-request {}}} {}))))
+  (testing "request-id is nil in db"
+    (testing "it resends the request"
+      (is (mailserver/resend-request {:db {:mailserver/current-request {}}}
+                                     {:request-id "a"}))))
+  (testing "request id matches"
+    (testing "it resends the request"
+      (is (mailserver/resend-request {:db {:mailserver/current-request {:request-id "a"}}}
+                                     {:request-id "a"}))))
+  (testing "request id does not match"
+    (testing "it does not resend the request"
+      (is (not (mailserver/resend-request {:db {:mailserver/current-request {:request-id "a"}}}
+                                          {:request-id "b"}))))))
+
 (deftest peers-summary-change
   (testing "Mailserver added, sym-key doesn't exist"
     (let [result (peers-summary-change-result false true false)]

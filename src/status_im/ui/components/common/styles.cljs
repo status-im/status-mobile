@@ -130,13 +130,15 @@
    :letter-spacing -0.2
    :color          colors/blue})
 
-(defn button [style background?]
+(defn button [style background? disabled?]
   (merge
    {:padding-vertical   12
     :padding-horizontal 42
     :border-radius      8
-    :background-color   (when background?
-                          (colors/alpha colors/blue 0.1))}
+    :background-color   (cond disabled?
+                              colors/gray-lighter
+                              background?
+                              (colors/alpha colors/blue 0.1))}
    style))
 
 (def button-label

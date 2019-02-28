@@ -262,6 +262,10 @@
     (log/debug "Adjusting mailserver request" "from:" from "adjusted-from:" adjusted-from)
     adjusted-from))
 
+(fx/defn handle-request-success [{:keys [db]} request-id]
+  (when (:mailserver/current-request db)
+    {:db (assoc-in db [:mailserver/current-request :request-id] request-id)}))
+
 (defn request-messages! [web3 {:keys [sym-key-id address]} {:keys [topics cursor to from] :as request}]
   ;; Add some room to from, unless we break day boundaries so that messages that have
   ;; been received after the last request are also fetched
@@ -288,10 +292,12 @@
                                 :to             to})
                       (fn [error request-id]
                         (if-not error
-                          (log/info "mailserver: messages request success for topic " topics "from" from "to" to)
+                          (do
+                            (log/info "mailserver: messages request success for topic " topics "from" from "to" to)
+                            (re-frame/dispatch [:mailserver.callback/request-success {:request-id request-id}]))
                           (do
                             (log/error "mailserver: messages request error for topic " topics ": " error)
-                            (utils/set-timeout #(re-frame/dispatch [:mailserver.callback/resend-request {:request-id "failed-request"}])
+                            (utils/set-timeout #(re-frame/dispatch [:mailserver.callback/resend-request {:request-id nil}])
                                                backoff-interval-ms)))))))
 
 (re-frame/reg-fx
@@ -575,22 +581,33 @@
 
 (fx/defn resend-request
   [{:keys [db] :as cofx} {:keys [request-id]}]
-  (if (and (:mailserver/current-request db)
-           (<= maximum-number-of-attempts
-               (get-in db [:mailserver/current-request :attempts])))
-    (fx/merge cofx
-              {:db (update db :mailserver/current-request dissoc :attempts)}
-              (change-mailserver))
-    (if-let [mailserver (get-mailserver-when-ready cofx)]
-      (let [{:keys [topics from to cursor limit] :as request} (get db :mailserver/current-request)
-            web3 (:web3 db)]
-        (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to "cursor" cursor "limit" (decrease-limit))
-        {:db (update-in db [:mailserver/current-request :attempts] inc)
-         :mailserver/set-limit (decrease-limit)
-         :mailserver/request-messages {:web3 web3
-                                       :mailserver mailserver
-                                       :request (assoc request :limit (decrease-limit))}})
-      {:mailserver/set-limit (decrease-limit)})))
+  (let [current-request (:mailserver/current-request db)]
+    ;; no inflight request, do nothing
+    (when (and current-request
+               ;; the request was never successful
+               (or (nil? request-id)
+                   ;; we haven't received the request-id yet, but has expired,
+                   ;; so we retry even though we are not sure it's the current
+                   ;; request that failed
+                   (nil? (:request-id current-request))
+                   ;; this is the same request that we are currently processing
+                   (= request-id (:request-id current-request))))
+
+      (if            (<= maximum-number-of-attempts
+                         (:attempts current-request))
+        (fx/merge cofx
+                  {:db (update db :mailserver/current-request dissoc :attempts)}
+                  (change-mailserver))
+        (if-let [mailserver (get-mailserver-when-ready cofx)]
+          (let [{:keys [topics from to cursor limit] :as request} current-request
+                web3 (:web3 db)]
+            (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to "cursor" cursor "limit" (decrease-limit))
+            {:db (update-in db [:mailserver/current-request :attempts] inc)
+             :mailserver/set-limit (decrease-limit)
+             :mailserver/request-messages {:web3 web3
+                                           :mailserver mailserver
+                                           :request (assoc request :limit (decrease-limit))}})
+          {:mailserver/set-limit (decrease-limit)})))))
 
 (fx/defn initialize-mailserver
   [cofx custom-mailservers]

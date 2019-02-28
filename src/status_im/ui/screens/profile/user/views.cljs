@@ -258,6 +258,20 @@
     :accessory-value     active-contacts-count
     :action-fn           #(re-frame/dispatch [:navigate-to :contacts-list])}])
 
+(defn tribute-to-talk-item [snt-amount seen?]
+  [list.views/big-list-item
+   (cond->
+    {:text                (i18n/label :t/tribute-to-talk)
+     :icon                :main-icons/tribute-to-talk
+     :accessibility-label :notifications-button
+     :new?                (not seen?)
+     :action-fn           #(re-frame/dispatch
+                            [:tribute-to-talk.ui/menu-item-pressed])}
+     snt-amount
+     (assoc :accessory-value (str snt-amount " SNT"))
+     (not (and seen? snt-amount))
+     (assoc :subtext      (i18n/label :t/tribute-to-talk-desc)))])
+
 (defview my-profile []
   (letsubs [{:keys [public-key photo-path] :as current-account} [:account/account]
             editing?        [:get :my-profile/editing?]
@@ -265,7 +279,9 @@
             currency        [:wallet/currency]
             login-data      [:get :accounts/login]
             scroll          (reagent/atom nil)
-            active-contacts-count [:contacts/active-count]]
+            active-contacts-count [:contacts/active-count]
+            {tribute-to-talk-seen? :seen?
+             snt-amount :snt-amount} [:tribute-to-talk/settings]]
     (let [shown-account    (merge current-account changed-account)
           ;; We scroll on the component once rendered. setTimeout is necessary,
           ;; likely to allow the animation to finish.
@@ -291,12 +307,15 @@
             :edited-contact       changed-account
             :editing?             editing?
             :allow-icon-change?   true
-            :options              (if (not= (identicon/identicon public-key) photo-path)
+            :options              (if (not= (identicon/identicon public-key)
+                                            photo-path)
                                     (profile-icon-options-ext)
                                     profile-icon-options)
             :on-change-text-event :my-profile/update-name}]]
          [share-profile-item (dissoc current-account :mnemonic)]
          [contacts-list-item active-contacts-count]
+         (when config/tr-to-talk-enabled?
+           [tribute-to-talk-item snt-amount tribute-to-talk-seen?])
          [react/view styles/my-profile-info-container
           [my-profile-settings current-account shown-account currency (nil? login-data)]]
          (when (nil? login-data)

@@ -28,6 +28,7 @@
                                 :currency-settings
                                 :mobile-network-settings
                                 :backup-seed
+                                :tribute-to-talk
                                 :qr-scanner]
 
                          config/hardwallet-enabled?

@@ -129,7 +129,7 @@
          ;; version of the group chat, for backward compatibility
          destinations (map (fn [member]
                              {:public-key member
-                              :chat chat-id})
+                              :chat (transport.topic/public-key->discovery-topic member)})
                            members)]
      (fx/merge
       cofx
