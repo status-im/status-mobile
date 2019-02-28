@@ -37,7 +37,7 @@
 
 (re-frame/reg-event-fx
  :chat/send-message
- (fn [cofx [_ message-text {:keys [to value] :as arguments}]]
+ (fn [cofx [_ _ {:keys [to value]}]]
    (chat.input/send-plain-text-message-fx (assoc cofx :now (datetime/timestamp)) value to)))
 
 (re-frame/reg-fx
