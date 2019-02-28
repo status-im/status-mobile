@@ -15,6 +15,14 @@ def getToolVersion(name) {
   return version
 }
 
+def nix_sh(cmd) {
+  sh """
+    . ~/.nix-profile/etc/profile.d/nix.sh && \\
+      nix-shell \'${env.WORKSPACE}/default.nix\' --argstr target-os \'${env.TARGET_PLATFORM}\' \\
+      --run \'${cmd}\'
+  """
+}
+
 def branchName() {
   return env.GIT_BRANCH.replaceAll(/.*origin\//, '')
 }
@@ -91,10 +99,10 @@ def installJSDeps(platform) {
   def maxAttempts = 10
   def installed = false
   /* prepare environment for specific platform build */
-  sh "scripts/prepare-for-platform.sh ${platform}"
+  nix_sh "scripts/prepare-for-platform.sh ${platform}"
   while (!installed && attempt <= maxAttempts) {
     println "#${attempt} attempt to install npm deps"
-    sh 'yarn install --frozen-lockfile'
+    nix_sh 'yarn install --frozen-lockfile'
     installed = fileExists('node_modules/web3/index.js')
     attemp = attempt + 1
   }

@@ -26,8 +26,10 @@ in with pkgs;
     name = "env";
     env = buildEnv { name = name; paths = buildInputs; };
     buildInputs = with _stdenv; [
+      bash
       clojure
       curl
+      git
       jq
       leiningen
       lsof # used in scripts/start-react-native.sh

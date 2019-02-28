@@ -40,7 +40,7 @@ if ! program_exists "curl"; then
   exit 1
 fi
 
-if is_linux; then
+if is_linux && [ -z "$CI_ENVIRONMENT" ]; then
   watches=$(cat /proc/sys/fs/inotify/max_user_watches)
   required_watches=524288
   if [ $watches -lt $required_watches ]; then
