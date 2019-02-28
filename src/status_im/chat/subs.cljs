@@ -7,7 +7,8 @@
             [status-im.chat.db :as chat.db]
             [status-im.models.transactions :as transactions]
             [status-im.utils.platform :as platform]
-            [status-im.ui.components.bottom-bar.styles :as tabs-styles]))
+            [status-im.ui.components.bottom-bar.styles :as tabs-styles]
+            [status-im.ui.components.bottom-bar.styles :as tabs.styles]))
 
 (re-frame/reg-sub ::chats :chats)
 (re-frame/reg-sub ::access-scope->command-id :access-scope->command-id)
@@ -77,10 +78,13 @@
  (fn [kb-height]
    (cond
      (and platform/iphone-x? (> kb-height 0))
-     (- kb-height 34 tabs-styles/tabs-height)
-     platform/ios? (- kb-height (if (> kb-height 0)
-                                  tabs-styles/tabs-height
-                                  0))
+     (- kb-height (* 2 tabs.styles/minimized-tabs-height))
+
+     platform/ios?
+     (+ kb-height (- (if (> kb-height 0)
+                       tabs.styles/minimized-tabs-height
+                       0)))
+
      :default 0)))
 
 (re-frame/reg-sub

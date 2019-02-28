@@ -319,4 +319,7 @@
          [react/view styles/my-profile-info-container
           [my-profile-settings current-account shown-account currency (nil? login-data)]]
          (when (nil? login-data)
-           [advanced shown-account on-show-advanced])]]])))
+           [advanced shown-account on-show-advanced])
+         [react/view
+          {:align-self :stretch
+           :height 16}]]]])))

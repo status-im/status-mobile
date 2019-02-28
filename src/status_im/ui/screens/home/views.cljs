@@ -16,7 +16,8 @@
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils])
+            [status-im.utils.utils :as utils]
+            [status-im.ui.components.bottom-bar.styles :as tabs.styles])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- toolbar [show-welcome? show-sync-state sync-state latest-block-number logged-in?]
@@ -59,21 +60,25 @@
        [icons/icon :main-icons/add {:color :white}])]]])
 
 (defn home-list-item [[home-item-id home-item]]
-  (let [delete-action   (if (:chat-id home-item)
-                          (if (and (:group-chat home-item)
-                                   (not (:public? home-item)))
-                            :group-chats.ui/remove-chat-pressed
-                            :chat.ui/remove-chat)
-                          :browser.ui/remove-browser-pressed)
-        inner-item-view (if (:chat-id home-item)
-                          inner-item/home-list-chat-item-inner-view
-                          inner-item/home-list-browser-item-inner-view)]
-    [list/deletable-list-item {:type      :chats
-                               :id        home-item-id
-                               :on-delete #(do
-                                             (re-frame/dispatch [:set-swipe-position :chats home-item-id false])
-                                             (re-frame/dispatch [delete-action home-item-id]))}
-     [inner-item-view home-item]]))
+  (if (= home-item-id :empty)
+    [react/view
+     {:style {:height     tabs.styles/tabs-diff
+              :align-self :stretch}}]
+    (let [delete-action   (if (:chat-id home-item)
+                            (if (and (:group-chat home-item)
+                                     (not (:public? home-item)))
+                              :group-chats.ui/remove-chat-pressed
+                              :chat.ui/remove-chat)
+                            :browser.ui/remove-browser-pressed)
+          inner-item-view (if (:chat-id home-item)
+                            inner-item/home-list-chat-item-inner-view
+                            inner-item/home-list-browser-item-inner-view)]
+      [list/deletable-list-item {:type      :chats
+                                 :id        home-item-id
+                                 :on-delete #(do
+                                               (re-frame/dispatch [:set-swipe-position :chats home-item-id false])
+                                               (re-frame/dispatch [delete-action home-item-id]))}
+       [inner-item-view home-item]])))
 
 ;;do not remove view-id and will-update or will-unmount handlers, this is how it works
 (views/defview welcome [view-id]
@@ -259,7 +264,8 @@
                                            previous-position)))
                          (show-search!)))
                      false)}))
-         [list/flat-list {:data           all-home-items
+         [list/flat-list {:data           (conj (vec all-home-items)
+                                                [:empty {}])
                           :key-fn         first
                           :end-fill-color colors/white
                           :on-scroll-begin-drag

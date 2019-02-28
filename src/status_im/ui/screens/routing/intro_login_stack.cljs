@@ -1,6 +1,19 @@
 (ns status-im.ui.screens.routing.intro-login-stack
   (:require [status-im.utils.config :as config]))
 
+(def all-screens
+  #{:login
+    :progress
+    :create-account
+    :recover
+    :accounts
+    :intro
+    :hardwallet-authentication-method
+    :hardwallet-connect
+    :enter-pin
+    :hardwallet-setup
+    :hardwallet-success})
+
 (defn intro-login-stack [view-id]
   {:name    :intro-login-stack
    :screens (cond-> [:login

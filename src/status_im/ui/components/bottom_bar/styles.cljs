@@ -10,6 +10,13 @@
     platform/ios? 52
     platform/desktop? 68))
 
+(def minimized-tabs-height 36)
+
+(def tabs-diff (- tabs-height minimized-tabs-height))
+
+(def minimized-tab-ratio
+  (/ minimized-tabs-height tabs-height))
+
 (def tab-height (dec tabs-height))
 
 (def tabs-container
@@ -94,10 +101,34 @@
    :right            0
    :background-color :white
    :elevation        8
-   :position         (when keyboard-shown? :absolute)
+   :position         (when (or platform/ios?
+                               keyboard-shown?)
+                       :absolute)
    :transform        [{:translateY
                        (animation/interpolate
                         visible?
                         {:inputRange  [0 1]
                          :outputRange [tabs-height 0]})}]})
 
+(def ios-titles-cover
+  {:background-color :white
+   :position         :absolute
+   :height           (- tabs-height minimized-tabs-height)
+   :align-self       :stretch
+   :top              tabs-height
+   :right            0
+   :left             0})
+
+(def title-cover-wrapper
+  {:position :absolute
+   :height   tabs-height
+   :bottom   (if platform/iphone-x? 34 0)
+   :right    0
+   :left     0})
+
+(defn animation-wrapper [keyboard-shown? main-tab?]
+  {:height     (cond
+                 keyboard-shown? 0
+                 main-tab? tabs-height
+                 :else minimized-tabs-height)
+   :align-self :stretch})

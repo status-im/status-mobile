@@ -38,7 +38,7 @@
                       "keyboardDidHide"
                       (fn [_]
                         (dispatch [:show-tab-bar])
-                        (when (zero? @keyboard-height)
+                        (when-not (zero? @keyboard-height)
                           (dispatch [:set :keyboard-height 0]))))
         (.hide react/splash-screen)
         (.addEventListener react/app-state "change" app-state-change-handler)

@@ -25,7 +25,8 @@
             [status-im.ui.screens.chat.stickers.views :as stickers]
             [status-im.ui.screens.chat.styles.main :as style]
             [status-im.ui.screens.chat.toolbar-content :as toolbar-content]
-            [status-im.utils.platform :as platform])
+            [status-im.utils.platform :as platform]
+            [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn add-contact-bar [public-key]
@@ -84,18 +85,18 @@
                                :modal? modal?
                                :current-public-key current-public-key)])
 
+(def animation-duration 200)
+
 (defview messages-view-animation [message-view]
   ;; smooths out appearance of message-view
-  (letsubs [opacity       (animation/create-value 0)
-            duration      (if platform/android? 100 200)
-            timeout       (if platform/android? 50 0)]
+  (letsubs [opacity (animation/create-value 0)]
     {:component-did-mount (fn [_]
                             (animation/start
-                             (animation/anim-sequence
-                              [(animation/anim-delay timeout)
-                               (animation/spring opacity {:toValue  1
-                                                          :duration duration
-                                                          :useNativeDriver true})])))}
+                             (animation/timing
+                              opacity
+                              {:toValue         1
+                               :duration        animation-duration
+                               :useNativeDriver true})))}
     [react/with-activity-indicator
      {:style   style/message-view-preview
       :preview [react/view style/message-view-preview]}

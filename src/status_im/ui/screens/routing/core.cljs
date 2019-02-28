@@ -13,30 +13,62 @@
    [status-im.ui.screens.routing.chat-stack :as chat-stack]
    [status-im.ui.screens.routing.wallet-stack :as wallet-stack]
    [status-im.ui.screens.routing.profile-stack :as profile-stack]
+   [status-im.ui.screens.routing.modals :as modals]
    [status-im.ui.components.bottom-bar.core :as bottom-bar]
-   [status-im.ui.components.status-bar.view :as status-bar]))
+   [status-im.ui.components.status-bar.view :as status-bar]
+   [status-im.ui.components.bottom-bar.styles :as tabs.styles]))
 
-(defn navigation-events [view-id modal?]
+(defonce view-id (reagent.core/atom nil))
+
+(defn navigation-events [current-view-id modal?]
   [:> navigation/navigation-events
    {:on-will-focus
     (fn []
-      (log/debug :on-will-focus view-id)
+      (when (not= @view-id current-view-id)
+        (reset! view-id current-view-id))
+      (log/debug :on-will-focus current-view-id)
       (when modal?
-        (status-bar/set-status-bar view-id))
-      (re-frame/dispatch [:screens/on-will-focus view-id]))
+        (status-bar/set-status-bar current-view-id))
+      (re-frame/dispatch [:screens/on-will-focus current-view-id]))
     :on-did-focus
     (fn []
-      (log/debug :on-did-focus view-id)
       (when-not modal?
-        (status-bar/set-status-bar view-id)))}])
+        (status-bar/set-status-bar current-view-id)))}])
 
-(defn wrap [view-id component]
+(defn wrap
   "Wraps screen with main view and adds navigation-events component"
+  [view-id component]
   (fn []
     (let [main-view (react/create-main-screen-view view-id)]
-      [main-view common-styles/flex
-       [component]
-       [navigation-events view-id false]])))
+      (if platform/ios?
+        [main-view (assoc common-styles/flex
+                          :margin-bottom
+                          (cond
+                            ;; there is no need to show bottom nav bar on
+                            ;; `intro-login-stack` screens
+                            (contains?
+                             intro-login-stack/all-screens
+                             view-id)
+                            0
+
+                            ;; :wallet-onboarding-setup is the only screen
+                            ;; except main tabs which requires maximised
+                            ;; bottom nav bar, that's why it requires an extra
+                            ;; bottom margin, otherwise bottom nav bar will
+                            ;; partially cover the screen
+                            (contains?
+                             #{:wallet-onboarding-setup}
+                             view-id)
+                            tabs.styles/tabs-height
+
+                            :else
+                            tabs.styles/minimized-tabs-height))
+         [component]
+         [navigation-events view-id false]]
+
+        [main-view common-styles/flex
+         [component]
+         [navigation-events view-id false]]))))
 
 (defn wrap-modal [modal-view component]
   "Wraps modal screen with necessary styling and adds :on-request-close handler
@@ -73,8 +105,21 @@
   (nav-reagent/stack-navigator
    routes
    (cond->
-    (merge {:headerMode "none"
-            :cardStyle  {:backgroundColor (when platform/ios? :white)}}
+    (merge {:headerMode        "none"
+            :cardStyle         {:backgroundColor (when platform/ios? :white)}
+            :onTransitionStart (fn [n]
+                                 (let [idx    (.. n
+                                                  -navigation
+                                                  -state
+                                                  -index)
+                                       routes (.. n
+                                                  -navigation
+                                                  -state
+                                                  -routes)]
+                                   (when (and (array? routes) (int? idx))
+                                     (let [route      (aget routes idx)
+                                           route-name (keyword (.-routeName route))]
+                                       (bottom-bar/minimize-bar route-name)))))}
            (prepare-config config)))))
 
 (defn switch-navigator [routes config]
@@ -125,18 +170,30 @@
        (map build-screen)
        (into {})))
 
+(defn wrap-bottom-bar
+  [nav]
+  [bottom-bar/bottom-bar nav view-id])
+
 (defn get-main-component [view-id]
   (log/debug :component view-id)
   (switch-navigator
    (into {}
          [(build-screen (intro-login-stack/intro-login-stack view-id))
-          [:tabs
-           {:screen (tab-navigator
-                     (->> [(build-screen chat-stack/chat-stack)
-                           (build-screen wallet-stack/wallet-stack)
-                           (build-screen profile-stack/profile-stack)]
-                          (into {}))
-                     {:initialRouteName :chat-stack
-                      :tabBarComponent  (reagent.core/reactify-component
-                                         bottom-bar/bottom-bar)})}]])
+          [:tabs-and-modals
+           {:screen
+            (stack-navigator
+             (merge
+              {:tabs
+               {:screen (tab-navigator
+                         (->> [(build-screen chat-stack/chat-stack)
+                               (build-screen wallet-stack/wallet-stack)
+                               (build-screen profile-stack/profile-stack)]
+                              (into {}))
+                         {:initialRouteName :chat-stack
+                          :tabBarComponent  (reagent.core/reactify-component
+                                             wrap-bottom-bar)})}}
+              (stack-screens modals/modal-screens))
+             {:mode              :modal
+              :initialRouteName  :tabs
+              :onTransitionStart (fn [])})}]])
    {:initialRouteName :intro-login-stack}))

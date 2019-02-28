@@ -57,3 +57,5 @@
   (js->clj (.getLayout value-xy)))
 
 (defn easing [] js/ReactNative.Easing)
+
+(defn cubic [] (.-cubic (easing)))
