@@ -25,6 +25,7 @@
             status-im.utils.keychain.events
             [re-frame.core :as re-frame]
             [status-im.hardwallet.core :as hardwallet]
+            [status-im.chat.models :as chat]
             [status-im.native-module.core :as status]
             [status-im.mailserver.core :as mailserver]
             [status-im.ui.components.permissions :as permissions]
@@ -72,6 +73,11 @@
 (re-frame/reg-fx
  :http-post
  http-post)
+
+(defn- mark-messages-seen
+  [{:keys [db] :as cofx}]
+  (let [{:keys [current-chat-id]} db]
+    (chat/mark-messages-seen cofx current-chat-id)))
 
 (defn- http-raw-post [{:keys [url body response-validator success-event-creator failure-event-creator timeout-ms opts]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
@@ -190,4 +196,5 @@
                 :hardwallet-connect (hardwallet/hardwallet-connect-screen-did-load %)
                 :hardwallet-authentication-method (hardwallet/authentication-method-screen-did-load %)
                 :accounts (hardwallet/accounts-screen-did-load %)
+                :chat (mark-messages-seen %)
                 nil))))

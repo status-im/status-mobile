@@ -246,7 +246,8 @@
               {:db (-> (assoc db :current-chat-id chat-id)
                        (set-chat-ui-props {:validation-messages nil}))}
               (contact-code/listen-to-chat chat-id)
-              (mark-messages-seen chat-id))))
+              (when platform/desktop?
+                (mark-messages-seen chat-id)))))
 
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
