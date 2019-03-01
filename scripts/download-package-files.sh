@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 filename=$1
 #fileid="1yPTGcPe5DZd3ubzAgUBp3aAQRAOK9eKQ"
