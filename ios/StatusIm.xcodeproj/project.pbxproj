@@ -1765,7 +1765,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/bash\n\nsource \"${PROJECT_DIR}/scripts/set_xcode_version.sh\"";
+			shellScript = "#!/usr/bin/env bash\n\nsource \"${PROJECT_DIR}/scripts/set_xcode_version.sh\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This script automatically sets the version and short version string of
 # an Xcode project from the Git repository containing the project.
