@@ -64,14 +64,10 @@ fi
 setup_header "Installing requirements..."
 
 install_nix && \
-install_react_native_cli && \
 install_nsis && \
 install_android_sdk && \
 install_android_ndk || \
 exit $?
 
 ####
-echo && setup_header "Installing dependencies..."
-
-dependency_setup make prepare-mobile && \
 setup_complete

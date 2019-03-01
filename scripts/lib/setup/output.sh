@@ -70,6 +70,13 @@ There are a few @b[[manual steps]] you might want to do:
     @blue[[https://facebook.github.io/react-native/docs/getting-started.html]]
 
 3. Add your SSH public key to Github if it isn't already in there.
+
+To build the app, please run one of the following commands, depending on the desired target:
+
+- @b[[make prepare-mobile]]
+- @b[[make prepare-desktop]]
+
+followed by one of the @b[[make release-*]] commands.
 "
 
   echo
