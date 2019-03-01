@@ -263,6 +263,7 @@
     "update-status": "Update your status...",
     "errors": "Errors",
     "mailserver-connection-error": "Could not connect to mailserver",
+    "mailserver-automatic": "Automatic selection",
     "currency-display-name-kzt": "Kazakhstan Tenge",
     "no-recent-chats": "Your Home screen will house your recent chats and DApp history. Tap the plus (+) button to get started.",
     "install": "Install",

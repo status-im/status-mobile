@@ -1,5 +1,7 @@
 (ns status-im.mailserver.subs
-  (:require [re-frame.core :as re-frame]))
+  (:require
+   [status-im.mailserver.core :as mailserver]
+   [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
  :mailserver/state
@@ -45,6 +47,11 @@
  :mailserver/current-id
  (fn [db]
    (:mailserver/current-id db)))
+
+(re-frame/reg-sub
+ :mailserver/preferred-id
+ (fn [db]
+   (mailserver/preferred-mailserver-id {:db db})))
 
 (re-frame/reg-sub
  :mailserver/mailservers

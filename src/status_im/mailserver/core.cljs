@@ -38,7 +38,7 @@
 (def seven-days (* 7 one-day))
 (def maximum-number-of-attempts 2)
 (def request-timeout 30)
-(def min-limit 200)
+(def min-limit 100)
 (def max-limit 2000)
 (def backoff-interval-ms 3000)
 (def default-limit max-limit)
@@ -46,6 +46,7 @@
   "Time after which mailserver connection is considered to have failed"
   10000)
 (def limit (atom default-limit))
+(def success-counter (atom 0))
 
 (defn connected? [{:keys [db]} id]
   (= (:mailserver/current-id db) id))
@@ -143,16 +144,29 @@
  (fn [enodes]
    (update-mailservers! enodes)))
 
-(re-frame/reg-fx
- :mailserver/set-limit
- (fn [n]
-   (reset! limit n)))
-
 (defn decrease-limit []
   (max min-limit (/ @limit 2)))
 
 (defn increase-limit []
   (min max-limit (* @limit 2)))
+
+(re-frame/reg-fx
+ :mailserver/set-limit
+ (fn [n]
+   (reset! limit n)))
+
+(re-frame/reg-fx
+ :mailserver/increase-limit
+ (fn []
+   (if (>= @success-counter 2)
+     (reset! limit (increase-limit))
+     (swap! success-counter inc))))
+
+(re-frame/reg-fx
+ :mailserver/decrease-limit
+ (fn []
+   (reset! limit (decrease-limit))
+   (reset! success-counter 0)))
 
 (defn mark-trusted-peer! [web3 enode]
   (.markTrustedPeer (transport.utils/shh web3)
@@ -262,7 +276,7 @@
     (log/debug "Adjusting mailserver request" "from:" from "adjusted-from:" adjusted-from)
     adjusted-from))
 
-(fx/defn handle-request-success [{:keys [db]} request-id]
+(fx/defn handle-request-success [{:keys [db]} {:keys [request-id]}]
   (when (:mailserver/current-request db)
     {:db (assoc-in db [:mailserver/current-request :request-id] request-id)}))
 
@@ -527,7 +541,7 @@
       (if (empty? error)
         (fx/merge
          cofx
-         {:mailserver/set-limit (increase-limit)}
+         {:mailserver/increase-limit []}
          (update-mailserver-topics {:request-id (:requestID event)
                                     :cursor     (:cursor event)}))
 
@@ -603,11 +617,11 @@
                 web3 (:web3 db)]
             (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to "cursor" cursor "limit" (decrease-limit))
             {:db (update-in db [:mailserver/current-request :attempts] inc)
-             :mailserver/set-limit (decrease-limit)
+             :mailserver/decrease-limit []
              :mailserver/request-messages {:web3 web3
                                            :mailserver mailserver
                                            :request (assoc request :limit (decrease-limit))}})
-          {:mailserver/set-limit (decrease-limit)})))))
+          {:mailserver/decrease-limit []})))))
 
 (fx/defn initialize-mailserver
   [cofx custom-mailservers]
@@ -733,10 +747,31 @@
 (fx/defn save-settings
   [{:keys [db] :as cofx} current-fleet mailserver-id]
   (let [{:keys [address]} (fetch-current cofx)
-        settings (get-in db [:account/account :settings])]
+        settings (get-in db [:account/account :settings])
+        ;; Check if previous mailserver was pinned
+        pinned?  (get-in settings [:mailserver current-fleet])]
     (fx/merge cofx
               {:db (assoc db :mailserver/current-id mailserver-id)
                :mailserver/remove-peer address}
               (connect-to-mailserver)
+              (when pinned?
+                (accounts.update/update-settings (assoc-in settings [:mailserver current-fleet] mailserver-id)
+                                                 {})))))
+
+(fx/defn unpin
+  [{:keys [db] :as cofx}]
+  (let [current-fleet (fleet/current-fleet db)
+        settings (get-in db [:account/account :settings])]
+    (fx/merge cofx
+              (accounts.update/update-settings (update settings :mailserver dissoc current-fleet)
+                                               {})
+              (change-mailserver))))
+
+(fx/defn pin
+  [{:keys [db] :as cofx}]
+  (let [current-fleet (fleet/current-fleet db)
+        mailserver-id (:mailserver/current-id db)
+        settings (get-in db [:account/account :settings])]
+    (fx/merge cofx
               (accounts.update/update-settings (assoc-in settings [:mailserver current-fleet] mailserver-id)
                                                {}))))

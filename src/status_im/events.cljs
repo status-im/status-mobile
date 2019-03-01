@@ -394,6 +394,16 @@
    (mailserver/connect-to-mailserver cofx)))
 
 (handlers/register-handler-fx
+ :mailserver.ui/unpin-pressed
+ (fn [cofx _]
+   (mailserver/unpin cofx)))
+
+(handlers/register-handler-fx
+ :mailserver.ui/pin-pressed
+ (fn [cofx _]
+   (mailserver/pin cofx)))
+
+(handlers/register-handler-fx
  :mailserver.ui/request-error-pressed
  (fn [cofx _]
    (mailserver/show-request-error-popup cofx)))

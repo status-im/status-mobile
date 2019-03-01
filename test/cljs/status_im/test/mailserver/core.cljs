@@ -354,9 +354,9 @@
     (testing "it did not reach the maximum number of attempts"
       (testing "it reached the maximum number of attempts"
         (testing "it decrease the limit")
-        (is (= {:mailserver/set-limit 1000} (mailserver/resend-request {:db {:mailserver/current-request
-                                                                             {}}}
-                                                                       {})))))))
+        (is (= {:mailserver/decrease-limit []} (mailserver/resend-request {:db {:mailserver/current-request
+                                                                                {}}}
+                                                                          {})))))))
 
 (deftest test-resend-request-request-id
   (testing "request-id passed is nil"
@@ -397,6 +397,30 @@
            #{}))
     (is (= (into #{} (keys (peers-summary-change-result true false false)))
            #{}))))
+
+(deftest unpin-test
+  (testing "it removes the preference"
+    (let [db {:mailserver/current-id "mailserverid"
+              :mailserver/mailservers
+              {:eth.beta {"mailserverid" {:address  "mailserver-address"
+                                          :password "mailserver-password"}}}
+              :account/account
+              {:settings {:fleet :eth.beta
+                          :mailserver {:eth.beta "mailserverid"}}}}]
+      (is (not (get-in (mailserver/unpin {:db db})
+                       [:db :account/account :settings :mailserver :eth.beta]))))))
+
+(deftest pin-test
+  (testing "it removes the preference"
+    (let [db {:mailserver/current-id "mailserverid"
+              :mailserver/mailservers
+              {:eth.beta {"mailserverid" {:address  "mailserver-address"
+                                          :password "mailserver-password"}}}
+              :account/account
+              {:settings {:fleet :eth.beta
+                          :mailserver {}}}}]
+      (is (= "mailserverid" (get-in (mailserver/pin {:db db})
+                                    [:db :account/account :settings :mailserver :eth.beta]))))))
 
 (deftest connect-to-mailserver
   (let [db {:mailserver/current-id "mailserverid"

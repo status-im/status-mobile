@@ -156,15 +156,18 @@
         (i18n/label :t/send-logs)]]]]))
 
 (views/defview advanced-settings []
-  (views/letsubs [current-mailserver-id [:mailserver/current-id]
-                  {:keys [settings]}    [:account/account]
-                  mailservers           [:mailserver/fleet-mailservers]
-                  mailserver-state      [:mailserver/state]
-                  node-status           [:node-status]
-                  peers-count           [:peers-count]
-                  connection-stats      [:connection-stats]
-                  disconnected          [:disconnected?]]
-    (let [render-fn (offline-messaging.views/render-row current-mailserver-id)
+  (views/letsubs [current-mailserver-id   [:mailserver/current-id]
+                  {:keys [settings]}      [:account/account]
+                  mailservers             [:mailserver/fleet-mailservers]
+                  mailserver-state        [:mailserver/state]
+                  preferred-mailserver-id [:mailserver/preferred-id]
+                  node-status             [:node-status]
+                  peers-count             [:peers-count]
+                  connection-stats        [:connection-stats]
+                  disconnected            [:disconnected?]]
+    (let [render-fn (offline-messaging.views/render-row
+                     current-mailserver-id
+                     preferred-mailserver-id)
           pfs? (:pfs? settings)
           connection-message (connection-status peers-count node-status mailserver-state disconnected)]
       [react/scroll-view
@@ -182,6 +185,7 @@
 
        [react/view {:style styles/title-separator}]
        [react/text {:style styles/adv-settings-subtitle} (i18n/label :offline-messaging)]
+       [offline-messaging.views/pinned-state preferred-mailserver-id]
        [react/view
         (for [mailserver (vals mailservers)]
           ^{:key (:id mailserver)}

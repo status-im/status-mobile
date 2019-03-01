@@ -1,7 +1,8 @@
 (ns status-im.ui.screens.offline-messaging-settings.styles
   (:require [status-im.ui.components.colors :as colors]
             [status-im.utils.platform :as platform])
-  (:require-macros [status-im.utils.styles :refer [defstyle]]))
+  (:require-macros [status-im.utils.styles :refer [defnstyle
+                                                   defstyle]]))
 
 (def wrapper
   {:flex             1
@@ -10,10 +11,13 @@
 (def mailserver-item-inner
   {:padding-horizontal 16})
 
-(defstyle mailserver-item
+(defnstyle mailserver-item [pinned?]
   {:flex-direction     :row
    :background-color   :white
    :align-items        :center
+   :opacity            (if pinned?
+                         1
+                         0.4)
    :padding-horizontal 16
    :ios                {:height 64}
    :android            {:height 56}})
@@ -46,3 +50,14 @@
 
 (defn mailserver-icon [connected?]
   (hash-map (if platform/desktop? :tint-color :color) (if connected? :white :gray)))
+
+(def mailserver-pinned
+  {:padding-horizontal 16
+   :flex-direction :row
+   :padding-vertical 5})
+
+(def mailserver-pinned-text
+  {:color colors/black})
+
+(def mailserver-pinned-text-container
+  {:margin-top 15})
