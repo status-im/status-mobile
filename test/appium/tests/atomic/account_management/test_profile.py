@@ -212,7 +212,9 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         chat_view.chat_options.click_until_presence_of_element(chat_view.view_profile_button)
         chat_view.view_profile_button.click()
         for text in basic_user['username'], 'In contacts', 'Send transaction', 'Send message', 'Contact code':
-            chat_view.find_full_text(text)
+            if not chat_view.element_by_text(text).scroll_to_element():
+                self.errors.append('%s is not visible' % text)
+        self.verify_no_errors()
 
     @marks.testrail_id(5468)
     @marks.medium

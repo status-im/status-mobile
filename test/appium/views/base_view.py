@@ -476,7 +476,7 @@ class BaseView(object):
         while not PlusButton(self.driver).is_element_displayed(2):
             try:
                 if counter >= 5:
-                    return
+                    break
                 self.back_button.click()
             except (NoSuchElementException, TimeoutException):
                 counter += 1
