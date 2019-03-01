@@ -39,9 +39,9 @@ pipeline {
         stage('iOS') { steps { script {
           ios = cmn.buildBranch('status-react/combined/mobile-ios')
         } } }
-        stage('iOS e2e') { steps { script {
-          iose2e = cmn.buildBranch('status-react/combined/mobile-ios-e2e')
-        } } }
+        //stage('iOS e2e') { steps { script {
+        //  iose2e = cmn.buildBranch('status-react/combined/mobile-ios-e2e')
+        //} } }
         stage('Android') { steps { script {
           apk = cmn.buildBranch('status-react/combined/mobile-android')
         } } }

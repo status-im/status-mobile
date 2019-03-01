@@ -70,6 +70,8 @@ def build_ios_adhoc(readonly)
         configuration: "Release",
         clean: true,
         export_method: "ad-hoc",
+        # Temporary fix for Xcode 10.1
+        xcargs: "-UseModernBuildSystem=N",
         output_directory: "status-adhoc"
     )
 end
@@ -106,6 +108,8 @@ def build_ios_e2e
         scheme: "StatusIm",
         workspace: "ios/StatusIm.xcworkspace",
         configuration: "Release",
+        # Temporary fix for Xcode 10.1
+        xcargs: "-UseModernBuildSystem=N",
         # Simulator apps can't be archived...
         skip_archive: true,
         # ...and we don't need an .ipa file for them, because we use .app directly
@@ -178,6 +182,8 @@ platform :ios do
         clean: true,
         export_method: "app-store",
         output_directory: "status_appstore",
+        # Temporary fix for Xcode 10.1
+        xcargs: "-UseModernBuildSystem=N",
         export_options: {
             "combileBitcode": true,
             "uploadBitcode": false,
