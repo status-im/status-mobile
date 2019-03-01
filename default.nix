@@ -5,7 +5,13 @@ let
     rev = "168cbb39691cca2822ce1fdb3e8c0183af5c6d0d";
     sha256 = "0fqasswfqrz2rbag9bz17j8y7615s0p9l23cw4sk2f384gk0zf6c";
   }) { config = { }; };
-
+  nodejs = pkgs."nodejs-10_x";
+  nodeInputs = import ./scripts/lib/setup/nix/global-node-packages/output {
+    # The remaining dependencies come from Nixpkgs
+    inherit pkgs;
+    inherit nodejs;
+  };
+  nodePkgs = (map (x: nodeInputs."${x}") (builtins.attrNames nodeInputs));
 in pkgs.stdenv.mkDerivation rec {
   name = "env";
   env = pkgs.buildEnv { name = name; paths = buildInputs; };
@@ -27,7 +33,8 @@ in pkgs.stdenv.mkDerivation rec {
     unzip
     wget
     yarn
-  ] ++ statusDesktopBuildInputs
+  ] ++ nodePkgs
+    ++ statusDesktopBuildInputs
     ++ stdenv.lib.optional stdenv.isDarwin cocoapods;
   shellHook = with pkgs; ''
       local toolversion="$(git rev-parse --show-toplevel)/scripts/toolversion"
