@@ -18,14 +18,6 @@
   (re-frame/dispatch [:update-wallet])
   (assoc-in db [:wallet :current-tab] 0))
 
-(defmethod navigation/preload-data! :wallet-modal
-  [db _]
-  ;;TODO(goranjovic) - get rid of this preload hook completely
-  (re-frame/dispatch [:wallet.ui/pull-to-refresh])
-  (re-frame/dispatch [:update-wallet])
-  (re-frame/dispatch [:update-transactions])
-  (assoc-in db [:wallet :modal-history?] false))
-
 (defmethod navigation/preload-data! :transactions-history
   [db _]
   (re-frame/dispatch [:update-transactions])

@@ -102,9 +102,9 @@
                    :style     {:width 12}
                    :icon-opts {:color :gray}}])
 
-(defn- render-collectible [address-hex {:keys [symbol name icon amount] :as collectible} modal?]
+(defn- render-collectible [address-hex {:keys [symbol name icon amount] :as collectible}]
   (let [items-number (money/to-fixed amount)
-        details?     (and (pos? items-number) (not modal?))]
+        details?     (pos? items-number)]
     [react/touchable-highlight
      (when details?
        {:on-press #(re-frame/dispatch [:show-collectibles-list address-hex collectible])})
@@ -127,7 +127,7 @@
 (defn group-assets [v]
   (group-by #(if (:nft? %) :nfts :tokens) v))
 
-(defn- asset-section [assets currency address-hex modal?]
+(defn- asset-section [assets currency address-hex]
   (let [{:keys [tokens nfts]} (group-assets assets)]
     [react/view styles/asset-section
      [list/section-list
@@ -144,7 +144,7 @@
                             {:title     (i18n/label :t/wallet-collectibles)
                              :key       :collectibles
                              :data      nfts
-                             :render-fn #(render-collectible address-hex % modal?)}]}]]))
+                             :render-fn #(render-collectible address-hex %)}]}]]))
 
 (defn snackbar [error-message]
   [react/view styles/snackbar-container
@@ -155,53 +155,37 @@
   (views/letsubs [assets          [:wallet/visible-assets-with-amount]
                   currency        [:wallet/currency]
                   portfolio-value [:portfolio-value]
-                  {:keys [modal-history?]} [:get :wallet]
                   {:keys [seed-backed-up?]} [:account/account]
                   error-message   [:wallet/error-message]
                   address-hex     [:account/hex-address]]
     [react/view styles/main-section
-     (when-not modal?
-       [status-bar.view/status-bar {:type :wallet-tab}])
-     (if modal?
-       [toolbar-modal modal-history?]
-       [settings/toolbar-view])
-     (if (and modal? modal-history?)
-       [react/view styles/modal-history
-        [transactions.views/history-list true]]
-       [react/scroll-view {:refresh-control
-                           (reagent/as-element
-                            [react/refresh-control {:on-refresh #(re-frame/dispatch [:wallet.ui/pull-to-refresh])
-                                                    :tint-color :white
-                                                    :refreshing false}])}
-        (if error-message
-          [snackbar error-message]
-          [total-section portfolio-value currency])
-        (when (and (not modal?)
-                   (not seed-backed-up?)
-                   (some (fn [{:keys [amount]}]
-                           (and amount (not (.isZero amount))))
-                         assets))
-          [backup-seed-phrase])
-        (if modal?
-          [react/view styles/address-section
-           [react/text {:style               styles/wallet-address
-                        :accessibility-label :address-text
-                        :selectable          true}
-            address-hex]]
-          [react/view (merge {:background-color colors/blue} styles/action-section)
-           [list/flat-list
-            {:data      actions
-             :key-fn    (fn [_ i] (str i))
-             :render-fn #(list/render-action % {:action-label-style {:font-size 17}})}]])
-        [asset-section assets currency address-hex modal?]
-        ;; Hack to allow different colors for bottom scroll view (iOS only)
-        [react/view {:style styles/scroll-bottom}]])]))
-
-(views/defview wallet-modal []
-  [wallet-root true])
+     [status-bar.view/status-bar {:type :wallet-tab}]
+     [settings/toolbar-view]
+     [react/scroll-view {:refresh-control
+                         (reagent/as-element
+                          [react/refresh-control {:on-refresh #(re-frame/dispatch [:wallet.ui/pull-to-refresh])
+                                                  :tint-color :white
+                                                  :refreshing false}])}
+      (if error-message
+        [snackbar error-message]
+        [total-section portfolio-value currency])
+      (when (and (not modal?)
+                 (not seed-backed-up?)
+                 (some (fn [{:keys [amount]}]
+                         (and amount (not (.isZero amount))))
+                       assets))
+        [backup-seed-phrase])
+      [react/view (merge {:background-color colors/blue} styles/action-section)
+       [list/flat-list
+        {:data      actions
+         :key-fn    (fn [_ i] (str i))
+         :render-fn #(list/render-action % {:action-label-style {:font-size 17}})}]]
+      [asset-section assets currency address-hex]
+      ;; Hack to allow different colors for bottom scroll view (iOS only)
+      [react/view {:style styles/scroll-bottom}]]]))
 
 (views/defview wallet []
   (views/letsubs [{:keys [wallet-set-up-passed?]} [:account/account]]
     (if (not wallet-set-up-passed?)
       [onboarding.views/onboarding]
-      [wallet-root false])))
+      [wallet-root])))

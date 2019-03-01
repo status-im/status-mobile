@@ -64,7 +64,6 @@
     :wallet-send-transaction         {:type :wallet-tab}
     :sign-message-modal              {:type :modal-wallet}
     :wallet-transaction-fee          {:type :modal-wallet}
-    :wallet-modal                    {:type :modal-wallet}
     :wallet-onboarding-setup-modal   {:type :modal-wallet}
     :wallet-send-transaction-modal   {:type :modal-wallet}
     :wallet-settings-assets          {:type :modal-wallet}

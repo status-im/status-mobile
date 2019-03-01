@@ -25,7 +25,6 @@
                             config/hardwallet-enabled?
                             (concat [:hardwallet-connect :enter-pin]))
                  :config  {:initialRouteName :home}}
-                :wallet-modal
                 :chat-modal
                 :show-extension-modal
                 :stickers-pack-modal
