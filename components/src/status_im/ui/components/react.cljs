@@ -101,16 +101,19 @@
 
 (defn text
   ([t]
-   [text-class t])
+   [text-class {:allowFontScaling false} t])
   ([opts t & ts]
    (->> (conj ts t)
         (transform-to-uppercase opts)
-        (concat [text-class (add-font-style :style opts)])
+        (concat [text-class (add-font-style
+                             :style
+                             (assoc opts :allowFontScaling false))])
         (vec))))
 
 (defn text-input [{:keys [style] :as opts} text]
   [text-input-class (merge
                      {:underline-color-android :transparent
+                      :allowFontScaling        false
                       :placeholder-text-color  colors/text-gray
                       :placeholder             (i18n/label :t/type-a-message)
                       :value                   text}
