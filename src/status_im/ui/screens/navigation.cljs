@@ -115,16 +115,27 @@
    {:db (assoc db :modal modal-view)}))
 
 (fx/defn navigate-back
-  [{{:keys [navigation-stack view-id] :as db} :db}]
-  (assoc
-   {::navigate-back nil}
-   :db (let [[previous-view-id :as navigation-stack'] (pop navigation-stack)
-             first-in-stack (first navigation-stack)]
-         (if (= view-id first-in-stack)
-           (-> db
-               (assoc :view-id previous-view-id)
-               (assoc :navigation-stack navigation-stack'))
-           (assoc db :view-id first-in-stack)))))
+  [{:keys [db] :as cofx}]
+  (let [{:keys [navigation-stack view-id current-chat-id]}
+        db
+
+        [previous-view-id :as navigation-stack']
+        (pop navigation-stack)
+
+        first-in-stack
+        (first navigation-stack)
+
+        new-db
+        (if (= view-id first-in-stack)
+          (-> db
+              (assoc :view-id previous-view-id)
+              (assoc :navigation-stack navigation-stack'))
+          (assoc db :view-id first-in-stack))]
+    (if (= previous-view-id :chat)
+      (fx/merge cofx
+                (assoc {::navigate-back nil} :db new-db)
+                (status-im.chat.models/mark-messages-seen current-chat-id))
+      (assoc {::navigate-back nil} :db new-db))))
 
 (handlers/register-handler-fx
  :navigate-back
