@@ -13,7 +13,7 @@ if [[ -z ${PROC_NAME} ]]; then
 fi
 
 for ((i = 0; i < ${STEPS}; i += 1)); do
-    if pgrep ${PROC_NAME} > /dev/null; then
+    if pgrep -f ${PROC_NAME} > /dev/null; then
         echo "Process found. Sleeping ${SLEEP_SEC}..." >&2
         sleep ${SLEEP_SEC}
     else
