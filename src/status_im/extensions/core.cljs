@@ -297,6 +297,11 @@
        (commands-sending/send cofx current-chat-id command params)))))
 
 (handlers/register-handler-fx
+ :extensions.chat.command/open-public-chat
+ (fn [_ [_ _ {:keys [topic navigate-to]}]]
+   {:dispatch [:chat.ui/start-public-chat topic {:dont-navigate? (not navigate-to) :navigation-reset? true}]}))
+
+(handlers/register-handler-fx
  :extensions/show-selection-screen
  (fn [cofx [_ _ {:keys [on-select] :as params}]]
    (navigation/navigate-to-cofx cofx
@@ -486,6 +491,10 @@
                 {:permissions [:read]
                  :value       :extensions.chat.command/send-message
                  :arguments   {:params :map}}
+                'chat.command/open-public-chat
+                {:permissions [:read]
+                 :value       :extensions.chat.command/open-public-chat
+                 :arguments   {:topic :string :navigate-to :boolean}}
                 'log
                 {:permissions [:read]
                  :value       :log
