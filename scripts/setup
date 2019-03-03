@@ -62,8 +62,7 @@ fi
 setup_header "Installing requirements..."
 
 install_nix && \
-install_android_sdk && \
-install_android_ndk || \
+install_android_sdk || \
 exit $?
 
 ####

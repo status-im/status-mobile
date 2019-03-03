@@ -91,23 +91,3 @@ function use_android_sdk() {
 
   scripts/generate-keystore.sh
 }
-
-function install_android_ndk() {
-  if [ -d "$ANDROID_NDK_ROOT" ]; then
-    cecho "@green[[Android NDK already installed.]]"
-  else
-    local ANDROID_NDK_VERSION=$(toolversion android-ndk)
-    local _ndkParentDir=$(dirname $ANDROID_NDK_ROOT)
-    mkdir -p $_ndkParentDir
-    cecho "@cyan[[Downloading Android NDK.]]"
-
-    local PLATFORM=$(echo "$OS" | tr '[:upper:]' '[:lower:]')
-
-    download_url . android-ndk.zip https://dl.google.com/android/repository/android-ndk-$ANDROID_NDK_VERSION-$PLATFORM-x86_64.zip && \
-      cecho "@cyan[[Extracting Android NDK to $_ndkParentDir.]]" && \
-      unzip -q -o ./android-ndk.zip -d "$_ndkParentDir" && \
-      rm -f ./android-ndk.zip && \
-      _ndkTargetDir="$_ndkParentDir/$(ls $_ndkParentDir | grep ndk)" && \
-      cecho "@blue[[Android NDK installation completed in $_ndkTargetDir.]]"
-  fi
-}

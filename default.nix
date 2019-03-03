@@ -10,6 +10,7 @@ in with pkgs;
   let
     _stdenv = stdenvNoCC; # TODO: Try to use stdenv for Darwin
     statusDesktop = callPackage ./scripts/lib/setup/nix/desktop { stdenv = _stdenv; };
+    statusMobile = callPackage ./scripts/lib/setup/nix/mobile { stdenv = _stdenv; };
     nodeInputs = import ./scripts/lib/setup/nix/global-node-packages/output {
       # The remaining dependencies come from Nixpkgs
       inherit pkgs;
@@ -33,8 +34,8 @@ in with pkgs;
       maven
       ncurses
       ps # used in scripts/start-react-native.sh
-      openjdk
       statusDesktop.buildInputs
+      statusMobile.buildInputs
       watchman
       unzip
       wget
@@ -43,17 +44,8 @@ in with pkgs;
       ++ lib.optional isLinux gcc7;
     shellHook = ''
         ${statusDesktop.shellHook}
+        ${statusMobile.shellHook}
 
-        local toolversion="$(git rev-parse --show-toplevel)/scripts/toolversion"
-
-        export JAVA_HOME="${openjdk}"
-        export ANDROID_HOME=~/.status/Android/Sdk
-        export ANDROID_SDK_ROOT="$ANDROID_HOME"
-        export ANDROID_NDK_ROOT="$ANDROID_SDK_ROOT/android-ndk-$($toolversion android-ndk)"
-        export ANDROID_NDK_HOME="$ANDROID_NDK_ROOT"
-        export ANDROID_NDK="$ANDROID_NDK_ROOT"
-        export PATH="$ANDROID_HOME/bin:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools:$PATH"
-
-        [ -d "$ANDROID_NDK_ROOT" ] || ./scripts/setup # we assume that if the Android NDK dir does not exist, make setup needs to be run
+        [ -d "$ANDROID_SDK_ROOT" ] || ./scripts/setup # we assume that if the Android SDK dir does not exist, make setup needs to be run
     '';
   }
