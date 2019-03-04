@@ -189,7 +189,7 @@
   [list/section-list
    {:sections [{:title :t/chats
                 :data chats}
-               {:title :t/browsers
+               {:title :t/browser
                 :data browsers}
                {:title :t/messages
                 :data []}]
@@ -213,7 +213,7 @@
           :action-fn     #()
           :icon          (case title
                            "messages" :main-icons/private-chat
-                           "browsers" :main-icons/browser
+                           "browser" :main-icons/browser
                            "chats"    :main-icons/message)
           :icon-color    colors/gray}]))
     :render-fn (fn [home-item]
