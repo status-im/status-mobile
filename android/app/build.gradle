@@ -132,8 +132,8 @@ def getEnvOrConfig = { varName ->
 }
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
 
     defaultConfig {
@@ -218,7 +218,10 @@ android {
         }
     }
 
-    sourceSets { main { jniLibs.srcDirs 'libs' } }
+    sourceSets {
+        main { jniLibs.srcDirs 'libs' }
+        main.assets.srcDirs += '../../resources/mapview'
+    }
 }
 
 configurations.all {
@@ -235,7 +238,7 @@ dependencies {
     implementation project(':react-native-dialogs')
     implementation project(':realm')
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.android.support:appcompat-v7:27.1.0"
+    implementation "com.android.support:appcompat-v7:28.0.0"
     // Force using exact RN version instead of relying on gradle dependency resolution
     // https://docs.gradle.org/current/userguide/introduction_dependency_management.html#sec:dependency_resolution
     //compile ("com.facebook.react:react-native:0.55.4") { force = true }  // From node_modules
@@ -246,6 +249,7 @@ dependencies {
     implementation project(':react-native-image-crop-picker')
     implementation project(':react-native-securerandom')
     implementation project(':react-native-webview-bridge')
+    implementation project(':react-native-webview')
     implementation project(':react-native-config')
     implementation project(':react-native-firebase')
     compile ('com.google.android.gms:play-services-base:16.0.1') {

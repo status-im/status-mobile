@@ -8,6 +8,7 @@
 (def react-native           (js/require "react-native"))
 (def realm                  (js/require "realm"))
 (def webview-bridge         (js/require "react-native-webview-bridge"))
+(def webview                #js {:WebView #js {}})
 (def secure-random          (.-generateSecureRandom (js/require "react-native-securerandom")))
 (def EventEmmiter           (js/require "react-native/Libraries/vendor/emitter/EventEmitter"))
 (def fetch                  (.-default (js/require "react-native-fetch-polyfill")))

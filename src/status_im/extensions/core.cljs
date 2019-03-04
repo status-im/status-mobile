@@ -21,6 +21,7 @@
             [status-im.utils.fx :as fx]
             status-im.extensions.ethereum
             status-im.extensions.camera
+            [status-im.extensions.map :as map]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.chat.commands.sending :as commands-sending]
@@ -434,7 +435,18 @@
                 'activity-indicator     {:value activity-indicator :properties {:animating :boolean :color :string :size :keyword :hides-when-stopped :boolean}}
                 'picker                 {:value picker :properties {:on-change :event :selected :string :enabled :boolean :data :vector}}
                 'nft-token-viewer       {:value transactions/nft-token :properties {:token :string}}
-                'transaction-status     {:value transactions/transaction-status :properties {:outgoing :string :tx-hash :string}}}
+                'transaction-status     {:value transactions/transaction-status :properties {:outgoing :string :tx-hash :string}}
+                'map                    {:value map/map-webview
+                                         :properties {:marker {:lng :number
+                                                               :lat :number
+                                                               :boundingbox {:lng1 :number
+                                                                             :lat1 :number
+                                                                             :lng2 :number
+                                                                             :lat2 :number}}
+                                                      :fly? :boolean
+                                                      :interactive? :boolean
+                                                      :on-change :event}}
+                'map-link               {:value map/map-link :properties {:text :string :lng :any :lat :any}}}
    :queries    {'identity            {:value :extensions/identity :arguments {:value :map}}
                 'store/get           {:value :store/get :arguments {:key :string}}
                 'contacts/all        {:value :extensions.contacts/all} ;; :photo :name :address :public-key
