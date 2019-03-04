@@ -63,9 +63,8 @@
   {:width  24
    :height 24})
 
-(defn nav-item-button [unread-messages?]
-  {:margin-left  13
-   :margin-right (if unread-messages? -5 13)})
+(def nav-item-button
+  {:margin-horizontal 13})
 
 (defstyle item
   {:ios     {:padding-horizontal 12
@@ -90,9 +89,6 @@
 ;;TODO(goranjovic) - Breaks the toolbar title into new line on smaller screens
 ;;e.g. see Discover > Popular hashtags on iPhone 5s
 (def ios-content-item {:position :absolute :right 40 :left 40})
-
-(def counter-container
-  {:top 3})
 
 (def icon-add
   {:width           24
