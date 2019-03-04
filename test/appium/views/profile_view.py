@@ -366,11 +366,22 @@ class MailServerAddressInput(BaseEditBox):
         self.locator = self.Locator.xpath_selector("//android.widget.EditText[@text='Specify a mailserver address']")
 
 
+class MailServerAutoSelectionButton(BaseButton):
+    def __init__(self, driver):
+        super(MailServerAutoSelectionButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[contains(@text,'Automatic selection')]")
+
+
 class MailServerElement(BaseButton):
 
     def __init__(self, driver, server_name):
         super(MailServerElement, self).__init__(driver)
+        self.server_name = server_name
         self.locator = self.Locator.xpath_selector("//*[@content-desc='mailserver-item']//*[@text='%s']" % server_name)
+
+    def click(self):
+        self.scroll_to_element().click()
+        self.driver.info('Tap on "%s" mailserver value' % self.server_name)
 
 
 class MailServerConnectButton(BaseButton):
@@ -471,6 +482,7 @@ class ProfileView(BaseView):
         self.mail_server_button = MailServerButton(self.driver)
         self.mail_server_address_input = MailServerAddressInput(self.driver)
         self.mail_server_connect_button = MailServerConnectButton(self.driver)
+        self.mail_server_auto_selection_button = MailServerAutoSelectionButton(self.driver)
 
     def switch_network(self, network):
         self.advanced_button.click()

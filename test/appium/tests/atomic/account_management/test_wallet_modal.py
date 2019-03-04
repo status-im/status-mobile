@@ -11,6 +11,7 @@ class TestWalletModal(SingleDeviceTestCase):
 
     @marks.testrail_id(5398)
     @marks.high
+    @marks.skip
     def test_wallet_modal_public_chat(self):
         user = wallet_users['A']
         sign_in = SignInView(self.driver)
@@ -39,6 +40,7 @@ class TestWalletModal(SingleDeviceTestCase):
 
     @marks.testrail_id(5399)
     @marks.high
+    @marks.skip
     def test_wallet_modal_dapp(self):
         user = wallet_users['B']
         sign_in = SignInView(self.driver)
@@ -70,6 +72,7 @@ class TestWalletModal(SingleDeviceTestCase):
 
     @marks.testrail_id(5692)
     @marks.high
+    @marks.skip
     def test_wallet_modal_1_1_chat(self):
         user = wallet_users['C']
         recipient_address = basic_user['public_key']
@@ -99,6 +102,7 @@ class TestWalletModal(SingleDeviceTestCase):
 
     @marks.testrail_id(5693)
     @marks.high
+    @marks.skip
     def test_wallet_modal_group_chat(self):
         user = wallet_users['D']
         recipient_address = basic_user['public_key']
@@ -131,6 +135,7 @@ class TestWalletModal(SingleDeviceTestCase):
 
     @marks.testrail_id(5400)
     @marks.high
+    @marks.skip
     def test_wallet_modal_transaction_history(self):
         user = wallet_users['B']
         sign_in = SignInView(self.driver)
@@ -148,6 +153,7 @@ class TestWalletModal(SingleDeviceTestCase):
 
     @marks.testrail_id(5480)
     @marks.low
+    @marks.skip
     def test_close_and_open_wallet_modal(self):
         user = wallet_users['B']
         sign_in = SignInView(self.driver)
@@ -175,6 +181,7 @@ class TestWalletModal(SingleDeviceTestCase):
 
     @marks.testrail_id(5484)
     @marks.low
+    @marks.skip
     def test_close_wallet_modal_via_closs_icon(self):
         sign_in_view = SignInView(self.driver)
         home = sign_in_view.create_user()
@@ -190,6 +197,7 @@ class TestWalletModal(SingleDeviceTestCase):
 
     @marks.testrail_id(5483)
     @marks.low
+    @marks.skip
     def test_close_wallet_modal_via_device_back_button(self):
         sign_in_view = SignInView(self.driver)
         home = sign_in_view.create_user()
@@ -212,6 +220,7 @@ class TestWalletModal(SingleDeviceTestCase):
 
     @marks.testrail_id(5482)
     @marks.low
+    @marks.skip
     def test_switch_between_main_and_history_in_wallet_modal(self):
         sign_in_view = SignInView(self.driver)
         home = sign_in_view.create_user()

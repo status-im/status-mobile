@@ -367,6 +367,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.specify_name_input.set_value(server_name)
         profile_1.mail_server_address_input.set_value(mailserver_address)
         profile_1.save_button.click()
+        profile_1.mail_server_auto_selection_button.click()
         profile_1.mail_server_by_name(server_name).click()
         profile_1.mail_server_connect_button.click()
         profile_1.confirm_button.click()
