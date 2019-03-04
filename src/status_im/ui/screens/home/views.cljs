@@ -156,12 +156,22 @@
                       :easing   (.in (animation/easing)
                                      (.-quad (animation/easing)))})))
 
+(defn set-search-state-visible!
+  [visible?]
+  (swap! search-input-state assoc :show? visible?)
+  (animation/set-value (:height @search-input-state)
+                       (if visible?
+                         styles/search-input-height
+                         0)))
+
 (defn animated-search-input
   [search-filter]
   (reagent/create-class
    {:component-will-unmount
-    #(do (swap! search-input-state assoc :show? false)
-         (animation/set-value (:height @search-input-state) 0))
+    #(set-search-state-visible! false)
+    :component-did-mount
+    #(when search-filter
+       (set-search-state-visible! true))
     :reagent-render
     (fn [search-filter]
       (let [{:keys [show? height]} @search-input-state]
