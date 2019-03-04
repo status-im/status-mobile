@@ -54,8 +54,8 @@ PODS:
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
   - Protobuf (3.6.1)
-  - React (0.56.0):
-    - React/Core (= 0.56.0)
+  - React (0.59.2):
+    - React/Core (= 0.59.2)
   - react-native-background-timer (2.1.0-alpha.6):
     - React
   - react-native-camera (1.1.5):
@@ -68,8 +68,8 @@ PODS:
     - React
   - react-native-webview (5.2.1):
     - React
-  - React/Core (0.56.0):
-    - yoga (= 0.56.0.React)
+  - React/Core (0.59.2):
+    - yoga (= 0.59.2.React)
   - RNKeychain (3.0.0-rc.3):
     - React
   - SQLCipher (3.4.2):
@@ -77,7 +77,7 @@ PODS:
   - SQLCipher/common (3.4.2)
   - SQLCipher/standard (3.4.2):
     - SQLCipher/common
-  - yoga (0.56.0.React)
+  - yoga (0.59.2.React)
 
 DEPENDENCIES:
   - Firebase/Core
@@ -127,13 +127,13 @@ SPEC CHECKSUMS:
   GoogleUtilities: 06b66f9567769a7958db20a92f0128b2843e49d5
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
-  React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
+  React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
   react-native-background-timer: bb7a98c8e97fc7c290de2d423dd09ddb73dcbcbb
   react-native-camera: 68ad5143d2d0636236d46c7de8d2a6455ca52a36
   react-native-webview: a42108b827082f8f0333529b0772102031d5960d
   RNKeychain: 627c6095cef215dd3d9804a9a9cf45ab96aa3997
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
-  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
+  yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
 PODFILE CHECKSUM: 2e0971124458d413e18b407b2337bf2c1d32f357
 

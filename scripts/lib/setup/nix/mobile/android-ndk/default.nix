@@ -6,15 +6,15 @@
 { stdenv, fetchzip }:
 
 let
-  ndk-version = "r10e";
+  ndk-version = "r17c";
   archives = {
     macosx = fetchzip {
       url = "https://dl.google.com/android/repository/android-ndk-${ndk-version}-darwin-x86_64.zip";
-      sha256 = "0pqagwqrp6sw7l5hcbjs308wqnxyslnpr7x8svs58dlkzn70255q";
+      sha256 = "0299m2l8jp773r9y1l9jbyy4xw2mvsz8gqv5b409gwclq8apip1w";
     };
     linux = fetchzip {
       url = "https://dl.google.com/android/repository/android-ndk-${ndk-version}-linux-x86_64.zip";
-      sha256 = "168dbhk7cvrri1b4jwskjqm5mj14cg6px7y7ycz4g9m8byqvqjhf";
+      sha256 = "02q1hy423syl868jdyaxjm44hn59cmni5019r811vinagvq3m7qi";
     };
   };
 

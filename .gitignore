@@ -129,6 +129,7 @@ fastlane/README.md
 /VERSION
 /package-lock.json
 /package.json
+/metro.config.js
 /yarn.lock
 /.re-natal
 /re-natal

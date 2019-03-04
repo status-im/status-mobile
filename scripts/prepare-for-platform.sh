@@ -55,6 +55,9 @@ if [ ! -f .babelrc ] || [ $(readlink .babelrc) != "${PLATFORM_FOLDER}/.babelrc" 
 
   echo "Creating link: .babelrc -> ${PLATFORM_FOLDER}/.babelrc"
   ln -sf ${PLATFORM_FOLDER}/.babelrc .babelrc
+
+  echo "Creating link: .babelrc -> ${PLATFORM_FOLDER}/.babelrc"
+  ln -sf ${PLATFORM_FOLDER}/metro.config.js metro.config.js
 fi
 
 yarn install --frozen-lockfile

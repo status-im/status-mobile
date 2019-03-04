@@ -13,7 +13,7 @@
 (defview qr-scanner-toolbar [title identifier]
   [react/view
    [status-bar/status-bar]
-   [toolbar/toolbar nil
+   [toolbar/toolbar {:style {:background-color :white}}
     [toolbar/nav-button (actions/back
                          #(do
                             (re-frame/dispatch [:qr-scanner.callback/scan-qr-code-cancel identifier])

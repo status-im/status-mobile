@@ -1,18 +1,42 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+    ext {
+        buildToolsVersion = "28.0.3"
+        minSdkVersion = 16
+        compileSdkVersion = 28
+        targetSdkVersion = 28
+        supportLibVersion = "28.0.0"
+    }
     repositories {
         flatDir { dirs "libs", "${rootDir}/app/libs" }
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
-        classpath 'com.google.gms:google-services:4.1.0'
+        classpath 'com.android.tools.build:gradle:3.3.2'
+        // google-services downgraded from 4.1.0 because of
+        // https://github.com/invertase/react-native-firebase/issues/766#issuecomment-365116012
+        classpath 'com.google.gms:google-services:4.0.1'
         classpath 'de.undercouch:gradle-download-task:3.1.2'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+    }
+}
+
+subprojects {
+    afterEvaluate {
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion 28
+                buildToolsVersion "28.0.3"
+
+                defaultConfig {
+                    targetSdkVersion 28
+                }
+            }
+        }
     }
 }
 
@@ -28,3 +52,4 @@ allprojects {
         maven { url "https://jitpack.io" }
     }
 }
+

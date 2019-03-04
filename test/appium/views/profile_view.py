@@ -105,14 +105,14 @@ class UserNameSetByUserText(BaseText):
     def __init__(self, driver):
         super(UserNameSetByUserText, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            '//android.widget.ImageView[@content-desc="chat-icon"]/../../android.widget.TextView[1]')
+            '//android.widget.ImageView[@content-desc="chat-icon"]/../android.widget.TextView[1]')
 
 
 class DefaultUserNameText(BaseText):
     def __init__(self, driver):
         super(DefaultUserNameText, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            '//android.widget.ImageView[@content-desc="chat-icon"]/../../android.widget.TextView[2]')
+            '//android.widget.ImageView[@content-desc="chat-icon"]/../android.widget.TextView[2]')
 
 
 class ShareMyProfileButton(BaseButton):

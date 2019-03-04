@@ -11,21 +11,8 @@ import re
 #
 
 lib_deps = []
-for jarfile in glob(['libs/*.jar']):
-  name = 'jars__' + re.sub(r'^.*/([^/]+)\.jar$', r'\1', jarfile)
-  lib_deps.append(':' + name)
-  prebuilt_jar(
-    name = name,
-    binary_jar = jarfile,
-  )
-
-for aarfile in glob(['libs/*.aar']):
-  name = 'aars__' + re.sub(r'^.*/([^/]+)\.aar$', r'\1', aarfile)
-  lib_deps.append(':' + name)
-  android_prebuilt_aar(
-    name = name,
-    aar = aarfile,
-  )
+create_aar_targets(glob(["libs/*.aar"]))
+create_jar_targets(glob(["libs/*.jar"]))
 
 android_library(
   name = 'all-libs',
