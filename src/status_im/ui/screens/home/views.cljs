@@ -294,8 +294,7 @@
                                         :animating true}]]
 
             :else
-            [react/view {:style {:flex 1
-                                 :z-index -1}}
+            [react/view {:style {:flex 1}}
              [connectivity/connectivity-view]
              [animated-search-input search-filter]
              (if (and (not search-filter)
