@@ -129,7 +129,7 @@
                                     :webview webview}
            :dispatch          [:navigate-back]}
 
-    (= method constants/web3-personal-sign)
+    (constants/web3-sign-message? method)
     (assoc :dispatch [:navigate-back])
 
     (= method constants/web3-send-transaction)

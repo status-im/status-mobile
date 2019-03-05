@@ -289,8 +289,8 @@
 
 (fx/defn web3-send-async
   [{:keys [db]} {:keys [method] :as payload} message-id]
-  (if (or (= method constants/web3-send-transaction)
-          (= method constants/web3-personal-sign))
+  (if (or (= constants/web3-send-transaction method)
+          (constants/web3-sign-message? method))
     {:db       (update-in db [:wallet :transactions-queue] conj {:message-id message-id :payload payload})
      ;;TODO(yenda): refactor check-dapps-transactions-queue to remove this dispatch
      :dispatch [:check-dapps-transactions-queue]}

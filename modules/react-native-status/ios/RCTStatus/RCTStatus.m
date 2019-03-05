@@ -319,6 +319,19 @@ RCT_EXPORT_METHOD(signMessage:(NSString *)message
 }
 
 ////////////////////////////////////////////////////////////////////
+#pragma mark - SignTypedData
+//////////////////////////////////////////////////////////////////// signTypedData
+RCT_EXPORT_METHOD(signTypedData:(NSString *)data
+                  password:(NSString *)password
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"SignTypedData() method called");
+#endif
+    NSString *result = StatusgoSignTypedData(data, password);
+    callback(@[result]);
+}
+
+////////////////////////////////////////////////////////////////////
 #pragma mark - SignGroupMembership
 //////////////////////////////////////////////////////////////////// signGroupMembership
 RCT_EXPORT_METHOD(signGroupMembership:(NSString *)content

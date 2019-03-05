@@ -104,6 +104,10 @@
   (when (and @node-started status)
     (.hashTransaction status rpcParams callback)))
 
+(defn sign-typed-data [data password callback]
+  (when (and @node-started status)
+    (.signTypedData status data password callback)))
+
 (defn send-transaction [rpcParams password callback]
   (when (and @node-started status)
     (.sendTransaction status rpcParams password callback)))
