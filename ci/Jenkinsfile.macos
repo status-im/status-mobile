@@ -23,12 +23,11 @@ pipeline {
 
   environment {
     TARGET_PLATFORM = 'macos'
+    CI_ENVIRONMENT = 'jenkins'
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
     LC_ALL = 'en_US.UTF-8'
-    QT_PATH = '/usr/local/opt/qt'
-    PATH = "/usr/local/opt/qt/bin:${env.PATH}"
-    MACDEPLOYQT = '/usr/local/opt/qt/bin/macdeployqt'
+    NIX_CONF_DIR = "${env.WORKSPACE}/scripts/lib/setup/nix"
     VERBOSE_LEVEL = '3'
   }
 
@@ -42,30 +41,26 @@ pipeline {
           btype   = cmn.utils.getBuildType()
           print "Running ${btype} build!"
           cmn.ci.abortPreviousRunningBuilds()
-          /* Read the valid NodeJS version */
-          env.NODE_VERSION = cmn.utils.getToolVersion('node')
           /* Cleanup and Prep */
           cmn.prepNixEnvironment()
-          nvm(env.NODE_VERSION) {
-            desktop.prepDeps()
-          }
+          desktop.prepDeps()
         }
       }
     }
     stage('Lint') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {
         script { cmn.utils.nix_sh('lein cljfmt check') }
-      } }
+      }
     }
     stage('Tests') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {
         script { cmn.utils.nix_sh('lein test-cljs') }
-      } }
+      }
     }
     stage('Build') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {
         script { desktop.buildClojureScript() }
-      } }
+      }
     }
     stage('Compile') {
       steps {

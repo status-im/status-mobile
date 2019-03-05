@@ -12,10 +12,11 @@ let
 
 in
   {
-    buildInputs = lib.optional targetAndroid [
-      android-ndk
-      openjdk
-    ];
+    buildInputs = [ bundler ] ++
+      lib.optional targetAndroid [
+        android-ndk
+        openjdk
+      ];
     shellHook = lib.optionalString targetAndroid ''
       export JAVA_HOME="${openjdk}"
       export ANDROID_HOME=~/.status/Android/Sdk
