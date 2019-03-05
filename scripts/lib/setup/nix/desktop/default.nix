@@ -6,11 +6,11 @@ with stdenv;
 let
   targetLinux = {
     "linux" = true;
-    "" = true;
+    "" = isLinux;
   }.${target-os} or false;
   targetWindows = {
     "windows" = true;
-    "" = true;
+    "" = isLinux;
   }.${target-os} or false;
   windowsPlatform = callPackage ./windows { };
   appimagekit = callPackage ./appimagekit { };

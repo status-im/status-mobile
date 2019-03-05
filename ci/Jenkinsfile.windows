@@ -36,11 +36,13 @@ pipeline {
    **/
   environment {
     TARGET_PLATFORM = 'windows'
+    CI_ENVIRONMENT = 'jenkins'
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
     LC_ALL = 'en_US.UTF-8'
     NPM_CONFIG_CACHE = '/var/tmp/npm'
     LEIN_HOME = '/var/tmp/lein'
+    NIX_CONF_DIR = "${env.WORKSPACE}/scripts/lib/setup/nix"
     TARGET_SYSTEM_NAME = 'Windows'
     CONAN_PRINT_RUN_COMMANDS = '1'
     CONAN_SYSREQUIRES_MODE = 'disabled'
@@ -59,6 +61,7 @@ pipeline {
           print "Running ${btype} build!"
           cmn.ci.abortPreviousRunningBuilds()
           /* Cleanup and Prep */
+          cmn.prepNixEnvironment()
           desktop.prepDeps()
         }
       }

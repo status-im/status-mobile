@@ -23,9 +23,11 @@ pipeline {
 
   environment {
     TARGET_PLATFORM = 'ios'
+    CI_ENVIRONMENT = 'jenkins'
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
     LC_ALL = 'en_US.UTF-8'
+    NIX_CONF_DIR = "${env.WORKSPACE}/scripts/lib/setup/nix"
     FASTLANE_DISABLE_COLORS=1
     REALM_DISABLE_ANALYTICS=1
     BUNDLE_PATH = "${HOME}/.bundle"
@@ -41,34 +43,31 @@ pipeline {
           btype   = cmn.utils.getBuildType()
           print "Running ${btype} build!"
           cmn.ci.abortPreviousRunningBuilds()
-          /* Read the valid NodeJS version */
-          env.NODE_VERSION = cmn.utils.getToolVersion('node')
           /* Cleanup and Prep */
-          nvm(env.NODE_VERSION) {
-            mobile.prep(btype)
-          }
+          cmn.prepNixEnvironment()
+          mobile.prep(btype)
         }
       }
     }
     stage('Lint') {
-      steps {nvm(env.NODE_VERSION) {
+      steps {
         script { cmn.utils.nix_sh('lein cljfmt check') }
-      } }
+      }
     }
     stage('Tests') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {
         script { cmn.utils.nix_sh('lein test-cljs') }
-      } }
+      }
     }
     stage('Build') {
-      steps { nvm(env.NODE_VERSION) {
-        sh "lein prod-build-ios"
-      } }
+      steps {
+        script { cmn.utils.nix_sh('lein prod-build-ios') }
+      }
     }
     stage('Bundle') {
-      steps { nvm(env.NODE_VERSION) {
+      steps {
         script { api = mobile.ios.bundle(btype) }
-      } }
+      }
     }
     stage('Archive') {
       steps {
