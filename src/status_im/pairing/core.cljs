@@ -209,6 +209,7 @@
      [{:web3    web3
        :src     current-public-key
        :dst     current-public-key
+       :topics  (get-in cofx [:db :mailserver/topics])
        :payload payload}]}))
 
 (fx/defn send-installation-message-fx [cofx payload]

@@ -134,14 +134,15 @@
      (fx/merge
       cofx
       {:shh/send-group-message
-       {:web3          web3
-        :src           current-public-key
-        :dsts          destinations
-        :success-event [:transport/message-sent
-                        chat-id
-                        message-id
-                        :group-user-message]
-        :payload       payload}}))))
+       {:web3             web3
+        :src              current-public-key
+        :dsts             destinations
+        :available-topics (get-in cofx [:db :mailserver/topics])
+        :success-event    [:transport/message-sent
+                           chat-id
+                           message-id
+                           :group-user-message]
+        :payload          payload}}))))
 
 (fx/defn handle-membership-update-received
   "Extract signatures in status-go and act if successful"

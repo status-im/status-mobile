@@ -80,12 +80,16 @@
 (re-frame/reg-fx
  :shh/send-direct-message
  (fn [post-calls]
-   (doseq [{:keys [web3 payload src dst success-event error-event]
+   (doseq [{:keys [web3 payload src dst success-event error-event topics]
             :or   {error-event :transport/send-status-message-error}} post-calls]
-     (let [direct-message {:pubKey dst
-                           :sig src
-                           :chat (transport.topic/public-key->discovery-topic dst)
-                           :payload payload}]
+     (let [part-topic-hash (transport.topic/public-key->discovery-topic-hash dst)
+           topic (if (contains? topics part-topic-hash)
+                   (transport.topic/public-key->discovery-topic dst)
+                   transport.topic/discovery-topic)
+           direct-message  {:pubKey  dst
+                            :sig     src
+                            :chat    topic
+                            :payload payload}]
        (send-direct-message! web3 direct-message success-event error-event 1)))))
 
 (re-frame/reg-fx
@@ -107,12 +111,15 @@
 (re-frame/reg-fx
  :shh/send-group-message
  (fn [params]
-   (let [{:keys [web3 payload chat src dsts success-event error-event]
+   (let [{:keys [web3 payload src dsts success-event error-event available-topics]
           :or   {error-event :transport/send-status-message-error}} params]
      (doseq [{:keys [public-key chat]} dsts]
-       (let [message
+       (let [topic (if (transport.topic/contains-topic? available-topics chat)
+                     chat
+                     transport.topic/discovery-topic)
+             message
              (clj->js {:pubKey public-key
-                       :chat chat
+                       :chat topic
                        :sig src
                        :payload (-> payload
                                     transit/serialize

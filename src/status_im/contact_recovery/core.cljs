@@ -53,9 +53,10 @@
   (let [{:keys [web3]} (:db cofx)
         current-public-key (accounts.db/current-public-key cofx)]
     {:shh/send-direct-message
-     [{:web3 web3
-       :src current-public-key
-       :dst public-key
+     [{:web3    web3
+       :src     current-public-key
+       :dst     public-key
+       :topics  (get-in cofx [:db :mailserver/topics])
        :payload ""}]}))
 
 (re-frame/reg-fx

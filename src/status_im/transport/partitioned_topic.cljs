@@ -37,6 +37,7 @@
       partitioned-topic
       utils/get-topic))
 
+(def discovery-topic constants/contact-discovery)
 (def discovery-topic-hash (utils/get-topic constants/contact-discovery))
 
 (defn public-key->discovery-topic
@@ -45,10 +46,15 @@
     (partitioned-topic public-key)
     constants/contact-discovery))
 
-(defn public-key->discovery-topic-hash [public-key]
+(defn public-key->discovery-topic-hash
+  [public-key]
   (if config/partitioned-topic-enabled?
     (partitioned-topic-hash public-key)
     discovery-topic-hash))
 
 (defn discovery-topics [public-key]
   [(partitioned-topic-hash public-key) discovery-topic-hash])
+
+(defn contains-topic?
+  [available-topics topic]
+  (contains? available-topics (utils/get-topic topic)))
