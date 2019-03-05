@@ -11,7 +11,7 @@ from views.sign_in_view import SignInView
 class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5335)
-    @marks.critical
+    @marks.high
     def test_wallet_set_up(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()

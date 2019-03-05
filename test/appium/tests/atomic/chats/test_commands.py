@@ -341,7 +341,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 class TestCommandsSingleDevices(SingleDeviceTestCase):
 
     @marks.testrail_id(5349)
-    @marks.critical
+    @marks.high
     def test_send_request_not_enabled_tokens(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -373,7 +373,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         chat.check_no_values_in_logcat(password=unique_password)
 
     @marks.testrail_id(5347)
-    @marks.critical
+    @marks.high
     def test_send_transaction_details_in_1_1_chat(self):
         recipient = basic_user
         sender = transaction_senders['G']

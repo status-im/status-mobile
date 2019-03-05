@@ -12,6 +12,7 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.testrail_id(5300)
     @marks.critical
     @marks.battery_consumption
+    @marks.skip
     def test_create_account(self):
         sign_in = SignInView(self.driver, skip_popups=False)
         sign_in.accept_agreements()

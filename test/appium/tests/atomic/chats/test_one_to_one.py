@@ -102,7 +102,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
 
     @marks.testrail_id(5315)
-    @marks.critical
+    @marks.high
     def test_send_message_to_newly_added_contact(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -504,7 +504,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(5322)
-    @marks.critical
+    @marks.medium
     def test_delete_cut_and_paste_messages(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()

@@ -51,7 +51,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(3993)
-    @marks.high
+    @marks.critical
     def test_send_message_in_group_chat(self):
         message_from_device_1 = 'Hello from device 1'
         message_from_device_2 = 'Hi there! Sent from device 2'

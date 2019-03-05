@@ -84,7 +84,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
 
     @marks.testrail_id(5744)
-    @marks.high
+    @marks.critical
     def test_send_two_transactions_one_after_another_in_dapp(self):
         sender = transaction_senders['Z']
         sign_in_view = SignInView(self.driver)
@@ -153,7 +153,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         wallet_view.wait_balance_changed_on_wallet_screen()
 
     @marks.testrail_id(5355)
-    @marks.critical
+    @marks.medium
     def test_onboarding_screen_when_requesting_tokens_for_new_account(self):
         signin_view = SignInView(self.driver)
         home_view = signin_view.create_user()

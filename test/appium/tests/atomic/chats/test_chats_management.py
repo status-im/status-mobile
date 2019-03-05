@@ -67,7 +67,7 @@ class TestChatManagement(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(5304)
-    @marks.critical
+    @marks.high
     def test_open_chat_by_pasting_public_key(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()

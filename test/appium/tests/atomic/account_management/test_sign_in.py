@@ -55,7 +55,7 @@ class TestSignIn(SingleDeviceTestCase):
 class TestSignInOffline(MultipleDeviceTestCase):
 
     @marks.testrail_id(5327)
-    @marks.critical
+    @marks.medium
     def test_offline_login(self):
         self.create_drivers(1)
         sign_in = SignInView(self.drivers[0])

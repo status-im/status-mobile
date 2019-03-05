@@ -12,7 +12,7 @@ from views.sign_in_view import SignInView
 class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5302)
-    @marks.critical
+    @marks.high
     def test_set_profile_picture(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -250,7 +250,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.deny_button.wait_for_visibility_of_element(2)
 
     @marks.testrail_id(5299)
-    @marks.critical
+    @marks.high
     def test_user_can_switch_network(self):
         signin_view = SignInView(self.driver)
         home_view = signin_view.create_user()
