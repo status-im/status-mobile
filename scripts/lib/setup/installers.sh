@@ -39,6 +39,10 @@ function install_nix() {
 }
 
 function install_android_sdk() {
+  if [ -z "$ANDROID_SDK_ROOT" ]; then
+    return 0
+  fi
+
   if [ -d "$ANDROID_SDK_ROOT" ]; then
     cecho "@green[[Android SDK already installed.]]"
   else
