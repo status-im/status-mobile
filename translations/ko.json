@@ -1,8 +1,9 @@
 {
     "confirm": "비밀번호 확인",
     "phone-national": "국내",
-    "amount": "금액",
+    "amount": "수량",
     "members-active": {
+        "one": "1 명",
         "other": "{{count}} 명"
     },
     "chat-name": "채팅 이름",
@@ -16,6 +17,7 @@
     "address": "주소",
     "new-public-group-chat": "오픈채팅 참여하기",
     "datetime-hour": {
+        "one": "시",
         "other": "시"
     },
     "datetime-ago-format": "{{number}}{{time-intervals}} {{ago}}",
