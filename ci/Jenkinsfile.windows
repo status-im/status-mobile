@@ -35,7 +35,7 @@ pipeline {
    * https://issues.jenkins-ci.org/browse/JENKINS-49076
    **/
   environment {
-    BUILD_PLATFORM = 'windows'
+    TARGET_PLATFORM = 'windows'
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
     LC_ALL = 'en_US.UTF-8'
