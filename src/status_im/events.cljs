@@ -1149,9 +1149,19 @@
    (hardwallet/load-loading-keys-screen cofx)))
 
 (handlers/register-handler-fx
+ :hardwallet/load-loading-keys-screen
+ (fn [cofx _]
+   (hardwallet/load-loading-keys-screen cofx)))
+
+(handlers/register-handler-fx
  :hardwallet.ui/recovery-phrase-cancel-pressed
  (fn [{:keys [db]} _]
    {:db (assoc-in db [:hardwallet :setup-step] :recovery-phrase)}))
+
+(handlers/register-handler-fx
+ :hardwallet/load-preparing-screen
+ (fn [cofx _]
+   (hardwallet/load-preparing-screen cofx)))
 
 (handlers/register-handler-fx
  :hardwallet/connection-error
@@ -1181,6 +1191,16 @@
  :hardwallet.ui/secret-keys-dialog-confirm-pressed
  (fn [cofx _]
    (hardwallet/load-pairing-screen cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet/load-pairing-screen
+ (fn [cofx _]
+   (hardwallet/load-pairing-screen cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet/load-generating-mnemonic-screen
+ (fn [cofx _]
+   (hardwallet/load-generating-mnemonic-screen cofx)))
 
 (handlers/register-handler-fx
  :hardwallet/pair

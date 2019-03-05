@@ -272,10 +272,9 @@
 (fx/defn on-get-application-info-success
   [{:keys [db] :as cofx} info on-success]
   (let [info' (js->clj info :keywordize-keys true)
-        {:keys [pin-retry-counter puk-retry-counter]} info'
+        {:keys [pin-retry-counter puk-retry-counter instance-uid]} info'
         connect-screen? (= (:view-id db) :hardwallet-connect)
         card-state (get-in db [:hardwallet :card-state])
-        instance-uid (get-in db [:hardwallet :application-info :instance-uid])
         accounts-screen? (= :accounts (:view-id db))
         auto-login? (and accounts-screen?
                          (not= on-success :hardwallet/auto-login))
@@ -488,16 +487,24 @@
                 (navigate-to-enter-pin-screen)
                 (navigation/navigate-to-cofx :hardwallet-connect nil)))))
 
-(fx/defn error-button-pressed [{:keys [db] :as cofx}]
-  (let [return-to-step (get-in db [:hardwallet :return-to-step] :begin)]
-    (fx/merge cofx
-              {:db (assoc-in db [:hardwallet :setup-step] return-to-step)}
-              (when-not return-to-step
-                (navigation/navigate-to-cofx :hardwallet-connect nil)))))
+(fx/defn error-button-pressed
+  [{:keys [db] :as cofx}]
+  (let [card-connected? (get-in db [:hardwallet :card-connected?])
+        on-card-connected (get-in db [:hardwallet :on-card-connected])]
+    (if card-connected?
+      {:dispatch [on-card-connected]}
+      (navigation/navigate-to-cofx cofx :hardwallet-connect nil))))
 
-(fx/defn load-pairing-screen [{:keys [db]}]
-  {:db       (assoc-in db [:hardwallet :setup-step] :pairing)
-   :dispatch [:hardwallet/pair]})
+(fx/defn load-pairing-screen
+  [{:keys [db] :as cofx}]
+  (let [card-connected? (get-in db [:hardwallet :card-connected?])]
+    (fx/merge cofx
+              {:db (-> db
+                       (assoc-in [:hardwallet :setup-step] :pairing)
+                       (assoc-in [:hardwallet :on-card-connected] :hardwallet/load-pairing-screen))}
+              (if card-connected?
+                (dispatch-event :hardwallet/pair)
+                (navigation/navigate-to-cofx :hardwallet-connect nil)))))
 
 (fx/defn pair [cofx]
   (let [{:keys [password]} (get-in cofx [:db :hardwallet :secrets])]
@@ -511,9 +518,15 @@
   (assoc-in fx [:db :hardwallet :pin :enter-step] :confirmation))
 
 (fx/defn load-preparing-screen
-  [{:keys [db]}]
-  {:db       (assoc-in db [:hardwallet :setup-step] :preparing)
-   :dispatch [:hardwallet/start-installation]})
+  [{:keys [db] :as cofx}]
+  (let [card-connected? (get-in db [:hardwallet :card-connected?])]
+    (fx/merge cofx
+              {:db (-> db
+                       (assoc-in [:hardwallet :setup-step] :preparing)
+                       (assoc-in [:hardwallet :on-card-connected] :hardwallet/load-preparing-screen))}
+              (if card-connected?
+                (dispatch-event :hardwallet/start-installation)
+                (navigation/navigate-to-cofx :hardwallet-connect nil)))))
 
 (fx/defn pin-match
   [{:keys [db] :as fx}]
@@ -738,14 +751,26 @@
       (pin-enter-error :t/pin-mismatch))))
 
 (fx/defn load-loading-keys-screen
-  [{:keys [db]}]
-  {:db       (assoc-in db [:hardwallet :setup-step] :loading-keys)
-   :dispatch [:hardwallet/generate-and-load-key]})
+  [{:keys [db] :as cofx}]
+  (let [card-connected? (get-in db [:hardwallet :card-connected?])]
+    (fx/merge cofx
+              {:db (-> db
+                       (assoc-in [:hardwallet :setup-step] :loading-keys)
+                       (assoc-in [:hardwallet :on-card-connected] :hardwallet/load-loading-keys-screen))}
+              (if card-connected?
+                (dispatch-event :hardwallet/generate-and-load-key)
+                (navigation/navigate-to-cofx :hardwallet-connect nil)))))
 
 (fx/defn load-generating-mnemonic-screen
-  [{:keys [db]}]
-  {:db       (assoc-in db [:hardwallet :setup-step] :generating-mnemonic)
-   :dispatch [:hardwallet/generate-mnemonic]})
+  [{:keys [db] :as cofx}]
+  (let [card-connected? (get-in db [:hardwallet :card-connected?])]
+    (fx/merge cofx
+              {:db (-> db
+                       (assoc-in [:hardwallet :setup-step] :generating-mnemonic)
+                       (assoc-in [:hardwallet :on-card-connected] :hardwallet/load-generating-mnemonic-screen))}
+              (if card-connected?
+                (dispatch-event :hardwallet/generate-mnemonic)
+                (navigation/navigate-to-cofx :hardwallet-connect nil)))))
 
 (fx/defn generate-mnemonic
   [cofx]
@@ -753,10 +778,9 @@
     {:hardwallet/generate-mnemonic {:pairing pairing}}))
 
 (fx/defn on-card-connected
-  [{:keys [db] :as cofx} data]
-  (log/debug "[hardwallet] card connected " data)
-  (let [return-to-step (get-in db [:hardwallet :return-to-step])
-        setup-step (get-in db [:hardwallet :setup-step])
+  [{:keys [db] :as cofx} _]
+  (log/debug "[hardwallet] card connected")
+  (let [setup-step (get-in db [:hardwallet :setup-step])
         setup-running? (boolean setup-step)
         pin-enter-step (get-in db [:hardwallet :pin :enter-step])
         login? (= :login pin-enter-step)
@@ -771,11 +795,9 @@
                        :else (get-in db [:hardwallet :on-card-read]))
         pairing (get-pairing db instance-uid)]
     (fx/merge cofx
-              {:db                              (cond-> db
-                                                  return-to-step (assoc-in [:hardwallet :setup-step] return-to-step)
-                                                  true (assoc-in [:hardwallet :card-connected?] true)
-                                                  true (assoc-in [:hardwallet :card-read-in-progress?] (boolean on-card-read))
-                                                  true (assoc-in [:hardwallet :return-to-step] nil))
+              {:db                              (-> db
+                                                    (assoc-in [:hardwallet :card-connected?] true)
+                                                    (assoc-in [:hardwallet :card-read-in-progress?] (boolean on-card-read)))
                :hardwallet/get-application-info {:pairing    pairing
                                                  :on-success on-card-read}}
               (when (and on-card-connected
@@ -793,8 +815,8 @@
               {:db (-> db
                        (assoc-in [:hardwallet :card-connected?] false)
                        (assoc-in [:hardwallet :card-read-in-progress?] false))}
-              (when (or setup-running?
-                        on-card-connected)
+              (when (and setup-running?
+                         on-card-connected)
                 (navigation/navigate-to-cofx :hardwallet-connect nil)))))
 
 (fx/defn begin-setup-button-pressed
@@ -832,6 +854,7 @@
   (let [secrets' (js->clj secrets :keywordize-keys true)]
     {:hardwallet/get-application-info nil
      :db                              (-> db
+                                          (assoc-in [:hardwallet :on-card-connected] nil)
                                           (assoc-in [:hardwallet :setup-step] :secret-keys)
                                           (assoc-in [:hardwallet :secrets] secrets'))}))
 
@@ -849,9 +872,7 @@
   [{:keys [db] :as cofx} {:keys [code error]}]
   (log/debug "[hardwallet] install applet and init card error: " error)
   (fx/merge cofx
-            {:db (-> db
-                     (assoc-in [:hardwallet :return-to-step] :begin)
-                     (assoc-in [:hardwallet :setup-error] error))}
+            {:db (assoc-in db [:hardwallet :setup-error] error)}
             (process-error code)))
 
 (def on-init-card-error on-install-applet-and-init-card-error)
@@ -877,6 +898,7 @@
     (fx/merge cofx
               {:db (-> db
                        (assoc-in [:hardwallet :application-info :paired?] true)
+                       (assoc-in [:hardwallet :on-card-connected] nil)
                        (assoc-in [:hardwallet :setup-step] next-step)
                        (assoc-in [:hardwallet :secrets :pairing] pairing)
                        (assoc-in [:hardwallet :secrets :paired-on] paired-on))}
@@ -888,29 +910,22 @@
 (fx/defn on-pairing-error
   [{:keys [db] :as cofx} {:keys [error code]}]
   (log/debug "[hardwallet] pairing error: " error)
-  (let [setup-step (get-in db [:hardwallet :setup-step])
-        next-step (if (= setup-step :enter-pair-code)
-                    :enter-pair-code
-                    :secret-keys)]
-    (fx/merge cofx
-              {:db (-> db
-                       (assoc-in [:hardwallet :return-to-step] next-step)
-                       (assoc-in [:hardwallet :setup-error] error))}
-              (process-error code))))
+  (fx/merge cofx
+            {:db (assoc-in db [:hardwallet :setup-error] error)}
+            (process-error code)))
 
 (fx/defn on-generate-mnemonic-success
   [{:keys [db]} mnemonic]
   {:db (-> db
            (assoc-in [:hardwallet :setup-step] :recovery-phrase)
+           (assoc-in [:hardwallet :on-card-connected] nil)
            (assoc-in [:hardwallet :secrets :mnemonic] mnemonic))})
 
 (fx/defn on-generate-mnemonic-error
   [{:keys [db] :as cofx} {:keys [error code]}]
   (log/debug "[hardwallet] generate mnemonic error: " error)
   (fx/merge cofx
-            {:db (-> db
-                     (assoc-in [:hardwallet :return-to-step] :card-ready)
-                     (assoc-in [:hardwallet :setup-error] error))}
+            {:db (assoc-in db [:hardwallet :setup-error] error)}
             (process-error code)))
 
 (fx/defn recovery-phrase-start-confirmation [{:keys [db]}]
@@ -1016,6 +1031,7 @@
                        (assoc-in [:hardwallet :wallet-address] wallet-address)
                        (assoc-in [:hardwallet :encryption-public-key] encryption-public-key)
                        (assoc-in [:hardwallet :keycard-instance-uid] instance-uid)
+                       (assoc-in [:hardwallet :on-card-connected] nil)
                        (update :hardwallet dissoc :recovery-phrase)
                        (update-in [:hardwallet :secrets] dissoc :pin :puk :password)
                        (assoc :node/on-ready :create-keycard-account)
@@ -1027,9 +1043,7 @@
   [{:keys [db] :as cofx} {:keys [error code]}]
   (log/debug "[hardwallet] generate and load key error: " error)
   (fx/merge cofx
-            {:db (-> db
-                     (assoc-in [:hardwallet :return-to-step] :recovery-phrase)
-                     (assoc-in [:hardwallet :setup-error] error))}
+            {:db (assoc-in db [:hardwallet :setup-error] error)}
             (process-error code)))
 
 (fx/defn on-get-keys-success
