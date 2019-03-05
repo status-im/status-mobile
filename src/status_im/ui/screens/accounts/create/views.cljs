@@ -45,18 +45,19 @@
             password-confirm [:get-in [:accounts/create :password-confirm]]]
     [react/keyboard-avoiding-view {:style styles/create-account-view}
      [status-bar/status-bar {:flat? true}]
+     [toolbar/toolbar nil
+      (when (#{:enter-password :confirm-password} step)
+        (toolbar/nav-button (actions/back #(re-frame/dispatch [:accounts.create.ui/step-back-pressed step])))) nil]
      (when (= :account-creating step)
        [react/view styles/account-creating-view
-        [react/view styles/account-creating-logo-container
-         [components.common/logo styles/account-creating-logo]]
+        [react/view styles/logo-container
+         [components.common/logo styles/logo]]
         [react/view {:style styles/account-creating-indicatior}
          [components/activity-indicator {:animating true}]
          [react/text {:style styles/account-creating-text}
           (i18n/label :t/creating-your-account)]]])
      (when (#{:enter-password :confirm-password :enter-name} step)
-       [react/view components.styles/flex
-        [toolbar/toolbar {:flat? true} (when (#{:enter-password :confirm-password} step)
-                                         (toolbar/nav-button (actions/back #(re-frame/dispatch [:accounts.create.ui/step-back-pressed step])))) nil]
+       [react/scroll-view {:flex 1}
         [react/view {:style styles/logo-container}
          [components.common/logo styles/logo]]
         ^{:key (str "step" step)}
@@ -69,11 +70,11 @@
             :password         password
             :password-confirm password-confirm}]
           [react/text {:style styles/input-description}
-           (get-in steps [step :input-description])]]
-         [react/view {:style components.styles/flex}]
-         [react/view {:style styles/bottom-container}
-          [react/view {:style components.styles/flex}]
-          [components.common/bottom-button
-           {:forward?  true
-            :disabled? (not next-enabled?)
-            :on-press  #(re-frame/dispatch [:accounts.create.ui/next-step-pressed step password password-confirm])}]]]])]))
+           (get-in steps [step :input-description])]]]])
+     (when (#{:enter-password :confirm-password :enter-name} step)
+       [react/view {:style styles/bottom-container}
+        [react/view {:style components.styles/flex}]
+        [components.common/bottom-button
+         {:forward?  true
+          :disabled? (not next-enabled?)
+          :on-press  #(re-frame/dispatch [:accounts.create.ui/next-step-pressed step password password-confirm])}]])]))

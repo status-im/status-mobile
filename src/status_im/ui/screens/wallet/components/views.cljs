@@ -49,8 +49,7 @@
   ([props title] (toolbar props default-action title))
   ([props action title] (toolbar props action title nil))
   ([props action title options]
-   [toolbar/toolbar (utils.core/deep-merge {:style wallet.styles/toolbar}
-                                           props)
+   [toolbar/toolbar (assoc-in props [:style :border-bottom-color] colors/white-light-transparent)
     [toolbar/nav-button action]
     [toolbar/content-title {:color :white :font-weight "700"}
      title]
@@ -223,7 +222,7 @@
   (let [content (reagent/atom nil)]
     (fn []
       [simple-screen {:avoid-keyboard? true}
-       [toolbar {:style wallet.styles/toolbar-bottom-line}
+       [toolbar {:style {:border-bottom-color colors/white-light-transparent}}
         default-action
         (i18n/label :t/recipient)]
        [react/view components.styles/flex

@@ -12,20 +12,12 @@
 
 (def toolbar-container
   {:flex           1
-   :flex-direction :row
-   :align-items    :stretch
-   :margin-left    3})
+   :flex-direction :row})
 
 (def messages-container
   {:flex           1
    :padding-bottom 0
    :margin-bottom  0})
-
-(def toolbar-view
-  {:flex-direction   :row
-   :height           56
-   :background-color colors/white
-   :elevation        2})
 
 (def action
   {:width           56
@@ -50,15 +42,14 @@
 
 (def chat-name-view
   {:flex            1
-   :justify-content :center
-   :margin-bottom   2})
+   :justify-content :center})
 
-(defstyle chat-name-text
-  {:color   colors/black
-   :android {:font-size 15
-             :line-height 20}
-   :ios     {:font-size 16
-             :line-height 22}})
+(def chat-name-text
+  {:color       colors/black
+   :font-size   15
+   :font-weight "500"
+   :line-height 22
+   :margin-top -3})
 
 (def group-icon
   {:margin-top    4
@@ -69,8 +60,7 @@
 (defstyle toolbar-subtitle
   {:color       colors/text-gray
    :line-height 15
-   :font-size   13
-   :ios         {:margin-top 4}})
+   :font-size   12})
 
 (defstyle last-activity-text
   {:color       colors/text-gray

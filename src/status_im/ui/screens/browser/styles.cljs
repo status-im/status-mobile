@@ -62,29 +62,40 @@
 (def web-view-error-text
   {:color colors/gray})
 
-(defnstyle toolbar-content [show-actions]
+(def toolbar-content
   {:flex-direction     :row
    :flex               1
-   :border-radius      4
-   :height             36
+   :border-radius      8
+   :max-height         36
    :background-color   colors/gray-lighter
    :padding-horizontal 12
-   :margin-right       5
+   :margin-right       8
    :align-items        :center
-   :android            {:margin-left (if show-actions 66 20)}
-   :ios                {:margin-left 20}})
+   :align-self         :center
+   :margin-top         10
+   :margin-left        56})
 
 (defstyle url-input
-  {:flex              1
-   :font-size         14
-   :letter-spacing    -0.2
-   :margin-horizontal 5
-   :android           {:padding 0}})
+  {:flex                1
+   :font-size           15
+   :line-height         22
+   :text-align-vertical :center
+   :android             {:margin      0
+                         :padding     0
+                         :margin-left 6}
+   :ios                 {:margin-top  -6
+                         :min-height  26
+                         :margin-left 6}})
+
+(def url-text-container
+  {:justify-content   :center
+   :flex              1
+   :margin-horizontal 5})
 
 (def url-text
-  {:font-size         14
-   :letter-spacing    -0.2
-   :margin-horizontal 5})
+  {:font-size         15
+   :line-height       22
+   :letter-spacing    -0.2})
 
 (def dot
   {:height           4

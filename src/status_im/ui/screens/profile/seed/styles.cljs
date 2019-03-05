@@ -2,32 +2,28 @@
   (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.components.styles :as common.styles]))
 
-(def intro-container
-  {:flex              1
-   :align-items       :center
-   :justify-content   :center
-   :margin-horizontal 26})
-
 (def intro-image
-  {:padding-bottom 10
-   :align-items    :center})
+  {:margin-top  16
+   :width       248
+   :height      233
+   :align-items :center})
 
 (def intro-text
-  {:text-align     :center
-   :font-size      22
-   :font-weight    :bold
-   :line-height    28
-   :letter-spacing -0.3})
+  {:text-align      :center
+   :font-size       22
+   :font-weight     :bold
+   :line-height     28
+   :margin-vertical 16})
 
 (def intro-description
-  {:margin-top     8
-   :line-height    21
-   :text-align     :center
-   :color          colors/gray})
+  {:margin-top  8
+   :line-height 21
+   :text-align  :center
+   :color       colors/gray})
 
 (def intro-button
-  {:flex-direction :row
-   :margin-top     16})
+  {:flex-direction   :row
+   :margin-vertical  16})
 
 (def six-words-container
   {:flex    1
@@ -154,8 +150,3 @@
    :font-size  14
    :text-align :center
    :color      colors/gray})
-
-(def backup-seed-container
-  (merge
-   common.styles/flex
-   {:background-color colors/white}))

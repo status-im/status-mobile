@@ -14,6 +14,8 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.actions :as toolbar.actions]
+            [status-im.ui.components.toolbar.styles :as toolbar.styles]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.profile.components.styles :as profile.components.styles]
             [status-im.ui.screens.profile.user.styles :as styles]
@@ -28,27 +30,27 @@
             [status-im.utils.universal-links.core :as universal-links]))
 
 (defn my-profile-toolbar []
-  [toolbar/toolbar {}
+  [toolbar/toolbar
+   {}
    nil
-   [toolbar/content-title ""]
-   [react/touchable-highlight
-    {:on-press            #(re-frame/dispatch [:my-profile/start-editing-profile])
+   nil
+   [toolbar/text-action
+    {:handler            #(re-frame/dispatch [:my-profile/start-editing-profile])
      :accessibility-label :edit-button}
-    [react/view
-     [react/text {:style      common.styles/label-action-text
-                  :uppercase? true}
-      (i18n/label :t/edit)]]]])
+    (i18n/label :t/edit)]])
 
 (defn my-profile-edit-toolbar [on-show]
   (reagent/create-class
    {:component-did-mount on-show
-    :reagent-render (fn [] [toolbar/toolbar {}
-                            nil
-                            [toolbar/content-title ""]
-                            [toolbar/default-done {:handler             #(re-frame/dispatch [:my-profile/save-profile])
-                                                   :icon                :main-icons/check
-                                                   :icon-opts           {:color colors/blue}
-                                                   :accessibility-label :done-button}]])}))
+    :reagent-render (fn []
+                      [toolbar/toolbar
+                       {}
+                       nil
+                       nil
+                       [toolbar/text-action
+                        {:handler             #(re-frame/dispatch [:my-profile/save-profile])
+                         :accessibility-label :done-button}
+                        (i18n/label :t/done)]])}))
 
 (def profile-icon-options
   [{:label  (i18n/label :t/image-source-gallery)
@@ -68,9 +70,9 @@
                               :action #(re-frame/dispatch [:my-profile/remove-current-photo])}))
 
 (defn qr-viewer-toolbar [label value]
-  [toolbar/toolbar {:style styles/qr-toolbar}
-   [toolbar/default-done {:icon-opts           {:color colors/black}
-                          :accessibility-label :done-button}]
+  [toolbar/toolbar nil
+   (toolbar/nav-button
+    (toolbar.actions/close toolbar.actions/default-handler))
    [toolbar/content-title label]])
 
 (defn qr-code-share-button [value]
@@ -227,7 +229,7 @@
 (defview advanced [params on-show]
   (letsubs [advanced? [:get :my-profile/advanced?]]
     {:component-will-unmount #(re-frame/dispatch [:set :my-profile/advanced? false])}
-    [react/view
+    [react/view {:padding-bottom 16}
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:set :my-profile/advanced? (not advanced?)])
                                  :style    styles/advanced-button}
       [react/view {:style styles/advanced-button-container}
@@ -293,7 +295,7 @@
                              (js/setTimeout
                               #(.scrollToEnd @scroll {:animated false})
                               300))]
-      [react/view {:flex 1}
+      [react/keyboard-avoiding-view {:style {:flex 1}}
        [status-bar/status-bar {:type :main}]
        [react/view profile.components.styles/profile
         (if editing?
@@ -319,7 +321,4 @@
          [react/view styles/my-profile-info-container
           [my-profile-settings current-account shown-account currency (nil? login-data)]]
          (when (nil? login-data)
-           [advanced shown-account on-show-advanced])
-         [react/view
-          {:align-self :stretch
-           :height 16}]]]])))
+           [advanced shown-account on-show-advanced])]]])))

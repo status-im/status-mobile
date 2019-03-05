@@ -19,24 +19,19 @@
 (defn group-chat-profile-toolbar [admin?]
   [toolbar/toolbar {}
    toolbar/default-nav-back
-   [toolbar/content-title ""]
+   nil
    (when admin?
-     [react/touchable-highlight
-      {:on-press #(re-frame/dispatch [:group-chat-profile/start-editing])}
-      [react/view
-       [react/text {:style               common.styles/label-action-text
-                    :uppercase?          true
-                    :accessibility-label :edit-button}
-        (i18n/label :t/edit)]]])])
+     [toolbar/text-action {:handler #(re-frame/dispatch [:group-chat-profile/start-editing])
+                           :accessibility-label :edit-button}
+      (i18n/label :t/edit)])])
 
 (defn group-chat-profile-edit-toolbar []
   [toolbar/toolbar {}
    nil
-   [toolbar/content-title ""]
-   [toolbar/default-done {:handler   #(re-frame/dispatch [:group-chats.ui/save-pressed])
-                          :icon      :main-icons/check
-                          :icon-opts {:color               colors/blue
-                                      :accessibility-label :done-button}}]])
+   nil
+   [toolbar/text-action {:handler   #(re-frame/dispatch [:group-chats.ui/save-pressed])
+                         :accessibility-label :done-button}
+    (i18n/label :t/done)]])
 
 (defn actions [allow-adding-members? chat-id]
   (concat

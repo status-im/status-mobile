@@ -4,18 +4,16 @@
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.styles :refer [defstyle]]))
 
-(def elevation 2)
-
 (defn- create-status-bar-style [{:keys [background-color bar-style translucent?]
                                  :or   {bar-style "light-content"}}]
   {:background-color (if translucent? "transparent" background-color)
    :translucent      translucent?
    :bar-style        bar-style})
 
-(defn- create-view-style [{:keys [background-color height elevation]
-                           :or   {height (get platform/platform-specific :status-bar-default-height)}}]
+(defn- create-view-style
+  [{:keys [background-color height]
+    :or   {height (get platform/platform-specific :status-bar-default-height)}}]
   {:background-color background-color
-   :elevation        elevation
    :height           height})
 
 ;; :main
@@ -76,8 +74,7 @@
 (defstyle view-modal-wallet
   {:ios     (create-view-style {:background-color colors/blue})
    :android (create-view-style {:background-color colors/blue
-                                :height           0
-                                :elevation        elevation})})
+                                :height           0})})
 
 ;; :transaction
 (defstyle status-bar-transaction
@@ -105,8 +102,7 @@
    :android (create-status-bar-style {:translucent?     true})})
 
 (def view-wallet
-  (create-view-style {:background-color colors/blue
-                      :elevation        elevation}))
+  (create-view-style {:background-color colors/blue}))
 
 ;; :default
 (defstyle status-bar-default

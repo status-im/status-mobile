@@ -62,9 +62,7 @@
    :empty-recent        (js/require "./resources/images/ui/empty-recent.png")
    :analytics-image     (js/require "./resources/images/ui/analytics-image.png")
    :welcome-image       (js/require "./resources/images/ui/welcome-image.png")
-   :lock                {:image  (js/require "./resources/images/ui/lock.png")
-                         :width  993
-                         :height 933}
+   :lock                (js/require "./resources/images/ui/lock.png")
    :tribute-to-talk     (js/require "./resources/images/ui/tribute-to-talk.png")
    :wallet-welcome      (js/require "./resources/images/ui/wallet-welcome.png")
    :hardwallet-card     (js/require "./resources/images/ui/hardwallet-card.png")

@@ -36,17 +36,20 @@
     :second-word (re-frame/dispatch [:my-profile/set-step :first-word])))
 
 (defn intro []
-  [react/view {:style styles/intro-container}
+  [react/scroll-view {:style                   {:padding-horizontal 16}
+                      :content-container-style {:align-items     :center
+                                                :justify-content :center}}
    (when-not platform/desktop?
-     [components.common/image-contain {:container-style styles/intro-image}
-      (:lock resources/ui)])
+     [react/image {:source (:lock resources/ui)
+                   :style styles/intro-image}])
    [react/i18n-text {:style styles/intro-text
                      :key   :your-data-belongs-to-you}]
    [react/i18n-text {:style styles/intro-description
                      :key   :your-data-belongs-to-you-description}]
-   [components.common/button {:button-style styles/intro-button
-                              :on-press     #(re-frame/dispatch [:set-in [:my-profile/seed :step] :12-words])
-                              :label        (i18n/label :t/ok-continue)}]])
+   [components.common/button
+    {:button-style styles/intro-button
+     :on-press     #(re-frame/dispatch [:set-in [:my-profile/seed :step] :12-words])
+     :label        (i18n/label :t/ok-continue)}]])
 
 (defn six-words [words]
   [react/view {:style styles/six-words-container}
@@ -139,7 +142,7 @@
 (defview backup-seed []
   (letsubs [current-account [:account/account]
             {:keys [step first-word second-word error word]} [:my-profile/recovery]]
-    [react/keyboard-avoiding-view {:style styles/backup-seed-container}
+    [react/keyboard-avoiding-view {:style {:flex 1}}
      [status-bar/status-bar]
      [toolbar/toolbar
       nil
@@ -150,7 +153,6 @@
         (i18n/label :t/backup-recovery-phrase)]
        [react/text {:style styles/step-n}
         (i18n/label :t/step-i-of-n {:step (steps-numbers step) :number 3})]]]
-     [components.common/separator]
      (case step
        :intro [intro]
        :12-words [twelve-words current-account]

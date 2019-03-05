@@ -31,42 +31,35 @@
 
 (defn toolbar-content [url url-original {:keys [secure?]} url-editing?]
   (let [url-text (atom url)]
-    [react/view
-     [react/view (styles/toolbar-content false)
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/lock-pressed secure?])}
-       (if secure?
-         [icons/icon :tiny-icons/tiny-lock {:color colors/green}]
-         [icons/icon :tiny-icons/tiny-lock-broken])]
-      (if url-editing?
-        [react/text-input {:on-change-text    #(reset! url-text %)
-                           :on-blur           #(re-frame/dispatch [:browser.ui/url-input-blured])
-                           :on-submit-editing #(re-frame/dispatch [:browser.ui/url-submitted @url-text])
-                           :placeholder       (i18n/label :t/enter-url)
-                           :auto-capitalize   :none
-                           :auto-correct      false
-                           :auto-focus        true
-                           :default-value     url
-                           :ellipsize         :end
-                           :style             styles/url-input}]
-        [react/touchable-highlight {:style {:flex 1} :on-press #(re-frame/dispatch [:browser.ui/url-input-pressed])}
-         [react/text {:style styles/url-text} (http/url-host url-original)]])]]))
-
-(defn- on-options [name browser-id]
-  (list-selection/show {:title   name
-                        :options (wallet.actions/actions browser-id)}))
+    [react/view styles/toolbar-content
+     [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/lock-pressed secure?])}
+      (if secure?
+        [icons/icon :tiny-icons/tiny-lock {:color colors/green}]
+        [icons/icon :tiny-icons/tiny-lock-broken])]
+     (if url-editing?
+       [react/text-input {:on-change-text    #(reset! url-text %)
+                          :on-blur           #(re-frame/dispatch [:browser.ui/url-input-blured])
+                          :on-submit-editing #(re-frame/dispatch [:browser.ui/url-submitted @url-text])
+                          :placeholder       (i18n/label :t/enter-url)
+                          :auto-capitalize   :none
+                          :auto-correct      false
+                          :auto-focus        true
+                          :default-value     url
+                          :ellipsize         :end
+                          :style             styles/url-input}]
+       [react/touchable-highlight {:style    styles/url-text-container
+                                   :on-press #(re-frame/dispatch [:browser.ui/url-input-pressed])}
+        [react/text {:style styles/url-text} (http/url-host url-original)]])]))
 
 (defn toolbar [error? url url-original browser browser-id url-editing?]
-  [toolbar.view/toolbar {}
+  [toolbar.view/toolbar
+   {:browser? true}
    [toolbar.view/nav-button
-    (actions/close (fn []
-                     (re-frame/dispatch [:navigate-to :home])
-                     (when error?
-                       (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
-   [toolbar-content url url-original browser url-editing?]
-   [toolbar.view/actions [{:icon      :main-icons/more
-                           :icon-opts {:color               :black
-                                       :accessibility-label :chat-menu-button}
-                           :handler   #(on-options name browser-id)}]]])
+    (actions/back (fn []
+                    (re-frame/dispatch [:navigate-to :home])
+                    (when error?
+                      (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
+   [toolbar-content url url-original browser url-editing?]])
 
 (defn- web-view-error [_ code desc]
   (reagent/as-element
@@ -82,7 +75,7 @@
     (let [domain-name (nth (re-find #"^\w+://(www\.)?([^/:]+)" url) 2)]
       (get (:inject-js browser-config) domain-name))))
 
-(defn navigation [url webview can-go-back? can-go-forward?]
+(defn navigation [browser-id url webview can-go-back? can-go-forward?]
   [react/view styles/navbar
    [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser.ui/previous-page-button-pressed])
                                :disabled            (not can-go-back?)
@@ -100,6 +93,10 @@
     {:on-press #(re-frame/dispatch [:browser.ui/open-modal-chat-button-pressed (http/url-host url)])
      :accessibility-label :modal-chat-button}
     [icons/icon :main-icons/message]]
+   [react/touchable-highlight
+    {:on-press #(wallet.actions/share-link browser-id)
+     :accessibility-label :modal-share-link-button}
+    [icons/icon :main-icons/share]]
    [react/touchable-highlight {:on-press #(.reload @webview)
                                :accessibility-label :refresh-page-button}
     [icons/icon :main-icons/refresh]]])
@@ -142,7 +139,7 @@
                                                        (str network-id)))
                                                     (get-inject-js url))
         :injected-java-script                  js-res/webview-js}])]
-   [navigation url-original webview can-go-back? can-go-forward?]
+   [navigation browser-id url-original webview can-go-back? can-go-forward?]
    [permissions.views/permissions-panel [(:dapp? browser) (:dapp browser)] show-permission]
    (when show-tooltip
      [tooltip/bottom-tooltip-info

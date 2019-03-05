@@ -3,8 +3,6 @@
 
 (def border-top-justify
   {:justify-content  :space-between
-   :border-top-color colors/white-light-transparent
-   :border-top-width 1
    :flex             1})
 
 (def signing-phrase

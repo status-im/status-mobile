@@ -56,7 +56,8 @@
   (letsubs [{:keys [chat-name group-chat chat-id contact]} [:chats/current-chat]]
     [react/view
      [status-bar/status-bar (when modal? {:type :modal-white})]
-     [toolbar/platform-agnostic-toolbar {}
+     [toolbar/toolbar
+      {:chat? true}
       (if modal?
         [toolbar/nav-button
          (toolbar.actions/close toolbar.actions/default-handler)]

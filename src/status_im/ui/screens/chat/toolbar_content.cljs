@@ -70,7 +70,6 @@
        [react/view {:style st/chat-name-view}
         [react/text {:style               st/chat-name-text
                      :number-of-lines     1
-                     :font                :toolbar-title
                      :accessibility-label :chat-name-text}
          chat-name]
         (if group-chat

@@ -12,10 +12,6 @@
 (def share-contact-code-button
   {:height 42})
 
-(def qr-toolbar
-  {:border-bottom-color colors/gray-light
-   :border-bottom-width 1})
-
 (def qr-code
   {:background-color colors/white})
 

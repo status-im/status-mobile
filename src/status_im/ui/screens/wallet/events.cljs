@@ -134,6 +134,15 @@
    (models/update-wallet cofx)))
 
 (handlers/register-handler-fx
+ :update-wallet-and-nav-back
+ (fn [cofx [_ on-close]]
+   (fx/merge cofx
+             (when on-close
+               {:dispatch on-close})
+             (navigation/navigate-back)
+             (models/update-wallet))))
+
+(handlers/register-handler-fx
  :update-transactions
  (fn [{:keys [db]} _]
    {::wallet.transactions/sync-transactions-now
@@ -230,7 +239,7 @@
               (assoc-in db-with-adjusted-gas [:wallet :send-transaction :original-gas] adjusted-gas))}))))
 
 (handlers/register-handler-fx
- :wallet-setup-navigate-back
+ :wallet.setup-ui/navigate-back-pressed
  (fn [{:keys [db] :as cofx}]
    (fx/merge cofx
              {:db (assoc-in db [:wallet :send-transaction] {})}

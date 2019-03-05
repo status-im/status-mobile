@@ -15,10 +15,12 @@
             [status-im.utils.money :as money]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.ethereum.core :as ethereum]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.wallet.utils :as wallet.utils]))
 
 (defn- toolbar [title]
-  [toolbar/toolbar {:style wallet.styles/toolbar}
+  [toolbar/toolbar
+   {:style {:border-bottom-color colors/white-light-transparent}}
    [toolbar/nav-button (act/close-white act/default-handler)]
    [toolbar/content-title {:color :white} title]])
 

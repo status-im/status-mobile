@@ -36,8 +36,7 @@
                  (if sync-state
                    (str "syncing " (:currentBlock sync-state) " of " (:highestBlock sync-state) " blocks...")
                    (str "not syncing")))]]]
-         [toolbar/content-wrapper
-          [components.common/logo styles/toolbar-logo]]))
+         [components.common/logo styles/toolbar-logo]))
      (cond
        (and platform/ios?
             logged-in?)
@@ -293,9 +292,10 @@
            (utils/set-timeout
             #(re-frame/dispatch [:init-rest-of-chats])
             100))))}
-    [react/view styles/container
+    [react/view {:flex 1}
      [status-bar/status-bar {:type :main}]
-     [react/keyboard-avoiding-view {:style (assoc styles/container :background-color :white)}
+     [react/keyboard-avoiding-view {:style {:flex             1
+                                            :background-color :white}}
       [toolbar show-welcome? (and network-initialized? (not rpc-network?))
        sync-state latest-block-number (not logging-in?)]
       (cond show-welcome?

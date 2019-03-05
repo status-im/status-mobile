@@ -72,7 +72,10 @@
               (accounts.update/account-update cleaned-edit {}))))
 
 (defn start-editing-group-chat-profile [{:keys [db]}]
-  {:db (assoc db :group-chat-profile/editing? true)})
+  (let [current-chat-name (get-in db [:chats (:current-chat-id db) :name])]
+    {:db (-> db
+             (assoc :group-chat-profile/editing? true)
+             (assoc-in [:group-chat-profile/profile :name] current-chat-name))}))
 
 (defn enter-two-random-words [{:keys [db]}]
   (let [{:keys [mnemonic]} (:account/account db)

@@ -65,8 +65,7 @@ class URLEditBoxLockIcon(BaseEditBox):
 
     def __init__(self, driver):
         super(URLEditBoxLockIcon, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//*[@content-desc='chat-menu-button']/../preceding-sibling::*[1]//*[@content-desc='icon']")
+        self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[2]')
 
 
 class PolicySummary(BaseElement):

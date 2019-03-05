@@ -4,13 +4,6 @@
 
 ;; wallet
 
-(def toolbar
-  {:background-color colors/blue})
-
-(defstyle toolbar-bottom-line
-  {:ios {:border-bottom-width 1
-         :border-bottom-color colors/white-transparent}})
-
 (defn button-container [enabled?]
   (merge {:flex-direction :row
           :align-items    :center}

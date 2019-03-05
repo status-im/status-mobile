@@ -77,7 +77,7 @@
   (views/letsubs [address-hex [:account/hex-address]
                   chain-id    [:get-network-id]]
     [wallet.components/simple-screen
-     [wallet.components/toolbar {}
+     [wallet.components/toolbar {:transparent? true}
       wallet.components/default-action
       (i18n/label :t/receive)
       [toolbar/actions [{:icon      :main-icons/share

@@ -107,18 +107,20 @@
               :icon-opts {:color colors/white}}])
 
 (defn big-list-item
-  [{:keys [text text-color subtext value action-fn active? destructive? hide-chevron?
+  [{:keys [style text text-color subtext value action-fn active? destructive? hide-chevron?
            accessory-value text-color new?
            accessibility-label icon icon-color image-source icon-content]
     :or   {icon-color colors/blue
            text-color colors/black
            value ""
-           active? true}}]
+           active? true
+           style {}}}]
   {:pre [(or icon image-source)
          (and action-fn text)
          (or (nil? accessibility-label) (keyword? accessibility-label))]}
   [react/touchable-highlight
    {:on-press action-fn
+    :style style
     :accessibility-label accessibility-label
     :disabled (not active?)}
    [react/view (styles/settings-item subtext)

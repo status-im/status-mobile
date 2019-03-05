@@ -9,11 +9,13 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.wallet.choose-recipient.styles :as styles]
             [status-im.utils.platform :as platform]))
 
 (defn- toolbar-view [camera-flashlight]
-  [toolbar/toolbar styles/toolbar
+  [toolbar/toolbar
+   {:transparent? true}
    [toolbar/nav-button (actions/back-white actions/default-handler)]
    [toolbar/content-title {:color :white}
     (i18n/label :t/wallet-choose-recipient)]

@@ -50,7 +50,7 @@
 
 (defn chat-icon-view-toolbar [chat-id group-chat name color online]
   [chat-icon-view chat-id group-chat name online
-   {:container              styles/container-chat-list
+   {:container              styles/container-chat-toolbar
     :online-view-wrapper    styles/online-view-wrapper
     :online-view            styles/online-view
     :online-dot-left        styles/online-dot-left
@@ -58,9 +58,9 @@
     :pending-wrapper        styles/pending-wrapper
     :pending-outer-circle   styles/pending-outer-circle
     :pending-inner-circle   styles/pending-inner-circle
-    :size                   40
-    :chat-icon              styles/chat-icon-chat-list
-    :default-chat-icon      (styles/default-chat-icon-chat-list color)
+    :size                   36
+    :chat-icon              styles/chat-icon-chat-toolbar
+    :default-chat-icon      (styles/default-chat-icon-chat-toolbar color)
     :default-chat-icon-text styles/default-chat-icon-text}])
 
 (defn chat-icon-view-chat-list [chat-id group-chat name color online & [hide-dapp?]]

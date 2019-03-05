@@ -8,6 +8,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.utils.ethereum.core :as ethereum]
@@ -44,12 +45,11 @@
             all-tokens     [:wallet/all-tokens]]
     [react/view (merge components.styles/flex {:background-color :white})
      [status-bar/status-bar {:type :modal-wallet}]
-     [toolbar/toolbar {:style wallet.styles/toolbar}
-      [toolbar/nav-text {:handler             #(do (re-frame/dispatch [:update-wallet])
-                                                   (re-frame/dispatch [:navigate-back]))
-                         :style               {:color colors/white}
-                         :accessibility-label :done-button}
-       (i18n/label :t/done)]
+     [toolbar/toolbar
+      {:style {:background-color    colors/blue
+               :border-bottom-width 0}}
+      [toolbar/nav-button
+       (toolbar.actions/close-white #(re-frame/dispatch [:update-wallet-and-nav-back]))]
       [toolbar/content-title {:color colors/white}
        (i18n/label :t/wallet-assets)]]
      [react/view {:style components.styles/flex}
@@ -65,11 +65,13 @@
             {address :address}   [:account/account]]
     [react/keyboard-avoiding-view {:style {:flex 1 :background-color colors/blue}}
      [status-bar/status-bar {:type :wallet}]
-     [toolbar/toolbar {:style wallet.styles/toolbar}
-      [toolbar/nav-button (actions/back-white #(do (when on-close
-                                                     (re-frame/dispatch (on-close (create-payload address))))
-                                                   (re-frame/dispatch [:update-wallet])
-                                                   (re-frame/dispatch [:navigate-back])))]
+     [toolbar/toolbar
+      {:style {:border-bottom-color colors/white-light-transparent}}
+      [toolbar/nav-button
+       (actions/back-white
+        #(re-frame/dispatch [:update-wallet-and-nav-back
+                             (when on-close
+                               (on-close (create-payload address)))]))]
       [toolbar/content-title {:color colors/white}
        label]]
      [view (create-payload address)]]))
@@ -84,7 +86,7 @@
 (defview toolbar-view []
   (letsubs [settings           [:wallet/settings]
             {address :address} [:account/account]]
-    [toolbar/toolbar {:style wallet.styles/toolbar :flat? true}
+    [toolbar/toolbar {:transparent? true}
      nil
      [toolbar/content-wrapper]
      [toolbar/actions

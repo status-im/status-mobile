@@ -86,12 +86,12 @@
       [vector-icons/icon :main-icons/next {:color colors/blue}])]])
 
 (defn button [{:keys [on-press label background? uppercase? button-style label-style disabled?] :or {background? true uppercase? true disabled false}}]
-  [react/touchable-highlight {:on-press on-press
+  [react/touchable-highlight {:style (styles/button button-style background? disabled?)
+                              :on-press on-press
                               :disabled disabled?}
-   [react/view {:style (styles/button button-style background? disabled?)}
-    [react/text {:uppercase? uppercase?
-                 :style      (merge styles/button-label label-style)}
-     label]]])
+   [react/text {:uppercase? uppercase?
+                :style      (merge styles/button-label label-style)}
+    label]])
 
 (defn red-button [props]
   [react/view {:align-items :center}

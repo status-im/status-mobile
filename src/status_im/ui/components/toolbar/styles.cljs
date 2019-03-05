@@ -7,46 +7,22 @@
 (def toolbar-icon-height 24)
 (def toolbar-icon-spacing 24)
 
-(defnstyle toolbar [background-color flat?]
-  (cond->
-   {:flex            0
-    :flex-direction  :row
-    :align-items     :center
-    :justify-content :space-between
-    :elevation       (if flat? 0 2)
-    :android         {:height 55}
-    :ios             {:height 56}}
-
-    background-color
-    (assoc :background-color background-color)))
-
-(def toolbar-nav-actions-container
-  {:flex-direction :row
-   :margin-left    4})
-
-(defstyle toolbar-container
-  {:flex        1
-   :align-items :center})
+(def toolbar
+  {:height 55
+   :flex   1})
 
 (def toolbar-title-container
-  {:flex           1
-   :flex-direction :column
-   :margin-left    6})
+  {:justify-content :center
+   :align-items     :center
+   :flex-direction  :column
+   :margin-left     6})
 
 (defstyle toolbar-title-text
   {:color          colors/black
    :letter-spacing -0.2
    :font-size      17
    :font-weight    :bold
-   :ios            {:text-align     :center
-                    :margin-left    15
-                    :margin-right   15}
-   :android        {:text-align     :left
-                    :margin-left    22}})
-
-(def toolbar-actions
-  {:flex           0
-   :flex-direction :row})
+   :text-align     :center})
 
 (defn toolbar-actions-container [actions-count custom]
   (merge {:flex-direction :row}
@@ -54,55 +30,39 @@
          (when (and (zero? actions-count) (not custom))
            {:width (+ toolbar-icon-width toolbar-icon-spacing)})))
 
-(def toolbar-action
-  {:flex            1
-   :align-items     :center
-   :justify-content :center})
+(def touchable-area
+  {:width 56
+   :height 56
+   :justify-content :center
+   :align-items :center})
 
 (def action-default
   {:width  24
    :height 24})
 
-(def nav-item-button
-  {:margin-horizontal 13})
-
-(defstyle item
-  {:ios     {:padding-horizontal 12
-             :padding-vertical   16}
-   :android {:padding 16}})
-
 (def item-text
   {:color     colors/blue
-   :font-size 17})
+   :font-size 15})
 
 (defstyle item-text-action
-  {:color   colors/blue
-   :ios     {:font-size      15
-             :letter-spacing -0.2}
-   :android {:font-size      14
-             :letter-spacing 0.5}})
+  {:color     colors/blue
+   :font-size 15})
 
 (def toolbar-text-action-disabled {:color colors/gray})
 
 (def item-text-white-background {:color colors/blue})
 
-;;TODO(goranjovic) - Breaks the toolbar title into new line on smaller screens
-;;e.g. see Discover > Popular hashtags on iPhone 5s
-(def ios-content-item {:position :absolute :right 40 :left 40})
-
 (def icon-add
-  {:width           24
-   :height          24
-   :color           colors/blue})
+  {:width  24
+   :height 24
+   :color  colors/blue})
 
 (def icon-add-illuminated
   {:width           24
    :height          24
    :color           colors/blue
    :container-style {:background-color (colors/alpha colors/blue 0.12)
-                     :border-radius    32
-                     :width            32
-                     :height           32
+                     :border-radius    28
                      :display          :flex
                      :justify-content  :center
                      :align-items      :center}})

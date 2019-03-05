@@ -6,16 +6,7 @@
   {:flex 1})
 
 (def account-creating-view
-  {:flex               1
-   :padding-horizontal 14})
-
-(def account-creating-logo-container
-  {:margin-top  37
-   :align-items :center})
-
-(def account-creating-logo
-  {:size      82
-   :icon-size 34})
+  {:flex 1})
 
 (def account-creating-indicatior
   {:flex            1
@@ -32,10 +23,7 @@
    :margin-top     16})
 
 (def logo-container
-  {:position    :absolute
-   :top         37
-   :left        0
-   :right       0
+  {:margin-top  16
    :align-items :center})
 
 (def logo
@@ -44,9 +32,7 @@
 
 (defstyle input-container
   {:margin-horizontal 16
-   :margin-top        105
-   :android           {:padding-top 13
-                       :margin-top  92}})
+   :margin-top        16})
 
 (def input-description
   {:font-size      14

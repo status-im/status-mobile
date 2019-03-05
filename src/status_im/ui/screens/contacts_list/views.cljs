@@ -18,20 +18,20 @@
 (defview contacts-list []
   (letsubs [blocked-contacts-count [:contacts/blocked-count]
             contacts      [:contacts/active]]
-    [react/view {:flex 1
-                 :background-color colors/white}
-     [status-bar/status-bar]
-     [toolbar.view/simple-toolbar (i18n/label :t/contacts)]
-     [react/scroll-view {:style {:background-color colors/white
-                                 :padding-top 16}}
+    [react/view {:flex 1}
+     [status-bar/status-bar {:type :main}]
+     [toolbar.view/toolbar nil
+      toolbar.view/default-nav-back
+      (toolbar.view/content-title (i18n/label :t/contacts))]
+     [react/scroll-view {:flex 1}
       [list.views/big-list-item
-       {:text                (i18n/label :t/blocked-users)
+       {:style               {:margin-vertical 16}
+        :text                (i18n/label :t/blocked-users)
         :icon                :main-icons/cancel
         :icon-color          colors/red
         :accessibility-label :blocked-users-list-button
         :accessory-value     blocked-contacts-count
         :action-fn           #(re-frame/dispatch [:navigate-to :blocked-users-list])}]
-      [react/view {:height 16}]
       [list.views/flat-list
        {:data                      contacts
         :key-fn                    :address

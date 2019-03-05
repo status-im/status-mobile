@@ -154,9 +154,6 @@
    :android    {:top 2}
    :ios        {:top 3}})
 
-(def container
-  {:flex 1})
-
 (def group-icon
   {:margin-top   8
    :margin-right 6
@@ -206,7 +203,7 @@
    :color          colors/gray})
 
 (def toolbar-logo
-  {:size      42
+  {:size      40
    :icon-size 17
    :shadow?   false})
 

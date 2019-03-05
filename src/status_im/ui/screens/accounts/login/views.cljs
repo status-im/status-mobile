@@ -63,7 +63,6 @@
     [react/keyboard-avoiding-view {:style ast/accounts-view}
      [status-bar/status-bar]
      [login-toolbar can-navigate-back?]
-     [components.common/separator]
      [react/scroll-view styles/login-view
       [react/view styles/login-badge-container
        [account-login-badge photo-path name]

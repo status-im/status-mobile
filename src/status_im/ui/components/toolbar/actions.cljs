@@ -34,7 +34,8 @@
 
 (defn close [handler]
   {:icon    :main-icons/close
-   :handler handler})
+   :handler handler
+   :accessibility-label :done-button})
 
 (def default-close
   (close default-handler))

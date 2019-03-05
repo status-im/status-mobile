@@ -18,7 +18,10 @@
 (defview qr-code-viewer-component [{:keys [style hint-style footer-style footer-button value hint legend]}]
   (letsubs  [{:keys [width]} [:dimensions/window]
              {:keys [snt-amount]} [:tribute-to-talk/settings]]
-    [react/view {:style (merge styles/qr-code style)}
+    [react/scroll-view {:content-container-style {:align-items       :center
+                                                  :margin-top        16
+                                                  :justify-content   :center}
+                        :style (merge {:flex 1} style)}
      (when snt-amount
        [react/view {:style {:margin-horizontal 16}}
         [tr-to-talk/enabled-note]])
@@ -37,7 +40,9 @@
                     :selectable          true}
         legend]]]
      (when footer-button
-       [footer-button value])]))
+       [react/view {:style {:align-self    :stretch
+                            :margin-bottom 16}}
+        [footer-button value]])]))
 
 (defn qr-code-viewer [{:keys [style hint-style footer-style footer-button value hint legend]
                        :as params}]

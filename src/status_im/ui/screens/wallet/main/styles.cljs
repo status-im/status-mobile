@@ -5,9 +5,8 @@
 ;; Main section
 
 (defstyle main-section
-  {:flex    1
-   :android {:background-color colors/white}
-   :ios     {:background-color colors/blue}})
+  {:flex 1
+   :background-color colors/blue})
 
 (defstyle scroll-bottom
   {:background-color colors/white
@@ -18,22 +17,14 @@
    :android          {:height 0}
    :ios              {:height 9999}})
 
-(def section
-  {:background-color colors/blue})
-
 (def backup-seed-phrase-container
-  {:flex-direction   :row
-   :align-items      :center
-   :border-radius    8
-   :margin           16
-   :background-color colors/black-transparent
-   :padding-top      10
-   :padding-bottom   10
-   :padding-left     14
-   :padding-right    12})
-
-(def backup-seed-phrase-text-container
-  {:flex 1})
+  {:flex-direction     :row
+   :background-color   colors/black-transparent
+   :margin             16
+   :border-radius      8
+   :padding-top        10
+   :padding-bottom     10
+   :padding-horizontal 16})
 
 (def backup-seed-phrase-title
   {:font-size   15
@@ -45,13 +36,12 @@
    :color       colors/white-transparent})
 
 (def total-balance-container
-  {:align-items     :center
-   :justify-content :center
-   :padding-top     49
-   :padding-bottom  38})
-
-(def total-balance
-  {:flex-direction :row})
+  {:align-items      :center
+   :justify-content  :center
+   :padding-top      49
+   :padding-bottom   38
+   :background-color colors/blue
+   :flex-direction   :row})
 
 (def total-balance-value
   {:font-size   32
@@ -77,9 +67,6 @@
    :text-align        :center})
 
 ;; Actions section
-
-(def action-section
-  {:background-color colors/blue})
 
 (def action
   {:background-color colors/white-transparent
@@ -144,11 +131,9 @@
    :line-height    20})
 
 (def address-section
-  (merge
-   section
-   {:flex-grow   1
-    :align-items :center
-    :padding     20}))
+  {:flex-grow   1
+   :align-items :center
+   :padding     20})
 
 (def modal-history
   {:flex             1

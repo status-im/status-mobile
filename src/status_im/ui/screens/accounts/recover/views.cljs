@@ -75,7 +75,6 @@
        [status-bar/status-bar]
        [toolbar/toolbar nil toolbar/default-nav-back
         [toolbar/content-title (i18n/label :t/sign-in-to-another)]]
-       [components.common/separator]
        [react/view styles/inputs-container
         [passphrase-input (or passphrase "") passphrase-error passphrase-warning]
         [password-input (or password "") password-error (when-not disabled? sign-in)]

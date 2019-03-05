@@ -1,9 +1,6 @@
 (ns status-im.ui.screens.wallet.choose-recipient.styles
   (:require [status-im.ui.components.colors :as colors]))
 
-(def toolbar
-  {:background-color :transparent})
-
 (def wallet-container
   {:flex             1
    :background-color colors/blue})
@@ -83,11 +80,11 @@
 (def qr-code
   {:flex             1
    :background-color colors/white-transparent
-   :align-items      :center})
+   :align-items      :stretch})
 
 (defn qr-code-text [dimensions]
-  {:zIndex      1
-   :padding-top 20
-   :color       :white
-   :text-align  :center
-   :width       (int (/ (:width dimensions) 2))})
+  {:zIndex           1
+   :padding-top      16
+   :color            :white
+   :text-align       :center
+   :padding-vertical 16})

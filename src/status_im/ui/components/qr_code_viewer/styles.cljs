@@ -41,10 +41,6 @@
 (def account-toolbar
   {:background-color colors/white})
 
-(def qr-code
-  {:flex-grow       1
-   :justify-content :center})
-
 (def footer
   {:flex-direction   :row
    :justify-content  :center})

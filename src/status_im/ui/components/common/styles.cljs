@@ -91,11 +91,9 @@
    :align-items      :center
    :justify-content  :center})
 
-(defstyle label-action-text
-  {:padding-right 16
-   :color         colors/blue
-   :ios           {:font-size 15}
-   :android       {:font-size 14}})
+(def label-action-text
+  {:color     colors/blue
+   :font-size 15})
 
 (defstyle logo-shaddow
   {:ios     {:shadowColor   colors/black
