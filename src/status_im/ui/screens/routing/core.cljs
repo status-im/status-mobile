@@ -73,10 +73,9 @@
   (nav-reagent/stack-navigator
    routes
    (cond->
-    (merge {:headerMode "none"}
-           (prepare-config config))
-     platform/android?
-     (assoc :cardStyle {:backgroundColor nil}))))
+    (merge {:headerMode "none"
+            :cardStyle  {:backgroundColor (when platform/ios? :white)}}
+           (prepare-config config)))))
 
 (defn switch-navigator [routes config]
   (nav-reagent/switch-navigator
