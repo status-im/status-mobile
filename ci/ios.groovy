@@ -43,6 +43,8 @@ def bundle(type) {
     pkg = cmn.pkgFilename(type, 'ipa')
     sh "cp status-adhoc/StatusIm.ipa ${pkg}"
   }
+  /* necessary for Diawi upload */
+  env.DIAWI_IPA = pkg
   return pkg
 }
 

@@ -210,7 +210,8 @@ platform :ios do
   desc "---"
   desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
   lane :upload_diawi do
-    upload_to_diawi("status-adhoc/StatusIm.ipa")
+    ipa = ENV["DIAWI_IPA"] || "status-adhoc/StatusIm.ipa"
+    upload_to_diawi(ipa)
   end
 
   desc "`fastlane ios saucelabs` - upload .app to sauce labs"
@@ -274,7 +275,8 @@ platform :android do
   desc "---"
   desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
   lane :upload_diawi do
-    upload_to_diawi("android/app/build/outputs/apk/release/app-release.apk")
+    apk = ENV["DIAWI_APK"] || "android/app/build/outputs/apk/release/app-release.apk"
+    upload_to_diawi(apk)
   end
 
   desc "`fastlane android saucelabs` - upload .apk to sauce labs"

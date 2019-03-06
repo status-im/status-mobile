@@ -75,7 +75,6 @@ pipeline {
       }
     }
     stage('Upload') {
-      when { expression { cmn.getBuildType() != 'release' } }
       steps {
         script {
           env.PKG_URL = cmn.uploadArtifact(api)
