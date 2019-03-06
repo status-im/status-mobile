@@ -89,6 +89,17 @@
                                      :active? true}]
                        :follow-up  (if modal? :extensions/stage-modal :extensions/stage)}}))
 
+(fx/defn install-from-message
+  [cofx url modal?]
+  (if (get-in cofx [:db :account/account :dev-mode?])
+    (load cofx url modal?)
+    {:ui/show-confirmation
+     {:title               (i18n/label :t/confirm-install)
+      :content             (i18n/label :t/extension-install-alert)
+      :on-accept           #(do
+                              (re-frame/dispatch [:accounts.ui/dev-mode-switched true])
+                              (re-frame/dispatch [:extensions.ui/install-extension-button-pressed url]))}}))
+
 (fx/defn initialize
   [{{:account/keys [account]} :db}]
   (let [{:keys [extensions dev-mode?]} account]

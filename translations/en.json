@@ -978,5 +978,7 @@
     "mobile-network-go-to-settings": "Go to settings",
     "mobile-network-use-mobile-data": "Status tends to use a lot of data when syncing chats. You can choose not to sync when on mobile network",
     "status-not-sent": "",
-    "status-not-sent-without-tap": ""
+    "status-not-sent-without-tap": "",
+    "confirm-install": "Confirm Install",
+    "extension-install-alert": "Development mode is required to install an extension. Do you want to enable and continue installing?"
 }
