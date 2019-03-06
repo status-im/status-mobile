@@ -479,10 +479,12 @@
                 {:permissions [:read]
                  :value       :extensions.chat.command/send-message
                  :arguments   {:params :map}}
-                'chat/send-message
-                {:permissions [:read]
-                 :value       :chat/send-message
-                 :arguments   {:to :string :value :string}}
+                
+                ;; TODO: figure out better security model
+;;                 'chat/send-message
+;;                 {:permissions [:read]
+;;                  :value       :chat/send-message
+;;                  :arguments   {:to :string :value :string}}
                 'log
                 {:permissions [:read]
                  :value       :log
