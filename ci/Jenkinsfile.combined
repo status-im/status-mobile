@@ -76,7 +76,7 @@ pipeline {
           /* mobile */
           Apk: cmn.pkgUrl(apk), Apke2e: cmn.pkgUrl(apke2e),
           iOS: cmn.pkgUrl(ios), /*iOSe2e: cmn.pkgUrl(iose2e),*/
-          Diawi: getEnv(ios, 'DIAWI_URL'),
+          Diawi: cmn.getEnv(ios, 'DIAWI_URL'),
           /* desktop */
           App: cmn.pkgUrl(nix), Mac: cmn.pkgUrl(osx), Win: cmn.pkgUrl(win),
           /* upload the sha256 checksums file too */
