@@ -31,13 +31,23 @@ def upload_to_saucelabs(file)
     username = ENV["SAUCE_USERNAME"]
     unique_name = ENV["SAUCE_LABS_NAME"]
 
-    url = "https://saucelabs.com/rest/v1/storage/" + username + '/' + unique_name + "?overwrite=true"
+    url = "https://saucelabs.com/rest/v1/storage/#{username}/#{unique_name}?overwrite=true"
+    # retry settings
+    conn_timeout = "5"
+    upload_timeout = "60"
+    upload_retries = "3"
 
     upload_result = sh(
         "curl",
         "-u", username + ':' + key,
         "-X", "POST",
         "-H", "Content-Type: application/octet-stream",
+        # we retry few times if upload doesn't succeed in sensible time
+        "--connect-timeout", conn_timeout,  # max time in sec. for establishing connection 
+        "--max-time", upload_timeout,       # max time in sec. for whole transfer to take
+        "--retry", upload_retries,          # number of retries to attempt
+        "--retry-max-time", upload_timeout, # same as --max-time but for retries
+        "--retry-delay", "0",               # an exponential backoff algorithm in sec.
         url,
         # this command has `status-react/fastlane` as cwd
         # so we need to jump outside this folder to get a file
@@ -46,7 +56,7 @@ def upload_to_saucelabs(file)
 
     # fail the lane if upload fails
     UI.user_error!(
-        "failed to upload file to saucelabs: " + upload_result
+        "failed to upload file to saucelabs despite #{upload_retries} retries: #{upload_result}"
     ) unless upload_result.include? "filename"
 end
 
