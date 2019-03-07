@@ -231,37 +231,111 @@ function bundleWindows() {
 }
 
 if is_linux; then
-  #
-  # getRecursiveDependencies will use ldd to go through the dependencies of a library,
-  # and output those which are ELF binaries
-  #
   declare -A treated_libs=()
-  declare -A treated_package_dirs=()
-  function getRecursiveDependencies() {
-    local args=("$@")
-    local root_lib=(${args[0]})
-    treated_libs["$root_lib"]=1
-    if program_exists 'realpath'; then
-      root_lib=$(realpath -m "$root_lib" 2> /dev/null)
+  function handleLinuxDependency() {
+    local module="$1"
+    local targetPath="$2"
+    local indent="$3"
+
+    if [ ${treated_libs[$module]} ]; then
+      return
     fi
-    echo $root_lib
 
-    [ -x $root_lib ] || return
+    treated_libs["$module"]=1
 
-    local nix_package_dep_libs=($(ldd $root_lib | grep '=>' | awk -F'=>' -F ' ' "/^.*/{print \$3}"))
-    [ ${#nix_package_dep_libs[@]} -eq 0 ] && return
+    local targetModule="$targetPath/$(basename $module)"
 
-    local nix_package_dep_libs_dirs=$(echo ${nix_package_dep_libs[@]} | xargs dirname | xargs realpath | sort -u | uniq | grep "^/nix")
-    for packageLibDir in $nix_package_dep_libs_dirs; do
-      if ! [ ${treated_package_dirs[$packageLibDir]} ]; then
-        treated_package_dirs["$packageLibDir"]=1
-        for lib in $(ls $packageLibDir/*.so* | xargs realpath | sort | uniq); do
-          local type=$(file $lib | awk -F':' "/^.*/{print \$2}" | awk -F' ' "/^.*/{print \$1}")
-          if [ $type == 'ELF' ]; then
-            [ ${treated_libs[$lib]} ] || getRecursiveDependencies "$lib"
+    if [ -L "$module" ]; then
+      handleLinuxDependency "$(dirname $module)/$(readlink -sq $module)" "$targetPath" "$indent"
+    fi
+  
+    # Copy library to target
+    [ $VERBOSE_LEVEL -ge 2 ] && echo "${indent}Copying $module to $targetModule"
+    cp -a -f $module $targetModule
+    chmod 777 $targetModule
+
+    if [ -f "$targetModule" ]; then
+      module="$targetModule"
+    else
+      echo -e "${RED}FATAL: $DEPLOYQT should have copied the dependency to ${targetPath}${NC}"
+      exit 1
+    fi
+
+    treated_libs["$module"]=1
+    if [ ! -L "$module" ]; then
+      fixupRPathsInModule "$module" "$targetPath" "  ${indent}"
+    fi
+  }
+
+  function fixupRPathsInModule() {
+    local module="$1"
+    local targetPath="$2"
+    local indent="$3"
+
+    if program_exists 'realpath'; then
+      module=$(realpath -m --no-symlinks "$module" 2> /dev/null)
+    fi
+
+    local type=$(realpath $module | xargs file | awk -F':' "/^.*/{print \$2}" | awk -F' ' "/^.*/{print \$1}")
+    if [ "$type" != 'ELF' ]; then
+      return
+    fi
+
+    treated_libs["$module"]=1
+    [ $VERBOSE_LEVEL -ge 2 ] && echo "${indent}Examining ${module}"
+  
+    if [ -L "$module" ]; then
+      handleLinuxDependency "$(dirname $module)/$(readlink -sq $module)" "$targetPath" "$indent"
+      return
+    fi
+
+    # Walk through the dependencies of $module
+    local package_dep_libs=$(ldd $module | grep '=>')
+    [ $? -eq 0 ] || return
+    package_dep_libs=$(echo "$package_dep_libs" | awk -F'=>' -F ' ' "/^.*/{print \$3}")
+    if [ $(echo "$package_dep_libs" | grep "not found") ]; then
+      echo "Some dependencies for $module were not found:"
+      ldd $module
+      exit 1
+    fi
+
+    # Change dependency rpath in $module to point to $libPath
+    local relPath="/$(realpath --relative-to="$(dirname $module)" $libPath)"
+    [ "$relPath" = '/.' ] && relPath=''
+    local rpath="\$ORIGIN${relPath}"
+    echo "${indent}Updating $module to point to $rpath"
+    patchelf --set-rpath "$rpath" "$module"
+    set +e
+    patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 "$module" 2> /dev/null
+    set -e
+
+    local nix_package_dep_libs=$(echo "$package_dep_libs" | grep /nix)
+    if [ ${#nix_package_dep_libs[@]} -eq 0 ]; then
+      return
+    fi
+
+    for depModule in ${nix_package_dep_libs[@]}; do
+      local type=$(realpath $depModule | xargs file | awk -F':' "/^.*/{print \$2}" | awk -F' ' "/^.*/{print \$1}")
+      if [ $type == 'ELF' ]; then
+        local fileName=$(basename $depModule)
+        local baseNameGlob="$(dirname $depModule)/${fileName%%.*}.so*"
+        for file in `ls $baseNameGlob 2> /dev/null`; do
+          if [ -L "$file" ]; then
+            handleLinuxDependency "$file" "$targetPath" "$indent"
           fi
         done
+        handleLinuxDependency "$depModule" "$targetPath" "$indent"
+      else
+        echo "${indent}$depModule is not an ELF file"
       fi
+    done
+  }
+
+  function patchQtPlugins() {
+    for f in `find $1 -name *.so*`; do
+      local relPath=$(realpath --relative-to="$(dirname $f)" ${WORKFOLDER}/AppDir/usr/lib)
+      patchelf --set-rpath "\$ORIGIN/$relPath" $f
+      touch --no-create -h -t 197001010000.00 $f
     done
   }
 fi
@@ -276,7 +350,7 @@ function bundleLinux() {
   # invoke linuxdeployqt to create Status.AppImage
   echo "Creating AppImage..."
   pushd $WORKFOLDER
-    rm -rf StatusImAppImage*
+    rm -rf StatusImAppImage
     # TODO this needs to be fixed: status-react/issues/5378
     if [ -z $STATUSIM_APPIMAGE_DIR ]; then
       STATUSIM_APPIMAGE="./${STATUSIM_APPIMAGE_ARCHIVE}"
@@ -295,6 +369,10 @@ function bundleLinux() {
   cp ./.env $usrBinPath
   cp ./desktop/bin/Status ./desktop/bin/reportApp $usrBinPath
 
+  local libPath=$(joinPath "$WORKFOLDER" "AppDir/usr/lib")
+  fixupRPathsInModule "$usrBinPath/Status" "$libPath"
+  fixupRPathsInModule "$usrBinPath/reportApp" "$libPath"
+
   rm -f Application-x86_64.AppImage Status-x86_64.AppImage
 
   [ $VERBOSE_LEVEL -ge 1 ] && ldd $(joinExistingPath "$usrBinPath" 'Status')
@@ -305,19 +383,10 @@ function bundleLinux() {
     rm -f $usrBinPath/Status.AppImage
   popd
 
-  # Tell linuxdeployqt about all the different lib folders in Nix's store 
-  local all_deps=($(getRecursiveDependencies "$usrBinPath/Status"))
-  local unique_folders=($(echo "${all_deps[@]}" | xargs dirname | sort -u -r | uniq | grep "/nix"))
-
-  if [ ${#unique_folders[@]} -gt 0 ]; then
-    # Ensure the binary isn't using the interpreter in Nix's store
-    patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 "$usrBinPath/Status"
-  fi
-
-  LD_LIBRARY_PATH="$(join : ${unique_folders[@]})" \
+  # TODO: process plugins
   linuxdeployqt \
     $desktopFilePath \
-    -verbose=$VERBOSE_LEVEL -always-overwrite -no-strip \
+    -verbose=$VERBOSE_LEVEL -no-strip \
     -no-translations -bundle-non-qt-libs \
     -qmake="$qmakePath" \
     -executable="$(joinExistingPath "$usrBinPath" 'reportApp')" \
@@ -326,14 +395,20 @@ function bundleLinux() {
     -extra-plugins=imageformats/libqsvg.so \
     -appimage
 
+  patchQtPlugins "${WORKFOLDER}/AppDir/usr/plugins"
+  patchQtPlugins "${WORKFOLDER}/AppDir/usr/qml"
+
   pushd $WORKFOLDER
     rm -f $usrBinPath/Status.AppImage
-    appimagetool ./AppDir
-    if [ ${#unique_folders[@]} -gt 0 ]; then
-      # Ensure the AppImage isn't using the interpreter in Nix's store
-      patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 ./Status-x86_64.AppImage
-    fi
+    for f in `find ./AppDir`; do
+      touch --no-create -h -t 197001010000.00 $f
+    done
     [ $VERBOSE_LEVEL -ge 1 ] && ldd $usrBinPath/Status
+
+    appimagetool ./AppDir
+    # Ensure the AppImage isn't using the interpreter in Nix's store
+    patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 ./Status-x86_64.AppImage
+    chmod +x ./Status-x86_64.AppImage
     rm -rf Status.AppImage
   popd
 
