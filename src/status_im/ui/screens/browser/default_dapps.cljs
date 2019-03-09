@@ -57,6 +57,10 @@
              :dapp-url    "https://cryptocribs.com"
              :photo-path  "contacts://cryptocribs"
              :description "Travel the globe. Pay in crypto."}
+             {:name        "dBay"
+             :dapp-url    "https://www.dbay.ai/"
+             :photo-path  "contacts://dBay"
+             :description "Buy from all your favorite DApps in one place."}
             {:name        "Ethlance"
              :dapp-url    "https://ethlance.com"
              :photo-path  "contacts://ethlance"

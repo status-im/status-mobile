@@ -13,7 +13,7 @@
    :etherplay          (js/require "./resources/images/contacts/etherplay.png")
    :ethcro             (js/require "./resources/images/contacts/ethcro.png")
    :easytrade          (js/require "./resources/images/contacts/easytrade.png")
-
+   :dBay               (js/require "./resources/images/contacts/dBay.png")
    :dragonereum        (js/require "./resources/images/contacts/dragonereum.png")
    :name-bazaar        (js/require "./resources/images/contacts/name-bazaar.png")
    :cryptographics     (js/require "./resources/images/contacts/cryptographics.png")
