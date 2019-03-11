@@ -17,7 +17,7 @@ SDK_PLATFORM_VERSION=$(call  __toolversion, android-sdk-platform)
 SDK_BUILD_TOOLS_VERSION=$(call  __toolversion, android-sdk-build-tools)
 
 # WARNING: Remember to change the tag when updating the image
-BASE_IMAGE_TAG = $(shell cd $(GIT_ROOT)/docker/base && make get-image-tag)
+BASE_IMAGE_TAG = $(shell cd $(GIT_ROOT)/docker/base && $(MAKE) get-image-tag --no-print-directory)
 DEPS_HASH = $(shell $(GIT_ROOT)/scripts/gen-deps-hash.sh -b $(BASE_IMAGE_TAG) \
 					-d android-ndk \
 					-d android-sdk \

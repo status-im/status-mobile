@@ -1,3 +1,6 @@
+.PHONY:get-image-tag
+.SILENT:get-image-tag
+
 __toolversion = $(shell $(GIT_ROOT)/scripts/toolversion $(1))
 
 GIT_COMMIT = $(shell git rev-parse --short HEAD)
