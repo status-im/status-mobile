@@ -4,7 +4,7 @@
 
 (def network-info {:background-color :white})
 
-(defstyle profile-info-item
+(def profile-info-item
   {:flex-direction :row
    :align-items    :center
    :padding-left   16})
@@ -13,20 +13,17 @@
   {:flex          1
    :padding-right (if options 16 40)})
 
-(defstyle profile-info-title
-  {:color       colors/gray
-   :font-size   14
-   :ios         {:letter-spacing -0.2}})
+(def profile-info-title
+  {:color     colors/gray
+   :font-size 14})
 
 (defstyle profile-setting-spacing
   {:ios     {:height 10}
    :android {:height 7}})
 
-(defstyle profile-setting-text
-  {:ios     {:font-size      17
-             :letter-spacing -0.2}
-   :android {:font-size 16
-             :color     colors/black}})
+(def profile-setting-text
+  {:font-size 17
+   :color     colors/black})
 
 (def action-container
   {:background-color colors/white})
@@ -60,6 +57,6 @@
   (merge profile-setting-text
          {:color colors/gray}))
 
-(defstyle contact-profile-info-container
+(def contact-profile-info-container
   {:padding-top      26
    :background-color colors/white})

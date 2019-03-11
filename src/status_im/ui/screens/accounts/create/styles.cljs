@@ -15,12 +15,11 @@
    :margin-bottom   100})
 
 (def account-creating-text
-  {:font-size      14
-   :line-height    21
-   :letter-spacing -0.2
-   :text-align     :center
-   :color          colors/black
-   :margin-top     16})
+  {:font-size   14
+   :line-height 21
+   :text-align  :center
+   :color       colors/black
+   :margin-top  16})
 
 (def logo-container
   {:margin-top  16
@@ -35,10 +34,9 @@
    :margin-top        16})
 
 (def input-description
-  {:font-size      14
-   :letter-spacing -0.2
-   :color          colors/gray
-   :line-height    21})
+  {:font-size   14
+   :color       colors/gray
+   :line-height 21})
 
 (def bottom-container
   {:flex-direction    :row

@@ -4,9 +4,8 @@
             [status-im.utils.platform :as p]))
 
 (def label
-  {:font-size      14
-   :letter-spacing -0.2
-   :color          colors/black})
+  {:font-size 14
+   :color     colors/black})
 
 (defn input-container [height]
   {:padding          16
@@ -17,11 +16,10 @@
    :background-color colors/gray-lighter})
 
 (defstyle input
-  {:font-size      15
-   :letter-spacing -0.2
-   :color          colors/black
-   :padding        0
-   :desktop        {:height 52}})
+  {:font-size 15
+   :color     colors/black
+   :padding   0
+   :desktop   {:height 52}})
 
 (defn error [label?]
   {:bottom-value (if label? -20 0)

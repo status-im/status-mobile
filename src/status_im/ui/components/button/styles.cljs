@@ -38,19 +38,12 @@
   (merge {:border-color border-color}
          (border position)))
 
-(defstyle button-text
+(def button-text
   {:font-weight        :normal
    :color              colors/white
    :padding-horizontal 16
-   :desktop            {:font-size        14
-                        :padding-vertical 10
-                        :letter-spacing   0.5}
-   :android            {:font-size        14
-                        :padding-vertical 10
-                        :letter-spacing   0.5}
-   :ios                {:font-size        15
-                        :padding-vertical 9
-                        :letter-spacing   -0.2}})
+   :font-size          15
+   :padding-vertical   10})
 
 (defstyle button-text-disabled
   {:android {:opacity 0.4}

@@ -16,10 +16,9 @@
 
 (def account-image-size 40)
 
-(defstyle account-title-text
+(def account-title-text
   {:color     :black
-   :font-size 17
-   :ios       {:letter-spacing -0.2}})
+   :font-size 17})
 
 (defstyle accounts-list-container
   {:flex          1
@@ -40,15 +39,13 @@
    :flex-shrink  1})
 
 (def account-badge-text
-  {:font-size      17
-   :letter-spacing -0.2
-   :color          colors/black})
+  {:font-size 17
+   :color     colors/black})
 
-(defstyle account-badge-pub-key-text
-  {:font-size      14
-   :ios            {:letter-spacing -0.2}
-   :color          colors/gray
-   :margin-top     4})
+(def account-badge-pub-key-text
+  {:font-size  14
+   :color      colors/gray
+   :margin-top 4})
 
 (def bottom-button-container
   {:margin-top    14

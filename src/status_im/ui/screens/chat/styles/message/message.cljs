@@ -5,12 +5,10 @@
             [status-im.utils.platform :as platform]
             [status-im.constants :as constants]))
 
-(defnstyle style-message-text [outgoing]
+(defn style-message-text
+  [outgoing]
   {:font-size      15
-   :color          (if outgoing colors/white colors/text)
-   :letter-spacing -0.2
-   :android        {:line-height 22}
-   :ios            {:line-height 22}})
+   :color          (if outgoing colors/white colors/text)})
 
 (defn message-padding-top
   [{:keys [first-in-group? display-username?]}]
@@ -36,9 +34,8 @@
              {:padding-left  8}))))
 
 (def message-timestamp
-  {:font-size      10
-   :letter-spacing 0.1
-   :align-self     :flex-end})
+  {:font-size  10
+   :align-self :flex-end})
 
 (defn message-timestamp-text [justify-timestamp? outgoing rtl? emoji?]
   (merge message-timestamp

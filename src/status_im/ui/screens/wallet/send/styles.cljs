@@ -37,9 +37,8 @@
    :background-color colors/gray-lighter})
 
 (def signing-phrase
-  {:font-size      15
-   :letter-spacing -0.2
-   :color          colors/black})
+  {:font-size 15
+   :color     colors/black})
 
 (def signing-phrase-description
   {:padding-top 8})
@@ -49,10 +48,9 @@
    :padding-vertical 20})
 
 (def password
-  {:padding        0
-   :font-size      15
-   :letter-spacing -0.2
-   :height         20})
+  {:padding   0
+   :font-size 15
+   :height    20})
 
 (def processing-view
   {:position         :absolute

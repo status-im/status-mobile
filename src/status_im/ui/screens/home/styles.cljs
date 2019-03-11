@@ -185,14 +185,13 @@
    :height 278})
 
 (defstyle welcome-text
-  {:line-height    28
-   :font-size      22
-   :font-weight    :bold
-   :letter-spacing -0.3
-   :android        {:margin-top 22}
-   :ios            {:margin-top 96}
-   :text-align     :center
-   :color          colors/black})
+  {:line-height 28
+   :font-size   22
+   :font-weight :bold
+   :android     {:margin-top 22}
+   :ios         {:margin-top 96}
+   :text-align  :center
+   :color       colors/black})
 
 (defstyle welcome-text-description
   {:line-height    21
@@ -204,8 +203,7 @@
 
 (def toolbar-logo
   {:size      40
-   :icon-size 17
-   :shadow?   false})
+   :icon-size 17})
 
 (def action-button-container
   {:position :absolute

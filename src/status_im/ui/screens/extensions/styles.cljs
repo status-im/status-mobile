@@ -21,7 +21,6 @@
 (defstyle extension-item-name-text
   {:color   colors/black
    :ios     {:font-size      17
-             :letter-spacing -0.2
              :line-height    20}
    :android {:font-size 16}})
 

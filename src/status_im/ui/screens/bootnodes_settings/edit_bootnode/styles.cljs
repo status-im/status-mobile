@@ -12,10 +12,9 @@
    :margin-top        15})
 
 (defstyle input
-  {:flex               1
-   :font-size          15
-   :letter-spacing     -0.2
-   :android            {:padding 0}})
+  {:flex      1
+   :font-size 15
+   :android   {:padding 0}})
 
 (def qr-code
   {:margin-right 14})
@@ -42,11 +41,9 @@
    :border-radius    8
    :ios              {:opacity 0.9}})
 
-(defstyle button-label
-  {:color   colors/white
-   :ios     {:font-size      17
-             :letter-spacing -0.2}
-   :android {:font-size 14}})
+(def button-label
+  {:color     colors/white
+   :font-size 17})
 
 (defstyle delete-button
   (assoc button

@@ -20,10 +20,9 @@
    :margin-top      15})
 
 (defstyle input
-  {:flex           1
-   :font-size      15
-   :letter-spacing -0.2
-   :android        {:padding 0}})
+  {:flex      1
+   :font-size 15
+   :android   {:padding 0}})
 
 (def bottom-container
   {:flex-direction    :row

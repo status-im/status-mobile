@@ -60,10 +60,9 @@
              (i18n/label :t/mainnet-text))]]]))
 
 (defn logo
-  ([] (logo nil))
-  ([{:keys [size icon-size shadow?] :or {shadow? true}}]
-   [react/view {:style (styles/logo-container size shadow?)}
-    [vector-icons/icon :icons/logo (styles/logo icon-size)]]))
+  [{:keys [size icon-size]}]
+  [react/view {:style (styles/logo-container size)}
+   [vector-icons/icon :icons/logo (styles/logo icon-size)]])
 
 (defn bottom-button [{:keys [accessibility-label
                              label

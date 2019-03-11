@@ -74,7 +74,6 @@
 (def turn-nfc-text
   {:text-transform :uppercase
    :line-height    20
-   :letter-spacing 0.5
    :color          colors/gray})
 
 (def go-to-settings-text

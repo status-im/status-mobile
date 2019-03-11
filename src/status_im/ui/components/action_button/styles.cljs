@@ -23,9 +23,8 @@
   {:padding-left 16})
 
 (def action-button-label
-  {:color          colors/blue
-   :letter-spacing -0.2
-   :font-size      16})
+  {:color     colors/blue
+   :font-size 16})
 
 (defstyle actions-list
   {:background-color colors/white
@@ -43,4 +42,3 @@
    :align-items      :center
    :justify-content  :center
    :background-color colors/gray-lighter})
-

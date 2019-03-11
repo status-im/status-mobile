@@ -36,7 +36,6 @@
 (defstyle input
   {:flex               1
    :font-size          15
-   :letter-spacing     -0.2
    :padding-horizontal 14
    :desktop            {:height 30
                         :width "100%"}

@@ -25,10 +25,9 @@
    :ios            {:align-items :center}
    :android        {:margin-left 15}})
 
-(defstyle name-text
+(def name-text
   {:color     colors/black
-   :font-size 17
-   :ios       {:letter-spacing -0.2}})
+   :font-size 17})
 
 (def address-text
   {:color     colors/white
@@ -64,7 +63,6 @@
    :border-radius      8
    :text-align         :center
    :font-size          15
-   :letter-spacing     -0.2
    :line-height        20})
 
 (def done-button-text

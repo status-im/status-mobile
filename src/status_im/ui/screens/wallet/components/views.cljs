@@ -35,10 +35,9 @@
 (defn text-input [props text]
   [react/text-input (utils.core/deep-merge {:placeholder-text-color colors/white-transparent
                                             :selection-color        colors/white
-                                            :style                  {:color          colors/white
-                                                                     :font-size      15
-                                                                     :height         52
-                                                                     :letter-spacing -0.2}}
+                                            :style                  {:color     colors/white
+                                                                     :font-size 15
+                                                                     :height    52}}
                                            props)
    text])
 

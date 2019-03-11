@@ -82,9 +82,8 @@
    :margin-horizontal 5})
 
 (def url-text
-  {:font-size         15
-   :line-height       22
-   :letter-spacing    -0.2})
+  {:font-size   15
+   :line-height 22})
 
 (def dot
   {:height           4

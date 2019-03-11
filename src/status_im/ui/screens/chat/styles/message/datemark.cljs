@@ -10,7 +10,6 @@
   {:margin-top       16
    :height           22})
 
-(defstyle datemark-text
+(def datemark-text
   {:color     colors/gray
-   :ios       {:letter-spacing -0.2}
    :font-size 15})

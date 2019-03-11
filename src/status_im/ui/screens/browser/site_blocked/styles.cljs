@@ -13,22 +13,20 @@
    :justify-content :center
    :align-items     :center})
 
-(defstyle title-text
+(def title-text
   {:color         colors/black
    :font-size     17
    :font-weight   :bold
    :margin-top    26
    :margin-bottom 10
    :line-height   20
-   :text-align    :center
-   :ios           {:letter-spacing -0.4}})
+   :text-align    :center})
 
-(defstyle description-text
+(def description-text
   {:color       colors/gray
    :font-size   15
    :line-height 22
-   :text-align  :center
-   :ios         {:letter-spacing -0.2}})
+   :text-align  :center})
 
 (def chat-link-text
   {:color colors/blue})

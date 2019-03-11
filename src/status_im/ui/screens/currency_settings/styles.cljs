@@ -15,9 +15,7 @@
    :ios                {:height 64}
    :android            {:height 56}})
 
-(defstyle currency-name-text
-  {:color   colors/black
-   :ios     {:font-size      17
-             :letter-spacing -0.2
-             :line-height    20}
-   :android {:font-size 16}})
+(def currency-name-text
+  {:color       colors/black
+   :font-size   17
+   :line-height 20})

@@ -17,12 +17,11 @@
    :flex-direction  :column
    :margin-left     6})
 
-(defstyle toolbar-title-text
-  {:color          colors/black
-   :letter-spacing -0.2
-   :font-size      17
-   :font-weight    :bold
-   :text-align     :center})
+(def toolbar-title-text
+  {:color       colors/black
+   :font-size   17
+   :font-weight :bold
+   :text-align  :center})
 
 (defn toolbar-actions-container [actions-count custom]
   (merge {:flex-direction :row}

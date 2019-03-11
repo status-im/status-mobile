@@ -17,12 +17,10 @@
    :ios                {:height 64}
    :android            {:height 56}})
 
-(defstyle bootnode-item-name-text
-  {:color   colors/black
-   :ios     {:font-size      17
-             :letter-spacing -0.2
-             :line-height    20}
-   :android {:font-size 16}})
+(def bootnode-item-name-text
+  {:color       colors/black
+   :font-size   17
+   :line-height 20})
 
 (defstyle switch-container
   {:height           50

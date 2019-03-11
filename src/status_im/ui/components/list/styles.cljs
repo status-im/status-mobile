@@ -146,12 +146,11 @@
    :margin-right     6})
 
 (def new-label-text
-  {:color          colors/white
-   :margin-left    6
-   :margin-right   4
-   :font-size      11
-   :letter-spacing 1
-   :font-weight    :bold})
+  {:color        colors/white
+   :margin-left  6
+   :margin-right 4
+   :font-size    11
+   :font-weight  :bold})
 
 (def base-separator
   {:height           1

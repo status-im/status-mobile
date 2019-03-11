@@ -33,16 +33,14 @@
   {:flex-direction :row})
 
 (def six-word-num
-  {:width          25
-   :text-align     :right
-   :opacity        0.4
-   :font-size      15
-   :letter-spacing -0.2})
+  {:width      25
+   :text-align :right
+   :opacity    0.4
+   :font-size  15})
 
 (def six-words-word
-  {:margin-left    24
-   :font-size      15
-   :letter-spacing -0.2})
+  {:margin-left 24
+   :font-size   15})
 
 (def six-words-separator
   {:height 12})
@@ -52,14 +50,12 @@
    :padding 16})
 
 (def twelve-words-label
-  {:font-size      14
-   :line-height    21
-   :letter-spacing -0.2})
+  {:font-size   14
+   :line-height 21})
 
 (def twelve-words-description
-  {:font-size      14
-   :line-height    21
-   :letter-spacing -0.2})
+  {:font-size   14
+   :line-height 21})
 
 (def twelve-words-spacer
   {:flex 1})
@@ -88,22 +84,19 @@
   {:flex-direction :row})
 
 (def enter-word-label
-  {:font-size      14
-   :line-height    21
-   :letter-spacing -0.2})
+  {:font-size   14
+   :line-height 21})
 
 (def enter-word-n
-  {:margin-left    8
-   :font-size      14
-   :line-height    21
-   :letter-spacing -0.2
-   :color          colors/gray})
+  {:margin-left 8
+   :font-size   14
+   :line-height 21
+   :color       colors/gray})
 
 (def enter-word-n-description
-  {:font-size      14
-   :line-height    21
-   :letter-spacing -0.2
-   :color          colors/gray})
+  {:font-size   14
+   :line-height 21
+   :color       colors/gray})
 
 (def finish-container
   {:flex               1
@@ -121,11 +114,10 @@
    :height 41})
 
 (def finish-label
-  {:font-size      22
-   :font-weight    :bold
-   :line-height    30
-   :letter-spacing -0.3
-   :text-align     :center})
+  {:font-size   22
+   :font-weight :bold
+   :line-height 30
+   :text-align  :center})
 
 (def finish-description
   {:margin-top  8
@@ -140,10 +132,9 @@
    :margin-bottom  32})
 
 (def backup-seed
-  {:font-weight    :bold
-   :font-size      15
-   :letter-spacing -0.2
-   :text-align     :center})
+  {:font-weight :bold
+   :font-size   15
+   :text-align  :center})
 
 (def step-n
   {:margin-top 5

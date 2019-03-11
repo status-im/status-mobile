@@ -185,12 +185,11 @@
   {:flex-direction :row
    :align-items    :center})
 
-(defstyle add-contact-text
+(def add-contact-text
   {:text-align          :center
    :text-align-vertical :center
    :padding-left        4
    :font-size           15
-   :ios                 {:letter-spacing 0.2}
    :color               colors/blue})
 
 (def add-contact-close-icon
@@ -217,12 +216,11 @@
    :margin-right     6})
 
 (def empty-chat-text
-  {:color          colors/gray
-   :width          280
-   :font-size      15
-   :line-height    22
-   :letter-spacing -0.2
-   :text-align     :center})
+  {:color       colors/gray
+   :width       280
+   :font-size   15
+   :line-height 22
+   :text-align  :center})
 
 (def empty-chat-text-name
   {:margin-bottom 5

@@ -15,12 +15,6 @@
   {:flex-direction :row
    :align-items    :center})
 
-(defstyle network-type-text
-  {:color   colors/black
-   :ios     {:font-size      17
-             :letter-spacing -0.2}
-   :android {:font-size 16}})
-
 (def bottom-container
   {:flex-direction    :row
    :margin-horizontal 12

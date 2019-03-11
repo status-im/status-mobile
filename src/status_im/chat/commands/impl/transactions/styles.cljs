@@ -69,10 +69,10 @@
    :align-items    :flex-end
    :max-width      250})
 
-(defnstyle command-send-amount-text [outgoing]
-  {:font-size   22
-   :color       (if outgoing colors/white colors/blue)
-   :ios         {:letter-spacing -0.5}})
+(defn command-send-amount-text
+  [outgoing]
+  {:font-size 22
+   :color     (if outgoing colors/white colors/blue)})
 
 (def command-send-currency
   {:flex-direction :column
@@ -83,15 +83,13 @@
    :color   (if outgoing colors/blue colors/blue-light)})
 
 (defn command-send-currency-text [outgoing]
-  {:font-size      22
-   :margin-left    4
-   :letter-spacing 1
-   :color          (if outgoing colors/white-transparent colors/gray)})
+  {:font-size   22
+   :margin-left 4
+   :color       (if outgoing colors/white-transparent colors/gray)})
 
 (defn command-request-currency-text [outgoing]
-  {:font-size      22
-   :letter-spacing 1
-   :color          (if outgoing colors/wild-blue-yonder colors/gray)})
+  {:font-size 22
+   :color     (if outgoing colors/wild-blue-yonder colors/gray)})
 
 (defn command-request-timestamp-text [outgoing]
   {:font-size 12
@@ -152,10 +150,9 @@
   {:flex-direction :row
    :margin-top     6})
 
-(defnstyle command-request-amount-text [outgoing]
-  {:font-size   22
-   :ios         {:letter-spacing -0.5}
-   :color       (if outgoing colors/white colors/black)})
+(defn command-request-amount-text [outgoing]
+  {:font-size 22
+   :color     (if outgoing colors/white colors/black)})
 
 (def command-request-separator-line
   {:background-color colors/gray-light
@@ -188,4 +185,3 @@
 
 (def command-request-timestamp-row
   {:margin-top 6})
-

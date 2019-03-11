@@ -23,20 +23,9 @@
    :android            {:height 56}})
 
 (defstyle mailserver-item-name-text
-  {:color   colors/black
-   :ios     {:font-size      17
-             :letter-spacing -0.2
-             :line-height    20}
-   :desktop {:font-size 16}
-   :android {:font-size 16}})
-
-(defstyle mailserver-item-connected-text
-  {:color   colors/gray
-   :ios     {:font-size      14
-             :margin-top     6
-             :letter-spacing -0.2}
-   :android {:font-size  12
-             :margin-top 2}})
+  {:color       colors/black
+   :font-size   17
+   :line-height 20})
 
 (defn mailserver-icon-container [connected?]
   {:width            40

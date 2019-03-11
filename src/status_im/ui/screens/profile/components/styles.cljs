@@ -32,8 +32,7 @@
    :flex        1
    :desktop     {:height 20
                  :width 200}
-   :ios         {:letter-spacing      -0.2
-                 :margin-top          1
+   :ios         {:margin-top          1
                  :height              45
                  :border-bottom-width 1
                  :border-bottom-color colors/gray-light}
@@ -91,12 +90,11 @@
    :font-size     15
    :color         colors/gray})
 
-(defstyle settings-title
+(def settings-title
   {:color         colors/gray
    :margin-left   16
    :margin-top    18
-   :font-size     14
-   :ios           {:letter-spacing -0.2}})
+   :font-size     14})
 
 ;; shared profile styles
 

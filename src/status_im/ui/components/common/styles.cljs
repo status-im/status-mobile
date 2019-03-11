@@ -50,13 +50,10 @@
                     :padding-bottom   17
                     :margin-top       8}})
 
-(defstyle form-title
+(def form-title
   {:flex-shrink 1
-   :ios         {:color          colors/text
-                 :letter-spacing -0.2
-                 :font-size      16}
-   :android     {:color     colors/text-gray
-                 :font-size 14}})
+   :color       colors/text
+   :font-size   16})
 
 (def form-title-count
   (merge form-title
@@ -77,11 +74,10 @@
    :align-items        :center})
 
 (defn network-text [text-color]
-  {:flex           1
-   :color          (or text-color colors/black)
-   :letter-spacing -0.2
-   :font-size      14
-   :margin-left    16})
+  {:flex        1
+   :color       (or text-color colors/black)
+   :font-size   14
+   :margin-left 16})
 
 (def network-icon
   {:width            40
@@ -95,23 +91,13 @@
   {:color     colors/blue
    :font-size 15})
 
-(defstyle logo-shaddow
-  {:ios     {:shadowColor   colors/black
-             :shadowOffset  {:height 5}
-             :shadowRadius  10
-             :shadowOpacity 0.14}
-   :android {:elevation 2}})
-
-(defn logo-container [size shadow?]
-  (merge
-   {:width            size
-    :height           size
-    :border-radius    size
-    :background-color colors/blue
-    :align-items      :center
-    :justify-content  :center}
-   (when shadow?
-     logo-shaddow)))
+(defn logo-container [size]
+  {:width            size
+   :height           size
+   :border-radius    size
+   :background-color colors/blue
+   :align-items      :center
+   :justify-content  :center})
 
 (defn logo [icon-size]
   {:color  :white
@@ -124,9 +110,8 @@
    :opacity        (if disabled? 0.4 1)})
 
 (def bottom-button-label
-  {:font-size      15
-   :letter-spacing -0.2
-   :color          colors/blue})
+  {:font-size 15
+   :color     colors/blue})
 
 (defn button [style background? disabled?]
   (merge
@@ -140,10 +125,9 @@
    style))
 
 (def button-label
-  {:font-size      15
-   :letter-spacing -0.2
-   :text-align     :center
-   :color          colors/blue})
+  {:font-size  15
+   :text-align :center
+   :color      colors/blue})
 
 (defn counter-container [size]
   {:width            size

@@ -20,11 +20,9 @@
   {:flex            1
    :justify-content :center})
 
-(defstyle name-text
-  {:color   colors/text
-   :android {:font-size 16}
-   :ios     {:font-size      17
-             :letter-spacing -0.2}})
+(def name-text
+  {:color     colors/text
+   :font-size 17})
 
 (def info-text
   {:margin-top 1

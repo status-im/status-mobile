@@ -124,11 +124,10 @@
    :margin-left 6})
 
 (def wallet-address
-  {:color          :white
-   :text-align     :center
-   :font-size      15
-   :letter-spacing -0.2
-   :line-height    20})
+  {:color       colors/white
+   :text-align  :center
+   :font-size   15
+   :line-height 20})
 
 (def address-section
   {:flex-grow   1

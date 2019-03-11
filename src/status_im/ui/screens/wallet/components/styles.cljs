@@ -61,8 +61,7 @@
           :flex           1
           :padding-bottom 0
           :padding-top    0
-          :height         52
-          :letter-spacing -0.2}))
+          :height         52}))
 
 (def contact-code-text-input
   {:text-align-vertical :top
@@ -81,9 +80,8 @@
          {:color colors/white-transparent}))
 
 (def network
-  {:color          :white
-   :font-size      13
-   :letter-spacing -0.2})
+  {:color     :white
+   :font-size 13})
 
 (def network-container
   {:padding-horizontal 10
@@ -159,15 +157,13 @@
    :border-radius  8})
 
 (def wallet-name
-  {:color          :white
-   :font-size      15
-   :letter-spacing -0.2})
+  {:color     colors/white
+   :font-size 15})
 
 (defn participant [address?]
-  {:color          (if address? :white colors/white-transparent)
-   :flex-shrink    1
-   :font-size      15
-   :letter-spacing -0.2})
+  {:color       (if address? :white colors/white-transparent)
+   :flex-shrink 1
+   :font-size   15})
 
 (def recipient-container
   {:flex-direction :row})
@@ -197,10 +193,9 @@
    :flex-direction :row})
 
 (def wallet-value
-  {:padding-left   6
-   :color          colors/white-transparent
-   :font-size      15
-   :letter-spacing -0.2})
+  {:padding-left 6
+   :color        colors/white-transparent
+   :font-size    15})
 
 (def wallet-value-amount
   {:flex -1})
@@ -211,7 +206,5 @@
    :background-color  colors/white-light-transparent})
 
 (def button-text
-  {:color          :white
-   :font-size      15
-   :letter-spacing -0.2})
-
+  {:color     colors/white
+   :font-size 15})

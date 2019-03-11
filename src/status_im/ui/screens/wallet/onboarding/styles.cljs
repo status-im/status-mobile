@@ -19,10 +19,9 @@
    :justify-content   :center})
 
 (def signing-word-text
-  {:font-size      15
-   :font-weight    "600"
-   :color          colors/black
-   :letter-spacing -0.2})
+  {:font-size   15
+   :font-weight "600"
+   :color       colors/black})
 
 (def bottom-buttons
   {:background-color colors/blue
@@ -79,21 +78,19 @@
    :height 312})
 
 (def onboarding-title
-  {:line-height    28
-   :font-size      22
-   :font-weight    :bold
-   :letter-spacing -0.3
-   :text-align     :center
-   :color          colors/white})
+  {:line-height 28
+   :font-size   22
+   :font-weight :bold
+   :text-align  :center
+   :color       colors/white})
 
 (def onboarding-text
-  {:line-height    21
-   :margin-top     8
-   :margin-bottom  32
-   :font-size      14
-   :letter-spacing -0.2
-   :text-align     :center
-   :color          colors/white-transparent})
+  {:line-height   21
+   :margin-top    8
+   :margin-bottom 32
+   :font-size     14
+   :text-align    :center
+   :color         colors/white-transparent})
 
 (def set-up-button
   {:flex-direction   :row
