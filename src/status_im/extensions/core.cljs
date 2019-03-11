@@ -25,7 +25,8 @@
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.chat.commands.sending :as commands-sending]
-            [status-im.browser.core :as browser]))
+            [status-im.browser.core :as browser]
+            [status-im.utils.platform :as platform]))
 
 (re-frame/reg-fx
  ::identity-event
@@ -365,12 +366,28 @@
 (defn image [{:keys [source uri style]}]
   [react/image (merge {:style (merge {:width 100 :height 100} style)} {:source (if source source {:uri uri})})])
 
-(defn link [{:keys [uri]}]
-  [react/text
-   {:style    {:color                colors/white
-               :text-decoration-line :underline}
-    :on-press #(re-frame/dispatch [:browser.ui/message-link-pressed uri])}
-   uri])
+(defn link [{:keys [uri style open-in text]}]
+  [react/text (merge {:style
+                      {:color                colors/white
+                       :text-decoration-line :underline}
+                      :on-press (case open-in
+                                  :device #(.openURL react/linking uri)
+                                  :status #(re-frame/dispatch [:browser.ui/open-in-status-option-selected uri])
+                                  #(re-frame/dispatch [:browser.ui/message-link-pressed uri]))}
+                     (when style {:style style}))
+   (or text uri)])
+
+(defn map-link
+  "create a link-view which opens native map/navigation app with marker and label"
+  [{:keys [text lat lng style]}]
+  (let [uri (cond
+              platform/ios? (str "http://maps.apple.com/?q=" (js/encodeURIComponent text) "&ll=" lat "," lng)
+              platform/android? (str "geo:0,0?q=" lat "," lng "(" (js/encodeURIComponent text) ")")
+              :else (str "http://www.openstreetmap.org/?mlat=" lat "&mlon=" lng))]
+    (link {:uri uri
+           :text text
+           :style style
+           :open-in :device})))
 
 (defn list [{:keys [key data item-view]}]
   [list/flat-list {:data data :key-fn (or key (fn [_ i] (str i))) :render-fn item-view}])
@@ -434,7 +451,7 @@
                 'image                  {:value image :properties {:uri :string :source :string}}
                 'input                  {:value input :properties {:on-change :event :placeholder :string :keyboard-type :keyword :change-delay? :number :placeholder-text-color :any :selection-color :any}}
                 'button                 {:value button :properties {:enabled :boolean :disabled :boolean :on-click :event}}
-                'link                   {:value link :properties {:uri :string}}
+                'link                   {:value link :properties {:uri :string :text? :string :open-in? {:one-of #{:device :status}}}}
                 'list                   {:value list :properties {:data :vector :item-view :view :key? :keyword}}
                 'checkbox               {:value checkbox :properties {:on-change :event :checked :boolean}}
                 'activity-indicator     {:value activity-indicator :properties {:animating :boolean :color :string :size :keyword :hides-when-stopped :boolean}}
@@ -451,7 +468,7 @@
                                                       :fly? :boolean
                                                       :interactive? :boolean
                                                       :on-change :event}}
-                'map-link               {:value map/map-link :properties {:text :string :lng :any :lat :any}}}
+                'map-link               {:value map-link :properties {:text :string :lng :any :lat :any}}}
    :queries    {'identity            {:value :extensions/identity :arguments {:value :map}}
                 'store/get           {:value :store/get :arguments {:key :string}}
                 'contacts/all        {:value :extensions.contacts/all} ;; :photo :name :address :public-key

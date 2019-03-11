@@ -8,7 +8,6 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.browser.styles :as styles]
             [status-im.react-native.js-dependencies :as js-dependencies]))
 
@@ -80,16 +79,3 @@
                                                   (str "update(" (types/clj->json (assoc marker :fly fly? :interactive interactive?)) ");")
                                                   (str "init(" (types/clj->json {:interactive interactive?}) ");")))}
      webview]))
-
-(defn map-link
-  "create a link-view which opens native map/navigation app with marker and label"
-  [{:keys [text lat lng]}]
-  (let [uri (cond
-              platform/ios? (str "http://maps.apple.com/?q=" (js/encodeURIComponent text) "&ll=" lat "," lng)
-              platform/android? (str "geo:0,0?q=" lat "," lng "(" (js/encodeURIComponent text) ")")
-              :else (str "http://www.openstreetmap.org/?mlat=" lat "&mlon=" lng))]
-    [react/text
-     {:style    {:color                colors/white
-                 :text-decoration-line :underline}
-      :on-press #(.openURL react/linking uri)}
-     text]))
