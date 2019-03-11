@@ -120,9 +120,10 @@
                                        :LightClient true
                                        :MinimumPoW 0.001
                                        :EnableNTPSync true}
-             :ShhextConfig        {:BackupDisabledDataDir (utils.platform/no-backup-directory)
-                                   :InstallationID          installation-id
-                                   :MailServerConfirmations config/mailserver-confirmations-enabled?
+             :ShhextConfig        {:BackupDisabledDataDir      (utils.platform/no-backup-directory)
+                                   :InstallationID             installation-id
+                                   :MaxMessageDeliveryAttempts config/max-message-delivery-attempts
+                                   :MailServerConfirmations    config/mailserver-confirmations-enabled?
                                    :PFSEnabled              true}
              :RequireTopics           (get-topics network))
 

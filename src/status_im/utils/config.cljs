@@ -32,6 +32,7 @@
 (def erc20-contract-warnings-enabled? (enabled? (get-config :ERC20_CONTRACT_WARNINGS)))
 (def partitioned-topic-enabled? (enabled? (get-config :PARTITIONED_TOPIC "0")))
 (def tr-to-talk-enabled? (enabled? (get-config :TRIBUTE_TO_TALK 0)))
+(def max-message-delivery-attempts (js/parseInt (get-config :MAX_MESSAGE_DELIVERY_ATTEMPTS "6")))
 
 ;; CONFIG VALUES
 (def log-level
