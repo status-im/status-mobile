@@ -701,10 +701,13 @@
 
 (fx/defn wait-for-card-tap
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (-> db
-                     (assoc-in [:hardwallet :on-card-read] :hardwallet/login-with-keycard))}
-            (navigation/navigate-to-cofx :hardwallet-connect nil)))
+  (let [card-connected? (get-in db [:hardwallet :card-connected?])]
+    (if card-connected?
+      (login-with-keycard cofx false)
+      (fx/merge cofx
+                {:db (-> db
+                         (assoc-in [:hardwallet :on-card-read] :hardwallet/login-with-keycard))}
+                (navigation/navigate-to-cofx :hardwallet-connect nil)))))
 
 ; PIN enter steps:
 ; login - PIN is used to login
