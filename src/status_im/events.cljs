@@ -652,6 +652,11 @@
    (qr-scanner/scan-qr-code cofx identifier (merge {:handler handler} opts))))
 
 (handlers/register-handler-fx
+ :qr-scanner.ui/qr-code-error-dismissed
+ (fn [cofx [_ _]]
+   (qr-scanner/scan-qr-code-after-error-dismiss cofx)))
+
+(handlers/register-handler-fx
  :qr-scanner.callback/scan-qr-code-success
  (fn [cofx [_ context data]]
    (qr-scanner/set-qr-code cofx context data)))

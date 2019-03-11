@@ -1,6 +1,8 @@
 (ns status-im.qr-scanner.core
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
+            [status-im.ui.screens.navigation :as navigation]
+            [taoensso.timbre :as log]
             [status-im.utils.utils :as utils]
             [status-im.utils.fx :as fx]))
 
@@ -17,6 +19,15 @@
                                                                  (i18n/label :t/camera-access-error))
                                               50))
                                            #(re-frame/dispatch [deny-handler qr-codes]))}})
+
+(fx/defn scan-qr-code-after-error-dismiss
+  [cofx]
+  (let [navigation-stack (vec (get-in cofx [:db :navigation-stack]))]
+     (log/debug "navigation-stack = " navigation-stack)
+     (fx/merge cofx
+              (navigation/navigate-to-clean :new {})
+              (navigation/navigate-to-cofx :qr-scanner {})
+              (assoc-in cofx [:app-db :navigation-stack] navigation-stack))))
 
 (fx/defn set-qr-code
   [{:keys [db]} context data]
