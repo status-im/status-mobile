@@ -10,7 +10,6 @@ from datetime import datetime
 from os import environ
 from io import BytesIO
 from sauceclient import SauceClient, SauceException
-from support.api.jenkins_api import get_jenkins_build_url
 from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
 from support.testrail_report import TestrailReport
@@ -157,8 +156,7 @@ def pytest_configure(config):
                 repo = Github(github_token).get_user('status-im').get_repo('status-react')
                 pull = repo.get_pull(int(pr_number))
                 pull.get_commits()[0].create_status(state='pending', context='Mobile e2e tests',
-                                                    description='e2e tests are running',
-                                                    target_url=get_jenkins_build_url(pr_number))
+                                                    description='e2e tests are running')
             if config.getoption('env') == 'sauce':
                 if not is_uploaded():
                     if 'http' in config.getoption('apk'):
