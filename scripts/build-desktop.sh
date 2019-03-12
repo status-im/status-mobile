@@ -230,116 +230,6 @@ function bundleWindows() {
            ./deployment/windows/nsis/setup.nsi
 }
 
-if is_linux; then
-  declare -A treated_libs=()
-  function handleLinuxDependency() {
-    local module="$1"
-    local targetPath="$2"
-    local indent="$3"
-
-    if [ ${treated_libs[$module]} ]; then
-      return
-    fi
-
-    treated_libs["$module"]=1
-
-    local targetModule="$targetPath/$(basename $module)"
-
-    if [ -L "$module" ]; then
-      handleLinuxDependency "$(dirname $module)/$(readlink -sq $module)" "$targetPath" "$indent"
-    fi
-  
-    # Copy library to target
-    [ $VERBOSE_LEVEL -ge 2 ] && echo "${indent}Copying $module to $targetModule"
-    cp -a -f $module $targetModule
-    chmod 777 $targetModule
-
-    if [ -f "$targetModule" ]; then
-      module="$targetModule"
-    else
-      echo -e "${RED}FATAL: $DEPLOYQT should have copied the dependency to ${targetPath}${NC}"
-      exit 1
-    fi
-
-    treated_libs["$module"]=1
-    if [ ! -L "$module" ]; then
-      fixupRPathsInModule "$module" "$targetPath" "  ${indent}"
-    fi
-  }
-
-  function fixupRPathsInModule() {
-    local module="$1"
-    local targetPath="$2"
-    local indent="$3"
-
-    if program_exists 'realpath'; then
-      module=$(realpath -m --no-symlinks "$module" 2> /dev/null)
-    fi
-
-    local type=$(realpath $module | xargs file | awk -F':' "/^.*/{print \$2}" | awk -F' ' "/^.*/{print \$1}")
-    if [ "$type" != 'ELF' ]; then
-      return
-    fi
-
-    treated_libs["$module"]=1
-    [ $VERBOSE_LEVEL -ge 2 ] && echo "${indent}Examining ${module}"
-  
-    if [ -L "$module" ]; then
-      handleLinuxDependency "$(dirname $module)/$(readlink -sq $module)" "$targetPath" "$indent"
-      return
-    fi
-
-    # Walk through the dependencies of $module
-    local package_dep_libs=$(ldd $module | grep '=>')
-    [ $? -eq 0 ] || return
-    package_dep_libs=$(echo "$package_dep_libs" | awk -F'=>' -F ' ' "/^.*/{print \$3}")
-    if [ $(echo "$package_dep_libs" | grep "not found") ]; then
-      echo "Some dependencies for $module were not found:"
-      ldd $module
-      exit 1
-    fi
-
-    # Change dependency rpath in $module to point to $libPath
-    local relPath="/$(realpath --relative-to="$(dirname $module)" $libPath)"
-    [ "$relPath" = '/.' ] && relPath=''
-    local rpath="\$ORIGIN${relPath}"
-    echo "${indent}Updating $module to point to $rpath"
-    patchelf --set-rpath "$rpath" "$module"
-    set +e
-    patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 "$module" 2> /dev/null
-    set -e
-
-    local nix_package_dep_libs=$(echo "$package_dep_libs" | grep /nix)
-    if [ ${#nix_package_dep_libs[@]} -eq 0 ]; then
-      return
-    fi
-
-    for depModule in ${nix_package_dep_libs[@]}; do
-      local type=$(realpath $depModule | xargs file | awk -F':' "/^.*/{print \$2}" | awk -F' ' "/^.*/{print \$1}")
-      if [ $type == 'ELF' ]; then
-        local fileName=$(basename $depModule)
-        local baseNameGlob="$(dirname $depModule)/${fileName%%.*}.so*"
-        for file in `ls $baseNameGlob 2> /dev/null`; do
-          if [ -L "$file" ]; then
-            handleLinuxDependency "$file" "$targetPath" "$indent"
-          fi
-        done
-        handleLinuxDependency "$depModule" "$targetPath" "$indent"
-      else
-        echo "${indent}$depModule is not an ELF file"
-      fi
-    done
-  }
-
-  function patchQtPlugins() {
-    for f in `find $1 -name *.so*`; do
-      local relPath=$(realpath --relative-to="$(dirname $f)" ${WORKFOLDER}/AppDir/usr/lib)
-      patchelf --set-rpath "\$ORIGIN/$relPath" $f
-      touch --no-create -h -t 197001010000.00 $f
-    done
-  }
-fi
-
 function bundleLinux() {
   local QTBIN=$(joinExistingPath "$QT_PATH" 'gcc_64/bin')
   if [ ! -d "$QTBIN" ]; then
@@ -369,10 +259,6 @@ function bundleLinux() {
   cp ./.env $usrBinPath
   cp ./desktop/bin/Status ./desktop/bin/reportApp $usrBinPath
 
-  local libPath=$(joinPath "$WORKFOLDER" "AppDir/usr/lib")
-  fixupRPathsInModule "$usrBinPath/Status" "$libPath"
-  fixupRPathsInModule "$usrBinPath/reportApp" "$libPath"
-
   rm -f Application-x86_64.AppImage Status-x86_64.AppImage
 
   [ $VERBOSE_LEVEL -ge 1 ] && ldd $(joinExistingPath "$usrBinPath" 'Status')
@@ -383,33 +269,41 @@ function bundleLinux() {
     rm -f $usrBinPath/Status.AppImage
   popd
 
-  # TODO: process plugins
   linuxdeployqt \
     $desktopFilePath \
-    -verbose=$VERBOSE_LEVEL -no-strip \
+    -verbose=$VERBOSE_LEVEL -always-overwrite -no-strip \
     -no-translations -bundle-non-qt-libs \
     -qmake="$qmakePath" \
     -executable="$(joinExistingPath "$usrBinPath" 'reportApp')" \
     -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'node_modules/react-native')" \
     -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'desktop/reportApp')" \
-    -extra-plugins=imageformats/libqsvg.so \
-    -appimage
-
-  patchQtPlugins "${WORKFOLDER}/AppDir/usr/plugins"
-  patchQtPlugins "${WORKFOLDER}/AppDir/usr/qml"
+    -extra-plugins=imageformats/libqsvg.so
 
   pushd $WORKFOLDER
     rm -f $usrBinPath/Status.AppImage
+
+    # Patch libraries and executables to remove references to /nix/store
+    set +e
+    for f in `find ./AppDir/usr/lib/*`; do
+      patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 $f 2> /dev/null
+      patchelf --set-rpath "\$ORIGIN" $f
+    done
+    set -e
+    for f in $usrBinPath/Status $usrBinPath/reportApp; do
+      patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 --set-rpath "\$ORIGIN:\$ORIGIN/../lib" $f
+    done
+    # To make the output more reproducible, always set the timestamps to the same value
     for f in `find ./AppDir`; do
       touch --no-create -h -t 197001010000.00 $f
     done
     [ $VERBOSE_LEVEL -ge 1 ] && ldd $usrBinPath/Status
 
     appimagetool ./AppDir
-    # Ensure the AppImage isn't using the interpreter in Nix's store
-    patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 ./Status-x86_64.AppImage
+    # Ensure the AppImage itself isn't using the interpreter in Nix's store
+    patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 --set-rpath "\$ORIGIN" ./Status-x86_64.AppImage
     chmod +x ./Status-x86_64.AppImage
     rm -rf Status.AppImage
+    mv -f ./Status-x86_64.AppImage ..
   popd
 
   echo -e "${GREEN}Package ready in ./Status-x86_64.AppImage!${NC}"

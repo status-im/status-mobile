@@ -16,6 +16,9 @@ stdenv.mkDerivation rec {
       }
     else throw "${name} is not supported on ${stdenv.hostPlatform.system}";
 
+  # Add our own patch to make linuxdeployqt correctly include all /nix/store rpaths to LD_LIBRARY_PATH so we don't have to calculate that ourselves
+  patches = [ ./linuxdeployqt.patch ];
+
   buildInputs = [ qt5.qtbase appimagekit ];
   nativeBuildInputs = [ wget ];
 
