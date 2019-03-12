@@ -78,5 +78,14 @@
  card/get-keys)
 
 (re-frame/reg-fx
+ :hardwallet/sign
+ card/sign)
+
+(re-frame/reg-fx
  :hardwallet/login-with-keycard
  statusgo/login-with-keycard)
+
+(re-frame/reg-fx
+ :send-transaction-with-signature
+ (fn [{:keys [transaction signature on-completed]}]
+   (statusgo/send-transaction-with-signature transaction signature on-completed)))

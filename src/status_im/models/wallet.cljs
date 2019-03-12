@@ -120,7 +120,7 @@
                                                :error     message}
                                      :webview webview-bridge}))
 
-(defn dapp-complete-transaction [id result method message-id webview]
+(defn dapp-complete-transaction [id result method message-id webview keycard?]
   (cond-> {:browser/send-to-bridge {:message {:type      constants/web3-send-async-callback
                                               :messageId message-id
                                               :result    {:jsonrpc "2.0"
@@ -130,7 +130,7 @@
            :dispatch          [:navigate-back]}
 
     (constants/web3-sign-message? method)
-    (assoc :dispatch [:navigate-back])
+    (assoc :dispatch (if keycard? [:navigate-to :browser] [:navigate-back]))
 
     (= method constants/web3-send-transaction)
     (assoc :dispatch [:navigate-to-clean :wallet-transaction-sent-modal])))
