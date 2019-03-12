@@ -279,7 +279,7 @@ class OpenInStatusButton(BaseButton):
 
     def click(self):
         self.wait_for_visibility_of_element()
-        
+
         # 'Open in Status' button already in DOM but need to scroll down so that click action works
         self.driver.swipe(500, 1000, 500, 100)
         self.driver.info('Tap on %s' % self.name)
@@ -449,6 +449,9 @@ class BaseView(object):
 
     def swipe_down(self):
         self.driver.swipe(500, 500, 500, 1000)
+
+    def swipe_left(self, y=1700):
+        self.driver.swipe(1000, y, 100, y)
 
     def get_status_test_dapp_view(self):
         from views.web_views.status_test_dapp import StatusTestDAppView

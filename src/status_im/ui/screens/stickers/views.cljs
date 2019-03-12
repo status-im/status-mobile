@@ -39,7 +39,8 @@
         (if pending
           [components/activity-indicator {:animating true
                                           :color     colors/white}]
-          [react/text {:style {:color colors/white}}
+          [react/text {:style {:color colors/white}
+                       :accessibility-label :sticker-pack-price}
            (cond (or owned (zero? price))
                  (i18n/label :t/install)
                  :else
@@ -52,8 +53,9 @@
     [react/view {:height 64 :align-items :center :flex-direction :row}
      [thumbnail-icon thumbnail 40]
      [react/view {:padding-horizontal 16 :flex 1}
-      [react/text name]
-      [react/text {:style {:color colors/gray :margin-top 6}} author]]
+      [react/text {:accessibility-label :sticker-pack-name} name]
+      [react/text {:style {:color colors/gray :margin-top 6}
+                   :accessibility-label :sticker-pack-author} author]]
      (if installed
        [installed-icon]
        [price-badge price id owned pending])]]])

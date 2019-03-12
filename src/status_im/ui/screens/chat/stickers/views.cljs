@@ -20,7 +20,8 @@
   [react/touchable-highlight
    {:on-press (fn [_]
                 (re-frame/dispatch [:chat.ui/set-chat-ui-props {:show-stickers? (not show-stickers?)}])
-                (js/setTimeout #(react/dismiss-keyboard!) 100))}
+                (js/setTimeout #(react/dismiss-keyboard!) 100))
+    :accessibility-label :show-stickers-icon}
    [vector-icons/icon :main-icons/stickers {:container-style {:margin 14 :margin-right 6}
                                             :color           (if show-stickers? colors/blue colors/gray)}]])
 
@@ -43,7 +44,9 @@
        ^{:key uri}
        [react/touchable-highlight {:style    {:height 75 :width 75 :margin 5}
                                    :on-press #(re-frame/dispatch [:chat/send-sticker sticker])}
-        [react/image {:style {:resize-mode :cover :width "100%" :height "100%"} :source {:uri uri}}]])]]])
+        [react/image {:style {:resize-mode :cover :width "100%" :height "100%"}
+                      :accessibility-label :sticker-icon
+                      :source {:uri uri}}]])]]])
 
 (defview recent-stickers-panel [window-width]
   (letsubs [stickers [:stickers/recent]]
