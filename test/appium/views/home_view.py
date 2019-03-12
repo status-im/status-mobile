@@ -1,6 +1,6 @@
 import time
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-from views.base_element import BaseButton, BaseText, BaseElement
+from views.base_element import BaseButton, BaseText, BaseElement, BaseEditBox
 from views.base_view import BaseView
 
 
@@ -98,6 +98,12 @@ class ChatUrlText(BaseText):
         self.locator = self.Locator.accessibility_id('chat-url-text')
 
 
+class SearchChatInput(BaseEditBox):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.xpath_selector('//android.widget.EditText')
+
+
 class HomeView(BaseView):
     def __init__(self, driver):
         super(HomeView, self).__init__(driver)
@@ -105,6 +111,7 @@ class HomeView(BaseView):
         self.plus_button = PlusButton(self.driver)
         self.chat_name_text = ChatNameText(self.driver)
         self.chat_url_text = ChatUrlText(self.driver)
+        self.search_chat_input = SearchChatInput(self.driver)
 
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing complete:')
