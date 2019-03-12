@@ -33,11 +33,11 @@
                           :icon  :main-icons/message}
     :count-subscription  :chats/unread-messages-number
     :accessibility-label :home-tab-button}
-   #_{:nav-stack           :dapp-stack
-      :content             {:title (i18n/label :t/dapp)
-                            :icon  :main-icons/dapp}
-      ;;:count-subscription  :chats/unread-messages-number
-      :accessibility-label :dapp-tab-button}
+   {:nav-stack           :browser-stack
+    :content             {:title (i18n/label :t/dapp)
+                          :icon  :main-icons/dapp}
+    ;;:count-subscription  :chats/unread-messages-number
+    :accessibility-label :dapp-tab-button}
    {:nav-stack           :wallet-stack
     :content             {:title (i18n/label :t/wallet)
                           :icon  :main-icons/wallet}
@@ -88,7 +88,7 @@
 
 (defn main-tab? [view-id]
   (contains?
-   #{:home :wallet :dapps :my-profile :wallet-onboarding-setup}
+   #{:home :wallet :open-dapp :my-profile :wallet-onboarding-setup}
    view-id))
 
 (defn minimize-bar [view-id]
@@ -176,7 +176,8 @@
                       -index)
               tab (case idx
                     0 :chat-stack
-                    1 :wallet-stack
-                    2 :profile-stack
+                    1 :browser-stack
+                    2 :wallet-stack
+                    3 :profile-stack
                     :chat-stack)]
           [tabs-animation-wrapper @keyboard-shown? @view-id tab]))})))

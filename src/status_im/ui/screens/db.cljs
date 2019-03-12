@@ -135,8 +135,6 @@
 (spec/def :navigation.screen-params.edit-contact-group/group-type (spec/nilable any?))
 (spec/def :navigation.screen-params/edit-contact-group (spec/keys :opt-un [:navigation.screen-params.edit-contact-group/group
                                                                            :navigation.screen-params.edit-contact-group/group-type]))
-(spec/def :navigation.screen-params.dapp-description/dapp :new/open-dapp)
-(spec/def :navigation.screen-params/dapp-description map?)
 
 (spec/def :navigation.screen-params/collectibles-list map?)
 
@@ -150,7 +148,6 @@
                                                                       :navigation.screen-params/qr-scanner
                                                                       :navigation.screen-params/group-contacts
                                                                       :navigation.screen-params/edit-contact-group
-                                                                      :navigation.screen-params/dapp-description
                                                                       :navigation.screen-params/collectibles-list
                                                                       :navigation.screen-params/show-extension
                                                                       :navigation.screen-params/selection-modal-screen

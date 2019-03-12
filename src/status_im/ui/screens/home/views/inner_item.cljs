@@ -19,7 +19,11 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.common.common :as components.common]
-            [status-im.browser.core :as browser]))
+            [status-im.ui.components.list-item.views :as list-item]
+            [status-im.browser.core :as browser]
+            [clojure.string :as string]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.ui.components.bottom-bar.styles :as tabs.styles]))
 
 (defview command-short-preview [message]
   (letsubs [id->command [:chats/id->command]
@@ -115,25 +119,15 @@
                                :content-type last-message-content-type}]
         [unviewed-indicator chat-id]]]]]))
 
-(defn home-list-browser-item-inner-view [{:keys [dapp url name browser-id] :as browser}]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/browser-item-selected browser-id])}
-   [react/view styles/chat-container
-    [react/view styles/chat-icon-container
-     (if dapp
-       [chat-icon.screen/dapp-icon-browser dapp 40]
-       [react/view styles/browser-icon-container
-        [vector-icons/icon :main-icons/browser {:color colors/gray}]])]
-    [react/view styles/chat-info-container
-     [react/view styles/item-upper-container
-      [react/view styles/name-view
-       [react/view {:flex-shrink 1}
-        [react/text {:style               styles/name-text
-                     :accessibility-label :chat-name-text
-                     :number-of-lines     1}
-         name]]]]
-     [react/view styles/item-lower-container
-      [react/view styles/last-message-container
-       [react/text {:style               styles/last-message-text
-                    :accessibility-label :chat-url-text
-                    :number-of-lines     1}
-        (or url (i18n/label :t/dapp))]]]]]])
+(defn home-list-browser-item-inner-view [{:keys [dapp url name browser-id]}]
+  (let [photo-path (:photo-path dapp)]
+    [list-item/list-item (merge
+                          {:title name
+                           :subtitle (or url (i18n/label :t/dapp))
+                           :on-press #(re-frame/dispatch [:browser.ui/browser-item-selected browser-id])}
+                          (if dapp
+                            (if (and photo-path (not (string/blank? (:photo-path dapp))))
+                              {:image-path photo-path}
+                              {:image [chat-icon/default-browser-icon name]})
+                            {:image [react/view styles/browser-icon-container
+                                     [vector-icons/icon :main-icons/browser {:color colors/gray}]]}))]))

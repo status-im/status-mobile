@@ -13,7 +13,7 @@
             {:line-height 22 :font-size 15}
             {:line-height 20 :font-size 17})
     subtitle
-    (assoc :font-weight 500 :font-size 15)))
+    (assoc :font-weight "500" :font-size 15)))
 
 (def subtitle
   {:margin-top  4

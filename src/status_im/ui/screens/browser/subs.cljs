@@ -20,6 +20,12 @@
            browsers)))
 
 (re-frame/reg-sub
+ :browser/browsers-vals
+ :<- [:browser/browsers]
+ (fn [browsers]
+   (sort-by :timestamp > (vals browsers))))
+
+(re-frame/reg-sub
  :get-current-browser
  :<- [:get :browser/options]
  :<- [:browser/browsers]

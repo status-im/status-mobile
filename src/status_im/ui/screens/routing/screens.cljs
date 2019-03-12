@@ -43,7 +43,7 @@
    [status-im.ui.screens.hardwallet.settings.views :as hardwallet.settings]
    [status-im.ui.screens.help-center.views :as help-center]
    [status-im.ui.screens.browser.views :as browser]
-   [status-im.ui.screens.add-new.open-dapp.views :as open-dapp]
+   [status-im.ui.screens.browser.open-dapp.views :as open-dapp]
    [status-im.ui.screens.intro.views :as intro]
    [status-im.ui.screens.accounts.create.views :as accounts.create]
    [status-im.ui.screens.hardwallet.authentication-method.views :as hardwallet.authentication]
@@ -85,7 +85,6 @@
    :group-chat-profile               profile.group-chat/group-chat-profile
    :new-public-chat                  new-public-chat/new-public-chat
    :open-dapp                        open-dapp/open-dapp
-   :dapp-description                 open-dapp/dapp-description
    :browser                          browser/browser
    :stickers                         stickers/packs
    :stickers-pack                    stickers/pack

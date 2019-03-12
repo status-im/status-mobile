@@ -5,19 +5,15 @@
 (re-frame/reg-sub
  :home-items
  :<- [:chats/active-chats]
- :<- [:browser/browsers]
  :<- [:search/filter]
  :<- [:search/filtered-chats]
- :<- [:search/filtered-browsers]
- (fn [[chats browsers search-filter filtered-chats filtered-browsers]]
+ (fn [[chats search-filter filtered-chats]]
    (if (or (nil? search-filter)
            (and platform/desktop? (empty? search-filter)))
      {:all-home-items
-      (sort-by #(-> % second :timestamp) >
-               (merge chats browsers))}
+      (sort-by #(-> % second :timestamp) > chats)}
      {:search-filter search-filter
-      :chats filtered-chats
-      :browsers filtered-browsers})))
+      :chats filtered-chats})))
 
 (re-frame/reg-sub
  :chain-sync-state

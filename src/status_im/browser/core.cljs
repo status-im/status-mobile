@@ -33,15 +33,6 @@
   (let [dapp-permissions (into {} (map #(vector (:dapp %) %) all-dapp-permissions))]
     {:db (assoc db :dapps/permissions dapp-permissions)}))
 
-(fx/defn navigate-to-browser
-  [{{:keys [view-id]} :db :as cofx}]
-  (if (= view-id :dapp-description)
-    (navigation/navigate-reset cofx
-                               {:index   1
-                                :actions [{:routeName :home}
-                                          {:routeName :browser}]})
-    (navigation/navigate-to-cofx cofx :browser nil)))
-
 (fx/defn update-browser-option
   [{:keys [db]} option-key option-value]
   {:db (assoc-in db [:browser/options option-key] option-value)})
@@ -272,7 +263,7 @@
       (fx/merge cofx
                 {:db (assoc db :browser/options
                             {:browser-id (:browser-id browser)})}
-                (navigate-to-browser)
+                (navigation/navigate-to-cofx :browser nil)
                 (update-browser browser)
                 (resolve-url nil)))))
 
@@ -368,7 +359,7 @@
 (fx/defn open-chat-from-browser
   [cofx host]
   (let [topic (string/lower-case (apply str (map filter-letters-numbers-and-replace-dot-on-dash host)))]
-    {:dispatch [:chat.ui/start-public-chat topic {:modal? true :navigation-reset? true}]}))
+    {:dispatch [:chat.ui/start-public-chat topic nil]}))
 
 (re-frame/reg-fx
  :browser/resolve-ens-content

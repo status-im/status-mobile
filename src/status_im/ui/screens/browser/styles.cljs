@@ -42,17 +42,6 @@
    :align-items      :center
    :justify-content  :center})
 
-(def web-view-loading
-  {:flex             1
-   :background-color colors/gray
-   :align-items      :center
-   :justify-content  :center
-   :position         :absolute
-   :top              0
-   :bottom           0
-   :left             0
-   :right            0})
-
 (def web-view-error
   {:flex             1
    :justify-content  :center
@@ -140,11 +129,6 @@
    :align-items      :center
    :justify-content  :center})
 
-(def permissions-panel-d-label
-  {:font-size   22
-   :color       colors/gray
-   :font-weight :bold})
-
 (def permissions-panel-ok-icon-container
   {:height           24
    :width            24
@@ -181,8 +165,3 @@
    :line-height       22
    :text-align        :center
    :margin-top        9})
-
-(def permissions-panel-permissions-label
-  {:color       colors/blue
-   :font-size   14
-   :margin-left 10})

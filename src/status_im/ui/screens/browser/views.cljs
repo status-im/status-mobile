@@ -56,7 +56,7 @@
    {:browser? true}
    [toolbar.view/nav-button
     (actions/back (fn []
-                    (re-frame/dispatch [:navigate-to :home])
+                    (re-frame/dispatch [:navigate-back])
                     (when error?
                       (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
    [toolbar-content url url-original browser url-editing?]])

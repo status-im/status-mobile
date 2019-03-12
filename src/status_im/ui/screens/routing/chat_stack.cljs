@@ -15,9 +15,6 @@
                      :contact-toggle-list
                      :group-chat-profile
                      :new-public-chat
-                     :open-dapp
-                     :dapp-description
-                     :browser
                      :stickers
                      :stickers-pack]
               config/hardwallet-enabled?

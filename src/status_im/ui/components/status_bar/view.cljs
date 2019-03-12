@@ -30,6 +30,7 @@
     :contact-toggle-list             {:type :main}
     :new-public-chat                 {:type :main}
     :qr-scanner                      {:type :main}
+    :browser-stack                   {:type :main}
     :open-dapp                       {:type :main}
     :my-profile                      {:type :main}
     :profile-stack                   {:type :main}

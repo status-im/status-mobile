@@ -37,13 +37,6 @@
      :on-press            #(re-frame/dispatch [:navigate-to :new-public-chat])}]
    [action-button/action-separator]
    [action-button/action-button
-    {:label               (i18n/label :t/open-dapp)
-     :accessibility-label :open-dapp-button
-     :icon                :main-icons/address
-     :icon-opts           {:color colors/blue}
-     :on-press            #(re-frame/dispatch [:navigate-to :open-dapp])}]
-   [action-button/action-separator]
-   [action-button/action-button
     {:label               (i18n/label :t/invite-friends)
      :accessibility-label :invite-friends-button
      :icon                :main-icons/share

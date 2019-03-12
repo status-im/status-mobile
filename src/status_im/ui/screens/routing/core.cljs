@@ -13,6 +13,7 @@
    [status-im.ui.screens.routing.chat-stack :as chat-stack]
    [status-im.ui.screens.routing.wallet-stack :as wallet-stack]
    [status-im.ui.screens.routing.profile-stack :as profile-stack]
+   [status-im.ui.screens.routing.browser-stack :as browser-stack]
    [status-im.ui.screens.routing.modals :as modals]
    [status-im.ui.components.bottom-bar.core :as bottom-bar]
    [status-im.ui.components.status-bar.view :as status-bar]
@@ -186,6 +187,7 @@
               {:tabs
                {:screen (tab-navigator
                          (->> [(build-screen chat-stack/chat-stack)
+                               (build-screen browser-stack/browser-stack)
                                (build-screen wallet-stack/wallet-stack)
                                (build-screen profile-stack/profile-stack)]
                               (into {}))

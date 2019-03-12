@@ -59,25 +59,16 @@
        [icons/icon :main-icons/add {:color :white}])]]])
 
 (defn home-list-item [[home-item-id home-item]]
-  (if (= home-item-id :empty)
-    [react/view
-     {:style {:height     tabs.styles/tabs-diff
-              :align-self :stretch}}]
-    (let [delete-action   (if (:chat-id home-item)
-                            (if (and (:group-chat home-item)
-                                     (not (:public? home-item)))
-                              :group-chats.ui/remove-chat-pressed
-                              :chat.ui/remove-chat)
-                            :browser.ui/remove-browser-pressed)
-          inner-item-view (if (:chat-id home-item)
-                            inner-item/home-list-chat-item-inner-view
-                            inner-item/home-list-browser-item-inner-view)]
-      [list/deletable-list-item {:type      :chats
-                                 :id        home-item-id
-                                 :on-delete #(do
-                                               (re-frame/dispatch [:set-swipe-position :chats home-item-id false])
-                                               (re-frame/dispatch [delete-action home-item-id]))}
-       [inner-item-view home-item]])))
+  (let [delete-action   (if (and (:group-chat home-item)
+                                 (not (:public? home-item)))
+                          :group-chats.ui/remove-chat-pressed
+                          :chat.ui/remove-chat)]
+    [list/deletable-list-item {:type      :chats
+                               :id        home-item-id
+                               :on-delete #(do
+                                             (re-frame/dispatch [:set-swipe-position :chats home-item-id false])
+                                             (re-frame/dispatch [delete-action home-item-id]))}
+     [inner-item/home-list-chat-item-inner-view home-item]]))
 
 ;;do not remove view-id and will-update or will-unmount handlers, this is how it works
 (views/defview welcome [view-id]
@@ -199,12 +190,10 @@
    [react/i18n-text {:style styles/no-chats-text :key :no-recent-chats}]])
 
 (defn home-filtered-items-list
-  [chats browsers]
+  [chats]
   [list/section-list
    {:sections [{:title :t/chats
                 :data chats}
-               {:title :t/browser
-                :data browsers}
                {:title :t/messages
                 :data []}]
     :key-fn first
@@ -234,12 +223,12 @@
                  [home-list-item home-item])}])
 
 (defn home-items-view
-  [search-filter chats browsers all-home-items]
+  [search-filter chats all-home-items]
   (let [previous-touch (reagent/atom nil)
         scrolling-from-top? (reagent/atom true)]
-    (fn [search-filter chats browsers all-home-items]
+    (fn [search-filter chats all-home-items]
       (if (not-empty search-filter)
-        [home-filtered-items-list chats browsers]
+        [home-filtered-items-list chats]
         [react/view
          (merge {:style {:flex 1}}
                 (when (and @scrolling-from-top?
@@ -263,10 +252,12 @@
                                            previous-position)))
                          (show-search!)))
                      false)}))
-         [list/flat-list {:data           (conj (vec all-home-items)
-                                                [:empty {}])
+         [list/flat-list {:data           all-home-items
                           :key-fn         first
                           :end-fill-color colors/white
+                          :footer         [react/view
+                                           {:style {:height     tabs.styles/tabs-diff
+                                                    :align-self :stretch}}]
                           :on-scroll-begin-drag
                           (fn [e]
                             (reset! scrolling-from-top?
@@ -284,7 +275,7 @@
                   latest-block-number [:latest-block-number]
                   rpc-network? [:current-network-uses-rpc?]
                   network-initialized? [:current-network-initialized?]
-                  {:keys [search-filter chats browsers all-home-items]} [:home-items]]
+                  {:keys [search-filter chats all-home-items]} [:home-items]]
     {:component-did-mount
      (fn [this]
        (let [[_ loading?] (.. this -props -argv)]
@@ -316,7 +307,7 @@
              (if (and (not search-filter)
                       (empty? all-home-items))
                [home-empty-view]
-               [home-items-view search-filter chats browsers all-home-items])])
+               [home-items-view search-filter chats all-home-items])])
       (when platform/android?
         [home-action-button (not logging-in?)])]]))
 

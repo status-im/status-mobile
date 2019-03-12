@@ -10,8 +10,7 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar.view]
             [status-im.ui.screens.add-new.styles :as add-new.styles]
-            [status-im.ui.screens.add-new.new-chat.styles :as styles]
-            [status-im.ui.screens.add-new.open-dapp.styles :as open-dapp.styles]))
+            [status-im.ui.screens.add-new.new-chat.styles :as styles]))
 
 (defn- render-row [row _ _]
   [contact-view/contact-view {:contact       row
@@ -21,7 +20,7 @@
 (views/defview new-chat []
   (views/letsubs [contacts      [:contacts/active]
                   error-message [:new-identity-error]]
-    [react/keyboard-avoiding-view open-dapp.styles/main-container
+    [react/keyboard-avoiding-view {:style {:flex 1}}
      [status-bar/status-bar]
      [toolbar.view/simple-toolbar (i18n/label :t/new-chat)]
      [react/view add-new.styles/new-chat-container
@@ -43,7 +42,7 @@
      [react/text {:style styles/error-message}
       error-message]
      (when (seq contacts)
-       [react/text {:style open-dapp.styles/list-title}
+       [react/text {:style styles/list-title}
         (i18n/label :t/contacts)])
      [list/flat-list {:data                      contacts
                       :key-fn                    :address
