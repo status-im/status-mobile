@@ -283,18 +283,14 @@
 (defn request-messages! [web3 {:keys [sym-key-id address]} {:keys [topics cursor to from] :as request}]
   ;; Add some room to from, unless we break day boundaries so that messages that have
   ;; been received after the last request are also fetched
-  (let [adjusted-from (adjust-request-for-transit-time from)
+  (let [actual-from   (adjust-request-for-transit-time from)
         actual-limit  (or (:limit request)
-                          @limit)
-        actual-from   (if (> (- to adjusted-from) one-day)
-                        from
-                        adjusted-from)]
+                          @limit)]
     (log/info "mailserver: request-messages for: "
               " topics " topics
               " from " actual-from
               " cursor " cursor
-              " limit " actual-limit
-              " to   " to)
+              " limit " actual-limit)
     (.requestMessages (transport.utils/shh web3)
                       (clj->js {:topics         topics
                                 :mailServerPeer address
@@ -302,8 +298,7 @@
                                 :timeout        request-timeout
                                 :limit          actual-limit
                                 :cursor         cursor
-                                :from           actual-from
-                                :to             to})
+                                :from           actual-from})
                       (fn [error request-id]
                         (if-not error
                           (do
@@ -328,32 +323,25 @@
                sym-key-id)
       mailserver)))
 
-(defn split-request-per-day
-  "NOTE: currently the mailserver is only accepting requests for a span
-  of 24 hours, so we split requests per 24h spans if the last request was
-  done more than 24h ago"
+(defn ->request
   [now-in-s [last-request topics]]
-  (let [days        (conj
-                     (into [] (range (max last-request
-                                          (- now-in-s one-day))
-                                     now-in-s
-                                     one-day))
-                     now-in-s)
-        day-ranges  (map vector days (rest days))]
-    (for [[from to] day-ranges]
-      {:topics topics
-       :from  from
-       :to    to})))
+  (when (< last-request now-in-s)
+    {:topics topics
+     ;; To is currently not sent to the mailserver, but we use to calculate
+     ;; when the last-request was sent.
+     :to     now-in-s
+     :from   (max last-request
+                  (- now-in-s one-day))}))
 
 (defn prepare-messages-requests
   [{:keys [db now] :as cofx} request-to]
   (let [web3     (:web3 db)]
-    (remove nil?
-            (mapcat (partial split-request-per-day request-to)
-                    (reduce (fn [acc [topic {:keys [last-request]}]]
-                              (update acc last-request conj topic))
-                            {}
-                            (:mailserver/topics db))))))
+    (->>
+     (:mailserver/topics db)
+     (reduce (fn [acc [topic {:keys [last-request]}]]
+               (update acc last-request conj topic))
+             {})
+     (keep (partial ->request request-to)))))
 
 (fx/defn process-next-messages-request
   [{:keys [db now] :as cofx}]
