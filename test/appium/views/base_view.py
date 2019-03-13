@@ -104,6 +104,21 @@ class HomeButton(TabButton):
         return self.navigate()
 
 
+class DappTabButton(TabButton):
+    def __init__(self, driver):
+        super(DappTabButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('dapp-tab-button')
+
+    def navigate(self):
+        from views.start_new_chat_view import StartNewChatView
+        return StartNewChatView(self.driver)
+
+    def click(self):
+        from views.start_new_chat_view import EnterUrlEditbox
+        self.click_until_presence_of_element(EnterUrlEditbox(self.driver))
+        return self.navigate()
+
+
 class WalletButton(TabButton):
     def __init__(self, driver):
         super(WalletButton, self).__init__(driver)
@@ -268,6 +283,7 @@ class BaseView(object):
         self.home_button = HomeButton(self.driver)
         self.wallet_button = WalletButton(self.driver)
         self.profile_button = ProfileButton(self.driver)
+        self.dapp_tab_button = DappTabButton(self.driver)
 
         self.yes_button = YesButton(self.driver)
         self.no_button = NoButton(self.driver)

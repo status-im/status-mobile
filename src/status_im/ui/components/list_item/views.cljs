@@ -27,7 +27,9 @@
                        :style  (styles/photo 40)}]])
       ;;Title
       [react/view {:style {:margin-left 16 :flex 1}}
-       [react/text {:style (styles/title small? subtitle)}
+       [react/text {:style           (styles/title small? subtitle)
+                    :number-of-lines 1
+                    :ellipsize-mode  :tail}
         title]
        ;;Subtitle
        (when subtitle

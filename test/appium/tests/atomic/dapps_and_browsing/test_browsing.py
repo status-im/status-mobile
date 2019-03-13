@@ -59,6 +59,7 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(5390)
     @marks.high
+    ### TO DO: this needs to be updated. Feature changed in PR-7719
     def test_swipe_to_delete_browser_entry(self):
         sign_in = SignInView(self.driver)
         home_view = sign_in.create_user()
@@ -76,9 +77,9 @@ class TestBrowsing(SingleDeviceTestCase):
     def test_open_google_com_via_open_dapp(self):
         sign_in_view = SignInView(self.driver)
         home = sign_in_view.create_user()
-        start_new_chat = home.plus_button.click()
-        start_new_chat.open_url('google.com')
-        browsing_view = start_new_chat.get_base_web_view()
+        open_dapp_view = home.dapp_tab_button.click()
+        open_dapp_view.open_url('google.com')
+        browsing_view = open_dapp_view.get_base_web_view()
         browsing_view.element_by_text('Google').wait_for_element(30)
 
     @marks.testrail_id(5321)
@@ -87,7 +88,7 @@ class TestBrowsing(SingleDeviceTestCase):
     def test_back_forward_buttons_browsing_website(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
-        start_new_chat = home.plus_button.click()
+        start_new_chat = home.dapp_tab_button.click()
         browsing_view = start_new_chat.open_url('www.wikipedia.org')
         browsing_view.element_by_text_part('Русский', 'button').click()
         browsing_view.find_text_part('Избранная статья')

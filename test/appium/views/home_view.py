@@ -162,12 +162,11 @@ class HomeView(BaseView):
         profile_view = self.profile_button.click()
         profile_view.advanced_button.click()
         profile_view.debug_mode_toggle.click()
-        home_view = profile_view.home_button.click()
-        start_new_chat_view = home_view.plus_button.click()
-        start_new_chat_view.open_d_app_button.click()
-        start_new_chat_view.status_test_dapp_button.scroll_to_element()
-        status_test_dapp = start_new_chat_view.status_test_dapp_button.click()
-        start_new_chat_view.open_button.click()
+        dapp_view = profile_view.dapp_tab_button.click()
+        #dapp_view.open_d_app_button.click()
+        dapp_view.status_test_dapp_button.scroll_to_element()
+        status_test_dapp = dapp_view.status_test_dapp_button.click()
+        #dapp_view.open_button.click()
         for _ in range(2):
             if allow_all:
                 status_test_dapp.allow_button.click()

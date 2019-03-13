@@ -12,7 +12,7 @@
    [status-im.ui.screens.wallet.components.views :as components]
    [status-im.ui.components.bottom-bar.styles :as tabs.styles]
    [status-im.react-native.resources :as resources]
-   [status-im.ui.components.contact.contact :as contact-view])
+   [status-im.ui.components.chat-icon.screen :as chat-icon])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn list-item [{:keys [browser-id] :as home-item}]
@@ -23,13 +23,19 @@
                                            (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))}
    [inner-item/home-list-browser-item-inner-view home-item]])
 
-(defn- render-dapp [{:keys [dapp-url recent?] :as dapp}]
+(defn- render-dapp [{:keys [dapp-url recent? description name] :as dapp}]
   (if recent?
     [list-item dapp]
-    [contact-view/contact-view {:contact             dapp
-                                :on-press            #(re-frame/dispatch [:browser.ui/open-dapp-button-pressed dapp-url])
-                                :show-forward?       true
-                                :accessibility-label :dapp-item}]))
+    [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/open-dapp-button-pressed dapp-url])}
+     [react/view {:style {:padding-top 11 :padding-horizontal 16 :padding-bottom 7 :flex-direction :row}}
+      [chat-icon/contact-icon-contacts-tab dapp]
+      [react/view {:padding-left 16 :padding-right 2 :flex 1}
+       [react/text {:style {:font-size 15 :line-height 22 :font-weight "500"}} name]
+       [react/text {:flex 1}
+        [react/text {:style {:font-size 13 :color "#939BA1" :line-height 18
+                             :margin-top 5 :margin-bottom 2}}
+         description]]
+       [react/text {:style {:font-size 12 :color "#4360DF"}} (str dapp-url " ->")]]]]))
 
 (defn list-header [empty?]
   [react/view (when empty? {:flex 1})
@@ -67,7 +73,6 @@
                                                              :data (map #(assoc % :dapp-url (:url %) :recent? true) browsers)}))
                          :key-fn                    :dapp-url
                          :render-fn                 render-dapp
-                         :default-separator?        true
                          :enableEmptySections       true
                          :footer         [react/view
                                           {:style {:height     tabs.styles/tabs-diff

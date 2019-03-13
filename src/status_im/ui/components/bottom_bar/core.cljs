@@ -34,9 +34,8 @@
     :count-subscription  :chats/unread-messages-number
     :accessibility-label :home-tab-button}
    {:nav-stack           :browser-stack
-    :content             {:title (i18n/label :t/dapp)
+    :content             {:title (i18n/label :t/dapps)
                           :icon  :main-icons/dapp}
-    ;;:count-subscription  :chats/unread-messages-number
     :accessibility-label :dapp-tab-button}
    {:nav-stack           :wallet-stack
     :content             {:title (i18n/label :t/wallet)
