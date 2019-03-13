@@ -80,17 +80,23 @@
 ;; SIGN MESSAGE
 (handlers/register-handler-fx
  :wallet/sign-message
- (fn [_ [_ typed? screen-params]]
+ (fn [_ [_ typed? screen-params password-error-cb]]
    (let [{:keys [data from password]} screen-params]
      (if typed?
        {::sign-typed-data {:data     data
                            :password password
                            :account  from
-                           :on-completed #(re-frame/dispatch [::sign-message-completed screen-params (types/json->clj %)])}}
+                           :on-completed #(re-frame/dispatch [::sign-message-completed
+                                                              screen-params
+                                                              (types/json->clj %)
+                                                              password-error-cb])}}
        {::sign-message {:params       {:data     data
                                        :password (security/safe-unmask-data password)
                                        :account  from}
-                        :on-completed #(re-frame/dispatch [::sign-message-completed screen-params (types/json->clj %)])}}))))
+                        :on-completed #(re-frame/dispatch [::sign-message-completed
+                                                           screen-params
+                                                           (types/json->clj %)
+                                                           password-error-cb])}}))))
 
 ;; SEND TRANSACTION CALLBACK
 (handlers/register-handler-fx
@@ -116,14 +122,19 @@
                                                             :amount  amount-text
                                                             :tx-hash result}]}))))))
 
+(re-frame/reg-fx
+ :show-sign-message-error
+ (fn [[password-error-cb]]
+   (password-error-cb)))
+
 ;; SIGN MESSAGE CALLBACK
 (handlers/register-handler-fx
  ::sign-message-completed
- (fn [{:keys [db now] :as cofx} [_ {:keys [on-result id method]} {:keys [result error]}]]
+ (fn [{:keys [db now] :as cofx} [_ {:keys [on-result id method]} {:keys [result error]} password-error-cb]]
    (let [db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
      (if error
        ;; ERROR
-       (models.wallet/handle-transaction-error (assoc cofx :db db') error)
+       {:show-sign-message-error [password-error-cb]}
        ;; RESULT
        (if on-result
          {:dispatch (conj on-result id result method)})))))

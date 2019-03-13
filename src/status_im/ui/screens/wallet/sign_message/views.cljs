@@ -56,7 +56,7 @@
             opacity-value   (animation/create-value 0)]
     {:component-did-mount #(send.animations/animate-sign-panel opacity-value bottom-value)}
     [react/animated-view {:style (styles/animated-sign-panel bottom-value)}
-     (when (:wrong-password? value-atom)
+     (when (:wrong-password? @value-atom)
        [tooltip/tooltip (i18n/label :t/wrong-password) styles/password-error-tooltip])
      [react/animated-view {:style (styles/sign-panel opacity-value)}
       [react/view styles/spinner-container
@@ -104,7 +104,9 @@
           nil]]]]
       [enter-password-buttons value-atom false
        #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
-       #(re-frame/dispatch [:wallet/sign-message typed? (merge screen-params @value-atom)])
+       #(re-frame/dispatch [:wallet/sign-message typed? (merge screen-params @value-atom)
+                            (fn []
+                              (swap! value-atom assoc :wrong-password? true))])
        :t/transactions-sign]
       [password-input-panel value-atom :t/signing-message-phrase-description false]
       (when in-progress?
