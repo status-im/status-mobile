@@ -83,7 +83,18 @@
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
                            :DataDir        "/ethereum/rinkeby_rpc"
                            :UpstreamConfig {:Enabled true
-                                            :URL     "https://rinkeby.infura.io/v3/f315575765b14720b32382a61a89341a"}}}})
+                                            :URL     "https://rinkeby.infura.io/v3/f315575765b14720b32382a61a89341a"}}}
+   "goerli"      {:id     "goerli",
+                  :name   "Goerli",
+                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :goerli)
+                           :DataDir        "/ethereum/goerli"
+                           :LightEthConfig {:Enabled true}}}
+   "goerli_rpc"  {:id     "goerli_rpc",
+                  :name   "Goerli with upstream RPC",
+                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :goerli)
+                           :DataDir        "/ethereum/goerli_rpc"
+                           :UpstreamConfig {:Enabled true
+                                            :URL     "https://goerli.blockscout.com/"}}}})
 
 (defn network-enabled? [network]
   (let [rpc-network? (get-in (val network) [:config :UpstreamConfig :Enabled])
