@@ -551,8 +551,8 @@
 
 (handlers/register-handler-fx
  :bootnodes.ui/delete-pressed
- (fn [_ [_ id]]
-   (bootnodes/show-delete-bootnode-confirmation _ id)))
+ (fn [cofx [_ id]]
+   (bootnodes/show-delete-bootnode-confirmation cofx id)))
 
 (handlers/register-handler-fx
  :bootnodes.ui/delete-confirmed
