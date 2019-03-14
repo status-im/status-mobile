@@ -103,7 +103,6 @@
 (handlers/register-handler-fx
  :init-rest-of-chats
  [(re-frame/inject-cofx :web3/get-web3)
-  (re-frame/inject-cofx :get-default-dapps)
   (re-frame/inject-cofx :data-store/all-chats)]
  (fn [{:keys [db] :as cofx} [_]]
    (log/debug "PERF" :init-rest-of-chats (.now js/Date))
@@ -131,7 +130,6 @@
   (re-frame/inject-cofx :data-store/get-all-installations)
   (re-frame/inject-cofx :data-store/all-browsers)
   (re-frame/inject-cofx :data-store/all-dapp-permissions)
-  (re-frame/inject-cofx :get-default-dapps)
   (re-frame/inject-cofx :data-store/all-chats)]
  account-change-success)
 
@@ -1455,7 +1453,7 @@
 (handlers/register-handler-fx
  :browser/loading-started
  (fn [cofx _]
-   (browser/update-browser-option cofx :error? false)))
+   (browser/update-browser-options cofx {:error? false :loading? true})))
 
 (handlers/register-handler-fx
  :browser.callback/resolve-ens-multihash-success

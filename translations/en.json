@@ -998,5 +998,7 @@
     "invalid-format": "Invalid format\nMust be {{format}}",
     "mailserver-format": "enode://{enode-id}:{password}@{ip-address}:{port}",
     "bootnode-format": "enode://{enode-id}@{ip-address}:{port}",
-    "fetch-messages": "↓ Fetch messages"
+    "fetch-messages": "↓ Fetch messages",
+    "open-dapp-store": "Discover ÐApps",
+    "browsed-websites": "Browsed websites will appear here."
 }

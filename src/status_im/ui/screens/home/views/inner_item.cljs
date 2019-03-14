@@ -14,9 +14,6 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.list-item.views :as list-item]
-            [clojure.string :as string]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.list.views :as list]))
 
 (defview command-short-preview [message]
@@ -124,17 +121,3 @@
                                              (re-frame/dispatch [:set-swipe-position :chats home-item-id false])
                                              (re-frame/dispatch [delete-action home-item-id]))}
      [home-list-chat-item-inner-view home-item]]))
-
-(defn home-list-browser-item-inner-view [{:keys [dapp url name browser-id]}]
-  (let [photo-path (:photo-path dapp)]
-    [list-item/list-item
-     (merge
-      {:title name
-       :subtitle (or url (i18n/label :t/dapp))
-       :on-press #(re-frame/dispatch [:browser.ui/browser-item-selected browser-id])}
-      (if dapp
-        (if (and photo-path (not (string/blank? (:photo-path dapp))))
-          {:image-path photo-path}
-          {:image [chat-icon/default-browser-icon name]})
-        {:image [react/view styles/browser-icon-container
-                 [vector-icons/icon :main-icons/browser {:color colors/gray}]]}))]))

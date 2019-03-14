@@ -200,7 +200,6 @@
 (spec/def :extensions/profile (spec/nilable any?))
 
 (spec/def ::db (spec/keys :opt [:contacts/contacts
-                                :contacts/dapps
                                 :contacts/new-identity
                                 :contacts/new-identity-error
                                 :contacts/identity

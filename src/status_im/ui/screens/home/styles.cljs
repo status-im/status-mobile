@@ -27,14 +27,6 @@
    :android        {:height 76}
    :ios            {:height 74}})
 
-(def browser-icon-container
-  {:width            40
-   :height           40
-   :border-radius    20
-   :background-color colors/gray-lighter
-   :align-items      :center
-   :justify-content  :center})
-
 (defstyle chat-info-container
   {:margin-bottom   13
    :justify-content :space-between

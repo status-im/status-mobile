@@ -63,7 +63,7 @@
 
 (fx/defn initialize-chats
   "Initialize persisted chats on startup"
-  [{:keys [db default-dapps get-all-stored-chats] :as cofx}
+  [{:keys [db get-all-stored-chats] :as cofx}
    {:keys [from to] :or {from 0 to nil}}]
   (let [old-chats (:chats db)
         chats (reduce (fn [acc {:keys [chat-id] :as chat}]
@@ -76,9 +76,7 @@
                       (get-all-stored-chats from to))
         chats (merge old-chats chats)]
     (fx/merge cofx
-              {:db (assoc db
-                          :chats chats
-                          :contacts/dapps default-dapps)}
+              {:db (assoc db :chats chats)}
               (commands/load-commands commands/register))))
 
 (defn load-more-messages

@@ -5,7 +5,6 @@
   (:require [cljs.test :refer-macros [deftest is are testing]]
             [status-im.accounts.login.core :as login.core]
             [status-im.events :as events]
-            [status-im.ui.screens.browser.default-dapps :as default-dapps]
             [status-im.test.sign-in.data :as data]
             [status-im.signals.core :as signals]))
 
@@ -41,7 +40,6 @@
                   :all-installations    []
                   :all-stored-browsers  []
                   :all-dapp-permissions []
-                  :default-dapps        default-dapps/all
                   :get-all-stored-chats data/get-chats}
           efx    (events/account-change-success cofx [nil "address"])
           new-db (:db efx)]

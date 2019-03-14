@@ -10,12 +10,9 @@
 (re-frame/reg-sub
  :browser/browsers
  :<- [:browsers]
- :<- [:contacts/dapps-by-name]
- (fn [[browsers dapps]]
-   (reduce (fn [acc [k {:keys [dapp? name] :as browser}]]
-             (cond-> (update acc k assoc
-                             :url (browser/get-current-url browser))
-               dapp? (assoc-in [k :dapp] (get dapps name))))
+ (fn [browsers]
+   (reduce (fn [acc [k browser]]
+             (update acc k assoc :url (browser/get-current-url browser)))
            browsers
            browsers)))
 

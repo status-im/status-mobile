@@ -4,11 +4,6 @@
             [status-im.contact.db :as contact.db]))
 
 (re-frame/reg-sub
- ::dapps
- (fn [db]
-   (:contacts/dapps db)))
-
-(re-frame/reg-sub
  ::contacts
  (fn [db]
    (get db :contacts/contacts)))
@@ -67,28 +62,6 @@
        (-> identity
            contact.db/public-key->new-contact
            contact.db/enrich-contact))))
-
-(re-frame/reg-sub
- :contacts/all-dapps
- :<- [::dapps]
- :<- [:account/account]
- (fn [[dapps {:keys [dev-mode?]}]]
-   (map (fn [m] (update m :data
-                        #(contact.db/filter-dapps % dev-mode?)))
-        dapps)))
-
-(re-frame/reg-sub
- :contacts/dapps-by-name
- :<- [:contacts/all-dapps]
- (fn [dapps]
-   (reduce (fn [dapps-by-name category]
-             (merge dapps-by-name
-                    (reduce (fn [acc {:keys [name] :as dapp}]
-                              (assoc acc name dapp))
-                            {}
-                            (:data category))))
-           {}
-           dapps)))
 
 (re-frame/reg-sub
  :contacts/contact-name-by-identity
