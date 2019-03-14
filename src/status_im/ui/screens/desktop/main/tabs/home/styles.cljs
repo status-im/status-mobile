@@ -59,8 +59,8 @@
 (defn chat-name [current?]
   {:font-size  14
    :font-weight (if current?
-                  :bold
-                  :normal)})
+                  "700"
+                  "400")})
 
 (def chat-last-message
   {:color      colors/gray
@@ -87,7 +87,7 @@
           :justify-content  :center}))
 
 (def topic-text
-  {:font-size 25.6
+  {:font-size 25
    :color     colors/white})
 
 (def popup-shaddow

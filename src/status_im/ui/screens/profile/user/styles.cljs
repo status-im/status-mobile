@@ -61,8 +61,7 @@
    :align-items    :center})
 
 (def advanced-button-label
-  {:font-size 15
-   :color     colors/blue})
+  {:color colors/blue})
 
 (def pair-button
   {:margin-left 32})

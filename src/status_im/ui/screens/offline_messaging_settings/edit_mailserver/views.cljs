@@ -20,8 +20,7 @@
    [react/view styles/button-container
     [react/view {:style               styles/connect-button
                  :accessibility-label :mailserver-connect-button}
-     [react/text {:style      styles/button-label
-                  :uppercase? true}
+     [react/text {:style styles/button-label}
       (i18n/label :t/connect)]]]])
 
 (defn delete-button [id]
@@ -29,8 +28,7 @@
    [react/view styles/button-container
     [react/view {:style               styles/delete-button
                  :accessibility-label :mailserver-delete-button}
-     [react/text {:style      styles/button-label
-                  :uppercase? true}
+     [react/text {:style styles/button-label}
       (i18n/label :t/delete)]]]])
 
 (def qr-code

@@ -42,8 +42,7 @@
         [react/image {:style  styles/chat-icon
                       :source {:uri photo-path}}])
       [react/view {:style (styles/chat-title-and-type pending?)}
-       [react/text {:style styles/chat-title
-                    :font  :medium}
+       [react/text {:style styles/chat-title}
         chat-name]
        (cond pending?
              [react/text {:style    styles/add-contact-text
@@ -317,7 +316,6 @@
                           :multiline              true
                           :blur-on-submit         true
                           :style                  (styles/chat-text-input container-height)
-                          :font                   :default
                           :ref                    #(do (reset! inp-ref %)
                                                        (re-frame/dispatch [:set-in [:desktop :input-ref] %]))
                           :default-value          input-text

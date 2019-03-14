@@ -47,13 +47,15 @@
           (commands/generate-preview command (commands/add-chat-contacts contacts command-message))
           [react/text (str "Unhandled command: " (-> command-message :content :command-path first))])))))
 
-(defview message-timestamp [t justify-timestamp? outgoing command? content content-type]
+(defview message-timestamp
+  [t justify-timestamp? outgoing command? content content-type]
   (when-not command?
     [react/text {:style (style/message-timestamp-text
                          justify-timestamp?
                          outgoing
                          (:rtl? content)
-                         (= content-type constants/content-type-emoji))} t]))
+                         (= content-type constants/content-type-emoji))}
+     t]))
 
 (defn message-view
   [{:keys [timestamp-str outgoing content content-type] :as message} message-content {:keys [justify-timestamp?]}]
@@ -62,13 +64,6 @@
    [message-timestamp timestamp-str justify-timestamp? outgoing (or (get content :command-path)
                                                                     (get content :command-ref))
     content content-type]])
-
-(defn timestamp-with-padding
-  "We can't use CSS as nested Text element don't accept margins nor padding
-  so we pad the invisible placeholder with some spaces to avoid having too
-  close to the text"
-  [t]
-  (str "   " t))
 
 (defview quoted-message [{:keys [from text]} outgoing current-public-key]
   (letsubs [username [:contacts/contact-name-by-identity from]]
@@ -83,8 +78,7 @@
 
 (defview message-content-status [{:keys [content]}]
   [react/view style/status-container
-   [react/text {:style style/status-text
-                :font  :default}
+   [react/text {:style style/status-text}
     (:text content)]])
 
 (defn expand-button [expanded? chat-id message-id]
@@ -99,14 +93,17 @@
      [react/view
       (when (:response-to content)
         [quoted-message (:response-to content) outgoing current-public-key])
-      [react/text (cond-> {:style           (style/text-message collapsible? outgoing)}
-                    (and collapsible? (not expanded?))
-                    (assoc :number-of-lines constants/lines-collapse-threshold))
-       (if-let [render-recipe (:render-recipe content)]
-         (chat.utils/render-chunks render-recipe message)
-         (:text content))
-       [react/text {:style (style/message-timestamp-placeholder-text outgoing)}
-        (timestamp-with-padding timestamp-str)]]
+      (apply react/nested-text
+             (cond-> {:style (style/text-message collapsible? outgoing)
+                      :text-break-strategy :balanced}
+               (and collapsible? (not expanded?))
+               (assoc :number-of-lines constants/lines-collapse-threshold))
+             (conj (if-let [render-recipe (:render-recipe content)]
+                     (chat.utils/render-chunks render-recipe message)
+                     [(:text content)])
+                   [{:style (style/message-timestamp-placeholder outgoing)}
+                    (str "  " timestamp-str)]))
+
       (when collapsible?
         [expand-button expanded? chat-id message-id])])
    {:justify-timestamp? true}])
@@ -114,7 +111,8 @@
 (defn emoji-message
   [{:keys [content] :as message}]
   [message-view message
-   [react/text {:style (style/emoji-message message)} (:text content)]])
+   [react/text {:style (style/emoji-message message)}
+    (:text content)]])
 
 (defmulti message-content (fn [_ message _] (message :content-type)))
 
@@ -151,12 +149,11 @@
   [wrapper {:keys [content-type] :as message}]
   [wrapper message
    [message-view message
-    [react/text {} (str "Unhandled content-type " content-type)]]])
+    [react/text (str "Unhandled content-type " content-type)]]])
 
 (defn- text-status [status]
   [react/view style/delivery-view
-   [react/text {:style style/delivery-text
-                :font  :default}
+   [react/text {:style style/delivery-text}
     (i18n/message-status-label status)]])
 
 (defview group-message-delivery-status [{:keys [message-id current-public-key user-statuses] :as msg}]
@@ -183,8 +180,7 @@
                                    :height        16
                                    :border-radius 8}}])
           (if (> delivery-statuses-count 3)
-            [react/text {:style style/delivery-text
-                         :font  :default}
+            [react/text {:style style/delivery-text}
              (str "+ " (- delivery-statuses-count 3))])]]))))
 
 (defn message-activity-indicator []

@@ -16,9 +16,7 @@
 
 (def account-creating-text
   {:font-size   14
-   :line-height 21
    :text-align  :center
-   :color       colors/black
    :margin-top  16})
 
 (def logo-container
@@ -35,8 +33,7 @@
 
 (def input-description
   {:font-size   14
-   :color       colors/gray
-   :line-height 21})
+   :color       colors/gray})
 
 (def bottom-container
   {:flex-direction    :row

@@ -5,10 +5,9 @@
             [re-frame.core :as re-frame]))
 
 (defn privacy-policy-button []
-  [react/view styles/privacy-policy-button-container
-   [react/text {:style    styles/privacy-policy-button-text-gray
-                :on-press #(re-frame/dispatch [:privacy-policy/privacy-policy-button-pressed])}
-    (i18n/label :t/agree-by-continuing)
-    [react/text
-     {:style styles/privacy-policy-button-text}
-     (i18n/label :t/privacy-policy)]]])
+  [react/nested-text
+   {:style    styles/privacy-policy-button-text-gray
+    :on-press #(re-frame/dispatch [:privacy-policy/privacy-policy-button-pressed])}
+   (i18n/label :t/agree-by-continuing)
+   [{:style styles/privacy-policy-button-text}
+    (i18n/label :t/privacy-policy)]])

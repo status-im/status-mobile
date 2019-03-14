@@ -19,8 +19,7 @@
    [react/view styles/button-container
     [react/view {:style               styles/delete-button
                  :accessibility-label :bootnode-delete-button}
-     [react/text {:style      styles/button-label
-                  :uppercase? true}
+     [react/text {:style styles/button-label}
       (i18n/label :t/delete)]]]])
 
 (def qr-code

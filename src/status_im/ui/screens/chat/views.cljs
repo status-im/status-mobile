@@ -119,10 +119,11 @@
   [contact-name]
   [react/view style/empty-chat-container
    [vector-icons/icon :tiny-icons/tiny-lock]
-   [react/text {:style style/empty-chat-text}
-    [react/text style/empty-chat-container-one-to-one
+   [react/nested-text {:style style/empty-chat-text}
+    [{:style style/empty-chat-container-one-to-one}
      (i18n/label :t/empty-chat-description-one-to-one)]
-    [react/text {:style style/empty-chat-text-name} contact-name]]])
+    [{:style style/empty-chat-text-name}
+     contact-name]]])
 
 (defn join-chat-button [chat-id]
   [buttons/secondary-button {:style style/join-button

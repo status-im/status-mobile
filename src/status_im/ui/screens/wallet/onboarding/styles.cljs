@@ -19,9 +19,7 @@
    :justify-content   :center})
 
 (def signing-word-text
-  {:font-size   15
-   :font-weight "600"
-   :color       colors/black})
+  {:typography :main-semibold})
 
 (def bottom-buttons
   {:background-color colors/blue
@@ -47,16 +45,13 @@
    :align-items  :center})
 
 (def super-safe-text
-  {:color         colors/white
-   :margin-bottom 12
-   :font-size     22
-   :font-weight   :bold})
+  {:typography    :header
+   :color         colors/white
+   :margin-bottom 12})
 
 (def super-safe-explainer-text
   {:color         colors/white
    :text-align    :center
-   :font-size     15
-   :line-height   22
    :margin-bottom 30})
 
 ;; onboarding screen styles
@@ -78,15 +73,12 @@
    :height 312})
 
 (def onboarding-title
-  {:line-height 28
-   :font-size   22
-   :font-weight :bold
-   :text-align  :center
-   :color       colors/white})
+  {:typography :header
+   :text-align :center
+   :color      colors/white})
 
 (def onboarding-text
-  {:line-height   21
-   :margin-top    8
+  {:margin-top    8
    :margin-bottom 32
    :font-size     14
    :text-align    :center

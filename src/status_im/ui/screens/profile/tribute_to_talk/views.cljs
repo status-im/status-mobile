@@ -112,8 +112,7 @@
   [react/scroll-view
    {:content-container-style styles/personalized-message-container}
    [react/view {:style styles/personalized-message-title}
-    [react/text {:style (assoc styles/description-label
-                               :color colors/black)}
+    [react/text {:style {:text-align :center}}
      (i18n/label :t/personalized-message)
      [react/text {:style styles/description-label}
       (str " (" (i18n/label :t/optional) ")")]]]
@@ -156,7 +155,7 @@
     (if snt-amount
       [react/text {:style (assoc styles/description-label :margin-top 16)}
        (i18n/label :t/tribute-to-talk-finish-desc)
-       [react/text {:style (assoc styles/description-label :color colors/black)}
+       [react/text {:style {:text-align :center}}
         snt-amount]
        " SNT"]
       [react/text {:style (assoc styles/description-label :margin-top 16)}
@@ -171,7 +170,6 @@
                                :margin-left 11)}
      (i18n/label :t/tribute-to-talk-enabled)]]
    [react/text {:style (assoc styles/enabled-note-text
-                              :font-weight :normal
                               :margin-left 35)}
     (i18n/label :t/tribute-to-talk-add-friends)]])
 
@@ -201,8 +199,7 @@
      [react/view {:flex-direction :row
                   :margin-bottom  16}
       [react/view {:style styles/edit-view-message-container}
-       [react/text {:style styles/edit-view-message}
-        message]]
+       [react/text message]]
       [react/view {:flex 1}]])
    [separator]
    [react/text {:style styles/edit-note}
@@ -231,19 +228,17 @@
     [react/view {:style {:background-color colors/white
                          :justify-content :center :align-items :center}}
      [icons/icon :tiny-icons/tribute-to-talk {:color colors/blue}]]
-    [react/text {:style {:color colors/gray
-                         :font-size 13
-                         :line-height 22
+    [react/text {:style {:color       colors/gray
+                         :font-size   13
                          :margin-left 4}}
      (i18n/label :t/tribute-to-talk)]]
    [react/view {:style styles/chat-sample-bubble}
-    [react/text {:style {:font-size 15 :color colors/black}}
-     (i18n/label :t/tribute-to-talk-sample-text)]]
+    [react/text (i18n/label :t/tribute-to-talk-sample-text)]]
    [react/view {:style (assoc styles/chat-sample-bubble :width 141)}
     ;;TODO replace hardcoded values
-    [react/text {:style {:font-size 22 :color colors/black}} "1000"
+    [react/text {:style {:font-size 22}} "1000"
      [react/text {:style {:font-size 22 :color colors/gray}} " SNT"]]
-    [react/text {:style {:font-size 12 :color colors/black}}
+    [react/text {:style {:font-size 12}}
      "~3.48"
      [react/text {:style {:font-size 12 :color colors/gray}} " USD"]]
     [react/view {:style styles/pay-to-chat-container}
@@ -316,7 +311,6 @@
         [react/view {:style styles/bottom-toolbar}
          [components.common/button {:button-style styles/intro-button
                                     :disabled?    disabled?
-                                    :uppercase?   false
                                     :label-style  (when disabled? {:color colors/gray})
                                     :on-press     #(re-frame/dispatch
                                                     [:tribute-to-talk.ui/step-forward-pressed])

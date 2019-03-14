@@ -20,9 +20,8 @@
    :margin-top      15})
 
 (defstyle input
-  {:flex      1
-   :font-size 15
-   :android   {:padding 0}})
+  {:flex    1
+   :android {:padding 0}})
 
 (def bottom-container
   {:flex-direction    :row
@@ -32,9 +31,6 @@
 (def hooks
   {:margin-top  20
    :margin-left 10})
-
-(def text
-  {:color colors/black})
 
 (def cartouche-container
   {:flex              1

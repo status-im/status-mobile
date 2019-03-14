@@ -45,10 +45,7 @@
    :justify-content :center})
 
 (def chat-name-text
-  {:color       colors/black
-   :font-size   15
-   :font-weight "500"
-   :line-height 22
+  {:typography :main-medium
    :margin-top -3})
 
 (def group-icon
@@ -57,17 +54,14 @@
    :width         14
    :height        9})
 
-(defstyle toolbar-subtitle
-  {:color       colors/text-gray
-   :line-height 15
-   :font-size   12})
+(def toolbar-subtitle
+  {:typography  :caption
+   :color       colors/text-gray})
 
-(defstyle last-activity-text
-  {:color       colors/text-gray
-   :line-height 15
-   :ios         {:font-size  14
-                 :margin-top 4}
-   :android     {:font-size 13}})
+(def last-activity-text
+  {:font-size  14
+   :margin-top 4
+   :color      colors/text-gray})
 
 (defn actions-wrapper [status-bar-height]
   {:background-color colors/white
@@ -189,7 +183,6 @@
   {:text-align          :center
    :text-align-vertical :center
    :padding-left        4
-   :font-size           15
    :color               colors/blue})
 
 (def add-contact-close-icon
@@ -216,15 +209,12 @@
    :margin-right     6})
 
 (def empty-chat-text
-  {:color       colors/gray
-   :width       280
-   :font-size   15
-   :line-height 22
-   :text-align  :center})
+  {:color      colors/gray
+   :width      280
+   :text-align :center})
 
 (def empty-chat-text-name
-  {:margin-bottom 5
-   :color         colors/black})
+  {:margin-bottom 5})
 
 (def join-button
   {:margin-top    24
@@ -233,8 +223,7 @@
 (def group-chat-icon
   {:color       colors/white
    :font-size   40
-   :font-weight :bold
-   :line-height 55})
+   :font-weight "700"})
 
 (def group-chat-join-footer
   {:position        :absolute
@@ -243,9 +232,7 @@
    :bottom          0})
 
 (def group-chat-join-name
-  {:color       :black
-   :font-weight :bold
-   :font-size   22})
+  {:typography :header})
 
 (def group-chat-join-container
   {:flex            1

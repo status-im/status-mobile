@@ -1,28 +1,28 @@
-(ns status-im.ui.screens.wallet.main.views
-  (:require-macros [status-im.utils.views :as views])
-  (:require [reagent.core :as reagent]
-            [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.screens.wallet.onboarding.views :as onboarding.views]
-            [status-im.ui.screens.wallet.styles :as wallet.styles]
-            [status-im.ui.screens.wallet.main.styles :as styles]
-            [status-im.ui.screens.wallet.settings.views :as settings]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]
-            [status-im.utils.money :as money]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.components.toolbar.actions :as action]
-            status-im.ui.screens.wallet.collectibles.etheremon.views
-            status-im.ui.screens.wallet.collectibles.cryptostrikers.views
-            status-im.ui.screens.wallet.collectibles.cryptokitties.views
-            status-im.ui.screens.wallet.collectibles.superrare.views
-            status-im.ui.screens.wallet.collectibles.kudos.views
-            [status-im.ui.components.status-bar.view :as status-bar.view]
-            [status-im.ui.screens.wallet.transactions.views :as transactions.views]))
+  (ns status-im.ui.screens.wallet.main.views
+    (:require-macros [status-im.utils.views :as views])
+    (:require [reagent.core :as reagent]
+              [re-frame.core :as re-frame]
+              [status-im.i18n :as i18n]
+              [status-im.ui.components.colors :as colors]
+              [status-im.ui.components.list.views :as list]
+              [status-im.ui.components.react :as react]
+              [status-im.ui.components.toolbar.view :as toolbar]
+              [status-im.ui.components.icons.vector-icons :as vector-icons]
+              [status-im.ui.screens.wallet.onboarding.views :as onboarding.views]
+              [status-im.ui.screens.wallet.styles :as wallet.styles]
+              [status-im.ui.screens.wallet.main.styles :as styles]
+              [status-im.ui.screens.wallet.settings.views :as settings]
+              [status-im.ui.screens.wallet.utils :as wallet.utils]
+              [status-im.utils.money :as money]
+              [status-im.utils.platform :as platform]
+              [status-im.ui.components.toolbar.actions :as action]
+              status-im.ui.screens.wallet.collectibles.etheremon.views
+              status-im.ui.screens.wallet.collectibles.cryptostrikers.views
+              status-im.ui.screens.wallet.collectibles.cryptokitties.views
+              status-im.ui.screens.wallet.collectibles.superrare.views
+              status-im.ui.screens.wallet.collectibles.kudos.views
+              [status-im.ui.components.status-bar.view :as status-bar.view]
+              [status-im.ui.screens.wallet.transactions.views :as transactions.views]))
 
 (defn toolbar-modal [modal-history?]
   [react/view
@@ -37,18 +37,17 @@
        :handler #(re-frame/dispatch [:set-in [:wallet :modal-history?] (not modal-history?)])}]]]])
 
 (defn- total-section [value currency]
-  [react/view {:style styles/total-balance-container}
-   [react/text {:style               styles/total-balance-value
-                :accessibility-label :total-amount-value-text}
-    (when (and
-           (not= "0" value)
-           (not= "..." value))
-      [react/text {:style styles/total-balance-tilde}
-       "~"])
+  [react/nested-text {:style styles/total-balance-text}
+   (when (and
+          (not= "0" value)
+          (not= "..." value))
+     "~")
+   [{:style                styles/total-balance-value
+     :accessibility-label :total-amount-value-text}
     value]
-   [react/text {:style               styles/total-balance-currency
-                :accessibility-label :total-amount-currency-text}
-    (:code currency)]])
+   [{:style               styles/total-balance-currency
+     :accessibility-label :total-amount-currency-text}
+    (str " " (:code currency))]])
 
 (defn- backup-seed-phrase []
   [react/touchable-highlight {:on-press       #(re-frame/dispatch [:navigate-to :backup-seed])
@@ -92,11 +91,9 @@
                       :accessibility-label (str (-> symbol name clojure.string/lower-case) "-asset-value-text")}
           (wallet.utils/format-amount amount decimals)]
          [react/text {:style           styles/asset-item-currency
-                      :uppercase?      true
                       :number-of-lines 1}
           (wallet.utils/display-symbol token)]]
         [react/text {:style           styles/asset-item-price
-                     :uppercase?      true
                      :number-of-lines 1}
          (or @asset-value "...")]]])))
 

@@ -45,20 +45,19 @@ class RecoverAccessButton(BaseButton):
 class CreateAccountButton(BaseButton):
     def __init__(self, driver):
         super(CreateAccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//android.widget.TextView[@text='CREATE ACCOUNT' or @text='CREATE NEW ACCOUNT']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Create account' or @text='Create new account']")
 
 
 class IHaveAccountButton(RecoverAccessButton):
     def __init__(self, driver):
         super(IHaveAccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='I ALREADY HAVE AN ACCOUNT']")
+        self.locator = self.Locator.xpath_selector("//*[@text='I already have an account']")
 
 
 class AddExistingAccountButton(RecoverAccessButton):
     def __init__(self, driver):
         super(AddExistingAccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='ADD EXISTING ACCOUNT']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Add existing account']")
 
 
 class ConfirmPasswordInput(BaseEditBox):
@@ -78,7 +77,7 @@ class OtherAccountsButton(BaseButton):
 
     def __init__(self, driver):
         super(OtherAccountsButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('OTHER ACCOUNTS')
+        self.locator = self.Locator.text_selector('Other accounts')
 
 
 class PrivacyPolicyLink(BaseButton):

@@ -76,16 +76,14 @@
     [react/scroll-view
      [react/view styles/pin-container
       [react/view styles/center-container
-       [react/text {:style styles/center-title-text
-                    :font  :bold}
+       [react/text {:style styles/center-title-text}
         (i18n/label title-label)]
        [react/text {:style           styles/create-pin-text
                     :number-of-lines 2}
         (i18n/label description-label)]
        (when retry-counter
-         [react/text {:style {:font-weight :bold
+         [react/text {:style {:font-weight "700"
                               :padding-top 10
-                              :font-size   15
                               :color       colors/red}}
           (i18n/label :t/pin-retries-left {:number retry-counter})])
        (case status
@@ -93,8 +91,7 @@
                      [react/activity-indicator {:animating true
                                                 :size      :small}]]
          :error [react/view styles/error-container
-                 [react/text {:style styles/error-text
-                              :font  :medium}
+                 [react/text {:style styles/error-text}
                   (i18n/label error-label)]]
          (if (= step :puk)
            [puk-indicators pin]

@@ -32,8 +32,7 @@
     (i18n/label :mobile-network-go-to-settings)]])
 
 (views/defview checkbox []
-  (views/letsubs
-    [checked? [:get :mobile-network/remember-choice?]]
+  (views/letsubs [checked? [:get :mobile-network/remember-choice?]]
     [react/view
      {:style styles/checkbox-line-container}
      [checkbox/checkbox
@@ -43,17 +42,16 @@
        :on-value-change #(re-frame/dispatch [:mobile-network/remember-choice? %])}]
      [react/view
       {:style styles/checkbox-text-container}
-      [react/text {:style styles/checkbox-text}
-       (i18n/label :mobile-network-sheet-remember-choice)]]]))
+      [react/text (i18n/label :mobile-network-sheet-remember-choice)]]]))
 
 (defn settings []
   [react/view
    {:style styles/settings-container}
-   [react/text
+   [react/nested-text
     {:style    styles/settings-text
      :on-press #(re-frame/dispatch [:mobile-network/navigate-to-settings])}
     (i18n/label :mobile-network-sheet-configure)
-    [react/text {:style styles/settings-link}
+    [{:style styles/settings-link}
      (str " " (i18n/label :mobile-network-sheet-settings))]]])
 
 (views/defview settings-sheet []

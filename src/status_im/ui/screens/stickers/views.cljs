@@ -38,11 +38,9 @@
           [icons/icon :icons/logo {:color colors/white :width 12 :height 12 :container-style {:margin-right 8}}])
         (if pending
           [components/activity-indicator {:animating true}]
-          [react/text {:style {:font-size 15 :color colors/white}}
+          [react/text {:style {:color colors/white}}
            (cond (or owned (zero? price))
                  (i18n/label :t/install)
-                 ;no-snt?
-                 ;(i18n/label :t/buy-with-snt)
                  :else
                  (str (money/wei-> :eth price)))])]])))
 
@@ -53,8 +51,8 @@
     [react/view {:height 64 :align-items :center :flex-direction :row}
      [thumbnail-icon thumbnail 40]
      [react/view {:padding-horizontal 16 :flex 1}
-      [react/text {:style {:font-size 15}} name]
-      [react/text {:style {:font-size 15 :color colors/gray :margin-top 6}} author]]
+      [react/text name]
+      [react/text {:style {:color colors/gray :margin-top 6}} author]]
      (if installed
        [installed-icon]
        [price-badge price id owned pending])]]])
@@ -82,8 +80,8 @@
       [react/view {:height 74 :align-items :center :flex-direction :row :padding-horizontal 16}
        [thumbnail-icon thumbnail 64]
        [react/view {:padding-horizontal 16 :flex 1}
-        [react/text {:style {:font-size 22 :font-weight :bold}} name]
-        [react/text {:style {:font-size 15 :color colors/gray :margin-top 6}} author]]
+        [react/text {:style {:typography :header}} name]
+        [react/text {:style {:color colors/gray :margin-top 6}} author]]
        (if installed
          [installed-icon]
          [price-badge price id owned pending])]

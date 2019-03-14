@@ -88,8 +88,7 @@
    :justify-content  :center})
 
 (def label-action-text
-  {:color     colors/blue
-   :font-size 15})
+  {:color colors/blue})
 
 (defn logo-container [size]
   {:width            size
@@ -110,8 +109,7 @@
    :opacity        (if disabled? 0.4 1)})
 
 (def bottom-button-label
-  {:font-size 15
-   :color     colors/blue})
+  {:color colors/blue})
 
 (defn button [style background? disabled?]
   (merge
@@ -125,8 +123,7 @@
    style))
 
 (def button-label
-  {:font-size  15
-   :text-align :center
+  {:text-align :center
    :color      colors/blue})
 
 (defn counter-container [size]
@@ -137,10 +134,9 @@
    :align-items      :center
    :justify-content  :center})
 
-(defnstyle counter-label [size]
+(defn counter-label [size]
   {:font-size  (/ size 2)
    :color      colors/white
-   :android    {:line-height (+ (/ size 2) 2)}
    :text-align :center})
 
 (def image-contain

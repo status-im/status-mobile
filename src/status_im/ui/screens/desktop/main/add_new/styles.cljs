@@ -14,8 +14,7 @@
 
 (def new-contact-title-text
   {:font-size   20
-   :font-weight :bold
-   :color       :black})
+   :font-weight "700"})
 
 (def new-contact-subtitle
   {:font-size 14})

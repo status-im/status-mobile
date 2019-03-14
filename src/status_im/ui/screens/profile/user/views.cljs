@@ -249,7 +249,7 @@
 (defn share-profile-item
   [{:keys [public-key photo-path] :as current-account}]
   [list.views/big-list-item
-   {:text            (i18n/label :t/share-my-profile)
+   {:text                (i18n/label :t/share-my-profile)
     :icon                :main-icons/share
     :accessibility-label :share-my-profile-button
     :action-fn           #(re-frame/dispatch [:navigate-to :profile-qr-viewer

@@ -102,12 +102,6 @@ class STTCheckBox(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='STT']/../android.widget.CheckBox")
 
 
-class DoneButton(BaseButton):
-    def __init__(self, driver):
-        super(DoneButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('done-button')
-
-
 class QRCodeImage(BaseButton):
     def __init__(self, driver):
         super(QRCodeImage, self).__init__(driver)
@@ -123,7 +117,7 @@ class AddressText(BaseButton):
 class SetUpButton(BaseButton):
     def __init__(self, driver):
         super(SetUpButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector("LET’S GET SET UP")
+        self.locator = self.Locator.text_selector("Let’s get set up")
 
 
 class SignInPhraseText(BaseText):
@@ -205,7 +199,6 @@ class WalletView(BaseView):
         self.options_button = OptionsButton(self.driver)
         self.manage_assets_button = ManageAssetsButton(self.driver)
         self.stt_check_box = STTCheckBox(self.driver)
-        self.done_button = DoneButton(self.driver)
 
         self.qr_code_image = QRCodeImage(self.driver)
         self.address_text = AddressText(self.driver)

@@ -18,9 +18,7 @@
    :android            {:height 56}})
 
 (def bootnode-item-name-text
-  {:color       colors/black
-   :font-size   17
-   :line-height 20})
+  {:font-size   17})
 
 (defstyle switch-container
   {:height           50

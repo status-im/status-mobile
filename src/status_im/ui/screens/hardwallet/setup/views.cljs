@@ -69,9 +69,8 @@
        [react/view components.styles/flex]
        [react/view {:margin-right 20}
         [components.common/bottom-button
-         {:on-press   #(re-frame/dispatch [:hardwallet.ui/secret-keys-next-button-pressed])
-          :uppercase? false
-          :forward?   true}]]]]]))
+         {:on-press #(re-frame/dispatch [:hardwallet.ui/secret-keys-next-button-pressed])
+          :forward? true}]]]]]))
 
 (defview card-ready []
   (letsubs [flow [:hardwallet-flow]]
@@ -89,9 +88,8 @@
        [react/view components.styles/flex]
        [react/view {:margin-right 20}
         [components.common/bottom-button
-         {:on-press   #(re-frame/dispatch [:hardwallet.ui/card-ready-next-button-pressed])
-          :uppercase? false
-          :forward?   true}]]]]]))
+         {:on-press #(re-frame/dispatch [:hardwallet.ui/card-ready-next-button-pressed])
+          :forward? true}]]]]]))
 
 (defview display-recovery-phrase []
   (letsubs [mnemonic [:hardwallet-mnemonic]]
@@ -100,8 +98,7 @@
        [react/view styles/recovery-phrase-inner-container
         [react/view styles/center-container
          [react/text {:style           styles/center-title-text
-                      :number-of-lines 2
-                      :font            :bold}
+                      :number-of-lines 2}
           (i18n/label :t/your-recovery-phrase)]
          [react/view
           [react/view {:style {:margin-top        17
@@ -117,16 +114,14 @@
                                 :background-color colors/gray-lighter}}]
            [seed.views/six-words (subvec mnemonic-vec 6 12)]]
           [react/view styles/recovery-phrase-description
-           [react/text {:style styles/recovery-phrase-description-text}
-            (i18n/label :t/your-recovery-phrase-description)]]]]]
+           [react/text (i18n/label :t/your-recovery-phrase-description)]]]]]
        [react/view styles/next-button-container
         [react/view components.styles/flex]
         [react/view {:margin-right 20}
          [components.common/bottom-button
-          {:on-press   #(re-frame/dispatch [:hardwallet.ui/recovery-phrase-next-button-pressed])
-           :label      (i18n/label :t/next)
-           :uppercase? false
-           :forward?   true}]]]])))
+          {:on-press #(re-frame/dispatch [:hardwallet.ui/recovery-phrase-next-button-pressed])
+           :label    (i18n/label :t/next)
+           :forward? true}]]]])))
 
 (defview confirm-word-input [error ref step]
   {:component-will-update #(.clear @ref)}
@@ -157,15 +152,13 @@
          [confirm-word-input error ref step]]]
        [react/view styles/back-and-next-buttons-container
         [components.common/bottom-button
-         {:on-press   #(re-frame/dispatch [:hardwallet.ui/recovery-phrase-confirm-word-back-button-pressed])
-          :back?      true
-          :uppercase? false
-          :label      (i18n/label :t/back)}]
+         {:on-press #(re-frame/dispatch [:hardwallet.ui/recovery-phrase-confirm-word-back-button-pressed])
+          :back?    true
+          :label    (i18n/label :t/back)}]
         [components.common/bottom-button
-         {:on-press   #(re-frame/dispatch [:hardwallet.ui/recovery-phrase-confirm-word-next-button-pressed])
-          :disabled?  (empty? input-word)
-          :uppercase? false
-          :forward?   true}]]])))
+         {:on-press  #(re-frame/dispatch [:hardwallet.ui/recovery-phrase-confirm-word-next-button-pressed])
+          :disabled? (empty? input-word)
+          :forward?  true}]]])))
 
 (defview enter-recovery-phrase []
   (letsubs [width [:dimensions/window-width]
@@ -200,11 +193,10 @@
         [react/view components.styles/flex]
         [react/view {:margin-right 20}
          [components.common/bottom-button
-          {:on-press   #(re-frame/dispatch [:hardwallet.ui/recovery-phrase-next-button-pressed])
-           :label      (i18n/label :t/next)
-           :disabled?  disabled?
-           :uppercase? false
-           :forward?   true}]]]])))
+          {:on-press  #(re-frame/dispatch [:hardwallet.ui/recovery-phrase-next-button-pressed])
+           :label     (i18n/label :t/next)
+           :disabled? disabled?
+           :forward?  true}]]]])))
 
 (defview recovery-phrase []
   (letsubs [flow [:hardwallet-flow]]
@@ -218,8 +210,7 @@
     [react/view styles/enter-pair-code-container
      [react/view styles/enter-pair-code-title-container
       [react/view
-       [react/text {:style styles/enter-pair-code-title-text
-                    :font  :bold}
+       [react/text {:style styles/enter-pair-code-title-text}
         (i18n/label :t/enter-pair-code)]
        [react/text {:style styles/enter-pair-code-explanation-text}
         (i18n/label :t/enter-pair-code-description)]]
@@ -231,10 +222,9 @@
       [react/view components.styles/flex]
       [react/view {:margin-right 20}
        [components.common/bottom-button
-        {:on-press   #(re-frame/dispatch [:hardwallet.ui/pair-code-next-button-pressed])
-         :disabled?  (empty? pair-code)
-         :uppercase? false
-         :forward?   true}]]]]))
+        {:on-press  #(re-frame/dispatch [:hardwallet.ui/pair-code-next-button-pressed])
+         :disabled? (empty? pair-code)
+         :forward?  true}]]]]))
 
 (defn- card-with-button-view
   [{:keys [text-label button-label button-container-style on-press show-icon?]}]
@@ -280,11 +270,9 @@
                            ["5" (i18n/label :t/recovery-phrase)]]]
         ^{:key number} [react/view styles/remaining-step-row
                         [react/view styles/remaining-step-row-text
-                         [react/text {:style {:color colors/black}}
-                          number]]
+                         [react/text number]]
                         [react/view styles/remaining-step-row-text2
-                         [react/text {:style {:color colors/black}}
-                          text]]])]]
+                         [react/text text]]])]]
     [react/view styles/bottom-container
      [react/touchable-highlight
       {:on-press #(re-frame/dispatch [:hardwallet.ui/begin-setup-button-pressed])}
@@ -330,9 +318,7 @@
       [react/touchable-highlight
        {:on-press #(re-frame/dispatch [:hardwallet.ui/error-button-pressed])}
        [react/view styles/bottom-button-container
-        [react/text {:style      styles/bottom-button-text
-                     :font       :medium
-                     :uppercase? false}
+        [react/text {:style styles/bottom-button-text}
          (i18n/label :t/try-again)]]]]]))
 
 (defn- loading-view [{:keys [title-label text-label estimated-time-seconds step-number]}]
@@ -340,8 +326,7 @@
   Used by 'Prepare', 'Pairing', 'Completing' screens"
   [react/view styles/loading-view-container
    [react/view styles/center-container
-    [react/text {:style styles/center-title-text
-                 :font  :bold}
+    [react/text {:style styles/center-title-text}
      (i18n/label title-label)]
     (when text-label
       [react/text {:style           styles/generating-codes-for-pairing-text
@@ -369,8 +354,7 @@
                                                        (.setNativeProps @progress-bar params))))))}
     [react/view styles/loading-view-container
      [react/view styles/center-container
-      [react/text {:style styles/center-title-text
-                   :font  :bold}
+      [react/text {:style styles/center-title-text}
        (i18n/label :t/preparing-card)]
       [react/text {:style           styles/generating-codes-for-pairing-text
                    :number-of-lines 2}
@@ -389,8 +373,7 @@
 (defn- generating-mnemonic []
   [react/view styles/loading-view-container
    [react/view styles/center-container
-    [react/text {:style styles/center-title-text
-                 :font  :bold}
+    [react/text {:style styles/center-title-text}
      (i18n/label :t/generating-mnemonic)]
     [react/text {:style styles/estimated-time-text}
      (i18n/label :t/this-will-take-few-seconds)]]
@@ -401,8 +384,7 @@
 (defn- loading-keys []
   [react/view styles/loading-view-container
    [react/view styles/center-container
-    [react/text {:style styles/center-title-text
-                 :font  :bold}
+    [react/text {:style styles/center-title-text}
      (i18n/label :t/finishing-card-setup)]
     [react/text {:style           styles/generating-codes-for-pairing-text
                  :number-of-lines 2}
@@ -416,8 +398,7 @@
 (defn- pairing []
   [react/view styles/loading-view-container
    [react/view styles/center-container
-    [react/text {:style styles/center-title-text
-                 :font  :bold}
+    [react/text {:style styles/center-title-text}
      (i18n/label :t/pairing-card)]
     [react/text {:style styles/estimated-time-text}
      (i18n/label :t/this-will-take-few-seconds)]]

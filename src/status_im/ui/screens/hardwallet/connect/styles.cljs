@@ -19,17 +19,8 @@
   {:margin-top 55})
 
 (def status-hardwallet-text
-  {:font-size   22
-   :font-weight :bold
-   :color       colors/black
+  {:typography  :header
    :text-align  :center})
-
-(def link-card-text
-  {:text-align         :center
-   :font-size          15
-   :color              colors/gray
-   :padding-horizontal 80
-   :padding-vertical   10})
 
 (defn bottom-action-container [nfc-enabled?]
   {:background-color (if nfc-enabled?
@@ -48,13 +39,6 @@
   {:width  301
    :height 180})
 
-(def hold-card-text
-  {:width        186
-   :text-align   :center
-   :font-size    14
-   :line-height  20
-   :margin-right 40})
-
 (def nfc-enabled-container
   {:flex-direction  :column
    :justify-content :space-between
@@ -70,11 +54,6 @@
 (def nfc-icon
   {:margin-left 52
    :margin-top  22})
-
-(def turn-nfc-text
-  {:text-transform :uppercase
-   :line-height    20
-   :color          colors/gray})
 
 (def go-to-settings-text
   {:text-align  :center
@@ -94,7 +73,6 @@
 
 (def product-info-text
   {:text-align :center
-   :font-size  15
    :color      colors/blue})
 
 (def external-link-icon

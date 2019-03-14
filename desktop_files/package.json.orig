@@ -23,9 +23,24 @@
     "node_modules/google-breakpad"
   ],
   "desktopFonts": [
-    "../../../../../resources/fonts/Inter-UI-Bold.otf",
-    "../../../../../resources/fonts/Inter-UI-Medium.otf",
-    "../../../../../resources/fonts/Inter-UI-Regular.otf"
+      "../../../../../resources/fonts/Inter-BlackItalic.otf",
+      "../../../../../resources/fonts/Inter-Black.otf",
+      "../../../../../resources/fonts/Inter-BoldItalic.otf",
+      "../../../../../resources/fonts/Inter-Bold.otf",
+      "../../../../../resources/fonts/Inter-ExtraBoldItalic.otf",
+      "../../../../../resources/fonts/Inter-ExtraBold.otf",
+      "../../../../../resources/fonts/Inter-ExtraLight-BETA.otf",
+      "../../../../../resources/fonts/Inter-ExtraLightItalic-BETA.otf",
+      "../../../../../resources/fonts/Inter-Italic.otf",
+      "../../../../../resources/fonts/Inter-Light-BETA.otf",
+      "../../../../../resources/fonts/Inter-LightItalic-BETA.otf",
+      "../../../../../resources/fonts/Inter-MediumItalic.otf",
+      "../../../../../resources/fonts/Inter-Medium.otf",
+      "../../../../../resources/fonts/Inter-Regular.otf",
+      "../../../../../resources/fonts/Inter-SemiBoldItalic.otf",
+      "../../../../../resources/fonts/Inter-SemiBold.otf",
+      "../../../../../resources/fonts/Inter-Thin-BETA.otf",
+      "../../../../../resources/fonts/Inter-ThinItalic-BETA.otf"
   ],
   "dependencies": {
     "assert": "1.4.1",

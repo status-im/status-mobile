@@ -32,7 +32,6 @@
 (defn- transaction-sent-message []
   [react/view {:align-items :center}
    [react/text {:style               styles/transaction-sent
-                :font                (if platform/android? :medium :default)
                 :accessibility-label :transaction-sent-text}
     (i18n/label :t/transaction-sent)]
    [react/i18n-text {:style styles/transaction-sent-description
@@ -45,10 +44,7 @@
                               :accessibility-label :got-it-button}
    [react/view {:align-items      :center
                 :padding-vertical 18}
-    [react/text {:style      {:color     colors/white
-                              :font-size 15}
-                 :font       (if platform/android? :medium :default)
-                 :uppercase? true}
+    [react/text {:style {:color colors/white}}
      (i18n/label :t/done)]]])
 
 (defn- sent-screen [{:keys [on-next]}]

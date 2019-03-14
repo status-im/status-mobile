@@ -22,10 +22,8 @@
    :ios                {:height 64}
    :android            {:height 56}})
 
-(defstyle mailserver-item-name-text
-  {:color       colors/black
-   :font-size   17
-   :line-height 20})
+(def mailserver-item-name-text
+  {:typography :title})
 
 (defn mailserver-icon-container [connected?]
   {:width            40
@@ -44,9 +42,6 @@
   {:padding-horizontal 16
    :flex-direction :row
    :padding-vertical 5})
-
-(def mailserver-pinned-text
-  {:color colors/black})
 
 (def mailserver-pinned-text-container
   {:margin-top 15})

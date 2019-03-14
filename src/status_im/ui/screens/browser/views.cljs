@@ -49,7 +49,7 @@
                           :style             styles/url-input}]
        [react/touchable-highlight {:style    styles/url-text-container
                                    :on-press #(re-frame/dispatch [:browser.ui/url-input-pressed])}
-        [react/text {:style styles/url-text} (http/url-host url-original)]])]))
+        [react/text (http/url-host url-original)]])]))
 
 (defn toolbar [error? url url-original browser browser-id url-editing?]
   [toolbar.view/toolbar

@@ -38,15 +38,11 @@
    :align-items    :center})
 
 (def complete-text
-  {:font-size   22
-   :font-weight :bold
-   :color       colors/black
-   :text-align  :center})
+  {:typography :header
+   :text-align :center})
 
 (def complete-information-text
   {:text-align         :center
-   :font-size          15
-   :line-height        22
    :color              colors/gray
    :margin-bottom      21
    :padding-horizontal 80
@@ -63,9 +59,8 @@
    :margin-bottom    40})
 
 (def bottom-action-text
-  {:font-size      15
+  {:typography     :main
    :color          colors/blue
-   :line-height    20
    :text-transform :uppercase})
 
 (def waiting-indicator-container

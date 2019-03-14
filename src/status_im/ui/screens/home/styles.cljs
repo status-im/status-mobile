@@ -88,12 +88,9 @@
 (def last-message-container
   {:flex-shrink 1})
 
-(defstyle last-message-text
-  {:color   colors/text-gray
-   :android {:font-size 14
-             :height    24}
-   :ios     {:font-size 15
-             :height    24}})
+(def last-message-text
+  {:color  colors/text-gray
+   :height 24})
 
 (def search-input-height 56)
 
@@ -115,16 +112,13 @@
    :border-radius    8})
 
 (def search-input
-  (merge {:flex      1
-          :font-size 15}
+  (merge {:flex 1}
          (when platform/android?
-           {:line-height 22
-            :margin      0
+           {:margin      0
             :padding     0})))
 
 (def filter-section-title
-  {:font-size     15
-   :margin-left   16
+  {:margin-left   16
    :margin-top    14
    :margin-bottom 4
    :color         colors/gray})
@@ -168,10 +162,8 @@
    :margin-horizontal 34})
 
 (def no-chats-text
-  {:line-height 22
-   :font-size   15
-   :text-align  :center
-   :color       colors/gray})
+  {:text-align     :center
+   :color          colors/gray})
 
 (def welcome-view
   {:flex 1})
@@ -181,17 +173,12 @@
    :margin-top  42})
 
 (def welcome-text
-  {:line-height 28
-   :font-size   22
-   :font-weight :bold
+  {:typography  :header
    :margin-top  32
-   :text-align  :center
-   :color       colors/black})
+   :text-align  :center})
 
 (def welcome-text-description
-  {:line-height       22
-   :font-size         15
-   :margin-top        8
+  {:margin-top        8
    :text-align        :center
    :margin-horizontal 32
    :color             colors/gray})

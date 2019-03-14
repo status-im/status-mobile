@@ -39,8 +39,7 @@
    :flex-shrink  1})
 
 (def account-badge-text
-  {:font-size 17
-   :color     colors/black})
+  {:font-size 17})
 
 (def account-badge-pub-key-text
   {:font-size  14

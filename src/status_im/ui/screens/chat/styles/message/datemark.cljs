@@ -11,5 +11,4 @@
    :height           22})
 
 (def datemark-text
-  {:color     colors/gray
-   :font-size 15})
+  {:color colors/gray})

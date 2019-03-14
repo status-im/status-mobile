@@ -20,14 +20,3 @@
 (def icon-default
   {:width  24
    :height 24})
-
-(def text-title-bold
-  {:font-size   17
-   :font-weight "700"})
-
-(def text-main
-  {:font-size 15})
-
-(def text-main-medium
-  {:font-size   15
-   :font-weight "500"})

@@ -21,8 +21,7 @@
    :padding-horizontal 16})
 
 (def details-name
-  {:color               colors/black
-   :text-align-vertical :center
+  {:text-align-vertical :center
    :margin-bottom       10})
 
 (def details-image

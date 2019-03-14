@@ -19,8 +19,7 @@
    :justify-content :center})
 
 (def primary-text-base
-  {:font-size   16
-   :color       colors/black})
+  {:font-size 16})
 
 (def primary-text
   primary-text-base)
@@ -100,11 +99,10 @@
 
 (defn settings-item-text
   [color]
-  {:flex        1
-   :flex-wrap   :nowrap
-   :line-height 20
-   :font-size   17
-   :color       color})
+  {:typography :title
+   :flex       1
+   :flex-wrap  :nowrap
+   :color      color})
 
 (def settings-item-text-container
   {:flex       1
@@ -116,24 +114,14 @@
    :height         18
    :align-items    :center})
 
-(defn settings-item-text-new
-  [color]
-  (assoc (settings-item-text color)
-         :font-weight "500"
-         :line-height 22
-         :font-size   15))
-
 (def settings-item-subtext
-  {:line-height 22
-   :font-size   15
-   :margin-top  2
+  {:margin-top  2
    :color       colors/gray})
 
 (def settings-item-value
   {:flex-wrap     :nowrap
    :text-align    :right
    :padding-right 10
-   :font-size     15
    :color         colors/gray})
 
 (def new-label
@@ -149,7 +137,7 @@
    :margin-left  6
    :margin-right 4
    :font-size    11
-   :font-weight  :bold})
+   :font-weight  "700"})
 
 (def base-separator
   {:height           1

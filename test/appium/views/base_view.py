@@ -164,7 +164,7 @@ class NextButton(BaseButton):
     def __init__(self, driver):
         super(NextButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            "//android.widget.TextView[@text='NEXT']")
+            "//android.widget.TextView[@text='Next']")
 
 
 class AddButton(BaseButton):
@@ -177,8 +177,7 @@ class AddButton(BaseButton):
 class DoneButton(BaseButton):
     def __init__(self, driver):
         super(DoneButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//android.widget.TextView[@text='DONE']")
+        self.locator = self.Locator.xpath_selector("//*[@content-desc='done-button' or contains(@text, 'Done')]")
 
 
 class AppsButton(BaseButton):
@@ -265,7 +264,7 @@ class GetStartedButton(BaseButton):
 
     def __init__(self, driver):
         super(GetStartedButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='GET STARTED']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Get started']")
 
 
 class AssetButton(BaseButton):

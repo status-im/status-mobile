@@ -24,12 +24,10 @@
    :justify-content :center})
 
 (def choose-authentication-method-text
-  {:color              colors/black
+  {:typography         :header
    :margin-top         51
    :padding-horizontal 60
-   :text-align         :center
-   :font-weight        :bold
-   :font-size          22})
+   :text-align         :center})
 
 (def choose-authentication-method-row-text
   {:color      colors/blue

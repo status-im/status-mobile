@@ -38,28 +38,22 @@
              [react/text {:style {:color colors/white}}
               (i18n/label :t/extensions-disclaimer)]]
             [cartouche {:header (i18n/label :t/identifier)}
-             [react/text {:style styles/text}
-              (str (get-in data [:meta :name]))]]
+             [react/text (str (get-in data [:meta :name]))]]
             [cartouche {:header (i18n/label :t/name)}
-             [react/text {:style styles/text}
-              (str (get-in data [:meta :name]))]]
+             [react/text (str (get-in data [:meta :name]))]]
             [cartouche {:header (i18n/label :t/description)}
-             [react/text {:style styles/text}
-              (str (get-in data [:meta :description]))]]
+             [react/text (str (get-in data [:meta :description]))]]
             [cartouche {:header (i18n/label :t/hooks)}
              (into [react/view] (for [hook (keys (:hooks data))]
-                                  [react/text {:style styles/text}
-                                   (str hook)]))]
+                                  [react/text (str hook)]))]
             [cartouche {:header (i18n/label :t/permissions)}
-             [react/text {:style styles/text}
-              (i18n/label :t/none)]]
+             [react/text (i18n/label :t/none)]]
             [cartouche {:header (i18n/label :t/errors)}
              (if errors
                (into [react/view] (for [{::errors/keys [type value]} errors]
-                                    [react/text {:style styles/text}
+                                    [react/text
                                      (str (when type (name type)) " " (str value))]))
-               [react/text {:style styles/text}
-                (i18n/label :t/none)])]]]
+               [react/text (i18n/label :t/none)])]]]
           [react/view styles/bottom-container
            [react/view components.styles/flex]
            [components.common/bottom-button

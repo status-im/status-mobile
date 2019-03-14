@@ -45,8 +45,7 @@
                           (.blur @input-ref)
                           (reset! input-is-focused? false))
              :style {:margin-left 16}}
-            [react/text {:style {:color     colors/blue
-                                 :font-size 15}}
+            [react/text {:style {:color colors/blue}}
              (i18n/label :t/cancel)]])]))))
 
 (defonce search-input-state

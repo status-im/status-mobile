@@ -79,7 +79,6 @@
 
 (defnstyle input-view [single-line-input?]
   {:flex           1
-   :font-size      15
    :padding-top    9
    :padding-bottom 5
    :padding-right  12
@@ -90,8 +89,7 @@
    :android        {:padding-top 3}})
 
 (def invisible-input-text
-  {:font-size        15
-   :position         :absolute
+  {:position         :absolute
    :left             0
    :background-color :transparent
    :color            :transparent})
@@ -99,7 +97,6 @@
 (defnstyle invisible-input-text-height [container-width]
   {:width            container-width
    :flex             1
-   :font-size        15
    :padding-top      5
    :padding-bottom   5
    :android          {:padding-top 3}
@@ -117,7 +114,6 @@
 
 (defnstyle input-helper-text [left]
   {:color               colors/gray
-   :font-size           15
    :text-align-vertical :center
    :flex                1
    :android             {:top -1}
@@ -125,7 +121,6 @@
 
 (defnstyle seq-input-text [left container-width]
   {:min-width           (- container-width left)
-   :font-size           15
    :position            :absolute
    :text-align-vertical :center
    :align-items         :center

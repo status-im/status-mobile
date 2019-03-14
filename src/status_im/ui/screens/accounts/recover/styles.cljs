@@ -24,8 +24,7 @@
 
 (def sign-you-in
   {:margin-top     16
-   :font-size      13
-   :color          colors/black})
+   :font-size      13})
 
 (def recover-release-warning
   {:margin-top     16

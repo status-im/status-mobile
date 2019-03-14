@@ -39,8 +39,7 @@
 
 (defn- public-chat-icon [topic]
   [react/view styles/public-chat-icon
-   [react/text {:uppercase? true
-                :style      styles/public-chat-icon-symbol}
+   [react/text {:style styles/public-chat-icon-symbol}
     (first topic)]])
 
 (defn- render-topic [topic]
@@ -66,13 +65,11 @@
      [toolbar/simple-toolbar
       (i18n/label :t/public-chat)]
      [react/view styles/chat-name-container
-      [react/text {:style styles/section-title
-                   :font  :medium}
+      [react/text {:style styles/section-title}
        (i18n/label :t/public-group-topic)]
       [chat-name-input topic error]]
      [react/view styles/chat-name-container
-      [react/text {:style styles/section-title
-                   :font  :medium}
+      [react/text {:style styles/section-title}
        (i18n/label :t/selected)]]
      [list/flat-list {:data                         default-public-chats
                       :key-fn                       identity

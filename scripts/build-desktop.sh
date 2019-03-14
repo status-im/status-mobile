@@ -39,9 +39,9 @@ external_modules_dir=( \
 )
 
 external_fonts=( \
-  '../../../../../resources/fonts/Inter-UI-Bold.otf' \
-  '../../../../../resources/fonts/Inter-UI-Medium.otf' \
-  '../../../../../resources/fonts/Inter-UI-Regular.otf' \
+  '../../../../../resources/fonts/Inter-Bold.otf' \
+  '../../../../../resources/fonts/Inter-Medium.otf' \
+  '../../../../../resources/fonts/Inter-Regular.otf' \
 )
 
 source "$SCRIPTPATH/lib/setup/path-support.sh"

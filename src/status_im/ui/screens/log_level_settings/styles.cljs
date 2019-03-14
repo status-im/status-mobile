@@ -19,9 +19,7 @@
    :android            {:height 56}})
 
 (def log-level-item-name-text
-  {:color       colors/black
-   :font-size   17
-   :line-height 20})
+  {:typography :title})
 
 (def log-level-item-connected-text
   {:color      colors/gray

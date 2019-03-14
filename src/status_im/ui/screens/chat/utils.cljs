@@ -11,15 +11,15 @@
 
 (defn format-author [from username style]
   ;; TODO: We defensively generate the name for now, to be revisited when new protocol is defined
-  (cond->> [react/text {:style (style false)
-                        :number-of-lines 1
-                        :ellipsize-mode  :tail}
-            (gfycat/generate-gfy from)]
-    username
-    (conj [react/text {:style (style true)
-                       :number-of-lines 1
-                       :ellipsize-mode  :tail}
-           (str username " • ")])))
+  [react/nested-text {:style (style false)
+                      :number-of-lines 1
+                      :ellipsize-mode  :tail}
+   (when username
+     [{:style (style true)
+       :number-of-lines 1
+       :ellipsize-mode  :tail}
+      (str username " • ")])
+   (gfycat/generate-gfy from)])
 
 (defn format-reply-author [from username current-public-key style]
   (or (and (= from current-public-key)
@@ -28,7 +28,7 @@
       (format-author from username style)))
 
 (def ^:private styling->prop
-  {:bold      {:style {:font-weight :bold}}
+  {:bold      {:style {:font-weight "700"}}
    :italic    {:style {:font-style  :italic}}
    :backquote {:style {:background-color colors/black
                        :color            colors/green}}})
@@ -55,12 +55,12 @@
     (if prop-fn (prop-fn text-chunk message) prop)))
 
 (defn render-chunks [render-recipe message]
-  (map-indexed (fn [idx [text-chunk kind]]
-                 (if (= :text kind)
-                   text-chunk
-                   [react/text (into {:key idx} (lookup-props text-chunk message kind))
-                    text-chunk]))
-               render-recipe))
+  (vec (map-indexed (fn [idx [text-chunk kind]]
+                      (if (= :text kind)
+                        text-chunk
+                        [(into {:key idx} (lookup-props text-chunk message kind))
+                         text-chunk]))
+                    render-recipe)))
 
 (defn render-chunks-desktop [limit render-recipe message]
   "This fn is only needed as a temporary hack

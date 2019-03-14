@@ -18,12 +18,7 @@
    :border-top-color colors/gray-light
    :border-top-width border-height})
 
-(def item-suggestion-name
-  {:color     colors/black
-   :font-size 15})
-
 (def item-suggestion-description
   {:flex        1
-   :font-size   15
    :margin-left 10
    :color       colors/gray})

@@ -24,9 +24,8 @@
    :justify-content :center})
 
 (def sign-you-in
-  {:margin-top     16
-   :font-size      13
-   :color          colors/black})
+  {:margin-top 16
+   :font-size  13})
 
 (def bottom-button-container
   {:flex-direction    :row
@@ -40,6 +39,4 @@
 (def login-badge-image-size 56)
 
 (def login-badge-name
-  {:font-size  15
-   :color      colors/black
-   :margin-top 8})
+  {:margin-top 8})

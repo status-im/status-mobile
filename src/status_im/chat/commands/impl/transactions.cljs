@@ -9,7 +9,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.chat-preview :as chat-preview]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.svgimage :as svgimage]
@@ -39,8 +38,7 @@
     [react/view transactions-styles/asset-main
      [react/image {:source (-> asset :icon :source)
                    :style  transactions-styles/asset-icon}]
-     [react/text {:style transactions-styles/asset-symbol}
-      (wallet.utils/display-symbol asset)]
+     [react/text (wallet.utils/display-symbol asset)]
      [react/text {:style transactions-styles/asset-name} name]]
     ;;TODO(goranjovic) : temporarily disabled to fix https://github.com/status-im/status-react/issues/4963
     ;;until the resolution of https://github.com/status-im/status-react/issues/4972
@@ -54,7 +52,7 @@
     [react/view transactions-styles/asset-main
      [react/image {:source (-> asset :icon :source)
                    :style  transactions-styles/asset-icon}]
-     [react/text {:style transactions-styles/asset-symbol} name]]
+     [react/text name]]
     [react/text {:style {:font-size     16
                          :color         colors/gray
                          :padding-right 14}}
@@ -84,7 +82,7 @@
 (defn personal-send-request-short-preview
   [label-key {:keys [content]}]
   (let [{:keys [amount coin]} (:params content)]
-    [chat-preview/text {}
+    [react/text {:number-of-lines 1}
      (i18n/label label-key {:amount (i18n/label-number amount)
                             :asset  (wallet.utils/display-symbol coin)})]))
 
@@ -120,7 +118,7 @@
                                          :margin-left  20
                                          :margin-right 20}
                                 :source {:uri image_url}}]
-            [react/text {} name]]])
+            [react/text name]]])
         collectible-tokens)])))
 
 (defview nft-token [{{:keys [name image_url]} :token}]
@@ -129,7 +127,7 @@
    [svgimage/svgimage {:style  {:width  100
                                 :height 100}
                        :source {:uri image_url}}]
-   [react/text {} name]])
+   [react/text name]])
 
 ;;TODO(goranjovic): currently we only allow tokens which are enabled in Manage assets here
 ;; because balances are only fetched for them. Revisit this decision with regard to battery/network consequences
@@ -209,13 +207,11 @@
        [react/view
         [react/view transactions-styles/command-send-amount-row
          [react/view transactions-styles/command-send-amount
-          [react/text {:style (transactions-styles/command-send-amount-text outgoing)
-                       :font  :medium}
+          [react/nested-text {:style (transactions-styles/command-send-amount-text outgoing)}
            amount
-           [react/text {:style (transactions-styles/command-amount-currency-separator outgoing)}
+           [{:style (transactions-styles/command-amount-currency-separator outgoing)}
             "."]
-           [react/text {:style (transactions-styles/command-send-currency-text outgoing)
-                        :font  :default}
+           [{:style (transactions-styles/command-send-currency-text outgoing)}
             (wallet.utils/display-symbol token)]]]]
         (when (and fiat-amount
                    platform/mobile?
@@ -409,13 +405,11 @@
                               [react/text {:style (transactions-styles/command-request-header-text outgoing)}
                                (i18n/label :transaction-request)]]
                              [react/view transactions-styles/command-request-row
-                              [react/text {:style (transactions-styles/command-request-amount-text outgoing)
-                                           :font  :medium}
+                              [react/nested-text {:style (transactions-styles/command-request-amount-text outgoing)}
                                amount
-                               [react/text {:style (transactions-styles/command-amount-currency-separator outgoing)}
+                               [{:style (transactions-styles/command-amount-currency-separator outgoing)}
                                 "."]
-                               [react/text {:style (transactions-styles/command-request-currency-text outgoing)
-                                            :font  :default}
+                               [{:style (transactions-styles/command-request-currency-text outgoing)}
                                 asset]]]
                              (when (and platform/mobile?
                                         ;;NOTE(goranjovic) - have to hide cross network asset fiat value until we can support

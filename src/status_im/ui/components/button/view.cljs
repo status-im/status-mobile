@@ -18,9 +18,7 @@
     [react/text {:style      (merge styles/button-text
                                     text-style
                                     (when disabled?
-                                      {:opacity 0.4}))
-                 :font       (if platform/android? :medium :default)
-                 :uppercase? true}
+                                      {:opacity 0.4}))}
      label]
     icon]])
 
@@ -40,8 +38,7 @@
   [react/touchable-highlight {:on-press on-press}
    [react/view (merge styles/button-with-icon-container style)
     [react/view styles/button-with-icon-text-container
-     [react/text {:style      styles/button-with-icon-text
-                  :uppercase? true}
+     [react/text {:style styles/button-with-icon-text}
       label]]
     [react/view {:style               styles/button-with-icon-image-container
                  :accessibility-label accessibility-label}

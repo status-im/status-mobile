@@ -14,18 +14,13 @@
    :align-items     :center})
 
 (def title-text
-  {:color         colors/black
-   :font-size     17
-   :font-weight   :bold
+  {:typography    :title-bold
    :margin-top    26
    :margin-bottom 10
-   :line-height   20
    :text-align    :center})
 
 (def description-text
   {:color       colors/gray
-   :font-size   15
-   :line-height 22
    :text-align  :center})
 
 (def chat-link-text

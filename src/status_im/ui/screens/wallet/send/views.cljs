@@ -82,8 +82,7 @@
          [react/activity-indicator {:animating true
                                     :size      :large}])]
       [react/view styles/signing-phrase-container
-       [react/text {:style               styles/signing-phrase
-                    :accessibility-label :signing-phrase-text}
+       [react/text {:accessibility-label :signing-phrase-text}
         signing-phrase]]
       [react/i18n-text {:style styles/signing-phrase-description :key message-label}]
       [react/view {:style                       styles/password-container

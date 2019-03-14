@@ -52,13 +52,9 @@
 (def text
   {:margin-right 10})
 
-(def text-list-primary-content
-  (merge text {:color colors/black}))
-
 (def text-input
   (merge text-content
-         {:font-size      15
-          :flex           1
+         {:flex           1
           :padding-bottom 0
           :padding-top    0
           :height         52}))
@@ -70,17 +66,11 @@
    :padding-right       8
    :height              72})
 
-(defstyle label
-  {:color   :white
-   :ios     {:line-height 16}
-   :android {:font-size   12}})
-
-(def label-transparent
-  (merge label
-         {:color colors/white-transparent}))
+(def label
+  {:color colors/white})
 
 (def network
-  {:color     :white
+  {:color     colors/white
    :font-size 13})
 
 (def network-container
@@ -157,13 +147,11 @@
    :border-radius  8})
 
 (def wallet-name
-  {:color     colors/white
-   :font-size 15})
+  {:color colors/white})
 
 (defn participant [address?]
   {:color       (if address? :white colors/white-transparent)
-   :flex-shrink 1
-   :font-size   15})
+   :flex-shrink 1})
 
 (def recipient-container
   {:flex-direction :row})
@@ -194,8 +182,7 @@
 
 (def wallet-value
   {:padding-left 6
-   :color        colors/white-transparent
-   :font-size    15})
+   :color        colors/white-transparent})
 
 (def wallet-value-amount
   {:flex -1})
@@ -206,5 +193,4 @@
    :background-color  colors/white-light-transparent})
 
 (def button-text
-  {:color     colors/white
-   :font-size 15})
+  {:color colors/white})

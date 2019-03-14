@@ -18,10 +18,7 @@
    :background-color colors/white})
 
 (def use-mobile-data-text
-  (merge
-   common-styles/text-main
-   {:color       colors/gray
-    :line-height 22}))
+  {:color colors/gray})
 
 (def settings-separator
   {:align-self       :stretch
@@ -34,6 +31,4 @@
    :padding-left    16})
 
 (def defaults
-  (merge
-   common-styles/text-main
-   {:color colors/blue}))
+  {:color colors/blue})

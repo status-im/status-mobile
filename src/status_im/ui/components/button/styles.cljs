@@ -39,10 +39,8 @@
          (border position)))
 
 (def button-text
-  {:font-weight        :normal
-   :color              colors/white
+  {:color              colors/white
    :padding-horizontal 16
-   :font-size          15
    :padding-vertical   10})
 
 (defstyle button-text-disabled
@@ -87,8 +85,7 @@
    :align-items     :center})
 
 (def button-with-icon-text
-  {:color     colors/blue
-   :font-size 15})
+  {:color colors/blue})
 
 (def button-with-icon-image-container
   {:border-radius   50

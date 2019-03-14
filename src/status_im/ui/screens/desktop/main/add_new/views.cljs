@@ -31,8 +31,7 @@
     {:component-will-unmount #(re-frame/dispatch [:new-chat/set-new-identity nil])}
     [react/view {:style styles/new-view}
      [react/view {:style styles/new-contact-title}
-      [react/text {:style styles/new-contact-title-text
-                   :font  :medium}
+      [react/text {:style styles/new-contact-title-text}
        (i18n/label :new-chat)]]
      [react/text {:style styles/new-contact-subtitle} (i18n/label :enter-ens-or-contact-code)]
      (let [disable?            (or (not (string/blank? chat-error))
@@ -48,7 +47,6 @@
                             :auto-focus        true
                             :flex              1
                             :selection-color   colors/blue
-                            :font              :default
                             :on-change         (fn [e]
                                                  (let [native-event (.-nativeEvent e)
                                                        text         (.-text native-event)]
@@ -77,8 +75,7 @@
 (views/defview new-group-chat []
   [react/view {:style styles/new-view}
    [react/view {:style styles/new-contact-title}
-    [react/text {:style styles/new-contact-title-text
-                 :font  :medium}
+    [react/text {:style styles/new-contact-title-text}
      (i18n/label :new-group-chat)]]
    [react/touchable-highlight {:on-press #(re-frame/dispatch [:contact.ui/start-group-chat-pressed])}
     [react/view
@@ -92,8 +89,7 @@
                   topic-error          [:public-chat.new/topic-error-message]]
     [react/view {:style styles/new-view}
      [react/view {:style styles/new-contact-title}
-      [react/text {:style styles/new-contact-title-text
-                   :font  :medium}
+      [react/text {:style styles/new-contact-title-text}
        (i18n/label :new-public-group-chat)]]
      [react/text {:style styles/new-contact-subtitle} (i18n/label :public-group-topic)]
      (let [disable?            (or topic-error
@@ -110,7 +106,6 @@
 
          [react/text-input {:flex            1
                             :auto-focus      true
-                            :font            :default
                             :selection-color colors/blue
                             :placeholder     ""
                             :on-change       (fn [e]

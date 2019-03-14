@@ -38,8 +38,7 @@
    :width              230})
 
 (def author
-  {:color       colors/black
-   :font-weight "500"
+  {:font-weight "500"
    :font-size   14})
 
 (def author-generated
@@ -100,7 +99,7 @@
           :justify-content  :center}))
 
 (def topic-text
-  {:font-size 18.7
+  {:font-size 18
    :color     colors/white})
 
 (def toolbar-chat-view
@@ -135,8 +134,7 @@
          :text-decoration-line :underline))
 
 (def system-message-text
-  {:color colors/black
-   :margin-top -5
+  {:margin-top -5
    :font-size 14})
 
 (def message-container
@@ -217,8 +215,7 @@
 
 (def chat-title
   {:margin-bottom  4
-   :font-size      14
-   :color          colors/black})
+   :font-size      14})
 
 (def reply-wrapper
   {:flex-direction :column-reverse})

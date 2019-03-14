@@ -203,7 +203,7 @@ class ProfileSendTransactionButton(BaseButton):
 class JoinChatButton(BaseButton):
     def __init__(self, driver):
         super(JoinChatButton, self).__init__(driver)
-        self.locator = self.Locator.text_part_selector('JOIN GROUP')
+        self.locator = self.Locator.text_part_selector('Join group')
 
 class DeclineChatButton(BaseButton):
     def __init__(self, driver):

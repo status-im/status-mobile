@@ -34,12 +34,10 @@
   [react/view
    [react/view styles/form-title-container
     [react/view styles/form-title-inner-container
-     [react/text {:style styles/form-title
-                  :font  :medium}
+     [react/text {:style styles/form-title}
       label]
      (when-not (nil? count-value)
-       [react/text {:style styles/form-title-count
-                    :font  :medium}
+       [react/text {:style styles/form-title-count}
         count-value])]]
    [top-shadow]])
 
@@ -69,27 +67,23 @@
                              disabled?
                              on-press
                              forward?
-                             back?
-                             uppercase?]
-                      :or {uppercase? true}}]
+                             back?]}]
   [react/touchable-highlight {:on-press on-press :disabled disabled?}
    [react/view (styles/bottom-button disabled?)
     (when back?
       [vector-icons/icon :main-icons/back {:color colors/blue
                                            :container-style {:align-self :baseline}}])
     [react/text {:style      styles/bottom-button-label
-                 :accessibility-label accessibility-label
-                 :uppercase? uppercase?}
+                 :accessibility-label accessibility-label}
      (or label (i18n/label :t/next))]
     (when forward?
       [vector-icons/icon :main-icons/next {:color colors/blue}])]])
 
-(defn button [{:keys [on-press label background? uppercase? button-style label-style disabled?] :or {background? true uppercase? true disabled false}}]
+(defn button [{:keys [on-press label background? button-style label-style disabled?] :or {background? true disabled false}}]
   [react/touchable-highlight {:style (styles/button button-style background? disabled?)
                               :on-press on-press
                               :disabled disabled?}
-   [react/text {:uppercase? uppercase?
-                :style      (merge styles/button-label label-style)}
+   [react/text {:style (merge styles/button-label label-style)}
     label]])
 
 (defn red-button [props]
@@ -103,8 +97,7 @@
   ([{:keys [size accessibility-label] :or {size 18}} value]
    (let [more-than-9 (> value 9)]
      [react/view {:style (styles/counter-container size)}
-      [react/text (cond-> {:style (styles/counter-label size)
-                           :font  :toolbar-title}
+      [react/text (cond-> {:style (styles/counter-label size)}
                     accessibility-label
                     (assoc :accessibility-label accessibility-label))
        (if more-than-9 (i18n/label :t/counter-9-plus) value)]])))

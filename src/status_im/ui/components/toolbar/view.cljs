@@ -62,7 +62,6 @@
   ([title-style title subtitle-style subtitle additional-text-props]
    [react/view {:style styles/toolbar-title-container}
     [react/text (merge {:style (merge styles/toolbar-title-text title-style)
-                        :font :toolbar-title
                         :numberOfLines 1
                         :ellipsizeMode :tail}
                        additional-text-props) title]

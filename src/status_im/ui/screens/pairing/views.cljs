@@ -104,14 +104,13 @@
      (icon-style (styles/pairing-button-icon true))]]
    [react/view {:style styles/pairing-actions-text}
     [react/view
-     [react/text {:style styles/installation-item-name-text}
-      (str
-       installation-name
-       " ("
-       (i18n/label :t/you)
-       ", "
-       (subs installation-id 0 5)
-       ")")]]]])
+     [react/text (str
+                  installation-name
+                  " ("
+                  (i18n/label :t/you)
+                  ", "
+                  (subs installation-id 0 5)
+                  ")")]]]])
 
 (defn render-row [{:keys [name
                           device-type
@@ -128,14 +127,13 @@
       (icon-style (styles/pairing-button-icon enabled?))]]
     [react/view {:style styles/pairing-actions-text}
      [react/view
-      [react/text {:style styles/installation-item-name-text}
-       (if (string/blank? name)
-         (str
-          (i18n/label :t/pairing-no-info)
-          " ("
-          (subs installation-id 0 5)
-          ")")
-         name)]]]
+      [react/text (if (string/blank? name)
+                    (str
+                     (i18n/label :t/pairing-no-info)
+                     " ("
+                     (subs installation-id 0 5)
+                     ")")
+                    name)]]]
     [react/view
      (if utils.platform/ios?
        ;; On IOS switches seems to be broken, they take up value of dev-mode? (so if dev mode is on they all show to be on).

@@ -30,12 +30,10 @@
      [react/text-input {:default-value name
                         :placeholder   ""
                         :auto-focus    true
-                        :font          :medium
                         :style         styles/profile-editing-user-name
                         :on-change     #(re-frame/dispatch [:my-profile/update-name
                                                             (.-text (.-nativeEvent %))])}]
      [react/text {:style           styles/profile-user-name
-                  :font           :medium
                   :number-of-lines 1}
       name])
    (let [gfy-name (gfy/generate-gfy public-key)]
@@ -60,8 +58,7 @@
                   tooltip-opacity      [:get-in [:tooltips :qr-copied]]]
     [react/view
      [react/view {:style styles/qr-code-container}
-      [react/text {:style styles/qr-code-title
-                   :font  :medium}
+      [react/text {:style styles/qr-code-title}
        (string/replace (i18n/label :qr-code-public-key-hint) "\n" "")]
       [react/view {:style styles/qr-code}
        [qr-code-viewer/qr-code {:value public-key :size 130}]]
@@ -146,7 +143,8 @@
     [react/view
      [react/view {:style (styles/adv-settings-row false)}
       [react/text {:style (assoc (styles/adv-settings-row-text colors/black)
-                                 :font-size 14)} (i18n/label :t/logging-enabled)]
+                                 :font-size 14)}
+       (i18n/label :t/logging-enabled)]
       [react/switch {:on-tint-color   colors/blue
                      :value           logging-enabled
                      :on-value-change #(re-frame/dispatch [:log-level.ui/logging-enabled (not logging-enabled)])}]]
@@ -171,8 +169,7 @@
           pfs? (:pfs? settings)
           connection-message (connection-status peers-count node-status mailserver-state disconnected)]
       [react/scroll-view
-       [react/text {:style styles/advanced-settings-title
-                    :font  :medium}
+       [react/text {:style styles/advanced-settings-title}
         (i18n/label :advanced-settings)]
 
        [react/view {:style styles/title-separator}]
@@ -230,8 +227,7 @@
   [react/touchable-highlight {:style    (styles/adv-settings-row help-open?)
                               :on-press #(re-frame/dispatch [:navigate-to (if help-open? :home :help-center)])}
    [react/view {:style styles/adv-settings}
-    [react/text {:style (styles/adv-settings-row-text colors/black)
-                 :font  (if help-open? :medium :default)}
+    [react/text {:style (styles/adv-settings-row-text colors/black)}
      (i18n/label  :t/help-center)]
     [vector-icons/icon :main-icons/next {:style {:tint-color colors/gray}}]]])
 
@@ -239,8 +235,7 @@
   [react/touchable-highlight {:style    (styles/adv-settings-row open?)
                               :on-press #(re-frame/dispatch [:navigate-to (if open? :home :about-app)])}
    [react/view {:style styles/adv-settings}
-    [react/text {:style (styles/adv-settings-row-text colors/black)
-                 :font  (if open? :medium :default)}
+    [react/text {:style (styles/adv-settings-row-text colors/black)}
      (i18n/label  :t/about-app)]
     [vector-icons/icon :main-icons/next {:style {:tint-color colors/gray}}]]])
 
@@ -250,8 +245,7 @@
                                            (re-frame/dispatch [:navigate-to (if adv-settings-open? :home :advanced-settings)])
                                            (re-frame/dispatch [:load-debug-metrics]))}
    [react/view {:style styles/adv-settings}
-    [react/text {:style (styles/adv-settings-row-text colors/black)
-                 :font  (if adv-settings-open? :medium :default)}
+    [react/text {:style (styles/adv-settings-row-text colors/black)}
      (i18n/label :t/advanced-settings)]
     [vector-icons/icon :main-icons/next {:style {:tint-color colors/gray}}]]])
 
@@ -293,14 +287,13 @@
           [react/touchable-highlight {:style  (styles/profile-row backup-recovery-phrase-open?)
                                       :on-press #(re-frame/dispatch [:navigate-to :backup-recovery-phrase])}
            [react/view {:style styles/adv-settings}
-            [react/text {:style (styles/profile-row-text colors/black)
-                         :font  (if backup-recovery-phrase-open? :medium :default)}
+            [react/text {:style (styles/profile-row-text colors/black)}
              (i18n/label :wallet-backup-recovery-title)]
             [components.common/counter {:size 22} 1]]])
         [react/view {:style (styles/profile-row false)}
          [react/touchable-highlight {:on-press #(re-frame/dispatch [:accounts.logout.ui/logout-confirmed])}
           [react/text {:style (styles/profile-row-text colors/red)} (i18n/label :t/logout)]]
-         [react/view [react/text {:style (styles/profile-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]]])))
+         [react/view [react/text {:style (styles/profile-row-text colors/gray)} (str "V" build/version " (" build/commit-sha ")")]]]]])))
 
 (views/defview profile-data []
   (views/letsubs

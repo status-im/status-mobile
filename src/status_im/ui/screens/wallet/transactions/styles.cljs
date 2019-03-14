@@ -18,10 +18,9 @@
   {:flex-direction :row
    :height         tabs.styles/tab-height})
 
-(defnstyle tab-title [active?]
-  {:ios        {:font-size 15}
-   :android    {:font-size 14}
-   :text-align :center
+(defn tab-title
+  [active?]
+  {:text-align :center
    :color      (if active?
                  colors/blue
                  colors/black)})
@@ -46,9 +45,6 @@
    :ios             {:padding-top 13}
    :android         {:padding-top 14}})
 
-(def amount-text
-  {:color colors/black})
-
 (def tx-amount
   {:flex-grow    1
    :flex-shrink  1
@@ -72,17 +68,18 @@
    :color     colors/gray})
 
 (def address-label
-  (merge address-item
-         {:margin-right 5}))
+  {:margin-right 5
+   :font-size    16
+   :color        colors/gray})
 
 (def address-contact
-  (merge address-item
-         {:color        colors/black
-          :margin-right 5}))
+  {:margin-right 5
+   :font-size    16})
 
 (def address-hash
-  (merge address-item
-         {:flex-shrink 1}))
+  {:flex-shrink 1
+   :font-size 16
+   :color     colors/gray})
 
 (def sign-all-view
   {:flex              1
@@ -121,8 +118,7 @@
   {:flex 5})
 
 (def details-item-value
-  {:font-size 14
-   :color     colors/black})
+  {:font-size 14})
 
 (def details-item-extra-value
   {:font-size 14
@@ -143,8 +139,7 @@
    :margin-vertical 7})
 
 (def details-header-value
-  {:font-size 16
-   :color     colors/black})
+  {:font-size 16})
 
 (def details-header-date
   {:font-size 14
@@ -172,13 +167,10 @@
    :opacity          0.30})
 
 (def details-confirmations-count
-  {:color           colors/black
-   :font-size       15
-   :margin-vertical 2})
+  {:margin-vertical 2})
 
 (def details-failed
   {:color           colors/red
-   :font-size       15
    :margin-vertical 2})
 
 (def details-confirmations-helper-text

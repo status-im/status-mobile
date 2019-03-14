@@ -19,10 +19,7 @@
    :padding-horizontal 16})
 
 (defstyle extension-item-name-text
-  {:color   colors/black
-   :ios     {:font-size      17
-             :line-height    20}
-   :android {:font-size 16}})
+  {:typography :title})
 
 (defn mailserver-icon [connected?]
   {:width            40
@@ -35,5 +32,4 @@
    :justify-content  :center})
 
 (def empty-list
-  {:color      colors/black
-   :text-align :center})
+  {:text-align :center})

@@ -11,8 +11,7 @@
    :android         {:padding-bottom 6}})
 
 (def dapp-name-text
-  {:color     colors/black
-   :font-size 16})
+  {:font-size 16})
 
 (defstyle dapp-text
   {:color   colors/gray
@@ -66,24 +65,15 @@
 
 (defstyle url-input
   {:flex                1
-   :font-size           15
-   :line-height         22
    :text-align-vertical :center
-   :android             {:margin      0
-                         :padding     0
-                         :margin-left 6}
-   :ios                 {:margin-top  -6
-                         :min-height  26
-                         :margin-left 6}})
+   :margin              0
+   :padding             0
+   :margin-left         6})
 
 (def url-text-container
   {:justify-content   :center
    :flex              1
    :margin-horizontal 5})
-
-(def url-text
-  {:font-size   15
-   :line-height 22})
 
 (def dot
   {:height           4
@@ -150,17 +140,13 @@
    :justify-content  :center})
 
 (def permissions-panel-title-label
-  {:margin-horizontal 20
-   :font-size         22
-   :line-height       28
+  {:typography        :header
+   :margin-horizontal 20
    :text-align        :center
-   :margin-top        19
-   :font-weight       :bold})
+   :margin-top        19})
 
 (def permissions-panel-description-label
   {:margin-horizontal 20
    :color             colors/gray
-   :font-size         15
-   :line-height       22
    :text-align        :center
    :margin-top        9})

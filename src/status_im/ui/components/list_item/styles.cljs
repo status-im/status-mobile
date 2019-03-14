@@ -9,22 +9,17 @@
    :background-color :white})
 
 (defn title [small? subtitle]
-  (cond-> (if small?
-            {:line-height 22 :font-size 15}
-            {:line-height 20 :font-size 17})
-    subtitle
-    (assoc :font-weight "500" :font-size 15)))
+  (merge (when-not small?
+           {:font-size 17})
+         (when subtitle
+           {:font-weight "500"})))
 
 (def subtitle
   {:margin-top  4
-   :line-height 22
-   :font-size   15
    :color       colors/gray})
 
 (def accessory-text
-  {:line-height  22
-   :font-size    15
-   :color        colors/gray
+  {:color        colors/gray
    :margin-right 8})
 
 (defn radius [size] (/ size 2))

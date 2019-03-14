@@ -19,9 +19,6 @@
    :ios              {:height 64}
    :android          {:height 56}})
 
-(defstyle installation-item-name-text
-  {:color colors/black})
-
 (def installation-list
   {:background-color   :white
    :padding-horizontal 16
@@ -70,13 +67,11 @@
 
 (def pairing-actions-text
   {:flex        1
-   :font-size   15
    :margin-left 16})
 
 (def pair-this-device-title
   {:color         colors/blue
-   :margin-bottom 6
-   :font-size     15})
+   :margin-bottom 6})
 
 (defnstyle pairing-button-icon [enabled?]
   (let [color (if enabled?
@@ -104,6 +99,5 @@
    :margin-top        15})
 
 (defstyle input
-  {:flex      1
-   :font-size 15
-   :android   {:padding 0}})
+  {:flex    1
+   :android {:padding 0}})

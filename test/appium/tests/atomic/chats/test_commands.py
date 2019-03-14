@@ -111,6 +111,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         if send_transaction_view.amount_edit_box.is_element_displayed():
             self.errors.append('Amount field is editable')
 
+        chat_1.driver.swipe(500, 1000, 500, 500)
+
         send_transaction_view.advanced_button.click()
         send_transaction_view.transaction_fee_button.click()
         gas_limit = '25000'

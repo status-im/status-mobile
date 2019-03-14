@@ -16,6 +16,4 @@
    :android            {:height 56}})
 
 (def currency-name-text
-  {:color       colors/black
-   :font-size   17
-   :line-height 20})
+  {:typography :title})

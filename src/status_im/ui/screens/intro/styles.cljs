@@ -17,16 +17,14 @@
 
 (defstyle intro-text
   {:text-align  :center
-   :color       colors/black
-   :font-weight :bold
+   :font-weight "700"
    :font-size   24})
 
 (def intro-text-description
-  {:line-height    21
-   :margin-top     8
-   :margin-bottom  16
-   :text-align     :center
-   :color          colors/gray})
+  {:margin-top    8
+   :margin-bottom 16
+   :text-align    :center
+   :color         colors/gray})
 
 (def buttons-container
   {:align-items :center})

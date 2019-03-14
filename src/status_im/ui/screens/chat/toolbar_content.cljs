@@ -32,7 +32,6 @@
 (defview last-activity [{:keys [sync-state accessibility-label]}]
   (letsubs [state [:get :sync-data]]
     [react/text {:style               st/last-activity-text
-                 :font                :toolbar-subtitle
                  :accessibility-label accessibility-label}
      (case sync-state
        :in-progress (in-progress-text state)
@@ -42,20 +41,14 @@
   (if (or (= sync-state :in-progress)
           (= sync-state :synced))
     [last-activity {:sync-state sync-state}]
-    (if public?
-      [react/view {:flex-direction :row}
-       [react/text {:style st/toolbar-subtitle
-                    :font  :toolbar-subtitle}
-        (i18n/label :t/public-group-status)]]
-      [react/view {:flex-direction :row}
-       [react/text {:style st/toolbar-subtitle
-                    :font  :toolbar-subtitle}
-        (if public?
-          (i18n/label :t/public-group-status)
-          (let [cnt (count contacts)]
-            (if (zero? cnt)
-              (i18n/label :members-active-none)
-              (i18n/label-pluralize cnt :t/members-active))))]])))
+    [react/view {:flex-direction :row}
+     [react/text {:style st/toolbar-subtitle}
+      (if public?
+        (i18n/label :t/public-group-status)
+        (let [cnt (count contacts)]
+          (if (zero? cnt)
+            (i18n/label :members-active-none)
+            (i18n/label-pluralize cnt :t/members-active))))]]))
 
 (defview toolbar-content-view []
   (letsubs [{:keys [group-chat color online contacts chat-name

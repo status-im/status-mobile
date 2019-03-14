@@ -22,8 +22,7 @@
    :android {:height 7}})
 
 (def profile-setting-text
-  {:font-size 17
-   :color     colors/black})
+  {:font-size 17})
 
 (def action-container
   {:background-color colors/white})

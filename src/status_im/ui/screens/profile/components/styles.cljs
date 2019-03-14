@@ -16,10 +16,8 @@
 
 (defstyle profile-name-text
   {:padding-vertical 8
-   :font-size        15
    :text-align       :center
-   :font-weight      :bold
-   :color            colors/black})
+   :font-weight      "700"})
 
 (defstyle profile-three-words
   {:font-size   12
@@ -27,8 +25,7 @@
    :color       colors/gray})
 
 (defstyle profile-name-input-text
-  {:font-size   15
-   :text-align  :center
+  {:text-align  :center
    :flex        1
    :desktop     {:height 20
                  :width 200}
@@ -36,8 +33,7 @@
                  :height              45
                  :border-bottom-width 1
                  :border-bottom-color colors/gray-light}
-   :android     {:color               colors/black
-                 :border-bottom-width 2
+   :android     {:border-bottom-width 2
                  :border-bottom-color colors/blue}})
 
 (def profile-header-name-container
@@ -70,10 +66,8 @@
    :flex-direction   :row
    :justify-content  :space-between})
 
-(defstyle settings-item-text
-  {:flex-wrap :nowrap
-   :font-size 15
-   :android   {:color colors/black}})
+(def settings-item-text
+  {:flex-wrap :nowrap})
 
 (def settings-item-destructive
   {:color colors/red})
@@ -86,7 +80,6 @@
    :flex-wrap     :nowrap
    :text-align    :right
    :padding-right 10
-   :font-size     15
    :color         colors/gray})
 
 (def settings-title

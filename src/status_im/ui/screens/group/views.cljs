@@ -41,7 +41,7 @@
    toolbar/default-nav-back
    [react/view {:style styles/toolbar-header-container}
     [react/view
-     [react/text {:style styles/toolbar-header} header]]
+     [react/text header]]
     [react/view
      [react/text {:style styles/toolbar-sub-header} sub-header]]]])
 

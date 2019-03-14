@@ -12,17 +12,12 @@
    :margin-vertical 32})
 
 (def intro-text
-  {:text-align  :center
-   :font-size   22
-   :color       colors/black
-   :font-weight :bold
-   :line-height 28})
+  {:typography :header
+   :text-align :center})
 
 (def description-label
-  {:line-height       22
-   :font-size         15
-   :text-align        :center
-   :color             colors/gray})
+  {:text-align :center
+   :color      colors/gray})
 
 (def intro-button
   {:margin-vertical    8
@@ -43,11 +38,8 @@
    :color      colors/gray})
 
 (def tribute-to-talk
-  {:font-weight "500"
-   :line-height 22
-   :font-size   15
-   :color       colors/black
-   :text-align  :center})
+  {:typography :main-medium
+   :text-align :center})
 
 (def container
   {:flex             1
@@ -88,8 +80,7 @@
    :max-width 32})
 
 (def number
-  {:line-height 28
-   :font-size   22
+  {:font-size   22
    :color       colors/blue})
 
 (def snt-amount-container
@@ -98,17 +89,14 @@
    :align-items       :center})
 
 (def snt-amount
-  {:font-size 32
-   :color     colors/black})
+  {:font-size 32})
 
 (def snt-amount-label
   (assoc snt-amount :color colors/gray))
 
 (def snt-asset-value
-  {:font-size   15
-   :font-weight "500"
-   :line-height 22
-   :color       colors/gray})
+  {:typography :main-medium
+   :color      colors/gray})
 
 (def personalized-message-container
   {:flex-grow         1
@@ -125,8 +113,6 @@
   {:border-radius       8
    :background-color    colors/gray-lighter
    :text-align-vertical :top
-   :font-size           15
-   :line-height         22
    :padding-horizontal  16
    :padding-vertical    16})
 
@@ -137,17 +123,9 @@
    :padding-horizontal  12
    :padding-vertical    8})
 
-(def edit-view-message
-  {:color       colors/black
-   :line-height 22
-   :font-size   15})
-
 (def finish-label
-  {:font-size   22
-   :line-height 28
-   :font-weight :bold
-   :text-align  :center
-   :color       colors/black})
+  {:typography :header
+   :text-align :center})
 
 (defn finish-circle [color radius]
   {:background-color color
@@ -174,17 +152,13 @@
 
 (def current-snt-amount
   {:font-size   28
-   :line-height 28
-   :color       colors/black
    :font-weight "500"})
 
 (def edit-label
-  {:font-size 15
-   :color     colors/blue})
+  {:color colors/blue})
 
 (def edit-note
-  {:font-size         15
-   :color             colors/gray
+  {:color             colors/gray
    :margin-top        16
    :margin-horizontal 16
    :text-align        :center})
@@ -209,9 +183,7 @@
    :justify-content    :center})
 
 (def learn-more-link-text
-  {:font-size   15
-   :line-height 21
-   :color       colors/blue})
+  {:color colors/blue})
 
 (def learn-more-image
   {:width           120
@@ -238,9 +210,7 @@
    :margin-bottom     32})
 
 (def learn-more-text
-  {:font-size   17
-   :line-height 22
-   :color       colors/black})
+  {:typography :title})
 
 (def learn-more-section
   {:border-radius     12
@@ -264,14 +234,12 @@
    :height          44})
 
 (def pay-to-chat-text
-  {:font-size   15
-   :color       colors/blue
-   :line-height 22
-   :font-weight "500"})
+  {:typography :main-medium
+   :color      colors/blue})
 
 (def edit-container
-  {:justify-content   :space-between
-   :flex-grow         1})
+  {:justify-content :space-between
+   :flex-grow       1})
 
 (def edit-screen-top-row
   {:flex-direction    :row
@@ -288,22 +256,18 @@
    :margin-top        52})
 
 (def remove-text
-  {:color       colors/red
-   :margin-left 16
-   :font-size   17})
+  {:typography  :title
+   :color       colors/red
+   :margin-left 16})
 
 (def remove-note
-  {:font-size         15
-   :margin-horizontal 16
+  {:margin-horizontal 16
    :color             colors/gray
    :text-align        :center
    :margin-top        12})
 
 (def enabled-note-text
-  {:color       colors/black
-   :line-height 22
-   :font-weight "500"
-   :font-size   15})
+  {:typography :main-medium})
 
 (def separator-style
   {:height           1

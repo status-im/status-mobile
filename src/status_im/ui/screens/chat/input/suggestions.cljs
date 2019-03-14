@@ -10,8 +10,7 @@
   [react/touchable-highlight (cond-> {:on-press on-press}
                                accessibility-label (assoc :accessibility-label accessibility-label))
    [react/view style/item-suggestion-container
-    [react/text {:style style/item-suggestion-name}
-     name]
+    [react/text name]
     [react/text {:style           style/item-suggestion-description
                  :number-of-lines 2}
      description]]])

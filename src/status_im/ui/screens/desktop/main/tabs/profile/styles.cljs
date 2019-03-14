@@ -166,8 +166,8 @@
 (def adv-settings-subtitle
   {:margin-left   24
    :margin-bottom 10
-   :font-weight   :bold
-   :font-size 16})
+   :font-weight   "700"
+   :font-size     16})
 
 (def connection-stats-title
   (merge adv-settings-subtitle

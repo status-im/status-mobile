@@ -420,7 +420,7 @@
 (defn text [o & children]
   (if (map? o)
     (into [react/text o] (map wrap-text-child children))
-    (into [react/text {} o] (map wrap-text-child children))))
+    (into [react/text o] (map wrap-text-child children))))
 
 (defn- wrap-view-child [child]
   (if (vector? child) child [text {} child]))

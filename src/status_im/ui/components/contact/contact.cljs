@@ -18,7 +18,7 @@
             [react/touchable-highlight
              {:on-press action}
              [react/view {}
-              [react/text {} label]]]))])
+              [react/text label]]]))])
 
 (defn contact-view
   [{:keys [style contact extended? on-press extend-options extend-title

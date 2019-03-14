@@ -11,9 +11,7 @@
    :margin-top 8})
 
 (def title-text
-  (merge
-   common-styles/text-title-bold
-   {:color colors/black}))
+  {:typography :title-bold})
 
 (def details
   {:width         311
@@ -23,11 +21,8 @@
    :margin-bottom 10})
 
 (def details-text
-  (merge
-   common-styles/text-main
-   {:color       colors/gray
-    :text-align  :center
-    :line-height 22}))
+  {:color       colors/gray
+   :text-align  :center})
 
 (def network-icon
   {:title-color     :blue
@@ -70,12 +65,6 @@
    :flex            1
    :margin-left     13})
 
-(def checkbox-text
-  (merge
-   common-styles/text-main
-   {:color       colors/black
-    :line-height 19}))
-
 (def settings-container
   {:margin-left 69
    :height      44
@@ -83,16 +72,10 @@
    :align-items :flex-start})
 
 (def settings-text
-  (merge
-   common-styles/text-main
-   {:color       colors/gray
-    :line-height 22}))
+  {:color colors/gray})
 
 (def settings-link
-  (merge
-   common-styles/text-main
-   {:color       colors/blue
-    :line-height 22}))
+  {:color colors/blue})
 
 (def go-to-settings-container
   {:height          52
@@ -101,6 +84,4 @@
    :align-self      :stretch})
 
 (def go-to-settings
-  (merge
-   common-styles/text-main
-   {:color colors/blue}))
+  {:color colors/blue})

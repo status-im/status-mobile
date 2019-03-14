@@ -32,7 +32,7 @@
                                           (re-frame/dispatch [:stickers/load-packs])
                                           (re-frame/dispatch [:navigate-to :stickers]))}
     [react/view {:margin-top 6 :height 44 :justify-content :center}
-     [react/text {:style {:font-size 15 :color colors/blue}}
+     [react/text {:style {:color colors/blue}}
       (i18n/label :t/get-stickers)]]]])
 
 (defn- stickers-panel [stickers window-width]

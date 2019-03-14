@@ -18,10 +18,8 @@
    :margin-left     6})
 
 (def toolbar-title-text
-  {:color       colors/black
-   :font-size   17
-   :font-weight :bold
-   :text-align  :center})
+  {:typography :title-bold
+   :text-align :center})
 
 (defn toolbar-actions-container [actions-count custom]
   (merge {:flex-direction :row}
@@ -40,16 +38,16 @@
    :height 24})
 
 (def item-text
-  {:color     colors/blue
-   :font-size 15})
+  {:color colors/blue})
 
 (defstyle item-text-action
-  {:color     colors/blue
-   :font-size 15})
+  {:color colors/blue})
 
-(def toolbar-text-action-disabled {:color colors/gray})
+(def toolbar-text-action-disabled
+  {:color colors/gray})
 
-(def item-text-white-background {:color colors/blue})
+(def item-text-white-background
+  {:color colors/blue})
 
 (def icon-add
   {:width  24

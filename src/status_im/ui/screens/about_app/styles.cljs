@@ -7,8 +7,7 @@
    :padding-horizontal 16})
 
 (def peer-text
-  {:font-size 10
-   :color colors/black})
+  {:font-size 10})
 
 (def about-title
   {:background-color colors/white
@@ -17,5 +16,4 @@
    :padding-horizontal 16})
 
 (def about-title-text
-  {:font-size 20
-   :color colors/black})
+  {:font-size 20})

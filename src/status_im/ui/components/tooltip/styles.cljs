@@ -46,8 +46,7 @@
    :font-size font-size})
 
 (def bottom-tooltip-text
-  {:color     colors/white
-   :font-size 15})
+  {:color colors/white})
 
 (def tooltip-triangle
   {:width  16

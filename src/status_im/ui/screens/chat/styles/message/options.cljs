@@ -17,14 +17,13 @@
    :padding-bottom     10})
 
 (def title-text
-  {:font-weight    :bold
-   :line-height    20})
+  {:font-weight "700"})
 
 (def label
   {:padding-horizontal 16})
 
 (def label-text
-  {:font-size 12})
+  {:typography :caption})
 
 (def icon
   {:width            40

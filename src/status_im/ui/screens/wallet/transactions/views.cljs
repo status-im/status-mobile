@@ -64,14 +64,13 @@
        [list/item-icon (transaction-type->icon (keyword type))]
        [list/item-content
         [react/view {:style styles/amount-time}
-         [react/text {:style           styles/tx-amount
-                      :ellipsize-mode  "tail"
-                      :number-of-lines 1}
-          [react/text {:accessibility-label :amount-text
-                       :style               styles/amount-text}
+         [react/nested-text {:style           styles/tx-amount
+                             :ellipsize-mode  "tail"
+                             :number-of-lines 1}
+          [{:accessibility-label :amount-text}
            (-> value  (money/internal->formatted symbol decimals) money/to-fixed str)]
           " "
-          [react/text {:accessibility-label :currency-text}
+          [{:accessibility-label :currency-text}
            (wallet.utils/display-symbol token)]]
          [react/text {:style styles/tx-time}
           time-formatted]]
@@ -171,11 +170,11 @@
      [react/view {:style styles/details-header-icon}
       [list/item-icon (transaction-type->icon type)]]
      [react/view {:style styles/details-header-infos}
-      [react/text {:style styles/details-header-value}
-       [react/text {:accessibility-label :amount-text}
+      [react/nested-text {:style styles/details-header-value}
+       [{:accessibility-label :amount-text}
         (pretty-print-asset symbol value token)]
        " "
-       [react/text {:accessibility-label :currency-text}
+       [{:accessibility-label :currency-text}
         (wallet.utils/display-symbol asset)]]
       [react/text {:style styles/details-header-date} date]]]))
 

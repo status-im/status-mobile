@@ -19,7 +19,6 @@
 
 (def error-text
   {:color      colors/red
-   :font-size  15
    :text-align :center})
 
 (def center-container
@@ -28,12 +27,10 @@
    :margin-top     28})
 
 (def center-title-text
-  {:font-size 22
-   :color     colors/black})
+  {:typography :header})
 
 (def create-pin-text
-  {:font-size   15
-   :padding-top 8
+  {:padding-top 8
    :width       314
    :text-align  :center
    :color       colors/gray})

@@ -98,9 +98,24 @@
 	<true/>
 	<key>UIAppFonts</key>
 	<array>
-		<string>Inter-UI-Bold.otf</string>
-		<string>Inter-UI-Medium.otf</string>
-		<string>Inter-UI-Regular.otf</string>
+		<string>Inter-Bold.otf</string>
+		<string>Inter-Medium.otf</string>
+		<string>Inter-Regular.otf</string>
+		<string>Inter-Black.otf</string>
+		<string>Inter-BlackItalic.otf</string>
+		<string>Inter-BoldItalic.otf</string>
+		<string>Inter-ExtraBold.otf</string>
+		<string>Inter-ExtraBoldItalic.otf</string>
+		<string>Inter-ExtraLight-BETA.otf</string>
+		<string>Inter-ExtraLightItalic-BETA.otf</string>
+		<string>Inter-Italic.otf</string>
+		<string>Inter-Light-BETA.otf</string>
+		<string>Inter-LightItalic-BETA.otf</string>
+		<string>Inter-MediumItalic.otf</string>
+		<string>Inter-SemiBold.otf</string>
+		<string>Inter-SemiBoldItalic.otf</string>
+		<string>Inter-Thin-BETA.otf</string>
+		<string>Inter-ThinItalic-BETA.otf</string>
 	</array>
 	<key>ITSEncryptionExportComplianceCode</key>
 	<string>1aa92c4d-6194-4d7d-b70a-16b48256b87e</string>

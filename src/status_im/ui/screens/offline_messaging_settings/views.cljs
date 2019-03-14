@@ -32,8 +32,7 @@
                          #(re-frame/dispatch [:mailserver.ui/unpin-pressed])
                          #(re-frame/dispatch [:mailserver.ui/pin-pressed]))}]
     [react/view  {:style styles/mailserver-pinned-text-container}
-     [react/text {:style styles/mailserver-pinned-text}
-      (i18n/label :t/mailserver-automatic)]]]])
+     [react/text (i18n/label :t/mailserver-automatic)]]]])
 
 (defn render-row [current-mailserver-id pinned?]
   (fn [{:keys [name id user-defined]}]

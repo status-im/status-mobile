@@ -8,16 +8,14 @@
    :background-color :white})
 
 (def badge-name-text
-  {:color     colors/black
-   :font-size 17})
+  {:font-size 17})
 
 (defstyle badge-connected-text
   {:color   colors/gray
    :ios     {:margin-top 5}})
 
-(defstyle paste-json-text-input
-  {:ios {:font-size   17
-         :line-height 24}})
+(def paste-json-text-input
+  {:font-size 17})
 
 (def connect-button-container
   {:margin-top        8
@@ -53,9 +51,7 @@
    :android           {:border-radius 4}})
 
 (defstyle network-config-text
-  {:color       colors/black
-   :font-size   17
-   :line-height 24
+  {:font-size   17
    :ios         {:opacity 0.8}
    :android     {:opacity 0.4}})
 
@@ -106,9 +102,7 @@
    :android            {:height 56}})
 
 (def network-item-name-text
-  {:color       colors/black
-   :font-size   17
-   :line-height 20})
+  {:font-size 17})
 
 (def network-item-connected-text
   {:color      colors/gray

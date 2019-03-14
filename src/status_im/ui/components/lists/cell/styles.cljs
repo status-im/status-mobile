@@ -44,9 +44,7 @@
    :margin-bottom   3})
 
 (defn item-title [color]
-  (merge common-styles/text-main-medium
-         {:color (get-color color)}))
+  {:color (get-color color)})
 
 (def item-details
-  (merge common-styles/text-main
-         {:color colors/gray}))
+  {:color colors/gray})

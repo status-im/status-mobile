@@ -38,19 +38,17 @@
                         :background-color colors/blue}}
     [vector-icons/icon :main-icons/info {:color colors/white}]]
    [react/view
-    {:style {:border-color "rgba(255,255,255,0.6)"
-             :border-width 1
-             :border-radius 8
-             :padding-top 15
+    {:style {:border-color   (colors/alpha colors/white 0.6)
+             :border-width   1
+             :border-radius  8
+             :padding-top    15
              :padding-bottom 15
-             :padding-left 20
-             :padding-right 20
-             :align-items :center}}
+             :padding-left   20
+             :padding-right  20
+             :align-items    :center}}
     [react/text
-     {:style {:color "rgba(255,255,255,0.6)"
-              :text-align :center
-              :font-size 15
-              :line-height 22}}
+     {:style {:color      (colors/alpha colors/white 0.6)
+              :text-align :center}}
      text]]])
 
 (defn toolbar []

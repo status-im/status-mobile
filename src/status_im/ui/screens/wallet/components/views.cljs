@@ -36,7 +36,6 @@
   [react/text-input (utils.core/deep-merge {:placeholder-text-color colors/white-transparent
                                             :selection-color        colors/white
                                             :style                  {:color     colors/white
-                                                                     :font-size 15
                                                                      :height    52}}
                                            props)
    text])
@@ -50,7 +49,8 @@
   ([props action title options]
    [toolbar/toolbar (assoc-in props [:style :border-bottom-color] colors/white-light-transparent)
     [toolbar/nav-button action]
-    [toolbar/content-title {:color :white :font-weight "700"}
+    [toolbar/content-title {:color       colors/white
+                            :font-weight "700"}
      title]
     options]))
 
@@ -122,9 +122,9 @@
      [list/item-image icon]
      [list/item-content
       [react/view {:flex-direction :row}
-       [react/text {:style styles/text-list-primary-content}
+       [react/text {:style styles/text}
         name]
-       [react/text {:force-uppercase? true}
+       [react/text {:style {:text-transform :uppercase}}
         (wallet.utils/display-symbol token)]]
       [list/item-secondary (wallet.utils/format-amount amount decimals)]]]]])
 
@@ -307,7 +307,5 @@
   [react/view styles/separator])
 
 (defn button-text [label]
-  [react/text {:style      styles/button-text
-               :font       (if platform/android? :medium :default)
-               :uppercase? true}
+  [react/text {:style styles/button-text}
    label])

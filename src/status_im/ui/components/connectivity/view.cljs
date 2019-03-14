@@ -105,15 +105,15 @@
              [react/activity-indicator {:animated     true
                                         :color        colors/white
                                         :margin-right 6}])
-           [react/text {:style    styles/text
-                        :on-press on-press-fn}
-            (if (= message :mobile-network)
-              [react/text {}
-               (i18n/label :t/waiting-for-wifi) " "
-               [react/text
-                {:style {:text-decoration-line :underline}}
-                (i18n/label :t/waiting-for-wifi-change)]]
-              (i18n/label message))]]))})))
+           (if (= message :mobile-network)
+             [react/nested-text {:style    styles/text
+                                 :on-press on-press-fn}
+              (i18n/label :t/waiting-for-wifi) " "
+              [{:style {:text-decoration-line :underline}}
+               (i18n/label :t/waiting-for-wifi-change)]]
+             [react/text {:style    styles/text
+                          :on-press on-press-fn}
+              (i18n/label message)])]))})))
 
 (defview connectivity-view []
   (letsubs [status-properties [:connectivity/status-properties]
