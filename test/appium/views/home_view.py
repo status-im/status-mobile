@@ -164,7 +164,7 @@ class HomeView(BaseView):
         profile_view.debug_mode_toggle.click()
         dapp_view = profile_view.dapp_tab_button.click()
         #dapp_view.open_d_app_button.click()
-        dapp_view.status_test_dapp_button.scroll_to_element()
+        dapp_view.status_test_dapp_button.scroll_to_element(15)
         status_test_dapp = dapp_view.status_test_dapp_button.click()
         #dapp_view.open_button.click()
         for _ in range(2):
