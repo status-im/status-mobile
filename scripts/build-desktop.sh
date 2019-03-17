@@ -142,17 +142,17 @@ function buildClojureScript() {
                       --dev false --platform desktop --assets-dest "$WORKFOLDER/assets"
   echo -e "${GREEN}Generating done.${NC}"
   echo ""
+}
 
-  # Add path to javascript bundle to package.json
+function compile() {
+  # Temporarily add path to javascript bundle to package.json
   local jsBundleLine="\"desktopJSBundlePath\": \"$WORKFOLDER/Status.jsbundle\""
   local jsPackagePath=$(joinExistingPath "$STATUSREACTPATH" 'desktop_files/package.json.orig')
   local tmp=$(mktemp)
   jq ".=(. + {$jsBundleLine})" "$jsPackagePath" > "$tmp" && mv "$tmp" "$jsPackagePath"
   echo -e "${YELLOW}Added 'desktopJSBundlePath' line to $jsPackagePath:${NC}"
   echo ""
-}
 
-function compile() {
   pushd desktop
     rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile modules reportApp/CMakeFiles desktop/node_modules/google-breakpad/CMakeFiles desktop/node_modules/react-native-keychain/desktop/qtkeychain-prefix/src/qtkeychain-build/CMakeFiles desktop/node_modules/react-native-keychain/desktop/qtkeychain
     EXTERNAL_MODULES_DIR="$(joinStrings ${external_modules_dir[@]})"
@@ -179,6 +179,8 @@ function compile() {
           $CMAKE_EXTRA_FLAGS || exit 1
     make -S -j5 || exit 1
   popd
+
+  git checkout $jsPackagePath # remove the bundle from the package.json file
 }
 
 function bundleWindows() {
