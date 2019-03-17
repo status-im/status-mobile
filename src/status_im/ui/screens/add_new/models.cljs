@@ -13,4 +13,4 @@
     (or (universal-links/handle-url cofx data)
         {:utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)
                             :content (i18n/label :t/use-valid-qr-code {:data data})
-                            :on-dismiss #(re-frame/dispatch [:qr-scanner.ui/qr-code-error-dismissed])}})))
+                            :on-dismiss nil #_#(re-frame/dispatch #_[:qr-scanner.ui/qr-code-error-dismissed])}})))
