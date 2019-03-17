@@ -1,7 +1,7 @@
 { stdenv, pkgs, target-os }:
 
 with pkgs;
-with stdenv; 
+with stdenv;
 
 let
   targetLinux = {
@@ -24,6 +24,7 @@ in
       file
       gnupg # Used by appimagetool
       go
+      hostname # Used by run-app.sh
     ] ++ lib.optional targetLinux [ appimagekit linuxdeployqt patchelf ]
       ++ lib.optional (! targetWindows) qt5.full
       ++ lib.optional targetWindows windowsPlatform.buildInputs;

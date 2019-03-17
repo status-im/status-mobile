@@ -13,7 +13,7 @@ plugins_path=""
 asset_path="share"
 executor=""
 
-react_host=`hostname -I`
+react_host=`hostname -i`
 
 # Parse args
 for arg in "$@"
