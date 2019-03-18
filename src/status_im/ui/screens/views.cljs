@@ -12,6 +12,7 @@
             [taoensso.timbre :as log]
             [status-im.utils.platform :as platform]
             [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
+            [status-im.ui.screens.home.sheet.views :as home.sheet]
             [status-im.ui.screens.routing.core :as routing]))
 
 (defonce rand-label (rand/id))
@@ -27,7 +28,11 @@
                  (merge mobile-network-settings/settings-sheet)
 
                  (= view :mobile-network-offline)
-                 (merge mobile-network-settings/offline-sheet))]
+                 (merge mobile-network-settings/offline-sheet)
+
+                 (= view :add-new)
+                 (merge home.sheet/add-new))]
+
       [bottom-sheet/bottom-sheet opts])))
 
 (defn main []

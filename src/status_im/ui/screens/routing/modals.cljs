@@ -20,4 +20,5 @@
    :wallet-settings-assets
    :wallet-transaction-fee
    :wallet-transactions-filter
-   :profile-qr-viewer])
+   :profile-qr-viewer
+   :welcome])

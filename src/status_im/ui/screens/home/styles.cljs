@@ -1,7 +1,8 @@
 (ns status-im.ui.screens.home.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.bottom-bar.styles :as tabs.styles]))
 
 (defn toolbar []
   {:background-color colors/white})
@@ -76,14 +77,14 @@
              :height    26}})
 
 (defstyle private-group-icon-container
-  {:align-items :center
+  {:align-items     :center
    :justify-content :center
-   :margin-right 6})
+   :margin-right    6})
 
 (defstyle public-group-icon-container
-  {:align-items :center
+  {:align-items     :center
    :justify-content :center
-   :margin-right 6})
+   :margin-right    6})
 
 (def last-message-container
   {:flex-shrink 1})
@@ -115,8 +116,8 @@
    :border-radius    8})
 
 (def search-input
-  (merge {:flex        1
-          :font-size   15}
+  (merge {:flex      1
+          :font-size 15}
          (when platform/android?
            {:line-height 22
             :margin      0
@@ -168,55 +169,51 @@
    :margin-horizontal 34})
 
 (def no-chats-text
-  {:line-height    21
-   :text-align     :center
-   :color          colors/gray})
+  {:line-height 22
+   :font-size   15
+   :text-align  :center
+   :color       colors/gray})
 
 (def welcome-view
   {:flex 1})
 
-(defstyle welcome-image-container
+(def welcome-image-container
   {:align-items :center
-   :android     {:margin-top 38}
-   :ios         {:margin-top 42}})
+   :margin-top  42})
 
-(def welcome-image
-  {:width  320
-   :height 278})
-
-(defstyle welcome-text
+(def welcome-text
   {:line-height 28
    :font-size   22
    :font-weight :bold
-   :android     {:margin-top 22}
-   :ios         {:margin-top 96}
+   :margin-top  32
    :text-align  :center
    :color       colors/black})
 
-(defstyle welcome-text-description
-  {:line-height    21
-   :margin-top     8
-   :android        {:margin-bottom 82}
-   :ios            {:margin-bottom 32}
-   :text-align     :center
-   :color          colors/gray})
-
-(def toolbar-logo
-  {:size      40
-   :icon-size 17})
+(def welcome-text-description
+  {:line-height       22
+   :font-size         15
+   :margin-top        8
+   :text-align        :center
+   :margin-horizontal 32
+   :color             colors/gray})
 
 (def action-button-container
-  {:position :absolute
-   :bottom   16
-   :right    16})
+  {:position    :absolute
+   :align-items :center
+   :bottom      (+ tabs.styles/tabs-diff 6)
+   :right       0
+   :left        0})
 
 (def action-button
-  {:width            56
-   :height           56
+  {:margin           10
+   :width            40
+   :height           40
    :background-color colors/blue
-   :border-radius    28
+   :border-radius    20
    :align-items      :center
-   :justify-content  :center})
-
-(def spinner-container
-  {:margin-right 10})
+   :justify-content  :center
+   :shadow-offset    {:width 0 :height 1}
+   :shadow-radius    6
+   :shadow-opacity   1
+   :shadow-color     "rgba(0, 12, 63, 0.2)"
+   :elevation        2})

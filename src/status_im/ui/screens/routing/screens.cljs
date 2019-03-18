@@ -142,7 +142,8 @@
    :tribute-to-talk                  tr-to-talk/tribute-to-talk
    :reset-card                       hardwallet.settings/reset-card
    :keycard-settings                 hardwallet.settings/keycard-settings
-   :mobile-network-settings          mobile-network-settings/mobile-network-settings})
+   :mobile-network-settings          mobile-network-settings/mobile-network-settings
+   :welcome                          [:modal home/welcome]})
 
 (defn get-screen [screen]
   (get all-screens screen #(throw (str "Screen " screen " is not defined."))))

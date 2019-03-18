@@ -3,239 +3,73 @@
             [reagent.core :as reagent]
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.animation :as animation]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.home.styles :as styles]
-            [status-im.ui.screens.home.views.inner-item :as inner-item]
-            [status-im.utils.platform :as platform]
+            [status-im.ui.screens.home.filter.views :as filter.views]
             [status-im.utils.utils :as utils]
-            [status-im.ui.components.bottom-bar.styles :as tabs.styles])
+            [status-im.ui.components.bottom-bar.styles :as tabs.styles]
+            [status-im.ui.screens.home.views.inner-item :as inner-item]
+            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.list-selection :as list-selection])
   (:require-macros [status-im.utils.views :as views]))
 
-(defn- toolbar [show-welcome? show-sync-state sync-state latest-block-number logged-in?]
-  (when-not (and show-welcome?
-                 platform/android?)
-    [toolbar/toolbar nil nil
-     (when-not show-welcome?
-       (if show-sync-state
-         [react/view {:style styles/sync-wrapper}
-          [components.common/logo styles/toolbar-logo]
+(views/defview les-debug-info []
+  (views/letsubs [sync-state           [:chain-sync-state]
+                  latest-block-number  [:latest-block-number]
+                  rpc-network?         [:current-network-uses-rpc?]
+                  network-initialized? [:current-network-initialized?]]
+    (when (and network-initialized? (not rpc-network?))
+      [react/view {:style styles/sync-wrapper}
+       [react/touchable-highlight {:on-press #(re-frame/dispatch [:home.ui/sync-info-pressed])}
+        [react/text {:style styles/sync-info}
+         (str "LES: 'latest' #" latest-block-number "\n"
+              (if sync-state
+                (str "syncing " (:currentBlock sync-state) " of " (:highestBlock sync-state) " blocks...")
+                (str "not syncing")))]]])))
 
-          [react/touchable-highlight {:accessibility-label :new-chat-button
-                                      :on-press            #(re-frame/dispatch [:home.ui/sync-info-pressed])}
-           [react/text {:style styles/sync-info}
-            (str "LES: 'latest' #" latest-block-number "\n"
-                 (if sync-state
-                   (str "syncing " (:currentBlock sync-state) " of " (:highestBlock sync-state) " blocks...")
-                   (str "not syncing")))]]]
-         [components.common/logo styles/toolbar-logo]))
-     (cond
-       (and platform/ios?
-            logged-in?)
-       [toolbar/actions
-        [(-> (toolbar.actions/add true #(re-frame/dispatch [:navigate-to :new]))
-             (assoc-in [:icon-opts :accessibility-label] :new-chat-button))]]
-       platform/ios?
-       [react/view {:style styles/spinner-container}
-        [react/activity-indicator {:color colors/blue
-                                   :animating true}]])]))
+(defn welcome []
+  [react/view {:style styles/welcome-view}
+   [react/view {:flex 1}]
+   [status-bar/status-bar {:type :main}]
+   [react/view {:style styles/welcome-image-container}
+    [components.common/image-contain
+     {:container-style {}}
+     {:image (:welcome-image resources/ui) :width 750 :height 556}]]
+   [react/i18n-text {:style styles/welcome-text :key :welcome-to-status}]
+   [react/view
+    [react/i18n-text {:style styles/welcome-text-description
+                      :key   :welcome-to-status-description}]]
+   [react/view {:flex 1}]
+   [react/view {:align-items :center :margin-bottom 52}
+    [components.common/button {:on-press #(re-frame/dispatch [:navigate-back])
+                               :label    (i18n/label :t/get-started)}]]])
 
-(defn- home-action-button [logged-in?]
-  [react/view styles/action-button-container
-   [react/touchable-highlight {:accessibility-label :new-chat-button
-                               :on-press            (when logged-in? #(re-frame/dispatch [:navigate-to :new]))}
-    [react/view styles/action-button
-     (if-not logged-in?
-       [react/activity-indicator {:color :white
-                                  :animating true}]
-       [icons/icon :main-icons/add {:color :white}])]]])
-
-(defn home-list-item [[home-item-id home-item]]
-  (let [delete-action   (if (and (:group-chat home-item)
-                                 (not (:public? home-item)))
-                          :group-chats.ui/remove-chat-pressed
-                          :chat.ui/remove-chat)]
-    [list/deletable-list-item {:type      :chats
-                               :id        home-item-id
-                               :on-delete #(do
-                                             (re-frame/dispatch [:set-swipe-position :chats home-item-id false])
-                                             (re-frame/dispatch [delete-action home-item-id]))}
-     [inner-item/home-list-chat-item-inner-view home-item]]))
-
-;;do not remove view-id and will-update or will-unmount handlers, this is how it works
-(views/defview welcome [view-id]
-  (views/letsubs [handler #(re-frame/dispatch [:set-in [:accounts/create :show-welcome?] false])]
-    {:component-will-update  handler
-     :component-will-unmount handler}
-    [react/view {:style styles/welcome-view}
-     [react/view {:style styles/welcome-image-container}
-      [react/image {:source (:welcome-image resources/ui)
-                    :style  styles/welcome-image}]]
-     [react/i18n-text {:style styles/welcome-text :key :welcome-to-status}]
-     [react/view
-      [react/i18n-text {:style styles/welcome-text-description
-                        :key   :welcome-to-status-description}]]]))
-
-(defn search-input
-  [search-filter {:keys [on-cancel on-focus on-change]}]
-  (let [input-is-focused? (reagent/atom false)
-        input-ref (reagent/atom nil)]
-    (fn [search-filter]
-      (let [show-cancel? (or @input-is-focused?
-                             search-filter)]
-        [react/view {:style styles/search-container}
-         [react/view {:style styles/search-input-container}
-          [icons/icon :main-icons/search {:color           colors/gray
-                                          :container-style {:margin-left  6
-                                                            :margin-right 2}}]
-          [react/text-input {:placeholder     (i18n/label :t/search)
-                             :blur-on-submit  true
-                             :multiline       false
-                             :ref             #(reset! input-ref %)
-                             :style           styles/search-input
-                             :default-value   search-filter
-                             :on-focus
-                             #(do
-                                (when on-focus
-                                  (on-focus search-filter))
-                                (reset! input-is-focused? true))
-                             :on-change
-                             (fn [e]
-                               (let [native-event (.-nativeEvent e)
-                                     text         (.-text native-event)]
-                                 (when on-change
-                                   (on-change text))))}]]
-         (when show-cancel?
-           [react/touchable-highlight
-            {:on-press #(do
-                          (when on-cancel
-                            (on-cancel))
-                          (.blur @input-ref)
-                          (reset! input-is-focused? false))
-             :style {:margin-left 16}}
-            [react/text {:style {:color     colors/blue
-                                 :font-size 15}}
-             (i18n/label :t/cancel)]])]))))
-
-(defonce search-input-state
-  (reagent/atom {:show? false
-                 :height (animation/create-value 0)}))
-
-(defn show-search!
-  []
-  (swap! search-input-state assoc :show? true)
-  (animation/start
-   (animation/timing (:height   @search-input-state)
-                     {:toValue  styles/search-input-height
-                      :duration 350
-                      :easing   (.out (animation/easing)
-                                      (.-quad (animation/easing)))})))
-
-(defn hide-search!
-  []
-  (utils/set-timeout
-   #(swap! search-input-state assoc :show? false)
-   350)
-  (animation/start
-   (animation/timing (:height   @search-input-state)
-                     {:toValue  0
-                      :duration 350
-                      :easing   (.in (animation/easing)
-                                     (.-quad (animation/easing)))})))
-
-(defn set-search-state-visible!
-  [visible?]
-  (swap! search-input-state assoc :show? visible?)
-  (animation/set-value (:height @search-input-state)
-                       (if visible?
-                         styles/search-input-height
-                         0)))
-
-(defn animated-search-input
-  [search-filter]
-  (reagent/create-class
-   {:component-will-unmount
-    #(set-search-state-visible! false)
-    :component-did-mount
-    #(when search-filter
-       (set-search-state-visible! true))
-    :reagent-render
-    (fn [search-filter]
-      (let [{:keys [show? height]} @search-input-state]
-        (when (or show?
-                  search-filter)
-          [react/animated-view
-           {:style {:height height}}
-           [search-input search-filter
-            {:on-cancel #(do
-                           (re-frame/dispatch [:search/filter-changed nil])
-                           (hide-search!))
-             :on-focus  (fn [search-filter]
-                          (when-not search-filter
-                            (re-frame/dispatch [:search/filter-changed ""])))
-             :on-change (fn [text]
-                          (re-frame/dispatch [:search/filter-changed text]))}]])))}))
-
-(defn home-empty-view
-  []
+(defn home-empty-view []
   [react/view styles/no-chats
-   [react/i18n-text {:style styles/no-chats-text :key :no-recent-chats}]])
+   [react/i18n-text {:style styles/no-chats-text :key :no-recent-chats}]
+   [react/view {:align-items :center :margin-top 20}
+    [components.common/button {:on-press #(list-selection/open-share {:message (i18n/label :t/get-status-at)})
+                               :label    (i18n/label :t/invite-friends)}]]])
 
-(defn home-filtered-items-list
-  [chats]
-  [list/section-list
-   {:sections [{:title :t/chats
-                :data chats}
-               {:title :t/messages
-                :data []}]
-    :key-fn first
-    ;; true by default on iOS
-    :stickySectionHeadersEnabled false
-    :render-section-header-fn
-    (fn [{:keys [title data]}]
-      [react/view {:style {:height 40}}
-       [react/text {:style styles/filter-section-title}
-        (i18n/label title)]])
-    :render-section-footer-fn
-    (fn [{:keys [title data]}]
-      (when (empty? data)
-        [list/big-list-item
-         {:text          (i18n/label (if (= title "messages")
-                                       :t/messages-search-coming-soon
-                                       :t/no-result))
-          :text-color    colors/gray
-          :hide-chevron? true
-          :action-fn     #()
-          :icon          (case title
-                           "messages" :main-icons/private-chat
-                           "browser" :main-icons/browser
-                           "chats"    :main-icons/message)
-          :icon-color    colors/gray}]))
-    :render-fn (fn [home-item]
-                 [home-list-item home-item])}])
-
-(defn home-items-view
-  [search-filter chats all-home-items]
-  (let [previous-touch (reagent/atom nil)
+(defn home-items-view [_ _ _]
+  (let [previous-touch      (reagent/atom nil)
         scrolling-from-top? (reagent/atom true)]
     (fn [search-filter chats all-home-items]
       (if (not-empty search-filter)
-        [home-filtered-items-list chats]
+        [filter.views/home-filtered-items-list chats]
         [react/view
          (merge {:style {:flex 1}}
                 (when (and @scrolling-from-top?
-                           (not (:show? @search-input-state)))
+                           (not (:show? @filter.views/search-input-state)))
                   {:on-start-should-set-responder-capture
                    (fn [event]
-                     (let [current-position (.-pageY (.-nativeEvent event))
+                     (let [current-position  (.-pageY (.-nativeEvent event))
                            current-timestamp (.-timestamp (.-nativeEvent event))]
                        (reset! previous-touch
                                [current-position current-timestamp]))
@@ -243,14 +77,14 @@
                      false)
                    :on-move-should-set-responder
                    (fn [event]
-                     (let [current-position (.-pageY (.-nativeEvent event))
+                     (let [current-position  (.-pageY (.-nativeEvent event))
                            current-timestamp (.-timestamp (.-nativeEvent event))
                            [previous-position previous-timestamp] @previous-touch]
                        (when (and previous-position
                                   (> 100 (- current-timestamp previous-timestamp))
                                   (< 10 (- current-position
                                            previous-position)))
-                         (show-search!)))
+                         (filter.views/show-search!)))
                      false)}))
          [list/flat-list {:data           all-home-items
                           :key-fn         first
@@ -265,34 +99,31 @@
                                     (zero? (.-y (.-contentOffset (.-nativeEvent e))))))
                           :render-fn
                           (fn [home-item]
-                            [home-list-item home-item])}]]))))
+                            [inner-item/home-list-item home-item])}]]))))
+
+(views/defview home-action-button []
+  (views/letsubs [logging-in? [:get :accounts/login]]
+    [react/view styles/action-button-container
+     [react/touchable-highlight {:accessibility-label :new-chat-button
+                                 :on-press            (when-not logging-in? #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new]))}
+      [react/view styles/action-button
+       (if logging-in?
+         [react/activity-indicator {:color     :white
+                                    :animating true}]
+         [icons/icon :main-icons/add {:color :white}])]]]))
 
 (views/defview home [loading?]
-  (views/letsubs [show-welcome? [:get-in [:accounts/create :show-welcome?]]
-                  view-id [:get :view-id]
-                  logging-in? [:get :accounts/login]
-                  sync-state [:chain-sync-state]
-                  latest-block-number [:latest-block-number]
-                  rpc-network? [:current-network-uses-rpc?]
-                  network-initialized? [:current-network-initialized?]
-                  {:keys [search-filter chats all-home-items]} [:home-items]]
-    {:component-did-mount
-     (fn [this]
-       (let [[_ loading?] (.. this -props -argv)]
-         (when loading?
-           (utils/set-timeout
-            #(re-frame/dispatch [:init-rest-of-chats])
-            100))))}
+  (views/letsubs [{:keys [search-filter chats all-home-items]} [:home-items]]
+    {:component-did-mount (fn [this]
+                            (let [[_ loading?] (.. this -props -argv)]
+                              (when loading? (utils/set-timeout #(re-frame/dispatch [:init-rest-of-chats]) 100))))}
     [react/view {:flex 1}
      [status-bar/status-bar {:type :main}]
      [react/keyboard-avoiding-view {:style {:flex             1
                                             :background-color :white}}
-      [toolbar show-welcome? (and network-initialized? (not rpc-network?))
-       sync-state latest-block-number (not logging-in?)]
-      (cond show-welcome?
-            [welcome view-id]
-
-            loading?
+      [toolbar/toolbar nil nil [toolbar/content-title (i18n/label :t/chat)]]
+      [les-debug-info]
+      (cond loading?
             [react/view {:style {:flex            1
                                  :justify-content :center
                                  :align-items     :center}}
@@ -303,13 +134,12 @@
             :else
             [react/view {:style {:flex 1}}
              [connectivity/connectivity-view]
-             [animated-search-input search-filter]
+             [filter.views/animated-search-input search-filter]
              (if (and (not search-filter)
                       (empty? all-home-items))
                [home-empty-view]
                [home-items-view search-filter chats all-home-items])])
-      (when platform/android?
-        [home-action-button (not logging-in?)])]]))
+      [home-action-button]]]))
 
 (views/defview home-wrapper []
   (views/letsubs [loading? [:get :chats/loading?]]

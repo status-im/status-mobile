@@ -2,10 +2,12 @@
   (:require [status-im.ui.components.action-button.styles :as st]
             [status-im.ui.components.common.common :refer [list-separator]]
             [status-im.ui.components.icons.vector-icons :as vi]
-            [status-im.ui.components.react :as rn]))
+            [status-im.ui.components.react :as rn]
+            [status-im.ui.components.colors :as colors]))
 
 (defn action-button [{:keys [label accessibility-label icon icon-opts on-press label-style cyrcle-color]}]
-  [rn/touchable-highlight (merge {:on-press on-press}
+  [rn/touchable-highlight (merge {:on-press       on-press
+                                  :underlay-color (colors/alpha colors/gray 0.15)}
                                  (when accessibility-label
                                    {:accessibility-label accessibility-label}))
    [rn/view {:style st/action-button}

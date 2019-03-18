@@ -35,7 +35,6 @@
    :align-self              :stretch
    :transform               [{:translateY bottom-value}]
    :justify-content         :flex-start
-   :align-items             :center
    :padding-bottom          bottom-padding})
 
 (def content-header

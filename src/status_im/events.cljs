@@ -52,8 +52,7 @@
             [status-im.node.core :as node]
             [status-im.stickers.core :as stickers]
             [status-im.utils.config :as config]
-            [status-im.constants :as constants]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
 
 ;; init module
 
@@ -1801,3 +1800,15 @@
  :tribute-to-talk.ui/remove-pressed
  (fn [cofx _]
    (tribute-to-talk/remove cofx)))
+
+(handlers/register-handler-fx
+ :bottom-sheet/show-sheet
+ (fn [cofx [_ view]]
+   (bottom-sheet/show-bottom-sheet
+    cofx
+    {:view view})))
+
+(handlers/register-handler-fx
+ :bottom-sheet/hide-sheet
+ (fn [cofx _]
+   (bottom-sheet/hide-bottom-sheet cofx)))

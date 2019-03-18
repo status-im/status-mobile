@@ -16,7 +16,8 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.list-item.views :as list-item]
             [clojure.string :as string]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]))
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.ui.components.list.views :as list]))
 
 (defview command-short-preview [message]
   (letsubs [id->command [:chats/id->command]
@@ -111,6 +112,18 @@
         [message-content-text {:content      last-message-content
                                :content-type last-message-content-type}]
         [unviewed-indicator chat-id]]]]]))
+
+(defn home-list-item [[home-item-id home-item]]
+  (let [delete-action   (if (and (:group-chat home-item)
+                                 (not (:public? home-item)))
+                          :group-chats.ui/remove-chat-pressed
+                          :chat.ui/remove-chat)]
+    [list/deletable-list-item {:type      :chats
+                               :id        home-item-id
+                               :on-delete #(do
+                                             (re-frame/dispatch [:set-swipe-position :chats home-item-id false])
+                                             (re-frame/dispatch [delete-action home-item-id]))}
+     [home-list-chat-item-inner-view home-item]]))
 
 (defn home-list-browser-item-inner-view [{:keys [dapp url name browser-id]}]
   (let [photo-path (:photo-path dapp)]

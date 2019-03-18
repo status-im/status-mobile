@@ -1,15 +1,14 @@
 (ns status-im.ui.components.action-button.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as styles]
-            [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (defstyle action-button
   {:padding-left   16
    :flex-direction :row
    :align-items    :center
-   :ios            {:height 63}
+   :ios            {:height 64}
    :desktop        {:height 50}
-   :android        {:height 56}})
+   :android        {:height 64}})
 
 (defnstyle action-button-icon-container [circle-color]
   {:border-radius    50
@@ -28,8 +27,7 @@
 
 (defstyle actions-list
   {:background-color colors/white
-   :android          {:padding-top    8
-                      :padding-bottom 8}})
+   :flex             1})
 
 (def action-button-label-disabled
   (merge action-button-label

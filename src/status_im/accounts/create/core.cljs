@@ -107,13 +107,14 @@
 
 (defn account-set-name [{{:accounts/keys [create] :as db} :db now :now :as cofx}]
   (fx/merge cofx
-            {:db                                  (assoc db :accounts/create {:show-welcome? true})
+            {:db                                              db
              :notifications/request-notifications-permissions nil
-             :dispatch                            [:navigate-to :home]}
+             :dispatch-n                                      [[:navigate-to :home]
+                                                               [:navigate-to :welcome]]}
             ;; We set last updated as we are actually changing a field,
             ;; unlike on recovery where the name is not set
             (accounts.update/account-update {:last-updated now
-                                             :name (:name create)} {})
+                                             :name         (:name create)} {})
             (mobile-network/on-network-status-change)))
 
 (fx/defn next-step
