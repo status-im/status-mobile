@@ -1,6 +1,7 @@
 (ns status-im.utils.core
   (:require [clojure.string :as str]
-            [cljs.tools.reader.edn :as edn]
+            #?(:cljs [cljs.tools.reader.edn :as edn]
+               :clj [clojure.tools.reader.edn :as edn])
             [taoensso.timbre :as log]))
 
 (defn truncate-str
@@ -66,8 +67,9 @@
   [key coll]
   (into {} (map #(vector (key %) %) coll)))
 
-(defn safe-read-message-content [content]
-  (try
-    (edn/read-string content)
-    (catch :default e
-      (log/warn "failed to transform message with " e))))
+#?(:cljs
+   (defn safe-read-message-content [content]
+     (try
+       (edn/read-string content)
+       (catch :default e
+         (log/warn "failed to transform message with " e)))))
