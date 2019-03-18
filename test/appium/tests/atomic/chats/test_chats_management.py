@@ -77,7 +77,7 @@ class TestChatManagement(SingleDeviceTestCase):
         chat.chat_message_input.send_keys(public_key)
         chat.send_message_button.click()
         chat.chat_element_by_text(public_key).long_press_element()
-        chat.element_by_text('Copy to clipboard').click()
+        chat.element_by_text('Copy').click()
         chat.get_back_to_home_view()
 
         start_new_chat = home.plus_button.click()

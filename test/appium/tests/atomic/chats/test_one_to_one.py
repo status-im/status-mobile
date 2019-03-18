@@ -484,7 +484,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat.send_message_button.click()
 
         chat.chat_element_by_text(message_text).long_press_element()
-        chat.element_by_text('Copy to clipboard').click()
+        chat.element_by_text('Copy').click()
 
         message_input.paste_text_from_clipboard()
         if message_input.text != message_text:
@@ -496,7 +496,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat.send_message_button.click()
 
         chat.chat_element_by_text(message_text).long_press_element()
-        chat.element_by_text('Copy to clipboard').click()
+        chat.element_by_text('Copy').click()
 
         message_input.paste_text_from_clipboard()
         if message_input.text != message_text:
