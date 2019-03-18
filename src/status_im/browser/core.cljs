@@ -199,6 +199,12 @@
     (utils.universal-links/handle-url cofx link)
     {:browser/show-browser-selection link}))
 
+(fx/defn browser-selection-cancel
+  [{:keys [db]}]
+  (let [view-id (:view-id db)]
+    (if (= view-id :qr-scanner)
+      {:db (assoc-in db [:navigation/screen-params view-id :barcode-read?] false)})))
+
 (fx/defn update-browser-on-nav-change
   [cofx url error?]
   (let [browser (get-current-browser (:db cofx))

@@ -381,7 +381,7 @@
     "currency-display-name-npr": "Nepal Rupee",
     "backup-recovery-phrase": "Backup recovery phrase",
     "send-request": "Send request",
-    "use-valid-qr-code": "This QR code doesn't contain a valid universal link, contact code or username: {{data}}",
+    "use-valid-qr-code": "This QR code doesn't contain a valid universal link, url, contact code or username: {{data}}",
     "paste-json": "Paste JSON",
     "browsing-site-blocked-title": "This site is blocked",
     "browsing-site-blocked-description1": "We detected potential malicious activity from this address. To protect you and your wallet, we're preventing further navigation.\n\nIf you think this is an error, let us know in the ",

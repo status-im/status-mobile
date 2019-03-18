@@ -1412,6 +1412,11 @@
    (browser/handle-message-link cofx link)))
 
 (handlers/register-handler-fx
+ :browser.ui/browser-selection-cancel
+ (fn [cofx [_ _]]
+   (browser/browser-selection-cancel cofx)))
+
+(handlers/register-handler-fx
  :browser.ui/remove-browser-pressed
  (fn [cofx [_ browser-id]]
    (browser/remove-browser cofx browser-id)))

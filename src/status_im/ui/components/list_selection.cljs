@@ -39,7 +39,8 @@
                         :action #(re-frame/dispatch [:browser.ui/open-in-status-option-selected link])}
                        {:label  (i18n/label (platform-web-browser))
                         :action #(.openURL react/linking (http/normalize-url link))}]
-         :cancel-text (i18n/label :t/browsing-cancel)}))
+         :cancel-text (i18n/label :t/browsing-cancel)
+         :on-cancel   #(re-frame/dispatch [:browser.ui/browser-selection-cancel])}))
 
 (defn browse-in-web-browser [link]
   (show {:title       (i18n/label :t/browsing-title)
