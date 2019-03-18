@@ -1,0 +1,148 @@
+<html style="padding: 0; margin: 0;">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+<link rel="stylesheet" href="leaflet.css"/>
+<script src="leaflet.js"></script>
+
+<body style="padding: 0; margin: 0;">
+<div id="mapid" style="height: 100%;width: 100vw;"></div>
+</body>
+
+<script>
+
+var staticmode = {
+    doubleClickZoom: false,
+    dragging: false,
+    keyboard: false,
+    touchZoom: false,
+    zoomControl: false,
+    scrollWheelZoom: false,
+    boxZoom: false,
+    tap: false,
+    zoomSnap: 0
+};
+
+var interactivemode = {
+    doubleClickZoom: true,
+    dragging: true,
+    zoomSnap: 0
+};
+
+var state = {
+    init: false,
+    interactive: false,
+    can_animate: false,
+    is_animating: false,
+    no_feedback: false,
+    map: null,
+    marker: null,
+    messageToStatus: {
+        lat: null,
+        lng: null,
+        boundingbox: {
+            lat1: null,
+            lat2: null,
+            lng1: null,
+            lng2: null
+        }
+    }
+};
+
+// internal functions
+
+function _feedback() {
+    if(state.marker) {
+        var currentBounds = state.map.getBounds();
+        var tmp = state.messageToStatus;
+        tmp.lat = state.marker._latlng.lat;
+        tmp.lng = state.marker._latlng.lng;
+        tmp = tmp.boundingbox;
+        tmp.lat1 = currentBounds._northEast.lat;
+        tmp.lat2 = currentBounds._southWest.lat;
+        tmp.lng1 = currentBounds._northEast.lng;
+        tmp.lng2 = currentBounds._southWest.lng;
+
+        var message = JSON.stringify(state.messageToStatus);
+
+        window.ReactNativeWebView.postMessage(message);
+    }
+}
+
+function _setMarker(lat, lng) {
+    if (state.marker) { // check
+        state.map.removeLayer(state.marker); // remove
+    }
+    state.marker = new L.marker([lat, lng]);
+    state.marker.addTo(state.map);
+}
+
+function _init(interactive,fitWorld) {
+    if(state.map) state.map.remove();
+    state.marker = null;
+
+    state.map = L.map('mapid', interactive ? interactivemode : staticmode);
+    
+    if(fitWorld) {
+        state.map.fitWorld();
+        state.can_animate = true;
+    }
+    else {
+        state.can_animate = false;
+    }
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(state.map);
+
+    if(interactive) {
+        state.map.on('click', function(e) {
+            state.no_feedback = false; // user interaction, reenable feedback
+            _setMarker(e.latlng.lat,e.latlng.lng);
+            if(state.is_animating) state.map.stop();
+            else _feedback();
+        });
+        state.map.on('movestart', function() {
+            state.is_animating = true;
+        });
+        state.map.on('moveend', function() {
+            state.is_animating = false;
+            if(!state.no_feedback) _feedback();
+
+            state.no_feedback = false; // change finished, reenable feedback
+        });
+    }
+
+    state.interactive = interactive;
+    state.init = true;
+}
+
+// exposed functions
+function init(opts) {
+    if(typeof opts !== 'object') return;
+    _init(opts.interactive,true);
+}
+
+function update(opts) {
+    if(typeof opts !== 'object') return;
+    state.no_feedback = true; //avoid send back position when new position from status app
+
+    // init or reinit if interactive changed
+    if(!state.init || opts.interactive != state.interactive) _init(opts.interactive,false);
+
+    var c1 = L.latLng(opts.boundingbox.lat1, opts.boundingbox.lng1),
+        c2 = L.latLng(opts.boundingbox.lat2, opts.boundingbox.lng2),
+        b = L.latLngBounds(c1, c2);
+
+    if(opts.fly && state.can_animate) {
+        state.map.flyToBounds(b);
+    }
+    else {
+        state.map.fitBounds(b);
+    }
+
+    state.can_animate = true;
+
+    _setMarker(opts.lat, opts.lng);
+}
+</script>
+<html>

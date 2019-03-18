@@ -59,7 +59,7 @@
       (if modal?
         [toolbar/nav-button
          (toolbar.actions/close toolbar.actions/default-handler)]
-        (toolbar/nav-back-count {:home? true}))
+        toolbar/nav-back-home)
       [toolbar-content/toolbar-content-view]
       (when-not modal?
         [toolbar/actions [{:icon      :main-icons/more

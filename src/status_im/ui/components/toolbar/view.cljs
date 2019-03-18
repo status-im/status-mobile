@@ -24,20 +24,9 @@
     item]])
 
 (defn nav-button
-  [{:keys [icon icon-opts unread-messages?] :as props}]
-  [nav-item (merge {:style (styles/nav-item-button unread-messages?)} props)
-   [vector-icons/icon icon (if unread-messages?
-                             (assoc icon-opts :color :active)
-                             icon-opts)]])
-
-(defview nav-button-with-count [props]
-  (letsubs [unread-messages-number [:chats/unread-messages-number]]
-    (let [unread-messages? (pos? unread-messages-number)]
-      [react/view {:flex-direction :row}
-       [nav-button (assoc props :unread-messages? unread-messages?)]
-       (when unread-messages?
-         [nav-item (merge {:style styles/counter-container} props)
-          [components.common/counter unread-messages-number]])])))
+  [{:keys [icon icon-opts] :as props}]
+  [nav-item (merge {:style styles/nav-item-button} props)
+   [vector-icons/icon icon icon-opts]])
 
 (defn nav-text
   ([text] (nav-text nil text))
@@ -52,14 +41,9 @@
   ([props text]
    (nav-text (merge props styles/item-text-white-background) text)))
 
+(def nav-back-home [nav-button actions/home-back])
 (def default-nav-back [nav-button actions/default-back])
 (def default-nav-close [nav-button actions/default-close])
-
-(defn nav-back-count
-  ([]
-   [nav-button-with-count actions/default-back])
-  ([{:keys [home?]}]
-   [nav-button-with-count (if home? actions/home-back actions/default-back)]))
 
 (defn default-done
   "Renders a touchable icon on Android or a label or iOS."

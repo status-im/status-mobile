@@ -1,6 +1,6 @@
 (ns status-im.utils.datetime
   (:require [re-frame.core :as re-frame]
-            [cljs-time.core :as t :refer [date-time plus days hours before?]]
+            [cljs-time.core :as t :refer [date-time plus minus days hours before?]]
             [cljs-time.coerce :refer [from-long to-long from-date]]
             [cljs-time.format :refer [formatters
                                       formatter
@@ -80,7 +80,7 @@
 (defn- to-str [ms old-fmt-fn yesterday-fmt-fn today-fmt-fn]
   (let [date (from-long ms)
         local (plus date time-zone-offset) ; this is wrong, it uses the current timezone offset, regardless of DST
-        today (t/today-at-midnight)
+        today (minus (t/today-at-midnight) time-zone-offset)
         yesterday (plus today (days -1))]
     (cond
       (before? date yesterday) (old-fmt-fn local)

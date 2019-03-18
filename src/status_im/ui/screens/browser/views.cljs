@@ -57,7 +57,7 @@
 
 (defn toolbar [error? url url-original browser browser-id url-editing?]
   [toolbar.view/toolbar {}
-   [toolbar.view/nav-button-with-count
+   [toolbar.view/nav-button
     (actions/close (fn []
                      (re-frame/dispatch [:navigate-to :home])
                      (when error?

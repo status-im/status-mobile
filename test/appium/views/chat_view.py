@@ -205,6 +205,10 @@ class JoinChatButton(BaseButton):
         super(JoinChatButton, self).__init__(driver)
         self.locator = self.Locator.text_part_selector('JOIN GROUP')
 
+class DeclineChatButton(BaseButton):
+    def __init__(self, driver):
+        super(DeclineChatButton, self).__init__(driver)
+        self.locator = self.Locator.text_part_selector('Decline invitation')
 
 class ChatElementByText(BaseText):
     def __init__(self, driver, text):
@@ -270,12 +274,6 @@ class ChatElementByText(BaseText):
         return element.is_element_displayed(wait_time)
 
 
-class EmptyPublicChatMessage(BaseText):
-    def __init__(self, driver):
-        super().__init__(driver)
-        self.locator = self.Locator.text_part_selector("There are no messages")
-
-
 class ChatItem(BaseElement):
     def __init__(self, driver):
         super().__init__(driver)
@@ -303,7 +301,6 @@ class ChatView(BaseView):
         self.add_to_contacts = AddToContacts(self.driver)
         self.user_name_text = UserNameText(self.driver)
         self.no_messages_in_chat = NoMessagesInChatText(self.driver)
-        self.empty_public_chat_message = EmptyPublicChatMessage(self.driver)
         self.chat_item = ChatItem(self.driver)
 
         self.commands_button = CommandsButton(self.driver)
@@ -319,6 +316,7 @@ class ChatView(BaseView):
         self.leave_chat_button = LeaveChatButton(self.driver)
         self.leave_button = LeaveButton(self.driver)
         self.join_chat_button = JoinChatButton(self.driver)
+        self.decline_invitation_button = DeclineChatButton(self.driver)
 
         self.chat_settings = ChatSettings(self.driver)
         self.view_profile_button = ViewProfileButton(self.driver)

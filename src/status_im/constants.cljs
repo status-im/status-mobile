@@ -207,6 +207,9 @@
 
 (def ^:const web3-send-transaction "eth_sendTransaction")
 (def ^:const web3-personal-sign "personal_sign")
+(def ^:const web3-sign-typed-data "eth_signTypedData")
+(def ^:const web3-sign-typed-data-v3 "eth_signTypedData_v3")
+
 (def ^:const web3-get-logs "eth_getLogs")
 (def ^:const web3-transaction-receipt "eth_getTransactionReceipt")
 (def ^:const web3-new-filter "eth_newFilter")
@@ -224,6 +227,9 @@
 (def ^:const web3-shh-uninstall-filter "shh_uninstallFilter")
 (def ^:const web3-shh-get-filter-changes "shh_getFilterChanges")
 (def ^:const web3-shh-get-messages "shh_getMessages")
+
+(defn web3-sign-message? [method]
+  (#{web3-sign-typed-data web3-sign-typed-data-v3 web3-personal-sign} method))
 
 (def ^:const status-create-address "status_createaddress")
 

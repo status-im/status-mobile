@@ -49,6 +49,9 @@
 (defn sign-message [rpcParams callback]
   (native-module/sign-message rpcParams callback))
 
+(defn sign-typed-data [data password callback]
+  (native-module/sign-typed-data data password callback))
+
 (defn send-transaction [rpcParams password callback]
   (native-module/send-transaction rpcParams password callback))
 

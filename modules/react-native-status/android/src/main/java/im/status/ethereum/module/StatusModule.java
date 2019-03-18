@@ -744,6 +744,25 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void signTypedData(final String data, final String password, final Callback callback) {
+        Log.d(TAG, "signTypedData");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.signTypedData(data, password);
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
     public void setAdjustResize() {
         Log.d(TAG, "setAdjustResize");
         final Activity activity = getCurrentActivity();

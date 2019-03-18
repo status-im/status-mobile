@@ -23,6 +23,8 @@ def bundle(type = 'nightly') {
   }
   def pkg = cmn.pkgFilename(type, 'apk')
   sh "cp android/app/build/outputs/apk/release/app-release.apk ${pkg}"
+  /* necessary for Diawi upload */
+  env.DIAWI_APK = pkg
   return pkg
 }
 

@@ -47,6 +47,11 @@
                         on-completed)))
 
 (re-frame/reg-fx
+ ::sign-typed-data
+ (fn [{:keys [data on-completed password]}]
+   (status/sign-typed-data data (security/safe-unmask-data password) on-completed)))
+
+(re-frame/reg-fx
  :wallet/show-transaction-error
  (fn [message]
    ;; (andrey) we need this timeout because modal window conflicts with alert
@@ -75,12 +80,17 @@
 ;; SIGN MESSAGE
 (handlers/register-handler-fx
  :wallet/sign-message
- (fn [_ [_ screen-params]]
+ (fn [_ [_ typed? screen-params]]
    (let [{:keys [data from password]} screen-params]
-     {::sign-message {:params       {:data     data
-                                     :password (security/safe-unmask-data password)
-                                     :account  from}
-                      :on-completed #(re-frame/dispatch [::sign-message-completed screen-params (types/json->clj %)])}})))
+     (if typed?
+       {::sign-typed-data {:data     data
+                           :password password
+                           :account  from
+                           :on-completed #(re-frame/dispatch [::sign-message-completed screen-params (types/json->clj %)])}}
+       {::sign-message {:params       {:data     data
+                                       :password (security/safe-unmask-data password)
+                                       :account  from}
+                        :on-completed #(re-frame/dispatch [::sign-message-completed screen-params (types/json->clj %)])}}))))
 
 ;; SEND TRANSACTION CALLBACK
 (handlers/register-handler-fx
@@ -95,7 +105,7 @@
        (merge
         {:db (cond-> (assoc-in db' [:wallet :send-transaction] {})
 
-               (not= method constants/web3-personal-sign)
+               (not (constants/web3-sign-message? method))
                (assoc-in [:wallet :transactions result]
                          (models.wallet/prepare-unconfirmed-transaction db now result)))}
 
@@ -157,13 +167,15 @@
            (models.wallet/open-modal-wallet-for-transaction db' transaction (first params)))
 
          ;;SIGN MESSAGE
-         (= method constants/web3-personal-sign)
-         (let [[address data] (models.wallet/normalize-sign-message-params params)]
+         (constants/web3-sign-message? method)
+         (let [typed? (not= constants/web3-personal-sign method)
+               [address data] (models.wallet/normalize-sign-message-params params)]
            (if (and address data)
              (let [screen-params {:id           (str (or id message-id))
                                   :from         address
                                   :data         data
-                                  :decoded-data (transport.utils/to-utf8 data)
+                                  :typed?       typed?
+                                  :decoded-data (if typed? (types/json->clj data) (transport.utils/to-utf8 data))
                                   :on-result    [:wallet.dapp/transaction-on-result message-id]
                                   :on-error     [:wallet.dapp/transaction-on-error message-id]
                                   :method       method}]
