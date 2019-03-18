@@ -323,7 +323,6 @@
          [contacts-list-item active-contacts-count]
          (when config/tr-to-talk-enabled?
            [tribute-to-talk-item snt-amount tribute-to-talk-seen?])
-         [react/view styles/my-profile-info-container
-          [my-profile-settings current-account shown-account currency (nil? login-data)]]
+         [my-profile-settings current-account shown-account currency (nil? login-data)]
          (when (nil? login-data)
            [advanced shown-account on-show-advanced])]]])))

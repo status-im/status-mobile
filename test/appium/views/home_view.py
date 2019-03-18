@@ -60,18 +60,18 @@ class ChatElement(BaseButton):
         class DeleteButton(BaseButton):
             def __init__(self, driver, parent_locator: str):
                 super(DeleteButton, self).__init__(driver)
-                locator_str = "/../../android.view.ViewGroup/*[@content-desc='icon']"
+                locator_str = "/..//*[@content-desc='icon']"
                 self.locator = self.Locator.xpath_selector(parent_locator + locator_str)
 
         return DeleteButton(self.driver, self.locator.value)
 
     def swipe_and_delete(self):
         counter = 0
-        while counter < 10:
+        while counter < 3:
             self.swipe_element()
             if self.swipe_delete_button.is_element_present():
                 break
-            time.sleep(10)
+            time.sleep(3)
             counter += 1
         self.swipe_delete_button.click()
 

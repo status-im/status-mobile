@@ -54,7 +54,6 @@
    :flex               1
    :flex-direction     :row
    :align-items        :center
-   :background-color   colors/white
    :height             52})
 
 (def settings-item-icon
@@ -102,10 +101,8 @@
   {:align-items :center})
 
 (def profile
-  {:flex             1
-   :background-color colors/white
-   :flex-direction   :column})
+  {:flex           1
+   :flex-direction :column})
 
 (def profile-form
-  {:background-color colors/white
-   :padding-vertical 16})
+  {:padding-vertical 16})

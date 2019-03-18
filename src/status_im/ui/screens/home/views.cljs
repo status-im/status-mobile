@@ -88,7 +88,6 @@
                      false)}))
          [list/flat-list {:data           all-home-items
                           :key-fn         first
-                          :end-fill-color colors/white
                           :footer         [react/view
                                            {:style {:height     tabs.styles/tabs-diff
                                                     :align-self :stretch}}]
@@ -119,8 +118,7 @@
                               (when loading? (utils/set-timeout #(re-frame/dispatch [:init-rest-of-chats]) 100))))}
     [react/view {:flex 1}
      [status-bar/status-bar {:type :main}]
-     [react/keyboard-avoiding-view {:style {:flex             1
-                                            :background-color :white}}
+     [react/keyboard-avoiding-view {:style {:flex 1}}
       [toolbar/toolbar nil nil [toolbar/content-title (i18n/label :t/chat)]]
       [les-debug-info]
       (cond loading?

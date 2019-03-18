@@ -23,8 +23,7 @@
   {:margin-top    12
    :margin-bottom 16})
 
-(defstyle my-profile-info-container
-  {:background-color colors/white})
+(defstyle my-profile-info-container {})
 
 (defstyle my-profile-settings-logout-wrapper
   {:flex-direction  :row
