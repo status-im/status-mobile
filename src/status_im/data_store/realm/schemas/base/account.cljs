@@ -238,4 +238,3 @@
 (def v21 (update v20 :properties merge
                  {:syncing-on-mobile-network? {:type :bool :default false}
                   :remember-syncing-choice?   {:type :bool :default false}}))
-

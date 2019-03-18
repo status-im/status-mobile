@@ -65,12 +65,13 @@
 ;; TODO(oskarth): At some point we want to get list of relevant assets to get prices for
 (re-frame/reg-fx
  :get-prices
- (fn [{:keys [from to mainnet? success-event error-event]}]
+ (fn [{:keys [from to mainnet? success-event error-event chaos-mode?]}]
    (prices/get-prices from
                       to
                       mainnet?
                       #(re-frame/dispatch [success-event %])
-                      #(re-frame/dispatch [error-event %]))))
+                      #(re-frame/dispatch [error-event %])
+                      chaos-mode?)))
 
 (re-frame/reg-fx
  :update-gas-price

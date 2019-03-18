@@ -595,6 +595,7 @@
     "at": "at",
     "off": "Off",
     "dev-mode": "Development mode",
+    "chaos-mode": "Chaos mode",
     "intro-text-description": "A community-powered platform to securely chat and transact on the Ethereum blockchain",
     "currency-display-name-kwd": "Kuwaiti Dinar",
     "invalid-number": "Invalid number",

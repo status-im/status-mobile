@@ -62,6 +62,13 @@
             (accounts.update/account-update {:dev-mode? dev-mode?}
                                             {})))
 
+(fx/defn switch-chaos-mode [{:keys [db] :as cofx} chaos-mode?]
+  (let [settings (get-in db [:account/account :settings])]
+    (accounts.update/update-settings
+     cofx
+     (assoc settings :chaos-mode? chaos-mode?)
+     {})))
+
 (fx/defn enable-notifications [cofx desktop-notifications?]
   (accounts.update/account-update cofx
                                   {:desktop-notifications? desktop-notifications?}

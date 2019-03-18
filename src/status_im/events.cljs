@@ -171,6 +171,11 @@
    (accounts/switch-dev-mode cofx dev-mode?)))
 
 (handlers/register-handler-fx
+ :accounts.ui/chaos-mode-switched
+ (fn [cofx [_ dev-mode?]]
+   (accounts/switch-chaos-mode cofx dev-mode?)))
+
+(handlers/register-handler-fx
  :accounts.ui/notifications-enabled
  (fn [cofx [_ desktop-notifications?]]
    (accounts/enable-notifications cofx desktop-notifications?)))

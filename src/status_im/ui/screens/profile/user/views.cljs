@@ -224,7 +224,12 @@
    [profile.components/settings-switch-item
     {:label-kw  :t/dev-mode
      :value     dev-mode?
-     :action-fn #(re-frame/dispatch [:accounts.ui/dev-mode-switched %])}]])
+     :action-fn #(re-frame/dispatch [:accounts.ui/dev-mode-switched %])}]
+   [profile.components/settings-item-separator]
+   [profile.components/settings-switch-item
+    {:label-kw  :t/chaos-mode
+     :value     (:chaos-mode? settings)
+     :action-fn #(re-frame/dispatch [:accounts.ui/chaos-mode-switched %])}]])
 
 (defview advanced [params on-show]
   (letsubs [advanced? [:get :my-profile/advanced?]]

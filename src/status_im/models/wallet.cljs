@@ -197,7 +197,8 @@
                                  :tokens (get tokens/all-default-tokens chain)}}))))
 
 (fx/defn update-wallet
-  [{{:keys [web3 network network-status] {:keys [address settings]} :account/account :as db} :db}]
+  [{{:keys [web3 network network-status]
+     {:keys [address settings]} :account/account :as db} :db}]
   (let [all-tokens  (:wallet/all-tokens db)
         network     (get-in db [:account/account :networks network])
         chain       (ethereum/network->chain-keyword network)
@@ -225,7 +226,8 @@
                             :to            [(:code currency)]
                             :mainnet?      mainnet?
                             :success-event :update-prices-success
-                            :error-event   :update-prices-fail}
+                            :error-event   :update-prices-fail
+                            :chaos-mode?   (:chaos-mode? settings)}
        :db                 (-> db
                                (clear-error-message :prices-update)
                                (clear-error-message :balance-update)
