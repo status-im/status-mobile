@@ -257,7 +257,7 @@ RCT_EXPORT_METHOD(updateMailservers:(NSString *)enodes
 //////////////////////////////////////////////////////////////////// getContactCode
 RCT_EXPORT_METHOD(getContactCode:(NSString *)identity
                   callback:(RCTResponseSenderBlock)callback) {
-  NSString* result = StatusgoGetContactCode(identity);
+  NSString *result = StatusgoGetContactCode(identity);
   callback(@[result]);
 #if DEBUG
   NSLog(@"GetContactCode() method called");
