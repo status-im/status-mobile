@@ -81,11 +81,9 @@
       (re-frame/dispatch [:browser.callback/resolve-ens-contenthash]))))
 
 (defn resolve-ens-contenthash-callback [hex]
-  (let [proto-code (subs hex 2 4)
+  (let [proto-code (when hex (subs hex 2 4))
         hash (when hex (multihash/base58 (multihash/create :sha2-256 (subs hex 12))))]
-    ;; We only support IPFS and SWARM
-    ;; TODO Once more implementations / providers are published this will have to be improved
-    (if (and ((#{constants/swarm-proto-code constants/ipfs-proto-code} proto-code) hash (not= hash resolver/default-hash)))
+    (if (and proto-code (#{constants/swarm-proto-code constants/ipfs-proto-code} proto-code) hash (not= hash resolver/default-hash))
       (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success proto-code hash])
       (re-frame/dispatch [:browser.callback/resolve-ens-multihash-error]))))
 

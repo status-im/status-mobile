@@ -18,14 +18,14 @@
   (ethereum/call web3
                  (ethereum/call-params contract "getPackData(uint256)" (ethereum/int->hex pack-id))
                  (fn [_ data]
-                   (cb (abi-spec/decode (subs data 2) ["bytes4[]" "address" "bool" "uint256" "uint256" "bytes"])))))
+                   (cb (when data (abi-spec/decode (subs data 2) ["bytes4[]" "address" "bool" "uint256" "uint256" "bytes"]))))))
 
 (defn owned-tokens [web3 contract address cb]
   "Returns vector of owned tokens ids in the contract by address"
   (ethereum/call web3
                  (ethereum/call-params contract "tokensOwnedBy(address)" (ethereum/normalized-address address))
                  (fn [_ data]
-                   (cb (first (abi-spec/decode (subs data 2) ["uint256[]"]))))))
+                   (cb (when data (first (abi-spec/decode (subs data 2) ["uint256[]"])))))))
 
 (defn token-pack-id [web3 contract token cb]
   "Returns pack id in the contract by token id"
