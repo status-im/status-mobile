@@ -1,7 +1,8 @@
 (ns status-im.utils.utils
   (:require [status-im.i18n :as i18n]
             [status-im.react-native.js-dependencies :as rn-dependencies]
-            [re-frame.core :as re-frame]))
+            [re-frame.core :as re-frame]
+            [status-im.utils.platform :as platform]))
 
 (defn show-popup
   ([title content]
@@ -71,7 +72,9 @@
 ;; background-timer
 
 (defn set-timeout [cb ms]
-  (.setTimeout rn-dependencies/background-timer cb ms))
+  (if platform/desktop?
+    (js/setTimeout cb ms)
+    (.setTimeout rn-dependencies/background-timer cb ms)))
 
 (defn unread-messages-count
   "display actual # if less than 1K, round to the lowest thousand if between 1 and 10K, otherwise 10K+ for anything larger"
@@ -94,10 +97,16 @@
      (set-timeout #(re-frame/dispatch dispatch) ms))))
 
 (defn clear-timeout [id]
-  (.clearTimeout rn-dependencies/background-timer id))
+  (if platform/desktop?
+    (js/clearTimeout id)
+    (.clearTimeout rn-dependencies/background-timer id)))
 
 (defn set-interval [cb ms]
-  (.setInterval rn-dependencies/background-timer cb ms))
+  (if platform/desktop?
+    (js/setInterval cb ms)
+    (.setInterval rn-dependencies/background-timer cb ms)))
 
 (defn clear-interval [id]
-  (.clearInterval rn-dependencies/background-timer id))
+  (if platform/desktop?
+    (js/clearInterval id)
+    (.clearInterval rn-dependencies/background-timer id)))

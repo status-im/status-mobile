@@ -17,7 +17,8 @@
             [status-im.models.transactions :as transactions]
             [status-im.i18n :as i18n]
             [status-im.node.core :as node]
-            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]))
+            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
+            [status-im.chaos-mode.core :as chaos-mode]))
 
 (defn login! [address password]
   (status/login address password #(re-frame/dispatch [:accounts.login.callback/login-success %])))
@@ -113,6 +114,7 @@
          (mobile-network/on-network-status-change)
          (protocol/initialize-protocol)
          (universal-links/process-stored-event)
+         (chaos-mode/check-chaos-mode)
          #(when-not platform/desktop?
             (initialize-wallet %)))
         (account-and-db-password-do-not-match cofx error)))))

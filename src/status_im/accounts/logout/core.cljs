@@ -5,7 +5,8 @@
             [status-im.utils.fx :as fx]
             [status-im.models.transactions :as transactions]
             [status-im.node.core :as node]
-            [status-im.init.core :as init]))
+            [status-im.init.core :as init]
+            [status-im.chaos-mode.core :as chaos-mode]))
 
 (fx/defn logout
   [{:keys [db] :as cofx}]
@@ -14,7 +15,8 @@
              :dev-server/stop              nil}
             (transactions/stop-sync)
             (transport/stop-whisper
-             #(re-frame/dispatch [:accounts.logout/filters-removed]))))
+             #(re-frame/dispatch [:accounts.logout/filters-removed]))
+            (chaos-mode/stop-checking)))
 
 (fx/defn leave-account
   [cofx]

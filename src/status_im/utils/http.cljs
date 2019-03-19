@@ -102,10 +102,12 @@
   ([url on-success] (get url on-success nil))
   ([url on-success on-error]
    (get url on-success on-error nil))
-  ([url on-success on-error {:keys [valid-response? timeout-ms]}]
+  ([url on-success on-error params]
+   (get url on-success on-error params nil))
+  ([url on-success on-error {:keys [valid-response? timeout-ms]} headers]
    (-> (rn-dependencies/fetch url
                               (clj->js {:method  "GET"
-                                        :headers {"Cache-Control" "no-cache"}
+                                        :headers (merge {"Cache-Control" "no-cache"} headers)
                                         :timeout (or timeout-ms http-request-default-timeout-ms)}))
        (.then (fn [response]
                 (->

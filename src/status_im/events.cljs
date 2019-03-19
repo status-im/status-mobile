@@ -52,7 +52,8 @@
             [status-im.node.core :as node]
             [status-im.stickers.core :as stickers]
             [status-im.utils.config :as config]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
+            [status-im.ui.components.react :as react]))
 
 ;; init module
 
@@ -170,10 +171,26 @@
  (fn [cofx [_ dev-mode?]]
    (accounts/switch-dev-mode cofx dev-mode?)))
 
+(def CUD-url "https://chaos-unicorn-day.org")
+
+(defn open-chaos-unicorn-day-link []
+  (.openURL react/linking CUD-url))
+
 (handlers/register-handler-fx
  :accounts.ui/chaos-mode-switched
- (fn [cofx [_ dev-mode?]]
-   (accounts/switch-chaos-mode cofx dev-mode?)))
+ (fn [{:keys [db] :as cofx} [_ chaos-mode?]]
+   (let [old-chaos-mode? (get-in db [:account/account :settings :chaos-mode?])]
+     (when (not= old-chaos-mode? chaos-mode?)
+       (fx/merge
+        cofx
+        (when chaos-mode?
+          {:ui/show-confirmation
+           {:title               (i18n/label :t/chaos-unicorn-day)
+            :content             (i18n/label :t/chaos-unicorn-day-details)
+            :confirm-button-text (i18n/label :t/see-details)
+            :cancel-button-text  (i18n/label :t/cancel)
+            :on-accept           open-chaos-unicorn-day-link}})
+        (accounts/switch-chaos-mode chaos-mode?))))))
 
 (handlers/register-handler-fx
  :accounts.ui/notifications-enabled
@@ -384,7 +401,7 @@
 
 (handlers/register-handler-fx
  :mailserver.ui/connect-pressed
- (fn [cofx [_  mailserver-id]]
+ (fn [cofx [_ mailserver-id]]
    (mailserver/show-connection-confirmation cofx mailserver-id)))
 
 (handlers/register-handler-fx
@@ -809,9 +826,9 @@
 (handlers/register-handler-fx
  :chat.ui/set-command-parameter
  (fn [{{:keys [chats current-chat-id chat-ui-props id->command access-scope->command-id]} :db :as cofx} [_ value]]
-   (let [current-chat (get chats current-chat-id)
-         selection (get-in chat-ui-props [current-chat-id :selection])
-         commands (commands/chat-commands id->command access-scope->command-id current-chat)
+   (let [current-chat   (get chats current-chat-id)
+         selection      (get-in chat-ui-props [current-chat-id :selection])
+         commands       (commands/chat-commands id->command access-scope->command-id current-chat)
          {:keys [current-param-position params]} (commands.input/selected-chat-command
                                                   (:input-text current-chat) selection commands)
          last-param-idx (dec (count params))]

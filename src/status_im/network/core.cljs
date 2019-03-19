@@ -13,7 +13,8 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.http :as http]
             [status-im.utils.types :as types]
-            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]))
+            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
+            [status-im.chaos-mode.core :as chaos-mode]))
 
 (def url-regex
   #"https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z]{2,6})?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)")
@@ -239,11 +240,14 @@
 
 (fx/defn handle-network-status-change
   [{:keys [db] :as cofx} {:keys [type] :as data}]
-  (fx/merge
-   cofx
-   {:db                       (assoc db :network/type type)
-    :network/notify-status-go data}
-   (mobile-network/on-network-status-change)))
+  (let [old-network-type (:network/type db)]
+    (fx/merge
+     cofx
+     {:db                       (assoc db :network/type type)
+      :network/notify-status-go data}
+     (when (= "none" old-network-type)
+       (chaos-mode/check-chaos-mode))
+     (mobile-network/on-network-status-change))))
 
 (re-frame/reg-fx
  :network/listen-to-network-status

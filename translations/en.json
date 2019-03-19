@@ -981,5 +981,8 @@
     "status-not-sent": "",
     "status-not-sent-without-tap": "",
     "confirm-install": "Confirm Install",
-    "extension-install-alert": "Development mode is required to install an extension. Do you want to enable and continue installing?"
+    "extension-install-alert": "Development mode is required to install an extension. Do you want to enable and continue installing?",
+    "see-details": "See details",
+    "chaos-unicorn-day": "Chaos Unicorn Day",
+    "chaos-unicorn-day-details": "\uD83E\uDD84\uD83E\uDD84\uD83E\uDD84\uD83E\uDD84\uD83E\uDD84\uD83E\uDD84\uD83E\uDD84\uD83D\uDE80!"
 }
