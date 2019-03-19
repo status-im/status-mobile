@@ -261,6 +261,13 @@ class ShowRoots(BaseButton):
         self.locator = self.Locator.accessibility_id('Show roots')
 
 
+class GetStartedButton(BaseButton):
+
+    def __init__(self, driver):
+        super(GetStartedButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='GET STARTED']")
+
+
 class AssetButton(BaseButton):
     def __init__(self, driver, asset_name):
         super(AssetButton, self).__init__(driver)
@@ -303,6 +310,7 @@ class BaseView(object):
         self.connection_status = ConnectionStatusText(self.driver)
         self.cross_icon = CrossIcon(self.driver)
         self.show_roots_button = ShowRoots(self.driver)
+        self.get_started_button = GetStartedButton(self.driver)
 
         self.apps_button = AppsButton(self.driver)
         self.status_app_icon = StatusAppIcon(self.driver)

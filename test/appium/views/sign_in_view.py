@@ -125,6 +125,7 @@ class SignInView(BaseView):
         self.name_input.set_value(username)
 
         self.next_button.click()
+        self.get_started_button.click()
         return self.get_home_view()
 
     def recover_access(self, passphrase: str, password: str = common_password):
