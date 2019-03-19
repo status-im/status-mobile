@@ -19,7 +19,7 @@ def nix_sh(cmd) {
   sh """
     . ~/.nix-profile/etc/profile.d/nix.sh && \\
       nix-shell \'${env.WORKSPACE}/default.nix\' --argstr target-os \'${env.TARGET_PLATFORM}\' \\
-      --run \'${cmd}\'
+        --run \'${cmd}\'
   """
 }
 

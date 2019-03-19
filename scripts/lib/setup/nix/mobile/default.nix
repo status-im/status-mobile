@@ -12,7 +12,7 @@ let
 
 in
   {
-    buildInputs = [ bundler ] ++
+    buildInputs = [ bundler ruby ] ++ ## bundler/ruby used for fastlane
       lib.optional targetAndroid [
         android-ndk
         openjdk
