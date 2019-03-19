@@ -166,14 +166,9 @@ class HomeView(BaseView):
         return chat_view
 
     def open_status_test_dapp(self, allow_all=True):
-        profile_view = self.profile_button.click()
-        profile_view.advanced_button.click()
-        profile_view.debug_mode_toggle.click()
-        dapp_view = profile_view.dapp_tab_button.click()
-        #dapp_view.open_d_app_button.click()
-        dapp_view.status_test_dapp_button.scroll_to_element(15)
-        status_test_dapp = dapp_view.status_test_dapp_button.click()
-        #dapp_view.open_button.click()
+        dapp_view = self.dapp_tab_button.click()
+        dapp_view.open_url('simpledapp.eth')
+        status_test_dapp = dapp_view.get_status_test_dapp_view()
         for _ in range(2):
             if allow_all:
                 status_test_dapp.allow_button.click()

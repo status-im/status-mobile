@@ -446,6 +446,10 @@ class BaseView(object):
     def swipe_down(self):
         self.driver.swipe(500, 500, 500, 1000)
 
+    def get_status_test_dapp_view(self):
+        from views.web_views.status_test_dapp import StatusTestDAppView
+        return StatusTestDAppView(self.driver)
+
     def get_home_view(self):
         from views.home_view import HomeView
         return HomeView(self.driver)

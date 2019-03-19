@@ -205,7 +205,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         except TimeoutException:
             self.errors.append('Device 2: URL was not opened from 1-1 chat')
         web_view.back_to_home_button.click()
-        chat_2.get_back_to_home_view()
+        chat_2.home_button.click()
+        chat_2.back_button.click()
 
         chat_name = ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
         home_1.join_public_chat(chat_name)

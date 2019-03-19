@@ -12,7 +12,7 @@ class TestBrowsing(SingleDeviceTestCase):
     def test_browse_page_with_non_english_text(self):
         sign_in = SignInView(self.driver)
         home_view = sign_in.create_user()
-        start_new_chat = home_view.plus_button.click()
+        start_new_chat = home_view.dapp_tab_button.click()
         browsing_view = start_new_chat.open_url('www.wikipedia.org')
         wiki_texts = ['Español', '日本語', 'Français', '中文', 'Português']
         for wiki_text in wiki_texts:
@@ -23,7 +23,7 @@ class TestBrowsing(SingleDeviceTestCase):
     def test_open_invalid_link(self):
         sign_in = SignInView(self.driver)
         home_view = sign_in.create_user()
-        start_new_chat = home_view.plus_button.click()
+        start_new_chat = home_view.dapp_tab_button.click()
         browsing_view = start_new_chat.open_url('invalid.takoe')
         browsing_view.find_text_part('Unable to load page')
         browsing_view.cross_icon.click()
@@ -35,7 +35,7 @@ class TestBrowsing(SingleDeviceTestCase):
     def test_connection_is_not_secure(self):
         sign_in = SignInView(self.driver)
         home_view = sign_in.create_user()
-        start_new_chat = home_view.plus_button.click()
+        start_new_chat = home_view.dapp_tab_button.click()
         browsing_view = start_new_chat.open_url('http://www.dvwa.co.uk')
         browsing_view.url_edit_box_lock_icon.click()
         browsing_view.find_full_text(connection_not_secure_text)
@@ -45,7 +45,7 @@ class TestBrowsing(SingleDeviceTestCase):
     def test_connection_is_secure(self):
         sign_in = SignInView(self.driver)
         home_view = sign_in.create_user()
-        start_new_chat = home_view.plus_button.click()
+        start_new_chat = home_view.dapp_tab_button.click()
         browsing_view = start_new_chat.open_url('https://www.bbc.com')
         browsing_view.url_edit_box_lock_icon.click()
         browsing_view.find_full_text(connection_is_secure_text)
@@ -59,11 +59,10 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(5390)
     @marks.high
-    ### TO DO: this needs to be updated. Feature changed in PR-7719
     def test_swipe_to_delete_browser_entry(self):
         sign_in = SignInView(self.driver)
         home_view = sign_in.create_user()
-        start_new_chat = home_view.plus_button.click()
+        start_new_chat = home_view.dapp_tab_button.click()
         browsing_view = start_new_chat.open_url('google.com')
         browsing_view.cross_icon.click()
         browser_entry = home_view.get_chat_with_user('Google')
