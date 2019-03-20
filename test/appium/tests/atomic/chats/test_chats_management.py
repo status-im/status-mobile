@@ -167,12 +167,6 @@ class TestChatManagement(SingleDeviceTestCase):
         search_list.append(basic_user['username'])
         chat.get_back_to_home_view()
 
-        start_new_chat = home.plus_button.click()
-
-        search_list.append('Google')
-        start_new_chat.open_url('google.com')
-        chat.cross_icon.click()
-
         home.swipe_down()
         for keyword in search_list:
             home.search_chat_input.send_keys(keyword)
@@ -185,6 +179,7 @@ class TestChatManagement(SingleDeviceTestCase):
                                        (element.text, keyword))
             home.search_chat_input.clear()
         self.verify_no_errors()
+
 
 @marks.chat
 class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
