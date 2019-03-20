@@ -23,7 +23,6 @@ def bundle(type) {
   sh 'mkdir -p status-e2e'
   /* build the actual app */
   withCredentials([
-    string(credentialsId: 'SLACK_URL', variable: 'SLACK_URL'),
     string(credentialsId: "slave-pass-${env.NODE_NAME}", variable: 'KEYCHAIN_PASSWORD'),
     string(credentialsId: 'FASTLANE_PASSWORD', variable: 'FASTLANE_PASSWORD'),
     string(credentialsId: 'APPLE_ID', variable: 'APPLE_ID'),

@@ -42,6 +42,7 @@ RUN cd /usr/lib/android-ndk && rm -fr docs tests samples \
 ################################################################################
 FROM statusteam/status-build-base:${BASE_IMAGE_TAG}
 
+ARG BUNDLER_VERSION
 ARG ANDROID_NDK_VERSION
 ARG ANDROID_SDK_VERSION
 
@@ -54,18 +55,21 @@ ENV GRADLE_USER_HOME=/var/tmp/gradle \
     ANDROID_NDK=/usr/lib/android-ndk \
     ANDROID_NDK_HOME=/usr/lib/android-ndk
 
-RUN add-apt-repository -y ppa:cwchien/gradle \
- && apt-get update \
- && DEBIAN_FRONTEND=noninteractive \
-      apt-get -q -y --no-install-recommends install \
-        gradle ruby ruby-dev ruby-bundler \
- && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/man \
- && gem install cocoapods bundler fastlane fastlane-plugin-diawi fastlane-plugin-clean_testflight_testers CFPropertyList
-
 # Install Android SDK & NDK
 COPY --from=sdk_and_ndk /usr/lib/android-sdk /usr/lib/android-sdk 
 COPY --from=sdk_and_ndk /usr/lib/android-ndk /usr/lib/android-ndk 
 RUN chmod o+w /usr/lib/android-sdk /usr/lib/android-ndk
+
+RUN add-apt-repository -y ppa:cwchien/gradle \
+ && apt-add-repository -y ppa:brightbox/ruby-ng \
+ && apt-get update \
+ && DEBIAN_FRONTEND=noninteractive \
+      apt-get -q -y --no-install-recommends install \
+        gradle ruby2.5 ruby2.5-dev \
+ && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/man
+
+RUN gem install bundler -v ${BUNDLER_VERSION} \
+ && gem install json cocoapods CFPropertyList
 
 LABEL source="https://github.com/status-im/status-react/tree/develop/docker/android" \
       description="Image for building Android version of Status app." \

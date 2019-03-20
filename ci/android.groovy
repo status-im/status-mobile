@@ -31,7 +31,6 @@ def bundle(type = 'nightly') {
 def uploadToPlayStore(type = 'nightly') {
   withCredentials([
     string(credentialsId: "SUPPLY_JSON_KEY_DATA", variable: 'GOOGLE_PLAY_JSON_KEY'),
-    string(credentialsId: "SLACK_URL", variable: 'SLACK_URL')
   ]) {
     sh "bundle exec fastlane android ${type}"
   }

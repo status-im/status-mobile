@@ -2,6 +2,7 @@ android-ndk;r10e;070be287539e3e7706f8dabfb6bf9879
 android-sdk-build-tools;28.0.1;
 android-sdk-platform;android-27;
 android-sdk;4333796;aa190cfd7299cd6a1c687355bb2764e4
+bundler;1.17.2;bundler 
 clojure_cli;1.9.0.381;
 cmake;3.12.2;
 conan;1.9.0;

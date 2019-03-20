@@ -3,7 +3,7 @@ pipeline {
     docker {
       label 'linux'
       /* WARNING: remember to keep this up-to-date with the value in docker/android/Makefile */
-      image 'statusteam/status-build-android:1.1.1-cd1596b3'
+      image 'statusteam/status-build-android:1.1.2-9ea4e0f4'
       args (
         "-v /home/jenkins/tmp:/var/tmp:rw "+
         "-v /home/jenkins/status-im.keystore:/tmp/status-im.keystore:ro"
@@ -44,11 +44,6 @@ pipeline {
     ANDROID_SDK_ROOT  = '/usr/lib/android-sdk'
     ANDROID_NDK       = '/usr/lib/android-ndk'
     ANDROID_NDK_HOME  = '/usr/lib/android-ndk'
-    /* We use EXECUTOR_NUMBER to avoid multiple instances clashing */
-    LEIN_HOME         = "/var/tmp/lein-${EXECUTOR_NUMBER}"
-    YARN_CACHE_FOLDER = "/var/tmp/yarn-${EXECUTOR_NUMBER}"
-    BUNDLE_PATH       = "/var/tmp/bundle-${EXECUTOR_NUMBER}"
-    GRADLE_USER_HOME  = "/var/tmp/gradle-${EXECUTOR_NUMBER}"
   }
 
   stages {
