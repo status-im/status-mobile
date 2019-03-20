@@ -2,7 +2,7 @@
   (:require [status-im.ui.components.colors :as colors]
             [status-im.utils.platform :as platform]
             [status-im.ui.components.animation :as animation])
-  (:require-macros [status-im.utils.styles :refer [defnstyle]]))
+  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]]))
 
 (def tabs-height
   (cond
@@ -79,14 +79,14 @@
   {:color     (if active? colors/blue colors/gray)
    :font-size 11})
 
-(def new-tabs-container
-  {:height           tabs-height
-   :align-self       :stretch
-   :background-color :white
-   :shadow-radius    4
-   :shadow-offset    {:width 0 :height -5}
-   :shadow-opacity   0.3
-   :shadow-color     "rgba(0, 9, 26, 0.12)"})
+(defstyle new-tabs-container
+  {:height     tabs-height
+   :align-self :stretch
+   :ios        {:background-color :white
+                :shadow-radius    4
+                :shadow-offset    {:width 0 :height -5}
+                :shadow-opacity   0.3
+                :shadow-color     "rgba(0, 9, 26, 0.12)"}})
 
 (def tabs
   {:height         tabs-height
