@@ -10,12 +10,10 @@
             [status-im.utils.platform :as platform]))
 
 (fx/defn show-mainnet-is-default-alert [{:keys [db]}]
-  (let [enter-name-screen? (= :enter-name (get-in db [:accounts/create :step]))
-        shown? (get-in db [:account/account :mainnet-warning-shown?])]
+  (let [shown? (get-in db [:account/account :mainnet-warning-shown?])]
     (when (and platform/mobile?
                config/mainnet-warning-enabled?
-               (not shown?)
-               (not enter-name-screen?))
+               (not shown?))
       (utils/show-popup
        (i18n/label :mainnet-is-default-alert-title)
        (i18n/label :mainnet-is-default-alert-text)
