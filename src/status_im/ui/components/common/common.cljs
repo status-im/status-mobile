@@ -102,6 +102,9 @@
                     (assoc :accessibility-label accessibility-label))
        (if more-than-9 (i18n/label :t/counter-9-plus) value)]])))
 
+(def small-screen-image-k 0.8)
+(def small-screen-height 600)
+
 (defview image-contain [{:keys [container-style style]} {:keys [image width height]}]
   (letsubs [content-width (reagent/atom 0)
             {window-width :width window-height :height} [:dimensions/window]]
@@ -112,13 +115,13 @@
                    :style       (merge style
                                        (if (> window-height window-width)
                                          {:width  (* @content-width
-                                                     (if (< window-height 600)
-                                                       0.6
+                                                     (if (< window-height small-screen-height)
+                                                       small-screen-image-k
                                                        1))
                                           :height (/ (* @content-width height
-                                                        (if (< window-height 600)
-                                                          0.6
+                                                        (if (< window-height small-screen-height)
+                                                          small-screen-image-k
                                                           1))
                                                      width)}
                                          {:width  @content-width
-                                          :height (* window-height 0.6)}))}]]))
+                                          :height (* window-height small-screen-image-k)}))}]]))

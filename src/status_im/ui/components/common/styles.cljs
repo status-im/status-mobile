@@ -140,4 +140,6 @@
    :text-align :center})
 
 (def image-contain
-  {:align-self :stretch})
+  {:align-self      :stretch
+   :align-items     :center
+   :justify-content :center})
