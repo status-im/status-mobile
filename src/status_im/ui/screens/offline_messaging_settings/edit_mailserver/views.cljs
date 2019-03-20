@@ -13,7 +13,9 @@
    [status-im.ui.components.toolbar.view :as toolbar]
    [status-im.ui.components.list.views :as list]
    [status-im.ui.components.text-input.view :as text-input]
-   [status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles :as styles]))
+   [status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles :as styles]
+   [status-im.ui.components.tooltip.views :as tooltip]
+   [clojure.string :as string]))
 
 (defn connect-button [id]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:mailserver.ui/connect-pressed id])}
@@ -41,11 +43,13 @@
 
 (views/defview edit-mailserver []
   (views/letsubs [mailserver [:mailserver.edit/mailserver]
-                  connected?        [:mailserver.edit/connected?]
-                  is-valid?         [:mailserver.edit/valid?]]
-    (let [url  (get-in mailserver [:url :value])
-          id   (get-in mailserver [:id :value])
-          name (get-in mailserver [:name :value])]
+                  connected? [:mailserver.edit/connected?]
+                  validation-errors [:mailserver.edit/validation-errors]]
+    (let [url          (get-in mailserver [:url :value])
+          id           (get-in mailserver [:id :value])
+          name         (get-in mailserver [:name :value])
+          is-valid?    (empty? validation-errors)
+          invalid-url? (contains? validation-errors :url)]
       [react/view components.styles/flex
        [status-bar/status-bar]
        [react/keyboard-avoiding-view components.styles/flex
@@ -60,14 +64,23 @@
             :default-value   name
             :on-change-text  #(re-frame/dispatch [:mailserver.ui/input-changed :name %])
             :auto-focus      true}]
-          [text-input/text-input-with-label
-           {:label           (i18n/label :t/mailserver-address)
-            :placeholder     (i18n/label :t/specify-mailserver-address)
-            :content         qr-code
-            :style           styles/input
-            :container       styles/input-container
-            :default-value   url
-            :on-change-text  #(re-frame/dispatch [:mailserver.ui/input-changed :url %])}]
+          [react/view
+           {:flex 1}
+           [text-input/text-input-with-label
+            {:label          (i18n/label :t/mailserver-address)
+             :placeholder    (i18n/label :t/mailserver-format)
+             :content        qr-code
+             :style          styles/input
+             :container      styles/input-container
+             :default-value  url
+             :on-change-text #(re-frame/dispatch [:mailserver.ui/input-changed :url %])}]
+           (when (and (not (string/blank? url))
+                      invalid-url?)
+             [tooltip/tooltip (i18n/label :t/invalid-format
+                                          {:format (i18n/label :t/mailserver-format)})
+              {:color        colors/red-light
+               :font-size    12
+               :bottom-value -25}])]
           (when (and id
                      (not connected?))
             [react/view
