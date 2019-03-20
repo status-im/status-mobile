@@ -79,7 +79,10 @@
       current-mailserver-id)))
 
 (re-frame/reg-sub
- :mailserver.edit/valid?
+ :mailserver.edit/validation-errors
  :<- [:mailserver.edit/mailserver]
  (fn [mailserver]
-   (not-any? :error (vals mailserver))))
+   (set (keep
+         (fn [[k {:keys [error]}]]
+           (when error k))
+         mailserver))))

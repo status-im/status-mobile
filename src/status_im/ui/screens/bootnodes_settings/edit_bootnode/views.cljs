@@ -12,7 +12,9 @@
    [status-im.ui.components.status-bar.view :as status-bar]
    [status-im.ui.components.toolbar.view :as toolbar]
    [status-im.ui.components.text-input.view :as text-input]
-   [status-im.ui.screens.bootnodes-settings.edit-bootnode.styles :as styles]))
+   [status-im.ui.screens.bootnodes-settings.edit-bootnode.styles :as styles]
+   [status-im.ui.components.tooltip.views :as tooltip]
+   [clojure.string :as string]))
 
 (defn delete-button [id]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:bootnodes.ui/delete-pressed id])}
@@ -31,11 +33,13 @@
     [vector-icons/icon :main-icons/qr {:color colors/blue}]]])
 
 (views/defview edit-bootnode []
-  (views/letsubs [manage-bootnode [:get-manage-bootnode]
-                  is-valid?       [:manage-bootnode-valid?]]
-    (let [url  (get-in manage-bootnode [:url :value])
-          id   (get-in manage-bootnode [:id :value])
-          name (get-in manage-bootnode [:name :value])]
+  (views/letsubs [manage-bootnode   [:get-manage-bootnode]
+                  validation-errors [:manage-bootnode-validation-errors]]
+    (let [url          (get-in manage-bootnode [:url :value])
+          id           (get-in manage-bootnode [:id :value])
+          name         (get-in manage-bootnode [:name :value])
+          is-valid?    (empty? validation-errors)
+          invalid-url? (contains? validation-errors :url)]
       [react/view styles/container
        [status-bar/status-bar]
        [react/keyboard-avoiding-view components.styles/flex
@@ -50,14 +54,22 @@
             :default-value   name
             :on-change-text  #(re-frame/dispatch [:bootnodes.ui/input-changed :name %])
             :auto-focus      true}]
-          [text-input/text-input-with-label
-           {:label           (i18n/label :t/bootnode-address)
-            :placeholder     (i18n/label :t/specify-bootnode-address)
-            :content         qr-code
-            :style           styles/input
-            :container       styles/input-container
-            :default-value   url
-            :on-change-text  #(re-frame/dispatch [:bootnodes.ui/input-changed :url %])}]
+          [react/view
+           {:flex 1}
+           [text-input/text-input-with-label
+            {:label          (i18n/label :t/bootnode-address)
+             :placeholder    (i18n/label :t/bootnode-format)
+             :content        qr-code
+             :style          styles/input
+             :container      styles/input-container
+             :default-value  url
+             :on-change-text #(re-frame/dispatch [:bootnodes.ui/input-changed :url %])}]
+           (when (and (not (string/blank? url)) invalid-url?)
+             [tooltip/tooltip (i18n/label :t/invalid-format
+                                          {:format (i18n/label :t/bootnode-format)})
+              {:color        colors/red-light
+               :font-size    12
+               :bottom-value -25}])]
           (when id
             [delete-button id])]]
         [react/view styles/bottom-container

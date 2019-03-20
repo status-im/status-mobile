@@ -8,11 +8,12 @@
             [status-im.ui.components.colors :as colors]
             [reagent.core :as reagent]))
 
-(views/defview tooltip [label & [{:keys [bottom-value color font-size] :or {bottom-value -30 color :white font-size 15}}]]
+(views/defview tooltip [label & [{:keys [bottom-value color font-size container-style]
+                                  :or {bottom-value -30 color :white font-size 15}}]]
   (views/letsubs [bottom-anim-value (animation/create-value bottom-value)
                   opacity-value     (animation/create-value 0)]
     {:component-did-mount (animations/animate-tooltip bottom-value bottom-anim-value opacity-value 10)}
-    [react/view styles/tooltip-container
+    [react/view (merge styles/tooltip-container container-style)
      [react/animated-view {:style (styles/tooltip-animated bottom-anim-value opacity-value)}
       [react/view (styles/tooltip-text-container color)
        [react/text {:style (styles/tooltip-text font-size)} label]]

@@ -8,7 +8,10 @@
    manage))
 
 (reg-sub
- :manage-bootnode-valid?
+ :manage-bootnode-validation-errors
  :<- [:get-manage-bootnode]
  (fn [manage]
-   (not-any? :error (vals manage))))
+   (set (keep
+         (fn [[k {:keys [error]}]]
+           (when error k))
+         manage))))
