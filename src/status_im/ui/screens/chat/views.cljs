@@ -30,23 +30,15 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn add-contact-bar [public-key]
-  [react/view style/add-contact
-   [react/view style/add-contact-left]
-   [react/touchable-highlight
-    {:on-press
-     #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])
-     :accessibility-label :add-to-contacts-button}
-    [react/view style/add-contact-center
-     [vector-icons/icon :main-icons/add
-      {:color colors/blue}]
-     [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]]
-   [react/touchable-highlight
-    {:on-press
-     #(re-frame/dispatch [:contact.ui/close-contact-pressed public-key])
-     :accessibility-label :add-to-contacts-close-button}
-    [vector-icons/icon :main-icons/close
-     {:color           colors/black
-      :container-style style/add-contact-close-icon}]]])
+  [react/touchable-highlight
+   {:on-press
+    #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])
+    :accessibility-label :add-to-contacts-button
+    :style style/add-contact}
+   [react/view style/add-contact-center
+    [vector-icons/icon :main-icons/add
+     {:color colors/blue}]
+    [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]])
 
 (defn- on-options [chat-id chat-name group-chat? public?]
   (list-selection/show {:title   chat-name

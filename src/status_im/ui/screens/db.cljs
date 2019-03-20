@@ -30,10 +30,6 @@
              :chats                              {}
              :current-chat-id                    nil
              :selected-participants              #{}
-             :discoveries                        {}
-             :discover-search-tags               #{}
-             :discover-current-dapp              {}
-             :tags                               []
              :sync-state                         :done
              :app-state                          "active"
              :wallet.transactions                constants/default-wallet-transactions
@@ -329,12 +325,6 @@
                                    :chat/bot-db
                                    :chat/id->command
                                    :chat/access-scope->command-id
-                                   :discoveries/discoveries
-                                   :discoveries/discover-search-tags
-                                   :discoveries/discover-current-dapp
-                                   :discoveries/tags
-                                   :discoveries/current-tag
-                                   :discoveries/request-discoveries-timer
                                    :wallet/wallet
                                    :wallet/wallet.transactions
                                    :wallet/wallet-selected-asset

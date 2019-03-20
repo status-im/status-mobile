@@ -166,18 +166,12 @@
   {:flex-direction      :row
    :align-items         :center
    :height              36
-   :background-color    :white
    :border-bottom-width 1
-   :border-color        colors/gray-lighter
-   :justify-content     :space-between})
-
-(def add-contact-left
-  {:width       24
-   :margin-left 12})
+   :justify-content :center
+   :border-color        colors/gray-lighter})
 
 (def add-contact-center
-  {:flex-direction :row
-   :align-items    :center})
+  {:flex-direction :row})
 
 (def add-contact-text
   {:text-align          :center

@@ -431,6 +431,21 @@
 
 (def v38 v37)
 
+(def v39 [chat/v14
+          transport/v8
+          contact/v6
+          message/v9
+          mailserver/v11
+          mailserver-topic/v1
+          user-status/v2
+          membership-update/v1
+          installation/v3
+          local-storage/v1
+          browser/v8
+          dapp-permissions/v9
+          contact-device-info/v1
+          contact-recovery/v1])
+
 ;; put schemas ordered by version
 (def schemas [{:schema        v1
                :schemaVersion 1
@@ -545,4 +560,7 @@
                :migration     (constantly nil)}
               {:schema        v38
                :schemaVersion 38
-               :migration     migrations/v38}])
+               :migration     migrations/v38}
+              {:schema        v39
+               :schemaVersion 39
+               :migration     (constantly nil)}])

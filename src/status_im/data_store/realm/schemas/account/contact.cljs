@@ -97,3 +97,20 @@
 (def v5 (assoc-in v4 [:properties :device-info]
                   {:type       :list
                    :objectType :contact-device-info}))
+
+(def v6 {:name       :contact
+         :primaryKey :public-key
+         :properties {:address          {:type :string :optional true}
+                      :name             {:type :string :optional true}
+                      :photo-path       {:type :string :optional true}
+                      :last-updated     {:type :int :default 0}
+                      :last-online      {:type :int :default 0}
+                      :blocked?         {:type :bool :default false}
+                      :pending?         {:type :bool :default false}
+                      :status           {:type :string :optional true}
+                      :fcm-token        {:type :string :optional true}
+                      :description      {:type :string :optional true}
+                      :public-key       :string
+                      :tags             {:type "string[]"}
+                      :device-info      {:type       :list
+                                         :objectType :contact-device-info}}})

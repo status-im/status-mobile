@@ -1588,11 +1588,6 @@
    (contact/unblock-contact cofx public-key)))
 
 (handlers/register-handler-fx
- :contact.ui/close-contact-pressed
- (fn [cofx [_ public-key]]
-   (contact/hide-contact cofx public-key)))
-
-(handlers/register-handler-fx
  :contact/qr-code-scanned
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx [_ _ contact-identity]]

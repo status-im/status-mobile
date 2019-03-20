@@ -4,7 +4,6 @@
   [{:description   nil
     :last-updated  1547185503000
     :tags          #{}
-    :hide-contact? false
     :address       "2f88d65f3cb52605a54a833ae118fb1363acccd2"
     :name          "Darkviolet Lightgreen Halcyon"
     :fcm-token     "cwigXoAk9R4:APA91bFZOy8vsCj9I9t6PYZXropyYEqAhKaVD2GxrURwvxe_Ay3zLrtJxeirp69se_5EOjS5i4T9xQnoPWrFTLfU9U7AUBdjxZtq5cnlP005bOY05p-psxGsQThMKQMeP5DJC9uxN0Ei"
@@ -21,7 +20,6 @@
    {:description   nil
     :last-updated  1547271764000
     :tags          #{}
-    :hide-contact? false
     :address       "b267ff8336ac10b3a1986c04a70ff91fb03d0b78"
     :name          "rv"
     :fcm-token     "dpVPtMBLuv8:APA91bEU4YuSz9yrc-vsiSl-IjdLSR5UpHm7yffaFlWQs_fvsTiK18ZcdYUbzA8iUoNuMVRNF_ngU7JdQInwNpXdGtNv_qcAFt0jhXHqf7dWY-kGJUBw9Ma8G_2fa40JLJchGVrzUIen"

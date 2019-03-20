@@ -75,8 +75,7 @@
   [{:keys [db] :as cofx} public-key]
   (when (not= (get-in db [:account/account :public-key]) public-key)
     (let [contact (-> (build-contact cofx public-key)
-                      (assoc :pending? false
-                             :hide-contact? false))]
+                      (assoc :pending? false))]
       (fx/merge cofx
                 {:db (assoc-in db [:contacts/new-identity] "")}
                 (upsert-contact contact)
@@ -264,11 +263,6 @@
   [cofx public-key]
   (fx/merge cofx
             (chat.models/start-chat public-key {:navigation-reset? true})))
-
-(fx/defn hide-contact
-  [{:keys [db]} public-key]
-  (when (get-in db [:contacts/contacts public-key])
-    {:db (assoc-in db [:contacts/contacts public-key :hide-contact?] true)}))
 
 (fx/defn handle-qr-code
   [{:keys [db] :as cofx} contact-identity]

@@ -21,7 +21,6 @@
 (spec/def :contact/last-updated (spec/nilable int?))
 (spec/def :contact/last-online (spec/nilable int?))
 (spec/def :contact/pending? boolean?)
-(spec/def :contact/hide-contact? boolean?)
 (spec/def :contact/tags (spec/coll-of string? :kind set?))
 (spec/def :contact/blocked? boolean?)
 
@@ -33,7 +32,6 @@
                                                 :contact/last-updated
                                                 :contact/last-online
                                                 :contact/pending?
-                                                :contact/hide-contact?
                                                 :contact/fcm-token
                                                 :contact/description
                                                 :contact/blocked?
@@ -104,8 +102,8 @@
 (defn active
   [contacts]
   (->> contacts
-       (remove (fn [[_ {:keys [pending? hide-contact? blocked?]}]]
-                 (or pending? hide-contact? blocked?)))
+       (remove (fn [[_ {:keys [pending? blocked?]}]]
+                 (or pending? blocked?)))
        sort-contacts))
 
 (defn filter-dapps
