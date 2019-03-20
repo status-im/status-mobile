@@ -215,7 +215,9 @@ _run-%: _ensure-in-nix-shell
 	scripts/run-environment-check.sh $(SYSTEM)
 	react-native run-$(SYSTEM)
 
-run-android: _run-android ##@run Run Android build
+run-android: _ensure-in-nix-shell ##@run Run Android build
+	scripts/run-environment-check.sh android
+	react-native run-android --appIdSuffix debug
 
 run-desktop: _run-desktop ##@run Run Desktop build
 
