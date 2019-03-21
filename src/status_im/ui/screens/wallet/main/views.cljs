@@ -1,28 +1,28 @@
-  (ns status-im.ui.screens.wallet.main.views
-    (:require-macros [status-im.utils.views :as views])
-    (:require [reagent.core :as reagent]
-              [re-frame.core :as re-frame]
-              [status-im.i18n :as i18n]
-              [status-im.ui.components.colors :as colors]
-              [status-im.ui.components.list.views :as list]
-              [status-im.ui.components.react :as react]
-              [status-im.ui.components.toolbar.view :as toolbar]
-              [status-im.ui.components.icons.vector-icons :as vector-icons]
-              [status-im.ui.screens.wallet.onboarding.views :as onboarding.views]
-              [status-im.ui.screens.wallet.styles :as wallet.styles]
-              [status-im.ui.screens.wallet.main.styles :as styles]
-              [status-im.ui.screens.wallet.settings.views :as settings]
-              [status-im.ui.screens.wallet.utils :as wallet.utils]
-              [status-im.utils.money :as money]
-              [status-im.utils.platform :as platform]
-              [status-im.ui.components.toolbar.actions :as action]
-              status-im.ui.screens.wallet.collectibles.etheremon.views
-              status-im.ui.screens.wallet.collectibles.cryptostrikers.views
-              status-im.ui.screens.wallet.collectibles.cryptokitties.views
-              status-im.ui.screens.wallet.collectibles.superrare.views
-              status-im.ui.screens.wallet.collectibles.kudos.views
-              [status-im.ui.components.status-bar.view :as status-bar.view]
-              [status-im.ui.screens.wallet.transactions.views :as transactions.views]))
+(ns status-im.ui.screens.wallet.main.views
+  (:require-macros [status-im.utils.views :as views])
+  (:require [reagent.core :as reagent]
+            [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.screens.wallet.onboarding.views :as onboarding.views]
+            [status-im.ui.screens.wallet.styles :as wallet.styles]
+            [status-im.ui.screens.wallet.main.styles :as styles]
+            [status-im.ui.screens.wallet.settings.views :as settings]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.utils.money :as money]
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.toolbar.actions :as action]
+            status-im.ui.screens.wallet.collectibles.etheremon.views
+            status-im.ui.screens.wallet.collectibles.cryptostrikers.views
+            status-im.ui.screens.wallet.collectibles.cryptokitties.views
+            status-im.ui.screens.wallet.collectibles.superrare.views
+            status-im.ui.screens.wallet.collectibles.kudos.views
+            [status-im.ui.components.status-bar.view :as status-bar.view]
+            [status-im.ui.screens.wallet.transactions.views :as transactions.views]))
 
 (defn toolbar-modal [modal-history?]
   [react/view
@@ -170,6 +170,11 @@
       (if error-message
         [snackbar error-message]
         [total-section portfolio-value currency])
+      ;; this view is a hack to hide the 1px high white line gap on android
+      (when platform/android?
+        [react/view {:style {:background-color colors/blue
+                             :height 1
+                             :margin -1}}])
       (when (and (not modal?)
                  (not seed-backed-up?)
                  (some (fn [{:keys [amount]}]
