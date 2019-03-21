@@ -285,7 +285,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         wallet_address = wallet.get_wallet_address()
         recipient = '0x' + basic_user['address']
 
-        wallet.send_transaction(asset_name='ethro', amount=0, recipient=recipient, sign_transaction=False)
+        wallet.send_transaction(asset_name='ETHro', amount=0, recipient=recipient, sign_transaction=False)
         send_transaction_view = SendTransactionView(self.driver)
 
         warning = 'No "Not enough ETH for gas" warning appeared while {}'
@@ -321,7 +321,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         self.network_api.verify_balance_is_updated(initial_balance=0, recipient_address=wallet_address[2:])
 
         wallet = home_view.wallet_button.click()
-        wallet.send_transaction(asset_name='ethro', amount=0.1, recipient=recipient, sign_transaction=False)
+        wallet.send_transaction(asset_name='ETHro', amount=0.1, recipient=recipient, sign_transaction=False)
 
         # Check whether sending all available ETH triggers the warning
         if not send_transaction_view.validation_warnings.not_enough_eth_for_gas.is_element_displayed():

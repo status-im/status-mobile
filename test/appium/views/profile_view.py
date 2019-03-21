@@ -395,7 +395,7 @@ class ActiveNetworkName(BaseText):
 
     def __init__(self, driver):
         super(ActiveNetworkName, self).__init__(driver)
-        self.locator = self.Locator.text_part_selector('WITH UPSTREAM RPC')
+        self.locator = self.Locator.text_part_selector('with upstream RPC')
 
 
 class AboutButton(BaseButton):

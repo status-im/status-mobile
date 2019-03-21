@@ -151,7 +151,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.get_back_to_home_view()
         wallet_view = profile_view.wallet_button.click()
         wallet_view.set_up_wallet()
-        if 'EUR' != wallet_view.currency_text.text:
+        if not wallet_view.find_text_part('EUR'):
             pytest.fail('EUR currency is not displayed')
 
     @marks.testrail_id(5431)

@@ -50,10 +50,8 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing_view.url_edit_box_lock_icon.click()
         browsing_view.find_full_text(connection_is_secure_text)
         browsing_view.cross_icon.click()
-        start_new_chat_view = home_view.plus_button.click()
-        start_new_chat_view.open_d_app_button.click()
-        start_new_chat_view.element_by_text('Airswap').click()
-        start_new_chat_view.open_button.click()
+
+        start_new_chat.element_by_text('Airswap').click()
         browsing_view.url_edit_box_lock_icon.click()
         browsing_view.find_full_text(connection_is_secure_text)
 
