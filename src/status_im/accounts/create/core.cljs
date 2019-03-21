@@ -20,7 +20,8 @@
             [taoensso.timbre :as log]
             [status-im.utils.fx :as fx]
             [status-im.node.core :as node]
-            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]))
+            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
+            [status-im.utils.platform :as platform]))
 
 (defn get-signing-phrase [cofx]
   (assoc cofx :signing-phrase (signing-phrase/generate)))
@@ -110,7 +111,8 @@
             {:db                                              db
              :notifications/request-notifications-permissions nil
              :dispatch-n                                      [[:navigate-to :home]
-                                                               [:navigate-to :welcome]]}
+                                                               (when-not platform/desktop?
+                                                                 [:navigate-to :welcome])]}
             ;; We set last updated as we are actually changing a field,
             ;; unlike on recovery where the name is not set
             (accounts.update/account-update {:last-updated now
