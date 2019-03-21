@@ -44,6 +44,12 @@ pipeline {
     ANDROID_SDK_ROOT  = '/usr/lib/android-sdk'
     ANDROID_NDK       = '/usr/lib/android-ndk'
     ANDROID_NDK_HOME  = '/usr/lib/android-ndk'
+    /* bundle cache is sensitive to being used by differnt ruby versions */
+    BUNDLE_PATH       = "/tmp/bundle"
+    /* We use EXECUTOR_NUMBER to avoid multiple instances clashing */
+    LEIN_HOME         = "/var/tmp/lein-${EXECUTOR_NUMBER}"
+    YARN_CACHE_FOLDER = "/var/tmp/yarn-${EXECUTOR_NUMBER}"
+    GRADLE_USER_HOME  = "/var/tmp/gradle-${EXECUTOR_NUMBER}"
   }
 
   stages {
