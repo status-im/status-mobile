@@ -48,6 +48,11 @@ def pkgFilename(type, ext) {
 }
 
 def doGitRebase() {
+  /* rebasing on relases defeats the point of having a release branch */
+  if (getBuildType() == 'release') {
+    println 'Skipping rebase due to release build...'
+    return
+  }
   sh 'git status'
   sh 'git fetch --force origin develop:develop'
   try {

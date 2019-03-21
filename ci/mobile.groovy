@@ -3,9 +3,7 @@ utils = load 'ci/utils.groovy'
 android = load 'ci/android.groovy'
 
 def prep(type = 'nightly') {
-  if (type != 'release') {
-    utils.doGitRebase()
-  }
+  utils.doGitRebase()
   /* ensure that we start from a known state */
   sh 'make clean'
   /* Run at start to void mismatched numbers */
