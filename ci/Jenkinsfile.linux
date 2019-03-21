@@ -2,7 +2,7 @@ pipeline {
   agent {
     docker {
       label 'linux'
-      image 'statusteam/nix:jenkins'
+      image 'statusteam/nix:jenkins-1.0.0-4a147dc3'
       args (
         "-v /tmp/Android/Sdk:/home/jenkins/.status/Android/Sdk:rw "+
         "-v /var/tmp/lein:/var/tmp/lein:rw "+

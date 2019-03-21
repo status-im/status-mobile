@@ -2,7 +2,7 @@ pipeline {
   agent { 
     docker {
       label 'linux'
-      image 'statusteam/nix:jenkins'
+      image 'statusteam/nix:jenkins-1.0.0-4a147dc3'
       args (
         "-v /home/jenkins/tmp:/var/tmp:rw "+
         "-v /home/jenkins/status-im.keystore:/tmp/status-im.keystore:ro"
