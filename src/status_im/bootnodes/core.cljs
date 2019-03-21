@@ -3,6 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.i18n :as i18n]
+
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]))
 
@@ -92,7 +93,7 @@
 
 (fx/defn set-bootnodes-from-qr
   [cofx url]
-  (assoc (set-input :url url cofx)
+  (assoc (set-input cofx :url (string/trim url))
          :dispatch [:navigate-back]))
 
 (fx/defn show-delete-bootnode-confirmation

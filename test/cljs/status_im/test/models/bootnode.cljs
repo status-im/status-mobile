@@ -61,6 +61,13 @@
                                             :error true}}}}
              (model/set-input {:db {}} :url "broken"))))))
 
+(deftest set-bootnode-from-qr
+  (testing "correct name"
+    (is (= {:dispatch [:navigate-back]
+            :db {:bootnodes/manage {:url  {:value valid-bootnode-address
+                                           :error false}}}}
+           (model/set-bootnodes-from-qr {:db {}} (str valid-bootnode-address "   "))))))
+
 (deftest edit-bootnode
   (let [db {:network "mainnet_rpc"
             :account/account
