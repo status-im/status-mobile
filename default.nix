@@ -57,11 +57,15 @@ with pkgs;
       ++ lib.optional targetDesktop statusDesktop.buildInputs
       ++ lib.optional targetMobile statusMobile.buildInputs;
     shellHook =
+      ''
+        set -e
+      '' +
       lib.optionalString targetDesktop statusDesktop.shellHook +
       lib.optionalString targetMobile statusMobile.shellHook +
       ''
         if [ -n "$ANDROID_SDK_ROOT" ] && [ ! -d "$ANDROID_SDK_ROOT" ]; then
           ./scripts/setup # we assume that if the Android SDK dir does not exist, make setup needs to be run
         fi
+        set +e
       '';
   }

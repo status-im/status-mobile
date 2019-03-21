@@ -23,7 +23,9 @@ DEPS_HASH = $(shell $(GIT_ROOT)/scripts/gen-deps-hash.sh -b $(NIX_SHA) \
 					-d android-sdk \
 					-d android-sdk-platform \
 					-d android-sdk-build-tools \
-					-d nix)
+					-d nix \
+					-d StatusImAppImage \
+					-d StatusIm-Windows-base-image)
 
 IMAGE_TAG = jenkins-1.0.0-$(DEPS_HASH)
 IMAGE_NAME = statusteam/nix:$(IMAGE_TAG)
@@ -36,6 +38,7 @@ build: $(NIX_INSTALL) $(ANDROID_SDK_ARCHIVE)
 		--build-arg="ANDROID_SDK_VERSION=$(ANDROID_SDK_VERSION)" \
 		--build-arg="SDK_BUILD_TOOLS_VERSION=$(SDK_BUILD_TOOLS_VERSION)" \
 		--build-arg="SDK_PLATFORM_VERSION=$(SDK_PLATFORM_VERSION)" \
+		--build-arg="DEPS_HASH=$(DEPS_HASH)" \
 		-t $(IMAGE_NAME) .
 
 $(NIX_INSTALL):

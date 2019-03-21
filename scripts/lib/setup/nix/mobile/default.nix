@@ -1,7 +1,7 @@
 { stdenv, pkgs, target-os ? "" }:
 
 with pkgs;
-with stdenv; 
+with stdenv;
 
 let
   android-ndk = callPackage ./android-ndk { };

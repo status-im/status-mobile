@@ -46,6 +46,8 @@ ENV LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8
 
 ARG NIX_VERSION
+# DEPS_HASH is not used expect for a new image to be created in case some indirect dependency changes (e.g. a download brought by nix-shell)
+ARG DEPS_HASH
 ARG ANDROID_SDK_VERSION
 ARG JENKINS_UID
 ARG JENKINS_GID

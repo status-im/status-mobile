@@ -1,7 +1,7 @@
 { stdenv, fetchFromGitHub
 , pkgconfig, cmake, autoconf, automake, libtool
 , wget, xxd, desktop-file-utils, file
-, glib, zlib, cairo, openssl, fuse, xz, squashfuse, inotify-tools, libarchive
+, gnupg, glib, zlib, cairo, openssl, fuse, xz, squashfuse, inotify-tools, libarchive
 , squashfsTools
 , gtest
 }:
@@ -70,6 +70,7 @@ in stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
+    gnupg
     glib zlib cairo openssl fuse
     xz inotify-tools libarchive
     squashfsTools

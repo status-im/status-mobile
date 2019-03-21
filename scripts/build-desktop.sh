@@ -83,7 +83,6 @@ fi
 
 STATUSREACTPATH="$(cd "$SCRIPTPATH" && cd '..' && pwd)"
 WORKFOLDER="$(joinExistingPath "$STATUSREACTPATH" 'StatusImPackage')"
-STATUSIM_APPIMAGE_ARCHIVE="StatusImAppImage_20181208.zip"
 
 function init() {
   if [ -z $STATUSREACTPATH ]; then
@@ -193,19 +192,8 @@ function bundleWindows() {
     exit 1
   fi
 
-  pushd $WORKFOLDER
-    rm -rf Windows
-    mkdir Windows
-
-    if [ -z $STATUSIM_WINDOWS_BASEIMAGE_ZIP ]; then
-      STATUSIM_WINDOWS_BASEIMAGE_ZIP=./StatusIm-Windows-base-image.zip
-      [ -f $STATUSIM_WINDOWS_BASEIMAGE_ZIP ] || wget https://desktop-app-files.ams3.digitaloceanspaces.com/StatusIm-Windows-base-image_20181113.zip -O StatusIm-Windows-base-image.zip
-    fi
-    unzip "$STATUSIM_WINDOWS_BASEIMAGE_ZIP" -d Windows/
-
-    pushd $STATUSREACTPATH/desktop/bin
-      rm -rf cmake_install.cmake Makefile CMakeFiles Status_autogen
-    popd
+  pushd $STATUSREACTPATH/desktop/bin
+    rm -rf cmake_install.cmake Makefile CMakeFiles Status_autogen
   popd
 
   local compressionAlgo="lzma"
@@ -217,11 +205,15 @@ function bundleWindows() {
     compressionAlgo="zlib"
   fi
 
+  # TODO this needs to be fixed: status-react/issues/5378
+  local windowsBaseImagePath="$(nix show-derivation -r -f $STATUSREACTPATH | jq -r '.[] | select(.env.name=="StatusIm-Windows-base-image") | .outputs.out.path')/src"
+
   local top_srcdir=$(joinExistingPath "$STATUSREACTPATH" '.')
   VERSION_MAJOR="$(cut -d'.' -f1 <<<"$VERSION")"
   VERSION_MINOR="$(cut -d'.' -f2 <<<"$VERSION")"
   VERSION_BUILD="$(cut -d'.' -f3 <<<"$VERSION")"
   makensis -Dtop_srcdir=${top_srcdir} \
+           -Dbase_image_dir=${windowsBaseImagePath} \
            -DCOMPRESSION_ALGO=${compressionAlgo} \
            -DCOMPRESSION_TYPE=${compressionType} \
            -DVERSION_MAJOR=$VERSION_MAJOR \
@@ -239,24 +231,21 @@ function bundleLinux() {
     QTBIN=$(joinExistingPath "$QT_PATH" 'bin')
   fi
 
-  # invoke linuxdeployqt to create Status.AppImage
   echo "Creating AppImage..."
   pushd $WORKFOLDER
-    rm -rf StatusImAppImage
+    rm -rf StatusImAppImage AppDir
+
     # TODO this needs to be fixed: status-react/issues/5378
-    if [ -z $STATUSIM_APPIMAGE_DIR ]; then
-      STATUSIM_APPIMAGE="./${STATUSIM_APPIMAGE_ARCHIVE}"
-    else
-      STATUSIM_APPIMAGE="${STATUSIM_APPIMAGE_DIR}/${STATUSIM_APPIMAGE_ARCHIVE}"
-    fi
-    [ -f $STATUSIM_APPIMAGE ] || wget "https://desktop-app-files.ams3.digitaloceanspaces.com/${STATUSIM_APPIMAGE_ARCHIVE}" -O $STATUSIM_APPIMAGE
-    unzip "$STATUSIM_APPIMAGE" -d .
-    rm -rf AppDir
+    local baseAppImagePath="$(nix show-derivation -r -f $STATUSREACTPATH | jq -r '.[] | select(.env.name=="StatusImAppImage") | .outputs.out.path')/src"
+    cp -r $baseAppImagePath/StatusImAppImage .
+    chmod -R +w StatusImAppImage/
+
     mkdir AppDir
   popd
 
-  qmakePath="$(joinExistingPath "${QTBIN}" 'qmake')"
-  usrBinPath="$(joinPath "$WORKFOLDER" "AppDir/usr/bin")"
+  # invoke linuxdeployqt to create Status.AppImage
+  local qmakePath="$(joinExistingPath "${QTBIN}" 'qmake')"
+  local usrBinPath="$(joinPath "$WORKFOLDER" "AppDir/usr/bin")"
   cp -r ./deployment/linux/usr $WORKFOLDER/AppDir
   cp ./.env $usrBinPath
   cp ./desktop/bin/Status ./desktop/bin/reportApp $usrBinPath
@@ -264,13 +253,13 @@ function bundleLinux() {
   rm -f Application-x86_64.AppImage Status-x86_64.AppImage
 
   [ $VERBOSE_LEVEL -ge 1 ] && ldd $(joinExistingPath "$usrBinPath" 'Status')
-  desktopFilePath="$(joinExistingPath "$WORKFOLDER" 'AppDir/usr/share/applications/Status.desktop')"
   pushd $WORKFOLDER
     cp -r assets/share/assets $usrBinPath
     cp -rf StatusImAppImage/* $usrBinPath
     rm -f $usrBinPath/Status.AppImage
   popd
 
+  local desktopFilePath="$(joinExistingPath "$WORKFOLDER" 'AppDir/usr/share/applications/Status.desktop')"
   linuxdeployqt \
     $desktopFilePath \
     -verbose=$VERBOSE_LEVEL -always-overwrite -no-strip \
@@ -450,14 +439,11 @@ fi
 function bundleMacOS() {
   pushd $WORKFOLDER
     # download prepared package with mac bundle files (it contains qt libraries, icon)
-    echo "Downloading skeleton of mac bundle..."
-
     rm -rf Status.app
     # TODO this needs to be fixed: status-react/issues/5378
-    [ -f ./Status.app.zip ] || curl -L -o Status.app.zip https://desktop-app-files.ams3.digitaloceanspaces.com/Status_20181113.app.zip
-    echo -e "${GREEN}Downloading done.${NC}"
-    echo ""
-    unzip ./Status.app.zip
+    local baseAppImagePath="$(nix show-derivation -r -f $STATUSREACTPATH | jq -r '.[] | select(.env.name=="StatusImAppBundle") | .outputs.out.path')/src"
+    cp -r $baseAppImagePath/Status.app .
+    chmod -R +w Status.app/
 
     local contentsPath='Status.app/Contents'
     local usrBinPath=$(joinExistingPath "$WORKFOLDER" "$contentsPath/MacOS")

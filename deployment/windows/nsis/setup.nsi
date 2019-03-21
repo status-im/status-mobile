@@ -4,6 +4,7 @@
  
   ;Unicode true
   ;!define top_srcdir @top_srcdir@
+  ;!define base_image_dir ""
   ;!define srcdir @srcdir@
   !define VERSION       ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_BUILD}
   !define VERSION_FULL  ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_BUILD}.0
@@ -626,7 +627,7 @@ Section "Status Desktop" SecMain
   File "${top_srcdir}\.env"
   File "${top_srcdir}\node_modules\node-notifier\vendor\snoreToast\SnoreToast.exe"
   File /r "${top_srcdir}\desktop\bin\"
-  File /r "${top_srcdir}\StatusImPackage\Windows\"
+  File /r "${base_image_dir}"
 
   SetOutPath "$INSTDIR\notifier"
   File "${top_srcdir}\node_modules\node-notifier\vendor\notifu\*.exe"

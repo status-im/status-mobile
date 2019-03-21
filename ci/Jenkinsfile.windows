@@ -2,7 +2,7 @@ pipeline {
   agent {
     docker {
       label 'linux-new'
-      image 'statusteam/nix:jenkins-1.0.0-4a147dc3'
+      image 'statusteam/nix:jenkins-1.0.0-158e62e1'
       args (
         "-v /var/tmp/lein:/var/tmp/lein:rw "+
         "-v /var/tmp/npm:/var/tmp/npm:rw "

@@ -8,5 +8,5 @@ let
 
 in
 {
-  buildInputs = lib.optional isLinux [ conan nsis baseImage ];
+  buildInputs = [ baseImage ];
 }

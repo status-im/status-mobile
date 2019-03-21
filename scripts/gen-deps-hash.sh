@@ -20,7 +20,7 @@ usage () {
 deps=()
 while getopts "hb:d:" opt; do
   case $opt in
-    b) base_hash="$OPTARG";;
+    b) base_hash="${base_hash}${OPTARG}";;
     d)
       version=$($toolversion "$OPTARG")
       if [ $? -ne 0 ]; then
