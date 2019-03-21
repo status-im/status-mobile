@@ -68,7 +68,7 @@
 
 (defmethod message-row :datemark
   [{{:keys [value]} :row}]
-  [message-datemark/chat-datemark value])
+  [message-datemark/chat-datemark-mobile value])
 
 (defmethod message-row :default
   [{:keys [group-chat current-public-key modal? row]}]
