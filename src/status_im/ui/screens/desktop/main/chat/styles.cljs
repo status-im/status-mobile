@@ -209,9 +209,9 @@
    :margin-top    10
    :margin-bottom 5})
 
-(defn chat-title-and-type [pending?]
+(defn chat-title-and-type [added?]
   {:flex 1
-   :justify-content (if pending? :flex-start :center)})
+   :justify-content (if added? :center :flex-start)})
 
 (def chat-title
   {:margin-bottom  4

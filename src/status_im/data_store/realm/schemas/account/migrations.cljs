@@ -369,3 +369,23 @@
             chat-id (aget chat "chat-id")]
         (when-let [last-clock-value (get-last-clock-value new-realm chat-id)]
           (aset chat "last-clock-value" last-clock-value))))))
+
+(defn v40
+  "the pending? and blocked? boolean fields are removed and turned
+  into system tags equivalents in the system-tags field"
+  [old-realm new-realm]
+  (log/debug "migrating v40 account database")
+  (let [old-contacts (.objects old-realm "contact")
+        new-contacts (.objects new-realm "contact")]
+    (dotimes [i (.-length old-contacts)]
+      (let [old-contact (aget old-contacts i)
+            new-contact (aget new-contacts i)
+            blocked? (aget old-contact "blocked?")
+            pending? (aget old-contact "pending?")
+            last-updated (aget old-contact "last-updated")
+            system-tags (cond-> #{}
+                          blocked? (conj ":contact/blocked")
+                          (false? pending?) (conj ":contact/added")
+                          (or (true? pending?)
+                              (zero? last-updated)) (conj ":contact/request-received"))]
+        (aset new-contact "system-tags" (clj->js system-tags))))))

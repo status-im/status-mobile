@@ -25,6 +25,17 @@
                                         :chat-id :global/not-empty-string))
 (spec/def :transport/filter any?)
 
+(spec/def :pairing/pending? boolean?)
+(spec/def :pairing/contact (spec/keys  :req-un [:contact/public-key
+                                                :contact/name
+                                                :contact/address
+                                                :contact/system-tags]
+                                       :opt-un [:contact/last-updated
+                                                :contact/last-online
+                                                :contact/fcm-token
+                                                :pairing/pending?
+                                                :contact/tags]))
+(spec/def :pairing/contacts (spec/nilable (spec/map-of :global/not-empty-string :pairing/contact)))
 (spec/def :pairing/installation-id :global/not-empty-string)
 (spec/def :pairing/device-type :global/not-empty-string)
 
@@ -93,7 +104,7 @@
 (spec/def :message/message-seen (spec/keys :req-un [:message/ids]))
 
 (spec/def :message/group-membership-update (spec/keys :req-un [:group-chat/membership-updates :group-chat/chat-id]))
-(spec/def :message/sync-installation (spec/keys :req-un [:contacts/contacts]))
+(spec/def :message/sync-installation (spec/keys :req-un [:pairing/contacts]))
 (spec/def :message/pair-installation (spec/keys :req-un [:pairing/installation-id
                                                          :pairing/device-type]))
 

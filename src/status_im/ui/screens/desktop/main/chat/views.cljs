@@ -31,7 +31,7 @@
 (defn toolbar-chat-view
   [{:keys [chat-id chat-name contact color public-key public? group-chat]
     :as   current-chat}]
-  (let [{:keys [pending? public-key photo-path]} contact]
+  (let [{:keys [added? public-key photo-path]} contact]
     [react/view {:style styles/toolbar-chat-view}
      [react/view {:style {:flex-direction :row
                           :flex           1}}
@@ -41,16 +41,17 @@
           (string/capitalize (second chat-name))]]
         [react/image {:style  styles/chat-icon
                       :source {:uri photo-path}}])
-      [react/view {:style (styles/chat-title-and-type pending?)}
+      [react/view {:style (styles/chat-title-and-type added?)}
        [react/text {:style styles/chat-title}
         chat-name]
-       (cond pending?
-             [react/text {:style    styles/add-contact-text
-                          :on-press #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])}
-              (i18n/label :t/add-to-contacts)]
-             public?
-             [react/text {:style styles/public-chat-text}
-              (i18n/label :t/public-chat)])]]
+       (cond
+         (and (not group-chat) (not added?))
+         [react/text {:style    styles/add-contact-text
+                      :on-press #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])}
+          (i18n/label :t/add-to-contacts)]
+         public?
+         [react/text {:style styles/public-chat-text}
+          (i18n/label :t/public-chat)])]]
      [react/touchable-highlight
       {:on-press #(show-desktop-menu
                    (get-chat-menu-items group-chat public? chat-id))}
@@ -375,23 +376,23 @@
   (views/letsubs [identity      [:contacts/current-contact-identity]
                   maybe-contact [:contacts/current-contact]]
     (let [contact (or maybe-contact (contact.db/public-key->new-contact identity))
-          {:keys [pending? public-key]} contact]
+          {:keys [added? public-key]} contact]
       [react/view {:style styles/chat-profile-body}
        [profile.views/profile-badge contact]
        ;; for private chat, public key will be chat-id
        [react/view
-        (if (or (nil? pending?) pending?)
+        (if added?
+          [react/view {:style styles/chat-profile-row}
+           [react/view {:style               styles/chat-profile-icon-container
+                        :accessibility-label :add-contact-link}
+            [vector-icons/icon :main-icons/add {:style (styles/chat-profile-icon colors/gray)}]]
+           [react/text {:style (styles/contact-card-text colors/gray)} (i18n/label :t/in-contacts)]]
           [react/touchable-highlight {:on-press #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])}
            [react/view {:style styles/chat-profile-row}
             [react/view {:style               styles/chat-profile-icon-container
                          :accessibility-label :add-contact-link}
              [vector-icons/icon :main-icons/add {:style (styles/chat-profile-icon colors/blue)}]]
-            [react/text {:style (styles/contact-card-text colors/blue)} (i18n/label :t/add-to-contacts)]]]
-          [react/view {:style styles/chat-profile-row}
-           [react/view {:style               styles/chat-profile-icon-container
-                        :accessibility-label :add-contact-link}
-            [vector-icons/icon :main-icons/add {:style (styles/chat-profile-icon colors/gray)}]]
-           [react/text {:style (styles/contact-card-text colors/gray)} (i18n/label :t/in-contacts)]])
+            [react/text {:style (styles/contact-card-text colors/blue)} (i18n/label :t/add-to-contacts)]]])
         [react/touchable-highlight
          {:on-press #(re-frame/dispatch
                       [:contact.ui/send-message-pressed {:public-key public-key}])}

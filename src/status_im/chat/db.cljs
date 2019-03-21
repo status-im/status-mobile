@@ -1,32 +1,19 @@
 (ns status-im.chat.db
   (:require [clojure.set :as clojure.set]
             [clojure.string :as string]
+            [status-im.contact.db :as contact.db]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.input :as commands.input]
             [status-im.group-chats.db :as group-chats.db]
             [status-im.utils.gfycat.core :as gfycat]))
 
-(defn chat-name
-  [{:keys [group-chat
-           chat-id
-           public?
-           name]}
-   {contact-name :name}]
-  (cond
-    public?    (str "#" name)
-    group-chat name
-    :else      (or contact-name
-                   (gfycat/generate-gfy chat-id))))
+(defn group-chat-name
+  [{:keys [public? name]}]
+  (str (when public? "#") name))
 
 (defn enrich-active-chat
-  [contacts {:keys [chat-id] :as chat} current-public-key]
-  (if-let [contact (get contacts chat-id)]
-    (-> chat
-        (assoc :contact contact
-               :chat-name (chat-name chat contact)
-               :name (:name contact)
-               :random-name (gfycat/generate-gfy (:public-key contact)))
-        (update :tags clojure.set/union (:tags contact)))
+  [contacts {:keys [chat-id public? group-chat name] :as chat} current-public-key]
+  (if group-chat
     (let [pending-invite-inviter-name
           (group-chats.db/get-pending-invite-inviter-name contacts
                                                           chat
@@ -35,8 +22,17 @@
         pending-invite-inviter-name
         (assoc :pending-invite-inviter-name pending-invite-inviter-name)
         :always
-        (assoc :chat-name
-               (chat-name chat nil))))))
+        (assoc :chat-name (group-chat-name chat))))
+    (let [{contact-name :name :as contact}
+          (get contacts chat-id
+               (contact.db/public-key->new-contact chat-id))
+          random-name (gfycat/generate-gfy chat-id)]
+      (-> chat
+          (assoc :contact contact
+                 :chat-name (or contact-name random-name)
+                 :name contact-name
+                 :random-name random-name)
+          (update :tags clojure.set/union (:tags contact))))))
 
 (defn active-chats
   [contacts chats {:keys [public-key]}]

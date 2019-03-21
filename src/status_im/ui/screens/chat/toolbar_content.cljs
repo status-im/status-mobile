@@ -51,7 +51,7 @@
             (i18n/label-pluralize cnt :t/members-active))))]]))
 
 (defview toolbar-content-view []
-  (letsubs [{:keys [group-chat color online contacts chat-name
+  (letsubs [{:keys [group-chat color online contacts chat-name contact
                     public? chat-id] :as chat}    [:chats/current-chat]
             show-actions?                         [:chats/current-chat-ui-prop :show-actions?]
             accounts                              [:accounts/accounts]
@@ -59,7 +59,7 @@
     (let [has-subtitle? (or group-chat (not= :done sync-state))]
       [react/view {:style st/toolbar-container}
        [react/view {:margin-right 8}
-        [chat-icon.screen/chat-icon-view-toolbar chat-id group-chat chat-name color online]]
+        [chat-icon.screen/chat-icon-view-toolbar contact group-chat chat-name color online]]
        [react/view {:style st/chat-name-view}
         [react/text {:style               st/chat-name-text
                      :number-of-lines     1

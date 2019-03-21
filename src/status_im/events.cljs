@@ -1620,16 +1620,6 @@
  (fn [cofx _]
    (contact/add-new-identity-to-contacts cofx)))
 
-(handlers/register-handler-fx
- :contact.ui/add-tag
- (fn [cofx _]
-   (contact/add-tag cofx)))
-
-(handlers/register-handler-fx
- :contact.ui/set-tag-input-field
- (fn [cofx [_ text]]
-   {:db (assoc-in (:db cofx) [:ui/contact :contact/new-tag] text)}))
-
 ;; search module
 
 (handlers/register-handler-fx

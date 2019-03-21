@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.chat.views
   (:require [re-frame.core :as re-frame]
             [status-im.chat.models :as models.chat]
-            [status-im.contact.core :as models.contact]
+            [status-im.contact.db :as contact.db]
             [status-im.group-chats.db :as group-chats.db]
             [status-im.i18n :as i18n]
             [status-im.ui.components.animation :as animation]
@@ -62,7 +62,7 @@
                            :handler   #(on-options chat-id chat-name group-chat public?)}]])]
      [connectivity/connectivity-view]
      (when (and (not group-chat)
-                (models.contact/can-add-to-contacts? contact))
+                (not (contact.db/added? contact)))
        [add-contact-bar chat-id])]))
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))

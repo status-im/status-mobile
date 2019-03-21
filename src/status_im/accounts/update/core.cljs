@@ -1,5 +1,6 @@
 (ns status-im.accounts.update.core
   (:require
+   [status-im.contact.db :as contact.db]
    [status-im.contact.device-info :as device-info]
    [status-im.data-store.accounts :as accounts-store]
    [status-im.data-store.transport :as transport-store]
@@ -36,9 +37,8 @@
                                             :success-event success-event})))))
 
 (fx/defn contact-public-keys [{:keys [db]}]
-  (reduce (fn [acc [_ {:keys [public-key dapp? pending?]}]]
-            (if (and (not dapp?)
-                     (not pending?))
+  (reduce (fn [acc [_ {:keys [public-key] :as contact}]]
+            (if (contact.db/active? contact)
               (conj acc public-key)
               acc))
           #{}

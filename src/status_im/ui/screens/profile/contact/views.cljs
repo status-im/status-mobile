@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.profile.contact.views
   (:require [re-frame.core :as re-frame]
-            [status-im.contact.db :as contact.db]
             [status-im.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
@@ -16,16 +15,16 @@
    toolbar/default-nav-back
    [toolbar/content-title ""]])
 
-(defn actions [{:keys [pending? public-key]}]
-  (concat (if (or (nil? pending?) pending?)
-            [{:label               (i18n/label :t/add-to-contacts)
-              :icon                :main-icons/add-contact
-              :action              #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])
-              :accessibility-label :add-to-contacts-button}]
+(defn actions [{:keys [public-key added?]}]
+  (concat (if added?
             [{:label               (i18n/label :t/in-contacts)
               :icon                :main-icons/in-contacts
               :disabled?           true
-              :accessibility-label :in-contacts-button}])
+              :accessibility-label :in-contacts-button}]
+            [{:label               (i18n/label :t/add-to-contacts)
+              :icon                :main-icons/add-contact
+              :action              #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])
+              :accessibility-label :add-to-contacts-button}])
           [{:label               (i18n/label :t/send-message)
             :icon                :main-icons/message
             :action              #(re-frame/dispatch [:contact.ui/send-message-pressed {:public-key public-key}])
@@ -77,25 +76,23 @@
     :icon-opts              styles/block-action-icon-opts}])
 
 (defview profile []
-  (letsubs [identity        [:contacts/current-contact-identity]
-            maybe-contact   [:contacts/current-contact]]
-    (let [contact (or maybe-contact (contact.db/public-key->new-contact identity))]
-      [react/view profile.components.styles/profile
-       [status-bar/status-bar]
-       [profile-contact-toolbar]
-       [react/scroll-view
-        [react/view profile.components.styles/profile-form
-         [profile.components/profile-header
-          {:contact              contact
-           :editing?             false
-           :allow-icon-change?   false}]]
-        [list/action-list (actions contact)
-         {:container-style        styles/action-container
-          :action-style           styles/action
-          :action-label-style     styles/action-label
-          :action-separator-style styles/action-separator
-          :icon-opts              styles/action-icon-opts}]
-        [react/view {:style {:height 16}}]
-        [block-contact-action contact]
-        [react/view styles/contact-profile-info-container
-         [profile-info contact]]]])))
+  (letsubs [contact [:contacts/current-contact]]
+    [react/view profile.components.styles/profile
+     [status-bar/status-bar]
+     [profile-contact-toolbar]
+     [react/scroll-view
+      [react/view profile.components.styles/profile-form
+       [profile.components/profile-header
+        {:contact              contact
+         :editing?             false
+         :allow-icon-change?   false}]]
+      [list/action-list (actions contact)
+       {:container-style        styles/action-container
+        :action-style           styles/action
+        :action-label-style     styles/action-label
+        :action-separator-style styles/action-separator
+        :icon-opts              styles/action-icon-opts}]
+      [react/view {:style {:height 16}}]
+      [block-contact-action contact]
+      [react/view styles/contact-profile-info-container
+       [profile-info contact]]]]))

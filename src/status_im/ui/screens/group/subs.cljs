@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.group.subs
   (:require [re-frame.core :refer [reg-sub]]
+            [status-im.contact.db :as contact.db]
             [status-im.utils.subs :as utils]))
 
 (reg-sub
@@ -10,8 +11,9 @@
  :is-participant-selected?
  (utils/contains-sub :selected-participants))
 
-(defn filter-selected-contacts [selected-contacts contacts]
-  (remove #(true? (:pending? (contacts %))) selected-contacts))
+(defn filter-selected-contacts
+  [selected-contacts contacts]
+  (filter  #(contact.db/added? (contacts %)) selected-contacts))
 
 (reg-sub
  :selected-contacts-count

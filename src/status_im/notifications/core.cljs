@@ -104,7 +104,7 @@
           ;; but we might want to build a map of hashed pubkeys to pubkeys
           ;; for this purpose
           (hash->pubkey contact-pubkey-or-hash
-                        (contact.db/active (:contacts/contacts db)))
+                        (contact.db/get-active-contacts (:contacts/contacts db)))
           (do
             (log/warn "failed to lookup contact from hash, not logged in")
             contact-pubkey-or-hash)))
@@ -212,7 +212,7 @@
     (and (valid-notification-payload? rehydrated-payload)
          (accounts.db/logged-in? cofx)
          (some #(= (:public-key %) from)
-               (contact.db/active (:contacts/contacts db)))
+               (contact.db/get-active-contacts (:contacts/contacts db)))
          (some #(= (:chat-id %) from)
                (vals (:chats db)))))
 

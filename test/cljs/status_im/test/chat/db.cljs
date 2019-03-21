@@ -2,22 +2,16 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.chat.db :as s]))
 
-(deftest chat-name
+(deftest group-chat-name
   (testing "it prepends # if it's a public chat"
-    (is (= "#withhash" (s/chat-name {:group-chat true
-                                     :chat-id "1"
-                                     :public? true
-                                     :name "withhash"} nil))))
+    (is (= "#withhash" (s/group-chat-name {:group-chat true
+                                           :chat-id "1"
+                                           :public? true
+                                           :name "withhash"}))))
   (testing "it leaves the name unchanged if it's a group chat"
-    (is (= "unchanged" (s/chat-name {:group-chat true
-                                     :chat-id "1"
-                                     :name "unchanged"} nil))))
-  (testing "it pulls the name from contact if it's a one-to-one"
-    (is (= "this-one" (s/chat-name {:chat-id "1"
-                                    :name "not-this-one"} {:name "this-one"}))))
-  (testing "it generates the name from chat id if no contact"
-    (is (= "Blond Cooperative Coelacanth" (s/chat-name {:chat-id "1"
-                                                        :name "not-this-one"} nil)))))
+    (is (= "unchanged" (s/group-chat-name {:group-chat true
+                                           :chat-id "1"
+                                           :name "unchanged"})))))
 
 (deftest message-stream-tests
   (testing "messages with no interspersed datemarks"
@@ -121,11 +115,11 @@
           (is (not (:display-username? actual-m1))))))))
 
 (deftest active-chats-test
-  (let [active-chat-1 {:is-active true :chat-id 1}
-        active-chat-2 {:is-active true :chat-id 2}
-        chats         {1 active-chat-1
-                       2 active-chat-2
-                       3 {:is-active false :chat-id 3}}]
+  (let [active-chat-1 {:is-active true :chat-id "1"}
+        active-chat-2 {:is-active true :chat-id "2"}
+        chats         {"1" active-chat-1
+                       "2" active-chat-2
+                       "3" {:is-active false :chat-id "3"}}]
     (testing "it returns only chats with is-active"
-      (is (= #{1 2}
+      (is (= #{"1" "2"}
              (set (keys (s/active-chats {} chats {}))))))))

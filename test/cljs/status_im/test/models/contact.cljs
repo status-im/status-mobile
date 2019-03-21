@@ -5,21 +5,6 @@
 (def public-key "0x04fcf40c526b09ff9fb22f4a5dbd08490ef9b64af700870f8a0ba2133f4251d5607ed83cd9047b8c2796576bc83fa0de23a13a4dced07654b8ff137fe744047917")
 (def address "71adb0644e2b590e37dafdfea8bd58f0c7668c7f")
 
-(deftest can-add-to-contact-test
-  (testing "a user is already in contacts"
-    (is (not (model/can-add-to-contacts? {:pending? false}))))
-  (testing "a user is pending"
-    (testing "a normal user"
-      (is (model/can-add-to-contacts? {:pending? true})))
-    (testing "a dapp"
-      (is (not (model/can-add-to-contacts? {:pending? true
-                                            :dapp?    true})))))
-  (testing "the user is not in the contacts"
-    (testing "a normal user"
-      (is (model/can-add-to-contacts? {})))
-    (testing "a dapp"
-      (is (not (model/can-add-to-contacts? {:dapp? true}))))))
-
 (deftest handle-contact-update-test
   (testing "the contact is not in contacts"
     (let [actual (model/handle-contact-update
@@ -35,19 +20,20 @@
           contact (get-in actual [:db :contacts/contacts public-key])]
       (testing "it stores the contact in the database"
         (is (:data-store/tx actual)))
-      (testing "it adds a new contact with pending? true"
+      (testing "it adds a new contact"
         (is (=  {:public-key       public-key
                  :photo-path       "image"
                  :name             "name"
                  :last-updated     1000
-                 :pending?         true
+                 :system-tags      #{:contact/request-received}
                  :device-info      {"1" {:id "1"
                                          :timestamp 1
                                          :fcm-token "token-1"}}
                  :fcm-token        "token"
-                 :address          "address"} contact)))))
+                 :address          "address"}
+                contact)))))
   (testing "the contact is already in contacts"
-    (testing "timestamp is greather than last-updated"
+    (testing "timestamp is greater than last-updated"
       (let [actual (model/handle-contact-update
                     public-key
                     1
@@ -70,13 +56,13 @@
                                                           "2" {:id "2"
                                                                :timestamp 0
                                                                :fcm-token "token-2"}}
-                                       :pending?         false
+                                       :system-tags      #{:contact/added}
                                        :fcm-token        "old-token"
                                        :address          "old-address"}}}})
             contact (get-in actual [:db :contacts/contacts public-key])]
         (testing "it stores the contact in the database"
           (is (:data-store/tx actual)))
-        (testing "it updates the contact leaving pending unchanged"
+        (testing "it updates the contact and adds contact/request-received to system tags"
           (is (=  {:public-key       public-key
                    :photo-path       "new-image"
                    :name             "new-name"
@@ -90,10 +76,11 @@
                                       "3" {:id "3"
                                            :fcm-token "token-3"
                                            :timestamp 1}}
-                   :pending?         false
+                   :system-tags      #{:contact/added :contact/request-received}
                    :fcm-token        "new-token"
-                   :address          "new-address"} contact)))))
-    (testing "timestamp is equal than last-updated"
+                   :address          "new-address"}
+                  contact)))))
+    (testing "timestamp is equal to last-updated"
       (let [actual (model/handle-contact-update
                     public-key
                     1
@@ -106,7 +93,7 @@
                                        :photo-path       "old-image"
                                        :name             "old-name"
                                        :last-updated     1000
-                                       :pending?         false
+                                       :system-tags      #{:contact/added}
                                        :fcm-token        "old-token"
                                        :address          "old-address"}}}})
             contact (get-in actual [:db :contacts/contacts public-key])]
@@ -125,7 +112,7 @@
                                        :photo-path       "old-image"
                                        :name             "old-name"
                                        :last-updated     1000
-                                       :pending?         false
+                                       :system-tags      #{:contact/added :contact/request-received}
                                        :fcm-token        "old-token"
                                        :address          "old-address"}}}})
             contact (get-in actual [:db :contacts/contacts public-key])]
@@ -144,18 +131,18 @@
                                                              :fcm-token "token-1"}}
                                      :name             "old-name"
                                      :last-updated     0
-                                     :pending?         false}}}})
+                                     :system-tags      #{:contact/added}}}}})
           contact (get-in actual [:db :contacts/contacts public-key])]
       (testing "it stores the contact in the database"
         (is (:data-store/tx actual)))
-      (testing "it updates the contact leaving pending unchanged"
+      (testing "it updates the contact"
         (is (=  {:public-key       public-key
                  :photo-path       "new-image"
                  :name             "new-name"
                  :device-info      {"1" {:id "1"
                                          :fcm-token "token-1"}}
                  :last-updated     1000
-                 :pending?         false
+                 :system-tags      #{:contact/added :contact/request-received}
                  :address          address} contact)))))
   (testing "the message is coming from us"
     (testing "it does not update contacts"

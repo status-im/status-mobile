@@ -94,17 +94,21 @@
   (assoc message :outgoing (and (= from current-public-key)
                                 (not (system-message? message)))))
 
-(defn build-desktop-notification [{:keys [db] :as cofx} {:keys [chat-id timestamp content from] :as message}]
-  (let [chat-name'        (chat.db/chat-name (get-in db [:chats chat-id]) from)
-        contact-name'     (if-let [contact-name (get-in db [:contacts/contacts from :name])]
-                            contact-name
-                            (:name (contact.db/public-key->new-contact from)))
-        shown-chat-name   (when-not (= chat-name' contact-name') chat-name') ; No point in repeating contact name if the chat name already contains the same name
+(defn build-desktop-notification
+  [{:keys [db] :as cofx} {:keys [chat-id timestamp content from] :as message}]
+  (let [{:keys [group-chat] :as chat} (get-in db [:chats chat-id])
+        contact-name (get-in db [:contacts/contacts from :name]
+                             (:name (contact.db/public-key->new-contact from)))
+        chat-name        (if group-chat
+                           (chat.db/group-chat-name chat)
+                           contact-name)
+        ;; contact name and chat-name are the same in 1-1 chats
+        shown-chat-name   (when group-chat chat-name)
         timestamp'        (when-not (< (time/seconds-ago (time/to-date timestamp)) 15)
                             (str " @ " (time/to-short-str timestamp)))
         body-first-line   (when (or shown-chat-name timestamp')
                             (str shown-chat-name timestamp' ":\n"))]
-    {:title       contact-name'
+    {:title       contact-name
      :body        (str body-first-line (:text content))
      :prioritary? (not (chat-model/multi-user-chat? cofx chat-id))}))
 

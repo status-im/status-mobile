@@ -4,6 +4,7 @@
   in our contacts."
   (:require
    [taoensso.timbre :as log]
+   [status-im.contact.db :as contact.db]
    [status-im.utils.fx :as fx]
    [status-im.transport.shh :as shh]
    [status-im.transport.message.public-chat :as transport.public-chat]
@@ -46,7 +47,7 @@
                                           (contains? members-joined my-public-key)
                                           (contains? members their-public-key)))
                                    (vals (:chats db)))]
-    (when (and (not= false (get-in db [:contacts/contacts their-public-key :pending?]))
+    (when (and (not (contact.db/active? db their-public-key))
                (not= my-public-key their-public-key)
                (not (get-in db [:chats their-public-key :is-active]))
                (empty? active-group-chats))
