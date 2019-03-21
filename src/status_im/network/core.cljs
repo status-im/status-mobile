@@ -108,22 +108,27 @@
   {:db       (assoc db :networks/manage (validate-manage default-manage))
    :dispatch [:navigate-to :edit-network]})
 
-(fx/defn connect-success [{:keys [db now] :as cofx} {:keys [network-id on-success client-version]}]
-  (let [current-network (get-in db [:account/account :networks (:network db)])]
-    (if (ethereum/network-with-upstream-rpc? current-network)
-      (fx/merge cofx
-                #(action-handler on-success {:network-id network-id :client-version client-version} %)
-                (accounts.update/account-update
-                 {:network      network-id
-                  :last-updated now}
-                 {:success-event [:accounts.update.callback/save-settings-success]}))
-      (fx/merge cofx
-                {:ui/show-confirmation {:title               (i18n/label :t/close-app-title)
-                                        :content             (i18n/label :t/close-app-content)
-                                        :confirm-button-text (i18n/label :t/close-app-button)
-                                        :on-accept           #(re-frame/dispatch [:network.ui/save-non-rpc-network-pressed network-id])
-                                        :on-cancel           nil}}
-                #(action-handler on-success {:network-id network-id :client-version client-version} %)))))
+(fx/defn connect-success [{:keys [db] :as cofx}
+                          {:keys [network-id on-success client-version]}]
+  (let [current-network (get-in db [:account/account :networks (:network db)])
+        network-with-upstream-rpc? (ethereum/network-with-upstream-rpc?
+                                    current-network)]
+    (fx/merge
+     cofx
+     {:ui/show-confirmation
+      {:title               (i18n/label :t/close-app-title)
+       :content             (if network-with-upstream-rpc?
+                              (i18n/label :t/logout-app-content)
+                              (i18n/label :t/close-app-content))
+       :confirm-button-text (i18n/label :t/close-app-button)
+       :on-accept           #(re-frame/dispatch
+                              [(if network-with-upstream-rpc?
+                                 :network.ui/save-rpc-network-pressed
+                                 :network.ui/save-non-rpc-network-pressed)
+                               network-id])
+       :on-cancel           nil}}
+     #(action-handler on-success {:network-id network-id
+                                  :client-version client-version} %))))
 
 (defn connect-failure [{:keys [network-id on-failure reason]}]
   (action-handler on-failure
@@ -192,6 +197,14 @@
                                   {:network      network
                                    :last-updated now}
                                   {:success-event [:network.callback/non-rpc-network-saved]}))
+
+(fx/defn save-rpc-network
+  [{:keys [now] :as cofx} network]
+  (accounts.update/account-update
+   cofx
+   {:network      network
+    :last-updated now}
+   {:success-event [:accounts.update.callback/save-settings-success]}))
 
 (fx/defn remove-network
   [{:keys [db now] :as cofx} network]

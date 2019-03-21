@@ -640,6 +640,7 @@
     "soon": "Soon",
     "wallet-asset": "Asset",
     "close-app-content": "The app will stop and close. When you reopen it, the selected network will be used",
+    "logout-app-content": "The account will be logged out. When you log in again, the selected network will be used",
     "password-description": "You'll need this password to open the app and confirm transactions.",
     "currency-display-name-afn": "Afghanistan Afghani",
     "word-n-description": "In order to check if you have backed up your recovery phrase correctly, enter the word #{{number}} above.",

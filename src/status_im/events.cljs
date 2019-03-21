@@ -499,6 +499,11 @@
    (network/save-non-rpc-network cofx network)))
 
 (handlers/register-handler-fx
+ :network.ui/save-rpc-network-pressed
+ (fn [cofx [_ network]]
+   (network/save-rpc-network cofx network)))
+
+(handlers/register-handler-fx
  :network.ui/remove-network-confirmed
  (fn [cofx [_ network]]
    (network/remove-network cofx network)))
