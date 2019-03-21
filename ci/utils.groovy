@@ -41,7 +41,7 @@ def pkgFilename(type, ext) {
 
 def doGitRebase() {
   /* rebasing on relases defeats the point of having a release branch */
-  if (getBuildType() == 'release') {
+  if (params.BUILD_TYPE == 'release') {
     println 'Skipping rebase due to release build...'
     return
   }
@@ -110,7 +110,7 @@ def uploadArtifact(path) {
   def domain = 'ams3.digitaloceanspaces.com'
   def bucket = 'status-im'
   /* There's so many PR builds we need a separate bucket */
-  if (params.BUILD_TYPE == 'pr') {
+  if (getBuildType() == 'pr') {
     bucket = 'status-im-prs'
   }
   /* WARNING: s3cmd can't guess APK MIME content-type */
