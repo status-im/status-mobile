@@ -43,7 +43,7 @@ for platform in "$@"; do
         # ./build/bin/statusgo-ios-9.3-framework/Statusgo.framework
         #
         # You can get this by running:
-        # make prepare-{ios,android}
+        # scripts/prepare-for-platform.sh {ios|android}
         #
         # Locally you can see it here:
         # > (cd status-react && find . -iname "Statusgo.framework")
