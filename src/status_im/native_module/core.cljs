@@ -96,3 +96,5 @@
 (def update-mailservers native-module/update-mailservers)
 
 (def rooted-device? native-module/rooted-device?)
+
+(def chaos-mode-update native-module/chaos-mode-update)
