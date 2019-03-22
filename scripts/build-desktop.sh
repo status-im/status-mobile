@@ -72,7 +72,7 @@ function joinExistingPath() {
 
 function join { local IFS="$1"; shift; echo "$*"; }
 
-CMAKE_EXTRA_FLAGS=$'-DCMAKE_CXX_FLAGS:=\'-DBUILD_FOR_BUNDLE=1\''
+CMAKE_EXTRA_FLAGS="-DCMAKE_CXX_FLAGS:='-DBUILD_FOR_BUNDLE=1'"
 [ -n $STATUS_NO_LOGGING ] && CMAKE_EXTRA_FLAGS="$CMAKE_EXTRA_FLAGS -DSTATUS_NO_LOGGING=1"
 if is_windows_target; then
   CMAKE_EXTRA_FLAGS="$CMAKE_EXTRA_FLAGS -DCMAKE_TOOLCHAIN_FILE='Toolchain-Ubuntu-mingw64.cmake'"
@@ -146,23 +146,23 @@ function buildClojureScript() {
 
 function compile() {
   # Temporarily add path to javascript bundle to package.json
-  local jsBundleLine="\"desktopJSBundlePath\": \"$WORKFOLDER/Status.jsbundle\""
+  local JS_BUNDLE_PATH="$WORKFOLDER/Status.jsbundle"
+  local jsBundleLine="\"desktopJSBundlePath\": \"$JS_BUNDLE_PATH\""
   local jsPackagePath=$(joinExistingPath "$STATUSREACTPATH" 'desktop_files/package.json.orig')
   local tmp=$(mktemp)
   jq ".=(. + {$jsBundleLine})" "$jsPackagePath" > "$tmp" && mv "$tmp" "$jsPackagePath"
   echo -e "${YELLOW}Added 'desktopJSBundlePath' line to $jsPackagePath:${NC}"
   echo ""
 
+  local EXTERNAL_MODULES_DIR="$(joinStrings ${external_modules_dir[@]})"
+  local DESKTOP_FONTS="$(joinStrings ${external_fonts[@]})"
   pushd desktop
     rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile modules reportApp/CMakeFiles desktop/node_modules/google-breakpad/CMakeFiles desktop/node_modules/react-native-keychain/desktop/qtkeychain-prefix/src/qtkeychain-build/CMakeFiles desktop/node_modules/react-native-keychain/desktop/qtkeychain
-    EXTERNAL_MODULES_DIR="$(joinStrings ${external_modules_dir[@]})"
-    DESKTOP_FONTS="$(joinStrings ${external_fonts[@]})"
-    JS_BUNDLE_PATH="$WORKFOLDER/Status.jsbundle"
     if is_windows_target; then
       export PATH=$STATUSREACTPATH:$PATH
 
       # Get the toolchain bin folder from toolchain/conanbuildinfo.json
-      bin_dirs=$(jq -r '.dependencies[0].bin_paths | .[]' toolchain/conanbuildinfo.json)
+      local bin_dirs=$(jq -r '.dependencies[0].bin_paths | .[]' toolchain/conanbuildinfo.json)
       while read -r bin_dir; do
         if [ ! -d $bin ]; then
           echo -e "${RED}Could not find $bin_dir directory from 'toolchain/conanbuildinfo.json', aborting${NC}"
@@ -172,11 +172,11 @@ function compile() {
       done <<< "$bin_dirs"
     fi
     cmake -Wno-dev \
+          $CMAKE_EXTRA_FLAGS \
           -DCMAKE_BUILD_TYPE=Release \
           -DEXTERNAL_MODULES_DIR="$EXTERNAL_MODULES_DIR" \
           -DDESKTOP_FONTS="$DESKTOP_FONTS" \
-          -DJS_BUNDLE_PATH="$JS_BUNDLE_PATH" \
-          $CMAKE_EXTRA_FLAGS || exit 1
+          -DJS_BUNDLE_PATH="$JS_BUNDLE_PATH" || exit 1
     make -S -j5 || exit 1
   popd
 
