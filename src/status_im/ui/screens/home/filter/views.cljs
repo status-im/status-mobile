@@ -117,23 +117,25 @@
     :key-fn                      first
     ;; true by default on iOS
     :stickySectionHeadersEnabled false
-    :render-section-header-fn    (fn [{:keys [title data]}]
-                                   [react/view {:style {:height 40}}
-                                    [react/text {:style styles/filter-section-title}
-                                     (i18n/label title)]])
-    :render-section-footer-f     (fn [{:keys [title data]}]
-                                   (when (empty? data)
-                                     [list/big-list-item
-                                      {:text          (i18n/label (if (= title "messages")
-                                                                    :t/messages-search-coming-soon
-                                                                    :t/no-result))
-                                       :text-color    colors/gray
-                                       :hide-chevron? true
-                                       :action-fn     #()
-                                       :icon          (case title
-                                                        "messages" :main-icons/private-chat
-                                                        "browser" :main-icons/browser
-                                                        "chats" :main-icons/message)
-                                       :icon-color    colors/gray}]))
+    :render-section-header-fn
+    (fn [{:keys [title data]}]
+      [react/view {:style {:height 40}}
+       [react/text {:style styles/filter-section-title}
+        (i18n/label title)]])
+    :render-section-footer-fn
+    (fn [{:keys [title data]}]
+      (when (empty? data)
+        [list/big-list-item
+         {:text          (i18n/label (if (= title "messages")
+                                       :t/messages-search-coming-soon
+                                       :t/no-result))
+          :text-color    colors/gray
+          :hide-chevron? true
+          :action-fn     #()
+          :icon          (case title
+                           "messages" :main-icons/private-chat
+                           "browser" :main-icons/browser
+                           "chats" :main-icons/message)
+          :icon-color    colors/gray}]))
     :render-fn                   (fn [home-item]
                                    [inner-item/home-list-item home-item])}])
