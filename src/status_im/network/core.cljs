@@ -139,18 +139,29 @@
   (if-let [config (get-in db [:account/account :networks network-id :config])]
     (if-let [upstream-url (get-in config [:UpstreamConfig :URL])]
       {:http-post {:url                   upstream-url
-                   :data                  (types/clj->json {:jsonrpc "2.0"
-                                                            :method  "web3_clientVersion"
-                                                            :id      1})
+                   :data                  (types/clj->json [{:jsonrpc "2.0"
+                                                             :method  "web3_clientVersion"
+                                                             :id      1}
+                                                            {:jsonrpc "2.0"
+                                                             :method  "net_version"
+                                                             :id      2}])
                    :opts                  {:headers {"Content-Type" "application/json"}}
                    :success-event-creator (fn [{:keys [response-body]}]
-                                            (if-let [client-version (:result (http/parse-payload response-body))]
-                                              [::connect-success {:network-id     network-id
-                                                                  :on-success     on-success
-                                                                  :client-version client-version}]
-                                              [::connect-failure {:network-id network-id
-                                                                  :on-failure on-failure
-                                                                  :reason     (i18n/label :t/network-invalid-url)}]))
+                                            (let [responses           (http/parse-payload response-body)
+                                                  client-version      (:result (first responses))
+                                                  expected-network-id (:NetworkId config)
+                                                  rpc-network-id      (when-let [res (:result (second responses))]
+                                                                        (js/parseInt res))]
+                                              (if (and client-version network-id
+                                                       (= expected-network-id rpc-network-id))
+                                                [::connect-success {:network-id     network-id
+                                                                    :on-success     on-success
+                                                                    :client-version client-version}]
+                                                [::connect-failure {:network-id network-id
+                                                                    :on-failure on-failure
+                                                                    :reason     (if (not= expected-network-id rpc-network-id)
+                                                                                  (i18n/label :t/network-invalid-network-id)
+                                                                                  (i18n/label :t/network-invalid-url))}])))
                    :failure-event-creator (fn [{:keys [response-body status-code]}]
                                             (let [reason (if status-code
                                                            (i18n/label :t/network-invalid-status-code {:code status-code})

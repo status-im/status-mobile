@@ -935,6 +935,7 @@
     "share-public-chat-text": "Check out this public chat on the Status app: {{link}}",
     "share-dapp-text": "Check out this DApp I'm using on Status: {{link}}",
     "network-invalid-url": "Network URL is invalid",
+    "network-invalid-network-id": "Specified network id doesn't correspond to network id by RPC url",
     "network-invalid-status-code": "Invalid status code: {{code}}",
     "extension-is-already-added": "The extension is already installed",
     "extension-uninstalled": "The extension was uninstalled",
