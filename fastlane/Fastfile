@@ -23,6 +23,46 @@ def unlock_keychain_if_needed
     end
 end
 
+def curl_upload(url, file, user, conn_timeout=5, timeout=60, retries=3)
+    begin
+        return sh(
+            "curl",
+            "--fail",
+            "--silent",
+            "--user", user,
+            "--request", "POST",
+            "--header", "Content-Type: application/octet-stream",
+            "--data-binary", "@../#{file}",         # `fastlane` is the cwd so we go one folder up
+            # we retry few times if upload doesn't succeed in sensible time
+            "--retry-connrefused",                  # consider ECONNREFUSED as error too retry
+            "--connect-timeout", conn_timeout.to_s, # max time in sec. for establishing connection 
+            "--max-time", timeout.to_s,             # max time in sec. for whole transfer to take
+            "--retry", retries.to_s,                # number of retries to attempt
+            "--retry-max-time", timeout.to_s,       # same as --max-time but for retries
+            "--retry-delay", "0",                   # an exponential backoff algorithm in sec.
+            url
+        )
+    rescue => error
+        UI.error "Error: #{error}"
+        raise
+    end
+end
+
+def retry_curl_upload(url, file, user, conn_timeout=5, timeout=60, retries=3)
+    # since curl doesn't retry on connection and operation timeouts we roll our own
+    try = 0
+    begin
+        return curl_upload(url, file, user, conn_timeout, timeout, retries)
+    rescue => error
+        try += 1
+        if try <= retries
+            UI.important "Warning: Retrying cURL upload! (attempt #{try}/#{retries})"
+            retry
+        else
+            raise
+        end
+    end
+end
 
 # uploads `file` to sauce labs (overwrites if there is anoter file from the
 # same commit)
@@ -32,31 +72,12 @@ def upload_to_saucelabs(file)
     unique_name = ENV["SAUCE_LABS_NAME"]
 
     url = "https://saucelabs.com/rest/v1/storage/#{username}/#{unique_name}?overwrite=true"
-    # retry settings
-    conn_timeout = "5"
-    upload_timeout = "60"
-    upload_retries = "3"
 
-    upload_result = sh(
-        "curl",
-        "-u", username + ':' + key,
-        "-X", "POST",
-        "-H", "Content-Type: application/octet-stream",
-        # we retry few times if upload doesn't succeed in sensible time
-        "--connect-timeout", conn_timeout,  # max time in sec. for establishing connection 
-        "--max-time", upload_timeout,       # max time in sec. for whole transfer to take
-        "--retry", upload_retries,          # number of retries to attempt
-        "--retry-max-time", upload_timeout, # same as --max-time but for retries
-        "--retry-delay", "0",               # an exponential backoff algorithm in sec.
-        url,
-        # this command has `status-react/fastlane` as cwd
-        # so we need to jump outside this folder to get a file
-        "--data-binary", "@" + "../" + file
-    )
+    upload_result = retry_curl_upload(url, file, "#{username}:#{key}")
 
     # fail the lane if upload fails
     UI.user_error!(
-        "failed to upload file to saucelabs despite #{upload_retries} retries: #{upload_result}"
+        "failed to upload file to saucelabs despite retries: #{upload_result}"
     ) unless upload_result.include? "filename"
 end
 
