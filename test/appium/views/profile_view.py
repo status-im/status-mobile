@@ -331,18 +331,12 @@ class AddBootnodeButton(BaseButton):
         self.locator = self.Locator.xpath_selector("(//*[@content-desc='icon'])[2]")
 
 
-class BootnodeNameInput(BaseEditBox):
-
-    def __init__(self, driver):
-        super(BootnodeNameInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.EditText[@text='Specify a name']")
-
-
 class BootnodeAddressInput(BaseEditBox):
 
     def __init__(self, driver):
         super(BootnodeAddressInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.EditText[@text='Specify bootnode address']")
+        self.locator = self.Locator.xpath_selector(
+            "//*[@text='Bootnode address']/following-sibling::*[1]/android.widget.EditText")
 
 
 class EnableBootnodesToggle(BaseEditBox):
@@ -363,7 +357,8 @@ class MailServerAddressInput(BaseEditBox):
 
     def __init__(self, driver):
         super(MailServerAddressInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.EditText[@text='Specify a mailserver address']")
+        self.locator = self.Locator.xpath_selector(
+            "//*[@text='Mailserver address']/following-sibling::*[1]/android.widget.EditText")
 
 
 class MailServerAutoSelectionButton(BaseButton):
