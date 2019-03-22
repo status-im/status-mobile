@@ -435,3 +435,13 @@ void RCTStatus::updateMailservers(QString enodes, double callbackId) {
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, enodes, callbackId);
 }
+
+void RCTStatus::chaosModeUpdate(bool on, double callbackId) {
+    Q_D(RCTStatus);
+    qCDebug(RCTSTATUS) << "::chaosModeUpdate call - callbackId:" << callbackId;
+    QtConcurrent::run([&](bool on, double callbackId) {
+            const char* result = ChaosModeUpdate(on);
+            logStatusGoResult("::chaosModeUpdate ChaosModeUpdate", result);
+            d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
+        }, on, callbackId);
+}
