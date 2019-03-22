@@ -43,7 +43,7 @@ class AllowButton(BaseButton):
 class DenyButton(BaseButton):
     def __init__(self, driver):
         super(DenyButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Deny']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Deny' or @text='DENY']")
 
 
 class DeleteButton(BaseButton):
@@ -171,7 +171,7 @@ class AddButton(BaseButton):
     def __init__(self, driver):
         super(AddButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            "//android.widget.TextView[@text='ADD']")
+            "//android.widget.TextView[@text='Add']")
 
 
 class DoneButton(BaseButton):
