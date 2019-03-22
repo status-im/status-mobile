@@ -487,6 +487,7 @@ class ProfileView(BaseView):
         network_button = NetworkSettingsButton.NetworkButton(self.driver, network)
         network_button.click()
         self.connect_button.click()
+        self.confirm_button.click()
         from views.sign_in_view import SignInView
         signin_view = SignInView(self.driver)
         signin_view.sign_in()
