@@ -52,4 +52,36 @@ def prepNixEnvironment() {
   }
 }
 
+def prep(type = 'nightly') {
+  prepNixEnvironment()
+
+  utils.doGitRebase()
+  /* ensure that we start from a known state */
+  sh 'make clean'
+  /* select type of build */
+  switch (type) {
+    case 'nightly':
+      sh 'cp .env.nightly .env'; break
+    case 'release':
+      sh 'cp .env.prod .env'; break
+    case 'e2e':
+      sh 'cp .env.e2e .env'; break
+    default:
+      sh 'cp .env.jenkins .env'; break
+  }
+  if (env.TARGET_PLATFORM == 'android' || env.TARGET_PLATFORM == 'ios') {
+    /* Run at start to void mismatched numbers */
+    utils.genBuildNumber()
+    /* install ruby dependencies */
+    utils.nix_sh 'bundle install --quiet'
+  }
+
+  def prepareTarget=env.TARGET_PLATFORM
+  if (env.TARGET_PLATFORM == 'macos' || env.TARGET_PLATFORM == 'linux' || env.TARGET_PLATFORM == 'windows') {
+    prepareTarget='desktop'
+  }
+  /* node deps, pods, and status-go download */
+  utils.nix_sh "make prepare-${prepareTarget}"
+}
+
 return this

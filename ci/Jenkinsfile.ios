@@ -40,12 +40,11 @@ pipeline {
           /* Necessary to load methods */
           mobile = load 'ci/mobile.groovy'
           cmn    = load 'ci/common.groovy'
-          btype   = cmn.utils.getBuildType()
+          btype  = cmn.utils.getBuildType()
           print "Running ${btype} build!"
           cmn.ci.abortPreviousRunningBuilds()
           /* Cleanup and Prep */
-          cmn.prepNixEnvironment()
-          mobile.prep(btype)
+          cmn.prep(btype)
         }
       }
     }

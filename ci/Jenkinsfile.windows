@@ -61,8 +61,7 @@ pipeline {
           print "Running ${btype} build!"
           cmn.ci.abortPreviousRunningBuilds()
           /* Cleanup and Prep */
-          cmn.prepNixEnvironment()
-          desktop.prepDeps()
+          cmn.prep(btype)
         }
       }
     }

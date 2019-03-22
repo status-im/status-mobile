@@ -59,7 +59,7 @@ pipeline {
           print "Running ${btype} build!"
           cmn.ci.abortPreviousRunningBuilds()
           /* Cleanup and Prep */
-          mobile.prep(btype)
+          cmn.prep(btype)
         }
       }
     }

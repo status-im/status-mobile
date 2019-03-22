@@ -42,11 +42,6 @@ def uploadArtifact(filename) {
 
 /* MAIN --------------------------------------------------*/
 
-def prepDeps() {
-  utils.doGitRebase()
-  cleanupAndDeps()
-}
-
 def compile() {
   /* disable logs for desktop builds when releasing */
   if (params.BUILD_TYPE == 'release') {
