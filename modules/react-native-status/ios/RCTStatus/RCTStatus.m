@@ -254,6 +254,16 @@ RCT_EXPORT_METHOD(updateMailservers:(NSString *)enodes
 #endif
 }
 
+//////////////////////////////////////////////////////////////////// chaosModeUpdate
+RCT_EXPORT_METHOD(chaosModeUpdate:(BOOL)on
+                  callback:(RCTResponseSenderBlock)callback) {
+  NSString* result = StatusgoChaosModeUpdate(on);
+  callback(@[result]);
+#if DEBUG
+  NSLog(@"ChaosModeUpdate() method called");
+#endif
+}
+
 //////////////////////////////////////////////////////////////////// recoverAccount
 RCT_EXPORT_METHOD(recoverAccount:(NSString *)passphrase
                   password:(NSString *)password

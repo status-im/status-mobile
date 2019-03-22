@@ -149,6 +149,10 @@
   (when status
     (.updateMailservers status enodes on-result)))
 
+(defn chaos-mode-update [on on-result]
+  (when status
+    (.chaosModeUpdate status on on-result)))
+
 (defn rooted-device? [callback]
   (cond
     ;; we assume that iOS is safe by default
