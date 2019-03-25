@@ -3,7 +3,7 @@ pipeline {
     /* the -u is necessary for acces to /nix */
     docker {
       label 'linux'
-      image 'statusteam/nix:jenkins-1.0.0-158e62e1'
+      image 'statusteam/nix:jenkins-1.0.0-150d5721'
     }
   }
 

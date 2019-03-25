@@ -26,7 +26,6 @@ in
       cmake
       extra-cmake-modules
       file
-      go
     ] ++ lib.optional targetLinux linuxPlatform.buildInputs
       ++ lib.optional targetDarwin darwinPlatform.buildInputs
       ++ lib.optional (! targetWindows) qt5.full
@@ -37,7 +36,4 @@ in
       export QT_PATH="${qt5.full}"
       export PATH="${stdenv.lib.makeBinPath [ qt5.full ]}:$PATH"
     '');
-
-    # Fixes Cgo related build failures (see https://github.com/NixOS/nixpkgs/issues/25959 )
-    hardeningDisable = linuxPlatform.hardeningDisable;
   }

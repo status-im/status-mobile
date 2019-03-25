@@ -2,7 +2,7 @@ pipeline {
   agent {
     docker {
       label 'linux'
-      image 'statusteam/nix:jenkins-1.0.0-158e62e1'
+      image 'statusteam/nix:jenkins-1.0.0-150d5721'
       args (
         "-v /tmp/Android/Sdk:/home/jenkins/.status/Android/Sdk:rw "+
         "-v /var/tmp/lein:/var/tmp/lein:rw "+
@@ -43,7 +43,7 @@ pipeline {
     NPM_CONFIG_CACHE = '/var/tmp/npm'
     CI_ENVIRONMENT = 'jenkins'
     LEIN_HOME = '/var/tmp/lein'
-    NIX_CONF_DIR = "${env.WORKSPACE}/scripts/lib/setup/nix"
+    NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     VERBOSE_LEVEL = '3'
   }
 

@@ -18,8 +18,8 @@ if (WIN32)
                              -DBUILD_freedesktop_backend=OFF -DBUILD_snarl=OFF -DBUILD_growl=OFF -DBUILD_trayicon=OFF -DBUILD_pushover_backend=OFF)
 endif()
 
+set(SN_LIBPATHSUFFIX /${CMAKE_LIBRARY_ARCHITECTURE})
 if (UNIX AND NOT APPLE)
-  set(SN_LIBPATHSUFFIX /${CMAKE_LIBRARY_ARCHITECTURE})
   set(SnoreNotifyFreedesktop_STATIC_LIB ${SN_PREFIX}/lib${SN_LIBPATHSUFFIX}/${CMAKE_STATIC_LIBRARY_PREFIX}snore_backend_freedesktop${CMAKE_STATIC_LIBRARY_SUFFIX})
 
   set(SnoreNotify_LIBS ${SnoreNotifyFreedesktop_STATIC_LIB})
@@ -40,7 +40,8 @@ set(SnoreNotify_STATIC_LIB ${SN_PREFIX}/lib${SN_LIBPATHSUFFIX}/${CMAKE_STATIC_LI
 set(SnoreNotifyBackend_STATIC_LIB ${SN_PREFIX}/lib${SN_LIBPATHSUFFIX}/${CMAKE_STATIC_LIBRARY_PREFIX}snore_backend_snore${CMAKE_STATIC_LIBRARY_SUFFIX})
 set(SnoreNotifyBackendSettings_STATIC_LIB ${SN_PREFIX}/lib${SN_LIBPATHSUFFIX}/${CMAKE_STATIC_LIBRARY_PREFIX}snore_settings_backend_snore${CMAKE_STATIC_LIBRARY_SUFFIX})
 set(SnoreNotifySettings_STATIC_LIB ${SN_PREFIX}/lib${SN_LIBPATHSUFFIX}/${CMAKE_STATIC_LIBRARY_PREFIX}snoresettings-qt5${CMAKE_STATIC_LIBRARY_SUFFIX})
-set(SnoreNotify_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${SN_PREFIX} -DSNORE_STATIC=ON -DBUILD_daemon=OFF -DBUILD_settings=OFF
+set(SnoreNotify_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${SN_PREFIX} -DCMAKE_INSTALL_LIBDIR=lib${SN_LIBPATHSUFFIX}
+                           -DSNORE_STATIC=ON -DBUILD_daemon=OFF -DBUILD_settings=OFF
                            -DBUILD_snoresend=OFF ${SnoreNotify_CMAKE_ARGS})
 set(SnoreNotify_CMAKE_ARGS ${SnoreNotify_CMAKE_ARGS}
                            "-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}"

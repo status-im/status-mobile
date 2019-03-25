@@ -1,7 +1,9 @@
 utils = load('ci/utils.groovy')
 
 def plutil(name, value) {
-  utils.nix_sh "plutil -replace ${name} -string ${value} ios/StatusIm/Info.plist"
+  return """
+  plutil -replace ${name} -string ${value} ios/StatusIm/Info.plist;
+"""
 }
 
 def bundle(type) {
@@ -16,9 +18,11 @@ def bundle(type) {
     default:            target = 'nightly';
   }
   /* configure build metadata */
-  plutil('CFBundleShortVersionString', utils.getVersion('mobile_files'))
-  plutil('CFBundleVersion', utils.genBuildNumber())
-  plutil('CFBundleBuildUrl', currentBuild.absoluteUrl)
+  utils.nix_sh(
+    plutil('CFBundleShortVersionString', utils.getVersion('mobile_files')) +
+    plutil('CFBundleVersion', utils.genBuildNumber()) +
+    plutil('CFBundleBuildUrl', currentBuild.absoluteUrl)
+  )
   /* the dir might not exist */
   sh 'mkdir -p status-e2e'
   /* build the actual app */

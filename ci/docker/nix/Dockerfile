@@ -82,10 +82,12 @@ RUN mkdir -p /home/jenkins/.status/Android/Sdk
 COPY --from=android_sdk /usr/lib/android-sdk /home/jenkins/.status/Android/Sdk
 RUN chmod o+w /home/jenkins/.status/Android/Sdk
 
+ARG GIT_COMMIT
+
 RUN export USER=jenkins \
  && /tmp/nix-install.sh \
  && . ~/.nix-profile/etc/profile.d/nix.sh \
- && nix-shell https://github.com/status-im/status-react/tarball/develop --run 'echo'
+ && nix-build --no-out-link https://github.com/status-im/status-react/tarball/${GIT_COMMIT}
 
 # hack to avoid calling login
 ENV USER=jenkins

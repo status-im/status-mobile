@@ -23,14 +23,18 @@ function install_nix() {
         echo "if [ -e ${HOME}/.nix-profile/etc/profile.d/nix.sh ]; then . ${HOME}/.nix-profile/etc/profile.d/nix.sh; fi # added by make setup Status script" >> ~/.bashrc
       fi
 
+      local buildFlags=''
+      [ -n "$CI_ENVIRONMENT" ] && buildFlags='-v'
       . ${HOME}/.nix-profile/etc/profile.d/nix.sh && \
       NIX_CONF_DIR=$(cd "${BASH_SOURCE%/*}" && pwd)/nix \
-        nix-build --no-out-link -A env.all ${GIT_ROOT}/default.nix
+        nix build --no-link ${buildFlags} -f ${GIT_ROOT}/default.nix
 
-      echo -e "${YELLOW}**********************************************************************************************************"
-      echo "The Nix package manager was successfully installed. Please run \`make shell\` to initialize the Nix environment."
-      echo "If this doesn't work, you might have to sign out and back in, in order for the environment to be reloaded."
-      echo -e "**********************************************************************************************************${NC}"
+      if [ $? -eq 0 ]; then
+        echo -e "${YELLOW}**********************************************************************************************************"
+        echo "The Nix package manager was successfully installed. Please run \`make shell\` to initialize the Nix environment."
+        echo "If this doesn't work, you might have to sign out and back in, in order for the environment to be reloaded."
+        echo -e "**********************************************************************************************************${NC}"
+      fi
     else
       echo "Please see https://nixos.org/nix/manual/#chap-installation"
     fi

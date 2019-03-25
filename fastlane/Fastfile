@@ -103,7 +103,10 @@ def build_ios_adhoc(readonly)
         export_method: "ad-hoc",
         # Temporary fix for Xcode 10.1
         xcargs: "-UseModernBuildSystem=N",
-        output_directory: "status-adhoc"
+        output_directory: "status-adhoc",
+        export_options: {
+            "UseModernBuildSystem": "N"
+        }
     )
 end
 
@@ -130,7 +133,8 @@ def build_ios_e2e
         destination: "generic/platform=iOS Simulator",
         # 2. fixing compilations issues as stated in https://stackoverflow.com/a/20505258
         #    it looks like i386 isn't supported by React Native
-        xcargs: "ARCHS=\"x86_64\" ONLY_ACTIVE_ARCH=NO",
+        # UseModernBuildSystem: Temporary fix for Xcode 10.1
+        xcargs: "ARCHS=\"x86_64\" ONLY_ACTIVE_ARCH=NO -UseModernBuildSystem=N",
         # 3. directory where to up StatusIm.app
         derived_data_path: "status-e2e",
         output_name: "StatusIm.app",
@@ -139,12 +143,13 @@ def build_ios_e2e
         scheme: "StatusIm",
         workspace: "ios/StatusIm.xcworkspace",
         configuration: "Release",
-        # Temporary fix for Xcode 10.1
-        xcargs: "-UseModernBuildSystem=N",
         # Simulator apps can't be archived...
         skip_archive: true,
         # ...and we don't need an .ipa file for them, because we use .app directly
-        skip_package_ipa: true
+        skip_package_ipa: true,
+        export_options: {
+            "UseModernBuildSystem": "N"
+        }
     )
 
     zip(

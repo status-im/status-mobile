@@ -20,19 +20,5 @@ dependencies {
     implementation 'com.facebook.react:react-native:+' // from node_modules
     compile 'com.github.status-im:function:0.0.1'
 
-    // WARNING: If you change this, make sure the GitHub release of the .aar exists.
-    // WARNING: status-go is downloaded in Makefile and has a hardcoded version too.
-    String statusGoVersion = getStatusGoVersion()
-    final String statusGoGroup = 'status-im', statusGoName = 'status-go'
-
-    // Check if the local status-go jar exists, and compile against that if it does
-    final String localStatusLibOutputDir = "${rootDir}/../modules/react-native-status/android/libs", localVersion = 'local'
-    final File localFile = new File("${localStatusLibOutputDir}/${statusGoGroup}/${statusGoName}/${localVersion}/${statusGoName}-${localVersion}.aar")
-    if ( localFile.exists() ) {
-        // Use the local version
-        logger.warn("Using local build of Android status-go library ${localFile.absolutePath}.")
-        statusGoVersion = localVersion
-    }
-
-    implementation(group: statusGoGroup, name: statusGoName, version: statusGoVersion, ext: 'aar')
+    implementation(group: 'status-im', name: 'status-go', version: getStatusGoVersion(), ext: 'aar')
 }
