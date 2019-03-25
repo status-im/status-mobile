@@ -169,15 +169,15 @@
        (when-not online?
          [wallet.main.views/snackbar :t/error-cant-send-transaction-offline])
        [react/view styles/send-transaction-form
-        [components/recipient-selector {:disabled? (or from-chat? modal?)
+        [components/recipient-selector {:disabled? (or from-chat? modal? show-password-input?)
                                         :address   to
                                         :name      to-name
                                         :modal?    modal?}]
-        [components/asset-selector {:disabled? (or from-chat? modal?)
+        [components/asset-selector {:disabled? (or from-chat? modal? show-password-input?)
                                     :error     asset-error
                                     :type      :send
                                     :symbol    symbol}]
-        [components/amount-selector {:disabled?     (or from-chat? modal?)
+        [components/amount-selector {:disabled?     (or from-chat? modal? show-password-input?)
                                      :error         (or amount-error
                                                         (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds))
                                                         (when-not sufficient-gas? (i18n/label :t/wallet-insufficient-gas)))
