@@ -304,8 +304,8 @@
           {:keys [symbol decimals]} (tokens/asset-for all-tokens chain symbol-param)
           {:keys [value error]}     (wallet.db/parse-amount amount decimals)
           next-view-id              (if (:wallet-set-up-passed? sender-account)
-                                      :wallet-send-transaction-modal
-                                      :wallet-onboarding-setup)]
+                                      :wallet-send-modal-stack
+                                      :wallet-send-modal-stack-with-onboarding)]
       (fx/merge cofx
                 {:db (-> db
                          (update-in [:wallet :send-transaction]
