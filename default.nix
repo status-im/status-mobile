@@ -20,7 +20,7 @@ with pkgs;
       "ios" = true;
       "" = true;
     }.${target-os} or false;
-    _stdenv = stdenvNoCC; # TODO: Try to use stdenv for Darwin
+    _stdenv = if stdenv.isDarwin then stdenvNoCC else stdenv; # TODO: Try to use stdenv for Darwin
     statusDesktop = callPackage ./scripts/lib/setup/nix/desktop { inherit target-os; stdenv = _stdenv; };
     statusMobile = callPackage ./scripts/lib/setup/nix/mobile { inherit target-os; stdenv = _stdenv; };
     nodeInputs = import ./scripts/lib/setup/nix/global-node-packages/output {
@@ -53,7 +53,6 @@ with pkgs;
       wget
     ] ++ nodePkgs
       ++ lib.optional isDarwin cocoapods
-      ++ lib.optional isLinux gcc7
       ++ lib.optional targetDesktop statusDesktop.buildInputs
       ++ lib.optional targetMobile statusMobile.buildInputs;
     shellHook =

@@ -5,6 +5,7 @@ with stdenv;
 
 let
   android-ndk = callPackage ./android-ndk { };
+  status-go = callPackage ./status-go { stdenv = pkgs.stdenv; };
   targetAndroid = {
     "android" = true;
     "" = true;
@@ -12,7 +13,8 @@ let
 
 in
   {
-    buildInputs = [ bundler ruby ] ++ ## bundler/ruby used for fastlane
+    buildInputs = [ status-go ] ++
+      [ bundler ruby ] ++ ## bundler/ruby used for fastlane
       lib.optional targetAndroid [
         android-ndk
         openjdk
