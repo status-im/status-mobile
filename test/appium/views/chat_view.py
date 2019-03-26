@@ -210,6 +210,15 @@ class DeclineChatButton(BaseButton):
         super(DeclineChatButton, self).__init__(driver)
         self.locator = self.Locator.text_part_selector('Decline invitation')
 
+class RemoveFromChatButton(BaseButton):
+    def __init__(self, driver):
+        super(RemoveFromChatButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="Remove from chat"]')
+
+class MakeAdminButton(BaseButton):
+    def __init__(self, driver):
+        super(MakeAdminButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="Make admin"]')
 
 class ChatElementByText(BaseText):
     def __init__(self, driver, text):
@@ -292,12 +301,18 @@ class HistoryTimeMarker(BaseText):
         super().__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="%s"]' % marker)
 
+class UsernameOptions(BaseButton):
+    def __init__(self, driver, username):
+        super(UsernameOptions, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='%s']/..//*[@content-desc='options']" % username)
 
 class GroupChatInfoView(BaseView):
     def __init__(self, driver):
         super(GroupChatInfoView, self).__init__(driver)
-
         self.add_members = AddGroupChatMembersButton(self.driver)
+
+    def get_username_options(self, username: str):
+        return UsernameOptions(self.driver, username)
 
 
 class ChatView(BaseView):
@@ -325,6 +340,8 @@ class ChatView(BaseView):
         self.leave_button = LeaveButton(self.driver)
         self.join_chat_button = JoinChatButton(self.driver)
         self.decline_invitation_button = DeclineChatButton(self.driver)
+        self.remove_user_button = RemoveFromChatButton(self.driver)
+        self.make_admin_button = MakeAdminButton(self.driver)
 
         self.chat_settings = ChatSettings(self.driver)
         self.view_profile_button = ViewProfileButton(self.driver)
@@ -441,6 +458,12 @@ class ChatView(BaseView):
             user_contact.scroll_to_element()
             user_contact.click()
         add_members_view.add_button.click()
+
+    def get_user_options(self, username: str):
+        self.chat_options.click()
+        group_info_view = self.group_info.click()
+        group_info_view.get_username_options(username).click()
+        return self
 
     def request_transaction_in_1_1_chat(self, asset, amount):
         self.commands_button.click()
