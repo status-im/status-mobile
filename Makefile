@@ -200,7 +200,7 @@ _unknown-startdev-target-%:
 _startdev-%: _ensure-in-nix-shell
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
 	$(eval DEVICE := $(word 3, $(subst -, , $@)))
-	$(MAKE) prepare-${SYSTEM} || $(MAKE) _unknown-startdev-target-$@
+	scripts/prepare-for-platform.sh ${SYSTEM} || $(MAKE) _unknown-startdev-target-$@
 	@ if [ -z "$(DEVICE)" ]; then \
 		$(MAKE) watch-$(SYSTEM) || $(MAKE) _unknown-startdev-target-$@; \
 	else \
