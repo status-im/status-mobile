@@ -206,7 +206,7 @@ function bundleWindows() {
   fi
 
   # TODO this needs to be fixed: status-react/issues/5378
-  local windowsBaseImagePath="$(nix show-derivation -r -f $STATUSREACTPATH | jq -r '.[] | select(.env.name=="StatusIm-Windows-base-image") | .outputs.out.path')/src"
+  local windowsBaseImagePath="$(nix show-derivation -r -f $STATUSREACTPATH | jq -r '.[] | select(.env.name=="StatusIm-Windows-base-image") | .outputs.out.path')/src/"
 
   local top_srcdir=$(joinExistingPath "$STATUSREACTPATH" '.')
   VERSION_MAJOR="$(cut -d'.' -f1 <<<"$VERSION")"

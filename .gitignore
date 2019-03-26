@@ -148,6 +148,7 @@ Status-Windows-x86_64.exe
 /desktop/lib/*
 /desktop/modules/*
 /desktop/Makefile
+/desktop/graph_info.json
 /desktop/run-app.bat
 /desktop/run-app.sh
 /desktop/CMakeFiles/
