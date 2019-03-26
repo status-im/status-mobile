@@ -34,4 +34,12 @@ echo "build.sh desktop fonts: "$desktopFonts
 rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile
 
 # Build project
-cmake -DCMAKE_BUILD_TYPE=Debug -DEXTERNAL_MODULES_DIR="$ExternalModulesPaths" -DJS_BUNDLE_PATH="$JsBundlePath" -DDESKTOP_FONTS="$desktopFonts" . && make
+cmake -DCMAKE_BUILD_TYPE=Debug \
+      -DEXTERNAL_MODULES_DIR="$ExternalModulesPaths" \
+      -DJS_BUNDLE_PATH="$JsBundlePath" \
+      -DDESKTOP_FONTS="$desktopFonts" \
+      -DCMAKE_C_COMPILER='gcc'\
+      -DCMAKE_CXX_COMPILER='g++' \
+      -DCMAKE_INSTALL_COMPONENT='' \
+      . && \
+make

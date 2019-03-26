@@ -11,4 +11,7 @@ let
 in
 {
   buildInputs = [ appimagekit linuxdeployqt patchelf baseImage ];
+
+  # Fixes Cgo related build failures (see https://github.com/NixOS/nixpkgs/issues/25959 )
+  hardeningDisable = [ "fortify" ];
 }
