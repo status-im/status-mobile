@@ -7,7 +7,7 @@
 
 (def interval-5m (* 5 60 1000))
 (defonce interval-id (atom nil))
-(def url "https://cloudflare-dns.com/dns-query?name=chaos-unicorn-day.status.im&type=TXT")
+(def url "https://cloudflare-dns.com/dns-query?name=chaos-unicorn-day-test.status.im&type=TXT")
 
 (defn chaos-mode-switched [chaos-mode?]
   (re-frame/dispatch [:accounts.ui/chaos-mode-switched chaos-mode?]))
