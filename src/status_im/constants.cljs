@@ -266,9 +266,5 @@
 (def ^:const scan-qr-code-callback "scan-qr-code-callback")
 
 ;;ipfs
-(def ^:const ipfs-add-url "https://ipfs.infura.io:5001/api/v0/add")
-(def ^:const ipfs-add-param-name "extension.event.edn")
-(def ^:const ipfs-cat-url "https://ipfs.infura.io/ipfs/")
-
 (def ^:const ipfs-proto-code "e3")
 (def ^:const swarm-proto-code "e4")
