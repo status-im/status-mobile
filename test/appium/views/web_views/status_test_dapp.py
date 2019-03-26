@@ -37,6 +37,15 @@ class TransactionsButton(BaseButton):
             from views.send_transaction_view import SendTransactionView
             return SendTransactionView(self.driver)
 
+    class SignTypedMessageButton(BaseButton):
+        def __init__(self, driver):
+            super(TransactionsButton.SignTypedMessageButton, self).__init__(driver)
+            self.locator = self.Locator.text_selector('Sign Typed Message')
+
+        def navigate(self):
+            from views.send_transaction_view import SendTransactionView
+            return SendTransactionView(self.driver)
+
     class DeployContractButton(BaseButton):
         def __init__(self, driver):
             super(TransactionsButton.DeployContractButton, self).__init__(driver)
@@ -109,6 +118,7 @@ class StatusTestDAppView(BaseWebView):
         self.send_two_tx_one_by_one_button = TransactionsButton.SendTwoTxOneByOneButton(self.driver)
         self.send_two_tx_in_batch_button = TransactionsButton.SendTwoTxInBatchButton(self.driver)
         self.test_filters_button = TransactionsButton.TestFiltersButton(self.driver)
+        self.sign_typed_message_button = TransactionsButton.SignTypedMessageButton(self.driver)
 
         self.status_api_button = StatusAPIButton(self.driver)
         self.request_contact_code_button = StatusAPIButton.RequestContactCodeButton(self.driver)
