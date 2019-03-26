@@ -180,17 +180,17 @@
  :accounts.ui/chaos-mode-switched
  (fn [{:keys [db] :as cofx} [_ chaos-mode?]]
    (let [old-chaos-mode? (get-in db [:account/account :settings :chaos-mode?])]
-     (when (not= old-chaos-mode? chaos-mode?)
-       (fx/merge
-        cofx
-        (when chaos-mode?
-          {:ui/show-confirmation
-           {:title               (i18n/label :t/chaos-unicorn-day)
-            :content             (i18n/label :t/chaos-unicorn-day-details)
-            :confirm-button-text (i18n/label :t/see-details)
-            :cancel-button-text  (i18n/label :t/cancel)
-            :on-accept           open-chaos-unicorn-day-link}})
-        (accounts/switch-chaos-mode chaos-mode?))))))
+     (fx/merge
+      cofx
+      (when (and chaos-mode?
+                 (not= old-chaos-mode? chaos-mode?))
+        {:ui/show-confirmation
+         {:title               (i18n/label :t/chaos-unicorn-day)
+          :content             (i18n/label :t/chaos-unicorn-day-details)
+          :confirm-button-text (i18n/label :t/see-details)
+          :cancel-button-text  (i18n/label :t/cancel)
+          :on-accept           open-chaos-unicorn-day-link}})
+      (accounts/switch-chaos-mode chaos-mode?)))))
 
 (handlers/register-handler-fx
  :accounts.ui/notifications-enabled
