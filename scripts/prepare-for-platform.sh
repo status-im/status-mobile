@@ -75,6 +75,7 @@ if [ "$PLATFORM" == 'mobile' ]; then
     echo "Downloading status-go artifact from DigitalOcean Bucket to $outputPath"
 
     set +e
+    mkdir -p $(dirname $outputPath)
     curl --fail --silent --location \
       "${DO_SPACE_URL}/status-go-$1-${STATUS_GO_VER}${ext}" \
       --output "$outputPath"
