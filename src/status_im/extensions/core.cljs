@@ -359,9 +359,9 @@
               platform/ios? (str "http://maps.apple.com/?q=" (js/encodeURIComponent text) "&ll=" lat "," lng)
               platform/android? (str "geo:0,0?q=" lat "," lng "(" (js/encodeURIComponent text) ")")
               :else (str "http://www.openstreetmap.org/?mlat=" lat "&mlon=" lng))]
-    (link {:uri uri
-           :text text
-           :style style
+    (link {:uri     uri
+           :text    text
+           :style   style
            :open-in :device})))
 
 (defn list [{:keys [key data item-view]}]
