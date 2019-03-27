@@ -80,7 +80,11 @@
             {:name        "SuperRare"
              :dapp-url    "https://superrare.co/market"
              :photo-path  "contacts://superrare"
-             :description "Buy, sell and collect unique digital creations by artists around the world"}]}
+             :description "Buy, sell and collect unique digital creations by artists around the world"}
+            {:name        "Nuo"
+             :dapp-url    "https://nuo.network/?utm_source=wallet&utm_medium=status"
+             :photo-path  "contacts://nuo"
+             :description "The non-custodial way to lend, borrow or margin trade cryptocurrency."}]}
    {:title (i18n/label :t/default-dapps-fun-games)
     :data  [{:name        "CryptoKitties"
              :dapp-url    "https://www.cryptokitties.co"
