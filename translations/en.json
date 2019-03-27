@@ -960,6 +960,8 @@
     "dapps-permissions": "DApp permissions",
     "revoke-access": "Revoke access",
     "extensions-camera-send-picture": "Send picture",
+    "extensions-network-not-found": "network not found for the given chain-id",
+    "extensions-chain-id-not-found": "chain-id not found or was not created by this extension",
     "mobile-syncing-sheet-title": "Sync using Mobile data",
     "mobile-syncing-sheet-details": "Status tends to use a lot of data when syncing chats. You can choose not to sync when on mobile network",
     "mobile-network-continue-syncing": "Continue syncing",

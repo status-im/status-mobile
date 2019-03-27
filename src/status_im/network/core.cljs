@@ -53,9 +53,18 @@
        (map :error)
        (not-any? identity)))
 
-(defn new-network [random-id network-name upstream-url type network-id]
+(defn get-network-id-for-chain-id [{:keys [db]} chain-id]
+  (let [networks (get-in db [:account/account :networks])
+        filtered (filter #(= chain-id (get-in % [1 :config :NetworkId])) networks)]
+    (first (keys filtered))))
+
+(defn chain-id-available? [current-networks network]
+  (let [chain-id (get-in network [:config :NetworkId])]
+    (every? #(not= chain-id (get-in % [1 :config :NetworkId])) current-networks)))
+
+(defn new-network [random-id network-name upstream-url type chain-id]
   (let [data-dir (str "/ethereum/" (name type) "_rpc")
-        config   {:NetworkId      (or (when network-id (int network-id))
+        config   {:NetworkId      (or (when chain-id (int chain-id))
                                       (ethereum/chain-keyword->chain-id type))
                   :DataDir        data-dir
                   :UpstreamConfig {:Enabled true
@@ -67,6 +76,9 @@
 (defn get-chain [{:keys [db]}]
   (let [network  (get (:networks (:account/account db)) (:network db))]
     (ethereum/network->chain-keyword network)))
+
+(defn get-network [{:keys [db]} network-id]
+  (get-in db [:account/account :networks network-id]))
 
 (fx/defn set-input
   [{:keys [db]} input-key value]
@@ -82,25 +94,31 @@
      (handler data cofx))))
 
 (fx/defn save
-  [{{:network/keys [manage] :account/keys [account] :as db} :db
+  [{{:networks/keys [manage] :account/keys [account] :as db} :db
     random-id-generator :random-id-generator :as cofx}
-   {:keys [data success-event on-success on-failure]}]
+   {:keys [data success-event on-success on-failure network-id chain-id-unique?]}]
   (let [data (or data manage)]
     (if (valid-manage? data)
-      (let [{:keys [name url chain network-id]} data
-            network      (new-network (random-id-generator)
+      ;; rename network-id from UI to chain-id
+      (let [{:keys [name url chain] chain-id :network-id} data
+            ;; network-id overrides random id
+            network      (new-network (or network-id (random-id-generator))
                                       (:value name)
                                       (:value url)
                                       (:value chain)
-                                      (:value network-id))
-            new-networks (merge {(:id network) network} (:networks account))]
-        (fx/merge cofx
-                  {:db (dissoc db :networks/manage)}
-                  #(action-handler on-success (:id network) %)
-                  (accounts.update/account-update
-                   {:networks new-networks}
-                   {:success-event success-event})))
-      (action-handler on-failure))))
+                                      (:value chain-id))
+            current-networks (:networks account)
+            new-networks (merge {(:id network) network} current-networks)]
+        (if (or (not chain-id-unique?)
+                (chain-id-available? current-networks network))
+          (fx/merge cofx
+                    {:db (dissoc db :networks/manage)}
+                    #(action-handler on-success (:id network) %)
+                    (accounts.update/account-update
+                     {:networks new-networks}
+                     {:success-event success-event}))
+          (action-handler on-failure "chain-id already defined" nil)))
+      (action-handler on-failure "invalid network parameters" nil))))
 
 ;; No edit functionality actually implemented
 (fx/defn edit
@@ -218,12 +236,12 @@
    {:success-event [:accounts.update.callback/save-settings-success]}))
 
 (fx/defn remove-network
-  [{:keys [db now] :as cofx} network]
+  [{:keys [db now] :as cofx} network success-event]
   (let [networks (dissoc (get-in db [:account/account :networks]) network)]
     (accounts.update/account-update cofx
                                     {:networks     networks
                                      :last-updated now}
-                                    {:success-event [:navigate-back]})))
+                                    {:success-event success-event})))
 
 (fx/defn save-network
   [cofx]

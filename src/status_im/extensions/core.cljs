@@ -23,6 +23,7 @@
             [status-im.utils.fx :as fx]
             status-im.extensions.ethereum
             status-im.extensions.camera
+            status-im.extensions.network
             [status-im.extensions.map :as map]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.ethereum.core :as ethereum]
@@ -549,7 +550,27 @@
                  :arguments   {:key :string}}
                 'store/clear-all
                 {:permissions [:read]
-                 :data        :store/clear-all}
+                 :data       :store/clear-all}
+                'network/add
+                {:permissions [:read]
+                 :data       :network/add
+                 :arguments   {:chain-id    :number
+                               :name        :string
+                               :url         :string
+                               :on-success? :event
+                               :on-failure? :event}}
+                'network/select
+                {:permissions [:read]
+                 :data       :network/select
+                 :arguments   {:chain-id    :number
+                               :on-success? :event
+                               :on-failure? :event}}
+                'network/remove
+                {:permissions [:read]
+                 :data       :network/remove
+                 :arguments   {:chain-id    :number
+                               :on-success? :event
+                               :on-failure? :event}}
                 'http/get
                 {:permissions [:read]
                  :data        :http/get

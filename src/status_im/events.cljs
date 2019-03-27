@@ -506,7 +506,7 @@
 (handlers/register-handler-fx
  :network.ui/remove-network-confirmed
  (fn [cofx [_ network]]
-   (network/remove-network cofx network)))
+   (network/remove-network cofx network [:navigate-back])))
 
 (handlers/register-handler-fx
  :network.ui/connect-network-pressed
