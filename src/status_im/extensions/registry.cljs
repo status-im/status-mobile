@@ -107,35 +107,64 @@
         new-extensions (assoc-in extensions [extension-key :active?] active?)
         hook-fn        (if active?
                          hook-in
-                         unhook)]
+                         unhook)
+        lifecycle-event (if active?
+                          (get-in extensions [extension-key :lifecycle :on-activation])
+                          (get-in extensions [extension-key :lifecycle :on-deactivation]))]
     (fx/merge cofx
+              ;; on-deactivate called before
+              (when (and (not active?) lifecycle-event) (lifecycle-event))
               (accounts.update/account-update {:extensions new-extensions} {:success-event nil})
-              (update-hooks hook-fn extension-key))))
+              (update-hooks hook-fn extension-key)
+              ;; on-activation called after
+              (when (and active? lifecycle-event) (lifecycle-event)))))
 
 (fx/defn install
   [{:keys [db] :as cofx} url {:keys [hooks] :as extension-data} modal?]
   (let [{:account/keys    [account]} db
-        extension      {:id      url
-                        :name    (or (get-in extension-data [:meta :name]) "Unnamed")
-                        :url     url
+        on-installation  (get-in extension-data [:lifecycle :on-installation])
+        on-activation    (get-in extension-data [:lifecycle :on-activation])
+        ephemeral?       (get-in extension-data [:lifecycle :ephemeral])
+        extension      {:id         url
+                        :name       (or (get-in extension-data [:meta :name]) "Unnamed")
+                        :url        url
+                        :lifecycle  {:on-installation on-installation
+                                     :on-deinstallation (get-in extension-data [:lifecycle :on-deinstallation])
+                                     :on-activation on-activation
+                                     :on-deactivation (get-in extension-data [:lifecycle :on-deactivation])
+                                     :ephemeral? ephemeral?}
                         :active? true}
         new-extensions (assoc (:extensions account) url extension)]
-    (fx/merge cofx
-              {:utils/show-popup {:title      (i18n/label :t/success)
-                                  :content    (i18n/label :t/extension-installed)
-                                  :on-dismiss #(re-frame/dispatch (if modal?
-                                                                    [:navigate-back]
-                                                                    [:navigate-to-clean :my-profile]))}}
-              (when hooks (accounts.update/account-update {:extensions new-extensions} {}))
-              (when hooks (add-to-registry url extension-data true)))))
+    (if ephemeral?
+      (fx/merge cofx
+                {:dispatch (if modal?
+                             [:navigate-back]
+                             [:navigate-to-clean :my-profile])}
+                (when on-activation (on-activation)))
+      (fx/merge cofx
+                {:utils/show-popup {:title      (i18n/label :t/success)
+                                    :content    (i18n/label :t/extension-installed)
+                                    :on-dismiss #(re-frame/dispatch (if modal?
+                                                                      [:navigate-back]
+                                                                      [:navigate-to-clean :my-profile]))}}
+                (when hooks (accounts.update/account-update {:extensions new-extensions} {}))
+                (when hooks (add-to-registry url extension-data true))
+                (when on-installation (on-installation))
+                (when on-activation (on-activation))))))
 
 (fx/defn uninstall
   [{:keys [db] :as cofx} extension-key]
   (let [{:account/keys [account]} db
+        extension     (get-in cofx [:db :account/account :extensions extension-key])
+        active?       (get extension :active?)
+        on-deinstallation  (get-in extension [:lifecycle :on-deinstallation])
+        on-deactivation    (get-in extension [:lifecycle :on-deactivation])
         new-extensions (dissoc (:extensions account) extension-key)]
     (fx/merge cofx
               {:utils/show-popup {:title     (i18n/label :t/success)
                                   :content   (i18n/label :t/extension-uninstalled)}}
+              (when (and active? on-deactivation) (on-deactivation))
+              (when on-deinstallation (on-deinstallation))
               (remove-from-registry extension-key)
               (accounts.update/account-update {:extensions new-extensions} {}))))
 
