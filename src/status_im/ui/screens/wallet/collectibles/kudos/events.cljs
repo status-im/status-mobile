@@ -14,18 +14,19 @@
 (defmethod collectibles/load-collectible-fx kudos [{db :db} symbol id]
   (let [chain-id   (get-in constants/default-networks [(:network db) :config :NetworkId])
         all-tokens (:wallet/all-tokens db)]
-    {:erc721-token-uri [(:web3 db) all-tokens symbol id chain-id]}))
+    {:erc721-token-uri [all-tokens symbol id chain-id]}))
 
 (re-frame/reg-fx
  :erc721-token-uri
- (fn [[web3 all-tokens symbol tokenId chain-id]]
+ (fn [[all-tokens symbol tokenId chain-id]]
    (let [chain (ethereum/chain-id->chain-keyword chain-id)
          contract (:address (tokens/symbol->token all-tokens chain symbol))]
-     (erc721/token-uri web3 contract tokenId
+     (erc721/token-uri contract
+                       tokenId
                        #(re-frame/dispatch [:token-uri-success
                                             tokenId
-                                            (when %2
-                                              (subs %2 (.indexOf %2 "http")))]))))) ;; extra chars in rinkeby
+                                            (when %
+                                              (subs % (.indexOf % "http")))]))))) ;; extra chars in rinkeby
 
 (handlers/register-handler-fx
  :token-uri-success

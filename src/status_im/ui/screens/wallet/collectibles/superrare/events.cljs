@@ -29,7 +29,7 @@
               imageUri
             }}}}"))
 
-(defmethod collectibles/load-collectibles-fx superrare [_ _ _ _ address _]
+(defmethod collectibles/load-collectibles-fx superrare [_ _ _ address _]
   {:http-post {:url                   graphql-url
                :data                  (types/clj->json {:query (graphql-query (ethereum/naked-address address))})
                :opts                  {:headers {"Content-Type" "application/json"}}

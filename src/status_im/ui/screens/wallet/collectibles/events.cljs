@@ -12,10 +12,10 @@
 
 (defmethod load-collectible-fx :default [_ _ _] nil)
 
-(defmulti load-collectibles-fx (fn [_ _ symbol _ _] symbol))
+(defmulti load-collectibles-fx (fn [_ symbol _ _] symbol))
 
-(defmethod load-collectibles-fx :default [web3 all-tokens symbol items-number address chain-id]
-  {:load-collectibles-fx [web3 all-tokens symbol items-number address chain-id]})
+(defmethod load-collectibles-fx :default [all-tokens symbol items-number address chain-id]
+  {:load-collectibles-fx [all-tokens symbol items-number address chain-id]})
 
 (handlers/register-handler-fx
  :show-collectibles-list
@@ -25,22 +25,22 @@
          items-number        (money/to-number amount)
          loaded-items-number (count (get-in db [:collectibles symbol]))]
      (merge (when (not= items-number loaded-items-number)
-              (load-collectibles-fx (:web3 db) all-tokens symbol items-number address chain-id))
+              (load-collectibles-fx all-tokens symbol items-number address chain-id))
             {:dispatch [:navigate-to :collectibles-list collectible]}))))
 
-(defn load-token [web3 i items-number contract address symbol]
+(defn load-token [i items-number contract address symbol]
   (when (< i items-number)
-    (erc721/token-of-owner-by-index web3 contract address i
-                                    (fn [v1 v2]
-                                      (load-token web3 (inc i) items-number contract address symbol)
-                                      (re-frame/dispatch [:load-collectible symbol (.toNumber v2)])))))
+    (erc721/token-of-owner-by-index contract address i
+                                    (fn [response]
+                                      (load-token (inc i) items-number contract address symbol)
+                                      (re-frame/dispatch [:load-collectible symbol (.toNumber response)])))))
 
 (re-frame/reg-fx
  :load-collectibles-fx
- (fn [[web3 all-tokens symbol items-number address chain-id]]
+ (fn [[all-tokens symbol items-number address chain-id]]
    (let [chain (ethereum/chain-id->chain-keyword chain-id)
          contract (:address (tokens/symbol->token all-tokens chain symbol))]
-     (load-token web3 0 items-number contract address symbol))))
+     (load-token 0 items-number contract address symbol))))
 
 (handlers/register-handler-fx
  :load-collectible

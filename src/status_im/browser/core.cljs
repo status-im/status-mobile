@@ -88,7 +88,7 @@
       (re-frame/dispatch [:browser.callback/resolve-ens-multihash-error]))))
 
 (fx/defn resolve-url
-  [{{:keys [web3 network] :as db} :db} {:keys [error? resolved-url]}]
+  [{{:keys [network] :as db} :db} {:keys [error? resolved-url]}]
   (when (not error?)
     (let [current-url (get-current-url (get-current-browser db))
           host (http/url-host current-url)]
@@ -96,22 +96,20 @@
         (let [network (get-in db [:account/account :networks network])
               chain   (ethereum/network->chain-keyword network)]
           {:db                            (update db :browser/options assoc :resolving? true)
-           :browser/resolve-ens-content {:web3     web3
-                                         :registry (get ens/ens-registries
+           :browser/resolve-ens-content {:registry (get ens/ens-registries
                                                         chain)
                                          :ens-name host
                                          :cb       resolve-ens-content-callback}})
         {:db (update db :browser/options assoc :url (or resolved-url current-url) :resolving? false)}))))
 
 (fx/defn resolve-ens-contenthash
-  [{{:keys [web3 network] :as db} :db}]
+  [{{:keys [network] :as db} :db}]
   (let [current-url (get-current-url (get-current-browser db))
         host (http/url-host current-url)]
     (let [network (get-in db [:account/account :networks network])
           chain   (ethereum/network->chain-keyword network)]
       {:db                            (update db :browser/options assoc :resolving? true)
-       :browser/resolve-ens-contenthash {:web3     web3
-                                         :registry (get ens/ens-registries
+       :browser/resolve-ens-contenthash {:registry (get ens/ens-registries
                                                         chain)
                                          :ens-name host
                                          :cb       resolve-ens-contenthash-callback}})))
@@ -361,13 +359,13 @@
 
 (re-frame/reg-fx
  :browser/resolve-ens-content
- (fn [{:keys [web3 registry ens-name cb]}]
-   (resolver/content web3 registry ens-name cb)))
+ (fn [{:keys [registry ens-name cb]}]
+   (resolver/content registry ens-name cb)))
 
 (re-frame/reg-fx
  :browser/resolve-ens-contenthash
- (fn [{:keys [web3 registry ens-name cb]}]
-   (resolver/contenthash web3 registry ens-name cb)))
+ (fn [{:keys [registry ens-name cb]}]
+   (resolver/contenthash registry ens-name cb)))
 
 (re-frame/reg-fx
  :browser/send-to-bridge
@@ -396,4 +394,3 @@
  :browser/show-web-browser-selection
  (fn [link]
    (list-selection/browse-in-web-browser link)))
-

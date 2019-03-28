@@ -4,28 +4,24 @@
 
 (def default-hash "0x0000000000000000000000000000000000000000000000000000000000000000")
 
-(defn contenthash [web3 registry ens-name cb]
-  (ens/resolver web3
-                registry
+(defn contenthash [registry ens-name cb]
+  (ens/resolver registry
                 ens-name
-                #(ens/contenthash web3 % ens-name cb)))
+                #(ens/contenthash % ens-name cb)))
 
-(defn content [web3 registry ens-name cb]
-  (ens/resolver web3
-                registry
+(defn content [registry ens-name cb]
+  (ens/resolver registry
                 ens-name
-                #(ens/content web3 % ens-name cb)))
+                #(ens/content % ens-name cb)))
 
-(defn name [web3 registry ens-name cb]
-  (ens/resolver web3
-                registry
+(defn name [registry ens-name cb]
+  (ens/resolver registry
                 ens-name
-                #(ens/name web3 % ens-name cb)))
+                #(ens/name % ens-name cb)))
 
 (defn pubkey
-  [web3 registry ens-name cb]
+  [registry ens-name cb]
   {:pre [(ens/is-valid-eth-name? ens-name)]}
-  (ens/resolver web3
-                registry
+  (ens/resolver registry
                 ens-name
-                #(ens/pubkey web3 % ens-name cb)))
+                #(ens/pubkey % ens-name cb)))

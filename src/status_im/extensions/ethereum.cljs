@@ -36,11 +36,12 @@
                         (first address)
                         address)]
     (if (ens/is-valid-eth-name? first-address)
-      (let [{:keys [web3 network]} db
+      (let [{:keys [network]} db
             network-info (get-in db [:account/account :networks network])
             chain (ethereum/network->chain-keyword network-info)
             registry (get ens/ens-registries chain)]
-        (ens/get-addr web3 registry first-address #(f db (assoc arguments address-keyword %))))
+        (ens/get-addr registry first-address
+                      #(f db (assoc arguments address-keyword %))))
       (f db arguments))))
 
 (defn prepare-extension-transaction [params contacts on-success on-failure]
@@ -375,11 +376,12 @@
  :extensions/ethereum-resolve-ens
  (fn [{db :db} [_ _ {:keys [name on-success on-failure]}]]
    (if (ens/is-valid-eth-name? name)
-     (let [{:keys [web3 network]} db
+     (let [{:keys [network]} db
            network-info (get-in db [:account/account :networks network])
            chain (ethereum/network->chain-keyword network-info)
            registry (get ens/ens-registries chain)]
-       (ens/get-addr web3 registry name #(on-success {:value %})))
+       (ens/get-addr registry name
+                     #(on-success {:value %})))
      (when on-failure
        (on-failure {:value (str "'" name "' is not a valid name")})))))
 

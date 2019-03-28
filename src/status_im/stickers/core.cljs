@@ -42,13 +42,14 @@
       (when (and (#{constants/swarm-proto-code constants/ipfs-proto-code} proto-code) hash)
         (re-frame/dispatch [:stickers/load-pack proto-code hash id price open?])))))
 
-(fx/defn open-sticker-pack [{{:keys [web3 network] :stickers/keys [packs packs-installed] :as db} :db :as cofx} id]
+(fx/defn open-sticker-pack
+  [{{:keys [network] :stickers/keys [packs packs-installed] :as db} :db :as cofx} id]
   (when id
     (let [pack    (or (get packs-installed id) (get packs id))
           network (get-in db [:account/account :networks network])]
       (if pack
         (navigation/navigate-to-cofx cofx :stickers-pack-modal pack)
-        {:stickers/pack-data-fx [web3 network id true]}))))
+        {:stickers/pack-data-fx [network id true]}))))
 
 (fx/defn load-pack [cofx proto-code hash id price open?]
   {:http-get {:url                   (str (if (= constants/swarm-proto-code proto-code)
@@ -59,11 +60,11 @@
                                        [:stickers/load-sticker-pack-success o id price open?])
               :failure-event-creator (constantly nil)}})
 
-(fx/defn load-packs [{{:keys [web3 network] :as db} :db}]
+(fx/defn load-packs [{{:keys [network] :as db} :db}]
   (let [network (get-in db [:account/account :networks network])
         address (ethereum/normalized-address (get-in db [:account/account :address]))]
-    {:stickers/owned-packs-fx [web3 network address]
-     :stickers/load-packs-fx [web3 network]}))
+    {:stickers/owned-packs-fx [network address]
+     :stickers/load-packs-fx [network]}))
 
 (defn prepare-transaction [id tx on-result]
   (merge {:id     id
@@ -86,37 +87,40 @@
      (prepare-transaction "approve" tx-object [:stickers/pending-pack pack-id])
      tx-object)))
 
-(fx/defn pending-pack [{{:keys [web3 network] :as db} :db :as cofx} id]
+(fx/defn pending-pack
+  [{{:keys [network] :as db} :db :as cofx} id]
   (let [network (get-in db [:account/account :networks network])
         address (ethereum/normalized-address (get-in db [:account/account :address]))]
     (fx/merge cofx
               {:db (update db :stickers/packs-pendning conj id)
-               :stickers/owned-packs-fx [web3 network address]}
+               :stickers/owned-packs-fx [network address]}
               (navigation/navigate-to-clean :wallet-transaction-sent-modal {})
               #(when (zero? (count (:stickers/packs-pendning db)))
                  {:stickers/set-pending-timout-fx nil}))))
 
-(fx/defn pending-timeout [{{:keys [web3 network] :stickers/keys [packs-pendning packs-owned] :as db} :db}]
+(fx/defn pending-timeout
+  [{{:keys [network] :stickers/keys [packs-pendning packs-owned] :as db} :db}]
   (let [packs-diff (clojure.set/difference packs-pendning packs-owned)
         network (get-in db [:account/account :networks network])
         address (ethereum/normalized-address (get-in db [:account/account :address]))]
     (merge {:db (assoc db :stickers/packs-pendning packs-diff)}
            (when-not (zero? (count packs-diff))
-             {:stickers/owned-packs-fx [web3 network address]
+             {:stickers/owned-packs-fx [network address]
               :stickers/set-pending-timout-fx nil}))))
 
 (fx/defn pack-owned [{db :db} id]
   {:db (update db :stickers/packs-owned conj id)})
 
-(fx/defn get-owned-pack [{{:keys [web3 network] :as db} :db}]
+(fx/defn get-owned-pack
+  [{{:keys [network] :as db} :db}]
   (let [address (ethereum/normalized-address (get-in db [:account/account :address]))]
-    {:stickers/owned-packs-fx [web3 network address]}))
+    {:stickers/owned-packs-fx [network address]}))
 
 (re-frame/reg-fx
  :stickers/pack-data-fx
- (fn [[web3 network id open?]]
+ (fn [[network id open?]]
    (when-let [contract (get ethereum.stickers/contracts (ethereum/network->chain-keyword network))]
-     (ethereum.stickers/pack-data web3 contract id (pack-data-callback id open?)))))
+     (ethereum.stickers/pack-data contract id (pack-data-callback id open?)))))
 
 (re-frame/reg-fx
  :stickers/set-pending-timout-fx
@@ -125,19 +129,19 @@
 
 (re-frame/reg-fx
  :stickers/load-packs-fx
- (fn [[web3 network]]
+ (fn [[network]]
    (when-let [contract (get ethereum.stickers/contracts (ethereum/network->chain-keyword network))]
-     (ethereum.stickers/pack-count web3 contract
+     (ethereum.stickers/pack-count contract
                                    (fn [count]
                                      (dotimes [n count]
-                                       (ethereum.stickers/pack-data web3 contract n (pack-data-callback n false))))))))
+                                       (ethereum.stickers/pack-data contract n (pack-data-callback n false))))))))
 
 (re-frame/reg-fx
  :stickers/owned-packs-fx
- (fn [[web3 network address]]
+ (fn [[network address]]
    (when-let [contract (get ethereum.stickers/contracts (ethereum/network->chain-keyword network))]
-     (ethereum.stickers/owned-tokens web3 contract address
+     (ethereum.stickers/owned-tokens contract address
                                      (fn [tokens]
                                        (doseq [n tokens]
-                                         (ethereum.stickers/token-pack-id web3 contract n
+                                         (ethereum.stickers/token-pack-id contract n
                                                                           #(re-frame/dispatch [:stickers/pack-owned %]))))))))

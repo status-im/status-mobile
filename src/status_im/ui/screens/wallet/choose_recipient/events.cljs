@@ -69,8 +69,8 @@
 
 (re-frame/reg-fx
  :resolve-address
- (fn [{:keys [web3 registry ens-name cb]}]
-   (ens/get-addr web3 registry ens-name cb)))
+ (fn [{:keys [registry ens-name cb]}]
+   (ens/get-addr registry ens-name cb)))
 
 (handlers/register-handler-fx
  :wallet.send/set-recipient
