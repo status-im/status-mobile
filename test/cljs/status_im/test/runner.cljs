@@ -38,6 +38,7 @@
             [status-im.test.utils.utils]
             [status-im.test.utils.money]
             [status-im.test.utils.clocks]
+            [status-im.test.utils.contenthash]
             [status-im.test.utils.ethereum.eip55]
             [status-im.test.utils.ethereum.eip681]
             [status-im.test.utils.ethereum.core]
@@ -111,6 +112,7 @@
  'status-im.test.utils.utils
  'status-im.test.utils.money
  'status-im.test.utils.clocks
+ 'status-im.test.utils.contenthash
  'status-im.test.utils.ethereum.eip55
  'status-im.test.utils.ethereum.eip681
  'status-im.test.utils.ethereum.core
