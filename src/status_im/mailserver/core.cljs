@@ -5,6 +5,7 @@
             [status-im.data-store.core :as data-store]
             [status-im.fleet.core :as fleet]
             [status-im.native-module.core :as status]
+            [status-im.utils.platform :as platform]
             [status-im.transport.utils :as transport.utils]
             [status-im.utils.fx :as fx]
             [status-im.constants :as constants]
@@ -401,7 +402,9 @@
           :content             (i18n/label :t/mailserver-error-content)
           :confirm-button-text (i18n/label :t/mailserver-pick-another)
           :on-accept           #(re-frame/dispatch
-                                 [:navigate-to :offline-messaging-settings])
+                                 [:navigate-to (if platform/desktop?
+                                                 :advanced-settings
+                                                 :offline-messaging-settings)])
           :extra-options       [{:text    (i18n/label :t/mailserver-retry)
                                  :onPress #(re-frame/dispatch
                                             [:mailserver.ui/connect-confirmed
