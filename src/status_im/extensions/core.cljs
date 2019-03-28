@@ -485,7 +485,7 @@
                  :arguments   {:params :map}}
                 'chat.command/open-public-chat
                 {:permissions [:read]
-                 :value       :extensions.chat.command/open-public-chat
+                 :data       :extensions.chat.command/open-public-chat
                  :arguments   {:topic :string :navigate-to :boolean}}
                 'log
                 {:permissions [:read]
@@ -499,16 +499,16 @@
                                :on-result :event}}
                 'browser/open-url
                 {:permissions [:read]
-                 :value       :extensions/open-url
+                 :data       :extensions/open-url
                  :arguments   {:url :string}}
                 'camera/picture
                 {:permissions [:read]
-                 :value       :extensions/camera-picture
+                 :data       :extensions/camera-picture
                  :arguments   {:on-success  :event
                                :on-failure? :event}}
                 'camera/qr-code
                 {:permissions [:read]
-                 :value       :extensions/camera-qr-code
+                 :data       :extensions/camera-qr-code
                  :arguments   {:on-success  :event
                                :on-failure? :event}}
                 'schedule/start
