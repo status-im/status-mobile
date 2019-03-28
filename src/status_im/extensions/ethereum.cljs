@@ -26,11 +26,13 @@
  (fn [_ [_ on-failure message]]
    (when on-failure (on-failure {:value message}))))
 
-(defn- wrap-with-resolution [db arguments address-keyword f]
+(defn- wrap-with-resolution
   "function responsible to resolve ens taken from argument
    and call the specified function with resolved address"
+  [db arguments address-keyword f]
   (let [address (get arguments address-keyword)
-        first-address (if (vector? address)  ;; currently we only support one ens for address
+        ;; currently we only support one ens for address
+        first-address (if (vector? address)
                         (first address)
                         address)]
     (if (ens/is-valid-eth-name? first-address)
@@ -100,7 +102,7 @@
     (cond
       (= "0x" result) nil
       (and outputs result)
-      (abi-spec/decode (string/replace result #"^0x" "")  outputs)
+      (abi-spec/decode result outputs)
       :else result)))
 
 (defn- execute-ethcall [_ {:keys [to method params outputs on-success on-failure]}]
@@ -236,38 +238,47 @@
   (let [eventid (str event "(" (string/join "," params) ")")]
     (abi-spec/sha3 eventid)))
 
-; Return a vector without indexed elements
-(defn- get-no-indexed [X indexed]
+(defn- get-no-indexed
+  "Return a vector without indexed elements"
+  [X indexed]
   (as-> (into [] (take (count X) (range))) $
     (zipmap $ X)
     (into [] (vals (apply dissoc $ indexed)))))
 
-; Return a vector with indexed elements
-(defn- get-indexed [X indexed]
+(defn- get-indexed
+  "Return a vector with indexed elements"
+  [X indexed]
   (let [keys (into [] (take (count X) (range)))]
     (mapv #((zipmap keys X) %) indexed)))
 
-; Return the hint with the specified event (Topic0) from a vector of event hints given by the user
-(defn- get-hint [hints first-topic]
+(defn- get-hint
+  "Return the hint with the specified event (Topic0) from a vector of event hints given by the user"
+  [hints first-topic]
   (as-> hints $
     (mapv #(event-topic-enc (% :event) (% :params)) $)
     (.indexOf $ first-topic)
     (get hints $)))
 
-; Return a map with all data params decoded
-(defn- decode-data [data hint]
+(defn- decode-data
+  "Return a map with all data params decoded"
+  [data hint]
   (let [indexes (hint :indexed)
         params (get-no-indexed (hint :params) indexes)
-        names (mapv keyword (get-no-indexed (hint :names) indexes))  ; Exclude indexed params and names from decode in data, these are decoded in topics
+        ;; Exclude indexed params and names from decode in data,
+        ;; these are decoded in topics
+        names (mapv keyword (get-no-indexed (hint :names) indexes))
         data-values (mapv (partial apply str) (partition 64 (string/replace-first data #"0x" "")))]
     (zipmap names (mapv abi-spec/hex-to-value data-values params))))
 
-; This assumes that Topic 0 is filtered and return a map with all topics decoded
-(defn- decode-topics [topics hint]
-  (zipmap [:topic1 :topic2 :topic3] (mapv abi-spec/hex-to-value topics (get-indexed (hint :params) (hint :indexed))))) ; Solidity indexed event params may number up to 3 (max 4 Topics)
+(defn- decode-topics
+  "This assumes that Topic 0 is filtered and return a map with all topics decoded"
+  [topics hint]
+  ;; Solidity indexed event params may number up to 3 (max 4 Topics)
+  (zipmap [:topic1 :topic2 :topic3] (mapv abi-spec/hex-to-value topics (get-indexed (hint :params) (hint :indexed)))))
 
-; Flatten the input of event provided by an developer of extensions and return a 1 depth vector
-(defn- flatten-input [input]
+(defn- flatten-input
+  "Flatten the input of event provided by an developer of extensions and return a 1 depth vector"
+  [input]
   (into [] (flatten input)))
 
 (defn parse-log [events-hints {:keys [address transactionHash blockHash transactionIndex topics blockNumber logIndex removed data]}]
@@ -276,7 +287,7 @@
           :address address
           :removed removed}
 
-         ; filter useless topic 0 and decode topics
+         ;; filter useless topic 0 and decode topics
          (when (and topics (seq events-hints)) {:topics (decode-topics (filterv #(not (= (first topics) %)) topics) (get-hint events-hints (first topics)))})
          (when (and data (seq events-hints)) {:data (decode-data data (get-hint events-hints (first topics)))})
          (when logIndex {:log-index (abi-spec/hex-to-number logIndex)})
