@@ -22,6 +22,7 @@
             [status-im.utils.fx :as fx]
             status-im.extensions.ethereum
             status-im.extensions.camera
+            status-im.extensions.dapp
             [status-im.extensions.map :as map]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.ethereum.core :as ethereum]
@@ -536,6 +537,21 @@
                 {:permissions [:read]
                  :value       :extensions/camera-qr-code
                  :arguments   {:on-success  :event
+                               :on-failure? :event}}
+                'dapp/add
+                {:permissions [:read]
+                 :data       :extensions/dapp-add
+                 :arguments   {:name        :string
+                               :dapp-url    :string
+                               :photo-path  :string
+                               :description :string
+                               :on-success? :event
+                               :on-failure? :event}}
+                'dapp/remove
+                {:permissions [:read]
+                 :data       :extensions/dapp-remove
+                 :arguments   {:name        :string
+                               :on-success? :event
                                :on-failure? :event}}
                 'schedule/start
                 {:permissions [:read]

@@ -59,10 +59,10 @@
   {:db            (update-in db [:browser/browsers] dissoc browser-id)
    :data-store/tx [(browser-store/remove-browser-tx browser-id)]})
 
-(defn check-if-dapp-in-list [{:keys [history history-index name] :as browser}]
+(defn check-if-dapp-in-list [{:keys [history history-index name] :as browser} db]
   (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))
         dapp         (first (filter #(= history-host (http/url-host (http/normalize-url (:dapp-url %))))
-                                    (apply concat (mapv :data default-dapps/all))))]
+                                    (apply concat (mapv :data (default-dapps/all-dapps db)))))]
     (if dapp
       ;;TODO(yenda): the consequence of this is that if user goes to a different
       ;;url from a dapp browser, the name of the browser in the home screen will
@@ -120,7 +120,7 @@
   [{:keys [db now]}
    {:keys [browser-id] :as browser}]
   (let [updated-browser (-> (assoc browser :timestamp now)
-                            (check-if-dapp-in-list)
+                            (check-if-dapp-in-list db)
                             (check-if-phishing-url))]
     {:db            (update-in db
                                [:browser/browsers browser-id]

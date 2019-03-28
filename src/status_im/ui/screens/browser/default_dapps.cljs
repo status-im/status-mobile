@@ -186,7 +186,11 @@
              :description "Request test assets and test basic web3 functionality."
              :developer?  true}]}])
 
+(defn all-dapps [db]
+  (let [user-dapps (get-in db [:account/account :dapps])]
+    (conj all {:title (i18n/label :t/exstensions-dapp-section) :data user-dapps})))
+
 (re-frame/reg-cofx
  :get-default-dapps
  (fn [coeffects _]
-   (assoc coeffects :default-dapps all)))
+   (assoc coeffects :default-dapps (all-dapps (:db coeffects)))))

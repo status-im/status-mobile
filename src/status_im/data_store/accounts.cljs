@@ -36,7 +36,8 @@
       (update :settings core/deserialize)
       (update :extensions deserialize-extensions)
       (update :bootnodes deserialize-bootnodes)
-      (update :networks deserialize-networks)))
+      (update :networks deserialize-networks)
+      (update :dapps #(types/json->clj %))))
 
 (defn- serialize-bootnodes [bootnodes]
   (->> bootnodes
@@ -58,7 +59,8 @@
       (update :bootnodes serialize-bootnodes)
       (update :networks serialize-networks)
       (update :recent-stickers #(if (nil? %) [] %))
-      (update :stickers #(if (nil? %) [] %))))
+      (update :stickers #(if (nil? %) [] %))
+      (update :dapps #(types/clj->json %))))
 
 (defn save-account-tx
   "Returns tx function for saving account"

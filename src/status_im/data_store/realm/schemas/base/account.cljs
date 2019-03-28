@@ -238,3 +238,6 @@
 (def v21 (update v20 :properties merge
                  {:syncing-on-mobile-network? {:type :bool :default false}
                   :remember-syncing-choice?   {:type :bool :default false}}))
+
+(def v22 (update v21 :properties merge {:dapps
+                                        {:type :string :optional true}}))
