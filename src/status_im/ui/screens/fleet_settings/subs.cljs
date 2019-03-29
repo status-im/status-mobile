@@ -7,3 +7,8 @@
  :settings/current-fleet
  (fn [db _]
    (fleet/current-fleet db)))
+
+(re-frame/reg-sub
+ :fleets/custom-fleets
+ (fn [{:keys [custom-fleets]} _]
+   custom-fleets))

@@ -89,6 +89,11 @@
                 "node-01.do-ams3.eth.test": "enode://1d193635e015918fb85bbaf774863d12f65d70c6977506187ef04420d74ec06c9e8f0dcb57ea042f85df87433dab17a1260ed8dde1bdf9d6d5d2de4b7bf8e993@206.189.243.163:443",
                 "node-01.gc-us-central1-a.eth.test": "enode://f593a27731bc0f8eb088e2d39222c2d59dfb9bf0b3950d7a828d51e8ab9e08fffbd9916a82fd993c1a080c57c2bd70ed6c36f489a969de697aff93088dbee1a9@35.194.31.108:443"
             }
+        },
+        "eth.contract": {
+          "boot": {},
+          "mail": {},
+          "whisper": {}
         }
     },
     "meta": {

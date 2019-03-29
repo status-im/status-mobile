@@ -51,6 +51,7 @@ public:
     Q_INVOKABLE void enableInstallation(QString installationId, double callbackId);
     Q_INVOKABLE void disableInstallation(QString installationId, double callbackId);
     Q_INVOKABLE void updateMailservers(QString enodes, double callbackId);
+    Q_INVOKABLE void getNodesFromContract(QString url, QString address, double callbackId);
     Q_INVOKABLE void chaosModeUpdate(bool on, double callbackId);
 
     Q_INVOKABLE void setAdjustResize();

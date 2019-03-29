@@ -98,3 +98,5 @@
 (def rooted-device? native-module/rooted-device?)
 
 (def chaos-mode-update native-module/chaos-mode-update)
+
+(def get-nodes-from-contract native-module/get-nodes-from-contract)

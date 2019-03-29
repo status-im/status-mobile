@@ -34,18 +34,19 @@
          [react/text {:style styles/fleet-item-name-text}
           fleet]]]])))
 
-(def fleets
-  (map name (keys fleet-core/fleets)))
+(defn fleets [custom-fleets]
+  (map name (keys (fleet-core/fleets {:custom-fleets custom-fleets}))))
 
 (views/defview fleet-settings []
-  (views/letsubs [current-fleet [:settings/current-fleet]]
+  (views/letsubs [custom-fleets [:fleets/custom-fleets]
+                  current-fleet [:settings/current-fleet]]
     [react/view {:flex 1}
      [status-bar/status-bar]
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/fleet-settings)]]
      [react/view styles/wrapper
-      [list/flat-list {:data               fleets
+      [list/flat-list {:data               (fleets custom-fleets)
                        :default-separator? false
                        :key-fn             identity
                        :render-fn          (render-row (name current-fleet))}]]]))

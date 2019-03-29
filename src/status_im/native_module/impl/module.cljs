@@ -153,6 +153,10 @@
   (when status
     (.chaosModeUpdate status on on-result)))
 
+(defn get-nodes-from-contract [rpc-endpoint contract-address on-result]
+  (when status
+    (.getNodesFromContract status rpc-endpoint contract-address on-result)))
+
 (defn rooted-device? [callback]
   (cond
     ;; we assume that iOS is safe by default

@@ -14,6 +14,7 @@
             [status-im.test.wallet.transactions.subs]
             [status-im.test.wallet.transactions.views]
             [status-im.test.mailserver.core]
+            [status-im.test.fleet.core]
             [status-im.test.group-chats.core]
             [status-im.test.pairing.core]
             [status-im.test.node.core]
@@ -86,6 +87,7 @@
  'status-im.test.data-store.realm.core
  'status-im.test.extensions.core
  'status-im.test.mailserver.core
+ 'status-im.test.fleet.core
  'status-im.test.group-chats.core
  'status-im.test.pairing.core
  'status-im.test.node.core

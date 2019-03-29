@@ -12,7 +12,8 @@
 (deftest on-password-input-submitted
   (testing
    "handling :accounts.login.ui/password-input-submitted event"
-    (let [cofx             {:db {:accounts/login {:address  "address"
+    (let [cofx             {:db {:accounts/accounts {"address" {:settings {:fleet "fleet"}}}
+                                 :accounts/login {:address  "address"
                                                   :password "password"}}}
           create-database? false
           efx              (login.core/user-login cofx create-database?)]
@@ -20,7 +21,7 @@
         (is (contains? efx :accounts.login/clear-web-data)))
       (testing "Change account."
         (is (= (:data-store/change-account efx)
-               ["address" "password" false])))
+               ["address" "password" false "fleet"])))
       (testing "set `node/on-ready` handler"
         (is (= (get-in efx [:db :node/on-ready]) :login)))
       (testing "start activity indicator"
@@ -142,14 +143,15 @@
 
 (deftest on-verify-account-success-after-database-does-not-exist
   (testing ":accounts.login.callback/verify-success event received."
-    (let [cofx          {:db {:accounts/login {:address  "address"
+    (let [cofx          {:db {:accounts/accounts {"address" {:settings {:fleet "fleet"}}}
+                              :accounts/login {:address  "address"
                                                :password "password"}}}
           verify-result "{\"error\":\"\"}"
           realm-error   {:error :database-does-not-exist}
           efx           (login.core/verify-callback
                          cofx verify-result realm-error)]
       (testing "Change account."
-        (is (= ["address" "password" true]
+        (is (= ["address" "password" true "fleet"]
                (:data-store/change-account efx))))
       (testing "Stop node."
         (is (contains? efx :node/stop))))))

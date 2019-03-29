@@ -4,6 +4,8 @@
             [status-im.data-store.core :as data-store]
             [status-im.native-module.core :as status]
             [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.config :as config]
+            [status-im.fleet.core :as fleet]
             [status-im.utils.fx :as fx]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.utils.keychain.core :as keychain]
@@ -14,11 +16,32 @@
             [status-im.utils.platform :as platform]
             [status-im.protocol.core :as protocol]
             [status-im.models.wallet :as models.wallet]
+            [status-im.utils.handlers :as handlers]
             [status-im.models.transactions :as transactions]
             [status-im.i18n :as i18n]
             [status-im.node.core :as node]
             [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
             [status-im.chaos-mode.core :as chaos-mode]))
+
+(def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
+(def contract-address "0xfbf4c8e2B41fAfF8c616a0E49Fb4365a5355Ffaf")
+(def contract-fleet? #{:eth.contract})
+
+(defn fetch-nodes [current-fleet resolve reject]
+  (let [default-nodes (-> (fleet/fleets {})
+                          (get-in [:eth.beta :mail])
+                          vals)]
+    (if config/contract-nodes-enabled?
+      (do
+        (log/debug "fetching contract fleet" current-fleet)
+        (status/get-nodes-from-contract
+         rpc-endpoint
+         contract-address
+         (handlers/response-handler resolve
+                                    (fn [error]
+                                      (log/warn "could not fetch nodes from contract defaulting to eth.beta")
+                                      (resolve default-nodes)))))
+      (resolve default-nodes))))
 
 (defn login! [address password]
   (status/login address password #(re-frame/dispatch [:accounts.login.callback/login-success %])))
@@ -31,11 +54,18 @@
 (defn clear-web-data! []
   (status/clear-web-data))
 
-(defn change-account! [address password create-database-if-not-exist?]
+(defn change-account! [address
+                       password
+                       create-database-if-not-exist?
+                       current-fleet]
   ;; No matter what is the keychain we use, as checks are done on decrypting base
   (.. (keychain/safe-get-encryption-key)
       (then #(data-store/change-account address password % create-database-if-not-exist?))
-      (then (fn [] (re-frame/dispatch [:init.callback/account-change-success address])))
+      (then #(js/Promise. (fn [resolve reject]
+                            (if (contract-fleet? current-fleet)
+                              (fetch-nodes current-fleet resolve reject)
+                              (resolve)))))
+      (then (fn [nodes] (re-frame/dispatch [:init.callback/account-change-success address nodes])))
       (catch (fn [error]
                (log/warn "Could not change account" error)
                ;; If all else fails we fallback to showing initial error
@@ -65,7 +95,10 @@
                                          (assoc-in [:accounts/login :processing] true)
                                          (assoc :node/on-ready :login))
       :accounts.login/clear-web-data nil
-      :data-store/change-account     [address password create-database?]})))
+      :data-store/change-account     [address
+                                      password
+                                      create-database?
+                                      (get-in db [:accounts/accounts address :settings :fleet])]})))
 
 (fx/defn account-and-db-password-do-not-match
   [{:keys [db] :as cofx} error]
@@ -151,7 +184,15 @@
 
            :database-does-not-exist
            (let [{:keys [address password]} (accounts.db/credentials cofx)]
-             {:data-store/change-account [address password true]}))
+             {:data-store/change-account [address
+                                          password
+                                          true
+                                          (get-in cofx
+                                                  [:db
+                                                   :accounts/accounts
+                                                   address
+                                                   :settings
+                                                   :fleet])]}))
          {:db (update db :accounts/login assoc
                       :error error
                       :processing false)})))))
@@ -274,6 +315,8 @@
 
 (re-frame/reg-fx
  :data-store/change-account
- (fn [[address password create-database-if-not-exist?]]
-   (change-account! address (security/safe-unmask-data password)
-                    create-database-if-not-exist?)))
+ (fn [[address password create-database-if-not-exist? current-fleet]]
+   (change-account! address
+                    (security/safe-unmask-data password)
+                    create-database-if-not-exist?
+                    current-fleet)))

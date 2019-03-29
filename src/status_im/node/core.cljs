@@ -90,7 +90,7 @@
 (defn- get-account-node-config [db address]
   (let [accounts (get db :accounts/accounts)
         current-fleet-key (fleet/current-fleet db address)
-        current-fleet (get fleet/fleets current-fleet-key)
+        current-fleet (get (fleet/fleets db) current-fleet-key)
         rendezvous-nodes (pick-nodes 3 (vals (:rendezvous current-fleet)))
         {:keys [network installation-id settings bootnodes networks]}
         (merge

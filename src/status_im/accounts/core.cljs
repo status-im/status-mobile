@@ -67,12 +67,13 @@
                                             {})))
 
 (fx/defn switch-chaos-mode [{:keys [db] :as cofx} chaos-mode?]
-  (let [settings (get-in db [:account/account :settings])]
-    (fx/merge cofx
-              {::chaos-mode-changed chaos-mode?}
-              (accounts.update/update-settings
-               (assoc settings :chaos-mode? chaos-mode?)
-               {}))))
+  (when (:account/account db)
+    (let [settings (get-in db [:account/account :settings])]
+      (fx/merge cofx
+                {::chaos-mode-changed chaos-mode?}
+                (accounts.update/update-settings
+                 (assoc settings :chaos-mode? chaos-mode?)
+                 {})))))
 
 (fx/defn enable-notifications [cofx desktop-notifications?]
   (accounts.update/account-update cofx

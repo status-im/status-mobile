@@ -110,10 +110,12 @@
              (chat-loading/initialize-chats {:from 10}))))
 
 (defn account-change-success
-  [{:keys [db] :as cofx} [_ address]]
-  (let [{:node/keys [status on-ready]} db]
+  [{:keys [db] :as cofx} [_ address nodes]]
+  (let [{:node/keys [status]} db]
     (fx/merge
      cofx
+     (when nodes
+       (fleet/set-nodes :eth.contract nodes))
      (if (= status :started)
        (accounts.login/login)
        (node/initialize (get-in db [:accounts/login :address])))

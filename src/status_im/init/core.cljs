@@ -167,7 +167,8 @@
   (let [{:universal-links/keys [url]
          :keys                 [accounts/accounts accounts/create networks/networks network
                                 network-status peers-count peers-summary view-id navigation-stack
-                                desktop/desktop hardwallet
+                                mailserver/mailservers
+                                desktop/desktop hardwallet custom-fleets
                                 device-UUID semaphores accounts/login]
          :node/keys            [status on-ready]
          :or                   {network (get app-db :network)}} db
@@ -185,11 +186,13 @@
                         :account/account current-account
                         :accounts/login login
                         :accounts/accounts accounts
+                        :mailserver/mailservers mailservers
                         :network-status network-status
                         :network network
                         :network/type (:network/type db)
                         :chain (ethereum/network->chain-name account-network)
                         :universal-links/url url
+                        :custom-fleets custom-fleets
                         :peers-summary peers-summary
                         :peers-count peers-count
                         :device-UUID device-UUID
