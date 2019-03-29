@@ -4,6 +4,7 @@ with pkgs;
 with stdenv;
 
 let
+  gradle = gradle_4_10;
   targetAndroid = {
     "android" = true;
     "" = true;
@@ -18,7 +19,7 @@ in
     buildInputs =
       [ bundler ruby ] ++ ## bundler/ruby used for fastlane
       lib.optional targetAndroid [
-        openjdk
+        openjdk gradle
       ];
     shellHook =
       lib.optionalString targetIOS ''
