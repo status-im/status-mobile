@@ -140,11 +140,11 @@ desktop-server:
 # -------------
 _run-%:
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
-	react-native run-$(SYSTEM)
+	npx react-native run-$(SYSTEM)
 
 run-android: export TARGET_OS ?= android
 run-android: ##@run Run Android build
-	react-native run-android --appIdSuffix debug
+	npx react-native run-android --appIdSuffix debug
 
 run-desktop: export TARGET_OS ?= $(HOST_OS)
 run-desktop: _run-desktop ##@run Run Desktop build
@@ -153,9 +153,9 @@ SIMULATOR=
 run-ios: export TARGET_OS ?= ios
 run-ios: ##@run Run iOS build
 ifneq ("$(SIMULATOR)", "")
-	react-native run-ios --simulator="$(SIMULATOR)"
+	npx react-native run-ios --simulator="$(SIMULATOR)"
 else
-	react-native run-ios
+	npx react-native run-ios
 endif
 
 #--------------

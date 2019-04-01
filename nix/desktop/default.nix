@@ -1,6 +1,6 @@
 { stdenv, callPackage, target-os,
   cmake, extra-cmake-modules, file, status-go,
-  darwin }:
+  darwin, nodejs }:
 
 with stdenv;
 
