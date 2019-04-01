@@ -8,12 +8,12 @@ let
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
   stdenv' = pkgs.stdenvNoCC;
   gradle = pkgs.gradle_4_10;
-  statusDesktop = pkgs.callPackage ./nix/desktop { inherit target-os status-go; inherit (pkgs) darwin; stdenv = stdenv'; };
+  statusDesktop = pkgs.callPackage ./nix/desktop { inherit target-os status-go; inherit (pkgs) darwin; nodejs = nodejs'; stdenv = stdenv'; };
   statusMobile = pkgs.callPackage ./nix/mobile { inherit target-os config status-go gradle; inherit (pkgs.xcodeenv) composeXcodeWrapper; stdenv = stdenv'; };
   status-go = pkgs.callPackage ./nix/status-go { inherit target-os; inherit (pkgs.xcodeenv) composeXcodeWrapper; inherit (statusMobile) xcodewrapperArgs; androidPkgs = statusMobile.androidComposition; };
   nodejs' = pkgs.nodejs-10_x;
   yarn' = pkgs.yarn.override { nodejs = nodejs'; };
-  nodeInputs = import ./nix/global-node-packages/output {
+  nodeInputs = import ./nix/global-node-packages {
     # The remaining dependencies come from Nixpkgs
     inherit pkgs;
     nodejs = nodejs';

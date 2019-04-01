@@ -11,13 +11,15 @@ rm -rf $output_dir && mkdir -p $output_dir
 react_native_cli_required_version=$($toolversion react_native_cli)
 cat << EOF > $input
 [
-    { "react-native-cli": "${react_native_cli_required_version}" }
+    { "react-native-cli": "${react_native_cli_required_version}",
+      "realm": "git+https://github.com/status-im/realm-js.git#heads/v2.20.1" }
 ]
 EOF
 
 node_required_version=$($toolversion node)
 node_major_version=$(echo $node_required_version | cut -d. -f1,1)
-node2nix --nodejs-${node_major_version} --bypass-cache -i $input \
+
+node2nix --nodejs-${node_major_version} -i $input \
          -o $output_dir/node-packages.nix \
          -c $output_dir/default.nix \
          -e $output_dir/node-env.nix

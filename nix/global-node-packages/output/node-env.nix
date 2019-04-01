@@ -72,7 +72,7 @@ let
           packageDir="$(find . -maxdepth 1 -type d | tail -1)"
 
           # Restore write permissions to make building work
-          find "$packageDir" -type d -print0 | xargs -0 chmod u+x
+          find "$packageDir" -type d -exec chmod u+x {} \;
           chmod -R u+w "$packageDir"
 
           # Move the extracted tarball into the output folder
@@ -308,6 +308,61 @@ let
     '';
   };
 
+  prepareAndInvokeNPM = {packageName, bypassCache, reconstructLock, npmFlags, production}:
+    let
+      forceOfflineFlag = if bypassCache then "--offline" else "--registry http://www.example.com";
+    in
+    ''
+        # Pinpoint the versions of all dependencies to the ones that are actually being used
+        echo "pinpointing versions of dependencies..."
+        source $pinpointDependenciesScriptPath
+
+        # Patch the shebangs of the bundled modules to prevent them from
+        # calling executables outside the Nix store as much as possible
+        patchShebangs .
+
+        # Deploy the Node.js package by running npm install. Since the
+        # dependencies have been provided already by ourselves, it should not
+        # attempt to install them again, which is good, because we want to make
+        # it Nix's responsibility. If it needs to install any dependencies
+        # anyway (e.g. because the dependency parameters are
+        # incomplete/incorrect), it fails.
+        #
+        # The other responsibilities of NPM are kept -- version checks, build
+        # steps, postprocessing etc.
+
+        export HOME=$TMPDIR
+        cd "${packageName}"
+        runHook preRebuild
+
+        ${stdenv.lib.optionalString bypassCache ''
+          ${stdenv.lib.optionalString reconstructLock ''
+            if [ -f package-lock.json ]
+            then
+                echo "WARNING: Reconstruct lock option enabled, but a lock file already exists!"
+                echo "This will most likely result in version mismatches! We will remove the lock file and regenerate it!"
+                rm package-lock.json
+            else
+                echo "No package-lock.json file found, reconstructing..."
+            fi
+
+            node ${reconstructPackageLock}
+          ''}
+
+          node ${addIntegrityFieldsScript}
+        ''}
+
+        npm ${forceOfflineFlag} --nodedir=${nodeSources} ${npmFlags} ${stdenv.lib.optionalString production "--production"} rebuild
+
+        if [ "$dontNpmInstall" != "1" ]
+        then
+            # NPM tries to download packages even when they already exist if npm-shrinkwrap is used.
+            rm -f npm-shrinkwrap.json
+
+            npm ${forceOfflineFlag} --nodedir=${nodeSources} ${npmFlags} ${stdenv.lib.optionalString production "--production"} install
+        fi
+    '';
+
   # Builds and composes an NPM package including all its dependencies
   buildNodePackage =
     { name
@@ -319,6 +374,7 @@ let
     , npmFlags ? ""
     , dontNpmInstall ? false
     , bypassCache ? false
+    , reconstructLock ? false
     , preRebuild ? ""
     , dontStrip ? true
     , unpackPhase ? "true"
@@ -326,7 +382,6 @@ let
     , ... }@args:
 
     let
-      forceOfflineFlag = if bypassCache then "--offline" else "--registry http://www.example.com";
       extraArgs = removeAttrs args [ "name" "dependencies" "buildInputs" "dontStrip" "dontNpmInstall" "preRebuild" "unpackPhase" "buildPhase" ];
     in
     stdenv.mkDerivation ({
@@ -352,47 +407,7 @@ let
         # Compose the package and all its dependencies
         source $compositionScriptPath
 
-        # Pinpoint the versions of all dependencies to the ones that are actually being used
-        echo "pinpointing versions of dependencies..."
-        source $pinpointDependenciesScriptPath
-
-        # Patch the shebangs of the bundled modules to prevent them from
-        # calling executables outside the Nix store as much as possible
-        patchShebangs .
-
-        # Deploy the Node.js package by running npm install. Since the
-        # dependencies have been provided already by ourselves, it should not
-        # attempt to install them again, which is good, because we want to make
-        # it Nix's responsibility. If it needs to install any dependencies
-        # anyway (e.g. because the dependency parameters are
-        # incomplete/incorrect), it fails.
-        #
-        # The other responsibilities of NPM are kept -- version checks, build
-        # steps, postprocessing etc.
-
-        export HOME=$TMPDIR
-        cd "${packageName}"
-        runHook preRebuild
-
-        ${stdenv.lib.optionalString bypassCache ''
-          if [ ! -f package-lock.json ]
-          then
-              echo "No package-lock.json file found, reconstructing..."
-              node ${reconstructPackageLock}
-          fi
-
-          node ${addIntegrityFieldsScript}
-        ''}
-
-        npm ${forceOfflineFlag} --nodedir=${nodeSources} ${npmFlags} ${stdenv.lib.optionalString production "--production"} rebuild
-
-        if [ "$dontNpmInstall" != "1" ]
-        then
-            # NPM tries to download packages even when they already exist if npm-shrinkwrap is used.
-            rm -f npm-shrinkwrap.json
-
-            npm ${forceOfflineFlag} --nodedir=${nodeSources} ${npmFlags} ${stdenv.lib.optionalString production "--production"} install
-        fi
+        ${prepareAndInvokeNPM { inherit packageName bypassCache reconstructLock npmFlags production; }}
 
         # Create symlink to the deployed executable folder, if applicable
         if [ -d "$out/lib/node_modules/.bin" ]
@@ -431,14 +446,13 @@ let
     , npmFlags ? ""
     , dontNpmInstall ? false
     , bypassCache ? false
+    , reconstructLock ? false
     , dontStrip ? true
     , unpackPhase ? "true"
     , buildPhase ? "true"
     , ... }@args:
 
     let
-      forceOfflineFlag = if bypassCache then "--offline" else "--registry http://www.example.com";
-
       extraArgs = removeAttrs args [ "name" "dependencies" "buildInputs" ];
 
       nodeDependencies = stdenv.mkDerivation ({
@@ -473,39 +487,13 @@ let
             fi
           ''}
 
-          # Pinpoint the versions of all dependencies to the ones that are actually being used
-          echo "pinpointing versions of dependencies..."
+          # Go to the parent folder to make sure that all packages are pinpointed
           cd ..
           ${stdenv.lib.optionalString (builtins.substring 0 1 packageName == "@") "cd .."}
 
-          source $pinpointDependenciesScriptPath
-          cd ${packageName}
+          ${prepareAndInvokeNPM { inherit packageName bypassCache reconstructLock npmFlags production; }}
 
-          # Patch the shebangs of the bundled modules to prevent them from
-          # calling executables outside the Nix store as much as possible
-          patchShebangs .
-
-          export HOME=$PWD
-
-          ${stdenv.lib.optionalString bypassCache ''
-            if [ ! -f package-lock.json ]
-            then
-                echo "No package-lock.json file found, reconstructing..."
-                node ${reconstructPackageLock}
-            fi
-
-            node ${addIntegrityFieldsScript}
-          ''}
-
-          npm ${forceOfflineFlag} --nodedir=${nodeSources} ${npmFlags} ${stdenv.lib.optionalString production "--production"} rebuild
-
-          ${stdenv.lib.optionalString (!dontNpmInstall) ''
-            # NPM tries to download packages even when they already exist if npm-shrinkwrap is used.
-            rm -f npm-shrinkwrap.json
-
-            npm ${forceOfflineFlag} --nodedir=${nodeSources} ${npmFlags} ${stdenv.lib.optionalString production "--production"} install
-          ''}
-
+          # Expose the executables that were installed
           cd ..
           ${stdenv.lib.optionalString (builtins.substring 0 1 packageName == "@") "cd .."}
 
@@ -532,6 +520,7 @@ let
       inherit nodeDependencies;
       shellHook = stdenv.lib.optionalString (dependencies != []) ''
         export NODE_PATH=$nodeDependencies/lib/node_modules
+        export PATH="$nodeDependencies/bin:$PATH"
       '';
     };
 in
