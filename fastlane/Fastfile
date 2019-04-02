@@ -186,16 +186,14 @@ platform :ios do
   desc "This lane builds a new adhoc build and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
   lane :pr do
     unlock_keychain_if_needed
-    # TODO: fixme when 2FA is setup
-    build_ios_adhoc(true)
+    build_ios_adhoc(false)
   end
 
   desc "`fastlane ios nightly` - makes a new nightly"
   desc "This lane builds a new nightly and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
   lane :nightly do
     unlock_keychain_if_needed
-    # TODO: fixme when 2FA is setup
-    build_ios_adhoc(true)
+    build_ios_adhoc(false)
   end
 
   desc "`fastlane ios release` builds a release & uploads it to TestFlight"
@@ -231,7 +229,7 @@ platform :ios do
   desc "uses custom plugin, installed via"
   desc "`sudo get install fastlane-plugin-clean_testflight_testers`"
   lane :clean do
-    clean_testflight_testers
+    clean_testflight_testers(username: ENV["FASTLANE_APPLE_ID"])
   end
 
   desc "`fastlane ios upload-diawi` - upload .ipa to diawi"
