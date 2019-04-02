@@ -33,9 +33,3 @@
  :keycard-reset-card-disabled?
  (fn [db]
    (get-in db [:hardwallet :reset-card :disabled?] false)))
-
-(re-frame/reg-sub
- :keycard-account?
- (fn [db]
-   (boolean
-    (get-in db [:account/account :keycard-instance-uid]))))

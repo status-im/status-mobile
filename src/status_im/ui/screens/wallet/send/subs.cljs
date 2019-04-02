@@ -89,9 +89,3 @@
        (models.wallet/add-max-fee)
        (check-sufficient-funds balance symbol amount)
        (check-sufficient-gas balance symbol amount))))
-
-(re-frame/reg-sub
- :wallet.send/signing-phrase-with-padding
- :<- [:account/account]
- (fn [{:keys [signing-phrase]}]
-   (clojure.string/replace-all signing-phrase #" " "     ")))

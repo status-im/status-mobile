@@ -41,8 +41,8 @@
 
 (defn- advanced-cartouche [native-currency {:keys [max-fee gas gas-price]}]
   [react/view
-   [wallet.components/cartouche {:on-press #(do (re-frame/dispatch [:wallet.send/clear-gas])
-                                                (re-frame/dispatch [:navigate-to :wallet-transaction-fee]))}
+   [wallet.components/cartouche {:on-press  #(do (re-frame/dispatch [:wallet.send/clear-gas])
+                                                 (re-frame/dispatch [:navigate-to :wallet-transaction-fee]))}
     (i18n/label :t/wallet-transaction-fee)
     [react/view {:style               styles/advanced-options-text-wrapper
                  :accessibility-label :transaction-fee-button}
@@ -67,11 +67,11 @@
      [advanced-cartouche native-currency transaction])])
 
 (defview password-input-panel [message-label spinning?]
-  (letsubs [account [:account/account]
+  (letsubs [account         [:account/account]
             wrong-password? [:wallet.send/wrong-password?]
-            signing-phrase (:signing-phrase @account)
-            bottom-value (animation/create-value -250)
-            opacity-value (animation/create-value 0)]
+            signing-phrase  (:signing-phrase @account)
+            bottom-value    (animation/create-value -250)
+            opacity-value   (animation/create-value 0)]
     {:component-did-mount #(send.animations/animate-sign-panel opacity-value bottom-value)}
     [react/animated-view {:style (styles/animated-sign-panel bottom-value)}
      (when wrong-password?
@@ -119,7 +119,7 @@
 ;; "Sign Transaction >" button
 (defn- sign-transaction-button [amount-error to amount sufficient-funds? sufficient-gas? modal? online?]
   (let [sign-enabled? (and (nil? amount-error)
-                           (or modal? (not (empty? to)))    ;;NOTE(goranjovic) - contract creation will have empty `to`
+                           (or modal? (not (empty? to))) ;;NOTE(goranjovic) - contract creation will have empty `to`
                            (not (nil? amount))
                            sufficient-funds?
                            sufficient-gas?
@@ -129,32 +129,19 @@
      [react/view]
      [button/button {:style               components.styles/flex
                      :disabled?           (not sign-enabled?)
-                     :on-press            #(re-frame/dispatch [:wallet.ui/sign-transaction-button-clicked])
+                     :on-press            #(re-frame/dispatch [:set-in
+                                                               [:wallet :send-transaction :show-password-input?]
+                                                               true])
                      :text-style          {:color :white}
                      :accessibility-label :sign-transaction-button}
       (i18n/label :t/transactions-sign-transaction)
       [vector-icons/icon :main-icons/next {:color (if sign-enabled? colors/white colors/white-light-transparent)}]]]))
 
-(defn signing-phrase-view [signing-phrase]
-  [react/view {:flex-direction :column
-               :align-items    :center
-               :margin-top     10}
-   [react/view (assoc styles/signing-phrase-container :width "90%" :height 40)
-    [react/text {:accessibility-label :signing-phrase-text
-                 :style               {:padding-vertical 16
-                                       :text-align       :center}}
-     signing-phrase]]
-   [react/text {:style {:color            :white
-                        :text-align       :center
-                        :font-size        12
-                        :padding-vertical 14}}
-    (i18n/label :t/signing-phrase-warning)]])
-
-(defn- render-send-transaction-view [{:keys [modal? transaction scroll advanced? keycard? signing-phrase network all-tokens amount-input network-status]}]
+(defn- render-send-transaction-view [{:keys [modal? transaction scroll advanced? network all-tokens amount-input network-status]}]
   (let [{:keys [amount amount-text amount-error asset-error show-password-input? to to-name sufficient-funds?
                 sufficient-gas? in-progress? from-chat? symbol]} transaction
-        chain (ethereum/network->chain-keyword network)
-        native-currency (tokens/native-currency chain)
+        chain                        (ethereum/network->chain-keyword network)
+        native-currency              (tokens/native-currency chain)
         {:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)
         online? (= :online network-status)]
     [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
@@ -185,9 +172,7 @@
                                      :amount-text   amount-text
                                      :input-options {:on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount % symbol decimals])
                                                      :ref            (partial reset! amount-input)}} token]
-        [advanced-options advanced? native-currency transaction scroll]
-        (when keycard?
-          [signing-phrase-view signing-phrase])]]
+        [advanced-options advanced? native-currency transaction scroll]]]
       (if show-password-input?
         [enter-password-buttons in-progress?
          #(re-frame/dispatch [:wallet/cancel-entering-password])
@@ -201,11 +186,11 @@
 ;; MAIN SEND TRANSACTION VIEW
 (defn- send-transaction-view [{:keys [scroll] :as opts}]
   (let [amount-input (atom nil)
-        handler (fn [_]
-                  (when (and scroll @scroll @amount-input
-                             (.isFocused @amount-input))
-                    (log/debug "Amount field focused, scrolling down")
-                    (.scrollToEnd @scroll)))]
+        handler      (fn [_]
+                       (when (and scroll @scroll @amount-input
+                                  (.isFocused @amount-input))
+                         (log/debug "Amount field focused, scrolling down")
+                         (.scrollToEnd @scroll)))]
     (reagent/create-class
      {:component-will-mount (fn [_]
                               ;;NOTE(goranjovic): keyboardDidShow is for android and keyboardWillShow for ios
@@ -216,41 +201,33 @@
 
 ;; SEND TRANSACTION FROM WALLET (CHAT)
 (defview send-transaction []
-  (letsubs [transaction [:wallet.send/transaction]
-            advanced? [:wallet.send/advanced?]
-            network [:account/network]
-            scroll (atom nil)
+  (letsubs [transaction    [:wallet.send/transaction]
+            advanced?      [:wallet.send/advanced?]
+            network        [:account/network]
+            scroll         (atom nil)
             network-status [:network-status]
-            all-tokens [:wallet/all-tokens]
-            signing-phrase [:wallet.send/signing-phrase-with-padding]
-            keycard? [:keycard-account?]]
+            all-tokens     [:wallet/all-tokens]]
     [send-transaction-view {:modal?         false
                             :transaction    transaction
                             :scroll         scroll
                             :advanced?      advanced?
-                            :keycard?       keycard?
-                            :signing-phrase signing-phrase
                             :network        network
                             :all-tokens     all-tokens
                             :network-status network-status}]))
 
 ;; SEND TRANSACTION FROM DAPP
 (defview send-transaction-modal []
-  (letsubs [transaction [:wallet.send/transaction]
-            advanced? [:wallet.send/advanced?]
-            network [:account/network]
-            scroll (atom nil)
+  (letsubs [transaction    [:wallet.send/transaction]
+            advanced?      [:wallet.send/advanced?]
+            network        [:account/network]
+            scroll         (atom nil)
             network-status [:network-status]
-            all-tokens [:wallet/all-tokens]
-            signing-phrase [:wallet.send/signing-phrase-with-padding]
-            keycard? [:keycard-account?]]
+            all-tokens     [:wallet/all-tokens]]
     (if transaction
       [send-transaction-view {:modal?         true
                               :transaction    transaction
                               :scroll         scroll
                               :advanced?      advanced?
-                              :keycard?       keycard?
-                              :signing-phrase signing-phrase
                               :network        network
                               :all-tokens     all-tokens
                               :network-status network-status}]

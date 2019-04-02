@@ -40,8 +40,7 @@
      (i18n/label :t/go-to-settings)]]])
 
 (defview hardwallet-connect []
-  (letsubs [nfc-enabled? [:hardwallet/nfc-enabled?]
-            setup-step [:hardwallet-setup-step]]
+  (letsubs [nfc-enabled? [:hardwallet/nfc-enabled?]]
     [react/view styles/container
      [status-bar/status-bar]
      [react/view {:flex            1
@@ -54,11 +53,10 @@
        (if nfc-enabled?
          [nfc-enabled]
          [nfc-disabled])]
-      (if (= setup-step :begin)
-        [react/view styles/bottom-container
-         [react/touchable-highlight {:on-press #(.openURL react/linking "https://hardwallet.status.im")}
-          [react/view styles/product-info-container
-           [react/text {:style styles/product-info-text}
-            (i18n/label :t/product-information)]
-           [vector-icons/icon :main-icons/link {:color           colors/blue
-                                                :container-style styles/external-link-icon}]]]])]]))
+      [react/view styles/bottom-container
+       [react/touchable-highlight {:on-press #(.openURL react/linking "https://hardwallet.status.im")}
+        [react/view styles/product-info-container
+         [react/text {:style styles/product-info-text}
+          (i18n/label :t/product-information)]
+         [vector-icons/icon :main-icons/link {:color           colors/blue
+                                              :container-style styles/external-link-icon}]]]]]]))

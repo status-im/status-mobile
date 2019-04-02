@@ -630,7 +630,6 @@
     "wallet-choose-from-contacts": "Choose from Contacts",
     "send-sending-to": "to {{recipient-name}}",
     "signing-phrase-description": "If you recognize these words, enter your login password to sign the transaction",
-    "signing-phrase-warning": "Only confirm the transaction if you recognize\n your three words",
     "currency-display-name-mad": "Moroccan Dirham",
     "here-is-your-signing-phrase": "Here is your signing phrase. You will use it to verify your transactions. *Write it down and keep it safe!*",
     "wants-to-access-profile": "wants to access to your profile",

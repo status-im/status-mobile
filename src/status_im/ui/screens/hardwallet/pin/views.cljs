@@ -9,8 +9,7 @@
             [status-im.ui.screens.hardwallet.components :as components]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.toolbar.actions :as actions]
-            [status-im.ui.components.toolbar.actions :as toolbar.actions]))
+            [status-im.ui.components.toolbar.actions :as actions]))
 
 (defn numpad-button [n step enabled?]
   [react/touchable-highlight
@@ -32,7 +31,8 @@
    [numpad-row [4 5 6] step enabled?]
    [numpad-row [7 8 9] step enabled?]
    [react/view styles/numpad-row-container
-    [react/view styles/numpad-empty-button]
+    [react/view styles/numpad-empty-button
+     [react/text {:style styles/numpad-empty-button-text}]]
     [numpad-button 0 step enabled?]
     [react/touchable-highlight
      {:on-press #(when enabled?
@@ -125,12 +125,7 @@
     [react/view {:flex             1
                  :background-color colors/white}
      [status-bar/status-bar]
-     [toolbar/toolbar
-      nil
-      [toolbar/nav-button (assoc toolbar.actions/default-back
-                                 :handler
-                                 #(re-frame/dispatch [:hardwallet.ui/navigate-back-button-clicked]))]
-      nil]
+     [toolbar/toolbar nil toolbar/default-nav-back nil]
      (if (zero? pin-retry-counter)
        [pin-view {:pin               pin
                   :retry-counter     (when (< puk-retry-counter puk-retries) puk-retry-counter)
@@ -149,7 +144,6 @@
                                        :t/current-pin)
                   :description-label (case step
                                        :current :t/current-pin-description
-                                       :sign :t/current-pin-description
                                        :login :t/login-pin-description
                                        :t/new-pin-description)
                   :step              step
