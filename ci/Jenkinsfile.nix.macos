@@ -5,23 +5,19 @@ pipeline {
 
   environment {
     /* we source .bash_profile to be able to use nix-store */
-    NIX_SSHOPTS="-o StrictHostKeyChecking=no source .bash_profile;"
+    NIX_SSHOPTS = "-o StrictHostKeyChecking=no source .bash_profile;"
     /* where our /nix/store is hosted */
     NIX_CACHE_USER = 'nix-cache'
     NIX_CACHE_HOST = 'master-01.do-ams3.ci.misc.statusim.net'
     /* we add both keys so default binary cache also works */
-    NIX_BIN_CACHE = 'https://nix-cache.status.im/'
-    NIX_BIN_CACHE_KEYS = (
-      'nix-cache.status.im-1:x/93lOfLU+duPplwMSBR+OlY4+mo+dCN7n0mr4oPwgY= '+
-      'cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY='
-    )
+    NIX_CONF_DIR = "${env.WORKSPACE}/scripts/lib/setup/nix"
   }
 
   options {
     timestamps()
     disableConcurrentBuilds()
     /* Prevent Jenkins jobs from running forever */
-    timeout(time: 120, unit: 'MINUTES')
+    timeout(time: 300, unit: 'MINUTES')
     /* Limit builds retained */
     buildDiscarder(logRotator(
       numToKeepStr: '20',
@@ -41,12 +37,9 @@ pipeline {
     }
     stage('Build') {
       steps {
-        /* we dogfood our own cache to speed up builds */
         sh """
           . ~/.nix-profile/etc/profile.d/nix.sh && \
-          nix-build -A env.all \
-            --option extra-substituters '${NIX_BIN_CACHE}' \
-            --trusted-public-keys '${NIX_BIN_CACHE_KEYS}'
+          nix-shell --run echo
         """
       }
     }
