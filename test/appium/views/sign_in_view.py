@@ -154,3 +154,7 @@ class SignInView(BaseView):
         except IndexError:
             raise NoSuchElementException(
                 'Device %s: Unable to find account by position %s' % (self.driver.number, position)) from None
+
+    def open_weblink_and_login(self, url_weblink):
+        self.open_universal_web_link(url_weblink)
+        self.sign_in()

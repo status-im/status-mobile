@@ -12,6 +12,7 @@ from PIL import Image
 from datetime import datetime
 from io import BytesIO
 from views.base_element import BaseButton, BaseElement, BaseEditBox, BaseText
+from support.device_apps import start_web_browser
 
 
 class BackButton(BaseButton):
@@ -282,6 +283,20 @@ class AssetButton(BaseButton):
         self.driver.info('Tap on %s' % self.name)
 
 
+class OpenInStatusButton(BaseButton):
+    def __init__(self, driver):
+        super(OpenInStatusButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="Open in Status"]')
+
+    def click(self):
+        self.wait_for_visibility_of_element()
+        
+        # 'Open in Status' button already in DOM but need to scroll down so that click action works
+        self.driver.swipe(500, 1000, 500, 100)
+        self.driver.info('Tap on %s' % self.name)
+        self.wait_for_element().click()
+
+
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
@@ -310,6 +325,9 @@ class BaseView(object):
         self.cross_icon = CrossIcon(self.driver)
         self.show_roots_button = ShowRoots(self.driver)
         self.get_started_button = GetStartedButton(self.driver)
+
+        # external browser
+        self.open_in_status_button = OpenInStatusButton(self.driver)
 
         self.apps_button = AppsButton(self.driver)
         self.status_app_icon = StatusAppIcon(self.driver)
@@ -566,3 +584,9 @@ class BaseView(object):
         airplane_toggle.click()
         # opening Status app
         self.driver.start_activity(app_package='im.status.ethereum', app_activity='.MainActivity')
+
+    def open_universal_web_link(self, deep_link):
+        start_web_browser(self.driver)
+        self.send_as_keyevent(deep_link)
+        self.confirm()
+        self.open_in_status_button.click()
