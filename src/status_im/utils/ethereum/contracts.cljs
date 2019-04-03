@@ -34,7 +34,7 @@
 
 (re-frame/reg-fx
  ::call
- (fn [[address data callback]]
+ (fn [{:keys [address data callback]}]
    (ethereum/call {:to address
                    :data data}
                   callback)))
@@ -60,4 +60,6 @@
             :on-result on-result})
           {::call {:address  contract-address
                    :data     data
-                   :callback #(callback (abi-spec/decode % return-params))}})))))
+                   :callback #(callback (if (empty? return-params)
+                                          %
+                                          (abi-spec/decode % return-params)))}})))))

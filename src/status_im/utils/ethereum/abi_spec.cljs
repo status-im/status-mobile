@@ -390,4 +390,5 @@
     (let [bytes (subs bytes 2)]
       (when-not (empty? bytes)
         (let [offsets (get-offsets types)]
-          (map (dec-type bytes) offsets types))))))
+          (map #(when-not (= "0x" %) %)
+               (map (dec-type bytes) offsets types)))))))
