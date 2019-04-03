@@ -29,6 +29,7 @@
   [cofx {:keys [contenthash on-success on-failure]}]
   (let [{:keys [namespace hash]} (decode contenthash)]
     (when (= namespace :ipfs)
-      (ipfs/cat {:hash hash
+      (ipfs/cat cofx
+                {:hash hash
                  :on-success on-success
                  :on-failure on-failure}))))
