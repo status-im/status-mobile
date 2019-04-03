@@ -40,7 +40,7 @@ fi
 
 if [ "$PLATFORM" == 'android' ]; then
   if [ ! -d $ANDROID_SDK_ROOT ]; then
-    echo -e "${GREEN}NDK setup not complete, please run 'scripts/setup'!${NC}"
+    echo -e "${GREEN}SDK setup not complete, please run 'scripts/setup'!${NC}"
     exit 1
   fi
   if [ ! -d $ANDROID_NDK_ROOT ]; then

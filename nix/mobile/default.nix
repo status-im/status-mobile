@@ -1,4 +1,4 @@
-{ stdenv, pkgs, target-os ? "", status-go, androidPkgs }:
+{ stdenv, pkgs, target-os ? "all", status-go, androidPkgs }:
 
 with pkgs;
 with stdenv;
@@ -7,18 +7,17 @@ let
   gradle = gradle_4_10;
   targetAndroid = {
     "android" = true;
-    "" = true;
+    "all" = true;
   }.${target-os} or false;
   targetIOS = {
     "ios" = true;
-    "" = true;
+    "all" = true;
   }.${target-os} or false;
 
 in
   {
     buildInputs =
-      [ bundler ruby ] ++ ## bundler/ruby used for fastlane
-      lib.optional targetAndroid [
+      lib.optionals targetAndroid [
         openjdk gradle
       ];
     shellHook =

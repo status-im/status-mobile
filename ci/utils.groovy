@@ -20,9 +20,9 @@ def nix_sh(cmd) {
     set +x
     . ~/.nix-profile/etc/profile.d/nix.sh
     set -x
-    nix-shell \'${env.WORKSPACE}/default.nix\' \\
-        --argstr target-os \'${env.TARGET_PLATFORM}\' \\
-        --run \'${cmd}\'
+    nix-shell --argstr target-os \'${env.TARGET_PLATFORM}\' \\
+              --run \'${cmd}\' \\
+              \'${env.WORKSPACE}/shell.nix\'
   """
 }
 

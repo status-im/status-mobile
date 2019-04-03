@@ -22,8 +22,8 @@ fi
 if command -v "nix" >/dev/null 2>&1; then
   echo -e "${GREEN}Configuring Nix shell...${NC}";
   if [[ $@ == "ENTER_NIX_SHELL" ]]; then
-    exec nix-shell
+    exec nix-shell --show-trace
   else
-    exec nix-shell --run "$@"
+    exec nix-shell --show-trace --run "$@"
   fi
 fi

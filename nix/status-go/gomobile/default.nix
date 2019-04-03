@@ -26,7 +26,7 @@ in buildGoPackage rec {
   '';
 
   patches = [ ./ndk-search-path.patch ./resolve-nix-android-sdk.patch ]
-    ++ lib.optional isDarwin [ ./ignore-nullability-error-on-ios.patch ];
+    ++ lib.optional isDarwin ./ignore-nullability-error-on-ios.patch;
 
   postPatch = ''
     substituteInPlace cmd/gomobile/install.go --replace "\`adb\`" "\`${platform-tools}/bin/adb\`"
@@ -41,14 +41,14 @@ in buildGoPackage rec {
     mkdir -p $out $bin/lib
 
     ln -s ${ncurses5}/lib/libncursesw.so.5 $bin/lib/libtinfo.so.5
-  '' + lib.optionalString isDarwin ''
+  '' + (if isDarwin then ''
     wrapProgram $bin/bin/gomobile \
       --prefix "PATH" : "${lib.makeBinPath [ xcodeWrapper ]}" \
       --prefix "LD_LIBRARY_PATH" : "${lib.makeLibraryPath [ ncurses5 zlib ]}:$bin/lib"
-  '' + lib.optionalString (!isDarwin) ''
+  '' else ''
     wrapProgram $bin/bin/gomobile \
       --prefix "LD_LIBRARY_PATH" : "${lib.makeLibraryPath [ ncurses5 zlib ]}:$bin/lib"
-  '' + ''
+  '') + ''
     $bin/bin/gomobile init
   '';
 

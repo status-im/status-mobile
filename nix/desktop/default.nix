@@ -6,15 +6,15 @@ with stdenv;
 let
   targetLinux = {
     "linux" = true;
-    "" = isLinux;
+    "all" = isLinux;
   }.${target-os} or false;
   targetDarwin = {
     "macos" = true;
-    "" = isDarwin;
+    "all" = isDarwin;
   }.${target-os} or false;
   targetWindows = {
     "windows" = true;
-    "" = isLinux;
+    "all" = isLinux;
   }.${target-os} or false;
   linuxPlatform = callPackage ./linux { };
   darwinPlatform = callPackage ./macos { };
@@ -26,10 +26,10 @@ in
       cmake
       extra-cmake-modules
       file
-    ] ++ lib.optional targetLinux linuxPlatform.buildInputs
-      ++ lib.optional targetDarwin darwinPlatform.buildInputs
-      ++ lib.optional (! targetWindows) qt5.full
-      ++ lib.optional targetWindows windowsPlatform.buildInputs;
+    ] ++ lib.optionals targetLinux linuxPlatform.buildInputs
+      ++ lib.optionals targetDarwin darwinPlatform.buildInputs
+      ++ lib.optionals targetWindows windowsPlatform.buildInputs
+      ++ lib.optional (! targetWindows) qt5.full;
     shellHook = (if target-os == "windows" then ''
       unset QT_PATH
     '' else ''

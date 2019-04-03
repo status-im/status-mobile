@@ -87,7 +87,8 @@ ARG GIT_COMMIT
 RUN export USER=jenkins \
  && /tmp/nix-install.sh \
  && . ~/.nix-profile/etc/profile.d/nix.sh \
- && nix-build --no-out-link https://github.com/status-im/status-react/tarball/${GIT_COMMIT}
+ && nix-build --no-out-link https://github.com/status-im/status-react/tarball/${GIT_COMMIT} \
+ && nix-shell --run 'echo' https://github.com/status-im/status-react/tarball/${GIT_COMMIT}
 
 # hack to avoid calling login
 ENV USER=jenkins
