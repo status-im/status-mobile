@@ -1218,7 +1218,7 @@
 (handlers/register-handler-fx
  :hardwallet.ui/pair-code-next-button-pressed
  (fn [cofx]
-   (hardwallet/pair cofx)))
+   (hardwallet/pair-code-next-button-pressed cofx)))
 
 (handlers/register-handler-fx
  :hardwallet.ui/recovery-phrase-next-button-pressed
@@ -1334,6 +1334,31 @@
  :hardwallet.ui/card-ready-next-button-pressed
  (fn [cofx _]
    (hardwallet/card-ready-next-button-pressed cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet.ui/import-account-back-button-pressed
+ (fn [cofx _]
+   (hardwallet/import-account-back-button-pressed cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet.ui/import-account-next-button-pressed
+ (fn [cofx _]
+   (hardwallet/import-account-next-button-pressed cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet/load-importing-account-screen
+ (fn [cofx _]
+   (hardwallet/load-importing-account-screen cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet/import-account
+ (fn [cofx _]
+   (hardwallet/import-account cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet/verify-pin
+ (fn [cofx _]
+   (hardwallet/verify-pin cofx)))
 
 (handlers/register-handler-fx
  :hardwallet/generate-mnemonic

@@ -91,6 +91,24 @@
          {:on-press #(re-frame/dispatch [:hardwallet.ui/card-ready-next-button-pressed])
           :forward? true}]]]]]))
 
+(defn- import-account []
+  [react/view styles/card-ready-container
+   [react/view styles/card-ready-inner-container
+    [react/view (assoc styles/center-container :margin-top 68)
+     [react/text {:style styles/center-title-text}
+      (i18n/label :t/card-is-paired)]
+     [react/text {:style styles/estimated-time-text}
+      (i18n/label :t/ready-to-import-keycard-account)]]
+    [react/view]]
+   [react/view styles/back-and-next-buttons-container
+    [components.common/bottom-button
+     {:on-press #(re-frame/dispatch [:hardwallet.ui/import-account-back-button-pressed])
+      :back?    true
+      :label    (i18n/label :t/back)}]
+    [components.common/bottom-button
+     {:on-press #(re-frame/dispatch [:hardwallet.ui/import-account-next-button-pressed])
+      :forward? true}]]])
+
 (defview display-recovery-phrase []
   (letsubs [mnemonic [:hardwallet-mnemonic]]
     (let [mnemonic-vec (vec (map-indexed vector (clojure.string/split mnemonic #" ")))]
@@ -414,6 +432,17 @@
     [react/activity-indicator {:animating true
                                :size      :large}]]])
 
+(defn- importing-account []
+  [react/view styles/loading-view-container
+   [react/view styles/center-container
+    [react/text {:style styles/center-title-text}
+     (i18n/label :t/importing-keycard-account)]
+    [react/text {:style styles/estimated-time-text}
+     (i18n/label :t/this-will-take-few-seconds)]]
+   [react/view styles/waiting-indicator-container
+    [react/activity-indicator {:animating true
+                               :size      :large}]]])
+
 (defn complete []
   [loading-view {:title-label            :t/completing-card-setup
                  :estimated-time-seconds 30
@@ -438,6 +467,8 @@
     :recovery-phrase-confirm-word1 [recovery-phrase-confirm-word step]
     :recovery-phrase-confirm-word2 [recovery-phrase-confirm-word step]
     :error [error]
+    :import-account [import-account]
+    :importing-account [importing-account]
     [begin]))
 
 (defview hardwallet-setup []
