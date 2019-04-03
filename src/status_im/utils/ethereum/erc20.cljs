@@ -15,7 +15,9 @@
 
   => 29166666
   "
-  (:require [status-im.utils.ethereum.core :as ethereum]
+  (:require [clojure.string :as string]
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.abi-spec :as abi-spec]
             [status-im.native-module.core :as status]
             [status-im.utils.security :as security]
             [status-im.js-dependencies :as dependencies]
@@ -26,7 +28,7 @@
 
 (def snt-contracts
   {:mainnet "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
-   :testnet "0xc55cF4B03948D7EBc8b9E8BAD92643703811d162"
+   :testnet "0xc55cf4b03948d7ebc8b9e8bad92643703811d162"
    :rinkeby nil})
 
 (def abi
@@ -147,3 +149,26 @@
                                        (ethereum/normalized-address owner-address)
                                        (ethereum/normalized-address spender-address))
                  #(cb (ethereum/hex->bignumber %))))
+
+(defn is-transfer?
+  [input-data]
+  (string/starts-with? input-data "0xa9059cbb"))
+
+(defn is-snt-contract?
+  [contract]
+  ((into #{} (vals snt-contracts)) contract))
+
+(defn get-transaction
+  "only supports SNT for now"
+  [transaction-hash callback]
+  (ethereum/get-transaction
+   transaction-hash
+   (fn [{:keys [to input] :as result}]
+     (when (and result
+                (is-snt-contract? to)
+                (is-transfer? input))
+       (let [[recipient snt-value]
+             (abi-spec/decode (subs input 10) ["address" "uint"])]
+         (callback (assoc result
+                          :recipient recipient
+                          :snt-value snt-value)))))))

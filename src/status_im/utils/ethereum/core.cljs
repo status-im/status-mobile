@@ -3,6 +3,7 @@
             [status-im.js-dependencies :as dependencies]
             [status-im.native-module.core :as status]
             [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.utils.ethereum.abi-spec :as abi-spec]
             [status-im.utils.money :as money]
             [taoensso.timbre :as log]))
 
@@ -132,7 +133,7 @@
                                  :method  "eth_call"
                                  :params  [params "latest"]}))
    (fn [response]
-     (if (= "" response)
+     (if (string/blank? response)
        (log/warn :web3-response-error)
        (callback (get (js->clj (.parse js/JSON response)) "result"))))))
 
@@ -175,11 +176,25 @@
                                      (cb (js->clj result :keywordize-keys true))
                                      (handle-error error)))))
 
-(defn get-transaction [web3 number cb]
-  (.getTransaction (.-eth web3) number (fn [error result]
-                                         (if-not error
-                                           (cb (js->clj result :keywordize-keys true))
-                                           (handle-error error)))))
+(defn- decode-uint
+  [hex]
+  (first (abi-spec/decode hex ["uint"])))
+
+(defn get-transaction [transaction-hash callback]
+  (status/call-private-rpc
+   (.stringify js/JSON (clj->js {:jsonprc "2.0"
+                                 :id      1
+                                 :method  "eth_getTransactionByHash"
+                                 :params  [transaction-hash]}))
+   (fn [response]
+     (if (string/blank? response)
+       (log/warn :web3-response-error)
+       (callback (-> (.parse js/JSON response)
+                     (js->clj :keywordize-keys true)
+                     :result
+                     (update :gasPrice decode-uint)
+                     (update :value decode-uint)
+                     (update :gas decode-uint)))))))
 
 (defn get-transaction-receipt [web3 number cb]
   (.getTransactionReceipt (.-eth web3) number (fn [error result]
