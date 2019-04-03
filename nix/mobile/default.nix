@@ -16,6 +16,7 @@ let
   xcodewrapperArgs = {
     version = "10.1";
   };
+  xcodeWrapper = xcodeenv.composeXcodeWrapper xcodewrapperArgs;
   android = callPackage ./android.nix { inherit config; };
 
 in
@@ -24,7 +25,8 @@ in
     inherit xcodewrapperArgs;
 
     buildInputs =
-      lib.optional targetAndroid android.buildInputs;
+      lib.optional targetAndroid android.buildInputs ++
+      lib.optional (targetIOS && isDarwin) xcodeWrapper;
     shellHook =
       lib.optionalString targetIOS ''
         export RCTSTATUS_FILEPATH=${status-go}/lib/ios/Statusgo.framework

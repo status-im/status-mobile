@@ -19,7 +19,7 @@ pipeline {
   stages {
     stage('Install Deps'){
       steps {
-        sh ('bundle install')
+        sh ('bundle install --gemfile=fastlane/Gemfile')
       }
     }
 
@@ -32,7 +32,7 @@ pipeline {
             passwordVariable: 'FASTLANE_PASSWORD'
           ),
         ]) {
-          sh ('bundle exec fastlane ios clean')
+          sh ('bundle exec --gemfile=fastlane/Gemfile fastlane ios clean')
         }
       }
     }

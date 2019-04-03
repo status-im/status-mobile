@@ -65,8 +65,11 @@ def prep(type = 'nightly') {
   if (env.TARGET_OS == 'android' || env.TARGET_OS == 'ios') {
     /* Run at start to void mismatched numbers */
     utils.genBuildNumber()
+  }
+
+  if (env.TARGET_OS == 'ios') {
     /* install ruby dependencies */
-    utils.nix_sh 'bundle install --quiet'
+    utils.nix_sh 'bundle install --gemfile=fastlane/Gemfile --quiet'
   }
 
   def prepareTarget=env.TARGET_OS
