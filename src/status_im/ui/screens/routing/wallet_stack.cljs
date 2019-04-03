@@ -11,6 +11,8 @@
               :screens [:wallet-send-transaction
                         :recent-recipients
                         :wallet-transaction-sent
+                        :enter-pin
+                        :hardwallet-connect
                         :recipient-qr-code
                         :wallet-send-assets]}
              {:name    :request-transaction-stack

@@ -4,13 +4,17 @@
   [{:name    :wallet-send-modal-stack
     :screens [:wallet-send-transaction-modal
               :wallet-transaction-sent-modal
-              :wallet-transaction-fee]
+              :wallet-transaction-fee
+              :hardwallet-connect
+              :enter-pin]
     :config  {:initialRouteName :wallet-send-transaction-modal}}
    {:name    :wallet-send-modal-stack-with-onboarding
     :screens [:wallet-onboarding-setup-modal
               :wallet-send-transaction-modal
               :wallet-transaction-sent-modal
-              :wallet-transaction-fee]
+              :wallet-transaction-fee
+              :hardwallet-connect
+              :enter-pin]
     :config  {:initialRouteName :wallet-onboarding-setup-modal}}
    :chat-modal
    :show-extension-modal
