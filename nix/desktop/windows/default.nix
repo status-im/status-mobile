@@ -14,4 +14,8 @@ in
     baseImage
     go # Needed for Windows build only
   ];
+
+  shellHook = ''
+    export STATUSREACT_WINDOWS_BASEIMAGE_PATH="${baseImage}/src"
+  '';
 }

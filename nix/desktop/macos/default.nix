@@ -9,4 +9,8 @@ let
 in
 {
   buildInputs = [ baseImage ];
+
+  shellHook = ''
+    export STATUSREACT_MACOS_BASEIMAGE_PATH="${baseImage}/src"
+  '';
 }
