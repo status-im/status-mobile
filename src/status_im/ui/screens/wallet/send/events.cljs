@@ -21,7 +21,12 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.config :as config]
             [status-im.transport.utils :as transport.utils]
-            [status-im.hardwallet.core :as hardwallet]))
+            [status-im.hardwallet.core :as hardwallet]
+            [clojure.string :as string]
+            [status-im.utils.ethereum.eip681 :as eip681]
+            [status-im.contact.db :as contact.db]
+            [status-im.utils.ethereum.eip55 :as eip55]
+            [status-im.utils.ethereum.ens :as ens]))
 
 ;;;; FX
 
@@ -385,3 +390,88 @@
                                                              screen-params
                                                              (types/json->clj %)
                                                              password-error-cb])}})))))
+(def wrong-password-error-code 5)
+
+(defn get-tx-params [{:keys [from to value gas gasPrice] :as params} symbol coin]
+  (if (= :ETH symbol)
+    params
+    (erc20/transfer-tx (:address coin) from to value gas gasPrice)))
+
+(defn send-transaction! [params symbol coin on-completed password]
+  (let [tx-params (get-tx-params params symbol coin)]
+    (status/send-transaction (types/clj->json tx-params)
+                             password
+                             on-completed)))
+
+(defn on-transaction-completed [transaction flow {:keys [public-key]} {:keys [decimals] :as coin} {:keys [result error]} in-progress?]
+  (let [{:keys [id method to symbol amount on-result]} transaction
+        amount-text (str (money/internal->formatted amount symbol decimals))]
+    (if error
+      ;; ERROR
+      (do (utils/show-popup (i18n/label :t/error)
+                            (if (= (:code error) wrong-password-error-code)
+                              (i18n/label :t/wrong-password)
+                              (:message error)))
+          (reset! in-progress? false))
+      (do
+        (re-frame/dispatch [:wallet/add-unconfirmed-transaction transaction result])
+        (if on-result
+          (re-frame/dispatch (conj on-result id result method))
+          (re-frame/dispatch [:send-transaction-message public-key flow {:address to
+                                                                         :asset   (name symbol)
+                                                                         :amount  amount-text
+                                                                         :tx-hash result}]))))))
+
+(defn send-transaction-wrapper [{:keys [transaction password flow all-tokens in-progress? chain contact account]}]
+  (let [symbol (:symbol transaction)
+        coin   (tokens/asset-for all-tokens (keyword chain) symbol)]
+    (reset! in-progress? true)
+    (send-transaction! (models.wallet/prepare-send-transaction (:address account) transaction)
+                       symbol
+                       coin
+                       #(on-transaction-completed transaction flow contact coin (types/json->clj %) in-progress?)
+                       password)))
+
+(defn qr-data->send-tx-data [{:keys [address value symbol gas gasPrice public-key from-chat?]}]
+  {:pre [(not (nil? address))]}
+  (cond-> {:to address :public-key public-key}
+    value (assoc :amount value)
+    symbol (assoc :symbol symbol)
+    gas (assoc :gas (money/bignumber gas))
+    from-chat? (assoc :from-chat? from-chat?)
+    gasPrice (assoc :gas-price (money/bignumber gasPrice))))
+
+(defn extract-qr-code-details [chain all-tokens qr-uri]
+  {:pre [(keyword? chain) (string? qr-uri)]}
+  ;; i don't like fetching all tokens here
+  (let [qr-uri (string/trim qr-uri)
+        chain-id (ethereum/chain-keyword->chain-id chain)]
+    (or (let [m (eip681/parse-uri qr-uri)]
+          (merge m (eip681/extract-request-details m all-tokens)))
+        (when (ethereum/address? qr-uri)
+          {:address qr-uri :chain-id chain-id}))))
+
+(defn qr-data->transaction-data [qr-data contacts]
+  {:pre [(map? qr-data)]}
+  (let [{:keys [to name] :as tx-details} (qr-data->send-tx-data qr-data)
+        contact-name (:name (contact.db/find-contact-by-address contacts to))]
+    (cond-> tx-details
+      contact-name (assoc :to-name name))))
+
+;; CHOOSEN RECIPIENT
+(defn eth-name->address [chain recipient callback]
+  (if (ens/is-valid-eth-name? recipient)
+    (ens/get-addr (get ens/ens-registries chain)
+                  recipient
+                  #(callback %))
+    (callback recipient)))
+
+(defn chosen-recipient [chain {:keys [to to-ens]} success-callback error-callback]
+  {:pre [(keyword? chain) (string? to)]}
+  (eth-name->address chain to
+                     (fn [to]
+                       (if (ethereum/address? to)
+                         (if (and (not to-ens) (not (eip55/valid-address-checksum? to)))
+                           (error-callback :t/wallet-invalid-address-checksum)
+                           (success-callback to))
+                         (error-callback :t/invalid-address)))))

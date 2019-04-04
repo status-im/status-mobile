@@ -4,6 +4,9 @@
 
 ;; wallet
 
+(def toolbar
+  {:background-color colors/blue})
+
 (defn button-container [enabled?]
   (merge {:flex-direction :row
           :align-items    :center}

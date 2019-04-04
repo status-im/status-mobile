@@ -18,6 +18,8 @@
    [status-im.ui.screens.wallet.main.views :as wallet.main]
    [status-im.ui.screens.wallet.collectibles.views :as collectibles]
    [status-im.ui.screens.wallet.send.views :as send]
+   [status-im.ui.screens.wallet.send.redesigned-views :as redesigned.send]
+   [status-im.ui.screens.wallet.send.views.amount :as wallet.send.amount]
    [status-im.ui.screens.wallet.sign-message.views :as sign-message]
    [status-im.ui.screens.wallet.request.views :as request]
    [status-im.ui.screens.wallet.components.views :as wallet.components]
@@ -101,7 +103,11 @@
    :wallet-onboarding-setup          wallet.onboarding/screen
    :wallet-send-transaction-chat     send/send-transaction
    :contact-code                     wallet.components/contact-code
+   :wallet-choose-amount             redesigned.send/choose-amount-token
+   :wallet-choose-asset              wallet.send.amount/choose-asset
+   :wallet-txn-overview              redesigned.send/transaction-overview
    :wallet-send-transaction          send/send-transaction
+   :wallet-send-transaction-new      redesigned.send/send-transaction
    :recent-recipients                wallet.components/recent-recipients
    :wallet-transaction-sent          transaction-sent/transaction-sent
    :recipient-qr-code                wallet.components/recipient-qr-code

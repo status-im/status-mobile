@@ -9,6 +9,10 @@
              :contact-code
              {:name    :send-transaction-stack
               :screens [:wallet-send-transaction
+                        :wallet-send-transaction-new
+                        :wallet-choose-amount
+                        :wallet-choose-asset
+                        :wallet-txn-overview
                         :recent-recipients
                         :wallet-transaction-sent
                         :enter-pin
