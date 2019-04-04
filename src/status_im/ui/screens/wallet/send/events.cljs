@@ -207,8 +207,8 @@
    ;; for the recipient, we always redirect to `:wallet-transaction-sent` even when we don't
    (let [send-command? (and chat-id (get-in db [:id->command ["send" #{:personal-chats}]]))]
      (fx/merge cofx
-               #(when send-command?
-                  (commands-sending/send % chat-id send-command? params))
+               #_#(when send-command?
+                    (commands-sending/send % chat-id send-command? params))
                (navigation/navigate-to-clean
                 (if (contains? #{:wallet-send-transaction :enter-pin :hardwallet-connect} (:view-id db))
                   :wallet-transaction-sent
