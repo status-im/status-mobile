@@ -5,3 +5,14 @@
          :properties {:topic        :string
                       :chat-ids     :string
                       :last-request {:type :int :default 1}}})
+
+(def v2
+  (-> v1
+      (assoc-in
+       [:properties :gap-from]
+       {:type     :int
+        :optional true})
+      (assoc-in
+       [:properties :gap-to]
+       {:type     :int
+        :optional true})))

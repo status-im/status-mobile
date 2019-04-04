@@ -62,3 +62,9 @@
   (-> v8
       (assoc-in [:properties :raw-payload-hash]
                 {:type :string})))
+
+(def v10
+  (-> v9
+      (assoc-in [:properties :whisper-timestamp]
+                {:type :int
+                 :optional true})))

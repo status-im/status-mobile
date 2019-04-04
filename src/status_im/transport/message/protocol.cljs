@@ -113,7 +113,7 @@
         (fx/merge cofx
                   (send-direct-message current-public-key nil this)
                   (send-with-pubkey params)))))
-  (receive [this chat-id signature _ cofx]
+  (receive [this chat-id signature timestamp cofx]
     {:chat-received-message/add-fx
      [(assoc (into {} this)
              :old-message-id (transport.utils/old-message-id this)
@@ -121,6 +121,7 @@
                           signature
                           (.-payload (:js-obj cofx)))
              :chat-id chat-id
+             :whisper-timestamp timestamp
              :raw-payload-hash (transport.utils/sha3
                                 (.-payload (:js-obj cofx)))
              :from signature

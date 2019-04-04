@@ -1,3 +1,4 @@
+; This entity is not used in the newer version of schema
 (ns status-im.data-store.realm.schemas.account.transport-inbox-topic)
 
 (def v1 {:name       :transport-inbox-topic
