@@ -55,7 +55,7 @@
       [toolbar/nav-button
        (actions/back-white
         #(re-frame/dispatch [:update-wallet-and-nav-back
-                             (when on-close
+                             (when (fn? on-close)
                                (on-close (create-payload address)))]))]
       [toolbar/content-title {:color colors/white}
        label]]
@@ -64,8 +64,8 @@
 (defn- setting->action [address {:keys [label on-open] :as m}]
   {:label  label
    :action #(do
-              (when on-open
-                (on-open address))
+              (when (fn? on-open)
+                (on-open (create-payload address)))
               (re-frame/dispatch [:navigate-to :wallet-settings-hook m]))})
 
 (defview toolbar-view []
