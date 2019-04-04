@@ -342,7 +342,6 @@
            {:style {:color       colors/black
                     :font-size   22
                     :line-height 28
-                    :font-weight :bold
                     :text-align  :center}}
            (i18n/label :t/network-fee-settings)]
           [react/text
@@ -432,14 +431,14 @@
   (some-> (token->fiat-conversion prices token fiat-currency gas-ether-price)
           (money/with-precision 3)))
 
-(defn fetch-optimal-gas [web3 tx-atom]
+(defn fetch-optimal-gas [web3 tx-atom cb]
   (let [symbol (:symbol @tx-atom)]
     (ethereum/gas-price
      web3
      (fn [_ gas-price]
        (when gas-price
-         {:optimal-gas       (ethereum/estimate-gas symbol)
-          :optimal-gas-price (money/bignumber gas-price)})))))
+         (cb {:optimal-gas       (ethereum/estimate-gas symbol)
+              :optimal-gas-price (money/bignumber gas-price)}))))))
 
 (defn optimal-gas-present? [{:keys [optimal-gas optimal-gas-price]}]
   (and optimal-gas optimal-gas-price))
@@ -448,4 +447,7 @@
   {:gas (or gas optimal-gas) :gas-price (or gas-price optimal-gas-price)})
 
 (defn refresh-optimal-gas [web3 tx-atom]
-  (fetch-optimal-gas web3 tx-atom))
+  (fetch-optimal-gas web3
+                     tx-atom
+                     (fn [res]
+                       (swap! tx-atom merge res))))
