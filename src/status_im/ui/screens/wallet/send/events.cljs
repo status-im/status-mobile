@@ -75,32 +75,78 @@
                             all-tokens
                             symbol
                             chain
-                            #(re-frame/dispatch [::transaction-completed (types/json->clj %)])
+                            #(re-frame/dispatch [:wallet.callback/transaction-completed (types/json->clj %)])
                             password]}))))
+
+;; SIGN MESSAGE
+(handlers/register-handler-fx
+ :wallet/sign-message
+ (fn [_ [_ typed? screen-params password-error-cb]]
+   (let [{:keys [data from password]} screen-params]
+     (if typed?
+       {::sign-typed-data {:data     data
+                           :password password
+                           :account  from
+                           :on-completed #(re-frame/dispatch [::sign-message-completed
+                                                              screen-params
+                                                              (types/json->clj %)
+                                                              password-error-cb])}}
+       {::sign-message {:params       {:data     data
+                                       :password (security/safe-unmask-data password)
+                                       :account  from}
+                        :on-completed #(re-frame/dispatch [::sign-message-completed
+                                                           screen-params
+                                                           (types/json->clj %)
+                                                           password-error-cb])}}))))
+
+(fx/defn send-transaction-message
+  "NOTE(goranjovic): we want to send the payment message only when we have a
+   whisper id for the recipient, we always redirect to `:wallet-transaction-sent`
+   even when we don't"
+  [{:keys [db] :as cofx} chat-id params]
+  (let [send-command? (and chat-id
+                           (get-in db [:id->command ["send" #{:personal-chats}]]))]
+    (when send-command?
+      (commands-sending/send cofx chat-id send-command? params))))
 
 ;; SEND TRANSACTION CALLBACK
 (handlers/register-handler-fx
- ::transaction-completed
+ :wallet.callback/transaction-completed
+ [(re-frame/inject-cofx :random-id-generator)]
  (fn [{:keys [db now] :as cofx} [_ {:keys [result error]}]]
-   (let [{:keys [id method public-key to symbol amount-text on-result]} (get-in db [:wallet :send-transaction])
+   (let [{:keys [id method public-key to symbol amount-text on-result
+                 send-transaction-message?]}
+         (get-in db [:wallet :send-transaction])
          db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
      (if error
-        ;; ERROR
+       ;; ERROR
        (models.wallet/handle-transaction-error (assoc cofx :db db') error)
-        ;; RESULT
-       (merge
-        {:db (cond-> (assoc-in db' [:wallet :send-transaction] {})
+       ;; RESULT
+       (fx/merge cofx
+                 (merge
+                  {:db (cond-> (assoc-in db' [:wallet :send-transaction] {})
 
-               (not (constants/web3-sign-message? method))
-               (assoc-in [:wallet :transactions result]
-                         (models.wallet/prepare-unconfirmed-transaction db now result)))}
-
-        (if on-result
-          {:dispatch (conj on-result id result method)}
-          {:dispatch [:send-transaction-message public-key {:address to
-                                                            :asset   (name symbol)
-                                                            :amount  amount-text
-                                                            :tx-hash result}]}))))))
+                         (not (constants/web3-sign-message? method))
+                         (assoc-in [:wallet :transactions result]
+                                   (models.wallet/prepare-unconfirmed-transaction db now result)))}
+                  (when  on-result
+                    {:dispatch (conj on-result id result method)}))
+                 #(when (or (not on-result)
+                            send-transaction-message?)
+                    (send-transaction-message
+                     %
+                     public-key
+                     {:address to
+                      :asset   (name symbol)
+                      :amount  amount-text
+                      :tx-hash result}))
+                 #(when-not on-result
+                    (navigation/navigate-to-clean
+                     %
+                     (if (contains? #{:wallet-send-transaction :enter-pin :hardwallet-connect} (:view-id db))
+                       :wallet-transaction-sent
+                       :wallet-transaction-sent-modal)
+                     {})))))))
 
 (re-frame/reg-fx
  :show-sign-message-error
@@ -192,23 +238,6 @@
                                   :keycard?       keycard?}]
                (navigation/navigate-to-cofx {:db db'} :wallet-sign-message-modal screen-params))
              {:db db'})))))))
-
-(handlers/register-handler-fx
- :send-transaction-message
- (concat [(re-frame/inject-cofx :random-id-generator)]
-         navigation/navigation-interceptors)
- (fn [{:keys [db] :as cofx} [_ chat-id params]]
-   ;;NOTE(goranjovic): we want to send the payment message only when we have a whisper id
-   ;; for the recipient, we always redirect to `:wallet-transaction-sent` even when we don't
-   (let [send-command? (and chat-id (get-in db [:id->command ["send" #{:personal-chats}]]))]
-     (fx/merge cofx
-               #(when send-command?
-                  (commands-sending/send % chat-id send-command? params))
-               (navigation/navigate-to-clean
-                (if (contains? #{:wallet-send-transaction :enter-pin :hardwallet-connect} (:view-id db))
-                  :wallet-transaction-sent
-                  :wallet-transaction-sent-modal)
-                {})))))
 
 (defn set-and-validate-amount-db [db amount symbol decimals]
   (let [{:keys [value error]} (wallet.db/parse-amount amount decimals)]
