@@ -47,3 +47,11 @@
     (do
       (re-frame/dispatch [:wallet/update-gas-price])
       (assoc-in db [:wallet :send-transaction] transaction-send-default))))
+
+(defmethod navigation/preload-data! :wallet-send-transaction-new
+  [db [event]]
+  (if (= event :navigate-back)
+    db
+    (do
+      (re-frame/dispatch [:wallet/update-gas-price])
+      (assoc-in db [:wallet :send-transaction] transaction-send-default))))

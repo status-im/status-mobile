@@ -7,9 +7,19 @@
              :wallet-onboarding-setup
              :wallet-send-transaction-chat
              :contact-code
+             {:name    :send-transaction-new-stack
+              :config  {:initialRouteName :wallet-send-transaction-new}
+              :screens [:wallet-send-transaction-new
+                        :wallet-choose-amount
+                        :wallet-choose-asset
+                        :wallet-txn-overview
+                        :recent-recipients
+                        :wallet-transaction-sent
+                        :recipient-qr-code
+                        :wallet-send-assets]}
              {:name    :send-transaction-stack
+              :config  {:initialRouteName :wallet-send-transaction}
               :screens [:wallet-send-transaction
-                        :wallet-send-transaction-new
                         :wallet-choose-amount
                         :wallet-choose-asset
                         :wallet-txn-overview
