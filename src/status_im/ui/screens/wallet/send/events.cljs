@@ -403,6 +403,27 @@
                              password
                              on-completed)))
 
+(defn prepare-unconfirmed-transaction-new [db now transaction hash]
+  (let [all-tokens  (:wallet/all-tokens db)]
+    (let [chain (:chain db)
+          token (tokens/symbol->token all-tokens (keyword chain) (:symbol transaction))]
+      (-> transaction
+          (assoc :confirmations "0"
+                 :timestamp (str now)
+                 :type :outbound
+                 :hash hash
+                 :value (:amount transaction)
+                 :token token
+                 :gas-limit (str (:gas transaction)))
+          (update :gas-price str)
+          (dissoc :message-id :id :gas)))))
+
+(handlers/register-handler-fx
+ :wallet/add-unconfirmed-transaction
+ (fn [{:keys [db now]} [_ transaction result]]
+   {:db (assoc-in db [:wallet :transactions result]
+                  (prepare-unconfirmed-transaction-new db now transaction result))}))
+
 (defn on-transaction-completed [transaction flow {:keys [public-key]} {:keys [decimals] :as coin} {:keys [result error]} in-progress?]
   (let [{:keys [id method to symbol amount on-result]} transaction
         amount-text (str (money/internal->formatted amount symbol decimals))]

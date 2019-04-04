@@ -166,8 +166,7 @@
         state-atom             (reagent/atom (create-initial-state coin (:amount transaction)))
         amount-input-ref       (atom nil)
         network-fees-modal-ref (atom nil)
-        open-network-fees!     #(do (js/alert "hey")
-                                    (.blur @amount-input-ref)
+        open-network-fees!     #(do (.blur @amount-input-ref)
                                     (common/anim-ref-send @network-fees-modal-ref :open!))
         close-network-fees!    #(common/anim-ref-send @network-fees-modal-ref :close!)]
     (when-not (common/optimal-gas-present? transaction)
