@@ -2,6 +2,16 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.utils.ethereum.abi-spec :as abi-spec]))
 
+(deftest hex-to-number
+  (testing "hex number is less than 53 bits, it returns a number")
+  (is (= (abi-spec/hex-to-number "9")
+         9))
+  (is (= (abi-spec/hex-to-number "99999999")
+         2576980377))
+  (testing "hex number is less than 53 bits, it returns a string")
+  (is (= (abi-spec/hex-to-number "9999999999999999")
+         "11068046444225730969")))
+
 (deftest enc
   (is (= "000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" (abi-spec/enc {:type :address :value "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}))))
 
@@ -33,9 +43,9 @@
            0
            0)))
 
-  (is (= (abi-spec/decode "0x0000000000000000000000000000000000000000000000000de0b6b3a76400000000000000000000000000000000000000000000000000000d7621dc58210000"
+  (is (= (abi-spec/decode "0x0000000000000000000000000000000000000000000000000de0b6b3a76400000000000000000000000000000000000000000000000000000d7621dc58210001"
                           ["uint256" "uint256"])
-         '(1000000000000000000 970000000000000000)))
+         '("1000000000000000000" "970000000000000001")))
 
   (is (= (abi-spec/decode "0x000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000000000000000000000000000000000000000000000000000000003e8"
                           ["address" "address" "uint256"])

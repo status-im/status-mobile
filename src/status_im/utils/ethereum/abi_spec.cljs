@@ -41,7 +41,11 @@
 
 (defn hex-to-number [x]
   (when x
-    (.toNumber (dependencies/Web3.prototype.toBigNumber (str "0x" x) 16))))
+    (let [hex-x (str "0x" x)]
+      (try
+        (.hexToNumber utils hex-x)
+        (catch :default err
+          (.hexToNumberString utils hex-x))))))
 
 (defn sha3 [s]
   (.sha3 utils (str s)))
