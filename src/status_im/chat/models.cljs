@@ -66,11 +66,12 @@
   dissociates these two fileds via this function, thereby signalling that the
   public chat is not fresh anymore."
   [{:keys [chats] :as db} chat-id]
-  (if (:might-have-join-time-messages? (get chats chat-id))
-    (-> db
-        (update-in [:chats chat-id] dissoc :join-time-mail-request-id)
-        (update-in [:chats chat-id] dissoc :might-have-join-time-messages?))
-    db))
+  (when (:might-have-join-time-messages? (get chats chat-id))
+    {:db (update-in db
+                    [:chats chat-id]
+                    dissoc
+                    :join-time-mail-request-id
+                    :might-have-join-time-messages?)}))
 
 (defn- create-new-chat
   [chat-id {:keys [db now]}]
