@@ -5422,9 +5422,9 @@ react-native-webview@^5.2.1:
     escape-string-regexp "^1.0.5"
     fbjs "^0.8.17"
 
-"react-native@git+https://github.com/status-im/react-native.git#status-v0.59.2":
-  version "0.59.2"
-  resolved "git+https://github.com/status-im/react-native.git#910d317028d9310add1d3fe13cea63195de008f4"
+"react-native@git+https://github.com/status-im/react-native.git#status-v0.59.3":
+  version "0.59.3"
+  resolved "git+https://github.com/status-im/react-native.git#d45e1b15e331d56b115217a12f6e6c1e54da4be9"
   dependencies:
     "@babel/runtime" "^7.0.0"
     "@react-native-community/cli" "^1.2.1"
