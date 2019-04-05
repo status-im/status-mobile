@@ -81,7 +81,7 @@
     (get contacts public-key
          (public-key->new-contact public-key))))
 
-(defn- contact-by-address [[_ contact] address]
+(defn- contact-by-address [contact address]
   (when (ethereum/address= (:address contact) address)
     contact))
 

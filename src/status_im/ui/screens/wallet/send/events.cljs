@@ -26,7 +26,8 @@
             [status-im.utils.ethereum.eip681 :as eip681]
             [status-im.contact.db :as contact.db]
             [status-im.utils.ethereum.eip55 :as eip55]
-            [status-im.utils.ethereum.ens :as ens]))
+            [status-im.utils.ethereum.ens :as ens]
+            [taoensso.timbre :as log]))
 
 ;;;; FX
 
@@ -476,7 +477,7 @@
   {:pre [(map? qr-data)]}
   (let [{:keys [to name] :as tx-details} (qr-data->send-tx-data qr-data)
         contact-name (:name (contact.db/find-contact-by-address contacts to))]
-    (cond-> tx-details
+    (cond-> (assoc tx-details :qr true)
       contact-name (assoc :to-name name))))
 
 ;; CHOOSEN RECIPIENT
@@ -487,12 +488,12 @@
                   #(callback %))
     (callback recipient)))
 
-(defn chosen-recipient [chain {:keys [to to-ens]} success-callback error-callback]
+(defn chosen-recipient [chain {:keys [to to-ens qr] :as params} success-callback error-callback]
   {:pre [(keyword? chain) (string? to)]}
   (eth-name->address chain to
                      (fn [to]
                        (if (ethereum/address? to)
-                         (if (and (not to-ens) (not (eip55/valid-address-checksum? to)))
+                         (if (and (not qr) (not to-ens) (not (eip55/valid-address-checksum? to)))
                            (error-callback :t/wallet-invalid-address-checksum)
                            (success-callback to))
                          (error-callback :t/invalid-address)))))
