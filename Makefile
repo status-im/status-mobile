@@ -1,4 +1,4 @@
-.PHONY: clean setup react-native test release _ensure-in-nix-shell _list
+.PHONY: clean clean-nix react-native test release _list
 
 help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
@@ -28,35 +28,30 @@ HELP_FUN = \
 
 export NIX_CONF_DIR = $(PWD)/nix
 
+export REACT_SERVER_PORT ?= 5001 # any value different from default 5000 will work; this has to be specified for both the Node.JS server process and the Qt process
+export STATUS_NODE_PORT ?= 12345 # no need to specify this if just running dev instance alongside release build
+export STATUS_DATA_DIR ?= ~/status-files/data1 # this is where Realm data files, Geth node data, and logs will reside; also not strictly needed for dev alongside release
+
+# WARNING: This has to be located right before the targets
+ifdef IN_NIX_SHELL
+SHELL := env bash
+else
+SHELL := ./nix/shell.sh
+endif
+
 # Main targets
 
+clean: SHELL := /bin/sh
 clean: ##@prepare Remove all output folders
 	git clean -dxf -f
 
+clean-nix: SHELL := /bin/sh
 clean-nix: ##@prepare Remove complete nix setup
 	sudo rm -rf /nix ~/.cache/nix
 
-setup: ##@prepare Install all the requirements for status-react
-	@./scripts/setup
-
-_ensure-in-nix-shell:
-ifndef IN_NIX_SHELL
-	$(error '$(RED)Please run '$(BOLD)$(MAKE) shell$(RESET)$(RED)' first$(RESET)')
-endif
-
 shell: ##@prepare Enter into a pre-configured shell
 ifndef IN_NIX_SHELL
-	@if command -v "nix" >/dev/null 2>&1 || [ -f ~/.nix-profile/etc/profile.d/nix.sh ]; then \
-		echo "Configuring Nix shell..."; \
-		if ! command -v "nix" >/dev/null 2>&1; then \
-			. ~/.nix-profile/etc/profile.d/nix.sh; \
-				nix-shell; \
-		else \
-			nix-shell; \
-		fi \
-	else \
-		echo "Please run 'make setup' first"; \
-	fi
+	@ENTER_NIX_SHELL
 else
 	@echo "Nix shell is already active"
 endif
@@ -66,51 +61,47 @@ endif
 #----------------
 release: release-android release-ios ##@build build release for Android and iOS
 
-release-android: prod-build-android ##@build build release for Android
-ifdef IN_NIX_SHELL
+release-android: ##@build build release for Android
+	@$(MAKE) prod-build-android && \
 	react-native run-android --variant=release
-endif
 
-release-ios: prod-build-ios ##@build build release for iOS release
-ifdef IN_NIX_SHELL
-	@echo "Build in XCode, see https://status.im/build_status/ for instructions"
+release-ios: ##@build build release for iOS release
 	# Open XCode inside the Nix context
+	@$(MAKE) prod-build-ios && \
+	@echo "Build in XCode, see https://status.im/build_status/ for instructions" && \
 	open ios/StatusIm.xcworkspace
-endif
 
-release-desktop: prod-build-desktop ##@build build release for desktop release
-ifdef IN_NIX_SHELL
+release-desktop: ##@build build release for desktop release
+	@$(MAKE) prod-build-desktop && \
 	scripts/build-desktop.sh
-endif
 
-release-windows-desktop: prod-build-desktop ##@build build release for desktop release
-ifdef IN_NIX_SHELL
+release-windows-desktop: ##@build build release for desktop release
+	@$(MAKE) prod-build-desktop && \
 	TARGET_SYSTEM_NAME=Windows scripts/build-desktop.sh
-endif
 
-prod-build: _ensure-in-nix-shell
-	scripts/prepare-for-platform.sh android
-	scripts/prepare-for-platform.sh ios
+prod-build:
+	scripts/prepare-for-platform.sh android && \
+	scripts/prepare-for-platform.sh ios && \
 	lein prod-build
 
-prod-build-android: _ensure-in-nix-shell
-	scripts/prepare-for-platform.sh android
+prod-build-android:
+	scripts/prepare-for-platform.sh android && \
 	lein prod-build-android
 
-prod-build-ios: _ensure-in-nix-shell
-	scripts/prepare-for-platform.sh ios
+prod-build-ios:
+	scripts/prepare-for-platform.sh ios && \
 	lein prod-build-ios
 
-prod-build-desktop: _ensure-in-nix-shell
-	git clean -qdxf -f ./index.desktop.js desktop/
-	scripts/prepare-for-platform.sh desktop
+prod-build-desktop:
+	git clean -qdxf -f ./index.desktop.js desktop/ && \
+	scripts/prepare-for-platform.sh desktop && \
 	lein prod-build-desktop
 
 #--------------
 # REPL
 # -------------
 
-_watch-%: _ensure-in-nix-shell ##@watch Start development for device
+_watch-%: ##@watch Start development for device
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
 	$(eval DEVICE := $(word 3, $(subst -, , $@)))
 	scripts/prepare-for-platform.sh $(SYSTEM)
@@ -127,29 +118,34 @@ watch-android-avd: _watch-android-avd ##@watch Start development for Android AVD
 watch-android-genymotion: _watch-android-genymotion ##@watch Start development for Android Genymotion
 
 watch-desktop: ##@watch Start development for Desktop
-	scripts/prepare-for-platform.sh desktop
+	@scripts/prepare-for-platform.sh desktop && \
 	clj -R:dev build.clj watch --platform desktop
+
+desktop-server:
+	@scripts/prepare-for-platform.sh desktop && \
+	node ubuntu-server.js
 
 #--------------
 # Run
 # -------------
-_run-%: _ensure-in-nix-shell
+_run-%:
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
-	scripts/prepare-for-platform.sh $(SYSTEM)
+	@scripts/prepare-for-platform.sh $(SYSTEM) && \
 	react-native run-$(SYSTEM)
 
-run-android: _ensure-in-nix-shell ##@run Run Android build
-	scripts/prepare-for-platform.sh android
+run-android: ##@run Run Android build
+	@scripts/prepare-for-platform.sh android && \
 	react-native run-android --appIdSuffix debug
 
 run-desktop: _run-desktop ##@run Run Desktop build
 
 SIMULATOR=
-run-ios: _ensure-in-nix-shell ##@run Run iOS build
-	scripts/prepare-for-platform.sh ios
+run-ios: ##@run Run iOS build
 ifneq ("$(SIMULATOR)", "")
+	@scripts/prepare-for-platform.sh ios && \
 	react-native run-ios --simulator="$(SIMULATOR)"
 else
+	@scripts/prepare-for-platform.sh ios && \
 	react-native run-ios
 endif
 
@@ -157,40 +153,42 @@ endif
 # Tests
 #--------------
 
-test: _ensure-in-nix-shell ##@test Run tests once in NodeJS
+test: ##@test Run tests once in NodeJS
 	lein with-profile test doo node test once
 
-test-auto: _ensure-in-nix-shell ##@test Run tests in interactive (auto) mode in NodeJS
+test-auto: ##@test Run tests in interactive (auto) mode in NodeJS
 	lein with-profile test doo node test
 
 #--------------
 # Other
 #--------------
-react-native: _ensure-in-nix-shell ##@other Start react native packager
+react-native: ##@other Start react native packager
 	@scripts/start-react-native.sh
 
-geth-connect: _ensure-in-nix-shell ##@other Connect to Geth on the device
-	adb forward tcp:8545 tcp:8545
+geth-connect: ##@other Connect to Geth on the device
+	adb forward tcp:8545 tcp:8545 && \
 	build/bin/geth attach http://localhost:8545
 
-android-ports: _ensure-in-nix-shell ##@other Add proxies to Android Device/Simulator
-	adb reverse tcp:8081 tcp:8081
-	adb reverse tcp:3449 tcp:3449
-	adb reverse tcp:4567 tcp:4567
+android-ports: ##@other Add proxies to Android Device/Simulator
+	adb reverse tcp:8081 tcp:8081 && \
+	adb reverse tcp:3449 tcp:3449 && \
+	adb reverse tcp:4567 tcp:4567 && \
 	adb forward tcp:5561 tcp:5561
 
-android-logcat: _ensure-in-nix-shell
+android-logcat:
 	adb logcat | grep -e StatusModule -e ReactNativeJS -e StatusNativeLogs
 
+_list: SHELL := /bin/sh
 _list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
 
+_unknown-startdev-target-%: SHELL := /bin/sh
 _unknown-startdev-target-%:
 	@ echo "Unknown target device '$*'. Supported targets:"
 	@ ${MAKE} _list | grep "watch-" | sed s/watch-/startdev-/
 	@ exit 1
 
-_startdev-%: _ensure-in-nix-shell
+_startdev-%:
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
 	$(eval DEVICE := $(word 3, $(subst -, , $@)))
 	scripts/prepare-for-platform.sh ${SYSTEM} || $(MAKE) _unknown-startdev-target-$@

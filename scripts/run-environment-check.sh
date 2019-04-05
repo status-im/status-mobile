@@ -38,7 +38,7 @@ if [ -z "$IN_NIX_SHELL" ]; then
   fi
 fi
 
-if [[ $PLATFORM == 'android' ]]; then
+if [ "$PLATFORM" == 'android' ]; then
   if [ ! -d $ANDROID_SDK_ROOT ]; then
     echo -e "${GREEN}NDK setup not complete, please run 'make setup'!${NC}"
     exit 1
@@ -47,6 +47,9 @@ if [[ $PLATFORM == 'android' ]]; then
     echo -e "${GREEN}NDK setup not complete, please run 'make setup'!${NC}"
     exit 1
   fi
+elif [ "$PLATFORM" == 'ios' ] && [ "$(uname)" != "Darwin" ]; then
+  echo -e "${RED}iOS builds are only possible on macOS hosts${NC}"
+  exit 1
 fi
 
 if [[ $PLATFORM == 'setup' ]]; then
