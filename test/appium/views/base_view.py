@@ -111,11 +111,11 @@ class DappTabButton(TabButton):
         self.locator = self.Locator.accessibility_id('dapp-tab-button')
 
     def navigate(self):
-        from views.start_new_chat_view import StartNewChatView
-        return StartNewChatView(self.driver)
+        from views.dapps_view import DappsView
+        return DappsView(self.driver)
 
     def click(self):
-        from views.start_new_chat_view import EnterUrlEditbox
+        from views.dapps_view import EnterUrlEditbox
         self.click_until_presence_of_element(EnterUrlEditbox(self.driver))
         return self.navigate()
 
@@ -237,18 +237,7 @@ class ProgressBar(BaseElement):
         self.locator = self.Locator.xpath_selector(parent_locator + '//android.widget.ProgressBar')
 
 
-class WalletModalButton(BaseButton):
-    def __init__(self, driver):
-        super(WalletModalButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='View my wallet']")
-
-    def navigate(self):
-        from views.wallet_view import WalletView
-        return WalletView(self.driver)
-
-
 class CrossIcon(BaseButton):
-
     def __init__(self, driver):
         super(CrossIcon, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[1]')
@@ -331,8 +320,6 @@ class BaseView(object):
 
         self.apps_button = AppsButton(self.driver)
         self.status_app_icon = StatusAppIcon(self.driver)
-
-        self.wallet_modal_button = WalletModalButton(self.driver)
 
         self.element_types = {
             'base': BaseElement,
@@ -528,8 +515,11 @@ class BaseView(object):
         return self.home_button.click()
 
     def relogin(self, password=common_password):
-        self.get_back_to_home_view()
-        profile_view = self.profile_button.click()
+        try:
+            profile_view = self.profile_button.click()
+        except (NoSuchElementException, TimeoutException):
+            self.get_back_to_home_view()
+            profile_view = self.profile_button.click()
         profile_view.logout()
         sign_in_view = self.get_sign_in_view()
         sign_in_view.sign_in(password)

@@ -168,9 +168,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2_chat.add_to_contacts.click()
 
         device_2_chat.get_back_to_home_view()
-        start_new_chat = device_2_home.plus_button.click()
-        start_new_chat.start_new_chat_button.click()
-        if not start_new_chat.element_by_text(username_1).is_element_displayed():
+        device_2_home.plus_button.click()
+        device_2_contacts = device_2_home.start_new_chat_button.click()
+        if not device_2_contacts.element_by_text(username_1).is_element_displayed():
             self.errors.append('%s is not added to contacts' % username_1)
 
         if device_1_chat.user_name_text.text != username_2:

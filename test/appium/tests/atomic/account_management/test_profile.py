@@ -136,10 +136,10 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     def test_invite_friends(self):
         sign_in_view = SignInView(self.driver)
         home = sign_in_view.create_user()
-        start_new_chat = home.plus_button.click()
-        start_new_chat.invite_friends_button.click()
-        start_new_chat.share_via_messenger()
-        start_new_chat.find_text_part("Get Status at http://status.im")
+        home.plus_button.click()
+        home.invite_friends_button.click()
+        home.share_via_messenger()
+        home.find_text_part("Get Status at http://status.im")
 
     @marks.testrail_id(5429)
     @marks.medium

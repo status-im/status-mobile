@@ -509,6 +509,7 @@ class ProfileView(BaseView):
         self.save_button.click()
         self.element_by_text_part('custom_ropsten').click_until_presence_of_element(self.connect_button)
         self.connect_button.click()
+        self.confirm_button.click()
         return self.get_sign_in_view()
 
     def get_recovery_phrase(self):

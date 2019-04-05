@@ -80,13 +80,13 @@ class TestChatManagement(SingleDeviceTestCase):
         chat.element_by_text('Copy').click()
         chat.get_back_to_home_view()
 
-        start_new_chat = home.plus_button.click()
-        start_new_chat.start_new_chat_button.click()
-        start_new_chat.public_key_edit_box.paste_text_from_clipboard()
-        if start_new_chat.public_key_edit_box.text != public_key:
+        home.plus_button.click()
+        contacts_view = home.start_new_chat_button.click()
+        contacts_view.public_key_edit_box.paste_text_from_clipboard()
+        if contacts_view.public_key_edit_box.text != public_key:
             pytest.fail('Public key is not pasted from clipboard')
-        start_new_chat.confirm()
-        start_new_chat.get_back_to_home_view()
+        contacts_view.confirm()
+        contacts_view.get_back_to_home_view()
         if not home.get_chat_with_user(basic_user['username']).is_element_present():
             pytest.fail("No chat open in home view")
 
@@ -129,11 +129,11 @@ class TestChatManagement(SingleDeviceTestCase):
     def test_incorrect_contact_code_start_new_chat(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
-        start_new_chat = home.plus_button.click()
-        start_new_chat.start_new_chat_button.click()
-        start_new_chat.public_key_edit_box.set_value(basic_user['public_key'][:-1])
-        start_new_chat.confirm()
-        warning_text = start_new_chat.element_by_text('Please enter or scan a valid contact code or username')
+        home.plus_button.click()
+        contacts_view = home.start_new_chat_button.click()
+        contacts_view.public_key_edit_box.set_value(basic_user['public_key'][:-1])
+        contacts_view.confirm()
+        warning_text = contacts_view.element_by_text('Please enter or scan a valid contact code or username')
         if not warning_text.is_element_displayed():
             pytest.fail('Error is not shown for invalid public key')
 
@@ -142,14 +142,14 @@ class TestChatManagement(SingleDeviceTestCase):
     def test_deny_camera_access_scanning_contact_code(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
-        start_new_chat = home.plus_button.click()
-        start_new_chat.start_new_chat_button.click()
-        start_new_chat.scan_contact_code_button.click()
-        start_new_chat.deny_button.click()
-        start_new_chat.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
-        start_new_chat.ok_button.click()
-        start_new_chat.scan_contact_code_button.click()
-        start_new_chat.deny_button.wait_for_visibility_of_element(2)
+        home.plus_button.click()
+        contacts_view = home.start_new_chat_button.click()
+        contacts_view.scan_contact_code_button.click()
+        contacts_view.deny_button.click()
+        contacts_view.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
+        contacts_view.ok_button.click()
+        contacts_view.scan_contact_code_button.click()
+        contacts_view.deny_button.wait_for_visibility_of_element(2)
 
     @marks.testrail_id(5757)
     @marks.critical
@@ -215,9 +215,9 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             self.errors.append("'Add to contacts' is not changed to 'In contacts'")
 
         chat_1.get_back_to_home_view()
-        start_new_chat = home_1.plus_button.click()
-        start_new_chat.start_new_chat_button.click()
-        if not start_new_chat.element_by_text(username).is_element_displayed():
+        home_1.plus_button.click()
+        contacts_1 = home_1.start_new_chat_button.click()
+        if not contacts_1.element_by_text(username).is_element_displayed():
             self.errors.append("List of contacts doesn't contain added user")
 
         self.verify_no_errors()

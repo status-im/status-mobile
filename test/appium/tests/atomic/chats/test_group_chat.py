@@ -3,23 +3,29 @@ from tests.base_test_case import MultipleDeviceTestCase
 from tests.users import chat_users
 from views.sign_in_view import SignInView
 
+
 def return_left_chat_system_message(username):
     return "*%s* left the group" % username
+
 
 def return_created_chat_system_message(username, chat_name):
     return "*%s* created the group *%s*" % (username, chat_name)
 
+
 def return_joined_chat_system_message(username):
     return "*%s* has joined the group" % username
 
+
 def return_made_admin_system_message(username):
     return "*%s* has been made admin" % username
+
 
 def create_users(driver_1, driver_2, username_1=None, username_2=None):
     device_1_sign_in, device_2_sign_in = SignInView(driver_1), SignInView(driver_2)
     if username_1 is not None and username_2 is not None:
         return device_1_sign_in.create_user(username_1), device_2_sign_in.create_user(username_1)
     return device_1_sign_in.create_user(), device_2_sign_in.create_user()
+
 
 def get_username(device_home, default=True):
     device_profile_view = device_home.profile_button.click()
@@ -29,6 +35,7 @@ def get_username(device_home, default=True):
         username = device_profile_view.username_set_by_user_text.text
     device_home.home_button.click()
     return username
+
 
 def create_new_group_chat(device_1_home, device_2_home, chat_name):
     # device 2: get public key and default username
@@ -47,11 +54,11 @@ def create_new_group_chat(device_1_home, device_2_home, chat_name):
 
     return device_1_chat, device_2_chat
 
+
 def create_and_join_group_chat(device_1_home, device_2_home, chat_name):
     device_1_chat, device_2_chat = create_new_group_chat(device_1_home, device_2_home, chat_name)
     device_2_chat.join_chat_button.click()
     return device_1_chat, device_2_chat
-
 
 
 @marks.chat

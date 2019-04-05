@@ -6,7 +6,6 @@ from tests import common_password
 from views.base_element import BaseButton, BaseEditBox, BaseText, BaseElement
 from views.base_view import BaseView, ProgressBar
 from views.profile_view import ProfilePictureElement, ProfileAddressText
-from views.start_new_chat_view import StartNewChatView
 
 
 class ChatMessageInput(BaseEditBox):
@@ -27,7 +26,8 @@ class AddGroupChatMembersButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='Add members']")
 
     def navigate(self):
-        return StartNewChatView(self.driver)
+        from views.contacts_view import ContactsView
+        return ContactsView(self.driver)
 
 
 class UserNameText(BaseText):
@@ -205,20 +205,24 @@ class JoinChatButton(BaseButton):
         super(JoinChatButton, self).__init__(driver)
         self.locator = self.Locator.text_part_selector('Join group')
 
+
 class DeclineChatButton(BaseButton):
     def __init__(self, driver):
         super(DeclineChatButton, self).__init__(driver)
         self.locator = self.Locator.text_part_selector('Decline invitation')
+
 
 class RemoveFromChatButton(BaseButton):
     def __init__(self, driver):
         super(RemoveFromChatButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="Remove from chat"]')
 
+
 class MakeAdminButton(BaseButton):
     def __init__(self, driver):
         super(MakeAdminButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="Make admin"]')
+
 
 class ChatElementByText(BaseText):
     def __init__(self, driver, text):
@@ -301,10 +305,12 @@ class HistoryTimeMarker(BaseText):
         super().__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="%s"]' % marker)
 
+
 class UsernameOptions(BaseButton):
     def __init__(self, driver, username):
         super(UsernameOptions, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='%s']/..//*[@content-desc='options']" % username)
+
 
 class GroupChatInfoView(BaseView):
     def __init__(self, driver):

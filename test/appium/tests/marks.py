@@ -18,7 +18,6 @@ dapps = pytest.mark.dapps
 message_reliability = pytest.mark.message_reliability
 transaction = pytest.mark.transaction
 wallet = pytest.mark.wallet
-wallet_modal = pytest.mark.wallet_modal
 sign_in = pytest.mark.sign_in
 skip = pytest.mark.skip
 logcat = pytest.mark.logcat
