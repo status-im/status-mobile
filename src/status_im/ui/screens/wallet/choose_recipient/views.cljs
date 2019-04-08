@@ -15,17 +15,21 @@
             [status-im.utils.dimensions :as dimensions]
             [reagent.core :as reagent]))
 
+(defn toggle-flashlight [old-value]
+  (if (= :off old-value)
+    :on
+    :off))
+
 (defn- toolbar-view [camera-flashlight]
-  [toolbar/toolbar
-   {:transparent? true}
+  [toolbar/toolbar {:background-color :transparent}
    [toolbar/nav-button (actions/back-white actions/default-handler)]
    [toolbar/content-title {:color :white}
     (i18n/label :t/wallet-choose-recipient)]
-   [toolbar/actions [{:icon      (if (= :on camera-flashlight)
+   [toolbar/actions [{:icon      (if (= :on @camera-flashlight)
                                    :main-icons/flash-active
                                    :main-icons/flash-inactive)
                       :icon-opts {:color :white}
-                      :handler   #(re-frame/dispatch [:wallet/toggle-flashlight])}]]])
+                      :handler   #(swap! camera-flashlight toggle-flashlight)}]]])
 
 (defn- viewfinder [{:keys [height width]} size]
   (let [height (cond-> height
