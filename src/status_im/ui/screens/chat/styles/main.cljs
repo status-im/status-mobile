@@ -234,6 +234,7 @@
   {:font-size     22
    :font-weight   "700"
    :line-height   28
+   :text-align    :center
    :margin-bottom 8
    :color         colors/black})
 
