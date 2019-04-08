@@ -436,6 +436,10 @@
                     :name     "Wrapped BTC"
                     :address  "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
                     :decimals 8}
+                   {:symbol   :BLT
+                    :name     "Bloom Token"
+                    :address  "0x107c4504cd79c5d2696ea0030a8dd4e92601b82e"
+                    :decimals 18}
                    ;; NOTE(goranjovic): the following three tokens are removed from the Manage Assets list
                    ;; and automatically removed from user's selection by a migration. However, we still need
                    ;; them listed here in order to correctly display any previous transactions the user had
