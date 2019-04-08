@@ -86,10 +86,10 @@
         (catch #(re-frame/dispatch [:hardwallet.callback/on-pairing-error (error-object->map %)])))))
 
 (defn generate-mnemonic
-  [{:keys [pairing]}]
+  [{:keys [pairing words]}]
   (when pairing
     (.. keycard
-        (generateMnemonic pairing)
+        (generateMnemonic pairing words)
         (then #(re-frame/dispatch [:hardwallet.callback/on-generate-mnemonic-success %]))
         (catch #(re-frame/dispatch [:hardwallet.callback/on-generate-mnemonic-error (error-object->map %)])))))
 

@@ -16,7 +16,8 @@
             [clojure.string :as string]
             [status-im.accounts.login.core :as accounts.login]
             [status-im.accounts.recover.core :as accounts.recover]
-            [status-im.models.wallet :as models.wallet]))
+            [status-im.models.wallet :as models.wallet]
+            [status-im.utils.ethereum.mnemonic :as mnemonic]))
 
 (def default-pin "000000")
 
@@ -823,7 +824,8 @@
 (fx/defn generate-mnemonic
   [cofx]
   (let [{:keys [pairing]} (get-in cofx [:db :hardwallet :secrets])]
-    {:hardwallet/generate-mnemonic {:pairing pairing}}))
+    {:hardwallet/generate-mnemonic {:pairing pairing
+                                    :words   (string/join "\n" mnemonic/dictionary)}}))
 
 (fx/defn on-card-connected
   [{:keys [db] :as cofx} _]
