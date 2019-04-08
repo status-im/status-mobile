@@ -289,9 +289,9 @@
          (map (partial update-last-message (:chats db)) chat-ids)))
 
 (fx/defn declare-syncd-public-chats!
-  [{:keys [db] :as cofx} chat-ids]
+  [cofx chat-ids]
   (apply fx/merge cofx
-         (map (partial chat-model/join-time-messages-checked db) chat-ids)))
+         (map (partial chat-model/join-time-messages-checked cofx) chat-ids)))
 
 (defn- chat-ids->never-synced-public-chat-ids [chats chat-ids]
   (let [never-synced-public-chat-ids (mailserver/chats->never-synced-public-chats chats)]

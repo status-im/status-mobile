@@ -753,8 +753,8 @@
 
 (handlers/register-handler-fx
  :chat.ui/join-time-messages-checked
- (fn [{:keys [db]} [_ chat-id]]
-   {:db (chat/join-time-messages-checked db chat-id)}))
+ (fn [cofx [_ chat-id]]
+   (chat/join-time-messages-checked cofx chat-id)))
 
 (handlers/register-handler-fx
  :chat.ui/show-message-details
