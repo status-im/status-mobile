@@ -66,6 +66,14 @@
   (fn [realm]
     (core/create realm :account (serialize-account account) true)))
 
+(defn delete-account-tx
+  "Returns tx function for deleting account"
+  [address]
+  (fn [realm]
+    (let [account (core/single (core/get-by-field realm :account :address address))]
+      (when account
+        (core/delete realm account)))))
+
 (re-frame/reg-cofx
  :data-store/get-all-accounts
  (fn [coeffects _]

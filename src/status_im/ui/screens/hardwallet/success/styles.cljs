@@ -45,7 +45,7 @@
   {:text-align         :center
    :color              colors/gray
    :margin-bottom      21
-   :padding-horizontal 80
+   :padding-horizontal 70
    :padding-top        20})
 
 (def bottom-action-container

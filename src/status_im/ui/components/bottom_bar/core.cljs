@@ -130,17 +130,18 @@
           (minimize-bar new-view-id))))
     :reagent-render
     (fn [keyboard-shown? view-id tab]
-      (if platform/ios?
-        [tabs-animation-wrapper-ios
-         [react/animated-view
-          {:style (tabs.styles/animated-container visible? keyboard-shown?)}
-          [tabs tab]]]
-        [tabs-animation-wrapper-android
-         keyboard-shown?
-         view-id
-         [react/animated-view
-          {:style (tabs.styles/animated-container visible? keyboard-shown?)}
-          [tabs tab]]]))}))
+      (when (not= view-id :enter-pin)
+        (if platform/ios?
+          [tabs-animation-wrapper-ios
+           [react/animated-view
+            {:style (tabs.styles/animated-container visible? keyboard-shown?)}
+            [tabs tab]]]
+          [tabs-animation-wrapper-android
+           keyboard-shown?
+           view-id
+           [react/animated-view
+            {:style (tabs.styles/animated-container visible? keyboard-shown?)}
+            [tabs tab]]])))}))
 
 (def disappearance-duration 150)
 (def appearance-duration 100)

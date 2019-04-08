@@ -70,6 +70,14 @@
  card/delete)
 
 (re-frame/reg-fx
+ :hardwallet/remove-key
+ card/remove-key)
+
+(re-frame/reg-fx
+ :hardwallet/remove-key-with-unpair
+ card/remove-key-with-unpair)
+
+(re-frame/reg-fx
  :hardwallet/unpair-and-delete
  card/unpair-and-delete)
 

@@ -109,8 +109,11 @@
     [pin-view {:pin               pin
                :title-label       (case step
                                     :confirmation :t/repeat-pin
+                                    :current :t/current-pin
                                     :t/create-a-pin)
-               :description-label :t/create-pin-description
+               :description-label (case step
+                                    :current :t/current-pin-description
+                                    :t/create-pin-description)
                :step              step
                :status            status
                :error-label       error-label}]))

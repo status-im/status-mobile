@@ -140,7 +140,7 @@
   [cofx]
   (let [{{:accounts/keys [accounts] :as db} :db} cofx]
     (if (empty? accounts)
-      (navigation/navigate-to-clean cofx :intro nil)
+      (navigation/navigate-to-cofx cofx :intro nil)
       (let [account-with-notification
             (when-not platform/desktop?
               (notifications/lookup-contact-pubkey-from-hash

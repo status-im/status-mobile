@@ -140,6 +140,20 @@
       (then #(re-frame/dispatch [:hardwallet.callback/on-delete-success %]))
       (catch #(re-frame/dispatch [:hardwallet.callback/on-delete-error (error-object->map %)]))))
 
+(defn remove-key
+  [{:keys [pin pairing]}]
+  (.. keycard
+      (removeKey pairing pin)
+      (then #(re-frame/dispatch [:hardwallet.callback/on-remove-key-success %]))
+      (catch #(re-frame/dispatch [:hardwallet.callback/on-remove-key-error (error-object->map %)]))))
+
+(defn remove-key-with-unpair
+  [{:keys [pin pairing]}]
+  (.. keycard
+      (removeKeyWithUnpair pairing pin)
+      (then #(re-frame/dispatch [:hardwallet.callback/on-remove-key-success %]))
+      (catch #(re-frame/dispatch [:hardwallet.callback/on-remove-key-error (error-object->map %)]))))
+
 (defn unpair-and-delete
   [{:keys [pin pairing]}]
   (when (and pairing pin)
