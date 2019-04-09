@@ -488,12 +488,20 @@
                   callback)
     (callback recipient)))
 
+;;TODO(goranjovic) - we have eip55 validation implemented, however all our screens still show address in lowercase
+;; format, so an address copy pasted from Status Wallet doesn't pass our own validation. This local flag temporarily
+;; disables the validation until it's supported across the app.
+(def eip55-enabled? false)
+
 (defn chosen-recipient [chain {:keys [to to-ens qr] :as params} success-callback error-callback]
   {:pre [(keyword? chain) (string? to)]}
   (eth-name->address chain to
                      (fn [to]
                        (if (ethereum/address? to)
-                         (if (and (not qr) (not to-ens) (not (eip55/valid-address-checksum? to)))
+                         (if (and eip55-enabled?
+                                  (not qr)
+                                  (not to-ens)
+                                  (not (eip55/valid-address-checksum? to)))
                            (error-callback :t/wallet-invalid-address-checksum)
                            (success-callback to))
                          (error-callback :t/invalid-address)))))
