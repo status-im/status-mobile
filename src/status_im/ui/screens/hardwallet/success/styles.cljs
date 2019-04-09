@@ -59,7 +59,7 @@
    :margin-bottom    40})
 
 (def bottom-action-text
-  {:typography     :main
+  {:typography     :main-medium
    :color          colors/blue
    :text-transform :uppercase})
 

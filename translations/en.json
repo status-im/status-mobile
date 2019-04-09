@@ -819,6 +819,7 @@
     "card-setup-prepare-text": "The whole process will take a few minutes.",
     "card-is-paired": "Card is paired",
     "no-keycard-applet-on-card": "No Keycard applet on card",
+    "keycard-applet-install-instructions": "To install the applet please follow the instructions on https://github.com/status-im/keycard-cli#keycard-applet-installation",
     "keycard-applet-will-be-installed": "Keycard applet will automatically be installed",
     "begin-set-up": "Begin setup",
     "maintain-card-to-phone-contact": "Maintain card-to-phone contact during process.",
