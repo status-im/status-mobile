@@ -6,7 +6,8 @@
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.ethereum.core :as ethereum]
             [taoensso.timbre :as log]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [status-im.constants :as constants]))
 
 (defview choose-amount-token []
   (letsubs [{:keys [transaction modal? contact native-currency]} [:get-screen-params :wallet-choose-amount]
@@ -57,16 +58,20 @@
   (reagent/create-class
    {:reagent-render (fn [opts] [recipient/render-choose-recipient opts])}))
 
-;; SEND TRANSACTION FROM WALLET (CHAT)
+(def default-transaction
+  {:optimal-gas ethereum/default-transaction-gas
+   :method      constants/web3-send-transaction
+   :symbol      :ETH})
+
+;; SEND TRANSACTION FROM WALLET
 (defview send-transaction []
-  (letsubs [transaction    [:wallet.send/transaction]
-            network        [:account/network]
+  (letsubs [network        [:account/network]
             network-status [:network-status]
             all-tokens     [:wallet/all-tokens]
             contacts       [:contacts/active]
             web3           [:get :web3]]
     [send-transaction-view {:modal?         false
-                            :transaction    (dissoc transaction :gas :gas-price)
+                            :transaction    default-transaction
                             :web3           web3
                             :network        network
                             :all-tokens     all-tokens
