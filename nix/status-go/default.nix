@@ -3,22 +3,65 @@
 with stdenv;
 
 let
-   gomobile = pkgs.callPackage ./gomobile { inherit (androidPkgs) platform-tools; inherit composeXcodeWrapper xcodewrapperArgs; };
-   version = lib.fileContents ../../STATUS_GO_VERSION; # TODO: Simplify this path search with lib.locateDominatingFile
-   owner = lib.fileContents ../../STATUS_GO_OWNER;
-   repo = "status-go";
-   goPackagePath = "github.com/${owner}/${repo}";
-   rev = version;
-   sha256 = lib.fileContents ../../STATUS_GO_SHA256;
-   mobileTarget = if isDarwin then "ios" else "android";
-   mobileOutputFileName = if isDarwin then "Statusgo.framework" else "status-go-${version}.aar";
-   desktopOutputFileName = "libstatus.a";
-   destopSystem = hostPlatform.system;
-   removeReferences = [ go ];
-   removeExpr = refs: ''remove-references-to ${lib.concatMapStrings (ref: " -t ${ref}") refs}'';
-   goBuildFlags = "-v";
-   goBuildLdFlags = "-ldflags=-s";
-   xcodeWrapper = composeXcodeWrapper xcodewrapperArgs;
+  gomobile = pkgs.callPackage ./gomobile { inherit (androidPkgs) platform-tools; inherit composeXcodeWrapper xcodewrapperArgs; };
+  version = lib.fileContents ../../STATUS_GO_VERSION; # TODO: Simplify this path search with lib.locateDominatingFile
+  owner = lib.fileContents ../../STATUS_GO_OWNER;
+  repo = "status-go";
+  goPackagePath = "github.com/${owner}/${repo}";
+  rev = version;
+  sha256 = lib.fileContents ../../STATUS_GO_SHA256;
+  mobileConfigs = {
+    android = {
+      name = "android";
+      outputFileName = "status-go-${version}.aar";
+      envVars = ''
+        ANDROID_HOME=${androidPkgs.androidsdk}/libexec/android-sdk \
+        ANDROID_NDK_HOME="${androidPkgs.ndk-bundle}/libexec/android-sdk/ndk-bundle" \
+      '';
+      gomobileExtraFlags = "";
+    };
+    ios = {
+      name = "ios";
+      outputFileName = "Statusgo.framework";
+      envVars = "";
+      gomobileExtraFlags = "-iosversion=8.0";
+    };
+  };
+  hostConfigs = {
+    darwin = {
+      mobileTargets = [ mobileConfigs.android mobileConfigs.ios ];
+      desktopOutputFileName = "libstatus.a";
+    };
+    linux = {
+      mobileTargets = [ mobileConfigs.android ];
+      desktopOutputFileName = "libstatus.a";
+    };
+  };
+  currentHostConfig = if isDarwin then hostConfigs.darwin else hostConfigs.linux;
+  currentHostMobileTargets = currentHostConfig.mobileTargets;
+  mobileBuildScript = lib.concatMapStrings (target: ''
+    echo
+    echo "Building mobile library for ${target.name}"
+    echo
+    GOPATH=${gomobile.dev}:$GOPATH \
+    PATH=${lib.makeBinPath [ gomobile.bin openjdk ]}:$PATH \
+    ${target.envVars} \
+    gomobile bind ${goBuildFlags} -target=${target.name} ${target.gomobileExtraFlags} \
+      -o ${target.outputFileName} \
+      ${goBuildLdFlags} \
+      ${goPackagePath}/mobile
+  '') currentHostMobileTargets;
+  mobileInstallScript = lib.concatMapStrings (target: ''
+    mkdir -p $out/lib/${target.name}
+    mv ${target.outputFileName} $out/lib/${target.name}/
+  '') currentHostMobileTargets;
+  desktopOutputFileName = currentHostConfig.desktopOutputFileName;
+  desktopSystem = hostPlatform.system;
+  removeReferences = [ go ];
+  removeExpr = refs: ''remove-references-to ${lib.concatMapStrings (ref: " -t ${ref}") refs}'';
+  goBuildFlags = "-v";
+  goBuildLdFlags = "-ldflags=-s";
+  xcodeWrapper = composeXcodeWrapper xcodewrapperArgs;
 
 in buildGoPackage rec {
   inherit goPackagePath version rev;
@@ -80,17 +123,7 @@ in buildGoPackage rec {
 
     # Build mobile libraries
     # TODO: Manage to pass -s -w to -ldflags. Seems to only accept a single flag
-    echo
-    echo "Building mobile library"
-    echo
-    ANDROID_HOME=${androidPkgs.androidsdk}/libexec/android-sdk \
-    ANDROID_NDK_HOME="${androidPkgs.ndk-bundle}/libexec/android-sdk/ndk-bundle" \
-    GOPATH=${gomobile.dev}:$GOPATH \
-    PATH=${lib.makeBinPath [ gomobile.bin openjdk ]}:$PATH \
-    gomobile bind ${goBuildFlags} -target=${mobileTarget} -iosversion=8.0 \
-      -o ${mobileOutputFileName} \
-      ${goBuildLdFlags} \
-      ${goPackagePath}/mobile
+    ${mobileBuildScript}
 
     runHook postBuild
   '';
@@ -98,12 +131,11 @@ in buildGoPackage rec {
   postInstall = ''
     mkdir -p $bin
     cp -r "$NIX_BUILD_TOP/go/bin/" $bin
+   
+    ${mobileInstallScript}
 
-    mkdir -p $out/lib/${mobileTarget}
-    mv ${mobileOutputFileName} $out/lib/${mobileTarget}/
-
-    mkdir -p $out/lib/${destopSystem} $out/include
-    mv $out/${desktopOutputFileName} $out/lib/${destopSystem}
+    mkdir -p $out/lib/${desktopSystem} $out/include
+    mv $out/${desktopOutputFileName} $out/lib/${desktopSystem}
     mv $out/libstatus.h $out/include
   '';
 
