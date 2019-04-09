@@ -54,9 +54,8 @@
                                              :web3            web3}])))
 
 ;; MAIN SEND TRANSACTION VIEW
-(defn- send-transaction-view [_opts]
-  (reagent/create-class
-   {:reagent-render (fn [opts] [recipient/render-choose-recipient opts])}))
+(defn- send-transaction-view [opts]
+  [recipient/render-choose-recipient opts])
 
 (def default-transaction
   {:optimal-gas ethereum/default-transaction-gas

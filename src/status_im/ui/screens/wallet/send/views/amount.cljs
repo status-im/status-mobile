@@ -108,11 +108,8 @@
 
 (defn converted-currency-amount [{:keys [input-amount inverted]} token fiat-currency prices]
   (when (valid-input-amount? input-amount)
-    (if-not inverted
-      (some-> (common/token->fiat-conversion prices token fiat-currency input-amount)
-              (money/with-precision 2))
-      (some-> (common/fiat->token-conversion prices token fiat-currency input-amount)
-              (money/with-precision 8)))))
+    (some-> (common/token->fiat-conversion prices token fiat-currency input-amount)
+            (money/with-precision (if inverted 8 2)))))
 
 (defn converted-currency-phrase [state token fiat-currency prices]
   (str (if-let [amount-bn (converted-currency-amount state token fiat-currency prices)]
@@ -126,7 +123,6 @@
     (when-let [amount-bn (if inverted
                            (common/fiat->token-conversion prices token fiat-currency input-amount)
                            (money/bignumber input-amount))]
-      amount-bn
       (money/formatted->internal amount-bn (:symbol token) (:decimals token)))))
 
 (defn update-input-errors [{:keys [input-amount inverted] :as state} token fiat-currency prices]
@@ -146,14 +142,13 @@
 
 (defn update-input-amount [state input-str token fiat-currency prices]
   {:pre [(map? state) (map? token) (map? fiat-currency) (map? prices)]}
-  (cond-> (-> state
-              (assoc :input-amount input-str)
-              (dissoc :error-message))
-    (not (string/blank? input-str))
-    (update-input-errors token fiat-currency prices)))
+  (let [has-value? (not (string/blank? input-str))]
+    (cond-> (-> state
+                (assoc :input-amount input-str)
+                (dissoc :error-message))
+      has-value? (update-input-errors token fiat-currency prices))))
 
 (defn render-choose-amount [{:keys [web3
-                                    chain
                                     network
                                     native-currency
                                     all-tokens
@@ -245,9 +240,9 @@
                                            :padding-vertical    7
                                            :max-width           290
                                            :text-align-vertical :center}}]
-                [react/text {:style {:color               (if (not (string/blank? input-amount))
-                                                            colors/white
-                                                            colors/blue-shadow)
+                [react/text {:style {:color               (if (string/blank? input-amount)
+                                                            colors/blue-shadow
+                                                            colors/white)
                                      :font-size           30
                                      :font-weight         "500"
                                      :text-align-vertical :center}}

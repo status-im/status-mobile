@@ -77,11 +77,11 @@
 
 (defn update-recipient [chain transaction error-message value]
   (if (ens/is-valid-eth-name? value)
-    (do (ens/get-addr (get ens/ens-registries chain)
-                      value
-                      #(if (ethereum/address? %)
-                         (swap! transaction assoc :to-ens value :to %)
-                         (reset! error-message (i18n/label :t/error-unknown-ens-name)))))
+    (ens/get-addr (get ens/ens-registries chain)
+                  value
+                  #(if (ethereum/address? %)
+                     (swap! transaction assoc :to-ens value :to %)
+                     (reset! error-message (i18n/label :t/error-unknown-ens-name))))
     (do (swap! transaction assoc :to value)
         (reset! error-message nil))))
 

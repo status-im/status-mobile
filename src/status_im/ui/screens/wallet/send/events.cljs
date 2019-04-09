@@ -485,7 +485,7 @@
   (if (ens/is-valid-eth-name? recipient)
     (ens/get-addr (get ens/ens-registries chain)
                   recipient
-                  #(callback %))
+                  callback)
     (callback recipient)))
 
 (defn chosen-recipient [chain {:keys [to to-ens qr] :as params} success-callback error-callback]
