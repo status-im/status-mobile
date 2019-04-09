@@ -20,7 +20,7 @@ function install_nix() {
       if is_linux && [ -f ~/.bashrc ] && ! grep -qF ".nix-profile/etc/profile.d/nix.sh" ~/.bashrc; then
         # For some reason, new terminals are not started as login shells, so .profile and .bash_profile are not sourced.
         # To get around it, we add Nix initialization to .bashrc as well, if it exists
-        echo "if [ -e ${HOME}/.nix-profile/etc/profile.d/nix.sh ]; then . ${HOME}/.nix-profile/etc/profile.d/nix.sh; fi # added by make setup Status script" >> ~/.bashrc
+        echo "if [ -e ${HOME}/.nix-profile/etc/profile.d/nix.sh ]; then . ${HOME}/.nix-profile/etc/profile.d/nix.sh; fi # added by Status' setup script" >> ~/.bashrc
       fi
 
       if [ $? -eq 0 ]; then

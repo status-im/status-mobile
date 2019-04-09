@@ -31,7 +31,7 @@ if [ -z "$IN_NIX_SHELL" ]; then
     echo -e "  \t\tfound\t\t$(node -v) ($(which node))"
     echo -e "  - yarn:\texpected\t${EXPECTED_YARN_VERSION}"
     echo -e "  \t\tfound\t\t$(yarn -v) ($(which yarn))"
-    echo -e "Please open another console to reload the environment, and then run 'make setup' if necessary."
+    echo -e "Please open another console to reload the environment."
 
     echo -e "**********************************************************************************************${NC}"
     exit 1
@@ -40,11 +40,11 @@ fi
 
 if [ "$PLATFORM" == 'android' ]; then
   if [ ! -d $ANDROID_SDK_ROOT ]; then
-    echo -e "${GREEN}NDK setup not complete, please run 'make setup'!${NC}"
+    echo -e "${GREEN}NDK setup not complete, please run 'scripts/setup'!${NC}"
     exit 1
   fi
   if [ ! -d $ANDROID_NDK_ROOT ]; then
-    echo -e "${GREEN}NDK setup not complete, please run 'make setup'!${NC}"
+    echo -e "${GREEN}NDK setup not complete, please run 'scripts/setup'!${NC}"
     exit 1
   fi
 elif [ "$PLATFORM" == 'ios' ] && [ "$(uname)" != "Darwin" ]; then
