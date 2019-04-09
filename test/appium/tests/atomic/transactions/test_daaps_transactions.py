@@ -1,5 +1,7 @@
 import pytest
+import time
 
+from tests import marks, unique_password
 from tests import marks, unique_password, common_password
 from tests.base_test_case import SingleDeviceTestCase
 from tests.users import transaction_senders, transaction_recipients, basic_user
@@ -23,9 +25,10 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.assets_button.click()
         send_transaction_view = status_test_dapp.request_stt_button.click()
         wallet_view = send_transaction_view.get_wallet_view()
-        wallet_view.done_button.click()
-        wallet_view.yes_button.click()
-        send_transaction_view.sign_transaction()
+        wallet_view.got_it_button.click()
+        time.sleep(2)
+        wallet_view.got_it_button.click()
+        send_transaction_view.sign_transaction_old()
         self.network_api.verify_balance_is_updated(initial_balance, address)
 
     @marks.testrail_id(5342)
@@ -56,7 +59,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
         send_transaction_view = status_test_dapp.deploy_contract_button.click()
-        send_transaction_view.sign_transaction()
+        send_transaction_view.sign_transaction_old()
         for text in 'Contract deployed at: ', 'Call contract get function', \
                     'Call contract set function', 'Call function 2 times in a row':
             if not status_test_dapp.element_by_text(text).is_element_displayed(120):
@@ -91,13 +94,13 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
         send_transaction_view = status_test_dapp.send_two_tx_in_batch_button.click()
-        send_transaction_view.sign_transaction()
+        send_transaction_view.sign_transaction_old()
 
         # Check that second 'Send transaction' screen appears
         if not send_transaction_view.element_by_text('Sign transaction').is_element_displayed(10):
             pytest.fail('Second send transaction screen did not appear!')
 
-        send_transaction_view.sign_transaction()
+        send_transaction_view.sign_transaction_old()
 
     @marks.testrail_id(5744)
     @marks.critical
@@ -111,13 +114,13 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
         send_transaction_view = status_test_dapp.send_two_tx_one_by_one_button.click()
-        send_transaction_view.sign_transaction()
+        send_transaction_view.sign_transaction_old()
 
         # Check that second 'Send transaction' screen appears
         if not send_transaction_view.element_by_text('Sign transaction').is_element_displayed(20):
             pytest.fail('Second send transaction screen did not appear!')
 
-        send_transaction_view.sign_transaction()
+        send_transaction_view.sign_transaction_old()
 
     @marks.logcat
     @marks.testrail_id(5418)
@@ -132,7 +135,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.assets_button.click()
         send_transaction_view = status_test_dapp.request_stt_button.click()
-        send_transaction_view.sign_transaction(unique_password)
+        send_transaction_view.sign_transaction_old(unique_password)
         send_transaction_view.check_no_values_in_logcat(password=unique_password)
 
     @marks.logcat
@@ -209,7 +212,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         if not send_transaction_view.sign_transaction_button.is_element_displayed():
             self.driver.fail('It seems transaction sign screen is not shown.')
 
-        send_transaction_view.sign_transaction()
+        send_transaction_view.sign_transaction_old()
 
         if not status_test_dapp.assets_button.is_element_displayed():
             self.driver.fail('It seems users was not redirected to Status DAPP screen.')
@@ -284,7 +287,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
             self.errors.append(warning.format('"Not enough ETH for gas" warning appeared while sending '
                                               'one transaction in batch with normal gas limit and price'))
 
-        send_transaction_view.sign_transaction()
+        send_transaction_view.sign_transaction_old()
         if not status_test_dapp.assets_button.is_element_displayed():
             self.errors.append('Could not sing the transaction!')
 
@@ -374,7 +377,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         if send_transaction_view.validation_warnings.not_enough_eth_for_gas.is_element_displayed():
             self.errors.append('"Not enough ETH for gas" warning appeared while sending normal amount of ETH')
 
-        send_transaction_view.sign_transaction()
+        send_transaction_view.sign_transaction_old()
         if not wallet.send_transaction_button.is_element_displayed():
             self.errors.append('Could not sing the transaction!')
 
@@ -452,7 +455,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         if send_transaction_view.validation_warnings.not_enough_eth_for_gas.is_element_displayed():
             self.errors.append('"Not enough ETH for gas" warning appeared while sending normal amount of ETH')
 
-        send_transaction_view.sign_transaction()
+        send_transaction_view.sign_transaction_old()
         if not wallet.send_transaction_button.is_element_displayed():
             self.errors.append('Could not sing the transaction!')
 

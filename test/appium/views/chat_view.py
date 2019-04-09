@@ -411,7 +411,7 @@ class ChatView(BaseView):
             wallet_view.yes_button.click()
         else:
             self.send_message_button.click_until_presence_of_element(send_transaction.sign_transaction_button)
-        send_transaction.sign_transaction(sender_password)
+        send_transaction.sign_transaction_old(sender_password)
 
     def delete_chat(self):
         self.chat_options.click()

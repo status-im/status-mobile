@@ -99,7 +99,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_1.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
 
         send_transaction_view.chose_recipient_button.find_element().click()
-        if send_transaction_view.recent_recipients_button.is_element_displayed():
+        if send_transaction_view.contacts_button.is_element_displayed():
             self.errors.append('Recipient field is editable')
             send_transaction_view.click_system_back_button()
 
@@ -125,7 +125,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         if send_transaction_view.total_fee_input.text != '%s ETHro' % (d(gas_limit) * d(gas_price) / d(1000000000)):
             self.errors.append('Gas limit and/or gas price fields were not edited')
         send_transaction_view.done_button.click()
-        send_transaction_view.sign_transaction()
+        send_transaction_view.sign_transaction_old()
 
         if not chat_1.chat_element_by_text(amount).is_element_displayed():
             self.errors.append('Message with the sent amount is not shown for the sender')
@@ -204,7 +204,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         send_transaction_device_1.confirm()
         send_transaction_device_1.chose_recipient_button.click()
         sender_button = send_transaction_device_1.element_by_text(sender['username'])
-        send_transaction_device_1.recent_recipients_button.click_until_presence_of_element(sender_button)
+        send_transaction_device_1.contacts_button.click_until_presence_of_element(sender_button)
         sender_button.click()
         wallet_1.send_request_button.click()
 

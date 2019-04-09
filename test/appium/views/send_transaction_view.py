@@ -217,6 +217,13 @@ class SendTransactionView(BaseView):
         self.send_button.click()
         self.got_it_button.click()
 
+    def sign_transaction_old(self, sender_password: str = common_password):
+        self.sign_transaction_button.click_until_presence_of_element(self.enter_password_input)
+        self.enter_password_input.send_keys(sender_password)
+        self.sign_transaction_button.click_until_presence_of_element(self.got_it_button)
+        self.progress_bar.wait_for_invisibility_of_element(20)
+        self.got_it_button.click()
+
     def select_token(self, token_text):
         for text in 'Ropsten Ether', token_text:
             button = self.element_by_text(text)
