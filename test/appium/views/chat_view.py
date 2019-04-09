@@ -444,7 +444,15 @@ class ChatView(BaseView):
         else:
             self.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
         if kwargs.get('sign_transaction', True):
-            send_transaction_view.sign_transaction(password)
+
+            # send_transaction_view.sign_transaction(password)
+
+            send_transaction_view.sign_transaction_button.click()
+            send_transaction_view.enter_password_input.send_keys(password)
+            send_transaction_view.sign_transaction_button.click()
+            send_transaction_view.progress_bar.wait_for_invisibility_of_element(20)
+            send_transaction_view.done_button.click()
+
             chat_elem = self.chat_element_by_text(amount)
             chat_elem.wait_for_visibility_of_element()
             chat_elem.progress_bar.wait_for_invisibility_of_element(20)

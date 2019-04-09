@@ -252,8 +252,9 @@ class WalletView(BaseView):
     def set_up_wallet(self):
         self.set_up_button.click()
         phrase = self.sign_in_phrase.string
-        self.done_button.click()
-        self.yes_button.click()
+        self.got_it_button.click()
+        time.sleep(2)
+        self.got_it_button.click()
         return phrase
 
     def get_wallet_address(self):

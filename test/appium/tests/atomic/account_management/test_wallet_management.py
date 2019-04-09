@@ -33,7 +33,7 @@ class TestWalletManagement(SingleDeviceTestCase):
                                        "transactions are safe. This combo is not stored in your account."]:
             if not wallet.element_by_text(text).is_element_displayed():
                 self.errors.append("'%s' text is not displayed" % text)
-        wallet.yes_button.click()
+        wallet.got_it_button.click()
         for element in [wallet.send_transaction_button, wallet.receive_transaction_button,
                         wallet.transaction_history_button]:
             if not element.is_element_displayed():
