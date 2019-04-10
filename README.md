@@ -65,4 +65,4 @@ Licensed under the [Mozilla Public License v2.0](https://github.com/status-im/st
 
 ## Testing Supported by
 
-<img width="160" src="http://foundation.zurb.com/sites/docs/assets/img/logos/browser-stack.svg" alt="BrowserStack"/>
+[![BrowserStack Status](https://www.browserstack.com/automate/badge.svg?badge_key=SFBWQ3k5R2tnT2t6UGsxU1h1U0g3VFlCNnoxVTRHYWNoTDhsb1laaTJZWT0tLUZMUm5sSVFBSU9qSWM1RUJvK1I3Z3c9PQ==--ad15ae7992b432b33743749d40318952415bd98f)](https://www.browserstack.com/automate/public-build/SFBWQ3k5R2tnT2t6UGsxU1h1U0g3VFlCNnoxVTRHYWNoTDhsb1laaTJZWT0tLUZMUm5sSVFBSU9qSWM1RUJvK1I3Z3c9PQ==--ad15ae7992b432b33743749d40318952415bd98f)
