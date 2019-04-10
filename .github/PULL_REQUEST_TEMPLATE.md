@@ -7,26 +7,34 @@ If you submit PR for issue with bounty then write here Fixes #NN where NN is iss
 
 fixes #...
 
-### Summary:
+### Summary
 
 [comment]: # (Summarise the problem and how the pull request solves it)
 ...
 
-### Review notes (optional):
-<!-- (Specify if something in particular should be looked at, or ignored, during review) -->
+<!-- (Optional, remove if no changes to documentation) -->
+Documentation change PR (review please): https://github.com/status-im/status.im/pull/xxx
 
-### Testing notes (optional):
-<!-- (Specify which platforms should be tested) -->
-#### Platforms (optional)
+### Review notes
+<!-- (Optional. Specify if something in particular should be looked at, or ignored, during review) -->
+
+### Testing notes
+<!-- (Optional) -->
+
+#### Platforms
+<!-- (Optional. Specify which platforms should be tested) -->
+
 - Android
 - iOS
 - macOS
 - Linux
 - Windows
 
-<!-- (Specify if some specific areas has to be tested, for example 1-1 chats) -->
-#### Areas that maybe impacted (optional)
-**Functional**
+#### Areas that maybe impacted
+<!-- (Optional. Specify if some specific areas has to be tested, for example 1-1 chats) -->
+
+##### Functional
+
 - 1-1 chats
 - public chats
 - group chats
@@ -40,13 +48,15 @@ fixes #...
 - fleet
 - bootnodes
 
-**Non-functional**
+##### Non-functional
+
 - battery performance
 - CPU performance / speed of the app
 - network consumption
 
+### Steps to test
 <!-- (Specify exact steps to test if there are such) -->
-### Steps to test:
+
 - Open Status
 - ...
 - Step 3, etc.
