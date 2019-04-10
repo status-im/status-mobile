@@ -271,6 +271,7 @@
                           :style                        style/scroll-root
                           :content-container-style      style/scroll-root
                           :keyboard-should-persist-taps :handled}
+       ^{:key current-chat-id}
        [react/view {:style     style/chat-view
                     :on-layout (fn [e]
                                  (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
