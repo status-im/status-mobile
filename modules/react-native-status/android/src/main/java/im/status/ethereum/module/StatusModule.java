@@ -701,6 +701,45 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void hashMessage(final String message, final Callback callback) {
+        Log.d(TAG, "hashMessage");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.hashMessage(message);
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void hashTypedData(final String data, final Callback callback) {
+        Log.d(TAG, "hashTypedData");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.hashTypedData(data);
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+
+    @ReactMethod
     public void sendTransactionWithSignature(final String txArgsJSON, final String signature, final Callback callback) {
         Log.d(TAG, "sendTransactionWithSignature");
         if (!checkAvailability()) {
@@ -1040,6 +1079,27 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
       public void run() {
         String res = Statusgo.chaosModeUpdate(on);
 
+        callback.invoke(res);
+      }
+    };
+
+    StatusThreadPoolExecutor.getInstance().execute(r);
+  }
+
+  @ReactMethod
+  public void getNodesFromContract(final String rpcEndpoint, final String contractAddress, final Callback callback) {
+    Log.d(TAG, "getNodesFromContract");
+    if (!checkAvailability()) {
+      callback.invoke(false);
+      return;
+    }
+
+    Runnable r = new Runnable() {
+      @Override
+      public void run() {
+        String res = Statusgo.getNodesFromContract(rpcEndpoint, contractAddress);
+
+        Log.d(TAG, res);
         callback.invoke(res);
       }
     };

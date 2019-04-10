@@ -103,7 +103,10 @@ def build_ios_adhoc(readonly)
         export_method: "ad-hoc",
         # Temporary fix for Xcode 10.1
         xcargs: "-UseModernBuildSystem=N",
-        output_directory: "status-adhoc"
+        output_directory: "status-adhoc",
+        export_options: {
+            "UseModernBuildSystem": "N"
+        }
     )
 end
 
@@ -130,7 +133,8 @@ def build_ios_e2e
         destination: "generic/platform=iOS Simulator",
         # 2. fixing compilations issues as stated in https://stackoverflow.com/a/20505258
         #    it looks like i386 isn't supported by React Native
-        xcargs: "ARCHS=\"x86_64\" ONLY_ACTIVE_ARCH=NO",
+        # UseModernBuildSystem: Temporary fix for Xcode 10.1
+        xcargs: "ARCHS=\"x86_64\" ONLY_ACTIVE_ARCH=NO -UseModernBuildSystem=N",
         # 3. directory where to up StatusIm.app
         derived_data_path: "status-e2e",
         output_name: "StatusIm.app",
@@ -139,12 +143,13 @@ def build_ios_e2e
         scheme: "StatusIm",
         workspace: "ios/StatusIm.xcworkspace",
         configuration: "Release",
-        # Temporary fix for Xcode 10.1
-        xcargs: "-UseModernBuildSystem=N",
         # Simulator apps can't be archived...
         skip_archive: true,
         # ...and we don't need an .ipa file for them, because we use .app directly
-        skip_package_ipa: true
+        skip_package_ipa: true,
+        export_options: {
+            "UseModernBuildSystem": "N"
+        }
     )
 
     zip(
@@ -186,16 +191,14 @@ platform :ios do
   desc "This lane builds a new adhoc build and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
   lane :pr do
     unlock_keychain_if_needed
-    # TODO: fixme when 2FA is setup
-    build_ios_adhoc(true)
+    build_ios_adhoc(false)
   end
 
   desc "`fastlane ios nightly` - makes a new nightly"
   desc "This lane builds a new nightly and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
   lane :nightly do
     unlock_keychain_if_needed
-    # TODO: fixme when 2FA is setup
-    build_ios_adhoc(true)
+    build_ios_adhoc(false)
   end
 
   desc "`fastlane ios release` builds a release & uploads it to TestFlight"
@@ -231,7 +234,7 @@ platform :ios do
   desc "uses custom plugin, installed via"
   desc "`sudo get install fastlane-plugin-clean_testflight_testers`"
   lane :clean do
-    clean_testflight_testers
+    clean_testflight_testers(username: ENV["FASTLANE_APPLE_ID"])
   end
 
   desc "`fastlane ios upload-diawi` - upload .ipa to diawi"
@@ -267,12 +270,15 @@ end
 
 
 platform :android do
+  # Optional env variables
+  APK_PATH = ENV["APK_PATH"] || "android/app/build/outputs/apk/release/app-release.apk"
+
   desc "Deploy a new internal build to Google Play"
   desc "expects GOOGLE_PLAY_JSON_KEY environment variable"
   lane :nightly do
     upload_to_play_store(
       track: "internal",
-      apk: "android/app/build/outputs/apk/release/app-release.apk",
+      apk: APK_PATH,
       json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"]
     )
 
@@ -283,7 +289,7 @@ platform :android do
   lane :release do
     upload_to_play_store(
       track: "alpha",
-      apk: "android/app/build/outputs/apk/release/app-release.apk",
+      apk: APK_PATH,
       json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"]
     )
   end
@@ -307,8 +313,7 @@ platform :android do
   desc "---"
   desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
   lane :upload_diawi do
-    apk = ENV["DIAWI_APK"] || "android/app/build/outputs/apk/release/app-release.apk"
-    upload_to_diawi(apk)
+    upload_to_diawi(APK_PATH)
   end
 
   desc "`fastlane android saucelabs` - upload .apk to sauce labs"
@@ -318,8 +323,6 @@ platform :android do
   desc "expects to have a saucelabs destination name as SAUCE_LABS_NAME env variable"
   desc "will fails if file isn't there"
   lane :saucelabs do
-    upload_to_saucelabs(
-        "android/app/build/outputs/apk/release/app-release.apk"
-    )
+    upload_to_saucelabs(APK_PATH)
   end
 end

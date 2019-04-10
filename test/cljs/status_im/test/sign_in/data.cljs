@@ -104,6 +104,7 @@
    :last-request                         nil
    :desktop-notifications?               false
    :settings                             {:web3-opt-in? true
+                                          :fleet        :eth.beta
                                           :wallet       {:visible-tokens {:testnet #{:STT
                                                                                      :HND}
                                                                           :mainnet #{:SNT}

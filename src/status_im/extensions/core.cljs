@@ -14,6 +14,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.wallet.settings.views :as settings]
             [status-im.i18n :as i18n]
+            [status-im.ipfs.core :as ipfs]
             [status-im.utils.money :as money]
             [status-im.constants :as constants]
             [status-im.ui.components.colors :as colors]
@@ -22,6 +23,7 @@
             [status-im.utils.fx :as fx]
             status-im.extensions.ethereum
             status-im.extensions.camera
+            status-im.extensions.network
             [status-im.extensions.map :as map]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.ethereum.core :as ethereum]
@@ -224,40 +226,13 @@
 
 (re-frame/reg-event-fx
  :ipfs/cat
- (fn [_ [_ _ {:keys [hash on-success on-failure]}]]
-   {:http-raw-get (merge {:url (str constants/ipfs-cat-url hash)
-                          :success-event-creator
-                          (fn [{:keys [status body]}]
-                            (if (= 200 status)
-                              (on-success {:value body})
-                              (when on-failure
-                                (on-failure {:value status}))))}
-                         (when on-failure
-                           {:failure-event-creator on-failure})
-                         {:timeout-ms 5000})}))
-
-(defn- parse-ipfs-add-response [res]
-  (let [{:keys [Name Hash Size]} (parse-json res)]
-    {:name Name
-     :hash Hash
-     :size Size}))
+ (fn [cofx [_ _ args]]
+   (ipfs/cat cofx args)))
 
 (re-frame/reg-event-fx
  :ipfs/add
- (fn [_ [_ _ {:keys [value on-success on-failure]}]]
-   (let [formdata (doto (js/FormData.)
-                    (.append constants/ipfs-add-param-name value))]
-     {:http-raw-post (merge {:url  constants/ipfs-add-url
-                             :body formdata
-                             :success-event-creator
-                             (fn [{:keys [status body]}]
-                               (if (= 200 status)
-                                 (on-success {:value (parse-ipfs-add-response body)})
-                                 (when on-failure
-                                   (on-failure {:value status}))))}
-                            (when on-failure
-                              {:failure-event-creator on-failure})
-                            {:timeout-ms 5000})})))
+ (fn [cofx [_ _ args]]
+   (ipfs/add cofx args)))
 
 (re-frame/reg-event-fx
  :http/post
@@ -385,9 +360,9 @@
               platform/ios? (str "http://maps.apple.com/?q=" (js/encodeURIComponent text) "&ll=" lat "," lng)
               platform/android? (str "geo:0,0?q=" lat "," lng "(" (js/encodeURIComponent text) ")")
               :else (str "http://www.openstreetmap.org/?mlat=" lat "&mlon=" lng))]
-    (link {:uri uri
-           :text text
-           :style style
+    (link {:uri     uri
+           :text    text
+           :style   style
            :open-in :device})))
 
 (defn list [{:keys [key data item-view]}]
@@ -420,7 +395,7 @@
 (defn text [o & children]
   (if (map? o)
     (into [react/text o] (map wrap-text-child children))
-    (into [react/text o] (map wrap-text-child children))))
+    (into [react/text {} o] (map wrap-text-child children))))
 
 (defn- wrap-view-child [child]
   (if (vector? child) child [text {} child]))
@@ -511,7 +486,7 @@
                  :arguments   {:params :map}}
                 'chat.command/open-public-chat
                 {:permissions [:read]
-                 :value       :extensions.chat.command/open-public-chat
+                 :data       :extensions.chat.command/open-public-chat
                  :arguments   {:topic :string :navigate-to :boolean}}
                 'log
                 {:permissions [:read]
@@ -525,16 +500,16 @@
                                :on-result :event}}
                 'browser/open-url
                 {:permissions [:read]
-                 :value       :extensions/open-url
+                 :data       :extensions/open-url
                  :arguments   {:url :string}}
                 'camera/picture
                 {:permissions [:read]
-                 :value       :extensions/camera-picture
+                 :data       :extensions/camera-picture
                  :arguments   {:on-success  :event
                                :on-failure? :event}}
                 'camera/qr-code
                 {:permissions [:read]
-                 :value       :extensions/camera-qr-code
+                 :data       :extensions/camera-qr-code
                  :arguments   {:on-success  :event
                                :on-failure? :event}}
                 'schedule/start
@@ -575,7 +550,27 @@
                  :arguments   {:key :string}}
                 'store/clear-all
                 {:permissions [:read]
-                 :data        :store/clear-all}
+                 :data       :store/clear-all}
+                'network/add
+                {:permissions [:read]
+                 :data       :network/add
+                 :arguments   {:chain-id    :number
+                               :name        :string
+                               :url         :string
+                               :on-success? :event
+                               :on-failure? :event}}
+                'network/select
+                {:permissions [:read]
+                 :data       :network/select
+                 :arguments   {:chain-id    :number
+                               :on-success? :event
+                               :on-failure? :event}}
+                'network/remove
+                {:permissions [:read]
+                 :data       :network/remove
+                 :arguments   {:chain-id    :number
+                               :on-success? :event
+                               :on-failure? :event}}
                 'http/get
                 {:permissions [:read]
                  :data        :http/get

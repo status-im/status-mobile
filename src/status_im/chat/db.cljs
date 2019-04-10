@@ -17,10 +17,16 @@
     (let [pending-invite-inviter-name
           (group-chats.db/get-pending-invite-inviter-name contacts
                                                           chat
-                                                          current-public-key)]
+                                                          current-public-key)
+          inviter-name
+          (group-chats.db/get-inviter-name contacts
+                                           chat
+                                           current-public-key)]
       (cond-> chat
         pending-invite-inviter-name
         (assoc :pending-invite-inviter-name pending-invite-inviter-name)
+        inviter-name
+        (assoc :inviter-name inviter-name)
         :always
         (assoc :chat-name (group-chat-name chat))))
     (let [{contact-name :name :as contact}

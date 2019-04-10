@@ -1,6 +1,7 @@
 (ns status-im.utils.ethereum.core
   (:require [clojure.string :as string]
             [status-im.js-dependencies :as dependencies]
+            [status-im.native-module.core :as status]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.money :as money]
             [taoensso.timbre :as log]))
@@ -124,8 +125,16 @@
 (defn- sig->method-id [signature]
   (apply str (take 10 (sha3 signature))))
 
-(defn call [web3 params cb]
-  (.call (.-eth web3) (clj->js params) cb))
+(defn call [params callback]
+  (status/call-private-rpc
+   (.stringify js/JSON (clj->js {:jsonprc "2.0"
+                                 :id      1
+                                 :method  "eth_call"
+                                 :params  [params "latest"]}))
+   (fn [response]
+     (if (= "" response)
+       (log/warn :web3-response-error)
+       (callback (get (js->clj (.parse js/JSON response)) "result"))))))
 
 (defn call-params [contract method-sig & params]
   (let [data (apply format-call-params (sig->method-id method-sig) params)]

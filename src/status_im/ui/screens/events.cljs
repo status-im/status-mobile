@@ -25,6 +25,7 @@
             status-im.utils.keychain.events
             [re-frame.core :as re-frame]
             [status-im.hardwallet.core :as hardwallet]
+            [status-im.chat.models :as chat]
             [status-im.native-module.core :as status]
             [status-im.mailserver.core :as mailserver]
             [status-im.ui.components.permissions :as permissions]
@@ -73,6 +74,11 @@
  :http-post
  http-post)
 
+(defn- mark-messages-seen
+  [{:keys [db] :as cofx}]
+  (let [{:keys [current-chat-id]} db]
+    (chat/mark-messages-seen cofx current-chat-id)))
+
 (defn- http-raw-post [{:keys [url body response-validator success-event-creator failure-event-creator timeout-ms opts]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
         on-error   (when failure-event-creator #(re-frame/dispatch (failure-event-creator %)))
@@ -119,6 +125,12 @@
  :set
  (fn [{:keys [db]} [_ k v]]
    {:db (assoc db k v)}))
+
+(handlers/register-handler-fx
+ :set-once
+ (fn [{:keys [db]} [_ k v]]
+   (when-not (get db k)
+     {:db (assoc db k v)})))
 
 (handlers/register-handler-fx
  :set-in
@@ -172,7 +184,11 @@
  :screens/on-will-focus
  (fn [{:keys [db] :as cofx} [_ view-id]]
    (fx/merge cofx
-             {:db (assoc db :view-id view-id)}
+             (if (= view-id :qr-scanner)
+               {:db (-> db
+                        (assoc :view-id view-id)
+                        (assoc-in [:navigation/screen-params view-id :barcode-read?] false))}
+               {:db (assoc db :view-id view-id)})
              #(case view-id
                 :keycard-settings (hardwallet/settings-screen-did-load %)
                 :reset-card (hardwallet/reset-card-screen-did-load %)
@@ -180,4 +196,5 @@
                 :hardwallet-connect (hardwallet/hardwallet-connect-screen-did-load %)
                 :hardwallet-authentication-method (hardwallet/authentication-method-screen-did-load %)
                 :accounts (hardwallet/accounts-screen-did-load %)
+                :chat (mark-messages-seen %)
                 nil))))

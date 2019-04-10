@@ -627,7 +627,7 @@ Section "Status Desktop" SecMain
   File "${top_srcdir}\.env"
   File "${top_srcdir}\node_modules\node-notifier\vendor\snoreToast\SnoreToast.exe"
   File /r "${top_srcdir}\desktop\bin\"
-  File /r "${base_image_dir}"
+  File /r "${base_image_dir}\"
 
   SetOutPath "$INSTDIR\notifier"
   File "${top_srcdir}\node_modules\node-notifier\vendor\notifu\*.exe"

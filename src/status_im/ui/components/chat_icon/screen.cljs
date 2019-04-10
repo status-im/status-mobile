@@ -122,6 +122,12 @@
     :default-chat-icon      (styles/default-chat-icon-profile colors/default-chat-color size)
     :default-chat-icon-text styles/default-chat-icon-text}])
 
+(defn chat-intro-icon-view [icon-text chat-id styles]
+  (let [photo-path (re-frame.core/subscribe [:contacts/chat-photo chat-id])]
+    (if-not (string/blank? @photo-path)
+      [photos/photo @photo-path styles]
+      [default-chat-icon icon-text styles])))
+
 (defn profile-icon-view [photo-path name color edit? size override-styles]
   (let [styles (merge {:container              {:width size :height size}
                        :online-view            styles/online-view-profile

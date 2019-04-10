@@ -110,7 +110,8 @@
   {:should-component-update (fn [_ _ args]
                               (let [[_ props] args]
                                 (not (nil? (:url props)))))}
-  [react/view {:flex 1}
+  [react/view {:flex 1
+               :elevation -10}
    [react/view components.styles/flex
     (if unsafe?
       [site-blocked.views/view {:can-go-back? can-go-back?

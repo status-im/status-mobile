@@ -2,13 +2,10 @@
 
 ########################################################################
 # This install script will setup your development dependencies on OS X
-# or Ubuntu. Ubuntu 16.04 is the only tested version.
+# or Ubuntu. Ubuntu 18.04 is the only tested version.
 #
 # Usage: scripts/setup
 ########################################################################
-
-YELLOW='\033[1;33m'
-NC='\033[0m'
 
 _current_dir=$(cd "${BASH_SOURCE%/*}" && pwd)
 source "$_current_dir/lib/setup/path-support.sh"

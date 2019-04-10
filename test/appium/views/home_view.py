@@ -60,7 +60,7 @@ class ChatElement(BaseButton):
         class DeleteButton(BaseButton):
             def __init__(self, driver, parent_locator: str):
                 super(DeleteButton, self).__init__(driver)
-                locator_str = "/..//*[@content-desc='icon']"
+                locator_str = "/../..//*[@content-desc='icon']"
                 self.locator = self.Locator.xpath_selector(parent_locator + locator_str)
 
         return DeleteButton(self.driver, self.locator.value)

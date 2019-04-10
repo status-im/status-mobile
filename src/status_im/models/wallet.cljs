@@ -2,16 +2,15 @@
   (:require [clojure.set :as set]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
-            [status-im.transport.utils :as transport.utils]
             [status-im.ui.screens.navigation :as navigation]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.utils.config :as config]
+            [status-im.utils.core :as utils.core]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.hex :as utils.hex]
-            [status-im.utils.core :as utils.core]
-            [status-im.utils.money :as money]
             [status-im.utils.fx :as fx]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]
-            [status-im.utils.config :as config]))
+            [status-im.utils.hex :as utils.hex]
+            [status-im.utils.money :as money]))
 
 (def min-gas-price-wei (money/bignumber 1))
 
@@ -120,7 +119,7 @@
                                                :error     message}
                                      :webview webview-bridge}))
 
-(defn dapp-complete-transaction [id result method message-id webview]
+(defn dapp-complete-transaction [id result method message-id webview keycard?]
   (cond-> {:browser/send-to-bridge {:message {:type      constants/web3-send-async-callback
                                               :messageId message-id
                                               :result    {:jsonrpc "2.0"
@@ -130,7 +129,7 @@
            :dispatch          [:navigate-back]}
 
     (constants/web3-sign-message? method)
-    (assoc :dispatch [:navigate-back])
+    (assoc :dispatch (if keycard? [:navigate-to :browser] [:navigate-back]))
 
     (= method constants/web3-send-transaction)
     (assoc :dispatch [:navigate-to-clean :wallet-transaction-sent-modal])))
@@ -249,3 +248,28 @@
                    (if wallet-set-up-passed?
                      :wallet-send-modal-stack
                      :wallet-send-modal-stack-with-onboarding)]]}))
+
+(fx/defn open-sign-transaction-flow
+  [{:keys [db] :as cofx} {:keys [gas gas-price] :as transaction}]
+  (let [go-to-view-id (if (get-in db [:account/account :wallet-set-up-passed?])
+                        :wallet-send-modal-stack
+                        :wallet-send-modal-stack-with-onboarding)]
+    (fx/merge cofx
+              (cond-> {:db (-> db
+                               (assoc-in [:wallet :send-transaction]
+                                         transaction)
+                               (assoc-in [:wallet :send-transaction :original-gas]
+                                         gas))}
+                (not gas)
+                (assoc :update-estimated-gas
+                       {:web3          (:web3 db)
+                        :obj           (select-keys transaction [:to :data])
+                        :success-event :wallet/update-estimated-gas-success})
+
+                (not gas-price)
+                (assoc :update-gas-price
+                       {:web3          (:web3 db)
+                        :success-event :wallet/update-gas-price-success
+                        :edit?         false}))
+              (update-wallet)
+              (navigation/navigate-to-cofx go-to-view-id {}))))

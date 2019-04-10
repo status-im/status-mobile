@@ -44,3 +44,13 @@
     (let [inviter-pk (get-inviter-pk my-public-key chat)]
       (get-in contacts [inviter-pk :name]
               (gfycat/generate-gfy inviter-pk)))))
+
+(defn get-inviter-name
+  "when the chat is a private group chat in which the user has been
+  invited and didn't accept the invitation yet, return inviter-name"
+  [contacts chat my-public-key]
+  (when (and (models.chat/group-chat? chat)
+             (joined? my-public-key chat))
+    (let [inviter-pk (get-inviter-pk my-public-key chat)]
+      (get-in contacts [inviter-pk :name]
+              (gfycat/generate-gfy inviter-pk)))))

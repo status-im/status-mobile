@@ -254,6 +254,17 @@ RCT_EXPORT_METHOD(updateMailservers:(NSString *)enodes
 #endif
 }
 
+//////////////////////////////////////////////////////////////////// getNodesFromContract
+RCT_EXPORT_METHOD(getNodesFromContract:(NSString *)url
+                               address:(NSString *) address
+                              callback:(RCTResponseSenderBlock)callback) {
+  NSString* result = StatusgoGetNodesFromContract(url, address);
+  callback(@[result]);
+#if DEBUG
+  NSLog(@"GetNodesFromContract() method called");
+#endif
+}
+
 //////////////////////////////////////////////////////////////////// chaosModeUpdate
 RCT_EXPORT_METHOD(chaosModeUpdate:(BOOL)on
                   callback:(RCTResponseSenderBlock)callback) {

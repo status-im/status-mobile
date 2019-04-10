@@ -3,7 +3,12 @@ utils = load 'ci/utils.groovy'
 def bundle(type = 'nightly') {
   /* Disable Gradle Daemon https://stackoverflow.com/questions/38710327/jenkins-builds-fail-using-the-gradle-daemon */
   def gradleOpt = "-PbuildUrl='${currentBuild.absoluteUrl}' -Dorg.gradle.daemon=false "
-  if (type == 'release') {
+  def target = "release"
+
+  if (type in ['pr', 'e2e']) {
+    /* PR builds shouldn't replace normal releases */
+    target = 'pr'
+  } else if (type == 'release') {
     gradleOpt += "-PreleaseVersion='${utils.getVersion('mobile_files')}'"
   }
   dir('android') {
@@ -18,12 +23,16 @@ def bundle(type = 'nightly') {
         passwordVariable: 'STATUS_RELEASE_KEY_PASSWORD'
       )
     ]) {
-      utils.nix_sh "./gradlew assembleRelease ${gradleOpt}"
+      utils.nix_sh "./gradlew assemble${target.capitalize()} ${gradleOpt}"
     }
   }
+  sh 'find android/app/build/outputs/apk'
+  def outApk = "android/app/build/outputs/apk/${target}/app-${target}.apk"
   def pkg = utils.pkgFilename(type, 'apk')
-  sh "cp android/app/build/outputs/apk/release/app-release.apk ${pkg}"
-  /* necessary for Diawi upload */
+  /* rename for upload */
+  sh "cp ${outApk} ${pkg}"
+  /* necessary for Fastlane */
+  env.APK_PATH = pkg
   env.DIAWI_APK = pkg
   return pkg
 }

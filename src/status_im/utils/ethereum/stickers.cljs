@@ -7,28 +7,28 @@
    :testnet "0x39d16CdB56b5a6a89e1A397A13Fe48034694316E"
    :rinkeby nil})
 
-(defn pack-count [web3 contract cb]
+(defn pack-count
   "Returns number of packs rigestered in the contract"
-  (ethereum/call web3
-                 (ethereum/call-params contract "packCount()")
-                 (fn [_ count] (cb (ethereum/hex->int count)))))
+  [contract cb]
+  (ethereum/call (ethereum/call-params contract "packCount()")
+                 (fn [count] (cb (ethereum/hex->int count)))))
 
-(defn pack-data [web3 contract pack-id cb]
+(defn pack-data
   "Returns vector of pack data parameters by pack id: [category owner mintable timestamp price contenthash]"
-  (ethereum/call web3
-                 (ethereum/call-params contract "getPackData(uint256)" (ethereum/int->hex pack-id))
-                 (fn [_ data]
-                   (cb (when data (abi-spec/decode (subs data 2) ["bytes4[]" "address" "bool" "uint256" "uint256" "bytes"]))))))
+  [contract pack-id cb]
+  (ethereum/call (ethereum/call-params contract "getPackData(uint256)" (ethereum/int->hex pack-id))
+                 (fn [data]
+                   (cb (abi-spec/decode data ["bytes4[]" "address" "bool" "uint256" "uint256" "bytes"])))))
 
-(defn owned-tokens [web3 contract address cb]
+(defn owned-tokens
   "Returns vector of owned tokens ids in the contract by address"
-  (ethereum/call web3
-                 (ethereum/call-params contract "tokensOwnedBy(address)" (ethereum/normalized-address address))
-                 (fn [_ data]
-                   (cb (when data (first (abi-spec/decode (subs data 2) ["uint256[]"])))))))
+  [contract address cb]
+  (ethereum/call (ethereum/call-params contract "tokensOwnedBy(address)" (ethereum/normalized-address address))
+                 (fn [data]
+                   (cb (first (abi-spec/decode data ["uint256[]"]))))))
 
-(defn token-pack-id [web3 contract token cb]
+(defn token-pack-id
   "Returns pack id in the contract by token id"
-  (ethereum/call web3
-                 (ethereum/call-params contract "tokenPackId(uint256)" (ethereum/int->hex token))
-                 (fn [_ data] (cb (ethereum/hex->int data)))))
+  [contract token cb]
+  (ethereum/call (ethereum/call-params contract "tokenPackId(uint256)" (ethereum/int->hex token))
+                 (fn [data] (cb (ethereum/hex->int data)))))

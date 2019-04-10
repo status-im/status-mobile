@@ -37,7 +37,8 @@
         (when (and (not (zero? price))) ;(not no-snt?))
           [icons/icon :icons/logo {:color colors/white :width 12 :height 12 :container-style {:margin-right 8}}])
         (if pending
-          [components/activity-indicator {:animating true}]
+          [components/activity-indicator {:animating true
+                                          :color     colors/white}]
           [react/text {:style {:color colors/white}}
            (cond (or owned (zero? price))
                  (i18n/label :t/install)

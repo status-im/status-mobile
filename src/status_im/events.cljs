@@ -110,10 +110,12 @@
              (chat-loading/initialize-chats {:from 10}))))
 
 (defn account-change-success
-  [{:keys [db] :as cofx} [_ address]]
-  (let [{:node/keys [status on-ready]} db]
+  [{:keys [db] :as cofx} [_ address nodes]]
+  (let [{:node/keys [status]} db]
     (fx/merge
      cofx
+     (when nodes
+       (fleet/set-nodes :eth.contract nodes))
      (if (= status :started)
        (accounts.login/login)
        (node/initialize (get-in db [:accounts/login :address])))
@@ -506,7 +508,7 @@
 (handlers/register-handler-fx
  :network.ui/remove-network-confirmed
  (fn [cofx [_ network]]
-   (network/remove-network cofx network)))
+   (network/remove-network cofx network [:navigate-back])))
 
 (handlers/register-handler-fx
  :network.ui/connect-network-pressed
@@ -678,6 +680,11 @@
    (qr-scanner/scan-qr-code cofx identifier (merge {:handler handler} opts))))
 
 (handlers/register-handler-fx
+ :qr-scanner.ui/qr-code-error-dismissed
+ (fn [cofx [_ _]]
+   (qr-scanner/scan-qr-code-after-error-dismiss cofx)))
+
+(handlers/register-handler-fx
  :qr-scanner.callback/scan-qr-code-success
  (fn [cofx [_ context data]]
    (qr-scanner/set-qr-code cofx context data)))
@@ -728,6 +735,11 @@
  :chat.ui/set-chat-ui-props
  (fn [{:keys [db]} [_ kvs]]
    {:db (chat/set-chat-ui-props db kvs)}))
+
+(handlers/register-handler-fx
+ :chat.ui/join-time-messages-checked
+ (fn [{:keys [db]} [_ chat-id]]
+   {:db (chat/join-time-messages-checked db chat-id)}))
 
 (handlers/register-handler-fx
  :chat.ui/show-message-details
@@ -949,7 +961,7 @@
 (handlers/register-handler-fx
  :hardwallet/get-application-info
  (fn [cofx _]
-   (hardwallet/get-application-info cofx nil)))
+   (hardwallet/get-application-info cofx nil nil)))
 
 (handlers/register-handler-fx
  :hardwallet.callback/on-get-application-info-success
@@ -1090,6 +1102,11 @@
    (hardwallet/on-get-keys-success cofx data)))
 
 (handlers/register-handler-fx
+ :hardwallet.callback/on-sign-success
+ (fn [cofx [_ data]]
+   (hardwallet/on-sign-success cofx data)))
+
+(handlers/register-handler-fx
  :hardwallet/auto-login
  (fn [cofx _]
    (hardwallet/login-with-keycard cofx true)))
@@ -1108,6 +1125,11 @@
  :hardwallet.callback/on-get-keys-error
  (fn [cofx [_ error]]
    (hardwallet/on-get-keys-error cofx error)))
+
+(handlers/register-handler-fx
+ :hardwallet.callback/on-sign-error
+ (fn [cofx [_ error]]
+   (hardwallet/on-sign-error cofx error)))
 
 (handlers/register-handler-fx
  :hardwallet.ui/status-hardwallet-option-pressed
@@ -1244,6 +1266,11 @@
    (hardwallet/update-pin cofx number step)))
 
 (handlers/register-handler-fx
+ :hardwallet.ui/navigate-back-button-clicked
+ (fn [cofx _]
+   (hardwallet/navigate-back-button-clicked cofx)))
+
+(handlers/register-handler-fx
  :hardwallet/process-pin-input
  (fn [cofx _]
    (hardwallet/process-pin-input cofx)))
@@ -1335,6 +1362,11 @@
  :hardwallet/navigate-to-reset-card-screen
  (fn [cofx _]
    (hardwallet/navigate-to-reset-card-screen cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet/sign
+ (fn [cofx _]
+   (hardwallet/sign cofx)))
 
 ;; browser module
 

@@ -1,7 +1,9 @@
 utils = load('ci/utils.groovy')
 
 def plutil(name, value) {
-  utils.nix_sh "plutil -replace ${name} -string ${value} ios/StatusIm/Info.plist"
+  return """
+  plutil -replace ${name} -string ${value} ios/StatusIm/Info.plist;
+"""
 }
 
 def bundle(type) {
@@ -16,17 +18,22 @@ def bundle(type) {
     default:            target = 'nightly';
   }
   /* configure build metadata */
-  plutil('CFBundleShortVersionString', utils.getVersion('mobile_files'))
-  plutil('CFBundleVersion', utils.genBuildNumber())
-  plutil('CFBundleBuildUrl', currentBuild.absoluteUrl)
+  utils.nix_sh(
+    plutil('CFBundleShortVersionString', utils.getVersion('mobile_files')) +
+    plutil('CFBundleVersion', utils.genBuildNumber()) +
+    plutil('CFBundleBuildUrl', currentBuild.absoluteUrl)
+  )
   /* the dir might not exist */
   sh 'mkdir -p status-e2e'
   /* build the actual app */
   withCredentials([
     string(credentialsId: "slave-pass-${env.NODE_NAME}", variable: 'KEYCHAIN_PASSWORD'),
-    string(credentialsId: 'FASTLANE_PASSWORD', variable: 'FASTLANE_PASSWORD'),
-    string(credentialsId: 'APPLE_ID', variable: 'APPLE_ID'),
-    string(credentialsId: 'fastlane-match-password', variable:'MATCH_PASSWORD')
+    string(credentialsId: 'fastlane-match-password', variable: 'MATCH_PASSWORD'),
+    usernamePassword(
+      credentialsId:  'fastlane-match-apple-id',
+      usernameVariable: 'FASTLANE_APPLE_ID',
+      passwordVariable: 'FASTLANE_PASSWORD'
+    ),
   ]) {
     utils.nix_sh "bundle exec fastlane ios ${target}"
   }

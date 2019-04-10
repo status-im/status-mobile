@@ -23,10 +23,15 @@
 (defn fleet-supports-les? [fleet]
   (not (nil? (some #(= fleet %) fleets-with-les))))
 
-(def fleets
-  (reduce merge (map #(:fleets (types/json->clj %))
-                     [(slurp "resources/config/fleets.json")
-                      (slurp "resources/config/fleets-les.json")])))
+(def default-fleets (slurp "resources/config/fleets.json"))
+(def default-les-fleets (slurp "resources/config/fleets-les.json"))
+
+(defn fleets [{:keys [custom-fleets]}]
+  (as-> [default-fleets
+         default-les-fleets] $
+    (mapv #(:fleets (types/json->clj %)) $)
+    (conj $ custom-fleets)
+    (reduce merge $)))
 
 (defn format-mailserver
   [mailserver address]
@@ -42,11 +47,11 @@
           {}
           mailservers))
 
-(def default-mailservers
+(defn default-mailservers [db]
   (reduce (fn [acc [fleet node-by-type]]
             (assoc acc fleet (format-mailservers (:mail node-by-type))))
           {}
-          fleets))
+          (fleets db)))
 
 (fx/defn show-save-confirmation
   [{:keys [db] :as cofx} fleet]
@@ -56,6 +61,30 @@
                           :confirm-button-text (i18n/label :t/close-app-button)
                           :on-accept           #(re-frame/dispatch [:fleet.ui/save-fleet-confirmed (keyword fleet)])
                           :on-cancel           nil}})
+
+(defn nodes->fleet [nodes]
+  (letfn [(format-nodes [nodes]
+            (reduce (fn [acc n]
+                      (assoc acc
+                             (keyword n)
+                             n))
+                    {}
+                    nodes))]
+    {:boot (format-nodes nodes)
+     :mail (format-nodes nodes)
+     :whisper (format-nodes nodes)}))
+
+(fx/defn set-nodes [{:keys [db]} fleet nodes]
+  {:db (-> db
+           (assoc-in [:custom-fleets fleet] (nodes->fleet nodes))
+           (assoc-in [:mailserver/mailservers fleet] (format-mailservers
+                                                      (reduce
+                                                       (fn [acc e]
+                                                         (assoc acc
+                                                                (keyword e)
+                                                                e))
+                                                       {}
+                                                       nodes))))})
 
 (fx/defn save
   [{:keys [db now] :as cofx} fleet]

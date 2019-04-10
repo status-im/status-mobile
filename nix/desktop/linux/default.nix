@@ -11,4 +11,8 @@ let
 in
 {
   buildInputs = [ appimagekit linuxdeployqt patchelf baseImage ];
+
+  shellHook = ''
+    export STATUSREACT_LINUX_BASEIMAGE_PATH="${baseImage}/src"
+  '';
 }

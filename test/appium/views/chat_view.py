@@ -287,7 +287,7 @@ class ChatElementByText(BaseText):
 class EmptyPublicChatMessage(BaseText):
     def __init__(self, driver):
         super().__init__(driver)
-        self.locator = self.Locator.text_part_selector("There are no messages")
+        self.locator = self.Locator.text_part_selector("It's been quite here")
 
 
 class ChatItem(BaseElement):
@@ -334,8 +334,10 @@ class ChatView(BaseView):
         self.members_button = MembersButton(self.driver)
         self.delete_chat_button = DeleteChatButton(self.driver)
         self.clear_history_button = ClearHistoryButton(self.driver)
-        self.group_info = GroupInfoButton(self.driver)
         self.clear_button = ClearButton(self.driver)
+
+        # Group chats
+        self.group_info = GroupInfoButton(self.driver)
         self.leave_chat_button = LeaveChatButton(self.driver)
         self.leave_button = LeaveButton(self.driver)
         self.join_chat_button = JoinChatButton(self.driver)
@@ -414,6 +416,13 @@ class ChatView(BaseView):
         self.chat_options.click()
         self.clear_history_button.click()
         self.clear_button.click()
+
+    def clear_history_via_group_info(self):
+        self.chat_options.click()
+        self.group_info.click()
+        self.clear_history_button.click()
+        self.clear_button.click()
+        self.back_button.click()
 
     def send_transaction_in_1_1_chat(self, asset, amount, password=common_password, wallet_set_up=False, **kwargs):
         self.commands_button.click()

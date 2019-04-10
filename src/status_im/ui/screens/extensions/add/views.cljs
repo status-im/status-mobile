@@ -3,7 +3,7 @@
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [clojure.string :as string]
-            [pluto.reader.errors :as errors]
+            [pluto.error :as error]
             [status-im.extensions.core :as extensions]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
@@ -50,9 +50,9 @@
              [react/text (i18n/label :t/none)]]
             [cartouche {:header (i18n/label :t/errors)}
              (if errors
-               (into [react/view] (for [{::errors/keys [type value]} errors]
+               (into [react/view] (for [{::error/keys [type target]} errors]
                                     [react/text
-                                     (str (when type (name type)) " " (str value))]))
+                                     (str (when type (name type)) " " (when target (name target)))]))
                [react/text (i18n/label :t/none)])]]]
           [react/view styles/bottom-container
            [react/view components.styles/flex]

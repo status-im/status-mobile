@@ -10,5 +10,11 @@
   {:margin-top       16
    :height           22})
 
+(def datemark-mobile
+  {:flex        1
+   :align-items :center
+   :margin-top  16
+   :height      22})
+
 (def datemark-text
   {:color colors/gray})

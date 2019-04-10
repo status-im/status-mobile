@@ -47,7 +47,7 @@
              :transport/chats                    {}
              :transport/filters                  {}
              :transport/message-envelopes        {}
-             :mailserver/mailservers             fleet/default-mailservers
+             :mailserver/mailservers             (fleet/default-mailservers {})
              :mailserver/topics                  {}
              :mailserver/pending-requests        0
              :chat/cooldowns                     0

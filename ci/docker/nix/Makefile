@@ -1,6 +1,7 @@
 __toolversion = $(shell $(GIT_ROOT)/scripts/toolversion $(1))
 
 GIT_COMMIT = $(shell git rev-parse --short HEAD)
+GIT_COMMIT_FULL = $(shell git rev-parse HEAD)
 GIT_ROOT = $(shell git rev-parse --show-toplevel)
 
 ANDROID_SDK_VERSION = $(call  __toolversion, android-sdk)
@@ -19,7 +20,7 @@ NIX_SHA = 0039df605d2324f721f0c99ab76fc58fa60f791d84b30196eed805e8e65b1e51
 NIX_URL = https://nixos.org/releases/nix/nix-$(NIX_VERSION)/install
 
 # WARNING: Remember to change the tag when updating the image
-DEPS_HASH = $(shell $(GIT_ROOT)/scripts/gen-deps-hash.sh -b $(NIX_SHA) \
+DEPS_HASH = $(shell $(GIT_ROOT)/scripts/gen-deps-hash.sh -b $(NIX_SHA) -b $(GIT_COMMIT_FULL) \
 					-d android-sdk \
 					-d android-sdk-platform \
 					-d android-sdk-build-tools \
@@ -39,6 +40,7 @@ build: $(NIX_INSTALL) $(ANDROID_SDK_ARCHIVE)
 		--build-arg="SDK_BUILD_TOOLS_VERSION=$(SDK_BUILD_TOOLS_VERSION)" \
 		--build-arg="SDK_PLATFORM_VERSION=$(SDK_PLATFORM_VERSION)" \
 		--build-arg="DEPS_HASH=$(DEPS_HASH)" \
+		--build-arg="GIT_COMMIT=$(GIT_COMMIT_FULL)" \
 		-t $(IMAGE_NAME) .
 
 $(NIX_INSTALL):

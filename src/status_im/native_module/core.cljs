@@ -58,6 +58,12 @@
 (defn hash-transaction [rpcParams callback]
   (native-module/hash-transaction rpcParams callback))
 
+(defn hash-message [message callback]
+  (native-module/hash-message message callback))
+
+(defn hash-typed-data [data callback]
+  (native-module/hash-typed-data data callback))
+
 (defn send-transaction-with-signature [rpcParams sig callback]
   (native-module/send-transaction-with-signature rpcParams sig callback))
 
@@ -98,3 +104,5 @@
 (def rooted-device? native-module/rooted-device?)
 
 (def chaos-mode-update native-module/chaos-mode-update)
+
+(def get-nodes-from-contract native-module/get-nodes-from-contract)

@@ -1,6 +1,7 @@
 (ns status-im.qr-scanner.core
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
+            [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.utils :as utils]
             [status-im.utils.fx :as fx]))
 
@@ -18,10 +19,16 @@
                                               50))
                                            #(re-frame/dispatch [deny-handler qr-codes]))}})
 
+(fx/defn scan-qr-code-after-error-dismiss
+  [{:keys [db]}]
+  (let [view-id (:view-id db)]
+    {:db (assoc-in db [:navigation/screen-params view-id :barcode-read?] false)}))
+
 (fx/defn set-qr-code
   [{:keys [db]} context data]
   (merge {:db (-> db
                   (update :qr-codes dissoc context)
+                  (update-in [:navigation/screen-params :qr-scanner] assoc :barcode-read? true)
                   (dissoc :current-qr-context))}
          (when-let [qr-codes (:qr-codes db)]
            {:dispatch [(:handler qr-codes) context data (dissoc qr-codes :handler)]})))

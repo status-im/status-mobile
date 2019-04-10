@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.qr-scanner.styles
+  (:require-macros [status-im.utils.styles :as styles])
   (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.components.toolbar.styles :as toolbar.styles]))
 
@@ -6,8 +7,10 @@
   {:flex             1
    :background-color :white})
 
-(def barcode-scanner
-  {:flex 1})
+(styles/defstyle barcode-scanner
+  {:flex      1
+   :elevation -10
+   :android {:marginTop 10}})
 
 (def rectangle-container
   {:position         :absolute

@@ -33,6 +33,7 @@
 (def partitioned-topic-enabled? (enabled? (get-config :PARTITIONED_TOPIC "0")))
 (def tr-to-talk-enabled? (enabled? (get-config :TRIBUTE_TO_TALK 0)))
 (def max-message-delivery-attempts (js/parseInt (get-config :MAX_MESSAGE_DELIVERY_ATTEMPTS "6")))
+(def contract-nodes-enabled? (enabled? (get-config :CONTRACT_NODES "0")))
 
 ;; CONFIG VALUES
 (def log-level

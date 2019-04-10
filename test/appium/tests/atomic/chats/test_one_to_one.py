@@ -232,9 +232,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         # When the placeholder is visible, the offline status bar does not appear
         wallet_view = home_view.wallet_button.click()
         wallet_view.home_button.click()
-
-        sign_in.toggle_airplane_mode()
-        sign_in.accept_agreements()
+        home_view.toggle_airplane_mode()
+        home_view.accept_agreements()
         home_view = sign_in.sign_in()
 
         chat = home_view.add_contact(transaction_senders['C']['public_key'])

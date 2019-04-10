@@ -375,6 +375,187 @@
       (is (not (mailserver/resend-request {:db {:mailserver/current-request {:request-id "a"}}}
                                           {:request-id "b"}))))))
 
+(def cofx-no-pub-topic
+  {:db
+   {:account/account {:public-key "me"}
+    :chats
+    {"chat-id-1" {:is-active                      true
+                  :messages                       {}
+                  :might-have-join-time-messages? true
+                  :group-chat                     true
+                  :public?                        true
+                  :chat-id                        "chat-id-1"}
+     "chat-id-2" {:is-active  true
+                  :messages   {}
+                  :group-chat true
+                  :public?    true
+                  :chat-id    "chat-id-2"}}}})
+
+(def cofx-single-pub-topic
+  {:db
+   {:account/account {:public-key "me"}
+    :chats
+    {"chat-id-1" {:is-active                      true
+                  :messages                       {}
+                  :join-time-mail-request-id      "a"
+                  :might-have-join-time-messages? true
+                  :group-chat                     true
+                  :public?                        true
+                  :chat-id                        "chat-id-1"}
+     "chat-id-2" {:is-active  true
+                  :messages   {}
+                  :group-chat true
+                  :public?    true
+                  :chat-id    "chat-id-2"}}}})
+
+(def cofx-multiple-pub-topic
+  {:db
+   {:account/account {:public-key "me"}
+    :chats
+    {"chat-id-1" {:is-active                      true
+                  :messages                       {}
+                  :join-time-mail-request-id      "a"
+                  :might-have-join-time-messages? true
+                  :group-chat                     true
+                  :public?                        true
+                  :chat-id                        "chat-id-1"}
+     "chat-id-2" {:is-active                      true
+                  :messages                       {}
+                  :join-time-mail-request-id      "a"
+                  :might-have-join-time-messages? true
+                  :group-chat                     true
+                  :public?                        true
+                  :chat-id                        "chat-id-2"}
+     "chat-id-3" {:is-active  true
+                  :messages   {}
+                  :group-chat true
+                  :public?    true
+                  :chat-id    "chat-id-3"}
+     "chat-id-4" {:is-active                      true
+                  :messages                       {}
+                  :join-time-mail-request-id      "a"
+                  :might-have-join-time-messages? true
+                  :group-chat                     true
+                  :public?                        true
+                  :chat-id                        "chat-id-4"}}}})
+
+(def mailserver-completed-event
+  {:requestID "a"
+   :lastEnvelopeHash "0xC0FFEE"
+   :cursor ""
+   :errorMessage ""})
+
+(def mailserver-completed-event-zero-for-envelope
+  {:requestID "a"
+   :lastEnvelopeHash "0x0000000000000000000000000000000000000000000000000000000000000000"
+   :cursor ""
+   :errorMessage ""})
+
+(deftest test-public-chat-related-handling-of-request-completed
+  (testing "Request does not include any public chat topic"
+    (testing "It does not dispatch any event"
+      (is (not (or (contains?
+                    (mailserver/handle-request-completed cofx-no-pub-topic mailserver-completed-event)
+                    :dispatch-n)
+                   (contains?
+                    (mailserver/handle-request-completed cofx-no-pub-topic mailserver-completed-event)
+                    :dispatch-later)))))
+    (testing "It has :mailserver/increase-limit effect"
+      (is (contains? (mailserver/handle-request-completed cofx-no-pub-topic mailserver-completed-event)
+                     :mailserver/increase-limit))))
+  (testing "Request includes one public chat topic"
+    (testing "Event has non-zero envelope"
+      (let [handeled-effects (mailserver/handle-request-completed
+                              cofx-single-pub-topic
+                              mailserver-completed-event)]
+        (testing "It has no :dispatch-n event"
+          (is (not (contains?
+                    handeled-effects
+                    :dispatch-n))))
+        (testing "It has one :dispatch-later event"
+          (is (= 1 (count (get
+                           handeled-effects
+                           :dispatch-later)))))
+        (testing "The :dispatch-later event is :chat.ui/join-time-messages-checked"
+          (is (= :chat.ui/join-time-messages-checked
+                 (-> (get
+                      handeled-effects
+                      :dispatch-later)
+                     first
+                     :dispatch
+                     first))))
+        (testing "The :dispatch-later event argument is the chat-id/topic that the request included"
+          (is (= "chat-id-1"
+                 (-> (get
+                      handeled-effects
+                      :dispatch-later)
+                     first
+                     :dispatch
+                     second))))
+        (testing "It has :mailserver/increase-limit effect"
+          (is (contains? handeled-effects
+                         :mailserver/increase-limit)))))
+    (testing "Event has zero-valued envelope"
+      (let [handeled-effects (mailserver/handle-request-completed
+                              cofx-single-pub-topic
+                              mailserver-completed-event-zero-for-envelope)]
+        (testing "It has one :dispatch-n event"
+          (is (= 1 (count (get
+                           handeled-effects
+                           :dispatch-n)))))
+        (testing "It has no :dispatch-later event"
+          (is (not (contains?
+                    handeled-effects
+                    :dispatch-later))))
+        (testing "The :dispatch-n event is :chat.ui/join-time-messages-checked"
+          (is (= :chat.ui/join-time-messages-checked
+                 (-> (get
+                      handeled-effects
+                      :dispatch-n)
+                     first
+                     first))))
+        (testing "The :dispatch-n event argument is the chat-id/topic that the request included"
+          (is (= "chat-id-1"
+                 (-> (get
+                      handeled-effects
+                      :dispatch-n)
+                     first
+                     second))))
+        (testing "It has :mailserver/increase-limit effect"
+          (is (contains? handeled-effects
+                         :mailserver/increase-limit))))))
+  (testing "Request includes multiple public chat topics (3)"
+    (testing "Event has non-zero envelope"
+      (let [handeled-effects (mailserver/handle-request-completed
+                              cofx-multiple-pub-topic
+                              mailserver-completed-event)]
+        (testing "It has no :dispatch-n event"
+          (is (not (contains?
+                    handeled-effects
+                    :dispatch-n))))
+        (testing "It has one :dispatch-later event"
+          (is (= 3 (count (get
+                           handeled-effects
+                           :dispatch-later)))))
+        (testing "It has :mailserver/increase-limit effect"
+          (is (contains? handeled-effects
+                         :mailserver/increase-limit)))))
+    (testing "Event has zero-valued envelope"
+      (let [handeled-effects (mailserver/handle-request-completed
+                              cofx-multiple-pub-topic
+                              mailserver-completed-event-zero-for-envelope)]
+        (testing "It has one :dispatch-n event"
+          (is (= 3 (count (get
+                           handeled-effects
+                           :dispatch-n)))))
+        (testing "It has no :dispatch-later event"
+          (is (not (contains?
+                    handeled-effects
+                    :dispatch-later))))
+        (testing "It has :mailserver/increase-limit effect"
+          (is (contains? handeled-effects
+                         :mailserver/increase-limit)))))))
+
 (deftest peers-summary-change
   (testing "Mailserver added, sym-key doesn't exist"
     (let [result (peers-summary-change-result false true false)]

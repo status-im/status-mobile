@@ -2,7 +2,7 @@ pipeline {
   agent {
     docker {
       label 'linux-new'
-      image 'statusteam/nix:jenkins-1.0.0-158e62e1'
+      image 'statusteam/nix:jenkins-1.0.0-150d5721'
       args (
         "-v /var/tmp/lein:/var/tmp/lein:rw "+
         "-v /var/tmp/npm:/var/tmp/npm:rw "
@@ -42,7 +42,7 @@ pipeline {
     LC_ALL = 'en_US.UTF-8'
     NPM_CONFIG_CACHE = '/var/tmp/npm'
     LEIN_HOME = '/var/tmp/lein'
-    NIX_CONF_DIR = "${env.WORKSPACE}/scripts/lib/setup/nix"
+    NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     TARGET_SYSTEM_NAME = 'Windows'
     CONAN_PRINT_RUN_COMMANDS = '1'
     CONAN_SYSREQUIRES_MODE = 'disabled'

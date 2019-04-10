@@ -116,7 +116,8 @@
                                         :action-fn           #(re-frame/dispatch [:navigate-to :currency-settings])
                                         :accessibility-label :currency-button}]
      [profile.components/settings-item-separator]
-     (when config/hardwallet-enabled?
+     (when (and config/hardwallet-enabled?
+                platform/android?)
        [profile.components/settings-item {:label-kw            :t/status-keycard
                                           :accessibility-label :keycard-button
                                           :action-fn           #(re-frame/dispatch [:profile.ui/keycard-settings-button-pressed])}])

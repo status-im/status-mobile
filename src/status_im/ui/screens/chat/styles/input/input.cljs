@@ -33,9 +33,7 @@
 (def reply-message-content
   {:flex-direction :column
    :padding-left   7
-   :margin-right   30
-   :max-height     140
-   :overflow       :scroll})
+   :max-height     140})
 
 (defn reply-message-author [chosen?]
   (assoc (message-author-name chosen?)

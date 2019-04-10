@@ -183,11 +183,32 @@
        [react/view {:style styles/title-separator}]
        [react/text {:style styles/adv-settings-subtitle} (i18n/label :offline-messaging)]
        [offline-messaging.views/pinned-state preferred-mailserver-id]
+       [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :edit-mailserver])}
+        [react/view {:style {:border-radius 8
+                             :flex 1
+                             :margin-left 24
+                             :width 90
+                             :padding 4
+                             :background-color colors/blue}}
+         [react/text {:style {:color colors/white}}
+          "Add mailserver"]]]
        [react/view
         (for [mailserver (vals mailservers)]
           ^{:key (:id mailserver)}
           [react/view {:style {:margin-vertical 8}}
            [render-fn mailserver]])]
+       [react/view {:style styles/title-separator}]
+       [react/text {:style styles/adv-settings-subtitle} (i18n/label :bootnodes)]
+       [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :bootnodes-settings])}
+        [react/view {:style {:border-radius 8
+                             :flex 1
+                             :margin-left 24
+                             :width 90
+                             :padding 4
+                             :background-color colors/blue}}
+         [react/text {:style {:color colors/white}}
+          "Bootnodes settings"]]]
+
        [react/view {:style styles/title-separator}]
        [react/text {:style styles/adv-settings-subtitle} (i18n/label :t/logging)]
        [logging-display]

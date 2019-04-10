@@ -87,17 +87,24 @@
 
 (def slider (get-class "Slider"))
 
+(def max-font-size-multiplier 1.25)
+
+(defn prepare-text-props [props]
+  (-> props
+      (update :style typography/get-style)
+      (assoc :max-font-size-multiplier max-font-size-multiplier)))
+
 ;; Accessor methods for React Components
 (defn text
   "For nested text elements, use nested-text instead"
   ([text-element]
    [text {} text-element])
   ([options text-element]
-   [text-class (update options :style typography/get-style) text-element]))
+   [text-class (prepare-text-props options) text-element]))
 
 (defn nested-text
   ([options & nested-text-elements]
-   (let [options-with-style (update options :style typography/get-style)]
+   (let [options-with-style (prepare-text-props options)]
      (reduce (fn [acc text-element]
                (conj acc
                      (cond
@@ -106,9 +113,9 @@
 
                        (vector? text-element)
                        (let [[options nested-text-elements] text-element]
-                         [nested-text (update (utils.core/deep-merge options-with-style
-                                                                     options)
-                                              :style typography/get-style)
+                         [nested-text (prepare-text-props
+                                       (utils.core/deep-merge options-with-style
+                                                              options))
                           nested-text-elements]))))
              [text-class options-with-style]
              nested-text-elements))))
@@ -117,10 +124,11 @@
   [options text]
   [text-input-class
    (merge
-    {:underline-color-android :transparent
-     :placeholder-text-color  colors/text-gray
-     :placeholder             (i18n/label :t/type-a-message)
-     :value                   text}
+    {:underline-color-android  :transparent
+     :max-font-size-multiplier max-font-size-multiplier
+     :placeholder-text-color   colors/text-gray
+     :placeholder              (i18n/label :t/type-a-message)
+     :value                    text}
     (-> options
         (update :style typography/get-style)
         (update :style dissoc :line-height)))])

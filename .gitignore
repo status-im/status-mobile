@@ -35,6 +35,9 @@ project.xcworkspace
 # Atom
 .tags*
 
+# VS Code
+.vscode/ipch/
+
 # node.js
 #
 node_modules/
@@ -94,9 +97,6 @@ doo-index.html
 
 # Status
 Statusgo.framework
-status-go-local.aar
-status-dev-cli
-status-go-*.zip
 
 #ios
 ios/Pods
@@ -129,6 +129,7 @@ fastlane/README.md
 /VERSION
 /package-lock.json
 /package.json
+/metro.config.js
 /yarn.lock
 /.re-natal
 /re-natal

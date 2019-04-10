@@ -436,6 +436,16 @@ void RCTStatus::updateMailservers(QString enodes, double callbackId) {
         }, enodes, callbackId);
 }
 
+void RCTStatus::getNodesFromContract(QString url, QString address, double callbackId) {
+    Q_D(RCTStatus);
+    qCDebug(RCTSTATUS) << "::getNodesFromContract call - callbackId:" << callbackId;
+    QtConcurrent::run([&](QString url, QString address, double callbackId) {
+            const char* result = GetNodesFromContract(url.toUtf8().data(), address.toUtf8().data());
+            logStatusGoResult("::getNodesFromContract GetNodesFromContract", result);
+            d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
+        }, url, address, callbackId);
+}
+
 void RCTStatus::chaosModeUpdate(bool on, double callbackId) {
     Q_D(RCTStatus);
     qCDebug(RCTSTATUS) << "::chaosModeUpdate call - callbackId:" << callbackId;

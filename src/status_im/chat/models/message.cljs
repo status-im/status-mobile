@@ -16,6 +16,7 @@
             [status-im.chat.models.message-content :as message-content]
             [status-im.chat.commands.receiving :as commands-receiving]
             [status-im.chat.db :as chat.db]
+            [status-im.mailserver.core :as mailserver]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.money :as money]
             [status-im.utils.types :as types]
@@ -287,35 +288,51 @@
   (apply fx/merge cofx
          (map (partial update-last-message (:chats db)) chat-ids)))
 
+(fx/defn declare-syncd-public-chats!
+  [{:keys [db] :as cofx} chat-ids]
+  (apply fx/merge cofx
+         (map (partial chat-model/join-time-messages-checked db) chat-ids)))
+
+(defn- chat-ids->never-synced-public-chat-ids [chats chat-ids]
+  (let [never-synced-public-chat-ids (mailserver/chats->never-synced-public-chats chats)]
+    (when (seq never-synced-public-chat-ids)
+      (-> never-synced-public-chat-ids
+          (select-keys (vec chat-ids))
+          keys))))
+
 (fx/defn receive-many
   [{:keys [now] :as cofx} messages]
-  (let [valid-messages   (keep #(when-let [chat-id (extract-chat-id cofx %)]
-                                  (assoc % :chat-id chat-id)) messages)
-        filtered-messages (filter-messages cofx valid-messages)
-        deduped-messages (:messages filtered-messages)
-        old-id->message  (:by-old-message-id filtered-messages)
-        chat->message    (group-by :chat-id deduped-messages)
-        chat-ids         (keys chat->message)
-        chats-fx-fns     (map (fn [chat-id]
-                                (let [unviewed-messages-count
-                                      (calculate-unviewed-messages-count
-                                       cofx
-                                       chat-id
-                                       (get chat->message chat-id))]
-                                  (chat-model/upsert-chat
-                                   {:chat-id                 chat-id
-                                    :is-active               true
-                                    :timestamp               now
-                                    :unviewed-messages-count unviewed-messages-count})))
-                              chat-ids)
-        messages-fx-fns (map #(add-received-message old-id->message %) deduped-messages)
-        groups-fx-fns   (map #(update-group-messages chat->message %) chat-ids)]
+  (let [valid-messages               (keep #(when-let [chat-id (extract-chat-id cofx %)]
+                                              (assoc % :chat-id chat-id)) messages)
+        filtered-messages            (filter-messages cofx valid-messages)
+        deduped-messages             (:messages filtered-messages)
+        old-id->message              (:by-old-message-id filtered-messages)
+        chat->message                (group-by :chat-id deduped-messages)
+        chat-ids                     (keys chat->message)
+        never-synced-public-chat-ids (chat-ids->never-synced-public-chat-ids
+                                      (get-in cofx [:db :chats]) chat-ids)
+        chats-fx-fns                 (map (fn [chat-id]
+                                            (let [unviewed-messages-count
+                                                  (calculate-unviewed-messages-count
+                                                   cofx
+                                                   chat-id
+                                                   (get chat->message chat-id))]
+                                              (chat-model/upsert-chat
+                                               {:chat-id                 chat-id
+                                                :is-active               true
+                                                :timestamp               now
+                                                :unviewed-messages-count unviewed-messages-count})))
+                                          chat-ids)
+        messages-fx-fns              (map #(add-received-message old-id->message %) deduped-messages)
+        groups-fx-fns                (map #(update-group-messages chat->message %) chat-ids)]
     (apply fx/merge cofx (concat chats-fx-fns
                                  messages-fx-fns
                                  groups-fx-fns
                                  (when platform/desktop?
                                    [(chat-model/update-dock-badge-label)])
-                                 [(update-last-messages chat-ids)]))))
+                                 [(update-last-messages chat-ids)]
+                                 (when (seq never-synced-public-chat-ids)
+                                   [(declare-syncd-public-chats! never-synced-public-chat-ids)])))))
 
 (defn system-message [{:keys [now] :as cofx} {:keys [clock-value chat-id content from]}]
   (let [{:keys [last-clock-value]} (get-in cofx [:db :chats chat-id])

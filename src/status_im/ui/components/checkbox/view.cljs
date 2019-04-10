@@ -2,8 +2,7 @@
   (:require [status-im.ui.components.checkbox.styles :as styles]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.utils.platform :as platform]))
+            [status-im.ui.components.react :as react]))
 
 (defn checkbox
   "react/check-box is currently not available on iOS,
@@ -18,9 +17,11 @@
            :accessibility-label accessibility-label}
           (when on-value-change
             {:on-press #(on-value-change (not checked?))}))
-   [react/view (styles/icon-check-container checked?)
-    (when checked?
-      [icons/icon :tiny-icons/tiny-check {:color colors/white}])]])
+   (if checked?
+     [icons/icon
+      :tiny-icons/tiny-check {:container-style (styles/icon-check-container true)
+                              :color colors/white}]
+     [react/view {:style  (styles/icon-check-container false)}])])
 
 (defn radio-button
   [{:keys [on-value-change checked? accessibility-label

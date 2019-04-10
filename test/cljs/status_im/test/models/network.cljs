@@ -1,6 +1,7 @@
 (ns status-im.test.models.network
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.network.core :as model]))
+            [status-im.network.core :as model]
+            [reagent.core :as reagent]))
 
 (deftest valid-rpc-url-test
   (testing "nil?"
@@ -96,7 +97,7 @@
                                                             :error false}}}}
                             :url "http://valid.com")))))
 
-(deftest save
+(deftest not-save-invalid-url
   (testing "it does not save a network with an invalid url"
     (is (nil? (model/save {:random-id-generator  (constantly "random")
                            :db {:networks/manage {:url {:value "wrong"}
@@ -104,3 +105,66 @@
                                                   :name {:value "empty"}}
                                 :account/account {}}}
                           {})))))
+
+(deftest save-valid-network
+  (testing "save a valid network"
+    (is (some? (model/save {:random-id-generator  (constantly "random")
+                            :db {:networks/manage {:url {:value "http://valid.com"}
+                                                   :chain {:value "mainnet"}
+                                                   :name {:value "valid"}}
+                                 :account/account {}}}
+                           {})))))
+
+(deftest not-save-non-unique-id
+  (testing "it does not save a network with network-id already defined"
+    (let [failure (reagent/atom false)]
+      (do (model/save {:random-id-generator  (constantly "random")
+                       :db {:networks/manage {:url {:value "http://valid.com"}
+                                              :chain {:value :mainnet}
+                                              :name {:value "valid"}}
+                            :account/account {:networks {"randomid"
+                                                         {:id     "randomid"
+                                                          :name   "network-name"
+                                                          :config {:NetworkId      1
+                                                                   :DataDir        "/ethereum/mainnet_rpc"
+                                                                   :UpstreamConfig {:Enabled true
+                                                                                    :URL     "upstream-url"}}}}}}}
+                      {:chain-id-unique? true
+                       :on-failure #(reset! failure true)})
+          (is @failure)))))
+
+(deftest save-valid-network-with-unique-check
+  (testing "save a valid network with network-id not already defined"
+    (is (some? (model/save {:random-id-generator  (constantly "random")
+                            :db {:networks/manage {:url {:value "http://valid.com"}
+                                                   :chain {:value :mainnet}
+                                                   :name {:value "valid"}}
+                                 :account/account {:networks {"randomid"
+                                                              {:id     "randomid"
+                                                               :name   "network-name"
+                                                               :config {:NetworkId      3
+                                                                        :DataDir        "/ethereum/mainnet_rpc"
+                                                                        :UpstreamConfig {:Enabled true
+                                                                                         :URL     "upstream-url"}}}}}}}
+                           {:chain-id-unique? true})))))
+
+(deftest save-with-id-override
+  (testing "save a valid network with id override"
+    (let [result (model/save {:random-id-generator  (constantly "random")
+                              :db {:networks/manage {:url {:value "http://valid.com"}
+                                                     :chain {:value :mainnet}
+                                                     :name {:value "valid"}}
+                                   :account/account {}}}
+                             {:network-id "override"})]
+      (is (some? (get-in result [:db :account/account :networks "override"]))))))
+
+(deftest get-network-id-for-chain-id
+  (testing "get the first network id for the given chain-id"
+    (is (= "randomid" (model/get-network-id-for-chain-id {:db {:account/account {:networks {"randomid"
+                                                                                            {:id     "randomid"
+                                                                                             :name   "network-name"
+                                                                                             :config {:NetworkId      1
+                                                                                                      :DataDir        "/ethereum/mainnet_rpc"
+                                                                                                      :UpstreamConfig {:Enabled true
+                                                                                                                       :URL     "upstream-url"}}}}}}}
+                                                         1)))))

@@ -26,7 +26,6 @@ in
       cmake
       extra-cmake-modules
       file
-      go
     ] ++ lib.optional targetLinux linuxPlatform.buildInputs
       ++ lib.optional targetDarwin darwinPlatform.buildInputs
       ++ lib.optional (! targetWindows) qt5.full
@@ -35,8 +34,10 @@ in
       unset QT_PATH
     '' else ''
       export QT_PATH="${qt5.full}"
+      export QT_BASEBIN_PATH="${qt5.qtbase.bin}"
       export PATH="${stdenv.lib.makeBinPath [ qt5.full ]}:$PATH"
-    '') + (lib.optionalString isDarwin ''
-      export MACOSX_DEPLOYMENT_TARGET=10.9
-    '');
+    '') +
+    lib.optionalString targetLinux linuxPlatform.shellHook +
+    lib.optionalString targetDarwin darwinPlatform.shellHook +
+    lib.optionalString targetWindows windowsPlatform.shellHook;
   }
