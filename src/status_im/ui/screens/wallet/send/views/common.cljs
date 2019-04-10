@@ -427,8 +427,8 @@
       (money/wei->ether (.times gas-param gas-price-param))
       0)))
 
-(defn network-fees [prices token fiat-currency gas-ether-price]
-  (some-> (token->fiat-conversion prices token fiat-currency gas-ether-price)
+(defn network-fees [prices native-currency fiat-currency gas-ether-price]
+  (some-> (token->fiat-conversion prices native-currency fiat-currency gas-ether-price)
           (money/with-precision 3)))
 
 (defn fetch-optimal-gas [web3 tx-atom cb]

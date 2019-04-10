@@ -18,7 +18,6 @@
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]))
 
 (defn white-toolbar [modal? title]
@@ -173,7 +172,7 @@
                       (assoc :amount (get balance symbol (money/bignumber 0))))
             gas-gas-price->fiat
             (fn [gas-map]
-              (common/network-fees prices coin fiat-currency (common/max-fee gas-map)))
+              (common/network-fees prices native-currency fiat-currency (common/max-fee gas-map)))
             update-amount-field #(swap! state-atom update-input-amount % coin fiat-currency prices)]
         [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
                                           :status-bar-type (if modal? :modal-wallet :wallet)}

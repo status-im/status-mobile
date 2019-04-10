@@ -198,7 +198,7 @@
             network-fee-eth (common/max-fee (common/current-gas transaction))
             network-fee-fiat
             (when (common/optimal-gas-present? transaction)
-              (common/network-fees prices token fiat-currency network-fee-eth))
+              (common/network-fees prices native-currency fiat-currency network-fee-eth))
 
             formatted-amount
             (money/internal->formatted (:amount transaction)
