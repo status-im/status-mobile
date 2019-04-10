@@ -210,11 +210,7 @@
      (fx/merge cofx
                #(when send-command?
                   (commands-sending/send % chat-id send-command? params))
-               (navigation/navigate-to-clean
-                (if (contains? #{:wallet-send-transaction :enter-pin :hardwallet-connect} (:view-id db))
-                  :wallet-transaction-sent
-                  :wallet-transaction-sent-modal)
-                {})))))
+               (navigation/navigate-to-clean :wallet-transaction-sent-modal {})))))
 
 (defn set-and-validate-amount-db [db amount symbol decimals]
   (let [{:keys [value error]} (wallet.db/parse-amount amount decimals)]
