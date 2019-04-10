@@ -276,7 +276,7 @@
                                                 (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
                                                                                                 :show-stickers? false}])
                                                 (react/dismiss-keyboard!))
-                               :on-long-press #(when (= content-type constants/content-type-text)
+                               :on-long-press #(when (or (= content-type constants/content-type-text) (= content-type constants/content-type-emoji))
                                                  (list-selection/chat-message message-id old-message-id (:text content) (i18n/label :t/message)))}
     [react/view {:accessibility-label :chat-item}
      (let [incoming-group (and group-chat (not outgoing))]
