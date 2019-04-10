@@ -18,7 +18,9 @@
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.styles :as components.styles]))
+            [status-im.ui.components.styles :as components.styles]
+            [taoensso.timbre :as log]
+            [status-im.models.wallet :as models.wallet]))
 
 (defn white-toolbar [modal? title]
   (let [action (if modal? actions/close actions/back)]
@@ -124,7 +126,19 @@
                            (money/bignumber input-amount))]
       (money/formatted->internal amount-bn (:symbol token) (:decimals token)))))
 
-(defn update-input-errors [{:keys [input-amount inverted] :as state} token fiat-currency prices]
+(defn- sufficient-gas? [max-fee balance symbol formatted-amount]
+  (or (nil? formatted-amount)
+      (let [amount            (money/formatted->internal (money/bignumber formatted-amount) :ETH 18)
+            available-ether   (get balance :ETH (money/bignumber 0))
+            available-for-gas (if (= :ETH symbol)
+                                (.minus available-ether (money/bignumber amount))
+                                available-ether)]
+        (money/sufficient-funds? (-> max-fee
+                                     money/bignumber
+                                     (money/formatted->internal :ETH 18))
+                                 (money/bignumber available-for-gas)))))
+
+(defn update-input-errors [{:keys [input-amount inverted] :as state} balance token max-fee symbol fiat-currency prices]
   {:pre [(map? state) (map? token) (map? fiat-currency) (map? prices)]}
   (let [{:keys [_value error]}
         (wallet.db/parse-amount input-amount
@@ -133,19 +147,23 @@
              (cond
                error error
                (not (money/sufficient-funds? (current-token-input-amount state token fiat-currency prices)
-                                             (:amount token)))
+                                             (get balance (:symbol token) (money/bignumber 0))))
                (i18n/label :t/wallet-insufficient-funds)
+               (not (sufficient-gas? max-fee balance symbol input-amount))
+               (i18n/label :t/wallet-insufficient-gas)
                :else nil)]
       (assoc state :error-message error-msg)
       state)))
 
-(defn update-input-amount [state input-str token fiat-currency prices]
+(defn update-input-amount [state input-str tx-atom balance token native-currency fiat-currency prices]
   {:pre [(map? state) (map? token) (map? fiat-currency) (map? prices)]}
-  (let [has-value? (not (string/blank? input-str))]
+  (let [has-value?              (not (string/blank? input-str))
+        {:keys [gas gas-price]} (common/current-gas @tx-atom)
+        max-fee                 (models.wallet/calculate-max-fee gas gas-price)]
     (cond-> (-> state
                 (assoc :input-amount input-str)
                 (dissoc :error-message))
-      has-value? (update-input-errors token fiat-currency prices))))
+      has-value? (update-input-errors balance token max-fee (:symbol @tx-atom) fiat-currency prices))))
 
 (defn render-choose-amount [{:keys [web3
                                     network
@@ -173,7 +191,8 @@
             gas-gas-price->fiat
             (fn [gas-map]
               (common/network-fees prices native-currency fiat-currency (common/max-fee gas-map)))
-            update-amount-field #(swap! state-atom update-input-amount % coin fiat-currency prices)]
+            update-amount-field #(swap! state-atom update-input-amount % tx-atom balance coin native-currency
+                                        fiat-currency prices)]
         [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
                                           :status-bar-type (if modal? :modal-wallet :wallet)}
          [common/toolbar :wallet (i18n/label :t/send-amount) nil]
