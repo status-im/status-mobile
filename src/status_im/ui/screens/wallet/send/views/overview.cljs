@@ -235,8 +235,9 @@
                    :fiat-currency fiat-currency
                    :gas-gas-price->fiat gas-gas-price->fiat
                    :on-submit (fn [{:keys [gas gas-price]}]
-                                (when (and gas gas-price)
-                                  (swap! tx-atom assoc :gas gas :gas-price gas-price))
+                                (if (and gas gas-price)
+                                  (swap! tx-atom assoc :gas gas :gas-price gas-price)
+                                  (swap! tx-atom dissoc :gas :gas-price))
                                 (close-network-fees!))))]])
           [react/text {:style {:margin-top 18
                                :text-align :center
