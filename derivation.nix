@@ -26,14 +26,17 @@ with pkgs;
     statusDesktop = callPackage ./nix/desktop { inherit target-os; stdenv = _stdenv; };
     statusMobile = callPackage ./nix/mobile { inherit target-os status-go; androidPkgs = androidComposition; stdenv = _stdenv; };
     status-go = callPackage ./nix/status-go { inherit (xcodeenv) composeXcodeWrapper; inherit xcodewrapperArgs; androidPkgs = androidComposition; };
+    nodejs' = pkgs.nodejs-10_x;
+    yarn' = yarn.override { nodejs = nodejs'; };
     nodeInputs = import ./nix/global-node-packages/output {
       # The remaining dependencies come from Nixpkgs
-      inherit pkgs nodejs;
+      inherit pkgs;
+      nodejs = nodejs';
     };
-    nodePkgs = [
-      nodejs
+    nodePkgBuildInputs = [
+      nodejs'
       python27 # for e.g. gyp
-      yarn
+      yarn'
     ] ++ (map (x: nodeInputs."${x}") (builtins.attrNames nodeInputs));
     xcodewrapperArgs = {
       version = "10.1";
@@ -69,7 +72,7 @@ with pkgs;
       watchman
 
       status-go
-    ] ++ nodePkgs
+    ] ++ nodePkgBuildInputs
       ++ lib.optional isDarwin cocoapods
       ++ lib.optional (!isDarwin) gcc7
       ++ lib.optionals targetDesktop statusDesktop.buildInputs
