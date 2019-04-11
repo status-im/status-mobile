@@ -12,22 +12,12 @@ function download_url() {
 
 function install_nix() {
   if ! program_exists nix; then
-    touch -a "${HOME}/.bash_profile"
-
     local required_version=$(toolversion nix)
-    bash <(curl https://nixos.org/releases/nix/nix-${required_version}/install) --no-daemon
+    NIX_INSTALLER_NO_MODIFY_PROFILE=1 bash <(curl https://nixos.org/releases/nix/nix-${required_version}/install) --no-daemon
     if [ $? -eq 0 ]; then
-      if is_linux && [ -f ~/.bashrc ] && ! grep -qF ".nix-profile/etc/profile.d/nix.sh" ~/.bashrc; then
-        # For some reason, new terminals are not started as login shells, so .profile and .bash_profile are not sourced.
-        # To get around it, we add Nix initialization to .bashrc as well, if it exists
-        echo "if [ -e ${HOME}/.nix-profile/etc/profile.d/nix.sh ]; then . ${HOME}/.nix-profile/etc/profile.d/nix.sh; fi # added by Status' setup script" >> ~/.bashrc
-      fi
-
-      if [ $? -eq 0 ]; then
-        echo -e "${YELLOW}**********************************************************************************************************"
-        echo "The Nix package manager was successfully installed."
-        echo -e "**********************************************************************************************************${NC}"
-      fi
+      echo -e "${YELLOW}**********************************************************************************************************"
+      echo "The Nix package manager was successfully installed."
+      echo -e "**********************************************************************************************************${NC}"
     else
       echo "Please see https://nixos.org/nix/manual/#chap-installation"
     fi

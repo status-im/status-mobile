@@ -20,18 +20,6 @@ exit_unless_os_supported
 ####
 setup_header "Checking prerequisites..."
 
-if program_exists nix; then
-  if [ -z "$IN_NIX_SHELL" ]; then
-    if is_nixos; then
-      cecho "@b@yellow[[All's good, you can run 'make shell' now]]"
-      exit 0
-    else
-      cecho "@b@red[[Please run 'make shell' first]]"
-      exit 1
-    fi
-  fi
-fi
-
 if ! program_exists "curl"; then
   cecho "@b@yellow[[Please install curl before running setup.]]"
   exit 1
