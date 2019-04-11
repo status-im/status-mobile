@@ -29,7 +29,8 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.chat.commands.sending :as commands-sending]
             [status-im.browser.core :as browser]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.datetime :as datetime]))
 
 (re-frame/reg-fx
  ::identity-event
@@ -128,8 +129,16 @@
 
 (re-frame/reg-sub
  :store/get
- (fn [db [_ {id :id} {:keys [key]}]]
-   (get-in db [:extensions/store id key])))
+ (fn [db [_ {id :id} {:keys [key] :as params}]]
+   (let [result (get-in db [:extensions/store id key])]
+     (if (:reverse params)
+       (reverse result)
+       result))))
+
+(re-frame/reg-sub
+ :store/get-in
+ (fn [db [_ {id :id} {:keys [keys]}]]
+   (get-in db (into [] (concat [:extensions/store id] keys)))))
 
 (defn- ->contact [{:keys [photo-path address name public-key]}]
   {:photo      photo-path
@@ -157,6 +166,11 @@
  :store/put
  (fn [{:keys [db]} [_ {id :id} {:keys [key value]}]]
    {:db (put-or-dissoc db id key value)}))
+
+(re-frame/reg-event-fx
+ :store/put-in
+ (fn [{:keys [db]} [_ {id :id} {:keys [keys value]}]]
+   {:db (assoc-in db (into [] (concat [:extensions/store id] keys)) value)}))
 
 (handlers/register-handler-fx
  :store/puts
@@ -322,12 +336,17 @@
     (js/clearTimeout id))
   (reset! current (js/setTimeout #(on-input-change-text on-change value) delay)))
 
-(defn input [{:keys [keyboard-type style on-change change-delay placeholder placeholder-text-color selection-color]}]
+(defn input [{:keys [keyboard-type style on-change change-delay placeholder placeholder-text-color selection-color
+                     auto-focus on-submit default-value]}]
   [react/text-input (merge {:placeholder placeholder}
                            (when placeholder-text-color {:placeholder-text-color placeholder-text-color})
                            (when selection-color {:selection-color selection-color})
                            (when style {:style style})
                            (when keyboard-type {:keyboard-type keyboard-type})
+                           (when auto-focus {:auto-focus auto-focus})
+                           (when default-value {:default-value default-value})
+                           (when on-submit
+                             {:on-submit-editing #(on-submit {})})
                            (when on-change
                              {:on-change-text
                               (if change-delay
@@ -417,6 +436,16 @@
 (defn icon [{:keys [key] :as o}]
   [icons/icon key o])
 
+(re-frame/reg-sub
+ :store/get-vals
+ (fn [db [_ {id :id} {:keys [key]}]]
+   (vals (get-in db [:extensions/store id key]))))
+
+(re-frame/reg-sub
+ :extensions.time/now
+ (fn [_ _]
+   (.toLocaleString (js/Date.))))
+
 (def capacities
   {:components {'view                   {:data view}
                 'scroll-view            {:data scroll-view :properties {:keyboard-should-persist-taps :keyword :content-container-style :map}}
@@ -425,7 +454,9 @@
                 'touchable-opacity      {:data touchable-opacity :properties {:on-press :event}}
                 'icon                   {:data icon :properties {:key :keyword :color :any}}
                 'image                  {:data image :properties {:uri :string :source :string}}
-                'input                  {:data input :properties {:on-change :event :placeholder :string :keyboard-type :keyword :change-delay? :number :placeholder-text-color :any :selection-color :any}}
+                'input                  {:data input :properties {:on-change :event :placeholder :string :keyboard-type :keyword
+                                                                  :change-delay? :number :placeholder-text-color :any :selection-color :any
+                                                                  :auto-focus? :boolean :on-submit :event :default-value :any}}
                 'button                 {:data button :properties {:enabled :boolean :disabled :boolean :on-click :event}}
                 'link                   {:data link :properties {:uri :string :text? :string :open-in? {:one-of #{:device :status}}}}
                 'list                   {:data list :properties {:data :vector :item-view :view :key? :keyword}}
@@ -446,7 +477,10 @@
                                                       :on-change :event}}
                 'map-link               {:data map-link :properties {:text :string :lng :any :lat :any}}}
    :queries    {'identity            {:data :extensions/identity :arguments {:value :map}}
-                'store/get           {:data :store/get :arguments {:key :string}}
+                'store/get           {:data :store/get :arguments {:key :string :reverse? :boolean}}
+                'store/get-in        {:data :store/get-in :arguments {:key :vector}}
+                'store/get-vals      {:data :store/get-vals :arguments {:key :string}}
+                'time/now            {:data :extensions.time/now}
                 'contacts/all        {:data :extensions.contacts/all} ;; :photo :name :address :public-key
                 'wallet/collectibles {:data :get-collectible-token :arguments {:token :string :symbol :string}}
                 'wallet/balance      {:data :extensions.wallet/balance :arguments {:token :string}}
@@ -536,6 +570,10 @@
                 {:permissions [:read]
                  :data        :store/put
                  :arguments   {:key :string :value :any}}
+                'store/put-in
+                {:permissions [:read]
+                 :data        :store/put-in
+                 :arguments   {:keys :vector :value :any}}
                 'store/puts
                 {:permissions [:read]
                  :data        :store/puts
@@ -819,7 +857,13 @@
                 {:permissions [:read]
                  :data        :extensions/shh-get-messages
                  :arguments   {:id :string}}}
-   :hooks       {:wallet.settings
+   :hooks       {:profile.settings
+                 {:properties
+                  {:label     :string
+                   :view      :view
+                   :on-open?  :event
+                   :on-close? :event}}
+                 :wallet.settings
                  {:properties
                   {:label     :string
                    :view      :view

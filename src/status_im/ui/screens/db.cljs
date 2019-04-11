@@ -197,6 +197,7 @@
 (spec/def :stickers/packs-installed (spec/nilable map?))
 (spec/def :stickers/selected-pack (spec/nilable any?))
 (spec/def :stickers/recent (spec/nilable vector?))
+(spec/def :extensions/profile (spec/nilable any?))
 
 (spec/def ::db (spec/keys :opt [:contacts/contacts
                                 :contacts/dapps
@@ -272,7 +273,8 @@
                                 :stickers/packs-owned
                                 :stickers/packs-pendning
                                 :bottom-sheet/show?
-                                :bottom-sheet/view]
+                                :bottom-sheet/view
+                                :extensions/profile]
                           :opt-un [::modal
                                    ::was-modal?
                                    ::rpc-url

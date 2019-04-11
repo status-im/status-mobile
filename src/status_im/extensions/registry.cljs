@@ -21,9 +21,16 @@
 (defmethod hook-for "wallet.settings" [_]
   (reify Hook
     (hook-in [_ id _ m {:keys [db]}]
-      {:db (assoc-in db [:wallet :settings id] m)})
+      (fn [{:keys [db]}] {:db (assoc-in db [:wallet :settings id] m)}))
     (unhook [_ id _ _ {:keys [db]}]
-      {:db (update-in db [:wallet :settings] dissoc id)})))
+      (fn [{:keys [db]}] {:db (update-in db [:wallet :settings] dissoc id)}))))
+
+(defmethod hook-for "profile.settings" [_]
+  (reify Hook
+    (hook-in [_ id _ m {:keys [db]}]
+      (fn [{:keys [db]}] {:db (assoc-in db [:extensions/profile :settings id] m)}))
+    (unhook [_ id _ _ {:keys [db]}]
+      (fn [{:keys [db]}] {:db (update-in db [:extensions/profile :settings] dissoc id)}))))
 
 (defmethod hook-for "chat.command" [_]
   (reify Hook
@@ -56,7 +63,8 @@
                             (preview [_ props] (when preview (preview props)))
                             protocol/Extension
                             (extension-id [_] extension-id)))]
-        (commands/load-commands cofx [new-command])))
+        (fn [cofx]
+          (commands/load-commands cofx [new-command]))))
     (unhook [_ id _ {:keys [scope]} {:keys [db] :as cofx}]
       (when-let [command (get-in db [:id->command [(name id) scope] :type])]
         (commands/remove-command command cofx)))))

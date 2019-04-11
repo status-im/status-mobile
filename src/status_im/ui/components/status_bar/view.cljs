@@ -34,6 +34,7 @@
     :open-dapp                       {:type :main}
     :my-profile                      {:type :main}
     :profile-stack                   {:type :main}
+    :my-profile-ext-settings         {:type :main}
     :contacts-list                   {:type :main}
     :browser                         {:type :main}
     :mobile-network-settings         {:type :main}

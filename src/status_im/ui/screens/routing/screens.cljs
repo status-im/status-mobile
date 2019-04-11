@@ -117,6 +117,7 @@
    :wallet-settings-assets           [:modal wallet-settings/manage-assets]
    :wallet-transactions-filter       [:modal wallet-transactions/filter-history]
    :my-profile                       profile.user/my-profile
+   :my-profile-ext-settings          profile.user/extensions-settings
    :contacts-list                    contacts-list/contacts-list
    :blocked-users-list               contacts-list/blocked-users-list
    :profile-photo-capture            photo-capture/profile-photo-capture

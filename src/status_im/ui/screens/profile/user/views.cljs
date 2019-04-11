@@ -103,8 +103,12 @@
 
 (defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]}
                             {:keys [dev-mode?
-                                    settings]} currency logged-in?]
-  (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
+                                    settings]}
+                            currency
+                            logged-in?
+                            extensions]
+  (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))
+        extensions-settings (vals (get extensions :settings))]
     [react/view
      [profile.components/settings-title (i18n/label :t/settings)]
      [profile.components/settings-item {:label-kw            :t/ens-names
@@ -151,6 +155,13 @@
       {:label-kw            :t/dapps-permissions
        :accessibility-label :dapps-permissions-button
        :action-fn           #(re-frame/dispatch [:navigate-to :dapps-permissions])}]
+     (when extensions-settings
+       (for [{:keys [label] :as st} extensions-settings]
+         [react/view
+          [profile.components/settings-item-separator]
+          [profile.components/settings-item
+           {:item-text           label
+            :action-fn           #(re-frame/dispatch [:navigate-to :my-profile-ext-settings st])}]]))
      [profile.components/settings-item-separator]
      [profile.components/settings-item
       {:label-kw            :t/need-help
@@ -268,21 +279,29 @@
 
 (defn tribute-to-talk-item [snt-amount seen?]
   [list.views/big-list-item
-   (cond->
-    {:text                (i18n/label :t/tribute-to-talk)
-     :icon                :main-icons/tribute-to-talk
-     :accessibility-label :notifications-button
-     :new?                (not seen?)
-     :action-fn           #(re-frame/dispatch
-                            [:tribute-to-talk.ui/menu-item-pressed])}
+   (cond-> {:text                (i18n/label :t/tribute-to-talk)
+            :icon                :main-icons/tribute-to-talk
+            :accessibility-label :notifications-button
+            :new?                (not seen?)
+            :action-fn           #(re-frame/dispatch
+                                   [:tribute-to-talk.ui/menu-item-pressed])}
      snt-amount
      (assoc :accessory-value (str snt-amount " SNT"))
      (not (and seen? snt-amount))
-     (assoc :subtext      (i18n/label :t/tribute-to-talk-desc)))])
+     (assoc :subtext (i18n/label :t/tribute-to-talk-desc)))])
+
+(defview extensions-settings []
+  (letsubs [{:keys [label view on-close]} [:get-screen-params :my-profile-ext-settings]]
+    [react/keyboard-avoiding-view {:style {:flex 1}}
+     [status-bar/status-bar {:type :main}]
+     [toolbar/simple-toolbar label]
+     [react/scroll-view
+      [view]]]))
 
 (defview my-profile []
   (letsubs [{:keys [public-key photo-path] :as current-account} [:account/account]
             editing?        [:get :my-profile/editing?]
+            extensions      [:get :extensions/profile]
             changed-account [:get :my-profile/profile]
             currency        [:wallet/currency]
             login-data      [:get :accounts/login]
@@ -324,6 +343,6 @@
          [contacts-list-item active-contacts-count]
          (when config/tr-to-talk-enabled?
            [tribute-to-talk-item snt-amount tribute-to-talk-seen?])
-         [my-profile-settings current-account shown-account currency (nil? login-data)]
+         [my-profile-settings current-account shown-account currency (nil? login-data) extensions]
          (when (nil? login-data)
            [advanced shown-account on-show-advanced])]]])))
