@@ -52,6 +52,10 @@
     :show-extension-modal            {:type :main}
     :wallet                          {:type :wallet-tab}
     :wallet-stack                    {:type :wallet-tab}
+    :send-transaction-new-stack      {:type :wallet-tab}
+    :wallet-send-transaction-new     {:type :wallet-tab}
+    :wallet-choose-amount            {:type :wallet-tab}
+    :wallet-txn-overview             {:type :wallet-tab}
     :profile-qr-viewer               {:type :modal-white}
     :recipient-qr-code               {:type :transparent}
     :wallet-send-assets              {:type :wallet}

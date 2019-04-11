@@ -211,7 +211,7 @@
         native-currency (tokens/native-currency chain)
         online?         (= :online network-status)]
     [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
-                                      :status-bar-type (if modal? :modal-wallet :wallet)}
+                                      :status-bar-type :wallet-tab}
      [common/toolbar :wallet (i18n/label :t/send-to) nil]
      [simple-tab-navigator
       {:address  {:name      (i18n/label :t/wallet-address-tab-title)

@@ -229,7 +229,7 @@
             total-fiat (some-> (common/token->fiat-conversion prices token fiat-currency total-amount)
                                (money/with-precision 2))]
         [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
-                                          :status-bar-type (if modal? :modal-wallet :wallet)}
+                                          :status-bar-type :wallet-tab}
          [common/toolbar flow (i18n/label :t/send-amount) (:public-key contact)]
          [react/view {:style {:flex             1
                               :border-top-width 1

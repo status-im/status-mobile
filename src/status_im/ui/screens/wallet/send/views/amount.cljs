@@ -194,7 +194,7 @@
             update-amount-field #(swap! state-atom update-input-amount % tx-atom balance coin native-currency
                                         fiat-currency prices)]
         [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
-                                          :status-bar-type (if modal? :modal-wallet :wallet)}
+                                          :status-bar-type :wallet-tab}
          [common/toolbar :wallet (i18n/label :t/send-amount) nil]
          (if (empty? balance)
            (common/info-page (i18n/label :t/wallet-no-assets-enabled))
