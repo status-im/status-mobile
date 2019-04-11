@@ -16,6 +16,8 @@ if ! command -v "nix" >/dev/null 2>&1; then
   else
     echo -e "${GREEN}Setting up environment...${NC}"
     ./scripts/setup
+
+    . ~/.nix-profile/etc/profile.d/nix.sh
   fi
 fi
 

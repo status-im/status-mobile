@@ -1,6 +1,5 @@
-# target-os = [ 'windows' 'linux' 'macos' 'darwin' 'android' 'ios' ]
 { system ? builtins.currentSystem
-, config ? {}, overlays ? []
+, config ? { android_sdk.accept_license = true; }, overlays ? []
 , pkgs ? (import <nixpkgs> { inherit system config overlays; })
 , target-os }:
 
@@ -27,8 +26,8 @@ with pkgs;
     # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
     _stdenv = stdenvNoCC;
     statusDesktop = callPackage ./nix/desktop { inherit target-os; stdenv = _stdenv; };
-    statusMobile = callPackage ./nix/mobile { inherit target-os status-go; androidPkgs = androidComposition; stdenv = _stdenv; };
-    status-go = callPackage ./nix/status-go { inherit (xcodeenv) composeXcodeWrapper; inherit xcodewrapperArgs; androidPkgs = androidComposition; };
+    statusMobile = callPackage ./nix/mobile { inherit target-os config status-go; stdenv = _stdenv; };
+    status-go = callPackage ./nix/status-go { inherit (xcodeenv) composeXcodeWrapper; inherit (statusMobile) xcodewrapperArgs; androidPkgs = statusMobile.androidComposition; };
     nodejs' = pkgs.nodejs-10_x;
     yarn' = yarn.override { nodejs = nodejs'; };
     nodeInputs = import ./nix/global-node-packages/output {
@@ -41,29 +40,6 @@ with pkgs;
       python27 # for e.g. gyp
       yarn'
     ] ++ (map (x: nodeInputs."${x}") (builtins.attrNames nodeInputs));
-    xcodewrapperArgs = {
-      version = "10.1";
-    };
-    xcodeWrapper = xcodeenv.composeXcodeWrapper xcodewrapperArgs;
-    androidComposition = androidenv.composeAndroidPackages {
-      toolsVersion = "26.1.1";
-      platformToolsVersion = "28.0.2";
-      buildToolsVersions = [ "28.0.3" ];
-      includeEmulator = false;
-      platformVersions = [ "26" "27" ];
-      includeSources = false;
-      includeDocs = false;
-      includeSystemImages = false;
-      systemImageTypes = [ "default" ];
-      abiVersions = [ "armeabi-v7a" ];
-      lldbVersions = [ "2.0.2558144" ];
-      cmakeVersions = [ "3.6.4111459" ];
-      includeNDK = true;
-      ndkVersion = "19.2.5345600";
-      useGoogleAPIs = false;
-      useGoogleTVAddOns = false;
-      includeExtras = [ "extras;android;m2repository" "extras;google;m2repository" ];
-    };
 
   in _stdenv.mkDerivation rec {
     name = "status-react-build-env";

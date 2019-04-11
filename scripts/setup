@@ -13,7 +13,6 @@ source "$_current_dir/lib/setup/path-support.sh"
 source_lib "output.sh"
 source_lib "packages.sh"
 source_lib "platform.sh"
-source_lib "installers.sh"
 
 exit_unless_os_supported
 
@@ -46,9 +45,18 @@ fi
 ####
 setup_header "Installing requirements..."
 
-install_nix && \
-install_android_sdk || \
-exit $?
+if ! program_exists nix; then
+  required_version=$(toolversion nix)
+  NIX_INSTALLER_NO_MODIFY_PROFILE=1 bash <(curl https://nixos.org/releases/nix/nix-${required_version}/install) --no-daemon
+  if [ $? -eq 0 ]; then
+    echo -e "${YELLOW}**********************************************************************************************************"
+    echo "The Nix package manager was successfully installed."
+    echo -e "**********************************************************************************************************${NC}"
+  else
+    echo "Please see https://nixos.org/nix/manual/#chap-installation"
+    exit
+  fi
+fi
 
 ####
 setup_complete

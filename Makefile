@@ -48,7 +48,7 @@ clean: ##@prepare Remove all output folders
 
 clean-nix: SHELL := /bin/sh
 clean-nix: ##@prepare Remove complete nix setup
-	sudo rm -rf /nix ~/.cache/nix
+	sudo rm -rf /nix ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status
 
 shell: ##@prepare Enter into a pre-configured shell
 ifndef IN_NIX_SHELL
