@@ -32,9 +32,43 @@
     (re-frame/dispatch [:wallet.ui/sign-transaction-button-clicked-new transaction])
     (reset! signing? true)))
 
-(defview confirm-modal [signing? {:keys [transaction total-amount gas-amount native-currency fiat-currency total-fiat]}]
-  (letsubs [keycard? [:keycard-account?]]
+(defn- phrase-word [word]
+  [react/text {:style {:color       colors/blue
+                       :font-size   15
+                       :line-height 22
+                       :font-weight "500"
+                       :width       "33%"
+                       :text-align  :center}}
+   word])
+
+(defn- phrase-separator []
+  [react/view {:style {:height           "100%"
+                       :width            1
+                       :background-color colors/gray-light}}])
+
+(defview confirm-modal [signing? account {:keys [transaction total-amount gas-amount native-currency fiat-currency total-fiat]}]
+  (let [keycard? (:keycard-instance-uid account)
+        phrase   (string/split (:signing-phrase account) #" ")]
     [react/view {:style signing-popup}
+     [tooltip/tooltip (i18n/label :t/wallet-passphrase-reminder)
+      {:bottom-value 12
+       :color        colors/white
+       :text-color   colors/blue
+       :font-size    12}]
+     [react/view {:flex              1
+                  :height            46
+                  :margin-top        18
+                  :flex-direction    :row
+                  :align-items       :center
+                  :margin-horizontal "15%"
+                  :border-width      1
+                  :border-color      colors/gray-light
+                  :border-radius     218}
+      [phrase-word (first phrase)]
+      [phrase-separator]
+      [phrase-word (second phrase)]
+      [phrase-separator]
+      [phrase-word (last phrase)]]
      [react/text {:style {:color       colors/black
                           :font-size   15
                           :line-height 22
@@ -75,117 +109,83 @@
                             :color       colors/blue}}
         (i18n/label :t/confirm)]]]]))
 
-(defn- phrase-word [word]
-  [react/text {:style {:color       colors/blue
-                       :font-size   15
-                       :line-height 22
-                       :font-weight "500"
-                       :width       "33%"
-                       :text-align  :center}}
-   word])
-
-(defn- phrase-separator []
-  [react/view {:style {:height           "100%"
-                       :width            1
-                       :background-color colors/gray-light}}])
-
 (defview sign-modal [account {:keys [transaction contact total-amount gas-amount native-currency fiat-currency
                                      total-fiat all-tokens chain flow]}]
   (letsubs [password     (reagent/atom nil)
             in-progress? (reagent/atom nil)]
-    (let [phrase (string/split (:signing-phrase account) #" ")]
-      [react/view {:style {:position :absolute
-                           :left     0
-                           :right    0
-                           :bottom   0}}
-       [tooltip/tooltip (i18n/label :t/wallet-passphrase-reminder)
-        {:bottom-value 12
-         :color        colors/white
-         :text-color   colors/blue
-         :font-size    12}]
-       [react/view {:style {:background-color        colors/white
-                            :border-top-left-radius  8
-                            :border-top-right-radius 8}}
-        [react/view {:flex              1
-                     :height            46
-                     :margin-top        18
-                     :flex-direction    :row
-                     :align-items       :center
-                     :margin-horizontal "15%"
-                     :border-width      1
-                     :border-color      colors/gray-light
-                     :border-radius     218}
-         [phrase-word (first phrase)]
-         [phrase-separator]
-         [phrase-word (second phrase)]
-         [phrase-separator]
-         [phrase-word (last phrase)]]
+    [react/view {:style {:position :absolute
+                         :left     0
+                         :right    0
+                         :bottom   0}}
+     [react/view {:style {:background-color        colors/white
+                          :border-top-left-radius  8
+                          :border-top-right-radius 8}}
+      [react/text {:style {:color       colors/black
+                           :margin-top  13
+                           :font-size   22
+                           :line-height 28
+                           :text-align  :center}}
+       (str "Send" " " total-amount " " (name (:symbol transaction)))]
+      (when-not (= :ETH (:symbol transaction))
         [react/text {:style {:color       colors/black
-                             :margin-top  13
+                             :margin-top  5
                              :font-size   22
                              :line-height 28
                              :text-align  :center}}
-         (str "Send" " " total-amount " " (name (:symbol transaction)))]
-        (when-not (= :ETH (:symbol transaction))
-          [react/text {:style {:color       colors/black
-                               :margin-top  5
-                               :font-size   22
-                               :line-height 28
-                               :text-align  :center}}
-           (str "Send" " " gas-amount " " (name (:symbol native-currency)))])
-        [react/text {:style {:color       colors/gray
-                             :text-align  :center
-                             :margin-top  3
-                             :line-height 21
-                             :font-size   15}}
-         (str "~ " (:symbol fiat-currency "$") total-fiat)]
-        [react/text-input
-         {:auto-focus             false
-          :secure-text-entry      true
-          :placeholder            (i18n/label :t/enter-your-login-password)
-          :placeholder-text-color colors/gray
-          :on-change-text         #(reset! password %)
-          :style                  {:flex              1
-                                   :margin-top        15
-                                   :margin-horizontal 15
-                                   :padding           14
-                                   :padding-bottom    18
-                                   :background-color  colors/gray-lighter
-                                   :border-radius     8
-                                   :font-size         15
-                                   :letter-spacing    -0.2
-                                   :height            52}
-          :accessibility-label    :enter-password-input
-          :keyboard-appearance    :dark
-          :auto-capitalize        :none}]
-        [react/view {:style {:flex-direction  :row
-                             :justify-content :center
-                             :padding-top     16
-                             :padding-bottom  24}}
-         [react/touchable-highlight
-          {:on-press #(events/send-transaction-wrapper {:transaction  transaction
-                                                        :password     @password
-                                                        :flow         flow
-                                                        :all-tokens   all-tokens
-                                                        :in-progress? in-progress?
-                                                        :chain        chain
-                                                        :contact      contact
-                                                        :account      account})
-           :disabled @in-progress?
-           :style    {:padding-horizontal 39
-                      :padding-vertical   12
-                      :border-radius      8
-                      :background-color   colors/blue-light}}
-          [react/text {:style {:font-size   15
-                               :line-height 22
-                               :color       colors/blue}}
-           (i18n/label :t/send)]]]]])))
+         (str "Send" " " gas-amount " " (name (:symbol native-currency)))])
+      [react/text {:style {:color       colors/gray
+                           :text-align  :center
+                           :margin-top  3
+                           :line-height 21
+                           :font-size   15}}
+       (str "~ " (:symbol fiat-currency "$") total-fiat)]
+      [react/text-input
+       {:auto-focus             false
+        :secure-text-entry      true
+        :placeholder            (i18n/label :t/enter-your-login-password)
+        :placeholder-text-color colors/gray
+        :on-change-text         #(reset! password %)
+        :style                  {:flex              1
+                                 :margin-top        15
+                                 :margin-horizontal 15
+                                 :padding           14
+                                 :padding-bottom    18
+                                 :background-color  colors/gray-lighter
+                                 :border-radius     8
+                                 :font-size         15
+                                 :letter-spacing    -0.2
+                                 :height            52}
+        :accessibility-label    :enter-password-input
+        :keyboard-appearance    :dark
+        :auto-capitalize        :none}]
+      [react/view {:style {:flex-direction  :row
+                           :justify-content :center
+                           :padding-top     16
+                           :padding-bottom  24}}
+       [react/touchable-highlight
+        {:on-press #(events/send-transaction-wrapper {:transaction  transaction
+                                                      :password     @password
+                                                      :flow         flow
+                                                      :all-tokens   all-tokens
+                                                      :in-progress? in-progress?
+                                                      :chain        chain
+                                                      :contact      contact
+                                                      :account      account})
+         :disabled @in-progress?
+         :style    {:padding-horizontal 39
+                    :padding-vertical   12
+                    :border-radius      8
+                    :background-color   colors/blue-light}}
+        [react/text {:style {:font-size   15
+                             :line-height 22
+                             :color       colors/blue}}
+         (i18n/label :t/send)]]]]]))
 
 (defview confirm-and-sign [params]
   (letsubs [signing? (reagent/atom false)
             account  [:account/account]]
     (if-not @signing?
-      [confirm-modal signing? params]
+      [confirm-modal signing? account params]
       [sign-modal account params])))
 
 (defn render-transaction-overview [{:keys [flow transaction contact token native-currency
