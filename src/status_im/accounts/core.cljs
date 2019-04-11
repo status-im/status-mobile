@@ -8,7 +8,8 @@
             [status-im.utils.config :as config]
             [status-im.utils.utils :as utils]
             [status-im.utils.fx :as fx]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.build :as build]))
 
 (re-frame/reg-fx
  ::chaos-mode-changed
@@ -16,10 +17,11 @@
    (native-module/chaos-mode-update on (constantly nil))))
 
 (fx/defn show-mainnet-is-default-alert [{:keys [db]}]
-  (let [shown? (get-in db [:account/account :mainnet-warning-shown?])]
+  (let [shown-version (get-in db [:account/account :mainnet-warning-shown-version])
+        current-version build/version]
     (when (and platform/mobile?
                config/mainnet-warning-enabled?
-               (not shown?))
+               (not= shown-version current-version))
       (utils/show-popup
        (i18n/label :mainnet-is-default-alert-title)
        (i18n/label :mainnet-is-default-alert-text)

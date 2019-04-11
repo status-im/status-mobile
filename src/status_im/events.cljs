@@ -53,7 +53,8 @@
             [status-im.stickers.core :as stickers]
             [status-im.utils.config :as config]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
-            [status-im.ui.components.react :as react]))
+            [status-im.ui.components.react :as react]
+            [status-im.utils.build :as build]))
 
 ;; init module
 
@@ -155,7 +156,7 @@
 (handlers/register-handler-fx
  :accounts.ui/mainnet-warning-shown
  (fn [cofx _]
-   (accounts.update/account-update cofx {:mainnet-warning-shown? true} {})))
+   (accounts.update/account-update cofx {:mainnet-warning-shown-version build/version} {})))
 
 (handlers/register-handler-fx
  :accounts.update.callback/published

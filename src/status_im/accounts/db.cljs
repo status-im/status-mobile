@@ -55,7 +55,7 @@
 (spec/def :account/seed-backed-up? (spec/nilable boolean?))
 (spec/def :account/installation-id :global/not-empty-string)
 (spec/def :account/wallet-set-up-passed? (spec/nilable boolean?))
-(spec/def :account/mainnet-warning-shown? (spec/nilable boolean?))
+(spec/def :account/mainnet-warning-shown-version (spec/nilable string?))
 (spec/def :account/desktop-alpha-release-warning-shown? (spec/nilable boolean?))
 (spec/def :account/keycard-instance-uid (spec/nilable string?))
 (spec/def :account/keycard-pairing (spec/nilable string?))
@@ -71,7 +71,7 @@
                                                 :account/seed-backed-up? :account/mnemonic :account/desktop-notifications?
                                                 :account/wallet-set-up-passed? :account/last-request
                                                 :account/bootnodes :account/extensions
-                                                :account/mainnet-warning-shown?
+                                                :account/mainnet-warning-shown-version
                                                 :account/desktop-alpha-release-warning-shown?
                                                 :account/keycard-instance-uid
                                                 :account/keycard-pairing

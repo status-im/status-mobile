@@ -238,3 +238,7 @@
 (def v21 (update v20 :properties merge
                  {:syncing-on-mobile-network? {:type :bool :default false}
                   :remember-syncing-choice?   {:type :bool :default false}}))
+
+(def v22 (update (update v21 :properties dissoc :mainnet-warning-shown?)
+                 :properties merge
+                 {:mainnet-warning-shown-version {:type :string :optional true}}))
