@@ -1,14 +1,5 @@
 pipeline {
-  agent { 
-    docker {
-      label 'linux'
-      image 'statusteam/nix:jenkins-1.0.0-e20e5e15'
-      args (
-        "-v /home/jenkins/tmp:/var/tmp:rw "+
-        "-v /home/jenkins/status-im.keystore:/tmp/status-im.keystore:ro"
-      )
-    }
-  }
+  agent { label 'linux' }
 
   options {
     timestamps()
@@ -39,7 +30,7 @@ pipeline {
     REALM_DISABLE_ANALYTICS = 1
     CI_ENVIRONMENT    = 'jenkins'
     /* since we are mounting it we need to specify location */
-    STATUS_RELEASE_STORE_FILE = '/tmp/status-im.keystore'
+    STATUS_RELEASE_STORE_FILE = '/home/jenkins/status-im.keystore'
     /* bundle cache is sensitive to being used by different ruby versions */
     BUNDLE_PATH       = "/var/tmp/bundle-${EXECUTOR_NUMBER}"
     /* We use EXECUTOR_NUMBER to avoid multiple instances clashing */

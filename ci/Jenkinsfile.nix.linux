@@ -1,11 +1,5 @@
 pipeline {
-  agent {
-    /* the -u is necessary for acces to /nix */
-    docker {
-      label 'linux'
-      image 'statusteam/nix:jenkins-1.0.0-e20e5e15'
-    }
-  }
+  agent { label 'linux' }
 
   environment {
     CI_ENVIRONMENT = 'jenkins'

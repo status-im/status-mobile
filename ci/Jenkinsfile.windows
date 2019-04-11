@@ -1,14 +1,5 @@
 pipeline {
-  agent {
-    docker {
-      label 'linux-new'
-      image 'statusteam/nix:jenkins-1.0.0-e20e5e15'
-      args (
-        "-v /var/tmp/lein:/var/tmp/lein:rw "+
-        "-v /var/tmp/npm:/var/tmp/npm:rw "
-      )
-    }
-  }
+  agent { label 'linux' }
 
   parameters {
     string(
