@@ -154,7 +154,7 @@ def getBuildType() {
   if (jobName.contains('e2e')) {
       return 'e2e'
   }
-  if (jobName.startsWith('status-react/pull requests')) {
+  if (jobName.startsWith('status-react/prs')) {
       return 'pr'
   }
   if (jobName.startsWith('status-react/nightly')) {
@@ -183,6 +183,31 @@ def changeId() {
     return null
   }
   return changeId
+}
+
+def updateEnv(type) {
+  def envFile = "${env.WORKSPACE}/.env"
+  /* select .env based on type of build */
+  def selectedEnv = '.env.jenkins'
+  switch (type) {
+    case 'nightly': selectedEnv = '.env.nightly'; break
+    case 'release': selectedEnv = '.env.prod';    break
+    case 'e2e':     selectedEnv = '.env.e2e';     break
+  }
+  sh "cp ${selectedEnv} .env"
+  /* find a list of .env settings to check for them in params */
+  def envContents = readFile(envFile)
+  def envLines = envContents.split()
+  def envVars = envLines.collect { it.split('=').first() }
+  /* for each var available in params modify the .env file */
+  envVars.each { var ->
+    if (params.get(var)) { /* var exists in params and is not empty */
+      println("Changing setting: ${var}=${params.get(var)}")
+      sh "sed -i'.bkp' 's/${var}=.*/${var}=${params.get(var)}/' ${envFile}"
+    }
+  }
+  /* show contents for debugging purposes */
+  sh "cat ${envFile}"
 }
 
 return this

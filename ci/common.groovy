@@ -53,22 +53,15 @@ def prepNixEnvironment() {
 }
 
 def prep(type = 'nightly') {
+  /* build/downloads all nix deps in advance */
   prepNixEnvironment()
-
+  /* rebase unless this is a release build */
   utils.doGitRebase()
   /* ensure that we start from a known state */
   sh 'make clean'
-  /* select type of build */
-  switch (type) {
-    case 'nightly':
-      sh 'cp .env.nightly .env'; break
-    case 'release':
-      sh 'cp .env.prod .env'; break
-    case 'e2e':
-      sh 'cp .env.e2e .env'; break
-    default:
-      sh 'cp .env.jenkins .env'; break
-  }
+  /* pick right .env and update from params */
+  utils.updateEnv(type)
+
   if (env.TARGET_PLATFORM == 'android' || env.TARGET_PLATFORM == 'ios') {
     /* Run at start to void mismatched numbers */
     utils.genBuildNumber()

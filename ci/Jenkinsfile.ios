@@ -65,7 +65,7 @@ pipeline {
     }
     stage('Bundle') {
       steps {
-        script { api = mobile.ios.bundle(btype) }
+        script { api = mobile.ios.bundle() }
       }
     }
     stage('Archive') {

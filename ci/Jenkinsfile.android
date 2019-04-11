@@ -80,7 +80,7 @@ pipeline {
     }
     stage('Bundle') {
       steps {
-        script { apk = mobile.android.bundle(btype) }
+        script { apk = mobile.android.bundle() }
       }
     }
     stage('Archive') {

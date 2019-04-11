@@ -6,12 +6,10 @@ def plutil(name, value) {
 """
 }
 
-def bundle(type) {
-  if (!type) {
-    type = utils.getBuildType()
-  }
+def bundle() {
+  def btype = utils.getBuildType()
   def target
-  switch (type) {
+  switch (btype) {
     case 'release':     target = 'release'; break;
     case 'testflight':  target = 'release'; break;
     case 'e2e':         target = 'e2e';     break;
@@ -39,14 +37,14 @@ def bundle(type) {
   }
   /* rename built file for uploads and archivization */
   def pkg = ''
-  if (type == 'release') {
+  if (btype == 'release') {
     pkg = utils.pkgFilename('release', 'ipa')
     sh "cp status_appstore/StatusIm.ipa ${pkg}"
-  } else if (type == 'e2e') {
+  } else if (btype == 'e2e') {
     pkg = utils.pkgFilename('e2e', 'app.zip')
     sh "cp status-e2e/StatusIm.app.zip ${pkg}"
-  } else if (type != 'testflight') {
-    pkg = utils.pkgFilename(type, 'ipa')
+  } else if (btype != 'testflight') {
+    pkg = utils.pkgFilename(btype, 'ipa')
     sh "cp status-adhoc/StatusIm.ipa ${pkg}"
   }
   /* necessary for Diawi upload */

@@ -28,21 +28,35 @@ def abortPreviousRunningBuilds() {
   }
 }
 
-def Build(name = null, buildType = null) {
+def Build(name = null) {
+  /**
+   * Generate parameters to pass from current params
+   * This allows utils.updateEnv() to work in sub-jobs
+   **/
+  parameters = params.keySet().collectEntries { key ->
+      [(key): [
+        name: key,
+        value: params.get(key),
+        $class: 'StringParameterValue'
+      ]]
+  }
   /* default to current build type */
-  buildType = buildType ? buildType : utils.getBuildType()
+  parameters['BUILD_TYPE'].value = utils.getBuildType()
   /* need to drop origin/ to match definitions of child jobs */
-  def branchName = utils.branchName()
+  parameters['BRANCH'].value = utils.branchName()
+  /* necessary for updating GitHub PRs */
+  parameters['CHANGE_ID'] = [
+    name: 'CHANGE_ID',
+    value: env.CHANGE_ID,
+    $class: 'StringParameterValue'
+  ]
   /* always pass the BRANCH and BUILD_TYPE params with current branch */
   def b = build(
     job: name,
     /* this allows us to analize the job even after failure */
     propagate: false,
-    parameters: [
-      [name: 'BRANCH',     value: branchName,    $class: 'StringParameterValue'],
-      [name: 'BUILD_TYPE', value: buildType,     $class: 'StringParameterValue'],
-      [name: 'CHANGE_ID',  value: env.CHANGE_ID, $class: 'StringParameterValue'],
-  ])
+    parameters: parameters.values()
+  )
   /* BlueOcean seems to not show child-build links */
   println "Build: ${b.getAbsoluteUrl()} (${b.result})"
   if (b.result != 'SUCCESS') {

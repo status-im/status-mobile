@@ -1,14 +1,15 @@
 utils = load 'ci/utils.groovy'
 
-def bundle(type = 'nightly') {
+def bundle() {
+  def btype = utils.getBuildType()
   /* Disable Gradle Daemon https://stackoverflow.com/questions/38710327/jenkins-builds-fail-using-the-gradle-daemon */
   def gradleOpt = "-PbuildUrl='${currentBuild.absoluteUrl}' -Dorg.gradle.daemon=false "
   def target = "release"
 
-  if (type in ['pr', 'e2e']) {
+  if (btype in ['pr', 'e2e']) {
     /* PR builds shouldn't replace normal releases */
     target = 'pr'
-  } else if (type == 'release') {
+  } else if (btype == 'release') {
     gradleOpt += "-PreleaseVersion='${utils.getVersion('mobile_files')}'"
   }
   dir('android') {
@@ -28,7 +29,7 @@ def bundle(type = 'nightly') {
   }
   sh 'find android/app/build/outputs/apk'
   def outApk = "android/app/build/outputs/apk/${target}/app-${target}.apk"
-  def pkg = utils.pkgFilename(type, 'apk')
+  def pkg = utils.pkgFilename(btype, 'apk')
   /* rename for upload */
   sh "cp ${outApk} ${pkg}"
   /* necessary for Fastlane */
