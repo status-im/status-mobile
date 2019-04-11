@@ -1,4 +1,4 @@
-# target-os = [ 'windows' 'linux' 'macos' 'android' 'ios' 'all' ]
+# target-os = [ 'windows' 'linux' 'macos' 'darwin' 'android' 'ios' 'all' ]
 { config ? { android_sdk.accept_license = true; },
   pkgs ? import ((import <nixpkgs> { }).fetchFromGitHub {
     owner = "status-im";

@@ -38,7 +38,7 @@ pipeline {
     stage('Build') {
       steps {
         sh """
-          nix build --no-link &&
+          nix build -v --no-link &&
           nix-shell --run echo
         """
       }

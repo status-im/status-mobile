@@ -46,6 +46,12 @@
   ([cofx chat-id]
    (group-chat? (get-chat cofx chat-id))))
 
+(defn is-active?
+  ([chat]
+   (:is-active chat))
+  ([cofx chat-id]
+   (is-active? (get-chat cofx chat-id))))
+
 (defn set-chat-ui-props
   "Updates ui-props in active chat by merging provided kvs into them"
   [{:keys [current-chat-id] :as db} kvs]
@@ -252,23 +258,24 @@
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
   [cofx chat-id {:keys [modal? navigation-reset?]}]
-  (cond
-    modal?
-    (fx/merge cofx
-              (navigation/navigate-to-cofx :chat-modal {})
-              (preload-chat-data chat-id))
+  (when ((is-active? (get-chat cofx chat-id)))
+    (cond
+      modal?
+      (fx/merge cofx
+                (navigation/navigate-to-cofx :chat-modal {})
+                (preload-chat-data chat-id))
 
-    navigation-reset?
-    (fx/merge cofx
-              (navigation/navigate-reset {:index   1
-                                          :actions [{:routeName :home}
-                                                    {:routeName :chat}]})
-              (preload-chat-data chat-id))
+      navigation-reset?
+      (fx/merge cofx
+                (navigation/navigate-reset {:index   1
+                                            :actions [{:routeName :home}
+                                                      {:routeName :chat}]})
+                (preload-chat-data chat-id))
 
-    :else
-    (fx/merge cofx
-              (navigation/navigate-to-cofx :chat {})
-              (preload-chat-data chat-id))))
+      :else
+      (fx/merge cofx
+                (navigation/navigate-to-cofx :chat {})
+                (preload-chat-data chat-id)))))
 
 (fx/defn start-chat
   "Start a chat, making sure it exists"

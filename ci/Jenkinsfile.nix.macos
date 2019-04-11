@@ -39,7 +39,7 @@ pipeline {
       steps {
         sh """
           . ~/.nix-profile/etc/profile.d/nix.sh && \
-          nix build --no-link && \
+          nix build -v --no-link && \
           nix-shell --run echo
         """
       }

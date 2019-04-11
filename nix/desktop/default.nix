@@ -10,6 +10,7 @@ let
   }.${target-os} or false;
   targetDarwin = {
     "macos" = true;
+    "darwin" = true;
     "all" = isDarwin;
   }.${target-os} or false;
   targetWindows = {

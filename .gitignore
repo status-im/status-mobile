@@ -163,3 +163,6 @@ logger_settings.ini
 conan*.txt
 conanbuildinfo.*
 conan.cmake
+
+# Env
+.env.bkp
