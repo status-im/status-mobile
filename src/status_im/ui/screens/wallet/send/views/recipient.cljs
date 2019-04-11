@@ -80,9 +80,9 @@
     (ens/get-addr (get ens/ens-registries chain)
                   value
                   #(if (ethereum/address? %)
-                     (swap! transaction assoc :to-ens value :to %)
+                     (swap! transaction assoc :to-ens value :to % :to-valid? true)
                      (reset! error-message (i18n/label :t/error-unknown-ens-name))))
-    (do (swap! transaction assoc :to value)
+    (do (swap! transaction assoc :to value :to-valid? (ethereum/address? (string/lower-case (or value ""))))
         (reset! error-message nil))))
 
 (defn choose-address-view
@@ -124,6 +124,7 @@
                                  :on-press         #(react/get-from-clipboard
                                                      (fn [addr]
                                                        (when (and addr (not (string/blank? addr)))
+                                                         (update-recipient chain transaction error-message addr)
                                                          (swap! transaction assoc :to (string/trim addr)))))}
            [react/view {:flex-direction     :row
                         :padding-horizontal 18}
@@ -156,7 +157,7 @@
                                   :font-size   15
                                   :line-height 22}}
               (i18n/label :t/scan)]]]]
-          (let [disabled? (string/blank? (:to @transaction))]
+          (let [disabled? (not (:to-valid? @transaction))]
             [common/action-button {:disabled?        disabled?
                                    :underlay-color   colors/black-transparent
                                    :background-color (if disabled? colors/blue colors/white)
