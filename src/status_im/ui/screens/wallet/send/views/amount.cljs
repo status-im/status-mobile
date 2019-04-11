@@ -289,29 +289,15 @@
                                                        :currency (:code fiat-currency)})]]])
                [react/view {:flex 1}]
 
-               [react/view {:flex-direction :row
+               [react/view {:flex-direction :row-reverse
                             :padding        3}
-                [common/action-button {:underlay-color   (colors/alpha colors/black 0.2)
-                                       :background-color colors/black-transparent
-                                       :on-press         #(swap! state-atom update :inverted not)}
-                 [react/view {:flex-direction :row}
-                  [react/text {:style {:color         colors/white
-                                       :font-size     15
-                                       :line-height   22
-                                       :padding-right 10}}
-                   (:code fiat-currency)]
-                  [vector-icons/icon :main-icons/change {:color colors/white-transparent}]
-                  [react/text {:style {:color        colors/white
-                                       :font-size    15
-                                       :line-height  22
-                                       :padding-left 11}}
-                   (wallet.utils/display-symbol coin)]]]
                 (let [disabled? (or (string/blank? input-amount)
                                     (not (empty? (:error-message @state-atom))))]
                   [common/action-button {:disabled?        disabled?
                                          :underlay-color   colors/black-transparent
                                          :background-color (if disabled? colors/blue colors/white)
                                          :token            coin
+                                         :style            {:flex 0.3}
                                          :on-press         #(re-frame/dispatch [:navigate-to :wallet-txn-overview
                                                                                 {:modal?      modal?
                                                                                  :contact     contact

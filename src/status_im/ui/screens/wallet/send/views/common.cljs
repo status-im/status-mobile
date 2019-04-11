@@ -26,17 +26,17 @@
                                    #(actions/default-handler)))]
      [toolbar/content-title {:color :white :font-size 17} title]]))
 
-(defn action-button [{:keys [disabled? on-press underlay-color background-color]} content]
+(defn action-button [{:keys [disabled? on-press underlay-color background-color style]} content]
   [react/touchable-highlight {:underlay-color underlay-color
                               :disabled       disabled?
                               :on-press       on-press
-                              :style          {:height           44
-                                               :background-color background-color
-                                               :border-radius    8
-                                               :flex             1
-                                               :align-items      :center
-                                               :justify-content  :center
-                                               :margin           3}}
+                              :style          (merge {:height           44
+                                                      :background-color background-color
+                                                      :border-radius    8
+                                                      :flex             1
+                                                      :align-items      :center
+                                                      :justify-content  :center
+                                                      :margin           3} style)}
    content])
 
 (defn info-page [message]
