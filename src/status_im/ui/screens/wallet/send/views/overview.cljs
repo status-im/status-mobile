@@ -295,18 +295,12 @@
                                :border-top-color  colors/white-light-transparent}}
            [react/view {:style {:flex-direction :row
                                 :align-items    :center}}
-            [react/touchable-highlight {:on-press            #(open-network-fees!)
-                                        :accessibility-label :network-fee-button
-                                        :style               {:background-color   colors/black-transparent
-                                                              :padding-horizontal 16
-                                                              :padding-vertical   9
-                                                              :border-radius      8}}
-             [react/view {:style {:flex-direction :row
-                                  :align-items    :center}}
-              [react/text {:style {:color         colors/white
-                                   :padding-right 10
-                                   :font-size     15}} (i18n/label :t/network-fee)]
-              [vector-icons/icon :main-icons/settings {:color colors/white}]]]
+            [react/view {:style {:flex-direction :row
+                                 :align-items    :center}}
+             [react/text {:style {:color         colors/white
+                                  :padding-right 10
+                                  :font-size     15}} (i18n/label :t/network-fee)]
+             [vector-icons/icon :main-icons/settings {:color colors/white}]]
             [react/view {:style {:flex 1}}
              [react/text {:style {:color       colors/white
                                   :line-height 21
