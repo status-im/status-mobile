@@ -6,7 +6,7 @@ def bundle() {
   def gradleOpt = "-PbuildUrl='${currentBuild.absoluteUrl}' -Dorg.gradle.daemon=false "
   def target = "release"
 
-  if (btype in ['pr', 'e2e']) {
+  if (params.BUILD_TYPE == 'pr') {
     /* PR builds shouldn't replace normal releases */
     target = 'pr'
   } else if (btype == 'release') {
