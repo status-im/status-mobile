@@ -118,6 +118,7 @@
           (assoc command-props
                  :input-params input-params
                  :current-param-position (current-param-position input-text text-selection)
+                 :cursor-in-the-end? (= (count input-text) text-selection)
                  :command-completion (command-completion input-params params)))))))
 
 (defn parse-parameters
@@ -146,8 +147,7 @@
         input-text                (cond-> (str command chat.constants/spacing-char
                                                (join-command-args new-params))
                                     (and (not last-param?)
-                                         (or (= 0 param-count)
-                                             (= param-index (dec param-count))))
+                                         (= param-index param-count))
                                     (str chat.constants/spacing-char))]
     {:db (-> db
              (chat/set-chat-ui-props {:validation-messages nil})
@@ -170,3 +170,8 @@
   [{:keys [db] :as cofx} command-message-id]
   (let [current-chat-id (:current-chat-id db)]
     {:db (assoc-in db [:chats current-chat-id :metadata :responding-to-command] command-message-id)}))
+
+(fx/defn clean-custom-params
+  [{:keys [db] :as cofx}]
+  (let [current-chat-id (:current-chat-id db)]
+    {:db (assoc-in db [:chats current-chat-id :custom-params] nil)}))

@@ -233,8 +233,8 @@
  :chats/input-placeholder
  :<- [:chats/current-chat]
  :<- [:chats/selected-chat-command]
- (fn [[{:keys [input-text]} {:keys [params current-param-position]}]]
-   (when (string/ends-with? (or input-text "") chat.constants/spacing-char)
+ (fn [[{:keys [input-text]} {:keys [params current-param-position cursor-in-the-end?]}]]
+   (when (and cursor-in-the-end? (string/ends-with? (or input-text "") chat.constants/spacing-char))
      (get-in params [current-param-position :placeholder]))))
 
 (re-frame/reg-sub

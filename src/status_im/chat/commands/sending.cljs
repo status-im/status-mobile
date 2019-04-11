@@ -39,6 +39,7 @@
           (fx/merge cofx
                     #(protocol/on-send type command-message %)
                     (commands.input/set-command-reference nil)
+                    (commands.input/clean-custom-params)
                     (chat.message/send-message command-message)))))))
 
 (fx/defn send
@@ -48,4 +49,5 @@
     (fx/merge cofx
               #(protocol/on-send type (commands/enrich-command-message-for-events db command-message) %)
               (commands.input/set-command-reference nil)
+              (commands.input/clean-custom-params)
               (chat.message/send-message command-message))))
