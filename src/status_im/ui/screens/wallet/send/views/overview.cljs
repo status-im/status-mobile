@@ -14,7 +14,9 @@
             [status-im.ui.screens.wallet.send.events :as events]
             [status-im.ui.components.list.styles :as list.styles]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.ui.screens.chat.photos :as photos]))
+            [status-im.ui.screens.chat.photos :as photos]
+            [re-frame.core :as re-frame]
+            [status-im.utils.ethereum.erc20 :as erc20]))
 
 (def signing-popup
   {:background-color        colors/white
@@ -25,47 +27,53 @@
    :right                   0
    :bottom                  0})
 
-(defn confirm-modal [signing? {:keys [transaction total-amount gas-amount native-currency fiat-currency total-fiat]}]
-  [react/view {:style signing-popup}
-   [react/text {:style {:color       colors/black
-                        :font-size   15
-                        :line-height 22
-                        :margin-top  23
-                        :text-align  :center}}
-    (i18n/label :t/total)]
-   [react/text {:style {:color       colors/black
-                        :margin-top  4
-                        :font-size   22
-                        :line-height 28
-                        :text-align  :center}}
-    (str total-amount " " (name (:symbol transaction)))]
-   (when-not (= :ETH (:symbol transaction))
+(defn confirm! [keycard? signing? transaction]
+  (if keycard?
+    (re-frame/dispatch [:wallet.ui/sign-transaction-button-clicked-new transaction])
+    (reset! signing? true)))
+
+(defview confirm-modal [signing? {:keys [transaction total-amount gas-amount native-currency fiat-currency total-fiat]}]
+  (letsubs [keycard? [:keycard-account?]]
+    [react/view {:style signing-popup}
      [react/text {:style {:color       colors/black
-                          :margin-top  5
+                          :font-size   15
+                          :line-height 22
+                          :margin-top  23
+                          :text-align  :center}}
+      (i18n/label :t/total)]
+     [react/text {:style {:color       colors/black
+                          :margin-top  4
                           :font-size   22
                           :line-height 28
                           :text-align  :center}}
-      (str gas-amount " " (name (:symbol native-currency)))])
-   [react/text {:style {:color       colors/gray
-                        :text-align  :center
-                        :margin-top  3
-                        :line-height 21
-                        :font-size   15}}
-    (str "~ " (:symbol fiat-currency "$") total-fiat)]
-   [react/view {:style {:flex-direction  :row
-                        :justify-content :center
-                        :padding-top     16
-                        :padding-bottom  24}}
-    [react/touchable-highlight
-     {:on-press #(reset! signing? true)
-      :style    {:padding-horizontal 39
-                 :padding-vertical   12
-                 :border-radius      8
-                 :background-color   colors/blue-light}}
-     [react/text {:style {:font-size   15
-                          :line-height 22
-                          :color       colors/blue}}
-      (i18n/label :t/confirm)]]]])
+      (str total-amount " " (name (:symbol transaction)))]
+     (when-not (= :ETH (:symbol transaction))
+       [react/text {:style {:color       colors/black
+                            :margin-top  5
+                            :font-size   22
+                            :line-height 28
+                            :text-align  :center}}
+        (str gas-amount " " (name (:symbol native-currency)))])
+     [react/text {:style {:color       colors/gray
+                          :text-align  :center
+                          :margin-top  3
+                          :line-height 21
+                          :font-size   15}}
+      (str "~ " (:symbol fiat-currency "$") total-fiat)]
+     [react/view {:style {:flex-direction  :row
+                          :justify-content :center
+                          :padding-top     16
+                          :padding-bottom  24}}
+      [react/touchable-highlight
+       {:on-press #(confirm! keycard? signing? transaction)
+        :style    {:padding-horizontal 39
+                   :padding-vertical   12
+                   :border-radius      8
+                   :background-color   colors/blue-light}}
+       [react/text {:style {:font-size   15
+                            :line-height 22
+                            :color       colors/blue}}
+        (i18n/label :t/confirm)]]]]))
 
 (defn- phrase-word [word]
   [react/text {:style {:color       colors/blue
@@ -316,6 +324,7 @@
                              :contact         contact
                              :total-amount    total-amount
                              :gas-amount      gas-amount
+                             :token           token
                              :native-currency native-currency
                              :fiat-currency   fiat-currency
                              :total-fiat      total-fiat

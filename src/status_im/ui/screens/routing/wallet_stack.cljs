@@ -15,6 +15,8 @@
                         :wallet-txn-overview
                         :recent-recipients
                         :wallet-transaction-sent-modal
+                        :enter-pin
+                        :hardwallet-connect
                         :recipient-qr-code
                         :wallet-send-assets]}
              {:name    :send-transaction-stack

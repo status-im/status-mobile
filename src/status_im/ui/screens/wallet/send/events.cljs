@@ -342,6 +342,25 @@
                          :chain        chain
                          :on-completed #(re-frame/dispatch [:wallet.callback/hash-transaction-completed %])}}))
 
+;;TODO(goranjovic) - cleanup after full merge
+(defn send-keycard-transaction-new
+  [{{:keys [chain] :as db} :db} transaction]
+  (let [{:keys [symbol]} transaction
+        all-tokens (:wallet/all-tokens db)
+        from (get-in db [:account/account :address])]
+    {::hash-transaction {:transaction  (models.wallet/prepare-send-transaction from transaction)
+                         :all-tokens   all-tokens
+                         :symbol       symbol
+                         :chain        chain
+                         :on-completed #(re-frame/dispatch [:wallet.callback/hash-transaction-completed %])}}))
+
+(handlers/register-handler-fx
+ :wallet.ui/sign-transaction-button-clicked-new
+ (fn [{:keys [db] :as cofx} [_ transaction]]
+   (let [keycard-account? (boolean (get-in db [:account/account :keycard-instance-uid]))]
+     (when keycard-account?
+       (send-keycard-transaction-new cofx transaction)))))
+
 (handlers/register-handler-fx
  :wallet.callback/hash-transaction-completed
  (fn [{:keys [db] :as cofx} [_ result]]
