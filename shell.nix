@@ -27,6 +27,7 @@ in _mkShell {
     wget
   ] ++ lib.optionals targetMobile [ bundler ruby ]; # bundler/ruby used for fastlane
   inputsFrom = [ projectDeps ];
+  TARGET_OS=target-os;
   shellHook =
     ''
       set -e

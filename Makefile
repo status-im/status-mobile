@@ -82,7 +82,7 @@ release-desktop: ##@build build release for desktop release
 release-windows-desktop: export TARGET_OS ?= windows
 release-windows-desktop: ##@build build release for desktop release
 	@$(MAKE) prod-build-desktop && \
-	TARGET_SYSTEM_NAME=Windows scripts/build-desktop.sh
+	scripts/build-desktop.sh
 
 release-desktop: export TARGET_OS ?= $(HOST_OS)
 prod-build:

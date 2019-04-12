@@ -22,7 +22,7 @@ pipeline {
   }
 
   environment {
-    TARGET_PLATFORM = 'ios'
+    TARGET_OS = 'ios'
     CI_ENVIRONMENT = 'jenkins'
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'

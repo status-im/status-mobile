@@ -10,8 +10,8 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 OS=$(uname -s)
-if [ -z $TARGET_SYSTEM_NAME ]; then
-  TARGET_SYSTEM_NAME=$OS
+if [ -z "$TARGET_OS" ]; then
+  TARGET_OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 fi
 WINDOWS_CROSSTOOLCHAIN_PKG_NAME='mxetoolchain-x86_64-w64-mingw32'
 
@@ -51,7 +51,7 @@ function is_linux() {
 }
 
 function is_windows_target() {
-  [[ "$TARGET_SYSTEM_NAME" =~ Windows ]]
+  [[ "$TARGET_OS" =~ windows ]]
 }
 
 function joinPath() {

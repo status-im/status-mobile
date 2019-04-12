@@ -35,7 +35,7 @@ pipeline {
    * https://issues.jenkins-ci.org/browse/JENKINS-49076
    **/
   environment {
-    TARGET_PLATFORM = 'windows'
+    TARGET_OS = 'windows'
     CI_ENVIRONMENT = 'jenkins'
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
@@ -43,7 +43,6 @@ pipeline {
     NPM_CONFIG_CACHE = '/var/tmp/npm'
     LEIN_HOME = '/var/tmp/lein'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
-    TARGET_SYSTEM_NAME = 'Windows'
     CONAN_PRINT_RUN_COMMANDS = '1'
     CONAN_SYSREQUIRES_MODE = 'disabled'
     CONAN_SYSREQUIRES_SUDO = '0'

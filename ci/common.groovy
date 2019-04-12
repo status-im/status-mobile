@@ -43,7 +43,7 @@ def notifyPR(success) {
 }
 
 def prepNixEnvironment() {
-  if (env.TARGET_PLATFORM == 'linux' || env.TARGET_PLATFORM == 'windows' || env.TARGET_PLATFORM == 'android') {
+  if (env.TARGET_OS == 'linux' || env.TARGET_OS == 'windows' || env.TARGET_OS == 'android') {
     def glibcLocales = sh(
       returnStdout: true,
       script: ". ~/.nix-profile/etc/profile.d/nix.sh && nix-build --no-out-link '<nixpkgs>' -A glibcLocales"
@@ -62,15 +62,15 @@ def prep(type = 'nightly') {
   /* pick right .env and update from params */
   utils.updateEnv(type)
 
-  if (env.TARGET_PLATFORM == 'android' || env.TARGET_PLATFORM == 'ios') {
+  if (env.TARGET_OS == 'android' || env.TARGET_OS == 'ios') {
     /* Run at start to void mismatched numbers */
     utils.genBuildNumber()
     /* install ruby dependencies */
     utils.nix_sh 'bundle install --quiet'
   }
 
-  def prepareTarget=env.TARGET_PLATFORM
-  if (env.TARGET_PLATFORM == 'macos' || env.TARGET_PLATFORM == 'linux' || env.TARGET_PLATFORM == 'windows') {
+  def prepareTarget=env.TARGET_OS
+  if (env.TARGET_OS == 'macos' || env.TARGET_OS == 'linux' || env.TARGET_OS == 'windows') {
     prepareTarget='desktop'
   }
   /* node deps, pods, and status-go download */

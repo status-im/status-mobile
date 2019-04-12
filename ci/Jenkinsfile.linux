@@ -36,7 +36,7 @@ pipeline {
    * https://issues.jenkins-ci.org/browse/JENKINS-49076
    **/
   environment {
-    TARGET_PLATFORM = 'linux'
+    TARGET_OS = 'linux'
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
     LC_ALL = 'en_US.UTF-8'
