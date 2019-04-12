@@ -1,4 +1,4 @@
-# target-os = [ 'windows' 'linux' 'macos' 'android' 'ios' ]
+# target-os = [ 'windows' 'linux' 'macos' 'darwin' 'android' 'ios' ]
 { system ? builtins.currentSystem
 , config ? {}, overlays ? []
 , pkgs ? (import <nixpkgs> { inherit system config overlays; })
@@ -7,15 +7,18 @@
 with pkgs;
   let
     sanitized-target-os = 
-      if (builtins.any (os: target-os == os) [ "linux" "android" "windows" "macos" "ios" "all" ])
+      if (builtins.any (os: target-os == os) [ "linux" "android" "windows" "macos" "darwin" "ios" "all" ])
       then target-os
       else throw "Unknown value for target-os: '${target-os}'";
+    # based on the value passed in through target-os, check if we're targetting a desktop platform
     targetDesktop = {
       "linux" = true;
       "windows" = true;
       "macos" = true;
+      "darwin" = true;
       "all" = true;
     }.${sanitized-target-os} or false;
+    # based on the value passed in through target-os, check if we're targetting a mobile platform
     targetMobile = {
       "android" = true;
       "ios" = true;
