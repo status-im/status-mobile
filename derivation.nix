@@ -26,7 +26,7 @@ with pkgs;
     # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
     _stdenv = stdenvNoCC;
     statusDesktop = callPackage ./nix/desktop { inherit target-os; stdenv = _stdenv; };
-    statusMobile = callPackage ./nix/mobile { inherit target-os config status-go; stdenv = _stdenv; };
+    statusMobile = callPackage ./nix/mobile { inherit target-os config; status-go = status-go.package; stdenv = _stdenv; };
     status-go = callPackage ./nix/status-go { inherit (xcodeenv) composeXcodeWrapper; inherit (statusMobile) xcodewrapperArgs; androidPkgs = statusMobile.androidComposition; };
     nodejs' = pkgs.nodejs-10_x;
     yarn' = yarn.override { nodejs = nodejs'; };
@@ -50,7 +50,7 @@ with pkgs;
       maven
       watchman
 
-      status-go
+      status-go.package
     ] ++ nodePkgBuildInputs
       ++ lib.optional isDarwin cocoapods
       ++ lib.optional (!isDarwin) gcc7
@@ -58,11 +58,6 @@ with pkgs;
       ++ lib.optionals targetMobile statusMobile.buildInputs;
     shellHook =
       status-go.shellHook +
-      ''
-        export STATUS_GO_INCLUDEDIR=${status-go}/include
-        export STATUS_GO_LIBDIR=${status-go}/lib
-        export STATUS_GO_BINDIR=${status-go.bin}/bin
-      '' +
       lib.optionalString targetDesktop statusDesktop.shellHook +
       lib.optionalString targetMobile statusMobile.shellHook;
     hardeningDisable = status-go.hardeningDisable;
