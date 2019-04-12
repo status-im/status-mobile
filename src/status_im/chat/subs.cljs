@@ -167,15 +167,35 @@
    (or referenced-messages {})))
 
 (re-frame/reg-sub
+ :chats/current-chat-topic
+ (fn [db]
+   (chat.db/topic-by-current-chat db)))
+
+(re-frame/reg-sub
+ :chats/messages-gap
+ :<- [:get-in [:mailserver/topics]]
+ :<- [:chats/current-chat-topic]
+ (fn [[mailserver-topics topic]]
+   (chat.db/messages-gap mailserver-topics topic)))
+
+(re-frame/reg-sub
  :chats/current-chat-messages-stream
  :<- [:chats/current-chat-messages]
  :<- [:chats/current-chat-message-groups]
  :<- [:chats/current-chat-message-statuses]
  :<- [:chats/current-chat-referenced-messages]
- (fn [[messages message-groups message-statuses referenced-messages]]
+ :<- [:chats/messages-gap]
+ (fn [[messages message-groups message-statuses referenced-messages messages-gap]]
    (-> (chat.db/sort-message-groups message-groups messages)
-       (chat.db/messages-with-datemarks-and-statuses messages message-statuses referenced-messages)
+       (chat.db/messages-with-datemarks-and-statuses messages message-statuses referenced-messages messages-gap)
        chat.db/messages-stream)))
+
+(re-frame/reg-sub
+ :chats/fetching-gap-in-progress?
+ (fn [db]
+   (let [chat-id (:current-chat-id db)
+         gaps (:mailserver/fetching-gaps-in-progress db)]
+     (contains? gaps chat-id))))
 
 (re-frame/reg-sub
  :chats/current-chat-intro-status

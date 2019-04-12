@@ -627,3 +627,187 @@
         (is (not (-> (mailserver/connect-to-mailserver {:db mailserver-with-sym-key-db})
                      :shh/generate-sym-key-from-password
                      first)))))))
+
+(deftest calculate-gap
+  (testing "new topic"
+    (is (= {:gap-from     10
+            :gap-to       10
+            :last-request 10}
+
+           (mailserver/calculate-gap
+            {:gap-from     nil
+             :gap-to       nil
+             :last-request nil}
+            {:request-from 5
+             :request-to   10}))))
+  (testing "calculate-gap#1"
+    (is (= {:gap-from     3
+            :gap-to       4
+            :last-request 5}
+
+           (mailserver/calculate-gap
+            {:gap-from     1
+             :gap-to       2
+             :last-request 3}
+            {:request-from 4
+             :request-to   5}))))
+  (testing "calculate-gap#2"
+    (is (= {:gap-from     1
+            :gap-to       2
+            :last-request 5}
+           (mailserver/calculate-gap
+            {:gap-from     1
+             :gap-to       2
+             :last-request 4}
+            {:request-from 3
+             :request-to   5}))))
+  (testing "calculate-gap#2-1"
+    (is (= {:gap-from     1
+            :gap-to       2
+            :last-request 4}
+           (mailserver/calculate-gap
+            {:gap-from     1
+             :gap-to       2
+             :last-request 3}
+            {:request-from 3
+             :request-to   4}))))
+  (testing "calculate-gap#3"
+    (is (= {:gap-from     1
+            :gap-to       2
+            :last-request 5}
+           (mailserver/calculate-gap
+            {:gap-from     1
+             :gap-to       2
+             :last-request 5}
+            {:request-from 3
+             :request-to   4}))))
+  (testing "calculate-gap#3-1"
+    (is (= {:gap-from     1
+            :gap-to       2
+            :last-request 3}
+           (mailserver/calculate-gap
+            {:gap-from     1
+             :gap-to       2
+             :last-request 3}
+            {:request-from 2
+             :request-to   3}))))
+  (testing "calculate-gap#4"
+    (is (= {:gap-from     1
+            :gap-to       2
+            :last-request 5}
+           (mailserver/calculate-gap
+            {:gap-from     1
+             :gap-to       2
+             :last-request 5}
+            {:request-from 3
+             :request-to   4}))))
+  (testing "calculate-gap#5"
+    (is (= {:gap-from     1
+            :gap-to       4
+            :last-request 5}
+           (mailserver/calculate-gap
+            {:gap-from     1
+             :gap-to       4
+             :last-request 5}
+            {:request-from 2
+             :request-to   3}))))
+  (testing "calculate-gap#6"
+    (is (= {:gap-from     2
+            :gap-to       3
+            :last-request 4}
+           (mailserver/calculate-gap
+            {:gap-from     2
+             :gap-to       3
+             :last-request 4}
+            {:request-from 1
+             :request-to   2}))))
+  (testing "calculate-gap#6-1"
+    (is (= {:gap-from     1
+            :gap-to       4
+            :last-request 5}
+           (mailserver/calculate-gap
+            {:gap-from     1
+             :gap-to       4
+             :last-request 5}
+            {:request-from 2
+             :request-to   3}))))
+  (testing "calculate-gap#0"
+    (is (= {:gap-from     2
+            :gap-to       3
+            :last-request 3}
+           (mailserver/calculate-gap
+            {:gap-from     3
+             :gap-to       3
+             :last-request 3}
+            {:request-from 1
+             :request-to   2}))))
+  (testing "calculate-gap#7"
+    (is (= {:gap-from     3
+            :gap-to       4
+            :last-request 5}
+           (mailserver/calculate-gap
+            {:gap-from     3
+             :gap-to       4
+             :last-request 5}
+            {:request-from 1
+             :request-to   2}))))
+  (testing "calculate-gap#8"
+    (is (= {:gap-from     5
+            :gap-to       5
+            :last-request 5}
+           (mailserver/calculate-gap
+            {:gap-from     2
+             :gap-to       3
+             :last-request 5}
+            {:request-from 1
+             :request-to   4}))))
+  (testing "calculate-gap#8-1"
+    (is (= {:gap-from     3
+            :gap-to       3
+            :last-request 3}
+           (mailserver/calculate-gap
+            {:gap-from     1
+             :gap-to       2
+             :last-request 3}
+            {:request-from 1
+             :request-to   2}))))
+  (testing "calculate-gap#9"
+    (is (= {:gap-from     5
+            :gap-to       5
+            :last-request 5}
+           (mailserver/calculate-gap
+            {:gap-from     2
+             :gap-to       3
+             :last-request 4}
+            {:request-from 1
+             :request-to   5}))))
+  (testing "calculate-gap#9-1"
+    (is (= {:gap-from     3
+            :gap-to       3
+            :last-request 3}
+           (mailserver/calculate-gap
+            {:gap-from     1
+             :gap-to       2
+             :last-request 3}
+            {:request-from 1
+             :request-to   3}))))
+  (testing "calculate-gap#10"
+    (is (= {:gap-from     1
+            :gap-to       2
+            :last-request 5}
+           (mailserver/calculate-gap
+            {:gap-from     1
+             :gap-to       3
+             :last-request 4}
+            {:request-from 2
+             :request-to   5}))))
+  (testing "calculate-gap#10-1"
+    (is (= {:gap-from     1
+            :gap-to       2
+            :last-request 3}
+           (mailserver/calculate-gap
+            {:gap-from     1
+             :gap-to       2
+             :last-request 3}
+            {:request-from 2
+             :request-to   3})))))

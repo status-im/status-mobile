@@ -44,6 +44,13 @@
         (not (or connecting? connection-error? request-error?)))))
 
 (re-frame/reg-sub
+ :mailserver/connected?
+ (fn [db]
+   (let [connected? (= :connected (:mailserver/state db))
+         online?    (= :online (:network-status db))]
+     (and connected? online?))))
+
+(re-frame/reg-sub
  :mailserver/current-id
  (fn [db]
    (:mailserver/current-id db)))

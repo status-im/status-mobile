@@ -273,7 +273,7 @@
         (get all-chats chat-id)
         {:keys [content content-type clock-value]}
         (->> (chat.db/sort-message-groups message-groups messages)
-             first
+             last
              second
              last
              :message-id

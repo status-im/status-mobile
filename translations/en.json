@@ -997,5 +997,6 @@
     "chaos-unicorn-day-details": "\uD83E\uDD84\uD83E\uDD84\uD83E\uDD84\uD83E\uDD84\uD83E\uDD84\uD83E\uDD84\uD83E\uDD84\uD83D\uDE80!",
     "invalid-format": "Invalid format\nMust be {{format}}",
     "mailserver-format": "enode://{enode-id}:{password}@{ip-address}:{port}",
-    "bootnode-format": "enode://{enode-id}@{ip-address}:{port}"
+    "bootnode-format": "enode://{enode-id}@{ip-address}:{port}",
+    "fetch-messages": "↓ Fetch messages"
 }

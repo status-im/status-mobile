@@ -2,13 +2,11 @@
  status-im.mailserver.core
   (:require [re-frame.core :as re-frame]
             [status-im.accounts.db :as accounts.db]
-            [status-im.data-store.core :as data-store]
             [status-im.fleet.core :as fleet]
             [status-im.native-module.core :as status]
             [status-im.utils.platform :as platform]
             [status-im.transport.utils :as transport.utils]
             [status-im.utils.fx :as fx]
-            [status-im.constants :as constants]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]
             [status-im.transport.db :as transport.db]
@@ -37,6 +35,7 @@
 
 (def one-day (* 24 3600))
 (def seven-days (* 7 one-day))
+(def max-request-range one-day)
 (def maximum-number-of-attempts 2)
 (def request-timeout 30)
 (def min-limit 100)
@@ -298,7 +297,7 @@
                  (assoc-in [:mailserver/current-request :request-id] request-id))}
         {:db (assoc-in db [:mailserver/current-request :request-id] request-id)}))))
 
-(defn request-messages! [web3 {:keys [sym-key-id address]} {:keys [topics cursor to from] :as request}]
+(defn request-messages! [web3 {:keys [sym-key-id address]} {:keys [topics cursor to from force-to?] :as request}]
   ;; Add some room to from, unless we break day boundaries so that messages that have
   ;; been received after the last request are also fetched
   (let [actual-from   (adjust-request-for-transit-time from)
@@ -307,16 +306,20 @@
     (log/info "mailserver: request-messages for: "
               " topics " topics
               " from " actual-from
+              " force-to? " force-to?
+              " to " to
               " cursor " cursor
               " limit " actual-limit)
     (.requestMessages (transport.utils/shh web3)
-                      (clj->js {:topics         topics
-                                :mailServerPeer address
-                                :symKeyID       sym-key-id
-                                :timeout        request-timeout
-                                :limit          actual-limit
-                                :cursor         cursor
-                                :from           actual-from})
+                      (clj->js (cond-> {:topics         topics
+                                        :mailServerPeer address
+                                        :symKeyID       sym-key-id
+                                        :timeout        request-timeout
+                                        :limit          actual-limit
+                                        :cursor         cursor
+                                        :from           actual-from}
+                                 force-to?
+                                 (assoc :to to)))
                       (fn [error request-id]
                         (if-not error
                           (do
@@ -341,25 +344,43 @@
                sym-key-id)
       mailserver)))
 
-(defn ->request
-  [now-in-s [last-request topics]]
-  (when (< last-request now-in-s)
-    {:topics topics
-     ;; To is currently not sent to the mailserver, but we use to calculate
-     ;; when the last-request was sent.
-     :to     now-in-s
-     :from   (max last-request
-                  (- now-in-s one-day))}))
+(defn topic->request
+  [default-request-to requests-from requests-to]
+  (fn [[topic {:keys [last-request]}]]
+    (let [force-request-from (get requests-from topic)
+          force-request-to (get requests-to topic)]
+      (when (or force-request-from
+                (> default-request-to last-request))
+        (let [from (or force-request-from
+                       (max last-request
+                            (- default-request-to max-request-range)))
+              to   (or force-request-to default-request-to)]
+          {:topic     topic
+           :from      from
+           :to        to
+           :force-to? (not (nil? force-request-to))})))))
+
+(defn aggregate-requests
+  [acc {:keys [topic from to force-to?]}]
+  (update acc [from to force-to?]
+          (fn [{:keys [topics]}]
+            {:topics    ((fnil conj #{}) topics topic)
+             :from      from
+             :to        to
+             ;; To is sent to the mailserver only when force-to? is true,
+             ;; also we use to calculate when the last-request was sent.
+             :force-to? force-to?})))
 
 (defn prepare-messages-requests
-  [{:keys [db now] :as cofx} request-to]
-  (let [web3     (:web3 db)]
-    (->>
-     (:mailserver/topics db)
-     (reduce (fn [acc [topic {:keys [last-request]}]]
-               (update acc last-request conj topic))
-             {})
-     (keep (partial ->request request-to)))))
+  [{{:keys [:mailserver/requests-from
+            :mailserver/requests-to
+            :mailserver/topics]} :db}
+   default-request-to]
+  (transduce
+   (keep (topic->request default-request-to requests-from requests-to))
+   (completing aggregate-requests vals)
+   {}
+   topics))
 
 (fx/defn process-next-messages-request
   [{:keys [db now] :as cofx}]
@@ -372,6 +393,7 @@
                            (quot now 1000))
             requests   (prepare-messages-requests cofx request-to)
             web3       (:web3 db)]
+        (log/debug "Mailserver: planned requests " requests)
         (if-let [request (first requests)]
           {:db                          (assoc db
                                                :mailserver/pending-requests (count requests)
@@ -382,7 +404,9 @@
                                          :request    request}}
           {:db (dissoc db
                        :mailserver/pending-requests
-                       :mailserver/request-to)})))))
+                       :mailserver/request-to
+                       :mailserver/requests-from
+                       :mailserver/requests-to)})))))
 
 (fx/defn add-mailserver-trusted
   "the current mailserver has been trusted
@@ -485,14 +509,100 @@
                         {:topic topic
                          :mailserver-topic mailserver-topic})]})))
 
-(defn get-updated-mailserver-topics [db topics last-request]
-  (reduce (fn [acc topic]
-            (if-let [mailserver-topic (some-> (get-in db [:mailserver/topics topic])
-                                              (assoc :last-request last-request))]
-              (assoc acc topic mailserver-topic)
-              acc))
-          {}
-          topics))
+(defn calculate-gap
+  [{:keys [gap-from
+           gap-to
+           last-request] :as config}
+   {:keys [request-from
+           request-to]}]
+  (merge config
+         (cond
+           (nil? gap-from)
+           {:gap-from     request-to
+            :gap-to       request-to
+            :last-request request-to}
+
+           ;;------GF     GT--------LRT     F---T
+           (> request-from last-request)
+           {:gap-from     last-request
+            :gap-to       request-from
+            :last-request request-to}
+
+           ;;------GF     GT--------LRT
+           ;;                  F----------T
+           (and (>= last-request request-from gap-to)
+                (> request-to last-request))
+           {:last-request request-to}
+
+           ;;------GF     GT--------LRT
+           ;;                F----T
+           (and (>= last-request request-from gap-to)
+                (>= last-request request-to gap-to))
+           config
+
+           ;;------GF     GT--------LRT
+           ;;          F-------T
+           (and (> gap-to request-from gap-from)
+                (>= last-request request-to gap-to))
+           {:gap-to request-from}
+
+           ;;------GF     GT--------LRT
+           ;;         F-T
+           (and (> gap-to request-from gap-from)
+                (> gap-to request-to gap-from))
+           config
+
+           ;;------GF     GT--------LRT
+           ;;   F------T
+           (and (>= gap-from request-from)
+                (> gap-to request-to gap-from))
+           {:gap-from request-to}
+
+           ;;---------GF=GT=LRT
+           ;; F---T
+           (and (>= gap-from request-from)
+                (>= gap-from request-to)
+                (= gap-from last-request))
+           {:gap-from request-to}
+
+           ;;------GF     GT--------LRT
+           ;; F---T
+           (and (>= gap-from request-from)
+                (>= gap-from request-to))
+           config
+
+           ;;------GF     GT--------LRT
+           ;;   F-------------T
+           (and (>= gap-from request-from)
+                (>= last-request request-to gap-to))
+           {:gap-from     last-request
+            :gap-to       last-request
+            :last-request last-request}
+
+           ;;------GF     GT--------LRT
+           ;;   F------------------------T
+           (and (>= gap-from request-from)
+                (>= request-to last-request))
+           {:gap-from     request-to
+            :gap-to       request-to
+            :last-request request-to}
+
+           ;;------GF     GT--------LRT
+           ;;          F-----------------T
+           (and (> gap-to request-from gap-from)
+                (>= request-to last-request))
+           {:gap-to       request-from
+            :last-request request-to})))
+
+(defn get-updated-mailserver-topics [db requested-topics from to]
+  (into
+   {}
+   (keep (fn [topic]
+           (when-let [config (get-in db [:mailserver/topics topic])]
+             [topic (calculate-gap config
+                                   {:request-from from
+                                    :request-to   to})])))
+   requested-topics))
 
 (fx/defn update-mailserver-topics
   "TODO: add support for cursors
@@ -500,7 +610,7 @@
   [{:keys [db now] :as cofx} {:keys [request-id cursor]}]
   (when-let [request (get db :mailserver/current-request)]
     (let [{:keys [from to topics]} request
-          mailserver-topics (get-updated-mailserver-topics db topics to)]
+          mailserver-topics (get-updated-mailserver-topics db topics from to)]
       (log/info "mailserver: message request " request-id
                 "completed for mailserver topics" topics "from" from "to" to)
       (if (empty? mailserver-topics)
@@ -516,16 +626,31 @@
                :mailserver/request-messages {:web3 (:web3 db)
                                              :mailserver    mailserver
                                              :request request-with-cursor}}))
-          (fx/merge cofx
-                    {:db (-> db
-                             (dissoc :mailserver/current-request)
-                             (update :mailserver/topics merge mailserver-topics))
-                     :data-store/tx (mapv (fn [[topic mailserver-topic]]
-                                            (data-store.mailservers/save-mailserver-topic-tx
-                                             {:topic topic
-                                              :mailserver-topic mailserver-topic}))
-                                          mailserver-topics)}
-                    (process-next-messages-request)))))))
+          (let [{:keys [chat-id] :as current-request} (db :mailserver/current-request)
+                gaps                    (db :mailserver/fetching-gaps-in-progress)
+                fetching-gap-completed? (= (get gaps chat-id)
+                                           (select-keys
+                                            current-request
+                                            [:from :to :force-to? :topics :chat-id]))]
+            (fx/merge cofx
+                      {:db            (-> db
+                                          (dissoc :mailserver/current-request)
+                                          (update :mailserver/requests-from
+                                                  #(apply dissoc % topics))
+                                          (update :mailserver/requests-to
+                                                  #(apply dissoc % topics))
+                                          (update :mailserver/topics merge mailserver-topics)
+                                          (update :mailserver/fetching-gaps-in-progress
+                                                  (fn [gaps]
+                                                    (if fetching-gap-completed?
+                                                      (dissoc gaps chat-id)
+                                                      gaps))))
+                       :data-store/tx (mapv (fn [[topic mailserver-topic]]
+                                              (data-store.mailservers/save-mailserver-topic-tx
+                                               {:topic            topic
+                                                :mailserver-topic mailserver-topic}))
+                                            mailserver-topics)}
+                      (process-next-messages-request))))))))
 
 (fx/defn retry-next-messages-request
   [{:keys [db] :as cofx}]
@@ -543,8 +668,8 @@
                    :mailserver/pending-requests))})
 
 (fx/defn handle-request-completed
-  [{{:keys [chats] :as db} :db :as cofx}
-   {:keys [requestID lastEnvelopeHash cursor errorMessage] :as event}]
+  [{{:keys [chats]} :db :as cofx}
+   {:keys [requestID lastEnvelopeHash cursor errorMessage]}]
   (when (accounts.db/logged-in? cofx)
     (if (empty? errorMessage)
       (let [never-synced-chats-in-request
@@ -596,12 +721,13 @@
       add the chat-id to the topic and reset last-request
       there was no filter for the chat and messages for that
       so the whole history for that topic needs to be re-fetched"
-  [{:keys [db] :as cofx} {:keys [topic chat-id]}]
+  [{:keys [db now] :as cofx} {:keys [topic chat-id]}]
   (let [{:keys [chat-ids last-request] :as current-mailserver-topic}
         (get-in db [:mailserver/topics topic] {:chat-ids #{}})]
     (when-let [mailserver-topic (when-not (chat-ids chat-id)
                                   (-> current-mailserver-topic
-                                      (assoc :last-request 1)
+                                      (assoc :last-request (- (quot now 1000)
+                                                              (* 24 60 60)))
                                       (update :chat-ids conj chat-id)))]
       (fx/merge cofx
                 {:db (assoc-in db [:mailserver/topics topic] mailserver-topic)
@@ -610,21 +736,42 @@
                                    :mailserver-topic mailserver-topic})]}))))
 
 (fx/defn fetch-history
-  [{:keys [db] :as cofx} chat-id from-timestamp]
-  (log/debug "fetch-history" "chat-id:" chat-id "from-timestamp:" from-timestamp)
+  [{:keys [db] :as cofx} chat-id {:keys [from to]}]
+
+  (log/debug "fetch-history" "chat-id:" chat-id "from-timestamp:" from)
   (let [public-key (accounts.db/current-public-key cofx)
         topic  (or (get-in db [:transport/chats chat-id :topic])
-                   (transport.topic/public-key->discovery-topic-hash public-key))
-        {:keys [chat-ids last-request] :as current-mailserver-topic}
-        (get-in db [:mailserver/topics topic] {:chat-ids #{}})]
-    (let [mailserver-topic (-> current-mailserver-topic
-                               (assoc :last-request (min from-timestamp last-request)))]
-      (fx/merge cofx
-                {:db (assoc-in db [:mailserver/topics topic] mailserver-topic)
-                 :data-store/tx [(data-store.mailservers/save-mailserver-topic-tx
-                                  {:topic topic
-                                   :mailserver-topic mailserver-topic})]}
-                (process-next-messages-request)))))
+                   (transport.topic/public-key->discovery-topic-hash public-key))]
+    (fx/merge cofx
+              {:db (cond-> (assoc-in db [:mailserver/requests-from topic] from)
+
+                     to
+                     (assoc-in [:mailserver/requests-to topic] to))}
+              (process-next-messages-request))))
+
+(fx/defn fill-the-gap
+  [{:keys [db] :as cofx} {:keys [exists? from to topic chat-id]}]
+  (let [mailserver (get-mailserver-when-ready cofx)
+        request    {:from      from
+                    :to        to
+                    :force-to? true
+                    :topics    [topic]
+                    :chat-id   chat-id}]
+    (when exists?
+      {:db
+       (-> db
+           (assoc
+            :mailserver/pending-requests 1
+            :mailserver/current-request request
+            :mailserver/request-to to)
+
+           (update :mailserver/fetching-gaps-in-progress
+                   assoc chat-id request))
+
+       :mailserver/request-messages
+       {:web3       (:web3 db)
+        :mailserver mailserver
+        :request    request}})))
 
 (fx/defn resend-request
   [{:keys [db] :as cofx} {:keys [request-id]}]
