@@ -22,10 +22,12 @@ if ! command -v "nix" >/dev/null 2>&1; then
 fi
 
 if command -v "nix" >/dev/null 2>&1; then
-  echo -e "${GREEN}Configuring Nix shell for target '${TARGET_OS:=all}'...${NC}";
+  echo -e "${GREEN}Configuring Nix shell for target '${TARGET_OS:=all}'...${NC}"
   if [[ $@ == "ENTER_NIX_SHELL" ]]; then
     exec nix-shell --show-trace --argstr target-os ${TARGET_OS}
   else
-    exec nix-shell --show-trace --argstr target-os ${TARGET_OS} --run "$@"
+    is_pure=''
+    [ "${TARGET_OS}" == 'linux' ] && is_pure='--pure'
+    exec nix-shell ${is_pure} --show-trace --argstr target-os ${TARGET_OS} --run "$@"
   fi
 fi

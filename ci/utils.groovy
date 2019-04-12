@@ -16,12 +16,15 @@ def getToolVersion(name) {
 }
 
 def nix_sh(cmd) {
+  def isPure = env.TARGET_PLATFORM == 'linux'
+  def pureFlag = isPure ? '--pure' : ''
+
   sh """
     set +x
     . ~/.nix-profile/etc/profile.d/nix.sh
     set -x
     nix-shell --argstr target-os \'${env.TARGET_PLATFORM}\' \\
-              --run \'${cmd}\' \\
+              ${pureFlag} --run \'${cmd}\' \\
               \'${env.WORKSPACE}/shell.nix\'
   """
 }

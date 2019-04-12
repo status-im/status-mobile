@@ -39,7 +39,7 @@ pipeline {
       steps {
         sh """
           nix build -v --no-link &&
-          nix-shell --run echo
+          nix-shell --pure --run echo
         """
       }
     }
