@@ -54,7 +54,8 @@
    [react/view {:align-items :center} (ok-circle)]
    [react/view {:flex 1}]   ;; spacer
    (transaction-sent-message)
-   (bottom-action-button on-next)])
+   (bottom-action-button on-next)
+   [react/view {:style {:height 40}}]])
 
 (defview transaction-sent []
   (letsubs [chat-id [:chats/current-chat-id]]

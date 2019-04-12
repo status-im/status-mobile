@@ -311,4 +311,5 @@
                                                        colors/blue)
                                         :font-size   15
                                         :line-height 22}}
-                    (i18n/label :t/next)]])]]]))]))))
+                    (i18n/label :t/next)]])]
+               [react/view {:style {:height 40}}]]]))]))))
