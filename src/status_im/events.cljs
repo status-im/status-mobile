@@ -724,7 +724,7 @@
  :chat.ui/fetch-history-pressed
  (fn [{:keys [now] :as cofx} [_ chat-id]]
    (mailserver/fetch-history cofx chat-id
-                             {:from (- (quot now 1000) (* 24 3600))})))
+                             {:from (- (quot now 1000) mailserver/one-day)})))
 
 (handlers/register-handler-fx
  :chat.ui/fill-the-gap
