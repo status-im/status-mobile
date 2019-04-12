@@ -28,28 +28,29 @@ def abortPreviousRunningBuilds() {
   }
 }
 
+def strParam(key, value) {
+  /* just a helper for making string params */
+  return [
+    name: key,
+    value: value,
+    $class: 'StringParameterValue',
+  ]
+}
+
 def Build(name = null) {
   /**
    * Generate parameters to pass from current params
    * This allows utils.updateEnv() to work in sub-jobs
    **/
   parameters = params.keySet().collectEntries { key ->
-      [(key): [
-        name: key,
-        value: params.get(key),
-        $class: 'StringParameterValue'
-      ]]
+      [(key): strParam(key, params.get(key))]
   }
   /* default to current build type */
-  parameters['BUILD_TYPE'].value = utils.getBuildType()
+  parameters['BUILD_TYPE'] = strParam('BUILD_TYPE', utils.getBuildType())
   /* need to drop origin/ to match definitions of child jobs */
-  parameters['BRANCH'].value = utils.branchName()
+  parameters['BRANCH'] = strParam('BRANCH', utils.branchName())
   /* necessary for updating GitHub PRs */
-  parameters['CHANGE_ID'] = [
-    name: 'CHANGE_ID',
-    value: env.CHANGE_ID,
-    $class: 'StringParameterValue'
-  ]
+  parameters['CHANGE_ID'] = strParam('CHANGE_ID', env.CHANGE_ID)
   /* always pass the BRANCH and BUILD_TYPE params with current branch */
   def b = build(
     job: name,
