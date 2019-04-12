@@ -64,7 +64,7 @@
                            (let [{:keys [chain-id]} parsed-qr-data
                                  tx-data            (events/qr-data->transaction-data parsed-qr-data contacts)]
                              (if (= chain-id (ethereum/chain-keyword->chain-id chain))
-                               (swap! transaction merge tx-data)
+                               (swap! transaction merge tx-data {:to-valid? (ethereum/address? (:to tx-data))})
                                (utils/show-popup (i18n/label :t/error)
                                                  (i18n/label :t/wallet-invalid-chain-id {:data  qr-data
                                                                                          :chain chain-id}))))
