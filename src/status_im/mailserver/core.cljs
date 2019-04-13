@@ -227,6 +227,13 @@
               (when-not (or sym-key-id generating-sym-key?)
                 (generate-mailserver-symkey mailserver)))))
 
+(defn executing-gap-request?
+  [{:mailserver/keys [current-request fetching-gaps-in-progress]}]
+  (= (get fetching-gaps-in-progress (:chat-id current-request))
+     (select-keys
+      current-request
+      [:from :to :force-to? :topics :chat-id])))
+
 (fx/defn connect-to-mailserver
   "Add mailserver as a peer using `::add-peer` cofx and generate sym-key when
    it doesn't exists
@@ -235,12 +242,14 @@
    A connection-check is made after `connection timeout` is reached and
    mailserver-state is changed to error if it is not connected by then"
   [{:keys [db] :as cofx}]
-  (let [{:keys [address] :as mailserver} (fetch-current cofx)
+  (let [{:keys [address]} (fetch-current cofx)
         {:keys [peers-summary]} db
-        added? (registered-peer? peers-summary
-                                 address)]
+        added?       (registered-peer? peers-summary address)
+        gap-request? (executing-gap-request? db)]
     (fx/merge cofx
-              {:db (dissoc db :mailserver/current-request)}
+              {:db (cond-> (dissoc db :mailserver/current-request)
+                     gap-request?
+                     (assoc :mailserver/fetching-gaps-in-progress {}))}
               (if added?
                 (mark-trusted-peer)
                 (add-peer)))))
@@ -627,31 +636,25 @@
                :mailserver/request-messages {:web3 (:web3 db)
                                              :mailserver    mailserver
                                              :request request-with-cursor}}))
-          (let [{:keys [chat-id] :as current-request} (db :mailserver/current-request)
-                gaps                    (db :mailserver/fetching-gaps-in-progress)
-                fetching-gap-completed? (= (get gaps chat-id)
-                                           (select-keys
-                                            current-request
-                                            [:from :to :force-to? :topics :chat-id]))]
-            (fx/merge cofx
-                      {:db            (-> db
-                                          (dissoc :mailserver/current-request)
-                                          (update :mailserver/requests-from
-                                                  #(apply dissoc % topics))
-                                          (update :mailserver/requests-to
-                                                  #(apply dissoc % topics))
-                                          (update :mailserver/topics merge mailserver-topics)
-                                          (update :mailserver/fetching-gaps-in-progress
-                                                  (fn [gaps]
-                                                    (if fetching-gap-completed?
-                                                      (dissoc gaps chat-id)
-                                                      gaps))))
-                       :data-store/tx (mapv (fn [[topic mailserver-topic]]
-                                              (data-store.mailservers/save-mailserver-topic-tx
-                                               {:topic            topic
-                                                :mailserver-topic mailserver-topic}))
-                                            mailserver-topics)}
-                      (process-next-messages-request))))))))
+          (fx/merge cofx
+                    {:db            (-> db
+                                        (dissoc :mailserver/current-request)
+                                        (update :mailserver/requests-from
+                                                #(apply dissoc % topics))
+                                        (update :mailserver/requests-to
+                                                #(apply dissoc % topics))
+                                        (update :mailserver/topics merge mailserver-topics)
+                                        (update :mailserver/fetching-gaps-in-progress
+                                                (fn [gaps]
+                                                  (if (executing-gap-request? db)
+                                                    (dissoc gaps (:chat-id request))
+                                                    gaps))))
+                     :data-store/tx (mapv (fn [[topic mailserver-topic]]
+                                            (data-store.mailservers/save-mailserver-topic-tx
+                                             {:topic            topic
+                                              :mailserver-topic mailserver-topic}))
+                                          mailserver-topics)}
+                    (process-next-messages-request)))))))
 
 (fx/defn retry-next-messages-request
   [{:keys [db] :as cofx}]
@@ -786,7 +789,8 @@
 
 (fx/defn resend-request
   [{:keys [db] :as cofx} {:keys [request-id]}]
-  (let [current-request (:mailserver/current-request db)]
+  (let [current-request (:mailserver/current-request db)
+        gap-request? (executing-gap-request? db)]
     ;; no inflight request, do nothing
     (when (and current-request
                ;; the request was never successful
@@ -803,16 +807,27 @@
         (fx/merge cofx
                   {:db (update db :mailserver/current-request dissoc :attempts)}
                   (change-mailserver))
-        (if-let [mailserver (get-mailserver-when-ready cofx)]
-          (let [{:keys [topics from to cursor limit] :as request} current-request
-                web3 (:web3 db)]
-            (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to "cursor" cursor "limit" (decrease-limit))
-            {:db (update-in db [:mailserver/current-request :attempts] inc)
-             :mailserver/decrease-limit []
-             :mailserver/request-messages {:web3 web3
-                                           :mailserver mailserver
-                                           :request (assoc request :limit (decrease-limit))}})
-          {:mailserver/decrease-limit []})))))
+        (let [mailserver (get-mailserver-when-ready cofx)
+              offline? (= :offline (:network-status db))]
+          (cond
+            (and gap-request? offline?)
+            {:db (-> db
+                     (dissoc :mailserver/current-request)
+                     (update :mailserver/fetching-gaps-in-progress
+                             dissoc (:chat-id current-request)))}
+
+            mailserver
+            (let [{:keys [topics from to cursor limit] :as request} current-request
+                  web3 (:web3 db)]
+              (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to "cursor" cursor "limit" (decrease-limit))
+              {:db                          (update-in db [:mailserver/current-request :attempts] inc)
+               :mailserver/decrease-limit   []
+               :mailserver/request-messages {:web3       web3
+                                             :mailserver mailserver
+                                             :request    (assoc request :limit (decrease-limit))}})
+
+            :else
+            {:mailserver/decrease-limit []}))))))
 
 (fx/defn initialize-mailserver
   [cofx custom-mailservers]
