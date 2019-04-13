@@ -28,9 +28,9 @@
 (spec/def :pairing/pending? boolean?)
 (spec/def :pairing/contact (spec/keys  :req-un [:contact/public-key
                                                 :contact/name
-                                                :contact/address
-                                                :contact/system-tags]
-                                       :opt-un [:contact/last-updated
+                                                :contact/address]
+                                       :opt-un [:contact/system-tags
+                                                :contact/last-updated
                                                 :contact/last-online
                                                 :contact/fcm-token
                                                 :pairing/pending?

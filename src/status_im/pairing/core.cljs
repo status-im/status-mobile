@@ -134,7 +134,7 @@
                                      (update :system-tags disj :contact/blocked))
                            ;; for compatibility with version < contact.v7
                            (contact.db/added? contact) (assoc :pending? false)
-                           (contact.db/pending? contact) (assoc :pending? true))))
+                           (contact.db/legacy-pending? contact) (assoc :pending? true))))
                 {}
                 batch)]
     (transport.pairing/SyncInstallation. contacts-to-sync {} {})))
@@ -235,7 +235,7 @@
                       {public-key (cond-> contact
                                     ;; for compatibility with version < contact.v7
                                     (contact.db/added? contact) (assoc :pending? false)
-                                    (contact.db/pending? contact) (assoc :pending? true))}
+                                    (contact.db/legacy-pending? contact) (assoc :pending? true))}
                       {} {})]
     (send-installation-message-fx cofx sync-message)))
 
@@ -259,12 +259,31 @@
              {}
              contacts))
 
+(defn ensure-system-tags
+  "Make sure system tags is there"
+  [contacts]
+  (reduce-kv (fn [acc k {:keys [system-tags] :as v}]
+               (assoc acc k
+                      (assoc
+                       v
+                       :system-tags
+                       (if system-tags
+                         system-tags
+                         (if (and (contains? v :pending?) (not (:pending? v)))
+                           #{:contact/added}
+                           #{:contact/request-received})))))
+             {}
+             contacts))
+
 (defn handle-sync-installation [{:keys [db] :as cofx} {:keys [contacts account chat]} sender]
   (if (= sender (accounts.db/current-public-key cofx))
     (let [success-event [:message/messages-persisted [(or (:dedup-id cofx) (:js-obj cofx))]]
-          new-contacts  (vals (merge-contacts (:contacts/contacts db) (ensure-photo-path contacts)))
+          new-contacts  (when (seq contacts)
+                          (vals (merge-contacts (:contacts/contacts db)
+                                                ((comp ensure-photo-path
+                                                       ensure-system-tags) contacts))))
           new-account   (merge-account (:account/account db) account)
-          contacts-fx   (mapv contact/upsert-contact new-contacts)]
+          contacts-fx   (when new-contacts (mapv contact/upsert-contact new-contacts))]
       (apply fx/merge
              cofx
              (concat

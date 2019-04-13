@@ -148,6 +148,17 @@
   ([db public-key]
    (pending? (get-in db [:contacts/contacts public-key]))))
 
+(defn legacy-pending?
+  "Would the :pending? field be true? for contacts sync payload sent to devices
+  running 0.11.0 or older?"
+  ([{:keys [system-tags] :as contact}]
+   (let [request-received? (contains? system-tags :contact/request-received)
+         added? (added? contact)]
+     (and request-received?
+          (not added?))))
+  ([db public-key]
+   (pending? (get-in db [:contacts/contacts public-key]))))
+
 (defn active?
   "Checks that the user is added to the contact and not blocked"
   ([contact]
