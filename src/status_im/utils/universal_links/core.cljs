@@ -5,6 +5,7 @@
             [re-frame.core :as re-frame]
             [status-im.accounts.db :as accounts.db]
             [status-im.chat.models :as chat]
+            [status-im.pairing.core :as pairing]
             [status-im.extensions.registry :as extensions.registry]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
@@ -65,7 +66,10 @@
 
 (fx/defn handle-public-chat [cofx public-chat]
   (log/info "universal-links: handling public chat" public-chat)
-  (chat/start-public-chat cofx public-chat {}))
+  (fx/merge
+   cofx
+   (chat/start-public-chat public-chat {})
+   (pairing/sync-public-chat public-chat)))
 
 (fx/defn handle-view-profile [{:keys [db] :as cofx} public-key]
   (log/info "universal-links: handling view profile" public-key)

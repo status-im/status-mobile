@@ -41,6 +41,12 @@
   ([cofx chat-id]
    (public-chat? (get-chat cofx chat-id))))
 
+(defn active-chat?
+  ([chat]
+   (:is-active chat))
+  ([cofx chat-id]
+   (active-chat? (get-chat cofx chat-id))))
+
 (defn group-chat?
   ([chat]
    (and (multi-user-chat? chat)
@@ -289,13 +295,16 @@
 (fx/defn start-public-chat
   "Starts a new public chat"
   [cofx topic {:keys [dont-navigate?] :as opts}]
-  (fx/merge cofx
-            (add-public-chat topic)
-            #(when-not dont-navigate?
-               (navigate-to-chat % topic opts))
-            (public-chat/join-public-chat topic)
-            (when platform/desktop?
-              (desktop.events/change-tab :home))))
+  (if (active-chat? cofx topic)
+    (when-not dont-navigate?
+      (navigate-to-chat cofx topic opts))
+    (fx/merge cofx
+              (add-public-chat topic)
+              #(when-not dont-navigate?
+                 (navigate-to-chat % topic opts))
+              (public-chat/join-public-chat topic)
+              #(when platform/desktop?
+                 (desktop.events/change-tab % :home)))))
 
 (fx/defn disable-chat-cooldown
   "Turns off chat cooldown (protection against message spamming)"

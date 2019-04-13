@@ -155,7 +155,6 @@
   (let [contacts (:contacts/contacts db)
         contact-batches (partition-all contact-batch-n (vals contacts))]
     (concat (mapv contact-batch->sync-installation-message contact-batches)
-
             [(sync-installation-account-message cofx)]
             (chats->sync-installation-messages cofx))))
 
