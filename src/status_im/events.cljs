@@ -1417,6 +1417,16 @@
  (fn [cofx _]
    (hardwallet/sign cofx)))
 
+(handlers/register-handler-fx
+ :hardwallet/prepare-to-sign
+ (fn [cofx _]
+   (hardwallet/prepare-to-sign cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet/unblock-pin
+ (fn [cofx _]
+   (hardwallet/unblock-pin cofx)))
+
 ;; browser module
 
 (handlers/register-handler-fx
