@@ -903,6 +903,7 @@
     "help": "help",
     "help-capitalized": "Help",
     "pairing-card": "Pairing card",
+    "invalid-pairing-password": "Invalid pairing password",
     "complete-exclamation": "Complete!",
     "complete-hardwallet-setup": "This card is now an essential part your account security. Transactions can't be sent without it.",
     "okay": "Okay",

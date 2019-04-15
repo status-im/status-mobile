@@ -145,7 +145,8 @@
                 (set-setup-step card-state)
                 (if (= :pre-init card-state)
                   (navigation/navigate-to-cofx :hardwallet-setup nil)
-                  (navigation/navigate-to-cofx :hardwallet-authentication-method nil))
+                  (when-not (= :not-paired card-state)
+                    (navigation/navigate-to-cofx :hardwallet-authentication-method nil)))
                 (when (= card-state :blank)
                   (show-no-keycard-applet-alert))
                 (when (= card-state :account)
@@ -539,9 +540,15 @@
                 (dispatch-event :hardwallet/pair)
                 (navigation/navigate-to-cofx :hardwallet-connect nil)))))
 
-(fx/defn pair [cofx]
-  (let [{:keys [password]} (get-in cofx [:db :hardwallet :secrets])]
-    {:hardwallet/pair {:password password}}))
+(fx/defn pair
+  [{:keys [db] :as cofx}]
+  (let [{:keys [password]} (get-in cofx [:db :hardwallet :secrets])
+        card-connected? (get-in db [:hardwallet :card-connected?])]
+    (if card-connected?
+      {:hardwallet/pair {:password password}}
+      (fx/merge cofx
+                {:db (assoc-in db [:hardwallet :on-card-connected] :hardwallet/pair)}
+                (navigation/navigate-to-cofx :hardwallet-connect nil)))))
 
 (fx/defn return-back-from-nfc-settings [{:keys [db]}]
   (when (= :hardwallet-connect (:view-id db))
@@ -985,9 +992,13 @@
 (fx/defn on-pairing-error
   [{:keys [db] :as cofx} {:keys [error code]}]
   (log/debug "[hardwallet] pairing error: " error)
-  (fx/merge cofx
-            {:db (assoc-in db [:hardwallet :setup-error] error)}
-            (process-error code)))
+  (let [setup-step (get-in db [:hardwallet :setup-step])]
+    (fx/merge cofx
+              {:db (-> db
+                       (assoc-in [:hardwallet :setup-error] (i18n/label :t/invalid-pairing-password))
+                       (assoc-in [:hardwallet :on-card-connected] nil))}
+              (when (not= setup-step :enter-pair-code)
+                (process-error code)))))
 
 (fx/defn on-generate-mnemonic-success
   [{:keys [db]} mnemonic]

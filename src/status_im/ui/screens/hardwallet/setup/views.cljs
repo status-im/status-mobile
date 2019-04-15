@@ -206,25 +206,33 @@
 
 (defview enter-pair-code []
   (letsubs [pair-code [:hardwallet-pair-code]
+            error [:hardwallet-setup-error]
             width [:dimensions/window-width]]
-    [react/view styles/enter-pair-code-container
-     [react/view styles/enter-pair-code-title-container
-      [react/view
-       [react/text {:style styles/enter-pair-code-title-text}
-        (i18n/label :t/enter-pair-code)]
-       [react/text {:style styles/enter-pair-code-explanation-text}
-        (i18n/label :t/enter-pair-code-description)]]
-      [react/view (styles/enter-pair-code-input-container width)
-       [text-input/text-input-with-label
-        {:on-change-text #(re-frame/dispatch [:hardwallet.ui/pair-code-input-changed %])
-         :placeholder    ""}]]]
-     [react/view styles/next-button-container
-      [react/view components.styles/flex]
-      [react/view {:margin-right 20}
-       [components.common/bottom-button
-        {:on-press  #(re-frame/dispatch [:hardwallet.ui/pair-code-next-button-pressed])
-         :disabled? (empty? pair-code)
-         :forward?  true}]]]]))
+    [react/scroll-view
+     [react/view styles/enter-pair-code-container
+      [react/view styles/enter-pair-code-title-container
+       [react/view
+        [react/text {:style styles/enter-pair-code-title-text}
+         (i18n/label :t/enter-pair-code)]
+        [react/text {:style styles/enter-pair-code-explanation-text}
+         (i18n/label :t/enter-pair-code-description)]]
+       (when error
+         [react/view
+          [react/text {:style {:font-weight "700"
+                               :padding-top 10
+                               :color       colors/red}}
+           error]])
+       [react/view (styles/enter-pair-code-input-container width)
+        [text-input/text-input-with-label
+         {:on-change-text #(re-frame/dispatch [:hardwallet.ui/pair-code-input-changed %])
+          :placeholder    ""}]]]
+      [react/view styles/next-button-container
+       [react/view components.styles/flex]
+       [react/view {:margin-right 20}
+        [components.common/bottom-button
+         {:on-press  #(re-frame/dispatch [:hardwallet.ui/pair-code-next-button-pressed])
+          :disabled? (empty? pair-code)
+          :forward?  true}]]]]]))
 
 (defn- card-with-button-view
   [{:keys [text-label button-label button-container-style on-press show-icon?]}]
