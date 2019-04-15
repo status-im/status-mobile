@@ -53,7 +53,11 @@
     discovery-topic-hash))
 
 (defn discovery-topics [public-key]
-  [(partitioned-topic-hash public-key) discovery-topic-hash])
+  [;; TODO(rasom):
+   ;; can be uncommented when proper deruvation will be implemented,
+   ;; useless at the moment
+   #_(partitioned-topic-hash public-key)
+   discovery-topic-hash])
 
 (defn contains-topic?
   [available-topics topic]

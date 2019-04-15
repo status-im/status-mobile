@@ -309,6 +309,7 @@
               " from " actual-from
               " force-to? " force-to?
               " to " to
+              " range " (- to from)
               " cursor " cursor
               " limit " actual-limit)
     (.requestMessages (transport.utils/shh web3)
@@ -733,7 +734,7 @@
       (let [mailserver-topic
             (-> current-mailserver-topic
                 (assoc :last-request (- (quot now 1000)
-                                        (if (= topic :discovery-topic)
+                                        (if (= topic transport.topic/discovery-topic-hash)
                                           max-discovery-request-range
                                           max-request-range)))
                 (update :chat-ids conj chat-id))]
