@@ -272,6 +272,9 @@
                                     (case current-view
                                       (:wallet
                                        :wallet-send-transaction
+                                       :wallet-send-transaction-new
+                                       :wallet-choose-amount
+                                       :wallet-txn-overview
                                        :wallet-transaction-sent
                                        :wallet-request-transaction
                                        :wallet-send-transaction-chat
