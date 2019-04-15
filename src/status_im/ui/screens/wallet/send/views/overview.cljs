@@ -247,73 +247,75 @@
                                   (swap! tx-atom assoc :gas gas :gas-price gas-price)
                                   (swap! tx-atom dissoc :gas :gas-price))
                                 (close-network-fees!))))]])
-          [react/text {:style {:margin-top 18
-                               :text-align :center
-                               :font-size  15
-                               :color      colors/white-transparent}}
-           (i18n/label :t/recipient)]
-          [react/view
-           (when contact
-             [react/view {:style {:margin-top      10
-                                  :flex-direction  :row
-                                  :justify-content :center}}
-              [photos/photo (:photo-path contact) {:size list.styles/image-size}]])
-           [react/text {:style {:color             colors/white
-                                :margin-horizontal 24
+          [react/scroll-view
+           [react/text {:style {:margin-top 18
+                                :text-align :center
+                                :font-size  15
+                                :color      colors/white-transparent}}
+            (i18n/label :t/recipient)]
+           [react/view
+            (when contact
+              [react/view {:style {:margin-top      10
+                                   :flex-direction  :row
+                                   :justify-content :center}}
+               [photos/photo (:photo-path contact) {:size list.styles/image-size}]])
+            [react/text {:style {:color             colors/white
+                                 :margin-horizontal 24
+                                 :margin-top        10
+                                 :line-height       22
+                                 :font-size         15
+                                 :text-align        :center}}
+             (ethereum/normalized-address (:to transaction))]]
+           [react/text {:style {:margin-top 18
+                                :font-size  15
+                                :text-align :center
+                                :color      colors/white-transparent}}
+            (i18n/label :t/amount)]
+           [react/view {:style {:flex-direction    :row
+                                :align-items       :center
                                 :margin-top        10
-                                :line-height       22
-                                :font-size         15
-                                :text-align        :center}}
-            (ethereum/normalized-address (:to transaction))]]
-          [react/text {:style {:margin-top 18
-                               :font-size  15
-                               :text-align :center
-                               :color      colors/white-transparent}}
-           (i18n/label :t/amount)]
-          [react/view {:style {:flex-direction    :row
-                               :align-items       :center
-                               :margin-top        10
-                               :margin-horizontal 24}}
-           [react/text {:style {:color     colors/white
-                                :font-size 15}} (i18n/label :t/sending)]
-           [react/view {:style {:flex 1}}
-            [react/text {:style {:color       colors/white
-                                 :line-height 21
-                                 :font-size   15
-                                 :font-weight "500"
-                                 :text-align  :right}}
-             amount-str]
-            [react/text {:style {:color       colors/white-transparent
-                                 :line-height 21
-                                 :font-size   15
-                                 :text-align  :right}}
-             (str "~ " (:symbol fiat-currency "$")  fiat-amount " " (:code fiat-currency))]]]
-          [react/view {:style {:margin-horizontal 24
-                               :margin-top        10
-                               :padding-top       10
-                               :border-top-width  1
-                               :border-top-color  colors/white-light-transparent}}
-           [react/view {:style {:flex-direction :row
-                                :align-items    :center}}
-            [react/view {:style {:flex-direction :row
-                                 :align-items    :center}}
-             [react/text {:style {:color         colors/white
-                                  :padding-right 10
-                                  :font-size     15}} (i18n/label :t/network-fee)]
-             [vector-icons/icon :main-icons/settings {:color colors/white}]]
+                                :margin-horizontal 24}}
+            [react/text {:style {:color     colors/white
+                                 :font-size 15}} (i18n/label :t/sending)]
             [react/view {:style {:flex 1}}
              [react/text {:style {:color       colors/white
                                   :line-height 21
                                   :font-size   15
                                   :font-weight "500"
-                                  :text-align  :right}
-                          :accessibility-label :total-fee}
-              (str network-fee-eth " " (wallet.utils/display-symbol native-currency))]
+                                  :text-align  :right}}
+              amount-str]
              [react/text {:style {:color       colors/white-transparent
                                   :line-height 21
                                   :font-size   15
                                   :text-align  :right}}
-              (str "~ "  network-fee-fiat " " (:code fiat-currency))]]]]
+              (str "~ " (:symbol fiat-currency "$") fiat-amount " " (:code fiat-currency))]]]
+           [react/view {:style {:margin-horizontal 24
+                                :margin-top        10
+                                :padding-top       10
+                                :border-top-width  1
+                                :border-top-color  colors/white-light-transparent}}
+            [react/view {:style {:flex-direction :row
+                                 :align-items    :center}}
+             [react/view {:style {:flex-direction :row
+                                  :align-items    :center}}
+              [react/text {:style {:color         colors/white
+                                   :padding-right 10
+                                   :font-size     15}} (i18n/label :t/network-fee)]
+              [vector-icons/icon :main-icons/settings {:color colors/white}]]
+             [react/view {:style {:flex 1}}
+              [react/text {:style               {:color       colors/white
+                                                 :line-height 21
+                                                 :font-size   15
+                                                 :font-weight "500"
+                                                 :text-align  :right}
+                           :accessibility-label :total-fee}
+               (str network-fee-eth " " (wallet.utils/display-symbol native-currency))]
+              [react/text {:style {:color       colors/white-transparent
+                                   :line-height 21
+                                   :font-size   15
+                                   :text-align  :right}}
+               (str "~ " network-fee-fiat " " (:code fiat-currency))]]]]
+           [react/view {:style {:height 500}}]]
           [confirm-and-sign {:transaction     transaction
                              :contact         contact
                              :total-amount    total-amount
