@@ -39,7 +39,7 @@
 (def max-discovery-request-range one-day)
 (def maximum-number-of-attempts 2)
 (def request-timeout 30)
-(def min-limit 100)
+(def min-limit 50)
 (def max-limit 2000)
 (def backoff-interval-ms 3000)
 (def default-limit max-limit)
@@ -364,10 +364,11 @@
           {:topic     topic
            :from      from
            :to        to
+           :limit     (when-not discovery? 100)
            :force-to? (not (nil? force-request-to))})))))
 
 (defn aggregate-requests
-  [acc {:keys [topic from to force-to?]}]
+  [acc {:keys [topic from to force-to? limit]}]
   (update acc [from to force-to?]
           (fn [{:keys [topics]}]
             {:topics    ((fnil conj #{}) topics topic)
@@ -375,7 +376,8 @@
              :to        to
              ;; To is sent to the mailserver only when force-to? is true,
              ;; also we use to calculate when the last-request was sent.
-             :force-to? force-to?})))
+             :force-to? force-to?
+             :limit     limit})))
 
 (defn prepare-messages-requests
   [{{:keys [:mailserver/requests-from
