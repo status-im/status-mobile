@@ -66,7 +66,7 @@
    {:keys [pubkey address mnemonic installation-id
            keycard-instance-uid keycard-pairing keycard-paired-on]}
    password
-   {:keys [seed-backed-up? login?] :or {login? true}}]
+   {:keys [seed-backed-up? login? new-account?] :or {login? true}}]
   (let [normalized-address (utils.hex/normalize-hex address)
         account            {:public-key             pubkey
                             :installation-id        (or installation-id (get-in db [:accounts/new-installation-id]))
@@ -84,7 +84,8 @@
                             :keycard-paired-on      keycard-paired-on
                             :settings               (constants/default-account-settings)
                             :syncing-on-mobile-network? false
-                            :remember-syncing-choice? false}]
+                            :remember-syncing-choice? false
+                            :new-account?           new-account?}]
     (log/debug "account-created")
     (when-not (string/blank? pubkey)
       (fx/merge cofx
