@@ -248,7 +248,7 @@
                   :placeholder            "0"
                   :placeholder-text-color colors/blue-shadow
                   :multiline              true
-                  :max-length             20
+                  :max-length             80
                   :default-value          input-amount
                   :selection-color        colors/green
                   :keyboard-appearance    :dark
