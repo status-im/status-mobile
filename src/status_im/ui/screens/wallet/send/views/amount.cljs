@@ -213,7 +213,8 @@
                        :gas-gas-price->fiat gas-gas-price->fiat
                        :on-submit (fn [{:keys [gas gas-price]}]
                                     (if (and gas gas-price)
-                                      (swap! tx-atom assoc :gas gas :gas-price gas-price)
+                                      (do (swap! tx-atom assoc :gas gas :gas-price gas-price)
+                                          (update-amount-field (:input-amount @state-atom)))
                                       (swap! tx-atom dissoc :gas :gas-price))
                                     (close-network-fees!))))]])
               [react/touchable-highlight {:style          {:background-color colors/black-transparent}
