@@ -104,6 +104,13 @@ check_is_pr_single_commit() {
   fi
 }
 
+request_to_squash() {
+  if [[ $(git rev-list $BRANCH..$PR_LOCAL_BRANCH | wc -l) -gt 1 ]] ;then
+    confirm "PR has multiple commits, do interactive rebase?"
+    git rebase -i $BRANCH
+  fi
+}
+
 confirm_pr() {
   git log -p $BRANCH..$PR_LOCAL_BRANCH
   confirm "Do you like this PR?"
@@ -156,6 +163,7 @@ EOF
   fetch_pr
   refresh_base_branch
   rebase_pr
+  request_to_squash
   check_is_pr_single_commit
   confirm_pr
   sign_pr
