@@ -311,6 +311,32 @@
  (fn [cofx [_ _ {:keys [url]}]]
    (browser/open-url cofx url)))
 
+(handlers/register-handler-fx
+ :extensions/profile-settings-close
+ (fn [{:keys [db] :as cofx} [_ _ {:keys [on-close on-failure]}]]
+   (let [view-id (:view-id db)]
+     ;; ensure the current view-id is the profile settings view
+     (if (= view-id :my-profile-ext-settings)
+       (fx/merge cofx
+                 (when on-close (on-close))
+                 (navigation/navigate-back))
+       (if on-failure
+         (on-failure {:value "extension is not currently showing profile settings"})
+         {})))))
+
+(handlers/register-handler-fx
+ :extensions/wallet-settings-close
+ (fn [{:keys [db] :as cofx} [_ _ {:keys [on-close on-failure]}]]
+   (let [view-id (:view-id db)]
+     ;; ensure the current view-id is the wallet settings view
+     (if (= view-id :wallet-settings-hook)
+       (fx/merge cofx
+                 (when on-close (on-close))
+                 (navigation/navigate-back))
+       (if on-failure
+         (on-failure {:value "extension is not currently showing wallet settings"})
+         {})))))
+
 ;;CAPACITIES
 
 (def all
@@ -684,4 +710,14 @@
    'ethereum/shh-get-messages
    {:permissions [:read]
     :data        :extensions/shh-get-messages
-    :arguments   {:id :string}}})
+    :arguments   {:id :string}}
+   'profile.settings/close
+   {:permissions [:read]
+    :data        :extensions/profile-settings-close
+    :arguments   {:on-close?   :event
+                  :on-failure? :event}}
+   'wallet.settings/close
+   {:permissions [:read]
+    :data        :extensions/wallet-settings-close
+    :arguments   {:on-close?   :event
+                  :on-failure? :event}}})
