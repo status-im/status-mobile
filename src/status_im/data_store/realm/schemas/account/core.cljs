@@ -15,7 +15,9 @@
             [status-im.data-store.realm.schemas.account.membership-update :as membership-update]
             [status-im.data-store.realm.schemas.account.installation :as installation]
             [status-im.data-store.realm.schemas.account.contact-recovery :as contact-recovery]
-            [status-im.data-store.realm.schemas.account.migrations :as migrations]))
+            [status-im.data-store.realm.schemas.account.mailserver-requests-gap :as mailserver-requests-gap]
+            [status-im.data-store.realm.schemas.account.migrations :as migrations]
+            [status-im.data-store.realm.schemas.account.chat-requests-range :as chat-requests-range]))
 
 (def v1 [chat/v1
          transport/v1
@@ -476,6 +478,23 @@
           contact-device-info/v1
           contact-recovery/v1])
 
+(def v42 [chat/v14
+          chat-requests-range/v1
+          transport/v8
+          contact/v7
+          message/v10
+          mailserver/v11
+          mailserver-topic/v2
+          user-status/v2
+          membership-update/v1
+          installation/v3
+          local-storage/v1
+          browser/v8
+          dapp-permissions/v9
+          contact-device-info/v1
+          contact-recovery/v1
+          mailserver-requests-gap/v1])
+
 ;; put schemas ordered by version
 (def schemas [{:schema        v1
                :schemaVersion 1
@@ -599,4 +618,7 @@
                :migration     migrations/v40}
               {:schema        v41
                :schemaVersion 41
-               :migration     (constantly nil)}])
+               :migration     (constantly nil)}
+              {:schema        v42
+               :schemaVersion 42
+               :migration     migrations/v42}])

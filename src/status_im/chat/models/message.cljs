@@ -466,8 +466,9 @@
   (let [{:keys [chats]}  db
         {:keys [last-clock-value] :as chat} (get chats chat-id)
         message-data                        (-> message
-                                                (assoc :from        (accounts.db/current-public-key cofx)
-                                                       :timestamp   now
+                                                (assoc :from (accounts.db/current-public-key cofx)
+                                                       :timestamp now
+                                                       :whisper-timestamp (quot now 1000)
                                                        :clock-value (utils.clocks/send
                                                                      last-clock-value))
                                                 (add-message-type chat))]

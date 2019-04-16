@@ -15,6 +15,4 @@
 (fx/defn unsubscribe-from-chat
   "Unsubscribe from chat on transport layer"
   [cofx chat-id]
-  (fx/merge cofx
-            (mailserver/remove-chat-from-mailserver-topic chat-id)
-            (remove-transport-chat chat-id)))
+  (remove-transport-chat cofx chat-id))

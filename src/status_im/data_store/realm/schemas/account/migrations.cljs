@@ -389,3 +389,31 @@
                           (or (true? pending?)
                               (zero? last-updated)) (conj ":contact/request-received"))]
         (aset new-contact "system-tags" (clj->js system-tags))))))
+
+(defn private-chats-ids [chats]
+  (set
+   (keep
+    (fn [i]
+      (let [chat (aget chats i)]
+        (when-not (aget chat "public?")
+          (aget chat "chat-id"))))
+    (range (.-length chats)))))
+
+(def one-day (* 24 60 60))
+
+(def discovery-topic-hash "0xf8946aac")
+
+(defn v42
+  "Add all private chats to :discovery mailserver topic"
+  [old-realm new-realm]
+  (log/debug "migrating v40 account database")
+  (let [mailserver-topic (-> (.objects new-realm "mailserver-topic")
+                             (.filtered (str "topic=\"" discovery-topic-hash "\""))
+                             (aget 0))
+        old-chat-ids     (edn/read-string (aget mailserver-topic "chat-ids"))
+        new-chats-ids    (private-chats-ids (.objects old-realm "chat"))
+        all-chat-ids     (clojure.set/union old-chat-ids new-chats-ids)
+        chat-ids-str     (pr-str all-chat-ids)]
+    (when mailserver-topic
+      (aset mailserver-topic "chat-ids" chat-ids-str))))
+

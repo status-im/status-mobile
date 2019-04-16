@@ -19,7 +19,9 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
             [status-im.utils.priority-map :refer [empty-message-map]]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.mailserver.core :as mailserver]
+            [status-im.transport.partitioned-topic :as transport.topic]))
 
 (defn- get-chat [cofx chat-id]
   (get-in cofx [:db :chats chat-id]))
@@ -163,6 +165,10 @@
   (fx/merge cofx
             #(when (public-chat? % chat-id)
                (transport.chat/unsubscribe-from-chat % chat-id))
+            #(when (group-chat? % chat-id)
+               (mailserver/remove-chat-from-mailserver-topic % chat-id))
+            (mailserver/remove-gaps chat-id)
+            (mailserver/remove-range chat-id)
             (deactivate-chat chat-id)
             (clear-history chat-id)
             #(when (one-to-one-chat? % chat-id)
@@ -242,13 +248,12 @@
 (fx/defn preload-chat-data
   "Takes chat-id and coeffects map, returns effects necessary when navigating to chat"
   [{:keys [db] :as cofx} chat-id]
-  (let [chat (get-in db [:chats chat-id])]
-    (fx/merge cofx
-              {:db (-> (assoc db :current-chat-id chat-id)
-                       (set-chat-ui-props {:validation-messages nil}))}
-              (contact-code/listen-to-chat chat-id)
-              (when platform/desktop?
-                (mark-messages-seen chat-id)))))
+  (fx/merge cofx
+            {:db (-> (assoc db :current-chat-id chat-id)
+                     (set-chat-ui-props {:validation-messages nil}))}
+            (contact-code/listen-to-chat chat-id)
+            (when platform/desktop?
+              (mark-messages-seen chat-id))))
 
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
@@ -277,7 +282,7 @@
   ;; don't allow to open chat with yourself
   (when (not= (accounts.db/current-public-key cofx) chat-id)
     (fx/merge cofx
-              (upsert-chat {:chat-id chat-id
+              (upsert-chat {:chat-id   chat-id
                             :is-active true})
               (navigate-to-chat chat-id opts))))
 

@@ -6,7 +6,8 @@
             [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.utils.datetime :as time]
             [status-im.utils.fx :as fx]
-            [status-im.utils.priority-map :refer [empty-message-map]]))
+            [status-im.utils.priority-map :refer [empty-message-map]]
+            [status-im.mailserver.core :as mailserver]))
 
 (def index-messages (partial into empty-message-map
                              (map (juxt :message-id identity))))
@@ -114,5 +115,6 @@
                 (chat-model/update-chats-unviewed-messages-count
                  {:chat-id                          current-chat-id
                   :new-loaded-unviewed-messages-ids loaded-unviewed-messages})
+                (mailserver/load-gaps current-chat-id)
                 (group-chat-messages current-chat-id new-messages)
                 (chat-model/mark-messages-seen current-chat-id)))))

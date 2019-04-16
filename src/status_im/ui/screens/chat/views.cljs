@@ -70,8 +70,8 @@
   [{{:keys [value]} :row}]
   [message-datemark/chat-datemark-mobile value])
 
-(defview gap []
-  (letsubs [in-progress? [:chats/fetching-gap-in-progress?]
+(defview gap [{:keys [ids]}]
+  (letsubs [in-progress? [:chats/fetching-gap-in-progress? ids]
             connected?   [:mailserver/connected?]]
     [react/view {:align-self          :stretch
                  :margin-top          24
@@ -85,7 +85,7 @@
                  :background-color    :white}
      [react/touchable-highlight
       {:on-press (when (and connected? (not in-progress?))
-                   #(re-frame/dispatch [:chat.ui/fill-the-gap]))}
+                   #(re-frame/dispatch [:chat.ui/fill-gaps ids]))}
       [react/view {:flex            1
                    :align-items     :center
                    :justify-content :center}
@@ -98,8 +98,8 @@
           (i18n/label :t/fetch-messages)])]]]))
 
 (defmethod message-row :gap
-  [_]
-  [gap])
+  [{:keys [row]}]
+  [gap (:gaps row)])
 
 (defmethod message-row :default
   [{:keys [group-chat current-public-key modal? row]}]

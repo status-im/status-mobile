@@ -172,11 +172,11 @@
    (chat.db/topic-by-current-chat db)))
 
 (re-frame/reg-sub
- :chats/messages-gap
- :<- [:get-in [:mailserver/topics]]
- :<- [:chats/current-chat-topic]
- (fn [[mailserver-topics topic]]
-   (chat.db/messages-gap mailserver-topics topic)))
+ :chats/messages-gaps
+ :<- [:get-in [:mailserver/gaps]]
+ :<- [:chats/current-chat-id]
+ (fn [[gaps chat-id]]
+   (sort-by :from (vals (get gaps chat-id)))))
 
 (re-frame/reg-sub
  :chats/current-chat-messages-stream
@@ -184,18 +184,18 @@
  :<- [:chats/current-chat-message-groups]
  :<- [:chats/current-chat-message-statuses]
  :<- [:chats/current-chat-referenced-messages]
- :<- [:chats/messages-gap]
- (fn [[messages message-groups message-statuses referenced-messages messages-gap]]
+ :<- [:chats/messages-gaps]
+ (fn [[messages message-groups message-statuses referenced-messages messages-gaps]]
    (-> (chat.db/sort-message-groups message-groups messages)
-       (chat.db/messages-with-datemarks-and-statuses messages message-statuses referenced-messages messages-gap)
+       (chat.db/messages-with-datemarks-and-statuses messages message-statuses referenced-messages messages-gaps)
        chat.db/messages-stream)))
 
 (re-frame/reg-sub
  :chats/fetching-gap-in-progress?
- (fn [db]
+ (fn [db [_ ids]]
    (let [chat-id (:current-chat-id db)
          gaps (:mailserver/fetching-gaps-in-progress db)]
-     (contains? gaps chat-id))))
+     (seq (select-keys (get gaps chat-id) ids)))))
 
 (re-frame/reg-sub
  :chats/current-chat-intro-status

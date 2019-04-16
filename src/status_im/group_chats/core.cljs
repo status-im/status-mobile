@@ -12,14 +12,13 @@
             [status-im.group-chats.db :as group-chats.db]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as native-module]
-            [status-im.transport.chat.core :as transport.chat]
             [status-im.transport.message.group-chat :as message.group-chat]
             [status-im.transport.message.protocol :as protocol]
-            [status-im.transport.message.public-chat :as transport.public-chat]
             [status-im.transport.partitioned-topic :as transport.topic]
             [status-im.utils.clocks :as utils.clocks]
-            [status-im.utils.config :as config]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [status-im.mailserver.core :as mailserver]
+            [taoensso.timbre :as log]))
 
 ;; Description of the flow:
 ;; the flow is complicated a bit by 2 asynchronous call to status-go, which might make the logic a bit more opaque.
@@ -213,10 +212,17 @@
         events            [create-event
                            (members-added-event clock-value selected-contacts)]]
 
-    {:group-chats/sign-membership {:chat-id chat-id
-                                   :from   my-public-key
-                                   :events events}
-     :db (assoc db :group/selected-contacts #{})}))
+    (fx/merge
+     cofx
+     {:group-chats/sign-membership {:chat-id chat-id
+                                    :from    my-public-key
+                                    :events  events}
+      :db                          (assoc db :group/selected-contacts #{})}
+     (mailserver/upsert-mailserver-topic
+      {:chat-ids [chat-id]
+       :topic    transport.topic/discovery-topic-hash
+       :fetch?   false})
+     (mailserver/process-next-messages-request))))
 
 (fx/defn remove-member
   "Format group update message and sign membership"
@@ -236,7 +242,7 @@
 
 (fx/defn join-chat
   "Format group update message and sign membership"
-  [{:keys [db] :as cofx} chat-id]
+  [cofx chat-id]
   (let [my-public-key     (accounts.db/current-public-key cofx)
         last-clock-value  (get-last-clock-value cofx chat-id)
         chat              (get-in cofx [:db :chats chat-id])
@@ -244,9 +250,16 @@
     (when (valid-event? chat (assoc event
                                     :from
                                     my-public-key))
-      {:group-chats/sign-membership {:chat-id chat-id
-                                     :from    my-public-key
-                                     :events  [event]}})))
+      (fx/merge
+       cofx
+       {:group-chats/sign-membership {:chat-id chat-id
+                                      :from    my-public-key
+                                      :events  [event]}}
+       (mailserver/upsert-mailserver-topic
+        {:chat-ids [chat-id]
+         :topic    transport.topic/discovery-topic-hash
+         :fetch    false})
+       (mailserver/process-next-messages-request)))))
 
 (fx/defn make-admin
   "Format group update with make admin message and sign membership"

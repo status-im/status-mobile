@@ -121,6 +121,7 @@
        (accounts.login/login)
        (node/initialize (get-in db [:accounts/login :address])))
      (init/initialize-account address)
+     (mailserver/initialize-ranges)
      (chat-loading/initialize-chats {:to 10}))))
 
 (handlers/register-handler-fx
@@ -130,7 +131,8 @@
   (re-frame/inject-cofx :data-store/get-all-installations)
   (re-frame/inject-cofx :data-store/all-browsers)
   (re-frame/inject-cofx :data-store/all-dapp-permissions)
-  (re-frame/inject-cofx :data-store/all-chats)]
+  (re-frame/inject-cofx :data-store/all-chats)
+  (re-frame/inject-cofx :data-store/all-chat-requests-ranges)]
  account-change-success)
 
 (handlers/register-handler-fx
@@ -723,20 +725,38 @@
  :chat.ui/fetch-history-pressed
  (fn [{:keys [now] :as cofx} [_ chat-id]]
    (mailserver/fetch-history cofx chat-id
-                             {:from (- (quot now 1000) (* 24 3600))})))
+                             {:from (- (quot now 1000) mailserver/one-day)})))
 
 (handlers/register-handler-fx
- :chat.ui/fill-the-gap
- (fn [{:keys [db] :as cofx}]
-   (let [mailserver-topics (:mailserver/topics db)
-         chat-id           (:current-chat-id db)
+ :chat.ui/fetch-history-pressed48-60
+ (fn [{:keys [now] :as cofx} [_ chat-id]]
+   (let [now (quot now 1000)]
+     (mailserver/fetch-history cofx chat-id
+                               {:from (- now (* 2.5 mailserver/one-day))
+                                :to   (- now (* 2 mailserver/one-day))}))))
+
+(handlers/register-handler-fx
+ :chat.ui/fetch-history-pressed84-96
+ (fn [{:keys [now] :as cofx} [_ chat-id]]
+   (let [now (quot now 1000)]
+     (mailserver/fetch-history cofx chat-id
+                               {:from (- now (* 4 mailserver/one-day))
+                                :to   (- now (* 3.5 mailserver/one-day))}))))
+
+(handlers/register-handler-fx
+ :chat.ui/fill-gaps
+ (fn [{:keys [db] :as cofx} [_ gap-ids]]
+   (let [chat-id           (:current-chat-id db)
          topic             (chat.db/topic-by-current-chat db)
-         gap               (chat.db/messages-gap mailserver-topics topic)]
+         gaps              (keep
+                            (fn [id]
+                              (get-in db [:mailserver/gaps chat-id id]))
+                            gap-ids)]
      (mailserver/fill-the-gap
       cofx
-      (assoc gap
-             :topic topic
-             :chat-id chat-id)))))
+      {:gaps    gaps
+       :topic   topic
+       :chat-id chat-id}))))
 
 (handlers/register-handler-fx
  :chat.ui/remove-chat-pressed
@@ -777,7 +797,8 @@
  :chat.ui/load-more-messages
  [(re-frame/inject-cofx :data-store/get-messages)
   (re-frame/inject-cofx :data-store/get-user-statuses)
-  (re-frame/inject-cofx :data-store/get-referenced-messages)]
+  (re-frame/inject-cofx :data-store/get-referenced-messages)
+  (re-frame/inject-cofx :data-store/all-gaps)]
  (fn [cofx _]
    (chat.loading/load-more-messages cofx)))
 

@@ -21,7 +21,8 @@
             [status-im.transport.partitioned-topic :as transport.topic]
             [status-im.utils.config :as config]
             [status-im.chat.models.loading :as chat.models.loading]
-            [status-im.chat.models.message :as chat.models.message]))
+            [status-im.chat.models.message :as chat.models.message]
+            [status-im.mailserver.core :as mailserver]))
 
 (fx/defn load-contacts
   [{:keys [db all-contacts]}]
@@ -74,7 +75,12 @@
       (fx/merge cofx
                 {:db (assoc-in db [:contacts/new-identity] "")}
                 (upsert-contact contact)
-                (send-contact-request contact)))))
+                (mailserver/upsert-mailserver-topic
+                 {:chat-ids [public-key]
+                  :topic    transport.topic/discovery-topic-hash
+                  :fetch?   false})
+                (send-contact-request contact)
+                (mailserver/process-next-messages-request)))))
 
 (fx/defn add-contacts-filter [{:keys [db]} public-key action]
   (when (not= (get-in db [:account/account :public-key]) public-key)
