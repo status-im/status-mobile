@@ -1,6 +1,5 @@
 (ns status-im.transport.partitioned-topic
-  (:require [status-im.utils.random :as random]
-            [status-im.transport.utils :as utils]
+  (:require [status-im.transport.utils :as utils]
             [status-im.constants :as constants]
             [status-im.utils.config :as config]))
 
@@ -26,9 +25,11 @@
 
 (defn- partitioned-topic
   [public-key]
-  (let [gen (random/rand-gen public-key)]
-    (-> (random/seeded-rand-int gen n-partitions)
-        (str "-discovery"))))
+  (-> public-key
+      (subs 3 35)
+      (js/parseInt 16)
+      (mod n-partitions)
+      (str "-discovery")))
 
 (defn partitioned-topic-hash
   "Given a public key return a partitioned topic between 0 and n"
