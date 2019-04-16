@@ -17,7 +17,7 @@
     (testing "it adds the discover filters"
       (is (= {:web3 nil :private-key-id "1" :topics '({:topic   "topic-4"
                                                        :chat-id "4"}
-                                                      {:topic   "0x2af2e6e7"
+                                                      {:topic   "0xd2a5f1a3"
                                                        :chat-id :discovery-topic}
                                                       {:topic   "0xf8946aac"
                                                        :chat-id :discovery-topic})}
