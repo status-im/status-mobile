@@ -1026,5 +1026,11 @@
     "wallet-no-contacts": "You don't have any contacts yet",
     "wallet-invalid-address": "Invalid address: \n {{data}}",
     "invalid-address": "Invalid address",
-    "wallet-invalid-address-checksum": "Error in address"
+    "wallet-invalid-address-checksum": "Error in address",
+    "gas-price-zero" : "Must be greater than zero",
+    "gas-price-too-precise" : "Too precise. Minimum value is 1 wei",
+    "gas-price-negative" : "Must be greater than zero",
+    "gas-limit-zero" : "Must be greater than zero",
+    "gas-limit-negative" : "Must be greater than zero"
+
 }

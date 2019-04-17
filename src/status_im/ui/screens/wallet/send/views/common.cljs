@@ -183,10 +183,24 @@
      label]]
    child])
 
+(defn validate-gas-price [raw]
+  (let [value (money/bignumber raw)]
+    (cond (empty? raw) :t/required-field
+          (not value) :t/invalid-number-format
+          (.eq value 0) :t/gas-price-zero
+          (.lt value 0) :t/gas-price-negative
+          (.lt value 0.000000001) :t/gas-price-too-precise)))
+
+(defn validate-gas [raw]
+  (let [value (money/bignumber raw)]
+    (cond (empty? raw) :t/required-field
+          (not value) :t/invalid-number-format
+          (.eq value 0) :t/gas-limit-zero
+          (.lt value 0) :t/gas-limit-negative)))
+
 (defn- custom-gas-edit
-  [_opts]
-  (let [gas-error (reagent/atom nil)
-        gas-price-error (reagent/atom nil)]
+  [opts]
+  (let [{:keys [gas-error gas-price-error]} (:errors opts)]
     (fn [{:keys [on-gas-input-change
                  on-gas-price-input-change
                  gas-input
@@ -210,8 +224,8 @@
         [react/text-input {:keyboard-type       :numeric
                            :placeholder         "0"
                            :on-change-text      (fn [x]
-                                                  (if-not (money/bignumber x)
-                                                    (reset! gas-price-error (i18n/label :t/invalid-number-format))
+                                                  (if-let [error (validate-gas-price x)]
+                                                    (reset! gas-price-error (i18n/label error))
                                                     (reset! gas-price-error nil))
                                                   (on-gas-price-input-change x))
                            :default-value       gas-price-input
@@ -241,8 +255,8 @@
         [react/text-input {:keyboard-type       :numeric
                            :placeholder         "0"
                            :on-change-text      (fn [x]
-                                                  (if-not (money/bignumber x)
-                                                    (reset! gas-error (i18n/label :t/invalid-number-format))
+                                                  (if-let [error (validate-gas x)]
+                                                    (reset! gas-error (i18n/label error))
                                                     (reset! gas-error nil))
                                                   (on-gas-input-change x))
                            :default-value       gas-input
@@ -291,6 +305,9 @@
      (when custom-open?
        {:gas custom-input-gas :gas-price custom-input-gas-price})}))
 
+(defn- update-disabled? [{:keys [gas-error gas-price-error]}]
+  (boolean (or @gas-error @gas-price-error)))
+
 ;; Choosing the gas amount
 (defn custom-gas-input-panel [{:keys [gas gas-price
                                       optimal-gas optimal-gas-price
@@ -301,11 +318,8 @@
         custom-height 290
         custom-open? (and gas gas-price)
         sheet-state-atom  (reagent.core/atom  {:custom-open? (boolean custom-open?)})
-      ;;  state-atom   (reagent.core/atom {
-      ;;                                   :gas-input       nil
-      ;;                                   :gas-price-input nil})
-
-        ;; slider animations
+        error-atoms {:gas-error       (reagent/atom nil)
+                     :gas-price-error (reagent/atom nil)}
         slider-height (animation/create-value (if custom-open? custom-height 0))
         slider-height-to #(animation/start
                            (animation/timing slider-height {:toValue  %
@@ -332,7 +346,7 @@
                     custom-fiat-price
                     gas-price-input-value
                     gas-input-value
-                    gas-map-for-submit] :as params}
+                    gas-map-for-submit]}
             (custom-gas-derived-state @sheet-state-atom @input-state-atom opts)]
         [react/scroll-view {:style {:background-color        colors/white
                                     :border-top-left-radius  8
@@ -390,20 +404,23 @@
              :on-gas-input-change       #(when (money/bignumber %)
                                            (swap! input-state-atom assoc :gas-input %))
              :gas-price-input           gas-price-input-value
-             :gas-input                 gas-input-value}]]
+             :gas-input                 gas-input-value
+             :errors                    error-atoms}]]
           [react/view {:style {:flex-direction   :row
                                :justify-content  :center
                                :padding-vertical 16}}
-           [react/touchable-highlight
-            {:on-press #(on-submit gas-map-for-submit)
-             :style    {:padding-horizontal 39
-                        :padding-vertical   12
-                        :border-radius      8
-                        :background-color   colors/blue-light}}
-            [react/text {:style {:font-size   15
-                                 :line-height 22
-                                 :color       colors/blue}}
-             (i18n/label :t/update)]]]]]))))
+           (let [disabled? (update-disabled? error-atoms)]
+             [react/touchable-highlight
+              {:on-press #(on-submit gas-map-for-submit)
+               :disabled disabled?
+               :style    {:padding-horizontal 39
+                          :padding-vertical   12
+                          :border-radius      8
+                          :background-color   (if disabled? colors/white colors/blue-light)}}
+              [react/text {:style {:font-size   15
+                                   :line-height 22
+                                   :color       colors/blue}}
+               (i18n/label :t/update)]])]]]))))
 
 (defn token->fiat-conversion [prices token fiat-currency value]
   {:pre [(map? prices) (map? token) (map? fiat-currency) value]}
