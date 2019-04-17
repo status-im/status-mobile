@@ -58,8 +58,8 @@
         fx              {:db                 (assoc db :account/account new-account)
                          :data-store/base-tx [{:transaction (accounts-store/save-account-tx new-account)
                                                :success-event success-event}]}
-        {:keys [name photo-path address]} new-account]
-    (if (or (:name new-account-fields) (:photo-path new-account-fields))
+        {:keys [name photo-path]} new-account-fields]
+    (if (or name photo-path)
       (fx/merge cofx
                 fx
                 #(send-account-update %))

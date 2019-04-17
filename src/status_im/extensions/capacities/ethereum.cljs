@@ -1,4 +1,4 @@
-(ns status-im.extensions.ethereum
+(ns status-im.extensions.capacities.ethereum
   (:require [clojure.string :as string]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]

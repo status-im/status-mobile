@@ -1,8 +1,7 @@
-(ns status-im.extensions.camera
+(ns status-im.extensions.capacities.camera.events
   (:require [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
             [status-im.utils.fx :as fx]
-            [status-im.extensions.views :as ext-views]
+            [status-im.extensions.capacities.camera.views :as ext-views]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.screens.navigation :as navigation]

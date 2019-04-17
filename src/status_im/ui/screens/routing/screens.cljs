@@ -14,7 +14,7 @@
    [status-im.ui.screens.profile.contact.views :as profile.contact]
    [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
    [status-im.ui.screens.profile.photo-capture.views :as photo-capture]
-   [status-im.extensions.views :as extensions]
+   [status-im.extensions.capacities.camera.views :as extensions.camera.views]
    [status-im.ui.screens.wallet.main.views :as wallet.main]
    [status-im.ui.screens.wallet.collectibles.views :as collectibles]
    [status-im.ui.screens.wallet.send.views :as send]
@@ -78,7 +78,7 @@
    :new-chat                         new-chat/new-chat
    :qr-scanner                       qr-scanner/qr-scanner
    :profile-qr-viewer                [:modal profile.user/qr-viewer]
-   :take-picture                     extensions/take-picture
+   :take-picture                     extensions.camera.views/take-picture
    :new-group                        group/new-group
    :add-participants-toggle-list     group/add-participants-toggle-list
    :contact-toggle-list              group/contact-toggle-list

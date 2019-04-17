@@ -1,4 +1,4 @@
-(ns status-im.extensions.views
+(ns status-im.extensions.capacities.camera.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]

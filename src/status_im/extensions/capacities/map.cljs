@@ -1,4 +1,4 @@
-(ns status-im.extensions.map
+(ns status-im.extensions.capacities.map
   (:require-macros
    [status-im.utils.slurp :refer [slurp]]
    [status-im.utils.views :refer [defview letsubs]])

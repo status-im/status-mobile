@@ -1,6 +1,6 @@
 (ns status-im.test.extensions.ethereum
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.extensions.ethereum :as ethereum]))
+            [status-im.extensions.capacities.ethereum :as ethereum]))
 
 ; ethereum/logs
 

@@ -95,11 +95,11 @@
 (fx/defn add-to-registry
   [{:keys [db] :as cofx} extension-id extension-data active?]
   (let [{:keys [hooks]} extension-data
-        data {:hooks   hooks
-              :active? active?}]
+        on-init (get-in extension-data [:lifecycle :on-init])]
     (fx/merge cofx
-              {:db (update-in db [:account/account :extensions extension-id] merge data)}
-              (update-hooks hook-in extension-id))))
+              {:db (update-in db [:account/account :extensions extension-id] merge {:hooks hooks :active? active?})}
+              (update-hooks hook-in extension-id)
+              (when on-init (on-init)))))
 
 (fx/defn remove-from-registry
   [cofx extension-id]
@@ -111,11 +111,11 @@
 
 (fx/defn change-state
   [cofx extension-key active?]
-  (let [extensions     (get-in cofx [:db :account/account :extensions])
-        new-extensions (assoc-in extensions [extension-key :active?] active?)
-        hook-fn        (if active?
-                         hook-in
-                         unhook)
+  (let [extensions      (get-in cofx [:db :account/account :extensions])
+        new-extensions  (assoc-in extensions [extension-key :active?] active?)
+        hook-fn         (if active?
+                          hook-in
+                          unhook)
         lifecycle-event (if active?
                           (get-in extensions [extension-key :lifecycle :on-activation])
                           (get-in extensions [extension-key :lifecycle :on-deactivation]))]
@@ -129,20 +129,20 @@
 
 (fx/defn install
   [{:keys [db] :as cofx} url {:keys [hooks] :as extension-data} modal?]
-  (let [{:account/keys    [account]} db
-        on-installation  (get-in extension-data [:lifecycle :on-installation])
-        on-activation    (get-in extension-data [:lifecycle :on-activation])
-        ephemeral?       (get-in extension-data [:lifecycle :ephemeral])
-        extension      {:id         url
-                        :name       (or (get-in extension-data [:meta :name]) "Unnamed")
-                        :url        url
-                        :lifecycle  {:on-installation on-installation
+  (let [{:account/keys [account]} db
+        on-installation (get-in extension-data [:lifecycle :on-installation])
+        on-activation   (get-in extension-data [:lifecycle :on-activation])
+        ephemeral?      (get-in extension-data [:lifecycle :ephemeral])
+        extension       {:id        url
+                         :name      (or (get-in extension-data [:meta :name]) "Unnamed")
+                         :url       url
+                         :lifecycle {:on-installation   on-installation
                                      :on-deinstallation (get-in extension-data [:lifecycle :on-deinstallation])
-                                     :on-activation on-activation
-                                     :on-deactivation (get-in extension-data [:lifecycle :on-deactivation])
-                                     :ephemeral? ephemeral?}
-                        :active? true}
-        new-extensions (assoc (:extensions account) url extension)]
+                                     :on-activation     on-activation
+                                     :on-deactivation   (get-in extension-data [:lifecycle :on-deactivation])
+                                     :ephemeral?        ephemeral?}
+                         :active?   true}
+        new-extensions  (assoc (:extensions account) url extension)]
     (if ephemeral?
       (fx/merge cofx
                 {:dispatch (if modal?
@@ -163,14 +163,14 @@
 (fx/defn uninstall
   [{:keys [db] :as cofx} extension-key]
   (let [{:account/keys [account]} db
-        extension     (get-in cofx [:db :account/account :extensions extension-key])
-        active?       (get extension :active?)
-        on-deinstallation  (get-in extension [:lifecycle :on-deinstallation])
-        on-deactivation    (get-in extension [:lifecycle :on-deactivation])
-        new-extensions (dissoc (:extensions account) extension-key)]
+        extension         (get-in cofx [:db :account/account :extensions extension-key])
+        active?           (get extension :active?)
+        on-deinstallation (get-in extension [:lifecycle :on-deinstallation])
+        on-deactivation   (get-in extension [:lifecycle :on-deactivation])
+        new-extensions    (dissoc (:extensions account) extension-key)]
     (fx/merge cofx
-              {:utils/show-popup {:title     (i18n/label :t/success)
-                                  :content   (i18n/label :t/extension-uninstalled)}}
+              {:utils/show-popup {:title   (i18n/label :t/success)
+                                  :content (i18n/label :t/extension-uninstalled)}}
               (when (and active? on-deactivation) (on-deactivation))
               (when on-deinstallation (on-deinstallation))
               (remove-from-registry extension-key)
@@ -190,17 +190,19 @@
   (if (get-in cofx [:db :account/account :dev-mode?])
     (load cofx url modal?)
     {:ui/show-confirmation
-     {:title               (i18n/label :t/confirm-install)
-      :content             (i18n/label :t/extension-install-alert)
-      :on-accept           #(do
-                              (re-frame/dispatch [:accounts.ui/dev-mode-switched true])
-                              (re-frame/dispatch [:extensions.ui/install-extension-button-pressed url]))}}))
+     {:title     (i18n/label :t/confirm-install)
+      :content   (i18n/label :t/extension-install-alert)
+      :on-accept #(do
+                    (re-frame/dispatch [:accounts.ui/dev-mode-switched true])
+                    (re-frame/dispatch [:extensions.ui/install-extension-button-pressed url]))}}))
 
 (fx/defn initialize
-  [{{:account/keys [account]} :db}]
-  (let [{:keys [extensions dev-mode?]} account]
+  [{{:account/keys [account] :as db} :db}]
+  (let [{:keys [extensions dev-mode?]} account
+        ext-vals (vals extensions)]
     (when dev-mode?
-      {:extensions/load {:extensions (vals extensions)
+      {:db              (assoc db :extensions/store (into {} (map (fn [{:keys [id data]}] {id data}) ext-vals)))
+       :extensions/load {:extensions ext-vals
                          :follow-up  :extensions/add-to-registry}})))
 
 (defn existing-hooks-for

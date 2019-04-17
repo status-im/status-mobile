@@ -27,7 +27,7 @@
 (defn- deserialize-extensions [extensions]
   (reduce-kv
    (fn [acc _ {:keys [url] :as extension}]
-     (assoc acc url extension))
+     (assoc acc url (update extension :data core/deserialize)))
    {}
    extensions))
 
@@ -49,7 +49,7 @@
        networks))
 
 (defn- serialize-extensions [extensions]
-  (or (vals extensions) '()))
+  (or (map #(update % :data core/serialize) (vals extensions)) '()))
 
 (defn- serialize-account [account]
   (-> account

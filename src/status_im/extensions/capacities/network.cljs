@@ -1,4 +1,4 @@
-(ns status-im.extensions.network
+(ns status-im.extensions.capacities.network
   (:require [status-im.utils.handlers :as handlers]
             [status-im.i18n :as i18n]
             [status-im.network.core :as network]))
