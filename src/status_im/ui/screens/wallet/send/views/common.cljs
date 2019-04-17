@@ -255,20 +255,21 @@
                             :font-size 12}}
         (i18n/label :t/gas-limit-explanation)]])))
 
-(defn- custom-gas-derived-state [{:keys [gas-input gas-price-input custom-open?]}
-                                 {:keys [custom-gas custom-gas-price
+(defn- custom-gas-derived-state [{:keys [custom-open?]}
+                                 {:keys [gas-input gas-price-input]}
+                                 {:keys [gas gas-price
                                          optimal-gas optimal-gas-price
                                          gas-gas-price->fiat
-                                         fiat-currency]}]
+                                         fiat-currency] :as params}]
   (let [custom-input-gas
         (or (when (not (string/blank? gas-input))
               (money/bignumber gas-input))
-            custom-gas
+            gas
             optimal-gas)
         custom-input-gas-price
         (or (when (not (string/blank? gas-price-input))
               (money/->wei :gwei gas-price-input))
-            custom-gas-price
+            gas-price
             optimal-gas-price)]
     {:optimal-fiat-price
      (str "~ " (:symbol fiat-currency)
@@ -282,25 +283,27 @@
        (str "..."))
      :gas-price-input-value
      (str (or gas-price-input
-              (some->> custom-gas-price (money/wei-> :gwei))
+              (some->> gas-price (money/wei-> :gwei))
               (some->> optimal-gas-price (money/wei-> :gwei))))
      :gas-input-value
-     (str (or gas-input custom-gas optimal-gas))
+     (str (or gas-input gas optimal-gas))
      :gas-map-for-submit
      (when custom-open?
        {:gas custom-input-gas :gas-price custom-input-gas-price})}))
 
 ;; Choosing the gas amount
-(defn custom-gas-input-panel [{:keys [custom-gas custom-gas-price
+(defn custom-gas-input-panel [{:keys [gas gas-price
                                       optimal-gas optimal-gas-price
-                                      gas-gas-price->fiat on-submit] :as opts}]
+                                      gas-gas-price->fiat on-submit
+                                      input-state-atom] :as opts}]
   {:pre [optimal-gas optimal-gas-price gas-gas-price->fiat on-submit]}
   (let [{:keys [height]}  (dimensions/window)
         custom-height 290
-        custom-open? (and custom-gas custom-gas-price)
-        state-atom   (reagent.core/atom {:custom-open?    (boolean custom-open?)
-                                         :gas-input       nil
-                                         :gas-price-input nil})
+        custom-open? (and gas gas-price)
+        sheet-state-atom  (reagent.core/atom  {:custom-open? (boolean custom-open?)})
+      ;;  state-atom   (reagent.core/atom {
+      ;;                                   :gas-input       nil
+      ;;                                   :gas-price-input nil})
 
         ;; slider animations
         slider-height (animation/create-value (if custom-open? custom-height 0))
@@ -320,17 +323,17 @@
 
         open-slider!  #(do
                          (slider-height-to custom-height)
-                         (swap! state-atom assoc :custom-open? true))
+                         (swap! sheet-state-atom assoc :custom-open? true))
         close-slider! #(do
                          (slider-height-to 0)
-                         (swap! state-atom assoc :custom-open? false))]
+                         (swap! sheet-state-atom assoc :custom-open? false))]
     (fn [opts]
       (let [{:keys [optimal-fiat-price
                     custom-fiat-price
                     gas-price-input-value
                     gas-input-value
-                    gas-map-for-submit]}
-            (custom-gas-derived-state @state-atom opts)]
+                    gas-map-for-submit] :as params}
+            (custom-gas-derived-state @sheet-state-atom @input-state-atom opts)]
         [react/scroll-view {:style {:background-color        colors/white
                                     :border-top-left-radius  8
                                     :border-top-right-radius 8
@@ -360,7 +363,7 @@
                                     :label            (i18n/label :t/optimal-gas-option)
                                     :on-press         close-slider!
                                     :background-color optimal-button-bg-color
-                                    :active           (not (:custom-open? @state-atom))}
+                                    :active           (not (:custom-open? @sheet-state-atom))}
                                    [react/text {:style {:color        colors/gray
                                                         :font-size    17
                                                         :padding-left 17
@@ -370,7 +373,7 @@
                                     :label            (i18n/label :t/custom-gas-option)
                                     :on-press         open-slider!
                                     :background-color custom-button-bg-color
-                                    :active           (:custom-open? @state-atom)}
+                                    :active           (:custom-open? @sheet-state-atom)}
                                    [react/text {:style {:color        colors/gray
                                                         :font-size    17
                                                         :padding-left 17
@@ -383,9 +386,9 @@
                                         :overflow         :hidden}}
            [custom-gas-edit
             {:on-gas-price-input-change #(when (money/bignumber %)
-                                           (swap! state-atom assoc :gas-price-input %))
+                                           (swap! input-state-atom assoc :gas-price-input %))
              :on-gas-input-change       #(when (money/bignumber %)
-                                           (swap! state-atom assoc :gas-input %))
+                                           (swap! input-state-atom assoc :gas-input %))
              :gas-price-input           gas-price-input-value
              :gas-input                 gas-input-value}]]
           [react/view {:style {:flex-direction   :row

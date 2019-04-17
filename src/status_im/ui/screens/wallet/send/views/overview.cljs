@@ -192,6 +192,7 @@
                                            fiat-currency prices all-tokens chain web3]}]
   (let [tx-atom                (reagent/atom transaction)
         network-fees-modal-ref (atom nil)
+        gas-input-state        (reagent.core/atom nil)
         open-network-fees!     #(common/anim-ref-send @network-fees-modal-ref :open!)
         close-network-fees!    #(common/anim-ref-send @network-fees-modal-ref :close!)
         modal?                 (= :dapp flow)]
@@ -242,6 +243,7 @@
                   (assoc
                    :fiat-currency fiat-currency
                    :gas-gas-price->fiat gas-gas-price->fiat
+                   :input-state-atom gas-input-state
                    :on-submit (fn [{:keys [gas gas-price]}]
                                 (if (and gas gas-price)
                                   (swap! tx-atom assoc :gas gas :gas-price gas-price)

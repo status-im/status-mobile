@@ -176,6 +176,7 @@
         coin                   (or (fetch-token all-tokens network (:symbol transaction))
                                    native-currency)
         state-atom             (reagent/atom (create-initial-state coin (:amount transaction)))
+        gas-input-state        (reagent.core/atom nil)
         amount-input-ref       (atom nil)
         network-fees-modal-ref (atom nil)
         open-network-fees!     #(do (.blur @amount-input-ref)
@@ -211,7 +212,8 @@
                       (assoc
                        :fiat-currency fiat-currency
                        :gas-gas-price->fiat gas-gas-price->fiat
-                       :on-submit (fn [{:keys [gas gas-price]}]
+                       :input-state-atom gas-input-state
+                       :on-submit (fn [{:keys [gas gas-price] :as params}]
                                     (if (and gas gas-price)
                                       (do (swap! tx-atom assoc :gas gas :gas-price gas-price)
                                           (update-amount-field (:input-amount @state-atom)))
@@ -224,7 +226,8 @@
                                                                           (when symbol
                                                                             (if-not (= symbol (:symbol @tx-atom))
                                                                               (update-amount-field nil))
-                                                                            (swap! tx-atom assoc :symbol symbol)
+                                                                            (swap! tx-atom assoc :symbol symbol :gas nil :gas-price nil)
+                                                                            (reset! gas-input-state nil)
                                                                             (common/refresh-optimal-gas web3 tx-atom))
                                                                           (re-frame/dispatch [:navigate-back]))}])
                                           :underlay-color colors/white-transparent}
