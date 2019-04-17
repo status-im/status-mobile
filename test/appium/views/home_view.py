@@ -200,7 +200,7 @@ class HomeView(BaseView):
 
     def open_status_test_dapp(self, allow_all=True):
         dapp_view = self.dapp_tab_button.click()
-        dapp_view.open_url('simpledapp.eth')
+        dapp_view.open_url('status-im.github.io/dapp')
         status_test_dapp = dapp_view.get_status_test_dapp_view()
         for _ in range(2):
             if allow_all:
