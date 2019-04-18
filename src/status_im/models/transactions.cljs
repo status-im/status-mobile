@@ -114,11 +114,13 @@
        (error-fn error)
        (add-block-info web3 current-block-number chain-tokens direction result success-fn)))))
 
-(defn- limited-from-block [current-block-number]
+(defn- limited-from-block [current-block-number latest-block-checked]
   {:pre [(integer? current-block-number)]
    ;; needs to be a positive etherium hex
    :post [(string? %) (string/starts-with? % "0x")]}
-  (-> current-block-number (- block-query-limit) (max 0) ethereum/int->hex))
+  (if latest-block-checked
+    (-> latest-block-checked (- confirmations-count-threshold) ethereum/int->hex)
+    (-> current-block-number (- block-query-limit) (max 0) ethereum/int->hex)))
 
 ;; Here we are querying event logs for Transfer events.
 ;;
@@ -130,6 +132,8 @@
 ;; - topics[2] - address of token sender with leading zeroes padding up to 32 bytes
 ;;
 
+(defonce latest-block-checked (atom nil))
+
 (defn- get-token-transfer-logs
   ;; NOTE(goranjovic): here we use direct JSON-RPC calls to get event logs because of web3 event issues with infura
   ;; we still use web3 to get other data, such as block info
@@ -138,7 +142,7 @@
   (let [[from to] (if (= :inbound direction)
                     [nil (add-padding (ethereum/normalized-address address))]
                     [(add-padding (ethereum/normalized-address address)) nil])
-        from-block (limited-from-block current-block-number)
+        from-block (limited-from-block current-block-number @latest-block-checked)
         args {:jsonrpc "2.0"
               :id      2
               :method  constants/web3-get-logs
@@ -146,6 +150,7 @@
                          :fromBlock from-block
                          :topics    [constants/event-transfer-hash from to]}]}
         payload (.stringify js/JSON (clj->js args))]
+    (reset! latest-block-checked current-block-number)
     (status/call-private-rpc payload
                              (response-handler web3 current-block-number chain-tokens direction ethereum/handle-error cb))))
 
@@ -334,7 +339,7 @@
   (get-transactions
    {:account-address account-address
     :chain           chain
-    :chain-tokens    (into {} (map (juxt :address identity) (tokens/tokens-for all-tokens chain)))
+    :chain-tokens (into {} (map (juxt :address identity) (tokens/tokens-for all-tokens chain)))
     :web3            web3
     :success-fn (fn [transactions]
                   #_(log/debug "Transactions received: " (pr-str (keys transactions)))
@@ -377,12 +382,14 @@
             transaction-map (:transactions wallet)
             transaction-ids (set (keys transaction-map))
             chaos-mode? (get-in account [:settings :chaos-mode?])]
-        (if-not (or (have-unconfirmed-transactions? (vals transaction-map))
+        (if-not (or @latest-block-checked
+                    (have-unconfirmed-transactions? (vals transaction-map))
                     (not-empty (set/difference chat-transaction-ids transaction-ids)))
           (done-fn)
           (transactions-query-helper web3 all-tokens account-address chain done-fn chaos-mode?))))))
 
 (defn- start-sync! [{:keys [:account/account network web3] :as options}]
+  (reset! latest-block-checked nil)
   (let [account-address (:address account)]
     (when @polling-executor
       (async-util/async-periodic-stop! @polling-executor))
@@ -397,11 +404,14 @@
  ::sync-transactions-now
  (fn [db] (sync-now! db)))
 
-(re-frame/reg-fx ::start-sync-transactions
-                 (fn [db] (start-sync! db)))
+(re-frame/reg-fx
+ ::start-sync-transactions
+ (fn [db] (start-sync! db)))
 
 (fx/defn start-sync [{:keys [db]}]
-  {::start-sync-transactions (select-keys db [:network-status :account/account :app-state :network :web3])})
+  {::start-sync-transactions
+   (select-keys db [:network-status :account/account :wallet/all-tokens
+                    :app-state :network :web3])})
 
 (re-frame/reg-fx
  ::stop-sync-transactions
