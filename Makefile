@@ -30,8 +30,6 @@ HOST_OS := $(shell uname | tr '[:upper:]' '[:lower:]')
 export NIX_CONF_DIR = $(PWD)/nix
 
 export REACT_SERVER_PORT ?= 5001 # any value different from default 5000 will work; this has to be specified for both the Node.JS server process and the Qt process
-export STATUS_NODE_PORT ?= 12345 # no need to specify this if just running dev instance alongside release build
-export STATUS_DATA_DIR ?= ~/status-files/data1 # this is where Realm data files, Geth node data, and logs will reside; also not strictly needed for dev alongside release
 
 # WARNING: This has to be located right before the targets
 ifdef IN_NIX_SHELL
