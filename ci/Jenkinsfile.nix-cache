@@ -1,5 +1,5 @@
 pipeline {
-  agent { label 'linux' }
+  agent { label params.AGENT_LABEL }
 
   environment {
     CI_ENVIRONMENT = 'jenkins'
@@ -15,7 +15,7 @@ pipeline {
     timestamps()
     disableConcurrentBuilds()
     /* Prevent Jenkins jobs from running forever */
-    timeout(time: 20, unit: 'MINUTES')
+    timeout(time: 300, unit: 'MINUTES')
     /* Limit builds retained */
     buildDiscarder(logRotator(
       numToKeepStr: '20',
@@ -26,13 +26,18 @@ pipeline {
   stages {
     stage('Setup') {
       steps {
-        sh 'nix-env -i openssh'
+        sh 'scripts/setup'
+        sh """
+          . ~/.nix-profile/etc/profile.d/nix.sh && \
+          nix-env -i openssh
+        """
       }
     }
     stage('Build') {
       steps {
         sh """
-          nix build -v --no-link &&
+          . ~/.nix-profile/etc/profile.d/nix.sh && \
+          nix build -v --no-link && \
           nix-shell --pure --run echo
         """
       }
@@ -41,6 +46,7 @@ pipeline {
       steps {
         sshagent(credentials: ['nix-cache-ssh']) {
           sh """
+            . ~/.nix-profile/etc/profile.d/nix.sh && \
             find /nix/store/ -mindepth 1 -maxdepth 1 -not -name '.links' -and -not -name '*.lock' | \
               xargs nix-copy-closure -v --to ${NIX_CACHE_USER}@${NIX_CACHE_HOST}
           """
