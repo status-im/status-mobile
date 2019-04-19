@@ -40,7 +40,7 @@
                   callback)))
 
 (fx/defn call
-  [{:keys [db] :as cofx} {:keys [contract method params callback on-result]}]
+  [{:keys [db] :as cofx} {:keys [contract method params callback on-result on-error details]}]
   (let [chain-keyword (-> (get-in db [:account/account :networks (:network db)])
                           ethereum/network->chain-keyword)
         contract-address (get-in contracts [contract :address chain-keyword])]
@@ -51,13 +51,15 @@
         (if write?
           (wallet/open-sign-transaction-flow
            cofx
-           {:to        contract-address
-            :data      data
-            :id        "approve"
-            :symbol    :ETH
-            :method    "eth_sendTransaction"
-            :amount    (money/bignumber 0)
-            :on-result on-result})
+           (merge {:to        contract-address
+                   :data      data
+                   :id        "approve"
+                   :symbol    :ETH
+                   :method    "eth_sendTransaction"
+                   :amount    (money/bignumber 0)
+                   :on-result on-result
+                   :on-error  on-error}
+                  details))
           {::call {:address  contract-address
                    :data     data
                    :callback #(callback (if (empty? return-params)

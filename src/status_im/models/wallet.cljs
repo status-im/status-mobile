@@ -160,22 +160,23 @@
           (update :gas-price str)
           (dissoc :message-id :id :gas)))))
 
-(defn handle-transaction-error [{:keys [db]} {:keys [code message]}]
+(fx/defn handle-transaction-error
+  [{:keys [db] :as cofx} {:keys [code message]}]
   (let [{:keys [on-error]} (get-in db [:wallet :send-transaction])]
     (case code
-
       ;;WRONG PASSWORD
       constants/send-transaction-err-decrypt
       {:db (-> db
                (assoc-in [:wallet :send-transaction :wrong-password?] true))}
 
-      (fx/merge {:db (-> db
-                         (assoc-in [:wallet :transactions-queue] nil)
-                         (assoc-in [:wallet :send-transaction] {}))}
-                {:wallet/show-transaction-error message}
-                (navigation/navigate-back)
-                (when on-error
-                  {:dispatch (conj on-error message)})))))
+      (fx/merge cofx
+                (merge {:db (-> db
+                                (assoc-in [:wallet :transactions-queue] nil)
+                                (assoc-in [:wallet :send-transaction] {}))
+                        :wallet/show-transaction-error message}
+                       (when on-error
+                         {:dispatch (conj on-error message)}))
+                navigation/navigate-back))))
 
 (defn clear-error-message [db error-type]
   (update-in db [:wallet :errors] dissoc error-type))
