@@ -51,7 +51,7 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing_view.find_full_text(connection_is_secure_text)
         browsing_view.cross_icon.click()
 
-        daap_view.element_by_text('Airswap').click()
+        browsing_view = daap_view.open_url('https://instant.airswap.io')
         browsing_view.url_edit_box_lock_icon.click()
         browsing_view.find_full_text(connection_is_secure_text)
 
