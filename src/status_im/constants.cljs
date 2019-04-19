@@ -245,7 +245,7 @@
 (def regx-italic #"~[^~]+~")
 (def regx-backquote #"`[^`]+`")
 (def regx-universal-link #"((^https?://get.status.im/)|(^status-im://))[\x00-\x7F]+$")
-(def regx-deep-link #"(^status-im://)[\x00-\x7F]+$")
+(def regx-deep-link #"((^ethereum:.*)|(^status-im://[\x00-\x7F]+$))")
 
 (def ^:const lines-collapse-threshold 20)
 (def ^:const chars-collapse-threshold 600)

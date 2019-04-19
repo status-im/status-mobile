@@ -56,6 +56,9 @@
   (testing "status-im://blah"
     (testing "it returns true"
       (is (links/deep-link? "status-im://blah"))))
+  (testing "ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7"
+    (testing "it returns true"
+      (is (links/deep-link? "ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7"))))
   (testing "http://get.status.im/blah"
     (testing "it returns true"
       (is (links/universal-link? "http://get.status.im/blah"))))

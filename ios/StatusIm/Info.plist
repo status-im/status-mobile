@@ -2,17 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>im.status.ethereum.applink</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>status-im</string>
-			</array>
-		</dict>
-	</array>
+	<key>CFBundleBuildUrl</key>
+	<string>????</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -31,10 +22,33 @@
 	<string>1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<key>CFBundleBuildUrl</key>
-	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>im.status.ethereum.applink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>status-im</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>im.status.ethereum.eip681</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>ethereum</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<true/>
+	<key>ITSEncryptionExportComplianceCode</key>
+	<string>1aa92c4d-6194-4d7d-b70a-16b48256b87e</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>whatsapp</string>
@@ -69,6 +83,27 @@
 	<string>Location access is required for some DApps to function properly.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Photos access it required to give you ability to choose custom profile pictures.</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Inter-Bold.otf</string>
+		<string>Inter-Medium.otf</string>
+		<string>Inter-Regular.otf</string>
+		<string>Inter-Black.otf</string>
+		<string>Inter-BlackItalic.otf</string>
+		<string>Inter-BoldItalic.otf</string>
+		<string>Inter-ExtraBold.otf</string>
+		<string>Inter-ExtraBoldItalic.otf</string>
+		<string>Inter-ExtraLight-BETA.otf</string>
+		<string>Inter-ExtraLightItalic-BETA.otf</string>
+		<string>Inter-Italic.otf</string>
+		<string>Inter-Light-BETA.otf</string>
+		<string>Inter-LightItalic-BETA.otf</string>
+		<string>Inter-MediumItalic.otf</string>
+		<string>Inter-SemiBold.otf</string>
+		<string>Inter-SemiBoldItalic.otf</string>
+		<string>Inter-Thin-BETA.otf</string>
+		<string>Inter-ThinItalic-BETA.otf</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
@@ -94,30 +129,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<true/>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Inter-Bold.otf</string>
-		<string>Inter-Medium.otf</string>
-		<string>Inter-Regular.otf</string>
-		<string>Inter-Black.otf</string>
-		<string>Inter-BlackItalic.otf</string>
-		<string>Inter-BoldItalic.otf</string>
-		<string>Inter-ExtraBold.otf</string>
-		<string>Inter-ExtraBoldItalic.otf</string>
-		<string>Inter-ExtraLight-BETA.otf</string>
-		<string>Inter-ExtraLightItalic-BETA.otf</string>
-		<string>Inter-Italic.otf</string>
-		<string>Inter-Light-BETA.otf</string>
-		<string>Inter-LightItalic-BETA.otf</string>
-		<string>Inter-MediumItalic.otf</string>
-		<string>Inter-SemiBold.otf</string>
-		<string>Inter-SemiBoldItalic.otf</string>
-		<string>Inter-Thin-BETA.otf</string>
-		<string>Inter-ThinItalic-BETA.otf</string>
-	</array>
-	<key>ITSEncryptionExportComplianceCode</key>
-	<string>1aa92c4d-6194-4d7d-b70a-16b48256b87e</string>
 </dict>
 </plist>
