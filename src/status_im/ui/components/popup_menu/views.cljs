@@ -21,6 +21,10 @@
          :on-select #(re-frame/dispatch [:chat.ui/clear-history-pressed])}
         {:text (i18n/label :t/fetch-history)
          :on-select #(re-frame/dispatch [:chat.ui/fetch-history-pressed chat-id])}
+        #_{:text      "Fetch 48-60h"
+           :on-select #(re-frame/dispatch [:chat.ui/fetch-history-pressed48-60 chat-id])}
+        #_{:text      "Fetch 84-96h"
+           :on-select #(re-frame/dispatch [:chat.ui/fetch-history-pressed84-96 chat-id])}
         {:text (i18n/label :t/delete-chat)
          :on-select #(re-frame/dispatch [(if (and group-chat (not public?))
                                            :group-chats.ui/remove-chat-pressed

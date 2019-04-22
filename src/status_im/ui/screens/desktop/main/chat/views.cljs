@@ -25,7 +25,8 @@
             [status-im.utils.identicon :as identicon]
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.desktop.main.chat.emoji :as emoji]
-            [status-im.ui.components.icons.vector-icons :as icons])
+            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.screens.chat.message.gap :as gap])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn toolbar-chat-view
@@ -186,9 +187,16 @@
 (defmethod message :default
   [text me? {:keys [message-id chat-id message-status user-statuses from
                     current-public-key content-type outgoing type value] :as message}]
-  (if (= type :datemark)
+  (cond
+    (= type :datemark)
     ^{:key (str "datemark" message-id)}
     [message.datemark/chat-datemark value]
+
+    (= type :gap)
+    ^{:key (str "gap" value)}
+    [gap/gap message nil nil]
+
+    :else
     (when (contains? constants/desktop-content-types content-type)
       (reagent.core/create-class
        {:component-did-mount

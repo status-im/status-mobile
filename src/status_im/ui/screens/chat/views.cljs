@@ -27,7 +27,8 @@
             [status-im.ui.screens.chat.toolbar-content :as toolbar-content]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
-            [status-im.utils.datetime :as datetime])
+            [status-im.utils.datetime :as datetime]
+            [status-im.ui.screens.chat.message.gap :as gap])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn add-contact-bar [public-key]
@@ -71,65 +72,9 @@
   [{{:keys [value]} :row}]
   [message-datemark/chat-datemark-mobile value])
 
-(defview gap
-  [ids idx list-ref in-progress? connected? range first-gap? intro-loading?]
-  (when-not (and first-gap? intro-loading?)
-    [react/view {:align-self          :stretch
-                 :margin-top          24
-                 :margin-bottom       24
-                 :height              48
-                 :align-items         :center
-                 :justify-content     :center
-                 :border-color        colors/gray-light
-                 :border-top-width    1
-                 :border-bottom-width 1
-                 :background-color    :white}
-     [react/touchable-highlight
-      {:on-press (when (and connected? (not in-progress?))
-                   #(do
-                      (when @list-ref
-                        (.scrollToIndex @list-ref #js {:index        (max 0 (dec idx))
-                                                       :viewOffset   20
-                                                       :viewPosition 0.5}))
-                      (if first-gap?
-                        (re-frame/dispatch [:chat.ui/fetch-more])
-                        (re-frame/dispatch [:chat.ui/fill-gaps ids]))))}
-      [react/view {:style {:flex            1
-                           :align-items     :center
-                           :justify-content :center
-                           :text-align      :center}}
-       (if in-progress?
-         [react/activity-indicator]
-         [react/nested-text
-          {:style {:text-align :center
-                   :color      (if connected?
-                                 colors/blue
-                                 colors/gray)}}
-          (i18n/label (if first-gap?
-                        :t/load-more-messages
-                        :t/fetch-messages))
-          (when first-gap?
-            [{:style {:typography :caption
-                      :color      colors/gray}}
-             (str "\n"
-                  (i18n/label :t/load-messages-before
-                              {:date (datetime/timestamp->long-date
-                                      (* 1000 (:lowest-request-from range)))}))])])]]]))
-
-(defview gap-wrapper [{:keys [gaps first-gap?]} idx list-ref]
-  (letsubs [in-progress? [:chats/fetching-gap-in-progress?
-                          (if first-gap?
-                            [:first-gap]
-                            (:ids gaps))]
-            connected?   [:mailserver/connected?]
-            range        [:chats/range]
-            intro-status [:chats/current-chat-intro-status]]
-    [gap (:ids gaps) idx list-ref in-progress?
-     connected? range first-gap? (= intro-status :loading)]))
-
 (defmethod message-row :gap
   [{:keys [row idx list-ref]}]
-  [gap-wrapper row idx list-ref])
+  [gap/gap row idx list-ref])
 
 (defmethod message-row :default
   [{:keys [group-chat current-public-key modal? row]}]
