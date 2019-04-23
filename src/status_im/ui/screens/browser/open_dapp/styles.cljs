@@ -3,18 +3,13 @@
   (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.components.styles :as styles]))
 
-(def input-container
-  {:flex-direction    :row
-   :align-items       :center
-   :border-radius     styles/border-radius
-   :height            36
-   :background-color  colors/gray-lighter
-   :margin-horizontal 16
-   :margin-bottom     9
-   :margin-top        24})
-
 (defstyle input
-  {:flex               1
+  {:border-radius      styles/border-radius
+   :background-color   colors/gray-lighter
+   :margin-horizontal  16
+   :margin-bottom      9
+   :margin-top         24
+   :height             36
    :padding-horizontal 14
    :desktop            {:height 30
                         :width  "100%"}
