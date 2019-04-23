@@ -17,16 +17,11 @@
   [react/view styles/icon-container
    [icons/icon :main-icons/dapp {:color colors/gray}]])
 
-(defn prepare-items [dapps]
-  (fn [{:keys [dapp permissions]}]
-    (merge
-     {:title       dapp
-      :accessories [:chevron]
-      :on-press    #(re-frame/dispatch [:navigate-to :manage-dapps-permissions {:dapp dapp :permissions permissions}])}
-     (let [path (get-in dapps [dapp :photo-path])]
-       (if path
-         {:image-path path}
-         {:image d-icon})))))
+(defn prepare-items [{:keys [dapp permissions]}]
+  {:title       dapp
+   :accessories [:chevron]
+   :on-press    #(re-frame/dispatch [:navigate-to :manage-dapps-permissions {:dapp dapp :permissions permissions}])
+   :image       d-icon})
 
 (defn prepare-items-manage [permission]
   {:title       (case permission
@@ -36,14 +31,13 @@
    :accessories [:check]})
 
 (views/defview dapps-permissions []
-  (views/letsubs [permissions [:get :dapps/permissions]
-                  dapps       [:contacts/dapps-by-name]]
+  (views/letsubs [permissions [:get :dapps/permissions]]
     [react/view {:flex 1 :background-color colors/white}
      [status-bar/status-bar]
      [toolbar/simple-toolbar
       (i18n/label :t/dapps-permissions)]
      [list/flat-list
-      {:data      (map (prepare-items dapps) (vals permissions))
+      {:data      (map prepare-items (vals permissions))
        :key-fn    (fn [_ i] (str i))
        :render-fn list-item/list-item}]]))
 
@@ -57,5 +51,5 @@
        :key-fn    (fn [_ i] (str i))
        :render-fn list-item/list-item}]
      [react/view {:padding-vertical 16}
-      [components.common/red-button {:label (i18n/label :t/revoke-access)
+      [components.common/red-button {:label    (i18n/label :t/revoke-access)
                                      :on-press #(re-frame/dispatch [:dapps/revoke-access dapp])}]]]))
