@@ -62,11 +62,12 @@
      [components/separator]
      (if (empty? browsers)
        [list-header true]
-       [list/flat-list {:header         [list-header false]
-                        :data           browsers
-                        :footer         [react/view
-                                         {:style {:height     tabs.styles/tabs-diff
-                                                  :align-self :stretch}}]
-                        :key-fn         :browser-id
-                        :end-fill-color colors/white
-                        :render-fn      list-item}])]))
+       [react/scroll-view
+        [list-header false]
+        [list/flat-list {:data           browsers
+                         :footer         [react/view
+                                          {:style {:height     tabs.styles/tabs-diff
+                                                   :align-self :stretch}}]
+                         :key-fn         :browser-id
+                         :end-fill-color colors/white
+                         :render-fn      list-item}]])]))
