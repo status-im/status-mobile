@@ -137,12 +137,11 @@
 (defn- get-token-transfer-logs
   ;; NOTE(goranjovic): here we use direct JSON-RPC calls to get event logs because of web3 event issues with infura
   ;; we still use web3 to get other data, such as block info
-  [web3 current-block-number chain-tokens direction address cb]
+  [web3 current-block-number from-block chain-tokens direction address cb]
   {:pre [web3 (integer? current-block-number) (map? chain-tokens) (keyword? direction) (string? address) (fn? cb)]}
   (let [[from to] (if (= :inbound direction)
                     [nil (add-padding (ethereum/normalized-address address))]
                     [(add-padding (ethereum/normalized-address address)) nil])
-        from-block (limited-from-block current-block-number @latest-block-checked)
         args {:jsonrpc "2.0"
               :id      2
               :method  constants/web3-get-logs
@@ -150,15 +149,18 @@
                          :fromBlock from-block
                          :topics    [constants/event-transfer-hash from to]}]}
         payload (.stringify js/JSON (clj->js args))]
-    (reset! latest-block-checked current-block-number)
     (status/call-private-rpc payload
                              (response-handler web3 current-block-number chain-tokens direction ethereum/handle-error cb))))
 
 (defn- get-token-transactions
-  [web3 chain-tokens direction address cb]
-  {:pre [web3 (map? chain-tokens) (keyword? direction) (string? address) (fn? cb)]}
+  [web3 chain-tokens address cb]
+  {:pre [web3 (map? chain-tokens) (string? address) (fn? cb)]}
   (ethereum/get-block-number web3
-                             #(get-token-transfer-logs web3 % chain-tokens direction address cb)))
+                             (fn [current-block-number]
+                               (let [from-block (limited-from-block current-block-number @latest-block-checked)]
+                                 (reset! latest-block-checked current-block-number)
+                                 (get-token-transfer-logs web3 current-block-number from-block chain-tokens :inbound address cb)
+                                 (get-token-transfer-logs web3 current-block-number from-block chain-tokens :outbound address cb)))))
 
 ;; --------------------------------------------------------------------------
 ;; etherscan transactions
@@ -248,12 +250,10 @@
                           success-fn
                           error-fn
                           chaos-mode?)
-  (doseq [direction [:inbound :outbound]]
-    (get-token-transactions web3
-                            chain-tokens
-                            direction
-                            account-address
-                            success-fn)))
+  (get-token-transactions web3
+                          chain-tokens
+                          account-address
+                          success-fn))
 
 ;; -----------------------------------------------------------------------------
 ;; Helpers functions that help determine if a background sync should execute
