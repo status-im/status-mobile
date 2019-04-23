@@ -140,7 +140,7 @@
        ;; Replacing therefore with checkbox until I have more time to investigate
        (checkbox.views/checkbox {:checked? enabled?
                                  :on-value-change (partial toggle-enabled! installation-id enabled?)})
-       [react/switch {:on-tint-color   colors/blue
+       [react/switch {:track-color     #js {:true colors/blue :false nil}
                       :value           enabled?
                       :on-value-change (partial toggle-enabled! installation-id enabled?)}])]]])
 

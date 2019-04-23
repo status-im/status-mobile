@@ -109,7 +109,7 @@
   [react/view styles/settings-item
    [react/view styles/settings-item-text-wrapper
     [react/i18n-text {:style styles/settings-item-text :key label-kw}]]
-   [react/switch {:on-tint-color   colors/blue
+   [react/switch {:track-color     #js {:true colors/blue :false nil}
                   :value           (boolean value)
                   :on-value-change action-fn
                   :disabled        (not active?)}]])

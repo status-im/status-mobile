@@ -145,7 +145,7 @@
       [react/text {:style (assoc (styles/adv-settings-row-text colors/black)
                                  :font-size 14)}
        (i18n/label :t/logging-enabled)]
-      [react/switch {:on-tint-color   colors/blue
+      [react/switch {:track-color     #js {:true colors/blue :false nil}
                      :value           logging-enabled
                      :on-value-change #(re-frame/dispatch [:log-level.ui/logging-enabled (not logging-enabled)])}]]
      [react/view {:style (styles/adv-settings-row false)}
@@ -217,7 +217,7 @@
        [react/text {:style styles/adv-settings-subtitle} (i18n/label :t/pfs)]
        [react/view {:style (styles/profile-row false)}
         [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :t/pfs)]
-        [react/switch {:on-tint-color   colors/blue
+        [react/switch {:track-color     #js {:true colors/blue :false nil}
                        :value           pfs?
                        :on-value-change #(re-frame/dispatch [:accounts.ui/toggle-pfs (not pfs?)])}]]])))
 
@@ -292,7 +292,7 @@
         [share-contact-code]
         [react/view {:style (styles/profile-row false)}
          [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :notifications)]
-         [react/switch {:on-tint-color   colors/blue
+         [react/switch {:track-color     #js {:true colors/blue :false nil}
                         :value           notifications?
                         :on-value-change #(re-frame/dispatch [:accounts.ui/notifications-enabled (not notifications?)])}]]
         [advanced-settings-item adv-settings-open?]
