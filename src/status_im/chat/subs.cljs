@@ -179,15 +179,40 @@
    (sort-by :from (vals (get gaps chat-id)))))
 
 (re-frame/reg-sub
+ :chats/range
+ :<- [:get-in [:mailserver/ranges]]
+ :<- [:chats/current-chat-id]
+ (fn [[ranges chat-id]]
+   (get ranges chat-id)))
+
+(re-frame/reg-sub
+ :chats/all-loaded?
+ :<- [:chats/current-chat]
+ (fn [chat]
+   (:all-loaded? chat)))
+
+(re-frame/reg-sub
+ :chats/public?
+ :<- [:chats/current-chat]
+ (fn [chat]
+   (:public? chat)))
+
+(re-frame/reg-sub
  :chats/current-chat-messages-stream
  :<- [:chats/current-chat-messages]
  :<- [:chats/current-chat-message-groups]
  :<- [:chats/current-chat-message-statuses]
  :<- [:chats/current-chat-referenced-messages]
  :<- [:chats/messages-gaps]
- (fn [[messages message-groups message-statuses referenced-messages messages-gaps]]
+ :<- [:chats/range]
+ :<- [:chats/all-loaded?]
+ :<- [:chats/public?]
+ (fn [[messages message-groups message-statuses referenced-messages
+       messages-gaps range all-loaded? public?]]
    (-> (chat.db/sort-message-groups message-groups messages)
-       (chat.db/messages-with-datemarks-and-statuses messages message-statuses referenced-messages messages-gaps)
+       (chat.db/messages-with-datemarks-and-statuses
+        messages message-statuses referenced-messages
+        messages-gaps range all-loaded? public?)
        chat.db/messages-stream)))
 
 (re-frame/reg-sub

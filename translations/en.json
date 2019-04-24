@@ -283,7 +283,9 @@
     "wallet-set-up-title": "Set up your wallet",
     "loading": "Loading... ",
     "empty-chat-description": "There are no messages \nin this chat yet",
-    "empty-chat-description-public": "It's been quiet here for the last 24h. Start the conversation or ",
+    "empty-chat-description-public": "It's been quiet here for the last {{quiet-hours}}. Start the conversation or ",
+    "quiet-hours": "{{quiet-hours}} hours",
+    "quiet-days": "{{quiet-days}} days",
     "empty-chat-description-public-share-this": "share this chat.",
     "camera-access-error": "To grant the required camera permission, please go to your system settings and make sure that Status > Camera is selected.",
     "wallet-invalid-address": "Invalid address: \n {{data}}",
@@ -1000,6 +1002,8 @@
     "mailserver-format": "enode://{enode-id}:{password}@{ip-address}:{port}",
     "bootnode-format": "enode://{enode-id}@{ip-address}:{port}",
     "fetch-messages": "↓ Fetch messages",
+    "load-more-messages": "↓ Fetch more messages",
+    "load-messages-before": "before {{date}}",
     "open-dapp-store": "Discover ÐApps",
     "browsed-websites": "Browsed websites will appear here."
 }

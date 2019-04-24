@@ -132,7 +132,25 @@
           nil
           nil
           nil
-          nil))))
+          nil
+          nil
+          false
+          false))))
+  (testing "empty state pub-chat"
+    (is (=
+         [{:type       :gap
+           :value      ":first-gap"
+           :first-gap? true}]
+         (db/messages-with-datemarks-and-statuses
+          nil
+          nil
+          nil
+          nil
+          nil
+          {:lowest-request-from 10
+           :highest-request-to  30}
+          true
+          true))))
   (testing "simple case"
     (is (=
          '({:whisper-timestamp 40

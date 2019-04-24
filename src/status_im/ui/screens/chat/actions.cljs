@@ -45,24 +45,24 @@
   [(view-profile chat-id)
    (clear-history)
    (fetch-history chat-id)
-   (fetch-history48-60 chat-id)
-   (fetch-history84-96 chat-id)
+   #_(fetch-history48-60 chat-id)
+   #_(fetch-history84-96 chat-id)
    (delete-chat chat-id false)])
 
 (defn- group-chat-actions [chat-id]
   [(group-info chat-id)
    (clear-history)
    (fetch-history chat-id)
-   (fetch-history48-60 chat-id)
-   (fetch-history84-96 chat-id)
+   #_(fetch-history48-60 chat-id)
+   #_(fetch-history84-96 chat-id)
    (delete-chat chat-id true)])
 
 (defn- public-chat-actions [chat-id]
   [(share-chat chat-id)
    (clear-history)
    (fetch-history chat-id)
-   (fetch-history48-60 chat-id)
-   (fetch-history84-96 chat-id)
+   #_(fetch-history48-60 chat-id)
+   #_(fetch-history84-96 chat-id)
    (delete-chat chat-id false)])
 
 (defn actions [group-chat? chat-id public?]

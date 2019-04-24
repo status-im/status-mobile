@@ -754,6 +754,24 @@
        :chat-id chat-id}))))
 
 (handlers/register-handler-fx
+ :chat.ui/fetch-more
+ (fn [{:keys [db] :as cofx}]
+   (let [chat-id           (:current-chat-id db)
+
+         {:keys [lowest-request-from]}
+         (get-in db [:mailserver/ranges chat-id])
+
+         topic             (chat.db/topic-by-current-chat db)
+         gaps              [{:id   :first-gap
+                             :to   lowest-request-from
+                             :from (- lowest-request-from mailserver/one-day)}]]
+     (mailserver/fill-the-gap
+      cofx
+      {:gaps    gaps
+       :topic   topic
+       :chat-id chat-id}))))
+
+(handlers/register-handler-fx
  :chat.ui/remove-chat-pressed
  (fn [_ [_ chat-id]]
    {:ui/show-confirmation {:title               (i18n/label :t/delete-confirmation)
