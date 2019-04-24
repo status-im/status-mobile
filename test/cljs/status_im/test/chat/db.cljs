@@ -207,6 +207,9 @@
             :timestamp-str     "14:00"
             :user-statuses     nil
             :datemark          "today"}
+           {:type  :gap
+            :value ":gapid1"
+            :gaps  {:ids [:gapid1]}}
            {:whisper-timestamp 30
             :timestamp         30
             :content           nil
@@ -217,9 +220,6 @@
             :type              :datemark
             :whisper-timestamp 30
             :timestamp         30}
-           {:type  :gap
-            :value ":gapid1"
-            :gaps  {:ids [:gapid1]}}
            {:whisper-timestamp 20
             :timestamp         20
             :content           nil
