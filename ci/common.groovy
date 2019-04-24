@@ -36,8 +36,8 @@ def notifyPR(success) {
   } catch (ex) { /* fallback to posting directly to GitHub */
     println "Failed to use GHCMGR: ${ex}"
     switch (success) {
-      case true:  gh.NotifyPRSuccess(); break
-      case false: gh.NotifyPRFailure(); break
+      case true:  gh.notifyPRSuccess(); break
+      case false: gh.notifyPRFailure(); break
     }
   }
 }

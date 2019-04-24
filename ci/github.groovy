@@ -10,7 +10,7 @@ utils = load 'ci/utils.groovy'
 
 def notify(message) {
   def githubIssuesUrl = 'https://api.github.com/repos/status-im/status-react/issues'
-  def changeId = changeId() 
+  def changeId = utils.changeId() 
   if (changeId == null) { return }
   def msgObj = [body: message]
   def msgJson = new JsonBuilder(msgObj).toPrettyString()

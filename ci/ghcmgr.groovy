@@ -34,17 +34,28 @@ def postBuild(success) {
   def ghcmgrurl = 'https://ghcmgr.status.im'
   def body = buildObj(success)
   def json = new JsonBuilder(body).toPrettyString()
+  def stdout = null
   withCredentials([usernamePassword(
     credentialsId:  'ghcmgr-auth',
     usernameVariable: 'GHCMGR_USER',
     passwordVariable: 'GHCMGR_PASS'
   )]) {
-    sh """
-      curl --silent --verbose -XPOST --data '${json}' \
-        -u '${GHCMGR_USER}:${GHCMGR_PASS}' \
-        -H "content-type: application/json" \
-        '${ghcmgrurl}/builds/status-react/${utils.changeId()}'
-    """
+    stdout = sh(
+      returnStdout: true,
+      script: """
+        curl --silent \
+          -XPOST --data '${json}' \
+          -u '${GHCMGR_USER}:${GHCMGR_PASS}' \
+          -w '\nHTTP_CODE:%{http_code}' \
+          -H "content-type: application/json" \
+          '${ghcmgrurl}/builds/status-react/${utils.changeId()}'
+      """
+    )
+  }
+  /* We're not using --fail because it suppresses server response */
+  if (!stdout.contains('HTTP_CODE:201')) {
+    error("Notifying GHCMGR failed with: ${httpCode}")
+    println("STDOUT:\n${stdout}")
   }
 }
 

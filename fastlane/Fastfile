@@ -161,10 +161,11 @@ end
 
 def upload_to_diawi(source)
     diawi(
-        token: ENV["DIAWI_TOKEN"],
-        file: source
+        file: source,
+        last_hope_attempts_count: 3,
+        token: ENV["DIAWI_TOKEN"]
     )
-
+    # save the URL to a file for use in CI
     File.write("diawi.out", lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI])
 end
 
