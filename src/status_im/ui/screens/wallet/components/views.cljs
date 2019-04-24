@@ -27,7 +27,8 @@
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]))
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.utils.ethereum.eip55 :as eip55]))
 
 ;; Wallet tab has a different coloring scheme (dark) that forces color changes (background, text)
 ;; It might be replaced by some theme mechanism
@@ -176,7 +177,7 @@
 (defn- recipient-address [address modal?]
   [react/text {:style               (merge styles/recipient-address (when-not address styles/recipient-no-address))
                :accessibility-label :recipient-address-text}
-   (or (ethereum/normalized-address address)
+   (or (eip55/address->checksum (ethereum/normalized-address address))
        (if modal?
          (i18n/label :t/new-contract)
          (i18n/label :t/specify-recipient)))])
@@ -195,7 +196,7 @@
          name]
         [react/text {:style               (styles/participant (and (not name) address?))
                      :accessibility-label (if request? :contact-address-text :recipient-address-text)}
-         (ethereum/normalized-address address)]]])))
+         (eip55/address->checksum (ethereum/normalized-address address))]]])))
 
 (defn render-contact [contact request?]
   [list/touchable-item #(re-frame/dispatch [:wallet/fill-request-from-contact contact request?])
@@ -206,7 +207,7 @@
       (:name contact)]
      [react/text {:style list.styles/secondary-text
                   :accessibility-label :contact-address-text}
-      (ethereum/normalized-address (:address contact))]]]])
+      (eip55/address->checksum (ethereum/normalized-address (:address contact)))]]]])
 
 (views/defview recent-recipients []
   (views/letsubs [contacts           [:contacts/active]

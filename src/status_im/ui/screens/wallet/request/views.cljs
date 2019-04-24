@@ -23,7 +23,8 @@
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.components.list.styles :as list.styles]))
+            [status-im.ui.components.list.styles :as list.styles]
+            [status-im.utils.ethereum.eip55 :as eip55]))
 
 ;; Request screen
 
@@ -94,4 +95,4 @@
         :footer-button send-transaction-request-button
         :value         (eip681/generate-uri address-hex {:chain-id chain-id})
         :hint          (i18n/label :t/request-qr-legend)
-        :legend        address-hex}]]]))
+        :legend        (eip55/address->checksum address-hex)}]]]))

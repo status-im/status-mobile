@@ -84,9 +84,7 @@
                           :ens-name recipient
                           :cb       #(re-frame/dispatch [:wallet.send/set-recipient %])}}
        (if (ethereum/address? recipient)
-         (if (-> recipient
-                 ethereum/address->checksum
-                 eip55/valid-address-checksum?)
+         (if (eip55/valid-address-checksum? recipient)
            {:db       (assoc-in db [:wallet :send-transaction :to] recipient)
             :dispatch [:navigate-back]}
            {:ui/show-error (i18n/label :t/wallet-invalid-address-checksum {:data recipient})})

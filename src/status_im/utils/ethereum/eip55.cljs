@@ -5,18 +5,17 @@
 
    e.g. 0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"
   (:require [clojure.string :as string]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.js-dependencies :as dependencies]))
 
-(defn valid-address-checksum? [address]
-  "verify address checksum according to EIP 55"
-  (let [adHash (ethereum/naked-address (ethereum/sha3
-                                        (string/lower-case (ethereum/naked-address address))))]
-    (every? true?
-            (map-indexed (fn [idx char]
-                           (if (> (compare char "9") 0)
-                             (if (>= (js/parseInt (nth adHash idx) 16) 8)
-                                ;  If true should be upper case
-                               (<= (compare char "Z") 0)
-                                ; If not should be lower case
-                               (> (compare char "Z") 0))
-                             true)) (ethereum/naked-address address)))))
+(def utils dependencies/web3-utils)
+
+(defn address->checksum
+  "Converts an arbitrary case address to one with correct checksum case."
+  [address]
+  (when address
+    (.toChecksumAddress utils address)))
+
+(defn valid-address-checksum?
+  "Checks address checksum validity."
+  [address]
+  (.checkAddressChecksum utils address))
