@@ -70,36 +70,45 @@
   [{{:keys [value]} :row}]
   [message-datemark/chat-datemark-mobile value])
 
-(defview gap [{:keys [ids]}]
+(defview gap
+  [ids idx list-ref in-progress? connected?]
+  [react/view {:align-self          :stretch
+               :margin-top          24
+               :margin-bottom       24
+               :height              48
+               :align-items         :center
+               :justify-content     :center
+               :border-color        colors/gray-light
+               :border-top-width    1
+               :border-bottom-width 1
+               :background-color    :white}
+   [react/touchable-highlight
+    {:on-press (when (and connected? (not in-progress?))
+                 #(do
+                    (when @list-ref
+                      (.scrollToIndex @list-ref #js {:index        (max 0 (dec idx))
+                                                     :viewOffset   20
+                                                     :viewPosition 0.5}))
+                    (re-frame/dispatch [:chat.ui/fill-gaps ids])))}
+    [react/view {:flex            1
+                 :align-items     :center
+                 :justify-content :center}
+     (if in-progress?
+       [react/activity-indicator]
+       [react/text
+        {:style {:color (if connected?
+                          colors/blue
+                          colors/gray)}}
+        (i18n/label :t/fetch-messages)])]]])
+
+(defview gap-wrapper [{:keys [ids]} idx list-ref]
   (letsubs [in-progress? [:chats/fetching-gap-in-progress? ids]
             connected?   [:mailserver/connected?]]
-    [react/view {:align-self          :stretch
-                 :margin-top          24
-                 :margin-bottom       24
-                 :height              48
-                 :align-items         :center
-                 :justify-content     :center
-                 :border-color        colors/gray-light
-                 :border-top-width    1
-                 :border-bottom-width 1
-                 :background-color    :white}
-     [react/touchable-highlight
-      {:on-press (when (and connected? (not in-progress?))
-                   #(re-frame/dispatch [:chat.ui/fill-gaps ids]))}
-      [react/view {:flex            1
-                   :align-items     :center
-                   :justify-content :center}
-       (if in-progress?
-         [react/activity-indicator]
-         [react/text
-          {:style {:color (if connected?
-                            colors/blue
-                            colors/gray)}}
-          (i18n/label :t/fetch-messages)])]]]))
+    [gap ids idx list-ref in-progress? connected?]))
 
 (defmethod message-row :gap
-  [{:keys [row]}]
-  [gap (:gaps row)])
+  [{:keys [row idx list-ref]}]
+  [gap-wrapper (:gaps row) idx list-ref])
 
 (defmethod message-row :default
   [{:keys [group-chat current-public-key modal? row]}]
@@ -247,6 +256,8 @@
              (i18n/label :t/empty-chat-description-one-to-one)
              [{} intro-name]])]]))))
 
+(defonce messages-list-ref (atom nil))
+
 (defview messages-view
   [{:keys [group-chat chat-id pending-invite-inviter-name] :as chat}
    modal?]
@@ -262,14 +273,17 @@
     (let [no-messages (empty? messages)
           flat-list-conf
           {:data                      messages
+           :ref                       #(reset! messages-list-ref %)
            :footer                    [chat-intro-header-container chat no-messages]
            :key-fn                    #(or (:message-id %) (:value %))
-           :render-fn                 (fn [message]
+           :render-fn                 (fn [message idx]
                                         [message-row
                                          {:group-chat         group-chat
                                           :modal?             modal?
                                           :current-public-key current-public-key
-                                          :row                message}])
+                                          :row                message
+                                          :idx                idx
+                                          :list-ref           messages-list-ref}])
            :inverted                  true
            :onEndReached              #(re-frame/dispatch
                                         [:chat.ui/load-more-messages])

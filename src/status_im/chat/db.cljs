@@ -112,13 +112,18 @@
                                    (- next-whisper-timestamp next-timestamp))
                                   120)]
     (reduce
-     (fn [acc {:keys [from id]}]
+     (fn [acc {:keys [from to id]}]
        (if (and next-message
                 (not ignore-next-message?)
                 (or
                  (and (nil? previous-timestamp)
                       (< from next-whisper-timestamp))
-                 (< previous-timestamp from next-whisper-timestamp)))
+                 (and
+                  (< previous-timestamp from)
+                  (< to next-whisper-timestamp))
+                 (and
+                  (< from previous-timestamp)
+                  (< to next-whisper-timestamp))))
          (-> acc
              (update :gaps-number inc)
              (update-in [:gap :ids] conj id))
