@@ -217,6 +217,7 @@ platform :ios do
         clean: true,
         export_method: "app-store",
         output_directory: "status_appstore",
+        include_symbols: false,
         # Temporary fix for Xcode 10.1
         xcargs: "-UseModernBuildSystem=N",
         export_options: {
