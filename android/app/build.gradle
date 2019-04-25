@@ -204,6 +204,7 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
+            debuggable        true
             versionNameSuffix "-SNAPSHOT"
             resValue "string", "build_config_package", "im.status.ethereum"
         }
@@ -216,6 +217,7 @@ android {
             initWith release
             applicationIdSuffix ".pr"
             versionNameSuffix ".pr"
+            debuggable        true
             matchingFallbacks = ["release"]
             // necessary to make react-native-config's code generation work
             resValue "string", "build_config_package", "im.status.ethereum"
