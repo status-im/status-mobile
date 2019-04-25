@@ -29,9 +29,8 @@
   protocol/StatusMessage
   (send [this chat-id cofx]
     (let [sync-message (transport.pairing/SyncInstallation.
-                        (select-keys
-                         (get-in cofx [:db :contacts/contacts])
-                         [chat-id])
+                        {chat-id (pairing/contact->pairing
+                                  (get-in cofx [:db :contacts/contacts chat-id]))}
                         nil
                         nil)]
       (fx/merge cofx

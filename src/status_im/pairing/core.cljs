@@ -124,17 +124,20 @@
                     (select-keys account-mergeable-keys))]
     (transport.pairing/SyncInstallation. {} account {})))
 
+(defn- contact->pairing [contact]
+  (cond-> (-> contact
+              (dissoc :photo-path)
+              (update :system-tags disj :contact/blocked))
+    ;; for compatibility with version < contact.v7
+    (contact.db/added? contact) (assoc :pending? false)
+    (contact.db/legacy-pending? contact) (assoc :pending? true)))
+
 (defn- contact-batch->sync-installation-message [batch]
   (let [contacts-to-sync
         (reduce (fn [acc {:keys [public-key system-tags] :as contact}]
                   (assoc acc
                          public-key
-                         (cond-> (-> contact
-                                     (dissoc :photo-path)
-                                     (update :system-tags disj :contact/blocked))
-                           ;; for compatibility with version < contact.v7
-                           (contact.db/added? contact) (assoc :pending? false)
-                           (contact.db/legacy-pending? contact) (assoc :pending? true))))
+                         (contact->pairing contact)))
                 {}
                 batch)]
     (transport.pairing/SyncInstallation. contacts-to-sync {} {})))
