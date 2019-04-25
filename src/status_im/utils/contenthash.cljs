@@ -15,15 +15,15 @@
              (nil? ipld))
     (str "0xe301" (hex/encode (b58/decode hash)))))
 
-(defn decode [contenthash]
-  (when (and contenthash
-             (string/starts-with? contenthash "0xe3011220")
-             (= 74 (count contenthash)))
+(defn decode [hex]
+  (when (and hex (not= hex "0x")
+             (string/starts-with? hex "0xe30101")
+             (= 78 (count hex)))
     {:namespace :ipfs
-     :hash (-> contenthash
-               (subs 6)
-               hex/decode
-               b58/encode)}))
+     :hash  (-> hex
+                (subs 10)
+                hex/decode
+                b58/encode)}))
 
 (fx/defn cat
   [cofx {:keys [contenthash on-success on-failure]}]

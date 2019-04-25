@@ -1502,8 +1502,8 @@
 
 (handlers/register-handler-fx
  :browser.callback/resolve-ens-multihash-success
- (fn [cofx [_ proto-code hash]]
-   (browser/resolve-ens-multihash-success cofx proto-code hash)))
+ (fn [cofx [_ m]]
+   (browser/resolve-ens-multihash-success cofx m)))
 
 (handlers/register-handler-fx
  :browser.callback/resolve-ens-multihash-error

@@ -12,6 +12,7 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.ens :as ens]
             [status-im.utils.ethereum.resolver :as resolver]
+            [status-im.utils.contenthash :as contenthash]
             [status-im.utils.fx :as fx]
             [status-im.utils.http :as http]
             [status-im.utils.multihash :as multihash]
@@ -66,17 +67,21 @@
   (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))]
     (cond-> browser history-host (assoc :unsafe? (dependencies/phishing-detect history-host)))))
 
+(defn- content->hash [hex]
+  (when (and hex (not= hex "0x"))
+    ;; TODO(julien) Remove once our ENS DApp are migrated
+    (multihash/base58 (multihash/create :sha2-256 (subs hex 2)))))
+
 (defn resolve-ens-content-callback [hex]
-  (let [hash (when hex (multihash/base58 (multihash/create :sha2-256 (subs hex 2))))]
+  (let [hash (content->hash hex)]
     (if (and hash (not= hash resolver/default-hash))
-      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success constants/ipfs-proto-code hash])
+      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success {:namespace :ipfs :hash hash}])
       (re-frame/dispatch [:browser.callback/resolve-ens-contenthash]))))
 
 (defn resolve-ens-contenthash-callback [hex]
-  (let [proto-code (when hex (subs hex 2 4))
-        hash (when hex (multihash/base58 (multihash/create :sha2-256 (subs hex 12))))]
-    (if (and proto-code (#{constants/swarm-proto-code constants/ipfs-proto-code} proto-code) hash (not= hash resolver/default-hash))
-      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success proto-code hash])
+  (let [{:keys [hash] :as m} (contenthash/decode hex)]
+    (if (and hash (not= hash resolver/default-hash))
+      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success m])
       (re-frame/dispatch [:browser.callback/resolve-ens-multihash-error]))))
 
 (fx/defn resolve-url
@@ -150,21 +155,29 @@
                              :history new-history
                              :history-index new-index)))))
 
+(defmulti storage-gateway :namespace)
+
+(defmethod storage-gateway :ipfs
+  [{:keys [hash]}]
+  (let [base32hash (-> (.encode js-dependencies/hi-base32 (alphabase.base58/decode hash))
+                       (string/replace #"=" "")
+                       (string/lower-case))]
+    (str "https://" base32hash ".infura.status.im")))
+
+(defmethod storage-gateway :swarm
+  [{:keys [hash]}]
+  (str "https://swarm-gateways.net/bzz:/" hash))
+
 (fx/defn resolve-ens-multihash-success
-  [{:keys [db] :as cofx} proto-code hash]
+  [{:keys [db] :as cofx} m]
   (let [current-url (get-current-url (get-current-browser db))
-        host (http/url-host current-url)
-        path  (subs current-url (+ (.indexOf current-url host) (count host)))
-        gateway (if (= constants/ipfs-proto-code proto-code)
-                  (let [base32hash (-> (.encode js-dependencies/hi-base32 (alphabase.base58/decode hash))
-                                       (string/replace #"=" "")
-                                       (string/lower-case))]
-                    (str base32hash ".infura.status.im"))
-                  (str "swarm-gateways.net/bzz:/" hash))]
+        host        (http/url-host current-url)
+        path        (subs current-url (+ (.indexOf current-url host) (count host)))
+        gateway     (storage-gateway m)]
     (fx/merge cofx
               {:db (-> (update db :browser/options
                                assoc
-                               :url (str "https://" gateway path)
+                               :url (str gateway path)
                                :resolving? false)
                        (assoc-in [:browser/options :resolved-ens host] gateway))})))
 

@@ -6,7 +6,8 @@
   "
   (:refer-clojure :exclude [name])
   (:require [clojure.string :as string]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.abi-spec :as abi-spec]))
 
 ;; this is the addresses of ens registries for the different networks
 (def ens-registries
@@ -86,7 +87,7 @@
                                        "contenthash(bytes32)"
                                        (namehash ens-name))
                  (fn [hash]
-                   (cb hash))))
+                   (cb (first (abi-spec/decode hash ["bytes"]))))))
 
 (defn content
   [resolver ens-name cb]
