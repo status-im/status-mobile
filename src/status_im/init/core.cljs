@@ -188,7 +188,7 @@
                         :accounts/accounts accounts
                         :mailserver/mailservers mailservers
                         :network-status network-status
-                        :network network
+                        :network account-network
                         :network/type (:network/type db)
                         :chain (ethereum/network->chain-name account-network)
                         :universal-links/url url
@@ -270,4 +270,3 @@
 (re-frame/reg-fx
  :init/reset-account-data
  reset-account-data!)
-
