@@ -8,6 +8,8 @@
             [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.ui.components.text-input.styles :as styles]
             [status-im.extensions.capacities.map :as map-component]))
 
 (defn button [{:keys [on-click enabled disabled] :as m} label]
@@ -23,9 +25,10 @@
     (js/clearTimeout id))
   (reset! current (js/setTimeout #(on-input-change-text on-change value) delay)))
 
-(defn input [{:keys [keyboard-type style on-change change-delay placeholder placeholder-text-color selection-color
+(defn input [{:keys [keyboard-type style error on-change change-delay placeholder placeholder-text-color selection-color
                      auto-focus on-submit default-value]}]
-  [react/text-input (merge {:placeholder placeholder}
+  [react/view
+   [react/text-input (merge {:placeholder placeholder}
                            (when placeholder-text-color {:placeholder-text-color placeholder-text-color})
                            (when selection-color {:selection-color selection-color})
                            (when style {:style style})
@@ -39,7 +42,9 @@
                               (if change-delay
                                 (let [current (atom nil)]
                                   #(on-input-change-text-delay current on-change % change-delay))
-                                #(on-input-change-text on-change %))}))])
+                                #(on-input-change-text on-change %))}))]
+   (when error
+      [tooltip/tooltip error (styles/error error)])]) 
 
 (defn touchable-opacity [{:keys [style on-press]} & children]
   (into [react/touchable-opacity (merge (when on-press {:on-press #(on-press {})})
