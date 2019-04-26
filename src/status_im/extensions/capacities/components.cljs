@@ -8,6 +8,8 @@
             [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.ui.components.text-input.styles :as styles]
             [status-im.extensions.capacities.map :as map-component]))
 
 (defn button [{:keys [on-click enabled disabled] :as m} label]
@@ -23,23 +25,26 @@
     (js/clearTimeout id))
   (reset! current (js/setTimeout #(on-input-change-text on-change value) delay)))
 
-(defn input [{:keys [keyboard-type style on-change change-delay placeholder placeholder-text-color selection-color
+(defn input [{:keys [keyboard-type style error on-change change-delay placeholder placeholder-text-color selection-color
                      auto-focus on-submit default-value]}]
-  [react/text-input (merge {:placeholder placeholder}
-                           (when placeholder-text-color {:placeholder-text-color placeholder-text-color})
-                           (when selection-color {:selection-color selection-color})
-                           (when style {:style style})
-                           (when keyboard-type {:keyboard-type keyboard-type})
-                           (when auto-focus {:auto-focus auto-focus})
-                           (when default-value {:default-value default-value})
-                           (when on-submit
-                             {:on-submit-editing #(on-submit {})})
-                           (when on-change
-                             {:on-change-text
-                              (if change-delay
-                                (let [current (atom nil)]
-                                  #(on-input-change-text-delay current on-change % change-delay))
-                                #(on-input-change-text on-change %))}))])
+  [react/view
+   [react/text-input (merge {:placeholder placeholder}
+                            (when placeholder-text-color {:placeholder-text-color placeholder-text-color})
+                            (when selection-color {:selection-color selection-color})
+                            (when style {:style style})
+                            (when keyboard-type {:keyboard-type keyboard-type})
+                            (when auto-focus {:auto-focus auto-focus})
+                            (when default-value {:default-value default-value})
+                            (when on-submit
+                              {:on-submit-editing #(on-submit {})})
+                            (when on-change
+                              {:on-change-text
+                               (if change-delay
+                                 (let [current (atom nil)]
+                                   #(on-input-change-text-delay current on-change % change-delay))
+                                 #(on-input-change-text on-change %))}))]
+   (when error
+     [tooltip/tooltip error (styles/error error)])])
 
 (defn touchable-opacity [{:keys [style on-press]} & children]
   (into [react/touchable-opacity (merge (when on-press {:on-press #(on-press {})})
@@ -132,7 +137,7 @@
    'touchable-opacity      {:data touchable-opacity :properties {:on-press :event}}
    'icon                   {:data icon :properties {:key :keyword :color :any}}
    'image                  {:data image :properties {:uri :string :source :string}}
-   'input                  {:data input :properties {:on-change :event :placeholder :string :keyboard-type :keyword
+   'input                  {:data input :properties {:on-change :event :error :string :placeholder :string :keyboard-type :keyword
                                                      :change-delay? :number :placeholder-text-color :any :selection-color :any
                                                      :auto-focus? :boolean :on-submit :event :default-value :any}}
    'button                 {:data button :properties {:enabled :boolean :disabled :boolean :on-click :event}}
