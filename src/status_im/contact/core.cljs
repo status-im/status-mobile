@@ -277,7 +277,7 @@
     (if (some? validation-result)
       {:utils/show-popup {:title (i18n/label :t/unable-to-read-this-code)
                           :content validation-result
-                          :on-dismiss #(re-frame/dispatch [:qr-scanner.ui/qr-code-error-dismissed])}}
+                          :on-dismiss #(re-frame/dispatch [:navigate-to-clean :home])}}
       (fx/merge cofx
                 fx
                 (if config/partitioned-topic-enabled?
