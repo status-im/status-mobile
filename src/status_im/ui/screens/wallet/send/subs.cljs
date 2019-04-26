@@ -94,4 +94,5 @@
  :wallet.send/signing-phrase-with-padding
  :<- [:account/account]
  (fn [{:keys [signing-phrase]}]
-   (clojure.string/replace-all signing-phrase #" " "     ")))
+   (when signing-phrase
+     (clojure.string/replace-all signing-phrase #" " "     "))))
