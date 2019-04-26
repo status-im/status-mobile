@@ -4,7 +4,7 @@
             status-im.utils.db
             status-im.ui.screens.db
             status-im.ui.screens.events
-            status-im.ui.screens.subs
+            status-im.subs
             status-im.data-store.core
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.ui.screens.views :as views]
@@ -20,7 +20,7 @@
   (set! (.-locale rn-dependencies/i18n) (.-language event)))
 
 (defn app-root [props]
-  (let [keyboard-height (subscribe [:get :keyboard-height])]
+  (let [keyboard-height (subscribe [:keyboard-height])]
     (reagent/create-class
      {:component-will-mount
       (fn []

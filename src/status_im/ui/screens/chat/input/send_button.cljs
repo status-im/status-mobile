@@ -15,10 +15,10 @@
 
 (defview send-button-view []
   (letsubs [{:keys [command-completion]} [:chats/selected-chat-command]
-            {:keys [input-text seq-arg-input-text]} [:chats/current-chat]
+            {:keys [input-text]} [:chats/current-chat]
             disconnected? [:disconnected?]
-            login-processing? [:get-in [:accounts/login :processing]]]
-    (when (and (sendable? input-text disconnected? login-processing?)
+            {:keys [processing]} [:accounts/login]]
+    (when (and (sendable? input-text disconnected? processing)
                (or (not command-completion)
                    (#{:complete :less-than-needed} command-completion)))
       [react/touchable-highlight

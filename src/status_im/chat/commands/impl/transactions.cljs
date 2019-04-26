@@ -14,7 +14,6 @@
             [status-im.ui.components.svgimage :as svgimage]
             [status-im.i18n :as i18n]
             [status-im.contact.db :as db.contact]
-            [status-im.constants :as constants]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.datetime :as datetime]
@@ -23,10 +22,7 @@
             [status-im.utils.platform :as platform]
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.ui.screens.wallet.choose-recipient.events :as choose-recipient.events]
-            [status-im.ui.screens.currency-settings.subs :as currency-settings.subs]
-            [status-im.models.transactions :as wallet.transactions]
             [status-im.ui.screens.navigation :as navigation]
-            status-im.chat.commands.impl.transactions.subs
             [status-im.ui.screens.wallet.utils :as wallet.utils]))
 
 ;; common `send/request` functionality
@@ -250,9 +246,12 @@
                (tokens/asset-for all-tokens (keyword network) (keyword asset)))]
     (assoc parameters :coin coin)))
 
+(defn get-currency [db]
+  (or (get-in db [:account/account :settings :wallet :currency]) :usd))
+
 (defn- inject-price-info [{:keys [amount asset] :as parameters} {:keys [db]}]
   (let [currency (-> db
-                     currency-settings.subs/get-currency
+                     get-currency
                      name
                      string/upper-case)]
     (assoc parameters

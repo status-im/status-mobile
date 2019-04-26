@@ -309,7 +309,7 @@
 (views/defview chat-text-input [chat-id input-text]
   (views/letsubs [inp-ref       (atom nil)
                   disconnected? [:disconnected?]
-                  show-emoji?   [:get-in [:desktop :show-emoji?]]]
+                  {:keys [show-emoji?]}   [:desktop]]
     {:component-will-update
      (fn [e [_ new-chat-id new-input-text]]
        (let [[_ old-chat-id] (.. e -props -argv)]
@@ -366,7 +366,7 @@
 (views/defview chat-view []
   (views/letsubs [{:keys [input-text chat-id pending-invite-inviter-name] :as current-chat}
                   [:chats/current-chat]
-                  show-emoji?        [:get-in [:desktop :show-emoji?]]
+                  {:keys [show-emoji?]} [:desktop]
                   current-public-key [:account/public-key]]
     [react/view {:style styles/chat-view}
      [toolbar-chat-view current-chat]

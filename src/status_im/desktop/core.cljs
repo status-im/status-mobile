@@ -4,7 +4,7 @@
             status-im.utils.db
             status-im.ui.screens.db
             status-im.ui.screens.events
-            status-im.ui.screens.subs
+            status-im.subs
             status-im.data-store.core
             [reagent.impl.component :as reagent.component]
             [status-im.ui.components.desktop.shortcuts :as shortcuts]

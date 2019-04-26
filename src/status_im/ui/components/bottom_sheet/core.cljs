@@ -1,7 +1,6 @@
 (ns status-im.ui.components.bottom-sheet.core
   (:require [status-im.ui.components.bottom-sheet.view :as view]
             [status-im.ui.components.bottom-sheet.events :as events]
-            status-im.ui.components.bottom-sheet.subs
             status-im.ui.components.bottom-sheet.db))
 
 (def show-bottom-sheet events/show-bottom-sheet)

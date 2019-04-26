@@ -56,7 +56,7 @@
     [react/touchable-highlight
      {:style               tabs.styles/touchable-container
       :disabled            active?
-      :on-press            #(re-frame/dispatch [:navigate-to nav-stack])
+      :on-press            #(re-frame/dispatch-sync [:navigate-to nav-stack])
       :accessibility-label accessibility-label}
      [react/view
       {:style tabs.styles/new-tab-container}

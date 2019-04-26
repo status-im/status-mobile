@@ -20,7 +20,7 @@
 (enable-console-print!)
 
 (views/defview main []
-  (views/letsubs [view-id [:get :view-id]
+  (views/letsubs [view-id [:view-id]
                   version [:get-app-version]]
     {:component-did-mount
      (fn []

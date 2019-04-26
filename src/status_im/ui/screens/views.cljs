@@ -36,7 +36,7 @@
       [bottom-sheet/bottom-sheet opts])))
 
 (defn main []
-  (let [view-id        (re-frame/subscribe [:get :view-id])
+  (let [view-id        (re-frame/subscribe [:view-id])
         main-component (atom nil)]
     (reagent/create-class
      {:component-did-mount

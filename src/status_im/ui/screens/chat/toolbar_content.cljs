@@ -30,7 +30,7 @@
     (str (i18n/label :t/sync-in-progress) " " percentage "% " currentBlock)))
 
 (defview last-activity [{:keys [sync-state accessibility-label]}]
-  (letsubs [state [:get :sync-data]]
+  (letsubs [state [:sync-data]]
     [react/text {:style               st/last-activity-text
                  :accessibility-label accessibility-label}
      (case sync-state

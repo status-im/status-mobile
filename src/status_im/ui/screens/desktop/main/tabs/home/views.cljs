@@ -145,7 +145,7 @@
 
 (views/defview chat-list-view [loading?]
   (views/letsubs [search-filter       [:search/filter]
-                  logging-in?          [:get :accounts/login]
+                  logging-in?          [:accounts/login]
                   {:keys [all-home-items chats]} [:home-items]]
     {:component-did-mount
      (fn [this]
@@ -168,5 +168,5 @@
          [chat-list-item chat])]]]))
 
 (views/defview chat-list-view-wrapper []
-  (views/letsubs [loading? [:get :chats/loading?]]
+  (views/letsubs [loading? [:chats/loading?]]
     [chat-list-view loading?]))

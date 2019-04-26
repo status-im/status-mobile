@@ -140,7 +140,7 @@
 ;; Set name of new group-chat
 (views/defview new-group []
   (views/letsubs [contacts   [:selected-group-contacts]
-                  group-name [:get :new-chat-name]]
+                  group-name [:new-chat-name]]
     (let [save-btn-enabled? (and (spec/valid? :global/not-empty-string group-name) (pos? (count contacts)))]
       [react/keyboard-avoiding-view (merge {:behavior :padding}
                                            styles/group-container)

@@ -56,7 +56,7 @@
      name]]])
 
 (defview login []
-  (letsubs [{:keys [photo-path name error processing save-password? can-save-password?]} [:get :accounts/login]
+  (letsubs [{:keys [photo-path name error processing save-password? can-save-password?]} [:accounts/login]
             can-navigate-back? [:can-navigate-back?]
             password-text-input (atom nil)
             sign-in-enabled? [:sign-in-enabled?]]

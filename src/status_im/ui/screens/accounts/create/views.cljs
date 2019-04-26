@@ -38,11 +38,8 @@
      next-enabled? (assoc :on-submit-editing #(re-frame/dispatch [:accounts.create.ui/next-step-pressed step password password-confirm])))])
 
 (defview create-account []
-  (letsubs [step [:get-in [:accounts/create :step]]
-            next-enabled? [:get-account-creation-next-enabled?]
-            error [:get-in [:accounts/create :error]]
-            password [:get-in [:accounts/create :password]]
-            password-confirm [:get-in [:accounts/create :password-confirm]]]
+  (letsubs [{:keys [step error password password-confirm]} [:accounts/create]
+            next-enabled? [:get-account-creation-next-enabled?]]
     [react/keyboard-avoiding-view {:style styles/create-account-view}
      [status-bar/status-bar {:flat? true}]
      [toolbar/toolbar nil

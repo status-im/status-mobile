@@ -104,7 +104,7 @@
 (views/defview browser-component
   [{:keys [webview error? url browser browser-id unsafe? can-go-back?
            can-go-forward? resolving? network-id address url-original
-           show-permission show-tooltip opt-in? dapp? rpc-url name]}]
+           show-permission show-tooltip opt-in? dapp? name]}]
   {:should-component-update (fn [_ _ args]
                               (let [[_ props] args]
                                 (not (nil? (:url props)))))}
@@ -133,7 +133,6 @@
                                                     (if opt-in?
                                                       (js-res/web3-opt-in-init (str network-id))
                                                       (js-res/web3-init
-                                                       rpc-url
                                                        (ethereum/normalized-address address)
                                                        (str network-id)))
                                                     (get-inject-js url))
@@ -152,8 +151,7 @@
                   window-width [:dimensions/window-width]
                   {:keys [address settings]} [:account/account]
                   {:keys [browser-id dapp? name unsafe?] :as browser} [:get-current-browser]
-                  {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:get :browser/options]
-                  rpc-url    [:get :rpc-url]
+                  {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:browser/options]
                   network-id [:get-network-id]]
     (let [can-go-back?    (browser/can-go-back? browser)
           can-go-forward? (browser/can-go-forward? browser)
@@ -181,5 +179,4 @@
                            :show-permission show-permission
                            :show-tooltip    show-tooltip
                            :opt-in?         opt-in?
-                           :rpc-url         rpc-url
                            :name            name}]])))

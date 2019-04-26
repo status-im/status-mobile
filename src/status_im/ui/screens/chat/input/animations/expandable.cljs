@@ -22,8 +22,8 @@
             input-focused?     [:chats/current-chat-ui-prop :input-focused?]
             messages-focused?  [:chats/current-chat-ui-prop :messages-focused?]
             chat-input-margin  [:chats/input-margin]
-            keyboard-height    [:get :keyboard-height]
-            chat-layout-height [:get :layout-height]]
+            keyboard-height    [:keyboard-height]
+            chat-layout-height [:layout-height]]
     (let [input-height (or input-height (+ input-style/padding-vertical
                                            input-style/min-input-height
                                            input-style/padding-vertical

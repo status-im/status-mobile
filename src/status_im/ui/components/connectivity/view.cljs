@@ -133,7 +133,7 @@
 
 (defview connectivity-view []
   (letsubs [status-properties [:connectivity/status-properties]
-            view-id           [:get :view-id]
+            view-id           [:view-id]
             window-width      [:dimensions/window-width]]
     (let [{:keys [loading-indicator?]} status-properties]
       [react/view {:style {:align-self :flex-start}}

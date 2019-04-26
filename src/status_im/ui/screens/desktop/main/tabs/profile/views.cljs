@@ -55,7 +55,7 @@
 
 (views/defview qr-code []
   (views/letsubs [{:keys [public-key]} [:account/account]
-                  tooltip-opacity      [:get-in [:tooltips :qr-copied]]]
+                  {:keys [qr-copied]} [:tooltips]]
     [react/view
      [react/view {:style styles/qr-code-container}
       [react/text {:style styles/qr-code-title}
@@ -67,8 +67,8 @@
                     :selectable       true
                     :selection-color  colors/blue}
         public-key]
-       (when tooltip-opacity
-         [copied-tooltip tooltip-opacity])]
+       (when qr-copied
+         [copied-tooltip qr-copied])]
       [react/touchable-highlight {:on-press #(do
                                                (re-frame/dispatch [:copy-to-clipboard public-key])
                                                (re-frame/dispatch [:show-tooltip :qr-copied]))}
@@ -271,8 +271,8 @@
     [vector-icons/icon :main-icons/next {:style {:tint-color colors/gray}}]]])
 
 (views/defview profile [{:keys [seed-backed-up? mnemonic] :as user}]
-  (views/letsubs [current-view-id [:get :view-id]
-                  editing?        [:get :my-profile/editing?]] ;; TODO janherich: refactor my-profile, unnecessary complicated structure in db (could be just `:staged-name`/`:editing?` fields in account map) and horrible way to access it woth `:get`/`:set` subs/events
+  (views/letsubs [current-view-id [:view-id]
+                  editing?        [:my-profile/editing?]] ;; TODO janherich: refactor my-profile, unnecessary complicated structure in db (could be just `:staged-name`/`:editing?` fields in account map) and horrible way to access it woth `:get`/`:set` subs/events
     (let [adv-settings-open?           (= current-view-id :advanced-settings)
           about-app-open?              (= current-view-id :about-app)
           help-open?                   (= current-view-id :help-center)

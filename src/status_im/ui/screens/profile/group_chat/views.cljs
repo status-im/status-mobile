@@ -91,9 +91,9 @@
 
 (defview group-chat-profile []
   (letsubs [{:keys [admins chat-id] :as current-chat} [:chats/current-chat]
-            editing?     [:get :group-chat-profile/editing?]
+            editing?     [:group-chat-profile/editing?]
             members      [:contacts/current-chat-contacts]
-            changed-chat [:get :group-chat-profile/profile]
+            changed-chat [:group-chat-profile/profile]
             current-pk   [:account/public-key]]
     (when current-chat
       (let [shown-chat            (merge current-chat changed-chat)

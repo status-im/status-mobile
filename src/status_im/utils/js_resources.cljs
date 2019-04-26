@@ -12,9 +12,8 @@
 (def web3 (str "; if (typeof Web3 == 'undefined') {"
                (slurp "node_modules/web3/dist/web3.min.js")
                "}"))
-(defn web3-init [provider-address current-account-address network-id]
-  (str "var providerAddress = \"" provider-address "\";"
-       "var currentAccountAddress = \"" current-account-address "\";"
+(defn web3-init [current-account-address network-id]
+  (str "var currentAccountAddress = \"" current-account-address "\";"
        "var networkId = \"" network-id "\";"
        (slurp "resources/js/web3_init.js")))
 

@@ -101,7 +101,7 @@
                             [inner-item/home-list-item home-item])}]]))))
 
 (views/defview home-action-button []
-  (views/letsubs [logging-in? [:get :accounts/login]]
+  (views/letsubs [logging-in? [:accounts/login]]
     [react/view styles/action-button-container
      [react/touchable-highlight {:accessibility-label :new-chat-button
                                  :on-press            (when-not logging-in? #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new]))}
@@ -144,5 +144,5 @@
       [home-action-button]]]))
 
 (views/defview home-wrapper []
-  (views/letsubs [loading? [:get :chats/loading?]]
+  (views/letsubs [loading? [:chats/loading?]]
     [home loading?]))

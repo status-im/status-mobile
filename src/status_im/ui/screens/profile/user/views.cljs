@@ -82,7 +82,7 @@
       :style               styles/share-link-button}]))
 
 (defview qr-viewer []
-  (letsubs [{:keys [value contact]} [:get :qr-modal]]
+  (letsubs [{:keys [value contact]} [:qr-modal]]
     [react/view styles/qr-code-viewer
      [status-bar/status-bar {:type :modal-white}]
      [qr-viewer-toolbar (:name contact) value]
@@ -241,7 +241,7 @@
      :action-fn #(re-frame/dispatch [:accounts.ui/chaos-mode-switched %])}]])
 
 (defview advanced [params on-show]
-  (letsubs [advanced? [:get :my-profile/advanced?]]
+  (letsubs [advanced? [:my-profile/advanced?]]
     {:component-will-unmount #(re-frame/dispatch [:set :my-profile/advanced? false])}
     [react/view {:padding-bottom 16}
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:set :my-profile/advanced? (not advanced?)])
@@ -315,11 +315,11 @@
 
 (defview my-profile []
   (letsubs [{:keys [public-key photo-path] :as current-account} [:account/account]
-            editing?        [:get :my-profile/editing?]
-            extensions      [:get :extensions/profile]
-            changed-account [:get :my-profile/profile]
+            editing?        [:my-profile/editing?]
+            extensions      [:extensions/profile]
+            changed-account [:my-profile/profile]
             currency        [:wallet/currency]
-            login-data      [:get :accounts/login]
+            login-data      [:accounts/login]
             scroll          (reagent/atom nil)
             active-contacts-count [:contacts/active-count]
             {tribute-to-talk-seen? :seen?

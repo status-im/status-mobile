@@ -1,9 +1,7 @@
 (ns status-im.chat.models.loading
-  (:require [clojure.set :as set]
-            [status-im.accounts.db :as accounts.db]
+  (:require [status-im.accounts.db :as accounts.db]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.models :as chat-model]
-            [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.utils.datetime :as time]
             [status-im.utils.fx :as fx]
             [status-im.utils.priority-map :refer [empty-message-map]]

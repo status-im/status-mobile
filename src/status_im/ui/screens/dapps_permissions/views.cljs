@@ -31,7 +31,7 @@
    :accessories [:check]})
 
 (views/defview dapps-permissions []
-  (views/letsubs [permissions [:get :dapps/permissions]]
+  (views/letsubs [permissions [:dapps/permissions]]
     [react/view {:flex 1 :background-color colors/white}
      [status-bar/status-bar]
      [toolbar/simple-toolbar
