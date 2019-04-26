@@ -24,26 +24,26 @@
   (re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success identifier (camera/get-qr-code-data data)]))
 
 (defview qr-scanner []
-  (letsubs [{identifier :current-qr-context
-             barcode-read-sub? :barcode-read?} [:get-screen-params]
-            camera-initialized? (reagent/atom false)]
-    (let [barcode-read? barcode-read-sub?]
-      [react/view styles/barcode-scanner-container
-       [qr-scanner-toolbar (or (:toolbar-title identifier) (i18n/label :t/scan-qr)) identifier]
-       [camera/camera {:onBarCodeRead #(if (:multiple? identifier)
-                                         (on-barcode-read identifier %)
-                                         (when-not barcode-read?
-                                           (on-barcode-read identifier %)))
-                       :ref           #(reset! camera-initialized? true)
-                       :captureAudio  false
-                       :style         styles/barcode-scanner}]
-       [react/view styles/rectangle-container
-        [react/view styles/rectangle
-         [react/image {:source {:uri :corner_left_top}
-                       :style  styles/corner-left-top}]
-         [react/image {:source {:uri :corner_right_top}
-                       :style  styles/corner-right-top}]
-         [react/image {:source {:uri :corner_right_bottom}
-                       :style  styles/corner-right-bottom}]
-         [react/image {:source {:uri :corner_left_bottom}
-                       :style  styles/corner-left-bottom}]]]])))
+  (letsubs [{identifier :current-qr-context} [:get-screen-params]
+            camera-initialized? (reagent/atom false)
+            barcode-read? (reagent/atom false)]
+    [react/view styles/barcode-scanner-container
+     [qr-scanner-toolbar (or (:toolbar-title identifier) (i18n/label :t/scan-qr)) identifier]
+     [camera/camera {:onBarCodeRead #(if (:multiple? identifier)
+                                       (on-barcode-read identifier %)
+                                       (when-not @barcode-read?
+                                         (do (reset! barcode-read? true)
+                                             (on-barcode-read identifier %))))
+                     :ref           #(reset! camera-initialized? true)
+                     :captureAudio  false
+                     :style         styles/barcode-scanner}]
+     [react/view styles/rectangle-container
+      [react/view styles/rectangle
+       [react/image {:source {:uri :corner_left_top}
+                     :style  styles/corner-left-top}]
+       [react/image {:source {:uri :corner_right_top}
+                     :style  styles/corner-right-top}]
+       [react/image {:source {:uri :corner_right_bottom}
+                     :style  styles/corner-right-bottom}]
+       [react/image {:source {:uri :corner_left_bottom}
+                     :style  styles/corner-left-bottom}]]]]))
