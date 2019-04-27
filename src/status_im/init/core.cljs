@@ -188,7 +188,7 @@
                         :accounts/accounts accounts
                         :mailserver/mailservers mailservers
                         :network-status network-status
-                        :network account-network
+                        :network account-network-id
                         :network/type (:network/type db)
                         :chain (ethereum/network->chain-name account-network)
                         :universal-links/url url
