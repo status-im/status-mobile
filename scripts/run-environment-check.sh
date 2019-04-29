@@ -38,22 +38,9 @@ if [ -z "$IN_NIX_SHELL" ]; then
   fi
 fi
 
-if [ "$PLATFORM" == 'android' ]; then
-  if [ ! -d $ANDROID_SDK_ROOT ]; then
-    echo -e "${GREEN}SDK setup not complete, please run 'scripts/setup'!${NC}"
-    exit 1
-  fi
-  if [ ! -d $ANDROID_NDK_ROOT ]; then
-    echo -e "${GREEN}NDK setup not complete, please run 'scripts/setup'!${NC}"
-    exit 1
-  fi
-elif [ "$PLATFORM" == 'ios' ] && [ "$(uname)" != "Darwin" ]; then
+if [ "$PLATFORM" == 'ios' ] && [ "$(uname)" != "Darwin" ]; then
   echo -e "${RED}iOS builds are only possible on macOS hosts${NC}"
   exit 1
 fi
 
-if [[ $PLATFORM == 'setup' ]]; then
-  echo -e "${YELLOW}Finished! Please close your terminal, reopen a new one and type 'nix-shell' before building Status.${NC}"
-else
-  echo -e "${GREEN}Finished!${NC}"
-fi
+echo -e "${GREEN}Finished!${NC}"

@@ -18,7 +18,9 @@ in _mkShell {
     # utilities
     bash
     curl
+    file
     git
+    gnumake
     jq
     ncurses
     lsof # used in scripts/start-react-native.sh
@@ -31,11 +33,13 @@ in _mkShell {
   shellHook =
     ''
       set -e
-    '' +
-    projectDeps.shellHook +
-    ''
-      if [ -n "$ANDROID_SDK_ROOT" ] && [ ! -d "$ANDROID_SDK_ROOT" ]; then
-        ./scripts/setup # we assume that if the Android SDK dir does not exist, setup script needs to be run
+    
+      ${projectDeps.shellHook}
+
+      STATUS_REACT_HOME=$(git rev-parse --show-toplevel)
+      if [ ! -f $STATUS_REACT_HOME/.ran-setup ]; then
+        $STATUS_REACT_HOME/scripts/setup
+        touch $STATUS_REACT_HOME/.ran-setup
       fi
       set +e
     '';

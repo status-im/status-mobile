@@ -16,7 +16,7 @@ def getToolVersion(name) {
 }
 
 def nix_sh(cmd) {
-  def isPure = env.TARGET_OS == 'linux'
+  def isPure = env.TARGET_OS == 'linux' || env.TARGET_OS == 'android'
   def pureFlag = isPure ? '--pure' : ''
 
   sh """
