@@ -1292,19 +1292,19 @@
   (let [tag-was-lost? (= "Tag was lost." (:error error))]
     (fx/merge cofx
               (if tag-was-lost?
+                (fx/merge cofx
+                          {:db               (-> db
+                                                 (assoc-in [:hardwallet :on-card-connected] :hardwallet/sign)
+                                                 (assoc-in [:hardwallet :pin :status] nil))
+                           :utils/show-popup {:title   (i18n/label :t/error)
+                                              :content (i18n/label :t/cannot-read-card)}}
+                          (navigation/navigate-to-cofx :hardwallet-connect nil))
+                (if (re-matches pin-mismatch-error (:error error))
                   (fx/merge cofx
-                            {:db               (-> db
-                                                   (assoc-in [:hardwallet :on-card-connected] :hardwallet/sign)
-                                                   (assoc-in [:hardwallet :pin :status] nil))
-                             :utils/show-popup {:title   (i18n/label :t/error)
-                                                :content (i18n/label :t/cannot-read-card)}}
-                            (navigation/navigate-to-cofx :hardwallet-connect nil))
-                  (if (re-matches pin-mismatch-error (:error error))
-                    (fx/merge cofx
-                              {:db (update-in db [:hardwallet :pin] merge {:status      :error
-                                                                           :sign        []
-                                                                           :error-label :t/pin-mismatch})}
-                              (navigation/navigate-to-cofx :enter-pin nil)
-                              (get-application-info (get-pairing db) nil))
-                    (show-wrong-keycard-alert cofx true)))
+                            {:db (update-in db [:hardwallet :pin] merge {:status      :error
+                                                                         :sign        []
+                                                                         :error-label :t/pin-mismatch})}
+                            (navigation/navigate-to-cofx :enter-pin nil)
+                            (get-application-info (get-pairing db) nil))
+                  (show-wrong-keycard-alert cofx true)))
               (get-application-info (get-pairing db) nil))))
