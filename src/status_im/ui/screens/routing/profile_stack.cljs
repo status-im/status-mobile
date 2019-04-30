@@ -32,11 +32,8 @@
                      :my-profile-ext-settings]
 
               config/hardwallet-enabled?
-              (concat [:hardwallet-authentication-method
-                       :hardwallet-connect
-                       :hardwallet-setup
-                       :hardwallet-success
-                       :keycard-settings
+              (concat [:keycard-settings
                        :reset-card
-                       :enter-pin]))
+                       :hardwallet-connect-settings
+                       :enter-pin-settings]))
    :config  {:initialRouteName :my-profile}})

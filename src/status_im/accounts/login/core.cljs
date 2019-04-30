@@ -263,9 +263,12 @@
 
 (fx/defn open-keycard-login
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (assoc-in db [:hardwallet :pin :enter-step] :login)}
-            (navigation/navigate-to-cofx :enter-pin nil)))
+  (let [navigation-stack (:navigation-stack db)]
+    (fx/merge cofx
+              {:db (assoc-in db [:hardwallet :pin :enter-step] :login)}
+              (if (empty? navigation-stack)
+                (navigation/navigate-to-cofx :accounts nil)
+                (navigation/navigate-to-cofx :enter-pin-login nil)))))
 
 (fx/defn get-user-password
   [_ address]

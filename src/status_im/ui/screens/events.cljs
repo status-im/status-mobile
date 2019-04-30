@@ -33,7 +33,8 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.http :as http]
             [status-im.utils.utils :as utils]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [status-im.models.wallet :as wallet]))
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
@@ -188,9 +189,16 @@
              #(case view-id
                 :keycard-settings (hardwallet/settings-screen-did-load %)
                 :reset-card (hardwallet/reset-card-screen-did-load %)
-                :enter-pin (hardwallet/enter-pin-screen-did-load %)
+                :enter-pin-login (hardwallet/enter-pin-screen-did-load %)
+                :enter-pin-sign (hardwallet/enter-pin-screen-did-load %)
+                :enter-pin-settings (hardwallet/enter-pin-screen-did-load %)
+                :enter-pin-modal (hardwallet/enter-pin-screen-did-load %)
                 :hardwallet-connect (hardwallet/hardwallet-connect-screen-did-load %)
+                :hardwallet-connect-sign (hardwallet/hardwallet-connect-screen-did-load %)
+                :hardwallet-connect-settings (hardwallet/hardwallet-connect-screen-did-load %)
+                :hardwallet-connect-modal (hardwallet/hardwallet-connect-screen-did-load %)
                 :hardwallet-authentication-method (hardwallet/authentication-method-screen-did-load %)
+                :wallet-send-transaction (wallet/send-transaction-screen-did-load %)
                 :accounts (hardwallet/accounts-screen-did-load %)
                 :chat (mark-messages-seen %)
                 nil))))

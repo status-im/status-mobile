@@ -10,7 +10,7 @@
     :intro
     :hardwallet-authentication-method
     :hardwallet-connect
-    :enter-pin
+    :enter-pin-login
     :hardwallet-setup
     :hardwallet-success})
 
@@ -25,13 +25,13 @@
               config/hardwallet-enabled?
               (concat [:hardwallet-authentication-method
                        :hardwallet-connect
-                       :enter-pin
+                       :enter-pin-login
                        :hardwallet-setup
                        :hardwallet-success]))
    :config  (if
              ;; add view-id here if you'd like that view to be
              ;; first view when app is started
-             (#{:login :progress :accounts :enter-pin} view-id)
+             (#{:login :progress :accounts :enter-pin-login} view-id)
               {:initialRouteName view-id}
               {:initialRouteName :login})})
 

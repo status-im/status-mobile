@@ -87,7 +87,13 @@
    :intro                            intro/intro
    :hardwallet-authentication-method hardwallet.authentication/hardwallet-authentication-method
    :hardwallet-connect               hardwallet.connect/hardwallet-connect
-   :enter-pin                        hardwallet.pin/enter-pin
+   :hardwallet-connect-settings      hardwallet.connect/hardwallet-connect
+   :hardwallet-connect-sign          hardwallet.connect/hardwallet-connect
+   :hardwallet-connect-modal         [:modal hardwallet.connect/hardwallet-connect]
+   :enter-pin-login                  hardwallet.pin/enter-pin
+   :enter-pin-settings               hardwallet.pin/enter-pin
+   :enter-pin-sign                   hardwallet.pin/enter-pin
+   :enter-pin-modal                  [:modal hardwallet.pin/enter-pin]
    :hardwallet-setup                 hardwallet.setup/hardwallet-setup
    :hardwallet-success               hardwallet.success/hardwallet-success
    :home                             home/home-wrapper

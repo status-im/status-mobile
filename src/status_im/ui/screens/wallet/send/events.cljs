@@ -117,7 +117,8 @@
    (let [{:keys [id method public-key to symbol amount-text on-result on-error
                  send-transaction-message?]}
          (get-in db [:wallet :send-transaction])
-         db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
+         db' (assoc-in db [:wallet :send-transaction :in-progress?] false)
+         modal-screen-was-used? (get-in db [:navigation/screen-params :wallet-send-modal-stack :modal?])]
      (if error
        ;; ERROR
        (models.wallet/handle-transaction-error (assoc cofx :db db') error)
@@ -143,9 +144,9 @@
                  #(when-not on-result
                     (navigation/navigate-to-clean
                      %
-                     (if (contains? #{:wallet-send-transaction :enter-pin :hardwallet-connect} (:view-id db))
-                       :wallet-transaction-sent
-                       :wallet-transaction-sent-modal)
+                     (if modal-screen-was-used?
+                       :wallet-transaction-sent-modal
+                       :wallet-transaction-sent)
                      {})))))))
 
 (re-frame/reg-fx
@@ -168,7 +169,8 @@
 (handlers/register-handler-fx
  ::hash-message-completed
  (fn [{:keys [db] :as cofx} [_ {:keys [result error]}]]
-   (let [db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
+   (let [view-id (:view-id db)
+         db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
      (if error
        ;; ERROR
        (models.wallet/handle-transaction-error (assoc cofx :db db') error)
@@ -177,7 +179,13 @@
                  {:db (-> db
                           (assoc-in [:hardwallet :pin :enter-step] :sign)
                           (assoc-in [:hardwallet :hash] result))}
-                 (navigation/navigate-to-cofx :enter-pin nil))))))
+                 (navigation/navigate-to-cofx
+                  (if (contains?
+                       #{:wallet-sign-message-modal :wallet-send-transaction-modal :wallet-send-modal-stack}
+                       view-id)
+                    :enter-pin-modal
+                    :enter-pin-sign)
+                  nil))))))
 
 ;; DISCARD TRANSACTION
 (handlers/register-handler-fx
@@ -345,7 +353,7 @@
 
 (re-frame/reg-fx
  ::hash-transaction
- (fn [{:keys [transaction all-tokens symbol chain on-completed]}]
+ (fn [{:keys [transaction on-completed]}]
    (status/hash-transaction (types/clj->json transaction) on-completed)))
 
 (re-frame/reg-fx
@@ -358,12 +366,23 @@
  (fn [{:keys [data on-completed]}]
    (status/hash-typed-data data on-completed)))
 
+(defn- prepare-keycard-transaction
+  [transaction from symbol chain all-tokens]
+  (if (= :ETH symbol)
+    (models.wallet/prepare-send-transaction from transaction)
+    (let [contract (:address (tokens/symbol->token all-tokens (keyword chain) symbol))
+          {:keys [gas gasPrice to from value]} (models.wallet/prepare-send-transaction from transaction)]
+      (merge (ethereum/call-params contract "transfer(address,uint256)" to value)
+             {:from     from
+              :gas      gas
+              :gasPrice gasPrice}))))
+
 (defn send-keycard-transaction
   [{{:keys [chain] :as db} :db}]
   (let [{:keys [symbol] :as transaction} (get-in db [:wallet :send-transaction])
         all-tokens (:wallet/all-tokens db)
         from (get-in db [:account/account :address])]
-    {::hash-transaction {:transaction  (models.wallet/prepare-send-transaction from transaction)
+    {::hash-transaction {:transaction  (prepare-keycard-transaction transaction from symbol chain all-tokens)
                          :all-tokens   all-tokens
                          :symbol       symbol
                          :chain        chain
@@ -378,7 +397,13 @@
                         (assoc-in [:hardwallet :pin :enter-step] :sign)
                         (assoc-in [:hardwallet :transaction] transaction)
                         (assoc-in [:hardwallet :hash] hash))}
-               (navigation/navigate-to-clean :enter-pin nil)))))
+               (navigation/navigate-to-clean
+                (if (contains?
+                     #{:wallet-sign-message-modal :wallet-send-transaction-modal :wallet-send-modal-stack}
+                     (:view-id db))
+                  :enter-pin-modal
+                  :enter-pin-sign)
+                nil)))))
 
 (handlers/register-handler-fx
  :wallet.ui/sign-transaction-button-clicked
