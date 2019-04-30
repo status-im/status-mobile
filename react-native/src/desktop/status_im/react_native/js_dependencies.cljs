@@ -33,3 +33,4 @@
 (def snoopy-buffer          #js {})
 (def background-timer       #js {:setTimeout (fn [cb ms] (js/setTimeout cb ms))})
 (def react-navigation       (js/require "react-navigation"))
+(def react-native-mail      #js {:mail (fn [])})

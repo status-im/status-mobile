@@ -2,10 +2,21 @@
   (:require [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.utils.fx :as fx]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types]
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.email :as mail]))
+
+(def report-email "error-reports@status.im")
+
+(re-frame/reg-fx
+ :logs/archive-logs
+ (fn [[db-json callback-handler]]
+   (status/send-logs
+    db-json
+    #(re-frame/dispatch [callback-handler %]))))
 
 (fx/defn send-logs
-  [{:keys [db] :as cofx}]
+  [{:keys [db]}]
   ;; TODO: Add message explaining db export
   (let [db-json (types/clj->json (select-keys db [:app-state
                                                   :current-chat-id
@@ -29,4 +40,16 @@
                                                   :dimensions/window
                                                   :my-profile/editing?
                                                   :node/status]))]
-    (status/send-logs db-json)))
+    {:logs/archive-logs [db-json ::send-email]}))
+
+(handlers/register-handler-fx
+ ::send-email
+ (fn [cofx [_ archive-path]]
+   (mail/send-email cofx
+                    {:subject    "Error report"
+                     :recipients [report-email]
+                     :body       "logs attached"
+                     :attachment {:path archive-path
+                                  :type "zip"
+                                  :name "status_logs.zip"}}
+                    (fn []))))

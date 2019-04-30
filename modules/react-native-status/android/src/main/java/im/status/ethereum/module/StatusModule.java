@@ -522,7 +522,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 			}
 
             out.close();
-            
+
             return true;
 		} catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -557,9 +557,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                            }
                        }).show();
     }
-    
+
     @ReactMethod
-    public void sendLogs(final String dbJson) {
+    public void sendLogs(final String dbJson, final Callback callback) {
         Log.d(TAG, "sendLogs");
         if (!checkAvailability()) {
             return;
@@ -594,33 +594,14 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                     return;
                 }
             }
-            
+
             dumpAdbLogsTo(new FileOutputStream(statusLogFile));
-        
+
             final Stack<String> errorList = new Stack<String>();
             final Boolean zipped = zip(new File[] {dbFile, gethLogFile, statusLogFile}, zipFile, errorList);
             if (zipped && zipFile.exists()) {
-                Log.d(TAG, "Sending " + zipFile.getAbsolutePath() + " file through share intent");
-
-                final String providerName = context.getPackageName() + ".provider";
-                final Activity activity = getCurrentActivity();
                 zipFile.setReadable(true, false);
-                final Uri dbJsonURI = FileProvider.getUriForFile(activity, providerName, zipFile);
-
-                Intent intentShareFile = new Intent(Intent.ACTION_SEND);
-
-                intentShareFile.setType("application/json");
-                intentShareFile.putExtra(Intent.EXTRA_STREAM, dbJsonURI);
-
-                SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                dateFormatGmt.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-                intentShareFile.putExtra(Intent.EXTRA_SUBJECT, "Status.im logs");
-                intentShareFile.putExtra(Intent.EXTRA_TEXT,
-                    String.format("Logs from %s GMT\n\nThese logs have been generated automatically by the user's request for debugging purposes.\n\n%s",
-                                  dateFormatGmt.format(new java.util.Date()),
-                                  errorList));
-
-                activity.startActivity(Intent.createChooser(intentShareFile, "Share Debug Logs"));
+                callback.invoke(zipFile.getAbsolutePath());
             } else {
                 Log.d(TAG, "File " + zipFile.getAbsolutePath() + " does not exist");
             }

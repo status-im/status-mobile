@@ -43,7 +43,8 @@
               "text-encoding"
               "js-sha3"
               "react-navigation"
-              "hi-base32"]
+              "hi-base32"
+              "react-native-mail"]
 
  ;; Desktop modules
  :desktop-modules ["realm"

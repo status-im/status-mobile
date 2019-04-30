@@ -201,7 +201,7 @@ void showFileInGraphicalShell(QWidget *parent, const QFileInfo &fileInfo)
 #endif
 }
 
-void RCTStatus::sendLogs(QString dbJSON) {
+void RCTStatus::sendLogs(QString dbJSON, double callbackId) {
     Q_D(RCTStatus);
 
     qCDebug(RCTSTATUS) << "::sendLogs call - logFilePath:" << getLogFilePath()

@@ -271,6 +271,7 @@ dependencies {
     implementation project(':react-native-webview')
     implementation project(':react-native-config')
     implementation project(':react-native-firebase')
+    implementation project(':RNMail')
     compile ('com.google.android.gms:play-services-base:16.0.1') {
         force = true
     }
