@@ -49,9 +49,9 @@
   (when status
     (.sendDataNotification status data-payload tokens on-result)))
 
-(defn send-logs [dbJson callback]
+(defn send-logs [dbJson js-logs callback]
   (when status
-    (.sendLogs status dbJson callback)))
+    (.sendLogs status dbJson js-logs callback)))
 
 (defn add-peer [enode on-result]
   (when (and @node-started status)

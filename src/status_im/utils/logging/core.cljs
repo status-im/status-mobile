@@ -4,15 +4,36 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.email :as mail]))
+            [status-im.utils.email :as mail]
+            [taoensso.timbre :as log]
+            [status-im.utils.config :as config]))
 
 (def report-email "error-reports@status.im")
+(def max-log-entries 1000)
+(def logs-queue (atom #queue[]))
+(defn add-log-entry [entry]
+  (swap! logs-queue conj entry)
+  (when (>= (count @logs-queue) max-log-entries)
+    (swap! logs-queue pop)))
+
+(defn init-logs []
+  (log/set-level! config/log-level)
+  (log/debug)
+  (log/merge-config!
+   {:output-fn (fn [& data]
+                 (let [res (apply log/default-output-fn data)]
+                   (add-log-entry res)
+                   res))}))
+
+(defn get-js-logs []
+  (clojure.string/join "\n" @logs-queue))
 
 (re-frame/reg-fx
  :logs/archive-logs
  (fn [[db-json callback-handler]]
    (status/send-logs
     db-json
+    (get-js-logs)
     #(re-frame/dispatch [callback-handler %]))))
 
 (fx/defn send-logs

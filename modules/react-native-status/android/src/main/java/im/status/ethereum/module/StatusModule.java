@@ -559,7 +559,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void sendLogs(final String dbJson, final Callback callback) {
+    public void sendLogs(final String dbJson, final String jsLogs, final Callback callback) {
         Log.d(TAG, "sendLogs");
         if (!checkAvailability()) {
             return;

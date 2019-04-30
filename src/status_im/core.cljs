@@ -7,10 +7,8 @@
             [reagent.core :as reagent]
             status-im.transport.impl.receive
             status-im.transport.impl.send
-            [taoensso.timbre :as log]
-            [status-im.utils.config :as config]
             [status-im.react-native.js-dependencies :as js-dependencies]
-            [goog.object :as object]
+            [status-im.utils.logging.core :as utils.logs]
             cljs.core.specs.alpha))
 
 (if js/goog.DEBUG
@@ -18,7 +16,7 @@
   (aset js/console "disableYellowBox" true))
 
 (defn init [app-root]
-  (log/set-level! config/log-level)
+  (utils.logs/init-logs)
   (error-handler/register-exception-handler!)
   (re-frame/dispatch [:init/app-started])
   (.registerComponent react/app-registry "StatusIm" #(reagent/reactify-component app-root))

@@ -229,6 +229,7 @@ RCT_EXPORT_METHOD(sendDataNotification:(NSString *)dataPayloadJSON
 #pragma mark - SendLogs method
 //////////////////////////////////////////////////////////////////// sendLogs
 RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
+                  jsLogs:(NSString *)jsLogs
                   callback:(RCTResponseSenderBlock)callback) {
     // TODO: Implement SendLogs for iOS
 #if DEBUG
@@ -239,35 +240,37 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     NSURL *rootUrl =[[fileManager
                       URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
                      lastObject];
-    
+
     NSURL *zipFile = [rootUrl URLByAppendingPathComponent:@"logs.zip"];
     [fileManager removeItemAtPath:zipFile.path error:nil];
-    
+
     NSURL *logsFolderName = [rootUrl URLByAppendingPathComponent:@"logs"];
-    
+
     if (![fileManager fileExistsAtPath:logsFolderName.path])
         [fileManager createDirectoryAtPath:logsFolderName.path withIntermediateDirectories:YES attributes:nil error:&error];
-    
+
     NSURL *dbFile = [logsFolderName URLByAppendingPathComponent:@"db.json"];
+    NSURL *jsLogsFile = [logsFolderName URLByAppendingPathComponent:@"Status.log"];
 #if DEBUG
     NSString *networkDirPath = @"ethereum/mainnet_rpc_dev";
 #else
     NSString *networkDirPath = @"ethereum/mainnet_rpc";
 #endif
-    
+
     NSURL *networkDir = [rootUrl URLByAppendingPathComponent:networkDirPath];
     NSURL *originalGethLogsFile = [networkDir URLByAppendingPathComponent:@"geth.log"];
     NSURL *gethLogsFile = [logsFolderName URLByAppendingPathComponent:@"geth.log"];
-    
+
     [dbJson writeToFile:dbFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
-    
+    [jsLogs writeToFile:jsLogsFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
+
     //NSString* gethLogs = StatusgoExportNodeLogs();
     //[gethLogs writeToFile:gethLogsFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
     [fileManager copyItemAtPath:originalGethLogsFile.path toPath:gethLogsFile.path error:nil];
-    
+
     [SSZipArchive createZipFileAtPath:zipFile.path withContentsOfDirectory:logsFolderName.path];
     [fileManager removeItemAtPath:logsFolderName.path error:nil];
-    
+
     callback(@[zipFile.path]);
 }
 
@@ -355,7 +358,7 @@ RCT_EXPORT_METHOD(verify:(NSString *)address
                       URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
                      lastObject];
     NSURL *absKeystoreUrl = [rootUrl URLByAppendingPathComponent:@"keystore"];
-    
+
     NSString *result = StatusgoVerifyAccountPassword(absKeystoreUrl.path, address, password);
     callback(@[result]);
 }
