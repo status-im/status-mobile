@@ -70,8 +70,8 @@
 (defn send-data-notification [m callback]
   (native-module/send-data-notification m callback))
 
-(defn send-logs [dbJson]
-  (native-module/send-logs dbJson))
+(defn send-logs [dbJson js-logs]
+  (native-module/send-logs dbJson js-logs))
 
 (defn add-peer [enode callback]
   (native-module/add-peer enode callback))

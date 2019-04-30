@@ -559,7 +559,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void sendLogs(final String dbJson) {
+    public void sendLogs(final String dbJson, final String jsLogs) {
         Log.d(TAG, "sendLogs");
         if (!checkAvailability()) {
             return;
@@ -573,6 +573,17 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(dbFile));
             outputStreamWriter.write(dbJson);
+            outputStreamWriter.close();
+        }
+        catch (IOException e) {
+            Log.e(TAG, "File write failed: " + e.toString());
+            showErrorMessage(e.getLocalizedMessage());
+        }
+
+        final File jsLogsFile = new File(logsTempDir, "js_logs.log");
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(jsLogsFile));
+            outputStreamWriter.write(jsLogs);
             outputStreamWriter.close();
         }
         catch (IOException e) {
@@ -598,7 +609,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             dumpAdbLogsTo(new FileOutputStream(statusLogFile));
 
             final Stack<String> errorList = new Stack<String>();
-            final Boolean zipped = zip(new File[] {dbFile, gethLogFile, statusLogFile}, zipFile, errorList);
+            final Boolean zipped = zip(new File[] {dbFile, jsLogsFile, gethLogFile, statusLogFile}, zipFile, errorList);
             if (zipped && zipFile.exists()) {
                 Log.d(TAG, "Sending " + zipFile.getAbsolutePath() + " file through share intent");
 

@@ -227,7 +227,8 @@ RCT_EXPORT_METHOD(sendDataNotification:(NSString *)dataPayloadJSON
 ////////////////////////////////////////////////////////////////////
 #pragma mark - SendLogs method
 //////////////////////////////////////////////////////////////////// sendLogs
-RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson) {
+RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
+                  jsLogs:(NSString *)jsLogs) {
     // TODO: Implement SendLogs for iOS
 #if DEBUG
     NSLog(@"SendLogs() method called, not implemented");
@@ -309,7 +310,7 @@ RCT_EXPORT_METHOD(verify:(NSString *)address
                       URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
                      lastObject];
     NSURL *absKeystoreUrl = [rootUrl URLByAppendingPathComponent:@"keystore"];
-    
+
     NSString *result = StatusgoVerifyAccountPassword(absKeystoreUrl.path, address, password);
     callback(@[result]);
 }
