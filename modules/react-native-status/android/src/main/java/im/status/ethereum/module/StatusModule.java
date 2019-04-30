@@ -522,7 +522,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 			}
 
             out.close();
-            
+
             return true;
 		} catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -557,7 +557,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                            }
                        }).show();
     }
-    
+
     @ReactMethod
     public void sendLogs(final String dbJson) {
         Log.d(TAG, "sendLogs");
@@ -594,9 +594,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                     return;
                 }
             }
-            
+
             dumpAdbLogsTo(new FileOutputStream(statusLogFile));
-        
+
             final Stack<String> errorList = new Stack<String>();
             final Boolean zipped = zip(new File[] {dbFile, gethLogFile, statusLogFile}, zipFile, errorList);
             if (zipped && zipFile.exists()) {
@@ -609,11 +609,13 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
                 Intent intentShareFile = new Intent(Intent.ACTION_SEND);
 
+                intentShareFile.setPackage("com.google.android.gm");
                 intentShareFile.setType("application/json");
                 intentShareFile.putExtra(Intent.EXTRA_STREAM, dbJsonURI);
 
                 SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 dateFormatGmt.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+                intentShareFile.putExtra(Intent.EXTRA_EMAIL, new String[] {"error-reports@status.im"});
                 intentShareFile.putExtra(Intent.EXTRA_SUBJECT, "Status.im logs");
                 intentShareFile.putExtra(Intent.EXTRA_TEXT,
                     String.format("Logs from %s GMT\n\nThese logs have been generated automatically by the user's request for debugging purposes.\n\n%s",
