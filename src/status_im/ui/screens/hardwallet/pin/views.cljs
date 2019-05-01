@@ -132,7 +132,7 @@
       nil
       [toolbar/nav-button (assoc toolbar.actions/default-back
                                  :handler
-                                 #(re-frame/dispatch [:hardwallet.ui/navigate-back-button-clicked]))]
+                                 #(re-frame/dispatch [:hardwallet.ui/enter-pin-navigate-back-button-clicked]))]
       nil]
      (if (zero? pin-retry-counter)
        [pin-view {:pin               pin

@@ -1316,6 +1316,16 @@
    (hardwallet/pair cofx)))
 
 (handlers/register-handler-fx
+ :hardwallet/verify-pin
+ (fn [cofx _]
+   (hardwallet/verify-pin cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet/change-pin
+ (fn [cofx _]
+   (hardwallet/change-pin cofx)))
+
+(handlers/register-handler-fx
  :hardwallet.ui/success-button-pressed
  (fn [cofx _]
    (hardwallet/success-button-pressed cofx)))
@@ -1326,9 +1336,14 @@
    (hardwallet/update-pin cofx number step)))
 
 (handlers/register-handler-fx
- :hardwallet.ui/navigate-back-button-clicked
+ :hardwallet.ui/enter-pin-navigate-back-button-clicked
  (fn [cofx _]
-   (hardwallet/navigate-back-button-clicked cofx)))
+   (hardwallet/enter-pin-navigate-back-button-clicked cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet.ui/hardwallet-connect-navigate-back-button-clicked
+ (fn [cofx _]
+   (hardwallet/hardwallet-connect-navigate-back-button-clicked cofx)))
 
 (handlers/register-handler-fx
  :hardwallet/process-pin-input

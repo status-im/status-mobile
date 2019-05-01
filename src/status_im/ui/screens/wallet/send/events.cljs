@@ -413,17 +413,24 @@
        (send-keycard-transaction cofx)
        {:db (assoc-in db [:wallet :send-transaction :show-password-input?] true)}))))
 
+(fx/defn keycard-hash-message
+  [_ data typed?]
+  (if typed?
+    {::hash-typed-data {:data         data
+                        :on-completed #(re-frame/dispatch [::hash-message-completed (types/json->clj %)])}}
+    {::hash-message {:message      (ethereum/naked-address data)
+                     :on-completed #(re-frame/dispatch [::hash-message-completed (types/json->clj %)])}}))
+
 (handlers/register-handler-fx
  :wallet.ui/sign-message-button-clicked
- (fn [{:keys [db]} [_ typed? screen-params password-error-cb]]
+ (fn [{:keys [db] :as cofx} [_ typed? screen-params password-error-cb]]
    (let [{:keys [data from password]} screen-params
-         keycard-account? (boolean (get-in db [:account/account :keycard-instance-uid]))]
+         keycard-account? (boolean (get-in db [:account/account :keycard-instance-uid]))
+         modal? (= (:view-id db) :wallet-sign-message-modal)]
      (if keycard-account?
-       (if typed?
-         {::hash-typed-data {:data         data
-                             :on-completed #(re-frame/dispatch [::hash-message-completed (types/json->clj %)])}}
-         {::hash-message {:message      (ethereum/naked-address data)
-                          :on-completed #(re-frame/dispatch [::hash-message-completed (types/json->clj %)])}})
+       (fx/merge cofx
+                 {:db (assoc-in db [:navigation/screen-params :wallet-send-modal-stack :modal?] modal?)}
+                 (keycard-hash-message data typed?))
        (if typed?
          {::sign-typed-data {:data     data
                              :password password
