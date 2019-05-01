@@ -82,7 +82,7 @@
                                       platform/android?
                                       (not js/goog.DEBUG)
                                       (not (contains? #{:intro :login :progress} @view-id)))
-                                 (navigation/navigate-to @view-id)))
+                                 (navigation/navigate-to @view-id nil)))
              ;; see https://reactnavigation.org/docs/en/state-persistence.html#development-mode
              :persistenceKey (when js/goog.DEBUG rand-label)}]
            [bottom-sheet]]))})))

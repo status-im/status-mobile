@@ -145,7 +145,7 @@
                          :error true}}
                  (-> actual :db :mailserver.edit/mailserver))))
         (testing "it navigates to edit-mailserver view"
-          (is (= :edit-mailserver
+          (is (= [:edit-mailserver nil]
                  (:status-im.ui.screens.navigation/navigate-to actual))))))
     (testing "when an id is given"
       (testing "when the mailserver is in the list"
@@ -159,7 +159,7 @@
                            :error false}}
                    (-> actual :db :mailserver.edit/mailserver))))
           (testing "it navigates to edit-mailserver view"
-            (is (= :edit-mailserver
+            (is (= [:edit-mailserver nil]
                    (:status-im.ui.screens.navigation/navigate-to actual))))))
       (testing "when the mailserver is not in the list"
         (let [actual (mailserver/edit cofx "not-existing")]
@@ -172,7 +172,7 @@
                            :error true}}
                    (-> actual :db :mailserver.edit/mailserver))))
           (testing "it navigates to edit-mailserver view"
-            (is (= :edit-mailserver
+            (is (= [:edit-mailserver nil]
                    (:status-im.ui.screens.navigation/navigate-to actual)))))))))
 
 (deftest connected-mailserver

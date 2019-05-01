@@ -21,10 +21,11 @@
 
 (defonce view-id (reagent.core/atom nil))
 
-(defn navigation-events [current-view-id modal?]
+(defn navigation-events [current-view-id modal? screen-focused?]
   [:> navigation/navigation-events
    {:on-will-focus
     (fn []
+      (reset! screen-focused? true)
       (when (not= @view-id current-view-id)
         (reset! view-id current-view-id))
       (log/debug :on-will-focus current-view-id)
@@ -34,13 +35,18 @@
     :on-did-focus
     (fn []
       (when-not modal?
-        (status-bar/set-status-bar current-view-id)))}])
+        (status-bar/set-status-bar current-view-id)))
+    :on-will-blur
+    (fn [] (reset! screen-focused? false))}])
 
 (defn wrap
   "Wraps screen with main view and adds navigation-events component"
   [view-id component]
-  (fn []
-    (let [main-view (react/create-main-screen-view view-id)]
+  (fn [args]
+    (let [main-view       (react/create-main-screen-view view-id)
+          ;; params passed to :navigate-to
+          params          (get-in args [:navigation :state :params])
+          screen-focused? (reagent.core/atom true)]
       (if platform/ios?
         [main-view (assoc common-styles/flex
                           :margin-bottom
@@ -64,38 +70,40 @@
 
                             :else
                             tabs.styles/minimized-tabs-height))
-         [component]
-         [navigation-events view-id false]]
+         [component params screen-focused?]
+         [navigation-events view-id false screen-focused?]]
 
         [main-view common-styles/flex
-         [component]
-         [navigation-events view-id false]]))))
+         [component params screen-focused?]
+         [navigation-events view-id false screen-focused?]]))))
 
 (defn wrap-modal [modal-view component]
   "Wraps modal screen with necessary styling and adds :on-request-close handler
   on Android"
-  (fn []
-    (if platform/android?
-      [react/view common-styles/modal
-       [react/modal
-        {:transparent      true
-         :animation-type   :slide
-         :on-request-close (fn []
-                             (cond
-                               (#{:wallet-send-transaction-modal
-                                  :wallet-sign-message-modal}
-                                modal-view)
-                               (re-frame/dispatch
-                                [:wallet/discard-transaction-navigate-back])
+  (fn [args]
+    (let [params  (get-in args [:navigation :state :params])
+          active? (reagent.core/atom true)]
+      (if platform/android?
+        [react/view common-styles/modal
+         [react/modal
+          {:transparent      true
+           :animation-type   :slide
+           :on-request-close (fn []
+                               (cond
+                                 (#{:wallet-send-transaction-modal
+                                    :wallet-sign-message-modal}
+                                  modal-view)
+                                 (re-frame/dispatch
+                                  [:wallet/discard-transaction-navigate-back])
 
-                               :else
-                               (re-frame/dispatch [:navigate-back])))}
+                                 :else
+                                 (re-frame/dispatch [:navigate-back])))}
+          [react/main-screen-modal-view modal-view
+           [component params active?]]
+          [navigation-events modal-view true active?]]]
         [react/main-screen-modal-view modal-view
-         [component]]
-        [navigation-events modal-view true]]]
-      [react/main-screen-modal-view modal-view
-       [component]
-       [navigation-events modal-view true]])))
+         [component params active?]
+         [navigation-events modal-view true active?]]))))
 
 (defn prepare-config [config]
   (-> config

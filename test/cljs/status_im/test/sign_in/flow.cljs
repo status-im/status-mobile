@@ -50,7 +50,7 @@
       (testing "Request notifications permissions."
         (is (contains? efx :notifications/request-notifications-permissions)))
       (testing "Navigate to :home."
-        (is (= :home (efx :status-im.ui.screens.navigation/navigate-to))))
+        (is (= [:home nil] (efx :status-im.ui.screens.navigation/navigate-to))))
       (testing "Account selected."
         (is (contains? new-db :account/account)))
       (testing "Chats initialized."

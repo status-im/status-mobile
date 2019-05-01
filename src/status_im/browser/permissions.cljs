@@ -34,7 +34,7 @@
 
     (= permission constants/dapp-permission-qr-code)
     (fx/merge (assoc-in cofx [:db :browser/options :yielding-control?] true)
-              (qr-scanner/scan-qr-code {:modal? false}
+              (qr-scanner/scan-qr-code {}
                                        {:handler        :browser.bridge.callback/qr-code-scanned
                                         :cancel-handler :browser.bridge.callback/qr-code-canceled
                                         :data           {:dapp-name  dapp-name

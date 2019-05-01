@@ -55,8 +55,7 @@
 (handlers/register-handler-fx
  :extensions/camera-qr-code
  (fn [{:keys [db] :as cofx} [_ _ {:keys [on-success on-failure]}]]
-   (qr-scanner/scan-qr-code cofx {:modal? false
-                                  :deny-handler :extensions/camera-denied}
+   (qr-scanner/scan-qr-code cofx {:deny-handler :extensions/camera-denied}
                             {:handler        :extensions/camera-qr-code-scanned
                              :cancel-handler :extensions/camera-cancel
                              :data           {:on-success on-success

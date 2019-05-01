@@ -53,7 +53,7 @@
     {:db           (if (= view-id go-to-view-id)
                      db
                      (push-view db go-to-view-id))
-     ::navigate-to go-to-view-id}))
+     ::navigate-to [go-to-view-id screen-params]}))
 
 (fx/defn navigate-reset
   [{:keys [db]} {:keys [index actions] :as config}]
@@ -76,9 +76,9 @@
 
 (re-frame/reg-fx
  ::navigate-to
- (fn [view-id]
-   (log/debug :navigate-to view-id)
-   (navigation/navigate-to (name view-id))))
+ (fn [[view-id params]]
+   (log/debug :navigate-to view-id params)
+   (navigation/navigate-to (name view-id) params)))
 
 (re-frame/reg-fx
  ::navigate-back

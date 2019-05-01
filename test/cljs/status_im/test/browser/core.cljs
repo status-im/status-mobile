@@ -5,7 +5,7 @@
 
 (defn has-navigated-to-browser? [result]
   (and (= (get result :status-im.ui.screens.navigation/navigate-to)
-          :browser)
+          [:browser nil])
        (= (get-in result [:db :view-id])
           :browser)))
 
