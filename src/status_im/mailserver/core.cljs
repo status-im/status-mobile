@@ -664,7 +664,7 @@
       :data-store/tx (map data-store.mailservers/save-chat-requests-range
                           (vals updated-ranges))})))
 
-(defn prepare-new-gaps [new-gaps ranges {:keys [from to]} chat-ids]
+(defn prepare-new-gaps [new-gaps ranges {:keys [from to] :as req} chat-ids]
   (into
    {}
    (comp
@@ -876,17 +876,26 @@
     (when-not (every? (partial contains? existing-ids) chat-ids)
       (let [{:keys [new-account? public-key]} (:account/account db)
             now-s        (quot now 1000)
-            last-request (if (or
-                              (not fetch?)
-                              (and new-account?
-                                   (or (= chat-id :discovery-topic)
-                                       (and
-                                        (string? chat-id)
-                                        (string/starts-with?
-                                         chat-id
-                                         public-key)))))
-                           (- now-s 10)
-                           (- now-s max-request-range))
+            previous-last-request (get current-mailserver-topic :last-request)
+            last-request (cond (and new-account?
+                                    (nil? previous-last-request)
+                                    (or (= chat-id :discovery-topic)
+                                        (and
+                                         (string? chat-id)
+                                         (string/starts-with?
+                                          chat-id
+                                          public-key))))
+                               (- now-s 10)
+
+                               (not fetch?)
+                               ;; in case a topic has been already requested
+                               ;; reset `last-request` so that creation
+                               ;; of an extra gap is prevented
+                               (max (or previous-last-request (- now-s 10))
+                                    (- now-s max-request-range))
+
+                               :else
+                               (- now-s max-request-range))
             mailserver-topic (-> current-mailserver-topic
                                  (assoc :last-request last-request)
                                  (update :chat-ids clojure.set/union (set chat-ids)))]
