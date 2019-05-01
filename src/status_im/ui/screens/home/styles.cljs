@@ -179,12 +179,11 @@
   {:position    :absolute
    :align-items :center
    :bottom      (+ tabs.styles/tabs-diff 6)
-   :right       0
-   :left        0})
+   :width       40
+   :height      40})
 
 (def action-button
-  {:margin           10
-   :width            40
+  {:width            40
    :height           40
    :background-color colors/blue
    :border-radius    20

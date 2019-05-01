@@ -118,29 +118,32 @@
                               (when loading? (utils/set-timeout #(re-frame/dispatch [:init-rest-of-chats]) 100))))}
     [react/view {:flex 1}
      [status-bar/status-bar {:type :main}]
-     [react/keyboard-avoiding-view {:style     {:flex 1}
+     [react/keyboard-avoiding-view {:style     {:flex 1
+                                                :align-items :center}
                                     :on-layout (fn [e]
                                                  (re-frame/dispatch
                                                   [:set-once :content-layout-height
                                                    (-> e .-nativeEvent .-layout .-height)]))}
-      [toolbar/toolbar nil nil [toolbar/content-title (i18n/label :t/chat)]]
-      [les-debug-info]
-      (cond loading?
-            [react/view {:style {:flex            1
-                                 :justify-content :center
-                                 :align-items     :center}}
-             [connectivity/connectivity-view]
-             [react/activity-indicator {:flex      1
-                                        :animating true}]]
+      [react/view {:style {:flex       1
+                           :align-self :stretch}}
+       [toolbar/toolbar nil nil [toolbar/content-title (i18n/label :t/chat)]]
+       [les-debug-info]
+       (cond loading?
+             [react/view {:style {:flex            1
+                                  :justify-content :center
+                                  :align-items     :center}}
+              [connectivity/connectivity-view]
+              [react/activity-indicator {:flex      1
+                                         :animating true}]]
 
-            :else
-            [react/view {:style {:flex 1}}
-             [connectivity/connectivity-view]
-             [filter.views/animated-search-input search-filter]
-             (if (and (not search-filter)
-                      (empty? all-home-items))
-               [home-empty-view]
-               [home-items-view search-filter chats all-home-items])])
+             :else
+             [react/view {:style {:flex 1}}
+              [connectivity/connectivity-view]
+              [filter.views/animated-search-input search-filter]
+              (if (and (not search-filter)
+                       (empty? all-home-items))
+                [home-empty-view]
+                [home-items-view search-filter chats all-home-items])])]
       [home-action-button]]]))
 
 (views/defview home-wrapper []
