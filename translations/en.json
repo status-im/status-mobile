@@ -876,7 +876,7 @@
     "pin-mismatch": "PIN does not match",
     "tag-was-lost": "Tag was lost",
     "cannot-use-default-pin": "PIN 000000 is not allowed.\nPlease use another number",
-    "pin-changed": "PIN has been changed to {{pin}}",
+    "pin-changed": "PIN has been changed",
     "pin-retries-left": "You have {{number}} retries left",
     "keycard-blocked": "Keycard has been blocked.\nYou need to reset card to continue using it.",
     "reset-card": "Reset card",

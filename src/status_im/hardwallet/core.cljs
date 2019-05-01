@@ -17,7 +17,8 @@
             [status-im.accounts.login.core :as accounts.login]
             [status-im.accounts.recover.core :as accounts.recover]
             [status-im.models.wallet :as models.wallet]
-            [status-im.utils.ethereum.mnemonic :as mnemonic]))
+            [status-im.utils.ethereum.mnemonic :as mnemonic]
+            [status-im.accounts.logout.core :as accounts.logout]))
 
 (def default-pin "000000")
 
@@ -653,8 +654,8 @@
                                      (assoc-in [:hardwallet :pin] {:status      nil
                                                                    :error-label nil}))
                :utils/show-popup {:title   ""
-                                  :content (i18n/label :t/pin-changed {:pin pin})}}
-              (navigation/navigate-back))))
+                                  :content (i18n/label :t/pin-changed)}}
+              (accounts.logout/logout))))
 
 (fx/defn on-change-pin-error
   [{:keys [db]} error]
