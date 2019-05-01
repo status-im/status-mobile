@@ -97,7 +97,7 @@
             current-pk   [:account/public-key]]
     (when current-chat
       (let [shown-chat            (merge current-chat changed-chat)
-            admin?                (admins current-pk)
+            admin?                (get admins current-pk)
             allow-adding-members? (and admin?
                                        (< (count members) constants/max-group-chat-participants))]
         [react/view profile.components.styles/profile
