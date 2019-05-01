@@ -61,7 +61,8 @@
     [list/touchable-item #(when-not hide-details? (re-frame/dispatch [:show-transaction-details hash]))
      [react/view {:accessibility-label :transaction-item}
       [list/item
-       [list/item-icon (transaction-type->icon (keyword type))]
+       (when type
+         [list/item-icon (transaction-type->icon (keyword type))])
        [list/item-content
         [react/view {:style styles/amount-time}
          [react/nested-text {:style           styles/tx-amount
@@ -124,10 +125,11 @@
      content]]])
 
 (defn- render-item-filter [{:keys [id label checked?]}]
-  [item-filter {:icon (transaction-type->icon id) :checked? checked? :path {:type id}}
-   [list/item-content
-    [list/item-primary-only {:accessibility-label :filter-name-text}
-     label]]])
+  (when id
+    [item-filter {:icon (transaction-type->icon id) :checked? checked? :path {:type id}}
+     [list/item-content
+      [list/item-primary-only {:accessibility-label :filter-name-text}
+       label]]]))
 
 (defn- wrap-filter-data [m]
   [{:title     (i18n/label :t/transactions-filter-type)
@@ -168,7 +170,8 @@
   (let [asset (tokens/asset-for all-tokens (ethereum/network->chain-keyword network) symbol)]
     [react/view {:style styles/details-header}
      [react/view {:style styles/details-header-icon}
-      [list/item-icon (transaction-type->icon type)]]
+      (when type
+        [list/item-icon (transaction-type->icon type)])]
      [react/view {:style styles/details-header-infos}
       [react/nested-text {:style styles/details-header-value}
        [{:accessibility-label :amount-text}
