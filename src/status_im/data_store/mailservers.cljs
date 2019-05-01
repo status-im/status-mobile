@@ -27,7 +27,7 @@
   [id]
   (fn [realm]
     (core/delete realm
-                 (core/get-by-field realm :mailserver :id id))))
+                 (core/get-by-field realm :mailserver :id (name id)))))
 
 (defn deserialize-mailserver-topic [serialized-mailserver-topic]
   (-> serialized-mailserver-topic
