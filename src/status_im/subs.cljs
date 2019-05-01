@@ -1,5 +1,5 @@
 (ns status-im.subs
-  (:require [re-frame.core :refer [reg-sub subscribe] :as re-frame]
+  (:require [re-frame.core :as re-frame]
             status-im.tribute-to-talk.subs
             status-im.ui.screens.hardwallet.connect.subs
             status-im.ui.screens.hardwallet.settings.subs
@@ -47,153 +47,144 @@
 
 ;; TOP LEVEL ===========================================================================================================
 
-(def subs-keys (atom {}))
-
-(defn reg-root-key-sub [sub-name db-key keys-key]
-  (swap! subs-keys update keys-key conj db-key)
-  (reg-sub sub-name :<- [keys-key] (fn [db] (get db db-key))))
+(defn reg-root-key-sub [sub-name db-key]
+  (re-frame/reg-sub sub-name (fn [db] (get db db-key))))
 
 ;;view
-(reg-root-key-sub :view-id :view-id :subs/view-keys)
-(reg-root-key-sub :navigation-stack :navigation-stack :subs/view-keys)
-(reg-root-key-sub :screen-params :navigation/screen-params :subs/view-keys)
+(reg-root-key-sub :view-id :view-id)
+(reg-root-key-sub :navigation-stack :navigation-stack)
+(reg-root-key-sub :screen-params :navigation/screen-params)
 
 ;;bottom sheet
-(reg-root-key-sub :bottom-sheet/show? :bottom-sheet/show? :subs/bottom-keys)
-(reg-root-key-sub :bottom-sheet/view :bottom-sheet/view :subs/bottom-keys)
+(reg-root-key-sub :bottom-sheet/show? :bottom-sheet/show?)
+(reg-root-key-sub :bottom-sheet/view :bottom-sheet/view)
 
 ;;general
-(reg-root-key-sub :network-name :chain :subs/general-keys)
-(reg-root-key-sub :sync-state :sync-state :subs/general-keys)
-(reg-root-key-sub :network-status :network-status :subs/general-keys)
-(reg-root-key-sub :peers-count :peers-count :subs/general-keys)
-(reg-root-key-sub :about-app/node-info :node-info :subs/general-keys)
-(reg-root-key-sub :peers-summary :peers-summary :subs/general-keys)
-(reg-root-key-sub :node-status :node/status :subs/general-keys)
-(reg-root-key-sub :tab-bar-visible? :tab-bar-visible? :subs/general-keys)
-(reg-root-key-sub :dimensions/window :dimensions/window :subs/general-keys)
-(reg-root-key-sub :initial-props :initial-props :subs/general-keys)
-(reg-root-key-sub :get-manage-extension :extensions/manage :subs/general-keys)
-(reg-root-key-sub :get-staged-extension :extensions/staged-extension :subs/general-keys)
-(reg-root-key-sub :get-device-UUID :device-UUID :subs/general-keys)
-(reg-root-key-sub :fleets/custom-fleets :custom-fleets :subs/general-keys)
-(reg-root-key-sub :chain-sync-state :node/chain-sync-state :subs/general-keys)
-(reg-root-key-sub :desktop/desktop :desktop/desktop :subs/general-keys)
-(reg-root-key-sub :desktop :desktop :subs/general-keys)
-(reg-root-key-sub :animations :animations :subs/general-keys)
-(reg-root-key-sub :get-network :network :subs/general-keys)
-(reg-root-key-sub :ui/search :ui/search :subs/general-keys)
-(reg-root-key-sub :web3-node-version :web3-node-version :subs/general-keys)
-(reg-root-key-sub :keyboard-height :keyboard-height :subs/general-keys)
-(reg-root-key-sub :sync-data :sync-data :subs/general-keys)
-(reg-root-key-sub :layout-height :layout-height :subs/general-keys)
-(reg-root-key-sub :mobile-network/remember-choice? :mobile-network/remember-choice? :subs/general-keys)
-(reg-root-key-sub :qr-modal :qr-modal :subs/general-keys)
-(reg-root-key-sub :content-layout-height :content-layout-height :subs/general-keys)
-(reg-root-key-sub :bootnodes/manage :bootnodes/manage :subs/general-keys)
-(reg-root-key-sub :networks/networks :networks/networks :subs/general-keys)
-(reg-root-key-sub :networks/manage :networks/manage :subs/general-keys)
-(reg-root-key-sub :get-pairing-installations :pairing/installations :subs/general-keys)
-(reg-root-key-sub :network/type :network/type :subs/general-keys)
-(reg-root-key-sub :tooltips :tooltips :subs/general-keys)
+(reg-root-key-sub :network-name :chain)
+(reg-root-key-sub :sync-state :sync-state)
+(reg-root-key-sub :network-status :network-status)
+(reg-root-key-sub :peers-count :peers-count)
+(reg-root-key-sub :about-app/node-info :node-info)
+(reg-root-key-sub :peers-summary :peers-summary)
+(reg-root-key-sub :node-status :node/status)
+(reg-root-key-sub :tab-bar-visible? :tab-bar-visible?)
+(reg-root-key-sub :dimensions/window :dimensions/window)
+(reg-root-key-sub :initial-props :initial-props)
+(reg-root-key-sub :get-manage-extension :extensions/manage)
+(reg-root-key-sub :get-staged-extension :extensions/staged-extension)
+(reg-root-key-sub :get-device-UUID :device-UUID)
+(reg-root-key-sub :fleets/custom-fleets :custom-fleets)
+(reg-root-key-sub :chain-sync-state :node/chain-sync-state)
+(reg-root-key-sub :desktop/desktop :desktop/desktop)
+(reg-root-key-sub :desktop :desktop)
+(reg-root-key-sub :animations :animations)
+(reg-root-key-sub :get-network :network)
+(reg-root-key-sub :ui/search :ui/search)
+(reg-root-key-sub :web3-node-version :web3-node-version)
+(reg-root-key-sub :keyboard-height :keyboard-height)
+(reg-root-key-sub :sync-data :sync-data)
+(reg-root-key-sub :layout-height :layout-height)
+(reg-root-key-sub :mobile-network/remember-choice? :mobile-network/remember-choice?)
+(reg-root-key-sub :qr-modal :qr-modal)
+(reg-root-key-sub :content-layout-height :content-layout-height)
+(reg-root-key-sub :bootnodes/manage :bootnodes/manage)
+(reg-root-key-sub :networks/networks :networks/networks)
+(reg-root-key-sub :networks/manage :networks/manage)
+(reg-root-key-sub :get-pairing-installations :pairing/installations)
+(reg-root-key-sub :network/type :network/type)
+(reg-root-key-sub :tooltips :tooltips)
 
 ;;profile
-(reg-root-key-sub :my-profile/seed :my-profile/seed :subs/profile-keys)
-(reg-root-key-sub :my-profile/advanced? :my-profile/advanced? :subs/profile-keys)
-(reg-root-key-sub :my-profile/editing? :my-profile/editing? :subs/profile-keys)
-(reg-root-key-sub :extensions/profile :extensions/profile :subs/profile-keys)
-(reg-root-key-sub :my-profile/profile :my-profile/profile :subs/profile-keys)
+(reg-root-key-sub :my-profile/seed :my-profile/seed)
+(reg-root-key-sub :my-profile/advanced? :my-profile/advanced?)
+(reg-root-key-sub :my-profile/editing? :my-profile/editing?)
+(reg-root-key-sub :extensions/profile :extensions/profile)
+(reg-root-key-sub :my-profile/profile :my-profile/profile)
 ;;account
-(reg-root-key-sub :accounts/accounts :accounts/accounts :subs/account-keys)
-(reg-root-key-sub :accounts/login :accounts/login :subs/account-keys)
-(reg-root-key-sub :account/account :account/account :subs/account-keys)
-(reg-root-key-sub :accounts/create :accounts/create :subs/account-keys)
-(reg-root-key-sub :get-recover-account :accounts/recover :subs/account-keys)
+(reg-root-key-sub :accounts/accounts :accounts/accounts)
+(reg-root-key-sub :accounts/login :accounts/login)
+(reg-root-key-sub :account/account :account/account)
+(reg-root-key-sub :accounts/create :accounts/create)
+(reg-root-key-sub :get-recover-account :accounts/recover)
 ;;chat
-(reg-root-key-sub ::cooldown-enabled? :chat/cooldown-enabled? :subs/chat-keys)
-(reg-root-key-sub ::chats :chats :subs/chat-keys)
-(reg-root-key-sub ::access-scope->command-id :access-scope->command-id :subs/chat-keys)
-(reg-root-key-sub ::chat-ui-props :chat-ui-props :subs/chat-keys)
-(reg-root-key-sub :chats/id->command :id->command :subs/chat-keys)
-(reg-root-key-sub :chats/current-chat-id :current-chat-id :subs/chat-keys)
-(reg-root-key-sub :public-group-topic :public-group-topic :subs/chat-keys)
-(reg-root-key-sub :chats/loading? :chats/loading? :subs/chat-keys)
-(reg-root-key-sub :new-chat-name :new-chat-name :subs/chat-keys)
-(reg-root-key-sub :group-chat-profile/editing? :group-chat-profile/editing? :subs/chat-keys)
-(reg-root-key-sub :group-chat-profile/profile :group-chat-profile/profile :subs/chat-keys)
-(reg-root-key-sub :selected-participants :selected-participants :subs/chat-keys)
+(reg-root-key-sub ::cooldown-enabled? :chat/cooldown-enabled?)
+(reg-root-key-sub ::chats :chats)
+(reg-root-key-sub ::access-scope->command-id :access-scope->command-id)
+(reg-root-key-sub ::chat-ui-props :chat-ui-props)
+(reg-root-key-sub :chats/id->command :id->command)
+(reg-root-key-sub :chats/current-chat-id :current-chat-id)
+(reg-root-key-sub :public-group-topic :public-group-topic)
+(reg-root-key-sub :chats/loading? :chats/loading?)
+(reg-root-key-sub :new-chat-name :new-chat-name)
+(reg-root-key-sub :group-chat-profile/editing? :group-chat-profile/editing?)
+(reg-root-key-sub :group-chat-profile/profile :group-chat-profile/profile)
+(reg-root-key-sub :selected-participants :selected-participants)
 
 ;;browser
-(reg-root-key-sub :browsers :browser/browsers :subs/browser-keys)
-(reg-root-key-sub :browser/options :browser/options :subs/browser-keys)
-(reg-root-key-sub :dapps/permissions :dapps/permissions :subs/browser-keys)
+(reg-root-key-sub :browsers :browser/browsers)
+(reg-root-key-sub :browser/options :browser/options)
+(reg-root-key-sub :dapps/permissions :dapps/permissions)
 
 ;;stickers
-(reg-root-key-sub :stickers/selected-pack :stickers/selected-pack :subs/stickers-keys)
-(reg-root-key-sub :stickers/packs :stickers/packs :subs/stickers-keys)
-(reg-root-key-sub :stickers/installed-packs :stickers/packs-installed :subs/stickers-keys)
-(reg-root-key-sub :stickers/packs-owned :stickers/packs-owned :subs/stickers-keys)
-(reg-root-key-sub :stickers/packs-pendning :stickers/packs-pendning :subs/stickers-keys)
+(reg-root-key-sub :stickers/selected-pack :stickers/selected-pack)
+(reg-root-key-sub :stickers/packs :stickers/packs)
+(reg-root-key-sub :stickers/installed-packs :stickers/packs-installed)
+(reg-root-key-sub :stickers/packs-owned :stickers/packs-owned)
+(reg-root-key-sub :stickers/packs-pendning :stickers/packs-pendning)
 
 ;;mailserver
-(reg-root-key-sub :mailserver/current-id :mailserver/current-id :subs/mailserver-keys)
-(reg-root-key-sub :mailserver/mailservers :mailserver/mailservers :subs/mailserver-keys)
-(reg-root-key-sub :mailserver.edit/mailserver :mailserver.edit/mailserver :subs/mailserver-keys)
-(reg-root-key-sub :mailserver/state :mailserver/state :subs/mailserver-keys)
-(reg-root-key-sub :mailserver/pending-requests :mailserver/pending-requests :subs/mailserver-keys)
-(reg-root-key-sub :mailserver/request-error? :mailserver/request-error :subs/mailserver-keys)
-(reg-root-key-sub :mailserver/fetching-gaps-in-progress :mailserver/fetching-gaps-in-progress :subs/mailserver-keys)
-(reg-root-key-sub :mailserver/gaps :mailserver/gaps :subs/mailserver-keys)
-(reg-root-key-sub :mailserver/ranges :mailserver/ranges :subs/mailserver-keys)
+(reg-root-key-sub :mailserver/current-id :mailserver/current-id)
+(reg-root-key-sub :mailserver/mailservers :mailserver/mailservers)
+(reg-root-key-sub :mailserver.edit/mailserver :mailserver.edit/mailserver)
+(reg-root-key-sub :mailserver/state :mailserver/state)
+(reg-root-key-sub :mailserver/pending-requests :mailserver/pending-requests)
+(reg-root-key-sub :mailserver/request-error? :mailserver/request-error)
+(reg-root-key-sub :mailserver/fetching-gaps-in-progress :mailserver/fetching-gaps-in-progress)
+(reg-root-key-sub :mailserver/gaps :mailserver/gaps)
+(reg-root-key-sub :mailserver/ranges :mailserver/ranges)
 
 ;;contacts
-(reg-root-key-sub ::contacts :contacts/contacts :subs/contacts-keys)
-(reg-root-key-sub :contacts/current-contact-identity :contacts/identity :subs/contacts-keys)
-(reg-root-key-sub :new-identity-error :contacts/new-identity-error :subs/general-keys)
-(reg-root-key-sub :contacts/new-identity :contacts/new-identity :subs/general-keys)
-(reg-root-key-sub :group/selected-contacts :group/selected-contacts :subs/general-keys)
+(reg-root-key-sub ::contacts :contacts/contacts)
+(reg-root-key-sub :contacts/current-contact-identity :contacts/identity)
+(reg-root-key-sub :new-identity-error :contacts/new-identity-error)
+(reg-root-key-sub :contacts/new-identity :contacts/new-identity)
+(reg-root-key-sub :group/selected-contacts :group/selected-contacts)
 ;;wallet
-(reg-root-key-sub :wallet :wallet :subs/wallet-keys)
-(reg-root-key-sub :prices :prices :subs/wallet-keys)
-(reg-root-key-sub :collectibles :collectibles :subs/wallet-keys)
-(reg-root-key-sub :wallet/all-tokens :wallet/all-tokens :subs/wallet-keys)
-(reg-root-key-sub :prices-loading? :prices-loading? :subs/wallet-keys)
-(reg-root-key-sub :wallet.transactions :wallet.transactions :subs/wallet-keys)
-
-(doseq [[subs-key db-keys] @subs-keys]
-  (reg-sub
-   subs-key
-   (fn [db]
-     (select-keys db db-keys))))
+(reg-root-key-sub :wallet :wallet)
+(reg-root-key-sub :prices :prices)
+(reg-root-key-sub :collectibles :collectibles)
+(reg-root-key-sub :wallet/all-tokens :wallet/all-tokens)
+(reg-root-key-sub :prices-loading? :prices-loading?)
+(reg-root-key-sub :wallet.transactions :wallet.transactions)
 
 ;;GENERAL ==============================================================================================================
 
-(reg-sub
+(re-frame/reg-sub
  :connection-stats
  :<- [:desktop/desktop]
  (fn [desktop _]
    (get desktop :debug-metrics)))
 
-(reg-sub
+(re-frame/reg-sub
  :settings/logging-enabled
  :<- [:desktop/desktop]
  (fn [desktop _]
    (get desktop :logging-enabled false)))
 
 ;;TODO we have network in two different places see :account/network, what's the difference?
-(reg-sub
+(re-frame/reg-sub
  :network
  :<- [:account/account]
  (fn [current-account]
    (get (:networks current-account) (:network current-account))))
 
-(reg-sub
+(re-frame/reg-sub
  :disconnected?
  :<- [:peers-count]
  (fn [peers-count]
    (zero? peers-count)))
 
-(reg-sub
+(re-frame/reg-sub
  :offline?
  :<- [:network-status]
  :<- [:sync-state]
@@ -203,37 +194,37 @@
        (= network-status :offline)
        (= sync-state :offline))))
 
-(reg-sub
+(re-frame/reg-sub
  :syncing?
  :<- [:sync-state]
  (fn [sync-state]
    (#{:pending :in-progress} sync-state)))
 
-(reg-sub
+(re-frame/reg-sub
  :dimensions/window-width
  :<- [:dimensions/window]
  :width)
 
-(reg-sub
+(re-frame/reg-sub
  :get-screen-params
  :<- [:screen-params]
  :<- [:view-id]
  (fn [[params view-id-db] [_ view-id]]
    (get params (or view-id view-id-db))))
 
-(reg-sub
+(re-frame/reg-sub
  :can-navigate-back?
  :<- [:navigation-stack]
  (fn [stack]
    (> (count stack) 1)))
 
-(reg-sub
+(re-frame/reg-sub
  :delete-swipe-position
  :<- [:animations]
  (fn [animations [_ type item-id]]
    (get-in animations [type item-id :delete-swiped])))
 
-(reg-sub
+(re-frame/reg-sub
  :search/filter
  :<- [:ui/search]
  (fn [search]
@@ -246,28 +237,28 @@
   (let [version (if platform/desktop? build/version build/build-no)]
     (str build/version " (" version ")")))
 
-(reg-sub
+(re-frame/reg-sub
  :get-app-version
  :<- [:web3-node-version]
  (fn [web3-node-version]
    (str app-short-version "; " (node-version web3-node-version))))
 
-(reg-sub
+(re-frame/reg-sub
  :get-app-short-version
  (fn [db] app-short-version))
 
-(reg-sub
+(re-frame/reg-sub
  :get-app-node-version
  :<- [:web3-node-version]
  node-version)
 
-(reg-sub
+(re-frame/reg-sub
  :my-profile/recovery
  :<- [:my-profile/seed]
  (fn [seed]
    (or seed {:step :intro})))
 
-(reg-sub
+(re-frame/reg-sub
  :bottom-sheet
  :<- [:bottom-sheet/show?]
  :<- [:bottom-sheet/view]
@@ -275,14 +266,14 @@
    {:show? show?
     :view  view}))
 
-(reg-sub
+(re-frame/reg-sub
  :is-contact-selected?
  :<- [:group/selected-contacts]
  (fn [selected-contacts [_ element]]
    (-> selected-contacts
        (contains? element))))
 
-(reg-sub
+(re-frame/reg-sub
  :is-participant-selected?
  :<- [:selected-participants]
  (fn [selected-participants [_ element]]
@@ -291,19 +282,19 @@
 
 ;;ACCOUNT ==============================================================================================================
 
-(reg-sub
+(re-frame/reg-sub
  :account/public-key
  :<- [:account/account]
  (fn [{:keys [public-key]}]
    public-key))
 
-(reg-sub
+(re-frame/reg-sub
  :account/hex-address
  :<- [:account/account]
  (fn [{:keys [address]}]
    (ethereum/normalized-address address)))
 
-(reg-sub
+(re-frame/reg-sub
  :sign-in-enabled?
  :<- [:accounts/login]
  :<- [:node-status]
@@ -312,50 +303,50 @@
         (spec/valid? ::accounts.db/password
                      (security/safe-unmask-data password)))))
 
-(reg-sub
+(re-frame/reg-sub
  :settings/current-fleet
  :<- [:account-settings]
  (fn [sett]
    (fleet/current-fleet-sub sett)))
 
-(reg-sub
+(re-frame/reg-sub
  :get-account-creation-next-enabled?
  :<- [:accounts/create]
  (fn [create]
    (accounts.db/account-creation-next-enabled? create)))
 
-(reg-sub
+(re-frame/reg-sub
  :account-settings
  :<- [:account/account]
  (fn [acc]
    (get acc :settings)))
 
 ;;TODO we have network in two different places see :network, what's the difference?
-(reg-sub
+(re-frame/reg-sub
  :account/network
  :<- [:account/account]
  :<- [:get-network]
  (fn [[account network]]
    (get-in account [:networks network])))
 
-(reg-sub
+(re-frame/reg-sub
  :current-network-initialized?
  :<- [:account/network]
  (fn [network]
    (boolean network)))
 
-(reg-sub
+(re-frame/reg-sub
  :current-network-uses-rpc?
  :<- [:account/network]
  (fn [network]
    (get-in network [:config :UpstreamConfig :Enabled])))
 
-(reg-sub
+(re-frame/reg-sub
  :latest-block-number
  (fn [{:node/keys [latest-block-number]} _]
    (if latest-block-number latest-block-number 0)))
 
-(reg-sub
+(re-frame/reg-sub
  :settings/current-log-level
  :<- [:account-settings]
  (fn [sett]
@@ -364,13 +355,13 @@
 
 ;;CHAT ==============================================================================================================
 
-(reg-sub
+(re-frame/reg-sub
  :get-collectible-token
  :<- [:collectibles]
  (fn [collectibles [_ {:keys [symbol token]}]]
    (get-in collectibles [(keyword symbol) (js/parseInt token)])))
 
-(reg-sub
+(re-frame/reg-sub
  ::show-suggestions-view?
  :<- [:chats/current-chat-ui-prop :show-suggestions?]
  :<- [:chats/current-chat]
@@ -380,14 +371,14 @@
             (commands.input/starts-as-command? (string/trim (or input-text ""))))
         (seq commands))))
 
-(reg-sub
+(re-frame/reg-sub
  ::show-suggestions?
  :<- [::show-suggestions-view?]
  :<- [:chats/selected-chat-command]
  (fn [[show-suggestions-box? selected-command]]
    (and show-suggestions-box? (not selected-command))))
 
-(reg-sub
+(re-frame/reg-sub
  ::get-commands-for-chat
  :<- [:chats/id->command]
  :<- [::access-scope->command-id]
@@ -395,13 +386,13 @@
  (fn [[id->command access-scope->command-id chat]]
    (commands/chat-commands id->command access-scope->command-id chat)))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/chat
  :<- [:chats/active-chats]
  (fn [chats [_ chat-id]]
    (get chats chat-id)))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/content-layout-height
  :<- [:content-layout-height]
  :<- [:chats/current-chat-ui-prop :input-height]
@@ -427,26 +418,26 @@
           platform/ios? tabs.styles/tabs-height
           :else tabs.styles/minimized-tabs-height)))))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/current-chat-ui-props
  :<- [::chat-ui-props]
  :<- [:chats/current-chat-id]
  (fn [[chat-ui-props id]]
    (get chat-ui-props id)))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/current-chat-ui-prop
  :<- [:chats/current-chat-ui-props]
  (fn [ui-props [_ prop]]
    (get ui-props prop)))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/validation-messages
  :<- [:chats/current-chat-ui-props]
  (fn [ui-props]
    (some-> ui-props :validation-messages)))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/input-margin
  :<- [:keyboard-height]
  (fn [kb-height]
@@ -461,7 +452,7 @@
 
      :default 0)))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/active-chats
  :<- [:contacts/contacts]
  :<- [::chats]
@@ -469,7 +460,7 @@
  (fn [[contacts chats account]]
    (chat.db/active-chats contacts chats account)))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/current-chat
  :<- [:chats/active-chats]
  :<- [:chats/current-chat-id]
@@ -480,31 +471,31 @@
        (assoc current-chat :universal-link (links/generate-link :public-chat :external current-chat-id))
        current-chat))))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/current-chat-message
  :<- [:chats/current-chat]
  (fn [{:keys [messages]} [_ message-id]]
    (get messages message-id)))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/current-chat-messages
  :<- [:chats/current-chat]
  (fn [{:keys [messages]}]
    (or messages {})))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/current-chat-message-groups
  :<- [:chats/current-chat]
  (fn [{:keys [message-groups]}]
    (or message-groups {})))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/current-chat-message-statuses
  :<- [:chats/current-chat]
  (fn [{:keys [message-statuses]}]
    (or message-statuses {})))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/current-chat-referenced-messages
  :<- [:chats/current-chat]
  (fn [{:keys [referenced-messages]}]
@@ -554,7 +545,7 @@
         messages-gaps range all-loaded? public?)
        chat.db/messages-stream)))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/current-chat-intro-status
  :<- [:chats/current-chat]
  :<- [:chats/current-chat-messages]
@@ -565,20 +556,20 @@
        :empty
        :messages))))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/available-commands
  :<- [::get-commands-for-chat]
  :<- [:chats/current-chat]
  (fn [[commands chat]]
    (chat.db/available-commands commands chat)))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/all-available-commands
  :<- [::get-commands-for-chat]
  (fn [commands]
    (chat.db/map->sorted-seq commands)))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/selected-chat-command
  :<- [:chats/current-chat]
  :<- [:chats/current-chat-ui-prop :selection]
@@ -586,7 +577,7 @@
  (fn [[{:keys [input-text]} selection commands]]
    (commands.input/selected-chat-command input-text selection commands)))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/input-placeholder
  :<- [:chats/current-chat]
  :<- [:chats/selected-chat-command]
@@ -594,7 +585,7 @@
    (when (and cursor-in-the-end? (string/ends-with? (or input-text "") chat.constants/spacing-char))
      (get-in params [current-param-position :placeholder]))))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/parameter-box
  :<- [:chats/current-chat]
  :<- [:chats/selected-chat-command]
@@ -602,7 +593,7 @@
    (when (and params current-param-position)
      (get-in params [current-param-position :suggestions]))))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/show-parameter-box?
  :<- [:chats/parameter-box]
  :<- [::show-suggestions?]
@@ -614,14 +605,14 @@
         (not show-suggestions?)
         (not (= :complete command-completion)))))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/unviewed-messages-count
  (fn [[_ chat-id]]
-   (subscribe [:chats/chat chat-id]))
+   (re-frame/subscribe [:chats/chat chat-id]))
  (fn [{:keys [unviewed-messages-count]}]
    unviewed-messages-count))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/photo-path
  :<- [:contacts/contacts]
  :<- [:account/account]
@@ -630,13 +621,13 @@
        (when (= id (:public-key account))
          (:photo-path account)))))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/unread-messages-number
  :<- [:chats/active-chats]
  (fn [chats _]
    (apply + (map :unviewed-messages-count (vals chats)))))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/cooldown-enabled?
  :<- [:chats/current-chat]
  :<- [::cooldown-enabled?]
@@ -644,13 +635,13 @@
    (and public?
         cooldown-enabled?)))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/reply-message
  :<- [:chats/current-chat]
  (fn [{:keys [metadata messages]}]
    (get messages (get-in metadata [:responding-to-message :message-id]))))
 
-(reg-sub
+(re-frame/reg-sub
  :public-chat.new/topic-error-message
  :<- [:public-group-topic]
  (fn [topic]
@@ -662,14 +653,14 @@
   [selected-contacts contacts]
   (filter #(contact.db/added? (contacts %)) selected-contacts))
 
-(reg-sub
+(re-frame/reg-sub
  :selected-contacts-count
  :<- [:group/selected-contacts]
  :<- [:contacts/contacts]
  (fn [[selected-contacts contacts]]
    (count (filter-selected-contacts selected-contacts contacts))))
 
-(reg-sub
+(re-frame/reg-sub
  :selected-participants-count
  :<- [:selected-participants]
  (fn [selected-participants]
@@ -678,14 +669,14 @@
 (defn filter-contacts [selected-contacts active-contacts]
   (filter #(selected-contacts (:public-key %)) active-contacts))
 
-(reg-sub
+(re-frame/reg-sub
  :selected-group-contacts
  :<- [:group/selected-contacts]
  :<- [:contacts/active]
  (fn [[selected-contacts active-contacts]]
    (filter-contacts selected-contacts active-contacts)))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/transaction-confirmed?
  :<- [:wallet-transactions]
  (fn [txs [_ tx-hash]]
@@ -693,7 +684,7 @@
        (js/parseInt)
        (>= transactions/confirmations-count-threshold))))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/wallet-transaction-exists?
  :<- [:wallet-transactions]
  (fn [txs [_ tx-hash]]
@@ -701,26 +692,26 @@
 
 ;;BOOTNODES ============================================================================================================
 
-(reg-sub
+(re-frame/reg-sub
  :settings/bootnodes-enabled
  :<- [:account/account]
  (fn [account]
    (let [{:keys [network settings]} account]
      (get-in settings [:bootnodes network]))))
 
-(reg-sub
+(re-frame/reg-sub
  :settings/network-bootnodes
  :<- [:account/account]
  (fn [account]
    (get-in account [:bootnodes (:network account)])))
 
-(reg-sub
+(re-frame/reg-sub
  :get-manage-bootnode
  :<- [:bootnodes/manage]
  (fn [manage]
    manage))
 
-(reg-sub
+(re-frame/reg-sub
  :manage-bootnode-validation-errors
  :<- [:get-manage-bootnode]
  (fn [manage]
@@ -731,7 +722,7 @@
 
 ;;BROWSER ==============================================================================================================
 
-(reg-sub
+(re-frame/reg-sub
  :browser/browsers
  :<- [:browsers]
  (fn [browsers]
@@ -740,13 +731,13 @@
            browsers
            browsers)))
 
-(reg-sub
+(re-frame/reg-sub
  :browser/browsers-vals
  :<- [:browser/browsers]
  (fn [browsers]
    (sort-by :timestamp > (vals browsers))))
 
-(reg-sub
+(re-frame/reg-sub
  :get-current-browser
  :<- [:browser/options]
  :<- [:browser/browsers]
@@ -756,13 +747,13 @@
 
 ;;STICKERS =============================================================================================================
 
-(reg-sub
+(re-frame/reg-sub
  :stickers/installed-packs-vals
  :<- [:stickers/installed-packs]
  (fn [packs]
    (vals packs)))
 
-(reg-sub
+(re-frame/reg-sub
  :stickers/all-packs
  :<- [:stickers/packs]
  :<- [:stickers/installed-packs]
@@ -776,7 +767,7 @@
             (get pending id) (assoc :pending true)))
         (vals packs))))
 
-(reg-sub
+(re-frame/reg-sub
  :stickers/get-current-pack
  :<- [:get-screen-params]
  :<- [:stickers/all-packs]
@@ -789,7 +780,7 @@
             id))
         packs))
 
-(reg-sub
+(re-frame/reg-sub
  :stickers/recent
  :<- [:account/account]
  :<- [:stickers/installed-packs-vals]
@@ -798,7 +789,7 @@
 
 ;;EXTENSIONS ===========================================================================================================
 
-(reg-sub
+(re-frame/reg-sub
  :extensions/all-extensions
  :<- [:account/account]
  (fn [account]
@@ -806,7 +797,7 @@
 
 ;;HOME =================================================================================================================
 
-(reg-sub
+(re-frame/reg-sub
  :home-items
  :<- [:chats/active-chats]
  :<- [:search/filter]
@@ -821,7 +812,7 @@
 
 ;;NETWORK SETTINGS =====================================================================================================
 
-(reg-sub
+(re-frame/reg-sub
  :get-network-id
  :<- [:network]
  (fn [network]
@@ -842,7 +833,7 @@
     (let [custom? (not (contains? default-networks (:id network)))]
       (assoc network :custom? custom?))))
 
-(reg-sub
+(re-frame/reg-sub
  :get-networks
  :<- [:account/account]
  :<- [:networks/networks]
@@ -853,13 +844,13 @@
       types
       (map #(filter (filter-networks %) networks) types)))))
 
-(reg-sub
+(re-frame/reg-sub
  :get-manage-network
  :<- [:networks/manage]
  (fn [manage]
    manage))
 
-(reg-sub
+(re-frame/reg-sub
  :manage-network-valid?
  :<- [:get-manage-network]
  (fn [manage]
@@ -867,7 +858,7 @@
 
 ;;PAIRING ==============================================================================================================
 
-(reg-sub
+(re-frame/reg-sub
  :pairing/installations
  :<- [:get-pairing-installations]
  (fn [installations]
@@ -875,19 +866,19 @@
         vals
         (sort-by (comp unchecked-negate :last-paired)))))
 
-(reg-sub
+(re-frame/reg-sub
  :pairing/installation-id
  :<- [:account/account]
  :installation-id)
 
-(reg-sub
+(re-frame/reg-sub
  :pairing/installation-name
  :<- [:account/account]
  (fn [account] (:installation-name account)))
 
 ;;PROFILE ==============================================================================================================
 
-(reg-sub
+(re-frame/reg-sub
  :get-profile-unread-messages-number
  :<- [:account/account]
  (fn [{:keys [seed-backed-up? mnemonic]}]
@@ -895,48 +886,48 @@
 
 ;;WALLET ==============================================================================================================
 
-(reg-sub
+(re-frame/reg-sub
  :balance
  :<- [:wallet]
  (fn [wallet]
    (:balance wallet)))
 
-(reg-sub
+(re-frame/reg-sub
  :price
  :<- [:prices]
  (fn [prices [_ fsym tsym]]
    (get-in prices [fsym tsym :price])))
 
-(reg-sub
+(re-frame/reg-sub
  :last-day
  :<- [:prices]
  (fn [prices [_ fsym tsym]]
    (get-in prices [fsym tsym :last-day])))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet-transactions
  :<- [:wallet]
  (fn [wallet]
    (get wallet :transactions)))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.settings/currency
  :<- [:account-settings]
  (fn [sett]
    (or (get-in sett [:wallet :currency]) :usd)))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.transactions/filters
  :<- [:wallet.transactions]
  (fn [txs]
    (get txs :filters)))
 
-(reg-sub
+(re-frame/reg-sub
  :asset-value
  (fn [[_ fsym decimals tsym]]
-   [(subscribe [:balance])
-    (subscribe [:price fsym tsym])
-    (subscribe [:wallet/currency])])
+   [(re-frame/subscribe [:balance])
+    (re-frame/subscribe [:price fsym tsym])
+    (re-frame/subscribe [:wallet/currency])])
  (fn [[balance price currency] [_ fsym decimals tsym]]
    (when (and balance price)
      (-> (money/internal->formatted (get balance fsym) fsym decimals)
@@ -953,7 +944,7 @@
                             .toNumber))
                  acc)) 0 balance))
 
-(reg-sub
+(re-frame/reg-sub
  :portfolio-value
  :<- [:balance]
  :<- [:prices]
@@ -978,25 +969,25 @@
          "0"))
      "...")))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet/balance-loading?
  :<- [:wallet]
  (fn [wallet]
    (:balance-loading? wallet)))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet/error-message
  :<- [:wallet]
  (fn [wallet]
    (or (get-in wallet [:errors :balance-update])
        (get-in wallet [:errors :prices-update]))))
 
-(reg-sub
+(re-frame/reg-sub
  :get-wallet-unread-messages-number
  (fn [db]
    0))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet/visible-tokens-symbols
  :<- [:network]
  :<- [:account/account]
@@ -1004,7 +995,7 @@
    (let [chain (ethereum/network->chain-keyword network)]
      (get-in current-account [:settings :wallet :visible-tokens chain]))))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet/visible-assets
  :<- [:network]
  :<- [:wallet/visible-tokens-symbols]
@@ -1015,20 +1006,20 @@
                    (tokens/sorted-tokens-for all-tokens (ethereum/network->chain-keyword network)))
            (tokens/native-currency chain)))))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet/visible-assets-with-amount
  :<- [:balance]
  :<- [:wallet/visible-assets]
  (fn [[balance visible-assets]]
    (map #(assoc % :amount (get balance (:symbol %))) visible-assets)))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet/transferrable-assets-with-amount
  :<- [:wallet/visible-assets-with-amount]
  (fn [all-assets]
    (filter #(not (:nft? %)) all-assets)))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet/currency
  :<- [:wallet.settings/currency]
  (fn [currency-id]
@@ -1036,7 +1027,7 @@
 
 ;;WALLET TRANSACTIONS ==================================================================================================
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.transactions/current-tab
  :<- [:wallet]
  (fn [wallet]
@@ -1053,7 +1044,7 @@
       :always (assoc key-wallet wallet
                      :time-formatted (datetime/timestamp->time timestamp)))))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.transactions/transactions
  :<- [:wallet]
  :<- [:contacts/contacts-by-address]
@@ -1063,13 +1054,13 @@
            {}
            (:transactions wallet))))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.transactions/grouped-transactions
  :<- [:wallet.transactions/transactions]
  (fn [transactions]
    (group-by :type (vals transactions))))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.transactions/pending-transactions-list
  :<- [:wallet.transactions/grouped-transactions]
  (fn [{:keys [pending]}]
@@ -1078,7 +1069,7 @@
       :key   :pending
       :data  pending})))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.transactions/failed-transactions-list
  :<- [:wallet.transactions/grouped-transactions]
  (fn [{:keys [failed]}]
@@ -1097,13 +1088,13 @@
                :key   date-key
                :data  (sort-by :timestamp > transactions)}))))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.transactions/completed-transactions-list
  :<- [:wallet.transactions/grouped-transactions]
  (fn [{:keys [inbound outbound failed]}]
    (group-transactions-by-date (concat inbound outbound failed))))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.transactions/transactions-history-list
  :<- [:wallet.transactions/pending-transactions-list]
  :<- [:wallet.transactions/completed-transactions-list]
@@ -1112,13 +1103,13 @@
      pending (into pending)
      completed (into completed))))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.transactions/current-transaction
  :<- [:wallet]
  (fn [wallet]
    (:current-transaction wallet)))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.transactions/transaction-details
  :<- [:wallet.transactions/transactions]
  :<- [:wallet.transactions/current-transaction]
@@ -1144,14 +1135,14 @@
                          (money/wei->str :eth (money/fee-value gas-used gas-price) display-unit))
                  :url  (transactions/get-transaction-details-url chain hash)}))))))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.transactions.details/confirmations
  :<- [:wallet.transactions/transaction-details]
  (fn [transaction-details]
    ;;TODO (yenda) this field should be calculated based on the current-block and the block of the transaction
    (:confirmations transaction-details)))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.transactions.details/confirmations-progress
  :<- [:wallet.transactions.details/confirmations]
  (fn [confirmations]
@@ -1162,37 +1153,37 @@
 
 ;;WALLET SEND ==========================================================================================================
 
-(reg-sub
+(re-frame/reg-sub
  ::send-transaction
  :<- [:wallet]
  (fn [wallet]
    (:send-transaction wallet)))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.send/symbol
  :<- [::send-transaction]
  (fn [send-transaction]
    (:symbol send-transaction)))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.send/advanced?
  :<- [::send-transaction]
  (fn [send-transaction]
    (:advanced? send-transaction)))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.send/camera-flashlight
  :<- [::send-transaction]
  (fn [send-transaction]
    (:camera-flashlight send-transaction)))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.send/wrong-password?
  :<- [::send-transaction]
  (fn [send-transaction]
    (:wrong-password? send-transaction)))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.send/sign-password-enabled?
  :<- [::send-transaction]
  (fn [{:keys [password]}]
@@ -1212,7 +1203,7 @@
      :gas
      (money/to-fixed (:gas transaction)))))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet/edit
  :<- [::send-transaction]
  :<- [:wallet]
@@ -1239,7 +1230,7 @@
                                             (money/formatted->internal :ETH 18))
                                         (money/bignumber available-for-gas))))))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.send/transaction
  :<- [::send-transaction]
  :<- [:balance]
@@ -1249,25 +1240,25 @@
        (check-sufficient-funds balance symbol amount)
        (check-sufficient-gas balance symbol amount))))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.send/signing-phrase-with-padding
  :<- [:account/account]
  (fn [{:keys [signing-phrase]}]
    (when signing-phrase
      (clojure.string/replace-all signing-phrase #" " "     "))))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet/settings
  :<- [:wallet]
  (fn [{:keys [settings]}]
    (reduce-kv #(conj %1 %3) [] settings)))
 
-(reg-sub
+(re-frame/reg-sub
  :wallet.request/transaction
  :<- [:wallet]
  :request-transaction)
 
-(reg-sub
+(re-frame/reg-sub
  :screen-collectibles
  :<- [:collectibles]
  :<- [:get-screen-params]
@@ -1278,7 +1269,7 @@
 ;;UI ==============================================================================================================
 
 ;;TODO this subscription looks super weird huge and with dispatches?
-(reg-sub
+(re-frame/reg-sub
  :connectivity/status-properties
  :<- [:offline?]
  :<- [:disconnected?]
@@ -1333,32 +1324,32 @@
 
 ;;CONTACT ==============================================================================================================
 
-(reg-sub
+(re-frame/reg-sub
  ::query-current-chat-contacts
  :<- [:chats/current-chat]
  :<- [:contacts/contacts]
  (fn [[chat contacts] [_ query-fn]]
    (contact.db/query-chat-contacts chat contacts query-fn)))
 
-(reg-sub
+(re-frame/reg-sub
  :contacts/contacts
  :<- [::contacts]
  (fn [contacts]
    (contact.db/enrich-contacts contacts)))
 
-(reg-sub
+(re-frame/reg-sub
  :contacts/active
  :<- [:contacts/contacts]
  (fn [contacts]
    (contact.db/get-active-contacts contacts)))
 
-(reg-sub
+(re-frame/reg-sub
  :contacts/active-count
  :<- [:contacts/active]
  (fn [active-contacts]
    (count active-contacts)))
 
-(reg-sub
+(re-frame/reg-sub
  :contacts/blocked
  :<- [:contacts/contacts]
  (fn [contacts]
@@ -1367,13 +1358,13 @@
                   (contact.db/blocked? contact)))
         (contact.db/sort-contacts))))
 
-(reg-sub
+(re-frame/reg-sub
  :contacts/blocked-count
  :<- [:contacts/blocked]
  (fn [blocked-contacts]
    (count blocked-contacts)))
 
-(reg-sub
+(re-frame/reg-sub
  :contacts/current-contact
  :<- [:contacts/contacts]
  :<- [:contacts/current-contact-identity]
@@ -1383,7 +1374,7 @@
            contact.db/public-key->new-contact
            contact.db/enrich-contact))))
 
-(reg-sub
+(re-frame/reg-sub
  :contacts/contact-name-by-identity
  :<- [:contacts/contacts]
  :<- [:account/account]
@@ -1393,13 +1384,13 @@
        (:name current-account)
        (:name (contacts identity))))))
 
-(reg-sub
+(re-frame/reg-sub
  :contacts/all-contacts-not-in-current-chat
  :<- [::query-current-chat-contacts remove]
  (fn [contacts]
    (sort-by (comp clojure.string/lower-case :name) contacts)))
 
-(reg-sub
+(re-frame/reg-sub
  :contacts/current-chat-contacts
  :<- [:chats/current-chat]
  :<- [:contacts/contacts]
@@ -1407,19 +1398,19 @@
  (fn [[{:keys [contacts admins]} all-contacts current-account]]
    (contact.db/get-all-contacts-in-group-chat contacts admins all-contacts current-account)))
 
-(reg-sub
+(re-frame/reg-sub
  :contacts/contacts-by-chat
  (fn [[_ _ chat-id] _]
-   [(subscribe [:chats/chat chat-id])
-    (subscribe [:contacts/contacts])])
+   [(re-frame/subscribe [:chats/chat chat-id])
+    (re-frame/subscribe [:contacts/contacts])])
  (fn [[chat all-contacts] [_ query-fn]]
    (contact.db/query-chat-contacts chat all-contacts query-fn)))
 
-(reg-sub
+(re-frame/reg-sub
  :contacts/chat-photo
  (fn [[_ chat-id] _]
-   [(subscribe [:chats/chat chat-id])
-    (subscribe [:contacts/contacts-by-chat filter chat-id])])
+   [(re-frame/subscribe [:chats/chat chat-id])
+    (re-frame/subscribe [:contacts/contacts-by-chat filter chat-id])])
  (fn [[chat contacts] [_ chat-id]]
    (when (and chat (not (:group-chat chat)))
      (cond
@@ -1432,13 +1423,13 @@
        :else
        (identicon/identicon chat-id)))))
 
-(reg-sub
+(re-frame/reg-sub
  :contacts/contact-by-address
  :<- [:contacts/contacts]
  (fn [contacts [_ address]]
    (contact.db/find-contact-by-address contacts address)))
 
-(reg-sub
+(re-frame/reg-sub
  :contacts/contacts-by-address
  :<- [:contacts/contacts]
  (fn [contacts]
@@ -1452,7 +1443,7 @@
 ;;EXTENSIONS ============================================================================================================
 ;;TODO not optimized yet
 
-(reg-sub
+(re-frame/reg-sub
  :extensions/identity
  (fn [_ [_ _ {:keys [value]}]]
    value))
@@ -1463,7 +1454,7 @@
      :address  "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
     (tokens/token-for (ethereum/network->chain-keyword network) all-tokens token)))
 
-(reg-sub
+(re-frame/reg-sub
  :extensions.wallet/balance
  :<- [:wallet/all-tokens]
  :<- [:network]
@@ -1474,7 +1465,7 @@
      {:value        (money/token->unit value decimals)
       :value-in-wei value})))
 
-(reg-sub
+(re-frame/reg-sub
  :extensions.wallet/token
  :<- [:wallet/all-tokens]
  :<- [:network]
@@ -1487,7 +1478,7 @@
 (defn normalize-token [m]
   (update m :symbol name))
 
-(reg-sub
+(re-frame/reg-sub
  :extensions.wallet/tokens
  :<- [:wallet/all-tokens]
  :<- [:wallet/visible-tokens-symbols]
@@ -1499,7 +1490,7 @@
        (filter #((set filter-vector) (:symbol %)) tokens)
        tokens))))
 
-(reg-sub
+(re-frame/reg-sub
  :store/get
  (fn [db [_ {id :id} {:keys [key] :as params}]]
    (let [result (get-in db [:extensions/store id key])]
@@ -1507,7 +1498,7 @@
        (reverse result)
        result))))
 
-(reg-sub
+(re-frame/reg-sub
  :store/get-in
  (fn [db [_ {id :id} {:keys [keys]}]]
    (get-in db (into [] (concat [:extensions/store id] keys)))))
@@ -1518,44 +1509,44 @@
    :address    (str "0x" address)
    :public-key public-key})
 
-(reg-sub
+(re-frame/reg-sub
  :extensions.contacts/all
  :<- [:contacts/active]
  (fn [[contacts] _]
    (map #(update % :address ->contact))))
 
-(reg-sub
+(re-frame/reg-sub
  :store/get-vals
  (fn [db [_ {id :id} {:keys [key]}]]
    (vals (get-in db [:extensions/store id key]))))
 
-(reg-sub
+(re-frame/reg-sub
  :extensions.time/now
  (fn [_ _]
    (.toLocaleString (js/Date.))))
 
 ;;MAILSERVER ===========================================================================================================
 
-(reg-sub
+(re-frame/reg-sub
  :mailserver/connecting?
  :<- [:mailserver/state]
  (fn [state]
    (#{:connecting :added} state)))
 
-(reg-sub
+(re-frame/reg-sub
  :mailserver/connection-error?
  :<- [:mailserver/state]
  (fn [state]
    (#{:error :disconnected} state)))
 
-(reg-sub
+(re-frame/reg-sub
  :chats/fetching-gap-in-progress?
  :<- [:chats/current-chat-id]
  :<- [:mailserver/fetching-gaps-in-progress]
  (fn [[chat-id gaps] [_ ids]]
    (seq (select-keys (get gaps chat-id) ids))))
 
-(reg-sub
+(re-frame/reg-sub
  :mailserver/fetching?
  :<- [:mailserver/state]
  :<- [:mailserver/pending-requests]
@@ -1568,14 +1559,14 @@
         (pos-int? pending-requests)
         (not (or connecting? connection-error? request-error?)))))
 
-(reg-sub
+(re-frame/reg-sub
  :mailserver/fleet-mailservers
  :<- [:settings/current-fleet]
  :<- [:mailserver/mailservers]
  (fn [[current-fleet mailservers]]
    (current-fleet mailservers)))
 
-(reg-sub
+(re-frame/reg-sub
  :mailserver.edit/connected?
  :<- [:mailserver.edit/mailserver]
  :<- [:mailserver/current-id]
@@ -1583,7 +1574,7 @@
    (= (get-in mailserver [:id :value])
       current-mailserver-id)))
 
-(reg-sub
+(re-frame/reg-sub
  :mailserver.edit/validation-errors
  :<- [:mailserver.edit/mailserver]
  (fn [mailserver]
@@ -1592,7 +1583,7 @@
            (when error k))
          mailserver))))
 
-(reg-sub
+(re-frame/reg-sub
  :mailserver/connected?
  :<- [:mailserver/state]
  :<- [:network-status]
@@ -1601,7 +1592,7 @@
          online?    (= :online network-status)]
      (and connected? online?))))
 
-(reg-sub
+(re-frame/reg-sub
  :mailserver/preferred-id
  :<- [:account-settings]
  (fn [settings]
@@ -1634,7 +1625,7 @@
         (sort-by #(-> % second :timestamp) >
                  (into {} results))))))
 
-(reg-sub
+(re-frame/reg-sub
  :search/filtered-chats
  :<- [:chats/active-chats]
  :<- [:search/filter]
