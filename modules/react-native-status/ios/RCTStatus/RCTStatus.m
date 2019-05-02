@@ -258,7 +258,6 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
 #if DEBUG
     NSLog(@"SendLogs() method called, not implemented");
 #endif
-    RCTKeyWindow().rootViewController;
     {
         NSLog(@"This device can send email");
         callback(@[@0]);
@@ -268,7 +267,8 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
         [mail setMessageBody:@"Here is some main text in the email!" isHTML:NO];
         [mail setToRecipients:@[@"testingEmail@example.com"]];
         
-        [RCTKeyWindow().rootViewController presentViewController:mail animated:YES completion:NULL];
+        UIViewController *presentingController = RCTPresentedViewController();
+        [presentingController presentViewController:mail animated:YES completion:NULL];
     }
     else
     {
