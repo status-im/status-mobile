@@ -1026,5 +1026,9 @@
     "load-more-messages": "↓ Fetch more messages",
     "load-messages-before": "before {{date}}",
     "open-dapp-store": "Discover ÐApps",
-    "browsed-websites": "Browsed websites will appear here."
+    "browsed-websites": "Browsed websites will appear here.",
+    "dapps-can-access" : "ÐApps can access my wallet and contact code",
+    "require-my-permission" : "Require my permission",
+    "might-break" : "Might break some ÐApps",
+    "always-allow" : "Always allow"
 }

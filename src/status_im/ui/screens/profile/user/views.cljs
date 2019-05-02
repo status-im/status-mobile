@@ -101,8 +101,7 @@
                                                         :value   value}]))
 
 (defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]}
-                            {:keys [dev-mode?
-                                    settings]}
+                            account
                             currency
                             logged-in?
                             extensions]
@@ -144,11 +143,6 @@
       {:label-kw            :t/devices
        :action-fn           #(re-frame/dispatch [:navigate-to :installations])
        :accessibility-label :pairing-settings-button}]
-     [profile.components/settings-item-separator]
-     [profile.components/settings-switch-item
-      {:label-kw  :t/web3-opt-in
-       :value     (or (nil? (:web3-opt-in? settings)) (:web3-opt-in? settings))
-       :action-fn #(re-frame/dispatch [:accounts.ui/web3-opt-in-mode-switched %])}]
      [profile.components/settings-item-separator]
      [profile.components/settings-item
       {:label-kw            :t/dapps-permissions
