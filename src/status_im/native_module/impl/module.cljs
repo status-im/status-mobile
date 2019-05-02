@@ -3,7 +3,8 @@
             [re-frame.core :as re-frame]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [clojure.string :as string]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [taoensso.timbre :as log]))
 
 (def status
   (when (exists? (.-NativeModules rn-dependencies/react-native))
@@ -51,7 +52,8 @@
 
 (defn send-logs [dbJson js-logs]
   (when status
-    (.sendLogs status dbJson js-logs)))
+    (.sendLogs status dbJson js-logs (fn [& res]
+                                       (log/debug :send-logs res)))))
 
 (defn add-peer [enode on-result]
   (when (and @node-started status)

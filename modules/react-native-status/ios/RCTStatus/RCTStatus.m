@@ -224,15 +224,55 @@ RCT_EXPORT_METHOD(sendDataNotification:(NSString *)dataPayloadJSON
 #endif
 }
 
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    switch (result) {
+        case MFMailComposeResultSent:
+            NSLog(@"You sent the email.");
+            break;
+        case MFMailComposeResultSaved:
+            NSLog(@"You saved a draft of this email");
+            break;
+        case MFMailComposeResultCancelled:
+            NSLog(@"You cancelled sending this email.");
+            break;
+        case MFMailComposeResultFailed:
+            NSLog(@"Mail failed:  An error occurred when trying to compose this email");
+            break;
+        default:
+            NSLog(@"An error occurred when trying to compose this email");
+            break;
+    }
+    
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
 ////////////////////////////////////////////////////////////////////
 #pragma mark - SendLogs method
 //////////////////////////////////////////////////////////////////// sendLogs
 RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
-                  jsLogs:(NSString *)jsLogs) {
+                  jsLogs:(NSString *)jsLogs
+                  callback:(RCTResponseSenderBlock)callback) {
     // TODO: Implement SendLogs for iOS
 #if DEBUG
     NSLog(@"SendLogs() method called, not implemented");
 #endif
+    if ([MFMailComposeViewController canSendMail])
+    {
+        callback(@[@0]);
+        MFMailComposeViewController *mail = [[MFMailComposeViewController alloc] init];
+        mail.mailComposeDelegate = self;
+        [mail setSubject:@"Sample Subject"];
+        [mail setMessageBody:@"Here is some main text in the email!" isHTML:NO];
+        [mail setToRecipients:@[@"testingEmail@example.com"]];
+        
+        [self presentViewController:mail animated:YES completion:NULL];
+    }
+    else
+    {
+        callback(@[@1]);
+        NSLog(@"This device cannot send email");
+    }
 }
 
 //////////////////////////////////////////////////////////////////// addPeer
