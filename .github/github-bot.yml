@@ -5,7 +5,7 @@ project-board:
   tested-pr-label-name: 'Tested - Issues'
   contributor-column-name: 'CONTRIBUTOR'
   review-column-name: 'REVIEW'
-  test-column-name: 'TO TEST'
+  test-column-name: 'E2E Tests'
 
 automated-tests:
   repo-full-name: 'status-im/status-react'
