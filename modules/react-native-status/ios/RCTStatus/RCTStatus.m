@@ -258,6 +258,7 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
 #if DEBUG
     NSLog(@"SendLogs() method called, not implemented");
 #endif
+    if ([MFMailComposeViewController canSendMail])
     {
         NSLog(@"This device can send email");
         callback(@[@0]);
