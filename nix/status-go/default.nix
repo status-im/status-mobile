@@ -3,13 +3,14 @@
 with stdenv;
 
 let
+  extractStatusGoConfig = f: lib.last (lib.splitString "\n" (lib.fileContents f));
   gomobile = pkgs.callPackage ./gomobile { inherit (androidPkgs) platform-tools; inherit composeXcodeWrapper xcodewrapperArgs; };
-  version = lib.fileContents ../../STATUS_GO_VERSION; # TODO: Simplify this path search with lib.locateDominatingFile
   owner = lib.fileContents ../../STATUS_GO_OWNER;
+  version = extractStatusGoConfig ../../STATUS_GO_VERSION; # TODO: Simplify this path search with lib.locateDominatingFile
+  sha256 = extractStatusGoConfig ../../STATUS_GO_SHA256;
   repo = "status-go";
-  goPackagePath = "github.com/${owner}/${repo}";
   rev = version;
-  sha256 = lib.fileContents ../../STATUS_GO_SHA256;
+  goPackagePath = "github.com/${owner}/${repo}";
   mobileConfigs = {
     android = {
       name = "android";
