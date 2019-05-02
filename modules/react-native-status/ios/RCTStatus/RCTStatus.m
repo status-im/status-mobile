@@ -259,6 +259,7 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
 #endif
     if ([MFMailComposeViewController canSendMail])
     {
+        NSLog(@"This device can send email");
         callback(@[@0]);
         MFMailComposeViewController *mail = [[MFMailComposeViewController alloc] init];
         mail.mailComposeDelegate = self;
