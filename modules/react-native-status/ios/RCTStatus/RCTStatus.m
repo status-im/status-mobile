@@ -3,6 +3,7 @@
 #import "React/RCTBridge.h"
 #import "React/RCTEventDispatcher.h"
 #import "Statusgo/Statusgo.h"
+#import "RCTUtils.h"
 
 @interface NSDictionary (BVJSONString)
 -(NSString*) bv_jsonStringWithPrettyPrint:(BOOL) prettyPrint;
@@ -257,7 +258,7 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
 #if DEBUG
     NSLog(@"SendLogs() method called, not implemented");
 #endif
-    if ([MFMailComposeViewController canSendMail])
+    RCTKeyWindow().rootViewController;
     {
         NSLog(@"This device can send email");
         callback(@[@0]);
@@ -267,7 +268,7 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
         [mail setMessageBody:@"Here is some main text in the email!" isHTML:NO];
         [mail setToRecipients:@[@"testingEmail@example.com"]];
         
-        [self presentViewController:mail animated:YES completion:NULL];
+        [RCTKeyWindow().rootViewController presentViewController:mail animated:YES completion:NULL];
     }
     else
     {
