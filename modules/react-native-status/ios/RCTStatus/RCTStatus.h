@@ -5,6 +5,6 @@
 #import <UIKit/UIKit.h>
 #import <MessageUI/MessageUI.h>
 
-@interface Status : UIViewController <RCTBridgeModule, StatusgoSignalHandler, MFMailComposeViewControllerDelegate>
+@interface Status : NSObject <RCTBridgeModule, StatusgoSignalHandler>
 - (void)handleSignal:(NSString *)signal;
 @end
