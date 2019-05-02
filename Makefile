@@ -12,7 +12,6 @@ RED    := $(shell tput -Txterm setaf 1)
 WHITE  := $(shell tput -Txterm setaf 7)
 YELLOW := $(shell tput -Txterm setaf 3)
 RESET  := $(shell tput -Txterm sgr0)
-BOLD   := $(shell tput bold)
 HELP_FUN = \
 		   %help; \
 		   while(<>) { push @{$$help{$$2 // 'options'}}, [$$1, $$3] if /^([a-zA-Z\-]+)\s*:.*\#\#(?:@([a-zA-Z\-]+))?\s(.*)$$/ }; \

@@ -1,18 +1,11 @@
-{ config, stdenv, pkgs, target-os ? "all", status-go }:
+{ config, stdenv, pkgs, target-os ? "all" }:
 
 with pkgs;
 with stdenv;
 
 let
   gradle = gradle_4_10;
-  targetAndroid = {
-    "android" = true;
-    "all" = true;
-  }.${target-os} or false;
-  targetIOS = {
-    "ios" = true;
-    "all" = true;
-  }.${target-os} or false;
+  platform = pkgs.callPackage ../platform.nix { inherit target-os; };
   xcodewrapperArgs = {
     version = "10.1";
   };
@@ -25,11 +18,8 @@ in
     inherit xcodewrapperArgs;
 
     buildInputs =
-      lib.optional targetAndroid android.buildInputs ++
-      lib.optional (targetIOS && isDarwin) xcodeWrapper;
+      lib.optional platform.targetAndroid android.buildInputs ++
+      lib.optional (platform.targetIOS && isDarwin) xcodeWrapper;
     shellHook =
-      lib.optionalString targetIOS ''
-        export RCTSTATUS_FILEPATH=${status-go}/lib/ios/Statusgo.framework
-      '' +
-      lib.optionalString targetAndroid android.shellHook;
+      lib.optionalString platform.targetAndroid android.shellHook;
   }

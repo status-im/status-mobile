@@ -17,5 +17,6 @@ in
 
   shellHook = ''
     export STATUSREACT_WINDOWS_BASEIMAGE_PATH="${baseImage}/src"
+    unset QT_PATH
   '';
 }

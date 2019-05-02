@@ -49,14 +49,14 @@ if (WIN32)
   set(REACT_NATIVE_DESKTOP_EXTERNAL_PROJECT_DEPS ${REACT_NATIVE_DESKTOP_EXTERNAL_PROJECT_DEPS} StatusGo_ep PARENT_SCOPE)
 else (WIN32)
   # For Linux and Darwin just use the Nix build of status-go
-  set(StatusGo_INCLUDE_DIR $ENV{STATUS_GO_INCLUDEDIR})
+  set(StatusGo_INCLUDE_DIR $ENV{STATUS_GO_DESKTOP_INCLUDEDIR})
   if (APPLE)
     set(StatusGo_PLATFORM "x86_64-darwin")
   else()
     set(StatusGo_PLATFORM "x86_64-linux")
   endif()
   set(StatusGo_STATIC_LIB
-      "$ENV{STATUS_GO_LIBDIR}/${StatusGo_PLATFORM}/${CMAKE_STATIC_LIBRARY_PREFIX}status${CMAKE_STATIC_LIBRARY_SUFFIX}")
+      "$ENV{STATUS_GO_DESKTOP_LIBDIR}/${StatusGo_PLATFORM}/${CMAKE_STATIC_LIBRARY_PREFIX}status${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
   include_directories(${StatusGo_INCLUDE_DIR})
 

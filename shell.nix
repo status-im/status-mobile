@@ -4,16 +4,8 @@ with pkgs;
 
 let
   projectDeps = import ./default.nix { inherit target-os; };
-  targetAndroid = {
-    "android" = true;
-    "all" = true;
-  }.${target-os} or false;
-  targetMobile = {
-    "android" = true;
-    "ios" = true;
-    "all" = true;
-  }.${target-os} or false;
-  useFastlanePkg = (targetAndroid && !_stdenv.isDarwin);
+  platform = callPackage ./nix/platform.nix { inherit target-os; };
+  useFastlanePkg = (platform.targetAndroid && !_stdenv.isDarwin);
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
   _stdenv = stdenvNoCC;
   _mkShell = mkShell.override { stdenv = _stdenv; };
@@ -39,7 +31,7 @@ in _mkShell {
     unzip
     wget
   ] ++
-  (if useFastlanePkg then [ _fastlane.package ] else [ bundler ruby ]); # bundler/ruby used for fastlane on macOS
+  (if useFastlanePkg then [ _fastlane.package ] else lib.optionals platform.targetMobile [ bundler ruby ]); # bundler/ruby used for fastlane on macOS
   inputsFrom = [ projectDeps ];
   TARGET_OS=target-os;
   shellHook =
