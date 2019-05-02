@@ -9,7 +9,8 @@
   {:background-color (colors/alpha colors/blue 0.1)
    :border-radius    50})
 
-(def action-label
+; Action label style is expected to be a fn
+(defn action-label [_]
   {:color colors/blue})
 
 (def action-separator
