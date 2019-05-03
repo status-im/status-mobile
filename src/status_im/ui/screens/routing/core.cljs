@@ -107,7 +107,7 @@
    routes
    (cond->
     (merge {:headerMode        "none"
-            :cardStyle         {:backgroundColor (when platform/ios? :white)}
+            :cardStyle         {:backgroundColor (when (or platform/ios? platform/desktop?) :white)}
             :onTransitionStart (fn [n]
                                  (let [idx    (.. n
                                                   -navigation

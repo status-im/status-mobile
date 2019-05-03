@@ -87,11 +87,13 @@
      [status-bar/status-bar {:type :modal-white}]
      [qr-viewer-toolbar (:name contact) value]
      [qr-code-viewer/qr-code-viewer
-      {:style         styles/qr-code
-       :footer-button qr-code-share-button
-       :value         value
-       :hint          (i18n/label :t/qr-code-public-key-hint)
-       :legend        (str value)}]]))
+      (merge
+       {:style         styles/qr-code
+        :value         value
+        :hint          (i18n/label :t/qr-code-public-key-hint)
+        :legend        (str value)}
+       (when-not platform/desktop?
+         {:footer-button qr-code-share-button}))]]))
 
 (defn- show-qr [contact source value]
   #(re-frame/dispatch [:navigate-to :profile-qr-viewer {:contact contact

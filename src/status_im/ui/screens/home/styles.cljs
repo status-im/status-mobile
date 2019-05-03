@@ -16,6 +16,7 @@
   {:flex-direction   :row
    :android          {:height 76}
    :ios              {:height 74}
+   :desktop          {:height 74}
    :overflow         :hidden})
 
 (defstyle chat-icon-container
@@ -25,7 +26,8 @@
    :padding-right  20
    :width          72
    :android        {:height 76}
-   :ios            {:height 74}})
+   :ios            {:height 74}
+   :desktop        {:height 74}})
 
 (defstyle chat-info-container
   {:margin-bottom   13
@@ -33,7 +35,8 @@
    :flex            1
    :flex-direction  :column
    :android         {:margin-top 16}
-   :ios             {:margin-top 14}})
+   :ios             {:margin-top 14}
+   :desktop         {:margin-top 14}})
 
 (defstyle chat-options-container
   {:padding-top 10})
@@ -49,7 +52,8 @@
    :justify-content :space-between
    :padding-right   16
    :android         {:margin-top 4}
-   :ios             {:margin-top 6}})
+   :ios             {:margin-top 6}
+   :desktop         {:margin-top 6}})
 
 (def message-status-container
   {:flex-direction :row
@@ -65,6 +69,8 @@
    :android {:font-size 16
              :height    26}
    :ios     {:font-size 17
+             :height    26}
+   :desktop {:font-size 17
              :height    26}})
 
 (defstyle private-group-icon-container
@@ -82,7 +88,7 @@
 
 (def last-message-text
   {:color  colors/text-gray
-   :height 24})
+   :max-height 24})
 
 (def search-input-height 56)
 
@@ -138,7 +144,8 @@
    :color      colors/blue
    :text-align :center
    :android    {:top 2}
-   :ios        {:top 3}})
+   :ios        {:top 3}
+   :desktop    {:top 3}})
 
 (def group-icon
   {:margin-top   8

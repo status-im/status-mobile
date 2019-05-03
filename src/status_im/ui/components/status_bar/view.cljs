@@ -16,7 +16,8 @@
           :wallet styles/view-wallet
           :wallet-tab styles/view-wallet-tab
           styles/view-default)]
-    [react/view {:style (cond-> view-style flat? (assoc :elevation 0))}]))
+    (when-not platform/desktop?
+      [react/view {:style (cond-> view-style flat? (assoc :elevation 0))}])))
 
 (defn get-config [view-id]
   (get

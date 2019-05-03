@@ -5,7 +5,8 @@
             [status-im.ui.components.dialog :as dialog]
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
-            [status-im.utils.http :as http]))
+            [status-im.utils.http :as http]
+            [status-im.ui.components.popup-menu.views :refer [show-desktop-menu]]))
 
 (defn open-share [content]
   (when (or (:message content)
@@ -17,13 +18,15 @@
     :action #(re-frame/dispatch [:chat.ui/reply-to-message message-id old-message-id])}
    {:label  (i18n/label :t/sharing-copy-to-clipboard)
     :action #(react/copy-to-clipboard text)}
-   {:label  (i18n/label :t/sharing-share)
-    :action #(open-share {:message text})}])
+   (when-not platform/desktop?
+     {:label  (i18n/label :t/sharing-share)
+      :action #(open-share {:message text})})])
 
 (defn show [options]
-  (if platform/ios?
-    (action-sheet/show options)
-    (dialog/show options)))
+  (cond
+    platform/ios?     (action-sheet/show options)
+    platform/android? (dialog/show options)
+    platform/desktop? (show-desktop-menu (->> (:options options) (remove nil?)))))
 
 (defn chat-message [message-id old-message-id text dialog-title]
   (show {:title       dialog-title

@@ -7,7 +7,8 @@
             [status-im.i18n :as i18n]
             [status-im.ui.screens.chat.stickers.styles :as styles]
             [status-im.ui.components.animation :as anim]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [status-im.utils.platform :as platform]))
 
 (def icon-size 28)
 (def icon-horizontal-margin 8)
@@ -20,7 +21,7 @@
   [react/touchable-highlight
    {:on-press (fn [_]
                 (re-frame/dispatch [:chat.ui/set-chat-ui-props {:show-stickers? (not show-stickers?)}])
-                (js/setTimeout #(react/dismiss-keyboard!) 100))
+                (when-not platform/desktop? (js/setTimeout #(react/dismiss-keyboard!) 100)))
     :accessibility-label :show-stickers-icon}
    [vector-icons/icon :main-icons/stickers {:container-style {:margin 14 :margin-right 6}
                                             :color           (if show-stickers? colors/blue colors/gray)}]])

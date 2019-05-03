@@ -102,9 +102,12 @@
       {:on-press (fn [_]
                    (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
                                                                    :show-stickers? false}])
-                   (react/dismiss-keyboard!))}
-      [react/animated-view {:style (style/message-view-animated opacity)}
-       message-view]]]))
+                   (when-not platform/desktop?
+                     (react/dismiss-keyboard!)))}
+      (if platform/desktop?
+        message-view
+        [react/animated-view {:style (style/message-view-animated opacity)}
+         message-view])]]))
 
 (defn join-chat-button [chat-id]
   [buttons/secondary-button {:style style/join-button

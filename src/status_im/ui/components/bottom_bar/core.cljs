@@ -28,25 +28,29 @@
       callback))))
 
 (def tabs-list-data
-  [{:nav-stack           :chat-stack
-    :content             {:title (i18n/label :t/chats)
-                          :icon  :main-icons/message}
-    :count-subscription  :chats/unread-messages-number
-    :accessibility-label :home-tab-button}
-   {:nav-stack           :browser-stack
-    :content             {:title (i18n/label :t/dapps)
-                          :icon  :main-icons/dapp}
-    :accessibility-label :dapp-tab-button}
-   {:nav-stack           :wallet-stack
-    :content             {:title (i18n/label :t/wallet)
-                          :icon  :main-icons/wallet}
-    :count-subscription  :get-wallet-unread-messages-number
-    :accessibility-label :wallet-tab-button}
-   {:nav-stack           :profile-stack
-    :content             {:title (i18n/label :t/profile)
-                          :icon  :main-icons/user-profile}
-    :count-subscription  :get-profile-unread-messages-number
-    :accessibility-label :profile-tab-button}])
+  (->>
+   [{:nav-stack           :chat-stack
+     :content             {:title (i18n/label :t/chats)
+                           :icon  :main-icons/message}
+     :count-subscription  :chats/unread-messages-number
+     :accessibility-label :home-tab-button}
+    (when-not platform/desktop?
+      {:nav-stack           :browser-stack
+       :content             {:title (i18n/label :t/dapps)
+                             :icon  :main-icons/dapp}
+       :accessibility-label :dapp-tab-button})
+    (when-not platform/desktop?
+      {:nav-stack           :wallet-stack
+       :content             {:title (i18n/label :t/wallet)
+                             :icon  :main-icons/wallet}
+       :count-subscription  :get-wallet-unread-messages-number
+       :accessibility-label :wallet-tab-button})
+    {:nav-stack           :profile-stack
+     :content             {:title (i18n/label :t/profile)
+                           :icon  :main-icons/user-profile}
+     :count-subscription  :get-profile-unread-messages-number
+     :accessibility-label :profile-tab-button}]
+   (remove nil?)))
 
 (defn new-tab
   [{:keys [icon label active? nav-stack

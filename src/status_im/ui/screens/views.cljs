@@ -66,7 +66,8 @@
                                   (if js/goog.DEBUG
                                     @initial-view-id
                                     @view-id))))
-        (react/dismiss-keyboard!))
+        (when-not platform/desktop?
+          (react/dismiss-keyboard!)))
       :component-did-update
       (fn []
         (log/debug :main-component-did-update @view-id))

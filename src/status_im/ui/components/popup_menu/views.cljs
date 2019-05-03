@@ -4,11 +4,14 @@
             [status-im.utils.platform :as platform]
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.config :as config]))
 
 (defn show-desktop-menu [items]
   (.show rn-dependencies/desktop-menu
-         (clj->js (mapv #(hash-map :text (:text %1) :onPress (:on-select %1)) items))))
+         (if config/mobile-ui-for-desktop?
+           (clj->js (mapv #(hash-map :text (:label %1) :onPress (:action %1)) items))
+           (clj->js (mapv #(hash-map :text (:text %1) :onPress (:on-select %1)) items)))))
 
 (defn get-chat-menu-items [group-chat public? chat-id]
   (->> [(when (and (not group-chat) (not public?))

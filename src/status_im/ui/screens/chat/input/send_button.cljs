@@ -13,9 +13,8 @@
              login-processing?
              disconnected?))))
 
-(defview send-button-view []
+(defview send-button-view [{:keys [input-text]}]
   (letsubs [{:keys [command-completion]} [:chats/selected-chat-command]
-            {:keys [input-text]} [:chats/current-chat]
             disconnected? [:disconnected?]
             {:keys [processing]} [:accounts/login]]
     (when (and (sendable? input-text disconnected? processing)

@@ -34,6 +34,7 @@
 (def tr-to-talk-enabled? (enabled? (get-config :TRIBUTE_TO_TALK 0)))
 (def max-message-delivery-attempts (js/parseInt (get-config :MAX_MESSAGE_DELIVERY_ATTEMPTS "6")))
 (def contract-nodes-enabled? (enabled? (get-config :CONTRACT_NODES "0")))
+(def mobile-ui-for-desktop? (enabled? (get-config :MOBILE_UI_FOR_DESKTOP "0")))
 
 ;; CONFIG VALUES
 (def log-level
