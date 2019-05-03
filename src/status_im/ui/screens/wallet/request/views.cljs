@@ -86,7 +86,7 @@
       [toolbar/actions [{:icon      :main-icons/share
                          :icon-opts {:color               :white
                                      :accessibility-label :share-button}
-                         :handler   #(list-selection/open-share {:message address-hex})}]]]
+                         :handler   #(list-selection/open-share {:message (eip55/address->checksum address-hex)})}]]]
      [react/view {:flex 1}
       [common/network-info {:text-color :white}]
       [qr-code-viewer/qr-code-viewer
