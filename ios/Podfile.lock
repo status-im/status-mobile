@@ -77,6 +77,7 @@ PODS:
   - SQLCipher/common (3.4.2)
   - SQLCipher/standard (3.4.2):
     - SQLCipher/common
+  - SSZipArchive (2.1.4)
   - yoga (0.59.3.React)
 
 DEPENDENCIES:
@@ -88,6 +89,7 @@ DEPENDENCIES:
   - react-native-webview (from `../node_modules/react-native-webview`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - SQLCipher (~> 3.0)
+  - SSZipArchive
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -102,6 +104,7 @@ SPEC REPOS:
     - nanopb
     - Protobuf
     - SQLCipher
+    - SSZipArchive
 
 EXTERNAL SOURCES:
   React:
@@ -133,8 +136,9 @@ SPEC CHECKSUMS:
   react-native-webview: a42108b827082f8f0333529b0772102031d5960d
   RNKeychain: 627c6095cef215dd3d9804a9a9cf45ab96aa3997
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
+  SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
-PODFILE CHECKSUM: 2e0971124458d413e18b407b2337bf2c1d32f357
+PODFILE CHECKSUM: 6a6c6a3aad3b4979df3974dc03b0bf305426ce72
 
 COCOAPODS: 1.5.3
