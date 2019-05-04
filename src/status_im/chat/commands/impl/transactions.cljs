@@ -161,7 +161,9 @@
 
           (or (js/isNaN amount)
               (> (count portions) 2)
-              (re-matches #".+(\.|,)$" amount-string))
+              (re-matches #".+(\.|,)$" amount-string)
+              ;; check if non-decimal number
+              (re-matches #"0[\dbxo][\d\.]*" amount-string))
           {:title       (i18n/label :t/send-request-amount)
            :description (i18n/label :t/send-request-amount-invalid-number)}
 
