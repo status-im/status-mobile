@@ -939,9 +939,10 @@
 (defn- get-balance-total-value [balance prices currency token->decimals]
   (reduce-kv (fn [acc symbol value]
                (if-let [price (get-in prices [symbol currency :price])]
-                 (+ acc (-> (money/internal->formatted value symbol (token->decimals symbol))
-                            (money/crypto->fiat price)
-                            .toNumber))
+                 (+ acc (or (some-> (money/internal->formatted value symbol (token->decimals symbol))
+                                    (money/crypto->fiat price)
+                                    .toNumber)
+                            0))
                  acc)) 0 balance))
 
 (re-frame/reg-sub
