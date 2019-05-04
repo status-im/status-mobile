@@ -160,6 +160,8 @@
         (if (and
              public?
              all-loaded?
+             (not (nil? highest-request-to))
+             (not (nil? lowest-request-from))
              (< (- highest-request-to lowest-request-from)
                 mailserver/max-gaps-range))
           (update acc :messages conj {:type       :gap
