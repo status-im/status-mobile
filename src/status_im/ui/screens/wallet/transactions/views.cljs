@@ -14,7 +14,8 @@
             [status-im.utils.money :as money]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]))
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.utils.utils :as utils]))
 
 (defn history-action [filter?]
   (cond->
@@ -254,7 +255,9 @@
     [react/view {:style components.styles/flex}
      [status-bar/status-bar]
      [toolbar/toolbar {}
-      toolbar/default-nav-back
+      [toolbar/nav-button (actions/back
+                           ;;TODO temporary fix to update wallet balance, should be fixed properly later
+                           (utils/set-timeout #(re-frame/dispatch [:update-wallet]) 500))]
       [toolbar/content-title (i18n/label :t/transaction-details)]
       (when transaction [toolbar/actions (details-action hash url)])]
      [react/scroll-view {:style components.styles/main-container}
@@ -262,3 +265,4 @@
       [details-confirmations confirmations confirmations-progress type]
       [react/view {:style styles/details-separator}]
       [details-list transaction]]]))
+

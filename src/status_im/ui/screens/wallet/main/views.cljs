@@ -164,7 +164,11 @@
      [react/scroll-view {:end-fill-color colors/white
                          :refresh-control
                          (reagent/as-element
-                          [react/refresh-control {:on-refresh #(re-frame/dispatch [:wallet.ui/pull-to-refresh])
+                          [react/refresh-control {:on-refresh (fn [_]
+                                                                ;;TODO temporay fix to update balance, should be fixed
+                                                                ;;properly later
+                                                                (re-frame/dispatch [:wallet.ui/pull-to-refresh])
+                                                                (re-frame/dispatch [:update-wallet]))
                                                   :tint-color :white
                                                   :refreshing false}])}
       (if error-message
