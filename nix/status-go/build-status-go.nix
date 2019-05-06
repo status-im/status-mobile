@@ -2,10 +2,10 @@
 
 { owner, repo, rev, version, goPackagePath, src, host,
   nativeBuildInputs ? [],
-  buildPhase,
+  buildPhase, buildMessage,
   installPhase ? "",
   postInstall ? "",
-  outputs, meta } @ args:
+  outputs, meta } @ args':
 
 with stdenv;
 
@@ -13,6 +13,7 @@ let
   removeReferences = [ go ];
   removeExpr = refs: ''remove-references-to ${lib.concatMapStrings (ref: " -t ${ref}") refs}'';
 
+  args = removeAttrs args' [ "buildMessage" ]; # Remove our arguments from args before passing them on to buildGoPackage
   buildStatusGo = buildGoPackage (args // {
     name = "${repo}-${version}-${host}";
 
@@ -42,6 +43,27 @@ let
     # we print out the version so that we fail fast in case there's any problem running xcrun, instead of failing at the end of the build
     preConfigure = lib.optionalString isDarwin ''
       xcrun xcodebuild -version
+    '';
+
+    buildPhase = ''
+      runHook preBuild
+
+      runHook renameImports
+
+      echo
+      echo "${buildMessage}"
+      echo
+      ${buildPhase}
+
+      runHook postBuild
+    '';
+
+    installPhase = ''
+      runHook preInstall
+
+      ${installPhase}
+
+      runHook postInstall
     '';
 
     # remove hardcoded paths to go package in /nix/store, otherwise Nix will fail the build
