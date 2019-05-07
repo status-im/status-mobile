@@ -281,7 +281,7 @@ class OpenInStatusButton(BaseButton):
         self.wait_for_visibility_of_element()
 
         # 'Open in Status' button already in DOM but need to scroll down so that click action works
-        self.driver.swipe(500, 500, 500, 100)
+        self.driver.swipe(500, 500, 500, 200)
         self.driver.info('Tap on %s' % self.name)
         self.wait_for_element().click()
 
