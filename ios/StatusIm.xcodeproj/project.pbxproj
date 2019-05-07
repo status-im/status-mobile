@@ -33,6 +33,7 @@
 		42B30EAD0EED4C72BB96D1AB /* Inter-ExtraBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6B145D55D500476BB45C2232 /* Inter-ExtraBold.otf */; };
 		475D202F20B7450D00879A77 /* libRNFirebase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 475D1FC020B7413500879A77 /* libRNFirebase.a */; };
 		4C16DE0C1F89508700AA10DB /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C16DE0B1F89508700AA10DB /* JavaScriptCore.framework */; };
+		4C5F69C322815E6A00D26222 /* libRNShakeEvent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C5F69BE22815E4F00D26222 /* libRNShakeEvent.a */; };
 		4C9FBC56227C85640024181F /* libRNMail.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C9FBC50227C85250024181F /* libRNMail.a */; };
 		54BD2CE922134B6291FE1BFD /* Inter-Light-BETA.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6864A92FD6844B928C52F5C1 /* Inter-Light-BETA.otf */; };
 		57C854A7993C47A3B1AECD32 /* Inter-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = C6B1215047604CD59A4C74D6 /* Inter-MediumItalic.otf */; };
@@ -187,6 +188,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RNFirebase;
+		};
+		4C5F69BD22815E4F00D26222 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4C5F698522815E4E00D26222 /* RNShakeEvent.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNShakeEvent;
 		};
 		4C9FBC4F227C85250024181F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -556,6 +564,7 @@
 		475D1FCD20B7415300879A77 /* libFirebaseCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		475D1FCE20B7415300879A77 /* libFirebaseMessaging.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseMessaging.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C16DE0B1F89508700AA10DB /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		4C5F698522815E4E00D26222 /* RNShakeEvent.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNShakeEvent.xcodeproj; path = "../node_modules/react-native-shake/ios/RNShakeEvent.xcodeproj"; sourceTree = "<group>"; };
 		4C9FBC19227C85250024181F /* RNMail.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNMail.xcodeproj; path = "../node_modules/react-native-mail/RNMail.xcodeproj"; sourceTree = "<group>"; };
 		4E586E1B0E544F64AA9F5BD1 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		5535217F57E44D77AA9CF083 /* libRCTOrientation.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTOrientation.a; sourceTree = "<group>"; };
@@ -629,6 +638,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C5F69C322815E6A00D26222 /* libRNShakeEvent.a in Frameworks */,
 				ABC194E5221009A800EB06E6 /* libRNLanguages.a in Frameworks */,
 				475D202F20B7450D00879A77 /* libRNFirebase.a in Frameworks */,
 				4C9FBC56227C85640024181F /* libRNMail.a in Frameworks */,
@@ -891,6 +901,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		4C5F698622815E4E00D26222 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4C5F69BE22815E4F00D26222 /* libRNShakeEvent.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		4C9FBC1A227C85250024181F /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -922,6 +940,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				4C5F698522815E4E00D26222 /* RNShakeEvent.xcodeproj */,
 				4C9FBC19227C85250024181F /* RNMail.xcodeproj */,
 				ABC194DC2210099B00EB06E6 /* RNLanguages.xcodeproj */,
 				B461988B2210C98F00603CF2 /* RNCWebView.xcodeproj */,
@@ -1325,6 +1344,10 @@
 					ProjectRef = AF409BB755B94FB1BBA01927 /* RNSecureRandom.xcodeproj */;
 				},
 				{
+					ProductGroup = 4C5F698622815E4E00D26222 /* Products */;
+					ProjectRef = 4C5F698522815E4E00D26222 /* RNShakeEvent.xcodeproj */;
+				},
+				{
 					ProductGroup = 92925B361F571DE600203EEB /* Products */;
 					ProjectRef = 1E74DC52A1E449A2BA858B14 /* RNSVG.xcodeproj */;
 				},
@@ -1449,6 +1472,13 @@
 			fileType = archive.ar;
 			path = libRNFirebase.a;
 			remoteRef = 475D1FBF20B7413500879A77 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4C5F69BE22815E4F00D26222 /* libRNShakeEvent.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNShakeEvent.a;
+			remoteRef = 4C5F69BD22815E4F00D26222 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		4C9FBC50227C85250024181F /* libRNMail.a */ = {
