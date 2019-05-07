@@ -10,11 +10,8 @@ let
   appimagekit = callPackage ./appimagekit { };
   linuxdeployqt = callPackage ./linuxdeployqt { inherit appimagekit; };
 
-in
-{
+in {
   buildInputs = [ appimagekit linuxdeployqt patchelf baseImage ];
 
-  shellHook = ''
-    export STATUSREACT_LINUX_BASEIMAGE_PATH="${baseImage}/src"
-  '';
+  inherit (baseImage) shellHook;
 }
