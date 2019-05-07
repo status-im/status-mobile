@@ -16,8 +16,8 @@ def getToolVersion(name) {
 }
 
 def nix_sh(cmd) {
-  def isPure = env.TARGET_OS == 'linux' || env.TARGET_OS == 'android'
-  def pureFlag = isPure ? '--pure --keep LOCALE_ARCHIVE_2_27 --keep REALM_DISABLE_ANALYTICS --keep STATUS_RELEASE_STORE_FILE --keep STATUS_RELEASE_STORE_PASSWORD --keep STATUS_RELEASE_KEY_ALIAS --keep STATUS_RELEASE_KEY_PASSWORD --keep VERBOSE_LEVEL' : ''
+  def isPure = env.TARGET_OS != 'windows' && env.TARGET_OS != 'ios' && !cmd.contains('prepare-for-platform.sh')
+  def pureFlag = isPure ? '--pure --keep LOCALE_ARCHIVE_2_27 --keep REALM_DISABLE_ANALYTICS --keep STATUS_RELEASE_STORE_FILE --keep STATUS_RELEASE_STORE_PASSWORD --keep STATUS_RELEASE_KEY_ALIAS --keep STATUS_RELEASE_KEY_PASSWORD --keep GPG_PASS_OUTER --keep GPG_PASS_INNER --keep KEYCHAIN_PASS --keep VERBOSE_LEVEL' : ''
 
   sh """
     set +x
@@ -30,7 +30,7 @@ def nix_sh(cmd) {
 }
 
 def nix_fastlane_sh(cmd) {
-  def isPure = env.TARGET_OS == 'android'
+  def isPure = env.TARGET_OS != 'ios'
   def pureFlag = isPure ? '--pure --keep LANG --keep LANGUAGE --keep LC_ALL --keep DIAWI_TOKEN --keep DIAWI_IPA --keep APK_PATH --keep GOOGLE_PLAY_JSON_KEY --keep SAUCE_LABS_NAME --keep SAUCE_USERNAME --keep SAUCE_ACCESS_KEY --keep FASTLANE_DISABLE_COLORS --keep FASTLANE_APPLE_ID --keep FASTLANE_PASSWORD --keep KEYCHAIN_PASSWORD --keep MATCH_PASSWORD --keep REALM_DISABLE_ANALYTICS --keep STATUS_RELEASE_STORE_FILE --keep GRADLE_USER_HOME' : ''
 
   sh """

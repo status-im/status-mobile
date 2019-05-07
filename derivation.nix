@@ -35,6 +35,7 @@ with pkgs;
     ] ++ status-go.packages
       ++ nodePkgBuildInputs
       ++ lib.optional isDarwin cocoapods
+      ++ lib.optional (isDarwin && !platform.targetIOS) clang
       ++ lib.optional (!isDarwin) gcc7
       ++ lib.optionals platform.targetDesktop statusDesktop.buildInputs
       ++ lib.optionals platform.targetMobile statusMobile.buildInputs;

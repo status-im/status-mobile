@@ -2,6 +2,8 @@
 
 with pkgs;
 
+assert stdenv.isLinux;
+
 stdenv.mkDerivation rec {
   name = "StatusIm-Windows-base-image";
   version = "20181113";

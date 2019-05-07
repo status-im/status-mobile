@@ -14,7 +14,8 @@ if(USE_QTWEBKIT)
   add_custom_command(TARGET @APP_NAME@ POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy_if_different
           "@CONAN_BIN_DIRS_QT5-MXE@/QtWebProcess.exe"
-          ${TARGET_DIR})
+          ${TARGET_DIR}
+          BYPRODUCTS ${TARGET_DIR}/QtWebProcess.exe)
 endif()
 foreach(qtmodule ${qtmodules})
   message(STATUS "Copying ${qtmodule} module to ${TARGET_DIR}")

@@ -3,6 +3,8 @@
 with pkgs;
 with stdenv;
 
+assert isLinux;
+
 let
   baseImage = callPackage ./base-image { };
 

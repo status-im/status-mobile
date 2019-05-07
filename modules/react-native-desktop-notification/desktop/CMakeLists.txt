@@ -69,13 +69,10 @@ if (CMAKE_CROSSCOMPILING)
 endif()
 
 ExternalProject_Add(SnoreNotify_ep
-  GIT_REPOSITORY https://github.com/status-im/snorenotify.git
-  GIT_TAG 9d54904e4896ab6c3c3a52f97381e5948b455970
-  GIT_SHALLOW TRUE
+  URL $ENV{SNORENOTIFY_SOURCES} # The source is defined in /nix/desktop/macos/snorenotify/default.nix
   CMAKE_ARGS ${SnoreNotify_CMAKE_ARGS}
   BUILD_BYPRODUCTS ${SnoreNotify_STATIC_LIB} ${SnoreNotify_LIBS} ${SnoreNotifyBackend_STATIC_LIB}
                    ${SnoreNotifyBackendSettings_STATIC_LIB} ${SnoreNotifySettings_STATIC_LIB}
-  LOG_DOWNLOAD 1
 )
 
 set(REACT_NATIVE_DESKTOP_EXTERNAL_PROJECT_DEPS ${REACT_NATIVE_DESKTOP_EXTERNAL_PROJECT_DEPS} SnoreNotify_ep PARENT_SCOPE)
