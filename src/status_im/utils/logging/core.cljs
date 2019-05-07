@@ -7,7 +7,11 @@
             [status-im.utils.email :as mail]
             [taoensso.timbre :as log]
             [status-im.utils.config :as config]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n :as i18n]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.build :as build]
+            [status-im.transport.utils :as transport.utils]
+            [status-im.utils.datetime :as datetime]))
 
 (def report-email "error-reports@status.im")
 (def max-log-entries 1000)
@@ -83,16 +87,53 @@
   [{:keys [db]}]
   {:db (dissoc db :logging/dialog-shown?)})
 
+(defn email-body
+  [{:keys [:web3-node-version :mailserver/current-id
+           :node-info :peers-summary]
+    :as db}]
+  "logs attached"
+  (let [build-number  (if platform/desktop? build/version build/build-no)
+        build-version (str build/version " (" build-number ")")
+        separator (clojure.string/join (take 40 (repeat "-")))
+        [enode-id ip-address port]
+        (transport.utils/extract-url-components (:enode node-info))]
+    (clojure.string/join
+     "\n"
+     (concat [separator
+              (str "App version: " build-version)
+              (str "OS: " platform/os)
+              (str "Node version: " web3-node-version)
+              (str "Mailserver: " (name current-id))
+              separator
+              "Node Info"
+              (str "id: " enode-id)
+              (str "ip: " ip-address)
+              (str "port: " port)
+              separator
+              "Peers"]
+             (mapcat
+              (fn [{:keys [enode]}]
+                (let [[enode-id ip-address port]
+                      (transport.utils/extract-url-components enode)]
+                  [(str "id: " enode-id)
+                   (str "ip: " ip-address)
+                   (str "port: " port)
+                   "\n"]))
+              peers-summary)
+             [separator
+              (datetime/timestamp->long-date
+               (datetime/now))]))))
+
 (handlers/register-handler-fx
  ::send-email
- (fn [cofx [_ archive-path]]
+ (fn [{:keys [db] :as cofx} [_ archive-path]]
    (fx/merge
     cofx
     (dialog-closed)
     (mail/send-email
      {:subject    "Error report"
       :recipients [report-email]
-      :body       "logs attached"
+      :body       (email-body db)
       :attachment {:path archive-path
                    :type "zip"
                    :name "status_logs.zip"}}
