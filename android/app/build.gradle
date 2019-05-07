@@ -217,7 +217,7 @@ android {
             initWith release
             applicationIdSuffix ".pr"
             versionNameSuffix   ".pr"
-            debuggable          true
+            debuggable          false
             matchingFallbacks = ["release"]
             // necessary to make react-native-config's code generation work
             resValue "string", "build_config_package", "im.status.ethereum"
@@ -276,6 +276,7 @@ dependencies {
     implementation project(':react-native-webview')
     implementation project(':react-native-config')
     implementation project(':react-native-firebase')
+    implementation project(':react-native-shake')
     implementation project(':RNMail')
     compile ('com.google.android.gms:play-services-base:16.0.1') {
         force = true

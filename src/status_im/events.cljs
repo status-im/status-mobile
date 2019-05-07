@@ -2121,3 +2121,8 @@
              (custom-tokens/remove-custom-token token)
              (when navigate-back?
                (navigation/navigate-back)))))
+
+(handlers/register-handler-fx
+ :shake-event
+ (fn [cofx _]
+   (logging/show-logs-dialog cofx)))

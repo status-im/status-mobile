@@ -6,7 +6,8 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.email :as mail]
             [taoensso.timbre :as log]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [status-im.i18n :as i18n]))
 
 (def report-email "error-reports@status.im")
 (def max-log-entries 1000)
@@ -63,14 +64,41 @@
                                                   :node/status]))]
     {:logs/archive-logs [db-json ::send-email]}))
 
+(fx/defn show-logs-dialog
+  [{:keys [db]}]
+  (when-not (:logging/dialog-shown? db)
+    {:db
+     (assoc db :logging/dialog-shown? true)
+     :utils/show-confirmation
+     {:title               (i18n/label :t/send-logs)
+      :content             (i18n/label :t/send-logs-to
+                                       {:email report-email})
+      :confirm-button-text (i18n/label :t/send-logs)
+      :on-accept           #(re-frame/dispatch
+                             [:logging.ui/send-logs-pressed])
+      :on-cancel           #(re-frame/dispatch
+                             [:logging/dialog-canceled])}}))
+
+(fx/defn dialog-closed
+  [{:keys [db]}]
+  {:db (dissoc db :logging/dialog-shown?)})
+
 (handlers/register-handler-fx
  ::send-email
  (fn [cofx [_ archive-path]]
-   (mail/send-email cofx
-                    {:subject    "Error report"
-                     :recipients [report-email]
-                     :body       "logs attached"
-                     :attachment {:path archive-path
-                                  :type "zip"
-                                  :name "status_logs.zip"}}
-                    (fn []))))
+   (fx/merge
+    cofx
+    (dialog-closed)
+    (mail/send-email
+     {:subject    "Error report"
+      :recipients [report-email]
+      :body       "logs attached"
+      :attachment {:path archive-path
+                   :type "zip"
+                   :name "status_logs.zip"}}
+     (fn [])))))
+
+(handlers/register-handler-fx
+ :logging/dialog-canceled
+ (fn [cofx]
+   (dialog-closed cofx)))
