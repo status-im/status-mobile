@@ -425,6 +425,7 @@
     "status-not-sent-tap": "Not confirmed. Tap for options",
     "status-not-sent-click": "Not confirmed. Click for options",
     "send-logs": "Send logs",
+    "send-logs-to": "Send logs to {{email}}",
     "edit-network-config": "Edit network config",
     "clear-history-confirmation": "Clear history?",
     "currency-display-name-gyd": "Guyana Dollar",

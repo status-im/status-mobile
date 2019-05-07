@@ -2237,3 +2237,8 @@
    (fx/merge cofx
              {:db (assoc-in db [:wallet :send-transaction] {})}
              (navigation/navigate-back))))
+
+(handlers/register-handler-fx
+ :shake-event
+ (fn [cofx _]
+   (logging/show-logs-dialog cofx)))
