@@ -84,10 +84,11 @@
                           :ens-name recipient
                           :cb       #(re-frame/dispatch [:wallet.send/set-recipient %])}}
        (if (ethereum/address? recipient)
-         (if (eip55/valid-address-checksum? recipient)
-           {:db       (assoc-in db [:wallet :send-transaction :to] recipient)
-            :dispatch [:navigate-back]}
-           {:ui/show-error (i18n/label :t/wallet-invalid-address-checksum {:data recipient})})
+         (let [checksum (eip55/address->checksum recipient)]
+           (if (eip55/valid-address-checksum? checksum)
+             {:db       (assoc-in db [:wallet :send-transaction :to] checksum)
+              :dispatch [:navigate-back]}
+             {:ui/show-error (i18n/label :t/wallet-invalid-address-checksum {:data recipient})}))
          {:ui/show-error (i18n/label :t/wallet-invalid-address {:data recipient})})))))
 
 (handlers/register-handler-fx
