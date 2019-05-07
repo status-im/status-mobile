@@ -15,8 +15,16 @@ def getToolVersion(name) {
   return version
 }
 
+def nix_impure_sh(cmd) {
+  _nix_sh(cmd, true)
+}
+
 def nix_sh(cmd) {
-  def isPure = env.TARGET_OS != 'windows' && env.TARGET_OS != 'ios' && !cmd.contains('prepare-for-platform.sh')
+  _nix_sh(cmd, false)
+}
+
+def _nix_sh(cmd, forceImpure) {
+  def isPure = !forceImpure && env.TARGET_OS != 'windows' && env.TARGET_OS != 'ios'
   def pureFlag = isPure ? '--pure --keep LOCALE_ARCHIVE_2_27 --keep REALM_DISABLE_ANALYTICS --keep STATUS_RELEASE_STORE_FILE --keep STATUS_RELEASE_STORE_PASSWORD --keep STATUS_RELEASE_KEY_ALIAS --keep STATUS_RELEASE_KEY_PASSWORD --keep GPG_PASS_OUTER --keep GPG_PASS_INNER --keep KEYCHAIN_PASS --keep VERBOSE_LEVEL' : ''
 
   sh """

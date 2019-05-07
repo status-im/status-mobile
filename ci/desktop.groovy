@@ -84,7 +84,7 @@ def bundleMacOS(type = 'nightly') {
       string(credentialsId: 'desktop-gpg-inner-pass', variable: 'GPG_PASS_INNER'),
       string(credentialsId: 'desktop-keychain-pass', variable: 'KEYCHAIN_PASS')
     ]) {
-      utils.nix_sh """
+      utils.nix_impure_sh """
         ../scripts/sign-macos-pkg.sh Status.app ../deployment/macos/macos-developer-id.keychain-db.gpg && \
         ../node_modules/appdmg/bin/appdmg.js ../deployment/macos/status-dmg.json ${pkg} && \
         ../scripts/sign-macos-pkg.sh ${pkg} ../deployment/macos/macos-developer-id.keychain-db.gpg

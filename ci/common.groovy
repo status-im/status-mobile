@@ -77,7 +77,7 @@ def prep(type = 'nightly') {
     prepareTarget='desktop'
   }
   /* node deps, pods, and status-go download */
-  utils.nix_sh "scripts/prepare-for-platform.sh ${prepareTarget}"
+  utils.nix_impure_sh "scripts/prepare-for-platform.sh ${prepareTarget}"
 }
 
 return this

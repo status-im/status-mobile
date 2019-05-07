@@ -3,6 +3,7 @@
 ########################################################################
 # This install script will setup your development dependencies on OS X
 # or Ubuntu. Ubuntu 18.04 is the only tested version.
+# It is not required or supported in NixOS.
 #
 # Usage: scripts/setup
 ########################################################################
