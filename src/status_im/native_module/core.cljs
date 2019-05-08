@@ -88,6 +88,9 @@
 (defn get-device-UUID [callback]
   (native-module/get-device-UUID callback))
 
+(defn set-blank-preview-flag [flag]
+  (native-module/set-blank-preview-flag flag))
+
 (defn is24Hour []
   (native-module/is24Hour))
 

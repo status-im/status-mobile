@@ -101,7 +101,7 @@
                                                         :value   value}]))
 
 (defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]}
-                            account
+                            {:keys [settings] :as account}
                             currency
                             logged-in?
                             extensions]
@@ -143,6 +143,11 @@
       {:label-kw            :t/devices
        :action-fn           #(re-frame/dispatch [:navigate-to :installations])
        :accessibility-label :pairing-settings-button}]
+     [profile.components/settings-item-separator]
+     [profile.components/settings-switch-item
+      {:label-kw  :t/preview-privacy
+       :value     (boolean (:preview-privacy? settings))
+       :action-fn #(re-frame/dispatch [:accounts.ui/preview-privacy-mode-switched %])}]
      [profile.components/settings-item-separator]
      [profile.components/settings-item
       {:label-kw            :t/dapps-permissions

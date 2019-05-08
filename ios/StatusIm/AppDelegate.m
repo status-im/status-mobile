@@ -20,7 +20,10 @@
 #import "RNFirebaseNotifications.h"
 #import "RNFirebaseMessaging.h"
 
-@implementation AppDelegate
+@implementation AppDelegate 
+{
+    UIView *_blankView;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -47,6 +50,10 @@
     RCTSetLogThreshold(RCTLogLevelTrace);
   }
 
+  NSDictionary *appDefaults = [NSDictionary
+      dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:@"BLANK_PREVIEW"];
+  [[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
+
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                       moduleName:@"StatusIm"
@@ -54,6 +61,10 @@
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+  _blankView = [[UIView alloc]initWithFrame:self.window.frame];
+  _blankView.backgroundColor = [UIColor whiteColor];
+  _blankView.alpha = 0;
+
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
@@ -99,6 +110,27 @@
 #else
   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
+}
+
+- (void)applicationWillResignActive:(UIApplication *)application {
+  if ([[NSUserDefaults standardUserDefaults] boolForKey:@"BLANK_PREVIEW"]) {
+    [self.window addSubview:_blankView];
+    [self.window bringSubviewToFront:_blankView];
+
+    [UIView animateWithDuration:0.5 animations:^{
+      _blankView.alpha = 1;
+    }];
+  } 
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+  if ([[NSUserDefaults standardUserDefaults] boolForKey:@"BLANK_PREVIEW"]) {
+    [UIView animateWithDuration:0.5 animations:^{
+      _blankView.alpha = 0;
+    } completion:^(BOOL finished) {
+      [_blankView removeFromSuperview];
+    }];
+  }
 }
 
 @end

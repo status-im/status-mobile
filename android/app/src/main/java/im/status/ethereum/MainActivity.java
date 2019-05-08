@@ -12,8 +12,10 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.view.WindowManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -109,7 +111,7 @@ public class MainActivity extends ReactActivity
         final ActivityManager activityManager = getActivityManager();
         Log.v("RNBootstrap", "Available system memory "+getAvailableMemory(activityManager).availMem + ", maximum usable application memory " + activityManager.getLargeMemoryClass()+"M");
 
-
+        setSecureFlag();
         SplashScreen.show(this, true);
         super.onCreate(savedInstanceState);
 
@@ -200,6 +202,16 @@ public class MainActivity extends ReactActivity
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(REJECTED_ROOTED_NOTIFICATION, true);
         editor.commit();
+    }
+
+    private void setSecureFlag() {
+        final SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final boolean setSecure = sharedPrefs.getBoolean("BLANK_PREVIEW", false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH && setSecure) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.M)

@@ -784,6 +784,7 @@
     "currency-display-name-usd": "United States Dollar",
     "currency-display-name-uah": "Ukraine Hryvnia",
     "web3-opt-in": "Browser privacy mode",
+    "preview-privacy": "Preview privacy mode",
     "recover-password-invalid": "This account already exists but passwords do not match",
     "recover-keycard-account-not-supported": "Recovering keycard account with password is not supported",
     "members-active-none": "no members",

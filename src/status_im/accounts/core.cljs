@@ -16,6 +16,11 @@
  (fn [on]
    (native-module/chaos-mode-update on (constantly nil))))
 
+(re-frame/reg-fx
+ ::blank-preview-flag-changed
+ (fn [flag]
+   (native-module/set-blank-preview-flag flag)))
+
 (fx/defn show-mainnet-is-default-alert [{:keys [db]}]
   (let [shown-version (get-in db [:account/account :mainnet-warning-shown-version])
         current-version build/version]
@@ -97,6 +102,14 @@
     (accounts.update/update-settings cofx
                                      (assoc settings :web3-opt-in? opt-in)
                                      {})))
+
+(fx/defn switch-preview-privacy-mode [{:keys [db] :as cofx} private?]
+  (let [settings (get-in db [:account/account :settings])]
+    (fx/merge cofx
+              {::blank-preview-flag-changed private?}
+              (accounts.update/update-settings
+               (assoc settings :preview-privacy? private?)
+               {}))))
 
 (fx/defn update-recent-stickers [cofx stickers]
   (accounts.update/account-update cofx

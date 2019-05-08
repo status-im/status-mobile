@@ -539,6 +539,15 @@ RCT_EXPORT_METHOD(getDeviceUUID:(RCTResponseSenderBlock)callback) {
     callback(@[Identifier]);
 }
 
+RCT_EXPORT_METHOD(setBlankPreviewFlag:(BOOL *)newValue)
+{
+  NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+
+  [userDefaults setBool:newValue forKey:@"BLANK_PREVIEW"];
+
+  [userDefaults synchronize];
+}
+
 - (bool) is24Hour
 {
     NSString *format = [NSDateFormatter dateFormatFromTemplate:@"j" options:0 locale:[NSLocale currentLocale]];

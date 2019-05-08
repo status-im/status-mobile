@@ -9,8 +9,10 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
+import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
@@ -941,6 +943,32 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         }
         callback.invoke(uniqueID);
+    }
+
+    @ReactMethod
+    public void setBlankPreviewFlag(final Boolean blankPreview) {
+        final SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.reactContext);
+        sharedPrefs.edit().putBoolean("BLANK_PREVIEW", blankPreview).commit();
+        setSecureFlag();
+    }
+
+    private void setSecureFlag() {
+        final SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.reactContext);
+        final boolean setSecure = sharedPrefs.getBoolean("BLANK_PREVIEW", true);
+        final Activity activity = this.reactContext.getCurrentActivity();
+        if (activity != null) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    final Window window = activity.getWindow();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH && setSecure) {
+                        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+                    } else {
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+                    }
+                }
+            });
+        }
     }
 
   private Boolean is24Hour() {

@@ -133,6 +133,9 @@
    (fn [UUID]
      (callback (string/upper-case UUID)))))
 
+(defn set-blank-preview-flag [flag]
+  (.setBlankPreviewFlag status flag))
+
 (defn extract-group-membership-signatures [signature-pairs callback]
   (when status
     (.extractGroupMembershipSignatures status signature-pairs callback)))

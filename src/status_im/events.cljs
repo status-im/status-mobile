@@ -215,6 +215,11 @@
    (accounts/switch-web3-opt-in-mode cofx opt-in)))
 
 (handlers/register-handler-fx
+ :accounts.ui/preview-privacy-mode-switched
+ (fn [cofx [_ private?]]
+   (accounts/switch-preview-privacy-mode cofx private?)))
+
+(handlers/register-handler-fx
  :accounts.ui/wallet-set-up-confirmed
  (fn [cofx [_ modal?]]
    (accounts/confirm-wallet-set-up cofx modal?)))
