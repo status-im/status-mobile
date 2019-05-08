@@ -14,7 +14,7 @@ let
   repo = "status-go";
   rev = version;
   goPackagePath = "github.com/${owner}/${repo}";
-  src = fetchFromGitHub { inherit rev owner repo sha256; };
+  src = fetchFromGitHub { inherit rev owner repo sha256; name = "${repo}-source"; };
 
   mobileConfigs = {
     android = {

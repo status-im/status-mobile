@@ -9,6 +9,7 @@ stdenv.mkDerivation rec {
   src =
     if stdenv.hostPlatform.system == "x86_64-linux" then
       fetchFromGitHub {
+        name = "${name}-source";
         owner = "probonopd";
         repo = "linuxdeployqt";
         rev = "600fc20ea73ee937a402a2bb6b3663d93fcc1d4b";

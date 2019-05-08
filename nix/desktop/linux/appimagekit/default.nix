@@ -9,6 +9,7 @@
 let
 
   appimagekit_src = fetchFromGitHub {
+    name = "AppImageKit-source";
     owner = "AppImage";
     repo = "AppImageKit";
     rev = "b0859501df61cde198b54a317c03b41dbafc98b1";
@@ -21,6 +22,7 @@ let
     version = "20161009";
 
     src = fetchFromGitHub {
+      name = "squashfuse-source";
       owner = "vasi";
       repo  = "squashfuse";
       rev   = "1f980303b89c779eabfd0a0fdd36d6a7a311bf92";
