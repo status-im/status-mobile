@@ -69,6 +69,10 @@ def pkgFilename(type, ext) {
 
 def doGitRebase() {
   /* rebasing on relases defeats the point of having a release branch */
+  if (branchName() == 'canary-branch') {
+    println 'Skipping rebase for canary build...'
+    return
+  }
   if (params.BUILD_TYPE == 'release') {
     println 'Skipping rebase due to release build...'
     return
