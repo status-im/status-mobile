@@ -66,7 +66,7 @@ class TransactionsButton(BaseButton):
 
         def click(self):
             self.driver.swipe(500, 1000, 500, 800)
-            self.find_element().click()
+            self.wait_for_visibility_of_element().click()
             return self.navigate()
 
     class SendTwoTxInBatchButton(BaseButton):

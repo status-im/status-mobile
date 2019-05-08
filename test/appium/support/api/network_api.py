@@ -12,6 +12,7 @@ class NetworkApi(object):
     def __init__(self):
         self.network_url = 'http://api-%s.etherscan.io/api?' % pytest.config.getoption('network')
         self.faucet_url = 'https://faucet-ropsten.status.im/donate'
+        self.faucet_backup_url = 'https://faucet.ropsten.be/donate'
         self.chat_bot_url = 'http://offsite.chat:8099'
 
     def get_transactions(self, address: str) -> List[dict]:
@@ -102,10 +103,14 @@ class NetworkApi(object):
     def faucet(self, address):
         return requests.request('GET', '%s/0x%s' % (self.faucet_url, address)).json()
 
+    def faucet_backup(self, address):
+        return requests.request('GET', '%s/0x%s' % (self.faucet_backup_url, address)).json()
+
     def get_donate(self, address, wait_time=300):
         initial_balance = self.get_balance(address)
         counter = 0
         if initial_balance < 1000000000000000000:
+            self.faucet_backup(address)
             response = self.faucet(address)
             while True:
                 if counter >= wait_time:
