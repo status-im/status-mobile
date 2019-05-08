@@ -1,49 +1,43 @@
 (ns status-im.subs
-  (:require [re-frame.core :as re-frame]
+  (:require [cljs.spec.alpha :as spec]
+            [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.accounts.db :as accounts.db]
+            [status-im.browser.core :as browser]
+            [status-im.chat.commands.core :as commands]
+            [status-im.chat.commands.input :as commands.input]
+            [status-im.chat.constants :as chat.constants]
+            [status-im.chat.db :as chat.db]
+            [status-im.constants :as constants]
+            [status-im.contact.db :as contact.db]
+            [status-im.fleet.core :as fleet]
+            [status-im.i18n :as i18n]
+            [status-im.models.transactions :as transactions]
+            [status-im.models.wallet :as models.wallet]
+            [status-im.ui.components.bottom-bar.styles :as tabs.styles]
+            [status-im.ui.components.toolbar.styles :as toolbar.styles]
+            [status-im.ui.screens.add-new.new-public-chat.db :as db]
+            [status-im.ui.screens.chat.stickers.styles :as stickers.styles]
+            [status-im.ui.screens.mobile-network-settings.utils
+             :as
+             mobile-network-utils]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.utils.build :as build]
+            [status-im.utils.config :as config]
+            [status-im.utils.datetime :as datetime]
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.utils.hex :as utils.hex]
+            [status-im.utils.identicon :as identicon]
+            [status-im.utils.money :as money]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.security :as security]
+            [status-im.utils.universal-links.core :as links]
             status-im.tribute-to-talk.subs
             status-im.ui.screens.hardwallet.connect.subs
             status-im.ui.screens.hardwallet.settings.subs
             status-im.ui.screens.hardwallet.pin.subs
-            status-im.ui.screens.hardwallet.setup.subs
-            [cljs.spec.alpha :as spec]
-            [clojure.string :as string]
-
-            [status-im.chat.db :as chat.db]
-            [status-im.accounts.db :as accounts.db]
-            [status-im.contact.db :as contact.db]
-
-            [status-im.browser.core :as browser]
-            [status-im.fleet.core :as fleet]
-            [status-im.constants :as constants]
-
-            [status-im.models.transactions :as transactions]
-            [status-im.models.wallet :as models.wallet]
-
-            [status-im.chat.commands.input :as commands.input]
-            [status-im.chat.commands.core :as commands]
-            [status-im.chat.constants :as chat.constants]
-
-            [status-im.ui.components.toolbar.styles :as toolbar.styles]
-            [status-im.ui.components.bottom-bar.styles :as tabs.styles]
-
-            [status-im.ui.screens.chat.stickers.styles :as stickers.styles]
-            [status-im.ui.screens.add-new.new-public-chat.db :as db]
-            [status-im.ui.screens.mobile-network-settings.utils :as mobile-network-utils]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]
-
-            [status-im.utils.universal-links.core :as links]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.security :as security]
-            [status-im.utils.config :as config]
-            [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.money :as money]
-            [status-im.utils.identicon :as identicon]
-            [status-im.utils.build :as build]
-            [status-im.utils.hex :as utils.hex]
-            [status-im.utils.datetime :as datetime]
-
-            [status-im.i18n :as i18n]))
+            status-im.ui.screens.hardwallet.setup.subs))
 
 ;; TOP LEVEL ===========================================================================================================
 
@@ -156,6 +150,9 @@
 (reg-root-key-sub :wallet/all-tokens :wallet/all-tokens)
 (reg-root-key-sub :prices-loading? :prices-loading?)
 (reg-root-key-sub :wallet.transactions :wallet.transactions)
+
+;;ethereum
+(reg-root-key-sub :ethereum/current-block :ethereum/current-block)
 
 ;;GENERAL ==============================================================================================================
 
@@ -1138,10 +1135,12 @@
 
 (re-frame/reg-sub
  :wallet.transactions.details/confirmations
+ :<- [:ethereum/current-block]
  :<- [:wallet.transactions/transaction-details]
- (fn [transaction-details]
-   ;;TODO (yenda) this field should be calculated based on the current-block and the block of the transaction
-   (:confirmations transaction-details)))
+ (fn [[current-block {:keys [block]}]]
+   (if (and current-block block)
+     (- current-block block)
+     0)))
 
 (re-frame/reg-sub
  :wallet.transactions.details/confirmations-progress

@@ -3,6 +3,7 @@
             [status-im.accounts.db :as accounts.db]
             [status-im.chaos-mode.core :as chaos-mode]
             [status-im.data-store.core :as data-store]
+            [status-im.ethereum.subscriptions :as ethereum.subscriptions]
             [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
             [status-im.models.transactions :as transactions]
@@ -84,6 +85,7 @@
 (fx/defn initialize-wallet [cofx]
   (fx/merge cofx
             (models.wallet/initialize-tokens)
+            (ethereum.subscriptions/initialize)
             (models.wallet/update-wallet)
             (transactions/start-sync)))
 
@@ -149,8 +151,8 @@
          (protocol/initialize-protocol)
          (universal-links/process-stored-event)
          (chaos-mode/check-chaos-mode)
-         #(when-not platform/desktop?
-            (initialize-wallet %)))
+         (when-not platform/desktop?
+           (initialize-wallet)))
         (account-and-db-password-do-not-match cofx error)))))
 
 (fx/defn show-migration-error-dialog

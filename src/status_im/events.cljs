@@ -20,6 +20,7 @@
             [status-im.contact-recovery.core :as contact-recovery]
             [status-im.contact.block :as contact.block]
             [status-im.contact.core :as contact]
+            [status-im.ethereum.subscriptions :as ethereum.subscriptions]
             [status-im.extensions.core :as extensions]
             [status-im.extensions.registry :as extensions.registry]
             [status-im.fleet.core :as fleet]
@@ -2045,3 +2046,14 @@
  :bottom-sheet/hide-sheet
  (fn [cofx _]
    (bottom-sheet/hide-bottom-sheet cofx)))
+
+;; ethereum subscriptions events
+(handlers/register-handler-fx
+ :ethereum.callback/subscription-success
+ (fn [cofx [_ id handler]]
+   (ethereum.subscriptions/register-subscription cofx id handler)))
+
+(handlers/register-handler-fx
+ :ethereum.signal/new-block
+ (fn [cofx [_ block-number]]
+   (ethereum.subscriptions/new-block cofx block-number)))

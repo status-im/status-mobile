@@ -1,5 +1,6 @@
 (ns status-im.utils.ethereum.core
   (:require [clojure.string :as string]
+            [status-im.ethereum.decode :as decode]
             [status-im.js-dependencies :as dependencies]
             [status-im.native-module.core :as status]
             [status-im.utils.ethereum.tokens :as tokens]
@@ -124,7 +125,7 @@
 
 (defn call [params callback]
   (status/call-private-rpc
-   (.stringify js/JSON (clj->js {:jsonprc "2.0"
+   (.stringify js/JSON (clj->js {:jsonrpc "2.0"
                                  :id      1
                                  :method  "eth_call"
                                  :params  [params "latest"]}))
@@ -172,13 +173,9 @@
                                      (cb (js->clj result :keywordize-keys true))
                                      (handle-error error)))))
 
-(defn- decode-uint
-  [hex]
-  (first (abi-spec/decode hex ["uint"])))
-
 (defn get-transaction [transaction-hash callback]
   (status/call-private-rpc
-   (.stringify js/JSON (clj->js {:jsonprc "2.0"
+   (.stringify js/JSON (clj->js {:jsonrpc "2.0"
                                  :id      1
                                  :method  "eth_getTransactionByHash"
                                  :params  [transaction-hash]}))
@@ -188,9 +185,9 @@
        (callback (-> (.parse js/JSON response)
                      (js->clj :keywordize-keys true)
                      :result
-                     (update :gasPrice decode-uint)
-                     (update :value decode-uint)
-                     (update :gas decode-uint)))))))
+                     (update :gasPrice decode/uint)
+                     (update :value decode/uint)
+                     (update :gas decode/uint)))))))
 
 (defn get-transaction-receipt [web3 number cb]
   (.getTransactionReceipt (.-eth web3) number (fn [error result]
