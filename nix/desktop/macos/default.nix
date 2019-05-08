@@ -1,4 +1,4 @@
-{ stdenv, pkgs }:
+{ stdenv, pkgs, status-go }:
 
 with pkgs;
 with stdenv;
@@ -11,11 +11,14 @@ let
 
 in
 {
-  buildInputs = [ baseImage ] ++
-    [ AppKit Cocoa darwin.cf-private Foundation OpenGL ];
+  buildInputs = [
+    baseImage status-go.packages
+    AppKit Cocoa darwin.cf-private Foundation OpenGL
+  ];
 
-  shellHook = ''
-    ${baseImage.shellHook}
-    export NIX_TARGET_LDFLAGS="-F${CoreFoundation}/Library/Frameworks -framework CoreFoundation $NIX_TARGET_LDFLAGS"
-  '';
+  shellHook =
+    baseImage.shellHook +
+    status-go.shellHook + ''
+      export NIX_TARGET_LDFLAGS="-F${CoreFoundation}/Library/Frameworks -framework CoreFoundation $NIX_TARGET_LDFLAGS"
+    '';
 }

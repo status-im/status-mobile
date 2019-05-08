@@ -1,4 +1,4 @@
-{ stdenv, pkgs }:
+{ stdenv, pkgs, status-go }:
 
 with pkgs;
 with stdenv;
@@ -11,7 +11,14 @@ let
   linuxdeployqt = callPackage ./linuxdeployqt { inherit appimagekit; };
 
 in {
-  buildInputs = [ appimagekit linuxdeployqt patchelf baseImage ];
+  buildInputs = [
+    appimagekit
+    linuxdeployqt
+    patchelf
+    baseImage
+  ] ++ status-go.packages;
 
-  inherit (baseImage) shellHook;
+  shellHook =
+    baseImage.shellHook +
+    status-go.shellHook;
 }

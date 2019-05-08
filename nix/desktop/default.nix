@@ -1,12 +1,12 @@
-{ stdenv, pkgs, target-os }:
+{ stdenv, pkgs, target-os, status-go }:
 
 with pkgs;
 with stdenv;
 
 let
   platform = callPackage ../platform.nix { inherit target-os; };
-  linuxPlatform = callPackage ./linux { };
-  darwinPlatform = callPackage ./macos { };
+  linuxPlatform = callPackage ./linux { inherit status-go; };
+  darwinPlatform = callPackage ./macos { inherit status-go; };
   windowsPlatform = callPackage ./windows { };
   snoreNotifySources = callPackage ./cmake/snorenotify { };
   qtkeychainSources = callPackage ./cmake/qtkeychain { };

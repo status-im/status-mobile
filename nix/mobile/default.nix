@@ -1,4 +1,4 @@
-{ config, stdenv, pkgs, target-os ? "all" }:
+{ config, stdenv, pkgs, target-os ? "all", status-go }:
 
 with pkgs;
 with stdenv;
@@ -18,8 +18,10 @@ in
     inherit xcodewrapperArgs;
 
     buildInputs =
-      lib.optional platform.targetAndroid android.buildInputs ++
+      status-go.packages ++
+      lib.optionals platform.targetAndroid android.buildInputs ++
       lib.optional (platform.targetIOS && isDarwin) xcodeWrapper;
     shellHook =
+      status-go.shellHook +
       lib.optionalString platform.targetAndroid android.shellHook;
   }
