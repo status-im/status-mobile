@@ -1,19 +1,19 @@
 (ns status-im.ui.screens.wallet.events
   (:require [re-frame.core :as re-frame]
-            [status-im.models.transactions :as wallet.transactions]
+            [status-im.ethereum.transactions.core :as transactions]
+            [status-im.i18n :as i18n]
             [status-im.models.wallet :as models]
             [status-im.ui.screens.navigation :as navigation]
             status-im.ui.screens.wallet.navigation
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.erc20 :as erc20]
             [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.money :as money]
             [status-im.utils.prices :as prices]
-            [taoensso.timbre :as log]
-            [status-im.utils.fx :as fx]
-            [status-im.i18n :as i18n]
-            [status-im.utils.utils :as utils.utils]))
+            [status-im.utils.utils :as utils.utils]
+            [taoensso.timbre :as log]))
 
 (defn get-balance [{:keys [web3 account-id on-success on-error]}]
   (if (and web3 account-id)
@@ -146,7 +146,7 @@
 (handlers/register-handler-fx
  :update-transactions
  (fn [{:keys [db]} _]
-   {::wallet.transactions/sync-transactions-now
+   {::transactions/sync-transactions-now
     (select-keys db [:network-status :account/account :wallet/all-tokens
                      :app-state :network :web3])}))
 

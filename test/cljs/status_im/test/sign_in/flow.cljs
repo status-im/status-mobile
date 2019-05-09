@@ -2,11 +2,11 @@
   "The main purpose of these tests is to signal that some steps of the sign in
   flow has been changed. Such changes should be reflected in both these tests
   and documents which describe the whole \"sign in\" flow."
-  (:require [cljs.test :refer-macros [deftest is are testing]]
+  (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.accounts.login.core :as login.core]
             [status-im.events :as events]
-            [status-im.test.sign-in.data :as data]
-            [status-im.signals.core :as signals]))
+            [status-im.signals.core :as signals]
+            [status-im.test.sign-in.data :as data]))
 
 (deftest on-password-input-submitted
   (testing
@@ -205,7 +205,7 @@
         (is (contains? efx :web3/get-syncing))
         (is (contains? efx :get-tokens-balance))
         (is (contains? efx :get-prices))
-        (is (contains? efx :status-im.models.transactions/start-sync-transactions))))))
+        (is (contains? efx :status-im.ethereum.transactions.core/start-sync-transactions))))))
 
 (deftest login-failed
   (testing
