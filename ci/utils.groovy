@@ -38,7 +38,7 @@ def nix_fastlane_sh(cmd) {
     . ~/.nix-profile/etc/profile.d/nix.sh
     set -x
     nix-shell --argstr target-os \'${env.TARGET_OS}\' \\
-              ${pureFlag} --run \'printenv && \$FASTLANE_SCRIPT ${cmd}\' \\
+              ${pureFlag} --run \'fastlane ${cmd}\' \\
               \'${env.WORKSPACE}/shell.nix\'
   """
 }

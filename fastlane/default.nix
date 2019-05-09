@@ -33,12 +33,9 @@ let
     };
   };
 
-in {
-  package = fastlane;
-
+in fastlane // {
   shellHook = ''
     export FASTLANE_PLUGINFILE_PATH=$PWD/fastlane/Pluginfile
-    export FASTLANE_SCRIPT="${fastlane}/bin/fastlane" # the ruby package also exposes the fastlane Gem, so we want to make sure we don't rely on PATH ordering to get the right package
   '';
 }
 

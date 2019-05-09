@@ -5,18 +5,18 @@ with pkgs;
 let
   projectDeps = import ./default.nix { inherit target-os; };
   platform = callPackage ./nix/platform.nix { inherit target-os; };
-  useFastlanePkg = (platform.targetAndroid && !_stdenv.isDarwin);
+  useFastlanePkg = (platform.targetAndroid && !stdenv'.isDarwin);
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
-  _stdenv = stdenvNoCC;
-  _mkShell = mkShell.override { stdenv = _stdenv; };
-  _fastlane = callPackage ./fastlane {
+  stdenv' = stdenvNoCC;
+  mkShell' = mkShell.override { stdenv = stdenv'; };
+  fastlane' = callPackage ./fastlane {
     bundlerEnv = _: pkgs.bundlerEnv { 
       name = "fastlane-gems";
       gemdir = ./fastlane;
     };
   };
 
-in _mkShell {
+in mkShell' {
   buildInputs = [
     # utilities
     bash
@@ -31,7 +31,7 @@ in _mkShell {
     unzip
     wget
   ] ++
-  (if useFastlanePkg then [ _fastlane.package ] else lib.optionals platform.targetMobile [ bundler ruby ]); # bundler/ruby used for fastlane on macOS
+  (if useFastlanePkg then [ fastlane' ] else lib.optionals platform.targetMobile [ bundler ruby ]); # bundler/ruby used for fastlane on macOS
   inputsFrom = [ projectDeps ];
   TARGET_OS=target-os;
   shellHook =
@@ -41,7 +41,7 @@ in _mkShell {
       STATUS_REACT_HOME=$(git rev-parse --show-toplevel)
 
       ${projectDeps.shellHook}
-      ${lib.optionalString useFastlanePkg _fastlane.shellHook}
+      ${lib.optionalString useFastlanePkg fastlane'.shellHook}
 
       if [ ! -f $STATUS_REACT_HOME/.ran-setup ]; then
         $STATUS_REACT_HOME/scripts/setup
