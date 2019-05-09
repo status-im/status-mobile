@@ -24,12 +24,6 @@ if [ $# -eq 0 ]; then
 fi
 
 STATUS_GO_OWNER="$(cat ${GIT_ROOT}/STATUS_GO_OWNER)"
-STATUS_GO_VERSION="v${1#"v"}"
-if [ "$STATUS_GO_OWNER" == 'status-im' ] && [ "$STATUS_GO_VERSION" != "$1" ]; then
-  echo "status-go release branches should include the v prefix!"
-  echo "Please create a new branch called $STATUS_GO_VERSION"
-  exit 1
-fi
 STATUS_GO_VERSION=$1
 STATUS_GO_SHA256=$(nix-prefetch-url --unpack https://github.com/${STATUS_GO_OWNER}/status-go/archive/${STATUS_GO_VERSION}.zip)
 
