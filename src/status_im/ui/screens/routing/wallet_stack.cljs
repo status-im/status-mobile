@@ -23,5 +23,6 @@
              :unsigned-transactions
              :transactions-history
              :wallet-transaction-details
-             :wallet-settings-hook]
+             :wallet-settings-hook
+             :extension-screen-holder]
    :config  {:initialRouteName :wallet}})

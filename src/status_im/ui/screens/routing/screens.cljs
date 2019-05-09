@@ -2,6 +2,7 @@
   (:require [status-im.extensions.capacities.camera.views
              :as
              extensions.camera.views]
+            [status-im.extensions.capacities.views :as extensions.views]
             [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.screens.accounts.create.views :as accounts.create]
             [status-im.ui.screens.accounts.login.views :as login]
@@ -104,6 +105,7 @@
    :qr-scanner                       qr-scanner/qr-scanner
    :profile-qr-viewer                [:modal profile.user/qr-viewer]
    :take-picture                     extensions.camera.views/take-picture
+   :extension-screen-holder          extensions.views/screen-holder
    :new-group                        group/new-group
    :add-participants-toggle-list     group/add-participants-toggle-list
    :contact-toggle-list              group/contact-toggle-list

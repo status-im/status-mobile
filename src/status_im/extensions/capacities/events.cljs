@@ -337,6 +337,26 @@
          (on-failure {:value "extension is not currently showing wallet settings"})
          {})))))
 
+(handlers/register-handler-fx
+ :extensions/screen-open
+ (fn [cofx [_ _ {:keys [view on-open]}]]
+   (fx/merge cofx
+             (when on-open (on-open))
+             (navigation/navigate-to-cofx :extension-screen-holder {:view view}))))
+
+(handlers/register-handler-fx
+ :extensions/screen-close
+ (fn [{:keys [db] :as cofx} [_ _ {:keys [on-close on-failure]}]]
+   (let [view-id (:view-id db)]
+     ;; ensure the current view-id is the extension fullscreen holder
+     (if (= view-id :extension-screen-holder)
+       (fx/merge cofx
+                 (when on-close (on-close))
+                 (navigation/navigate-back))
+       (if on-failure
+         (on-failure {:value "extension is not currently showing a fullscreen view"})
+         {})))))
+
 ;;CAPACITIES
 
 (def all
@@ -462,6 +482,16 @@
     :data       :network/remove
     :arguments   {:chain-id    :number
                   :on-success? :event
+                  :on-failure? :event}}
+   'screen/open
+   {:permissions [:read]
+    :data        :extensions/screen-open
+    :arguments   {:view        :view
+                  :on-open?    :event}}
+   'screen/close
+   {:permissions [:read]
+    :data        :extensions/screen-close
+    :arguments   {:on-close?   :event
                   :on-failure? :event}}
    'http/get
    {:permissions [:read]
