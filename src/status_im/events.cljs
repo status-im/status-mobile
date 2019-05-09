@@ -2057,3 +2057,8 @@
  :ethereum.signal/new-block
  (fn [cofx [_ block-number]]
    (ethereum.subscriptions/new-block cofx block-number)))
+
+(handlers/register-handler-fx
+ :ethereum.signal/new-transactions
+ (fn [cofx [_ transactions]]
+   (ethereum.subscriptions/new-transactions cofx transactions)))

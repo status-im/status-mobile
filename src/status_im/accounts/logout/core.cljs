@@ -1,12 +1,12 @@
 (ns status-im.accounts.logout.core
   (:require [re-frame.core :as re-frame]
+            [status-im.chaos-mode.core :as chaos-mode]
+            [status-im.ethereum.transactions.core :as transactions]
             [status-im.i18n :as i18n]
-            [status-im.transport.core :as transport]
-            [status-im.utils.fx :as fx]
-            [status-im.models.transactions :as transactions]
-            [status-im.node.core :as node]
             [status-im.init.core :as init]
-            [status-im.chaos-mode.core :as chaos-mode]))
+            [status-im.node.core :as node]
+            [status-im.transport.core :as transport]
+            [status-im.utils.fx :as fx]))
 
 (fx/defn logout
   [{:keys [db] :as cofx}]

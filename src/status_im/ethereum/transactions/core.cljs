@@ -1,166 +1,19 @@
-(ns status-im.models.transactions
+(ns status-im.ethereum.transactions.core
   (:require [clojure.set :as set]
-            [cljs.core.async :as async]
             [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            re-frame.db
             [status-im.utils.async :as async-util]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.constants :as constants]
-            [status-im.native-module.core :as status]
             [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.utils.fx :as fx]
             [status-im.utils.http :as http]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]
-            [status-im.utils.fx :as fx]
-            [re-frame.core :as re-frame]
-            [re-frame.db]
-            [status-im.utils.config :as config])
-  (:require-macros
-   [cljs.core.async.macros :refer [go-loop go]]))
+            [taoensso.timbre :as log]))
 
 (def sync-interval-ms 15000)
 (def sync-timeout-ms  20000)
 (def confirmations-count-threshold 12)
-(def block-query-limit 100000)
-
-;; ----------------------------------------------------------------------------
-;; token transfer event logs from eth-node
-;; ----------------------------------------------------------------------------
-
-(defn- parse-json [s]
-  {:pre [(string? s)]}
-  (try
-    (let [res (-> s
-                  js/JSON.parse
-                  (js->clj :keywordize-keys true))]
-      (if (= (:error res) "")
-        {:result true}
-        res))
-    (catch :default e
-      {:error (.-message e)})))
-
-(defn- add-padding [address]
-  {:pre [(string? address)]}
-  (str "0x000000000000000000000000" (subs address 2)))
-
-(defn- remove-padding [topic]
-  {:pre [(string? topic)]}
-  (str "0x" (subs topic 26)))
-
-(defn- parse-transaction-entries [current-block-number block-info chain-tokens direction transfers]
-  {:pre [(integer? current-block-number) (map? block-info)
-         (map? chain-tokens) (every? (fn [[k v]] (and (string? k) (map? v))) chain-tokens)
-         (keyword? direction)
-         (every? map? transfers)]}
-  (into {}
-        (keep identity
-              (for [transfer transfers]
-                (when-let [token (->> transfer :address (get chain-tokens))]
-                  (when-not (:nft? token)
-                    [(:transactionHash transfer)
-                     {:block         (-> block-info :number str)
-                      :hash          (:transactionHash transfer)
-                      :symbol        (:symbol token)
-                      :from          (some-> transfer :topics second remove-padding)
-                      :to            (some-> transfer :topics last remove-padding)
-                      :value         (-> transfer :data ethereum/hex->bignumber)
-                      :type          direction
-
-                      :confirmations (str (- current-block-number (-> transfer :blockNumber ethereum/hex->int)))
-
-                      :gas-price     nil
-                      :nonce         nil
-                      :data          nil
-
-                      :gas-limit     nil
-                      :timestamp     (-> block-info :timestamp (* 1000) str)
-
-                      :gas-used      nil
-
-                      ;; NOTE(goranjovic) - metadata on the type of token: contains name, symbol, decimas, address.
-                      :token         token
-
-                      ;; NOTE(goranjovic) - if an event has been emitted, we can say there was no error
-                      :error?        false
-
-                      ;; NOTE(goranjovic) - just a flag we need when we merge this entry with the existing entry in
-                      ;; the app, e.g. transaction info with gas details, or a previous transfer entry with old
-                      ;; confirmations count.
-                      :transfer      true}]))))))
-
-(defn- add-block-info [web3 current-block-number chain-tokens direction result success-fn]
-  {:pre [web3 (integer? current-block-number) (map? chain-tokens) (keyword? direction)
-         (every? map? result)
-         (fn? success-fn)]}
-  (let [transfers-by-block (group-by :blockNumber result)]
-    (doseq [[block-number transfers] transfers-by-block]
-      (ethereum/get-block-info web3 (ethereum/hex->int block-number)
-                               (fn [block-info]
-                                 (if-not (map? block-info)
-                                   (log/error "Request for block info failed")
-                                   (success-fn (parse-transaction-entries current-block-number
-                                                                          block-info
-                                                                          chain-tokens
-                                                                          direction
-                                                                          transfers))))))))
-
-(defn- response-handler [web3 current-block-number chain-tokens direction error-fn success-fn]
-  (fn handle-response
-    ([response]
-     #_(log/debug "Token transaction logs recieved --" (pr-str response))
-     (let [{:keys [error result]} (parse-json response)]
-       (handle-response error result)))
-    ([error result]
-     (if error
-       (error-fn error)
-       (add-block-info web3 current-block-number chain-tokens direction result success-fn)))))
-
-(defn- limited-from-block [current-block-number latest-block-checked]
-  {:pre [(integer? current-block-number)]
-   ;; needs to be a positive etherium hex
-   :post [(string? %) (string/starts-with? % "0x")]}
-  (if latest-block-checked
-    (-> latest-block-checked (- confirmations-count-threshold) ethereum/int->hex)
-    (-> current-block-number (- block-query-limit) (max 0) ethereum/int->hex)))
-
-;; Here we are querying event logs for Transfer events.
-;;
-;; The parameters are as follows:
-;; - address - token smart contract address
-;; - fromBlock - we need to specify it, since default is latest
-;; - topics[0] - hash code of the Transfer event signature
-;; - topics[1] - address of token sender with leading zeroes padding up to 32 bytes
-;; - topics[2] - address of token sender with leading zeroes padding up to 32 bytes
-;;
-
-(defonce latest-block-checked (atom nil))
-
-(defn- get-token-transfer-logs
-  ;; NOTE(goranjovic): here we use direct JSON-RPC calls to get event logs because of web3 event issues with infura
-  ;; we still use web3 to get other data, such as block info
-  [web3 current-block-number from-block chain-tokens direction address cb]
-  {:pre [web3 (integer? current-block-number) (map? chain-tokens) (keyword? direction) (string? address) (fn? cb)]}
-  (let [[from to] (if (= :inbound direction)
-                    [nil (add-padding (ethereum/normalized-address address))]
-                    [(add-padding (ethereum/normalized-address address)) nil])
-        args {:jsonrpc "2.0"
-              :id      2
-              :method  constants/web3-get-logs
-              :params  [{:address (keys chain-tokens)
-                         :fromBlock from-block
-                         :topics    [constants/event-transfer-hash from to]}]}
-        payload (.stringify js/JSON (clj->js args))]
-    (status/call-private-rpc payload
-                             (response-handler web3 current-block-number chain-tokens direction ethereum/handle-error cb))))
-
-(defn- get-token-transactions
-  [web3 chain-tokens address cb]
-  {:pre [web3 (map? chain-tokens) (string? address) (fn? cb)]}
-  (ethereum/get-block-number web3
-                             (fn [current-block-number]
-                               (let [from-block (limited-from-block current-block-number @latest-block-checked)]
-                                 (reset! latest-block-checked current-block-number)
-                                 (get-token-transfer-logs web3 current-block-number from-block chain-tokens :inbound address cb)
-                                 (get-token-transfer-logs web3 current-block-number from-block chain-tokens :outbound address cb)))))
 
 ;; --------------------------------------------------------------------------
 ;; etherscan transactions
@@ -199,8 +52,7 @@
 
 (defn- format-transaction [account
                            {:keys [value timeStamp blockNumber hash from to
-                                   gas gasPrice gasUsed nonce confirmations
-                                   input isError]}]
+                                   gas gasPrice gasUsed nonce input isError]}]
   (let [inbound? (= (str "0x" account) to)
         error?   (= "1" isError)]
     {:value         value
@@ -218,7 +70,6 @@
      :gas-price     gasPrice
      :gas-used      gasUsed
      :nonce         nonce
-     :confirmations confirmations
      :data          input}))
 
 (defn- format-transactions-response [response account]
@@ -249,11 +100,7 @@
                           account-address
                           success-fn
                           error-fn
-                          chaos-mode?)
-  (get-token-transactions web3
-                          chain-tokens
-                          account-address
-                          success-fn))
+                          chaos-mode?))
 
 ;; -----------------------------------------------------------------------------
 ;; Helpers functions that help determine if a background sync should execute
@@ -302,21 +149,8 @@
            (map :tx-hash)
            set))))
 
-;; Seq[transaction] -> truthy
-(defn- have-unconfirmed-transactions?
-  "Detects if some of the transactions have less than 12 confirmations"
-  [transactions]
-  {:pre [(every? string? (map :confirmations transactions))]}
-  (->> transactions
-       (map :confirmations)
-       (map int)
-       (some #(< % confirmations-count-threshold))))
-
 (letfn [(combine-entries [transaction token-transfer]
           (merge transaction (select-keys token-transfer [:symbol :from :to :value :type :token :transfer])))
-        (update-confirmations [tx1 tx2]
-                              (assoc tx1 :confirmations (str (max (int (:confirmations tx1))
-                                                                  (int (:confirmations tx2))))))
         (tx-and-transfer? [tx1 tx2]
                           (and (not (:transfer tx1)) (:transfer tx2)))
         (both-transfer?
@@ -325,7 +159,6 @@
   (defn- dedupe-transactions [tx1 tx2]
     (cond (tx-and-transfer? tx1 tx2) (combine-entries tx1 tx2)
           (tx-and-transfer? tx2 tx1) (combine-entries tx2 tx1)
-          (both-transfer? tx1 tx2)   (update-confirmations tx1 tx2)
           :else tx2)))
 
 ;; ----------------------------------------------------------------------------
@@ -382,14 +215,11 @@
             transaction-map (:transactions wallet)
             transaction-ids (set (keys transaction-map))
             chaos-mode? (get-in account [:settings :chaos-mode?])]
-        (if-not (or @latest-block-checked
-                    (have-unconfirmed-transactions? (vals transaction-map))
-                    (not-empty (set/difference chat-transaction-ids transaction-ids)))
+        (if-not (not-empty (set/difference chat-transaction-ids transaction-ids))
           (done-fn)
           (transactions-query-helper web3 all-tokens account-address chain done-fn chaos-mode?))))))
 
 (defn- start-sync! [{:keys [:account/account network web3] :as options}]
-  (reset! latest-block-checked nil)
   (let [account-address (:address account)]
     (when @polling-executor
       (async-util/async-periodic-stop! @polling-executor))
