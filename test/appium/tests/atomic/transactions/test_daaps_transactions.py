@@ -242,7 +242,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
         # Requesting test ETH and waiting till the balance updates
         send_transaction_view.cross_icon.click()
-        status_test_dapp.faucet_asset(asset='eth')
+        self.network_api.get_donate(wallet_address[2:])
         self.network_api.verify_balance_is_updated(initial_balance=0, recipient_address=wallet_address[2:])
 
         status_test_dapp.transactions_button.click()

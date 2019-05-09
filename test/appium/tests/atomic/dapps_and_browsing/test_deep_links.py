@@ -34,7 +34,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         sign_in_view.open_weblink_and_login(deep_link)
         chat_view = sign_in_view.get_chat_view()
         for text in basic_user['username'], 'Add to contacts', 'Send transaction':
-            if not chat_view.element_by_text(text).scroll_to_element():
+            if not chat_view.element_by_text(text).scroll_to_element(10):
                 pytest.fail("User profile screen is not opened")
 
 
@@ -64,7 +64,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         sign_in_view.open_weblink_and_login(deep_link)
         chat_view = sign_in_view.get_chat_view()
         for text in basic_user['username'], 'Share my profile', 'Contacts':
-            if not chat_view.element_by_text(text).scroll_to_element():
+            if not chat_view.element_by_text(text).scroll_to_element(12):
                 pytest.fail("Own profile screen is not opened!")
 
     @marks.testrail_id(5781)
