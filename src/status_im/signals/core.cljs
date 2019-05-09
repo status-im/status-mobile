@@ -74,4 +74,5 @@
       "messages.decrypt.failed" (contact-recovery/handle-contact-recovery-fx cofx (:sender event))
       "discovery.summary"  (summary cofx event)
       "subscriptions.data" (ethereum.subscriptions/handle-signal cofx event)
+      "subscriptions.error" (ethereum.subscriptions/handle-error cofx event)
       (log/debug "Event " type " not handled"))))

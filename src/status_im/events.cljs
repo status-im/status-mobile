@@ -2054,17 +2054,6 @@
  (fn [cofx _]
    (bottom-sheet/hide-bottom-sheet cofx)))
 
-;; ethereum subscriptions events
-(handlers/register-handler-fx
- :ethereum.callback/subscription-success
- (fn [cofx [_ id handler]]
-   (ethereum.subscriptions/register-subscription cofx id handler)))
-
-(handlers/register-handler-fx
- :ethereum.signal/new-block
- (fn [cofx [_ block-number]]
-   (ethereum.subscriptions/new-block cofx block-number)))
-
 ;;custom tokens
 
 (handlers/register-handler-fx
@@ -2121,3 +2110,20 @@
              (custom-tokens/remove-custom-token token)
              (when navigate-back?
                (navigation/navigate-back)))))
+
+;; ethereum subscriptions events
+
+(handlers/register-handler-fx
+ :ethereum.callback/subscription-success
+ (fn [cofx [_ id handler]]
+   (ethereum.subscriptions/register-subscription cofx id handler)))
+
+(handlers/register-handler-fx
+ :ethereum.signal/new-block
+ (fn [cofx [_ block-number]]
+   (ethereum.subscriptions/new-block cofx block-number)))
+
+(handlers/register-handler-fx
+ :ethereum.signal/new-transactions
+ (fn [cofx [_ transactions]]
+   (ethereum.subscriptions/new-transactions cofx transactions)))
