@@ -1,4 +1,4 @@
-{ stdenv, pkgs, buildGoPackage, fetchgit,
+{ stdenv, pkgs, utils, buildGoPackage, fetchgit,
   glibc, ncurses5, zlib, makeWrapper, patchelf,
   platform-tools, composeXcodeWrapper, xcodewrapperArgs ? {}
 }:
@@ -20,10 +20,8 @@ in buildGoPackage rec {
   buildInputs = [ makeWrapper ]
     ++ lib.optional isDarwin xcodeWrapper;
 
-  # we print out the version so that we fail fast in case there's any problem running xcrun, instead of failing at the end of the build
-  preConfigure = lib.optionalString isDarwin ''
-    PATH=${lib.makeBinPath [ xcodeWrapper ]}:$PATH xcrun xcodebuild -version
-  '';
+  # Ensure XCode and the iPhone SDK are present, instead of failing at the end of the build
+  preConfigure = lib.optionalString isDarwin utils.enforceiPhoneSDKAvailable;
 
   patches = [ ./ndk-search-path.patch ./resolve-nix-android-sdk.patch ]
     ++ lib.optional isDarwin ./ignore-nullability-error-on-ios.patch;

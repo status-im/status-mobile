@@ -23,7 +23,7 @@ setup_header "Checking prerequisites..."
 _need_curl=0
 ! is_nixos && ! program_exists nix && _need_curl=1
 
-if _need_curl && ! program_exists "curl"; then
+if [ $_need_curl -eq 1 ] && ! program_exists "curl"; then
   cecho "@b@yellow[[Please install curl before running setup.]]"
   exit 1
 fi

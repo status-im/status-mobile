@@ -1,4 +1,4 @@
-{ buildGoPackage, go, xcodeWrapper, stdenv }:
+{ buildGoPackage, go, xcodeWrapper, stdenv, utils }:
 
 { owner, repo, rev, version, goPackagePath, src, host,
   nativeBuildInputs ? [],
@@ -40,10 +40,8 @@ let
         "var EnabledStr = \"true\""
     '';
 
-    # we print out the version so that we fail fast in case there's any problem running xcrun, instead of failing at the end of the build
-    preConfigure = lib.optionalString isDarwin ''
-      xcrun xcodebuild -version
-    '';
+    # Ensure XCode is present, instead of failing at the end of the build
+    preConfigure = lib.optionalString isDarwin utils.enforceXCodeAvailable;
 
     buildPhase = ''
       runHook preBuild

@@ -4,9 +4,10 @@ with stdenv;
 
 let
   platform = pkgs.callPackage ../platform.nix { inherit target-os; };
-  gomobile = pkgs.callPackage ./gomobile { inherit (androidPkgs) platform-tools; inherit composeXcodeWrapper xcodewrapperArgs; };
-  buildStatusGoDesktopLib = pkgs.callPackage ./build-desktop-status-go.nix { inherit buildGoPackage go pkgs xcodeWrapper; };
-  buildStatusGoMobileLib = pkgs.callPackage ./build-mobile-status-go.nix { inherit buildGoPackage go gomobile pkgs xcodeWrapper; };
+  utils = pkgs.callPackage ../utils.nix { inherit xcodeWrapper; };
+  gomobile = pkgs.callPackage ./gomobile { inherit (androidPkgs) platform-tools; inherit composeXcodeWrapper xcodewrapperArgs utils; };
+  buildStatusGoDesktopLib = pkgs.callPackage ./build-desktop-status-go.nix { inherit buildGoPackage go pkgs xcodeWrapper utils; };
+  buildStatusGoMobileLib = pkgs.callPackage ./build-mobile-status-go.nix { inherit buildGoPackage go gomobile pkgs xcodeWrapper utils; };
   extractStatusGoConfig = f: lib.last (lib.splitString "\n" (lib.fileContents f));
   owner = lib.fileContents ../../STATUS_GO_OWNER;
   version = extractStatusGoConfig ../../STATUS_GO_VERSION; # TODO: Simplify this path search with lib.locateDominatingFile
