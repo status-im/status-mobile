@@ -22,13 +22,13 @@ pipeline {
   }
 
   environment {
+    LANG     = "en_US.UTF-8"
+    LC_ALL   = "en_US.UTF-8"
+    LANGUAGE = "en_US.UTF-8"
     TARGET_OS = 'android'
-    LANG     = 'en_US.UTF-8'
-    LANGUAGE = 'en_US.UTF-8'
-    LC_ALL   = 'en_US.UTF-8'
+    NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     FASTLANE_DISABLE_COLORS = 1
     REALM_DISABLE_ANALYTICS = 1
-    CI_ENVIRONMENT    = 'jenkins'
     /* since we are mounting it we need to specify location */
     STATUS_RELEASE_STORE_FILE = '/home/jenkins/status-im.keystore'
     /* We use EXECUTOR_NUMBER to avoid multiple instances clashing */
@@ -54,17 +54,17 @@ pipeline {
     }
     stage('Lint') {
       steps {
-        script { cmn.utils.nix_sh('lein cljfmt check') }
+        script { cmn.nix.shell('lein cljfmt check') }
       }
     }
     stage('Tests') {
       steps {
-        script { cmn.utils.nix_sh('lein test-cljs') }
+        script { cmn.nix.shell('lein test-cljs') }
       }
     }
     stage('Build') {
       steps {
-        script { cmn.utils.nix_sh('lein prod-build-android') }
+        script { cmn.nix.shell('lein prod-build-android') }
       }
     }
     stage('Bundle') {

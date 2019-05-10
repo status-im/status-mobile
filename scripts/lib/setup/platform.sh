@@ -19,7 +19,6 @@ function exit_unless_os_supported() {
     cecho "@red[[This install script is not supported in a pure Nix shell]]"
 
     echo
-
     exit 1
   fi
 
@@ -28,9 +27,7 @@ function exit_unless_os_supported() {
 via apt. To manually install, please visit the docs for more information:]]
 
     @blue[[https://status.im/build_status]]"
-
     echo
-
     exit 1
   fi
 }

@@ -23,42 +23,43 @@ def unlock_keychain_if_needed
     end
 end
 
-def curl_upload(url, file, user, conn_timeout=5, timeout=60, retries=3)
-    begin
-        return sh(
-            "curl",
-            "--fail",
-            "--silent",
-            "--user", user,
-            "--request", "POST",
-            "--header", "Content-Type: application/octet-stream",
-            "--data-binary", "@../#{file}",         # `fastlane` is the cwd so we go one folder up
-            # we retry few times if upload doesn't succeed in sensible time
-            "--retry-connrefused",                  # consider ECONNREFUSED as error too retry
-            "--connect-timeout", conn_timeout.to_s, # max time in sec. for establishing connection 
-            "--max-time", timeout.to_s,             # max time in sec. for whole transfer to take
-            "--retry", retries.to_s,                # number of retries to attempt
-            "--retry-max-time", timeout.to_s,       # same as --max-time but for retries
-            "--retry-delay", "0",                   # an exponential backoff algorithm in sec.
-            url
-        )
-    rescue => error
-        UI.error "Error: #{error}"
-        raise
+def curl_upload(url, file, auth, conn_timeout=5, timeout=60, retries=3)
+    rval = sh(
+        "curl",
+        "--silent",
+        "--user", auth,
+        "--write-out", "\nHTTP_CODE:%{http_code}",
+        "--request", "POST",
+        "--header", "Content-Type: application/octet-stream",
+        "--data-binary", "@../#{file}",         # `fastlane` is the cwd so we go one folder up
+        # we retry few times if upload doesn't succeed in sensible time
+        "--retry-connrefused",                  # consider ECONNREFUSED as error too retry
+        "--connect-timeout", conn_timeout.to_s, # max time in sec. for establishing connection 
+        "--max-time", timeout.to_s,             # max time in sec. for whole transfer to take
+        "--retry", retries.to_s,                # number of retries to attempt
+        "--retry-max-time", timeout.to_s,       # same as --max-time but for retries
+        "--retry-delay", "0",                   # an exponential backoff algorithm in sec.
+        url
+    )
+    # We're not using --fail because it suppresses server response
+    if not rval.include? "HTTP_CODE:200"
+        raise "Error:\n#{rval}"
     end
+    return rval
 end
 
-def retry_curl_upload(url, file, user, conn_timeout=5, timeout=60, retries=3)
+def retry_curl_upload(url, file, auth, conn_timeout=5, timeout=60, retries=3)
     # since curl doesn't retry on connection and operation timeouts we roll our own
     try = 0
     begin
-        return curl_upload(url, file, user, conn_timeout, timeout, retries)
+        return curl_upload(url, file, auth, conn_timeout, timeout, retries)
     rescue => error
         try += 1
         if try <= retries
             UI.important "Warning: Retrying cURL upload! (attempt #{try}/#{retries})"
             retry
         else
+            UI.error "Error:\n#{error}"
             raise
         end
     end

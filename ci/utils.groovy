@@ -1,3 +1,5 @@
+nix = load 'ci/nix.groovy'
+
 def getVersion(type = null) {
   /* if type is undefined we get VERSION from repo root */
   def path = "${env.WORKSPACE}/VERSION"
@@ -13,42 +15,6 @@ def getToolVersion(name) {
     script: "${env.WORKSPACE}/scripts/toolversion ${name}"
   ).trim()
   return version
-}
-
-def nix_impure_sh(cmd) {
-  _nix_sh(cmd, true)
-}
-
-def nix_sh(cmd) {
-  _nix_sh(cmd, false)
-}
-
-def _nix_sh(cmd, forceImpure) {
-  def isPure = !forceImpure && env.TARGET_OS != 'windows' && env.TARGET_OS != 'ios'
-  def pureFlag = isPure ? '--pure --keep LOCALE_ARCHIVE_2_27 --keep REALM_DISABLE_ANALYTICS --keep STATUS_RELEASE_STORE_FILE --keep STATUS_RELEASE_STORE_PASSWORD --keep STATUS_RELEASE_KEY_ALIAS --keep STATUS_RELEASE_KEY_PASSWORD --keep GPG_PASS_OUTER --keep GPG_PASS_INNER --keep KEYCHAIN_PASS --keep VERBOSE_LEVEL' : ''
-
-  sh """
-    set +x
-    . ~/.nix-profile/etc/profile.d/nix.sh
-    set -x
-    nix-shell --argstr target-os \'${env.TARGET_OS}\' \\
-              ${pureFlag} --run \'${cmd}\' \\
-              \'${env.WORKSPACE}/shell.nix\'
-  """
-}
-
-def nix_fastlane_sh(cmd) {
-  def isPure = env.TARGET_OS != 'ios'
-  def pureFlag = isPure ? '--pure --keep LANG --keep LANGUAGE --keep LC_ALL --keep DIAWI_TOKEN --keep DIAWI_IPA --keep APK_PATH --keep GOOGLE_PLAY_JSON_KEY --keep SAUCE_LABS_NAME --keep SAUCE_USERNAME --keep SAUCE_ACCESS_KEY --keep FASTLANE_DISABLE_COLORS --keep FASTLANE_APPLE_ID --keep FASTLANE_PASSWORD --keep KEYCHAIN_PASSWORD --keep MATCH_PASSWORD --keep REALM_DISABLE_ANALYTICS --keep STATUS_RELEASE_STORE_FILE --keep GRADLE_USER_HOME' : ''
-
-  sh """
-    set +x
-    . ~/.nix-profile/etc/profile.d/nix.sh
-    set -x
-    nix-shell --argstr target-os \'${env.TARGET_OS}\' \\
-              ${pureFlag} --run \'fastlane ${cmd}\' \\
-              \'${env.WORKSPACE}/shell.nix\'
-  """
 }
 
 def branchName() {
@@ -136,10 +102,10 @@ def installJSDeps(platform) {
   def maxAttempts = 10
   def installed = false
   /* prepare environment for specific platform build */
-  nix_sh "scripts/prepare-for-platform.sh ${platform}"
+  nix.shell "scripts/prepare-for-platform.sh ${platform}"
   while (!installed && attempt <= maxAttempts) {
     println "#${attempt} attempt to install npm deps"
-    nix_sh 'yarn install --frozen-lockfile'
+    nix.shell 'yarn install --frozen-lockfile'
     installed = fileExists('node_modules/web3/index.js')
     attemp = attempt + 1
   }

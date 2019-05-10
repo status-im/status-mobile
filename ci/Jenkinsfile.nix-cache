@@ -2,7 +2,6 @@ pipeline {
   agent { label params.AGENT_LABEL }
 
   environment {
-    CI_ENVIRONMENT = 'jenkins'
     /* we source .bash_profile to be able to use nix-store */
     NIX_SSHOPTS = "-o StrictHostKeyChecking=no source .bash_profile;"
     /* where our /nix/store is hosted */

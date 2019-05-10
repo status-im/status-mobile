@@ -1,8 +1,11 @@
 import groovy.json.JsonBuilder
 
+/* Libraries -----------------------------------------------------------------*/
+
 gh = load 'ci/github.groovy'
 ci = load 'ci/jenkins.groovy'
 gh = load 'ci/github.groovy'
+nix = load 'ci/nix.groovy'
 utils = load 'ci/utils.groovy'
 ghcmgr = load 'ci/ghcmgr.groovy'
 
@@ -42,19 +45,9 @@ def notifyPR(success) {
   }
 }
 
-def prepNixEnvironment() {
-  if (env.TARGET_OS == 'linux' || env.TARGET_OS == 'windows' || env.TARGET_OS == 'android') {
-    def glibcLocales = sh(
-      returnStdout: true,
-      script: ". ~/.nix-profile/etc/profile.d/nix.sh && nix-build --no-out-link '<nixpkgs>' -A glibcLocales"
-    ).trim()
-    env.LOCALE_ARCHIVE_2_27 = "${glibcLocales}/lib/locale/locale-archive"
-  }
-}
-
 def prep(type = 'nightly') {
   /* build/downloads all nix deps in advance */
-  prepNixEnvironment()
+  nix.prepEnv()
   /* rebase unless this is a release build */
   utils.doGitRebase()
   /* ensure that we start from a known state */
@@ -69,7 +62,7 @@ def prep(type = 'nightly') {
 
   if (env.TARGET_OS == 'ios') {
     /* install ruby dependencies */
-    utils.nix_sh 'bundle install --gemfile=fastlane/Gemfile --quiet'
+    nix.shell 'bundle install --gemfile=fastlane/Gemfile --quiet'
   }
 
   def prepareTarget=env.TARGET_OS
@@ -77,7 +70,7 @@ def prep(type = 'nightly') {
     prepareTarget='desktop'
   }
   /* node deps, pods, and status-go download */
-  utils.nix_impure_sh "scripts/prepare-for-platform.sh ${prepareTarget}"
+  utils.nix.shell("scripts/prepare-for-platform.sh ${prepareTarget}", pure: false)
 }
 
 return this

@@ -1,3 +1,4 @@
+nix = load('ci/nix.groovy')
 utils = load('ci/utils.groovy')
 
 def plutil(name, value) {
@@ -16,7 +17,7 @@ def bundle() {
     default:            target = 'nightly';
   }
   /* configure build metadata */
-  utils.nix_sh(
+  nix.shell(
     plutil('CFBundleShortVersionString', utils.getVersion('mobile_files')) +
     plutil('CFBundleVersion', utils.genBuildNumber()) +
     plutil('CFBundleBuildUrl', currentBuild.absoluteUrl)
@@ -33,7 +34,14 @@ def bundle() {
       passwordVariable: 'FASTLANE_PASSWORD'
     ),
   ]) {
-    utils.nix_sh "bundle exec --gemfile=fastlane/Gemfile fastlane ios ${target}"
+    nix.shell(
+      "bundle exec --gemfile=fastlane/Gemfile fastlane ios ${target}",
+      keep: [
+        'FASTLANE_DISABLE_COLORS',
+        'FASTLANE_PASSWORD', 'KEYCHAIN_PASSWORD',
+        'MATCH_PASSWORD', 'FASTLANE_APPLE_ID',
+      ]
+    )
   }
   /* rename built file for uploads and archivization */
   def pkg = ''
@@ -56,7 +64,10 @@ def uploadToDiawi() {
   withCredentials([
     string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
   ]) {
-    utils.nix_sh 'bundle exec --gemfile=fastlane/Gemfile fastlane ios upload_diawi'
+    nix.shell(
+      'bundle exec --gemfile=fastlane/Gemfile fastlane ios upload_diawi',
+      keep: ['FASTLANE_DISABLE_COLORS', 'DIAWI_TOKEN']
+    )
   }
   diawiUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
   return diawiUrl
@@ -73,7 +84,10 @@ def uploadToSauceLabs() {
     string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
     string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
   ]) {
-    utils.nix_sh 'bundle exec --gemfile=fastlane/Gemfile fastlane ios saucelabs'
+    nix.shell(
+      'bundle exec --gemfile=fastlane/Gemfile fastlane ios saucelabs',
+      keep: ['FASTLANE_DISABLE_COLORS', 'SAUCE_ACCESS_KEY', 'SAUCE_USERNAME']
+    )
   }
   return env.SAUCE_LABS_NAME
 }
