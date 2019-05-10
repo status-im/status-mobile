@@ -25,7 +25,7 @@
    [rn/view {:style st/action-button}
     [rn/view {:style (st/action-button-icon-container cyrcle-color)}
      [rn/image {:source (get resources/ui icon)
-                :style  {}}]]
+                :style  {:tint-color :green}}]]
     [rn/text {:style (merge st/action-button-label label-style st/action-button-label-container)}
      label]]])
 
