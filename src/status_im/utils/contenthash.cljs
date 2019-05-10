@@ -11,13 +11,23 @@
 (defn encode [{:keys [hash namespace ipld]}]
   (when (and hash
              (= namespace :ipfs)
-             (= 46 (count hash))
              (nil? ipld))
-    (str "0xe301" (hex/encode (b58/decode hash)))))
+    (when-let [b58-hash (if (string/starts-with? hash "z")
+                          (when (= (count hash) 49)
+                            ;; this is a CID multihash
+                            ;; the z is removed, it indicates that the
+                            ;; CID is b58 encoded
+                            (subs hash 1))
+                          (when (= (count hash) 46)
+                            ;; this is a deprecated simple ipfs hash
+                            hash))]
+      (str "0xe301" (hex/encode (b58/decode b58-hash))))))
 
 (defn decode [hex]
   (when (and hex (not= hex "0x")
              (string/starts-with? hex "0xe30101")
+             ;; TODO properly decode the CID
+             ;; extract the content-type using varint ns
              (= 78 (count hex)))
     {:namespace :ipfs
      :hash  (-> hex
