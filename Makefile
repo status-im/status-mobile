@@ -1,4 +1,4 @@
-.PHONY: clean clean-nix react-native-android react-native-ios react-native-desktop test release _list
+.PHONY: add-gcroots clean clean-nix react-native-android react-native-ios react-native-desktop test release _list
 
 help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
@@ -45,7 +45,10 @@ clean: ##@prepare Remove all output folders
 
 clean-nix: SHELL := /bin/sh
 clean-nix: ##@prepare Remove complete nix setup
-	sudo rm -rf /nix ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status
+	sudo rm -rf /nix ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
+
+add-gcroots: ##@prepare Add Nix GC roots to avoid status-react expressions being garbage collected
+	scripts/add-gcroots.sh
 
 shell: ##@prepare Enter into a pre-configured shell
 ifndef IN_NIX_SHELL

@@ -16,7 +16,7 @@ function is_nixos() {
 
 function exit_unless_os_supported() {
   if [ "$IN_NIX_SHELL" == 'pure' ]; then
-    cecho "@red[[This install script is not supported in a pure Nix shell]]
+    cecho "@red[[This install script is not supported in a pure Nix shell]]"
 
     echo
 

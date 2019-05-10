@@ -162,3 +162,4 @@ conan.cmake
 
 # nix
 /.ran-setup
+/.nix-gcroots/

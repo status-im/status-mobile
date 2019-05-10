@@ -32,7 +32,7 @@ if command -v "nix" >/dev/null 2>&1; then
     exec nix-shell --show-trace --argstr target-os ${TARGET_OS}
   else
     is_pure=''
-    if [ "${TARGET_OS}" != 'ios' ] && [ "${TARGET_OS}" != 'windows' ]; then
+    if [ "${TARGET_OS}" != 'all' ] && [ "${TARGET_OS}" != 'ios' ] && [ "${TARGET_OS}" != 'windows' ]; then
       is_pure='--pure'
       pure_desc='pure '
     fi
