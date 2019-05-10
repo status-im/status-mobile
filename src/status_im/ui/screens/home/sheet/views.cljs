@@ -11,43 +11,53 @@
   (re-frame/dispatch [:bottom-sheet/hide-sheet])
   (re-frame/dispatch event))
 
+(defonce version (atom false))
+
+(defn action
+  []
+  (swap! version not)
+  (if @version
+    action-button/action-button2
+    action-button/action-button))
+
 (defn add-new-view []
-  [react/view {:flex 1 :flex-direction :row}
-   [react/view action-button.styles/actions-list
-    [action-button/action-button
-     {:label               (i18n/label :t/start-new-chat)
-      :accessibility-label :start-1-1-chat-button
-      :icon                :main-icons/private-chat
-      :icon-opts           {:color colors/blue}
-      :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-chat])}]
-    [action-button/action-button
-     {:label               (i18n/label :t/start-group-chat)
-      :accessibility-label :start-group-chat-button
-      :icon                :main-icons/group-chat
-      :icon-opts           {:color colors/blue}
-      :on-press            #(hide-sheet-and-dispatch [:contact.ui/start-group-chat-pressed])}]
-    [action-button/action-button
-     {:label               (i18n/label :t/new-public-group-chat)
-      :accessibility-label :join-public-chat-button
-      :icon                :main-icons/public-chat
-      :icon-opts           {:color colors/blue}
-      :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-public-chat])}]
-    [action-button/action-button
-     {:label               (i18n/label :t/scan-qr)
-      :accessibility-label :scan-qr-code-button
-      :icon                :main-icons/qr
-      :icon-opts           {:color colors/blue}
-      :on-press            #(hide-sheet-and-dispatch [:qr-scanner.ui/scan-qr-code-pressed
-                                                      {:toolbar-title (i18n/label :t/scan-qr)}
-                                                      :handle-qr-code])}]
-    [action-button/action-button
-     {:label               (i18n/label :t/invite-friends)
-      :accessibility-label :invite-friends-button
-      :icon                :main-icons/share
-      :icon-opts           {:color colors/blue}
-      :on-press            #(do
-                              (re-frame/dispatch [:bottom-sheet/hide-sheet])
-                              (list-selection/open-share {:message (i18n/label :t/get-status-at)}))}]]])
+  (let [act (action)]
+    [react/view {:flex             1 :flex-direction :column
+                 :background-color :green}
+     [act
+      {:label               (i18n/label :t/start-new-chat)
+       :accessibility-label :start-1-1-chat-button
+       :icon                :main-icons/private-chat
+       :icon-opts           {:color colors/blue}
+       :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-chat])}]
+     [act
+      {:label               (i18n/label :t/start-group-chat)
+       :accessibility-label :start-group-chat-button
+       :icon                :main-icons/group-chat
+       :icon-opts           {:color colors/blue}
+       :on-press            #(hide-sheet-and-dispatch [:contact.ui/start-group-chat-pressed])}]
+     [act
+      {:label               (i18n/label :t/new-public-group-chat)
+       :accessibility-label :join-public-chat-button
+       :icon                :main-icons/public-chat
+       :icon-opts           {:color colors/blue}
+       :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-public-chat])}]
+     [act
+      {:label               (i18n/label :t/scan-qr)
+       :accessibility-label :scan-qr-code-button
+       :icon                :main-icons/qr
+       :icon-opts           {:color colors/blue}
+       :on-press            #(hide-sheet-and-dispatch [:qr-scanner.ui/scan-qr-code-pressed
+                                                       {:toolbar-title (i18n/label :t/scan-qr)}
+                                                       :handle-qr-code])}]
+     [act
+      {:label               (i18n/label :t/invite-friends)
+       :accessibility-label :invite-friends-button
+       :icon                :main-icons/share
+       :icon-opts           {:color colors/blue}
+       :on-press            #(do
+                               (re-frame/dispatch [:bottom-sheet/hide-sheet])
+                               (list-selection/open-share {:message (i18n/label :t/get-status-at)}))}]]))
 
 (def add-new
   {:content        add-new-view

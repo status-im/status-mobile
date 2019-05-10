@@ -98,4 +98,3 @@
        ;; https://github.com/status-im/status-react/pull/2849 will be merged
         :threshold         200
         :events            events}))))
-
