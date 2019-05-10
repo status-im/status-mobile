@@ -22,8 +22,8 @@
 
 (defn add-new-view []
   (let [act (action)]
-    [react/view {:flex             1 :flex-direction :column
-                 :background-color :green}
+    [react/view {:flex           1
+                 :flex-direction :column}
      [act
       {:label               (i18n/label :t/start-new-chat)
        :accessibility-label :start-1-1-chat-button
