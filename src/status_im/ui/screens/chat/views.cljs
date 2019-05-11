@@ -68,20 +68,26 @@
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))
 
+(defn wrap [{:keys [idx viewed-ids]} component]
+  (if (contains? @viewed-ids idx)
+    component
+    [react/view {:height 50 :width 100}]))
+
 (defmethod message-row :datemark
-  [{{:keys [value]} :row}]
-  [message-datemark/chat-datemark-mobile value])
+  [{{:keys [value]} :row :as props}]
+  [wrap props [message-datemark/chat-datemark-mobile value]])
 
 (defmethod message-row :gap
-  [{:keys [row idx list-ref]}]
-  [gap/gap row idx list-ref])
+  [{:keys [row idx list-ref] :as props}]
+  [wrap props [gap/gap row idx list-ref]])
 
 (defmethod message-row :default
-  [{:keys [group-chat current-public-key modal? row]}]
-  [message/chat-message (assoc row
-                               :group-chat group-chat
-                               :modal? modal?
-                               :current-public-key current-public-key)])
+  [{:keys [group-chat current-public-key modal? row] :as props}]
+  [wrap props
+   [message/chat-message (assoc row
+                                :group-chat group-chat
+                                :modal? modal?
+                                :current-public-key current-public-key)]])
 
 (def animation-duration 200)
 
@@ -236,12 +242,24 @@
 
 (defonce messages-list-ref (atom nil))
 
+(defonce viewed-messages-idxs (reagent.core/atom (range 5)))
+
+(defn v [args]
+  (let [n (set (js->clj (.map
+                         (.-viewableItems args)
+                         (fn [item]
+                           (.-index item)))))]
+    (swap! viewed-messages-idxs #(clojure.set/union % n))))
+
 (defview messages-view
   [{:keys [group-chat chat-id pending-invite-inviter-name] :as chat}
    modal?]
   (letsubs [messages           [:chats/current-chat-messages-stream]
             current-public-key [:account/public-key]]
-    {:component-did-mount
+    {:component-will-mount
+     (fn []
+       (reset! viewed-messages-idxs (range 5)))
+     :component-did-mount
      (fn [args]
        (when-not (:messages-initialized? (second (.-argv (.-props args))))
          (re-frame/dispatch [:chat.ui/load-more-messages]))
@@ -261,7 +279,9 @@
                                           :current-public-key current-public-key
                                           :row                message
                                           :idx                idx
-                                          :list-ref           messages-list-ref}])
+                                          :list-ref           messages-list-ref
+                                          :viewed-ids         viewed-messages-idxs}])
+           :onViewableItemsChanged    v
            :inverted                  true
            :onEndReached              #(re-frame/dispatch
                                         [:chat.ui/load-more-messages])
