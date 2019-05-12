@@ -255,9 +255,7 @@
     [react/view {:style components.styles/flex}
      [status-bar/status-bar]
      [toolbar/toolbar {}
-      [toolbar/nav-button (actions/back
-                           ;;TODO temporary fix to update wallet balance, should be fixed properly later
-                           (utils/set-timeout #(re-frame/dispatch [:update-wallet]) 500))]
+      toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/transaction-details)]
       (when transaction [toolbar/actions (details-action hash url)])]
      [react/scroll-view {:style components.styles/main-container}
