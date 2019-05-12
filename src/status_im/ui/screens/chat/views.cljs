@@ -29,7 +29,8 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
             [status-im.utils.datetime :as datetime]
-            [status-im.ui.screens.chat.message.gap :as gap])
+            [status-im.ui.screens.chat.message.gap :as gap]
+            [reagent.core :as reagent])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn add-contact-bar [public-key]
@@ -153,7 +154,8 @@
   (letsubs [intro-status [:chats/current-chat-intro-status]
             height       [:chats/content-layout-height]
             input-height [:chats/current-chat-ui-prop :input-height]
-            {:keys [:lowest-request-from :highest-request-to]} [:chats/range]]
+            {:keys [:lowest-request-from :highest-request-to]} [:chats/range]
+            all-loaded?  [:chats/all-loaded?]]
     (let [icon-text  (if public? chat-id name)
           intro-name (if public? chat-name name)]
       ;; TODO This when check ought to be unnecessary but for now it prevents
@@ -237,12 +239,32 @@
 
 (defonce messages-list-ref (atom nil))
 
+(def ^:const initial-limit 5)
+(def ^:const second-initial-limit-step 6)
+(def second-limit (+ initial-limit second-initial-limit-step))
+(def ^:const third-initial-limit-step 11)
+(def ^:const default-limit-step 20)
+(def ^:const initial-threshold 0.5)
+(def ^:const default-threshold 2)
+
+(defonce messages-limit (reagent/atom initial-limit))
+
+(defn increment-limit [lim]
+  (+ lim
+     (case lim
+       initial-limit second-initial-limit-step
+       second-limit third-initial-limit-step
+       default-limit-step)))
+
 (defview messages-view
   [{:keys [group-chat chat-id pending-invite-inviter-name] :as chat}
    modal?]
   (letsubs [messages           [:chats/current-chat-messages-stream]
             current-public-key [:account/public-key]]
-    {:component-did-mount
+    {:component-will-mount
+     (fn []
+       (reset! messages-limit initial-limit))
+     :component-did-mount
      (fn [args]
        (when-not (:messages-initialized? (second (.-argv (.-props args))))
          (re-frame/dispatch [:chat.ui/load-more-messages]))
@@ -250,8 +272,12 @@
                            {:messages-focused? true
                             :input-focused?    false}]))}
     (let [no-messages (empty? messages)
+          m-limit     @messages-limit
+          threshold   (if (= m-limit initial-limit)
+                        initial-threshold
+                        default-threshold)
           flat-list-conf
-          {:data                      messages
+          {:data                      (take m-limit messages)
            :ref                       #(reset! messages-list-ref %)
            :footer                    [chat-intro-header-container chat no-messages]
            :key-fn                    #(or (:message-id %) (:value %))
@@ -264,9 +290,12 @@
                                           :idx                idx
                                           :list-ref           messages-list-ref}])
            :inverted                  true
-           :onEndReached              #(re-frame/dispatch
-                                        [:chat.ui/load-more-messages])
-           :enableEmptySections       true
+           :onEndReachedThreshold     threshold
+           :onEndReached              (fn []
+                                        (swap! messages-limit increment-limit)
+                                        (when (> @messages-limit (count messages))
+                                          (re-frame/dispatch
+                                           [:chat.ui/load-more-messages])))
            :keyboardShouldPersistTaps :handled}
           group-header {:header [group-chat-footer chat-id]}]
       (if pending-invite-inviter-name
