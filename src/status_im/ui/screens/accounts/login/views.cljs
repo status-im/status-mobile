@@ -59,7 +59,8 @@
   (letsubs [{:keys [photo-path name error processing save-password? can-save-password?]} [:accounts/login]
             can-navigate-back? [:can-navigate-back?]
             password-text-input (atom nil)
-            sign-in-enabled? [:sign-in-enabled?]]
+            sign-in-enabled? [:sign-in-enabled?]
+            view-id [:view-id]]
     [react/keyboard-avoiding-view {:style ast/accounts-view}
      [status-bar/status-bar]
      [login-toolbar can-navigate-back?]
@@ -72,7 +73,7 @@
          {:label             (i18n/label :t/password)
           :placeholder       (i18n/label :t/password)
           :ref               #(reset! password-text-input %)
-          :auto-focus        true
+          :auto-focus        (= view-id :login)
           :on-submit-editing (when sign-in-enabled?
                                #(login-account @password-text-input))
           :on-change-text    #(do

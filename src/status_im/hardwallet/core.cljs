@@ -814,14 +814,17 @@
   [{:keys [db] :as cofx}]
   (let [pin (vector->string (get-in db [:hardwallet :pin :current]))
         pairing (get-pairing db)
-        card-connected? (get-in db [:hardwallet :card-connected?])]
+        card-connected? (get-in db [:hardwallet :card-connected?])
+        setup? (boolean (get-in db [:hardwallet :setup-step]))]
     (if card-connected?
       {:db                    (assoc-in db [:hardwallet :pin :status] :verifying)
        :hardwallet/verify-pin {:pin     pin
                                :pairing pairing}}
       (fx/merge cofx
                 {:db (assoc-in db [:hardwallet :on-card-connected] :hardwallet/verify-pin)}
-                (navigation/navigate-to-cofx :hardwallet-connect-settings nil)))))
+                (navigation/navigate-to-cofx (if setup?
+                                               :hardwallet-connect
+                                               :hardwallet-connect-settings) nil)))))
 
 (defn- unblock-pin
   [{:keys [db] :as cofx}]
