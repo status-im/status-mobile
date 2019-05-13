@@ -335,6 +335,29 @@ RCT_EXPORT_METHOD(recoverAccount:(NSString *)passphrase
     callback(@[result]);
 }
 
+//////////////////////////////////////////////////////////////////// startOnboarding
+RCT_EXPORT_METHOD(startOnboarding:(NSInteger)n
+                  password:(NSInteger)mnemonicLength
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"StartOnboarding() method called");
+#endif
+    NSString *result = StatusgoStartOnboarding(n, mnemonicLength);
+    callback(@[result]);
+}
+
+//////////////////////////////////////////////////////////////////// importOnboardingAccount
+RCT_EXPORT_METHOD(importOnboardingAccount:(NSString *)id
+                  password:(NSString *)password
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"ImportOnboardingAccount() method called");
+#endif
+    NSString *result = StatusgoImportOnboardingAccount(id, password);
+    callback(@[result]);
+}
+
+
 //////////////////////////////////////////////////////////////////// login
 RCT_EXPORT_METHOD(login:(NSString *)address
                   password:(NSString *)password
@@ -449,6 +472,7 @@ RCT_EXPORT_METHOD(setSoftInputMode: (NSInteger) i) {
 RCT_EXPORT_METHOD(clearCookies) {
     NSHTTPCookie *cookie;
     NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+
     for (cookie in [storage cookies]) {
         [storage deleteCookie:cookie];
     }

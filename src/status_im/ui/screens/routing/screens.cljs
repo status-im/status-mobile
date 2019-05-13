@@ -71,6 +71,7 @@
    :recover                                          recover/recover
    :accounts                                         accounts/accounts
    :intro                                            intro/intro
+   :intro-wizard                                     intro/wizard
    :hardwallet-authentication-method                 hardwallet.authentication/hardwallet-authentication-method
    :hardwallet-connect                               hardwallet.connect/hardwallet-connect
    :hardwallet-connect-settings                      hardwallet.connect/hardwallet-connect

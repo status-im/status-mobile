@@ -6,18 +6,30 @@ from views.base_view import BaseView
 
 
 class AccountButton(BaseButton):
-
     def __init__(self, driver):
         super(AccountButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[contains(@text,'0x')]")
 
 
 class PasswordInput(BaseEditBox):
-
     def __init__(self, driver):
         super(PasswordInput, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Password']"
                                                    "/following-sibling::android.view.ViewGroup/android.widget.EditText")
+
+
+class CreatePasswordInput(BaseEditBox):
+    def __init__(self, driver):
+        super(CreatePasswordInput, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Create a password']"
+                                                   "/following-sibling::android.widget.EditText")
+
+
+class ConfirmYourPasswordInput(BaseEditBox):
+    def __init__(self, driver):
+        super(ConfirmYourPasswordInput, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Confirm your password']"
+                                                   "/following-sibling::android.widget.EditText")
 
 
 class SignInButton(BaseButton):
@@ -48,10 +60,28 @@ class CreateAccountButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='Create account' or @text='Create new account']")
 
 
+class GenerateKeyButton(BaseButton):
+    def __init__(self, driver):
+        super(GenerateKeyButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Generate a key']")
+
+
 class IHaveAccountButton(RecoverAccessButton):
     def __init__(self, driver):
         super(IHaveAccountButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='I already have an account']")
+
+
+class AccessKeyButton(RecoverAccessButton):
+    def __init__(self, driver):
+        super(AccessKeyButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Access key']")
+
+
+class MaybeLaterButton(BaseButton):
+    def __init__(self, driver):
+        super(MaybeLaterButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Maybe later']")
 
 
 class AddExistingAccountButton(RecoverAccessButton):
@@ -106,25 +136,35 @@ class SignInView(BaseView):
         # new design
         self.create_account_button = CreateAccountButton(self.driver)
         self.i_have_account_button = IHaveAccountButton(self.driver)
+        self.access_key_button = AccessKeyButton(self.driver)
+        self.generate_key_button = GenerateKeyButton(self.driver)
         self.add_existing_account_button = AddExistingAccountButton(self.driver)
         self.confirm_password_input = ConfirmPasswordInput(self.driver)
+        self.create_password_input = CreatePasswordInput(self.driver)
+        self.confirm_your_password_input = ConfirmYourPasswordInput(self.driver)
+        self.maybe_later_button = MaybeLaterButton(self.driver)
         self.name_input = NameInput(self.driver)
         self.other_accounts_button = OtherAccountsButton(self.driver)
         self.privacy_policy_link = PrivacyPolicyLink(self.driver)
 
-    def create_user(self, username: str = '', password=common_password):
-        self.create_account_button.click()
-        self.password_input.set_value(password)
-        self.next_button.click()
-        self.confirm_password_input.set_value(password)
-        self.next_button.click()
-
-        self.element_by_text_part('Display name').wait_for_element(60)
-        username = username if username else 'user_%s' % get_current_time()
-        self.name_input.set_value(username)
-
-        self.next_button.click()
+    def create_user(self, password=common_password):
         self.get_started_button.click()
+        self.generate_key_button.click()
+        self.next_button.click()
+        self.next_button.click()
+        self.create_password_input.set_value(password)
+        self.next_button.click()
+        self.confirm_your_password_input.set_value(password)
+        self.next_button.click()
+        self.maybe_later_button.click()
+        self.maybe_later_button.click()
+
+        # self.element_by_text_part('Display name').wait_for_element(60)
+        # username = username if username else 'user_%s' % get_current_time()
+        # self.name_input.set_value(username)
+
+        # self.next_button.click()
+        # self.get_started_button.click()
         return self.get_home_view()
 
     def recover_access(self, passphrase: str, password: str = common_password):
@@ -132,7 +172,7 @@ class SignInView(BaseView):
             self.other_accounts_button.click()
             recover_access_view = self.add_existing_account_button.click()
         else:
-            recover_access_view = self.i_have_account_button.click()
+            recover_access_view = self.access_key_button.click()
         recover_access_view.passphrase_input.click()
         recover_access_view.passphrase_input.set_value(passphrase)
         recover_access_view.password_input.click()

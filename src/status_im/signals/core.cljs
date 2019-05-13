@@ -37,14 +37,17 @@
                      [address password (:realm-error db)]}))
                 :create-account
                 (fn [_]
-                  {:accounts.create/create-account (:password create)})
+                  {:accounts.create/create-account (select-keys create [:id :password])})
                 :recover-account
                 (fn [{:keys [db]}]
                   (let [{:keys [password passphrase]} (:accounts/recover db)]
                     {:accounts.recover/recover-account
                      [(security/mask-data passphrase) password]}))
                 :create-keycard-account
-                (hardwallet/create-keycard-account)))))
+                (hardwallet/create-keycard-account)
+                :start-onboarding
+                (fn []
+                  {:intro-wizard/start-onboarding {:n 5 :mnemonic-length 12}})))))
 
 (fx/defn status-node-stopped
   [{db :db}]

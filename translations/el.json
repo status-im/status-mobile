@@ -7,7 +7,7 @@
     "amount": "Ποσό",
     "open": "Άνοιγμα",
     "close-app-title": "Προειδοποίηση!",
-    "wallet-advanced": "Προχωρημένη",
+    "advanced": "Προχωρημένη",
     "members-active": {
         "one": "1 μέλος",
         "other": "{{count}} μέλη",

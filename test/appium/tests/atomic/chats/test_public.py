@@ -15,8 +15,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
     def test_public_chat_messaging(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        username_1, username_2 = 'user_1', 'user_2'
-        home_1, home_2 = device_1.create_user(username=username_1), device_2.create_user(username=username_2)
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
         profile_1 = home_1.profile_button.click()
         default_username_1 = profile_1.default_username_text.text
         profile_1.home_button.click()

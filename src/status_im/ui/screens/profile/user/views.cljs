@@ -253,7 +253,7 @@
        [react/view {:style styles/advanced-button-container-background}
         [react/view {:style styles/advanced-button-row}
          [react/text {:style styles/advanced-button-label}
-          (i18n/label :t/wallet-advanced)]
+          (i18n/label :t/advanced)]
          [icons/icon (if advanced? :main-icons/dropdown-up :main-icons/dropdown) {:color colors/blue}]]]]]
      (when advanced?
        [advanced-settings params on-show supported-biometric-auth])]))

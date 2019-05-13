@@ -70,15 +70,17 @@
       (assoc style :font-family default-font-family)
       (-> style
           (assoc :font-family
-                 (str default-font-family "-"
-                      (case font-weight
-                        "400" (when-not (= font-style :italic)
-                                "Regular")
-                        "500" "Medium"
-                        "600" "SemiBold"
-                        "700" "Bold")
-                      (when (= font-style :italic)
-                        "Italic")))
+                 (if (= (:font-family style) "monospace")
+                   (if platform/ios? "Menlo-Regular" "monospace")
+                   (str default-font-family "-"
+                        (case font-weight
+                          "400" (when-not (= font-style :italic)
+                                  "Regular")
+                          "500" "Medium"
+                          "600" "SemiBold"
+                          "700" "Bold")
+                        (when (= font-style :italic)
+                          "Italic"))))
           (dissoc :font-weight :font-style)))))
 
 (defn get-nested-style

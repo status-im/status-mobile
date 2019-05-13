@@ -3,6 +3,7 @@
   (:require [re-frame.core :refer [dispatch]]
             [status-im.utils.platform :refer [android?]]
             [status-im.utils.universal-links.core :as utils.universal-links]
+            [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.utils.navigation :as navigation]
@@ -45,6 +46,9 @@
 
                  (= view :public-chat-actions)
                  (merge home.sheet/public-chat-actions)
+
+                 (= view :learn-more)
+                 (merge about-app/learn-more)
 
                  (= view :private-chat-actions)
                  (merge home.sheet/private-chat-actions)

@@ -660,6 +660,44 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
+    @ReactMethod
+    public void startOnboarding(final Integer n, final Integer mnemonicLength, final Callback callback) {
+        Log.d(TAG, "startOnboarding");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.startOnboarding(n, mnemonicLength);
+
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void importOnboardingAccount(final String id, final String password, final Callback callback) {
+        Log.d(TAG, "importOnboardingAccount");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.importOnboardingAccount(id, password);
+
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
     private String createIdentifier() {
         return UUID.randomUUID().toString();
     }

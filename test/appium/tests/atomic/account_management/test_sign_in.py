@@ -13,12 +13,13 @@ class TestSignIn(SingleDeviceTestCase):
     @marks.critical
     def test_login_with_new_account(self):
         sign_in = SignInView(self.driver)
-        username = 'test_user'
-        sign_in.create_user(username=username)
+        sign_in.create_user()
+        profile = sign_in.profile_button.click()
+        default_username = profile.default_username_text.text
         self.driver.close_app()
         self.driver.launch_app()
         sign_in.accept_agreements()
-        if not sign_in.element_by_text(username).is_element_displayed():
+        if not sign_in.element_by_text(default_username).is_element_displayed():
             self.errors.append('Username is not shown while login')
         sign_in.sign_in()
         if not sign_in.home_button.is_element_displayed():

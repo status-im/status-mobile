@@ -41,7 +41,18 @@ class TestCreateAccount(SingleDeviceTestCase):
         if sign_in.ok_button.is_element_displayed():
             sign_in.ok_button.click()
         sign_in.other_accounts_button.click()
-        sign_in.create_user()
+        sign_in.create_account_button.click()
+        sign_in.password_input.set_value(common_password)
+        sign_in.next_button.click()
+        sign_in.confirm_password_input.set_value(common_password)
+        sign_in.next_button.click()
+
+        sign_in.element_by_text_part('Display name').wait_for_element(60)
+        username = 'user_%s' % get_current_time()
+        sign_in.name_input.set_value(username)
+
+        sign_in.next_button.click()
+        sign_in.get_started_button.click()
         if sign_in.get_public_key() == public_key:
             pytest.fail('New account was not created')
 

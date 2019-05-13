@@ -178,6 +178,9 @@
 (reg-root-key-sub :signing/sign :signing/sign)
 (reg-root-key-sub :signing/edit-fee :signing/edit-fee)
 
+;;intro-wizard
+(reg-root-key-sub :intro-wizard :intro-wizard)
+
 ;;GENERAL ==============================================================================================================
 
 (re-frame/reg-sub

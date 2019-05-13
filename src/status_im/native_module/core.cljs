@@ -22,6 +22,12 @@
 (defn recover-account [passphrase password callback]
   (native-module/recover-account passphrase password callback))
 
+(defn start-onboarding [n mnemonic-length callback]
+  (native-module/start-onboarding n mnemonic-length callback))
+
+(defn import-onboarding-account [id password callback]
+  (native-module/import-onboarding-account id password callback))
+
 (defn login [address password callback]
   (native-module/login address password callback))
 

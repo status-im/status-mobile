@@ -1,11 +1,14 @@
 (ns status-im.ui.screens.about-app.views
-  (:require-macros [status-im.utils.views :as views])
+  (:require-macros [status-im.utils.views :as views]
+                   [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.about-app.styles :as styles]
             [status-im.i18n :as i18n]
             [status-im.transport.utils :as transport.utils]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [re-frame.core :as re-frame]))
 
@@ -19,6 +22,19 @@
      :peers peers})
    nil
    4))
+
+(defview learn-more-sheet []
+  (letsubs [{:keys [title content]} [:bottom-sheet/options]]
+    [react/view {:style {:padding 16}}
+     [react/view {:style {:align-items :center :flex-direction :row :margin-bottom 16}}
+      [vector-icons/icon :main-icons/info {:color colors/blue
+                                           :container-style {:margin-right 13}}]
+      [react/text {:style styles/learn-more-title} title]]
+     [react/text {:style styles/learn-more-text} content]]))
+
+(def learn-more
+  {:content learn-more-sheet
+   :content-height 180})
 
 (defn peer-view [{:keys [enode]}]
   (let [[enode-id ip-address port] (transport.utils/extract-url-components enode)]

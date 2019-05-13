@@ -166,6 +166,7 @@
          :keys                 [accounts/accounts accounts/create networks/networks network
                                 network-status peers-count peers-summary view-id navigation-stack
                                 mailserver/mailservers
+                                intro-wizard
                                 desktop/desktop hardwallet custom-fleets supported-biometric-auth
                                 device-UUID semaphores accounts/login]
          :node/keys            [status on-ready]
@@ -177,6 +178,7 @@
                         :view-id view-id
                         :navigation-stack navigation-stack
                         :node/status status
+                        :intro-wizard intro-wizard
                         :node/on-ready on-ready
                         :accounts/create create
                         :desktop/desktop (merge desktop (:desktop/desktop app-db))
@@ -201,20 +203,19 @@
            (= view-id :create-account)
            (assoc-in [:accounts/create :step] :enter-name))}))
 
-(defn login-only-events [cofx address stored-pns]
+(defn login-only-events [{:keys [db] :as cofx} address stored-pns]
   (fx/merge cofx
-            (cond->
-             {:notifications/request-notifications-permissions nil}
-
-              platform/ios?
-              ;; on ios navigation state might be not initialized yet when
-              ;; navigate-to call happens.
-              ;; That's why it should be delayed a bit.
-              ;; TODO(rasom): revisit this later and find better solution
-              (assoc :dispatch-later
-                     [{:ms       1
-                       :dispatch [:navigate-to :home]}]))
-            (when-not platform/ios?
+            (when-not (:intro-wizard db)
+              (cond-> {:notifications/request-notifications-permissions nil}
+                platform/ios?
+                ;; on ios navigation state might be not initialized yet when
+                ;; navigate-to call happens.
+                ;; That's why it should be delayed a bit.
+                ;; TODO(rasom): revisit this later and find better solution
+                (assoc :dispatch-later
+                       [{:ms       1
+                         :dispatch [:navigate-to :home]}])))
+            (when-not (or (:intro-wizard db) platform/ios?)
               (navigation/navigate-to-cofx :home nil))
             (notifications/process-stored-event address stored-pns)
             (when platform/desktop?

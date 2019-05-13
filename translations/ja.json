@@ -7,7 +7,7 @@
     "amount": "金額",
     "open": "開く",
     "close-app-title": "警告!",
-    "wallet-advanced": "高度な",
+    "advanced": "高度な",
     "members-active": {
         "one": "1人がアクティブ",
         "other": "{{count}}人がアクティブ",

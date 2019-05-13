@@ -1,5 +1,6 @@
 (ns status-im.test.runner
   (:require [doo.runner :refer-macros [doo-tests]]
+            [status-im.test.accounts.create.core]
             [status-im.test.accounts.recover.core]
             [status-im.test.browser.core]
             [status-im.test.browser.permissions]
@@ -81,6 +82,7 @@
 (set! goog.DEBUG false)
 
 (doo-tests
+ 'status-im.test.accounts.create.core
  'status-im.test.accounts.recover.core
  'status-im.test.browser.core
  'status-im.test.browser.permissions

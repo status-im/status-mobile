@@ -8,6 +8,7 @@
     :recover
     :accounts
     :intro
+    :intro-wizard
     :hardwallet-authentication-method
     :hardwallet-connect
     :enter-pin-login
@@ -52,6 +53,7 @@
   (-> (login-stack :intro)
       (update :screens conj
               :intro
+              :intro-wizard
               :keycard-onboarding-intro
               :keycard-onboarding-start
               :keycard-onboarding-puk-code

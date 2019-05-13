@@ -19,6 +19,9 @@
            (when on-dismiss
              (clj->js {:cancelable false})))))
 
+(defn vibrate []
+  #_(.vibrate (.-Vibration rn-dependencies/react-native)))
+
 (re-frame/reg-fx
  :utils/show-popup
  (fn [{:keys [title content on-dismiss]}]

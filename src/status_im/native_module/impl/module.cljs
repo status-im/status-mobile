@@ -61,6 +61,14 @@
   (when (and @node-started (status))
     (.recoverAccount (status) passphrase password on-result)))
 
+(defn start-onboarding [n mnemonic-length on-result]
+  (when (and @node-started (status))
+    (.startOnboarding (status) n mnemonic-length on-result)))
+
+(defn import-onboarding-account [id password on-result]
+  (when (and @node-started (status))
+    (.importOnboardingAccount (status) id password on-result)))
+
 (defn login [address password on-result]
   (when (and @node-started (status))
     (.login (status) address password on-result)))
