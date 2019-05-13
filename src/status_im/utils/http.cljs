@@ -32,7 +32,7 @@
                                        :body    body}))))))
        (.catch (or on-error
                    (fn [error]
-                     (utils/show-popup "Error" (str error))))))))
+                     (utils/show-popup "Error" url (str error))))))))
 
 (defn post
   "Performs an HTTP POST request"
@@ -72,7 +72,7 @@
        (.catch (fn [error]
                  (if on-error
                    (on-error {:response-body error})
-                   (utils/show-popup "Error" (str error))))))))
+                   (utils/show-popup "Error" url (str error))))))))
 
 (defn raw-get
   "Performs an HTTP GET request and returns raw results :status :headers :body."
@@ -94,7 +94,7 @@
                                        :body    body}))))))
        (.catch (or on-error
                    (fn [error]
-                     (utils/show-popup "Error" (str error))))))))
+                     (utils/show-popup "Error" url (str error))))))))
 
 (defn get
   "Performs an HTTP GET request"
@@ -129,7 +129,7 @@
                   :else false)))
        (.catch (or on-error
                    (fn [error]
-                     (utils/show-popup "Error" (str error))))))))
+                     (utils/show-popup "Error" url (str error))))))))
 
 (defn normalize-url [url]
   (str (when (and (string? url) (not (re-find #"^[a-zA-Z-_]+:/" url))) "http://") url))
