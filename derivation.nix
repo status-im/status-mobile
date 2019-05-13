@@ -23,6 +23,9 @@ with pkgs;
       python27 # for e.g. gyp
       yarn'
     ] ++ (builtins.attrValues nodeInputs);
+    selectedSources =
+      lib.optional platform.targetDesktop statusDesktop ++
+      lib.optional platform.targetMobile statusMobile;
 
   in _stdenv.mkDerivation rec {
     name = "status-react-build-env";
@@ -36,9 +39,6 @@ with pkgs;
       ++ lib.optional isDarwin cocoapods
       ++ lib.optional (isDarwin && !platform.targetIOS) clang
       ++ lib.optional (!isDarwin) gcc7
-      ++ lib.optionals platform.targetDesktop statusDesktop.buildInputs
-      ++ lib.optionals platform.targetMobile statusMobile.buildInputs;
-    shellHook =
-      lib.optionalString platform.targetDesktop statusDesktop.shellHook +
-      lib.optionalString platform.targetMobile statusMobile.shellHook;
+      ++ lib.catAttrs "buildInputs" selectedSources;
+    shellHook = lib.concatStrings (lib.catAttrs "shellHook" selectedSources);
   }

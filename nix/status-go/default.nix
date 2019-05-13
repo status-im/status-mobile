@@ -71,14 +71,14 @@ let
     });
   };
 
-  packages = if target-os == "android" then [ status-go-packages.android ] else
-             if target-os == "ios" then [ status-go-packages.ios ] else
-             if target-os == "all" then currentHostConfig.allTargets else
-             if platform.targetDesktop then [ status-go-packages.desktop ] else
-             throw "Unexpected target platform ${target-os}";
+  buildInputs = if target-os == "android" then [ status-go-packages.android ] else
+                if target-os == "ios" then [ status-go-packages.ios ] else
+                if target-os == "all" then currentHostConfig.allTargets else
+                if platform.targetDesktop then [ status-go-packages.desktop ] else
+                throw "Unexpected target platform ${target-os}";
 
 in {
-  inherit packages;
+  inherit buildInputs;
 
   shellHook =
     lib.optionalString platform.targetIOS ''

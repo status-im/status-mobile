@@ -16,9 +16,14 @@ in {
     linuxdeployqt
     patchelf
     baseImage
-  ] ++ status-go.packages;
+    qt5.full
+  ] ++ status-go.buildInputs;
 
   shellHook =
     baseImage.shellHook +
-    status-go.shellHook;
+    status-go.shellHook + ''
+      export QT_PATH="${qt5.full}"
+      export QT_BASEBIN_PATH="${qt5.qtbase.bin}"
+      export PATH="${qt5.full}/bin:$PATH"
+    '';
 }

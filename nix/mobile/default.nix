@@ -1,4 +1,4 @@
-{ config, stdenv, pkgs, target-os ? "all", status-go }:
+{ config, stdenv, pkgs, target-os, status-go }:
 
 with pkgs;
 with stdenv;
@@ -10,18 +10,19 @@ let
     version = "10.1";
   };
   xcodeWrapper = xcodeenv.composeXcodeWrapper xcodewrapperArgs;
-  android = callPackage ./android.nix { inherit config; };
+  androidPlatform = callPackage ./android.nix { inherit config; };
+  selectedSources =
+    [ status-go ] ++
+    lib.optional platform.targetAndroid androidPlatform;
 
 in
   {
-    inherit (android) androidComposition;
+    inherit (androidPlatform) androidComposition;
     inherit xcodewrapperArgs;
 
     buildInputs =
-      status-go.packages ++
-      lib.optionals platform.targetAndroid android.buildInputs ++
+      status-go.buildInputs ++
+      lib.catAttrs "buildInputs" selectedSources ++
       lib.optional (platform.targetIOS && isDarwin) xcodeWrapper;
-    shellHook =
-      status-go.shellHook +
-      lib.optionalString platform.targetAndroid android.shellHook;
+    shellHook = lib.concatStrings (lib.catAttrs "shellHook" selectedSources);
   }

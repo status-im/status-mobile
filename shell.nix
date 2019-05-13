@@ -33,20 +33,19 @@ in mkShell' {
   ] ++
   (if useFastlanePkg then [ fastlane' ] else lib.optionals platform.targetMobile [ bundler ruby ]); # bundler/ruby used for fastlane on macOS
   inputsFrom = [ projectDeps ];
-  TARGET_OS=target-os;
-  shellHook =
-    ''
-      set -e
+  TARGET_OS = target-os;
+  shellHook = ''
+    set -e
 
-      STATUS_REACT_HOME=$(git rev-parse --show-toplevel)
+    STATUS_REACT_HOME=$(git rev-parse --show-toplevel)
 
-      ${projectDeps.shellHook}
-      ${lib.optionalString useFastlanePkg fastlane'.shellHook}
+    ${projectDeps.shellHook}
+    ${lib.optionalString useFastlanePkg fastlane'.shellHook}
 
-      if [ "$IN_NIX_SHELL" != 'pure' ] && [ ! -f $STATUS_REACT_HOME/.ran-setup ]; then
-        $STATUS_REACT_HOME/scripts/setup
-        touch $STATUS_REACT_HOME/.ran-setup
-      fi
-      set +e
-    '';
+    if [ "$IN_NIX_SHELL" != 'pure' ] && [ ! -f $STATUS_REACT_HOME/.ran-setup ]; then
+      $STATUS_REACT_HOME/scripts/setup
+      touch $STATUS_REACT_HOME/.ran-setup
+    fi
+    set +e
+  '';
 }
