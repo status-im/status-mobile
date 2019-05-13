@@ -30,10 +30,10 @@
              ;; extract the content-type using varint ns
              (= 78 (count hex)))
     {:namespace :ipfs
-     :hash  (-> hex
-                (subs 10)
-                hex/decode
-                b58/encode)}))
+     :hash  (str "z" (-> hex
+                         (subs 6)
+                         hex/decode
+                         b58/encode))}))
 
 (fx/defn cat
   [cofx {:keys [contenthash on-success on-failure]}]
