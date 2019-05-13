@@ -21,6 +21,7 @@
             [status-im.contact.block :as contact.block]
             [status-im.contact.core :as contact]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
+            [status-im.ethereum.transactions.core :as ethereum.transactions]
             [status-im.extensions.core :as extensions]
             [status-im.extensions.registry :as extensions.registry]
             [status-im.fleet.core :as fleet]
@@ -2055,10 +2056,21 @@
 
 (handlers/register-handler-fx
  :ethereum.signal/new-block
- (fn [cofx [_ block-number]]
-   (ethereum.subscriptions/new-block cofx block-number)))
+ (fn [cofx [_ block]]
+   (ethereum.subscriptions/new-block cofx block)))
+
+;; ethereum transactions events
+(handlers/register-handler-fx
+ :ethereum.transactions.callback/get-etherscan-transactions-success
+ (fn [cofx [_ transactions]]
+   (ethereum.transactions/handle-history cofx transactions)))
 
 (handlers/register-handler-fx
- :ethereum.signal/new-transactions
- (fn [cofx [_ transactions]]
-   (ethereum.subscriptions/new-transactions cofx transactions)))
+ :ethereum.transactions.callback/get-etherscan-transactions-error
+ (fn [cofx [event error]]
+   (log/error event error)))
+
+(handlers/register-handler-fx
+ :ethereum.transactions/new
+ (fn [cofx [_ transaction]]
+   (ethereum.transactions/new cofx transaction)))

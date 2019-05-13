@@ -1,21 +1,19 @@
 (ns status-im.ui.screens.wallet.transactions.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.screens.wallet.transactions.styles :as styles]
-            [status-im.utils.money :as money]
-            [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.ethereum.core :as ethereum]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.utils.money :as money])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn history-action [filter?]
   (cond->
@@ -111,7 +109,6 @@
                          :render-fn       #(render-transaction % network all-tokens hide-details?)
                          :empty-component [react/i18n-text {:style styles/empty-text
                                                             :key   :transactions-history-empty}]
-                         :on-refresh      #(re-frame/dispatch [:update-transactions])
                          :refreshing      false}]]))
 
 ;; Filter history
@@ -263,4 +260,3 @@
       [details-confirmations confirmations confirmations-progress type]
       [react/view {:style styles/details-separator}]
       [details-list transaction]]]))
-

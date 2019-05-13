@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.wallet.navigation
   (:require [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.constants :as constants]
@@ -24,11 +25,6 @@
                        (re-frame/dispatch [:update-wallet]))
                      500)
   (assoc-in db [:wallet :current-tab] 0))
-
-(defmethod navigation/preload-data! :transactions-history
-  [db _]
-  (re-frame/dispatch [:update-transactions])
-  db)
 
 (def transaction-send-default
   (let [symbol :ETH]

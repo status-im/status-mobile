@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.wallet.events
   (:require [re-frame.core :as re-frame]
-            [status-im.ethereum.transactions.core :as transactions]
             [status-im.i18n :as i18n]
             [status-im.models.wallet :as models]
             [status-im.ui.screens.navigation :as navigation]
@@ -142,13 +141,6 @@
                {:dispatch on-close})
              (navigation/navigate-back)
              (models/update-wallet))))
-
-(handlers/register-handler-fx
- :update-transactions
- (fn [{:keys [db]} _]
-   {::transactions/sync-transactions-now
-    (select-keys db [:network-status :account/account :wallet/all-tokens
-                     :app-state :network :web3])}))
 
 (handlers/register-handler-fx
  :update-balance-success
