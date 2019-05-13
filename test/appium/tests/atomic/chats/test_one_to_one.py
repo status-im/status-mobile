@@ -667,26 +667,32 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         wallet_view.set_up_wallet()
         wallet_address = wallet_view.get_wallet_address()
         home_view = wallet_view.get_back_to_home_view()
+
+        # get test ETH, switch to home and wallet to get updated balance
         self.network_api.get_donate(wallet_address[2:])
+        self.network_api.verify_balance_is_updated(initial_balance=0, recipient_address=wallet_address[2:])
         home_view.wallet_button.click()
-        wallet_view.wait_balance_changed_on_wallet_screen()
         wallet_view.get_back_to_home_view()
 
+        # get STT, switch to home and wallet to get updated balance
         status_test_dapp = home_view.open_status_test_dapp()
+        status_test_dapp.assets_button.click()
         transaction_view = status_test_dapp.request_stt_button.click()
-        wallet_view.done_button.click()
-        wallet_view.yes_button.click()
         transaction_view.sign_transaction()
+        home_view = status_test_dapp.get_back_to_home_view()
+        wallet_view = home_view.wallet_button.click()
+        home_view = wallet_view.get_back_to_home_view()
 
-        transaction_view.get_back_to_home()
+        # join to public chat, buy and install stickers
         home_view.join_public_chat(home_view.get_public_chat_name())
-
         chat = sign_in_view.get_chat_view()
         chat.show_stickers_button.click()
         chat.get_stickers.click()
         chat.element_by_accessibility_id('sticker-pack-price').find_elements()[0].click()
+        transaction_view.sign_transaction()
         chat.element_by_text('Install').wait_for_element(120).click()
 
+        # check that can use installed pack
         transaction_view.back_button.click()
         time.sleep(2)
         chat.swipe_left()
