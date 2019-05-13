@@ -1,153 +1,8 @@
 (ns status-im.test.wallet.transactions
   (:require [cljs.test :refer-macros [deftest is]]
             [goog.Uri :as goog-uri]
-            [status-im.ethereum.transactions.core :as transactions]
+            [status-im.ethereum.transactions.etherscan :as transactions]
             [status-im.utils.http :as http]))
-
-(deftest chat-map->transaction-ids
-  (is (= #{} (transactions/chat-map->transaction-ids "testnet_rpc" {})))
-  (is (= #{"a" "b" "c" "d"}
-         (transactions/chat-map->transaction-ids
-          "testnet_rpc"
-          {:a {:messages {1 {:content-type "command"
-                             :content {:params {:tx-hash "a"
-                                                :network "testnet"}}}}}
-           :b {:messages {1 {:content-type "command"
-                             :content {:params {:tx-hash "b"
-                                                :network "testnet"}}}}}
-           :c {:messages {1 {:content-type "command"
-                             :content {:params {:tx-hash "c"
-                                                :network "testnet"}}}
-                          2 {:content-type "command"
-                             :content {:params {:tx-hash "d"
-                                                :network "testnet"}}}}}})))
-
-  (is (= #{"a" "b" "c" "d" "e"}
-         (transactions/chat-map->transaction-ids
-          "testnet"
-          {:aa {:messages {1 {:content-type "command"
-                              :content {:params {:tx-hash "a"
-                                                 :network "testnet"}}}}}
-           :bb {:messages {1 {:content-type "command"
-                              :content {:params {:tx-hash "b"
-                                                 :network "testnet"}}}}}
-           :cc {:messages {1 {:content-type "command"
-                              :content {:params {:tx-hash "c"
-                                                 :network "testnet"}}}
-                           2 {:content-type "command"
-                              :content {:params {:tx-hash "d"
-                                                 :network "testnet"}}}
-                           3 {:content-type "command"
-                              :content {:params {:tx-hash "e"
-                                                 :network "testnet"}}}}}})))
-  (is (= #{"b"}
-         (transactions/chat-map->transaction-ids
-          "testnet_rpc"
-          {:aa {:public? true
-                :messages {1 {:content-type "command"
-                              :content {:params {:tx-hash "a"
-                                                 :network "testnet"}}}}}
-           :bb {:messages {1 {:content-type "command"
-                              :content {:params {:tx-hash "b"
-                                                 :network "testnet"}}}}}
-           :cc {:messages {1 {:content {:params {:tx-hash "c"
-                                                 :network "testnet"}}}
-                           2 {:content-type "command"}}}}))))
-
-;; The following tests are fantastic for developing the async-periodic-exec
-;; but dismal for CI because of their probablistic nature
-#_(deftest async-periodic-exec
-    (testing "work-fn is executed and can be stopeed"
-      (let [executor (atom nil)
-            state (atom 0)]
-        (reset! executor
-                (transactions/async-periodic-exec
-                 (fn [done-fn]
-                   (swap! state inc)
-                   (done-fn))
-                 100
-                 500))
-        (async test-done
-               (js/setTimeout
-                (fn []
-                  (is (> 6 @state 2))
-                  (transactions/async-periodic-stop! @executor)
-                  (let [st @state]
-                    (js/setTimeout
-                     #(do
-                        (is (= st @state))
-                        (is (closed? @executor))
-                        (test-done))
-                     500)))
-                500)))))
-
-#_(deftest async-periodic-exec-error-in-job
-    (testing "error thrown in job is caught and loop continues"
-      (let [executor (atom nil)
-            state (atom 0)]
-        (reset! executor
-                (transactions/async-periodic-exec
-                 (fn [done-fn]
-                   (swap! state inc)
-                   (throw (ex-info "Throwing this on purpose in error-in-job test" {})))
-                 10
-                 100))
-        (async test-done
-               (js/setTimeout
-                (fn []
-                  (is (> @state 1))
-                  (transactions/async-periodic-stop! @executor)
-                  (let [st @state]
-                    (js/setTimeout
-                     #(do
-                        (is (= st @state))
-                        (is (closed? @executor))
-                        (test-done))
-                     500)))
-                1000)))))
-
-#_(deftest async-periodic-exec-job-takes-longer
-    (testing "job takes longer than expected, executor timeout but task side-effects are still applied"
-      (let [executor (atom nil)
-            state (atom 0)]
-        (reset! executor
-                (transactions/async-periodic-exec
-                 (fn [done-fn] (js/setTimeout #(swap! state inc) 100))
-                 10
-                 1))
-        (async test-done
-               (js/setTimeout
-                (fn []
-                  (transactions/async-periodic-stop! @executor)
-                  (js/setTimeout
-                   #(do (is (< 3 @state))
-                        (test-done))
-                   500))
-                500)))))
-
-#_(deftest async-periodic-exec-stop-early
-    (testing "stopping early prevents any executions"
-      (let [executor (atom nil)
-            state (atom 0)]
-        (reset! executor
-                (transactions/async-periodic-exec
-                 (fn [done-fn]
-                   (swap! state inc)
-                   (done-fn))
-                 100
-                 100))
-        (async test-done
-               (js/setTimeout
-                (fn []
-                  (is (zero? @state))
-                  (transactions/async-periodic-stop! @executor)
-                  (let [st @state]
-                    (js/setTimeout
-                     (fn []
-                       (is (zero? @state))
-                       (test-done))
-                     500)))
-                50)))))
 
 (defn- uri-query-data [uri]
   (let [uri' (goog-uri/parse uri)
@@ -183,7 +38,7 @@
            :sort "desc",
            :apikey "DMSI4UAAKUBVGCDMVP3H2STAMSAUV7BYFI",
            :q "json"}}
-         (uri-query-data (transactions/get-transaction-url :mainnet "asdfasdf"))))
+         (uri-query-data (transactions/get-transaction-url :mainnet "0xasdfasdf"))))
   (is (= {:scheme "https",
           :domain "api-rinkeby.etherscan.io",
           :path "/api",
@@ -196,28 +51,29 @@
            :sort "desc",
            :apikey "DMSI4UAAKUBVGCDMVP3H2STAMSAUV7BYFI",
            :q "json"}}
-         (uri-query-data (transactions/get-transaction-url :rinkeby "asdfasdfg"))))
-  (let [uri (-> (transactions/get-transaction-url :testnet "asdfasdfgg")
+         (uri-query-data (transactions/get-transaction-url :rinkeby "0xasdfasdfg"))))
+  (let [uri (-> (transactions/get-transaction-url :testnet "0xasdfasdfgg")
                 uri-query-data)]
     (is (= "api-ropsten.etherscan.io" (:domain uri)))
     (is (= "0xasdfasdfgg" (-> uri :query :address))))
-  (is (thrown? js/Error (transactions/get-transaction-url nil "asdfasdfg"))))
+  (is (thrown? js/Error (transactions/get-transaction-url nil "0xasdfasdfg"))))
 
 (declare  mock-etherscan-success-response
           mock-etherscan-error-response
           mock-etherscan-empty-response)
 
-(deftest etherscan-transactions
+(deftest etherscan-history
   (let [ky-set #{:block :hash :symbol :gas-price :value :gas-limit :type
                  :gas-used :from :timestamp :nonce :to :data}]
     (with-redefs [http/get (fn [url success-fn error-fn]
                              (success-fn mock-etherscan-success-response))]
       (let [result (atom nil)]
-        (transactions/etherscan-transactions
+        (transactions/etherscan-history
          :mainnet
-         "asdfasdf"
+         "0xasdfasdf"
          #(reset! result %)
-         (fn [er]))
+         (fn [er])
+         false)
         (doseq [[tx-hash tx-map] @result]
           (is (string? tx-hash))
           (is (= tx-hash (:hash tx-map)))
@@ -232,24 +88,24 @@
   (with-redefs [http/get (fn [url success-fn error-fn]
                            (success-fn mock-etherscan-empty-response))]
     (let [result (atom nil)]
-      (transactions/etherscan-transactions
+      (transactions/etherscan-history
        :mainnet
-       "asdfasdf"
+       "0xasdfasdf"
        #(reset! result %)
-       (fn [er]))
+       (fn [er])
+       false)
       (is (= {} @result))))
 
   (with-redefs [http/get (fn [url success-fn error-fn]
                            (success-fn mock-etherscan-error-response))]
     (let [result (atom nil)]
-      (transactions/etherscan-transactions
+      (transactions/etherscan-history
        :mainnet
-       "asdfasdf"
+       "0xasdfasdf"
        #(reset! result %)
-       (fn [er]))
+       (fn [er])
+       false)
       (is (= {} @result)))))
-
-#_(run-tests)
 
 (def mock-etherscan-error-response
   "{\"status\":\"0\",\"message\":\"NOTOK\",\"result\":\"Error!\"}")

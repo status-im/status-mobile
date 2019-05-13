@@ -1,7 +1,6 @@
 (ns status-im.accounts.logout.core
   (:require [re-frame.core :as re-frame]
             [status-im.chaos-mode.core :as chaos-mode]
-            [status-im.ethereum.transactions.core :as transactions]
             [status-im.i18n :as i18n]
             [status-im.init.core :as init]
             [status-im.node.core :as node]
@@ -13,7 +12,6 @@
   (fx/merge cofx
             {:keychain/clear-user-password (get-in db [:account/account :address])
              :dev-server/stop              nil}
-            (transactions/stop-sync)
             (transport/stop-whisper
              #(re-frame/dispatch [:accounts.logout/filters-removed]))
             (chaos-mode/stop-checking)))

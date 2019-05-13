@@ -204,8 +204,7 @@
         (is (contains? efx :get-balance))
         (is (contains? efx :web3/get-syncing))
         (is (contains? efx :get-tokens-balance))
-        (is (contains? efx :get-prices))
-        (is (contains? efx :status-im.ethereum.transactions.core/start-sync-transactions))))))
+        (is (contains? efx :get-prices))))))
 
 (deftest login-failed
   (testing
