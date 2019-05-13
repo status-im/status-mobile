@@ -16,4 +16,5 @@
    :warning-sign        (js/require "./resources/images/ui/warning-sign.png")
    :phone-nfc-on        (js/require "./resources/images/ui/phone-nfc-on.png")
    :phone-nfc-off       (js/require "./resources/images/ui/phone-nfc-off.png")
-   :dapp-store          (js/require "./resources/images/ui/dapp-store.png")})
+   :dapp-store          (js/require "./resources/images/ui/dapp-store.png")
+   :svg                 (js/require "./resources/images/svg.png")})
