@@ -13,6 +13,8 @@
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
+            [status-im.ethereum.transactions.core :as transactions]
+            [status-im.ethereum.transactions.etherscan :as transactions.etherscan]
             [status-im.models.wallet :as models.wallet]
             [status-im.ui.components.bottom-bar.styles :as tabs.styles]
             [status-im.ui.components.toolbar.styles :as toolbar.styles]
@@ -1134,7 +1136,7 @@
                  :hash      (i18n/label :not-applicable)}
                 {:cost (when gas-used
                          (money/wei->str :eth (money/fee-value gas-used gas-price) display-unit))
-                 :url  (transactions/get-transaction-details-url chain hash)}))))))
+                 :url  (transactions.etherscan/get-transaction-details-url chain hash)}))))))
 
 (re-frame/reg-sub
  :wallet.transactions.details/confirmations
@@ -1142,7 +1144,7 @@
  :<- [:wallet.transactions/transaction-details]
  (fn [[current-block {:keys [block]}]]
    (if (and current-block block)
-     (- current-block block)
+     (inc (- current-block block))
      0)))
 
 (re-frame/reg-sub
