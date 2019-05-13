@@ -6,7 +6,8 @@
             [status-im.utils.platform :as platform]
             [status-im.ui.components.styles :as styles]
             [status-im.react-native.js-dependencies :as js-dependencies]
-            [status-im.ui.components.colors :as colors])
+            [status-im.ui.components.colors :as colors]
+            [status-im.react-native.resources :as resources])
   (:refer-clojure :exclude [use]))
 
 (when-not platform/desktop?
@@ -267,9 +268,14 @@
          icon-vec))
      (throw (js/Error. (str "Unknown icon: " name))))])
 
+(defonce icons-enabled? (reagent/atom false))
+
 (defn icon
   ([name] (icon name nil))
   ([name options]
    (let [icon-fn (if platform/desktop? desktop-icon mobile-icon)]
-     [icon-fn name options])))
+     (if @icons-enabled?
+       [icon-fn name options]
+       #_[react/text "ICON"]
+       [react/image {:source (:svg resources/ui)}]))))
 

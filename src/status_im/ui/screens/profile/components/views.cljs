@@ -104,11 +104,13 @@
         [vector-icons/icon :main-icons/next {:color colors/gray}]))]])
 
 (defn settings-switch-item
-  [{:keys [label-kw value action-fn active?]
+  [{:keys [label-kw label value action-fn active?]
     :or {active? true}}]
   [react/view styles/settings-item
    [react/view styles/settings-item-text-wrapper
-    [react/i18n-text {:style styles/settings-item-text :key label-kw}]]
+    (if label
+      [react/text {:style styles/settings-item-text} label]
+      [react/i18n-text {:style styles/settings-item-text :key label-kw}])]
    [react/switch {:track-color     #js {:true colors/blue :false nil}
                   :value           (boolean value)
                   :on-value-change action-fn

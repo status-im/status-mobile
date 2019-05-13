@@ -230,6 +230,10 @@
     {:label-kw  :t/dev-mode
      :value     dev-mode?
      :action-fn #(re-frame/dispatch [:accounts.ui/dev-mode-switched %])}]
+   [profile.components/settings-switch-item
+    {:label     "ICONS"
+     :value     @icons/icons-enabled?
+     :action-fn #(swap! icons/icons-enabled? not)}]
    [profile.components/settings-item-separator]
    [profile.components/settings-switch-item
     {:label-kw  :t/chaos-mode

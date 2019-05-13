@@ -15,7 +15,8 @@
    :warning-sign        (fn [] (js/require "./resources/images/ui/warning-sign.png"))
    :phone-nfc-on        (fn [] (js/require "./resources/images/ui/phone-nfc-on.png"))
    :phone-nfc-off       (fn [] (js/require "./resources/images/ui/phone-nfc-off.png"))
-   :dapp-store          (fn [] (js/require "./resources/images/ui/dapp-store.png"))})
+   :dapp-store          (fn [] (js/require "./resources/images/ui/dapp-store.png"))
+   :svg                 (fn [] (js/require "./resources/images/svg.png"))})
 
 (def loaded-images (atom {}))
 
