@@ -204,8 +204,8 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
-            debuggable        true
-            versionNameSuffix "-SNAPSHOT"
+            debuggable          true
+            versionNameSuffix   "-SNAPSHOT"
             resValue "string", "build_config_package", "im.status.ethereum"
         }
         release {
@@ -216,8 +216,8 @@ android {
         pr {
             initWith release
             applicationIdSuffix ".pr"
-            versionNameSuffix ".pr"
-            debuggable        true
+            versionNameSuffix   ".pr"
+            debuggable          true
             matchingFallbacks = ["release"]
             // necessary to make react-native-config's code generation work
             resValue "string", "build_config_package", "im.status.ethereum"
@@ -235,6 +235,11 @@ android {
                         versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
             }
         }
+    }
+
+    aaptOptions {
+        // disable PNG optimization as for some reason it cannot be trusted to provide deterministic output (see https://f-droid.org/en/docs/Reproducible_Builds/)
+        cruncherEnabled = false
     }
 
     sourceSets {
