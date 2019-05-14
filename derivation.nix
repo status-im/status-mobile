@@ -8,9 +8,10 @@ let
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
   stdenv = pkgs.stdenvNoCC;
   gradle = pkgs.gradle_4_10;
-  go = pkgs.go_1_11;
+  baseGo = pkgs.go_1_11;
+  go = pkgs.callPackage ./nix/patched-go { inherit baseGo; };
   buildGoPackage = pkgs.buildGoPackage.override { inherit go; };
-  statusDesktop = pkgs.callPackage ./nix/desktop { inherit target-os stdenv status-go pkgs nodejs go; inherit (pkgs) darwin; };
+  statusDesktop = pkgs.callPackage ./nix/desktop { inherit target-os stdenv status-go pkgs nodejs; inherit (pkgs) darwin; go = baseGo; };
   statusMobile = pkgs.callPackage ./nix/mobile { inherit target-os config stdenv pkgs nodejs status-go gradle; inherit (pkgs.xcodeenv) composeXcodeWrapper; };
   status-go = pkgs.callPackage ./nix/status-go { inherit target-os go buildGoPackage; inherit (pkgs.xcodeenv) composeXcodeWrapper; inherit (statusMobile) xcodewrapperArgs; androidPkgs = statusMobile.androidComposition; };
   nodejs = pkgs.nodejs-10_x;
@@ -35,7 +36,7 @@ in with stdenv; mkDerivation rec {
   ] ++ nodePkgBuildInputs
     ++ lib.optional isDarwin cocoapods
     ++ lib.optional (isDarwin && !platform.targetIOS) clang
-    ++ lib.optional (!isDarwin) gcc7
+    ++ lib.optional (!isDarwin) gcc8
     ++ lib.catAttrs "buildInputs" selectedSources;
   shellHook = lib.concatStrings (lib.catAttrs "shellHook" selectedSources);
 }
