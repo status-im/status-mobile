@@ -52,6 +52,7 @@
 ;;bottom sheet
 (reg-root-key-sub :bottom-sheet/show? :bottom-sheet/show?)
 (reg-root-key-sub :bottom-sheet/view :bottom-sheet/view)
+(reg-root-key-sub :bottom-sheet/options :bottom-sheet/options)
 
 ;;general
 (reg-root-key-sub :network-name :chain)

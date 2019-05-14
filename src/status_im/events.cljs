@@ -2038,10 +2038,11 @@
 ;; bottom-sheet events
 (handlers/register-handler-fx
  :bottom-sheet/show-sheet
- (fn [cofx [_ view]]
+ (fn [cofx [_ view options]]
    (bottom-sheet/show-bottom-sheet
     cofx
-    {:view view})))
+    {:view view
+     :options options})))
 
 (handlers/register-handler-fx
  :bottom-sheet/hide-sheet

@@ -31,7 +31,16 @@
                  (merge mobile-network-settings/offline-sheet)
 
                  (= view :add-new)
-                 (merge home.sheet/add-new))]
+                 (merge home.sheet/add-new)
+
+                 (= view :public-chat-actions)
+                 (merge home.sheet/public-chat-actions)
+
+                 (= view :private-chat-actions)
+                 (merge home.sheet/private-chat-actions)
+
+                 (= view :group-chat-actions)
+                 (merge home.sheet/group-chat-actions))]
 
       [bottom-sheet/bottom-sheet opts])))
 

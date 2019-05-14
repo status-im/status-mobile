@@ -274,6 +274,7 @@
                                 :stickers/packs-pendning
                                 :bottom-sheet/show?
                                 :bottom-sheet/view
+                                :bottom-sheet/options
                                 :extensions/profile
                                 :wallet/custom-token-screen]
                           :opt-un [::modal

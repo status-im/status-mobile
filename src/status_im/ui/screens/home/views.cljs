@@ -104,7 +104,7 @@
   (views/letsubs [logging-in? [:accounts/login]]
     [react/view styles/action-button-container
      [react/touchable-highlight {:accessibility-label :new-chat-button
-                                 :on-press            (when-not logging-in? #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new]))}
+                                 :on-press            (when-not logging-in? #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))}
       [react/view styles/action-button
        (if logging-in?
          [react/activity-indicator {:color     :white

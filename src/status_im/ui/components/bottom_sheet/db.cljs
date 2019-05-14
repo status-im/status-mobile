@@ -3,3 +3,4 @@
 
 (spec/def :bottom-sheet/show? (spec/nilable boolean?))
 (spec/def :bottom-sheet/view (spec/nilable keyword?))
+(spec/def :bottom-sheet/options (spec/nilable map?))
