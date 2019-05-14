@@ -117,7 +117,9 @@
                                                          :output-dir         "target/android-prod"
                                                          :static-fns         true
                                                          :optimize-constants true
-                                                         :optimizations      :simple
+                                                         :optimizations      :advanced
+                                                         :infer-externs      true
+                                                         :externs            ["ex.js"]
                                                          :closure-defines    {"goog.DEBUG" false}
                                                          :parallel-build     false
                                                          :elide-asserts      true
