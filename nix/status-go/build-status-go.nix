@@ -5,6 +5,7 @@
   buildPhase, buildMessage,
   installPhase ? "",
   postInstall ? "",
+  preFixup ? "",
   outputs, meta } @ args':
 
 with stdenv;
@@ -17,7 +18,9 @@ let
   buildStatusGo = buildGoPackage (args // {
     name = "${repo}-${version}-${host}";
 
-    nativeBuildInputs = nativeBuildInputs ++ lib.optional isDarwin xcodeWrapper;
+    nativeBuildInputs = 
+      nativeBuildInputs ++
+      lib.optional isDarwin xcodeWrapper;
 
     # Fixes Cgo related build failures (see https://github.com/NixOS/nixpkgs/issues/25959 )
     hardeningDisable = [ "fortify" ];
@@ -64,8 +67,10 @@ let
       runHook postInstall
     '';
 
-    # remove hardcoded paths to go package in /nix/store, otherwise Nix will fail the build
+    # replace hardcoded paths to go package in /nix/store, otherwise Nix will fail the build
     preFixup = ''
+      ${preFixup}
+
       find $out -type f -exec ${removeExpr removeReferences} '{}' + || true
       return
     '';

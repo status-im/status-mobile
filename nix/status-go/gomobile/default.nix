@@ -31,10 +31,25 @@ in buildGoPackage rec {
     lib.optionalString platform.targetAndroid ''
     substituteInPlace cmd/gomobile/install.go --replace "\`adb\`" "\`${platform-tools}/bin/adb\`"
     '' + ''
+    WORK=$NIX_BUILD_TOP/gomobile-work
+
+    # Prevent a non-deterministic temporary directory from polluting the resulting object files
+    substituteInPlace cmd/gomobile/env.go --replace \
+      'tmpdir, err = ioutil.TempDir("", "gomobile-work-")' \
+      "tmpdir = \"$WORK\"" \
+      --replace '"io/ioutil"' ""
+
     echo "Creating $dev"
     mkdir -p $dev/src/$goPackagePath
     echo "Copying from $src"
     cp -a $src/. $dev/src/$goPackagePath
+  '';
+
+  preBuild = ''
+    mkdir $WORK
+  '';
+  postBuild = ''
+    rm -rf $WORK
   '';
 
   postInstall = ''
