@@ -5,11 +5,13 @@
 ;; we reuse the exemple from EIP-1577 but omit content type: dag-pb (0x70)
 ;; in the contenthash as we do not support it yet
 
+;; the content hash from EIP-1577 is modified so that to use CIDv1
+
 (deftest contenthash-decode
   (testing "decoding a valid ipfs hash"
     (is (= (contenthash/decode "0xe3010170122029f2d17be6139079dc48696d1f582a8530eb9805b561eda517e22a892c7e3f1f")
            {:namespace :ipfs
-            :hash "QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4"})))
+            :hash "zdj7WYFeYXcRgTKW6M3DNBQbdNeYd79uQ2yWJD2g1HtWPXeNz"})))
   (testing "decoding an invalid ipfs hash"
     (is (nil? (contenthash/decode "0xe301122029f2d17be6139079dc48696d1f582a8530eb9805b561eda517e2"))))
   (testing "decoding random garbage"
