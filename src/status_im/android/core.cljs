@@ -21,11 +21,10 @@
 
 (defn app-root [props]
   (reagent/create-class
-   {:component-will-mount
-                    (fn []
-                      (.hide splash-screen))
-    :display-name   "root"
-    :reagent-render main}))
+   {:component-will-mount (fn []
+                            (.hide splash-screen))
+    :display-name         "root"
+    :reagent-render       main}))
 
 (defn init []
   (.registerComponent (.-AppRegistry react-native)
