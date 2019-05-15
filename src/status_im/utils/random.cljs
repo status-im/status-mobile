@@ -3,13 +3,15 @@
             [status-im.js-dependencies :as dependencies]
             [status-im.utils.datetime :as datetime]))
 
-(def chance (new (dependencies/Chance)))
+(defn chance []
+  (let [Chance (dependencies/Chance)]
+    (Chance.)))
 
 (defn guid []
-  (.guid chance))
+  (.guid (chance)))
 
 (defn id []
-  (str (datetime/timestamp) "-" (.guid chance)))
+  (str (datetime/timestamp) "-" (.guid (chance))))
 
 (defn rand-gen
   [seed]
