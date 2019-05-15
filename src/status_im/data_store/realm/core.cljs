@@ -155,7 +155,7 @@
   (open-realm (last schemas) file-name encryption-key))
 
 (defn keccak512-array [key]
-  (.array (.-keccak512 js-dependencies/js-sha3) key))
+  (.array (.-keccak512 (js-dependencies/js-sha3)) key))
 
 (defn merge-Uint8Arrays [arr1 arr2]
   (let [arr1-length (.-length arr1)
@@ -167,7 +167,7 @@
 
 (defn db-encryption-key [password encryption-key]
   (let [password-array (.encode
-                        (new (.-TextEncoder js-dependencies/text-encoding))
+                        (new (.-TextEncoder (js-dependencies/text-encoding)))
                         password)]
     (keccak512-array (merge-Uint8Arrays encryption-key password-array))))
 

@@ -13,7 +13,8 @@
   It should be only used for internal application needs and never provided to any
   3rd parties (DApps, etc)"
   []
-  (dependencies/Web3.
+  (new
+   (dependencies/Web3)
    #js {:sendAsync (fn [payload callback]
                      (status/call-private-rpc
                       (.stringify js/JSON payload)

@@ -65,7 +65,7 @@
 
 (defn check-if-phishing-url [{:keys [history history-index] :as browser}]
   (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))]
-    (cond-> browser history-host (assoc :unsafe? (dependencies/phishing-detect history-host)))))
+    (cond-> browser history-host (assoc :unsafe? ((dependencies/phishing-detect) history-host)))))
 
 (defn- content->hash [hex]
   (when (and hex (not= hex "0x"))
@@ -159,7 +159,7 @@
 
 (defmethod storage-gateway :ipfs
   [{:keys [hash]}]
-  (let [base32hash (-> (.encode js-dependencies/hi-base32 (alphabase.base58/decode hash))
+  (let [base32hash (-> (.encode (js-dependencies/hi-base32) (alphabase.base58/decode hash))
                        (string/replace #"=" "")
                        (string/lower-case))]
     (str "https://" base32hash ".infura.status.im")))

@@ -11,44 +11,44 @@
         to-pad (- 64 (mod len 64))]
     (if (= 64 to-pad)
       x
-      (.rightPad utils x (+ len to-pad)))))
+      (.rightPad (utils) x (+ len to-pad)))))
 
 (defn left-pad [x]
   (let [len (count x)
         to-pad (- 64 (mod len 64))]
     (if (= 64 to-pad)
       x
-      (.leftPad utils x (+ len to-pad)))))
+      (.leftPad (utils) x (+ len to-pad)))))
 
 (defn to-two-complement [x]
   (when x
-    (subs (.toTwosComplement utils x) 2)))
+    (subs (.toTwosComplement (utils) x) 2)))
 
 (defn from-utf8 [x]
   (when x
-    (subs (.fromUtf8 utils x) 2)))
+    (subs (.fromUtf8 (utils) x) 2)))
 
 (defn bytes-to-hex [x]
   (when x
-    (subs (.bytesToHex utils x) 2)))
+    (subs (.bytesToHex (utils) x) 2)))
 
 (defn number-to-hex [x]
   (when x
-    (subs (.numberToHex utils x) 2)))
+    (subs (.numberToHex (utils) x) 2)))
 
 (defn hex-to-utf8 [x]
-  (.hexToUtf8 utils (str "0x" x)))
+  (.hexToUtf8 (utils) (str "0x" x)))
 
 (defn hex-to-number [x]
   (when x
     (let [hex-x (str "0x" x)]
       (try
-        (.hexToNumber utils hex-x)
+        (.hexToNumber (utils) hex-x)
         (catch :default err
-          (.hexToNumberString utils hex-x))))))
+          (.hexToNumberString (utils) hex-x))))))
 
 (defn sha3 [s]
-  (.sha3 utils (str s)))
+  (.sha3 (utils) (str s)))
 
 (defn is-hex? [value]
   (when value

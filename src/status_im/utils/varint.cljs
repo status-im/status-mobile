@@ -23,7 +23,7 @@
 (defn encode-hex [num]
   (reduce (fn [hex current-bit]
             (str hex
-                 (.leftPad utils
+                 (.leftPad (utils)
                            (abi-spec/number-to-hex current-bit)
                            2)))
           ""

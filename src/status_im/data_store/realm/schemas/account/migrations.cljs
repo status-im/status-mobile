@@ -191,7 +191,7 @@
    "status-im.transport.message.protocol"))
 
 (defn sha3 [s]
-  (.sha3 dependencies/Web3.prototype s))
+  (.sha3 (.-prototype (dependencies/Web3)) s))
 
 (defn old-message-id
   "Calculates the same `message-id` as was used in `0.9.31`"

@@ -30,7 +30,7 @@
 (defn bignumber [n]
   (when n
     (try
-      (dependencies/Web3.prototype.toBigNumber (normalize (str n)))
+      (.toBigNumber (.-prototype (dependencies/Web3)) (normalize (str n)))
       (catch :default err nil))))
 
 (defn valid? [bn]
@@ -40,13 +40,13 @@
 (defn str->wei [s]
   (when-let [ns (normalize s)]
     (try
-      (dependencies/Web3.prototype.toWei ns "ether")
+      (.toWei (.-prototype (dependencies/Web3)) ns "ether")
       (catch :default err nil))))
 
 (defn to-decimal [s]
   (when s
     (try
-      (dependencies/Web3.prototype.toDecimal (normalize s))
+      (.toDecimal (.-prototype (dependencies/Web3)) (normalize s))
       (catch :default err nil))))
 
 (defn from-decimal [n] (when n (str "1" (string/join (repeat n "0")))))
