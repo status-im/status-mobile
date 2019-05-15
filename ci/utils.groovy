@@ -47,7 +47,7 @@ def doGitRebase() {
     println 'Skipping rebase for canary build...'
     return
   }
-  if (params.BUILD_TYPE == 'release') {
+  if (params.BUILD_TYPE == 'release' || branchName().startsWith('release/')) {
     println 'Skipping rebase due to release build...'
     return
   }
