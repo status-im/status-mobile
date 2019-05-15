@@ -1,0 +1,36 @@
+# This is a comment.
+# Each line is a file pattern followed by one or more owners.
+
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence,
+# @global-owner1 and @global-owner2 will be requested for
+# review when someone opens a pull request.
+*       @status-im/status-core
+
+/ci                 @jakubgs
+/fastlane           @jakubgs
+/scripts            @jakubgs
+/.env*              @jakubgs
+/.TOOLVERSIONS      @jakubgs
+/STATUS_GO_*        @jakubgs
+
+# Order is important; the last matching pattern takes the most
+# precedence. When someone opens a pull request that only
+# modifies Nix files, only @js-owner and not the global
+# owner(s) will be requested for a review.
+*.nix       @PombeirP @jakubgs
+/nix        @PombeirP @jakubgs
+/.github/   @PombeirP @jakubgs
+
+/components @status-im/status-core-ui
+
+desktop/                        @vkjr
+/desktop_files                  @vkjr
+modules/react-native-desktop*/  @vkjr
+modules/react-native-desktop*/  @vkjr
+
+/doc        @oskarth @mandrigin @yenda @jeluard
+
+/deployment @vkjr @PombeirP
+
+/test    @antdanchenko @churik
