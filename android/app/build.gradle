@@ -170,15 +170,22 @@ android {
     *   Duplicate files copied in APK META-INF/rxjava.properties
     */
     packagingOptions {
-        exclude 'META-INF/rxjava.properties'
-        exclude '/lib/mips64/**'
+        //exclude 'META-INF/rxjava.properties'
+        // exclude '/lib/mips64/**'
         exclude '/lib/arm64-v8a/**'
         exclude '/lib/x86_64/**'
+        exclude '/lib/arm64-v8a/libc++_shared.so'
+        exclude '/lib/arm64-v8a/libjsc.so'
         /** Fix for: Execution failed for task ':app:transformNativeLibsWithStripDebugSymbolForDebug'.
         *   with recent version of ndk (17.0.4754217)
         */
         doNotStrip '*/mips/*.so'
         doNotStrip '*/mips64/*.so'
+
+        pickFirst '/lib/armeabi-v7a/libjsc.so'
+        pickFirst '/lib/x86/libjsc.so'
+        pickFirst '/lib/armeabi-v7a/libc++_shared.so'
+        pickFirst '/lib/x86/libc++_shared.so'
     }
     dexOptions {
         jumboMode true
@@ -253,6 +260,8 @@ configurations.all {
 }
 
 dependencies {
+    implementation "org.webkit:android-jsc:r241213"
+
     implementation project(':react-native-background-timer')
     implementation project(':react-native-svg')
     implementation 'com.android.support:multidex:1.0.2'

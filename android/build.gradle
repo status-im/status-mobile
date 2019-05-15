@@ -46,9 +46,14 @@ allprojects {
         google()
         jcenter()
         maven { url "$rootDir/../node_modules/react-native/android" }
+        maven {
+            // Local Maven repo containing AARs with JSC library built for Android
+            url "$rootDir/../node_modules/jsc-android/dist"
+        }
         // for geth, function, and status-go
         flatDir { dirs "libs", System.env.STATUS_GO_ANDROID_LIBDIR }
         maven { url "https://jitpack.io" }
+
     }
 }
 
