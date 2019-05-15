@@ -27,6 +27,7 @@
     :reagent-render       main}))
 
 (defn init []
+  (.log js/console "ready")
   (.registerComponent (.-AppRegistry react-native)
                       "StatusIm"
                       #(reagent/reactify-component app-root)))
