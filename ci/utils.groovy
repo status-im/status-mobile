@@ -51,10 +51,14 @@ def doGitRebase() {
     println 'Skipping rebase due to release build...'
     return
   }
+  def rebaseBranch = 'develop'
+  if (CHANGE_TARGET) { /* This is available for PR builds */
+    rebaseBranch = CHANGE_TARGET
+  }
   sh 'git status'
-  sh 'git fetch --force origin develop:develop'
+  sh "git fetch --force origin ${rebaseBranch}:${rebaseBranch}"
   try {
-    sh 'git rebase develop'
+    sh "git rebase ${rebaseBranch}"
   } catch (e) {
     sh 'git rebase --abort'
     throw e
