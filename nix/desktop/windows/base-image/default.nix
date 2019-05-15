@@ -7,13 +7,13 @@ assert stdenv.isLinux;
 let
   package = stdenv.mkDerivation rec {
     name = "StatusIm-Windows-base-image";
-    version = "20181113";
+    version = "20190515";
 
     src =
       if stdenv.hostPlatform.system == "x86_64-linux" then
         fetchurl {
           url = "https://desktop-app-files.ams3.digitaloceanspaces.com/${name}_${version}.zip";
-          sha256 = "1wrxcss63zlwspmw76k549z72hcycxzd9iw4cdh98l4hs2ayzsk3";
+          sha256 = "0wkq0khllms2hnbznb1j8l8yfw6z7phzrdg4ndyik20jkl0faj8f";
         }
       else throw "${name} is not supported on ${stdenv.hostPlatform.system}";
 

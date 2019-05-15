@@ -5,13 +5,13 @@ with pkgs;
 let
     package = stdenv.mkDerivation rec {
     name = "StatusImAppBundle";
-    version = "20181113";
+    version = "20190515";
 
     src =
       if stdenv.hostPlatform.system == "x86_64-darwin" then
         fetchurl {
           url = "https://desktop-app-files.ams3.digitaloceanspaces.com/Status_${version}.app.zip";
-          sha256 = "0n8n6p60dwsr4q5v4vq8fffcy5qmqhp03yy95k66q4yic72r0hhz";
+          sha256 = "1255jgdp0apqh7qfp752nww91iq39x5mm7rf0wazq2vjahfr4pc5";
         }
       else throw "${name} is not supported on ${stdenv.hostPlatform.system}";
 
