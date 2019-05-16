@@ -15,7 +15,8 @@
 
 (defn rand-gen
   [seed]
-  (new (dependencies/Chance) seed))
+  (let [Chance (dependencies/Chance)]
+    (Chance. seed)))
 
 (defn seeded-rand-int
   [gen n] (.integer gen #js {:min 0 :max (dec n)}))

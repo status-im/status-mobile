@@ -5,7 +5,7 @@
 (defn phishing-detect []     (js/require "eth-phishing-detect"))
 (defn homoglyph-finder []    (js/require "homoglyph-finder"))
 (defn identicon-js []        (js/require "identicon.js"))
-(defn Web3 []                (js/require "web3"))
+(def Web3                    (js/require "web3"))
 (defn text-encoding []       (js/require "text-encoding"))
 (defn js-sha3 []             (js/require "js-sha3"))
 (defn web3-utils []          (js/require "web3-utils"))

@@ -49,7 +49,7 @@
 
 (defn address? [s]
   (when s
-    (.isAddress (.-prototype (dependencies/Web3)) s)))
+    (.isAddress dependencies/Web3.prototype s)))
 
 (defn network->chain-id [network]
   (get-in network [:config :NetworkId]))
@@ -67,9 +67,9 @@
 
 (defn sha3
   ([s]
-   (.sha3 (.-prototype (dependencies/Web3)) (str s)))
+   (.sha3 dependencies/Web3.prototype (str s)))
   ([s opts]
-   (.sha3 (.-prototype (dependencies/Web3)) (str s) (clj->js opts))))
+   (.sha3 dependencies/Web3.prototype (str s) (clj->js opts))))
 
 (defn hex->string [s]
   (when s
@@ -95,7 +95,7 @@
     (js/parseInt s 16)))
 
 (defn int->hex [i]
-  (.toHex (.-prototype (dependencies/Web3)) i))
+  (.toHex dependencies/Web3.prototype i))
 
 (defn hex->bignumber [s]
   (money/bignumber (if (= s hex-prefix) 0 s)))
@@ -112,7 +112,7 @@
   (str (apply str (drop (count s) (repeat 64 "0"))) s))
 
 (defn string->hex [i]
-  (.fromAscii (.-prototype (dependencies/Web3)) i))
+  (.fromAscii dependencies/Web3.prototype i))
 
 (defn format-param [param]
   (if (number? param)

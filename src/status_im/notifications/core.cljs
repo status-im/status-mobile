@@ -52,7 +52,7 @@
              (= (.-length to) pn-pubkey-hash-length)))))
 
 (defn sha3 [s]
-  (.sha3 (.-prototype (dependencies/Web3)) s))
+  (.sha3 dependencies/Web3.prototype s))
 
 (defn anonymize-pubkey
   [pubkey]

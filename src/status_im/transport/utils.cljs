@@ -4,18 +4,18 @@
             [status-im.js-dependencies :as dependencies]))
 
 (defn from-utf8 [s]
-  (.fromUtf8 (.-prototype (dependencies/Web3)) s))
+  (.fromUtf8 dependencies/Web3.prototype s))
 
 (defn to-ascii [s]
-  (.toAscii (.-prototype (dependencies/Web3)) s))
+  (.toAscii dependencies/Web3.prototype s))
 
 (defn to-utf8 [s]
   (try
-    (.toUtf8 (.-prototype (dependencies/Web3)) (str s))
+    (.toUtf8 dependencies/Web3.prototype (str s))
     (catch :default err nil)))
 
 (defn sha3 [s]
-  (.sha3 (.-prototype (dependencies/Web3)) s))
+  (.sha3 dependencies/Web3.prototype s))
 
 (defn old-message-id
   [message]

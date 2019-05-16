@@ -1,6 +1,6 @@
 (ns status-im.contact.db
   (:require [cljs.spec.alpha :as spec]
-            [status-im.js-dependencies :as js-dependencies]
+            [status-im.js-dependencies :as dependencies]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.ethereum.core :as ethereum]
@@ -66,7 +66,7 @@
                          128 public-key
                          nil)]
     (when normalized-key
-      (subs (.sha3 (.-prototype (js-dependencies/Web3)) normalized-key #js {:encoding "hex"}) 26))))
+      (subs (.sha3 dependencies/Web3.prototype normalized-key #js {:encoding "hex"}) 26))))
 
 (defn public-key->new-contact [public-key]
   {:name        (gfycat/generate-gfy public-key)
