@@ -5,8 +5,8 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.config :as config]))
 
-(def webview-bridge-class
-  (reagent/adapt-react-class (.-default js-dependencies/webview-bridge)))
+(defn webview-bridge-class []
+  (reagent/adapt-react-class (.-default (js-dependencies/webview-bridge))))
 
 (def module (.-WebViewBridgeModule (.-NativeModules js-dependencies/react-native)))
 
@@ -24,5 +24,5 @@
         :reagent-render
         (fn [opts]
           (when @dapp-name-sent?
-            [webview-bridge-class opts]))}))
-    [webview-bridge-class opts]))
+            [(webview-bridge-class) opts]))}))
+    [(webview-bridge-class) opts]))

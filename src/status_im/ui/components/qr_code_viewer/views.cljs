@@ -8,7 +8,7 @@
 
 (defn qr-code [props]
   (reagent/create-element
-   rn-dependencies/qr-code
+   (rn-dependencies/qr-code)
    (clj->js (merge {:inverted true} props))))
 
 (defview qr-code-viewer-component [{:keys [style hint-style footer-style footer-button value hint legend]}]

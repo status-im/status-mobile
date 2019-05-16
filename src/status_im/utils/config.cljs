@@ -3,7 +3,7 @@
             [status-im.utils.platform :as platform]
             [clojure.string :as string]))
 
-(def config (js->clj (.-default rn-dependencies/config) :keywordize-keys true))
+(def config (js->clj (.-default (rn-dependencies/config)) :keywordize-keys true))
 
 (defn get-config
   ([k] (get config k))

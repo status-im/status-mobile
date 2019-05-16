@@ -31,8 +31,8 @@
                               (re-frame/dispatch [:navigate-back])))]
       [toolbar/content-title (i18n/label :t/extensions-camera-send-picture)]]
      [camera/camera {:style         {:flex 1}
-                     :aspect        (:fill camera/aspects)
-                     :captureTarget (:disk camera/capture-targets)
+                     :aspect        (:fill (camera/aspects))
+                     :captureTarget (:disk (camera/capture-targets))
                      :ref           #(reset! camera-ref %)}]
      [react/view styles/button-container
       [react/view styles/button
@@ -45,7 +45,7 @@
          [icons/icon :main-icons/camera {:color :white}]]]]]]))
 
 ;TODO image picker doesn't notify when the user cancel image selection
-; in this case we cannot notify cancel to extension 
+; in this case we cannot notify cancel to extension
 (defn- open-image-picker [context]
   (react/show-image-picker
    (fn [image]

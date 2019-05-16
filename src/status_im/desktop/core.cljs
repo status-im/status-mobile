@@ -30,7 +30,7 @@
         (re-frame/dispatch [:set-initial-props (reagent/props this)]))
       :component-will-unmount
       (fn []
-        (.stop react/http-bridge)
+        (.stop (react/http-bridge))
         (.removeEventListener react/app-state "change" app-state-change-handler))
       :display-name "root"
       :reagent-render views/main})

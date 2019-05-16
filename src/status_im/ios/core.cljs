@@ -43,7 +43,7 @@
         (dispatch [:set-initial-props (reagent/props this)]))
       :component-will-unmount
       (fn []
-        (.stop react/http-bridge)
+        (.stop (react/http-bridge))
         (.removeEventListener react/app-state "change" app-state-change-handler)
         (.removeEventListener rn-dependencies/react-native-languages "change" on-languages-change))
       :display-name "root"

@@ -13,8 +13,8 @@
 
 (def mapview-html (slurp "resources/mapview/mapview.html"))
 
-(def webview-class
-  (reagent/adapt-react-class (.-WebView js-dependencies/webview)))
+(defn webview-class []
+  (reagent/adapt-react-class (.-WebView (js-dependencies/webview))))
 
 (defn map-component
   "creates a webview reagent component which cause webview to be updated only when style changes.
@@ -32,7 +32,7 @@
           false)))
     :reagent-render
     (fn [opts]
-      [webview-class opts])}))
+      [(webview-class) opts])}))
 
 (defn- on-map-message [map-event on-change]
   (let [data (-> map-event

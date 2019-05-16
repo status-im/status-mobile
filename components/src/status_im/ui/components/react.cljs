@@ -26,7 +26,7 @@
 
 (def native-modules (.-NativeModules js-dependencies/react-native))
 (def device-event-emitter (.-DeviceEventEmitter js-dependencies/react-native))
-(def dismiss-keyboard! js-dependencies/dismiss-keyboard)
+(defn dismiss-keyboard! [] ((js-dependencies/dismiss-keyboard)))
 (def back-handler (get-react-property "BackHandler"))
 
 (def splash-screen (.-SplashScreen native-modules))
@@ -173,7 +173,7 @@
 
 ;; Image picker
 
-(def image-picker-class js-dependencies/image-crop-picker)
+(defn image-picker-class [] (js-dependencies/image-crop-picker))
 
 (defn show-access-error [o]
   (when (= "E_PERMISSION_MISSING" (object/get o "code"))
@@ -184,7 +184,7 @@
   ([images-fn]
    (show-image-picker images-fn nil))
   ([images-fn media-type]
-   (let [image-picker (.-default image-picker-class)]
+   (let [image-picker (.-default (image-picker-class))]
      (-> image-picker
          (.openPicker (clj->js {:multiple false :mediaType (or media-type "any")}))
          (.then images-fn)
