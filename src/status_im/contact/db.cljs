@@ -177,10 +177,10 @@
 
 (defn enrich-contacts
   [contacts]
-  (reduce (fn [acc [public-key contact]]
-            (assoc acc public-key (enrich-contact contact)))
-          {}
-          contacts))
+  (reduce-kv (fn [acc public-key contact]
+               (assoc acc public-key (enrich-contact contact)))
+             {}
+             contacts))
 
 (defn get-blocked-contacts
   [contacts]

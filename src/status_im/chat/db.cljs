@@ -44,12 +44,14 @@
 
 (defn active-chats
   [contacts chats {:keys [public-key]}]
-  (reduce (fn [acc [chat-id {:keys [is-active] :as chat}]]
-            (if is-active
-              (assoc acc chat-id (enrich-active-chat contacts chat public-key))
-              acc))
-          {}
-          chats))
+  (reduce-kv (fn [acc chat-id {:keys [is-active] :as chat}]
+               (if is-active
+                 (assoc acc
+                        chat-id
+                        (enrich-active-chat contacts chat public-key))
+                 acc))
+             {}
+             chats))
 
 (defn topic-by-current-chat
   [{:keys [current-chat-id chats] :as db}]
