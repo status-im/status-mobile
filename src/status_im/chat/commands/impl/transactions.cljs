@@ -307,6 +307,7 @@
             chain              (keyword (:chain db))
             symbol             :STT
             all-tokens         (:wallet/all-tokens db)
+            wallet-balance     (get-in db [:wallet :balance symbol])
             {:keys [decimals]} (tokens/asset-for all-tokens chain symbol)
             {:keys [value]}    (wallet.db/parse-amount amount decimals)
             internal-value     (money/formatted->internal value symbol decimals)]
@@ -317,7 +318,9 @@
                          :details  {:to-name     name
                                     :public-key  public-key
                                     :from-chat?  true
+                                    :sufficient-funds? (money/sufficient-funds? internal-value wallet-balance)
                                     :symbol      symbol
+                                    :amount      internal-value
                                     :amount-text amount}}))
       (let [recipient-contact     (or
                                    (get-in db [:contacts/contacts (:current-chat-id db)])
