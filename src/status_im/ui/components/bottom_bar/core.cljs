@@ -43,7 +43,6 @@
       {:nav-stack           :wallet-stack
        :content             {:title (i18n/label :t/wallet)
                              :icon  :main-icons/wallet}
-       :count-subscription  :get-wallet-unread-messages-number
        :accessibility-label :wallet-tab-button})
     {:nav-stack           :profile-stack
      :content             {:title (i18n/label :t/profile)
