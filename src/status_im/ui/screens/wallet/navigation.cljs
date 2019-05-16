@@ -14,7 +14,7 @@
                        (re-frame/dispatch [:wallet.ui/pull-to-refresh])
                        (re-frame/dispatch [:update-wallet]))
                      500)
-  (assoc-in db [:wallet :current-tab] 0))
+  db)
 
 (defmethod navigation/preload-data! :wallet-stack
   [db _]
@@ -24,7 +24,7 @@
                        (re-frame/dispatch [:wallet.ui/pull-to-refresh])
                        (re-frame/dispatch [:update-wallet]))
                      500)
-  (assoc-in db [:wallet :current-tab] 0))
+  db)
 
 (def transaction-send-default
   (let [symbol :ETH]

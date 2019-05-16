@@ -280,6 +280,18 @@
    (-> selected-participants
        (contains? element))))
 
+(re-frame/reg-sub
+ :ethereum/chain-keyword
+ :<- [:network]
+ (fn [network]
+   (ethereum/network->chain-keyword network)))
+
+(re-frame/reg-sub
+ :ethereum/native-currency
+ :<- [:ethereum/chain-keyword]
+ (fn [chain-keyword]
+   (tokens/native-currency chain-keyword)))
+
 ;;ACCOUNT ==============================================================================================================
 
 (re-frame/reg-sub
@@ -905,22 +917,10 @@
    (get-in prices [fsym tsym :last-day])))
 
 (re-frame/reg-sub
- :wallet-transactions
- :<- [:wallet]
- (fn [wallet]
-   (get wallet :transactions)))
-
-(re-frame/reg-sub
  :wallet.settings/currency
  :<- [:account-settings]
- (fn [sett]
-   (or (get-in sett [:wallet :currency]) :usd)))
-
-(re-frame/reg-sub
- :wallet.transactions/filters
- :<- [:wallet.transactions]
- (fn [txs]
-   (get txs :filters)))
+ (fn [settings]
+   (or (get-in settings [:wallet :currency]) :usd)))
 
 (re-frame/reg-sub
  :asset-value
@@ -936,7 +936,8 @@
          str
          (i18n/format-currency (:code currency))))))
 
-(defn- get-balance-total-value [balance prices currency token->decimals]
+(defn- get-balance-total-value
+  [balance prices currency token->decimals]
   (reduce-kv (fn [acc symbol value]
                (if-let [price (get-in prices [symbol currency :price])]
                  (+ acc (or (some-> (money/internal->formatted value symbol (token->decimals symbol))
@@ -984,11 +985,6 @@
        (get-in wallet [:errors :prices-update]))))
 
 (re-frame/reg-sub
- :get-wallet-unread-messages-number
- (fn [db]
-   0))
-
-(re-frame/reg-sub
  :wallet/visible-tokens-symbols
  :<- [:network]
  :<- [:account/account]
@@ -1029,12 +1025,19 @@
 ;;WALLET TRANSACTIONS ==================================================================================================
 
 (re-frame/reg-sub
- :wallet.transactions/current-tab
+ :wallet-transactions
  :<- [:wallet]
  (fn [wallet]
-   (get wallet :current-tab 0)))
+   (get wallet :transactions)))
 
-(defn enrich-transaction [{:keys [type to from timestamp] :as transaction} contacts]
+(re-frame/reg-sub
+ :wallet.transactions/filters
+ :<- [:wallet.transactions]
+ (fn [txs]
+   (get txs :filters)))
+
+(defn enrich-transaction
+  [{:keys [type to from timestamp] :as transaction} contacts]
   (let [[contact-address key-contact key-wallet] (if (= type :inbound)
                                                    [from :from-contact :to-wallet]
                                                    [to :to-contact :from-wallet])
@@ -1111,48 +1114,69 @@
    (:current-transaction wallet)))
 
 (re-frame/reg-sub
- :wallet.transactions/transaction-details
+ :wallet.transactions.details/current-transaction
  :<- [:wallet.transactions/transactions]
  :<- [:wallet.transactions/current-transaction]
- :<- [:network]
- (fn [[transactions current-transaction network]]
-   (let [{:keys [gas-used gas-price hash timestamp type] :as transaction} (get transactions current-transaction)
-         chain           (ethereum/network->chain-keyword network)
-         native-currency (tokens/native-currency chain)
-         display-unit    (wallet.utils/display-symbol native-currency)]
+ :<- [:ethereum/native-currency]
+ :<- [:ethereum/chain-keyword]
+ (fn [[transactions current-transaction native-currency chain-keyword]]
+   (let [{:keys [gas-used gas-price hash timestamp type token value]
+          :as transaction}
+         (get transactions current-transaction)]
      (when transaction
-       (merge transaction
-              {:gas-price-eth  (if gas-price (money/wei->str :eth gas-price display-unit) "-")
-               :gas-price-gwei (if gas-price (money/wei->str :gwei gas-price) "-")
-               :date           (datetime/timestamp->long-date timestamp)}
-              (if (= type :unsigned)
-                {:block     (i18n/label :not-applicable)
-                 :cost      (i18n/label :not-applicable)
-                 :gas-limit (i18n/label :not-applicable)
-                 :gas-used  (i18n/label :not-applicable)
-                 :nonce     (i18n/label :not-applicable)
-                 :hash      (i18n/label :not-applicable)}
-                {:cost (when gas-used
-                         (money/wei->str :eth (money/fee-value gas-used gas-price) display-unit))
-                 :url  (transactions.etherscan/get-transaction-details-url chain hash)}))))))
+       (let [{:keys [symbol-display symbol decimals] :as asset}
+             (or token native-currency)
+             amount-text   (if value
+                             (wallet.utils/format-amount value decimals)
+                             "...")
+             currency-text (when asset
+                             (clojure.core/name (or symbol-display symbol)))
+             native-currency-text (-> native-currency
+                                      :symbol-display
+                                      name)]
+         (merge transaction
+                {:amount-text    amount-text
+                 :currency-text  currency-text
+                 :gas-price-eth  (if gas-price
+                                   (money/wei->str :eth
+                                                   gas-price
+                                                   native-currency-text)
+                                   "-")
+                 :gas-price-gwei (if gas-price
+                                   (money/wei->str :gwei
+                                                   gas-price)
+                                   "-")
+                 :date           (datetime/timestamp->long-date timestamp)}
+                (if (= type :unsigned)
+                  {:block     (i18n/label :not-applicable)
+                   :cost      (i18n/label :not-applicable)
+                   :gas-limit (i18n/label :not-applicable)
+                   :gas-used  (i18n/label :not-applicable)
+                   :nonce     (i18n/label :not-applicable)
+                   :hash      (i18n/label :not-applicable)}
+                  {:cost (when gas-used
+                           (money/wei->str :eth
+                                           (money/fee-value gas-used gas-price)
+                                           native-currency-text))
+                   :url  (transactions.etherscan/get-transaction-details-url
+                          chain-keyword
+                          hash)})))))))
 
 (re-frame/reg-sub
- :wallet.transactions.details/confirmations
+ :wallet.transactions.details/screen
+ :<- [:wallet.transactions.details/current-transaction]
  :<- [:ethereum/current-block]
- :<- [:wallet.transactions/transaction-details]
- (fn [[current-block {:keys [block]}]]
-   (if (and current-block block)
-     (inc (- current-block block))
-     0)))
-
-(re-frame/reg-sub
- :wallet.transactions.details/confirmations-progress
- :<- [:wallet.transactions.details/confirmations]
- (fn [confirmations]
-   (let [max-confirmations 10]
-     (if (>= confirmations max-confirmations)
-       100
-       (* 100 (/ confirmations max-confirmations))))))
+ (fn [[{:keys [block] :as transaction} current-block]]
+   :wallet.transactions.details/current-transaction
+   (let [confirmations (if (and current-block block)
+                         (inc (- current-block block))
+                         0)]
+     (assoc transaction
+            :confirmations confirmations
+            :confirmations-progress
+            (if (>= confirmations transactions/confirmations-count-threshold)
+              100
+              (* 100 (/ confirmations transactions/confirmations-count-threshold)))))))
 
 ;;WALLET SEND ==========================================================================================================
 

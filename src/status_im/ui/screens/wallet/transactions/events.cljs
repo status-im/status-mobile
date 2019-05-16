@@ -2,10 +2,20 @@
   (:require [status-im.utils.handlers :as handlers]))
 
 (defn- mark-all-checked [filters]
-  (update filters :type #(map (fn [m] (assoc m :checked? true)) %)))
+  (update filters
+          :type
+          #(map (fn [m]
+                  (assoc m :checked? true))
+                %)))
 
 (defn- mark-checked [filters {:keys [type]} checked?]
-  (update filters :type #(map (fn [{:keys [id] :as m}] (if (= type id) (assoc m :checked? checked?) m)) %)))
+  (update filters
+          :type
+          #(map (fn [{:keys [id] :as m}]
+                  (if (= type id)
+                    (assoc m :checked? checked?)
+                    m))
+                %)))
 
 (defn- update-filters [db f]
   (update-in db [:wallet.transactions :filters] f))
