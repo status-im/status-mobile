@@ -49,14 +49,18 @@
     (:postponed :pending) (transaction-icon :main-icons/arrow-right colors/gray-light colors/gray)
     (throw (str "Unknown transaction type: " k))))
 
-(defn render-transaction [{:keys [hash from-contact to-contact to from type value time-formatted symbol]}
-                          network all-tokens hide-details?]
-  (let [[label contact address
-         contact-accessibility-label
-         address-accessibility-label] (if (inbound? type)
-                                        [(i18n/label :t/from) from-contact from :sender-text :sender-address-text]
-                                        [(i18n/label :t/to) to-contact to :recipient-name-text :recipient-address-text])
-        {:keys [decimals] :as token}   (tokens/asset-for all-tokens (ethereum/network->chain-keyword network) symbol)]
+(defn render-transaction
+  [{:keys [hash from-contact to-contact to from type value time-formatted symbol]}
+   network all-tokens hide-details?]
+  (let [[label contact address contact-accessibility-label
+         address-accessibility-label]
+        (if (inbound? type)
+          [(i18n/label :t/from) from-contact from :sender-text :sender-address-text]
+          [(i18n/label :t/to) to-contact to :recipient-name-text :recipient-address-text])
+        {:keys [decimals] :as token}
+        (tokens/asset-for all-tokens
+                          (ethereum/network->chain-keyword network)
+                          symbol)]
     [list/touchable-item #(when-not hide-details? (re-frame/dispatch [:show-transaction-details hash]))
      [react/view {:accessibility-label :transaction-item}
       [list/item
@@ -96,7 +100,10 @@
   (:checked? (some #(when (= (:type transaction) (:id %)) %) (:type filter-data))))
 
 (defn update-transactions [m filter-data]
-  (update m :data (fn [v] (filter #(filtered-transaction? % filter-data) v))))
+  (update m
+          :data
+          (fn [v]
+            (filter #(filtered-transaction? % filter-data) v))))
 
 (defview history-list [& [hide-details?]]
   (letsubs [transactions-history-list [:wallet.transactions/transactions-history-list]
@@ -157,34 +164,26 @@
      [toolbar-view filter-data]
      [history-list]]))
 
-(defn- pretty-print-asset [symbol amount token]
-  (if amount
-    (if (= :ETH symbol)
-      (->> amount (money/wei-> :eth) money/to-fixed str)
-      (-> amount (money/token->unit (:decimals token)) money/to-fixed str))
-    "..."))
-
-(defn details-header [network all-tokens {:keys [value date type symbol token]}]
-  (let [asset (tokens/asset-for all-tokens (ethereum/network->chain-keyword network) symbol)]
-    [react/view {:style styles/details-header}
-     [react/view {:style styles/details-header-icon}
-      (when type
-        [list/item-icon (transaction-type->icon type)])]
-     [react/view {:style styles/details-header-infos}
-      [react/nested-text {:style styles/details-header-value}
-       [{:accessibility-label :amount-text}
-        (pretty-print-asset symbol value token)]
-       " "
-       [{:accessibility-label :currency-text}
-        (wallet.utils/display-symbol asset)]]
-      [react/text {:style styles/details-header-date} date]]]))
+(defn details-header
+  [date type amount-text currency-text]
+  [react/view {:style styles/details-header}
+   [react/view {:style styles/details-header-icon}
+    (when type
+      [list/item-icon (transaction-type->icon type)])]
+   [react/view {:style styles/details-header-infos}
+    [react/nested-text {:style styles/details-header-value}
+     [{:accessibility-label :amount-text} amount-text]
+     " "
+     [{:accessibility-label :currency-text} currency-text]]
+    [react/text {:style styles/details-header-date} date]]])
 
 (defn progress-bar [progress failed?]
   [react/view {:style styles/progress-bar}
    [react/view {:style (styles/progress-bar-done progress failed?)}]
    [react/view {:style (styles/progress-bar-todo (- 100 progress) failed?)}]])
 
-(defn details-confirmations [confirmations confirmations-progress type]
+(defn details-confirmations
+  [confirmations confirmations-progress type]
   [react/view {:style styles/details-block}
    [progress-bar confirmations-progress (failed? type)]
    (if (failed? type)
@@ -213,10 +212,12 @@
        [react/text (merge {:style styles/details-item-extra-value} extra-props)
         (str extra-value)]]])))
 
-(defn details-list [{:keys [block hash
-                            from from-wallet from-contact
-                            to to-wallet to-contact
-                            gas-limit gas-price-gwei gas-price-eth gas-used cost nonce data]}]
+(defn details-list
+  [{:keys [block hash
+           from from-wallet from-contact
+           to to-wallet to-contact
+           gas-limit gas-price-gwei gas-price-eth gas-used
+           cost nonce data]}]
   [react/view {:style styles/details-block}
    [details-list-row :t/block block]
    [details-list-row :t/hash hash]
@@ -240,15 +241,16 @@
    [details-list-row :t/data data]])
 
 (defn details-action [hash url]
-  [(actions/opts [{:label (i18n/label :t/copy-transaction-hash) :action #(react/copy-to-clipboard hash)}
-                  {:label (i18n/label :t/open-on-etherscan) :action #(.openURL react/linking url)}])])
+  [(actions/opts [{:label (i18n/label :t/copy-transaction-hash)
+                   :action #(react/copy-to-clipboard hash)}
+                  {:label (i18n/label :t/open-on-etherscan)
+                   :action #(.openURL react/linking url)}])])
 
 (defview transaction-details []
-  (letsubs [{:keys [hash url type] :as transaction} [:wallet.transactions/transaction-details]
-            confirmations          [:wallet.transactions.details/confirmations]
-            confirmations-progress [:wallet.transactions.details/confirmations-progress]
-            network                [:account/network]
-            all-tokens             [:wallet/all-tokens]]
+  (letsubs [{:keys [hash url type confirmations confirmations-progress
+                    date amount-text currency-text]
+             :as transaction}
+            [:wallet.transactions.details/screen]]
     [react/view {:style components.styles/flex}
      [status-bar/status-bar]
      [toolbar/toolbar {}
@@ -256,7 +258,7 @@
       [toolbar/content-title (i18n/label :t/transaction-details)]
       (when transaction [toolbar/actions (details-action hash url)])]
      [react/scroll-view {:style components.styles/main-container}
-      [details-header network all-tokens transaction]
+      [details-header date type amount-text currency-text]
       [details-confirmations confirmations confirmations-progress type]
       [react/view {:style styles/details-separator}]
       [details-list transaction]]]))
