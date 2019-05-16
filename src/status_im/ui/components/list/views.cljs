@@ -62,7 +62,7 @@
 (defn item-image
   [{:keys [source style image-style]}]
   [react/view {:style style}
-   [react/image {:source source
+   [react/image {:source (if (fn? source) (source) source)
                  :style  (merge styles/item-image image-style)}]])
 
 (defn item-primary
