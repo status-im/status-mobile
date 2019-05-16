@@ -119,7 +119,7 @@
 (defn onboarding []
   [react/view styles/root
    [react/view {:style styles/onboarding-image-container}
-    [react/image {:source (:wallet-welcome resources/ui)
+    [react/image {:source (resources/get-image :wallet-welcome)
                   :style  styles/onboarding-image}]]
    [react/text {:style styles/onboarding-title}
     (i18n/label :t/wallet-onboarding-title)]

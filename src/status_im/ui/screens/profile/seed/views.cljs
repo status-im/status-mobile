@@ -40,7 +40,7 @@
                       :content-container-style {:align-items     :center
                                                 :justify-content :center}}
    (when-not platform/desktop?
-     [react/image {:source (:lock resources/ui)
+     [react/image {:source (resources/get-image :lock)
                    :style styles/intro-image}])
    [react/i18n-text {:style styles/intro-text
                      :key   :your-data-belongs-to-you}]

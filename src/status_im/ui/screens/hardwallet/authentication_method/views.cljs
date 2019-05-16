@@ -32,7 +32,7 @@
     [common/separator]
     [react/view styles/choose-authentication-method
      [react/view styles/lock-image-container
-      [react/image {:source (:keycard-lock resources/ui)
+      [react/image {:source (resources/get-image :keycard-lock)
                     :style  styles/lock-image}]]
      [react/text {:style           styles/choose-authentication-method-text
                   :number-of-lines 3}

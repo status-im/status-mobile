@@ -167,7 +167,8 @@
 
 (defn db-encryption-key [password encryption-key]
   (let [password-array (.encode
-                        (new (.-TextEncoder (js-dependencies/text-encoding)))
+                        (let [TE (.-TextEncoder (js-dependencies/text-encoding))]
+                          (TE.))
                         password)]
     (keccak512-array (merge-Uint8Arrays encryption-key password-array))))
 

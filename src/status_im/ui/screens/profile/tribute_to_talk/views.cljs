@@ -34,7 +34,7 @@
    [react/view {:style {:flex       1
                         :min-height 32}}]
 
-   [react/image {:source (:tribute-to-talk resources/ui)
+   [react/image {:source (resources/get-image :tribute-to-talk)
                  :style styles/intro-image}]
    [react/view {:style {:flex       1
                         :min-height 32}}]
@@ -313,7 +313,7 @@
        [react/text {:style styles/step-n}
         (i18n/label :t/learn-more)]]])
    [react/scroll-view {:content-container-style styles/learn-more-container}
-    [react/image {:source (:tribute-to-talk resources/ui)
+    [react/image {:source (resources/get-image :tribute-to-talk)
                   :style styles/learn-more-image}]
     [react/text {:style styles/learn-more-title-text}
      (i18n/label :t/tribute-to-talk)]

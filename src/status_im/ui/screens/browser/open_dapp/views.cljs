@@ -31,7 +31,7 @@
      :image    [react/view styles/browser-icon-container
                 [vector-icons/icon :main-icons/browser {:color colors/gray}]]}]])
 
-(def dapp-image-data {:image (:dapp-store resources/ui) :width 768 :height 333})
+(def dapp-image-data {:image (resources/get-image :dapp-store) :width 768 :height 333})
 (def dapp-image (components.common/image-contain nil dapp-image-data))
 
 (def privacy-otions-visible? (reagent/atom true))

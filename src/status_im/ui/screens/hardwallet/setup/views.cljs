@@ -28,7 +28,7 @@
      [react/scroll-view
       [react/view styles/secret-keys-inner-container
        [react/view
-        [react/image {:source (:secret-keys resources/ui)
+        [react/image {:source (resources/get-image :secret-keys)
                       :style  styles/secret-keys-image-container}]]
        [react/view styles/secret-keys-title-container
         [react/text {:style           styles/secret-keys-title-text
@@ -265,7 +265,7 @@
   Used by 'Prepare', 'Pair', 'No slots', 'Card is linked' screens"
   [react/view styles/card-with-button-view-container
    [react/view styles/hardwallet-card-image-container
-    [react/image {:source (:hardwallet-card resources/ui)
+    [react/image {:source (resources/get-image :hardwallet-card)
                   :style  styles/hardwallet-card-image}]
     [react/view styles/center-text-container
      [react/text {:style (assoc styles/center-text :padding-horizontal 60)}
@@ -287,7 +287,7 @@
      [react/text {:style styles/card-is-empty-text}
       (i18n/label :t/card-is-blank)]
      [react/view {:margin-top 15}
-      [react/image {:source (:hardwallet-card resources/ui)
+      [react/image {:source (resources/get-image :hardwallet-card)
                     :style  styles/hardwallet-card-image}]]
      [react/view styles/card-is-empty-prepare-text
       [react/text {:style styles/center-text}
@@ -336,7 +336,7 @@
   (letsubs [error [:hardwallet-setup-error]]
     [react/view styles/card-with-button-view-container
      [react/view styles/hardwallet-card-image-container
-      [react/image {:source (:hardwallet-card resources/ui)
+      [react/image {:source (resources/get-image :hardwallet-card)
                     :style  styles/hardwallet-card-image}]
       [react/view styles/center-text-container
        [react/text {:style styles/center-text}
