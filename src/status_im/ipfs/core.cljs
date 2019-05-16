@@ -1,16 +1,17 @@
 (ns status-im.ipfs.core
   (:refer-clojure :exclude [cat])
-  (:require [status-im.utils.fx :as fx]))
+  (:require [status-im.utils.fx :as fx]
+            [taoensso.timbre :as log]))
 
 ;; we currently use an ipfs gateway but this detail is not relevant
 ;; outside of this namespace
 (def ^:const ipfs-add-url "https://ipfs.infura.io:5001/api/v0/add?cid-version=1")
-(def ^:const ipfs-cat-url "https://ipfs.infura.io/ipfs/")
+(def ^:const ipfs-cat-url "https://ipfs.io/ipfs/")
 
 (fx/defn cat
   [cofx {:keys [hash on-success on-failure]}]
   {:http-raw-get (cond-> {:url (str ipfs-cat-url hash)
-                          :timeout-ms 5000
+                          :timeout-ms 60000
                           :success-event-creator
                           (fn [{:keys [status body]}]
                             (if (= 200 status)
@@ -37,9 +38,9 @@
                    (.append "file" value))]
     {:http-raw-post (cond-> {:url  ipfs-add-url
                              :body formdata
-                             :timeout-ms 5000
+                             :timeout-ms 60000
                              :success-event-creator
-                             (fn [{:keys [status body]}]
+                             (fn [{:keys [status body] :as ipfs-resp}]
                                (if (= 200 status)
                                  (on-success (parse-ipfs-add-response body))
                                  (when on-failure
