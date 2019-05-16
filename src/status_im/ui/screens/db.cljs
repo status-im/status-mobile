@@ -328,6 +328,8 @@
                                    :chat/id->command
                                    :chat/access-scope->command-id
                                    :wallet/wallet
+                                   :wallet/wallet.transactions
+                                   :wallet/wallet-selected-asset
                                    :prices/prices
                                    :prices/prices-loading?
                                    :notifications/notifications
