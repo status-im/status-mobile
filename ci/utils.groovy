@@ -52,8 +52,8 @@ def doGitRebase() {
     return
   }
   def rebaseBranch = 'develop'
-  if (CHANGE_TARGET) { /* This is available for PR builds */
-    rebaseBranch = CHANGE_TARGET
+  if (env.CHANGE_TARGET) { /* This is available for PR builds */
+    rebaseBranch = env.CHANGE_TARGET
   }
   sh 'git status'
   sh "git fetch --force origin ${rebaseBranch}:${rebaseBranch}"
