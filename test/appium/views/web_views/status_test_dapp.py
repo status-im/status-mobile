@@ -1,4 +1,5 @@
 from views.web_views.base_web_view import BaseWebView, BaseButton
+import time
 
 
 class AssetsButton(BaseButton):
@@ -65,7 +66,8 @@ class TransactionsButton(BaseButton):
             return SendTransactionView(self.driver)
 
         def click(self):
-            self.driver.swipe(500, 1000, 500, 800)
+            self.swipe_to_web_element()
+            time.sleep(2)
             self.wait_for_visibility_of_element().click()
             return self.navigate()
 

@@ -141,8 +141,7 @@ class SignInView(BaseView):
         return self.get_home_view()
 
     def sign_in(self, password=common_password):
-        if self.ok_button.is_element_displayed():
-            self.ok_button.click()
+        self.accept_agreements()
         self.password_input.set_value(password)
         return self.sign_in_button.click()
 

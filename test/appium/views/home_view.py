@@ -96,7 +96,7 @@ class ChatElement(BaseButton):
     def swipe_and_delete(self):
         counter = 0
         while counter < 3:
-            self.swipe_element()
+            self.swipe_left_on_element()
             if self.swipe_delete_button.is_element_present():
                 break
             time.sleep(3)

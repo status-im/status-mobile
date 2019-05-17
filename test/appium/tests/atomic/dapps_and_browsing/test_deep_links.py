@@ -37,7 +37,6 @@ class TestDeepLinks(SingleDeviceTestCase):
             if not chat_view.element_by_text(text).scroll_to_element(10):
                 pytest.fail("User profile screen is not opened")
 
-
     @marks.testrail_id(5442)
     @marks.medium
     def test_open_dapp_using_deep_link(self):
