@@ -55,6 +55,7 @@
       :reagent-render views/main})))
 
 (defn init []
+  (.log js/console "ready")
   (status/set-soft-input-mode status/adjust-resize)
   (core/init app-root)
   (snoopy/subscribe!))
