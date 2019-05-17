@@ -1023,6 +1023,7 @@
     "chaos-unicorn-day": "Chaos Unicorn Day",
     "chaos-unicorn-day-details": "\uD83E\uDD84\uD83E\uDD84\uD83E\uDD84\uD83E\uDD84\uD83E\uDD84\uD83E\uDD84\uD83E\uDD84\uD83D\uDE80!",
     "invalid-format": "Invalid format\nMust be {{format}}",
+    "invalid-range": "Invalid format, must be between {{min}} and {{max}}",
     "mailserver-format": "enode://{enode-id}:{password}@{ip-address}:{port}",
     "bootnode-format": "enode://{enode-id}@{ip-address}:{port}",
     "fetch-messages": "↓ Fetch messages",

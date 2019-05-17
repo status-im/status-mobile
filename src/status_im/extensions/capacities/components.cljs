@@ -1,16 +1,20 @@
 (ns status-im.extensions.capacities.components
-  (:require [status-im.ui.components.react :as react]
-            [status-im.chat.commands.impl.transactions :as transactions]
-            [status-im.ui.components.button.view :as button]
-            [re-frame.core :as re-frame]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.checkbox.view :as checkbox]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.tooltip.views :as tooltip]
-            [status-im.ui.components.text-input.styles :as styles]
-            [status-im.extensions.capacities.map :as map-component]))
+  (:require
+   [clojure.string :as string]
+   [reagent.core :as reagent]
+   [status-im.ui.components.react :as react]
+   [status-im.chat.commands.impl.transactions :as transactions]
+   [status-im.ui.components.button.view :as button]
+   [re-frame.core :as re-frame]
+   [status-im.i18n :as i18n]
+   [status-im.utils.platform :as platform]
+   [status-im.ui.components.list.views :as list]
+   [status-im.ui.components.checkbox.view :as checkbox]
+   [status-im.ui.components.colors :as colors]
+   [status-im.ui.components.icons.vector-icons :as icons]
+   [status-im.ui.components.tooltip.views :as tooltip]
+   [status-im.ui.components.text-input.styles :as styles]
+   [status-im.extensions.capacities.map :as map-component]))
 
 (defn button [{:keys [on-click enabled disabled] :as m} label]
   [button/secondary-button (merge {:disabled? (or (when (contains? m :enabled) (or (nil? enabled) (false? enabled))) disabled)}
@@ -25,26 +29,37 @@
     (js/clearTimeout id))
   (reset! current (js/setTimeout #(on-input-change-text on-change value) delay)))
 
-(defn input [{:keys [keyboard-type style error on-change change-delay placeholder placeholder-text-color selection-color
+(defn- in-range [n start end]
+  (or (string/blank? n) (and (nil? start) (nil? end)) (and (< n end) (> n start))))
+
+(defn input [{:keys [keyboard-type style error min max on-change change-delay placeholder placeholder-text-color selection-color
                      auto-focus on-submit default-value]}]
-  [react/view
-   [react/text-input (merge {:placeholder placeholder}
-                            (when placeholder-text-color {:placeholder-text-color placeholder-text-color})
-                            (when selection-color {:selection-color selection-color})
-                            (when style {:style style})
-                            (when keyboard-type {:keyboard-type keyboard-type})
-                            (when auto-focus {:auto-focus auto-focus})
-                            (when default-value {:default-value default-value})
-                            (when on-submit
-                              {:on-submit-editing #(on-submit {})})
-                            (when on-change
-                              {:on-change-text
-                               (if change-delay
-                                 (let [current (atom nil)]
-                                   #(on-input-change-text-delay current on-change % change-delay))
-                                 #(on-input-change-text on-change %))}))]
-   (when error
-     [tooltip/tooltip error (styles/error error)])])
+
+  (let [input-range (reagent/atom nil)]
+    (fn []
+      [react/view
+       [react/text-input (merge {:placeholder placeholder}
+                                {:on-change-text #(reset! input-range %)}
+                                (when placeholder-text-color {:placeholder-text-color placeholder-text-color})
+                                (when selection-color {:selection-color selection-color})
+                                (when style {:style style})
+                                (when keyboard-type {:keyboard-type keyboard-type})
+                                (when auto-focus {:auto-focus auto-focus})
+                                (when default-value {:default-value default-value})
+                                (when on-submit
+                                  {:on-submit-editing #(on-submit {})})
+                                (when on-change
+                                  {:on-change-text
+                                   (if change-delay
+                                     (let [current (atom nil)]
+                                       #(on-input-change-text-delay current on-change % change-delay))
+                                     #(on-input-change-text on-change %))}))]
+
+       (when-not (in-range @input-range, min, max)
+         [tooltip/tooltip (i18n/label :t/invalid-range {:min min :max max}) styles/error])
+
+       (when error
+         [tooltip/tooltip error (styles/error error)])])))
 
 (defn touchable-opacity [{:keys [style on-press]} & children]
   (into [react/touchable-opacity (merge (when on-press {:on-press #(on-press {})})
@@ -139,7 +154,7 @@
    'image                  {:data image :properties {:uri :string :source :string}}
    'input                  {:data input :properties {:on-change :event :error :string :placeholder :string :keyboard-type :keyword
                                                      :change-delay? :number :placeholder-text-color :any :selection-color :any
-                                                     :auto-focus? :boolean :on-submit :event :default-value :any}}
+                                                     :auto-focus? :boolean :min :number :max :number :on-submit :event :default-value :any}}
    'button                 {:data button :properties {:enabled :boolean :disabled :boolean :on-click :event}}
    'link                   {:data link :properties {:uri :string :text? :string :open-in? {:one-of #{:device :status}}}}
    'list                   {:data flat-list :properties {:data :vector :item-view :view :key? :keyword}}
