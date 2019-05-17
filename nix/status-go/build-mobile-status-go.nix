@@ -1,5 +1,6 @@
 
-{ buildGoPackage, go, gomobile, openjdk, xcodeWrapper, pkgs, stdenv, utils }:
+{ stdenv, utils, callPackage,
+  buildGoPackage, go, gomobile, openjdk, xcodeWrapper }:
 
 { owner, repo, rev, version, goPackagePath, src, host,
 
@@ -11,7 +12,7 @@ with stdenv;
 
 let
   targetConfig = config;
-  buildStatusGo = pkgs.callPackage ./build-status-go.nix { inherit buildGoPackage go xcodeWrapper utils; };
+  buildStatusGo = callPackage ./build-status-go.nix { inherit buildGoPackage go xcodeWrapper utils; };
 
   args = removeAttrs args' [ "config" "goBuildFlags" "goBuildLdFlags" ]; # Remove mobile-only arguments from args
   buildStatusGoMobileLib = buildStatusGo (args // {

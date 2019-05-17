@@ -1,6 +1,6 @@
-{ stdenv, pkgs, status-go }:
+{ stdenv, callPackage,
+  appimagekit, patchelf, qt5, status-go }:
 
-with pkgs;
 with stdenv;
 
 assert isLinux;

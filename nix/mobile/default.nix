@@ -1,16 +1,15 @@
-{ config, stdenv, pkgs, target-os, status-go }:
+{ config, stdenv, callPackage, target-os,
+  gradle, status-go, composeXcodeWrapper }:
 
-with pkgs;
 with stdenv;
 
 let
-  gradle = gradle_4_10;
-  platform = pkgs.callPackage ../platform.nix { inherit target-os; };
+  platform = callPackage ../platform.nix { inherit target-os; };
   xcodewrapperArgs = {
     version = "10.1";
   };
-  xcodeWrapper = xcodeenv.composeXcodeWrapper xcodewrapperArgs;
-  androidPlatform = callPackage ./android.nix { inherit config; };
+  xcodeWrapper = composeXcodeWrapper xcodewrapperArgs;
+  androidPlatform = callPackage ./android.nix { inherit config gradle; };
   selectedSources =
     [ status-go ] ++
     lib.optional platform.targetAndroid androidPlatform;

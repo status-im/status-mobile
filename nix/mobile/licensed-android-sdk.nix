@@ -1,6 +1,4 @@
-{ config, stdenv, pkgs, androidComposition }:
-
-with pkgs;
+{ config, stdenv, androidComposition }:
 
 stdenv.mkDerivation rec {
   name = "licensed-android-sdk";

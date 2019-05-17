@@ -1,10 +1,9 @@
-{ config, stdenv, pkgs }:
+{ config, stdenv, callPackage,
+  androidenv, openjdk, gradle }:
 
-with pkgs;
 with stdenv;
 
 let
-  gradle = gradle_4_10;
   androidComposition = androidenv.composeAndroidPackages {
     toolsVersion = "26.1.1";
     platformToolsVersion = "28.0.2";
@@ -33,7 +32,7 @@ in
     buildInputs = [ openjdk gradle ];
     shellHook = ''
       export JAVA_HOME="${openjdk}"
-      export ANDROID_HOME=${licensedAndroidEnv}
+      export ANDROID_HOME="${licensedAndroidEnv}"
       export ANDROID_SDK_ROOT="$ANDROID_HOME"
       export ANDROID_NDK_ROOT="${androidComposition.androidsdk}/libexec/android-sdk/ndk-bundle"
       export ANDROID_NDK_HOME="$ANDROID_NDK_ROOT"

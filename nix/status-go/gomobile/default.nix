@@ -1,5 +1,5 @@
-{ stdenv, pkgs, utils, buildGoPackage, fetchgit,
-  glibc, ncurses5, zlib, makeWrapper, patchelf,
+{ stdenv, utils, fetchgit,
+  buildGoPackage, glibc, ncurses5, zlib, makeWrapper, patchelf,
   platform-tools, composeXcodeWrapper, xcodewrapperArgs ? {}
 }:
 

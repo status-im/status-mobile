@@ -61,8 +61,6 @@ if [ ! -f .babelrc ] || [ $(readlink .babelrc) != "${PLATFORM_FOLDER}/.babelrc" 
   ln -sf ${PLATFORM_FOLDER}/metro.config.js metro.config.js
 fi
 
-rm -rf /home/jenkins/.cache/yarn/v4/.tmp/6ec8ff0e65cf4f48c50d7472fa1f10ca
-rm -rf /Users/jenkins/Library/Caches/Yarn/v4/.tmp/6ec8ff0e65cf4f48c50d7472fa1f10ca
 yarn install --frozen-lockfile
 
 case $1 in

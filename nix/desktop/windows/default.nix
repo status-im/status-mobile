@@ -1,6 +1,6 @@
-{ stdenv, pkgs }:
+{ stdenv, callPackage,
+  conan, nsis, go }:
 
-with pkgs;
 with stdenv;
 
 assert isLinux;
