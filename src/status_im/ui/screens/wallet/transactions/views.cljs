@@ -15,154 +15,149 @@
             [status-im.utils.money :as money])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
-(defn history-action [filter?]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TRANSACTION HISTORY
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn history-action
+  [all-filters?]
   (cond->
    {:icon      :main-icons/filter
     :icon-opts {:accessibility-label :filters-button}
     :handler   #(re-frame/dispatch [:navigate-to :wallet-transactions-filter])}
-    filter? (assoc-in [:icon-opts :overlay-style] styles/corner-dot)))
+    (not all-filters?) (assoc-in [:icon-opts :overlay-style] styles/corner-dot)))
 
-(defn- all-checked? [filter-data]
-  (and (every? :checked? (:type filter-data))
-       (every? :checked? (:tokens filter-data))))
-
-(defn- toolbar-view [filter-data]
+(defn- toolbar-view
+  [all-filters?]
   [toolbar/toolbar nil
    toolbar/default-nav-back
    [toolbar/content-title (i18n/label :t/transactions-history)]
    [toolbar/actions
-    [(history-action (not (all-checked? filter-data)))]]])
+    [(history-action all-filters?)]]])
 
-(defn- inbound? [type] (= :inbound type))
-(defn- failed? [type] (= :failed type))
-
-(defn- transaction-icon [k background-color color]
-  {:icon      k
+(defn- transaction-icon
+  [icon-key background-color color]
+  {:icon      icon-key
    :icon-opts {:color color}
    :style     (styles/transaction-icon-background background-color)})
 
-(defn- transaction-type->icon [k]
+(defn- transaction-type->icon
+  [k]
   (case k
-    :inbound (transaction-icon :main-icons/arrow-left (colors/alpha colors/green 0.2) colors/green)
-    :outbound (transaction-icon :main-icons/arrow-right (colors/alpha colors/blue 0.1) colors/blue)
-    :failed (transaction-icon :main-icons/warning colors/gray-light colors/red)
-    (:postponed :pending) (transaction-icon :main-icons/arrow-right colors/gray-light colors/gray)
+    :inbound (transaction-icon :main-icons/arrow-left
+                               (colors/alpha colors/green 0.2)
+                               colors/green)
+    :outbound (transaction-icon :main-icons/arrow-right
+                                (colors/alpha colors/blue 0.1)
+                                colors/blue)
+    :failed (transaction-icon :main-icons/warning
+                              colors/gray-light
+                              colors/red)
+    :pending (transaction-icon :main-icons/arrow-right
+                               colors/gray-light colors/gray)
     (throw (str "Unknown transaction type: " k))))
 
 (defn render-transaction
-  [{:keys [hash from-contact to-contact to from type value time-formatted symbol]}
-   network all-tokens hide-details?]
-  (let [[label contact address contact-accessibility-label
-         address-accessibility-label]
-        (if (inbound? type)
-          [(i18n/label :t/from) from-contact from :sender-text :sender-address-text]
-          [(i18n/label :t/to) to-contact to :recipient-name-text :recipient-address-text])
-        {:keys [decimals] :as token}
-        (tokens/asset-for all-tokens
-                          (ethereum/network->chain-keyword network)
-                          symbol)]
-    [list/touchable-item #(when-not hide-details? (re-frame/dispatch [:show-transaction-details hash]))
-     [react/view {:accessibility-label :transaction-item}
-      [list/item
-       (when type
-         [list/item-icon (transaction-type->icon (keyword type))])
-       [list/item-content
-        [react/view {:style styles/amount-time}
-         [react/nested-text {:style           styles/tx-amount
-                             :ellipsize-mode  "tail"
-                             :number-of-lines 1}
-          [{:accessibility-label :amount-text}
-           (-> value  (money/internal->formatted symbol decimals) money/to-fixed str)]
-          " "
-          [{:accessibility-label :currency-text}
-           (wallet.utils/display-symbol token)]]
-         [react/text {:style styles/tx-time}
-          time-formatted]]
-        [react/view {:style styles/address-row}
-         [react/text {:style styles/address-label}
-          label]
-         (when contact
-           [react/text {:style               styles/address-contact
-                        :accessibility-label contact-accessibility-label}
-            contact])
-         [react/text {:style               styles/address-hash
-                      :ellipsize-mode      "middle"
-                      :number-of-lines     1
-                      :accessibility-label address-accessibility-label}
-          address]]]
-       (when-not hide-details?
-         [list/item-icon {:icon      :main-icons/next
-                          :style     {:margin-top 10}
-                          :icon-opts (merge styles/forward
-                                            {:accessibility-label :show-transaction-button})}])]]]))
+  [{:keys [label contact address contact-accessibility-label
+           address-accessibility-label currency-text amount-text
+           time-formatted on-touch-fn type]}]
+  [list/touchable-item on-touch-fn
+   [react/view {:accessibility-label :transaction-item}
+    [list/item
+     (when type
+       [list/item-icon (transaction-type->icon (keyword type))])
+     [list/item-content
+      [react/view {:style styles/amount-time}
+       [react/nested-text {:style           styles/tx-amount
+                           :ellipsize-mode  "tail"
+                           :number-of-lines 1}
+        [{:accessibility-label :amount-text}
+         amount-text]
+        " "
+        [{:accessibility-label :currency-text}
+         currency-text]]
+       [react/text {:style styles/tx-time}
+        time-formatted]]
+      [react/view {:style styles/address-row}
+       [react/text {:style styles/address-label}
+        label]
+       (when contact
+         [react/text {:style               styles/address-contact
+                      :accessibility-label contact-accessibility-label}
+          contact])
+       [react/text {:style               styles/address-hash
+                    :ellipsize-mode      "middle"
+                    :number-of-lines     1
+                    :accessibility-label address-accessibility-label}
+        address]]]
+     [list/item-icon {:icon      :main-icons/next
+                      :style     {:margin-top 10}
+                      :icon-opts (merge styles/forward
+                                        {:accessibility-label :show-transaction-button})}]]]])
 
-(defn filtered-transaction? [transaction filter-data]
-  (:checked? (some #(when (= (:type transaction) (:id %)) %) (:type filter-data))))
+(defn history-list
+  [transactions-history-sections]
+  [react/view components.styles/flex
+   [list/section-list {:sections        transactions-history-sections
+                       :key-fn          :hash
+                       :render-fn       #(render-transaction %)
+                       :empty-component
+                       [react/i18n-text {:style styles/empty-text
+                                         :key   :transactions-history-empty}]
+                       :refreshing      false}]])
 
-(defn update-transactions [m filter-data]
-  (update m
-          :data
-          (fn [v]
-            (filter #(filtered-transaction? % filter-data) v))))
+(defview transactions
+  []
+  (letsubs [{:keys [transaction-history-sections all-filters?]}
+            [:wallet.transactions.history/screen]]
+    [react/view styles/transactions-view
+     [status-bar/status-bar]
+     [toolbar-view all-filters?]
+     [history-list transaction-history-sections]]))
 
-(defview history-list [& [hide-details?]]
-  (letsubs [transactions-history-list [:wallet.transactions/transactions-history-list]
-            filter-data               [:wallet.transactions/filters]
-            network                   [:account/network]
-            all-tokens                [:wallet/all-tokens]]
-    [react/view components.styles/flex
-     [list/section-list {:sections        (map #(update-transactions % filter-data) transactions-history-list)
-                         :key-fn          :hash
-                         :render-fn       #(render-transaction % network all-tokens hide-details?)
-                         :empty-component [react/i18n-text {:style styles/empty-text
-                                                            :key   :transactions-history-empty}]
-                         :refreshing      false}]]))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TRANSACTION FILTERS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Filter history
-
-(defn- item-filter [{:keys [icon checked? path]} content]
+(defn- render-item-filter [{:keys [id label checked? on-touch]}]
   [react/view {:accessibility-label :filter-item}
    [list/list-item-with-checkbox
     {:checked?        checked?
-     :on-value-change #(re-frame/dispatch [:wallet.transactions/filter path %])}
+     :on-value-change on-touch}
     [list/item
-     [list/item-icon icon]
-     content]]])
-
-(defn- render-item-filter [{:keys [id label checked?]}]
-  (when id
-    [item-filter {:icon (transaction-type->icon id) :checked? checked? :path {:type id}}
+     [list/item-icon (transaction-type->icon id)]
      [list/item-content
       [list/item-primary-only {:accessibility-label :filter-name-text}
-       label]]]))
-
-(defn- wrap-filter-data [m]
-  [{:title     (i18n/label :t/transactions-filter-type)
-    :key       :type
-    :render-fn render-item-filter
-    :data      (:type m)}])
+       label]]]]])
 
 (defview filter-history []
-  (letsubs [filter-data [:wallet.transactions/filters]]
+  (letsubs [{:keys [filters all-filters? on-touch-select-all]}
+            [:wallet.transactions.filters/screen]]
     [react/view styles/filter-container
      [status-bar/status-bar {:type :modal-main}]
      [toolbar/toolbar {}
-      [toolbar/nav-clear-text {:accessibility-label :done-button} (i18n/label :t/done)]
-      [toolbar/content-title (i18n/label :t/transactions-filter-title)]
-      [toolbar/text-action {:handler             #(re-frame/dispatch [:wallet.transactions/filter-all])
-                            :disabled?           (all-checked? filter-data)
-                            :accessibility-label :select-all-button}
+      [toolbar/nav-clear-text
+       {:accessibility-label :done-button}
+       (i18n/label :t/done)]
+      [toolbar/content-title
+       (i18n/label :t/transactions-filter-title)]
+      [toolbar/text-action
+       {:handler             on-touch-select-all
+        :disabled?           all-filters?
+        :accessibility-label :select-all-button}
        (i18n/label :t/transactions-filter-select-all)]]
-     [react/view {:style (merge {:background-color :white} components.styles/flex)}
-      [list/section-list {:sections (wrap-filter-data filter-data)
-                          :key-fn   (comp str :id)}]]]))
+     [react/view
+      {:style (merge {:background-color :white} components.styles/flex)}
+      [list/section-list {:sections [{:title
+                                      (i18n/label :t/transactions-filter-type)
+                                      :key       :type
+                                      :render-fn render-item-filter
+                                      :data filters}]
+                          :key-fn   :id}]]]))
 
-(defview transactions []
-  (letsubs [filter-data [:wallet.transactions/filters]]
-    [react/view styles/transactions-view
-     [status-bar/status-bar]
-     [toolbar-view filter-data]
-     [history-list]]))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TRANSACTION DETAILS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn details-header
   [date type amount-text currency-text]
@@ -183,10 +178,10 @@
    [react/view {:style (styles/progress-bar-todo (- 100 progress) failed?)}]])
 
 (defn details-confirmations
-  [confirmations confirmations-progress type]
+  [confirmations confirmations-progress failed?]
   [react/view {:style styles/details-block}
-   [progress-bar confirmations-progress (failed? type)]
-   (if (failed? type)
+   [progress-bar confirmations-progress failed?]
+   (if failed?
      [react/i18n-text {:style styles/details-failed
                        :key   :failed}]
      [react/text {:style styles/details-confirmations-count}
@@ -259,6 +254,6 @@
       (when transaction [toolbar/actions (details-action hash url)])]
      [react/scroll-view {:style components.styles/main-container}
       [details-header date type amount-text currency-text]
-      [details-confirmations confirmations confirmations-progress type]
+      [details-confirmations confirmations confirmations-progress (= :failed type)]
       [react/view {:style styles/details-separator}]
       [details-list transaction]]]))

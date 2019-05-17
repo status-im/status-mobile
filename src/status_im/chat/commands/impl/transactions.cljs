@@ -1,30 +1,34 @@
 (ns status-im.chat.commands.impl.transactions
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
-            [reagent.core :as reagent]
             [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.chat.commands.impl.transactions.styles
+             :as
+             transactions-styles]
             [status-im.chat.commands.protocol :as protocol]
-            [status-im.chat.commands.impl.transactions.styles :as transactions-styles]
-            [status-im.data-store.messages :as messages-store]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.animation :as animation]
-            [status-im.ui.components.svgimage :as svgimage]
-            [status-im.i18n :as i18n]
             [status-im.contact.db :as db.contact]
+            [status-im.data-store.messages :as messages-store]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.animation :as animation]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.svgimage :as svgimage]
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.ui.screens.wallet.choose-recipient.events
+             :as
+             choose-recipient.events]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.utils.datetime :as datetime]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]
-            [status-im.ui.screens.wallet.db :as wallet.db]
-            [status-im.ui.screens.wallet.choose-recipient.events :as choose-recipient.events]
-            [status-im.ui.screens.navigation :as navigation]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]))
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.wallet.db :as wallet.db])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 ;; common `send/request` functionality
 
@@ -179,19 +183,22 @@
 ;; `/send` command
 
 (defview send-status [tx-hash outgoing]
-  (letsubs [confirmed? [:chats/transaction-confirmed? tx-hash]
-            tx-exists? [:chats/wallet-transaction-exists? tx-hash]]
-    [react/touchable-highlight {:on-press #(when tx-exists?
+  (letsubs [{:keys [exists? confirmed?]} [:chats/transaction-status tx-hash]]
+    [react/touchable-highlight {:on-press #(when exists?
                                              (re-frame/dispatch [:show-transaction-details tx-hash]))}
      [react/view transactions-styles/command-send-status-container
-      [vector-icons/icon (if confirmed? :tiny-icons/tiny-check :tiny-icons/tiny-pending)
-       {:color           (if outgoing colors/blue-light colors/blue)
+      [vector-icons/icon (if confirmed?
+                           :tiny-icons/tiny-check
+                           :tiny-icons/tiny-pending)
+       {:color           (if outgoing
+                           colors/blue-light
+                           colors/blue)
         :container-style (transactions-styles/command-send-status-icon outgoing)}]
       [react/view
        [react/text {:style (transactions-styles/command-send-status-text outgoing)}
         (i18n/label (cond
                       confirmed? :status-confirmed
-                      tx-exists? :status-pending
+                      exists? :status-pending
                       :else :status-tx-not-found))]]]]))
 
 (defn transaction-status [{:keys [tx-hash outgoing]}]
