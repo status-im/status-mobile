@@ -12,7 +12,6 @@
             [status-im.test.wallet.subs]
             [status-im.test.wallet.transactions]
             [status-im.test.wallet.transactions.subs]
-            [status-im.test.wallet.transactions.views]
             [status-im.test.mailserver.core]
             [status-im.test.fleet.core]
             [status-im.test.group-chats.core]
@@ -99,7 +98,6 @@
  'status-im.test.wallet.subs
  'status-im.test.wallet.transactions
  'status-im.test.wallet.transactions.subs
- 'status-im.test.wallet.transactions.views
  'status-im.test.chat.models.loading
  'status-im.test.chat.models.input
  'status-im.test.chat.models.message

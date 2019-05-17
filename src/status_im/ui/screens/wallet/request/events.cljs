@@ -1,12 +1,10 @@
 (ns status-im.ui.screens.wallet.request.events
-  (:require [re-frame.core :as re-frame]
-            [status-im.ui.screens.wallet.db :as wallet-db]
-            [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.handlers :as handlers]
+  (:require [status-im.chat.commands.sending :as commands-sending]
             [status-im.chat.models :as chat-model]
-            [status-im.chat.commands.sending :as commands-sending]
             [status-im.utils.fx :as fx]
-            [status-im.utils.money :as money]))
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.money :as money]
+            [status-im.wallet.db :as wallet.db]))
 
 (handlers/register-handler-fx
  :wallet-send-request
@@ -23,7 +21,7 @@
 (handlers/register-handler-fx
  :wallet.request/set-and-validate-amount
  (fn [{:keys [db]} [_ amount symbol decimals]]
-   (let [{:keys [value error]} (wallet-db/parse-amount amount decimals)]
+   (let [{:keys [value error]} (wallet.db/parse-amount amount decimals)]
      {:db (-> db
               (assoc-in [:wallet :request-transaction :amount] (money/formatted->internal value symbol decimals))
               (assoc-in [:wallet :request-transaction :amount-text] amount)
