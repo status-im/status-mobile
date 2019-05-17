@@ -7,7 +7,7 @@
             [status-im.native-module.core :as status]
             [status-im.transport.utils :as transport.utils]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.ui.screens.wallet.db :as wallet.db]
+            [status-im.wallet.db :as wallet.db]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.erc20 :as erc20]
             [status-im.utils.ethereum.tokens :as tokens]

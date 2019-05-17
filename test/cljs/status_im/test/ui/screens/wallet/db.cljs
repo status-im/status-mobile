@@ -1,6 +1,6 @@
 (ns status-im.test.ui.screens.wallet.db
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.ui.screens.wallet.db :as wallet.db]
+            [status-im.wallet.db :as wallet.db]
             [status-im.utils.money :as money]
             [status-im.i18n :as i18n]))
 
