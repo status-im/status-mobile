@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.wallet.db
+(ns status-im.wallet.db
   (:require [cljs.spec.alpha :as spec]
             [status-im.i18n :as i18n]
             status-im.ui.screens.wallet.request.db
@@ -22,6 +22,7 @@
 (spec/def :wallet/visible-tokens any?)
 (spec/def :wallet/currency any?)
 (spec/def :wallet/balance any?)
+(spec/def :wallet/filters set?)
 
 (spec/def :wallet/wallet (spec/keys :opt-un [:wallet/send-transaction
                                              :wallet/request-transaction
@@ -30,6 +31,7 @@
                                              :wallet/errors
                                              :wallet/transactions
                                              :wallet/edit
+                                             :wallet/filters
                                              :wallet/current-tab
                                              :wallet/current-transaction
                                              :wallet/modal-history?
@@ -58,3 +60,15 @@
 
         :else
         {:value value}))))
+
+(def default-wallet-filters
+  #{:inbound :outbound :pending :failed})
+
+(def default-wallet
+  {:filters default-wallet-filters})
+
+(defn get-confirmations
+  [{:keys [block]} current-block]
+  (if (and current-block block)
+    (inc (- current-block block))
+    0))

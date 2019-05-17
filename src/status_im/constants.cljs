@@ -30,13 +30,6 @@
 
 (def system "system")
 
-(def default-wallet-transactions
-  {:filters
-   {:type [{:id :inbound   :label (i18n/label :t/incoming)  :checked? true}
-           {:id :outbound  :label (i18n/label :t/outgoing)  :checked? true}
-           {:id :pending   :label (i18n/label :t/pending)   :checked? true}
-           {:id :failed    :label (i18n/label :t/failed)    :checked? true}]}})
-
 (def mainnet-networks
   {"mainnet"     {:id     "mainnet",
                   :name   "Mainnet",

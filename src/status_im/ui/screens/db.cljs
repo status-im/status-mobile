@@ -16,7 +16,8 @@
             status-im.browser.db
             status-im.ui.screens.add-new.db
             status-im.ui.screens.add-new.new-public-chat.db
-            status-im.ui.components.bottom-sheet.core))
+            status-im.ui.components.bottom-sheet.core
+            [status-im.wallet.db :as wallet.db]))
 
 ;; initial state of app-db
 (def app-db {:keyboard-height                    0
@@ -32,7 +33,7 @@
              :selected-participants              #{}
              :sync-state                         :done
              :app-state                          "active"
-             :wallet.transactions                constants/default-wallet-transactions
+             :wallet                              wallet.db/default-wallet
              :wallet/all-tokens                  {}
              :prices                             {}
              :peers-count                        0
@@ -329,7 +330,6 @@
                                    :chat/id->command
                                    :chat/access-scope->command-id
                                    :wallet/wallet
-                                   :wallet/wallet.transactions
                                    :prices/prices
                                    :prices/prices-loading?
                                    :notifications/notifications

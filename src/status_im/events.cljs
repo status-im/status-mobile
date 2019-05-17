@@ -57,6 +57,7 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.logging.core :as logging]
             [status-im.utils.utils :as utils]
+            [status-im.wallet.db :as wallet.db]
             [status-im.web3.core :as web3]
             [taoensso.timbre :as log]
             [status-im.wallet.custom-tokens.core :as custom-tokens]))
@@ -2144,3 +2145,20 @@
  :ethereum.transactions/new
  (fn [cofx [_ transaction]]
    (ethereum.transactions/new cofx transaction)))
+
+;; wallet events
+(handlers/register-handler-fx
+ :wallet.transactions/add-filter
+ (fn [{:keys [db]} [_ id]]
+   {:db (update-in db [:wallet :filters] conj id)}))
+
+(handlers/register-handler-fx
+ :wallet.transactions/remove-filter
+ (fn [{:keys [db]} [_ id]]
+   {:db (update-in db [:wallet :filters] disj id)}))
+
+(handlers/register-handler-fx
+ :wallet.transactions/add-all-filters
+ (fn [{:keys [db]} _]
+   {:db (assoc-in db [:wallet :filters]
+                  wallet.db/default-wallet-filters)}))
