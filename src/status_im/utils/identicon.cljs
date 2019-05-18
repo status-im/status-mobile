@@ -9,4 +9,5 @@
                                     :size       default-size})))
   ([hash options]
    (str "data:image/png;base64,"
-        (str (new (dependencies/identicon-js) hash options)))))
+        (let [Identicon (dependencies/identicon-js)]
+          (str (Identicon. hash options))))))
