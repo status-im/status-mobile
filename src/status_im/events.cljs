@@ -57,6 +57,7 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.logging.core :as logging]
             [status-im.utils.utils :as utils]
+            [status-im.wallet.core :as wallet]
             [status-im.wallet.db :as wallet.db]
             [status-im.web3.core :as web3]
             [taoensso.timbre :as log]
@@ -2133,6 +2134,12 @@
    (ethereum.transactions/new cofx transaction)))
 
 ;; wallet events
+
+(handlers/register-handler-fx
+ :wallet.ui/pull-to-refresh
+ (fn [cofx _]
+   (wallet/update-wallet cofx)))
+
 (handlers/register-handler-fx
  :wallet.transactions/add-filter
  (fn [{:keys [db]} [_ id]]
@@ -2148,3 +2155,91 @@
  (fn [{:keys [db]} _]
    {:db (assoc-in db [:wallet :filters]
                   wallet.db/default-wallet-filters)}))
+
+(handlers/register-handler-fx
+ :wallet.settings/toggle-visible-token
+ (fn [cofx [_ symbol checked?]]
+   (wallet/toggle-visible-token cofx symbol checked?)))
+
+(handlers/register-handler-fx
+ :wallet/token-found
+ (fn [cofx [_ symbol balance]]
+   (wallet/configure-token-balance-and-visibility cofx symbol balance)))
+
+(handlers/register-handler-fx
+ :TODO.remove/update-wallet
+ (fn [cofx _]
+   (wallet/update-wallet cofx)))
+
+(handlers/register-handler-fx
+ :wallet.settings.ui/navigate-back-pressed
+ (fn [cofx [_ on-close]]
+   (fx/merge cofx
+             (when on-close
+               {:dispatch on-close})
+             (navigation/navigate-back)
+             (wallet/update-wallet))))
+
+(handlers/register-handler-fx
+ :wallet.callback/update-balance-success
+ (fn [cofx [_ balance]]
+   (wallet/update-balance cofx balance)))
+
+(handlers/register-handler-fx
+ :wallet.callback/update-balance-fail
+ (fn [cofx [_ err]]
+   (wallet/on-update-balance-fail cofx err)))
+
+(handlers/register-handler-fx
+ :wallet.callback/update-token-balance-success
+ (fn [cofx [_ symbol balance]]
+   (wallet/update-token-balance cofx symbol balance)))
+
+(handlers/register-handler-fx
+ :wallet.callback/update-token-balance-fail
+ (fn [cofx [_ symbol err]]
+   (wallet/on-update-token-balance-fail cofx symbol err)))
+
+(handlers/register-handler-fx
+ :wallet.callback/update-prices-success
+ (fn [cofx [_ prices]]
+   (wallet/update-prices cofx prices)))
+
+(handlers/register-handler-fx
+ :wallet.callback/update-prices-fail
+ (fn [cofx [_ err]]
+   (wallet/on-update-prices-fail cofx err)))
+
+(handlers/register-handler-fx
+ :wallet.ui/show-transaction-details
+ (fn [cofx [_ hash]]
+   (wallet/open-transaction-details cofx hash)))
+
+(handlers/register-handler-fx
+ :wallet/show-sign-transaction
+ (fn [cofx [_ {:keys [id method]} from-chat?]]
+   (wallet/open-send-transaction-modal cofx id method from-chat?)))
+
+(handlers/register-handler-fx
+ :wallet/update-gas-price-success
+ (fn [cofx [_ price edit?]]
+   (wallet/update-gas-price cofx price edit?)))
+
+(handlers/register-handler-fx
+ :TODO.remove/update-estimated-gas
+ (fn [{:keys [db]} [_ obj]]
+   {:update-estimated-gas {:web3          (:web3 db)
+                           :obj           obj
+                           :success-event :wallet/update-estimated-gas-success}}))
+
+(handlers/register-handler-fx
+ :wallet/update-estimated-gas-success
+ (fn [cofx [_ gas]]
+   (wallet/update-estimated-gas-price cofx gas)))
+
+(handlers/register-handler-fx
+ :wallet.setup.ui/navigate-back-pressed
+ (fn [{:keys [db] :as cofx}]
+   (fx/merge cofx
+             {:db (assoc-in db [:wallet :send-transaction] {})}
+             (navigation/navigate-back))))

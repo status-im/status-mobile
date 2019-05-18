@@ -74,7 +74,7 @@
       {:style {:border-bottom-color colors/white-light-transparent}}
       [toolbar/nav-button
        (actions/back-white
-        #(re-frame/dispatch [:update-wallet-and-nav-back
+        #(re-frame/dispatch [:wallet.settings.ui/navigate-back-pressed
                              (when (fn? on-close)
                                (on-close (create-payload address)))]))]
       [toolbar/content-title {:color colors/white}

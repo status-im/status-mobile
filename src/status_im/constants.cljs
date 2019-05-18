@@ -102,11 +102,7 @@
 
 (defn default-account-settings []
   {:web3-opt-in? true
-   :wallet       {:visible-tokens {:testnet #{:STT :HND}
-                                   :mainnet #{:SNT}
-                                   :rinkeby #{:MOKSHA :KDO}
-                                   :xdai    #{}
-                                   :poa     #{}}}})
+   :wallet       {:visible-tokens {}}})
 
 (def currencies
   {:aed {:id :aed :code "AED" :display-name (i18n/label :t/currency-display-name-aed) :symbol "د.إ"}
