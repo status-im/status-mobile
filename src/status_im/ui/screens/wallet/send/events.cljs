@@ -3,11 +3,9 @@
             [status-im.chat.commands.sending :as commands-sending]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
-            [status-im.models.wallet :as models.wallet]
             [status-im.native-module.core :as status]
             [status-im.transport.utils :as transport.utils]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.wallet.db :as wallet.db]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.erc20 :as erc20]
             [status-im.utils.ethereum.tokens :as tokens]
@@ -16,7 +14,9 @@
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.wallet.core :as wallet]
+            [status-im.wallet.db :as wallet.db]))
 
 ;;;; FX
 
@@ -66,7 +66,7 @@
        {:db                (-> db
                                (assoc-in [:wallet :send-transaction :wrong-password?] false)
                                (assoc-in [:wallet :send-transaction :in-progress?] true))
-        ::send-transaction [(models.wallet/prepare-send-transaction from transaction)
+        ::send-transaction [(wallet/prepare-send-transaction from transaction)
                             all-tokens
                             symbol
                             chain
@@ -116,7 +116,7 @@
          modal-screen-was-used? (get-in db [:navigation/screen-params :wallet-send-modal-stack :modal?])]
      (if error
        ;; ERROR
-       (models.wallet/handle-transaction-error (assoc cofx :db db') error)
+       (wallet/handle-transaction-error (assoc cofx :db db') error)
        ;; RESULT
        (fx/merge cofx
                  (merge
@@ -124,7 +124,7 @@
 
                          (not (constants/web3-sign-message? method))
                          (assoc-in [:wallet :transactions result]
-                                   (models.wallet/prepare-unconfirmed-transaction db now result)))}
+                                   (wallet/prepare-unconfirmed-transaction db now result)))}
                   (when  on-result
                     {:dispatch (conj on-result id result method)}))
                  #(when (or (not on-result)
@@ -168,7 +168,7 @@
          db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
      (if error
        ;; ERROR
-       (models.wallet/handle-transaction-error (assoc cofx :db db') error)
+       (wallet/handle-transaction-error (assoc cofx :db db') error)
        ;; RESULT
        (fx/merge cofx
                  {:db (-> db
@@ -186,19 +186,19 @@
 (handlers/register-handler-fx
  :wallet/discard-transaction
  (fn [cofx _]
-   (models.wallet/discard-transaction cofx)))
+   (wallet/discard-transaction cofx)))
 
 (handlers/register-handler-fx
  :wallet.dapp/transaction-on-result
  (fn [{db :db} [_ message-id id result method]]
    (let [webview (:webview-bridge db)
          keycard? (boolean (get-in db [:account/account :keycard-instance-uid]))]
-     (models.wallet/dapp-complete-transaction (int id) result method message-id webview keycard?))))
+     (wallet/dapp-complete-transaction (int id) result method message-id webview keycard?))))
 
 (handlers/register-handler-fx
  :wallet.dapp/transaction-on-error
  (fn [{db :db} [_ message-id message]]
-   (models.wallet/web3-error-callback {} db message-id message)))
+   (wallet/web3-error-callback {} db message-id message)))
 
 ;; DAPP TRANSACTIONS QUEUE
 ;; NOTE(andrey) We need this queue because dapp can send several transactions in a row, this is bad behaviour
@@ -219,13 +219,13 @@
 
          ;;SEND TRANSACTION
          (= method constants/web3-send-transaction)
-         (let [transaction (models.wallet/prepare-dapp-transaction queued-transaction (:contacts/contacts db))]
-           (models.wallet/open-modal-wallet-for-transaction db' transaction (first params)))
+         (let [transaction (wallet/prepare-dapp-transaction queued-transaction (:contacts/contacts db))]
+           (wallet/open-modal-wallet-for-transaction db' transaction (first params)))
 
          ;;SIGN MESSAGE
          (constants/web3-sign-message? method)
          (let [typed? (not= constants/web3-personal-sign method)
-               [address data] (models.wallet/normalize-sign-message-params params)]
+               [address data] (wallet/normalize-sign-message-params params)]
            (if (and address data)
              (let [signing-phrase (-> (get-in db [:account/account :signing-phrase])
                                       (clojure.string/replace-all #" " "     "))
@@ -259,7 +259,7 @@
  (fn [cofx _]
    (fx/merge cofx
              (navigation/navigate-back)
-             (models.wallet/discard-transaction))))
+             (wallet/discard-transaction))))
 
 (defn update-gas-price
   ([db edit? success-event]
@@ -311,7 +311,7 @@
 (handlers/register-handler-fx
  :wallet.send/edit-value
  (fn [cofx [_ key value]]
-   (models.wallet/edit-value key value cofx)))
+   (wallet/edit-value key value cofx)))
 
 (handlers/register-handler-fx
  :wallet.send/set-gas-details
@@ -333,7 +333,7 @@
                        (money/to-fixed
                         (ethereum/estimate-gas
                          (-> db :wallet :send-transaction :symbol))))]
-     (assoc (models.wallet/edit-value
+     (assoc (wallet/edit-value
              :gas
              gas-default
              cofx)
@@ -364,9 +364,9 @@
 (defn- prepare-keycard-transaction
   [transaction from symbol chain all-tokens]
   (if (= :ETH symbol)
-    (models.wallet/prepare-send-transaction from transaction)
+    (wallet/prepare-send-transaction from transaction)
     (let [contract (:address (tokens/symbol->token all-tokens (keyword chain) symbol))
-          {:keys [gas gasPrice to from value]} (models.wallet/prepare-send-transaction from transaction)]
+          {:keys [gas gasPrice to from value]} (wallet/prepare-send-transaction from transaction)]
       (merge (ethereum/call-params contract "transfer(address,uint256)" to value)
              {:from     from
               :gas      gas

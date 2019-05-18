@@ -8,6 +8,7 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
+            [status-im.wallet.core :as wallet]
             [taoensso.timbre :as log]))
 
 (def confirmations-count-threshold 12)
@@ -180,14 +181,18 @@
 ;; -----------------------------------------------
 
 (fx/defn new
-  [{:keys [db]} {:keys [hash] :as transaction}]
-  {:db (assoc-in db [:wallet :transactions hash] transaction)})
+  [{:keys [db] :as cofx} {:keys [hash] :as transaction}]
+  (fx/merge cofx
+            {:db (assoc-in db [:wallet :transactions hash] transaction)}
+            wallet/update-wallet))
 
 (fx/defn handle-history
-  [{:keys [db]} transactions]
-  {:db (update-in db
-                  [:wallet :transactions]
-                  #(merge transactions %))})
+  [{:keys [db] :as cofx} transactions]
+  (fx/merge cofx
+            {:db (update-in db
+                            [:wallet :transactions]
+                            #(merge transactions %))}
+            wallet/update-wallet))
 
 (fx/defn handle-token-history
   [{:keys [db]} transactions]

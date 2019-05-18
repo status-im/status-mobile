@@ -2,14 +2,13 @@
   (:require [re-frame.core :as re-frame]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.navigation :as navigation]
             [status-im.native-module.core :as native-module]
-            [status-im.ui.screens.wallet.settings.models :as wallet.settings.models]
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.build :as build]
             [status-im.utils.config :as config]
-            [status-im.utils.utils :as utils]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as platform]
-            [status-im.utils.build :as build]))
+            [status-im.utils.utils :as utils]))
 
 (re-frame/reg-fx
  ::chaos-mode-changed
@@ -49,7 +48,6 @@
   [{:keys [db] :as cofx} modal?]
   (fx/merge cofx
             (continue-after-wallet-onboarding modal?)
-            (wallet.settings.models/wallet-autoconfig-tokens)
             (accounts.update/account-update {:wallet-set-up-passed? true} {})))
 
 (fx/defn update-dev-server-state

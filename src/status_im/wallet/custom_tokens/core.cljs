@@ -8,7 +8,7 @@
             [clojure.string :as string]
             [status-im.ethereum.decode :as decode]
             [status-im.utils.fx :as fx]
-            [status-im.ui.screens.wallet.settings.models :as models]))
+            [status-im.wallet.core :as wallet]))
 
 (re-frame/reg-fx
  :wallet.custom-token/get-decimals
@@ -111,12 +111,12 @@
         new-token {:address  contract :name name :symbol symbol :custom? true
                    :decimals (int decimals) :color (rand-nth colors/chat-colors)}]
     (fx/merge (assoc-in cofx [:db :wallet/all-tokens chain-key contract] new-token)
-              (models/add-custom-token new-token))))
+              (wallet/add-custom-token new-token))))
 
 (fx/defn remove-custom-token [{:keys [db] :as cofx} {:keys [address] :as token}]
   (let [chain-key (ethereum/get-chain-keyword db)]
     (fx/merge (update-in cofx [:db :wallet/all-tokens chain-key] dissoc address)
-              (models/remove-custom-token token))))
+              (wallet/remove-custom-token token))))
 
 (fx/defn field-is-edited [{:keys [db] :as cofx} field-key value]
   (case field-key

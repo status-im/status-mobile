@@ -1,17 +1,17 @@
 (ns status-im.stickers.core
-  (:require [status-im.utils.fx :as fx]
-            [cljs.reader :as edn]
-            [status-im.accounts.core :as accounts]
-            [status-im.ui.screens.navigation :as navigation]
+  (:require [cljs.reader :as edn]
             [re-frame.core :as re-frame]
-            [status-im.utils.multihash :as multihash]
+            [status-im.accounts.core :as accounts]
             [status-im.constants :as constants]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.stickers :as ethereum.stickers]
-            [status-im.models.wallet :as models.wallet]
-            [status-im.utils.money :as money]
+            [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.ethereum.abi-spec :as abi-spec]
-            [status-im.utils.ethereum.erc20 :as erc20]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.erc20 :as erc20]
+            [status-im.utils.ethereum.stickers :as ethereum.stickers]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.money :as money]
+            [status-im.utils.multihash :as multihash]
+            [status-im.wallet.core :as wallet]))
 
 (fx/defn init-stickers-packs [{:keys [db]}]
   (let [sticker-packs (into {} (map #(let [pack (edn/read-string %)]
@@ -82,7 +82,7 @@
         data              (abi-spec/encode "buyToken(uint256,address)" [pack-id address])
         tx-object         {:to   (get erc20/snt-contracts chain)
                            :data (abi-spec/encode "approveAndCall(address,uint256,bytes)" [stickers-contract price data])}]
-    (models.wallet/open-modal-wallet-for-transaction
+    (wallet/open-modal-wallet-for-transaction
      db
      (prepare-transaction "approve" tx-object [:stickers/pending-pack pack-id])
      tx-object)))

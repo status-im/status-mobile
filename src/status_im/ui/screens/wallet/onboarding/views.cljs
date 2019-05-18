@@ -55,7 +55,7 @@
   ^{:key "toolbar"}
   [wallet.components/toolbar
    {:transparent? true}
-   (actions/back-white #(re-frame/dispatch [:wallet.setup-ui/navigate-back-pressed]))
+   (actions/back-white #(re-frame/dispatch [:wallet.setup.ui/navigate-back-pressed]))
    (i18n/label :t/wallet-set-up-title)])
 
 (defn main-panel [signing-phrase on-confirm]

@@ -11,11 +11,9 @@
             [status-im.constants :as constants]
             [status-im.contact.db :as contact.db]
             [status-im.ethereum.transactions.core :as transactions]
+            [status-im.ethereum.transactions.etherscan :as transactions.etherscan]
             [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
-            [status-im.ethereum.transactions.core :as transactions]
-            [status-im.ethereum.transactions.etherscan :as transactions.etherscan]
-            [status-im.models.wallet :as models.wallet]
             [status-im.ui.components.bottom-bar.styles :as tabs.styles]
             [status-im.ui.components.toolbar.styles :as toolbar.styles]
             [status-im.ui.screens.add-new.new-public-chat.db :as db]
@@ -30,18 +28,18 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.stateofus :as stateofus]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.hex :as utils.hex]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.utils.universal-links.core :as links]
+            [status-im.wallet.core :as wallet]
+            [status-im.wallet.db :as wallet.db]
             status-im.tribute-to-talk.subs
             status-im.ui.screens.hardwallet.connect.subs
             status-im.ui.screens.hardwallet.settings.subs
             status-im.ui.screens.hardwallet.pin.subs
-            status-im.ui.screens.hardwallet.setup.subs
-            [status-im.wallet.db :as wallet.db]))
+            status-im.ui.screens.hardwallet.setup.subs))
 
 ;; TOP LEVEL ===========================================================================================================
 
@@ -1129,7 +1127,7 @@
                     :contact to-contact
                     :address to))
            :time-formatted (datetime/timestamp->time timestamp)
-           :on-touch-fn #(re-frame/dispatch [:show-transaction-details hash]))))
+           :on-touch-fn #(re-frame/dispatch [:wallet.ui/show-transaction-details hash]))))
 
 (defn- group-transactions-by-date
   [transactions]
@@ -1258,12 +1256,12 @@
   [transaction edit]
   (cond-> edit
     (not (get-in edit [:gas-price :value]))
-    (models.wallet/build-edit
+    (wallet/build-edit
      :gas-price
      (money/to-fixed (money/wei-> :gwei (:gas-price transaction))))
 
     (not (get-in edit [:gas :value]))
-    (models.wallet/build-edit
+    (wallet/build-edit
      :gas
      (money/to-fixed (:gas transaction)))))
 
@@ -1300,7 +1298,7 @@
  :<- [:balance]
  (fn [[{:keys [amount symbol] :as transaction} balance]]
    (-> transaction
-       (models.wallet/add-max-fee)
+       (wallet/add-max-fee)
        (check-sufficient-funds balance symbol amount)
        (check-sufficient-gas balance symbol amount))))
 

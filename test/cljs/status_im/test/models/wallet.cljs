@@ -1,31 +1,31 @@
 (ns status-im.test.models.wallet
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.utils.money :as money]
-            [status-im.models.wallet :as model]))
+            [status-im.wallet.core :as wallet]))
 
 (deftest valid-min-gas-price-test
   (testing "not an number"
-    (is (= :invalid-number (model/invalid-send-parameter? :gas-price nil))))
+    (is (= :invalid-number (wallet/invalid-send-parameter? :gas-price nil))))
   (testing "a number less than the minimum"
-    (is (= :not-enough-wei (model/invalid-send-parameter? :gas-price (money/bignumber "0.0000000001")))))
+    (is (= :not-enough-wei (wallet/invalid-send-parameter? :gas-price (money/bignumber "0.0000000001")))))
   (testing "a number greater than the mininum"
-    (is (not (model/invalid-send-parameter? :gas-price 3))))
+    (is (not (wallet/invalid-send-parameter? :gas-price 3))))
   (testing "the minimum"
-    (is (not (model/invalid-send-parameter? :gas-price (money/bignumber "0.000000001"))))))
+    (is (not (wallet/invalid-send-parameter? :gas-price (money/bignumber "0.000000001"))))))
 
 (deftest valid-gas
   (testing "not an number"
-    (is (= :invalid-number (model/invalid-send-parameter? :gas nil))))
+    (is (= :invalid-number (wallet/invalid-send-parameter? :gas nil))))
   (testing "0"
-    (is (= :invalid-number (model/invalid-send-parameter? :gas 0))))
+    (is (= :invalid-number (wallet/invalid-send-parameter? :gas 0))))
   (testing "a number"
-    (is (not (model/invalid-send-parameter? :gas 1)))))
+    (is (not (wallet/invalid-send-parameter? :gas 1)))))
 
 (deftest build-edit-test
   (testing "an invalid edit"
     (let [actual (-> {}
-                     (model/build-edit :gas "invalid")
-                     (model/build-edit :gas-price "0.00000000001"))]
+                     (wallet/build-edit :gas "invalid")
+                     (wallet/build-edit :gas-price "0.00000000001"))]
       (testing "it marks gas-price as invalid"
         (is (get-in actual [:gas-price :invalid?])))
       (testing "it does not change value"
@@ -38,13 +38,13 @@
         (is (= "0" (:max-fee actual))))))
   (testing "gas price in wei should be round"
     (let [actual (-> {}
-                     (model/build-edit :gas "21000")
-                     (model/build-edit :gas-price "0.0000000023"))]
+                     (wallet/build-edit :gas "21000")
+                     (wallet/build-edit :gas-price "0.0000000023"))]
       (is (get-in actual [:gas-price :invalid?]))))
   (testing "an valid edit"
     (let [actual (-> {}
-                     (model/build-edit :gas "21000")
-                     (model/build-edit :gas-price "10"))]
+                     (wallet/build-edit :gas "21000")
+                     (wallet/build-edit :gas-price "10"))]
       (testing "it does not mark gas-price as invalid"
         (is (not (get-in actual [:gas-price :invalid?]))))
       (testing "it sets the value in number for gas-price, in gwei"

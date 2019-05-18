@@ -7,7 +7,6 @@
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
-            [status-im.models.wallet :as models.wallet]
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
             [status-im.protocol.core :as protocol]
@@ -22,6 +21,7 @@
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.universal-links.core :as universal-links]
+            [status-im.wallet.core :as wallet]
             [taoensso.timbre :as log]))
 
 (def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
@@ -84,10 +84,10 @@
 
 (fx/defn initialize-wallet [cofx]
   (fx/merge cofx
-            (models.wallet/initialize-tokens)
+            (wallet/initialize-tokens)
             (transactions/initialize)
             (ethereum.subscriptions/initialize)
-            (models.wallet/update-wallet)))
+            (wallet/update-wallet)))
 
 (fx/defn user-login [{:keys [db] :as cofx} create-database?]
   (let [{:keys [address password]} (accounts.db/credentials cofx)]
