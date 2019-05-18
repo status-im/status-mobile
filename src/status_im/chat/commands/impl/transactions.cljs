@@ -185,7 +185,7 @@
 (defview send-status [tx-hash outgoing]
   (letsubs [{:keys [exists? confirmed?]} [:chats/transaction-status tx-hash]]
     [react/touchable-highlight {:on-press #(when exists?
-                                             (re-frame/dispatch [:show-transaction-details tx-hash]))}
+                                             (re-frame/dispatch [:wallet.ui/show-transaction-details tx-hash]))}
      [react/view transactions-styles/command-send-status-container
       [vector-icons/icon (if confirmed?
                            :tiny-icons/tiny-check

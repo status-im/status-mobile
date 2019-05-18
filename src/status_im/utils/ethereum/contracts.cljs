@@ -1,10 +1,10 @@
 (ns status-im.utils.ethereum.contracts
   (:require [re-frame.core :as re-frame]
-            [status-im.models.wallet :as wallet]
             [status-im.utils.ethereum.abi-spec :as abi-spec]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.fx :as fx]
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [status-im.wallet.core :as wallet]))
 
 (def contracts
   {:status/snt
