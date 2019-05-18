@@ -2,17 +2,17 @@
   (:require [clojure.string :as string]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
-            [status-im.models.wallet :as models.wallet]
-            [status-im.utils.hex :as hex]
+            [status-im.native-module.core :as status]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.ethereum.abi-spec :as abi-spec]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.ethereum.ens :as ens]
             [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.ens :as ens]
+            [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.hex :as hex]
             [status-im.utils.money :as money]
             [status-im.utils.types :as types]
-            [status-im.native-module.core :as status]))
+            [status-im.wallet.core :as wallet]))
 
 (handlers/register-handler-fx
  :extensions/wallet-ui-on-success
@@ -72,7 +72,7 @@
   (let [tx-object (assoc (select-keys arguments [:to :gas :gas-price :value :nonce])
                          :data (when (and method params) (abi-spec/encode method params)))
         transaction (prepare-extension-transaction tx-object (:contacts/contacts db) on-success on-failure)]
-    (models.wallet/open-modal-wallet-for-transaction db transaction tx-object)))
+    (wallet/open-modal-wallet-for-transaction db transaction tx-object)))
 
 (handlers/register-handler-fx
  :extensions/ethereum-send-transaction

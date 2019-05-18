@@ -1,24 +1,24 @@
 (ns status-im.hardwallet.core
-  (:require [re-frame.core :as re-frame]
-            status-im.hardwallet.fx
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.accounts.create.core :as accounts.create]
+            [status-im.accounts.login.core :as accounts.login]
+            [status-im.accounts.logout.core :as accounts.logout]
+            [status-im.accounts.recover.core :as accounts.recover]
+            [status-im.data-store.accounts :as accounts-store]
+            [status-im.i18n :as i18n]
+            [status-im.node.core :as node]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
+            [status-im.utils.datetime :as utils.datetime]
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.mnemonic :as mnemonic]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as platform]
-            [taoensso.timbre :as log]
-            [status-im.i18n :as i18n]
             [status-im.utils.types :as types]
-            [status-im.accounts.create.core :as accounts.create]
-            [status-im.node.core :as node]
-            [status-im.utils.datetime :as utils.datetime]
-            [status-im.data-store.accounts :as accounts-store]
-            [status-im.utils.ethereum.core :as ethereum]
-            [clojure.string :as string]
-            [status-im.accounts.login.core :as accounts.login]
-            [status-im.accounts.recover.core :as accounts.recover]
-            [status-im.models.wallet :as models.wallet]
-            [status-im.utils.ethereum.mnemonic :as mnemonic]
-            [status-im.accounts.logout.core :as accounts.logout]))
+            [status-im.wallet.core :as wallet]
+            [taoensso.timbre :as log]
+            status-im.hardwallet.fx))
 
 (def default-pin "000000")
 
@@ -54,7 +54,7 @@
     (if navigate-to-browser?
       (fx/merge cofx
                 {:db (assoc-in db [:hardwallet :on-card-connected] nil)}
-                (models.wallet/discard-transaction)
+                (wallet/discard-transaction)
                 (navigation/navigate-to-cofx :browser nil))
       (if (= :enter-pin-login (:view-id db))
         (navigation/navigate-to-clean cofx :accounts nil)

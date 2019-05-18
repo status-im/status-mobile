@@ -2,29 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.constants :as constants]
-            [status-im.utils.utils :as utils]))
-
-(defmethod navigation/preload-data! :wallet
-  [db _]
-  ;;TODO(goranjovic) - get rid of this preload hook completely
-  ;;TODO(andrey) - temporary "improvement" with timeout, to fix screen rendering, wallet update should be optimized
-  (utils/set-timeout (fn []
-                       (re-frame/dispatch [:wallet.ui/pull-to-refresh])
-                       (re-frame/dispatch [:update-wallet]))
-                     500)
-  db)
-
-(defmethod navigation/preload-data! :wallet-stack
-  [db _]
-  ;;TODO(goranjovic) - get rid of this preload hook completely
-  ;;TODO(andrey) - temporary "improvement" with timeout, to fix screen rendering, wallet update should be optimized
-  (utils/set-timeout (fn []
-                       (re-frame/dispatch [:wallet.ui/pull-to-refresh])
-                       (re-frame/dispatch [:update-wallet]))
-                     500)
-  db)
+            [status-im.utils.ethereum.core :as ethereum]))
 
 (def transaction-send-default
   (let [symbol :ETH]
