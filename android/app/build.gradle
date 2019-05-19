@@ -81,6 +81,7 @@ project.ext.react = [
     entryFile: "index.android.js",
     bundleInPr: true,
     bundleCommand: "ram-bundle",
+    bundleConfig: "packager/config.js"
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
