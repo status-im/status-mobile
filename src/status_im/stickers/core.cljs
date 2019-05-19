@@ -6,7 +6,6 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.ethereum.abi-spec :as abi-spec]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.erc20 :as erc20]
             [status-im.utils.ethereum.stickers :as ethereum.stickers]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
@@ -74,13 +73,18 @@
          (when on-result {:on-result on-result})
          tx))
 
+(def snt-contracts
+  {:mainnet "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
+   :testnet "0xc55cf4b03948d7ebc8b9e8bad92643703811d162"
+   :rinkeby nil})
+
 (fx/defn approve-pack [{db :db} pack-id price]
   (let [network           (get-in db [:account/account :networks (:network db)])
         address           (ethereum/normalized-address (get-in db [:account/account :address]))
         chain             (ethereum/network->chain-keyword network)
         stickers-contract (get ethereum.stickers/contracts chain)
         data              (abi-spec/encode "buyToken(uint256,address)" [pack-id address])
-        tx-object         {:to   (get erc20/snt-contracts chain)
+        tx-object         {:to   (get snt-contracts chain)
                            :data (abi-spec/encode "approveAndCall(address,uint256,bytes)" [stickers-contract price data])}]
     (wallet/open-modal-wallet-for-transaction
      db
