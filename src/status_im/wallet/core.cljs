@@ -3,13 +3,13 @@
             [re-frame.core :as re-frame]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.constants :as constants]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.config :as config]
             [status-im.utils.core :as utils.core]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.erc20 :as erc20]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.fx :as fx]
             [status-im.utils.hex :as utils.hex]
@@ -17,30 +17,6 @@
             [status-im.utils.prices :as prices]
             [status-im.utils.utils :as utils.utils]
             [taoensso.timbre :as log]))
-
-(defn get-balance [{:keys [web3 account-id on-success on-error]}]
-  (if (and web3 account-id)
-    (.getBalance
-     (.-eth web3)
-     account-id
-     (fn [err resp]
-       (if-not err
-         (on-success resp)
-         (on-error err))))
-    (on-error "web3 or account-id not available")))
-
-(defn get-token-balance
-  [{:keys [web3 contract account-id on-success on-error]}]
-  (if (and web3 contract account-id)
-    (erc20/balance-of
-     web3
-     contract
-     (ethereum/normalized-address account-id)
-     (fn [err resp]
-       (if-not err
-         (on-success resp)
-         (on-error err))))
-    (on-error "web3, contract or account-id not available")))
 
 (defn assoc-error-message [db error-type err]
   (assoc-in db [:wallet :errors error-type] (or err :unknown-error)))
@@ -83,27 +59,18 @@
 ;; FX
 
 (re-frame/reg-fx
- :get-balance
- (fn [{:keys [web3 account-id success-event error-event]}]
-   (get-balance {:web3       web3
-                 :account-id account-id
-                 :on-success #(re-frame/dispatch [success-event %])
-                 :on-error   #(re-frame/dispatch [error-event %])})))
+ :wallet/get-balance
+ (fn [{:keys [account-id on-success on-error]}]
+   (json-rpc/call
+    {:method     "eth_getBalance"
+     :params     [account-id "latest"]
+     :on-success on-success
+     :on-error   on-error})))
 
+;; TODO(oskarth): At some point we want to get list of relevant
+;; assets to get prices for
 (re-frame/reg-fx
- :get-tokens-balance
- (fn [{:keys [web3 symbols all-tokens chain account-id success-event error-event]}]
-   (doseq [symbol symbols]
-     (let [contract (:address (tokens/symbol->token all-tokens chain symbol))]
-       (get-token-balance {:web3       web3
-                           :contract   contract
-                           :account-id account-id
-                           :on-success #(re-frame/dispatch [success-event symbol %])
-                           :on-error   #(re-frame/dispatch [error-event symbol %])})))))
-
-;; TODO(oskarth): At some point we want to get list of relevant assets to get prices for
-(re-frame/reg-fx
- :get-prices
+ :wallet/get-prices
  (fn [{:keys [from to mainnet? success-event error-event chaos-mode?]}]
    (prices/get-prices from
                       to
@@ -113,91 +80,99 @@
                       chaos-mode?)))
 
 (re-frame/reg-fx
- :update-gas-price
- (fn [{:keys [web3 success-event edit?]}]
-   (ethereum/gas-price web3 #(re-frame/dispatch [success-event %2 edit?]))))
+ :wallet/update-gas-price
+ (fn [{:keys [success-event edit?]}]
+   (json-rpc/call
+    {:method "eth_gasPrice"
+     :on-success
+     #(re-frame/dispatch [success-event % edit?])})))
 
 (re-frame/reg-fx
- :update-estimated-gas
- (fn [{:keys [web3 obj success-event]}]
-   (ethereum/estimate-gas-web3 web3 (clj->js obj) #(re-frame/dispatch [success-event %2]))))
+ :wallet/update-estimated-gas
+ (fn [{:keys [obj success-event]}]
+   (json-rpc/call
+    {:method "eth_estimateGas"
+     :params [obj]
+     :on-success
+     #(re-frame/dispatch [success-event %])})))
 
-(defn- validate-token-name! [web3 {:keys [address symbol name]}]
-  (erc20/name web3 address #(when (and (seq %2) ;;NOTE(goranjovic): skipping check if field not set in contract
-                                       (not= name %2))
-                              (let [message (i18n/label :t/token-auto-validate-name-error
-                                                        {:symbol   symbol
-                                                         :expected name
-                                                         :actual   %2
-                                                         :address  address})]
-                                (log/warn message)
-                                (utils.utils/show-popup (i18n/label :t/warning) message)))))
+(defn- validate-token-name!
+  [{:keys [address symbol name]}]
+  (json-rpc/eth-call
+   {:contract address
+    :method "name()"
+    :outputs ["string"]
+    :on-success
+    (fn [[contract-name]]
+      (when (and (not (empty? contract-name))
+                 (not= name contract-name))
+        (let [message (i18n/label :t/token-auto-validate-name-error
+                                  {:symbol   symbol
+                                   :expected name
+                                   :actual   contract-name
+                                   :address  address})]
+          (log/warn message)
+          (utils.utils/show-popup (i18n/label :t/warning) message))))}))
 
-(defn- validate-token-symbol! [web3 {:keys [address symbol]}]
-  (erc20/symbol web3 address #(when (and (seq %2) ;;NOTE(goranjovic): skipping check if field not set in contract
-                                         (not= (clojure.core/name symbol) %2))
-                                (let [message (i18n/label :t/token-auto-validate-symbol-error
-                                                          {:symbol   symbol
-                                                           :expected (clojure.core/name symbol)
-                                                           :actual   %2
-                                                           :address  address})]
-                                  (log/warn message)
-                                  (utils.utils/show-popup (i18n/label :t/warning) message)))))
+(defn- validate-token-symbol!
+  [{:keys [address symbol]}]
+  (json-rpc/eth-call
+   {:contract address
+    :method "symbol()"
+    :outputs ["string"]
+    :on-success
+    (fn [[contract-symbol]]
+      ;;NOTE(goranjovic): skipping check if field not set in contract
+      (when (and (not (empty? contract-symbol))
+                 (not= (clojure.core/name symbol) contract-symbol))
+        (let [message (i18n/label :t/token-auto-validate-symbol-error
+                                  {:symbol   symbol
+                                   :expected (clojure.core/name symbol)
+                                   :actual   contract-symbol
+                                   :address  address})]
+          (log/warn message)
+          (utils.utils/show-popup (i18n/label :t/warning) message))))}))
 
-(defn- validate-token-decimals! [web3 {:keys [address symbol decimals nft? skip-decimals-check?]}]
-  ;;NOTE(goranjovic): only skipping check if skip-decimals-check? flag is present because we can't differentiate
-  ;;between unset decimals and 0 decimals.
-  (when-not skip-decimals-check?
-    (erc20/decimals web3 address #(when (and %2
-                                             (not nft?)
-                                             (not= decimals (int %2)))
-                                    (let [message (i18n/label :t/token-auto-validate-decimals-error
-                                                              {:symbol   symbol
-                                                               :expected decimals
-                                                               :actual   %2
-                                                               :address  address})]
-                                      (log/warn message)
-                                      (utils.utils/show-popup (i18n/label :t/warning) message))))))
+(defn- validate-token-decimals!
+  [{:keys [address symbol decimals nft?]}]
+  (when-not nft?
+    (json-rpc/eth-call
+     {:contract address
+      :method "decimals()"
+      :outputs ["uint256"]
+      :on-success
+      (fn [[contract-decimals]]
+        (when (and (not (nil? contract-decimals))
+                   (not= decimals contract-decimals))
+          (let [message (i18n/label :t/token-auto-validate-decimals-error
+                                    {:symbol   symbol
+                                     :expected decimals
+                                     :actual   contract-decimals
+                                     :address  address})]
+            (log/warn message)
+            (utils.utils/show-popup (i18n/label :t/warning) message))))})))
 
 (re-frame/reg-fx
  :wallet/validate-tokens
- (fn [{:keys [web3 tokens]}]
+ (fn [tokens]
    (doseq [token tokens]
-     (validate-token-decimals! web3 token)
-     (validate-token-symbol! web3 token)
-     (validate-token-name! web3 token))))
+     (validate-token-decimals! token)
+     (validate-token-symbol! token)
+     (validate-token-name! token))))
 
 (re-frame/reg-fx
- :wallet/check-all-known-tokens-balance
- (fn [{:keys [web3 contracts account]}]
-   (doseq [{:keys [address symbol]} contracts]
-     ;;TODO(goranjovic): move `get-token-balance` function to wallet models
-     (get-token-balance {:web3       web3
-                         :contract   address
-                         :account-id (:address account)
-                         :on-error   #(re-frame/dispatch [:update-token-balance-fail symbol %])
-                         :on-success #(when (> % 0)
-                                        (re-frame/dispatch [:wallet/token-found symbol %]))}))))
-
-(fx/defn wallet-autoconfig-tokens
-  [{:keys [db] :as cofx}]
-  (let [{:keys [account/account web3 network-status] :wallet/keys [all-tokens]} db
-        network   (get (:networks account) (:network account))
-        chain     (ethereum/network->chain-keyword network)
-        contracts (->> (tokens/tokens-for all-tokens chain)
-                       (remove :hidden?))
-        settings  (:settings account)
-        assets    (get-in settings [:wallet :visible-tokens chain])]
-    (when-not (or (= network-status :offline)
-                  assets)
-      (let [new-settings (assoc-in settings
-                                   [:wallet :visible-tokens chain]
-                                   #{})]
-        (fx/merge cofx
-                  {:wallet/check-all-known-tokens-balance {:web3      web3
-                                                           :contracts contracts
-                                                           :account   account}}
-                  (accounts.update/update-settings new-settings {}))))))
+ :wallet/get-tokens-balance
+ (fn [{:keys [wallet-address tokens on-success on-error]}]
+   (doseq [{:keys [address symbol]} tokens]
+     (json-rpc/eth-call
+      {:contract   address
+       :method     "balanceOf(address)"
+       :params     [wallet-address]
+       :outputs    ["uint256"]
+       :on-success
+       (fn [[balance]]
+         (on-success symbol (money/bignumber balance)))
+       :on-error   #(on-error symbol %)}))))
 
 (def min-gas-price-wei (money/bignumber 1))
 
@@ -277,7 +252,8 @@
       (assoc :nonce nonce))))
 
 ;; SEND TRANSACTION -> RPC TRANSACTION
-(defn prepare-send-transaction [from {:keys [amount to gas gas-price data nonce]}]
+(defn prepare-send-transaction
+  [from {:keys [amount to gas gas-price data nonce]}]
   (cond-> {:from     (ethereum/normalized-address from)
            :to       (ethereum/normalized-address to)
            :value    (ethereum/int->hex amount)
@@ -288,9 +264,10 @@
     nonce
     (assoc :nonce nonce)))
 
-;; NOTE (andrey) we need this function, because params may be mixed up, so we need to figure out which one is address
-;; and which message
-(defn normalize-sign-message-params [params]
+(defn normalize-sign-message-params
+  "NOTE (andrey) we need this function, because params may be mixed up,
+  so we need to figure out which one is address and which message"
+  [params]
   (let [first_param           (first params)
         second_param          (second params)
         first-param-address?  (ethereum/address? first_param)
@@ -300,23 +277,29 @@
         [first_param second_param]
         [second_param first_param]))))
 
-(defn web3-error-callback [fx {:keys [webview-bridge]} message-id message]
-  (assoc fx :browser/send-to-bridge {:message {:type      constants/web3-send-async-callback
-                                               :messageId message-id
-                                               :error     message}
-                                     :webview webview-bridge}))
+(defn web3-error-callback
+  [fx {:keys [webview-bridge]} message-id message]
+  (assoc fx :browser/send-to-bridge
+         {:message {:type      constants/web3-send-async-callback
+                    :messageId message-id
+                    :error     message}
+          :webview webview-bridge}))
 
-(defn dapp-complete-transaction [id result method message-id webview keycard?]
-  (cond-> {:browser/send-to-bridge {:message {:type      constants/web3-send-async-callback
-                                              :messageId message-id
-                                              :result    {:jsonrpc "2.0"
-                                                          :id      (int id)
-                                                          :result  result}}
-                                    :webview webview}
-           :dispatch          [:navigate-back]}
+(defn dapp-complete-transaction
+  [id result method message-id webview keycard?]
+  (cond-> {:browser/send-to-bridge
+           {:message {:type      constants/web3-send-async-callback
+                      :messageId message-id
+                      :result    {:jsonrpc "2.0"
+                                  :id      (int id)
+                                  :result  result}}
+            :webview webview}
+           :dispatch [:navigate-back]}
 
     (constants/web3-sign-message? method)
-    (assoc :dispatch (if keycard? [:navigate-to :browser] [:navigate-back]))
+    (assoc :dispatch (if keycard?
+                       [:navigate-to :browser]
+                       [:navigate-back]))
 
     (= method constants/web3-send-transaction)
     (assoc :dispatch [:navigate-to-clean :wallet-transaction-sent-modal])))
@@ -350,6 +333,9 @@
 (fx/defn handle-transaction-error
   [{:keys [db] :as cofx} {:keys [code message]}]
   (let [{:keys [on-error]} (get-in db [:wallet :send-transaction])]
+    (log/error :wallet/transaction-error
+               :code code
+               :message message)
     (case code
       ;;WRONG PASSWORD
       constants/send-transaction-err-decrypt
@@ -368,75 +354,111 @@
 (defn clear-error-message [db error-type]
   (update-in db [:wallet :errors] dissoc error-type))
 
-(defn tokens-symbols [visible-token-symbols all-tokens chain]
-  (set/difference (set visible-token-symbols) (set (map :symbol (tokens/nfts-for all-tokens chain)))))
+(defn tokens-symbols
+  [visible-token-symbols all-tokens chain]
+  (set/difference (set visible-token-symbols)
+                  (set (map :symbol (tokens/nfts-for all-tokens chain)))))
 
 (fx/defn initialize-tokens
   [{:keys [db] :as cofx}]
-  (let [network-id    (get-in db [:account/account :network])
-        network       (get-in db [:account/account :networks network-id])
-        custom-tokens (get-in db [:account/account :settings :wallet :custom-tokens])
-        chain         (ethereum/network->chain-keyword network)
+  (let [custom-tokens (get-in db [:account/account :settings :wallet :custom-tokens])
+        chain         (ethereum/chain-keyword db)
         all-tokens    (merge-with
                        merge
                        (utils.core/map-values #(utils.core/index-by :address %)
                                               tokens/all-default-tokens)
                        custom-tokens)]
-    (fx/merge cofx
-              (merge
-               {:db (assoc db :wallet/all-tokens all-tokens)}
-               (when config/erc20-contract-warnings-enabled?
-                 {:wallet/validate-tokens {:web3   (:web3 db)
-                                           :tokens (get tokens/all-default-tokens chain)}}))
-              wallet-autoconfig-tokens)))
+    (fx/merge
+     cofx
+     (merge
+      {:db (assoc db :wallet/all-tokens all-tokens)}
+      (when config/erc20-contract-warnings-enabled?
+        {:wallet/validate-tokens (get tokens/all-default-tokens chain)})))))
 
-(fx/defn update-wallet
-  [{{:keys [web3 network network-status]
-     {:keys [address settings]} :account/account :as db} :db}]
-  (let [all-tokens  (:wallet/all-tokens db)
-        network     (get-in db [:account/account :networks network])
-        chain       (ethereum/network->chain-keyword network)
+(fx/defn update-balances
+  [{{:keys [network-status :wallet/all-tokens]
+     {:keys [address settings]} :account/account :as db} :db :as cofx}]
+  (let [normalized-address (ethereum/normalized-address address)
+        chain  (ethereum/chain-keyword db)
+        assets (get-in settings [:wallet :visible-tokens chain])
+        tokens (->> (tokens/tokens-for all-tokens chain)
+                    (remove #(or (:hidden? %)
+                                 (:nft? %)))
+                    (filter #((or assets identity) (:symbol %))))]
+    (when (not= network-status :offline)
+      (fx/merge
+       cofx
+       {:wallet/get-balance
+        {:account-id normalized-address
+         :on-success #(re-frame/dispatch
+                       [:wallet.callback/update-balance-success %])
+         :on-error   #(re-frame/dispatch
+                       [:wallet.callback/update-balance-fail %])}
+
+        :wallet/get-tokens-balance
+        {:wallet-address normalized-address
+         :tokens         tokens
+         :on-success
+         (fn [symbol balance]
+           (if assets
+             (re-frame/dispatch
+              [:wallet.callback/update-token-balance-success symbol balance])
+             ;; NOTE: when there is no visible assets set,
+             ;; we make an initialization round
+             (when (> balance 0)
+               (re-frame/dispatch
+                [:wallet/token-found symbol balance]))))
+         :on-error
+         (fn [symbol error]
+           (re-frame/dispatch
+            [:wallet.callback/update-token-balance-fail symbol error]))}
+
+        :db
+        (-> db
+            (clear-error-message :balance-update)
+            (assoc-in [:wallet :balance-loading?] true))}
+       (when-not assets
+         (accounts.update/update-settings
+          (assoc-in settings
+                    [:wallet :visible-tokens chain]
+                    #{})
+          {}))))))
+
+(fx/defn update-prices
+  [{{:keys [network network-status :wallet/all-tokens]
+     {:keys [address settings networks]} :account/account :as db} :db}]
+  (let [chain       (ethereum/chain-keyword db)
         mainnet?    (= :mainnet chain)
         assets      (get-in settings [:wallet :visible-tokens chain])
-        tokens      (tokens-symbols (get-in settings [:wallet :visible-tokens chain]) all-tokens chain)
+        tokens      (tokens-symbols assets all-tokens chain)
         currency-id (or (get-in settings [:wallet :currency]) :usd)
         currency    (get constants/currencies currency-id)]
     (when (not= network-status :offline)
-      {:get-balance        {:web3          web3
-                            :account-id    address
-                            :success-event :wallet.callback/update-balance-success
-                            :error-event   :wallet.callback/update-balance-fail}
-       :get-tokens-balance {:web3          web3
-                            :account-id    address
-                            :symbols       assets
-                            :chain         chain
-                            :all-tokens    all-tokens
-                            :success-event :wallet.callback/update-token-balance-success
-                            :error-event   :wallet.callback/update-token-balance-fail}
-       :get-prices         {:from          (if mainnet?
-                                             (conj tokens "ETH")
-                                             [(-> (tokens/native-currency chain)
-                                                  (wallet.utils/exchange-symbol))])
-                            :to            [(:code currency)]
-                            :mainnet?      mainnet?
-                            :success-event :wallet.callback/update-prices-success
-                            :error-event   :wallet.callback/update-prices-fail
-                            :chaos-mode?   (:chaos-mode? settings)}
-       :db                 (-> db
-                               (clear-error-message :prices-update)
-                               (clear-error-message :balance-update)
-                               (assoc-in [:wallet :balance-loading?] true)
-                               (assoc :prices-loading? true))})))
+      {:wallet/get-prices
+       {:from          (if mainnet?
+                         (conj tokens "ETH")
+                         [(-> (tokens/native-currency chain)
+                              (wallet.utils/exchange-symbol))])
+        :to            [(:code currency)]
+        :mainnet?      mainnet?
+        :success-event :wallet.callback/update-prices-success
+        :error-event   :wallet.callback/update-prices-fail
+        :chaos-mode?   (:chaos-mode? settings)}
 
-(defn open-modal-wallet-for-transaction [db transaction tx-object]
+       :db
+       (-> db
+           (clear-error-message :prices-update)
+           (assoc :prices-loading? true))})))
+
+(defn open-modal-wallet-for-transaction
+  [db transaction tx-object]
   (let [{:keys [gas gas-price]} transaction
         {:keys [wallet-set-up-passed?]} (:account/account db)]
     {:db         (-> db
                      (assoc-in [:navigation/screen-params :wallet-send-modal-stack :modal?] true)
                      (assoc-in [:wallet :send-transaction] transaction)
                      (assoc-in [:wallet :send-transaction :original-gas] gas))
-     :dispatch-n [[:TODO.remove/update-wallet]
-                  (when-not gas
+     :dispatch-n [(when-not gas
                     [:TODO.remove/update-estimated-gas tx-object])
                   (when-not gas-price
                     [:wallet/update-gas-price])
@@ -444,9 +466,10 @@
                    (if wallet-set-up-passed?
                      :wallet-send-modal-stack
                      :wallet-send-modal-stack-with-onboarding)]]}))
-2
+
 (fx/defn open-sign-transaction-flow
-  [{:keys [db] :as cofx} {:keys [gas gas-price] :as transaction}]
+  [{:keys [db] :as cofx}
+   {:keys [gas gas-price] :as transaction}]
   (let [go-to-view-id (if (get-in db [:account/account :wallet-set-up-passed?])
                         :wallet-send-modal-stack
                         :wallet-send-modal-stack-with-onboarding)]
@@ -458,17 +481,14 @@
                                (assoc-in [:wallet :send-transaction :original-gas]
                                          gas))}
                 (not gas)
-                (assoc :update-estimated-gas
-                       {:web3          (:web3 db)
-                        :obj           (select-keys transaction [:to :data])
+                (assoc :wallet/update-estimated-gas
+                       {:obj           (select-keys transaction [:to :data])
                         :success-event :wallet/update-estimated-gas-success})
 
                 (not gas-price)
-                (assoc :update-gas-price
-                       {:web3          (:web3 db)
-                        :success-event :wallet/update-gas-price-success
+                (assoc :wallet/update-gas-price
+                       {:success-event :wallet/update-gas-price-success
                         :edit?         false}))
-              (update-wallet)
               (navigation/navigate-to-cofx go-to-view-id {}))))
 
 (defn send-transaction-screen-did-load
@@ -482,7 +502,7 @@
     (conj (or ids #{}) id)
     (disj ids id)))
 
-(fx/defn update-prices
+(fx/defn on-update-prices-success
   [{:keys [db]} prices]
   {:db (assoc db
               :prices prices
@@ -491,13 +511,13 @@
 (fx/defn update-balance
   [{:keys [db]} balance]
   {:db (-> db
-           (assoc-in [:wallet :balance :ETH] balance)
+           (assoc-in [:wallet :balance :ETH] (money/bignumber balance))
            (assoc-in [:wallet :balance-loading?] false))})
 
 (fx/defn update-token-balance
   [{:keys [db]} symbol balance]
   {:db (-> db
-           (assoc-in [:wallet :balance symbol] balance)
+           (assoc-in [:wallet :balance symbol] (money/bignumber balance))
            (assoc-in [:wallet :balance-loading?] false))})
 
 (fx/defn update-gas-price
@@ -543,7 +563,8 @@
         new-settings (assoc-in settings [:wallet :custom-tokens chain address] token)]
     (accounts.update/update-settings cofx new-settings {})))
 
-(fx/defn configure-token-balance-and-visibility [cofx symbol balance]
+(fx/defn configure-token-balance-and-visibility
+  [cofx symbol balance]
   (fx/merge cofx
             (toggle-visible-token symbol true)
             ;;TODO(goranjovic): move `update-token-balance-success` function to wallet models

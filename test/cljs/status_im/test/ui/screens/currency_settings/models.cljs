@@ -11,7 +11,7 @@
 
 (deftest set-currency
   (let [cofx (models/set-currency {:db {:account/account {:settings {:wallet {}}}}} :usd)]
-    (is (= [:db :get-balance :get-tokens-balance :get-prices :data-store/base-tx] (keys cofx)))
+    (is (= [:db :wallet/get-prices :data-store/base-tx] (keys cofx)))
     (is (= :usd (get-in cofx [:db :account/account :settings :wallet :currency]))))
   (is (= :jpy (get-in (models/set-currency {:db {:account/account {:settings {:wallet {}}}}} :jpy)
                       [:db :account/account :settings :wallet :currency]))))

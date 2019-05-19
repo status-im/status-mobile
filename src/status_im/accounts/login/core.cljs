@@ -85,9 +85,10 @@
 (fx/defn initialize-wallet [cofx]
   (fx/merge cofx
             (wallet/initialize-tokens)
+            (wallet/update-balances)
+            (wallet/update-prices)
             (transactions/initialize)
-            (ethereum.subscriptions/initialize)
-            (wallet/update-wallet)))
+            (ethereum.subscriptions/initialize)))
 
 (fx/defn user-login [{:keys [db] :as cofx} create-database?]
   (let [{:keys [address password]} (accounts.db/credentials cofx)]

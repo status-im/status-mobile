@@ -4,11 +4,11 @@
             [re-frame.core :as re-frame]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.contact.db :as contact.db]
+            [status-im.ethereum.contracts :as contracts]
             [status-im.ipfs.core :as ipfs]
             [status-im.tribute-to-talk.db :as tribute-to-talk.db]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.contenthash :as contenthash]
-            [status-im.utils.ethereum.contracts :as contracts]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))

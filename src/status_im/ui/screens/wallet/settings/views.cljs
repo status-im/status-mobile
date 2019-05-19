@@ -48,7 +48,7 @@
         [action-button/action-button {:label     (i18n/label :t/add-custom-token)
                                       :icon      :main-icons/add
                                       :icon-opts {:color :blue}
-                                      :on-press  #(re-frame/dispatch [:navigate-to :wallet-add-custom-token])}]
+                                      :on-press  #(re-frame/dispatch [:wallet.settings.ui/navigate-back-pressed])}]
         [list/section-list
          {:sections                    (concat
                                         (when (seq custom-tokens)

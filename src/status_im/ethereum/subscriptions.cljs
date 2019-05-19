@@ -8,7 +8,8 @@
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.ethereum.json-rpc :as json-rpc]))
 
 (fx/defn handle-signal
   [cofx {:keys [subscription_id data] :as event}]
@@ -56,33 +57,14 @@
                   ;; from etherscan
                   (transactions/initialize))))))
 
-(defn subscribe-signal
-  [filter params callback]
-  (status/call-private-rpc
-   (types/clj->json {:jsonrpc "2.0"
-                     :id      1
-                     :method  "eth_subscribeSignal"
-                     :params  [filter params]})
-   (fn [response]
-     (if (string/blank? response)
-       (log/error ::subscription-unknown-error :filter filter :params params)
-       (let [{:keys [error result]}
-             (-> (.parse js/JSON response)
-                 (js->clj :keywordize-keys true))]
-         (if error
-           (log/error ::subscription-error error :filter filter :params params)
-           (re-frame/dispatch [:ethereum.callback/subscription-success
-                               result
-                               callback])))))))
-
 (defn new-token-transaction-filter
   [{:keys [chain-tokens from to] :as args}]
-  (subscribe-signal
-   "eth_newFilter"
-   [{:fromBlock "latest"
-     :toBlock "latest"
-     :topics [constants/event-transfer-hash from to]}]
-   (transactions/inbound-token-transfer-handler chain-tokens)))
+  (json-rpc/call
+   {:method "eth_newFilter"
+    :params [{:fromBlock "latest"
+              :toBlock "latest"
+              :topics [constants/event-transfer-hash from to]}]
+    :on-success (transactions/inbound-token-transfer-handler chain-tokens)}))
 
 (re-frame/reg-fx
  :ethereum.subscriptions/token-transactions
@@ -95,13 +77,16 @@
 
 (defn new-block-filter
   []
-  (subscribe-signal
-   "eth_newBlockFilter" []
-   (fn [[block-hash]]
-     (transactions/get-block-by-hash
-      block-hash
-      (fn [block]
-        (re-frame/dispatch [:ethereum.signal/new-block block]))))))
+  (json-rpc/call
+   {:method "eth_newBlockFilter"
+    :on-success
+    (fn [[block-hash]]
+      (json-rpc/call
+       {:method "eth_getBlockByHash"
+        :params [block-hash true]
+        :on-success
+        (fn [block]
+          (re-frame/dispatch [:ethereum.signal/new-block block]))}))}))
 
 (re-frame/reg-fx
  :ethereum.subscriptions/new-block
