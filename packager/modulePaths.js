@@ -1,4 +1,4 @@
-["index.android.js",
+module.exports = ["index.android.js",
 "node_modules/realm/lib/index.js",
 "node_modules/react-native-languages/index.js",
 "node_modules/i18n-js/app/assets/javascripts/i18n.js",
