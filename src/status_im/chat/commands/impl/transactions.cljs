@@ -333,9 +333,9 @@
                  ;; TODO(janherich) - refactor wallet send events, updating gas price
                  ;; is generic thing which shouldn't be defined in wallet.send, then
                  ;; we can include the utility helper without running into circ-dep problem
-                 :update-gas-price {:web3          (:web3 db)
-                                    :success-event :wallet/update-gas-price-success
-                                    :edit?         false}}
+                 :wallet/update-gas-price
+                 {:success-event :wallet/update-gas-price-success
+                  :edit?         false}}
                 (navigation/navigate-to-cofx next-view-id {}))))
   protocol/EnhancedParameters
   (enhance-send-parameters [_ parameters cofx]

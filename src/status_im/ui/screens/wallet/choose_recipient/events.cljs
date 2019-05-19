@@ -51,9 +51,9 @@
 ;; NOTE(janherich) - whenever changing assets, we want to clear the previusly set amount/amount-text
 (defn changed-asset [{:keys [db] :as fx} old-symbol new-symbol]
   (-> fx
-      (merge {:update-gas-price {:web3          (:web3 db)
-                                 :success-event :wallet/update-gas-price-success
-                                 :edit?         false}})
+      (merge {:wallet/update-gas-price
+              {:success-event :wallet/update-gas-price-success
+               :edit?         false}})
       (assoc-in [:db :wallet :send-transaction :amount] nil)
       (assoc-in [:db :wallet :send-transaction :amount-text] nil)
       (assoc-in [:db :wallet :send-transaction :asset-error]

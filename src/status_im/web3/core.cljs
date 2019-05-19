@@ -39,13 +39,6 @@
      (fn [error sync]
        (re-frame/dispatch [:web3.callback/get-syncing-success error sync])))))
 
-(defn get-block-number-fx [web3]
-  (when web3
-    (.getBlockNumber
-     (.-eth web3)
-     (fn [error block-number]
-       (re-frame/dispatch [:web3.callback/get-block-number error block-number])))))
-
 (defn set-default-account
   [web3 address]
   (set! (.-defaultAccount (.-eth web3))

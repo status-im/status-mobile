@@ -1273,15 +1273,17 @@
     send-transaction
     edit)))
 
-(defn check-sufficient-funds [transaction balance symbol amount]
+(defn check-sufficient-funds
+  [transaction balance symbol amount]
   (assoc transaction :sufficient-funds?
          (or (nil? amount)
              (money/sufficient-funds? amount (get balance symbol)))))
 
-(defn check-sufficient-gas [transaction balance symbol amount]
+(defn check-sufficient-gas
+  [transaction balance symbol amount]
   (assoc transaction :sufficient-gas?
          (or (nil? amount)
-             (let [available-ether   (get balance :ETH (money/bignumber 0))
+             (let [available-ether   (money/bignumber (get balance :ETH 0))
                    available-for-gas (if (= :ETH symbol)
                                        (.minus available-ether (money/bignumber amount))
                                        available-ether)]

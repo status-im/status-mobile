@@ -1,68 +1,22 @@
 (ns status-im.ethereum.transactions.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.ethereum.decode :as decode]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.transactions.etherscan :as transactions.etherscan]
-            [status-im.native-module.core :as status]
-            [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.fx :as fx]
-            [status-im.utils.types :as types]
-            [status-im.wallet.core :as wallet]
-            [taoensso.timbre :as log]))
+            [status-im.utils.money :as money]
+            [status-im.wallet.core :as wallet]))
 
 (def confirmations-count-threshold 12)
-
-(defn get-block-by-hash
-  [block-hash callback]
-  (status/call-private-rpc
-   (types/clj->json {:jsonrpc "2.0"
-                     :id      1
-                     :method  "eth_getBlockByHash"
-                     :params  [block-hash true]})
-   (fn [response]
-     (if (string/blank? response)
-       (log/warn :web3-response-error)
-       (callback (-> (.parse js/JSON response)
-                     (js->clj :keywordize-keys true)
-                     :result
-                     (update :number decode/uint)
-                     (update :timestamp decode/uint)))))))
-
-(defn get-transaction-by-hash
-  [transaction-hash callback]
-  (status/call-private-rpc
-   (types/clj->json {:jsonrpc "2.0"
-                     :id      1
-                     :method  "eth_getTransactionByHash"
-                     :params  [transaction-hash]})
-   (fn [response]
-     (if (string/blank? response)
-       (log/warn :web3-response-error)
-       (callback (-> (.parse js/JSON response)
-                     (js->clj :keywordize-keys true)
-                     :result))))))
-
-(defn get-transaction-receipt [transaction-hash callback]
-  (status/call-private-rpc
-   (types/clj->json {:jsonrpc "2.0"
-                     :id      1
-                     :method  "eth_getTransactionReceipt"
-                     :params  [transaction-hash]})
-   (fn [response]
-     (if (string/blank? response)
-       (log/warn :web3-response-error)
-       (callback (-> (.parse js/JSON response)
-                     (js->clj :keywordize-keys true)
-                     :result))))))
 
 (defn add-padding [address]
   {:pre [(string? address)]}
   (str "0x000000000000000000000000" (subs address 2)))
 
-(defn- remove-padding [topic]
-  {:pre [(string? topic)]}
-  (str "0x" (subs topic 26)))
+(defn- remove-padding [address]
+  {:pre [(string? address)]}
+  (str "0x" (subs address 26)))
 
 (def default-erc20-token
   {:symbol   :ERC20
@@ -80,7 +34,7 @@
                :symbol        symbol
                :from          (remove-padding from)
                :to            (remove-padding to)
-               :value         (ethereum/hex->bignumber data)
+               :value         (money/bignumber data)
                :type          direction
                :token         token
                :error?        false
@@ -96,31 +50,33 @@
   [chain-tokens
    {:keys [number timestamp]}
    {:keys [transfer direction hash gasPrice value gas from input nonce to] :as transaction}]
-  (get-transaction-receipt
-   hash
-   (fn [{:keys [gasUsed logs] :as receipt}]
-     (let [[event _ _] (:topics (first logs))
-           transfer    (= constants/event-transfer-hash event)]
-       (re-frame/dispatch
-        [:ethereum.transactions/new
-         (merge {:block     (str number)
-                 :timestamp (str (* timestamp 1000))
-                 :gas-used  (str (decode/uint gasUsed))
-                 :gas-price (str (decode/uint gasPrice))
-                 :gas-limit (str (decode/uint gas))
-                 :nonce     (str (decode/uint nonce))
-                 :data      input}
-                (if transfer
-                  (parse-token-transfer chain-tokens
-                                        :outbound
-                                        (first logs))
-                  ;; this is not a ERC20 token transaction
-                  {:hash   hash
-                   :symbol :ETH
-                   :from   from
-                   :to     to
-                   :type   direction
-                   :value  (str (decode/uint value))}))])))))
+  (json-rpc/call
+   {:method "eth_getTransactionReceipt"
+    :params [hash]
+    :on-success
+    (fn [{:keys [gasUsed logs] :as receipt}]
+      (let [[event _ _] (:topics (first logs))
+            transfer    (= constants/event-transfer-hash event)]
+        (re-frame/dispatch
+         [:ethereum.transactions/new
+          (merge {:block     (str number)
+                  :timestamp (str (* timestamp 1000))
+                  :gas-used  (str (decode/uint gasUsed))
+                  :gas-price (str (decode/uint gasPrice))
+                  :gas-limit (str (decode/uint gas))
+                  :nonce     (str (decode/uint nonce))
+                  :data      input}
+                 (if transfer
+                   (parse-token-transfer chain-tokens
+                                         :outbound
+                                         (first logs))
+                   ;; this is not a ERC20 token transaction
+                   {:hash   hash
+                    :symbol :ETH
+                    :from   from
+                    :to     to
+                    :type   direction
+                    :value  (str (decode/uint value))}))])))}))
 
 (re-frame/reg-fx
  :ethereum.transactions/enrich-transactions-from-new-blocks
@@ -153,28 +109,34 @@
       ;; This function takes the map of supported tokens as params and returns a
       ;; handler for token transfer events
       (doseq [[block-hash block-transfers] transfers-by-block]
-        (get-block-by-hash
-         block-hash
-         (fn [{:keys [timestamp number]}]
-           (let [timestamp (str (* timestamp 1000))]
-             (doseq [{:keys [hash] :as transfer} block-transfers]
-               (get-transaction-by-hash
-                hash
-                (fn [{:keys [gasPrice gas input nonce]}]
-                  (get-transaction-receipt
-                   hash
-                   (fn [{:keys [gasUsed]}]
-                     (re-frame/dispatch
-                      [:ethereum.transactions/new
-                       (-> transfer
-                           (dissoc :block-hash)
-                           (assoc :timestamp timestamp
-                                  :block     (str number)
-                                  :gas-used  (str (decode/uint gasUsed))
-                                  :gas-price (str (decode/uint gasPrice))
-                                  :gas-limit (str (decode/uint gas))
-                                  :data      input
-                                  :nonce     (str (decode/uint nonce))))])))))))))))))
+        (json-rpc/call
+         {:method "eth_getBlockByHash"
+          :params [block-hash false]
+          :on-success
+          (fn [{:keys [timestamp number]}]
+            (let [timestamp (str (* timestamp 1000))]
+              (doseq [{:keys [hash] :as transfer} block-transfers]
+                (json-rpc/call
+                 {:method "eth_getTransactionByHash"
+                  :params [hash]
+                  :on-success
+                  (fn [{:keys [gasPrice gas input nonce]}]
+                    (json-rpc/call
+                     {:method "eth_getTransactionReceipt"
+                      :params [hash]
+                      :on-success
+                      (fn [{:keys [gasUsed]}]
+                        (re-frame/dispatch
+                         [:ethereum.transactions/new
+                          (-> transfer
+                              (dissoc :block-hash)
+                              (assoc :timestamp timestamp
+                                     :block     (str number)
+                                     :gas-used  (str (decode/uint gasUsed))
+                                     :gas-price (str (decode/uint gasPrice))
+                                     :gas-limit (str (decode/uint gas))
+                                     :data      input
+                                     :nonce     (str (decode/uint nonce))))]))}))}))))})))))
 
 ;; -----------------------------------------------
 ;; transactions api
@@ -184,7 +146,7 @@
   [{:keys [db] :as cofx} {:keys [hash] :as transaction}]
   (fx/merge cofx
             {:db (assoc-in db [:wallet :transactions hash] transaction)}
-            wallet/update-wallet))
+            wallet/update-balances))
 
 (fx/defn handle-history
   [{:keys [db] :as cofx} transactions]
@@ -192,7 +154,7 @@
             {:db (update-in db
                             [:wallet :transactions]
                             #(merge transactions %))}
-            wallet/update-wallet))
+            wallet/update-balances))
 
 (fx/defn handle-token-history
   [{:keys [db]} transactions]
