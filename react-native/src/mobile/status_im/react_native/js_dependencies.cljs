@@ -12,7 +12,7 @@
 (def webview-bridge         (require/js-require "react-native-webview-bridge"))
 (def webview                (require/js-require "react-native-webview"))
 
-(def react-native-securerandom (require/js-require react-native-securerandom))
+(def react-native-securerandom (require/js-require "react-native-securerandom"))
 (defn secure-random []         (.-generateSecureRandom (react-native-securerandom)))
 
 (def EventEmmiter           (require/js-require "react-native/Libraries/vendor/emitter/EventEmitter"))
