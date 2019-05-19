@@ -117,7 +117,6 @@
                                                          :output-dir         "target/android-prod"
                                                          :static-fns         true
                                                          :optimize-constants true
-                                                         :pretty-print       true
                                                          :optimizations      :advanced
                                                          :infer-externs      true
                                                          :externs            ["ex.js"]
