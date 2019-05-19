@@ -199,12 +199,11 @@
                (set (:utils/dispatch-later efx)))))
       (testing "Check the rest of effects."
         (is (contains? efx :web3/set-default-account))
-        (is (contains? efx :web3/get-block-number))
         (is (contains? efx :web3/fetch-node-version))
-        (is (contains? efx :get-balance))
         (is (contains? efx :web3/get-syncing))
-        (is (contains? efx :get-tokens-balance))
-        (is (contains? efx :get-prices))))))
+        (is (contains? efx :wallet/get-balance))
+        (is (contains? efx :wallet/get-tokens-balance))
+        (is (contains? efx :wallet/get-prices))))))
 
 (deftest login-failed
   (testing

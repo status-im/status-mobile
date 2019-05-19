@@ -9,4 +9,4 @@
         new-settings (assoc-in settings [:wallet :currency] currency)]
     (fx/merge cofx
               (accounts.update/update-settings new-settings {})
-              (wallet/update-wallet))))
+              (wallet/update-prices))))

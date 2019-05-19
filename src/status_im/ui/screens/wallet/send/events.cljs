@@ -7,7 +7,6 @@
             [status-im.transport.utils :as transport.utils]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.erc20 :as erc20]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
@@ -25,9 +24,17 @@
                            (security/safe-unmask-data masked-password)
                            on-completed))
 
-(defn- send-tokens [all-tokens symbol chain {:keys [from to value gas gasPrice]} on-completed masked-password]
+(defn- send-tokens
+  [all-tokens symbol chain
+   {:keys [from to value gas gasPrice]} on-completed masked-password]
   (let [contract (:address (tokens/symbol->token all-tokens (keyword chain) symbol))]
-    (erc20/transfer contract from to value gas gasPrice masked-password on-completed)))
+    (status/send-transaction (types/clj->json
+                              (merge (ethereum/call-params contract "transfer(address,uint256)" to value)
+                                     {:from     from
+                                      :gas      gas
+                                      :gasPrice gasPrice}))
+                             (security/safe-unmask-data masked-password)
+                             on-completed)))
 
 (re-frame/reg-fx
  ::send-transaction
@@ -263,9 +270,9 @@
 
 (defn update-gas-price
   ([db edit? success-event]
-   {:update-gas-price {:web3          (:web3 db)
-                       :success-event (or success-event :wallet/update-gas-price-success)
-                       :edit?         edit?}})
+   {:wallet/update-gas-price
+    {:success-event (or success-event :wallet/update-gas-price-success)
+     :edit?         edit?}})
   ([db edit?] (update-gas-price db edit? :wallet/update-gas-price-success))
   ([db] (update-gas-price db false :wallet/update-gas-price-success)))
 

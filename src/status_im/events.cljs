@@ -979,11 +979,6 @@
  (fn [cofx [_ error sync]]
    (web3/update-syncing-progress cofx error sync)))
 
-(handlers/register-handler-fx
- :web3.callback/get-block-number
- (fn [cofx [_ error block-number]]
-   (node/update-block-number cofx error block-number)))
-
 ;; notifications module
 
 (handlers/register-handler-fx
@@ -2152,7 +2147,7 @@
 (handlers/register-handler-fx
  :wallet.ui/pull-to-refresh
  (fn [cofx _]
-   (wallet/update-wallet cofx)))
+   (wallet/update-prices cofx)))
 
 (handlers/register-handler-fx
  :wallet.transactions/add-filter
@@ -2181,18 +2176,13 @@
    (wallet/configure-token-balance-and-visibility cofx symbol balance)))
 
 (handlers/register-handler-fx
- :TODO.remove/update-wallet
- (fn [cofx _]
-   (wallet/update-wallet cofx)))
-
-(handlers/register-handler-fx
  :wallet.settings.ui/navigate-back-pressed
  (fn [cofx [_ on-close]]
    (fx/merge cofx
              (when on-close
                {:dispatch on-close})
              (navigation/navigate-back)
-             (wallet/update-wallet))))
+             (wallet/update-balances))))
 
 (handlers/register-handler-fx
  :wallet.callback/update-balance-success
@@ -2217,7 +2207,7 @@
 (handlers/register-handler-fx
  :wallet.callback/update-prices-success
  (fn [cofx [_ prices]]
-   (wallet/update-prices cofx prices)))
+   (wallet/on-update-prices-success cofx prices)))
 
 (handlers/register-handler-fx
  :wallet.callback/update-prices-fail
@@ -2242,9 +2232,9 @@
 (handlers/register-handler-fx
  :TODO.remove/update-estimated-gas
  (fn [{:keys [db]} [_ obj]]
-   {:update-estimated-gas {:web3          (:web3 db)
-                           :obj           obj
-                           :success-event :wallet/update-estimated-gas-success}}))
+   {:wallet/update-estimated-gas
+    {:obj           obj
+     :success-event :wallet/update-estimated-gas-success}}))
 
 (handlers/register-handler-fx
  :wallet/update-estimated-gas-success

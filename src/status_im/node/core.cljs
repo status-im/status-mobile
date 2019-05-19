@@ -157,11 +157,6 @@
                 {:error error}
                 (when sync-state (js->clj sync-state :keywordize-keys true))))})
 
-(fx/defn update-block-number
-  [{:keys [db]} error block-number]
-  (when-not error
-    {:db (assoc db :node/latest-block-number block-number)}))
-
 (fx/defn start
   [{:keys [db]} address]
   (let [network     (if address
