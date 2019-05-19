@@ -8,11 +8,29 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.screens.privacy-policy.views :as privacy-policy]))
 
+(defn foo []
+  (let [modules (js/require.getModules)
+        ids     (.keys js/Object modules)]
+    (-> ids
+        (.filter (fn [id]
+                   (.-isInitialized (aget modules id))))
+        (.map (fn [id]
+                (.-verboseName (aget modules id))))
+        js->clj
+        pr-str)))
+
 (defview intro []
   [react/view {:style styles/intro-view}
    [status-bar/status-bar {:flat? true}]
    [react/view {:style styles/intro-logo-container}
     [components.common/logo styles/intro-logo]]
+   [react/text
+    {:style
+     {:width            100
+      :height           100
+      :background-color :green}
+     :selectable true}
+    (foo)]
    [react/i18n-text {:style styles/intro-text
                      :key   :intro-text}]
    [react/view
