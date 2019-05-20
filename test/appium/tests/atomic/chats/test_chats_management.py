@@ -29,14 +29,14 @@ class TestChatManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5319)
     @marks.critical
-    def test_swipe_to_delete_1_1_chat(self):
+    def test_long_press_to_delete_1_1_chat(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
         chat = home.add_contact(basic_user['public_key'])
         chat.chat_message_input.send_keys('test message')
         chat.send_message_button.click()
         chat.get_back_to_home_view()
-        home.get_chat_with_user(basic_user['username']).swipe_and_delete()
+        home.delete_chat_long_press(basic_user['username'])
         self.driver.close_app()
         self.driver.launch_app()
         sign_in.accept_agreements()
@@ -46,7 +46,7 @@ class TestChatManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5343)
     @marks.critical
-    def test_swipe_to_delete_public_chat(self):
+    def test_long_press_to_delete_public_chat(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
         chat_name = home.get_public_chat_name()
@@ -55,7 +55,7 @@ class TestChatManagement(SingleDeviceTestCase):
         chat.chat_message_input.send_keys(message)
         chat.send_message_button.click()
         chat.get_back_to_home_view()
-        home.get_chat_with_user('#' + chat_name).swipe_and_delete()
+        home.delete_chat_long_press('#' + chat_name)
         profile = home.profile_button.click()
         profile.logout()
         sign_in.sign_in()
