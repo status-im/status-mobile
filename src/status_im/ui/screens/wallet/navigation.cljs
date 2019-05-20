@@ -30,7 +30,7 @@
   (re-frame/dispatch [:update-transactions])
   db)
 
-(def transaction-send-default
+(defn transaction-send-default []
   (let [symbol :ETH]
     {:gas    (ethereum/estimate-gas symbol)
      :method constants/web3-send-transaction
@@ -45,7 +45,7 @@
     db
     (-> db
         (assoc-in [:wallet :request-transaction] transaction-request-default)
-        (assoc-in [:wallet :send-transaction] transaction-send-default))))
+        (assoc-in [:wallet :send-transaction] (transaction-send-default)))))
 
 (defmethod navigation/preload-data! :wallet-send-transaction
   [db [event]]

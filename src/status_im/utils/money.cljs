@@ -30,7 +30,7 @@
 (defn bignumber [n]
   (when n
     (try
-      (.toBigNumber dependencies/Web3.prototype (normalize (str n)))
+      (.toBigNumber (dependencies/web3-prototype) (normalize (str n)))
       (catch :default err nil))))
 
 (defn valid? [bn]
@@ -40,29 +40,31 @@
 (defn str->wei [s]
   (when-let [ns (normalize s)]
     (try
-      (.toWei dependencies/Web3.prototype ns "ether")
+      (.toWei (dependencies/web3-prototype) ns "ether")
       (catch :default err nil))))
 
 (defn to-decimal [s]
   (when s
     (try
-      (.toDecimal dependencies/Web3.prototype (normalize s))
+      (.toDecimal (dependencies/web3-prototype) (normalize s))
       (catch :default err nil))))
 
 (defn from-decimal [n] (when n (str "1" (string/join (repeat n "0")))))
 
-(def eth-units
-  {:wei    (bignumber "1")
-   :kwei   (bignumber (from-decimal 3))
-   :mwei   (bignumber (from-decimal 6))
-   :gwei   (bignumber (from-decimal 9))
-   :szabo  (bignumber (from-decimal 12))
-   :finney (bignumber (from-decimal 15))
-   :eth    (bignumber (from-decimal 18))
-   :keth   (bignumber (from-decimal 21))
-   :meth   (bignumber (from-decimal 24))
-   :geth   (bignumber (from-decimal 27))
-   :teth   (bignumber (from-decimal 30))})
+(defn eth-units [unit]
+  (case unit
+    :wei (bignumber "1")
+    :kwei (bignumber (from-decimal 3))
+    :mwei (bignumber (from-decimal 6))
+    :gwei (bignumber (from-decimal 9))
+    :szabo (bignumber (from-decimal 12))
+    :finney (bignumber (from-decimal 15))
+    :eth (bignumber (from-decimal 18))
+    :keth (bignumber (from-decimal 21))
+    :meth (bignumber (from-decimal 24))
+    :geth (bignumber (from-decimal 27))
+    :teth (bignumber (from-decimal 30))
+    nil))
 
 (defn wei-> [unit n]
   (when-let [bn (bignumber n)]

@@ -86,7 +86,7 @@
               topics                 (db :mailserver/topics)
               topic-hash             (if (contains? topics partitioned-topic-hash)
                                        partitioned-topic-hash
-                                       transport.topic/discovery-topic-hash)]
+                                       (transport.topic/discovery-topic-hash))]
           {:shh/post [{:web3          web3
                        :success-event success-event
                        :message       (merge {:sig     (accounts.db/current-public-key cofx)

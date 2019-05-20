@@ -517,7 +517,7 @@
   [{:keys [db] :as cofx} chat-id]
   (let [{:keys [public?] :as chat} (get-in db [:chats chat-id])
         topic (if (and chat (not public?))
-                transport.topic/discovery-topic-hash
+                (transport.topic/discovery-topic-hash)
                 (get-in db [:transport/chats chat-id :topic]))
         {:keys [chat-ids] :as mailserver-topic} (update (get-in db [:mailserver/topics topic])
                                                         :chat-ids

@@ -58,16 +58,18 @@
               (merge {:address address :chain-id (if chain-id (js/parseInt chain-id) (ethereum/chain-keyword->chain-id :mainnet))}
                      arguments))))))))
 
-(defn parse-eth-value [s]
+(defn parse-eth-value
   "Takes a map as returned by `parse-uri` and returns value as BigNumber"
+  [s]
   (when (string? s)
     (let [eth? (string/ends-with? s "ETH")
           n (money/bignumber (string/replace s "ETH" ""))]
       (if eth? (.times n 1e18) n))))
 
-(defn extract-request-details [{:keys [value address chain-id function-name function-arguments]} all-tokens]
+(defn extract-request-details
   "Return a map encapsulating request details (with keys `value`, `address` and `symbol`) from a parsed URI.
    Supports ethereum and erc20 token."
+  [{:keys [value address chain-id function-name function-arguments]} all-tokens]
   (when address
     (case function-name
       nil

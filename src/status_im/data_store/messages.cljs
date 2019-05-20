@@ -78,7 +78,7 @@
    (assoc cofx :get-stored-messages get-by-chat-id)))
 
 (defn- sha3 [s]
-  (.sha3 dependencies/Web3.prototype s))
+  (.sha3 (dependencies/web3-prototype) s))
 
 (re-frame/reg-cofx
  :data-store/get-referenced-messages

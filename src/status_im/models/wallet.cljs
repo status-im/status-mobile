@@ -12,14 +12,15 @@
             [status-im.utils.hex :as utils.hex]
             [status-im.utils.money :as money]))
 
-(def min-gas-price-wei (money/bignumber 1))
+(defn min-gas-price-wei []
+  (money/bignumber 1))
 
 (defmulti invalid-send-parameter? (fn [type _] type))
 
 (defmethod invalid-send-parameter? :gas-price [_ value]
   (cond
     (not value) :invalid-number
-    (.lt (money/->wei :gwei value) min-gas-price-wei) :not-enough-wei
+    (.lt (money/->wei :gwei value) (min-gas-price-wei)) :not-enough-wei
     (-> (money/->wei :gwei value) .decimalPlaces pos?) :invalid-number))
 
 (defmethod invalid-send-parameter? :default [_ value]
