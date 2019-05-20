@@ -24,7 +24,6 @@
    :enter-pin-modal
    :hardwallet-connect-modal
    :selection-modal-screen
-   :wallet-settings-assets
    :wallet-transaction-fee
    :wallet-transactions-filter
    :profile-qr-viewer

@@ -57,7 +57,8 @@
             [status-im.utils.logging.core :as logging]
             [status-im.utils.utils :as utils]
             [status-im.web3.core :as web3]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.wallet.custom-tokens.core :as custom-tokens]))
 
 ;; init module
 
@@ -2057,3 +2058,52 @@
  :ethereum.signal/new-block
  (fn [cofx [_ block-number]]
    (ethereum.subscriptions/new-block cofx block-number)))
+
+;;custom tokens
+
+(handlers/register-handler-fx
+ :wallet.custom-token/decimals-result
+ (fn [cofx [_ result]]
+   (custom-tokens/decimals-result cofx result)))
+
+(handlers/register-handler-fx
+ :wallet.custom-token/symbol-result
+ (fn [cofx [_ contract result]]
+   (custom-tokens/symbol-result cofx contract result)))
+
+(handlers/register-handler-fx
+ :wallet.custom-token/name-result
+ (fn [cofx [_ contract result]]
+   (custom-tokens/name-result cofx contract result)))
+
+(handlers/register-handler-fx
+ :wallet.custom-token/balance-result
+ (fn [cofx [_ contract result]]
+   (custom-tokens/balance-result cofx contract result)))
+
+(handlers/register-handler-fx
+ :wallet.custom-token/total-supply-result
+ (fn [cofx [_ contract result]]
+   (custom-tokens/total-supply-result cofx contract result)))
+
+(handlers/register-handler-fx
+ :wallet.custom-token/contract-address-is-pasted
+ (fn [cofx [_ contract]]
+   (custom-tokens/contract-address-is-changed cofx contract)))
+
+(handlers/register-handler-fx
+ :wallet.custom-token.ui/contract-address-paste
+ (fn [_ _]
+   {:wallet.custom-token/contract-address-paste nil}))
+
+(handlers/register-handler-fx
+ :wallet.custom-token.ui/field-is-edited
+ (fn [cofx [_ field-key value]]
+   (custom-tokens/field-is-edited cofx field-key value)))
+
+(handlers/register-handler-fx
+ :wallet.custom-token.ui/add-pressed
+ (fn [cofx _]
+   (fx/merge cofx
+             (custom-tokens/add-pressed)
+             (navigation/navigate-back))))

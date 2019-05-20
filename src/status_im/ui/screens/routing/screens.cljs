@@ -77,7 +77,8 @@
             [status-im.ui.screens.wallet.transaction-sent.views
              :as
              transaction-sent]
-            [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]))
+            [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
+            [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]))
 
 (def all-screens
   {:login                            login/login
@@ -142,7 +143,8 @@
    :wallet-transaction-details       wallet-transactions/transaction-details
    :wallet-settings-hook             wallet-settings/settings-hook
    :selection-modal-screen           [:modal screens.extensions/selection-modal-screen]
-   :wallet-settings-assets           [:modal wallet-settings/manage-assets]
+   :wallet-settings-assets           wallet-settings/manage-assets
+   :wallet-add-custom-token          custom-tokens/add-custom-token
    :wallet-transactions-filter       [:modal wallet-transactions/filter-history]
    :my-profile                       profile.user/my-profile
    :my-profile-ext-settings          profile.user/extensions-settings

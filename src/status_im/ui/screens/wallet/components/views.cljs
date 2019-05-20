@@ -28,7 +28,8 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.utils.ethereum.eip55 :as eip55]))
+            [status-im.utils.ethereum.eip55 :as eip55]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]))
 
 ;; Wallet tab has a different coloring scheme (dark) that forces color changes (background, text)
 ;; It might be replaced by some theme mechanism
@@ -115,12 +116,14 @@
     :request :wallet.request/set-symbol
     (throw (str "Unknown type: " k))))
 
-(defn- render-token [{:keys [symbol name icon decimals amount] :as token} type]
+(defn- render-token [{:keys [symbol name icon decimals amount color] :as token} type]
   [list/touchable-item  #(do (re-frame/dispatch [(type->handler type) symbol])
                              (re-frame/dispatch [:navigate-back]))
    [react/view
     [list/item
-     [list/item-image icon]
+     (if icon
+       [list/item-image icon]
+       [chat-icon/custom-icon-view-list name color])
      [list/item-content
       [react/view {:flex-direction :row}
        [react/text {:style styles/text}
@@ -155,14 +158,16 @@
   (views/letsubs [balance    [:balance]
                   network    [:network]
                   all-tokens [:wallet/all-tokens]]
-    (let [{:keys [name icon decimals] :as token} (tokens/asset-for all-tokens (ethereum/network->chain-keyword network) symbol)]
+    (let [{:keys [name icon decimals color] :as token} (tokens/asset-for all-tokens (ethereum/network->chain-keyword network) symbol)]
       (when name
         [react/view
          [cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
           (i18n/label :t/wallet-asset)
           [react/view {:style               styles/asset-content-container
                        :accessibility-label :choose-asset-button}
-           [list/item-image (assoc icon :style styles/asset-icon :image-style {:width 32 :height 32})]
+           (if icon
+             [list/item-image (assoc icon :style styles/asset-icon :image-style {:width 32 :height 32})]
+             [chat-icon/custom-icon-view-list name color 32])
            [react/view styles/asset-text-content
             [react/view styles/asset-label-content
              [react/text {:style (merge styles/text-content styles/asset-label)}

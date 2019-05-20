@@ -9,17 +9,28 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.ui.components.toolbar.actions :as actions]))
+            [status-im.ui.components.toolbar.actions :as actions]
+            [status-im.ui.components.action-button.action-button :as action-button]
+            [status-im.ui.components.list-header.views :as list-header]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]))
 
-(defn- render-token [{:keys [symbol name icon]} visible-tokens]
+(defn toolbar []
+  [toolbar/toolbar nil
+   [toolbar/nav-button
+    (toolbar.actions/back #(re-frame/dispatch [:update-wallet-and-nav-back]))]
+   [toolbar/content-title
+    (i18n/label :t/wallet-assets)]])
+
+(defn- render-token [{:keys [symbol name icon color]} visible-tokens]
   [list/list-item-with-checkbox
    {:checked?        (contains? visible-tokens (keyword symbol))
     :on-value-change #(re-frame/dispatch [:wallet.settings/toggle-visible-token (keyword symbol) %])}
    [list/item
-    [list/item-image icon]
+    (if icon
+      [list/item-image icon]
+      [chat-icon/custom-icon-view-list name color])
     [list/item-content
      [list/item-primary name]
      [list/item-secondary symbol]]]])
@@ -28,26 +39,35 @@
   (letsubs [network        [:network]
             visible-tokens [:wallet/visible-tokens-symbols]
             all-tokens     [:wallet/all-tokens]]
-    [react/view (merge components.styles/flex {:background-color :white})
-     [status-bar/status-bar {:type :modal-wallet}]
-     [toolbar/toolbar
-      {:style {:background-color    colors/blue
-               :border-bottom-width 0}}
-      [toolbar/nav-button
-       (toolbar.actions/close-white #(re-frame/dispatch [:update-wallet-and-nav-back]))]
-      [toolbar/content-title {:color colors/white}
-       (i18n/label :t/wallet-assets)]]
-     [react/view {:style components.styles/flex}
-      [list/flat-list {:data      (tokens/sorted-tokens-for all-tokens (ethereum/network->chain-keyword network))
-                       :key-fn    (comp str :symbol)
-                       :render-fn #(render-token % visible-tokens)}]]]))
+    (let [chain-key (ethereum/network->chain-keyword network)
+          {custom-tokens true default-tokens nil} (group-by :custom? (tokens/sorted-tokens-for all-tokens chain-key))]
+      [react/view (merge components.styles/flex {:background-color :white})
+       [status-bar/status-bar]
+       [toolbar]
+       [react/view {:style {:flex 1 :padding-top 16}}
+        [action-button/action-button {:label     (i18n/label :t/add-custom-token)
+                                      :icon      :main-icons/add
+                                      :icon-opts {:color :blue}
+                                      :on-press  #(re-frame/dispatch [:navigate-to :wallet-add-custom-token])}]
+        [list/section-list
+         {:sections                    (concat
+                                        (when (seq custom-tokens)
+                                          [{:title (i18n/label :t/custom)
+                                            :data  custom-tokens}])
+                                        [{:title (i18n/label :t/default)
+                                          :data  default-tokens}])
+          :key-fn                      :address
+          :stickySectionHeadersEnabled false
+          :render-section-header-fn    (fn [{:keys [title data]}]
+                                         [list-header/list-header title])
+          :render-fn                   #(render-token % visible-tokens)}]]])))
 
 (defn- create-payload [address]
   {:address (ethereum/normalized-address address)})
 
 (defview settings-hook []
   (letsubs [{:keys [label view on-close]} [:get-screen-params :wallet-settings-hook]
-            {address :address}   [:account/account]]
+            {address :address} [:account/account]]
     [react/keyboard-avoiding-view {:style {:flex 1 :background-color colors/blue}}
      [status-bar/status-bar {:type :wallet}]
      [toolbar/toolbar
@@ -69,7 +89,7 @@
               (re-frame/dispatch [:navigate-to :wallet-settings-hook m]))})
 
 (defview toolbar-view []
-  (letsubs [settings           [:wallet/settings]
+  (letsubs [settings [:wallet/settings]
             {address :address} [:account/account]]
     [toolbar/toolbar {:style {:background-color    colors/blue
                               :border-bottom-width 0}}

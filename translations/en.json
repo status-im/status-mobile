@@ -1029,5 +1029,20 @@
     "dapps-can-access" : "ÐApps can access my wallet and contact code",
     "require-my-permission" : "Require my permission",
     "might-break" : "Might break some ÐApps",
-    "always-allow" : "Always allow"
+    "always-allow" : "Always allow",
+    "you-already-have-an-asset" : "You already have an asset {{value}}",
+    "add-custom-token" : "Add custom token",
+    "contract-address" : "Contract address",
+    "processing" : "Processing",
+    "paste" : "Paste",
+    "specify-address" : "Specify address",
+    "name-of-token" : "The name of your token",
+    "symbol" : "Symbol",
+    "decimals" : "Decimals",
+    "balance" : "Balance",
+    "no-tokens-found" : "No tokens found",
+    "wrong-contract" :"Wrong contract",
+    "already-have-asset" : "You already have this asset",
+    "wrong-address" : "Wrong address",
+    "default" : "Default"
 }

@@ -3,20 +3,26 @@
   (:require [status-im.ui.components.colors :as colors]
             [status-im.utils.platform :as p]))
 
-(def label
-  {:font-size 14})
+(defn label [editable]
+  (merge
+   {:margin-vertical 10}
+   (when-not editable {:color colors/gray})))
 
-(defn input-container [height]
-  {:padding          16
-   :justify-content  :center
-   :margin-vertical  8
-   :height           (or height 52)
-   :border-radius    8
-   :background-color colors/gray-lighter})
+(defn input-container [height editable]
+  (merge
+   {:padding          16
+    :justify-content  :center
+    :height           (or height 52)
+    :border-radius    8
+    :background-color (when editable colors/gray-lighter)}
+   (when-not editable
+     {:border-color colors/gray-lighter
+      :border-width 1})))
 
 (defstyle input
-  {:padding 0
-   :desktop {:height 52}})
+  {:padding             0
+   :text-align-vertical :top
+   :desktop             {:height 52}})
 
 (defn error [label?]
   {:bottom-value (if label? -20 0)

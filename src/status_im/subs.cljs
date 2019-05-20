@@ -150,6 +150,7 @@
 (reg-root-key-sub :wallet/all-tokens :wallet/all-tokens)
 (reg-root-key-sub :prices-loading? :prices-loading?)
 (reg-root-key-sub :wallet.transactions :wallet.transactions)
+(reg-root-key-sub :wallet/custom-token-screen :wallet/custom-token-screen)
 
 ;;ethereum
 (reg-root-key-sub :ethereum/current-block :ethereum/current-block)
@@ -1001,7 +1002,7 @@
  (fn [[network visible-tokens-symbols all-tokens]]
    (let [chain (ethereum/network->chain-keyword network)]
      (conj (filter #(contains? visible-tokens-symbols (:symbol %))
-                   (tokens/sorted-tokens-for all-tokens (ethereum/network->chain-keyword network)))
+                   (tokens/sorted-tokens-for all-tokens chain))
            (tokens/native-currency chain)))))
 
 (re-frame/reg-sub

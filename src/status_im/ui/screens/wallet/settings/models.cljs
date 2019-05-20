@@ -11,11 +11,21 @@
     (conj (or ids #{}) id)
     (disj ids id)))
 
-(fx/defn toggle-visible-token [{{:account/keys [account]} :db :as cofx} symbol checked?]
+(defn update-toggle-in-settings [{{:account/keys [account]} :db} symbol checked?]
   (let [network      (get (:networks account) (:network account))
         chain        (ethereum/network->chain-keyword network)
-        settings     (get account :settings)
-        new-settings (update-in settings [:wallet :visible-tokens chain] #(set-checked % symbol checked?))]
+        settings     (get account :settings)]
+    (update-in settings [:wallet :visible-tokens chain] #(set-checked % symbol checked?))))
+
+(fx/defn toggle-visible-token [cofx symbol checked?]
+  (let [new-settings (update-toggle-in-settings cofx symbol checked?)]
+    (accounts.update/update-settings cofx new-settings {})))
+
+(fx/defn add-custom-token [{{:account/keys [account]} :db :as cofx} {:keys [symbol address] :as token}]
+  (let [network      (get (:networks account) (:network account))
+        chain        (ethereum/network->chain-keyword network)
+        settings     (update-toggle-in-settings cofx symbol true)
+        new-settings (assoc-in settings [:wallet :custom-tokens chain address] token)]
     (accounts.update/update-settings cofx new-settings {})))
 
 (fx/defn configure-token-balance-and-visibility [cofx symbol balance]

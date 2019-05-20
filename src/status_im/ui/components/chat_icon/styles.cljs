@@ -180,6 +180,10 @@
   {:width  40
    :height 40})
 
+(defn container-list-size [size]
+  {:width  size
+   :height size})
+
 (def container-chat-toolbar
   {:width  36
    :height 36})

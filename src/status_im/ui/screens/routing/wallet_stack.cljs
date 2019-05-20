@@ -24,5 +24,7 @@
              :transactions-history
              :wallet-transaction-details
              :wallet-settings-hook
-             :extension-screen-holder]
+             :extension-screen-holder
+             :wallet-settings-assets
+             :wallet-add-custom-token]
    :config  {:initialRouteName :wallet}})

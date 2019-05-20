@@ -198,6 +198,7 @@
 (spec/def :stickers/selected-pack (spec/nilable any?))
 (spec/def :stickers/recent (spec/nilable vector?))
 (spec/def :extensions/profile (spec/nilable any?))
+(spec/def :wallet/custom-token-screen (spec/nilable map?))
 
 (spec/def ::db (spec/keys :opt [:contacts/contacts
                                 :contacts/new-identity
@@ -273,7 +274,8 @@
                                 :stickers/packs-pendning
                                 :bottom-sheet/show?
                                 :bottom-sheet/view
-                                :extensions/profile]
+                                :extensions/profile
+                                :wallet/custom-token-screen]
                           :opt-un [::modal
                                    ::was-modal?
                                    ::rpc-url

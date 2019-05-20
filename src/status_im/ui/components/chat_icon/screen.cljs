@@ -81,6 +81,12 @@
     :default-chat-icon-text styles/default-chat-icon-text}
    hide-dapp?])
 
+(defn custom-icon-view-list
+  [name color & [size]]
+  [react/view (styles/container-list-size (or size 40))
+   [default-chat-icon name {:default-chat-icon      (styles/default-chat-icon-profile color (or size 40))
+                            :default-chat-icon-text styles/default-chat-icon-text}]])
+
 (defn contact-icon-view
   [{:keys [photo-path name dapp?]} {:keys [container] :as styles}]
   [react/view container

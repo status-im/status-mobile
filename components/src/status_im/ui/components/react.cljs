@@ -286,7 +286,6 @@
                                        :wallet-sign-message-modal
                                        :contact-code
                                        :wallet-onboarding-setup
-                                       :wallet-settings-assets
                                        :wallet-modal
                                        :wallet-onboarding-setup-modal
                                        :wallet-settings-hook)
@@ -301,7 +300,6 @@
                                      :recent-recipients
                                      :wallet-send-assets
                                      :wallet-request-assets
-                                     :wallet-settings-assets
                                      :wallet-modal} current-view)
                               [view {:background-color colors/white
                                      :position         :absolute

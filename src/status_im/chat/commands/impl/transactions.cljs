@@ -23,17 +23,21 @@
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.ui.screens.wallet.choose-recipient.events :as choose-recipient.events]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]))
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]))
 
 ;; common `send/request` functionality
 
-(defn- render-asset [{:keys [name symbol amount decimals] :as asset}]
+(defn- render-asset [{:keys [name symbol amount decimals icon color] :as asset}]
   [react/touchable-highlight
    {:on-press #(re-frame/dispatch [:chat.ui/set-command-parameter (wallet.utils/display-symbol asset)])}
    [react/view transactions-styles/asset-container
     [react/view transactions-styles/asset-main
-     [react/image {:source (-> asset :icon :source)
-                   :style  transactions-styles/asset-icon}]
+     (if icon
+       [react/image {:source (:source icon)
+                     :style  transactions-styles/asset-icon}]
+       [react/view {:style transactions-styles/asset-icon}
+        [chat-icon/custom-icon-view-list name color 30]])
      [react/text (wallet.utils/display-symbol asset)]
      [react/text {:style transactions-styles/asset-name} name]]
     ;;TODO(goranjovic) : temporarily disabled to fix https://github.com/status-im/status-react/issues/4963

@@ -54,3 +54,7 @@
     (do
       (re-frame/dispatch [:wallet/update-gas-price])
       (assoc-in db [:wallet :send-transaction] transaction-send-default))))
+
+(defmethod navigation/preload-data! :wallet-add-custom-token
+  [db [event]]
+  (dissoc db :wallet/custom-token-screen))
