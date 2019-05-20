@@ -13,7 +13,7 @@
              login-processing?
              disconnected?))))
 
-(defview send-button-view [{:keys [input-text]}]
+(defview send-button-view [{:keys [input-text]} on-send-press]
   (letsubs [{:keys [command-completion]} [:chats/selected-chat-command]
             disconnected? [:disconnected?]
             {:keys [processing]} [:accounts/login]]
@@ -21,7 +21,7 @@
                (or (not command-completion)
                    (#{:complete :less-than-needed} command-completion)))
       [react/touchable-highlight
-       {:on-press #(re-frame/dispatch [:chat.ui/send-current-message])}
+       {:on-press on-send-press}
        [vector-icons/icon :main-icons/arrow-up
         {:container-style     style/send-message-container
          :accessibility-label :send-message-button

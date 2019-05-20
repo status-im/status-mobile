@@ -271,3 +271,5 @@
 (def decline-chat
   {:color colors/blue
    :margin-bottom 40})
+
+(def messages-list-vertical-padding 46)

@@ -53,10 +53,13 @@
         {:placeholder (i18n/label :cooldown/text-input-disabled)}))]))
 
 (defview basic-text-input-desktop [{:keys [set-container-width-fn height single-line-input? set-text state-text]}]
-  (letsubs [cooldown-enabled?    [:chats/cooldown-enabled?]]
+  (letsubs [inp-ref       (atom nil)
+            cooldown-enabled?    [:chats/cooldown-enabled?]]
     [react/text-input
      (merge
-      {:ref                    #(when % (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-ref %}]))
+      {:ref                    #(when % (do
+                                          (reset! inp-ref %)
+                                          (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-ref %}])))
        :accessibility-label    :chat-message-input
        :multiline              (not single-line-input?)
        :default-value          @state-text
@@ -68,6 +71,8 @@
        :on-blur                #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused? false}])
        :submit-shortcut        {:key "Enter"}
        :on-submit-editing      #(do
+                                  (.clear @inp-ref)
+                                  (.focus @inp-ref)
                                   (re-frame/dispatch [:chat.ui/set-chat-input-text @state-text])
                                   (re-frame/dispatch [:chat.ui/send-current-message])
                                   (set-text ""))
@@ -200,8 +205,13 @@
         (if input-text-empty?
           [commands-button]
           (if platform/desktop?
-            [send-button/send-button-view {:input-text @state-text}]
-            [send-button/send-button-view {:input-text input-text}]))]])))
+            [send-button/send-button-view {:input-text @state-text}
+             #(do
+                (re-frame/dispatch [:chat.ui/set-chat-input-text @state-text])
+                (re-frame/dispatch [:chat.ui/send-current-message])
+                (set-text ""))]
+            [send-button/send-button-view {:input-text input-text}
+             #(re-frame/dispatch [:chat.ui/send-current-message])]))]])))
 
 (defn container []
   [react/view

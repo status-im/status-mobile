@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.chat.views
   (:require [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
             [status-im.chat.models :as models.chat]
             [status-im.contact.db :as contact.db]
             [status-im.group-chats.db :as group-chats.db]
@@ -272,6 +273,57 @@
         [list/flat-list (merge flat-list-conf group-header)]
         [list/flat-list flat-list-conf]))))
 
+(def load-step 5)
+
+(defn load-more [all-messages-count messages-to-load]
+  (let [next-count (min all-messages-count (+ @messages-to-load load-step))]
+    (reset! messages-to-load next-count)))
+
+(defview messages-view-desktop [{:keys [chat-id group-chat]}
+                                modal?]
+  (letsubs [messages           [:chats/current-chat-messages-stream]
+            current-public-key [:account/public-key]
+            messages-to-load   (reagent/atom load-step)
+            chat-id*           (reagent/atom nil)]
+    {:component-did-update #(if (:messages-initialized? (second (.-argv (.-props %1))))
+                              (load-more (count messages) messages-to-load)
+                              (re-frame/dispatch [:chat.ui/load-more-messages]))
+     :component-did-mount  #(if (:messages-initialized? (second (.-argv (.-props %1))))
+                              (load-more (count messages) messages-to-load)
+                              (re-frame/dispatch [:chat.ui/load-more-messages]))}
+    (let [messages-list-ref    (atom nil)
+          scroll-timer  (atom nil)
+          scroll-height (atom nil)
+          _             (when (or (not @chat-id*) (not= @chat-id* chat-id))
+                          (do
+                            (reset! messages-to-load load-step)
+                            (reset! chat-id* chat-id)))]
+      [react/view {:style style/chat-view}
+       [react/scroll-view {:scrollEventThrottle              16
+                           :headerHeight                     style/messages-list-vertical-padding
+                           :footerWidth                      style/messages-list-vertical-padding
+                           :enableArrayScrollingOptimization true
+                           :inverted                         true
+                           :ref                              #(reset! messages-list-ref %)
+                           :on-scroll                        (fn [e]
+                                                               (let [ne (.-nativeEvent e)
+                                                                     y  (.-y (.-contentOffset ne))]
+                                                                 (when (<= y 0)
+                                                                   (when @scroll-timer (js/clearTimeout @scroll-timer))
+                                                                   (reset! scroll-timer (js/setTimeout #(re-frame/dispatch [:chat.ui/load-more-messages]) 300)))
+                                                                 (reset! scroll-height (+ y (.-height (.-layoutMeasurement ne))))))}
+        [react/view
+         (doall
+          (for [{:keys [from content] :as message-obj} (take @messages-to-load messages)]
+            ^{:key message-obj}
+            [message-row
+             {:group-chat         group-chat
+              :modal?             modal?
+              :current-public-key current-public-key
+              :row                message-obj
+              :idx                #(or (:message-id message-obj) (:value message-obj))
+              :list-ref           messages-list-ref}]))]]])))
+
 (defn show-input-container? [my-public-key current-chat]
   (or (not (models.chat/group-chat? current-chat))
       (group-chats.db/joined? my-public-key current-chat)))
@@ -300,7 +352,10 @@
                                  (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
         [chat-toolbar current-chat public? modal?]
         [messages-view-animation
-         [messages-view current-chat modal?]]
+         ;;TODO(kozieiev) : When FlatList in react-native-desktop become viable it should be used instead of optimized ScrollView for chat
+         (if platform/desktop?
+           [messages-view-desktop current-chat modal?]
+           [messages-view current-chat modal?])]
         (when (show-input-container? my-public-key current-chat)
           [input/container])
         (when show-stickers?
