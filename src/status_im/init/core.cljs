@@ -77,7 +77,7 @@
             {:init/get-device-UUID                  nil
              :init/restore-native-settings          nil
              :ui/listen-to-window-dimensions-change nil
-             :notifications/init                    nil
+             ;;:notifications/init                    nil
              :network/listen-to-network-status      nil
              :network/listen-to-connection-status   nil
              :hardwallet/register-card-events       nil}
