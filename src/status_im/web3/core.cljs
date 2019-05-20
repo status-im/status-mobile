@@ -14,14 +14,14 @@
   3rd parties (DApps, etc)"
   []
   (let [Web3 (dependencies/Web3)]
-   (Web3.
-    #js {:sendAsync (fn [payload callback]
-                      (status/call-private-rpc
-                       (.stringify js/JSON payload)
-                       (fn [response]
-                         (if (= "" response)
-                           (log/warn :web3-response-error)
-                           (callback nil (.parse js/JSON response))))))})))
+    (Web3.
+     #js {:sendAsync (fn [payload callback]
+                       (status/call-private-rpc
+                        (.stringify js/JSON payload)
+                        (fn [response]
+                          (if (= "" response)
+                            (log/warn :web3-response-error)
+                            (callback nil (.parse js/JSON response))))))})))
 
 (defn get-web3 [cofx]
   (let [web3 (make-internal-web3)]
