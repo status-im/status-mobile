@@ -1,28 +1,18 @@
-const {getDefaultConfig} = require("metro-config");
-const modulePaths = require('packager/modulePaths');
+const { getDefaultConfig } = require("metro-config");
 
 module.exports = (async () => {
     const {
-        resolver: {sourceExts, assetExts}
+        resolver: { sourceExts, assetExts }
     } = await getDefaultConfig();
     return {
         transformer: {
             babelTransformerPath: require.resolve("react-native-svg-transformer"),
-            getTransformOptions: () => {
-                const moduleMap = {};
-                modulePaths.forEach(path => {
-                    if (fs.existsSync(path)) {
-                        moduleMap[resolve(path)] = true;
-                    }
-                });
-                return {
-                    preloadedModules: moduleMap,
-                    transform: {
-                        experimentalImportSupport: false,
-                        inlineRequires: {blacklist: moduleMap},
-                    },
-                }
-            },
+            getTransformOptions: async () => ({
+                transform: {
+                    experimentalImportSupport: false,
+                    inlineRequires: false,
+                },
+            }),
         },
         resolver: {
             assetExts: assetExts.filter(ext => ext !== "svg"),
