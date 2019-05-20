@@ -28,6 +28,9 @@
   (when x
     (subs (.fromUtf8 utils x) 2)))
 
+(defn hex-to-boolean [x]
+  (= x "0x0"))
+
 (defn bytes-to-hex [x]
   (when x
     (subs (.bytesToHex utils x) 2)))

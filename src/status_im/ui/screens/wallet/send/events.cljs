@@ -6,6 +6,7 @@
             [status-im.native-module.core :as status]
             [status-im.transport.utils :as transport.utils]
             [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.ethereum.abi-spec :as abi-spec]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.fx :as fx]
@@ -29,10 +30,13 @@
    {:keys [from to value gas gasPrice]} on-completed masked-password]
   (let [contract (:address (tokens/symbol->token all-tokens (keyword chain) symbol))]
     (status/send-transaction (types/clj->json
-                              (merge (ethereum/call-params contract "transfer(address,uint256)" to value)
-                                     {:from     from
-                                      :gas      gas
-                                      :gasPrice gasPrice}))
+                              {:to       contract
+                               :from     from
+                               :data     (abi-spec/encode
+                                          "transfer(address,uint256)"
+                                          [to value])
+                               :gas      gas
+                               :gasPrice gasPrice})
                              (security/safe-unmask-data masked-password)
                              on-completed)))
 
@@ -66,9 +70,10 @@
 (handlers/register-handler-fx
  :wallet/send-transaction
  (fn [{{:keys [chain] :as db} :db} _]
-   (let [{:keys [password symbol in-progress?] :as transaction} (get-in db [:wallet :send-transaction])
+   (let [{:keys [password symbol in-progress?] :as transaction}
+         (get-in db [:wallet :send-transaction])
          all-tokens (:wallet/all-tokens db)
-         from       (get-in db [:account/account :address])]
+         from       (ethereum/current-address db)]
      (when-not in-progress?
        {:db                (-> db
                                (assoc-in [:wallet :send-transaction :wrong-password?] false)
@@ -374,8 +379,9 @@
     (wallet/prepare-send-transaction from transaction)
     (let [contract (:address (tokens/symbol->token all-tokens (keyword chain) symbol))
           {:keys [gas gasPrice to from value]} (wallet/prepare-send-transaction from transaction)]
-      (merge (ethereum/call-params contract "transfer(address,uint256)" to value)
-             {:from     from
+      (merge (abi-spec/encode "transfer(address,uint256)" [to value])
+             {:to       contract
+              :from     from
               :gas      gas
               :gasPrice gasPrice}))))
 

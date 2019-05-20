@@ -9,6 +9,7 @@
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.config :as config]
             [status-im.utils.core :as utils.core]
+            [status-im.utils.ethereum.abi-spec :as abi-spec]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.fx :as fx]
@@ -256,9 +257,9 @@
   [from {:keys [amount to gas gas-price data nonce]}]
   (cond-> {:from     (ethereum/normalized-address from)
            :to       (ethereum/normalized-address to)
-           :value    (ethereum/int->hex amount)
-           :gas      (ethereum/int->hex gas)
-           :gasPrice (ethereum/int->hex gas-price)}
+           :value    (str "0x" (abi-spec/number-to-hex amount))
+           :gas      (str "0x" (abi-spec/number-to-hex gas))
+           :gasPrice (str "0x" (abi-spec/number-to-hex gas-price))}
     data
     (assoc :data data)
     nonce
@@ -314,15 +315,15 @@
            (when on-error
              {:dispatch (conj on-error "transaction was cancelled by user")}))))
 
-(defn prepare-unconfirmed-transaction [db now hash]
+(defn prepare-unconfirmed-transaction
+  [db now hash]
   (let [transaction (get-in db [:wallet :send-transaction])
         all-tokens  (:wallet/all-tokens db)]
     (let [chain (:chain db)
           token (tokens/symbol->token all-tokens (keyword chain) (:symbol transaction))]
       (-> transaction
-          (assoc :confirmations "0"
-                 :timestamp (str now)
-                 :type :outbound
+          (assoc :timestamp (str now)
+                 :type :pending
                  :hash hash
                  :value (:amount transaction)
                  :token token
@@ -467,30 +468,6 @@
                      :wallet-send-modal-stack
                      :wallet-send-modal-stack-with-onboarding)]]}))
 
-(fx/defn open-sign-transaction-flow
-  [{:keys [db] :as cofx}
-   {:keys [gas gas-price] :as transaction}]
-  (let [go-to-view-id (if (get-in db [:account/account :wallet-set-up-passed?])
-                        :wallet-send-modal-stack
-                        :wallet-send-modal-stack-with-onboarding)]
-    (fx/merge cofx
-              (cond-> {:db (-> db
-                               (assoc-in [:navigation/screen-params :wallet-send-modal-stack :modal?] true)
-                               (assoc-in [:wallet :send-transaction]
-                                         transaction)
-                               (assoc-in [:wallet :send-transaction :original-gas]
-                                         gas))}
-                (not gas)
-                (assoc :wallet/update-estimated-gas
-                       {:obj           (select-keys transaction [:to :data])
-                        :success-event :wallet/update-estimated-gas-success})
-
-                (not gas-price)
-                (assoc :wallet/update-gas-price
-                       {:success-event :wallet/update-gas-price-success
-                        :edit?         false}))
-              (navigation/navigate-to-cofx go-to-view-id {}))))
-
 (defn send-transaction-screen-did-load
   [{:keys [db]}]
   {:db (assoc-in db
@@ -569,3 +546,34 @@
             (toggle-visible-token symbol true)
             ;;TODO(goranjovic): move `update-token-balance-success` function to wallet models
             (update-token-balance symbol balance)))
+
+(fx/defn eth-transaction-call
+  [{:keys [db] :as cofx}
+   {:keys [contract method params on-success on-error details] :as transaction}]
+  (let [current-address (ethereum/current-address db)
+        transaction (merge {:to        contract
+                            :from      current-address
+                            :data      (abi-spec/encode method params)
+                            :id        "approve"
+                            :symbol    :ETH
+                            :method    "eth_sendTransaction"
+                            :amount    (money/bignumber 0)
+                            :on-success on-success
+                            :on-error  on-error}
+                           details)
+        go-to-view-id (if (get-in db [:account/account :wallet-set-up-passed?])
+                        :wallet-send-modal-stack
+                        :wallet-send-modal-stack-with-onboarding)]
+    (fx/merge cofx
+              {:db (-> db
+                       (assoc-in [:navigation/screen-params :wallet-send-modal-stack :modal?] true)
+                       (assoc-in [:wallet :send-transaction]
+                                 transaction))
+               :wallet/update-estimated-gas
+               {:obj           (select-keys transaction [:to :from :data])
+                :success-event :wallet/update-estimated-gas-success}
+
+               :wallet/update-gas-price
+               {:success-event :wallet/update-gas-price-success
+                :edit?         false}}
+              (navigation/navigate-to-cofx go-to-view-id {}))))
