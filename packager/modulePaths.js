@@ -1,4 +1,4 @@
-var foo = ["index.android.js",
+module .exports = [
 "node_modules/realm/lib/index.js",
 "node_modules/react-native-languages/index.js",
 "node_modules/i18n-js/app/assets/javascripts/i18n.js",
@@ -651,5 +651,3 @@ var foo = ["index.android.js",
 "node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js",
 "node_modules/react-navigation/src/routers/KeyGenerator.js",
 "node_modules/react-navigation/src/utils/withDefaultValue.js"];
-
-module .exports = [];
