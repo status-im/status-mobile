@@ -1,6 +1,5 @@
 (ns status-im.utils.ethereum.core
   (:require [clojure.string :as string]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.js-dependencies :as dependencies]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.money :as money]))

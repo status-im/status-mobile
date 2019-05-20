@@ -127,7 +127,7 @@
 (reg-root-key-sub :stickers/packs :stickers/packs)
 (reg-root-key-sub :stickers/installed-packs :stickers/packs-installed)
 (reg-root-key-sub :stickers/packs-owned :stickers/packs-owned)
-(reg-root-key-sub :stickers/packs-pendning :stickers/packs-pendning)
+(reg-root-key-sub :stickers/packs-pending :stickers/packs-pending)
 
 ;;mailserver
 (reg-root-key-sub :mailserver/current-id :mailserver/current-id)
@@ -769,7 +769,7 @@
  :<- [:stickers/packs]
  :<- [:stickers/installed-packs]
  :<- [:stickers/packs-owned]
- :<- [:stickers/packs-pendning]
+ :<- [:stickers/packs-pending]
  (fn [[packs installed owned pending]]
    (map (fn [{:keys [id] :as pack}]
           (cond-> pack
@@ -1168,9 +1168,8 @@
    (let [{:keys [gas-used gas-price hash timestamp type token value]
           :as transaction}
          (get transactions current-transaction)
-         native-currency-text (-> native-currency
-                                  :symbol-display
-                                  name)]
+         native-currency-text (name (or (:symbol-display native-currency)
+                                        (:symbol native-currency)))]
      (when transaction
        (merge transaction
               {:gas-price-eth  (if gas-price
