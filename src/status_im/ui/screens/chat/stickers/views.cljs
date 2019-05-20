@@ -93,7 +93,8 @@
        [stickers-panel (map #(assoc % :pack id) stickers) window-width])]))
 
 (defn pack-icon [{:keys [id on-press background-color]
-                  :or   {on-press         #(re-frame/dispatch [:stickers/select-pack id])}} icon]
+                  :or   {on-press #(re-frame/dispatch [:stickers/select-pack id])}}
+                 icon]
   [react/touchable-highlight {:on-press on-press}
    [react/view {:style {:align-items :center}}
     [react/view {:style (styles/pack-icon background-color icon-size icon-horizontal-margin)}
@@ -148,7 +149,8 @@
           [vector-icons/icon :stickers-icons/recent {:color colors/gray}]]
          (for [{:keys [id thumbnail]} installed-packs]
            ^{:key id}
-           [pack-icon {:id id}
+           [pack-icon {:id id
+                       :background-color colors/white}
             [react/image {:style {:width icon-size :height icon-size :border-radius (/ icon-size 2)}
                           :source {:uri thumbnail}}]])]
         [scroll-indicator]]]]]))

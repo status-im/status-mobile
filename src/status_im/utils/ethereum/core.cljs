@@ -1,6 +1,5 @@
 (ns status-im.utils.ethereum.core
   (:require [clojure.string :as string]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.js-dependencies :as dependencies]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.money :as money]))
@@ -40,6 +39,10 @@
       address
       (str hex-prefix address))))
 
+(defn current-address [db]
+  (-> (get-in db [:account/account :address])
+      normalized-address))
+
 (defn naked-address [s]
   (when s
     (string/replace s hex-prefix "")))
@@ -73,71 +76,6 @@
    (.sha3 dependencies/Web3.prototype (str s)))
   ([s opts]
    (.sha3 dependencies/Web3.prototype (str s) (clj->js opts))))
-
-(defn hex->string [s]
-  (when s
-    (let [hex (.toString s)]
-      (loop [res "" i (if (string/starts-with? hex hex-prefix) 2 0)]
-        (if (and (< i (.-length hex)))
-          (recur
-           (if (= (.substr hex i 2) "00")
-             res
-             (str res (.fromCharCode js/String (js/parseInt (.substr hex i 2) 16))))
-           (+ i 2))
-          res)))))
-
-(defn hex->boolean [s]
-  (= s "0x0"))
-
-(defn boolean->hex [b]
-  (if b "0x0" "0x1"))
-
-(defn hex->int [s]
-  (if (= s hex-prefix)
-    0
-    (js/parseInt s 16)))
-
-(defn int->hex [i]
-  (.toHex dependencies/Web3.prototype i))
-
-(defn hex->bignumber [s]
-  (money/bignumber (if (= s hex-prefix) 0 s)))
-
-(defn hex->address
-  "When hex value is 66 char in length (2 for 0x, 64 for
-  the 32 bytes used by abi-spec for an address), only keep
-  the part that constitute the address and normalize it,"
-  [s]
-  (when (= 66 (count s))
-    (normalized-address (subs s 26))))
-
-(defn zero-pad-64 [s]
-  (str (apply str (drop (count s) (repeat 64 "0"))) s))
-
-(defn string->hex [i]
-  (.fromAscii dependencies/Web3.prototype i))
-
-(defn format-param [param]
-  (if (number? param)
-    (zero-pad-64 (str (hex->int param)))
-    (zero-pad-64 (subs param 2))))
-
-(defn format-call-params [method-id & params]
-  (let [params (string/join (map format-param params))]
-    (str method-id params)))
-
-(defn- sig->method-id [signature]
-  (apply str (take 10 (sha3 signature))))
-
-(defn call [params callback]
-  (json-rpc/call
-   {:method "eth_call"
-    :params [params "latest"]
-    :on-success callback}))
-
-(defn call-params [contract method-sig & params]
-  (let [data (apply format-call-params (sig->method-id method-sig) params)]
-    {:to contract :data data}))
 
 (def default-transaction-gas (money/bignumber 21000))
 

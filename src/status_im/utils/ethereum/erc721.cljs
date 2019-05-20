@@ -2,19 +2,22 @@
   "
   Helper functions to interact with [ERC721](https://eips.ethereum.org/EIPS/eip-721) smart contract
   "
-  (:require [status-im.utils.ethereum.core :as ethereum]))
+  (:require [status-im.ethereum.json-rpc :as json-rpc]))
 
-(defn token-of-owner-by-index [contract address index cb]
-  (ethereum/call (ethereum/call-params
-                  contract
-                  "tokenOfOwnerByIndex(address,uint256)"
-                  (ethereum/normalized-address address)
-                  (ethereum/int->hex index))
-                 #(cb (ethereum/hex->bignumber %))))
+(defn token-of-owner-by-index
+  [contract address index cb]
+  (json-rpc/eth-call
+   {:contract contract
+    :method "tokenOfOwnerByIndex(address,uint256)"
+    :params [address index]
+    :outputs ["uint256"]
+    :on-success (fn [[token]] (cb token))}))
 
-(defn token-uri [contract tokenId cb]
-  (ethereum/call (ethereum/call-params
-                  contract
-                  "tokenURI(uint256)"
-                  (ethereum/int->hex tokenId))
-                 #(cb (ethereum/hex->string %))))
+(defn token-uri
+  [contract tokenId cb]
+  (json-rpc/eth-call
+   {:contract contract
+    :method "tokenURI(uint256)"
+    :params [tokenId]
+    :outputs ["string"]
+    :on-success (fn [[uri]] (cb uri))}))

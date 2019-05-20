@@ -3,7 +3,6 @@
   (:refer-clojure :exclude [name]))
 
 (def default-hash "0x0000000000000000000000000000000000000000000000000000000000000000")
-
 (defn contenthash [registry ens-name cb]
   (ens/resolver registry
                 ens-name
