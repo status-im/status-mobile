@@ -14,15 +14,14 @@
 
 (handlers/register-handler-fx
  :new-chat/set-new-identity
- (fn [{{:keys [network network-status] :as db} :db} [_ new-identity]]
+ (fn [{{:keys [network-status] :as db} :db} [_ new-identity]]
    (let [is-public-key? (and (string? new-identity)
                              (string/starts-with? new-identity "0x"))]
      (merge {:db (assoc db
                         :contacts/new-identity       new-identity
                         :contacts/new-identity-error (db/validate-pub-key db new-identity))}
             (when-not is-public-key?
-              (let [network (get-in db [:account/account :networks network])
-                    chain   (ethereum/network->chain-keyword network)]
+              (let [chain (ethereum/chain-keyword db)]
                 {:resolve-public-key {:registry (get ens/ens-registries chain)
                                       :ens-name (if (ens/is-valid-eth-name? new-identity)
                                                   new-identity

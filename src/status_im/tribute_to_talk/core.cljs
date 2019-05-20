@@ -5,12 +5,14 @@
             [status-im.accounts.update.core :as accounts.update]
             [status-im.contact.db :as contact.db]
             [status-im.ethereum.contracts :as contracts]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ipfs.core :as ipfs]
             [status-im.tribute-to-talk.db :as tribute-to-talk.db]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.fx :as fx]
+            [status-im.wallet.core :as wallet]
             [taoensso.timbre :as log]))
 
 (fx/defn update-settings
@@ -195,25 +197,35 @@
                          [:tribute-to-talk.callback/fetch-manifest-success
                           identity manifest])))}))
 
+(re-frame/reg-fx
+ :tribute-to-talk/get-manifest
+ (fn [{:keys [contract address on-success]}]
+   (json-rpc/eth-call
+    {:contract contract
+     :method "getManifest(address)"
+     :params [address]
+     :outputs ["bytes"]
+     :on-success on-success})))
+
 (fx/defn check-manifest
-  [{:keys [db] :as cofx} identity]
-  (or (contracts/call cofx
-                      {:contract :status/tribute-to-talk
-                       :method :get-manifest
-                       :params [(contact.db/public-key->address identity)]
-                       :return-params ["bytes"]
-                       :callback
-                       #(re-frame/dispatch
-                         (if-let [contenthash (first %)]
-                           [:tribute-to-talk.callback/check-manifest-success
-                            identity
-                            contenthash]
-                           [:tribute-to-talk.callback/no-manifest-found identity]))})
-      ;; `contracts/call` returns nil if there is no contract for the current network
-      ;; update settings if checking own manifest or do nothing otherwise
-      (when-let [me? (= identity
-                        (get-in cofx [:db :account/account :public-key]))]
-        (update-settings cofx nil))))
+  [{:keys [db] :as cofx} public-key]
+  (if-let [contract (contracts/get-address db :status/tribute-to-talk)]
+    (let [address (contact.db/public-key->address public-key)]
+      {:tribute-to-talk/get-manifest
+       {:contract contract
+        :address  address
+        :on-success
+        (fn [[contenthash]]
+          (re-frame/dispatch
+           (if contenthash
+             [:tribute-to-talk.callback/check-manifest-success
+              public-key
+              contenthash]
+             [:tribute-to-talk.callback/no-manifest-found public-key])))}})
+    ;; update settings if checking own manifest or do nothing otherwise
+    (when-let [me? (= identity
+                      (get-in cofx [:db :account/account :public-key]))]
+      (update-settings cofx nil))))
 
 (fx/defn check-own-manifest
   [cofx]
@@ -224,13 +236,17 @@
   (let [contenthash (when hash
                       (contenthash/encode {:hash hash
                                            :namespace :ipfs}))]
-    (or (contracts/call cofx
-                        {:contract :status/tribute-to-talk
-                         :method :set-manifest
-                         :params [contenthash]
-                         :on-result [:tribute-to-talk.callback/set-manifest-transaction-completed]
-                         :on-error [:tribute-to-talk.callback/set-manifest-transaction-failed]})
-        {:db (assoc-in db [:navigation/screen-params :tribute-to-talk :state] :transaction-failed)})))
+    (if-let [contract (contracts/get-address db :status/tribute-to-talk)]
+      (wallet/eth-transaction-call
+       cofx
+       {:contract contract
+        :method "setManifest(bytes)"
+        :params [contenthash]
+        :on-result [:tribute-to-talk.callback/set-manifest-transaction-completed]
+        :on-error [:tribute-to-talk.callback/set-manifest-transaction-failed]})
+      {:db (assoc-in db
+                     [:navigation/screen-params :tribute-to-talk :state]
+                     :transaction-failed)})))
 
 (defn remove
   [{:keys [db] :as cofx}]

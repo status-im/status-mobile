@@ -6,8 +6,8 @@
   "
   (:refer-clojure :exclude [name])
   (:require [clojure.string :as string]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.abi-spec :as abi-spec]))
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.utils.ethereum.core :as ethereum]))
 
 ;; this is the addresses of ens registries for the different networks
 (def ens-registries
@@ -17,7 +17,7 @@
 
 (def default-namehash "0000000000000000000000000000000000000000000000000000000000000000")
 (def default-address "0x0000000000000000000000000000000000000000")
-(def default-key "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+(def default-key "0x0400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
 
 (defn namehash
   [s]
@@ -35,28 +35,37 @@
 
 (defn resolver
   [registry ens-name cb]
-  (ethereum/call (ethereum/call-params registry
-                                       "resolver(bytes32)"
-                                       (namehash ens-name))
-                 (fn [address]
-                   (let [address (ethereum/hex->address address)]
-                     (cb (if (and address (not= address default-address)) address ""))))))
+  (json-rpc/eth-call
+   {:contract registry
+    :method "resolver(bytes32)"
+    :params [(namehash ens-name)]
+    :outputs ["address"]
+    :on-success
+    (fn [[address]]
+      (when-not (= address default-address)
+        (cb address)))}))
 
 (defn owner
   [registry ens-name cb]
-  (ethereum/call (ethereum/call-params registry
-                                       "owner(bytes32)"
-                                       (namehash ens-name))
-                 (fn [address]
-                   (cb address))))
+  (json-rpc/eth-call
+   {:contract registry
+    :method "owner(bytes32)"
+    :params [(namehash ens-name)]
+    :outputs ["address"]
+    :on-success
+    (fn [[address]]
+      (cb address))}))
 
 (defn ttl
   [registry ens-name cb]
-  (ethereum/call (ethereum/call-params registry
-                                       "ttl(bytes32)"
-                                       (namehash ens-name))
-                 (fn [ttl]
-                   (cb (ethereum/hex->int ttl)))))
+  (json-rpc/eth-call
+   {:contract registry
+    :method "ttl(bytes32)"
+    :params [(namehash ens-name)]
+    :outputs ["uint256"]
+    :on-success
+    (fn [[ttl]]
+      (cb ttl))}))
 
 ;; Resolver contract
 ;; Resolver must implement EIP65 (supportsInterface). When interacting with an unknown resolver it's safer to rely on it.
@@ -65,9 +74,14 @@
 
 (defn addr
   [resolver ens-name cb]
-  (ethereum/call (ethereum/call-params resolver "addr(bytes32)" (namehash ens-name))
-                 (fn [address]
-                   (cb (ethereum/hex->address address)))))
+  (json-rpc/eth-call
+   {:contract resolver
+    :method "addr(bytes32)"
+    :params [(namehash ens-name)]
+    :outputs ["address"]
+    :on-success
+    (fn [[address]]
+      (cb address))}))
 
 (def name-hash "0x691f3431")
 
@@ -75,37 +89,41 @@
 
 (defn name
   [resolver ens-name cb]
-  (ethereum/call (ethereum/call-params resolver
-                                       "name(bytes32)"
-                                       (namehash ens-name))
-                 (fn [address]
-                   (cb (ethereum/hex->address address)))))
+  (json-rpc/eth-call
+   {:contract resolver
+    :method "name(bytes32)"
+    :params [(namehash ens-name)]
+    :outputs ["string"]
+    :on-success
+    (fn [[name]]
+      (cb name))}))
 
 (defn contenthash
   [resolver ens-name cb]
-  (ethereum/call (ethereum/call-params resolver
-                                       "contenthash(bytes32)"
-                                       (namehash ens-name))
-                 (fn [hash]
-                   (cb (first (abi-spec/decode hash ["bytes"]))))))
+  (json-rpc/eth-call
+   {:contract resolver
+    :method "contenthash(bytes32)"
+    :params [(namehash ens-name)]
+    :on-success
+    (fn [hash]
+      (cb hash))}))
 
 (defn content
   [resolver ens-name cb]
-  (ethereum/call (ethereum/call-params resolver
-                                       "content(bytes32)"
-                                       (namehash ens-name))
-                 (fn [hash]
-                   (cb hash))))
+  (json-rpc/eth-call
+   {:contract resolver
+    :method "content(bytes32)"
+    :params [(namehash ens-name)]
+    :on-success
+    (fn [hash]
+      (cb hash))}))
 
 (def ABI-hash "0x2203ab56")
 (def pubkey-hash "0xc8690233")
 
-(defn add-uncompressed-public-key-prefix
-  [key]
-  (when (and key
-             (not= "0x" key)
-             (not= default-key key))
-    (str "0x04" (subs key 2))))
+(defn uncompressed-public-key
+  [x y]
+  (str "0x04" x y))
 
 (defn is-valid-eth-name?
   [ens-name]
@@ -115,12 +133,16 @@
 
 (defn pubkey
   [resolver ens-name cb]
-  (ethereum/call (ethereum/call-params resolver
-                                       "pubkey(bytes32)"
-                                       (namehash ens-name))
-                 (fn [key]
-                   (when-let [public-key (add-uncompressed-public-key-prefix key)]
-                     (cb public-key)))))
+  (json-rpc/eth-call
+   {:contract resolver
+    :method "pubkey(bytes32)"
+    :params [(namehash ens-name)]
+    :outputs ["bytes32" "bytes32"]
+    :on-success
+    (fn [[x y]]
+      (when-let [public-key (uncompressed-public-key x y)]
+        (when-not (= public-key default-key)
+          (cb public-key))))}))
 
 (defn get-addr
   [registry ens-name cb]
