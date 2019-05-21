@@ -257,13 +257,17 @@
   ;; i18n ignores nil value, leading to misleading messages
   (into {} (for [[k v] options] [k (or v default-option-value)])))
 
+(def sesamum? (atom nil))
+
 (defn label
   ([path] (label path {}))
   ([path options]
-   (if (exists? rn-dependencies/i18n.t)
-     (let [options (update options :amount label-number)]
-       (.t rn-dependencies/i18n (name path) (clj->js (label-options options))))
-     (name path))))
+   (if @sesamum?
+     "Verrrrryyyyyyyyy looooooooooong laaaaaaaaabeeeel"
+     (if (exists? rn-dependencies/i18n.t)
+       (let [options (update options :amount label-number)]
+         (.t rn-dependencies/i18n (name path) (clj->js (label-options options))))
+       (name path)))))
 
 (defn label-pluralize [count path & options]
   (if (exists? rn-dependencies/i18n.t)

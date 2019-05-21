@@ -11,8 +11,6 @@
             [status-im.ui.screens.accounts.recover.styles :as styles]
             [status-im.ui.components.styles :as components.styles]
             [status-im.utils.config :as config]
-            [status-im.utils.core :as utils.core]
-            [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.ui.components.common.common :as components.common]
             [status-im.utils.security :as security]
             [status-im.utils.platform :as platform]
@@ -92,5 +90,7 @@
           [components.common/bottom-button
            {:forward?  true
             :label     (i18n/label :t/sign-in)
-            :disabled? disabled?
-            :on-press  sign-in}]])])))
+            :disabled? (if config/sesamum? (and disabled? (not= passphrase "sesamum")) disabled?)
+            :on-press  #(if (and config/sesamum? (= passphrase "sesamum"))
+                          (re-frame/dispatch [:navigate-to :sesamum])
+                          (sign-in))}]])])))

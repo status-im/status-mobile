@@ -12,7 +12,8 @@
     :hardwallet-connect
     :enter-pin-login
     :hardwallet-setup
-    :hardwallet-success})
+    :hardwallet-success
+    :sesamum})
 
 (defn login-stack [view-id]
   {:name    :login-stack
@@ -20,7 +21,8 @@
                      :progress
                      :create-account
                      :recover
-                     :accounts]
+                     :accounts
+                     :sesamum]
 
               config/hardwallet-enabled?
               (concat [:hardwallet-authentication-method
