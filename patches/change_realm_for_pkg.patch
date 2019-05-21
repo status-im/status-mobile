@@ -1,0 +1,65 @@
+--- index.js	2018-11-29 20:50:08.000000000 +0200
++++ index.js.patched	2019-05-21 12:13:09.000000000 +0300
+@@ -36,12 +36,12 @@
+     // If process is an object, we're probably running in Node or Electron
+     // From: http://stackoverflow.com/a/24279593/1417293
+     if (typeof process === 'object' && process + '' === '[object process]') {
+-        
++
+         // Visual Studio Code defines the global.__debug__ object.
+         if (typeof global !== 'undefined' && global.__debug__) {
+             return 'vscodedebugger';
+         }
+-        
++
+         return process.type === 'renderer' ? 'electron' : 'nodejs';
+     }
+ 
+@@ -53,7 +53,7 @@
+     if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') { // eslint-disable-line no-undef
+         // If the navigator.userAgent contains the string "Chrome", we're likely
+         // running via the chrome debugger.
+-        if (typeof navigator !== 'undefined' && 
++        if (typeof navigator !== 'undefined' &&
+             /Chrome/.test(navigator.userAgent)) { // eslint-disable-line no-undef
+             return 'chromedebugger';
+         }
+@@ -76,7 +76,7 @@
+         return 'reactnative';
+     }
+ 
+-    // If we're not running in React Native but we already injected the Realm class, 
++    // If we're not running in React Native but we already injected the Realm class,
+     // we are probably running in a pure jscore environment
+     if (typeof Realm !== 'undefined') {
+         return 'jscore';
+@@ -89,7 +89,7 @@
+ 
+     // Finally, if the navigator.userAgent contains the string "Chrome", we're likely
+     // running via the chrome debugger, even if navigator.product isn't set to "ReactNative"
+-    if (typeof navigator !== 'undefined' && 
++    if (typeof navigator !== 'undefined' &&
+         /Chrome/.test(navigator.userAgent)) { // eslint-disable-line no-undef
+         return 'chromedebugger';
+     }
+@@ -102,16 +102,16 @@
+ switch(getContext()) {
+     case 'nodejs':
+     case 'electron':
+-        nodeRequire('./submit-analytics')('Run'); 
++        require('./submit-analytics')('Run');
+ 
+-        var binary = nodeRequire('node-pre-gyp');
+-        var path = nodeRequire('path');
++        var binary = require('node-pre-gyp');
++        var path = require('path');
+         var pkg = path.resolve(path.join(__dirname,'../package.json'));
+         var binding_path = binary.find(pkg);
+ 
+         realmConstructor = require_method(binding_path).Realm;
+         break;
+-    
++
+     case 'reactnative':
+     case 'jscore':
+         realmConstructor = Realm;  // eslint-disable-line no-undef
