@@ -383,8 +383,7 @@
         chain  (ethereum/chain-keyword db)
         assets (get-in settings [:wallet :visible-tokens chain])
         tokens (->> (tokens/tokens-for all-tokens chain)
-                    (remove #(or (:hidden? %)))
-                    (filter #((or assets identity) (:symbol %))))]
+                    (remove #(or (:hidden? %))))]
     (when (not= network-status :offline)
       (fx/merge
        cofx
@@ -400,10 +399,11 @@
          :tokens         tokens
          :on-success
          (fn [symbol balance]
-           (if assets
+           (if (and assets
+                    (assets symbol))
              (re-frame/dispatch
               [:wallet.callback/update-token-balance-success symbol balance])
-             ;; NOTE: when there is no visible assets set,
+             ;; NOTE: when there it is not a visible assets
              ;; we make an initialization round
              (when (> balance 0)
                (re-frame/dispatch
