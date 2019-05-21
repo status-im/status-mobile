@@ -5,7 +5,7 @@
   {:name    :profile-stack
    :screens (cond-> [:my-profile
                      :contacts-list
-                     :ens-welcome
+                     :ens-main
                      :ens-register
                      :ens-terms
                      :blocked-users-list

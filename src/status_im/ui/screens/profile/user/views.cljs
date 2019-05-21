@@ -283,7 +283,7 @@
        :icon                :main-icons/username
        :accessibility-label :ens-button}
       (if enabled?
-        {:action-fn #(re-frame/dispatch [:navigate-to :ens-welcome props])}
+        {:action-fn #(re-frame/dispatch [:navigate-to :ens-main props])}
         {:icon-color    colors/gray
          :active?       false
          :hide-chevron? (not enabled?)})))])

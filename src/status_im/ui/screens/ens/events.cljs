@@ -1,23 +1,23 @@
 (ns status-im.ui.screens.ens.events
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.models.wallet :as wallet]
+            [status-im.accounts.update.core :as update]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.resolver :as resolver]
+            [status-im.ethereum.stateofus :as stateofus]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.ethereum.abi-spec :as abi-spec]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.ens :as ens]
-            [status-im.utils.ethereum.resolver :as resolver]
-            [status-im.utils.ethereum.stateofus :as stateofus]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [status-im.wallet.core :as wallet]))
 
 (re-frame/reg-fx
  ::ens/resolve
  (fn [[registry name cb]]
    (ens/get-addr registry name cb)))
 
-(defn- on-resolve [registry custom-domain? name address public-key s]
+(defn- on-resolve [registry custom-domain? username address public-key s]
   (if (and (seq address) (= address (ethereum/normalized-address s)))
     (resolver/pubkey registry name
                      (fn [ss]
@@ -92,32 +92,45 @@
 
 (handlers/register-handler-fx
  :ens/on-registration-success
- (fn [{:keys [db]} _]
-   {:db       (assoc-state db :registered)
-    :dispatch [:navigate-back]}))
+ (fn [{:keys [db] :as cofx} [_ username]]
+   (let [new-account (update-in db [:account/account :usernames] #((fnil conj []) %1 %2) username)]
+     (fx/merge
+      cofx
+      {:db (assoc db :account/account new-account)
+       :dispatch [:navigate-back]}
+      (update/account-update (get-in new-account [:account/account :usernames])
+                             {:success-event [:ens/set-state :registered]})))))
 
 (handlers/register-handler-fx
  :ens/on-registration-failure
  (fn [{:keys [db]} _]
    {:db (assoc-state db :registration-failed)}))
 
-(defn- prepare-extension-transaction [{:keys [contract username address public-key]}]
-  (let [method        "register(bytes32,address,bytes32,bytes32)"
-        {:keys [x y]} (ethereum/coordinates public-key)
-        data          (abi-spec/encode method [(ethereum/sha3 username) address x y])]
-    {:to-name         "Stateofus registrar"
-     :symbol          :ETH
-     :method          method
-     :amount          (money/bignumber 0)
-     :to              contract
-     :gas             (money/bignumber 200000)
-     :data            data
-     :on-result       [:ens/on-registration-success]
-     :on-error        [:ens/on-registration-failure]}))
+#_(defn- prepare-extension-transaction [{:keys [contract username address public-key]}]
+    (let [method        "register(bytes32,address,bytes32,bytes32)"
+          {:keys [x y]} (ethereum/coordinates public-key)
+          data          (abi-spec/encode method [(ethereum/sha3 username) address x y])]
+      {:to-name         "Stateofus registrar"
+       :symbol          :ETH
+       :method          method
+       :amount          (money/bignumber 0)
+       :to              contract
+       :gas             (money/bignumber 200000)
+       :data            data
+       :on-result       [:ens/on-registration-success]
+       :on-error        [:ens/on-registration-failure]}))
 
 (handlers/register-handler-fx
  :ens/register
- (fn [{db :db} [_ data]]
-   (let [transaction (prepare-extension-transaction data)]
-     ;; Last argument is nil: no need to estimate gas
-     (wallet/open-modal-wallet-for-transaction db transaction nil))))
+ (fn [cofx [_ {:keys [contract username address public-key]}]]
+   (let [{:keys [x y]} (ethereum/coordinates public-key)]
+     (wallet/eth-transaction-call
+      cofx
+      {:to-name   "Stateofus registrar"
+       :contract  contract
+       :method    "register(bytes32,address,bytes32,bytes32)"
+       :params    [(ethereum/sha3 username) address x y]
+       :amount    (money/bignumber 0)
+       :gas       (money/bignumber 200000)
+       :on-result [:ens/on-registration-success]
+       :on-error  [:ens/on-registration-failure]}))))

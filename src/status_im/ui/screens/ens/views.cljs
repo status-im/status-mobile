@@ -7,11 +7,12 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.stateofus :as stateofus])
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.stateofus :as stateofus])
   (:require-macros [status-im.utils.views :as views]))
 
 ;; Components
@@ -29,6 +30,14 @@
   [react/touchable-opacity {:on-press on-press}
    [react/text {:style {:text-align-vertical :center :color colors/blue}}
     label]])
+
+(defn- item [{:keys [text subtext action] :as props}]
+  [list/big-list-item
+   {:text                "sdfdsf"
+    ;:style {:flex 1}
+    :subtext             subtext
+    :icon                :main-icons/check
+    :action-fn action}])
 
 ;; Terms
 
@@ -160,7 +169,7 @@
    [react/text {:style {:color colors/gray :font-size 15}}
     title]
    [react/view {:margin-top 8 :padding-horizontal 16 :padding-vertical 12 :border-width 1 :border-radius 12 :border-color colors/gray-light}
-    [react/text {:style {:color colors/black :font-size 15}}
+    [react/text {:style {:font-size 15}}
      content]]])
 
 (defn- agreement [{:keys [checked contract]}]
@@ -241,7 +250,7 @@
      (i18n/label :t/ens-registration-failed)]
     :connected
     [react/view {:flex-direction :row :align-items :center}
-     [react/text {:style {:text-align-vertical :center :color colors/black}}
+     [react/text {:style {:text-align-vertical :center}}
       (stateofus/domain username)]
      [react/text {:style {:text-align-vertical :center}}
       (i18n/label :t/ens-connected)]]
@@ -260,7 +269,7 @@
 (defn- registration-finalized [{:keys [state] :as props}]
   [react/view {:style {:flex 1 :align-items :center :justify-content :center}}
    [finalized-icon props]
-   [react/text {:style {:color colors/black :typography :header :margin-top 32 :margin-horizontal 32 :text-align :center}}
+   [react/text {:style {:typography :header :margin-top 32 :margin-horizontal 32 :text-align :center}}
     (final-state-label state)]
    [react/view {:align-items :center :margin-horizontal 32 :margin-top 12 :margin-bottom 20}
     [final-state-details props]]
@@ -326,42 +335,64 @@
     [react/text {:style {:typography :header}}
      icon-label]]
    [react/view {:style {:flex 1 :margin-horizontal 16}}
-    [react/text {:style {:color colors/black :font-size 15 :typography :main-semibold}}
+    [react/text {:style {:font-size 15 :typography :main-semibold}}
      title]
     content]])
 
-(views/defview welcome []
-  (views/letsubs [props [:get-screen-params :ens-welcome]]
+(defn- welcome [props]
+  [react/scroll-view {:style {:flex 1}}
+   [react/view {:style {:flex 1 :align-items :center}}
+    [react/image {:source (:ens-header resources/ui)
+                  :style  {:margin-top 32}}]
+    [react/text {:style {:margin-top 32 :margin-bottom 8 :typography :header}}
+     (i18n/label :t/ens-get-name)]
+    [react/text {:style {:margin-top 8 :margin-bottom 24 :color colors/gray :font-size 15 :margin-horizontal 16 :text-align :center}}
+     (i18n/label :t/ens-welcome-hints)]
+    [welcome-item {:icon-label "1" :title (i18n/label :t/ens-welcome-point-1-title)}
+     [react/view {:flex-direction :row}
+      [react/nested-text
+       {:style {:color colors/gray}}
+       (i18n/label :t/ens-welcome-point-1)
+       [{:style {:text-decoration-line :underline}}
+        (stateofus/subdomain "myname")]]]]
+    [welcome-item {:icon-label "2" :title (i18n/label :t/ens-welcome-point-2-title)}
+     [react/text {:style {:color colors/gray}}
+      (i18n/label :t/ens-welcome-point-2)]]
+    [welcome-item {:icon-label "3" :title (i18n/label :t/ens-welcome-point-3-title)}
+     [react/text {:style {:color colors/gray}}
+      (i18n/label :t/ens-welcome-point-3)]]
+    [welcome-item {:icon-label "@" :title (i18n/label :t/ens-welcome-point-4-title)}
+     [react/text {:style {:color colors/gray}}
+      (i18n/label :t/ens-welcome-point-4)]]
+    [react/text {:style {:margin-top 16 :text-align :center :color colors/gray :typography :caption :padding-bottom 96}}
+     (i18n/label :t/ens-powered-by)]]
+   [react/view {:align-items :center :padding-top 8 :padding-bottom 16 :background-color colors/white :position :absolute :left 0 :right 0 :bottom 0
+                :border-top-width 1 :border-top-color colors/gray-lighter}
+    [components.common/button {:on-press #(re-frame/dispatch [:navigate-to :ens-register props])
+                               :label    (i18n/label :t/get-started)}]]])
+
+(defn- registered [props usernames]
+  [react/view ;{:style {:flex 1}}
+   [react/view ;{:style {:flex 1}}
+    [item {:text   "Add username"
+           :action #(re-frame/dispatch [:navigate-to :ens-register props])}]]
+   ;[react/view {:style {:flex 1}}]
+   [react/text {:style {:color colors/gray}}
+    "Your usernames"]
+   (if (seq usernames)
+     [react/view {:style {:margin-top 8}}
+      (for [{:keys [domain]} usernames]
+        [react/view])]
+     [react/text {:style {:color colors/gray :font-size 15}}
+      "You don't have any username connected"])])
+
+(views/defview main []
+  (views/letsubs [props     [:get-screen-params :ens-main]
+                  usernames (list)]
     [react/view {:style {:flex 1}}
      [toolbar/simple-toolbar
       (i18n/label :t/ens-usernames)]
-     [react/scroll-view {:style {:flex 1}}
-      [react/view {:style {:flex 1 :align-items :center}}
-       [react/image {:source (:ens-header resources/ui)
-                     :style  {:margin-top 32}}]
-       [react/text {:style {:margin-top 32 :margin-bottom 8 :color colors/black :typography :header}}
-        (i18n/label :t/ens-get-name)]
-       [react/text {:style {:margin-top 8 :margin-bottom 24 :color colors/gray :font-size 15 :margin-horizontal 16 :text-align :center}}
-        (i18n/label :t/ens-welcome-hints)]
-       [welcome-item {:icon-label "1" :title (i18n/label :t/ens-welcome-point-1-title)}
-        [react/view {:flex-direction :row}
-         [react/nested-text
-          {:style {:color colors/gray}}
-          (i18n/label :t/ens-welcome-point-1)
-          [{:style {:color colors/black :text-decoration-line :underline}}
-           (stateofus/subdomain "myname")]]]]
-       [welcome-item {:icon-label "2" :title (i18n/label :t/ens-welcome-point-2-title)}
-        [react/text {:style {:color colors/gray}}
-         (i18n/label :t/ens-welcome-point-2)]]
-       [welcome-item {:icon-label "3" :title (i18n/label :t/ens-welcome-point-3-title)}
-        [react/text {:style {:color colors/gray}}
-         (i18n/label :t/ens-welcome-point-3)]]
-       [welcome-item {:icon-label "@" :title (i18n/label :t/ens-welcome-point-4-title)}
-        [react/text {:style {:color colors/gray}}
-         (i18n/label :t/ens-welcome-point-4)]]
-       [react/text {:style {:margin-top 16 :text-align :center :color colors/gray :typography :caption :padding-bottom 96}}
-        (i18n/label :t/ens-powered-by)]]]
-     [react/view {:align-items :center :padding-top 8 :padding-bottom 16 :background-color colors/white :position :absolute :left 0 :right 0 :bottom 0
-                  :border-top-width 1 :border-top-color colors/gray-lighter}
-      [components.common/button {:on-press #(re-frame/dispatch [:navigate-to :ens-register props])
-                                 :label    (i18n/label :t/get-started)}]]]))
+     [registered props
+      usernames]
+     #_[welcome props]]))
+

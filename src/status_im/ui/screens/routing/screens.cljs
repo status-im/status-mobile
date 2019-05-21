@@ -151,7 +151,7 @@
    :my-profile                       profile.user/my-profile
    :my-profile-ext-settings          profile.user/extensions-settings
    :contacts-list                    contacts-list/contacts-list
-   :ens-welcome                      ens/welcome
+   :ens-main                         ens/main
    :ens-register                     ens/register
    :ens-terms                        ens/terms
    :blocked-users-list               contacts-list/blocked-users-list
