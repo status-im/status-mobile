@@ -11,8 +11,6 @@ Nous voulons voir un monde dans lequel les gens ont plus de contrôle sur la val
 
 <b>Fonctionnalités bêta :</b>
 
-■ Client léger — Status exécute une implémentation complète de Go Ethereum, avec le client léger et protocoles Whisper activés.
-
 ■ Messagerie chiffrée — construite sur le protocole Whisper, ce qui permet une décentralisation des conversations de groupe un-à-un, et des paiements sociaux.
 
 ■ Parcourir dApps — Interaction transparente avec l'écosystème émergeant de dApps en utilisant le navigateur Web 3.0 de Status.
@@ -21,4 +19,4 @@ Nous voulons voir un monde dans lequel les gens ont plus de contrôle sur la val
 
 
 <b>Impliquez-vous</b>
-En tant que projet open source, la meilleure façon de participer au développement est de télécharger et de tester Status. Notre mission est de faciliter la transition vers un Internet et un système financier plus ouverts à travers le nouveau paradigme que représente Ethereum. Avec les objectifs de haut niveau de la préservation de notre droit collectif en tant qu'êtres humains à la vie privée, atténuant le risque de censure et encourageant le commerce économique de manière transparente et ouverte, Status construit une communauté que tout le monde est invité à rejoindre et où chacun peut contribuer à la cause. Nous aimerions recevoir de vos nouvelles. Rejoignez-nous sur : https://chat.status.im/
+En tant que projet open source, la meilleure façon de participer au développement est de télécharger et de tester Status. Notre mission est de faciliter la transition vers un Internet et un système financier plus ouverts à travers le nouveau paradigme que représente Ethereum. Avec les objectifs de haut niveau de la préservation de notre droit collectif en tant qu'êtres humains à la vie privée, atténuant le risque de censure et encourageant le commerce économique de manière transparente et ouverte, Status construit une communauté que tout le monde est invité à rejoindre et où chacun peut contribuer à la cause. Nous aimerions recevoir de vos nouvelles. Rejoignez-nous sur : https://get.status.im/chat/public/status
