@@ -26,6 +26,7 @@
             [status-im.utils.config :as config]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.stateofus :as stateofus]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.hex :as utils.hex]
             [status-im.utils.identicon :as identicon]
@@ -1633,3 +1634,27 @@
  :<- [:search/filter]
  (fn [[chats search-filter]]
    (apply-filter search-filter chats extract-chat-attributes)))
+
+;;ENS ==================================================================================================================
+
+(re-frame/reg-sub
+ :ens/state
+ (fn [db]
+   (get-in db [:ens :state])))
+
+(re-frame/reg-sub
+ :ens/username
+ (fn [db]
+   (get-in db [:ens :username])))
+
+(re-frame/reg-sub
+ :ens/custom-domain?
+ (fn [db]
+   (get-in db [:ens :custom-domain?])))
+
+(re-frame/reg-sub
+ :ens.stateofus/registrar
+ :<- [:account/network]
+ (fn [network]
+   (let [chain (ethereum/network->chain-keyword network)]
+     (get stateofus/registrars chain))))

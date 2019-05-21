@@ -100,6 +100,8 @@
 (defn hex->bignumber [s]
   (money/bignumber (if (= s hex-prefix) 0 s)))
 
+(def ^:const public-key-length 128)
+
 (defn hex->address
   "When hex value is 66 char in length (2 for 0x, 64 for
   the 32 bytes used by abi-spec for an address), only keep
@@ -107,6 +109,12 @@
   [s]
   (when (= 66 (count s))
     (normalized-address (subs s 26))))
+
+(defn coordinates [public-key]
+  (when-let [hex (naked-address public-key)]
+    (when (= public-key-length (count (subs hex 2)))
+      {:x (normalized-address (subs hex 2 65))
+       :y (normalized-address (subs hex 66))})))
 
 (defn zero-pad-64 [s]
   (str (apply str (drop (count s) (repeat 64 "0"))) s))

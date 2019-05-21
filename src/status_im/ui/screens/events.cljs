@@ -9,6 +9,7 @@
             status-im.web3.events
             status-im.ui.screens.add-new.new-chat.navigation
             status-im.ui.screens.profile.events
+            status-im.ui.screens.ens.events
             status-im.ui.screens.extensions.add.events
             status-im.ui.screens.wallet.events
             status-im.ui.screens.wallet.collectibles.events

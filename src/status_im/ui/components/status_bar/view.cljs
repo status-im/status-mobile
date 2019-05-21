@@ -37,6 +37,7 @@
     :profile-stack                   {:type :main}
     :my-profile-ext-settings         {:type :main}
     :contacts-list                   {:type :main}
+    :ens-usernames                   {:type :main}
     :browser                         {:type :main}
     :mobile-network-settings         {:type :main}
     :backup-seed                     {:type :main}
