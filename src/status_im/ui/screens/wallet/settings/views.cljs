@@ -16,6 +16,8 @@
             [status-im.ui.components.list-header.views :as list-header]
             [status-im.ui.components.chat-icon.screen :as chat-icon]))
 
+(def default-icon (js/require "./resources/images/tokens/default-native.png"))
+
 (defn toolbar []
   [toolbar/toolbar nil
    [toolbar/nav-button
@@ -30,7 +32,7 @@
     :on-value-change #(re-frame/dispatch [:wallet.settings/toggle-visible-token (keyword symbol) %])}
    [list/item
     (if icon
-      [list/item-image icon]
+      [list/item-image (assoc icon :loadingIndicatorSource default-icon)]
       [chat-icon/custom-icon-view-list name color])
     [list/item-content
      [list/item-primary name]
