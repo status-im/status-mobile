@@ -20,12 +20,12 @@
             [status-im.ui.screens.hardwallet.setup.styles :as styles]
             [status-im.utils.security :as security]))
 
-(defonce event-emitter (.-DeviceEventEmitter js-dependencies/react-native))
+(defn event-emitter [] (.-DeviceEventEmitter js-dependencies/react-native))
 
 (defview secret-keys []
   (letsubs [secrets [:hardwallet-secrets]]
     [react/view styles/secret-keys-container
-     [react/scroll-view
+     [(react/scroll-view)
       [react/view styles/secret-keys-inner-container
        [react/view
         [react/image {:source (resources/get-image :secret-keys)
@@ -235,7 +235,7 @@
             error [:hardwallet-setup-error]
             width [:dimensions/window-width]
             ref (atom nil)]
-    [react/scroll-view
+    [(react/scroll-view)
      [react/view styles/enter-pair-code-container
       [react/view styles/enter-pair-code-title-container
        [react/view
@@ -282,7 +282,7 @@
 
 (defn begin []
   [react/view styles/card-blank-container
-   [react/scroll-view
+   [(react/scroll-view)
     [react/view styles/hardwallet-card-image-container
      [react/text {:style styles/card-is-empty-text}
       (i18n/label :t/card-is-blank)]
@@ -323,14 +323,14 @@
                           :button-label           :t/help-capitalized
                           :show-icon?             true
                           :button-container-style {:background-color colors/white}
-                          :on-press               #(.openURL react/linking "https://hardwallet.status.im")}])
+                          :on-press               #(.openURL (react/linking) "https://hardwallet.status.im")}])
 
 (defn card-already-linked []
   [card-with-button-view {:text-label             :t/card-already-linked
                           :button-label           :t/help-capitalized
                           :show-icon?             true
                           :button-container-style {:background-color colors/white}
-                          :on-press               #(.openURL react/linking "https://hardwallet.status.im")}])
+                          :on-press               #(.openURL (react/linking) "https://hardwallet.status.im")}])
 
 (defview error []
   (letsubs [error [:hardwallet-setup-error]]
@@ -380,7 +380,7 @@
                                (.removeListener @listener)))
      :component-did-mount  (fn []
                              (reset! listener
-                                     (.addListener event-emitter
+                                     (.addListener (event-emitter)
                                                    "keycardInstallationProgress"
                                                    (fn [params]
                                                      (when @progress-bar
@@ -396,10 +396,10 @@
        (i18n/label :t/taking-long-hold-phone-connected)]]
      [react/view styles/progress-bar-container
       (if (contains? #{:blank :init} card-state)
-        [react/progress-bar {:styleAttr     "Horizontal"
-                             :indeterminate false
-                             :progress      0
-                             :ref           #(reset! progress-bar %)}]
+        [(react/progress-bar) {:styleAttr     "Horizontal"
+                               :indeterminate false
+                               :progress      0
+                               :ref           #(reset! progress-bar %)}]
         [react/activity-indicator {:animating true
                                    :size      :large}])]]))
 

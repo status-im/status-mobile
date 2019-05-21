@@ -145,7 +145,7 @@
                       :on-value-change (partial toggle-enabled! installation-id enabled?)}])]]])
 
 (defn render-rows [installation-id installation-name installations]
-  [react/scroll-view {:style styles/wrapper}
+  [(react/scroll-view) {:style styles/wrapper}
    [your-device installation-id installation-name]
    (when (seq installations)
      [list/flat-list {:data               installations
@@ -155,7 +155,7 @@
 
 (views/defview edit-installation-name []
   [react/keyboard-avoiding-view styles/edit-installation
-   [react/scroll-view {:keyboard-should-persist-taps :handled}
+   [(react/scroll-view) {:keyboard-should-persist-taps :handled}
     [react/view
      [react/text (i18n/label :t/pairing-please-set-a-name)]]
     [text-input/text-input-with-label
@@ -177,7 +177,7 @@
 
 (defn info-section []
   [react/view {:style styles/info-section}
-   [react/touchable-highlight {:on-press #(.openURL react/linking "https://status.im/tutorials/pairing.html")}
+   [react/touchable-highlight {:on-press #(.openURL (react/linking) "https://status.im/tutorials/pairing.html")}
     [react/text {:style styles/info-section-text} (i18n/label :t/learn-more)]]])
 
 (defn installations-list [installation-id installation-name installations]
@@ -195,7 +195,7 @@
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/devices)]]
-     [react/scroll-view {:style {:background-color :white}}
+     [(react/scroll-view) {:style {:background-color :white}}
       (if (string/blank? installation-name)
         [edit-installation-name]
         [react/view

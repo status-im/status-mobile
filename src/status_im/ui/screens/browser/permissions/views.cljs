@@ -74,8 +74,8 @@
     (when @current-permission
       (let [{:keys [title description icon]} @current-permission]
         [react/view styles/permissions-panel-container
-         [react/animated-view {:style (styles/permissions-panel-background alpha-value)}]
-         [react/animated-view {:style (styles/permissions-panel bottom-anim-value)}
+         [(react/animated-view) {:style (styles/permissions-panel-background alpha-value)}]
+         [(react/animated-view) {:style (styles/permissions-panel bottom-anim-value)}
           [react/view styles/permissions-panel-icons-container
            (if dapp?
              [chat-icon.screen/dapp-icon-permission dapp 48]

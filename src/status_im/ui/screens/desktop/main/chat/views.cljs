@@ -242,19 +242,19 @@
                             (reset! messages-to-load load-step)
                             (reset! chat-id* chat-id)))]
       [react/view {:style styles/messages-view}
-       [react/scroll-view {:scrollEventThrottle              16
-                           :headerHeight                     styles/messages-list-vertical-padding
-                           :footerWidth                      styles/messages-list-vertical-padding
-                           :enableArrayScrollingOptimization true
-                           :inverted                         true
-                           :on-scroll                        (fn [e]
-                                                               (let [ne (.-nativeEvent e)
-                                                                     y  (.-y (.-contentOffset ne))]
-                                                                 (when (<= y 0)
-                                                                   (when @scroll-timer (js/clearTimeout @scroll-timer))
-                                                                   (reset! scroll-timer (js/setTimeout #(re-frame/dispatch [:chat.ui/load-more-messages]) 300)))
-                                                                 (reset! scroll-height (+ y (.-height (.-layoutMeasurement ne))))))
-                           :ref                              #(reset! scroll-ref %)}
+       [(react/scroll-view) {:scrollEventThrottle              16
+                             :headerHeight                     styles/messages-list-vertical-padding
+                             :footerWidth                      styles/messages-list-vertical-padding
+                             :enableArrayScrollingOptimization true
+                             :inverted                         true
+                             :on-scroll                        (fn [e]
+                                                                 (let [ne (.-nativeEvent e)
+                                                                       y  (.-y (.-contentOffset ne))]
+                                                                   (when (<= y 0)
+                                                                     (when @scroll-timer (js/clearTimeout @scroll-timer))
+                                                                     (reset! scroll-timer (js/setTimeout #(re-frame/dispatch [:chat.ui/load-more-messages]) 300)))
+                                                                   (reset! scroll-height (+ y (.-height (.-layoutMeasurement ne))))))
+                             :ref                              #(reset! scroll-ref %)}
         [react/view
          (doall
           (for [{:keys [from content] :as message-obj} (take @messages-to-load messages)]

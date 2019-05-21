@@ -67,7 +67,7 @@
 
 (defn number-view
   [numpad-symbol {:keys [on-press]}]
-  [react/touchable-opacity
+  [(react/touchable-opacity)
    {:on-press #(on-press numpad-symbol)}
    [react/view {:style styles/number-container}
     (if (= numpad-symbol :remove)
@@ -96,7 +96,7 @@
 
 (defn set-snt-amount
   [snt-amount]
-  [react/scroll-view
+  [(react/scroll-view)
    {:content-container-style  styles/set-snt-amount-container}
    [react/view {:style (styles/horizontal-separator 16 32)}]
    [snt-amount-label snt-amount]
@@ -109,7 +109,7 @@
 
 (defn personalized-message
   [message]
-  [react/scroll-view
+  [(react/scroll-view)
    {:content-container-style styles/personalized-message-container}
    [react/view {:style styles/personalized-message-title}
     [react/nested-text {:style {:text-align :center}}
@@ -219,7 +219,7 @@
 
 (defn edit
   [snt-amount message fiat-value]
-  [react/scroll-view {:content-container-style styles/edit-container}
+  [(react/scroll-view) {:content-container-style styles/edit-container}
    [react/view {:style styles/edit-screen-top-row}
     [react/view {:style {:flex-direction  :row
                          :justify-content :flex-start
@@ -312,7 +312,7 @@
         (i18n/label :t/tribute-to-talk)]
        [react/text {:style styles/step-n}
         (i18n/label :t/learn-more)]]])
-   [react/scroll-view {:content-container-style styles/learn-more-container}
+   [(react/scroll-view) {:content-container-style styles/learn-more-container}
     [react/image {:source (resources/get-image :tribute-to-talk)
                   :style styles/learn-more-image}]
     [react/text {:style styles/learn-more-title-text}
@@ -347,12 +347,11 @@
                       :t/tribute-to-talk-paywall-learn-more-3))]]]])
 
 (defview tribute-to-talk []
-  (letsubs [current-account           [:account/account]
-            {:keys [step snt-amount editing? message
+  (letsubs [{:keys [step snt-amount editing? message
                     fiat-value disable-button? state]}
             [:tribute-to-talk/ui]]
     [react/keyboard-avoiding-view {:style styles/container}
-     [react/safe-area-view {:style {:flex 1}}
+     [(react/safe-area-view) {:style {:flex 1}}
       [status-bar/status-bar]
       [toolbar/toolbar
        nil

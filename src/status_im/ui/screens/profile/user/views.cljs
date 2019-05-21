@@ -125,7 +125,7 @@
                                           :action-fn           #(re-frame/dispatch [:profile.ui/keycard-settings-button-pressed])}])
      [profile.components/settings-item {:label-kw            :t/notifications
                                         :accessibility-label :notifications-button
-                                        :action-fn           #(.openURL react/linking "app-settings://notification/status-im")}]
+                                        :action-fn           #(.openURL (react/linking) "app-settings://notification/status-im")}]
      [profile.components/settings-item-separator]
      [profile.components/settings-item {:label-kw            :t/mobile-network-settings
                                         :accessibility-label :notifications-button
@@ -310,7 +310,7 @@
     [react/keyboard-avoiding-view {:style {:flex 1}}
      [status-bar/status-bar {:type :main}]
      [toolbar/simple-toolbar label]
-     [react/scroll-view
+     [(react/scroll-view)
       [view]]]))
 
 (defview my-profile []
@@ -342,8 +342,8 @@
         (if editing?
           [my-profile-edit-toolbar on-show-edit]
           [my-profile-toolbar])
-        [react/scroll-view {:ref                          #(reset! scroll %)
-                            :keyboard-should-persist-taps :handled}
+        [(react/scroll-view) {:ref                          #(reset! scroll %)
+                              :keyboard-should-persist-taps :handled}
          [react/view profile.components.styles/profile-form
           [profile.components/profile-header
            {:contact              current-account

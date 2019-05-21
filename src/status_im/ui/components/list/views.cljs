@@ -218,7 +218,7 @@
   [{:keys [data] :as props}]
   {:pre [(or (nil? data)
              (sequential? data))]}
-  [flat-list-class
+  [(flat-list-class)
    (merge (base-list-props props)
           props
           {:data (wrap-data data)})])
@@ -249,7 +249,7 @@
    See https://facebook.github.io/react-native/docs/sectionlist.html"
   [{:keys [sections render-section-header-fn render-section-footer-fn] :as props
     :or {render-section-header-fn default-render-section-header}}]
-  [section-list-class
+  [(section-list-class)
    (merge (base-list-props props)
           props
           (when render-section-footer-fn
@@ -308,7 +308,7 @@
           swipe-pan-responder (responder/swipe-pan-responder offset-x styles/delete-button-width id swiped?)
           swipe-pan-handler   (responder/pan-handlers swipe-pan-responder)]
       [react/view swipe-pan-handler
-       [react/animated-view {:style {:flex 1 :right offset-x}}
+       [(react/animated-view) {:style {:flex 1 :right offset-x}}
         body
         [react/touchable-highlight {:style    styles/delete-icon-highlight
                                     :on-press on-delete}

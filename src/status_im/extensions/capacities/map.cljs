@@ -69,7 +69,7 @@
       :on-should-start-load-with-request     #(let [url (.-url %)]
                                                 (if (string/starts-with? url "file")
                                                   true
-                                                  (do (.openURL react/linking url) false)))
+                                                  (do (.openURL (react/linking) url) false)))
 
       :ref                                   #(reset! webview %)
       :on-message                            #(when on-change (on-map-message % on-change))

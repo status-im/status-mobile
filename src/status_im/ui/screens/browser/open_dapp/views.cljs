@@ -95,7 +95,7 @@
      [components/separator]
      (if (empty? browsers)
        [list-header true]
-       [react/scroll-view
+       [(react/scroll-view)
         [list-header false]
         [list/flat-list {:data           browsers
                          :footer         [react/view

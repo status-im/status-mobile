@@ -9,14 +9,14 @@
   (:require-macros [status-im.utils.views :as views]))
 
 (defn chat-link []
-  [react/text {:on-press #(.openURL react/linking "status-im://chat/public/status")
+  [react/text {:on-press #(.openURL (react/linking) "status-im://chat/public/status")
                :style    styles/chat-link-text}
    "#status"])
 
 (views/defview view [{:keys [can-go-back?]}]
-  [react/scroll-view {:keyboard-should-persist-taps :always
-                      :bounces                      false
-                      :content-container-style      styles/container}
+  [(react/scroll-view) {:keyboard-should-persist-taps :always
+                        :bounces                      false
+                        :content-container-style      styles/container}
    [react/view styles/container-root-view
     [vector-icons/icon :main-icons/info {:color colors/red}]
     [react/text {:style styles/title-text}

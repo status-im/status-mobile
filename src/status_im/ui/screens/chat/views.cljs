@@ -107,7 +107,7 @@
                      (react/dismiss-keyboard!)))}
       (if platform/desktop?
         message-view
-        [react/animated-view {:style (style/message-view-animated opacity)}
+        [(react/animated-view) {:style (style/message-view-animated opacity)}
          message-view])]]))
 
 (defn join-chat-button [chat-id]
@@ -342,10 +342,10 @@
     (when (= chat-id current-chat-id)
       ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
       ;; more details here: https://github.com/facebook/react-native/issues/11071
-      [react/scroll-view {:scroll-enabled               false
-                          :style                        style/scroll-root
-                          :content-container-style      style/scroll-root
-                          :keyboard-should-persist-taps :handled}
+      [(react/scroll-view) {:scroll-enabled               false
+                            :style                        style/scroll-root
+                            :content-container-style      style/scroll-root
+                            :keyboard-should-persist-taps :handled}
        ^{:key current-chat-id}
        [react/view {:style     style/chat-view
                     :on-layout (fn [e]

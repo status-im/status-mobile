@@ -161,7 +161,7 @@
          (if logging-in?
            [components/activity-indicator {:animating true :color :white}]
            [icons/icon :main-icons/add {:style {:tint-color :white}}])]]]]
-     [react/scroll-view {:enableArrayScrollingOptimization true}
+     [(react/scroll-view) {:enableArrayScrollingOptimization true}
       [react/view
        (for [[index chat] (map-indexed vector (or all-home-items chats))]
          ^{:key (first chat)}

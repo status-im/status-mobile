@@ -6,7 +6,8 @@
             [taoensso.timbre :as log]))
 
 (defn keycard [] (.-default js-dependencies/status-keycard))
-(defonce event-emitter (.-DeviceEventEmitter js-dependencies/react-native))
+(defn event-emitter []
+  (.-DeviceEventEmitter js-dependencies/react-native))
 
 (defn- error-object->map [object]
   {:code  (.-code object)
@@ -32,7 +33,7 @@
 
 (defn remove-event-listeners []
   (doseq [event ["keyCardOnConnected" "keyCardOnDisconnected"]]
-    (.removeAllListeners event-emitter event)))
+    (.removeAllListeners (event-emitter) event)))
 
 (defn register-card-events []
   (when (and config/hardwallet-enabled?)
@@ -41,12 +42,12 @@
 
     (re-frame/dispatch [:hardwallet.callback/on-register-card-events
                         {:on-card-connected
-                         (.addListener event-emitter
+                         (.addListener (event-emitter)
                                        "keyCardOnConnected"
                                        #(re-frame/dispatch [:hardwallet.callback/on-card-connected %]))
 
                          :on-card-disconnected
-                         (.addListener event-emitter
+                         (.addListener (event-emitter)
                                        "keyCardOnDisconnected"
                                        #(re-frame/dispatch [:hardwallet.callback/on-card-disconnected %]))}])))
 

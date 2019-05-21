@@ -19,8 +19,8 @@
   (letsubs [available-commands [:chats/available-commands]]
     [expandable/expandable-view {:key :suggestions}
      [react/view
-      [react/scroll-view {:keyboard-should-persist-taps :always
-                          :bounces                      false}
+      [(react/scroll-view) {:keyboard-should-persist-taps :always
+                            :bounces                      false}
        (when (seq available-commands)
          (map-indexed
           (fn [i {:keys [type] :as command}]

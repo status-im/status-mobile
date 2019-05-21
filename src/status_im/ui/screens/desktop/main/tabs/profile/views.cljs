@@ -168,7 +168,7 @@
                      preferred-mailserver-id)
           pfs? (:pfs? settings)
           connection-message (connection-status peers-count node-status mailserver-state disconnected)]
-      [react/scroll-view
+      [(react/scroll-view)
        [react/text {:style styles/advanced-settings-title}
         (i18n/label :advanced-settings)]
 
@@ -225,7 +225,7 @@
   (views/letsubs [installations     [:pairing/installations]
                   installation-id   [:pairing/installation-id]
                   installation-name [:pairing/installation-name]]
-    [react/scroll-view
+    [(react/scroll-view)
      (installations-section
       installation-id
       installation-name

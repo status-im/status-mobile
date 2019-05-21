@@ -36,9 +36,9 @@
     :second-word (re-frame/dispatch [:my-profile/set-step :first-word])))
 
 (defn intro []
-  [react/scroll-view {:style                   {:padding-horizontal 16}
-                      :content-container-style {:align-items     :center
-                                                :justify-content :center}}
+  [(react/scroll-view) {:style                   {:padding-horizontal 16}
+                        :content-container-style {:align-items     :center
+                                                  :justify-content :center}}
    (when-not platform/desktop?
      [react/image {:source (resources/get-image :lock)
                    :style styles/intro-image}])
