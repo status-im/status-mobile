@@ -162,11 +162,11 @@
   (let [base32hash (-> (.encode js-dependencies/hi-base32 (alphabase.base58/decode hash))
                        (string/replace #"=" "")
                        (string/lower-case))]
-    (str "https://" base32hash ".infura.status.im")))
+    (str base32hash ".infura.status.im")))
 
 (defmethod storage-gateway :swarm
   [{:keys [hash]}]
-  (str "https://swarm-gateways.net/bzz:/" hash))
+  (str "swarm-gateways.net/bzz:/" hash))
 
 (fx/defn resolve-ens-multihash-success
   [{:keys [db] :as cofx} m]
@@ -177,7 +177,7 @@
     (fx/merge cofx
               {:db (-> (update db :browser/options
                                assoc
-                               :url (str gateway path)
+                               :url (str "https://" gateway path)
                                :resolving? false)
                        (assoc-in [:browser/options :resolved-ens host] gateway))})))
 
