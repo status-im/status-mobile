@@ -258,8 +258,8 @@
   [name {:keys [color container-style accessibility-label width height]
          :or   {accessibility-label :icon}}]
   ^{:key name}
-  [react/animated-view {:style               container-style
-                        :accessibility-label accessibility-label}
+  [(react/animated-view) {:style               container-style
+                          :accessibility-label accessibility-label}
    (if-let [icon-fn (get icons name)]
      (let [icon-vec (icon-fn (match-color color))]
        (if width

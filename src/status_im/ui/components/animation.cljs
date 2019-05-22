@@ -6,31 +6,31 @@
   ([anim callback] (.start anim callback)))
 
 (defn anim-loop [animation]
-  (.loop react/animated animation))
+  (.loop (react/animated) animation))
 
 (defn interpolate [anim-value config]
   (.interpolate anim-value (clj->js config)))
 
 (defn timing [anim-value config]
-  (.timing react/animated anim-value (clj->js config)))
+  (.timing (react/animated) anim-value (clj->js config)))
 
 (defn spring [anim-value config]
-  (.spring react/animated anim-value (clj->js config)))
+  (.spring (react/animated) anim-value (clj->js config)))
 
 (defn decay [anim-value config]
-  (.decay react/animated anim-value (clj->js config)))
+  (.decay (react/animated) anim-value (clj->js config)))
 
 (defn anim-sequence [animations]
-  (.sequence react/animated (clj->js animations)))
+  (.sequence (react/animated) (clj->js animations)))
 
 (defn parallel [animations]
-  (.parallel react/animated (clj->js animations)))
+  (.parallel (react/animated) (clj->js animations)))
 
 (defn anim-delay [duration]
-  (.delay react/animated duration))
+  (.delay (react/animated) duration))
 
 (defn event [config]
-  (.event react/animated (clj->js [nil, config])))
+  (.event (react/animated) (clj->js [nil, config])))
 
 (defn add-listener [anim-value listener]
   (.addListener anim-value listener))

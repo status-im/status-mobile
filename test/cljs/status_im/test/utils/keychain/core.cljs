@@ -14,7 +14,7 @@
 (deftest key-does-not-exists
   (async
    done
-   (with-redefs [rn/keychain #js {:getGenericPassword (constantly (.resolve js/Promise nil))}]
+   (with-redefs [rn/keychain (fn [] #js {:getGenericPassword (constantly (.resolve js/Promise nil))})]
      (testing "it returns a valid key"
        (.. (keychain/get-encryption-key)
            (then (fn [k]
@@ -27,7 +27,7 @@
 (deftest key-does-exists
   (async
    done
-   (with-redefs [rn/keychain #js {:getGenericPassword (constantly (.resolve js/Promise #js {:password (key->json (range 64 128))}))}]
+   (with-redefs [rn/keychain (fn [] #js {:getGenericPassword (constantly (.resolve js/Promise #js {:password (key->json (range 64 128))}))})]
      (testing "it returns a valid key"
        (.. (keychain/get-encryption-key)
            (then (fn [k]
@@ -40,7 +40,7 @@
 (deftest key-is-weak
   (async
    done
-   (with-redefs [rn/keychain #js {:getGenericPassword (constantly (.resolve js/Promise #js {:password (key->json weak-key)}))}
+   (with-redefs [rn/keychain (fn [] #js {:getGenericPassword (constantly (.resolve js/Promise #js {:password (key->json weak-key)}))})
                  keychain/generic-password (atom nil)]
      (testing "it returns a valid key"
        (.. (keychain/get-encryption-key)
@@ -55,7 +55,7 @@
 (deftest safe-key-is-not-valid
   (async
    done
-   (with-redefs [rn/keychain #js {:getGenericPassword (constantly (.resolve js/Promise #js {:password (key->json weak-key)}))}
+   (with-redefs [rn/keychain (fn [] #js {:getGenericPassword (constantly (.resolve js/Promise #js {:password (key->json weak-key)}))})
                  keychain/generic-password (atom nil)]
      (testing "it returns a valid key"
        (.. (keychain/safe-get-encryption-key)
@@ -69,7 +69,7 @@
 (deftest safe-key-is-nil
   (async
    done
-   (with-redefs [rn/keychain #js {:getGenericPassword (constantly (.resolve js/Promise #js {:password nil}))}
+   (with-redefs [rn/keychain (fn [] #js {:getGenericPassword (constantly (.resolve js/Promise #js {:password nil}))})
                  keychain/generic-password (atom nil)]
      (testing "it returns a valid key"
        (.. (keychain/safe-get-encryption-key)

@@ -73,10 +73,10 @@
             bottom-value (animation/create-value -250)
             opacity-value (animation/create-value 0)]
     {:component-did-mount #(send.animations/animate-sign-panel opacity-value bottom-value)}
-    [react/animated-view {:style (styles/animated-sign-panel bottom-value)}
+    [(react/animated-view) {:style (styles/animated-sign-panel bottom-value)}
      (when wrong-password?
        [tooltip/tooltip (i18n/label :t/wrong-password) styles/password-error-tooltip])
-     [react/animated-view {:style (styles/sign-panel opacity-value)}
+     [(react/animated-view) {:style (styles/sign-panel opacity-value)}
       [react/view styles/spinner-container
        (when spinning?
          [react/activity-indicator {:animating true
@@ -161,10 +161,10 @@
      [toolbar modal? (i18n/label :t/send-transaction)]
      [react/view components.styles/flex
       [common/network-info {:text-color :white}]
-      [react/scroll-view {:keyboard-should-persist-taps :always
-                          :ref                          #(reset! scroll %)
-                          :on-content-size-change       #(when (and (not modal?) scroll @scroll)
-                                                           (.scrollToEnd @scroll))}
+      [(react/scroll-view) {:keyboard-should-persist-taps :always
+                            :ref                          #(reset! scroll %)
+                            :on-content-size-change       #(when (and (not modal?) scroll @scroll)
+                                                             (.scrollToEnd @scroll))}
        (when-not online?
          [wallet.main.views/snackbar :t/error-cant-send-transaction-offline])
        [react/view styles/send-transaction-form
@@ -211,8 +211,8 @@
     (reagent/create-class
      {:component-will-mount (fn [_]
                               ;;NOTE(goranjovic): keyboardDidShow is for android and keyboardWillShow for ios
-                              (.addListener react/keyboard "keyboardDidShow" handler)
-                              (.addListener react/keyboard "keyboardWillShow" handler))
+                              (.addListener (react/keyboard)  "keyboardDidShow" handler)
+                              (.addListener (react/keyboard)  "keyboardWillShow" handler))
       :reagent-render       (fn [opts] (render-send-transaction-view
                                         (assoc opts :amount-input amount-input)))})))
 

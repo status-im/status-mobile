@@ -14,7 +14,7 @@
                   opacity-value     (animation/create-value 0)]
     {:component-did-mount (animations/animate-tooltip bottom-value bottom-anim-value opacity-value 10)}
     [react/view (merge styles/tooltip-container container-style)
-     [react/animated-view {:style (styles/tooltip-animated bottom-anim-value opacity-value)}
+     [(react/animated-view) {:style (styles/tooltip-animated bottom-anim-value opacity-value)}
       [react/view (styles/tooltip-text-container color)
        [react/text {:style (styles/tooltip-text font-size)} label]]
       [vector-icons/icon :icons/tooltip-triangle {:color color :style styles/tooltip-triangle}]]]))
@@ -24,7 +24,7 @@
                   opacity-value     (animation/create-value 0)]
     {:component-did-mount (animations/animate-tooltip -150 bottom-anim-value opacity-value -10)}
     [react/view styles/bottom-tooltip-container
-     [react/animated-view {:style (styles/tooltip-animated bottom-anim-value opacity-value)}
+     [(react/animated-view) {:style (styles/tooltip-animated bottom-anim-value opacity-value)}
       [vector-icons/icon :icons/tooltip-triangle {:color           colors/gray
                                                   :style           styles/tooltip-triangle
                                                   :container-style {:transform [{:rotate "180deg"}]}}]

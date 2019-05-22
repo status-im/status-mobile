@@ -53,13 +53,13 @@
                          :top -3
                          :height 3
                          :background-color colors/white}}
-     [react/animated-view {:style (animated-bar-style blue-bar-left-margin
-                                                      parent-width
-                                                      colors/blue)}]
-     [react/animated-view {:style (assoc (animated-bar-style white-bar-left-margin
-                                                             parent-width
-                                                             colors/white)
-                                         :left (* 0.15 parent-width))}]]))
+     [(react/animated-view) {:style (animated-bar-style blue-bar-left-margin
+                                                        parent-width
+                                                        colors/blue)}]
+     [(react/animated-view) {:style (assoc (animated-bar-style white-bar-left-margin
+                                                               parent-width
+                                                               colors/white)
+                                           :left (* 0.15 parent-width))}]]))
 
 (defonce show-connected? (reagent/atom true))
 
@@ -108,15 +108,15 @@
                    connected? connecting? loading-indicator?] :as opts}]
         (when (or (not connected?)
                   @show-connected?)
-          [react/animated-view {:style               (styles/text-wrapper
-                                                      (assoc opts
-                                                             :height anim-height
-                                                             :background-color (if connected?
-                                                                                 colors/green
-                                                                                 colors/gray)
-                                                             :opacity anim-opacity
-                                                             :modal? (= view-id :chat-modal)))
-                                :accessibility-label :connection-status-text}
+          [(react/animated-view) {:style               (styles/text-wrapper
+                                                        (assoc opts
+                                                               :height anim-height
+                                                               :background-color (if connected?
+                                                                                   colors/green
+                                                                                   colors/gray)
+                                                               :opacity anim-opacity
+                                                               :modal? (= view-id :chat-modal)))
+                                  :accessibility-label :connection-status-text}
            (when connecting?
              [react/activity-indicator {:animated     true
                                         :color        colors/white

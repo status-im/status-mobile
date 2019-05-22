@@ -164,12 +164,13 @@
     [react/view styles/main-section
      [status-bar.view/status-bar {:type :wallet-tab}]
      [settings/toolbar-view]
-     [react/scroll-view {:end-fill-color colors/white
-                         :refresh-control
-                         (reagent/as-element
-                          [react/refresh-control {:on-refresh #(re-frame/dispatch [:wallet.ui/pull-to-refresh])
-                                                  :tint-color :white
-                                                  :refreshing false}])}
+     [(react/scroll-view) {:end-fill-color
+                           colors/white
+                           :refresh-control
+                           (reagent/as-element
+                            [(react/refresh-control) {:on-refresh #(re-frame/dispatch [:wallet.ui/pull-to-refresh])
+                                                      :tint-color :white
+                                                      :refreshing false}])}
       (if error-message
         [snackbar error-message]
         [total-section portfolio-value currency])

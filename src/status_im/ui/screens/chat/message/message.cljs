@@ -280,7 +280,7 @@
                                                     (when (= content-type constants/content-type-sticker)
                                                       (re-frame/dispatch [:stickers/open-sticker-pack (:pack content)]))
                                                     (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
-                                                                                                    :show-stickers? false}])
+                                                                                                    :show-stickers?    false}])
                                                     (when-not platform/desktop?
                                                       (react/dismiss-keyboard!)))))
                                :on-long-press #(when (or (= content-type constants/content-type-text) (= content-type constants/content-type-emoji))

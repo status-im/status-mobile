@@ -234,8 +234,8 @@
 (defn details-action [hash url]
   [(actions/opts [{:label (i18n/label :t/copy-transaction-hash)
                    :action #(react/copy-to-clipboard hash)}
-                  {:label (i18n/label :t/open-on-etherscan)
-                   :action #(.openURL react/linking url)}])])
+                  {:label  (i18n/label :t/open-on-etherscan)
+                   :action #(.openURL (react/linking) url)}])])
 
 (defview transaction-details []
   (letsubs [{:keys [hash url type confirmations confirmations-progress
@@ -248,7 +248,7 @@
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/transaction-details)]
       (when transaction [toolbar/actions (details-action hash url)])]
-     [react/scroll-view {:style components.styles/main-container}
+     [(react/scroll-view) {:style components.styles/main-container}
       [details-header date type amount-text currency-text]
       [details-confirmations confirmations confirmations-progress (= :failed type)]
       [react/view {:style styles/details-separator}]

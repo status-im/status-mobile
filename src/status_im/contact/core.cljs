@@ -66,7 +66,7 @@
                 (upsert-contact contact)
                 (mailserver/upsert-mailserver-topic
                  {:chat-ids [public-key]
-                  :topic    transport.topic/discovery-topic-hash
+                  :topic    (transport.topic/discovery-topic-hash)
                   :fetch?   false})
                 (send-contact-request contact)
                 (mailserver/process-next-messages-request)))))

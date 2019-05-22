@@ -15,7 +15,7 @@
             [status-im.ui.screens.home.sheet.views :as home.sheet]
             [status-im.ui.screens.routing.core :as routing]))
 
-(defonce rand-label (rand/id))
+(defonce rand-label (when js/goog.DEBUG (rand/id)))
 
 (defonce initial-view-id (atom nil))
 

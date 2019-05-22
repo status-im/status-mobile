@@ -13,14 +13,15 @@
   It should be only used for internal application needs and never provided to any
   3rd parties (DApps, etc)"
   []
-  (dependencies/Web3.
-   #js {:sendAsync (fn [payload callback]
-                     (status/call-private-rpc
-                      (.stringify js/JSON payload)
-                      (fn [response]
-                        (if (= "" response)
-                          (log/warn :web3-response-error)
-                          (callback nil (.parse js/JSON response))))))}))
+  (let [Web3 (dependencies/Web3)]
+    (Web3.
+     #js {:sendAsync (fn [payload callback]
+                       (status/call-private-rpc
+                        (.stringify js/JSON payload)
+                        (fn [response]
+                          (if (= "" response)
+                            (log/warn :web3-response-error)
+                            (callback nil (.parse js/JSON response))))))})))
 
 (defn get-web3 [cofx]
   (let [web3 (make-internal-web3)]

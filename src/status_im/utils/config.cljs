@@ -3,11 +3,14 @@
             [status-im.utils.platform :as platform]
             [clojure.string :as string]))
 
-(def config (js->clj (.-default rn-dependencies/config) :keywordize-keys true))
+(def config
+  (memoize
+   (fn []
+     (js->clj (.-default (rn-dependencies/config)) :keywordize-keys true))))
 
 (defn get-config
-  ([k] (get config k))
-  ([k not-found] (get config k not-found)))
+  ([k] (get (config) k))
+  ([k not-found] (get (config) k not-found)))
 
 ;; TODO(oskarth): Extend this to deal with true/false for Jenkins parameter builds
 (defn enabled? [v] (= "1" v))

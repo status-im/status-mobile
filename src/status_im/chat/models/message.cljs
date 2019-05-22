@@ -365,8 +365,17 @@
 
 (def ^:private transport-keys [:content :content-type :message-type :clock-value :timestamp])
 
+(defn remove-icon
+  "Coin's icon's resource is represented as a function,
+  can't be properly de/serialised and has to be removed."
+  [message]
+  (cond-> message
+    (get-in message [:content :params :coin :icon :source])
+    (update-in [:content :params :coin] dissoc :icon)))
+
 (fx/defn upsert-and-send [{:keys [now] :as cofx} {:keys [chat-id from] :as message}]
-  (let [send-record     (protocol/map->Message (select-keys message transport-keys))
+  (let [message         (remove-icon message)
+        send-record     (protocol/map->Message (select-keys message transport-keys))
         old-message-id  (transport.utils/old-message-id send-record)
         wrapped-record  (if (= (:message-type send-record) :group-user-message)
                           (wrap-group-message cofx chat-id send-record)

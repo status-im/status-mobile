@@ -31,7 +31,7 @@
       toolbar/default-nav-back
       [toolbar/content-title
        (i18n/label :t/add-custom-token)]]
-     [react/scroll-view {:keyboard-should-persist-taps :handled :style {:flex 1 :margin-top 8 :padding-horizontal 16}}
+     [(react/scroll-view) {:keyboard-should-persist-taps :handled :style {:flex 1 :margin-top 8 :padding-horizontal 16}}
       [react/view {:style {:flex-direction :row :justify-content :space-between :padding-vertical 10}}
        [react/text (i18n/label :t/contract-address)]
        (if in-progress?

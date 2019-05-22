@@ -60,7 +60,7 @@
       [react/view {:margin-top  71
                    :flex        1
                    :align-items :center}
-       [react/image {:source (:warning-sign resources/ui)
+       [react/image {:source (resources/get-image :warning-sign)
                      :style  {:width  160
                               :height 160}}]]
       [react/view {:flex               1
@@ -99,7 +99,7 @@
       [react/view {:margin-top  47
                    :flex        1
                    :align-items :center}
-       [react/image {:source (:hardwallet-card resources/ui)
+       [react/image {:source (resources/get-image :hardwallet-card)
                      :style  {:width  255
                               :height 160}}]
        (when paired-on
@@ -115,7 +115,7 @@
          [react/view
           [action-row {:icon     :main-icons/info
                        :label    :t/help-capitalized
-                       :on-press #(.openURL react/linking "https://hardwallet.status.im")}]
+                       :on-press #(.openURL (react/linking) "https://hardwallet.status.im")}]
           (when pairing
             [react/view
              [action-row {:icon     :main-icons/add

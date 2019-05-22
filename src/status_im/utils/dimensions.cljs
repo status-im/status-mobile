@@ -3,7 +3,7 @@
             [status-im.ui.components.react :as react]))
 
 (defn add-event-listener []
-  (.addEventListener react/dimensions
+  (.addEventListener (react/dimensions)
                      "change"
                      #(re-frame/dispatch [:update-window-dimensions %])))
 
