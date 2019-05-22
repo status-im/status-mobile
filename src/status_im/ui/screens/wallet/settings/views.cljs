@@ -55,6 +55,7 @@
         [list/flat-list
          {:key-fn                      :address
           :data default-tokens
+          :initialNumToRender 15
           :render-fn                   #(render-token % visible-tokens)}]]])))
 
 (defn- create-payload [address]
