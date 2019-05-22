@@ -1,26 +1,25 @@
 (ns status-im.ui.screens.wallet.settings.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.tokens :as tokens]
             [status-im.i18n :as i18n]
+            [status-im.ui.components.action-button.action-button :as action-button]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.list-header.views :as list-header]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
-            [status-im.ui.components.action-button.action-button :as action-button]
-            [status-im.ui.components.list-header.views :as list-header]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]))
+            [status-im.ui.components.toolbar.view :as toolbar])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn toolbar []
   [toolbar/toolbar nil
    [toolbar/nav-button
-    (toolbar.actions/back #(re-frame/dispatch
-                            [:wallet.settings.ui/navigate-back-pressed]))]
+    (actions/back #(re-frame/dispatch
+                    [:wallet.settings.ui/navigate-back-pressed]))]
    [toolbar/content-title
     (i18n/label :t/wallet-assets)]])
 

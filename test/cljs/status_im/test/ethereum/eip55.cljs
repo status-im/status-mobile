@@ -1,6 +1,6 @@
-(ns status-im.test.utils.ethereum.eip55
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.utils.ethereum.eip55 :as eip55]))
+(ns status-im.test.ethereum.eip55
+  (:require [cljs.test :refer-macros [deftest is]]
+            [status-im.ethereum.eip55 :as eip55]))
 
 (deftest valid-address-checksum?
   (is (= true (eip55/valid-address-checksum? "0x52908400098527886E0F7030069857D2E4169EE7")))

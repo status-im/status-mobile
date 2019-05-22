@@ -1,7 +1,7 @@
-(ns status-im.utils.ethereum.core
+(ns status-im.ethereum.core
   (:require [clojure.string :as string]
+            [status-im.ethereum.tokens :as tokens]
             [status-im.js-dependencies :as dependencies]
-            [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.money :as money]))
 
 ;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids

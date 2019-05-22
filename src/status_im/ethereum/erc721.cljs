@@ -1,4 +1,4 @@
-(ns status-im.utils.ethereum.erc721
+(ns status-im.ethereum.erc721
   "
   Helper functions to interact with [ERC721](https://eips.ethereum.org/EIPS/eip-721) smart contract
   "

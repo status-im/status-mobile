@@ -1,12 +1,12 @@
 (ns status-im.ui.screens.wallet.collectibles.events
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.handlers :as handlers]
-            [status-im.utils.ethereum.erc721 :as erc721]
-            [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.money :as money]
             [status-im.browser.core :as browser]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.erc721 :as erc721]
+            [status-im.ethereum.tokens :as tokens]
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.money :as money]))
 
 (defmulti load-collectible-fx (fn [_ symbol _] symbol))
 

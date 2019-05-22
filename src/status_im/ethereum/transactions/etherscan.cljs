@@ -1,7 +1,7 @@
 (ns status-im.ethereum.transactions.etherscan
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.tokens :as tokens]
             [status-im.utils.fx :as fx]
             [status-im.utils.http :as http]
             [status-im.utils.types :as types]

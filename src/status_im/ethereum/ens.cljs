@@ -1,4 +1,4 @@
-(ns status-im.utils.ethereum.ens
+(ns status-im.ethereum.ens
   "
   https://docs.ens.domains/en/latest/index.html
   https://eips.ethereum.org/EIPS/eip-137
@@ -6,8 +6,8 @@
   "
   (:refer-clojure :exclude [name])
   (:require [clojure.string :as string]
-            [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.json-rpc :as json-rpc]))
 
 ;; this is the addresses of ens registries for the different networks
 (def ens-registries

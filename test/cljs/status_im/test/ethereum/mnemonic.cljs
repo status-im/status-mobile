@@ -1,6 +1,6 @@
-(ns status-im.test.utils.ethereum.mnemonic
+(ns status-im.test.ethereum.mnemonic
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.utils.ethereum.mnemonic :as mnemonic]))
+            [status-im.ethereum.mnemonic :as mnemonic]))
 
 (deftest valid-words?
   (is (not (mnemonic/valid-words? ["rate" "rate"])))

@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.wallet.collectibles.superrare.events
-  (:require [status-im.ui.screens.wallet.collectibles.events :as collectibles]
-            [status-im.utils.ethereum.core :as ethereum]
+  (:require [status-im.ethereum.core :as ethereum]
+            [status-im.ui.screens.wallet.collectibles.events :as collectibles]
             [status-im.utils.http :as http]
             [status-im.utils.types :as types]))
 

@@ -1,6 +1,6 @@
 (ns status-im.tribute-to-talk.db
-  (:require [status-im.js-dependencies :as dependencies]
-            [status-im.utils.ethereum.core :as ethereum]))
+  (:require [status-im.ethereum.core :as ethereum]
+            [status-im.js-dependencies :as dependencies]))
 
 (def utils dependencies/web3-utils)
 

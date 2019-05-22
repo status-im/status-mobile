@@ -3,16 +3,15 @@
             [re-frame.core :as re-frame]
             [status-im.accounts.create.core :as accounts.create]
             [status-im.accounts.db :as db]
+            [status-im.ethereum.mnemonic :as mnemonic]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
+            [status-im.node.core :as node]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.ethereum.mnemonic :as mnemonic]
+            [status-im.utils.fx :as fx]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.security :as security]
-            [status-im.utils.types :as types]
-            [status-im.utils.fx :as fx]
-            [status-im.node.core :as node]
-            [clojure.string :as str]))
+            [status-im.utils.types :as types]))
 
 (defn check-password-errors [password]
   (cond (string/blank? password) :required-field
@@ -69,8 +68,8 @@
   [{:keys [db] :as cofx} {:keys [error pubkey address]} password]
   (if (empty? error)
     (let [account-address (-> address
-                              (str/lower-case)
-                              (str/replace-first "0x" ""))
+                              (string/lower-case)
+                              (string/replace-first "0x" ""))
           keycard-account? (boolean (get-in db [:accounts/accounts account-address :keycard-instance-uid]))]
       (if keycard-account?
         ;; trying to recover account created with keycard

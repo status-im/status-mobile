@@ -3,8 +3,10 @@
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.browser.core :as browser]
+            [status-im.ethereum.core :as ethereum]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
@@ -16,10 +18,8 @@
             [status-im.ui.screens.browser.permissions.views :as permissions.views]
             [status-im.ui.screens.browser.site-blocked.views :as site-blocked.views]
             [status-im.ui.screens.browser.styles :as styles]
-            [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.http :as http]
-            [status-im.utils.js-resources :as js-res]
-            [status-im.ui.components.connectivity.view :as connectivity])
+            [status-im.utils.js-resources :as js-res])
   (:require-macros
    [status-im.utils.slurp :refer [slurp]]
    [status-im.utils.views :as views]))

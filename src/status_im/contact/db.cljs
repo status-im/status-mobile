@@ -1,9 +1,9 @@
 (ns status-im.contact.db
   (:require [cljs.spec.alpha :as spec]
+            [status-im.ethereum.core :as ethereum]
             [status-im.js-dependencies :as js-dependencies]
-            [status-im.utils.identicon :as identicon]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.identicon :as identicon]
             status-im.utils.db))
 
 ;;;; DB

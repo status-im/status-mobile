@@ -1,4 +1,4 @@
-(ns status-im.utils.ethereum.abi-spec
+(ns status-im.ethereum.abi-spec
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
             [status-im.js-dependencies :as dependencies]))

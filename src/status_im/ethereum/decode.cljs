@@ -1,5 +1,5 @@
 (ns status-im.ethereum.decode
-  (:require [status-im.utils.ethereum.abi-spec :as abi-spec]))
+  (:require [status-im.ethereum.abi-spec :as abi-spec]))
 
 (defn uint
   [hex]

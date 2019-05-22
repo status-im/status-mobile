@@ -1,4 +1,4 @@
-(ns status-im.utils.ethereum.mnemonic
+(ns status-im.ethereum.mnemonic
   (:require [clojure.string :as string]))
 
 (def dictionary

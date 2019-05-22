@@ -8,11 +8,7 @@
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.screens.wallet.transactions.styles :as styles]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.money :as money])
+            [status-im.ui.screens.wallet.transactions.styles :as styles])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;

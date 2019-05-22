@@ -1,9 +1,9 @@
 (ns status-im.ethereum.json-rpc
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.ethereum.decode :as decode]
             [status-im.native-module.core :as status]
-            [status-im.utils.ethereum.abi-spec :as abi-spec]
             [status-im.utils.money :as money]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]))

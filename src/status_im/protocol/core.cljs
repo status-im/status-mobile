@@ -1,13 +1,13 @@
 (ns status-im.protocol.core
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.transport.core :as transport]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
-            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.transport.core :as transport]
             [status-im.utils.fx :as fx]
             [status-im.utils.semaphores :as semaphores]
-            [status-im.utils.utils :as utils]
-            [status-im.i18n :as i18n]))
+            [status-im.utils.utils :as utils]))
 
 (fx/defn update-sync-state
   [{{:keys [sync-state sync-data] :as db} :db} error sync]

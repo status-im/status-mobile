@@ -1,6 +1,6 @@
-(ns status-im.test.utils.ethereum.abi-spec
+(ns status-im.test.ethereum.abi-spec
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.utils.ethereum.abi-spec :as abi-spec]))
+            [status-im.ethereum.abi-spec :as abi-spec]))
 
 (deftest hex-to-number
   (testing "hex number is less than 53 bits, it returns a number")

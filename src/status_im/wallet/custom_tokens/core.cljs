@@ -1,14 +1,14 @@
 (ns status-im.wallet.custom-tokens.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.decode :as decode]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.money :as money]
             [status-im.utils.fx :as fx]
+            [status-im.utils.money :as money]
             [status-im.wallet.core :as wallet]))
 
 (re-frame/reg-fx

@@ -1,7 +1,7 @@
-(ns status-im.utils.ethereum.eip165
+(ns status-im.ethereum.eip165
   "Utility function related to [EIP165](https://eips.ethereum.org/EIPS/eip-165)"
-  (:require [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.utils.ethereum.abi-spec :as abi-spec]))
+  (:require [status-im.ethereum.abi-spec :as abi-spec]
+            [status-im.ethereum.json-rpc :as json-rpc]))
 
 (def supports-interface-hash "0x01ffc9a7")
 (def marker-hash "0xffffffff")

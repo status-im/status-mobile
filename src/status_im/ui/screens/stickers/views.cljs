@@ -1,17 +1,16 @@
 (ns status-im.ui.screens.stickers.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [status-im.ethereum.core :as ethereum]
             [status-im.i18n :as i18n]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.stickers.styles :as styles]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.utils.money :as money]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.ui.components.react :as components]))
+            [status-im.ui.screens.stickers.styles :as styles]
+            [status-im.utils.money :as money])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- thumbnail-icon [uri size]
   [react/image {:style  {:width size :height size :border-radius (/ size 2)}
@@ -36,8 +35,8 @@
         (when (and (not (zero? price))) ;(not no-snt?))
           [icons/icon :icons/logo {:color colors/white :width 12 :height 12 :container-style {:margin-right 8}}])
         (if pending
-          [components/activity-indicator {:animating true
-                                          :color     colors/white}]
+          [react/activity-indicator {:animating true
+                                     :color     colors/white}]
           [react/text {:style {:color colors/white}
                        :accessibility-label :sticker-pack-price}
            (cond (or owned (zero? price))

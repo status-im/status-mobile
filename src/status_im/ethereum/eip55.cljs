@@ -1,4 +1,4 @@
-(ns status-im.utils.ethereum.eip55
+(ns status-im.ethereum.eip55
   "Utility function related to [EIP55](https://eips.ethereum.org/EIPS/eip-55)
 
    This EIP standardize how ethereum addresses should be printed as strings to validate checksum.

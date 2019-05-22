@@ -1,11 +1,11 @@
 (ns status-im.ui.screens.add-new.new-chat.events
-  (:require [re-frame.core :as re-frame]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.resolver :as resolver]
             [status-im.ui.screens.add-new.new-chat.db :as db]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.ens :as ens]
-            [status-im.utils.ethereum.resolver :as resolver]
-            [status-im.utils.handlers :as handlers]
-            [clojure.string :as string]))
+            [status-im.utils.handlers :as handlers]))
 
 (re-frame/reg-fx
  :resolve-public-key

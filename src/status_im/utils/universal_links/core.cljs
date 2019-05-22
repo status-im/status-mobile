@@ -1,12 +1,13 @@
 (ns status-im.utils.universal-links.core
   (:require [cljs.spec.alpha :as spec]
             [goog.string :as gstring]
-            [goog.string.format]
             [re-frame.core :as re-frame]
             [status-im.accounts.db :as accounts.db]
             [status-im.chat.models :as chat]
-            [status-im.pairing.core :as pairing]
+            [status-im.constants :as constants]
+            [status-im.ethereum.eip681 :as eip681]
             [status-im.extensions.registry :as extensions.registry]
+            [status-im.pairing.core :as pairing]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
@@ -14,10 +15,8 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
-            [status-im.utils.ethereum.eip681 :as eip681]
-            [taoensso.timbre :as log]
             [status-im.utils.platform :as platform]
-            [status-im.constants :as constants]))
+            [taoensso.timbre :as log]))
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link

@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.utils.fx :as fx]
             [status-im.js-dependencies :as dependencies]
-            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.ethereum.core :as ethereum]
             [status-im.node.core :as node]
             [status-im.protocol.core :as protocol]
             [taoensso.timbre :as log]

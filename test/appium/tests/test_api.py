@@ -11,7 +11,7 @@ from tests import marks
 
 def get_parameters():
     directory = os.sep.join(__file__.split(os.sep)[:-4])
-    file_path = path.join(directory, 'src/status_im/utils/ethereum/tokens.cljs')
+    file_path = path.join(directory, 'src/status_im/ethereum/tokens.cljs')
     with open(file_path, 'r') as f:
         data = f.read()
     return re.findall('{:symbol\s*:(.*)\n\s*:name\s*"(.*)"\n\s*:address\s*"(.*)"\n\s*:decimals\s*(.*)}', data)

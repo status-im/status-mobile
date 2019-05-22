@@ -1,4 +1,4 @@
-(ns status-im.utils.ethereum.macros
+(ns status-im.ethereum.macros
   (:require [clojure.string :as string]
             [clojure.java.io :as io]))
 
