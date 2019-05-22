@@ -26,7 +26,7 @@ def bundle() {
       )
     ]) {
       nix.shell(
-        "./gradlew assemble${target.capitalize()} ${gradleOpt}",
+        "./gradlew assembleRelease ${gradleOpt}",
         keep: [
           'REALM_DISABLE_ANALYTICS',
           'STATUS_RELEASE_STORE_FILE', 'STATUS_RELEASE_STORE_PASSWORD',
