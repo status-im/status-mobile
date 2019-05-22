@@ -1,7 +1,7 @@
-(ns status-im.utils.ethereum.tokens
-  (:require-macros [status-im.utils.ethereum.macros :refer [resolve-icons] :as ethereum.macros])
-  (:require [clojure.string :as string]
-            [status-im.utils.config :as config]))
+(ns status-im.ethereum.tokens
+  (:require [clojure.string :as string])
+  (:require-macros
+   [status-im.ethereum.macros :as ethereum.macros :refer [resolve-icons]]))
 
 (defn- asset-border [color]
   {:border-color color :border-width 1 :border-radius 32})

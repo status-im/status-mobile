@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.wallet.navigation
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ui.screens.navigation :as navigation]))
 
 (def transaction-send-default
   (let [symbol :ETH]

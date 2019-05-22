@@ -8,8 +8,11 @@
             [status-im.chat.commands.protocol :as protocol]
             [status-im.contact.db :as db.contact]
             [status-im.data-store.messages :as messages-store]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.tokens :as tokens]
             [status-im.i18n :as i18n]
             [status-im.ui.components.animation :as animation]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
@@ -21,12 +24,9 @@
              choose-recipient.events]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.datetime :as datetime]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.wallet.db :as wallet.db])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 

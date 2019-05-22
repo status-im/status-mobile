@@ -1,15 +1,12 @@
 (ns status-im.ethereum.subscriptions
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.ethereum.tokens :as tokens]
             [status-im.ethereum.transactions.core :as transactions]
-            [status-im.native-module.core :as status]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.fx :as fx]
-            [status-im.utils.types :as types]
-            [taoensso.timbre :as log]
-            [status-im.ethereum.json-rpc :as json-rpc]))
+            [taoensso.timbre :as log]))
 
 (fx/defn handle-signal
   [cofx {:keys [subscription_id data] :as event}]

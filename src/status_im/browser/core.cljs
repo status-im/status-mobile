@@ -4,14 +4,14 @@
             [status-im.browser.permissions :as browser.permissions]
             [status-im.constants :as constants]
             [status-im.data-store.browser :as browser-store]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.resolver :as resolver]
             [status-im.i18n :as i18n]
-            [status-im.js-dependencies :as dependencies]
+            [status-im.js-dependencies :as js-dependencies]
             [status-im.native-module.core :as status]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.ens :as ens]
-            [status-im.utils.ethereum.resolver :as resolver]
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.fx :as fx]
             [status-im.utils.http :as http]
@@ -19,10 +19,8 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.random :as random]
             [status-im.utils.types :as types]
-            [status-im.utils.universal-links.core :as utils.universal-links]
-            [taoensso.timbre :as log]
-            [status-im.js-dependencies :as js-dependencies]
-            [status-im.utils.universal-links.core :as universal-links]))
+            [status-im.utils.universal-links.core :as universal-links]
+            [taoensso.timbre :as log]))
 
 (fx/defn initialize-browsers
   [{:keys [db all-stored-browsers]}]
@@ -65,7 +63,7 @@
 
 (defn check-if-phishing-url [{:keys [history history-index] :as browser}]
   (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))]
-    (cond-> browser history-host (assoc :unsafe? (dependencies/phishing-detect history-host)))))
+    (cond-> browser history-host (assoc :unsafe? (js-dependencies/phishing-detect history-host)))))
 
 (defn- content->hash [hex]
   (when (and hex (not= hex "0x"))
@@ -198,8 +196,8 @@
 
 (fx/defn handle-message-link
   [cofx link]
-  (if (utils.universal-links/universal-link? link)
-    (utils.universal-links/handle-url cofx link)
+  (if (universal-links/universal-link? link)
+    (universal-links/handle-url cofx link)
     {:browser/show-browser-selection link}))
 
 (fx/defn update-browser-on-nav-change
@@ -224,10 +222,10 @@
 (fx/defn navigation-state-changed
   [cofx event error?]
   (let [{:strs [url loading title]} (js->clj event)
-        deep-link? (utils.universal-links/deep-link? url)]
-    (if (utils.universal-links/universal-link? url)
+        deep-link? (universal-links/deep-link? url)]
+    (if (universal-links/universal-link? url)
       (when-not (and deep-link? platform/ios?) ;; ios webview handles this
-        (utils.universal-links/handle-url cofx url))
+        (universal-links/handle-url cofx url))
       (fx/merge cofx
                 (update-browser-option :loading? loading)
                 (update-browser-name title)
@@ -240,8 +238,8 @@
   [cofx url]
   (let [browser (get-current-browser (:db cofx))
         normalized-url (http/normalize-and-decode-url url)]
-    (if (utils.universal-links/universal-link? normalized-url)
-      (utils.universal-links/handle-url cofx normalized-url)
+    (if (universal-links/universal-link? normalized-url)
+      (universal-links/handle-url cofx normalized-url)
       (fx/merge cofx
                 (update-browser-option :url-editing? false)
                 (update-browser-history browser normalized-url)
@@ -256,8 +254,8 @@
         browser {:browser-id    (random/id)
                  :history-index 0
                  :history       [normalized-url]}]
-    (if (utils.universal-links/universal-link? normalized-url)
-      (utils.universal-links/handle-url cofx normalized-url)
+    (if (universal-links/universal-link? normalized-url)
+      (universal-links/handle-url cofx normalized-url)
       (fx/merge cofx
                 {:db (assoc db :browser/options
                             {:browser-id (:browser-id browser)})}

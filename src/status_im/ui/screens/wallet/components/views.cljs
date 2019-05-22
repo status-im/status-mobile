@@ -1,35 +1,35 @@
 (ns status-im.ui.screens.wallet.components.views
-  (:require-macros [status-im.utils.views :as views])
   (:require [clojure.string :as string]
-            [reagent.core :as reagent]
             [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.eip55 :as eip55]
+            [status-im.ethereum.tokens :as tokens]
             [status-im.i18n :as i18n]
             [status-im.ui.components.bottom-buttons.view :as bottom-buttons]
             [status-im.ui.components.button.view :as button]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.list.styles :as list.styles]
-            [status-im.ui.components.list-selection :as list-selection]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.screens.wallet.components.styles :as styles]
-            [status-im.ui.screens.wallet.choose-recipient.views :as choose-recipient]
-            [status-im.ui.screens.wallet.styles :as wallet.styles]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.money :as money]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
-            [status-im.utils.core :as utils.core]
-            [status-im.utils.utils :as utils.utils]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.list.styles :as list.styles]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.utils.ethereum.eip55 :as eip55]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]))
+            [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.screens.wallet.choose-recipient.views
+             :as
+             choose-recipient]
+            [status-im.ui.screens.wallet.components.styles :as styles]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.utils.core :as utils.core]
+            [status-im.utils.money :as money]
+            [status-im.utils.utils :as utils.utils])
+  (:require-macros [status-im.utils.views :as views]))
 
 ;; Wallet tab has a different coloring scheme (dark) that forces color changes (background, text)
 ;; It might be replaced by some theme mechanism

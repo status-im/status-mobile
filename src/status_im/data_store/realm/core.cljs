@@ -1,18 +1,17 @@
 (ns status-im.data-store.realm.core
-  (:require [goog.object :as object]
-            [goog.string :as gstr]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
+            [cognitect.transit :as transit]
+            [goog.object :as object]
             [re-frame.core :as re-frame]
             [status-im.data-store.realm.schemas.account.core :as account]
             [status-im.data-store.realm.schemas.base.core :as base]
-            [taoensso.timbre :as log]
-            [status-im.utils.fs :as fs]
-            [status-im.utils.async :as utils.async]
-            [status-im.utils.platform :as utils.platform]
-            [status-im.utils.ethereum.core :as utils.ethereum]
-            [cognitect.transit :as transit]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.js-dependencies :as js-dependencies]
             [status-im.react-native.js-dependencies :as rn-dependencies]
-            [status-im.js-dependencies :as js-dependencies]))
+            [status-im.utils.async :as utils.async]
+            [status-im.utils.fs :as fs]
+            [status-im.utils.platform :as utils.platform]
+            [taoensso.timbre :as log]))
 
 (defn to-buffer [key]
   (when-not (nil? key)
@@ -90,7 +89,7 @@
 
 (defn get-account-db-path
   [address]
-  (str (accounts-realm-dir) (utils.ethereum/sha3 address)))
+  (str (accounts-realm-dir) (ethereum/sha3 address)))
 
 (defn delete-realms []
   (log/warn "realm: deleting all realms")
@@ -98,7 +97,7 @@
 
 (defn delete-account-realm
   [address]
-  (log/warn "realm: deleting account db " (utils.ethereum/sha3 address))
+  (log/warn "realm: deleting account db " (ethereum/sha3 address))
   (let [file (get-account-db-path address)]
     (.. (fs/unlink file)
         (then #(fs/unlink (str file ".lock")))

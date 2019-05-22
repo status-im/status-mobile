@@ -1,6 +1,6 @@
-(ns status-im.utils.ethereum.resolver
-  (:require [status-im.utils.ethereum.ens :as ens])
-  (:refer-clojure :exclude [name]))
+(ns status-im.ethereum.resolver
+  (:refer-clojure :exclude [name])
+  (:require [status-im.ethereum.ens :as ens]))
 
 (def default-hash "0x0000000000000000000000000000000000000000000000000000000000000000")
 (defn contenthash [registry ens-name cb]

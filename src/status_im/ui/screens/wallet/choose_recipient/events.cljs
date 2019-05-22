@@ -2,11 +2,11 @@
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.contact.db :as contact.db]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.eip55 :as eip55]
+            [status-im.ethereum.eip681 :as eip681]
+            [status-im.ethereum.ens :as ens]
             [status-im.i18n :as i18n]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.eip55 :as eip55]
-            [status-im.utils.ethereum.eip681 :as eip681]
-            [status-im.utils.ethereum.ens :as ens]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.money :as money]))
 

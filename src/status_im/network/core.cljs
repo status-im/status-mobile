@@ -2,19 +2,19 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.accounts.update.core :as accounts.update]
+            [status-im.chaos-mode.core :as chaos-mode]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.fleet.core :as fleet-core]
             [status-im.i18n :as i18n]
+            [status-im.mailserver.core :as mailserver]
             [status-im.native-module.core :as status]
             [status-im.network.net-info :as net-info]
-            [status-im.mailserver.core :as mailserver]
-            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.fleet.core :as fleet-core]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.http :as http]
-            [status-im.utils.types :as types]
-            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
-            [status-im.chaos-mode.core :as chaos-mode]))
+            [status-im.utils.types :as types]))
 
 (def url-regex
   #"https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z]{2,6})?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)")

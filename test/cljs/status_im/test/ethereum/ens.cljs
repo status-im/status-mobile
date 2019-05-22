@@ -1,6 +1,6 @@
-(ns status-im.test.utils.ethereum.ens
+(ns status-im.test.ethereum.ens
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.utils.ethereum.ens :as ens]))
+            [status-im.ethereum.ens :as ens]))
 
 (deftest namehash
   (is (= (str "0x" ens/default-namehash) (ens/namehash nil)))

@@ -1,11 +1,11 @@
 (ns status-im.ui.components.common.common
   (:require [reagent.core :as reagent]
+            [status-im.ethereum.core :as ethereum]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.styles :as styles]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
-            [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 

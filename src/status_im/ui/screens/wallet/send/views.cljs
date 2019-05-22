@@ -1,10 +1,13 @@
 (ns status-im.ui.screens.wallet.send.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.tokens :as tokens]
             [status-im.i18n :as i18n]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.bottom-buttons.view :as bottom-buttons]
             [status-im.ui.components.button.view :as button]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as common]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
@@ -13,23 +16,20 @@
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]
-            [status-im.ui.screens.wallet.components.styles :as wallet.components.styles]
-            [status-im.ui.screens.wallet.components.views :as components]
+            [status-im.ui.screens.wallet.components.styles
+             :as
+             wallet.components.styles]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
+            [status-im.ui.screens.wallet.main.views :as wallet.main.views]
             [status-im.ui.screens.wallet.send.animations :as send.animations]
             [status-im.ui.screens.wallet.send.styles :as styles]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
-            [status-im.ui.screens.wallet.main.views :as wallet.main.views]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]
             [status-im.utils.utils :as utils]
-            [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.transport.utils :as transport.utils]
-            [taoensso.timbre :as log]
-            [reagent.core :as reagent]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]))
+            [taoensso.timbre :as log])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- toolbar [modal? title]
   (let [action (if modal? actions/close-white actions/back-white)]
@@ -168,22 +168,25 @@
        (when-not online?
          [wallet.main.views/snackbar :t/error-cant-send-transaction-offline])
        [react/view styles/send-transaction-form
-        [components/recipient-selector {:disabled? (or from-chat? modal? show-password-input?)
-                                        :address   to
-                                        :name      to-name
-                                        :modal?    modal?}]
-        [components/asset-selector {:disabled? (or from-chat? modal? show-password-input?)
-                                    :error     asset-error
-                                    :type      :send
-                                    :symbol    symbol}]
-        [components/amount-selector {:disabled?     (or from-chat? modal? show-password-input?)
-                                     :error         (or amount-error
-                                                        (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds))
-                                                        (when-not sufficient-gas? (i18n/label :t/wallet-insufficient-gas)))
-                                     :amount        amount
-                                     :amount-text   amount-text
-                                     :input-options {:on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount % symbol decimals])
-                                                     :ref            (partial reset! amount-input)}} token]
+        [wallet.components/recipient-selector
+         {:disabled? (or from-chat? modal? show-password-input?)
+          :address   to
+          :name      to-name
+          :modal?    modal?}]
+        [wallet.components/asset-selector
+         {:disabled? (or from-chat? modal? show-password-input?)
+          :error     asset-error
+          :type      :send
+          :symbol    symbol}]
+        [wallet.components/amount-selector
+         {:disabled?     (or from-chat? modal? show-password-input?)
+          :error         (or amount-error
+                             (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds))
+                             (when-not sufficient-gas? (i18n/label :t/wallet-insufficient-gas)))
+          :amount        amount
+          :amount-text   amount-text
+          :input-options {:on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount % symbol decimals])
+                          :ref            (partial reset! amount-input)}} token]
         [advanced-options advanced? native-currency transaction scroll]
         (when keycard?
           [signing-phrase-view signing-phrase])]]

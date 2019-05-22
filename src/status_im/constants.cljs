@@ -1,7 +1,6 @@
 (ns status-im.constants
-  (:require [status-im.i18n :as i18n]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.types :as types]
+  (:require [status-im.ethereum.core :as ethereum]
+            [status-im.i18n :as i18n]
             [status-im.utils.config :as config]))
 
 (def ethereum-rpc-url "http://localhost:8545")
