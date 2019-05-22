@@ -52,17 +52,9 @@
                                       :icon      :main-icons/add
                                       :icon-opts {:color :blue}
                                       :on-press  #(re-frame/dispatch [:navigate-to :wallet-add-custom-token])}]
-        [list/section-list
-         {:sections                    (concat
-                                        (when (seq custom-tokens)
-                                          [{:title (i18n/label :t/custom)
-                                            :data  custom-tokens}])
-                                        [{:title (i18n/label :t/default)
-                                          :data  default-tokens}])
-          :key-fn                      :address
-          :stickySectionHeadersEnabled false
-          :render-section-header-fn    (fn [{:keys [title data]}]
-                                         [list-header/list-header title])
+        [list/flat-list
+         {:key-fn                      :address
+          :data default-tokens
           :render-fn                   #(render-token % visible-tokens)}]]])))
 
 (defn- create-payload [address]
