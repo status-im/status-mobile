@@ -1,4 +1,4 @@
-{ stdenv, callPackage, target-os,
+{ stdenv, pkgs, callPackage, target-os,
   cmake, extra-cmake-modules, file, status-go,
   darwin, nodejs }:
 
@@ -15,6 +15,10 @@ let
     lib.optional platform.targetLinux linuxPlatform ++
     lib.optional platform.targetDarwin darwinPlatform ++
     lib.optional platform.targetWindows windowsPlatform;
+  nodeInputs = import ./realm-node {
+    # The remaining dependencies come from Nixpkgs
+    inherit pkgs nodejs;
+  };
 
 in
   {
@@ -24,6 +28,8 @@ in
       file
       snoreNotifySources
       qtkeychainSources
-    ] ++ lib.catAttrs "buildInputs" selectedSources;
+    ] ++ lib.catAttrs "buildInputs" selectedSources
+      ++ (builtins.attrValues nodeInputs);
+
     shellHook = lib.concatStrings (lib.catAttrs "shellHook" (selectedSources ++ [ snoreNotifySources qtkeychainSources ]));
   }

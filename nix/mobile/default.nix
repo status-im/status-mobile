@@ -1,5 +1,5 @@
-{ config, stdenv, callPackage, target-os,
-  gradle, status-go, composeXcodeWrapper }:
+{ config, stdenv, pkgs, callPackage, target-os,
+  gradle, status-go, composeXcodeWrapper, nodejs }:
 
 with stdenv;
 

@@ -8,21 +8,16 @@ let
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
   stdenv' = pkgs.stdenvNoCC;
   gradle = pkgs.gradle_4_10;
-  statusDesktop = pkgs.callPackage ./nix/desktop { inherit target-os status-go; inherit (pkgs) darwin; nodejs = nodejs'; stdenv = stdenv'; };
-  statusMobile = pkgs.callPackage ./nix/mobile { inherit target-os config status-go gradle; inherit (pkgs.xcodeenv) composeXcodeWrapper; stdenv = stdenv'; };
+  statusDesktop = pkgs.callPackage ./nix/desktop { inherit target-os status-go pkgs; inherit (pkgs) darwin; stdenv = stdenv'; nodejs = nodejs'; };
+  statusMobile = pkgs.callPackage ./nix/mobile { inherit target-os config pkgs status-go gradle; inherit (pkgs.xcodeenv) composeXcodeWrapper; stdenv = stdenv'; nodejs = nodejs'; };
   status-go = pkgs.callPackage ./nix/status-go { inherit target-os; inherit (pkgs.xcodeenv) composeXcodeWrapper; inherit (statusMobile) xcodewrapperArgs; androidPkgs = statusMobile.androidComposition; };
   nodejs' = pkgs.nodejs-10_x;
   yarn' = pkgs.yarn.override { nodejs = nodejs'; };
-  nodeInputs = import ./nix/global-node-packages {
-    # The remaining dependencies come from Nixpkgs
-    inherit pkgs;
-    nodejs = nodejs';
-  };
   nodePkgBuildInputs = [
     nodejs'
     pkgs.python27 # for e.g. gyp
     yarn'
-  ] ++ (builtins.attrValues nodeInputs);
+  ];
   selectedSources =
     stdenv'.lib.optional platform.targetDesktop statusDesktop ++
     stdenv'.lib.optional platform.targetMobile statusMobile;

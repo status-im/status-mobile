@@ -38,6 +38,7 @@ in mkShell' {
     set -e
 
     STATUS_REACT_HOME=$(git rev-parse --show-toplevel)
+    export PATH=$STATUS_REACT_HOME/node_modules/.bin:$PATH
 
     ${projectDeps.shellHook}
     ${lib.optionalString useFastlanePkg fastlane'.shellHook}
