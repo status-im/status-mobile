@@ -25,6 +25,13 @@
                   :background-color :green}
      :selectable true}
     (foo)]
+
+   [react/text
+    {:style      {:width            100
+                  :height           100
+                  :background-color :yellow}
+     :selectable true}
+    (str "DEV" js/__DEV__)]
    [react/i18n-text {:style styles/intro-text
                      :key   :intro-text}]
    [react/view
