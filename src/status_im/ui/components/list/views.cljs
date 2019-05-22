@@ -93,8 +93,10 @@
   (into [react/view {:style styles/item-content-view}] (keep identity children)))
 
 (defn list-item-with-checkbox
-  [{:keys [on-value-change style checked?] :as props} item]
-  [react/touchable-highlight {:on-press #(on-value-change (not checked?))}
+  [{:keys [on-value-change style checked? on-long-press] :as props} item]
+  [react/touchable-highlight (merge {:on-press #(on-value-change (not checked?))}
+                                    (when on-long-press
+                                      {:on-long-press on-long-press}))
    (conj item
          [react/view {:style (merge style styles/item-checkbox)}
           [checkbox/checkbox props]])])

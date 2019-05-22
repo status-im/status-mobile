@@ -145,6 +145,7 @@
    :selection-modal-screen           [:modal screens.extensions/selection-modal-screen]
    :wallet-settings-assets           wallet-settings/manage-assets
    :wallet-add-custom-token          custom-tokens/add-custom-token
+   :wallet-custom-token-details      custom-tokens/custom-token-details
    :wallet-transactions-filter       [:modal wallet-transactions/filter-history]
    :my-profile                       profile.user/my-profile
    :my-profile-ext-settings          profile.user/extensions-settings

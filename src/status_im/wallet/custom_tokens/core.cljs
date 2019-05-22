@@ -104,7 +104,7 @@
      :wallet.custom-token/get-name contract}
     {:db (update db :wallet/custom-token-screen merge {:in-progress? nil :error (i18n/label :t/wrong-contract)})}))
 
-(fx/defn add-pressed [{:keys [db] :as cofx}]
+(fx/defn add-custom-token [{:keys [db] :as cofx}]
   (let [{:keys [contract name symbol decimals]} (get db :wallet/custom-token-screen)
         chain-key (ethereum/get-chain-keyword db)
         symbol    (keyword symbol)
@@ -112,6 +112,11 @@
                    :decimals (int decimals) :color (rand-nth colors/chat-colors)}]
     (fx/merge (assoc-in cofx [:db :wallet/all-tokens chain-key contract] new-token)
               (models/add-custom-token new-token))))
+
+(fx/defn remove-custom-token [{:keys [db] :as cofx} {:keys [address] :as token}]
+  (let [chain-key (ethereum/get-chain-keyword db)]
+    (fx/merge (update-in cofx [:db :wallet/all-tokens chain-key] dissoc address)
+              (models/remove-custom-token token))))
 
 (fx/defn field-is-edited [{:keys [db] :as cofx} field-key value]
   (case field-key

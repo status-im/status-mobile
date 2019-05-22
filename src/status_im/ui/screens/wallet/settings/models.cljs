@@ -28,6 +28,13 @@
         new-settings (assoc-in settings [:wallet :custom-tokens chain address] token)]
     (accounts.update/update-settings cofx new-settings {})))
 
+(fx/defn remove-custom-token [{{:account/keys [account]} :db :as cofx} {:keys [symbol address]}]
+  (let [network      (get (:networks account) (:network account))
+        chain        (ethereum/network->chain-keyword network)
+        settings     (update-toggle-in-settings cofx symbol false)
+        new-settings (update-in settings [:wallet :custom-tokens chain] dissoc address)]
+    (accounts.update/update-settings cofx new-settings {})))
+
 (fx/defn configure-token-balance-and-visibility [cofx symbol balance]
   (fx/merge cofx
             (toggle-visible-token symbol true)

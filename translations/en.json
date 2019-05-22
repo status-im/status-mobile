@@ -1046,5 +1046,7 @@
     "wrong-contract" :"Wrong contract",
     "already-have-asset" : "You already have this asset",
     "wrong-address" : "Wrong address",
-    "default" : "Default"
+    "default" : "Default",
+    "token-details" : "Token details",
+    "remove-token" : "Remove token"
 }

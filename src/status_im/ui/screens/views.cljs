@@ -24,6 +24,9 @@
     (let [opts (cond-> {:show?     show?
                         :on-cancel #(re-frame/dispatch [:bottom-sheet/hide])}
 
+                 (map? view)
+                 (merge view)
+
                  (= view :mobile-network)
                  (merge mobile-network-settings/settings-sheet)
 

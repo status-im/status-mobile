@@ -2111,5 +2111,13 @@
  :wallet.custom-token.ui/add-pressed
  (fn [cofx _]
    (fx/merge cofx
-             (custom-tokens/add-pressed)
+             (custom-tokens/add-custom-token)
              (navigation/navigate-back))))
+
+(handlers/register-handler-fx
+ :wallet.custom-token.ui/remove-pressed
+ (fn [cofx [_ token navigate-back?]]
+   (fx/merge cofx
+             (custom-tokens/remove-custom-token token)
+             (when navigate-back?
+               (navigation/navigate-back)))))
