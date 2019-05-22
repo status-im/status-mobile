@@ -45,7 +45,7 @@
     [react/view {:flex 1}
      [status-bar/status-bar]
      [toolbar/simple-toolbar (i18n/label :t/about-app)]
-     [react/scroll-view
+     [(react/scroll-view)
       [react/view
        [profile.components/settings-item-separator]
 

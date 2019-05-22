@@ -73,7 +73,7 @@
 (defn pin-view [{:keys [pin title-label description-label step status error-label
                         retry-counter]}]
   (let [enabled? (not= status :verifying)]
-    [react/scroll-view
+    [(react/scroll-view)
      [react/view styles/pin-container
       [react/view styles/center-container
        [react/text {:style styles/center-title-text}

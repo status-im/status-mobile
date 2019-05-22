@@ -26,7 +26,7 @@ def bundle() {
       )
     ]) {
       nix.shell(
-        "./gradlew assemble${target.capitalize()} ${gradleOpt}",
+        "./gradlew assembleRelease ${gradleOpt}",
         keep: [
           'REALM_DISABLE_ANALYTICS',
           'STATUS_RELEASE_STORE_FILE', 'STATUS_RELEASE_STORE_PASSWORD',
@@ -36,7 +36,7 @@ def bundle() {
     }
   }
   sh 'find android/app/build/outputs/apk'
-  def outApk = "android/app/build/outputs/apk/${target}/app-${target}.apk"
+  def outApk = "android/app/build/outputs/apk/release/app-release.apk"
   def pkg = utils.pkgFilename(btype, 'apk')
   /* rename for upload */
   sh "cp ${outApk} ${pkg}"

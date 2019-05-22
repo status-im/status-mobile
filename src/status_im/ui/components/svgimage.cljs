@@ -43,7 +43,7 @@
       (fn []
         [react/view {:style     style
                      :on-layout #(reset! width (-> % .-nativeEvent .-layout .-width))}
-         [react/web-view
+         [(react/web-view)
           {:java-script-enabled         false
            :third-party-cookies-enabled false
            :scroll-enabled              false

@@ -107,7 +107,7 @@
     (when platform/iphone-x?
       [react/view
        {:style tabs.styles/ios-titles-cover}])]
-   [react/safe-area-view {:flex 1}]])
+   [(react/safe-area-view) {:flex 1}]])
 
 (defn tabs-animation-wrapper-android
   [keyboard-shown? view-id content]
@@ -134,13 +134,13 @@
                              :enter-pin-settings} view-id)
         (if platform/ios?
           [tabs-animation-wrapper-ios
-           [react/animated-view
+           [(react/animated-view)
             {:style (tabs.styles/animated-container visible? keyboard-shown?)}
             [tabs tab]]]
           [tabs-animation-wrapper-android
            keyboard-shown?
            view-id
-           [react/animated-view
+           [(react/animated-view)
             {:style (tabs.styles/animated-container visible? keyboard-shown?)}
             [tabs tab]]])))}))
 
@@ -156,12 +156,12 @@
         (when platform/android?
           (reset!
            listeners
-           [(.addListener react/keyboard "keyboardDidShow"
+           [(.addListener (react/keyboard)  "keyboardDidShow"
                           (fn []
                             (reset! keyboard-shown? true)
                             (animate visible?
                                      disappearance-duration 0)))
-            (.addListener react/keyboard "keyboardDidHide"
+            (.addListener (react/keyboard)  "keyboardDidHide"
                           (fn []
                             (reset! keyboard-shown? false)
                             (animate visible? appearance-duration

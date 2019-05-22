@@ -11,14 +11,14 @@
                        "Status Android"))
 
 (defn respond! [request-id status-code data]
-  (.respond react/http-bridge
+  (.respond (react/http-bridge)
             request-id
             status-code
             "application/json"
             (types/clj->json data)))
 
 (defn start! []
-  (.start react/http-bridge
+  (.start (react/http-bridge)
           port
           server-name
           (fn [req]
@@ -33,4 +33,4 @@
                 (log/debug "Error: " e))))))
 
 (defn stop! []
-  (.stop react/http-bridge))
+  (.stop (react/http-bridge)))

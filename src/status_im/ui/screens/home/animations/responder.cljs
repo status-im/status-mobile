@@ -24,7 +24,7 @@
       (animation/start (animation/spring animated-offset-x {:toValue to-value})))))
 
 (defn swipe-pan-responder [animated-offset-x end-offset-x chat-id swiped?]
-  (.create react/pan-responder
+  (.create (react/pan-responder)
            (clj->js {:onMoveShouldSetPanResponder on-start
                      :onPanResponderMove          (on-move animated-offset-x end-offset-x swiped?)
                      :onPanResponderRelease       (on-release animated-offset-x end-offset-x chat-id swiped?)

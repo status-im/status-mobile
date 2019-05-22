@@ -5,7 +5,8 @@
             [status-im.constants :as constants]
             [status-im.data-store.realm.core :as core]
             [status-im.utils.core :as utils]
-            [status-im.js-dependencies :as dependencies]))
+            [status-im.js-dependencies :as dependencies]
+            [taoensso.timbre :as log]))
 
 (defn- transform-message [{:keys [content] :as message}]
   (when-let [parsed-content (utils/safe-read-message-content content)]
@@ -78,7 +79,7 @@
    (assoc cofx :get-stored-messages get-by-chat-id)))
 
 (defn- sha3 [s]
-  (.sha3 dependencies/Web3.prototype s))
+  (.sha3 (dependencies/web3-prototype) s))
 
 (re-frame/reg-cofx
  :data-store/get-referenced-messages

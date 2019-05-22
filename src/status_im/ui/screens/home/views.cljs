@@ -40,7 +40,7 @@
    [react/view {:style styles/welcome-image-container}
     [components.common/image-contain
      {:container-style {}}
-     {:image (:welcome-image resources/ui) :width 750 :height 556}]]
+     {:image (resources/get-image :welcome-image) :width 750 :height 556}]]
    [react/i18n-text {:style styles/welcome-text :key :welcome-to-status}]
    [react/view
     [react/i18n-text {:style styles/welcome-text-description

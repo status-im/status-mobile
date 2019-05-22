@@ -7,15 +7,15 @@
   (:require [clojure.string :as string]
             [status-im.js-dependencies :as dependencies]))
 
-(def utils dependencies/web3-utils)
+(defn utils [] (dependencies/web3-utils))
 
 (defn address->checksum
   "Converts an arbitrary case address to one with correct checksum case."
   [address]
   (when address
-    (.toChecksumAddress utils address)))
+    (.toChecksumAddress (utils) address)))
 
 (defn valid-address-checksum?
   "Checks address checksum validity."
   [address]
-  (.checkAddressChecksum utils address))
+  (.checkAddressChecksum (utils) address))
