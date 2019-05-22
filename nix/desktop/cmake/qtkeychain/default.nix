@@ -29,12 +29,12 @@ let
         --replace "\"\$QTKEYCHAIN_VERSION" qtkeychain
     '';
 
-    meta = {
+    meta = with stdenv.lib; {
       description = "Patched sources for qtkeychain, a platform-independent Qt API for storing passwords securely";
       homepage = https://github.com/status-im/qtkeychain;
-      license = stdenv.lib.licenses.bsd3;
-      maintainers = [ stdenv.lib.maintainers.pombeirp ];
-      platforms = with stdenv.lib.platforms; darwin ++ linux;
+      license = licenses.bsd3;
+      maintainers = [ maintainers.pombeirp ];
+      platforms = with platforms; darwin ++ linux;
     };
   };
 

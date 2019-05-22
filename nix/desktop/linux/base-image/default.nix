@@ -1,6 +1,4 @@
-{ pkgs, stdenv, fetchurl }:
-
-with pkgs;
+{ stdenv, fetchurl, unzip }:
 
 let
   package = stdenv.mkDerivation rec {
@@ -23,12 +21,12 @@ let
       unzip $src -d $out/src
     '';
 
-    meta = {
+    meta = with stdenv.lib; {
       description = "A base image for Linux Status Desktop release distributions";
       homepage = https://desktop-app-files.ams3.digitaloceanspaces.com/;
-      license = stdenv.lib.licenses.gpl3;
-      maintainers = [ stdenv.lib.maintainers.pombeirp ];
-      platforms = stdenv.lib.platforms.linux;
+      license = licenses.gpl3;
+      maintainers = [ maintainers.pombeirp ];
+      platforms = platforms.linux;
     };
   };
 
