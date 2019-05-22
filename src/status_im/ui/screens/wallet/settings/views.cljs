@@ -58,11 +58,10 @@
      [list/item-secondary symbol]]]])
 
 (defview manage-assets []
-  (letsubs [network        [:network]
+  (letsubs [chain          [:ethereum/chain-keyword]
             visible-tokens [:wallet/visible-tokens-symbols]
             all-tokens     [:wallet/all-tokens]]
-    (let [chain-key (ethereum/network->chain-keyword network)
-          {custom-tokens true default-tokens nil} (group-by :custom? (tokens/sorted-tokens-for all-tokens chain-key))]
+    (let [{custom-tokens true default-tokens nil} (group-by :custom? (tokens/sorted-tokens-for all-tokens chain))]
       [react/view (merge components.styles/flex {:background-color :white})
        [status-bar/status-bar]
        [toolbar]

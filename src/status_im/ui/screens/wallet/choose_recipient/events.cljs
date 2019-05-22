@@ -75,12 +75,9 @@
 (handlers/register-handler-fx
  :wallet.send/set-recipient
  (fn [{:keys [db]} [_ recipient]]
-   (let [{:keys [web3 network]} db
-         network-info (get-in db [:account/account :networks network])
-         chain (ethereum/network->chain-keyword network-info)]
+   (let [chain (ethereum/chain-keyword db)]
      (if (ens/is-valid-eth-name? recipient)
-       {:resolve-address {:web3     web3
-                          :registry (get ens/ens-registries chain)
+       {:resolve-address {:registry (get ens/ens-registries chain)
                           :ens-name recipient
                           :cb       #(re-frame/dispatch [:wallet.send/set-recipient %])}}
        (if (ethereum/address? recipient)

@@ -16,8 +16,7 @@
 
 (defn get-settings
   [db]
-  (let [chain-keyword    (-> (get-in db [:account/account :networks (:network db)])
-                             ethereum/network->chain-keyword)]
+  (let [chain-keyword (ethereum/chain-keyword db)]
     (get-in db [:account/account :settings :tribute-to-talk chain-keyword])))
 
 (defn enabled?

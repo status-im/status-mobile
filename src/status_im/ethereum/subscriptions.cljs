@@ -37,12 +37,11 @@
 (fx/defn new-block
   [{:keys [db] :as cofx} {:keys [number transactions] :as block}]
   (when number
-    (let [{:keys [:account/account :wallet/all-tokens network
-                  :ethereum/current-block]} db
-          chain (ethereum/network->chain-keyword (get-in account [:networks network]))
+    (let [{:keys [:wallet/all-tokens :ethereum/current-block]} db
+          chain (ethereum/chain-keyword db)
           chain-tokens (into {} (map (juxt :address identity)
                                      (tokens/tokens-for all-tokens chain)))
-          wallet-address (ethereum/normalized-address (:address account))
+          wallet-address (ethereum/current-address db)
           token-contracts-addresses (into #{} (keys chain-tokens))]
       (fx/merge cofx
                 {:db (assoc-in db [:ethereum/current-block] number)
@@ -94,11 +93,11 @@
 
 (fx/defn initialize
   [{:keys [db] :as cofx}]
-  (let [{:keys [:account/account :wallet/all-tokens network]} db
-        chain (ethereum/network->chain-keyword (get-in account [:networks network]))
+  (let [{:keys [:wallet/all-tokens]} db
+        chain (ethereum/chain-keyword db)
         chain-tokens (into {} (map (juxt :address identity)
                                    (tokens/tokens-for all-tokens chain)))
-        normalized-address (ethereum/normalized-address (:address account))
+        normalized-address (ethereum/current-address db)
         padded-address (transactions/add-padding normalized-address)]
     {:ethereum.subscriptions/new-block nil
      :ethereum.subscriptions/token-transactions

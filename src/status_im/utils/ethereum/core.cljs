@@ -57,9 +57,6 @@
 (defn network->chain-keyword [network]
   (chain-id->chain-keyword (network->chain-id network)))
 
-(defn get-chain-keyword [db]
-  (network->chain-keyword (get-in db [:account/account :networks (:network db)])))
-
 (defn network->chain-name [network]
   (-> network
       network->chain-keyword

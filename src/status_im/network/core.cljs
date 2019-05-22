@@ -73,10 +73,6 @@
      :name       network-name
      :config     config}))
 
-(defn get-chain [{:keys [db]}]
-  (let [network  (get (:networks (:account/account db)) (:network db))]
-    (ethereum/network->chain-keyword network)))
-
 (defn get-network [{:keys [db]} network-id]
   (get-in db [:account/account :networks network-id]))
 

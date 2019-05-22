@@ -26,7 +26,7 @@
 
 (defview transaction-fee []
   (letsubs [send-transaction            [:wallet.send/transaction]
-            network                     [:account/network]
+            chain                       [:ethereum/chain-keyword]
             {gas-edit       :gas
              max-fee        :max-fee
              gas-price-edit :gas-price} [:wallet/edit]
@@ -34,7 +34,6 @@
     (let [{:keys [amount symbol]} send-transaction
           gas                (:value gas-edit)
           gas-price          (:value gas-price-edit)
-          chain              (ethereum/network->chain-keyword network)
           native-currency    (tokens/native-currency chain)
           {:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)]
       [components/simple-screen {:status-bar-type :modal-wallet}

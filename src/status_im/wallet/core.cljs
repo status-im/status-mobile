@@ -378,8 +378,8 @@
 
 (fx/defn update-balances
   [{{:keys [network-status :wallet/all-tokens]
-     {:keys [address settings]} :account/account :as db} :db :as cofx}]
-  (let [normalized-address (ethereum/normalized-address address)
+     {:keys [settings]} :account/account :as db} :db :as cofx}]
+  (let [normalized-address (ethereum/current-address db)
         chain  (ethereum/chain-keyword db)
         assets (get-in settings [:wallet :visible-tokens chain])
         tokens (->> (tokens/tokens-for all-tokens chain)
@@ -425,8 +425,8 @@
           {}))))))
 
 (fx/defn update-prices
-  [{{:keys [network network-status :wallet/all-tokens]
-     {:keys [address settings networks]} :account/account :as db} :db}]
+  [{{:keys [network-status :wallet/all-tokens]
+     {:keys [address settings]} :account/account :as db} :db}]
   (let [chain       (ethereum/chain-keyword db)
         mainnet?    (= :mainnet chain)
         assets      (get-in settings [:wallet :visible-tokens chain])
@@ -520,9 +520,8 @@
                        adjusted-gas))})))
 
 (defn update-toggle-in-settings
-  [{{:account/keys [account]} :db} symbol checked?]
-  (let [network      (get (:networks account) (:network account))
-        chain        (ethereum/network->chain-keyword network)
+  [{{:account/keys [account] :as db} :db} symbol checked?]
+  (let [chain        (ethereum/chain-keyword db)
         settings     (get account :settings)]
     (update-in settings [:wallet :visible-tokens chain] #(set-checked % symbol checked?))))
 
@@ -532,16 +531,15 @@
     (accounts.update/update-settings cofx new-settings {})))
 
 (fx/defn add-custom-token
-  [{{:account/keys [account]} :db :as cofx} {:keys [symbol address] :as token}]
-  (let [network      (get (:networks account) (:network account))
-        chain        (ethereum/network->chain-keyword network)
+  [{:keys [db] :as cofx} {:keys [symbol address] :as token}]
+  (let [chain        (ethereum/chain-keyword db)
         settings     (update-toggle-in-settings cofx symbol true)
         new-settings (assoc-in settings [:wallet :custom-tokens chain address] token)]
     (accounts.update/update-settings cofx new-settings {})))
 
-(fx/defn remove-custom-token [{{:account/keys [account]} :db :as cofx} {:keys [symbol address]}]
-  (let [network      (get (:networks account) (:network account))
-        chain        (ethereum/network->chain-keyword network)
+(fx/defn remove-custom-token
+  [{:keys [db] :as cofx} {:keys [symbol address]}]
+  (let [chain        (ethereum/chain-keyword db)
         settings     (update-toggle-in-settings cofx symbol false)
         new-settings (update-in settings [:wallet :custom-tokens chain] dissoc address)]
     (accounts.update/update-settings cofx new-settings {})))

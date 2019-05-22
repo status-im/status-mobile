@@ -22,10 +22,9 @@
    [icons/icon :main-icons/check {:color colors/white :height 20 :width 20}]])
 
 (defview price-badge [price id owned pending]
-  (letsubs [network [:network]
+  (letsubs [chain   [:ethereum/chain-keyword]
             balance [:balance]]
-    (let [chain           (ethereum/network->chain-keyword network)
-          snt             (money/to-number (if (= :mainnet chain) (:SNT balance) (:STT balance)))
+    (let [snt             (money/to-number (if (= :mainnet chain) (:SNT balance) (:STT balance)))
           not-enough-snt? (> price snt)
           no-snt?         (or (nil? snt) (zero? snt))]
       [react/touchable-highlight {:on-press #(cond pending nil
