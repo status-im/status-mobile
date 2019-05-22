@@ -66,7 +66,7 @@
                          128 public-key
                          nil)]
     (when normalized-key
-      (subs (.sha3 js-dependencies/Web3.prototype normalized-key #js {:encoding "hex"}) 26))))
+      (subs (.sha3 (js-dependencies/web3-prototype) normalized-key #js {:encoding "hex"}) 26))))
 
 (defn public-key->new-contact [public-key]
   {:name        (gfycat/generate-gfy public-key)

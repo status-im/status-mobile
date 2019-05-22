@@ -46,7 +46,6 @@
               "hi-base32"
               "react-native-mail"
               "react-native-shake"]
-
  ;; Desktop modules
  :desktop-modules ["realm"
                    "react-native-languages"

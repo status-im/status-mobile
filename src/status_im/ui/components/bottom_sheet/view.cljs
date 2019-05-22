@@ -80,7 +80,7 @@
 
 (defn swipe-pan-responder [opts]
   (.create
-   react/pan-responder
+   (react/pan-responder)
    (clj->js
     {:onMoveShouldSetPanResponder (fn [_ state]
                                     (or (< 10 (js/Math.abs (.-dx state)))
@@ -110,8 +110,8 @@
         {:on-press #(cancel opts on-cancel)
          :style    styles/container}
 
-        [react/animated-view (styles/shadow opacity-value)]]
-       [react/animated-view
+        [(react/animated-view) (styles/shadow opacity-value)]]
+       [(react/animated-view)
         {:style (styles/content-container height bottom-value)}
         [react/view styles/content-header
          [react/view styles/handle]]

@@ -7,10 +7,12 @@
   {:border-color color :border-width 1 :border-radius 32})
 
 (def default-native-currency
-  {:name     "Native"
-   :symbol   :ETH
-   :decimals 18
-   :icon     {:source (js/require "./resources/images/tokens/default-native.png")}})
+  (memoize
+   (fn []
+     {:name     "Native"
+      :symbol   :ETH
+      :decimals 18
+      :icon     {:source (js/require "./resources/images/tokens/default-native.png")}})))
 
 (def all-native-currencies
   (ethereum.macros/resolve-native-currency-icons
@@ -40,7 +42,7 @@
   (set (map #(-> % val :symbol) all-native-currencies)))
 
 (defn native-currency [chain]
-  (-> (get all-native-currencies chain default-native-currency)))
+  (-> (get all-native-currencies chain (default-native-currency))))
 
 (defn ethereum? [symbol]
   (native-currency-symbols symbol))

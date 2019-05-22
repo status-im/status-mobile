@@ -14,7 +14,9 @@
 (def mapview-html (slurp "resources/mapview/mapview.html"))
 
 (def webview-class
-  (reagent/adapt-react-class (.-WebView js-dependencies/webview)))
+  (memoize
+   (fn []
+     (reagent/adapt-react-class (.-WebView js-dependencies/webview)))))
 
 (defn map-component
   "creates a webview reagent component which cause webview to be updated only when style changes.
@@ -32,7 +34,7 @@
           false)))
     :reagent-render
     (fn [opts]
-      [webview-class opts])}))
+      [(webview-class) opts])}))
 
 (defn- on-map-message [map-event on-change]
   (let [data (-> map-event
@@ -69,7 +71,7 @@
       :on-should-start-load-with-request     #(let [url (.-url %)]
                                                 (if (string/starts-with? url "file")
                                                   true
-                                                  (do (.openURL react/linking url) false)))
+                                                  (do (.openURL (react/linking) url) false)))
 
       :ref                                   #(reset! webview %)
       :on-message                            #(when on-change (on-map-message % on-change))

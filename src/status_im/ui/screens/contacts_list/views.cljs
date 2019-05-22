@@ -23,7 +23,7 @@
      [toolbar.view/toolbar nil
       toolbar.view/default-nav-back
       (toolbar.view/content-title (i18n/label :t/contacts))]
-     [react/scroll-view {:flex 1}
+     [(react/scroll-view) {:flex 1}
       [list.views/big-list-item
        {:style               {:margin-vertical 16}
         :text                (i18n/label :t/blocked-users)
@@ -43,8 +43,8 @@
                  :background-color colors/white}
      [status-bar/status-bar]
      [toolbar.view/simple-toolbar (i18n/label :t/blocked-users)]
-     [react/scroll-view {:style {:background-color colors/white
-                                 :padding-vertical 8}}
+     [(react/scroll-view) {:style {:background-color colors/white
+                                   :padding-vertical 8}}
       [list.views/flat-list
        {:data                      blocked-contacts
         :key-fn                    :address

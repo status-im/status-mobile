@@ -6,7 +6,7 @@
 (def ^:const privacy-policy-link "https://www.iubenda.com/privacy-policy/45710059")
 
 (defn open-privacy-policy-link! []
-  (.openURL react/linking privacy-policy-link))
+  (.openURL (react/linking) privacy-policy-link))
 
 (re-frame/reg-fx
  :privacy-policy/open-privacy-policy-link

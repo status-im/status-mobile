@@ -37,7 +37,7 @@
 ;; to an address (`server`) property.
 
 (defn enum-val [enum-name value-name]
-  (get-in (js->clj rn/keychain) [enum-name value-name]))
+  (get-in (js->clj (rn/keychain)) [enum-name value-name]))
 
 ;; We need a more strict access mode for keychain entries that save user password.
 ;; iOS
@@ -72,13 +72,13 @@
 
 ;; Android only
 (defn- secure-hardware-available? [callback]
-  (-> (.getSecurityLevel rn/keychain)
+  (-> (.getSecurityLevel (rn/keychain))
       (.then (fn [level] (callback (= level keychain-secure-hardware))))))
 
 ;; iOS only
 (defn- device-encrypted? [callback]
   (-> (.canImplyAuthentication
-       rn/keychain
+       (rn/keychain)
        (clj->js
         {:authenticationType
          (enum-val "ACCESS_CONTROL" "BIOMETRY_ANY_OR_DEVICE_PASSCODE")}))
@@ -86,7 +86,7 @@
 
 ;; Stores the password for the address to the Keychain
 (defn save-user-password [address password callback]
-  (-> (.setInternetCredentials rn/keychain address address password keychain-secure-hardware (clj->js keychain-restricted-availability))
+  (-> (.setInternetCredentials (rn/keychain) address address password keychain-secure-hardware (clj->js keychain-restricted-availability))
       (.then callback)))
 
 (defn handle-callback [callback result]
@@ -97,7 +97,7 @@
 ;; Gets the password for a specified address from the Keychain
 (defn get-user-password [address callback]
   (if (or platform/ios? platform/android?)
-    (-> (.getInternetCredentials rn/keychain address)
+    (-> (.getInternetCredentials (rn/keychain) address)
         (.then (partial handle-callback callback)))
     (callback))) ;; no-op for Desktop
 
@@ -105,7 +105,7 @@
 ;; (example of usage is logout or signing in w/o "save-password")
 (defn clear-user-password [address callback]
   (if (or platform/ios? platform/android?)
-    (-> (.resetInternetCredentials rn/keychain address)
+    (-> (.resetInternetCredentials (rn/keychain) address)
         (.then callback))
     (callback true))) ;; no-op for Desktop
 
@@ -147,14 +147,14 @@
 (defn store [encryption-key]
   (log/debug "storing encryption key")
   (-> (.setGenericPassword
-       rn/keychain
+       (rn/keychain)
        username
        (.stringify js/JSON encryption-key))
       (.then (constantly encryption-key))))
 
 (defn create []
   (log/debug "no key exists, creating...")
-  (.. (rn/secure-random key-bytes)
+  (.. ((rn/secure-random) key-bytes)
       (then bytes->js-array)))
 
 (defn handle-not-found []
@@ -174,7 +174,7 @@
     (js/Promise.
      (fn [on-success _]
        (on-success (security/unmask @generic-password))))
-    (.. (.getGenericPassword rn/keychain)
+    (.. (.getGenericPassword (rn/keychain))
         (then
          (fn [res]
            (if res
@@ -195,10 +195,10 @@
 
 (defn reset []
   (log/debug "resetting key...")
-  (.resetGenericPassword rn/keychain))
+  (.resetGenericPassword (rn/keychain)))
 
 (defn set-username []
-  (when platform/desktop? (.setUsername rn/keychain username)))
+  (when platform/desktop? (.setUsername (rn/keychain) username)))
 
 ;;;; Effects
 

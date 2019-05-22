@@ -45,7 +45,7 @@
 
 (defn address? [s]
   (when s
-    (.isAddress dependencies/Web3.prototype s)))
+    (.isAddress (dependencies/web3-prototype) s)))
 
 (defn network->chain-id [network]
   (get-in network [:config :NetworkId]))
@@ -66,9 +66,9 @@
 
 (defn sha3
   ([s]
-   (.sha3 dependencies/Web3.prototype (str s)))
+   (.sha3 (dependencies/web3-prototype) (str s)))
   ([s opts]
-   (.sha3 dependencies/Web3.prototype (str s) (clj->js opts))))
+   (.sha3 (dependencies/web3-prototype) (str s) (clj->js opts))))
 
 (defn hex->string [s]
   (when s

@@ -16,7 +16,7 @@
   (letsubs [card-read-in-progress? [:hardwallet/card-read-in-progress?]]
     [react/view styles/nfc-enabled-container
      [react/view
-      [react/image {:source (:hold-card-animation resources/ui)
+      [react/image {:source (resources/get-image :hold-card-animation)
                     :style  styles/phone-nfc-on-image}]]
      [react/view styles/turn-nfc-text-container
       [react/text {:style           styles/status-hardwallet-text
@@ -30,7 +30,7 @@
 (defn nfc-disabled []
   [react/view styles/nfc-disabled-container
    [react/view
-    [react/image {:source (:phone-nfc-off resources/ui)
+    [react/image {:source (resources/get-image :phone-nfc-off)
                   :style  styles/phone-nfc-off-image}]]
    [react/view styles/turn-nfc-text-container
     [react/text {:style    styles/status-hardwallet-text
@@ -59,7 +59,7 @@
          [nfc-disabled])]
       (if (= setup-step :begin)
         [react/view styles/bottom-container
-         [react/touchable-highlight {:on-press #(.openURL react/linking "https://hardwallet.status.im")}
+         [react/touchable-highlight {:on-press #(.openURL (react/linking) "https://hardwallet.status.im")}
           [react/view styles/product-info-container
            [react/text {:style styles/product-info-text}
             (i18n/label :t/product-information)]

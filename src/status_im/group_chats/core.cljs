@@ -220,7 +220,7 @@
       :db                          (assoc db :group/selected-contacts #{})}
      (mailserver/upsert-mailserver-topic
       {:chat-ids [chat-id]
-       :topic    transport.topic/discovery-topic-hash
+       :topic    (transport.topic/discovery-topic-hash)
        :fetch?   false})
      (mailserver/process-next-messages-request))))
 
@@ -257,7 +257,7 @@
                                       :events  [event]}}
        (mailserver/upsert-mailserver-topic
         {:chat-ids [chat-id]
-         :topic    transport.topic/discovery-topic-hash
+         :topic    (transport.topic/discovery-topic-hash)
          :fetch    false})
        (mailserver/process-next-messages-request)))))
 

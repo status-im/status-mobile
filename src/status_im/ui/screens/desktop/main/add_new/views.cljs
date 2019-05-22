@@ -59,7 +59,7 @@
            {:style (styles/add-contact-button-text disable?)}
            (i18n/label :start-chat)]]]])
      (when (seq contacts) [react/text {:style styles/new-contact-subtitle} (i18n/label :or-choose-a-contact)])
-     [react/scroll-view
+     [(react/scroll-view)
       [react/view {:style styles/suggested-contacts}
        (doall
         (for [c contacts]
@@ -120,7 +120,7 @@
            (i18n/label :new-public-group-chat)]]]])
      [topic-input-placeholder]
      [react/text {:style styles/new-contact-subtitle} (i18n/label :selected-for-you)]
-     [react/scroll-view
+     [(react/scroll-view)
       [react/view {:style styles/suggested-contacts}
        (doall
         (for [topic public-chat/default-public-chats]
