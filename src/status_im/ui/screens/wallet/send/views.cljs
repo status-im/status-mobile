@@ -150,10 +150,9 @@
                         :padding-vertical 14}}
     (i18n/label :t/signing-phrase-warning)]])
 
-(defn- render-send-transaction-view [{:keys [modal? transaction scroll advanced? keycard? signing-phrase network all-tokens amount-input network-status]}]
+(defn- render-send-transaction-view [{:keys [chain modal? transaction scroll advanced? keycard? signing-phrase all-tokens amount-input network-status]}]
   (let [{:keys [amount amount-text amount-error asset-error show-password-input? to to-name sufficient-funds?
                 sufficient-gas? in-progress? from-chat? symbol]} transaction
-        chain (ethereum/network->chain-keyword network)
         native-currency (tokens/native-currency chain)
         {:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)
         online? (= :online network-status)]
@@ -218,7 +217,7 @@
 (defview send-transaction []
   (letsubs [transaction [:wallet.send/transaction]
             advanced? [:wallet.send/advanced?]
-            network [:account/network]
+            chain [:ethereum/chain-keyword]
             scroll (atom nil)
             network-status [:network-status]
             all-tokens [:wallet/all-tokens]
@@ -230,7 +229,7 @@
                             :advanced?      advanced?
                             :keycard?       keycard?
                             :signing-phrase signing-phrase
-                            :network        network
+                            :chain          chain
                             :all-tokens     all-tokens
                             :network-status network-status}]))
 
@@ -238,7 +237,7 @@
 (defview send-transaction-modal []
   (letsubs [transaction [:wallet.send/transaction]
             advanced? [:wallet.send/advanced?]
-            network [:account/network]
+            chain [:ethereum/chain-keyword]
             scroll (atom nil)
             network-status [:network-status]
             all-tokens [:wallet/all-tokens]
@@ -251,7 +250,7 @@
                               :advanced?      advanced?
                               :keycard?       keycard?
                               :signing-phrase signing-phrase
-                              :network        network
+                              :chain          chain
                               :all-tokens     all-tokens
                               :network-status network-status}]
       [react/view wallet.styles/wallet-modal-container

@@ -85,13 +85,12 @@
       (re-frame/dispatch [:browser.callback/resolve-ens-multihash-error]))))
 
 (fx/defn resolve-url
-  [{{:keys [network] :as db} :db} {:keys [error? resolved-url]}]
+  [{:keys [db]} {:keys [error? resolved-url]}]
   (when (not error?)
     (let [current-url (get-current-url (get-current-browser db))
           host (http/url-host current-url)]
       (if (and (not resolved-url) (ens/is-valid-eth-name? host))
-        (let [network (get-in db [:account/account :networks network])
-              chain   (ethereum/network->chain-keyword network)]
+        (let [chain   (ethereum/chain-keyword db)]
           {:db                            (update db :browser/options assoc :resolving? true)
            :browser/resolve-ens-content {:registry (get ens/ens-registries
                                                         chain)
@@ -100,11 +99,10 @@
         {:db (update db :browser/options assoc :url (or resolved-url current-url) :resolving? false)}))))
 
 (fx/defn resolve-ens-contenthash
-  [{{:keys [network] :as db} :db}]
+  [{:keys [db]}]
   (let [current-url (get-current-url (get-current-browser db))
         host (http/url-host current-url)]
-    (let [network (get-in db [:account/account :networks network])
-          chain   (ethereum/network->chain-keyword network)]
+    (let [chain   (ethereum/chain-keyword db)]
       {:db                            (update db :browser/options assoc :resolving? true)
        :browser/resolve-ens-contenthash {:registry (get ens/ens-registries
                                                         chain)

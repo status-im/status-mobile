@@ -85,7 +85,7 @@
 
 (defn field-exists?
   [{:wallet/keys [all-tokens] :as db} field-key field-value]
-  (let [chain-key (ethereum/get-chain-keyword db)]
+  (let [chain-key (ethereum/chain-keyword db)]
     (some #(= field-value (get % field-key))
           (vals (get all-tokens chain-key)))))
 
@@ -101,7 +101,7 @@
 
 (defn token-in-list?
   [{:wallet/keys [all-tokens] :as db} contract]
-  (let [chain-key (ethereum/get-chain-keyword db)
+  (let [chain-key (ethereum/chain-keyword db)
         addresses (set (map string/lower-case (keys (get all-tokens chain-key))))]
     (not (nil? (get addresses (string/lower-case contract))))))
 
@@ -168,7 +168,7 @@
 (fx/defn add-custom-token
   [{:keys [db] :as cofx}]
   (let [{:keys [contract name symbol decimals]} (get db :wallet/custom-token-screen)
-        chain-key (ethereum/get-chain-keyword db)
+        chain-key (ethereum/chain-keyword db)
         symbol    (keyword symbol)
         new-token {:address  contract
                    :name     name
@@ -183,7 +183,7 @@
 
 (fx/defn remove-custom-token
   [{:keys [db] :as cofx} {:keys [address] :as token}]
-  (let [chain-key (ethereum/get-chain-keyword db)]
+  (let [chain-key (ethereum/chain-keyword db)]
     (fx/merge (update-in cofx [:db :wallet/all-tokens chain-key] dissoc address)
               (wallet/remove-custom-token token))))
 

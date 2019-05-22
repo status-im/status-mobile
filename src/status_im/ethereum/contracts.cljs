@@ -12,6 +12,5 @@
 
 (defn get-address
   [db contract]
-  (let [chain-keyword (-> (get-in db [:account/account :networks (:network db)])
-                          ethereum/network->chain-keyword)]
+  (let [chain-keyword (ethereum/chain-keyword db)]
     (get-in contracts [contract chain-keyword])))

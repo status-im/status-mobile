@@ -950,11 +950,11 @@
  :<- [:balance]
  :<- [:prices]
  :<- [:wallet/currency]
- :<- [:network]
+ :<- [:ethereum/chain-keyword]
  :<- [:wallet/all-tokens]
- (fn [[balance prices currency network all-tokens] [_ currency-code]]
+ (fn [[balance prices currency chain all-tokens] [_ currency-code]]
    (if (and balance prices)
-     (let [assets          (tokens/tokens-for all-tokens (ethereum/network->chain-keyword network))
+     (let [assets          (tokens/tokens-for all-tokens chain)
            token->decimals (into {} (map #(vector (:symbol %) (:decimals %)) assets))
            balance-total-value
            (get-balance-total-value balance
@@ -985,22 +985,20 @@
 
 (re-frame/reg-sub
  :wallet/visible-tokens-symbols
- :<- [:network]
+ :<- [:ethereum/chain-keyword]
  :<- [:account/account]
- (fn [[network current-account]]
-   (let [chain (ethereum/network->chain-keyword network)]
-     (get-in current-account [:settings :wallet :visible-tokens chain]))))
+ (fn [[chain current-account]]
+   (get-in current-account [:settings :wallet :visible-tokens chain])))
 
 (re-frame/reg-sub
  :wallet/visible-assets
- :<- [:network]
+ :<- [:ethereum/chain-keyword]
  :<- [:wallet/visible-tokens-symbols]
  :<- [:wallet/all-tokens]
- (fn [[network visible-tokens-symbols all-tokens]]
-   (let [chain (ethereum/network->chain-keyword network)]
-     (conj (filter #(contains? visible-tokens-symbols (:symbol %))
-                   (tokens/sorted-tokens-for all-tokens chain))
-           (tokens/native-currency chain)))))
+ (fn [[chain visible-tokens-symbols all-tokens]]
+   (conj (filter #(contains? visible-tokens-symbols (:symbol %))
+                 (tokens/sorted-tokens-for all-tokens chain))
+         (tokens/native-currency chain))))
 
 (re-frame/reg-sub
  :wallet/visible-assets-with-amount
@@ -1511,19 +1509,19 @@
  (fn [_ [_ _ {:keys [value]}]]
    value))
 
-(defn get-token-for [network all-tokens token]
+(defn get-token-for [chain all-tokens token]
   (if (= token "ETH")
     {:decimals 18
      :address  "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
-    (tokens/token-for (ethereum/network->chain-keyword network) all-tokens token)))
+    (tokens/token-for chain all-tokens token)))
 
 (re-frame/reg-sub
  :extensions.wallet/balance
  :<- [:wallet/all-tokens]
- :<- [:network]
+ :<- [:ethereum/chain-keyword]
  :<- [:balance]
- (fn [[all-tokens network balance] [_ _ {token :token}]]
-   (let [{:keys [decimals]} (get-token-for network all-tokens token)
+ (fn [[all-tokens chain balance] [_ _ {token :token}]]
+   (let [{:keys [decimals]} (get-token-for chain all-tokens token)
          value (or (get balance (keyword token)) (money/bignumber 0))]
      {:value        (money/token->unit value decimals)
       :value-in-wei value})))
@@ -1545,10 +1543,10 @@
  :extensions.wallet/tokens
  :<- [:wallet/all-tokens]
  :<- [:wallet/visible-tokens-symbols]
- :<- [:network]
- (fn [[all-tokens visible-tokens-symbols network] [_ _ {filter-vector :filter visible :visible}]]
+ :<- [:ethereum/chain-keyword]
+ (fn [[all-tokens visible-tokens-symbols chain] [_ _ {filter-vector :filter visible :visible}]]
    (let [tokens (map normalize-token (filter #(and (not (:nft? %)) (if visible (contains? visible-tokens-symbols (:symbol %)) true))
-                                             (tokens/sorted-tokens-for all-tokens (ethereum/network->chain-keyword network))))]
+                                             (tokens/sorted-tokens-for all-tokens chain)))]
      (if filter-vector
        (filter #((set filter-vector) (:symbol %)) tokens)
        tokens))))

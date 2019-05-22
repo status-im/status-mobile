@@ -156,9 +156,9 @@
 
 (views/defview asset-selector [{:keys [disabled? type symbol error]}]
   (views/letsubs [balance    [:balance]
-                  network    [:network]
+                  chain      [:ethereum/chain-keyword]
                   all-tokens [:wallet/all-tokens]]
-    (let [{:keys [name icon decimals color] :as token} (tokens/asset-for all-tokens (ethereum/network->chain-keyword network) symbol)]
+    (let [{:keys [name icon decimals color] :as token} (tokens/asset-for all-tokens chain symbol)]
       (when name
         [react/view
          [cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}

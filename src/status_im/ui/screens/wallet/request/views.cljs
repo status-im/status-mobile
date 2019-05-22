@@ -30,14 +30,14 @@
 
 (views/defview send-transaction-request []
   ;; TODO(jeluard) both send and request flows should be merged
-  (views/letsubs [network                                           [:account/network]
-                  {:keys [to to-name public-key]}                   [:wallet.send/transaction]
-                  {:keys [amount amount-error amount-text symbol
-                          to to-name public-key]}                   [:wallet.request/transaction]
-                  network-status                                    [:network-status]
-                  all-tokens                                        [:wallet/all-tokens]
-                  scroll                                            (atom nil)]
-    (let [{:keys [decimals] :as token} (tokens/asset-for all-tokens (ethereum/network->chain-keyword network) symbol)]
+  (views/letsubs [chain                           [:ethereum/chain-keyword]
+                  {:keys [to to-name public-key]} [:wallet.send/transaction]
+                  {:keys [amount amount-error amount-text symbol to
+                          to-name public-key]}    [:wallet.request/transaction]
+                  network-status                  [:network-status]
+                  all-tokens                      [:wallet/all-tokens]
+                  scroll                          (atom nil)]
+    (let [{:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)]
       [wallet.components/simple-screen {:avoid-keyboard? true}
        [wallet.components/toolbar (i18n/label :t/new-request)]
        [react/view components.styles/flex

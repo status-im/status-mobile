@@ -18,8 +18,7 @@
 (fx/defn update-settings
   [{:keys [db] :as cofx} {:keys [snt-amount message update] :as new-settings}]
   (let [account-settings (get-in db [:account/account :settings])
-        chain-keyword    (-> (get-in db [:account/account :networks (:network db)])
-                             ethereum/network->chain-keyword)
+        chain-keyword    (ethereum/chain-keyword db)
         tribute-to-talk-settings (cond-> (merge (tribute-to-talk.db/get-settings db)
                                                 new-settings)
                                    new-settings

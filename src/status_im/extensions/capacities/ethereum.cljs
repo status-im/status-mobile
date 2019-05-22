@@ -36,9 +36,7 @@
                         (first address)
                         address)]
     (if (ens/is-valid-eth-name? first-address)
-      (let [{:keys [network]} db
-            network-info (get-in db [:account/account :networks network])
-            chain (ethereum/network->chain-keyword network-info)
+      (let [chain (ethereum/chain-keyword db)
             registry (get ens/ens-registries chain)]
         (ens/get-addr registry first-address
                       #(f db (assoc arguments address-keyword %))))
@@ -376,9 +374,7 @@
  :extensions/ethereum-resolve-ens
  (fn [{db :db} [_ _ {:keys [name on-success on-failure]}]]
    (if (ens/is-valid-eth-name? name)
-     (let [{:keys [network]} db
-           network-info (get-in db [:account/account :networks network])
-           chain (ethereum/network->chain-keyword network-info)
+     (let [chain (ethereum/chain-keyword db)
            registry (get ens/ens-registries chain)]
        (ens/get-addr registry name
                      #(on-success {:value %})))
@@ -395,7 +391,7 @@
      (fx/merge cofx
                {:db (assoc-in db [:wallet :send-transaction]
                               {:id                id
-                               :from             (ethereum/normalized-address (get-in db [:account/account :address]))
+                               :from             (ethereum/current-address db)
                                :data             (or data (str "0x" (abi-spec/from-utf8 message)))
                                :on-result        [:extensions/wallet-ui-on-success on-success]
                                :on-error         [:extensions/wallet-ui-on-failure on-failure]
