@@ -73,7 +73,7 @@
 (defn chat-list-item [[chat-id
                        {:keys [group-chat public?] :as chat}]]
   [react/touchable-highlight
-   {:on-press (fn [arg]
+   {:on-press (fn [^js arg]
                 (let [right-click? (= "right" (.-button (.-nativeEvent arg)))]
                   (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
                   (when right-click?
@@ -109,7 +109,7 @@
                               :margin-left       20
                               :margin-right      22}
                       :default-value search-filter
-                      :on-change (fn [e]
+                      :on-change (fn [^js e]
                                    (let [native-event (.-nativeEvent e)
                                          text         (.-text native-event)]
                                      (re-frame/dispatch [:search/filter-changed text])))}]])
@@ -148,7 +148,7 @@
                   logging-in?          [:accounts/login]
                   {:keys [all-home-items chats]} [:home-items]]
     {:component-did-mount
-     (fn [this]
+     (fn [^js this]
        (let [[_ loading?] (.. this -props -argv)]
          (when loading?
            (re-frame/dispatch [:init-rest-of-chats]))))}

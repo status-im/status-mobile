@@ -62,7 +62,7 @@
   (when (string? s)
     (let [eth? (string/ends-with? s "ETH")
           n (money/bignumber (string/replace s "ETH" ""))]
-      (if eth? (.times n 1e18) n))))
+      (if eth? (.times ^js n 1e18) n))))
 
 (defn extract-request-details [{:keys [value address chain-id function-name function-arguments]} all-tokens]
   "Return a map encapsulating request details (with keys `value`, `address` and `symbol`) from a parsed URI.

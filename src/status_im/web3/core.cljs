@@ -36,18 +36,18 @@
 (defn get-syncing [web3]
   (when web3
     (.getSyncing
-     (.-eth web3)
+     (.-eth ^js web3)
      (fn [error sync]
        (re-frame/dispatch [:web3.callback/get-syncing-success error sync])))))
 
 (defn set-default-account
   [web3 address]
-  (set! (.-defaultAccount (.-eth web3))
+  (set! (.-defaultAccount (.-eth ^js web3))
         (ethereum/normalized-address address)))
 
 (defn fetch-node-version
   [web3 cb]
-  (.. web3
+  (.. ^js web3
       -version
       (getNode
        (fn [err resp]

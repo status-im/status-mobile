@@ -280,7 +280,7 @@
        (= (get-in send-message [:content :params :amount])
           (get-in request-message [:content :params :amount]))))
 
-(deftype PersonalSendCommand []
+(deftype ^js PersonalSendCommand []
   protocol/Command
   (id [_] "send")
   (scope [_] #{:personal-chats})
@@ -458,7 +458,7 @@
          markup]
         markup))))
 
-(deftype PersonalRequestCommand []
+(deftype ^js PersonalRequestCommand []
   protocol/Command
   (id [_] "request")
   (scope [_] #{:personal-chats})

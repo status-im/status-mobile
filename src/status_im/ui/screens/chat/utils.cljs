@@ -38,7 +38,7 @@
              {:style    {:color                (if outgoing colors/white colors/blue)
                          :text-decoration-line :underline}
               :on-press (if platform/desktop?
-                          #(.openURL (react/linking) (http/normalize-url text))
+                          #(.openURL ^js (react/linking) (http/normalize-url text))
                           #(re-frame/dispatch [:browser.ui/message-link-pressed text]))})
    :tag    (fn [text {:keys [outgoing]}]
              {:style    {:color                (if outgoing colors/white colors/blue)

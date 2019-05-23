@@ -205,11 +205,11 @@
  :node/les-show-debug-info
  (fn [[web3 account chain-sync-state]]
    (.getBalance
-    (.-eth web3)
+    (.-eth ^js web3)
     (:address account)
     (fn [error-balance balance]
       (.getBlockNumber
-       (.-eth web3)
+       (.-eth ^js web3)
        (fn
          [error-block block]
          (utils/show-popup

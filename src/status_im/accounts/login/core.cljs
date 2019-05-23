@@ -60,7 +60,7 @@
                        create-database-if-not-exist?
                        current-fleet]
   ;; No matter what is the keychain we use, as checks are done on decrypting base
-  (.. (keychain/safe-get-encryption-key)
+  (.. ^js (keychain/safe-get-encryption-key)
       (then #(data-store/change-account address password % create-database-if-not-exist?))
       (then #(js/Promise. (fn [resolve reject]
                             (if (contract-fleet? current-fleet)

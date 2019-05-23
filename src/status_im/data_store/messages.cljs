@@ -60,7 +60,7 @@
     (keep (fn [{:keys [response-to response-to-v2]}]
             (when-let [js-message
                        (if response-to-v2
-                         (.objectForPrimaryKey @core/account-realm "message" response-to-v2)
+                         (.objectForPrimaryKey ^js @core/account-realm "message" response-to-v2)
                          (core/single (core/get-by-field
                                        @core/account-realm
                                        :message :old-message-id response-to)))]
@@ -79,7 +79,7 @@
    (assoc cofx :get-stored-messages get-by-chat-id)))
 
 (defn- sha3 [s]
-  (.sha3 (dependencies/web3-prototype) s))
+  (.sha3 ^js (dependencies/web3-prototype) s))
 
 (re-frame/reg-cofx
  :data-store/get-referenced-messages
@@ -137,5 +137,5 @@
 
 (defn message-exists? [message-id]
   (if @core/account-realm
-    (not (nil? (.objectForPrimaryKey @core/account-realm "message" message-id)))
+    (not (nil? (.objectForPrimaryKey ^js @core/account-realm "message" message-id)))
     false))

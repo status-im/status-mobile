@@ -156,15 +156,15 @@
   and handles incoming url if the app has been started by clicking on a link"
   []
   (log/debug "universal-links: initializing")
-  (.. (react/linking)
+  (.. ^js (react/linking)
       (getInitialURL)
       (then dispatch-url))
-  (.. (react/linking)
+  (.. ^js (react/linking)
       (addEventListener "url" url-event-listener)))
 
 (defn finalize
   "Remove event listener for url"
   []
   (log/debug "universal-links: finalizing")
-  (.. (react/linking)
+  (.. ^js (react/linking)
       (removeEventListener "url" url-event-listener)))

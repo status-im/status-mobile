@@ -184,7 +184,7 @@
 (def CUD-url "https://chaos-unicorn-day.org")
 
 (defn open-chaos-unicorn-day-link []
-  (.openURL (react/linking) CUD-url))
+  (.openURL ^js (react/linking) CUD-url))
 
 (handlers/register-handler-fx
  :accounts.ui/chaos-mode-switched

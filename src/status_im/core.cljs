@@ -9,6 +9,7 @@
             status-im.transport.impl.send
             [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.utils.logging.core :as utils.logs]
+            [goog.object :as object]
             cljs.core.specs.alpha))
 
 (if js/goog.DEBUG
@@ -19,6 +20,6 @@
   (utils.logs/init-logs)
   (error-handler/register-exception-handler!)
   (re-frame/dispatch [:init/app-started])
-  (.registerComponent react/app-registry "StatusIm" #(reagent/reactify-component app-root))
+  ((object/get react/app-registry "registerComponent") "StatusIm" #(reagent/reactify-component app-root))
   (when platform/android?
-    (.registerHeadlessTask react/app-registry "RNFirebaseBackgroundMessage" background-messaging/message-handler-fn)))
+    ((object/get react/app-registry "registerHeadlessTask") "RNFirebaseBackgroundMessage" background-messaging/message-handler-fn)))

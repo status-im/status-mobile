@@ -46,14 +46,14 @@
 (defn- get-messages-by-messages-ids
   [message-ids]
   (when (not-empty message-ids)
-    (-> @core/account-realm
+    (-> ^js @core/account-realm
         (.objects "message")
         (.filtered (str "(" (core/in-query "message-id" message-ids) ")")))))
 
 (defn- get-statuses-by-messages-ids
   [message-ids]
   (when-not (empty message-ids)
-    (-> @core/account-realm
+    (-> ^js @core/account-realm
         (.objects "user-status")
         (.filtered (str "(" (core/in-query "message-id" message-ids) ")")))))
 

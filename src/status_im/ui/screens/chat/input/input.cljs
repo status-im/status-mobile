@@ -40,9 +40,9 @@
        :on-blur                #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused? false}])
        :on-submit-editing      #(when single-line-input?
                                   (re-frame/dispatch [:chat.ui/send-current-message]))
-       :on-layout              #(set-container-width-fn (.-width (.-layout (.-nativeEvent %))))
-       :on-change              #(re-frame/dispatch [:chat.ui/set-chat-input-text (.-text (.-nativeEvent %))])
-       :on-selection-change    #(let [s (-> (.-nativeEvent %)
+       :on-layout              #(set-container-width-fn (.-width (.-layout (.-nativeEvent ^js %))))
+       :on-change              #(re-frame/dispatch [:chat.ui/set-chat-input-text (.-text (.-nativeEvent ^js %))])
+       :on-selection-change    #(let [s (-> (.-nativeEvent ^js %)
                                             (.-selection))
                                       end (.-end s)]
                                   (re-frame/dispatch [:chat.ui/set-chat-ui-props {:selection end}]))
@@ -76,11 +76,11 @@
                                   (re-frame/dispatch [:chat.ui/set-chat-input-text @state-text])
                                   (re-frame/dispatch [:chat.ui/send-current-message])
                                   (set-text ""))
-       :on-layout              #(set-container-width-fn (.-width (.-layout (.-nativeEvent %))))
+       :on-layout              #(set-container-width-fn (.-width (.-layout (.-nativeEvent ^js %))))
        :on-change              #(do
-                                  (set-text (.-text (.-nativeEvent %))))
+                                  (set-text (.-text (.-nativeEvent ^js %))))
        :on-end-editing         #(re-frame/dispatch [:chat.ui/set-chat-input-text @state-text])
-       :on-selection-change    #(let [s (-> (.-nativeEvent %)
+       :on-selection-change    #(let [s (-> (.-nativeEvent ^js %)
                                             (.-selection))
                                       end (.-end s)]
                                   (re-frame/dispatch [:chat.ui/set-chat-ui-props {:selection end}]))
@@ -94,7 +94,7 @@
 (defview invisible-input [{:keys [set-layout-width-fn value]}]
   (letsubs [{:keys [input-text]} [:chats/current-chat]]
     [react/text {:style     style/invisible-input-text
-                 :on-layout #(let [w (-> (.-nativeEvent %)
+                 :on-layout #(let [w (-> (.-nativeEvent ^js %)
                                          (.-layout)
                                          (.-width))]
                                (set-layout-width-fn w))}
@@ -192,7 +192,7 @@
                               (string/blank? state-text)
                               (string/blank? input-text))]
       [react/view {:style     (style/root margin)
-                   :on-layout #(let [h (-> (.-nativeEvent %)
+                   :on-layout #(let [h (-> (.-nativeEvent ^js %)
                                            (.-layout)
                                            (.-height))]
                                  (when (> h 0)

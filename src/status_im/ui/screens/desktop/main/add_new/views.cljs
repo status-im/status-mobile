@@ -47,7 +47,7 @@
                             :auto-focus        true
                             :flex              1
                             :selection-color   colors/blue
-                            :on-change         (fn [e]
+                            :on-change         (fn [^js e]
                                                  (let [native-event (.-nativeEvent e)
                                                        text         (.-text native-event)]
                                                    (re-frame/dispatch [:new-chat/set-new-identity text])))

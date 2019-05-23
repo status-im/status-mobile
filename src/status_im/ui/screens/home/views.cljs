@@ -68,7 +68,7 @@
                 (when (and @scrolling-from-top?
                            (not (:show? @filter.views/search-input-state)))
                   {:on-start-should-set-responder-capture
-                   (fn [event]
+                   (fn [^js event]
                      (let [current-position  (.-pageY (.-nativeEvent event))
                            current-timestamp (.-timestamp (.-nativeEvent event))]
                        (reset! previous-touch
@@ -76,7 +76,7 @@
 
                      false)
                    :on-move-should-set-responder
-                   (fn [event]
+                   (fn [^js event]
                      (let [current-position  (.-pageY (.-nativeEvent event))
                            current-timestamp (.-timestamp (.-nativeEvent event))
                            [previous-position previous-timestamp] @previous-touch]
@@ -92,7 +92,7 @@
                                            {:style {:height     tabs.styles/tabs-diff
                                                     :align-self :stretch}}]
                           :on-scroll-begin-drag
-                          (fn [e]
+                          (fn [^js e]
                             (reset! scrolling-from-top?
                                     ;; check if scrolling up from top of list
                                     (zero? (.-y (.-contentOffset (.-nativeEvent e))))))
@@ -113,14 +113,14 @@
 
 (views/defview home [loading?]
   (views/letsubs [{:keys [search-filter chats all-home-items]} [:home-items]]
-    {:component-did-mount (fn [this]
+    {:component-did-mount (fn [^js this]
                             (let [[_ loading?] (.. this -props -argv)]
                               (when loading? (utils/set-timeout #(re-frame/dispatch [:init-rest-of-chats]) 100))))}
     [react/view {:flex 1}
      [status-bar/status-bar {:type :main}]
      [react/keyboard-avoiding-view {:style     {:flex 1
                                                 :align-items :center}
-                                    :on-layout (fn [e]
+                                    :on-layout (fn [^js e]
                                                  (re-frame/dispatch
                                                   [:set-once :content-layout-height
                                                    (-> e .-nativeEvent .-layout .-height)]))}

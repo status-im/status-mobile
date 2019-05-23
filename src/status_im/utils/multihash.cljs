@@ -50,7 +50,7 @@
 ;; - `hex-digest` is a string holding the hex-encoded algorithm output.
 ;;
 ;; Multihash values also support metadata.
-(deftype Multihash [code hex-digest _meta]
+(deftype ^js Multihash [code hex-digest _meta]
 
   Object
 

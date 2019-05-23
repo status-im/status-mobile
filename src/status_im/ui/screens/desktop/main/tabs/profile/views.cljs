@@ -32,7 +32,7 @@
                         :auto-focus    true
                         :style         styles/profile-editing-user-name
                         :on-change     #(re-frame/dispatch [:my-profile/update-name
-                                                            (.-text (.-nativeEvent %))])}]
+                                                            (.-text (.-nativeEvent ^js %))])}]
      [react/text {:style           styles/profile-user-name
                   :number-of-lines 1}
       name])

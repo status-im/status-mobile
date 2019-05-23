@@ -7,7 +7,7 @@
 ;; MaskedData ensures that the object passed to it won't be occasionally printed
 ;; via println or log functions. Useful for keeping sensitive data, such as passwords
 ;; to avoid accidentally exposing them.
-(deftype MaskedData [data]
+(deftype ^js MaskedData [data]
   Object
   (toString [_] "******")
   Unmaskable

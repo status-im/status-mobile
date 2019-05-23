@@ -92,7 +92,8 @@ prod-build:
 
 prod-build-android: export TARGET_OS ?= android
 prod-build-android:
-	lein prod-build-android
+	node ./node_modules/shadow-cljs/cli/runner.js release android && \
+	mv shadow-build/index.js index.android.js
 
 prod-build-ios: export TARGET_OS ?= ios
 prod-build-ios:

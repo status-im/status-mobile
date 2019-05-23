@@ -32,8 +32,8 @@
 
 (defn v5 [old-realm new-realm]
   (log/debug "migrating accounts schema v4")
-  (let [accounts (.objects new-realm "account")]
-    (dotimes [i (.-length accounts)]
+  (let [accounts (.objects ^js new-realm "account")]
+    (dotimes [i (.-length ^js accounts)]
       (let [account      (aget accounts i)
             old-settings (deserialize (aget account "settings"))
             new-settings (-> old-settings
@@ -55,8 +55,8 @@
 
 (defn v8 [old-realm new-realm]
   (log/debug "migrating accounts schema v8")
-  (let [accounts (.objects new-realm "account")]
-    (dotimes [i (.-length accounts)]
+  (let [accounts (.objects ^js new-realm "account")]
+    (dotimes [i (.-length ^js accounts)]
       (let [account      (aget accounts i)
             old-settings (deserialize (aget account "settings"))
             new-settings (-> old-settings
@@ -67,8 +67,8 @@
 
 (defn v9 [old-realm new-realm]
   (log/debug "migrating accounts schema v9")
-  (let [accounts (.objects new-realm "account")]
-    (dotimes [i (.-length accounts)]
+  (let [accounts (.objects ^js new-realm "account")]
+    (dotimes [i (.-length ^js accounts)]
       (let [account      (aget accounts i)
             old-settings (deserialize (aget account "settings"))
             new-settings (-> old-settings
@@ -81,8 +81,8 @@
 
 (defn v11 [old-realm new-realm]
   (log/debug "migrating accounts schema v11")
-  (let [accounts (.objects new-realm "account")]
-    (dotimes [i (.-length accounts)]
+  (let [accounts (.objects ^js new-realm "account")]
+    (dotimes [i (.-length ^js accounts)]
       (let [account             (aget accounts i)
             old-installation-id (aget account "installation-id")
             installation-id     (random/guid)]
@@ -99,8 +99,8 @@
   "Rename wnode to mailserver in account settings"
   [old-realm new-realm]
   (log/debug "migrating accounts schema v14")
-  (let [accounts (.objects new-realm "account")]
-    (dotimes [i (.-length accounts)]
+  (let [accounts (.objects ^js new-realm "account")]
+    (dotimes [i (.-length ^js accounts)]
       (let [account      (aget accounts i)
             {:keys [wnode] :as old-settings} (deserialize (aget account "settings"))
             new-settings (when wnode
@@ -118,8 +118,8 @@
 
 (defn v17 [old-realm new-realm]
   (log/debug "migrating accounts schema v17")
-  (let [accounts (.objects new-realm "account")]
-    (dotimes [i (.-length accounts)]
+  (let [accounts (.objects ^js new-realm "account")]
+    (dotimes [i (.-length ^js accounts)]
       (let [account      (aget accounts i)
             old-settings (deserialize (aget account "settings"))
             new-settings (update-in old-settings [:wallet :visible-tokens :mainnet]
@@ -160,13 +160,13 @@
               (.stringify js/JSON (clj->js new-config)))))))
 
 (defn- update-rpc-urls! [networks-js update-func]
-  (dotimes [i (.-length networks-js)]
+  (dotimes [i (.-length ^js networks-js)]
     (let [network-js (aget networks-js i)]
       (update-func network-js))))
 
 (defn- migrate-rpc-urls! [realm-js migrate-func]
-  (let [accounts (.objects realm-js "account")]
-    (dotimes [i (.-length accounts)]
+  (let [accounts (.objects ^js realm-js "account")]
+    (dotimes [i (.-length ^js accounts)]
       (let [account  (aget accounts i)
             networks (aget account "networks")]
         (migrate-func networks)

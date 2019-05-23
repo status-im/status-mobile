@@ -21,5 +21,5 @@
          input (:input-ref desktop)
          sel (:input-selection desktop)
          new-text (if sel (str (subs inp-txt 0 sel) emoji (subs inp-txt sel)) (str inp-txt emoji))]
-     (when input (.setNativeProps input (clj->js {:text new-text})))
+     (when input (.setNativeProps ^js input (clj->js {:text new-text})))
      {:db (assoc-in db [:chats current-chat-id :input-text] new-text)})))

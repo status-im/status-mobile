@@ -16,14 +16,14 @@
           on-success #(callback {:type (:type info) :expensive? %})]
       (if platform/ios?
         (on-success false)
-        (.. (react-components/net-info)
+        (.. ^js (react-components/net-info)
             isConnectionExpensive
             (then on-success)
             (catch (fn [error] (log/warn "isConnectionExpensive: " error))))))))
 
 (defn net-info [callback]
   (when (react-components/net-info)
-    (.then (.getConnectionInfo (react-components/net-info))
+    (.then (.getConnectionInfo ^js (react-components/net-info))
            (wrap-net-info callback))))
 
 (defn add-connection-listener [listener]

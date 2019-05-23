@@ -31,7 +31,7 @@
       (fn []
         (.addListener (react/keyboard)
                       "keyboardDidShow"
-                      (fn [e]
+                      (fn [^js e]
                         (let [h (.. e -endCoordinates -height)]
                           (dispatch [:hide-tab-bar])
                           (when-not (= h @keyboard-height)

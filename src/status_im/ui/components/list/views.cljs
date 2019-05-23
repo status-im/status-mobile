@@ -167,7 +167,7 @@
 
 (defn- wrap-render-fn [f]
   (fn [data]
-    (reagent/as-element (f (.-item data) (.-index data) (.-separators data)))))
+    (reagent/as-element (f (.-item ^js data) (.-index ^js data) (.-separators ^js data)))))
 
 (defn- wrap-key-fn [f]
   (fn [data index]
@@ -196,7 +196,7 @@
 ;; This forces clj <-> js serialization and breaks clj semantic
 ;; See https://github.com/reagent-project/reagent/issues/335
 
-(deftype Item [value]
+(deftype ^js Item [value]
   IEncodeJS
   (-clj->js [x] (.-value x))
   (-key->js [x] (.-value x))
@@ -227,9 +227,9 @@
 
 (defn- wrap-render-section-header-fn [f]
   (fn [data]
-    (let [section (.-section data)]
-      (reagent/as-element (f {:title (.-title section)
-                              :data  (.-data section)})))))
+    (let [section (.-section ^js data)]
+      (reagent/as-element (f {:title (.-title ^js section)
+                              :data  (.-data ^js section)})))))
 
 (defn- default-render-section-header [{:keys [title data]}]
   (when (seq data)

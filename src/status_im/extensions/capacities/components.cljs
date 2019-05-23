@@ -57,7 +57,7 @@
   [react/text (merge {:style    {:color                colors/white
                                  :text-decoration-line :underline}
                       :on-press (case open-in
-                                  :device #(.openURL (react/linking) uri)
+                                  :device #(.openURL ^js (react/linking) uri)
                                   :status #(re-frame/dispatch [:browser.ui/open-in-status-option-selected uri])
                                   #(re-frame/dispatch [:browser.ui/message-link-pressed uri]))}
                      (when style {:style style}))

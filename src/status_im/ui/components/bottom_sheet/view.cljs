@@ -39,7 +39,7 @@
 
 (defn- on-move
   [{:keys [height bottom-value opacity-value]}]
-  (fn [_ state]
+  (fn [_ ^js state]
     (let [dy (.-dy state)]
       (cond (pos? dy)
             (let [opacity (max min-opacity (- 1 (/ dy (- height swipe-opacity-range))))]
@@ -80,17 +80,17 @@
 
 (defn swipe-pan-responder [opts]
   (.create
-   (react/pan-responder)
+   ^js (react/pan-responder)
    (clj->js
-    {:onMoveShouldSetPanResponder (fn [_ state]
-                                    (or (< 10 (js/Math.abs (.-dx state)))
-                                        (< 5 (js/Math.abs (.-dy state)))))
+    {:onMoveShouldSetPanResponder (fn [_ ^js state]
+                                    (or (< 10 (js/Math.abs (.-dx ^js state)))
+                                        (< 5 (js/Math.abs (.-dy ^js state)))))
      :onPanResponderMove          (on-move opts)
      :onPanResponderRelease       (on-release opts)
      :onPanResponderTerminate     (on-release opts)})))
 
 (defn pan-handlers [pan-responder]
-  (js->clj (.-panHandlers pan-responder)))
+  (js->clj (.-panHandlers ^js pan-responder)))
 
 (defn- bottom-sheet-view
   [{:keys [opacity-value bottom-value]}]
@@ -135,7 +135,7 @@
     (reagent.core/create-class
      {:component-will-update
       (fn [this [_ new-args]]
-        (let [old-args             (second (.-argv (.-props this)))
+        (let [old-args             (second (.-argv (.-props ^js this)))
               old-show?            (:show? old-args)
               new-show?            (:show? new-args)
               old-height           (:content-height old-args)

@@ -16,7 +16,7 @@
  :keychain/get-encryption-key
  (fn [event]
    (when platform/desktop? (keychain/set-username))
-   (.. (keychain/get-encryption-key)
+   (.. ^js (keychain/get-encryption-key)
        (then #(re-frame/dispatch (conj event %)))
        (catch (partial handle-key-error event)))))
 

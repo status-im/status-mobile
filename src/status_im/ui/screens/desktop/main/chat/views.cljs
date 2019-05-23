@@ -101,7 +101,7 @@
 (views/defview message-without-timestamp
   [text {:keys [chat-id message-id old-message-id content group-chat expanded? current-public-key user-statuses] :as message} style]
   [react/view {:flex 1 :margin-vertical 5}
-   [react/touchable-highlight {:on-press (fn [arg]
+   [react/touchable-highlight {:on-press (fn [^js arg]
                                            (when (= "right" (.-button (.-nativeEvent arg)))
                                              (show-desktop-menu
                                               [{:text      (i18n/label :t/sharing-copy-to-clipboard)
@@ -228,10 +228,10 @@
                   current-public-key [:account/public-key]
                   messages-to-load   (reagent/atom load-step)
                   chat-id*           (reagent/atom nil)]
-    {:component-did-update #(if (:messages-initialized? (second (.-argv (.-props %1))))
+    {:component-did-update #(if (:messages-initialized? (second (.-argv (.-props ^js %1))))
                               (load-more (count messages) messages-to-load)
                               (re-frame/dispatch [:chat.ui/load-more-messages]))
-     :component-did-mount  #(if (:messages-initialized? (second (.-argv (.-props %1))))
+     :component-did-mount  #(if (:messages-initialized? (second (.-argv (.-props ^js %1))))
                               (load-more (count messages) messages-to-load)
                               (re-frame/dispatch [:chat.ui/load-more-messages]))}
     (let [scroll-ref    (atom nil)
@@ -247,7 +247,7 @@
                              :footerWidth                      styles/messages-list-vertical-padding
                              :enableArrayScrollingOptimization true
                              :inverted                         true
-                             :on-scroll                        (fn [e]
+                             :on-scroll                        (fn [^js e]
                                                                  (let [ne (.-nativeEvent e)
                                                                        y  (.-y (.-contentOffset ne))]
                                                                    (when (<= y 0)
@@ -312,10 +312,10 @@
                   {:keys [show-emoji?]}   [:desktop]]
     {:component-will-update
      (fn [e [_ new-chat-id new-input-text]]
-       (let [[_ old-chat-id] (.. e -props -argv)]
+       (let [[_ old-chat-id] (.. ^js e -props -argv)]
          (when (not= old-chat-id new-chat-id)
            ;; reset default text when switch to another chat
-           (.setNativeProps @inp-ref #js {:text (or new-input-text "")}))))}
+           (.setNativeProps ^js @inp-ref #js {:text (or new-input-text "")}))))}
     (let [component               (reagent/current-component)
           set-container-height-fn #(reagent/set-state component {:container-height %})
           {:keys [container-height]} (reagent/state component)]
@@ -328,14 +328,14 @@
                           :ref                    #(do (reset! inp-ref %)
                                                        (re-frame/dispatch [:set-in [:desktop :input-ref] %]))
                           :default-value          input-text
-                          :on-content-size-change #(set-container-height-fn (.-height (.-contentSize (.-nativeEvent %))))
-                          :on-selection-change    #(re-frame/dispatch [:set-in [:desktop :input-selection] (.-start (.-selection (.-nativeEvent %)))])
+                          :on-content-size-change #(set-container-height-fn (.-height (.-contentSize (.-nativeEvent ^js %))))
+                          :on-selection-change    #(re-frame/dispatch [:set-in [:desktop :input-selection] (.-start (.-selection (.-nativeEvent ^js %)))])
                           :submit-shortcut        {:key "Enter"}
                           :on-submit-editing      #(when-not disconnected?
                                                      (.clear @inp-ref)
                                                      (.focus @inp-ref)
                                                      (re-frame/dispatch [:chat.ui/send-current-message]))
-                          :on-change              (fn [e]
+                          :on-change              (fn [^js e]
                                                     (let [native-event (.-nativeEvent e)
                                                           text         (.-text native-event)]
                                                       (re-frame/dispatch [:chat.ui/set-chat-input-text text])))}]

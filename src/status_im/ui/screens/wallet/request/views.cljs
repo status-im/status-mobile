@@ -52,7 +52,7 @@
             :disabled?     (= :offline network-status)
             :amount        amount
             :amount-text   amount-text
-            :input-options {:on-focus       (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd @scroll) 100)))
+            :input-options {:on-focus       (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd ^js @scroll) 100)))
                             :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount % symbol decimals])}}
            token]]]
         [bottom-buttons/bottom-buttons styles/bottom-buttons

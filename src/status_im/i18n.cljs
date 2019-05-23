@@ -7,9 +7,9 @@
    [clojure.set :as set]
    [status-im.utils.types :as types]))
 
-(set! (.-locale rn-dependencies/i18n) (.-language rn-dependencies/react-native-languages))
-(set! (.-fallbacks rn-dependencies/i18n) true)
-(set! (.-defaultSeparator rn-dependencies/i18n) "/")
+(set! (.-locale ^js rn-dependencies/i18n) (.-language ^js rn-dependencies/react-native-languages))
+(set! (.-fallbacks ^js rn-dependencies/i18n) true)
+(set! (.-defaultSeparator ^js rn-dependencies/i18n) "/")
 
 ;; translations
 (def translations-by-locale
@@ -225,7 +225,7 @@
 (defn supported-locales-that-are-not-considered-supported []
   (set/difference (actual-supported-locales) supported-locales))
 
-(set! (.-translations rn-dependencies/i18n)
+(set! (.-translations ^js rn-dependencies/i18n)
       (clj->js translations-by-locale))
 
 ;;:zh, :zh-hans-xx, :zh-hant-xx have been added until this bug will be fixed https://github.com/fnando/i18n-js/issues/460
@@ -244,7 +244,7 @@
 (defn label-number [number]
   (when number
     (let [{:keys [delimiter separator]} delimeters]
-      (.toNumber rn-dependencies/i18n
+      (.toNumber ^js rn-dependencies/i18n
                  (string/replace number #"," ".")
                  (clj->js {:precision                 10
                            :strip_insignificant_zeros true
@@ -262,12 +262,12 @@
   ([path options]
    (if (exists? rn-dependencies/i18n.t)
      (let [options (update options :amount label-number)]
-       (.t rn-dependencies/i18n (name path) (clj->js (label-options options))))
+       (.t ^js rn-dependencies/i18n (name path) (clj->js (label-options options))))
      (name path))))
 
 (defn label-pluralize [count path & options]
   (if (exists? rn-dependencies/i18n.t)
-    (.p rn-dependencies/i18n count (name path) (clj->js options))
+    (.p ^js rn-dependencies/i18n count (name path) (clj->js options))
     (name path)))
 
 (defn message-status-label [status]
@@ -278,77 +278,77 @@
        (label)))
 
 (def locale
-  (.-locale rn-dependencies/i18n))
+  (.-locale ^js rn-dependencies/i18n))
 
 (defn format-currency
   ([value currency-code]
    (format-currency value currency-code true))
   ([value currency-code currency-symbol?]
-   (.addTier2Support goog.i18n.currency)
-   (let [currency-code-to-nfs-map {"ZAR" (.-NumberFormatSymbols_af goog.i18n)
-                                   "ETB" (.-NumberFormatSymbols_am goog.i18n)
-                                   "EGP" (.-NumberFormatSymbols_ar goog.i18n)
-                                   "DZD" (.-NumberFormatSymbols_ar_DZ goog.i18n)
-                                   "AZN" (.-NumberFormatSymbols_az goog.i18n)
-                                   "BYN" (.-NumberFormatSymbols_be goog.i18n)
-                                   "BGN" (.-NumberFormatSymbols_bg goog.i18n)
-                                   "BDT" (.-NumberFormatSymbols_bn goog.i18n)
-                                   "EUR" (.-NumberFormatSymbols_br goog.i18n)
-                                   "BAM" (.-NumberFormatSymbols_bs goog.i18n)
-                                   "USD" (.-NumberFormatSymbols_en goog.i18n)
-                                   "CZK" (.-NumberFormatSymbols_cs goog.i18n)
-                                   "GBP" (.-NumberFormatSymbols_cy goog.i18n)
-                                   "DKK" (.-NumberFormatSymbols_da goog.i18n)
-                                   "CHF" (.-NumberFormatSymbols_de_CH goog.i18n)
-                                   "AUD" (.-NumberFormatSymbols_en_AU goog.i18n)
-                                   "CAD" (.-NumberFormatSymbols_en_CA goog.i18n)
-                                   "INR" (.-NumberFormatSymbols_en_IN goog.i18n)
-                                   "SGD" (.-NumberFormatSymbols_en_SG goog.i18n)
-                                   "MXN" (.-NumberFormatSymbols_es_419 goog.i18n)
-                                   "IRR" (.-NumberFormatSymbols_fa goog.i18n)
-                                   "PHP" (.-NumberFormatSymbols_fil goog.i18n)
-                                   "ILS" (.-NumberFormatSymbols_he goog.i18n)
-                                   "HRK" (.-NumberFormatSymbols_hr goog.i18n)
-                                   "HUF" (.-NumberFormatSymbols_hu goog.i18n)
-                                   "AMD" (.-NumberFormatSymbols_hy goog.i18n)
-                                   "IDR" (.-NumberFormatSymbols_id goog.i18n)
-                                   "ISK" (.-NumberFormatSymbols_is goog.i18n)
-                                   "JPY" (.-NumberFormatSymbols_ja goog.i18n)
-                                   "GEL" (.-NumberFormatSymbols_ka goog.i18n)
-                                   "KZT" (.-NumberFormatSymbols_kk goog.i18n)
-                                   "KHR" (.-NumberFormatSymbols_km goog.i18n)
-                                   "KRW" (.-NumberFormatSymbols_ko goog.i18n)
-                                   "KGS" (.-NumberFormatSymbols_ky goog.i18n)
-                                   "CDF" (.-NumberFormatSymbols_ln goog.i18n)
-                                   "LAK" (.-NumberFormatSymbols_lo goog.i18n)
-                                   "MKD" (.-NumberFormatSymbols_mk goog.i18n)
-                                   "MNT" (.-NumberFormatSymbols_mn goog.i18n)
-                                   "MDL" (.-NumberFormatSymbols_mo goog.i18n)
-                                   "MYR" (.-NumberFormatSymbols_ms goog.i18n)
-                                   "MMK" (.-NumberFormatSymbols_my goog.i18n)
-                                   "NOK" (.-NumberFormatSymbols_nb goog.i18n)
-                                   "NPR" (.-NumberFormatSymbols_ne goog.i18n)
-                                   "PLN" (.-NumberFormatSymbols_pl goog.i18n)
-                                   "BRL" (.-NumberFormatSymbols_pt goog.i18n)
-                                   "RON" (.-NumberFormatSymbols_ro goog.i18n)
-                                   "RUB" (.-NumberFormatSymbols_ru goog.i18n)
-                                   "RSD" (.-NumberFormatSymbols_sh goog.i18n)
-                                   "LKR" (.-NumberFormatSymbols_si goog.i18n)
-                                   "ALL" (.-NumberFormatSymbols_sq goog.i18n)
-                                   "SEK" (.-NumberFormatSymbols_sv goog.i18n)
-                                   "TZS" (.-NumberFormatSymbols_sw goog.i18n)
-                                   "THB" (.-NumberFormatSymbols_th goog.i18n)
-                                   "TRY" (.-NumberFormatSymbols_tr goog.i18n)
-                                   "UAH" (.-NumberFormatSymbols_uk goog.i18n)
-                                   "PKR" (.-NumberFormatSymbols_ur goog.i18n)
-                                   "UZS" (.-NumberFormatSymbols_uz goog.i18n)
-                                   "VND" (.-NumberFormatSymbols_vi goog.i18n)
-                                   "CNY" (.-NumberFormatSymbols_zh goog.i18n)
-                                   "HKD" (.-NumberFormatSymbols_zh_HK goog.i18n)
-                                   "TWD" (.-NumberFormatSymbols_zh_TW goog.i18n)}
+   (.addTier2Support ^js goog.i18n.currency)
+   (let [currency-code-to-nfs-map {"ZAR" (.-NumberFormatSymbols_af ^js goog.i18n)
+                                   "ETB" (.-NumberFormatSymbols_am ^js goog.i18n)
+                                   "EGP" (.-NumberFormatSymbols_ar ^js goog.i18n)
+                                   "DZD" (.-NumberFormatSymbols_ar_DZ ^js goog.i18n)
+                                   "AZN" (.-NumberFormatSymbols_az ^js goog.i18n)
+                                   "BYN" (.-NumberFormatSymbols_be ^js goog.i18n)
+                                   "BGN" (.-NumberFormatSymbols_bg ^js goog.i18n)
+                                   "BDT" (.-NumberFormatSymbols_bn ^js goog.i18n)
+                                   "EUR" (.-NumberFormatSymbols_br ^js goog.i18n)
+                                   "BAM" (.-NumberFormatSymbols_bs ^js goog.i18n)
+                                   "USD" (.-NumberFormatSymbols_en ^js goog.i18n)
+                                   "CZK" (.-NumberFormatSymbols_cs ^js goog.i18n)
+                                   "GBP" (.-NumberFormatSymbols_cy ^js goog.i18n)
+                                   "DKK" (.-NumberFormatSymbols_da ^js goog.i18n)
+                                   "CHF" (.-NumberFormatSymbols_de_CH ^js goog.i18n)
+                                   "AUD" (.-NumberFormatSymbols_en_AU ^js goog.i18n)
+                                   "CAD" (.-NumberFormatSymbols_en_CA ^js goog.i18n)
+                                   "INR" (.-NumberFormatSymbols_en_IN ^js goog.i18n)
+                                   "SGD" (.-NumberFormatSymbols_en_SG ^js goog.i18n)
+                                   "MXN" (.-NumberFormatSymbols_es_419 ^js goog.i18n)
+                                   "IRR" (.-NumberFormatSymbols_fa ^js goog.i18n)
+                                   "PHP" (.-NumberFormatSymbols_fil ^js goog.i18n)
+                                   "ILS" (.-NumberFormatSymbols_he ^js goog.i18n)
+                                   "HRK" (.-NumberFormatSymbols_hr ^js goog.i18n)
+                                   "HUF" (.-NumberFormatSymbols_hu ^js goog.i18n)
+                                   "AMD" (.-NumberFormatSymbols_hy ^js goog.i18n)
+                                   "IDR" (.-NumberFormatSymbols_id ^js goog.i18n)
+                                   "ISK" (.-NumberFormatSymbols_is ^js goog.i18n)
+                                   "JPY" (.-NumberFormatSymbols_ja ^js goog.i18n)
+                                   "GEL" (.-NumberFormatSymbols_ka ^js goog.i18n)
+                                   "KZT" (.-NumberFormatSymbols_kk ^js goog.i18n)
+                                   "KHR" (.-NumberFormatSymbols_km ^js goog.i18n)
+                                   "KRW" (.-NumberFormatSymbols_ko ^js goog.i18n)
+                                   "KGS" (.-NumberFormatSymbols_ky ^js goog.i18n)
+                                   "CDF" (.-NumberFormatSymbols_ln ^js goog.i18n)
+                                   "LAK" (.-NumberFormatSymbols_lo ^js goog.i18n)
+                                   "MKD" (.-NumberFormatSymbols_mk ^js goog.i18n)
+                                   "MNT" (.-NumberFormatSymbols_mn ^js goog.i18n)
+                                   "MDL" (.-NumberFormatSymbols_mo ^js goog.i18n)
+                                   "MYR" (.-NumberFormatSymbols_ms ^js goog.i18n)
+                                   "MMK" (.-NumberFormatSymbols_my ^js goog.i18n)
+                                   "NOK" (.-NumberFormatSymbols_nb ^js goog.i18n)
+                                   "NPR" (.-NumberFormatSymbols_ne ^js goog.i18n)
+                                   "PLN" (.-NumberFormatSymbols_pl ^js goog.i18n)
+                                   "BRL" (.-NumberFormatSymbols_pt ^js goog.i18n)
+                                   "RON" (.-NumberFormatSymbols_ro ^js goog.i18n)
+                                   "RUB" (.-NumberFormatSymbols_ru ^js goog.i18n)
+                                   "RSD" (.-NumberFormatSymbols_sh ^js goog.i18n)
+                                   "LKR" (.-NumberFormatSymbols_si ^js goog.i18n)
+                                   "ALL" (.-NumberFormatSymbols_sq ^js goog.i18n)
+                                   "SEK" (.-NumberFormatSymbols_sv ^js goog.i18n)
+                                   "TZS" (.-NumberFormatSymbols_sw ^js goog.i18n)
+                                   "THB" (.-NumberFormatSymbols_th ^js goog.i18n)
+                                   "TRY" (.-NumberFormatSymbols_tr ^js goog.i18n)
+                                   "UAH" (.-NumberFormatSymbols_uk ^js goog.i18n)
+                                   "PKR" (.-NumberFormatSymbols_ur ^js goog.i18n)
+                                   "UZS" (.-NumberFormatSymbols_uz ^js goog.i18n)
+                                   "VND" (.-NumberFormatSymbols_vi ^js goog.i18n)
+                                   "CNY" (.-NumberFormatSymbols_zh ^js goog.i18n)
+                                   "HKD" (.-NumberFormatSymbols_zh_HK ^js goog.i18n)
+                                   "TWD" (.-NumberFormatSymbols_zh_TW ^js goog.i18n)}
          nfs                      (or (get currency-code-to-nfs-map currency-code)
-                                      (.-NumberFormatSymbols_en goog.i18n))]
-     (set! (.-NumberFormatSymbols goog.i18n)
+                                      (.-NumberFormatSymbols_en ^js goog.i18n))]
+     (set! (.-NumberFormatSymbols ^js goog.i18n)
            (if currency-symbol?
              nfs
              (-> nfs
@@ -357,6 +357,6 @@
                  (update-in [:CURRENCY_PATTERN] #(string/replace % #"\s*¤\s*" ""))
                  clj->js)))
      (.format
-      (new goog.i18n.NumberFormat (.-CURRENCY goog.i18n.NumberFormat.Format) currency-code)
+      (new goog.i18n.NumberFormat (.-CURRENCY ^js goog.i18n.NumberFormat.Format) currency-code)
       value))))
 

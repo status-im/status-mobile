@@ -193,7 +193,7 @@
 (defn- calculate-max-fee
   [gas gas-price]
   (if (and gas gas-price)
-    (money/to-fixed (money/wei->ether (.times gas gas-price)))
+    (money/to-fixed (money/wei->ether (.times ^js gas gas-price)))
     "0"))
 
 (defn- edit-max-fee [edit]

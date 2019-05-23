@@ -30,23 +30,23 @@
 (defn bignumber [n]
   (when n
     (try
-      (.toBigNumber (dependencies/web3-prototype) (normalize (str n)))
+      (.toBigNumber ^js (dependencies/web3-prototype) (normalize (str n)))
       (catch :default err nil))))
 
 (defn valid? [bn]
   (when bn
-    (.greaterThanOrEqualTo bn 0)))
+    (.greaterThanOrEqualTo ^js bn 0)))
 
 (defn str->wei [s]
   (when-let [ns (normalize s)]
     (try
-      (.toWei (dependencies/web3-prototype) ns "ether")
+      (.toWei ^js (dependencies/web3-prototype) ns "ether")
       (catch :default err nil))))
 
 (defn to-decimal [s]
   (when s
     (try
-      (.toDecimal (dependencies/web3-prototype) (normalize s))
+      (.toDecimal ^js (dependencies/web3-prototype) (normalize s))
       (catch :default err nil))))
 
 (defn from-decimal [n] (when n (str "1" (string/join (repeat n "0")))))
@@ -71,19 +71,19 @@
 
 (defn wei-> [unit n]
   (when-let [bn (bignumber n)]
-    (.dividedBy bn ((eth-units) unit))))
+    (.dividedBy ^js bn ((eth-units) unit))))
 
 (defn ->wei [unit n]
   (when-let [bn (bignumber n)]
-    (.times bn ((eth-units) unit))))
+    (.times ^js bn ((eth-units) unit))))
 
 (defn to-fixed [bn]
   (when bn
-    (.toFixed bn)))
+    (.toFixed ^js bn)))
 
 (defn to-number [bn]
   (when bn
-    (.toNumber bn)))
+    (.toNumber ^js bn)))
 
 (defn wei->str
   ([unit n display-unit]
@@ -95,17 +95,17 @@
 
 (defn ether->wei [bn]
   (when bn
-    (.times bn (bignumber 1e18))))
+    (.times ^js bn (bignumber 1e18))))
 
 (defn token->unit [n decimals]
   (when-let [bn (bignumber n)]
     (when-let [d (from-decimal decimals)]
-      (.dividedBy bn (bignumber d)))))
+      (.dividedBy ^js bn (bignumber d)))))
 
 (defn unit->token [n decimals]
   (when-let [bn (bignumber n)]
     (when-let [d (from-decimal decimals)]
-      (.times bn (bignumber d)))))
+      (.times ^js bn (bignumber d)))))
 
 ;;NOTE(goranjovic) - We have two basic representations of values that refer to cryptocurrency amounts: formatted and
 ;; internal. Formatted representation is the one we show on screens and include in reports, whereas internal
@@ -130,27 +130,27 @@
     (token->unit n decimals)))
 
 (defn fee-value [gas gas-price]
-  (.times (bignumber gas) (bignumber gas-price)))
+  (.times ^js (bignumber gas) (bignumber gas-price)))
 
 (defn crypto->fiat [crypto fiat-price]
   (when-let [bn (bignumber crypto)]
-    (.times bn (bignumber fiat-price))))
+    (.times ^js bn (bignumber fiat-price))))
 
 (defn percent-change [from to]
   (let [bnf (bignumber from)
         bnt (bignumber to)]
     (when (and bnf bnt)
-      (-> (.dividedBy bnf bnt)
+      (-> (.dividedBy ^js bnf bnt)
           (.minus 1)
           (.times 100)))))
 
 (defn with-precision [n decimals]
   (when-let [bn (bignumber n)]
-    (.round bn decimals)))
+    (.round ^js bn decimals)))
 
 (defn sufficient-funds? [amount balance]
   (when (and amount balance)
-    (.greaterThanOrEqualTo balance amount)))
+    (.greaterThanOrEqualTo ^js balance amount)))
 
 (defn fiat-amount-value [amount-str from to prices]
   (-> amount-str

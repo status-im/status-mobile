@@ -123,7 +123,7 @@
   (reagent.core/create-class
    {:component-will-update
     (fn [this new-params]
-      (let [old-view-id (get (.-argv (.-props this)) 2)
+      (let [old-view-id (get (.-argv (.-props ^js this)) 2)
             new-view-id (get new-params 2)]
         (when (not= new-view-id old-view-id)
           (minimize-bar new-view-id))))
@@ -176,7 +176,7 @@
               (.remove listener)))))
       :reagent-render
       (fn [args view-id]
-        (let [idx (.. (:navigation args)
+        (let [idx (.. ^js (:navigation args)
                       -state
                       -index)
               tab (case idx

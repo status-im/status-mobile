@@ -3,13 +3,13 @@
             [status-im.utils.platform :as platform]))
 
 (def navigation-actions
-  (.-NavigationActions js-dependencies/react-navigation))
+  (.-NavigationActions ^js js-dependencies/react-navigation))
 
 (def navigation-events
-  (.-NavigationEvents js-dependencies/react-navigation))
+  (.-NavigationEvents ^js js-dependencies/react-navigation))
 
 (def stack-actions
-  (.-StackActions js-dependencies/react-navigation))
+  (.-StackActions ^js js-dependencies/react-navigation))
 
 (def navigator-ref (atom nil))
 
@@ -22,7 +22,7 @@
 (defn navigate-to [route params]
   (when (can-be-called?)
     (.dispatch
-     @navigator-ref
+     ^js @navigator-ref
      (.navigate
       navigation-actions
       #js {:routeName (name route)
@@ -30,19 +30,19 @@
 
 (defn- navigate [params]
   (when (can-be-called?)
-    (.navigate navigation-actions (clj->js params))))
+    (.navigate ^js navigation-actions (clj->js params))))
 
 (defn navigate-reset [state]
   (when (can-be-called?)
     (let [state' (update state :actions #(mapv navigate %))]
       (.dispatch
-       @navigator-ref
+       ^js @navigator-ref
        (.reset
-        stack-actions
+        ^js stack-actions
         (clj->js state'))))))
 
 (defn navigate-back []
   (when (can-be-called?)
     (.dispatch
-     @navigator-ref
-     (.back navigation-actions))))
+     ^js @navigator-ref
+     (.back ^js navigation-actions))))

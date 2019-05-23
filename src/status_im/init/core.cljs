@@ -28,7 +28,7 @@
   "Try to decrypt the database, move on if successful otherwise go back to
   initial state"
   [encryption-key]
-  (.. (data-store/init encryption-key)
+  (.. ^js (data-store/init encryption-key)
       (then #(re-frame/dispatch [:init.callback/init-store-success]))
       (catch (fn [error]
                (log/warn "Could not decrypt database" error)
@@ -43,12 +43,12 @@
 
 ;; TODO (yenda) move keychain functions to dedicated namespace
 (defn reset-keychain! []
-  (.. (keychain/reset)
+  (.. ^js (keychain/reset)
       (then
        #(re-frame/dispatch [:init.callback/keychain-reset]))))
 
 (defn reset-data! []
-  (.. (realm/delete-realms)
+  (.. ^js (realm/delete-realms)
       (then reset-keychain!)
       (catch reset-keychain!)))
 

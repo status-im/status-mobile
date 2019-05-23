@@ -15,7 +15,7 @@
 
 (defn- get-by-chat-and-messages-ids
   [chat-id message-ids]
-  (-> @core/account-realm
+  (-> ^js @core/account-realm
       (.objects "user-status")
       (.filtered (str "chat-id=\"" chat-id "\""
                       (when (seq message-ids)

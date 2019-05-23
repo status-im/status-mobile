@@ -22,19 +22,19 @@
 ;; When migrating a particular record, it is important to use a different type and still handle the previous
 ;; gracefully for compatibility
 
-(deftype ContactRequestHandler []
+(deftype ^js ContactRequestHandler []
   Object
   (tag [this v] "c2")
   (rep [this {:keys [name profile-image address fcm-token device-info]}]
     #js [name profile-image address fcm-token device-info]))
 
-(deftype ContactRequestConfirmedHandler []
+(deftype ^js ContactRequestConfirmedHandler []
   Object
   (tag [this v] "c3")
   (rep [this {:keys [name profile-image address fcm-token device-info]}]
     #js [name profile-image address fcm-token device-info]))
 
-(deftype ContactUpdateHandler []
+(deftype ^js ContactUpdateHandler []
   Object
   (tag [this v] "c6")
   (rep [this {:keys [name profile-image address fcm-token device-info]}]
@@ -58,7 +58,7 @@
                                         constants/content-type-command-request]}
        command-path))
 
-(deftype MessageHandler []
+(deftype ^js MessageHandler []
   Object
   (tag [this v] "c4")
   (rep [this {:keys [content content-type message-type clock-value timestamp]}]
@@ -71,25 +71,25 @@
       ;; no need for legacy conversions for rest of the content types
       #js [content content-type message-type clock-value timestamp])))
 
-(deftype MessagesSeenHandler []
+(deftype ^js MessagesSeenHandler []
   Object
   (tag [this v] "c5")
   (rep [this {:keys [message-ids]}]
     (clj->js message-ids)))
 
-(deftype GroupMembershipUpdateHandler []
+(deftype ^js GroupMembershipUpdateHandler []
   Object
   (tag [this v] "g5")
   (rep [this {:keys [chat-id membership-updates message]}]
     #js [chat-id membership-updates message]))
 
-(deftype SyncInstallationHandler []
+(deftype ^js SyncInstallationHandler []
   Object
   (tag [this v] "p1")
   (rep [this {:keys [contacts account chat]}]
     #js [contacts account chat]))
 
-(deftype PairInstallationHandler []
+(deftype ^js PairInstallationHandler []
   Object
   (tag [this v] "p2")
   (rep [this {:keys [name installation-id device-type fcm-token]}]

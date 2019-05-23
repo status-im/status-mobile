@@ -265,7 +265,7 @@
      (fn []
        (reset! messages-limit initial-limit))
      :component-did-mount
-     (fn [args]
+     (fn [^js args]
        (when-not (:messages-initialized? (second (.-argv (.-props args))))
          (re-frame/dispatch [:chat.ui/load-more-messages]))
        (re-frame/dispatch [:chat.ui/set-chat-ui-props
@@ -314,10 +314,10 @@
             current-public-key [:account/public-key]
             messages-to-load   (reagent/atom load-step)
             chat-id*           (reagent/atom nil)]
-    {:component-did-update #(if (:messages-initialized? (second (.-argv (.-props %1))))
+    {:component-did-update #(if (:messages-initialized? (second (.-argv (.-props ^js %1))))
                               (load-more (count messages) messages-to-load)
                               (re-frame/dispatch [:chat.ui/load-more-messages]))
-     :component-did-mount  #(if (:messages-initialized? (second (.-argv (.-props %1))))
+     :component-did-mount  #(if (:messages-initialized? (second (.-argv (.-props ^js %1))))
                               (load-more (count messages) messages-to-load)
                               (re-frame/dispatch [:chat.ui/load-more-messages]))}
     (let [messages-list-ref    (atom nil)
@@ -335,7 +335,7 @@
                            :inverted                         true
                            :ref                              #(reset! messages-list-ref %)
                            :on-scroll                        (fn [e]
-                                                               (let [ne (.-nativeEvent e)
+                                                               (let [ne (.-nativeEvent ^js e)
                                                                      y  (.-y (.-contentOffset ne))]
                                                                  (when (<= y 0)
                                                                    (when @scroll-timer (js/clearTimeout @scroll-timer))
@@ -378,7 +378,7 @@
        ^{:key current-chat-id}
        [react/view {:style     style/chat-view
                     :on-layout (fn [e]
-                                 (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
+                                 (re-frame/dispatch [:set :layout-height (-> ^js e .-nativeEvent .-layout .-height)]))}
         [chat-toolbar current-chat public? modal?]
         [messages-view-animation
          ;;TODO(kozieiev) : When FlatList in react-native-desktop become viable it should be used instead of optimized ScrollView for chat

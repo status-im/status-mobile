@@ -7,7 +7,7 @@
 (defn default-camera [] (.-default (js-dependecies/camera)))
 
 (defn constants [t]
-  (-> (default-camera)
+  (-> ^js (default-camera)
       (object/get "constants")
       (object/get t)
       (js->clj)
@@ -18,10 +18,10 @@
 (def torch-modes (constants "TorchMode"))
 
 (defn set-torch [state]
-  (set! (.-torchMode (default-camera)) (get torch-modes state)))
+  (set! (.-torchMode ^js (default-camera)) (get torch-modes state)))
 
 (defn request-access-ios [then else]
-  (-> (.checkVideoAuthorizationStatus (default-camera))
+  (-> (.checkVideoAuthorizationStatus ^js (default-camera))
       (.then (fn [allowed?] (if allowed? (then) (else))))
       (.catch else)))
 
@@ -29,4 +29,4 @@
   (reagent/create-element (default-camera) (clj->js (merge {:inverted true} props))))
 
 (defn get-qr-code-data [code]
-  (.-data code))
+  (.-data ^js code))

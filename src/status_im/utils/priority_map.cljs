@@ -6,7 +6,7 @@
 ;; from https://github.com/tailrecursion/cljs-priority-map/blob/master/src/cljs/tailrecursion/priority_map.cljs
 ;; fixing `vals` and `keys` function
 
-(deftype PersistentPriorityMap [priority->set-of-items item->priority meta keyfn ^:mutable __hash]
+(deftype ^js PersistentPriorityMap [priority->set-of-items item->priority meta keyfn ^:mutable __hash]
   IPrintWithWriter
   (-pr-writer [coll writer opts]
     (let [pr-pair (fn [keyval] (pr-sequential-writer writer pr-writer "" " " "" opts keyval))]
@@ -184,7 +184,7 @@
 
 (defn- read-priority-map [elems]
   (if (map? elems)
-    (into status-im.utils-map.PersistentPriorityMap.EMPTY elems)
+    (into status-im.utils.priority-map.PersistentPriorityMap.EMPTY elems)
     (throw (js/Error "Priority map literal expects a map for its elements."))))
 
 (register-tag-parser! "status-im.utils.priority-map" read-priority-map)

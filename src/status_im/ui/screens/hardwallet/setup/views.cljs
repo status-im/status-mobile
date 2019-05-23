@@ -323,14 +323,14 @@
                           :button-label           :t/help-capitalized
                           :show-icon?             true
                           :button-container-style {:background-color colors/white}
-                          :on-press               #(.openURL (react/linking) "https://hardwallet.status.im")}])
+                          :on-press               #(.openURL ^js (react/linking) "https://hardwallet.status.im")}])
 
 (defn card-already-linked []
   [card-with-button-view {:text-label             :t/card-already-linked
                           :button-label           :t/help-capitalized
                           :show-icon?             true
                           :button-container-style {:background-color colors/white}
-                          :on-press               #(.openURL (react/linking) "https://hardwallet.status.im")}])
+                          :on-press               #(.openURL ^js (react/linking) "https://hardwallet.status.im")}])
 
 (defview error []
   (letsubs [error [:hardwallet-setup-error]]
@@ -384,7 +384,7 @@
                                                    "keycardInstallationProgress"
                                                    (fn [params]
                                                      (when @progress-bar
-                                                       (.setNativeProps @progress-bar params))))))}
+                                                       (.setNativeProps ^js @progress-bar params))))))}
     [react/view styles/loading-view-container
      [react/view styles/center-container
       [react/text {:style styles/center-title-text}

@@ -70,7 +70,7 @@
  (fn [{:keys [web3 network-id]}]
    ;; ensure that node was started correctly
    (when (and network-id web3) ; necessary because of the unit tests
-     (.getNetwork (.-version web3)
+     (.getNetwork (.-version ^js web3)
                   (fn [error fetched-network-id]
                     (when (and (not error) ; error most probably means we are offline
                                (not= network-id fetched-network-id))

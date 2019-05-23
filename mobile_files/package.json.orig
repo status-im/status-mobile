@@ -71,5 +71,8 @@
     "url": "0.10.3",
     "web3": "git+https://github.com/status-im/web3.js.git#0.20.2-status",
     "web3-utils": "1.0.0-beta.36"
+  },
+  "devDependencies": {
+    "shadow-cljs": "^2.8.37"
   }
 }

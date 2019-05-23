@@ -125,7 +125,7 @@
                                           :action-fn           #(re-frame/dispatch [:profile.ui/keycard-settings-button-pressed])}])
      [profile.components/settings-item {:label-kw            :t/notifications
                                         :accessibility-label :notifications-button
-                                        :action-fn           #(.openURL (react/linking) "app-settings://notification/status-im")}]
+                                        :action-fn           #(.openURL ^js (react/linking) "app-settings://notification/status-im")}]
      [profile.components/settings-item-separator]
      [profile.components/settings-item {:label-kw            :t/mobile-network-settings
                                         :accessibility-label :notifications-button
@@ -335,7 +335,7 @@
                               300))
           on-show-advanced (fn []
                              (js/setTimeout
-                              #(.scrollToEnd @scroll {:animated false})
+                              #(.scrollToEnd ^js @scroll {:animated false})
                               300))]
       [react/keyboard-avoiding-view {:style {:flex 1}}
        [status-bar/status-bar {:type :main}]

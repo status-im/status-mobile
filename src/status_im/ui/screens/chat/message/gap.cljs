@@ -11,7 +11,7 @@
   [ids first-gap? idx list-ref]
   (fn []
     (when (and list-ref @list-ref (not platform/desktop?))
-      (.scrollToIndex @list-ref
+      (.scrollToIndex ^js @list-ref
                       #js {:index        (max 0 (dec idx))
                            :viewOffset   20
                            :viewPosition 0.5}))

@@ -42,7 +42,7 @@
     (when (and source uri (http/url-sanitized? uri))
       (fn []
         [react/view {:style     style
-                     :on-layout #(reset! width (-> % .-nativeEvent .-layout .-width))}
+                     :on-layout #(reset! width (-> ^js % .-nativeEvent .-layout .-width))}
          [(react/web-view)
           {:java-script-enabled         false
            :third-party-cookies-enabled false

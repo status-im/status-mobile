@@ -110,7 +110,7 @@
   (letsubs [content-width (reagent/atom 0)
             {window-width :width window-height :height} [:dimensions/window]]
     [react/view {:style     (merge styles/image-contain container-style)
-                 :on-layout #(reset! content-width (-> % .-nativeEvent .-layout .-width))}
+                 :on-layout #(reset! content-width (-> ^js % .-nativeEvent .-layout .-width))}
      [react/image {:source      image
                    :resize-mode :contain
                    :style       (merge style

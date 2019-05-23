@@ -7,12 +7,12 @@
 (defn to-wei
   [s]
   (when s
-    (.toWei (utils) s)))
+    (.toWei ^js (utils) s)))
 
 (defn from-wei
   [s]
   (when s
-    (.fromWei (utils) s)))
+    (.fromWei ^js (utils) s)))
 
 (defn get-settings
   [db]

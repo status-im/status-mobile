@@ -1,7 +1,8 @@
 (ns status-im.ui.components.status-bar.view
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.styles :as styles]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [goog.object :as object]))
 
 (defn status-bar [{:keys [type flat?]}]
   (let [view-style
@@ -108,14 +109,17 @@
           :wallet-tab styles/status-bar-wallet-tab
           styles/status-bar-default)]
     (when (and background-color platform/android?)
-      (.setBackgroundColor react/status-bar-class (clj->js background-color)))
+      ((object/get react/status-bar-class "setBackgroundColor")
+       (clj->js background-color)))
     (when bar-style
-      (.setBarStyle react/status-bar-class (clj->js bar-style)))
+      ((object/get react/status-bar-class "setBarStyle")
+       (clj->js bar-style)))
     (when hidden
-      (.setHidden react/status-bar-class (clj->js hidden)))
+      ((object/get react/status-bar-class "setHidden")
+       (clj->js hidden)))
     (when network-activity-indicator-visible
-      (.setNetworkActivityIndicatorVisible
-       react/status-bar-class
+      ((object/get react/status-bar-class "setNetworkActivityIndicatorVisible")
        (clj->js network-activity-indicator-visible)))
     (when translucent
-      (.setTranslucent react/status-bar-class (clj->js translucent)))))
+      ((object/get react/status-bar-class "setTranslucent")
+       (clj->js translucent)))))

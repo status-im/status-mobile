@@ -5,10 +5,10 @@
 
 (defn get-updated-value [gesture end-offset-x swiped?]
   (let [base-value (if swiped? end-offset-x 0)]
-    (- base-value (.-dx gesture))))
+    (- base-value (.-dx ^js gesture))))
 
 (defn on-start [_ gesture]
-  (> (js/Math.abs (.-dx gesture)) 10))
+  (> (js/Math.abs (.-dx ^js gesture)) 10))
 
 (defn on-move [animated-offset-x end-offset-x swiped?]
   (fn [_ gesture]
@@ -24,11 +24,11 @@
       (animation/start (animation/spring animated-offset-x {:toValue to-value})))))
 
 (defn swipe-pan-responder [animated-offset-x end-offset-x chat-id swiped?]
-  (.create (react/pan-responder)
+  (.create ^js (react/pan-responder)
            (clj->js {:onMoveShouldSetPanResponder on-start
                      :onPanResponderMove          (on-move animated-offset-x end-offset-x swiped?)
                      :onPanResponderRelease       (on-release animated-offset-x end-offset-x chat-id swiped?)
                      :onPanResponderTerminate     (on-release animated-offset-x end-offset-x chat-id swiped?)})))
 
 (defn pan-handlers [pan-responder]
-  (js->clj (.-panHandlers pan-responder)))
+  (js->clj (.-panHandlers ^js pan-responder)))

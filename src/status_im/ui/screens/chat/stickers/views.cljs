@@ -67,7 +67,7 @@
       (.scrollTo ref (clj->js {:x x :animated true})))))
 
 (defn on-scroll [e installed-packs window-width]
-  (let [num     (/ (.-nativeEvent.contentOffset.x e) window-width)
+  (let [num     (/ (.-nativeEvent.contentOffset.x ^js e) window-width)
         pack-id (if (zero? num)
                   :recent
                   (get-in (vec installed-packs) [(dec num) :id]))]
@@ -85,7 +85,7 @@
                           :shows-horizontal-scroll-indicator false
                           :on-momentum-scroll-end            #(on-scroll % installed-packs window-width)
                           :scrollEventThrottle               8
-                          :on-scroll                         #(reset! scroll-x (.-nativeEvent.contentOffset.x %))}
+                          :on-scroll                         #(reset! scroll-x (.-nativeEvent.contentOffset.x ^js %))}
      ^{:key "recent"}
      [recent-stickers-panel window-width]
      (for [{:keys [stickers id]} installed-packs]

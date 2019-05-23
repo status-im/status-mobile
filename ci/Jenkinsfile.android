@@ -64,7 +64,13 @@ pipeline {
     }
     stage('Build') {
       steps {
-        script { cmn.nix.shell('lein prod-build-android') }
+        script {
+            cmn.nix.shell('git clone --single-branch --branch status_1.10.520 git@github.com:rasom/clojurescript.git')
+            cmn.nix.shell('cd clojurescript; lein install')
+            cmn.nix.shell('rm -rf clojurescript')
+            cmn.nix.shell('node ./node_modules/shadow-cljs/cli/runner.js release android')
+            cmn.nix.shell('mv shadow-build/index.js index.android.js')
+        }
       }
     }
     stage('Bundle') {

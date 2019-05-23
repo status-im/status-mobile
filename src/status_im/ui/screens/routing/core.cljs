@@ -116,7 +116,7 @@
    (cond->
     (merge {:headerMode        "none"
             :cardStyle         {:backgroundColor (when (or platform/ios? platform/desktop?) :white)}
-            :onTransitionStart (fn [n]
+            :onTransitionStart (fn [^js n]
                                  (let [idx    (.. n
                                                   -navigation
                                                   -state
@@ -127,7 +127,7 @@
                                                   -routes)]
                                    (when (and (array? routes) (int? idx))
                                      (let [route      (aget routes idx)
-                                           route-name (keyword (.-routeName route))]
+                                           route-name (keyword (.-routeName ^js route))]
                                        (bottom-bar/minimize-bar route-name)))))}
            (prepare-config config)))))
 

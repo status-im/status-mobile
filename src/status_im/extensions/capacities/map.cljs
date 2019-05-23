@@ -30,14 +30,14 @@
         true
         (do
           (when (and @wvref (not= injected-java-script new-injected-java-script))
-            (.injectJavaScript @wvref new-injected-java-script))
+            (.injectJavaScript ^js @wvref new-injected-java-script))
           false)))
     :reagent-render
     (fn [opts]
       [(webview-class) opts])}))
 
 (defn- on-map-message [map-event on-change]
-  (let [data (-> map-event
+  (let [data (-> ^js map-event
                  (.-nativeEvent)
                  (.-data)
                  (types/json->clj))]
@@ -71,7 +71,7 @@
       :on-should-start-load-with-request     #(let [url (.-url %)]
                                                 (if (string/starts-with? url "file")
                                                   true
-                                                  (do (.openURL (react/linking) url) false)))
+                                                  (do (.openURL ^js (react/linking) url) false)))
 
       :ref                                   #(reset! webview %)
       :on-message                            #(when on-change (on-map-message % on-change))

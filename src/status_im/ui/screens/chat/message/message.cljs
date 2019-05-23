@@ -274,7 +274,7 @@
 (defn chat-message [{:keys [outgoing group-chat modal? current-public-key content-type content] :as message}]
   [react/view
    [react/touchable-highlight {:on-press      (fn [arg]
-                                                (if (and platform/desktop? (= "right" (.-button (.-nativeEvent arg))))
+                                                (if (and platform/desktop? (= "right" (.-button (.-nativeEvent ^js arg))))
                                                   (open-chat-context-menu message)
                                                   (do
                                                     (when (= content-type constants/content-type-sticker)

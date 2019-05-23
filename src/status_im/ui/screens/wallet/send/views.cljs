@@ -55,7 +55,7 @@
   [react/view {:style styles/advanced-wrapper}
    [react/touchable-highlight {:on-press (fn []
                                            (re-frame/dispatch [:wallet.send/toggle-advanced (not advanced?)])
-                                           (when (and scroll @scroll) (utils/set-timeout #(.scrollToEnd @scroll) 350)))}
+                                           (when (and scroll @scroll) (utils/set-timeout #(.scrollToEnd ^js @scroll) 350)))}
     [react/view {:style styles/advanced-button-wrapper}
      [react/view {:style               styles/advanced-button
                   :accessibility-label :advanced-button}
@@ -164,7 +164,7 @@
       [(react/scroll-view) {:keyboard-should-persist-taps :always
                             :ref                          #(reset! scroll %)
                             :on-content-size-change       #(when (and (not modal?) scroll @scroll)
-                                                             (.scrollToEnd @scroll))}
+                                                             (.scrollToEnd ^js @scroll))}
        (when-not online?
          [wallet.main.views/snackbar :t/error-cant-send-transaction-offline])
        [react/view styles/send-transaction-form
@@ -205,14 +205,14 @@
   (let [amount-input (atom nil)
         handler (fn [_]
                   (when (and scroll @scroll @amount-input
-                             (.isFocused @amount-input))
+                             (.isFocused ^js @amount-input))
                     (log/debug "Amount field focused, scrolling down")
-                    (.scrollToEnd @scroll)))]
+                    (.scrollToEnd ^js @scroll)))]
     (reagent/create-class
      {:component-will-mount (fn [_]
                               ;;NOTE(goranjovic): keyboardDidShow is for android and keyboardWillShow for ios
-                              (.addListener (react/keyboard)  "keyboardDidShow" handler)
-                              (.addListener (react/keyboard)  "keyboardWillShow" handler))
+                              (.addListener ^js (react/keyboard)  "keyboardDidShow" handler)
+                              (.addListener ^js (react/keyboard)  "keyboardWillShow" handler))
       :reagent-render       (fn [opts] (render-send-transaction-view
                                         (assoc opts :amount-input amount-input)))})))
 

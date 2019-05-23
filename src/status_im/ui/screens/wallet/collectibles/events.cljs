@@ -33,7 +33,7 @@
     (erc721/token-of-owner-by-index contract address i
                                     (fn [response]
                                       (load-token (inc i) items-number contract address symbol)
-                                      (re-frame/dispatch [:load-collectible symbol (.toNumber response)])))))
+                                      (re-frame/dispatch [:load-collectible symbol (.toNumber ^js response)])))))
 
 (re-frame/reg-fx
  :load-collectibles-fx

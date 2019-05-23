@@ -119,11 +119,11 @@
              :old-message-id (transport.utils/old-message-id this)
              :message-id (transport.utils/message-id
                           signature
-                          (.-payload (:js-obj cofx)))
+                          (.-payload ^js (:js-obj cofx)))
              :chat-id chat-id
              :whisper-timestamp timestamp
              :raw-payload-hash (transport.utils/sha3
-                                (.-payload (:js-obj cofx)))
+                                (.-payload ^js (:js-obj cofx)))
              :from signature
              :dedup-id (:dedup-id cofx)
              :js-obj (:js-obj cofx))]})

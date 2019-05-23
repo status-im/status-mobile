@@ -28,7 +28,7 @@
 (defn request-permissions []
   (if platform/desktop?
     (re-frame/dispatch [:notifications.callback/request-notifications-permissions-granted {}])
-    (-> (.requestPermission (.messaging (firebase)))
+    (-> (.requestPermission (.messaging ^js (firebase)))
         (.then
          (fn [_]
            (log/debug "notifications-granted")
@@ -52,7 +52,7 @@
              (= (.-length to) pn-pubkey-hash-length)))))
 
 (defn sha3 [s]
-  (.sha3 (dependencies/web3-prototype) s))
+  (.sha3 ^js (dependencies/web3-prototype) s))
 
 (defn anonymize-pubkey
   [pubkey]
@@ -124,7 +124,7 @@
   (defn decode-notification-payload [message-js]
     ;; message-js.-data is Notification.data():
     ;; https://github.com/invertase/react-native-firebase/blob/adcbeac3d11585dd63922ef178ff6fd886d5aa9b/src/modules/notifications/Notification.js#L79
-    (let [data-js     (.. message-js -data)
+    (let [data-js     (.. ^js message-js -data)
           msg-v2-json (object/get data-js "msg-v2")]
       (try
         (let [payload (if msg-v2-json
@@ -164,22 +164,33 @@
               ;; We must prefix the notification ID, otherwise it will
               ;; cause a crash in iOS
               {:notificationId (str "hash:" msg-id)})))
-          firebase (firebase)]
-      (firebase.notifications.Notification.
-       native-notification (.notifications firebase))))
+          firebase (firebase)
+          Notification (.. ^js firebase
+                           -notifications
+                           -Notification)]
+      (Notification.
+       native-notification (.notifications ^js firebase))))
 
   (defn display-notification [{:keys [title body] :as params}]
     (let [notification (build-notification params)
           firebase (firebase)]
       (when platform/android?
-        (.. notification
+        (.. ^js notification
             (-android.setChannelId channel-id)
             (-android.setAutoCancel true)
-            (-android.setPriority firebase.notifications.Android.Priority.High)
-            (-android.setCategory firebase.notifications.Android.Category.Message)
+            (-android.setPriority (.. ^js firebase
+                                      -notifications
+                                      -Android
+                                      -Priority
+                                      -High))
+            (-android.setCategory (.. ^js firebase
+                                      -notifications
+                                      -Android
+                                      -Category
+                                      -Message))
             (-android.setGroup group-id)
             (-android.setSmallIcon icon)))
-      (.. firebase
+      (.. ^js firebase
           notifications
           (displayNotification notification)
           (then #(log/debug "Display Notification" title body))
@@ -187,7 +198,7 @@
                    (log/debug "Display Notification error" title body error))))))
 
   (defn get-fcm-token []
-    (-> (.getToken (.messaging (firebase)))
+    (-> (.getToken (.messaging ^js (firebase)))
         (.then (fn [x]
                  (log/debug "get-fcm-token:" x)
                  (re-frame/dispatch
@@ -195,14 +206,22 @@
 
   (defn create-notification-channel []
     (let [firebase (firebase)
-          channel (firebase.notifications.Android.Channel.
+          Channel (.. ^js firebase
+                      -notifications
+                      -Android
+                      -Channel)
+          channel (Channel.
                    channel-id
                    channel-name
-                   firebase.notifications.Android.Importance.High)]
-      (.setSound channel sound-name)
-      (.setShowBadge channel true)
-      (.enableVibration channel true)
-      (.. firebase
+                   (.. ^js firebase
+                       -notifications
+                       -Android
+                       -Importance
+                       -High))]
+      (.setSound ^js channel sound-name)
+      (.setShowBadge ^js channel true)
+      (.enableVibration ^js channel true)
+      (.. ^js firebase
           notifications
           -android
           (createChannel channel)
@@ -265,7 +284,7 @@
   ;; https://github.com/invertase/react-native-firebase/blob/adcbeac3d11585dd63922ef178ff6fd886d5aa9b/src/modules/notifications/Notification.js#L13
   (defn handle-notification-open-event [event]
     (log/debug "handle-notification-open-event" event)
-    (let [decoded-payload (decode-notification-payload (.. event -notification))]
+    (let [decoded-payload (decode-notification-payload (.. ^js event -notification))]
       (when decoded-payload
         (re-frame/dispatch
          [:notifications/notification-open-event-received decoded-payload nil]))))
@@ -275,7 +294,7 @@
     It is only needed to handle PNs from legacy clients
     (which use firebase.notifications API)"
     (log/debug "Handle initial push notifications")
-    (.. (firebase)
+    (.. ^js (firebase)
         notifications
         getInitialNotification
         (then (fn [event]
@@ -285,7 +304,7 @@
 
   (defn setup-token-refresh-callback []
     (.onTokenRefresh
-     (.messaging (firebase))
+     (.messaging ^js (firebase))
      (fn [x]
        (log/debug "onTokenRefresh:" x)
        (re-frame/dispatch [:notifications.callback/get-fcm-token-success x]))))
@@ -297,7 +316,7 @@
     "we can remove this method"
     (log/debug "calling onNotification")
     (.onNotification
-     (.notifications (firebase))
+     (.notifications ^js (firebase))
      (fn [message-js]
        (log/debug "handle-on-notification-callback called")
        (let [decoded-payload (decode-notification-payload message-js)]
@@ -309,7 +328,7 @@
   (defn setup-on-message-callback []
     (log/debug "calling onMessage")
     (.onMessage
-     (.messaging (firebase))
+     (.messaging ^js (firebase))
      (fn [message-js]
        (log/debug "handle-on-message-callback called")
        (let [decoded-payload (decode-notification-payload message-js)]
@@ -321,7 +340,7 @@
 
   (defn setup-on-notification-opened-callback []
     (log/debug "setup-on-notification-opened-callback")
-    (.. (firebase)
+    (.. ^js (firebase)
         notifications
         (onNotificationOpened handle-notification-open-event)))
 

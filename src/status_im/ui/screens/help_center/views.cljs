@@ -20,7 +20,7 @@
      [profile.components/settings-item
       {:label-kw            :t/faq
        :accessibility-label :faq-button
-       :action-fn           #(.openURL (react/linking)
+       :action-fn           #(.openURL ^js (react/linking)
                                        (if platform/desktop?
                                          "https://status.im/docs/FAQ-desktop.html"
                                          "https://status.im/docs/FAQs.html"))}]

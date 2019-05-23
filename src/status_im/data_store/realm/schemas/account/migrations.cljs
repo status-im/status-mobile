@@ -24,8 +24,8 @@
 
 (defn v5 [old-realm new-realm]
   (log/debug "migrating chats schema v5")
-  (let [chats (.objects new-realm "chat")]
-    (dotimes [i (.-length chats)]
+  (let [chats (.objects ^js new-realm "chat")]
+    (dotimes [i (.-length ^js chats)]
       (js-delete (aget chats i) "contact-info"))))
 
 (defn v6 [old-realm new-realm]
@@ -33,20 +33,20 @@
 
 (defn v7 [old-realm new-realm]
   (log/debug "migrating messages schema v7")
-  (let [messages (.objects new-realm "message")]
-    (dotimes [i (.-length messages)]
+  (let [messages (.objects ^js new-realm "message")]
+    (dotimes [i (.-length ^js messages)]
       (js-delete (aget messages i) "user-statuses"))))
 
 (defn message-by-id [realm message-id]
-  (some-> realm
+  (some-> ^js realm
           (.objects "message")
           (.filtered (str "message-id = \"" message-id "\""))
           (aget 0)))
 
 (defn v8 [old-realm new-realm]
   (log/debug "migrating v8 account database")
-  (let [browsers     (.objects new-realm "browser")
-        old-browsers (.objects old-realm "browser")]
+  (let [browsers     (.objects ^js new-realm "browser")
+        old-browsers (.objects ^js old-realm "browser")]
     (dotimes [i (.-length browsers)]
       (let [browser     (aget browsers i)
             old-browser (aget old-browsers i)
@@ -59,7 +59,7 @@
 
 (defn v10 [old-realm new-realm]
   (log/debug "migrating v10 account database")
-  (some-> old-realm
+  (some-> ^js old-realm
           (.objects "request")
           (.filtered (str "status = \"answered\""))
           (.map (fn [request _ _]
@@ -71,20 +71,20 @@
 
 (defn v11 [old-realm new-realm]
   (log/debug "migrating v11 account database")
-  (let [mailservers     (.objects new-realm "mailserver")]
-    (dotimes [i (.-length mailservers)]
+  (let [mailservers     (.objects ^js new-realm "mailserver")]
+    (dotimes [i (.-length ^js mailservers)]
       (aset (aget mailservers i) "fleet" "eth.beta"))))
 
 (defn v12 [old-realm new-realm]
   (log/debug "migrating v12 account database")
-  (some-> new-realm
+  (some-> ^js new-realm
           (.objects "message")
           (.filtered (str "content-type = \"text/plain\""))
           (.map (fn [message _ _]
                   (let [content     (aget message "content")
                         new-content {:text content}]
                     (aset message "content" (pr-str new-content))))))
-  (some-> new-realm
+  (some-> ^js new-realm
           (.objects "message")
           (.filtered (str "content-type = \"emoji\""))
           (.map (fn [message _ _]
@@ -97,7 +97,7 @@
 
 (defn v14 [old-realm new-realm]
   (log/debug "migrating v14 account database")
-  (some-> new-realm
+  (some-> ^js new-realm
           (.objects "message")
           (.filtered (str "content-type = \"command-request\""))
           (.map (fn [message _ _]
@@ -117,7 +117,7 @@
   "reset last request to 1 to fetch 7 past days of history"
   [old-realm new-realm]
   (log/debug "migrating v18 account database")
-  (some-> new-realm
+  (some-> ^js new-realm
           (.objects "transport-inbox-topic")
           (.map (fn [inbox-topic _ _]
                   (aset inbox-topic "last-request" 1)))))
@@ -127,7 +127,7 @@
 
 (defn v20 [old-realm new-realm]
   (log/debug "migrating v20 account database")
-  (some-> new-realm
+  (some-> ^js new-realm
           (.objects "message")
           (.filtered (str "content-type = \"text/plain\""))
           (.map (fn [message _ _]
@@ -146,16 +146,16 @@
   change to public-key and remove whisper-identity field"
   [old-realm new-realm]
   (log/debug "migrating v20 account database")
-  (let [old-contacts (.objects old-realm "contact")
-        new-contacts (.objects new-realm "contact")]
+  (let [old-contacts (.objects ^js old-realm "contact")
+        new-contacts (.objects ^js new-realm "contact")]
     (dotimes [i (.-length old-contacts)]
       (let [old-contact (aget old-contacts i)
             new-contact (aget new-contacts i)
             whisper-identity (aget old-contact "whisper-identity")]
         (aset new-contact "public-key" whisper-identity))))
-  (let [old-user-statuses (.objects old-realm "user-status")
-        new-user-statuses (.objects new-realm "user-status")]
-    (dotimes [i (.-length old-user-statuses)]
+  (let [old-user-statuses (.objects ^js old-realm "user-status")
+        new-user-statuses (.objects ^js new-realm "user-status")]
+    (dotimes [i (.-length ^js old-user-statuses)]
       (let [old-user-status (aget old-user-statuses i)
             new-user-status (aget new-user-statuses i)
             whisper-identity (aget old-user-status "whisper-identity")]
@@ -167,11 +167,11 @@
 (defn v25 [old-realm new-realm])
 
 (defn v26 [old-realm new-realm]
-  (let [chats (.objects new-realm "chat")]
-    (dotimes [i (.-length chats)]
+  (let [chats (.objects ^js new-realm "chat")]
+    (dotimes [i (.-length ^js chats)]
       (let [chat                (aget chats i)
             chat-id             (aget chat "chat-id")
-            user-statuses-count (-> (.objects new-realm "user-status")
+            user-statuses-count (-> (.objects ^js new-realm "user-status")
                                     (.filtered (str "chat-id=\"" chat-id "\""
                                                     " and "
                                                     "status = \"received\""))
@@ -191,7 +191,7 @@
    "status-im.transport.message.protocol"))
 
 (defn sha3 [s]
-  (.sha3 (dependencies/web3-prototype) s))
+  (.sha3 ^js (dependencies/web3-prototype) s))
 
 (defn old-message-id
   "Calculates the same `message-id` as was used in `0.9.31`"
@@ -218,7 +218,7 @@
                                         constants/content-type-command-request]}
        command-path))
 
-(deftype MessageHandler []
+(deftype ^js MessageHandler []
   Object
   (tag [this v] "c4")
   (rep [this {:keys [content content-type message-type clock-value timestamp]}]
@@ -245,12 +245,12 @@
   (transport.utils/from-utf8 (serialize message)))
 
 (defn v27 [old-ream new-realm]
-  (let [messages (.objects new-realm "message")
-        user-statuses (.objects new-realm "user-status")
+  (let [messages (.objects ^js new-realm "message")
+        user-statuses (.objects ^js new-realm "user-status")
         old-ids->new-ids (volatile! {})
         messages-to-be-deleted (volatile! [])
         statuses-to-be-deleted (volatile! [])]
-    (dotimes [i (.-length messages)]
+    (dotimes [i (.-length ^js messages)]
       (let [message         (aget messages i)
             prev-message-id (aget message "message-id")
             content         (-> (aget message "content")
@@ -270,7 +270,7 @@
             raw-payload-hash (transport.utils/sha3 raw-payload)]
         (vswap! old-ids->new-ids assoc prev-message-id message-id)
         (if (.objectForPrimaryKey
-             new-realm
+             ^js new-realm
              "message"
              message-id)
           (vswap! messages-to-be-deleted conj message)
@@ -282,14 +282,14 @@
     (doseq [message @messages-to-be-deleted]
       (.delete new-realm message))
 
-    (dotimes [i (.-length user-statuses)]
+    (dotimes [i (.-length ^js user-statuses)]
       (let [user-status (aget user-statuses i)
             message-id     (aget user-status "message-id")
             new-message-id (get @old-ids->new-ids message-id)
             public-key     (aget user-status "public-key")
             new-status-id (str new-message-id "-" public-key)]
         (if (.objectForPrimaryKey
-             new-realm
+             ^js new-realm
              "user-status"
              new-status-id)
           (vswap! statuses-to-be-deleted conj user-status)
@@ -298,11 +298,11 @@
             (aset user-status "message-id" new-message-id)))))
 
     (doseq [status @statuses-to-be-deleted]
-      (.delete new-realm status))))
+      (.delete ^js new-realm status))))
 
 (defn get-last-message [realm chat-id]
   (->
-   (.objects realm "message")
+   ^js (.objects realm "message")
    (.filtered (str "chat-id=\"" chat-id "\""))
    (.sorted "timestamp" true)
    (aget 0)))
@@ -311,7 +311,7 @@
 
 (defn get-last-clock-value [realm chat-id]
   (if-let [last-message
-           (-> (.objects realm "message")
+           (-> ^js (.objects realm "message")
                (.filtered (str "chat-id=\"" chat-id "\""))
                (.sorted "clock-value" true)
                (aget 0))]
@@ -322,16 +322,16 @@
     0))
 
 (defn v29 [old-realm new-realm]
-  (let [chats (.objects new-realm "chat")]
-    (dotimes [i (.-length chats)]
+  (let [chats (.objects ^js new-realm "chat")]
+    (dotimes [i (.-length ^js chats)]
       (let [chat (aget chats i)
             chat-id (aget chat "chat-id")]
         (when-let [last-clock-value (get-last-clock-value new-realm chat-id)]
           (aset chat "last-clock-value" last-clock-value))))))
 
 (defn v30 [old-realm new-realm]
-  (let [chats (.objects new-realm "chat")]
-    (dotimes [i (.-length chats)]
+  (let [chats (.objects ^js new-realm "chat")]
+    (dotimes [i (.-length ^js chats)]
       (let [chat (aget chats i)
             chat-id (aget chat "chat-id")]
         (when-let [last-message (get-last-message new-realm chat-id)]
@@ -341,8 +341,8 @@
             (aset chat "last-message-content-type" content-type)))))))
 
 (defn v34 [old-realm new-realm]
-  (let [chats (.objects new-realm "chat")]
-    (dotimes [i (.-length chats)]
+  (let [chats (.objects ^js new-realm "chat")]
+    (dotimes [i (.-length ^js chats)]
       (let [chat (aget chats i)
             chat-id (aget chat "chat-id")]
         (aset chat "group-chat-local-version" 0)))))
@@ -352,9 +352,9 @@
 
 (defn v35 [old-realm new-realm]
   (log/debug "migrating transport chats")
-  (let [old-chats (.objects old-realm "transport")
-        new-chats (.objects new-realm "transport")]
-    (dotimes [i (.-length old-chats)]
+  (let [old-chats (.objects ^js old-realm "transport")
+        new-chats (.objects ^js new-realm "transport")]
+    (dotimes [i (.-length ^js old-chats)]
       (let [old-chat (aget old-chats i)
             new-chat (aget new-chats i)
             chat-id  (aget old-chat "chat-id")]
@@ -363,8 +363,8 @@
 
 (defn v38 [old-realm new-realm]
   (log/debug "migrating chats v38")
-  (let [chats (.objects new-realm "chat")]
-    (dotimes [i (.-length chats)]
+  (let [chats (.objects ^js new-realm "chat")]
+    (dotimes [i (.-length ^js chats)]
       (let [chat (aget chats i)
             chat-id (aget chat "chat-id")]
         (when-let [last-clock-value (get-last-clock-value new-realm chat-id)]
@@ -375,9 +375,9 @@
   into system tags equivalents in the system-tags field"
   [old-realm new-realm]
   (log/debug "migrating v40 account database")
-  (let [old-contacts (.objects old-realm "contact")
-        new-contacts (.objects new-realm "contact")]
-    (dotimes [i (.-length old-contacts)]
+  (let [old-contacts (.objects ^js old-realm "contact")
+        new-contacts (.objects ^js new-realm "contact")]
+    (dotimes [i (.-length ^js old-contacts)]
       (let [old-contact (aget old-contacts i)
             new-contact (aget new-contacts i)
             blocked? (aget old-contact "blocked?")
@@ -397,7 +397,7 @@
       (let [chat (aget chats i)]
         (when-not (aget chat "public?")
           (aget chat "chat-id"))))
-    (range (.-length chats)))))
+    (range (.-length ^js chats)))))
 
 (def one-day (* 24 60 60))
 
@@ -407,11 +407,11 @@
   "Add all private chats to :discovery mailserver topic"
   [old-realm new-realm]
   (log/debug "migrating v40 account database")
-  (let [mailserver-topic (-> (.objects new-realm "mailserver-topic")
+  (let [mailserver-topic (-> (.objects ^js new-realm "mailserver-topic")
                              (.filtered (str "topic=\"" discovery-topic-hash "\""))
                              (aget 0))
         old-chat-ids     (edn/read-string (aget mailserver-topic "chat-ids"))
-        new-chats-ids    (private-chats-ids (.objects old-realm "chat"))
+        new-chats-ids    (private-chats-ids (.objects ^js old-realm "chat"))
         all-chat-ids     (clojure.set/union old-chat-ids new-chats-ids)
         chat-ids-str     (pr-str all-chat-ids)]
     (when mailserver-topic

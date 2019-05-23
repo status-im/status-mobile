@@ -32,7 +32,7 @@
                                                  (when on-focus
                                                    (on-focus search-filter))
                                                  (reset! input-is-focused? true))
-                             :on-change       (fn [e]
+                             :on-change       (fn [^js e]
                                                 (let [native-event (.-nativeEvent e)
                                                       text         (.-text native-event)]
                                                   (when on-change

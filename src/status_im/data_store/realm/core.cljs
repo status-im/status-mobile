@@ -16,7 +16,7 @@
 (defn to-buffer [key]
   (when-not (nil? key)
     (when key
-      (let [length (.-length key)
+      (let [length (.-length ^js key)
             arr    (js/Int8Array. length)]
         (dotimes [i length]
           (aset arr i (aget key i)))
@@ -27,8 +27,8 @@
   decrypts it, throws error otherwise."
   [file-name encryption-key]
   (if encryption-key
-    (.schemaVersion rn-dependencies/realm file-name (to-buffer encryption-key))
-    (.schemaVersion rn-dependencies/realm file-name)))
+    (.schemaVersion ^js rn-dependencies/realm file-name (to-buffer encryption-key))
+    (.schemaVersion ^js rn-dependencies/realm file-name)))
 
 (defn encrypted-realm-version-promise
   [file-name encryption-key]
@@ -47,7 +47,7 @@
   (let [options-js (clj->js (assoc options :path file-name))]
     (log/debug "Using encryption key...")
     (when encryption-key
-      (set! (.-encryptionKey options-js) (to-buffer encryption-key)))
+      (set! (.-encryptionKey ^js options-js) (to-buffer encryption-key)))
     (when (exists? js/window)
       (rn-dependencies/realm. options-js))))
 
@@ -63,7 +63,7 @@
   (re-matches #".*(\.management|\.lock|\.note)$" n))
 
 (def old-base-realm-path
-  (.-defaultPath rn-dependencies/realm))
+  (.-defaultPath ^js rn-dependencies/realm))
 
 (defn realm-dir []
   "This has to be a fn because otherwise re-frame app-db is not
@@ -74,7 +74,7 @@
           status-data-dir (get initial-props :STATUS_DATA_DIR)]
       (cond-> (if status-data-dir
                 (str status-data-dir "/default.realm")
-                (.-defaultPath rn-dependencies/realm))
+                (.-defaultPath ^js rn-dependencies/realm))
         utils.platform/desktop?
         (str "/")))))
 
@@ -99,15 +99,14 @@
   [address]
   (log/warn "realm: deleting account db " (ethereum/sha3 address))
   (let [file (get-account-db-path address)]
-    (.. (fs/unlink file)
+    (.. ^js (fs/unlink file)
         (then #(fs/unlink (str file ".lock")))
         (then #(fs/unlink (str file ".management")))
         (then #(fs/unlink (str file ".note"))))))
 
 (defn ensure-directories []
-  (..
-   (fs/mkdir (realm-dir))
-   (then #(fs/mkdir (accounts-realm-dir)))))
+  (.. ^js (fs/mkdir (realm-dir))
+      (then #(fs/mkdir (accounts-realm-dir)))))
 
 (defn- move-realm-to-library [path]
   (let [filename (last (string/split path "/"))
@@ -122,7 +121,7 @@
 (defn move-realms []
   (log/info "realm: moving all realms")
   (..
-   (fs/read-dir old-realm-dir)
+   ^js (fs/read-dir old-realm-dir)
    (then #(->> (js->clj % :keywordize-keys true)
                (map :path)
                (filter is-realm-file?)))
@@ -154,9 +153,9 @@
   (open-realm (last schemas) file-name encryption-key))
 
 (defn keccak512-array [key]
-  (.array (.-keccak512 (js-dependencies/js-sha3)) key))
+  (.array (.-keccak512 ^js (js-dependencies/js-sha3)) key))
 
-(defn merge-Uint8Arrays [arr1 arr2]
+(defn merge-Uint8Arrays [^js arr1 ^js arr2]
   (let [arr1-length (.-length arr1)
         arr2-length (.-length arr2)
         arr         (js/Uint8Array. (+ arr1-length arr2-length))]
@@ -165,9 +164,9 @@
     arr))
 
 (defn db-encryption-key [password encryption-key]
-  (let [TextEncoder (.-TextEncoder (js-dependencies/text-encoding))
+  (let [TextEncoder (.-TextEncoder ^js (js-dependencies/text-encoding))
         password-array (.encode
-                        (new TextEncoder)
+                        ^js (new TextEncoder)
                         password)]
     (keccak512-array (merge-Uint8Arrays encryption-key password-array))))
 
@@ -205,7 +204,7 @@
 (defn re-encrypt-realm
   [file-name old-key new-key on-success on-error]
   (let [old-file-name (str file-name "old")]
-    (.. (fs/move-file file-name old-file-name)
+    (.. ^js (fs/move-file file-name old-file-name)
         (then #(fs/unlink (str file-name ".lock")))
         (then #(fs/unlink (str file-name ".management")))
         (then #(fs/unlink (str file-name ".note")))
@@ -219,7 +218,7 @@
                                                     account/schemas
                                                     old-key)]
                   (log/info "copy old database")
-                  (.writeCopyTo old-account-db file-name (to-buffer new-key))
+                  (.writeCopyTo ^js old-account-db file-name (to-buffer new-key))
                   (log/info "old database copied")
                   (close old-account-db)
                   (log/info "old database closed")
@@ -250,7 +249,7 @@
            (do
              (log/warn "failed checking db encryption with" e)
              (log/info "try to encrypt with old key")
-             (.. (encrypted-realm-version-promise file-name old-key)
+             (.. ^js (encrypted-realm-version-promise file-name old-key)
                  (then
                   #(re-encrypt-realm file-name old-key new-key on-success on-error))
                  (catch on-error)))))))))
@@ -258,7 +257,7 @@
 (defn db-exists? [address]
   (js/Promise.
    (fn [on-success on-error]
-     (.. (fs/file-exists? (get-account-db-path address))
+     (.. ^js (fs/file-exists? (get-account-db-path address))
          (then (fn [db-exists?]
                  (if db-exists?
                    (on-success)
@@ -286,7 +285,7 @@
 ;; realm functions
 
 (defn write [realm f]
-  (.write realm f))
+  (.write ^js realm f))
 
 (defn create
   ([realm schema-name obj]
@@ -294,27 +293,27 @@
   ([realm schema-name obj update?]
    (let [obj-to-save (select-keys obj (keys (get-in entity->schemas
                                                     [schema-name :properties])))]
-     (.create realm (name schema-name) (clj->js obj-to-save) update?))))
+     (.create ^js realm (name schema-name) (clj->js obj-to-save) update?))))
 
 (defn delete [realm obj]
-  (.delete realm obj))
+  (.delete ^js realm obj))
 
 (defn get-all [realm schema-name]
-  (.objects realm (name schema-name)))
+  (.objects ^js realm (name schema-name)))
 
 (defn sorted [results field-name order]
-  (.sorted results (name field-name) (if (= order :asc)
-                                       false
-                                       true)))
+  (.sorted ^js results (name field-name) (if (= order :asc)
+                                           false
+                                           true)))
 
 (defn multi-field-sorted [results fields]
-  (.sorted results (clj->js fields)))
+  (.sorted ^js results (clj->js fields)))
 
 (defn page [results from to]
   (js/Array.prototype.slice.call results from (or to -1)))
 
 (defn filtered [results filter-query]
-  (.filtered results filter-query))
+  (.filtered ^js results filter-query))
 
 (def reader (transit/reader :json))
 (def writer (transit/writer :json))
@@ -380,7 +379,7 @@
   "Selects objects from realm identified by schema-name based on value of field"
   [realm schema-name field value]
   (let [q (to-query schema-name :eq field value)]
-    (.filtered (.objects realm (name schema-name)) q)))
+    (.filtered (.objects ^js realm (name schema-name)) q)))
 
 (defn- and-query [queries]
   (string/join " and " queries))
@@ -395,7 +394,7 @@
   (let [queries (map (fn [[k v]]
                        (to-query schema-name :eq k v))
                      fields)]
-    (.filtered (.objects realm (name schema-name))
+    (.filtered (.objects ^js realm (name schema-name))
                (case op
                  :and (and-query queries)
                  :or (or-query queries)))))

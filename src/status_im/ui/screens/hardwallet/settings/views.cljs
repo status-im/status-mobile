@@ -115,7 +115,7 @@
          [react/view
           [action-row {:icon     :main-icons/info
                        :label    :t/help-capitalized
-                       :on-press #(.openURL (react/linking) "https://hardwallet.status.im")}]
+                       :on-press #(.openURL ^js (react/linking) "https://hardwallet.status.im")}]
           (when pairing
             [react/view
              [action-row {:icon     :main-icons/add

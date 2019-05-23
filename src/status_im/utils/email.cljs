@@ -7,7 +7,7 @@
  :email/send
  ;; https://github.com/chirag04/react-native-mail#example
  (fn [[opts callback]]
-   (.mail (dependencies/react-native-mail)
+   (.mail ^js (dependencies/react-native-mail)
           (clj->js opts)
           callback)))
 

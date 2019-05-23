@@ -10,7 +10,7 @@
 
 (defn get-new-key-pair [{:keys [web3 on-success on-error]}]
   (if web3
-    (.. web3
+    (.. ^js web3
         -shh
         (newKeyPair (fn [err resp]
                       (if-not err
@@ -27,7 +27,7 @@
 
 (defn get-public-key [{:keys [web3 key-pair-id on-success on-error]}]
   (if (and web3 key-pair-id)
-    (.. web3
+    (.. ^js web3
         -shh
         (getPublicKey key-pair-id (fn [err resp]
                                     (if-not err
@@ -45,7 +45,7 @@
 
 (defn generate-sym-key-from-password
   [{:keys [web3 password on-success on-error]}]
-  (.. web3
+  (.. ^js web3
       -shh
       (generateSymKeyFromPassword password (fn [err resp]
                                              (if-not err
@@ -54,7 +54,7 @@
 
 (defn post-message
   [{:keys [web3 whisper-message on-success on-error]}]
-  (.. web3
+  (.. ^js web3
       -shh
       (extPost (clj->js whisper-message) (fn [err resp]
                                            (if-not err
@@ -70,7 +70,7 @@
       (re-frame/dispatch [error-event err resp]))))
 
 (defn send-direct-message! [web3 direct-message success-event error-event count]
-  (.. web3
+  (.. ^js web3
       -shh
       (sendDirectMessage
        (clj->js (update direct-message :payload (comp transport.utils/from-utf8
@@ -102,7 +102,7 @@
                            :payload (-> payload
                                         transit/serialize
                                         transport.utils/from-utf8)})]
-     (.. web3
+     (.. ^js web3
          -shh
          (sendPairingMessage
           message
@@ -125,14 +125,14 @@
                                     transit/serialize
                                     transport.utils/from-utf8)})]
 
-         (.. web3
+         (.. ^js web3
              -shh
              (sendDirectMessage
               message
               (handle-response success-event error-event (count dsts)))))))))
 
 (defn send-public-message! [web3 message success-event error-event]
-  (.. web3
+  (.. ^js web3
       -shh
       (sendPublicMessage
        (clj->js message)
@@ -165,7 +165,7 @@
 
 (defn add-sym-key
   [{:keys [web3 sym-key on-success on-error]}]
-  (.. web3
+  (.. ^js web3
       -shh
       (addSymKey sym-key (fn [err resp]
                            (if-not err
@@ -174,7 +174,7 @@
 
 (defn add-sym-keys-batch
   [{:keys [web3 keys on-success on-error]}]
-  (let [batch    (.createBatch web3)
+  (let [batch    (.createBatch ^js web3)
         results  (atom [])
         total    (count keys)
         counter  (atom 0)
@@ -189,17 +189,17 @@
                      (on-success @results)))]
     (log/debug "PERF" :add-sym-key-batch total)
     (doseq [{:keys [chat-id sym-key]} keys]
-      (let [request (.. web3
+      (let [request (.. ^js web3
                         -shh
                         -addSymKey
                         (request sym-key
                                  (partial callback chat-id sym-key)))]
-        (.add batch request)))
-    (.execute batch)))
+        (.add ^js batch request)))
+    (.execute ^js batch)))
 
 (defn get-sym-key
   [{:keys [web3 sym-key-id on-success on-error]}]
-  (.. web3
+  (.. ^js web3
       -shh
       (getSymKey sym-key-id (fn [err resp]
                               (if-not err
@@ -208,7 +208,7 @@
 
 (defn new-sym-key
   [{:keys [web3 on-success on-error]}]
-  (.. web3
+  (.. ^js web3
       -shh
       (newSymKey (fn [err resp]
                    (if-not err

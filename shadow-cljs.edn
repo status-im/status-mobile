@@ -1,0 +1,25 @@
+;; shadow-cljs configuration
+{:source-paths
+ ["components/src"
+  "react-native/src/cljsjs"
+  "react-native/src/mobile"
+  "src"
+  "env/prod"]
+
+ :dependencies
+ [[org.clojure/core.async "0.4.474"]
+  [reagent "0.7.0" :exclusions [cljsjs/react cljsjs/react-dom cljsjs/react-dom-server cljsjs/create-react-class]]
+  [status-im/re-frame "0.10.5"]
+  [com.andrewmcveigh/cljs-time "0.5.2"]
+  [com.taoensso/timbre "4.10.0"]
+  [hickory "0.7.1"]
+  [com.cognitect/transit-cljs "0.8.248"]
+  [status-im/pluto "iteration-4-9"]
+  [mvxcvi/alphabase "1.0.0"]
+  [rasom/cljs-react-navigation "0.1.4"]]
+
+ :builds
+ {:android {:target           :react-native
+            :init-fn          status-im.android.core/init
+            :output-dir       "shadow-build"
+            :compiler-options {:infer-externs :auto}}}}

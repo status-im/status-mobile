@@ -18,7 +18,7 @@
      (i18n/label :t/browsing-site-blocked-title)]
     [react/nested-text  {:style styles/description-text}
      (i18n/label :t/browsing-site-blocked-description1)
-     [{:on-press #(.openURL (react/linking) "status-im://chat/public/status")
+     [{:on-press #(.openURL ^js (react/linking) "status-im://chat/public/status")
        :style    styles/chat-link-text}
       "#status"]
      (i18n/label :t/browsing-site-blocked-description2)]

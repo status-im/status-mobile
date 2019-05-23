@@ -64,7 +64,7 @@
 (def image-class (get-class "Image"))
 (def picker-obj (lazy-get-react-property "Picker"))
 (defn picker-class [] (adapt-class (picker-obj)))
-(defn picker-item-class [] (adapt-class (.-Item (picker-obj))))
+(defn picker-item-class [] (adapt-class (.-Item ^js (picker-obj))))
 
 (defn valid-source? [source]
   (or (not (map? source))
@@ -94,12 +94,12 @@
 (def pan-responder (lazy-get-react-property "PanResponder"))
 (def animated (lazy-get-react-property "Animated"))
 (defn animated-view []
-  (reagent/adapt-react-class (.-View (animated))))
+  (reagent/adapt-react-class (.-View ^js (animated))))
 
 (def dimensions (lazy-get-react-property "Dimensions"))
 (def keyboard (lazy-get-react-property "Keyboard"))
 (def linking (lazy-get-react-property "Linking"))
-(def desktop-notification (.-DesktopNotification (.-NativeModules js-dependencies/react-native)))
+(def desktop-notification (.-DesktopNotification (.-NativeModules ^js js-dependencies/react-native)))
 
 (def max-font-size-multiplier 1.25)
 
@@ -198,8 +198,9 @@
   ([images-fn]
    (show-image-picker images-fn nil))
   ([images-fn media-type]
-   (let [image-picker (.-default (image-picker-class))]
-     (-> image-picker
+   (let [image-picker (.-default ^js (image-picker-class))]
+     (-> ^js
+         image-picker
          (.openPicker (clj->js {:multiple false :mediaType (or media-type "any")}))
          (.then images-fn)
          (.catch show-access-error)))))
@@ -207,14 +208,14 @@
 ;; Clipboard
 
 (def sharing
-  (.-Share js-dependencies/react-native))
+  (.-Share ^js js-dependencies/react-native))
 
 (defn copy-to-clipboard [text]
-  (.setString (.-Clipboard js-dependencies/react-native) text))
+  (.setString (.-Clipboard ^js js-dependencies/react-native) text))
 
 (defn get-from-clipboard [clbk]
-  (let [clipboard-contents (.getString (.-Clipboard js-dependencies/react-native))]
-    (.then clipboard-contents #(clbk %))))
+  (let [clipboard-contents (.getString (.-Clipboard ^js js-dependencies/react-native))]
+    (.then ^js clipboard-contents #(clbk %))))
 
 ;; HTTP Bridge
 

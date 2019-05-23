@@ -8,7 +8,7 @@
 (defn buffer [] (.-default js-dependencies/snoopy-buffer))
 
 (defn create-filter [f]
-  (fn [message]
+  (fn [^js message]
     (let [method    (.-method message)
           module    (.-module message)
           args      (.-args message)
