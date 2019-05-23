@@ -1,6 +1,4 @@
-{ pkgs, stdenv, fetchFromGitHub }:
-
-with pkgs;
+{ stdenv, lib, fetchFromGitHub }:
 
 let
   version = "0.8.90";

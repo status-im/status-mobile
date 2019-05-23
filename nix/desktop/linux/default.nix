@@ -1,12 +1,12 @@
 { stdenv, callPackage,
-  appimagekit, patchelf, qt5, status-go }:
+  appimagekit, patchelf, qt5, status-go, nodejs }:
 
 with stdenv;
 
 assert isLinux;
 
 let
-  baseImage = callPackage ./base-image { };
+  baseImage = callPackage ./base-image { inherit nodejs; };
   appimagekit = callPackage ./appimagekit { };
   linuxdeployqt = callPackage ./linuxdeployqt { inherit appimagekit; };
 

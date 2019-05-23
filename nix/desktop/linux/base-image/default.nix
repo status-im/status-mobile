@@ -1,6 +1,7 @@
-{ stdenv, fetchurl, unzip }:
+{ stdenv, callPackage, fetchurl, nodejs, unzip }:
 
 let
+  ubuntu-server = callPackage ../../ubuntu-server { target-os = "linux"; inherit nodejs; };
   package = stdenv.mkDerivation rec {
     name = "StatusImAppImage";
     version = "20190515";
@@ -13,7 +14,7 @@ let
         }
       else throw "${name} is not supported on ${stdenv.hostPlatform.system}";
 
-    nativeBuildInputs = [ unzip ];
+    nativeBuildInputs = [ unzip ubuntu-server ];
 
     phases = [ "unpackPhase" ];
     unpackPhase = ''
