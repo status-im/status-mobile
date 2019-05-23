@@ -1392,11 +1392,6 @@
    (hardwallet/import-account cofx)))
 
 (handlers/register-handler-fx
- :hardwallet/verify-pin
- (fn [cofx _]
-   (hardwallet/verify-pin cofx)))
-
-(handlers/register-handler-fx
  :hardwallet/generate-mnemonic
  (fn [cofx _]
    (hardwallet/generate-mnemonic cofx)))
@@ -1442,11 +1437,6 @@
  :hardwallet/unpair
  (fn [cofx _]
    (hardwallet/unpair cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/verify-pin
- (fn [cofx _]
-   (hardwallet/verify-pin cofx)))
 
 (handlers/register-handler-fx
  :keycard-settings.ui/reset-card-pressed
