@@ -64,7 +64,7 @@
            status
            db] :as cofx}
    {:keys [pubkey address mnemonic installation-id
-           keycard-instance-uid keycard-pairing keycard-paired-on]}
+           keycard-instance-uid keycard-key-uid keycard-pairing keycard-paired-on]}
    password
    {:keys [seed-backed-up? login? new-account?] :or {login? true}}]
   (let [normalized-address (utils.hex/normalize-hex address)
@@ -80,6 +80,7 @@
                             :seed-backed-up?        seed-backed-up?
                             :mnemonic               mnemonic
                             :keycard-instance-uid   keycard-instance-uid
+                            :keycard-key-uid        keycard-key-uid
                             :keycard-pairing        keycard-pairing
                             :keycard-paired-on      keycard-paired-on
                             :settings               (constants/default-account-settings)

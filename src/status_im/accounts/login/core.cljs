@@ -74,9 +74,9 @@
 
 ;;;; Handlers
 (fx/defn login [cofx]
-  (if (get-in cofx [:db :hardwallet :whisper-private-key])
+  (if (get-in cofx [:db :hardwallet :account :whisper-private-key])
     {:hardwallet/login-with-keycard (-> cofx
-                                        (get-in [:db :hardwallet])
+                                        (get-in [:db :hardwallet :account])
                                         (select-keys [:whisper-private-key :encryption-public-key])
                                         (assoc :on-result #(re-frame/dispatch [:accounts.login.callback/login-success %])))}
     (let [{:keys [address password]} (accounts.db/credentials cofx)]
@@ -159,8 +159,7 @@
                                                 :on-card-read
                                                 :card-read-in-progress?
                                                 :pin
-                                                :whisper-private-key
-                                                :encryption-public-key))
+                                                :account))
           :web3/set-default-account [web3 address]
           :web3/fetch-node-version  [web3
                                      #(re-frame/dispatch

@@ -58,6 +58,7 @@
 (spec/def :account/mainnet-warning-shown-version (spec/nilable string?))
 (spec/def :account/desktop-alpha-release-warning-shown? (spec/nilable boolean?))
 (spec/def :account/keycard-instance-uid (spec/nilable string?))
+(spec/def :account/keycard-key-uid (spec/nilable string?))
 (spec/def :account/keycard-pairing (spec/nilable string?))
 (spec/def :account/keycard-paired-on (spec/nilable int?))
 
@@ -74,6 +75,7 @@
                                                 :account/mainnet-warning-shown-version
                                                 :account/desktop-alpha-release-warning-shown?
                                                 :account/keycard-instance-uid
+                                                :account/keycard-key-uid
                                                 :account/keycard-pairing
                                                 :account/keycard-paired-on]))
 
