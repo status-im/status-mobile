@@ -8,6 +8,7 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.qr-scanner.styles :as styles]
+            [taoensso.timbre :as log]
             [status-im.ui.components.toolbar.actions :as actions]))
 
 (defview qr-scanner-toolbar [title identifier]
@@ -27,28 +28,29 @@
 ;; that two separate instances of `qr-scanner` screen can work simultaneously
 (defview qr-scanner [{identifier :current-qr-context} screen-focused?]
   (letsubs [camera-initialized? (reagent/atom false)
-            barcode-read? (reagent/atom false)]
-    [react/view styles/barcode-scanner-container
-     [qr-scanner-toolbar (or (:toolbar-title identifier) (i18n/label :t/scan-qr)) identifier]
-     ;; camera component should be hidden if screen is not shown
-     ;; otherwise another screen with camera from a different stack
-     ;; will not work properly
-     (when @screen-focused?
-       [camera/camera {:onBarCodeRead #(if (:multiple? identifier)
-                                         (on-barcode-read identifier %)
-                                         (when-not @barcode-read?
-                                           (do (reset! barcode-read? true)
-                                               (on-barcode-read identifier %))))
-                       :ref           #(reset! camera-initialized? true)
-                       :captureAudio  false
-                       :style         styles/barcode-scanner}])
-     [react/view styles/rectangle-container
-      [react/view styles/rectangle
-       [react/image {:source {:uri :corner_left_top}
-                     :style  styles/corner-left-top}]
-       [react/image {:source {:uri :corner_right_top}
-                     :style  styles/corner-right-top}]
-       [react/image {:source {:uri :corner_right_bottom}
-                     :style  styles/corner-right-bottom}]
-       [react/image {:source {:uri :corner_left_bottom}
-                     :style  styles/corner-left-bottom}]]]]))
+            {barcode-read-sub? :barcode-read?} [:get-screen-params]]
+    (let [barcode-read? (reagent/atom barcode-read-sub?)]        
+		    [react/view styles/barcode-scanner-container
+		     [qr-scanner-toolbar (or (:toolbar-title identifier) (i18n/label :t/scan-qr)) identifier]
+		     ;; camera component should be hidden if screen is not shown
+		     ;; otherwise another screen with camera from a different stack
+		     ;; will not work properly
+		     (when @screen-focused?
+		       [camera/camera {:onBarCodeRead #(if (:multiple? identifier)
+		                                         (on-barcode-read identifier %)
+		                                         (when-not @barcode-read?
+		                                           (do (reset! barcode-read? true)
+		                                               (on-barcode-read identifier %))))
+		                         :ref           #(reset! camera-initialized? true)
+		                         :captureAudio  false
+		                         :style         styles/barcode-scanner}])
+		       [react/view styles/rectangle-container
+		        [react/view styles/rectangle
+		         [react/image {:source {:uri :corner_left_top}
+		                       :style  styles/corner-left-top}]
+		         [react/image {:source {:uri :corner_right_top}
+		                       :style  styles/corner-right-top}]
+		         [react/image {:source {:uri :corner_right_bottom}
+		                       :style  styles/corner-right-bottom}]
+		         [react/image {:source {:uri :corner_left_bottom}
+		                       :style  styles/corner-left-bottom}]]]])))

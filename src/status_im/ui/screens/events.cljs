@@ -183,7 +183,11 @@
  :screens/on-will-focus
  (fn [{:keys [db] :as cofx} [_ view-id]]
    (fx/merge cofx
-             {:db (assoc db :view-id view-id)}
+             (if (= view-id :qr-scanner)
+               {:db (-> db
+                        (assoc :view-id view-id)
+                        (assoc-in [:navigation/screen-params view-id :barcode-read?] false))}
+               {:db (assoc db :view-id view-id)})
              #(case view-id
                 :keycard-settings (hardwallet/settings-screen-did-load %)
                 :reset-card (hardwallet/reset-card-screen-did-load %)
