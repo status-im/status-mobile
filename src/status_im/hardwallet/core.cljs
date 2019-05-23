@@ -30,6 +30,14 @@
          (filter #(= keycard-instance-uid (:keycard-instance-uid %)))
          first)))
 
+(defn- find-account-by-keycard-key-uid
+  [db keycard-key-uid]
+  (when keycard-key-uid
+    (->> (:accounts/accounts db)
+         vals
+         (filter #(= keycard-key-uid (:keycard-key-uid %)))
+         first)))
+
 (defn get-pairing
   ([db]
    (get-pairing db (get-in db [:hardwallet :application-info :instance-uid])))
@@ -257,20 +265,35 @@
        :hardwallet/get-keys {:pairing pairing
                              :pin     pin}})))
 
+(defn- get-account-for-login
+  "Finds account by key-uid.
+  Temporary, it also searches by instance-uid which was used before key-uid was introduced -
+  workaround should be removed before release."
+  [db key-uid instance-uid auto-login?]
+  (if auto-login?
+    (or
+     (find-account-by-keycard-key-uid db key-uid)
+     ; TODO: remove before release
+     (let [acc (find-account-by-keycard-instance-uid db instance-uid)]
+       (when-not (:keycard-key-uid acc)
+         acc)))
+    (get-in db [:accounts/accounts (get-in db [:accounts/login :address])])))
+
 (fx/defn login-with-keycard
   [{:keys [db] :as cofx} auto-login?]
-  (let [account-login-address (get-in db [:accounts/login :address])
-        account-was-manually-selected? account-login-address
-        account-instance-uid (get-in db [:accounts/accounts account-login-address :keycard-instance-uid])
+  (let [keycard-key-uid (get-in db [:hardwallet :application-info :key-uid])
         keycard-instance-uid (get-in db [:hardwallet :application-info :instance-uid])
-        account (find-account-by-keycard-instance-uid db keycard-instance-uid)
-        account-mismatch? (if account-was-manually-selected?
-                            (not= account-instance-uid keycard-instance-uid)
-                            (nil? account))
+        account (get-account-for-login db keycard-key-uid keycard-instance-uid auto-login?)
+        account-key-uid (get account :keycard-key-uid)
+        account-instance-uid (get account :keycard-instance-uid)
+        account-mismatch? (if auto-login?
+                            (nil? account)
+                            (if (:keycard-key-uid account)
+                              (not= account-key-uid keycard-key-uid)
+                              (not= account-instance-uid keycard-instance-uid)))
         pairing (:keycard-pairing account)]
-
     (cond
-      (empty? keycard-instance-uid)
+      (empty? keycard-key-uid)
       (fx/merge cofx
                 {:utils/show-popup {:title   (i18n/label :t/no-account-on-card)
                                     :content (i18n/label :t/no-account-on-card-text)}}
@@ -693,6 +716,23 @@
     {:hardwallet/get-application-info {:pairing    pairing'
                                        :on-success on-card-read}}))
 
+; TODO: remove before release
+(fx/defn save-key-uid-to-account
+  "Migrate old accounts without keycard-key-uid stored in account.
+   Runs after keycard login"
+  {:events [:hardwallet/save-key-uid-to-account]}
+  [{:keys [db]}]
+  (let [keycard-key-uid (get-in db [:hardwallet :application-info :key-uid])
+        account (:account/account db)
+        account-key-uid (:keycard-key-uid account)]
+    (when (and (nil? account-key-uid)
+               (< 2 (count keycard-key-uid)))
+      (let [account' (assoc account :keycard-key-uid keycard-key-uid)]
+        {:db                 (-> db
+                                 (assoc-in [:account/account :keycard-key-uid] keycard-key-uid)
+                                 (assoc-in [:accounts/accounts (:address account') :keycard-key-uid] keycard-key-uid))
+         :data-store/base-tx [(accounts-store/save-account-tx account')]}))))
+
 (defn- tag-lost-exception? [code error]
   (or
    (= code "android.nfc.TagLostException")
@@ -939,7 +979,7 @@
         pin (vector->string (get-in db [:hardwallet :pin :import-account]))]
     (fx/merge cofx
               {:db                  (-> db
-                                        (assoc-in [:hardwallet :keycard-instance-uid] instance-uid)
+                                        (assoc-in [:hardwallet :account :instance-uid] instance-uid)
                                         (assoc-in [:hardwallet :secrets] {:pairing   pairing'
                                                                           :paired-on (utils.datetime/timestamp)}))
                :hardwallet/get-keys {:pairing    pairing'
@@ -1287,11 +1327,12 @@
 
 (fx/defn create-keycard-account
   [{:keys [db] :as cofx}]
-  (let [{{:keys [whisper-public-key
-                 wallet-address
-                 encryption-public-key
-                 keycard-instance-uid
-                 secrets]} :hardwallet} db
+  (let [{{:keys [account secrets]} :hardwallet} db
+        {:keys [whisper-public-key
+                wallet-address
+                encryption-public-key
+                instance-uid
+                key-uid]} account
         {:keys [pairing paired-on]} secrets]
     (fx/merge (-> cofx
                   (accounts.create/get-signing-phrase)
@@ -1300,7 +1341,8 @@
               (accounts.create/on-account-created {:pubkey               whisper-public-key
                                                    :address              wallet-address
                                                    :mnemonic             ""
-                                                   :keycard-instance-uid keycard-instance-uid
+                                                   :keycard-instance-uid instance-uid
+                                                   :keycard-key-uid      key-uid
                                                    :keycard-pairing      pairing
                                                    :keycard-paired-on    paired-on}
                                                   encryption-public-key
@@ -1310,22 +1352,13 @@
 
 (fx/defn on-generate-and-load-key-success
   [{:keys [db random-guid-generator] :as cofx} data]
-  (let [{:keys [whisper-public-key
-                whisper-private-key
-                whisper-address
-                wallet-address
-                instance-uid
-                encryption-public-key]} (js->clj data :keywordize-keys true)
-        whisper-public-key' (str "0x" whisper-public-key)
-        instance-uid' (get-in db [:hardwallet :keycard-instance-uid])]
+  (let [account-data (js->clj data :keywordize-keys true)]
     (fx/merge cofx
               {:db (-> db
-                       (assoc-in [:hardwallet :whisper-public-key] whisper-public-key')
-                       (assoc-in [:hardwallet :whisper-private-key] whisper-private-key)
-                       (assoc-in [:hardwallet :whisper-address] whisper-address)
-                       (assoc-in [:hardwallet :wallet-address] wallet-address)
-                       (assoc-in [:hardwallet :encryption-public-key] encryption-public-key)
-                       (assoc-in [:hardwallet :keycard-instance-uid] (or instance-uid' instance-uid))
+                       (assoc-in [:hardwallet :account] (-> account-data
+                                                            (update :whisper-public-key #(str "0x" %))
+                                                            (update :instance-uid #(get-in db [:hardwallet :account :instance-uid] %))))
+                       (assoc-in [:hardwallet :application-info :key-uid] (:key-uid account-data))
                        (assoc-in [:hardwallet :on-card-connected] nil)
                        (update :hardwallet dissoc :recovery-phrase)
                        (update-in [:hardwallet :secrets] dissoc :pin :puk :password)
@@ -1345,28 +1378,21 @@
 
 (fx/defn on-get-keys-success
   [{:keys [db] :as cofx} data]
-  (let [{:keys [whisper-public-key
-                whisper-private-key
-                wallet-address
-                encryption-public-key]} (js->clj data :keywordize-keys true)
-        whisper-public-key' (str "0x" whisper-public-key)
+  (let [{:keys [wallet-address encryption-public-key] :as account-data} (js->clj data :keywordize-keys true)
         {:keys [photo-path name]} (get-in db [:accounts/accounts wallet-address])
-        password encryption-public-key
         instance-uid (get-in db [:hardwallet :application-info :instance-uid])]
     (fx/merge cofx
               {:db                              (-> db
                                                     (assoc-in [:hardwallet :pin :status] nil)
                                                     (assoc-in [:hardwallet :pin :login] [])
-                                                    (assoc-in [:hardwallet :whisper-public-key] whisper-public-key')
-                                                    (assoc-in [:hardwallet :whisper-private-key] whisper-private-key)
-                                                    (assoc-in [:hardwallet :wallet-address] wallet-address)
-                                                    (assoc-in [:hardwallet :encryption-public-key] encryption-public-key)
+                                                    (assoc-in [:hardwallet :account] (update account-data :whisper-public-key #(str "0x" %)))
                                                     (update :accounts/login assoc
-                                                            :password password
+                                                            :password encryption-public-key
                                                             :address wallet-address
                                                             :photo-path photo-path
                                                             :name name))
-               :hardwallet/get-application-info {:pairing (get-pairing db instance-uid)}}
+               :hardwallet/get-application-info {:pairing    (get-pairing db instance-uid)
+                                                 :on-success :hardwallet/save-key-uid-to-account}}
               (accounts.login/user-login true))))
 
 (fx/defn on-get-keys-error
