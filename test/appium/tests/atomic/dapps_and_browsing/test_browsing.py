@@ -30,6 +30,13 @@ class TestBrowsing(SingleDeviceTestCase):
         if home_view.element_by_text('Browser').is_element_displayed():
             pytest.fail('Browser entity is shown for an invalid link')
 
+    @marks.testrail_id(6210)
+    @marks.high
+    def test_open_blocked_site(self):
+        home_view = SignInView(self.driver).create_user()
+        daap_view = home_view.dapp_tab_button.click()
+        daap_view.open_url('https://www.cryptokitties.domainname').find_text_part('This site is blocked')
+
     @marks.testrail_id(5430)
     @marks.medium
     def test_connection_is_not_secure(self):

@@ -41,7 +41,7 @@ def pytest_addoption(parser):
                      action='store',
                      default='8.0',
                      help='Android device platform version')
-    parser.addoption('--log',
+    parser.addoption('--log_steps',
                      action='store',
                      default=False,
                      help='Display each test step in terminal as plain text: True/False')
@@ -136,7 +136,7 @@ def is_uploaded():
 def pytest_configure(config):
     config.addinivalue_line("markers", "testrail_id(name): empty")
 
-    if config.getoption('log'):
+    if config.getoption('log_steps'):
         import logging
         logging.basicConfig(level=logging.INFO)
     if config.getoption('env') != 'api':
