@@ -309,20 +309,6 @@
 ;; accounts login module
 
 (handlers/register-handler-fx
- :accounts.login.ui/password-input-submitted
- (fn [cofx _]
-   (accounts.login/user-login cofx false)))
-
-(handlers/register-handler-fx
- :accounts.login.callback/login-success
- [(re-frame/inject-cofx :web3/get-web3)
-  (re-frame/inject-cofx :data-store/get-all-mailservers)
-  (re-frame/inject-cofx :data-store/transport)
-  (re-frame/inject-cofx :data-store/mailserver-topics)]
- (fn [cofx [_ login-result]]
-   (accounts.login/user-login-callback cofx login-result)))
-
-(handlers/register-handler-fx
  :accounts.login.callback/verify-success
  (fn [cofx [_ verify-result realm-error]]
    (accounts.login/verify-callback cofx verify-result realm-error)))

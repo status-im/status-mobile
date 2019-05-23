@@ -247,7 +247,7 @@
                      [:navigation/screen-params :tribute-to-talk :state]
                      :transaction-failed)})))
 
-(defn remove
+(fx/defn remove
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db (assoc-in db [:navigation/screen-params :tribute-to-talk]

@@ -90,7 +90,23 @@
             (transactions/initialize)
             (ethereum.subscriptions/initialize)))
 
-(fx/defn user-login [{:keys [db] :as cofx} create-database?]
+(fx/defn user-login-without-creating-db
+  {:events [:accounts.login.ui/password-input-submitted]}
+  [{:keys [db] :as cofx}]
+  (let [{:keys [address password]} (accounts.db/credentials cofx)]
+    (fx/merge
+     cofx
+     {:db                            (-> db
+                                         (assoc-in [:accounts/login :processing] true)
+                                         (assoc :node/on-ready :login))
+      :accounts.login/clear-web-data nil
+      :data-store/change-account     [address
+                                      password
+                                      false
+                                      (get-in db [:accounts/accounts address :settings :fleet])]})))
+
+(fx/defn user-login
+  [{:keys [db] :as cofx} create-database?]
   (let [{:keys [address password]} (accounts.db/credentials cofx)]
     (fx/merge
      cofx
@@ -120,6 +136,11 @@
     :dispatch [:accounts.logout.ui/logout-confirmed]}))
 
 (fx/defn user-login-callback
+  {:events [:accounts.login.callback/login-success]
+   :interceptors [(re-frame/inject-cofx :web3/get-web3)
+                  (re-frame/inject-cofx :data-store/get-all-mailservers)
+                  (re-frame/inject-cofx :data-store/transport)
+                  (re-frame/inject-cofx :data-store/mailserver-topics)]}
   [{:keys [db web3] :as cofx} login-result]
   (let [data    (types/json->clj login-result)
         error   (:error data)

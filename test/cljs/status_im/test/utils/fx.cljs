@@ -17,6 +17,18 @@
   [{:keys [db]} b]
   (identity nil))
 
+(fx/defn hello4
+  {:doc "this function is useless as well"
+   :events [:test/valid1 :test/valid2]}
+  [{:keys [db]} b]
+  {:db (assoc db :a b) :b (:a db)})
+
+(fx/defn hello5
+  "lol lazy function does nothing"
+  {:events [:test]}
+  [{:keys [db]} b]
+  (identity nil))
+
 (deftest merge-fxs-test
   (testing "merge function for fxs"
     (let [cofx {:db {:c 2}}]
