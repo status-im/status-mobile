@@ -424,8 +424,8 @@
     "logout": "Log out",
     "status-not-sent-tap": "Not confirmed. Tap for options",
     "status-not-sent-click": "Not confirmed. Click for options",
-    "send-logs": "Send logs",
-    "send-logs-to": "Send logs to {{email}}",
+    "send-logs": "Report a bug",
+    "send-logs-to": "Report a bug to {{email}}",
     "edit-network-config": "Edit network config",
     "clear-history-confirmation": "Clear history?",
     "currency-display-name-gyd": "Guyana Dollar",
@@ -1049,5 +1049,6 @@
     "wrong-address" : "Wrong address",
     "default" : "Default",
     "token-details" : "Token details",
-    "remove-token" : "Remove token"
+    "remove-token" : "Remove token",
+    "report-bug-email-template": "1. Issue Description\n(Describe the feature you would like, or briefly summarise the bug and what you did, what you expected to happen, and what actually happens. Sections below)\n\n\n2. Steps to reproduce\n(Describe how we can replicate the bug step by step.)\n-Open Status\n-...\n-Step 3, etc.\n\n\n3. Expected behavior\n(Describe what you expected to happen.)\n\n\n4. Actual behavior\n(Describe what actually happened.)\n\n\n5. Attach screenshots that can demo the problem, please\n"
 }
