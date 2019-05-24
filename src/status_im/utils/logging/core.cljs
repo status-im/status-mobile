@@ -99,7 +99,8 @@
         (transport.utils/extract-url-components (:enode node-info))]
     (clojure.string/join
      "\n"
-     (concat [separator
+     (concat [(i18n/label :t/report-bug-email-template)]
+             [separator
               (str "App version: " build-version)
               (str "OS: " platform/os)
               (str "Node version: " web3-node-version)
