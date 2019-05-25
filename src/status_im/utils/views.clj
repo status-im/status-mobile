@@ -51,21 +51,18 @@
                                           [(first rest-body') {} (second rest-body')]))
                                     3 rest-body')
         [subs-bindings vars-bindings] (prepare-subs subs)]
-    `(do
-       (when-not (find-ns 're-frame.core)
-         (require 're-frame.core))
-       (defn ~n ~params
-         (let [~@subs-bindings]
-           (reagent.core/create-class
-            (merge ~(->> component-map
-                         (map (fn [[k f]]
-                                (let [args (gensym "args")]
-                                  [k `(fn [& ~args]
-                                        (let [~@vars-bindings]
-                                          (apply ~f ~args)))])))
-                         (into {}))
-                   {:display-name (name '~n)
-                    :reagent-render
-                    (fn ~params
-                      (let [~@vars-bindings]
-                        ~body))})))))))
+    `(defn ~n ~params
+       (let [~@subs-bindings]
+         (reagent.core/create-class
+          (merge ~(->> component-map
+                       (map (fn [[k f]]
+                              (let [args (gensym "args")]
+                                [k `(fn [& ~args]
+                                      (let [~@vars-bindings]
+                                        (apply ~f ~args)))])))
+                       (into {}))
+                 {:display-name (name '~n)
+                  :reagent-render
+                  (fn ~params
+                    (let [~@vars-bindings]
+                      ~body))}))))))
