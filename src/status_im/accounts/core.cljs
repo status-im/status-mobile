@@ -2,19 +2,23 @@
   (:require [re-frame.core :as re-frame]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.navigation :as navigation]
             [status-im.native-module.core :as native-module]
-            [status-im.ui.screens.wallet.settings.models :as wallet.settings.models]
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.build :as build]
             [status-im.utils.config :as config]
-            [status-im.utils.utils :as utils]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as platform]
-            [status-im.utils.build :as build]))
+            [status-im.utils.utils :as utils]))
 
 (re-frame/reg-fx
  ::chaos-mode-changed
  (fn [on]
    (native-module/chaos-mode-update on (constantly nil))))
+
+(re-frame/reg-fx
+ ::blank-preview-flag-changed
+ (fn [flag]
+   (native-module/set-blank-preview-flag flag)))
 
 (fx/defn show-mainnet-is-default-alert [{:keys [db]}]
   (let [shown-version (get-in db [:account/account :mainnet-warning-shown-version])
@@ -44,7 +48,6 @@
   [{:keys [db] :as cofx} modal?]
   (fx/merge cofx
             (continue-after-wallet-onboarding modal?)
-            (wallet.settings.models/wallet-autoconfig-tokens)
             (accounts.update/account-update {:wallet-set-up-passed? true} {})))
 
 (fx/defn update-dev-server-state
@@ -97,6 +100,14 @@
     (accounts.update/update-settings cofx
                                      (assoc settings :web3-opt-in? opt-in)
                                      {})))
+
+(fx/defn switch-preview-privacy-mode [{:keys [db] :as cofx} private?]
+  (let [settings (get-in db [:account/account :settings])]
+    (fx/merge cofx
+              {::blank-preview-flag-changed private?}
+              (accounts.update/update-settings
+               (assoc settings :preview-privacy? private?)
+               {}))))
 
 (fx/defn update-recent-stickers [cofx stickers]
   (accounts.update/account-update cofx

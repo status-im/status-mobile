@@ -1,9 +1,9 @@
 (ns status-im.contact.db
   (:require [cljs.spec.alpha :as spec]
+            [status-im.ethereum.core :as ethereum]
             [status-im.js-dependencies :as js-dependencies]
-            [status-im.utils.identicon :as identicon]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.identicon :as identicon]
             status-im.utils.db))
 
 ;;;; DB
@@ -148,6 +148,17 @@
   ([db public-key]
    (pending? (get-in db [:contacts/contacts public-key]))))
 
+(defn legacy-pending?
+  "Would the :pending? field be true? for contacts sync payload sent to devices
+  running 0.11.0 or older?"
+  ([{:keys [system-tags] :as contact}]
+   (let [request-received? (contains? system-tags :contact/request-received)
+         added? (added? contact)]
+     (and request-received?
+          (not added?))))
+  ([db public-key]
+   (pending? (get-in db [:contacts/contacts public-key]))))
+
 (defn active?
   "Checks that the user is added to the contact and not blocked"
   ([contact]
@@ -166,10 +177,10 @@
 
 (defn enrich-contacts
   [contacts]
-  (reduce (fn [acc [public-key contact]]
-            (assoc acc public-key (enrich-contact contact)))
-          {}
-          contacts))
+  (reduce-kv (fn [acc public-key contact]
+               (assoc acc public-key (enrich-contact contact)))
+             {}
+             contacts))
 
 (defn get-blocked-contacts
   [contacts]

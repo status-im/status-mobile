@@ -32,7 +32,7 @@
     (i18n/label :mobile-network-go-to-settings)]])
 
 (views/defview checkbox []
-  (views/letsubs [checked? [:get :mobile-network/remember-choice?]]
+  (views/letsubs [checked? [:mobile-network/remember-choice?]]
     [react/view
      {:style styles/checkbox-line-container}
      [checkbox/checkbox

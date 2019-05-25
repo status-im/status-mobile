@@ -3,10 +3,11 @@
             [status-im.utils.handlers :as handlers]))
 
 (fx/defn show-bottom-sheet
-  [{:keys [db]} {:keys [view]}]
+  [{:keys [db]} {:keys [view options]}]
   {:db (assoc db
               :bottom-sheet/show? true
-              :bottom-sheet/view view)})
+              :bottom-sheet/view view
+              :bottom-sheet/options options)})
 
 (fx/defn hide-bottom-sheet
   [{:keys [db]}]

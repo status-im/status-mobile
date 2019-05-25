@@ -9,8 +9,10 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
+import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
@@ -522,7 +524,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 			}
 
             out.close();
-            
+
             return true;
 		} catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -557,9 +559,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                            }
                        }).show();
     }
-    
+
     @ReactMethod
-    public void sendLogs(final String dbJson) {
+    public void sendLogs(final String dbJson, final String jsLogs, final Callback callback) {
         Log.d(TAG, "sendLogs");
         if (!checkAvailability()) {
             return;
@@ -594,33 +596,14 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                     return;
                 }
             }
-            
+
             dumpAdbLogsTo(new FileOutputStream(statusLogFile));
-        
+
             final Stack<String> errorList = new Stack<String>();
             final Boolean zipped = zip(new File[] {dbFile, gethLogFile, statusLogFile}, zipFile, errorList);
             if (zipped && zipFile.exists()) {
-                Log.d(TAG, "Sending " + zipFile.getAbsolutePath() + " file through share intent");
-
-                final String providerName = context.getPackageName() + ".provider";
-                final Activity activity = getCurrentActivity();
                 zipFile.setReadable(true, false);
-                final Uri dbJsonURI = FileProvider.getUriForFile(activity, providerName, zipFile);
-
-                Intent intentShareFile = new Intent(Intent.ACTION_SEND);
-
-                intentShareFile.setType("application/json");
-                intentShareFile.putExtra(Intent.EXTRA_STREAM, dbJsonURI);
-
-                SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                dateFormatGmt.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-                intentShareFile.putExtra(Intent.EXTRA_SUBJECT, "Status.im logs");
-                intentShareFile.putExtra(Intent.EXTRA_TEXT,
-                    String.format("Logs from %s GMT\n\nThese logs have been generated automatically by the user's request for debugging purposes.\n\n%s",
-                                  dateFormatGmt.format(new java.util.Date()),
-                                  errorList));
-
-                activity.startActivity(Intent.createChooser(intentShareFile, "Share Debug Logs"));
+                callback.invoke(zipFile.getAbsolutePath());
             } else {
                 Log.d(TAG, "File " + zipFile.getAbsolutePath() + " does not exist");
             }
@@ -960,6 +943,32 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         }
         callback.invoke(uniqueID);
+    }
+
+    @ReactMethod
+    public void setBlankPreviewFlag(final Boolean blankPreview) {
+        final SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.reactContext);
+        sharedPrefs.edit().putBoolean("BLANK_PREVIEW", blankPreview).commit();
+        setSecureFlag();
+    }
+
+    private void setSecureFlag() {
+        final SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.reactContext);
+        final boolean setSecure = sharedPrefs.getBoolean("BLANK_PREVIEW", true);
+        final Activity activity = this.reactContext.getCurrentActivity();
+        if (activity != null) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    final Window window = activity.getWindow();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH && setSecure) {
+                        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+                    } else {
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+                    }
+                }
+            });
+        }
     }
 
   private Boolean is24Hour() {

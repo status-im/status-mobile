@@ -7,7 +7,7 @@
 (defview parameter-box-container []
   (letsubs [parameter-box [:chats/parameter-box]]
     (when parameter-box
-      [react/view style/root
+      [react/view
        [parameter-box]])))
 
 (defview parameter-box-view []

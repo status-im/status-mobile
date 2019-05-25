@@ -7,7 +7,8 @@
             [status-im.i18n :as i18n]
             [status-im.ui.screens.chat.stickers.styles :as styles]
             [status-im.ui.components.animation :as anim]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [status-im.utils.platform :as platform]))
 
 (def icon-size 28)
 (def icon-horizontal-margin 8)
@@ -20,7 +21,8 @@
   [react/touchable-highlight
    {:on-press (fn [_]
                 (re-frame/dispatch [:chat.ui/set-chat-ui-props {:show-stickers? (not show-stickers?)}])
-                (js/setTimeout #(react/dismiss-keyboard!) 100))}
+                (when-not platform/desktop? (js/setTimeout #(react/dismiss-keyboard!) 100)))
+    :accessibility-label :show-stickers-icon}
    [vector-icons/icon :main-icons/stickers {:container-style {:margin 14 :margin-right 6}
                                             :color           (if show-stickers? colors/blue colors/gray)}]])
 
@@ -43,7 +45,9 @@
        ^{:key uri}
        [react/touchable-highlight {:style    {:height 75 :width 75 :margin 5}
                                    :on-press #(re-frame/dispatch [:chat/send-sticker sticker])}
-        [react/image {:style {:resize-mode :cover :width "100%" :height "100%"} :source {:uri uri}}]])]]])
+        [react/image {:style {:resize-mode :cover :width "100%" :height "100%"}
+                      :accessibility-label :sticker-icon
+                      :source {:uri uri}}]])]]])
 
 (defview recent-stickers-panel [window-width]
   (letsubs [stickers [:stickers/recent]]
@@ -89,7 +93,8 @@
        [stickers-panel (map #(assoc % :pack id) stickers) window-width])]))
 
 (defn pack-icon [{:keys [id on-press background-color]
-                  :or   {on-press         #(re-frame/dispatch [:stickers/select-pack id])}} icon]
+                  :or   {on-press #(re-frame/dispatch [:stickers/select-pack id])}}
+                 icon]
   [react/touchable-highlight {:on-press on-press}
    [react/view {:style {:align-items :center}}
     [react/view {:style (styles/pack-icon background-color icon-size icon-horizontal-margin)}
@@ -144,7 +149,8 @@
           [vector-icons/icon :stickers-icons/recent {:color colors/gray}]]
          (for [{:keys [id thumbnail]} installed-packs]
            ^{:key id}
-           [pack-icon {:id id}
+           [pack-icon {:id id
+                       :background-color colors/white}
             [react/image {:style {:width icon-size :height icon-size :border-radius (/ icon-size 2)}
                           :source {:uri thumbnail}}]])]
         [scroll-indicator]]]]]))

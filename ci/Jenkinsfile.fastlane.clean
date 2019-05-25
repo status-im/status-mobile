@@ -6,7 +6,6 @@ pipeline {
     LANGUAGE = "en_US.UTF-8"
     LC_ALL = "en_US.UTF-8"
     FASTLANE_DISABLE_COLORS = 1
-    REALM_DISABLE_ANALYTICS = 1
   }
 
   options {
@@ -19,7 +18,7 @@ pipeline {
   stages {
     stage('Install Deps'){
       steps {
-        sh ('bundle install')
+        sh ('bundle install --gemfile=fastlane/Gemfile')
       }
     }
 
@@ -32,7 +31,7 @@ pipeline {
             passwordVariable: 'FASTLANE_PASSWORD'
           ),
         ]) {
-          sh ('bundle exec fastlane ios clean')
+          sh ('bundle exec --gemfile=fastlane/Gemfile fastlane ios clean')
         }
       }
     }

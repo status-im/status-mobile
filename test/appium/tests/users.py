@@ -303,3 +303,10 @@ transaction_recipients['I']['address'] = "0x4e6c60f344b13d730682f0a6d8ae1255c75e
 transaction_recipients['I']['public_key'] = "0x049d6fe0c874d11ddd92f72ac75659703a7b58211b934fc22f0c7eae835b71651c8" \
                                             "3ae5e4fd688f1c898d39a657ea08a39d05d20a830bbf7eaffb6ccda9bef348f"
 
+
+transaction_recipients['J'] = dict()
+transaction_recipients['J']['passphrase'] = "estate add believe wonder riot used brain wing lecture misery order echo"
+transaction_recipients['J']['username'] = "Powderblue Pertinent Hylaeosaurus"
+transaction_recipients['J']['address'] = "0xa03a75b7888cac24b35b4d1f5924406f3b491795"
+transaction_recipients['J']['public_key'] = "0x043f622675f671b171ce136a29c1c5078b7185b38fccd0cc67d19429dbc481b358e" \
+                                            "e7d3ef534acf263174d6821402bc998bc6baf1791dacf0eb1fc995f6ddb59c8"

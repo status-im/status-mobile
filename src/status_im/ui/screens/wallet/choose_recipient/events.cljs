@@ -2,11 +2,11 @@
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.contact.db :as contact.db]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.eip55 :as eip55]
+            [status-im.ethereum.eip681 :as eip681]
+            [status-im.ethereum.ens :as ens]
             [status-im.i18n :as i18n]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.eip55 :as eip55]
-            [status-im.utils.ethereum.eip681 :as eip681]
-            [status-im.utils.ethereum.ens :as ens]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.money :as money]))
 
@@ -51,9 +51,9 @@
 ;; NOTE(janherich) - whenever changing assets, we want to clear the previusly set amount/amount-text
 (defn changed-asset [{:keys [db] :as fx} old-symbol new-symbol]
   (-> fx
-      (merge {:update-gas-price {:web3          (:web3 db)
-                                 :success-event :wallet/update-gas-price-success
-                                 :edit?         false}})
+      (merge {:wallet/update-gas-price
+              {:success-event :wallet/update-gas-price-success
+               :edit?         false}})
       (assoc-in [:db :wallet :send-transaction :amount] nil)
       (assoc-in [:db :wallet :send-transaction :amount-text] nil)
       (assoc-in [:db :wallet :send-transaction :asset-error]
@@ -75,21 +75,17 @@
 (handlers/register-handler-fx
  :wallet.send/set-recipient
  (fn [{:keys [db]} [_ recipient]]
-   (let [{:keys [web3 network]} db
-         network-info (get-in db [:account/account :networks network])
-         chain (ethereum/network->chain-keyword network-info)]
+   (let [chain (ethereum/chain-keyword db)]
      (if (ens/is-valid-eth-name? recipient)
-       {:resolve-address {:web3     web3
-                          :registry (get ens/ens-registries chain)
+       {:resolve-address {:registry (get ens/ens-registries chain)
                           :ens-name recipient
                           :cb       #(re-frame/dispatch [:wallet.send/set-recipient %])}}
        (if (ethereum/address? recipient)
-         (if (-> recipient
-                 ethereum/address->checksum
-                 eip55/valid-address-checksum?)
-           {:db       (assoc-in db [:wallet :send-transaction :to] recipient)
-            :dispatch [:navigate-back]}
-           {:ui/show-error (i18n/label :t/wallet-invalid-address-checksum {:data recipient})})
+         (let [checksum (eip55/address->checksum recipient)]
+           (if (eip55/valid-address-checksum? checksum)
+             {:db       (assoc-in db [:wallet :send-transaction :to] checksum)
+              :dispatch [:navigate-back]}
+             {:ui/show-error (i18n/label :t/wallet-invalid-address-checksum {:data recipient})}))
          {:ui/show-error (i18n/label :t/wallet-invalid-address {:data recipient})})))))
 
 (handlers/register-handler-fx
@@ -105,8 +101,8 @@
          new-amount                             (:value details)
          new-gas                                (:gas details)
          symbol-changed?                        (and old-symbol new-symbol (not= old-symbol new-symbol))]
-     (cond-> {:db         db
-              :dispatch   [:navigate-back]}
+     (cond-> {:db db}
+       (not= :deep-link origin) (assoc :dispatch [:navigate-back]) ;; Only navigate-back when called from within wallet
        (and address valid-network?) (update :db #(fill-request-details % details false))
        symbol-changed? (changed-asset old-symbol new-symbol)
        (and old-amount new-amount (not= old-amount new-amount)) (changed-amount-warning old-amount new-amount)

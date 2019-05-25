@@ -41,7 +41,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(5384)
-    @marks.high
+    @marks.critical
     def test_open_transaction_on_etherscan(self):
         user = wallet_users['A']
         sign_in_view = SignInView(self.driver)

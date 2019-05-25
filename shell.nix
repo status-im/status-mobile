@@ -4,38 +4,49 @@ with pkgs;
 
 let
   projectDeps = import ./default.nix { inherit target-os; };
-  targetMobile = {
-    "android" = true;
-    "ios" = true;
-    "all" = true;
-  }.${target-os} or false;
+  platform = callPackage ./nix/platform.nix { inherit target-os; };
+  useFastlanePkg = (platform.targetAndroid && !stdenv'.isDarwin);
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
-  _stdenv = stdenvNoCC;
-  _mkShell = mkShell.override { stdenv = _stdenv; };
+  stdenv' = stdenvNoCC;
+  mkShell' = mkShell.override { stdenv = stdenv'; };
+  fastlane' = callPackage ./fastlane {
+    bundlerEnv = _: pkgs.bundlerEnv { 
+      name = "fastlane-gems";
+      gemdir = ./fastlane;
+    };
+  };
 
-in _mkShell {
+in mkShell' {
   buildInputs = [
     # utilities
     bash
     curl
+    file
     git
+    gnumake
     jq
     ncurses
     lsof # used in scripts/start-react-native.sh
     ps # used in scripts/start-react-native.sh
     unzip
     wget
-  ] ++ lib.optionals targetMobile [ bundler ruby ]; # bundler/ruby used for fastlane
+  ] ++
+  (if useFastlanePkg then [ fastlane' ] else lib.optionals platform.targetMobile [ bundler ruby ]); # bundler/ruby used for fastlane on macOS
   inputsFrom = [ projectDeps ];
-  shellHook =
-    ''
-      set -e
-    '' +
-    projectDeps.shellHook +
-    ''
-      if [ -n "$ANDROID_SDK_ROOT" ] && [ ! -d "$ANDROID_SDK_ROOT" ]; then
-        ./scripts/setup # we assume that if the Android SDK dir does not exist, setup script needs to be run
-      fi
-      set +e
-    '';
+  TARGET_OS = target-os;
+  shellHook = ''
+    set -e
+
+    STATUS_REACT_HOME=$(git rev-parse --show-toplevel)
+    export PATH=$STATUS_REACT_HOME/node_modules/.bin:$PATH
+
+    ${projectDeps.shellHook}
+    ${lib.optionalString useFastlanePkg fastlane'.shellHook}
+
+    if [ "$IN_NIX_SHELL" != 'pure' ] && [ ! -f $STATUS_REACT_HOME/.ran-setup ]; then
+      $STATUS_REACT_HOME/scripts/setup
+      touch $STATUS_REACT_HOME/.ran-setup
+    fi
+    set +e
+  '';
 }

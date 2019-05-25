@@ -1,12 +1,11 @@
 (ns status-im.chat.models.loading
-  (:require [clojure.set :as set]
-            [status-im.accounts.db :as accounts.db]
+  (:require [status-im.accounts.db :as accounts.db]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.models :as chat-model]
-            [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.utils.datetime :as time]
             [status-im.utils.fx :as fx]
-            [status-im.utils.priority-map :refer [empty-message-map]]))
+            [status-im.utils.priority-map :refer [empty-message-map]]
+            [status-im.mailserver.core :as mailserver]))
 
 (def index-messages (partial into empty-message-map
                              (map (juxt :message-id identity))))
@@ -63,7 +62,7 @@
 
 (fx/defn initialize-chats
   "Initialize persisted chats on startup"
-  [{:keys [db default-dapps get-all-stored-chats] :as cofx}
+  [{:keys [db get-all-stored-chats] :as cofx}
    {:keys [from to] :or {from 0 to nil}}]
   (let [old-chats (:chats db)
         chats (reduce (fn [acc {:keys [chat-id] :as chat}]
@@ -76,9 +75,7 @@
                       (get-all-stored-chats from to))
         chats (merge old-chats chats)]
     (fx/merge cofx
-              {:db (assoc db
-                          :chats chats
-                          :contacts/dapps default-dapps)}
+              {:db (assoc db :chats chats)}
               (commands/load-commands commands/register))))
 
 (defn load-more-messages
@@ -116,5 +113,6 @@
                 (chat-model/update-chats-unviewed-messages-count
                  {:chat-id                          current-chat-id
                   :new-loaded-unviewed-messages-ids loaded-unviewed-messages})
+                (mailserver/load-gaps current-chat-id)
                 (group-chat-messages current-chat-id new-messages)
                 (chat-model/mark-messages-seen current-chat-id)))))

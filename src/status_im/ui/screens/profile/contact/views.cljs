@@ -7,7 +7,8 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.profile.components.styles :as profile.components.styles]
             [status-im.ui.screens.profile.components.views :as profile.components]
-            [status-im.ui.screens.profile.contact.styles :as styles])
+            [status-im.ui.screens.profile.contact.styles :as styles]
+            [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn profile-contact-toolbar []
@@ -32,11 +33,12 @@
            {:label               (i18n/label :t/send-transaction)
             :icon                :main-icons/send
             :action              #(re-frame/dispatch [:profile/send-transaction public-key])
-            :accessibility-label :send-transaction-button}
-           {:label               (i18n/label :t/share-profile-link)
-            :icon                :main-icons/share
-            :action              #(re-frame/dispatch [:profile/share-profile-link public-key])
-            :accessibility-label :share-profile-link}]))
+            :accessibility-label :send-transaction-button}]
+          (when-not platform/desktop?
+            [{:label               (i18n/label :t/share-profile-link)
+              :icon                :main-icons/share
+              :action              #(re-frame/dispatch [:profile/share-profile-link public-key])
+              :accessibility-label :share-profile-link}])))
 
 (defn profile-info-item [{:keys [label value options accessibility-label]}]
   [react/view styles/profile-info-item
@@ -90,6 +92,7 @@
        {:container-style        styles/action-container
         :action-style           styles/action
         :action-label-style     styles/action-label
+        :action-subtext-style   styles/action-subtext
         :action-separator-style styles/action-separator
         :icon-opts              styles/action-icon-opts}]
       [react/view {:style {:height 16}}]

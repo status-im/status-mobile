@@ -1,43 +1,47 @@
 (ns status-im.chat.commands.impl.transactions
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
-            [reagent.core :as reagent]
             [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.chat.commands.impl.transactions.styles
+             :as
+             transactions-styles]
             [status-im.chat.commands.protocol :as protocol]
-            [status-im.chat.commands.impl.transactions.styles :as transactions-styles]
-            [status-im.data-store.messages :as messages-store]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.animation :as animation]
-            [status-im.ui.components.svgimage :as svgimage]
-            [status-im.i18n :as i18n]
             [status-im.contact.db :as db.contact]
-            [status-im.constants :as constants]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.data-store.messages :as messages-store]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.tokens :as tokens]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.animation :as animation]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.svgimage :as svgimage]
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.ui.screens.wallet.choose-recipient.events
+             :as
+             choose-recipient.events]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]
-            [status-im.ui.screens.wallet.db :as wallet.db]
-            [status-im.ui.screens.wallet.choose-recipient.events :as choose-recipient.events]
-            [status-im.ui.screens.currency-settings.subs :as currency-settings.subs]
-            [status-im.models.transactions :as wallet.transactions]
-            [status-im.ui.screens.navigation :as navigation]
-            status-im.chat.commands.impl.transactions.subs
-            [status-im.ui.screens.wallet.utils :as wallet.utils]))
+            [status-im.wallet.db :as wallet.db])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 ;; common `send/request` functionality
 
-(defn- render-asset [{:keys [name symbol amount decimals] :as asset}]
+(defn- render-asset [{:keys [name symbol amount decimals icon color] :as asset}]
   [react/touchable-highlight
    {:on-press #(re-frame/dispatch [:chat.ui/set-command-parameter (wallet.utils/display-symbol asset)])}
    [react/view transactions-styles/asset-container
     [react/view transactions-styles/asset-main
-     [react/image {:source (-> asset :icon :source)
-                   :style  transactions-styles/asset-icon}]
+     (if icon
+       [react/image {:source (:source icon)
+                     :style  transactions-styles/asset-icon}]
+       [react/view {:style transactions-styles/asset-icon}
+        [chat-icon/custom-icon-view-list name color 30]])
      [react/text (wallet.utils/display-symbol asset)]
      [react/text {:style transactions-styles/asset-name} name]]
     ;;TODO(goranjovic) : temporarily disabled to fix https://github.com/status-im/status-react/issues/4963
@@ -165,7 +169,9 @@
 
           (or (js/isNaN amount)
               (> (count portions) 2)
-              (re-matches #".+(\.|,)$" amount-string))
+              (re-matches #".+(\.|,)$" amount-string)
+              ;; check if non-decimal number
+              (re-matches #"0[\dbxo][\d\.]*" amount-string))
           {:title       (i18n/label :t/send-request-amount)
            :description (i18n/label :t/send-request-amount-invalid-number)}
 
@@ -177,19 +183,22 @@
 ;; `/send` command
 
 (defview send-status [tx-hash outgoing]
-  (letsubs [confirmed? [:chats/transaction-confirmed? tx-hash]
-            tx-exists? [:chats/wallet-transaction-exists? tx-hash]]
-    [react/touchable-highlight {:on-press #(when tx-exists?
-                                             (re-frame/dispatch [:show-transaction-details tx-hash]))}
+  (letsubs [{:keys [exists? confirmed?]} [:chats/transaction-status tx-hash]]
+    [react/touchable-highlight {:on-press #(when exists?
+                                             (re-frame/dispatch [:wallet.ui/show-transaction-details tx-hash]))}
      [react/view transactions-styles/command-send-status-container
-      [vector-icons/icon (if confirmed? :tiny-icons/tiny-check :tiny-icons/tiny-pending)
-       {:color           (if outgoing colors/blue-light colors/blue)
+      [vector-icons/icon (if confirmed?
+                           :tiny-icons/tiny-check
+                           :tiny-icons/tiny-pending)
+       {:color           (if outgoing
+                           colors/blue-light
+                           colors/blue)
         :container-style (transactions-styles/command-send-status-icon outgoing)}]
       [react/view
        [react/text {:style (transactions-styles/command-send-status-text outgoing)}
         (i18n/label (cond
                       confirmed? :status-confirmed
-                      tx-exists? :status-pending
+                      exists? :status-pending
                       :else :status-tx-not-found))]]]]))
 
 (defn transaction-status [{:keys [tx-hash outgoing]}]
@@ -250,9 +259,12 @@
                (tokens/asset-for all-tokens (keyword network) (keyword asset)))]
     (assoc parameters :coin coin)))
 
+(defn get-currency [db]
+  (or (get-in db [:account/account :settings :wallet :currency]) :usd))
+
 (defn- inject-price-info [{:keys [amount asset] :as parameters} {:keys [db]}]
   (let [currency (-> db
-                     currency-settings.subs/get-currency
+                     get-currency
                      name
                      string/upper-case)]
     (assoc parameters
@@ -308,6 +320,7 @@
                                       :wallet-send-modal-stack-with-onboarding)]
       (fx/merge cofx
                 {:db (-> db
+                         (assoc-in [:navigation/screen-params :wallet-send-modal-stack :modal?] true)
                          (update-in [:wallet :send-transaction]
                                     assoc
                                     :amount (money/formatted->internal value symbol decimals)
@@ -320,9 +333,9 @@
                  ;; TODO(janherich) - refactor wallet send events, updating gas price
                  ;; is generic thing which shouldn't be defined in wallet.send, then
                  ;; we can include the utility helper without running into circ-dep problem
-                 :update-gas-price {:web3          (:web3 db)
-                                    :success-event :wallet/update-gas-price-success
-                                    :edit?         false}}
+                 :wallet/update-gas-price
+                 {:success-event :wallet/update-gas-price-success
+                  :edit?         false}}
                 (navigation/navigate-to-cofx next-view-id {}))))
   protocol/EnhancedParameters
   (enhance-send-parameters [_ parameters cofx]

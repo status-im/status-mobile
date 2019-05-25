@@ -1,3 +1,4 @@
+nix = load 'ci/nix.groovy'
 utils = load 'ci/utils.groovy'
 
 def bundle() {
@@ -24,7 +25,14 @@ def bundle() {
         passwordVariable: 'STATUS_RELEASE_KEY_PASSWORD'
       )
     ]) {
-      utils.nix_sh "./gradlew assemble${target.capitalize()} ${gradleOpt}"
+      nix.shell(
+        "./gradlew assemble${target.capitalize()} ${gradleOpt}",
+        keep: [
+          'REALM_DISABLE_ANALYTICS',
+          'STATUS_RELEASE_STORE_FILE', 'STATUS_RELEASE_STORE_PASSWORD',
+          'STATUS_RELEASE_KEY_ALIAS', 'STATUS_RELEASE_KEY_PASSWORD'
+        ]
+      )
     }
   }
   sh 'find android/app/build/outputs/apk'
@@ -34,7 +42,6 @@ def bundle() {
   sh "cp ${outApk} ${pkg}"
   /* necessary for Fastlane */
   env.APK_PATH = pkg
-  env.DIAWI_APK = pkg
   return pkg
 }
 
@@ -42,7 +49,10 @@ def uploadToPlayStore(type = 'nightly') {
   withCredentials([
     string(credentialsId: "SUPPLY_JSON_KEY_DATA", variable: 'GOOGLE_PLAY_JSON_KEY'),
   ]) {
-    utils.nix_sh "bundle exec fastlane android ${type}"
+    nix.shell(
+      "fastlane android ${type}",
+      keep: ['FASTLANE_DISABLE_COLORS', 'GOOGLE_PLAY_JSON_KEY']
+    )
   }
 }
 
@@ -58,7 +68,13 @@ def uploadToSauceLabs() {
     string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
     string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
   ]) {
-    utils.nix_sh 'bundle exec fastlane android saucelabs'
+    nix.shell(
+      'fastlane android saucelabs',
+      keep: [
+        'FASTLANE_DISABLE_COLORS', 'APK_PATH',
+        'SAUCE_ACCESS_KEY', 'SAUCE_USERNAME', 'SAUCE_LABS_NAME'
+      ]
+    )
   }
   return env.SAUCE_LABS_NAME
 }
@@ -68,7 +84,10 @@ def uploadToDiawi() {
   withCredentials([
     string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
   ]) {
-    utils.nix_sh 'bundle exec fastlane android upload_diawi'
+    nix.shell(
+      'fastlane android upload_diawi',
+      keep: ['FASTLANE_DISABLE_COLORS', 'APK_PATH', 'DIAWI_TOKEN']
+    )
   }
   diawiUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
   return diawiUrl

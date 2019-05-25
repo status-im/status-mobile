@@ -111,7 +111,7 @@
 
 (defn verify-pin
   [{:keys [pin pairing]}]
-  (when (and pairing pin)
+  (when (and pairing (not-empty pin))
     (.. keycard
         (verifyPin pairing pin)
         (then #(re-frame/dispatch [:hardwallet.callback/on-verify-pin-success %]))
@@ -140,6 +140,20 @@
       (then #(re-frame/dispatch [:hardwallet.callback/on-delete-success %]))
       (catch #(re-frame/dispatch [:hardwallet.callback/on-delete-error (error-object->map %)]))))
 
+(defn remove-key
+  [{:keys [pin pairing]}]
+  (.. keycard
+      (removeKey pairing pin)
+      (then #(re-frame/dispatch [:hardwallet.callback/on-remove-key-success %]))
+      (catch #(re-frame/dispatch [:hardwallet.callback/on-remove-key-error (error-object->map %)]))))
+
+(defn remove-key-with-unpair
+  [{:keys [pin pairing]}]
+  (.. keycard
+      (removeKeyWithUnpair pairing pin)
+      (then #(re-frame/dispatch [:hardwallet.callback/on-remove-key-success %]))
+      (catch #(re-frame/dispatch [:hardwallet.callback/on-remove-key-error (error-object->map %)]))))
+
 (defn unpair-and-delete
   [{:keys [pin pairing]}]
   (when (and pairing pin)
@@ -149,11 +163,12 @@
         (catch #(re-frame/dispatch [:hardwallet.callback/on-delete-error (error-object->map %)])))))
 
 (defn get-keys
-  [{:keys [pairing pin]}]
-  (.. keycard
-      (getKeys pairing pin)
-      (then #(re-frame/dispatch [:hardwallet.callback/on-get-keys-success %]))
-      (catch #(re-frame/dispatch [:hardwallet.callback/on-get-keys-error (error-object->map %)]))))
+  [{:keys [pairing pin on-success]}]
+  (when (and pairing (not-empty pin))
+    (.. keycard
+        (getKeys pairing pin)
+        (then #(re-frame/dispatch [(or on-success :hardwallet.callback/on-get-keys-success) %]))
+        (catch #(re-frame/dispatch [:hardwallet.callback/on-get-keys-error (error-object->map %)])))))
 
 (defn sign
   [{:keys [pairing pin hash]}]

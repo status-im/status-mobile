@@ -1,4 +1,4 @@
-.PHONY: clean clean-nix react-native test release _list
+.PHONY: add-gcroots clean clean-nix react-native-android react-native-ios react-native-desktop test release _list
 
 help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
@@ -12,7 +12,6 @@ RED    := $(shell tput -Txterm setaf 1)
 WHITE  := $(shell tput -Txterm setaf 7)
 YELLOW := $(shell tput -Txterm setaf 3)
 RESET  := $(shell tput -Txterm sgr0)
-BOLD   := $(shell tput bold)
 HELP_FUN = \
 		   %help; \
 		   while(<>) { push @{$$help{$$2 // 'options'}}, [$$1, $$3] if /^([a-zA-Z\-]+)\s*:.*\#\#(?:@([a-zA-Z\-]+))?\s(.*)$$/ }; \
@@ -30,8 +29,6 @@ HOST_OS := $(shell uname | tr '[:upper:]' '[:lower:]')
 export NIX_CONF_DIR = $(PWD)/nix
 
 export REACT_SERVER_PORT ?= 5001 # any value different from default 5000 will work; this has to be specified for both the Node.JS server process and the Qt process
-export STATUS_NODE_PORT ?= 12345 # no need to specify this if just running dev instance alongside release build
-export STATUS_DATA_DIR ?= ~/status-files/data1 # this is where Realm data files, Geth node data, and logs will reside; also not strictly needed for dev alongside release
 
 # WARNING: This has to be located right before the targets
 ifdef IN_NIX_SHELL
@@ -48,7 +45,10 @@ clean: ##@prepare Remove all output folders
 
 clean-nix: SHELL := /bin/sh
 clean-nix: ##@prepare Remove complete nix setup
-	sudo rm -rf /nix ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status
+	sudo rm -rf /nix ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
+
+add-gcroots: ##@prepare Add Nix GC roots to avoid status-react expressions being garbage collected
+	scripts/add-gcroots.sh
 
 shell: ##@prepare Enter into a pre-configured shell
 ifndef IN_NIX_SHELL
@@ -82,9 +82,9 @@ release-desktop: ##@build build release for desktop release
 release-windows-desktop: export TARGET_OS ?= windows
 release-windows-desktop: ##@build build release for desktop release
 	@$(MAKE) prod-build-desktop && \
-	TARGET_SYSTEM_NAME=Windows scripts/build-desktop.sh
+	scripts/build-desktop.sh
 
-release-desktop: export TARGET_OS ?= $(HOST_OS)
+prod-build: export TARGET_OS ?= all
 prod-build:
 	scripts/prepare-for-platform.sh android && \
 	scripts/prepare-for-platform.sh ios && \
@@ -92,18 +92,15 @@ prod-build:
 
 prod-build-android: export TARGET_OS ?= android
 prod-build-android:
-	scripts/prepare-for-platform.sh android && \
 	lein prod-build-android
 
 prod-build-ios: export TARGET_OS ?= ios
 prod-build-ios:
-	scripts/prepare-for-platform.sh ios && \
 	lein prod-build-ios
 
-prod-build-android: export TARGET_OS ?= android
+prod-build-desktop: export TARGET_OS ?= $(HOST_OS)
 prod-build-desktop:
 	git clean -qdxf -f ./index.desktop.js desktop/ && \
-	scripts/prepare-for-platform.sh desktop && \
 	lein prod-build-desktop
 
 #--------------
@@ -113,7 +110,6 @@ prod-build-desktop:
 _watch-%: ##@watch Start development for device
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
 	$(eval DEVICE := $(word 3, $(subst -, , $@)))
-	scripts/prepare-for-platform.sh $(SYSTEM)
 	clj -R:dev build.clj watch --platform $(SYSTEM) --$(SYSTEM)-device $(DEVICE)
 
 watch-ios-real: export TARGET_OS ?= ios
@@ -133,12 +129,10 @@ watch-android-genymotion: _watch-android-genymotion ##@watch Start development f
 
 watch-desktop: export TARGET_OS ?= $(HOST_OS)
 watch-desktop: ##@watch Start development for Desktop
-	@scripts/prepare-for-platform.sh desktop && \
 	clj -R:dev build.clj watch --platform desktop
 
 desktop-server: export TARGET_OS ?= $(HOST_OS)
 desktop-server:
-	@scripts/prepare-for-platform.sh desktop && \
 	node ubuntu-server.js
 
 #--------------
@@ -146,13 +140,11 @@ desktop-server:
 # -------------
 _run-%:
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
-	@scripts/prepare-for-platform.sh $(SYSTEM) && \
-	react-native run-$(SYSTEM)
+	npx react-native run-$(SYSTEM)
 
 run-android: export TARGET_OS ?= android
 run-android: ##@run Run Android build
-	@scripts/prepare-for-platform.sh android && \
-	react-native run-android --appIdSuffix debug
+	npx react-native run-android --appIdSuffix debug
 
 run-desktop: export TARGET_OS ?= $(HOST_OS)
 run-desktop: _run-desktop ##@run Run Desktop build
@@ -161,11 +153,9 @@ SIMULATOR=
 run-ios: export TARGET_OS ?= ios
 run-ios: ##@run Run iOS build
 ifneq ("$(SIMULATOR)", "")
-	@scripts/prepare-for-platform.sh ios && \
-	react-native run-ios --simulator="$(SIMULATOR)"
+	npx react-native run-ios --simulator="$(SIMULATOR)"
 else
-	@scripts/prepare-for-platform.sh ios && \
-	react-native run-ios
+	npx react-native run-ios
 endif
 
 #--------------
@@ -181,8 +171,16 @@ test-auto: ##@test Run tests in interactive (auto) mode in NodeJS
 #--------------
 # Other
 #--------------
-run-desktop: export TARGET_OS ?= $(HOST_OS)
-react-native: ##@other Start react native packager
+react-native-desktop: export TARGET_OS ?= $(HOST_OS)
+react-native-desktop: ##@other Start react native packager
+	@scripts/start-react-native.sh
+
+react-native-android: export TARGET_OS ?= android
+react-native-android: ##@other Start react native packager for Android client
+	@scripts/start-react-native.sh
+
+react-native-ios: export TARGET_OS ?= ios
+react-native-ios: ##@other Start react native packager for Android client
 	@scripts/start-react-native.sh
 
 geth-connect: export TARGET_OS ?= android
@@ -214,7 +212,6 @@ _unknown-startdev-target-%:
 _startdev-%:
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
 	$(eval DEVICE := $(word 3, $(subst -, , $@)))
-	scripts/prepare-for-platform.sh ${SYSTEM} || exit 1
 	@ if [ -z "$(DEVICE)" ]; then \
 		$(MAKE) watch-$(SYSTEM) || $(MAKE) _unknown-startdev-target-$@; \
 	else \

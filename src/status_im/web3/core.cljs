@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.utils.fx :as fx]
             [status-im.js-dependencies :as dependencies]
-            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.ethereum.core :as ethereum]
             [status-im.node.core :as node]
             [status-im.protocol.core :as protocol]
             [taoensso.timbre :as log]
@@ -38,13 +38,6 @@
      (.-eth web3)
      (fn [error sync]
        (re-frame/dispatch [:web3.callback/get-syncing-success error sync])))))
-
-(defn get-block-number-fx [web3]
-  (when web3
-    (.getBlockNumber
-     (.-eth web3)
-     (fn [error block-number]
-       (re-frame/dispatch [:web3.callback/get-block-number error block-number])))))
 
 (defn set-default-account
   [web3 address]

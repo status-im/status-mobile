@@ -1,10 +1,9 @@
-{ config, stdenv, pkgs }:
+{ config, stdenv, callPackage,
+  androidenv, openjdk, gradle }:
 
-with pkgs;
 with stdenv;
 
 let
-  gradle = gradle_4_10;
   androidComposition = androidenv.composeAndroidPackages {
     toolsVersion = "26.1.1";
     platformToolsVersion = "28.0.2";
@@ -24,6 +23,7 @@ let
     useGoogleTVAddOns = false;
     includeExtras = [ "extras;android;m2repository" "extras;google;m2repository" ];
   };
+  licensedAndroidEnv = callPackage ./licensed-android-sdk.nix { inherit androidComposition; };
 
 in
   {
@@ -32,32 +32,13 @@ in
     buildInputs = [ openjdk gradle ];
     shellHook = ''
       export JAVA_HOME="${openjdk}"
-      export ANDROID_HOME=~/.status/Android/Sdk
+      export ANDROID_HOME="${licensedAndroidEnv}"
       export ANDROID_SDK_ROOT="$ANDROID_HOME"
       export ANDROID_NDK_ROOT="${androidComposition.androidsdk}/libexec/android-sdk/ndk-bundle"
       export ANDROID_NDK_HOME="$ANDROID_NDK_ROOT"
       export ANDROID_NDK="$ANDROID_NDK_ROOT"
-      export PATH="$ANDROID_HOME/bin/$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools:$PATH"
-    '' +
-    ## We need to make a writeable copy of the Android SDK so that we can accept the license (which causes files to be written to the SDK folders)
-    ## since the nix store is immutable by nature, we can't license the SDK from there.
-    ''
-      if ! [ -d $ANDROID_HOME ]; then
-        echo "=> pulling the Android SDK out of the nix store and into a writeable directory"
+      export PATH="$ANDROID_HOME/bin:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools:$PATH"
 
-        mkdir -p $ANDROID_HOME
-        cp -rL ${androidComposition.androidsdk}/bin $ANDROID_HOME
-        cp -rL ${androidComposition.androidsdk}/libexec/android-sdk/* $ANDROID_HOME/
-        chmod -R 755 $ANDROID_HOME/
-    '' + lib.optionalString config.android_sdk.accept_license ''
-        echo "=> accepting Android SDK licenses"
-        pushd $ANDROID_HOME
-          yes | $PWD/bin/sdkmanager --licenses || if [ $? -ne '141' ]; then exit $?; fi;  #Captures SIGPIPE 141 error but still allow repeating "y" to accept all licenses
-        popd
-    '' +
-    ''
-        echo "=> generating keystore"
-        $PWD/scripts/generate-keystore.sh
-      fi
+      $STATUS_REACT_HOME/scripts/generate-keystore.sh
     '';
   }

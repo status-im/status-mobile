@@ -11,7 +11,7 @@ if(NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
   message(FATAL_ERROR "Can only cross-compile to Windows from Linux")
 endif()
 
-set(USE_QTWEBKIT ON)
+set(USE_QTWEBKIT OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/toolchain/")
 include(conanbuildinfo)

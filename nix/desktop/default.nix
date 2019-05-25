@@ -1,25 +1,24 @@
-{ stdenv, pkgs, target-os }:
+{ stdenv, pkgs, callPackage, target-os,
+  cmake, extra-cmake-modules, file, status-go,
+  darwin, nodejs }:
 
-with pkgs;
 with stdenv;
 
 let
-  targetLinux = {
-    "linux" = true;
-    "all" = isLinux;
-  }.${target-os} or false;
-  targetDarwin = {
-    "macos" = true;
-    "darwin" = true;
-    "all" = isDarwin;
-  }.${target-os} or false;
-  targetWindows = {
-    "windows" = true;
-    "all" = isLinux;
-  }.${target-os} or false;
-  linuxPlatform = callPackage ./linux { };
-  darwinPlatform = callPackage ./macos { };
+  platform = callPackage ../platform.nix { inherit target-os; };
+  linuxPlatform = callPackage ./linux { inherit status-go; };
+  darwinPlatform = callPackage ./macos { inherit status-go darwin; };
   windowsPlatform = callPackage ./windows { };
+  snoreNotifySources = callPackage ./cmake/snorenotify { };
+  qtkeychainSources = callPackage ./cmake/qtkeychain { };
+  selectedSources =
+    lib.optional platform.targetLinux linuxPlatform ++
+    lib.optional platform.targetDarwin darwinPlatform ++
+    lib.optional platform.targetWindows windowsPlatform;
+  nodeInputs = import ./realm-node {
+    # The remaining dependencies come from Nixpkgs
+    inherit pkgs nodejs;
+  };
 
 in
   {
@@ -27,18 +26,10 @@ in
       cmake
       extra-cmake-modules
       file
-    ] ++ lib.optionals targetLinux linuxPlatform.buildInputs
-      ++ lib.optionals targetDarwin darwinPlatform.buildInputs
-      ++ lib.optionals targetWindows windowsPlatform.buildInputs
-      ++ lib.optional (! targetWindows) qt5.full;
-    shellHook = (if target-os == "windows" then ''
-      unset QT_PATH
-    '' else ''
-      export QT_PATH="${qt5.full}"
-      export QT_BASEBIN_PATH="${qt5.qtbase.bin}"
-      export PATH="${stdenv.lib.makeBinPath [ qt5.full ]}:$PATH"
-    '') +
-    lib.optionalString targetLinux linuxPlatform.shellHook +
-    lib.optionalString targetDarwin darwinPlatform.shellHook +
-    lib.optionalString targetWindows windowsPlatform.shellHook;
+      snoreNotifySources
+      qtkeychainSources
+    ] ++ lib.catAttrs "buildInputs" selectedSources
+      ++ (builtins.attrValues nodeInputs);
+
+    shellHook = lib.concatStrings (lib.catAttrs "shellHook" (selectedSources ++ [ snoreNotifySources qtkeychainSources ]));
   }

@@ -16,3 +16,6 @@
        [:properties :gap-to]
        {:type     :int
         :optional true})))
+
+(def v3
+  (update v2 :properties dissoc :gap-to :gap-from))

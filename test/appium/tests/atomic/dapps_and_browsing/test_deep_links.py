@@ -34,9 +34,8 @@ class TestDeepLinks(SingleDeviceTestCase):
         sign_in_view.open_weblink_and_login(deep_link)
         chat_view = sign_in_view.get_chat_view()
         for text in basic_user['username'], 'Add to contacts', 'Send transaction':
-            if not chat_view.element_by_text(text).scroll_to_element():
+            if not chat_view.element_by_text(text).scroll_to_element(10):
                 pytest.fail("User profile screen is not opened")
-
 
     @marks.testrail_id(5442)
     @marks.medium
@@ -44,7 +43,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         self.driver.close_app()
-        dapp_name = 'simpledapp.eth'
+        dapp_name = 'status-im.github.io/dapp'
         dapp_deep_link = 'https://get.status.im/browse/%s' % dapp_name
         sign_in_view.open_weblink_and_login(dapp_deep_link)
         web_view = sign_in_view.get_chat_view()
@@ -64,7 +63,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         sign_in_view.open_weblink_and_login(deep_link)
         chat_view = sign_in_view.get_chat_view()
         for text in basic_user['username'], 'Share my profile', 'Contacts':
-            if not chat_view.element_by_text(text).scroll_to_element():
+            if not chat_view.element_by_text(text).scroll_to_element(12):
                 pytest.fail("Own profile screen is not opened!")
 
     @marks.testrail_id(5781)

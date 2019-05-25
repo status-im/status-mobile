@@ -1,19 +1,17 @@
 (ns status-im.accounts.logout.core
   (:require [re-frame.core :as re-frame]
+            [status-im.chaos-mode.core :as chaos-mode]
             [status-im.i18n :as i18n]
-            [status-im.transport.core :as transport]
-            [status-im.utils.fx :as fx]
-            [status-im.models.transactions :as transactions]
-            [status-im.node.core :as node]
             [status-im.init.core :as init]
-            [status-im.chaos-mode.core :as chaos-mode]))
+            [status-im.node.core :as node]
+            [status-im.transport.core :as transport]
+            [status-im.utils.fx :as fx]))
 
 (fx/defn logout
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:keychain/clear-user-password (get-in db [:account/account :address])
              :dev-server/stop              nil}
-            (transactions/stop-sync)
             (transport/stop-whisper
              #(re-frame/dispatch [:accounts.logout/filters-removed]))
             (chaos-mode/stop-checking)))

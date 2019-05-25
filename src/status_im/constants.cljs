@@ -1,7 +1,6 @@
 (ns status-im.constants
-  (:require [status-im.i18n :as i18n]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.types :as types]
+  (:require [status-im.ethereum.core :as ethereum]
+            [status-im.i18n :as i18n]
             [status-im.utils.config :as config]))
 
 (def ethereum-rpc-url "http://localhost:8545")
@@ -29,13 +28,6 @@
 (def default-network config/default-network)
 
 (def system "system")
-
-(def default-wallet-transactions
-  {:filters
-   {:type [{:id :inbound   :label (i18n/label :t/incoming)  :checked? true}
-           {:id :outbound  :label (i18n/label :t/outgoing)  :checked? true}
-           {:id :pending   :label (i18n/label :t/pending)   :checked? true}
-           {:id :failed    :label (i18n/label :t/failed)    :checked? true}]}})
 
 (def mainnet-networks
   {"mainnet"     {:id     "mainnet",
@@ -109,11 +101,8 @@
 
 (defn default-account-settings []
   {:web3-opt-in? true
-   :wallet       {:visible-tokens {:testnet #{:STT :HND}
-                                   :mainnet #{:SNT}
-                                   :rinkeby #{:MOKSHA :KDO}
-                                   :xdai    #{}
-                                   :poa     #{}}}})
+   :preview-privacy? false
+   :wallet       {:visible-tokens {}}})
 
 (def currencies
   {:aed {:id :aed :code "AED" :display-name (i18n/label :t/currency-display-name-aed) :symbol "د.إ"}
@@ -245,7 +234,7 @@
 (def regx-italic #"~[^~]+~")
 (def regx-backquote #"`[^`]+`")
 (def regx-universal-link #"((^https?://get.status.im/)|(^status-im://))[\x00-\x7F]+$")
-(def regx-deep-link #"(^status-im://)[\x00-\x7F]+$")
+(def regx-deep-link #"((^ethereum:.*)|(^status-im://[\x00-\x7F]+$))")
 
 (def ^:const lines-collapse-threshold 20)
 (def ^:const chars-collapse-threshold 600)

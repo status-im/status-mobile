@@ -8,15 +8,20 @@
             [status-im.accounts.update.core :as accounts.update]
             [status-im.bootnodes.core :as bootnodes]
             [status-im.browser.core :as browser]
-            [status-im.node.core :as node]
             [status-im.browser.permissions :as browser.permissions]
+            [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.input :as commands.input]
+            [status-im.chat.db :as chat.db]
             [status-im.chat.models :as chat]
             [status-im.chat.models.input :as chat.input]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.chat.models.message :as chat.message]
-            [status-im.contact.core :as contact]
+            [status-im.contact-code.core :as contact-code]
             [status-im.contact-recovery.core :as contact-recovery]
+            [status-im.contact.block :as contact.block]
+            [status-im.contact.core :as contact]
+            [status-im.ethereum.subscriptions :as ethereum.subscriptions]
+            [status-im.ethereum.transactions.core :as ethereum.transactions]
             [status-im.extensions.core :as extensions]
             [status-im.extensions.registry :as extensions.registry]
             [status-im.fleet.core :as fleet]
@@ -24,38 +29,39 @@
             [status-im.hardwallet.core :as hardwallet]
             [status-im.i18n :as i18n]
             [status-im.init.core :as init]
-            [status-im.utils.logging.core :as logging]
             [status-im.log-level.core :as log-level]
             [status-im.mailserver.core :as mailserver]
             [status-im.network.core :as network]
+            [status-im.node.core :as node]
             [status-im.notifications.core :as notifications]
             [status-im.pairing.core :as pairing]
-            [status-im.contact-code.core :as contact-code]
             [status-im.privacy-policy.core :as privacy-policy]
             [status-im.protocol.core :as protocol]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.search.core :as search]
             [status-im.signals.core :as signals]
-            [status-im.transport.message.core :as transport.message]
-            [status-im.transport.core :as transport]
-            [status-im.ui.screens.currency-settings.models :as currency-settings.models]
-            [status-im.tribute-to-talk.core :as tribute-to-talk]
-            [status-im.node.core :as node]
-            [status-im.web3.core :as web3]
-            [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.handlers :as handlers]
-            [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]
-            [status-im.chat.commands.core :as commands]
-            [status-im.chat.models.loading :as chat-loading]
-            [status-im.node.core :as node]
             [status-im.stickers.core :as stickers]
-            [status-im.utils.config :as config]
+            [status-im.transport.core :as transport]
+            [status-im.transport.message.core :as transport.message]
+            [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.ui.components.react :as react]
+            [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
+            [status-im.ui.screens.currency-settings.models
+             :as
+             currency-settings.models]
+            [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.build :as build]
-            [status-im.chat.db :as chat.db]))
+            [status-im.utils.config :as config]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.logging.core :as logging]
+            [status-im.utils.utils :as utils]
+            [status-im.wallet.core :as wallet]
+            [status-im.wallet.db :as wallet.db]
+            [status-im.web3.core :as web3]
+            [taoensso.timbre :as log]
+            [status-im.wallet.custom-tokens.core :as custom-tokens]))
 
 ;; init module
 
@@ -103,13 +109,12 @@
 (handlers/register-handler-fx
  :init-rest-of-chats
  [(re-frame/inject-cofx :web3/get-web3)
-  (re-frame/inject-cofx :get-default-dapps)
   (re-frame/inject-cofx :data-store/all-chats)]
  (fn [{:keys [db] :as cofx} [_]]
    (log/debug "PERF" :init-rest-of-chats (.now js/Date))
    (fx/merge cofx
              {:db (assoc db :chats/loading? false)}
-             (chat-loading/initialize-chats {:from 10}))))
+             (chat.loading/initialize-chats {:from 10}))))
 
 (defn account-change-success
   [{:keys [db] :as cofx} [_ address nodes]]
@@ -122,7 +127,8 @@
        (accounts.login/login)
        (node/initialize (get-in db [:accounts/login :address])))
      (init/initialize-account address)
-     (chat-loading/initialize-chats {:to 10}))))
+     (mailserver/initialize-ranges)
+     (chat.loading/initialize-chats {:to 10}))))
 
 (handlers/register-handler-fx
  :init.callback/account-change-success
@@ -131,8 +137,8 @@
   (re-frame/inject-cofx :data-store/get-all-installations)
   (re-frame/inject-cofx :data-store/all-browsers)
   (re-frame/inject-cofx :data-store/all-dapp-permissions)
-  (re-frame/inject-cofx :get-default-dapps)
-  (re-frame/inject-cofx :data-store/all-chats)]
+  (re-frame/inject-cofx :data-store/all-chats)
+  (re-frame/inject-cofx :data-store/all-chat-requests-ranges)]
  account-change-success)
 
 (handlers/register-handler-fx
@@ -212,6 +218,11 @@
    (accounts/switch-web3-opt-in-mode cofx opt-in)))
 
 (handlers/register-handler-fx
+ :accounts.ui/preview-privacy-mode-switched
+ (fn [cofx [_ private?]]
+   (accounts/switch-preview-privacy-mode cofx private?)))
+
+(handlers/register-handler-fx
  :accounts.ui/wallet-set-up-confirmed
  (fn [cofx [_ modal?]]
    (accounts/confirm-wallet-set-up cofx modal?)))
@@ -240,7 +251,8 @@
   (re-frame/inject-cofx :accounts.create/get-signing-phrase)
   (re-frame/inject-cofx :accounts.create/get-status)]
  (fn [cofx [_ result password]]
-   (accounts.create/on-account-created cofx result password {:seed-backed-up? false})))
+   (accounts.create/on-account-created cofx result password {:seed-backed-up? false
+                                                             :new-account?    true})))
 
 (handlers/register-handler-fx
  :accounts.create.ui/create-new-account-button-pressed
@@ -682,11 +694,6 @@
    (qr-scanner/scan-qr-code cofx identifier (merge {:handler handler} opts))))
 
 (handlers/register-handler-fx
- :qr-scanner.ui/qr-code-error-dismissed
- (fn [cofx [_ _]]
-   (qr-scanner/scan-qr-code-after-error-dismiss cofx)))
-
-(handlers/register-handler-fx
  :qr-scanner.callback/scan-qr-code-success
  (fn [cofx [_ context data]]
    (qr-scanner/set-qr-code cofx context data)))
@@ -724,20 +731,56 @@
  :chat.ui/fetch-history-pressed
  (fn [{:keys [now] :as cofx} [_ chat-id]]
    (mailserver/fetch-history cofx chat-id
-                             {:from (- (quot now 1000) (* 24 3600))})))
+                             {:from (- (quot now 1000) mailserver/one-day)})))
 
 (handlers/register-handler-fx
- :chat.ui/fill-the-gap
- (fn [{:keys [db] :as cofx}]
-   (let [mailserver-topics (:mailserver/topics db)
-         chat-id           (:current-chat-id db)
+ :chat.ui/fetch-history-pressed48-60
+ (fn [{:keys [now] :as cofx} [_ chat-id]]
+   (let [now (quot now 1000)]
+     (mailserver/fetch-history cofx chat-id
+                               {:from (- now (* 2.5 mailserver/one-day))
+                                :to   (- now (* 2 mailserver/one-day))}))))
+
+(handlers/register-handler-fx
+ :chat.ui/fetch-history-pressed84-96
+ (fn [{:keys [now] :as cofx} [_ chat-id]]
+   (let [now (quot now 1000)]
+     (mailserver/fetch-history cofx chat-id
+                               {:from (- now (* 4 mailserver/one-day))
+                                :to   (- now (* 3.5 mailserver/one-day))}))))
+
+(handlers/register-handler-fx
+ :chat.ui/fill-gaps
+ (fn [{:keys [db] :as cofx} [_ gap-ids]]
+   (let [chat-id           (:current-chat-id db)
          topic             (chat.db/topic-by-current-chat db)
-         gap               (chat.db/messages-gap mailserver-topics topic)]
+         gaps              (keep
+                            (fn [id]
+                              (get-in db [:mailserver/gaps chat-id id]))
+                            gap-ids)]
      (mailserver/fill-the-gap
       cofx
-      (assoc gap
-             :topic topic
-             :chat-id chat-id)))))
+      {:gaps    gaps
+       :topic   topic
+       :chat-id chat-id}))))
+
+(handlers/register-handler-fx
+ :chat.ui/fetch-more
+ (fn [{:keys [db] :as cofx}]
+   (let [chat-id           (:current-chat-id db)
+
+         {:keys [lowest-request-from]}
+         (get-in db [:mailserver/ranges chat-id])
+
+         topic             (chat.db/topic-by-current-chat db)
+         gaps              [{:id   :first-gap
+                             :to   lowest-request-from
+                             :from (- lowest-request-from mailserver/one-day)}]]
+     (mailserver/fill-the-gap
+      cofx
+      {:gaps    gaps
+       :topic   topic
+       :chat-id chat-id}))))
 
 (handlers/register-handler-fx
  :chat.ui/remove-chat-pressed
@@ -754,8 +797,8 @@
 
 (handlers/register-handler-fx
  :chat.ui/join-time-messages-checked
- (fn [{:keys [db]} [_ chat-id]]
-   {:db (chat/join-time-messages-checked db chat-id)}))
+ (fn [cofx [_ chat-id]]
+   (chat/join-time-messages-checked cofx chat-id)))
 
 (handlers/register-handler-fx
  :chat.ui/show-message-details
@@ -778,7 +821,8 @@
  :chat.ui/load-more-messages
  [(re-frame/inject-cofx :data-store/get-messages)
   (re-frame/inject-cofx :data-store/get-user-statuses)
-  (re-frame/inject-cofx :data-store/get-referenced-messages)]
+  (re-frame/inject-cofx :data-store/get-referenced-messages)
+  (re-frame/inject-cofx :data-store/all-gaps)]
  (fn [cofx _]
    (chat.loading/load-more-messages cofx)))
 
@@ -934,11 +978,6 @@
  :web3.callback/get-syncing-success
  (fn [cofx [_ error sync]]
    (web3/update-syncing-progress cofx error sync)))
-
-(handlers/register-handler-fx
- :web3.callback/get-block-number
- (fn [cofx [_ error block-number]]
-   (node/update-block-number cofx error block-number)))
 
 ;; notifications module
 
@@ -1113,6 +1152,16 @@
    (hardwallet/on-delete-error cofx error)))
 
 (handlers/register-handler-fx
+ :hardwallet.callback/on-remove-key-success
+ (fn [cofx _]
+   (hardwallet/on-remove-key-success cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet.callback/on-remove-key-error
+ (fn [cofx [_ error]]
+   (hardwallet/on-remove-key-error cofx error)))
+
+(handlers/register-handler-fx
  :hardwallet.callback/on-get-keys-success
  (fn [cofx [_ data]]
    (hardwallet/on-get-keys-success cofx data)))
@@ -1185,7 +1234,7 @@
 (handlers/register-handler-fx
  :hardwallet.ui/pair-code-next-button-pressed
  (fn [cofx]
-   (hardwallet/pair cofx)))
+   (hardwallet/pair-code-next-button-pressed cofx)))
 
 (handlers/register-handler-fx
  :hardwallet.ui/recovery-phrase-next-button-pressed
@@ -1272,6 +1321,16 @@
    (hardwallet/pair cofx)))
 
 (handlers/register-handler-fx
+ :hardwallet/verify-pin
+ (fn [cofx _]
+   (hardwallet/verify-pin cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet/change-pin
+ (fn [cofx _]
+   (hardwallet/change-pin cofx)))
+
+(handlers/register-handler-fx
  :hardwallet.ui/success-button-pressed
  (fn [cofx _]
    (hardwallet/success-button-pressed cofx)))
@@ -1282,9 +1341,14 @@
    (hardwallet/update-pin cofx number step)))
 
 (handlers/register-handler-fx
- :hardwallet.ui/navigate-back-button-clicked
+ :hardwallet.ui/enter-pin-navigate-back-button-clicked
  (fn [cofx _]
-   (hardwallet/navigate-back-button-clicked cofx)))
+   (hardwallet/enter-pin-navigate-back-button-clicked cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet.ui/hardwallet-connect-navigate-back-button-clicked
+ (fn [cofx _]
+   (hardwallet/hardwallet-connect-navigate-back-button-clicked cofx)))
 
 (handlers/register-handler-fx
  :hardwallet/process-pin-input
@@ -1301,6 +1365,31 @@
  :hardwallet.ui/card-ready-next-button-pressed
  (fn [cofx _]
    (hardwallet/card-ready-next-button-pressed cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet/proceed-to-generate-mnemonic
+ (fn [cofx _]
+   (hardwallet/proceed-to-generate-mnemonic cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet.ui/import-account-back-button-pressed
+ (fn [cofx _]
+   (hardwallet/import-account-back-button-pressed cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet.ui/import-account-next-button-pressed
+ (fn [cofx _]
+   (hardwallet/import-account-next-button-pressed cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet/load-importing-account-screen
+ (fn [cofx _]
+   (hardwallet/load-importing-account-screen cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet/import-account
+ (fn [cofx _]
+   (hardwallet/import-account cofx)))
 
 (handlers/register-handler-fx
  :hardwallet/generate-mnemonic
@@ -1370,6 +1459,11 @@
    (hardwallet/unpair-and-delete cofx)))
 
 (handlers/register-handler-fx
+ :hardwallet/remove-key-with-unpair
+ (fn [cofx _]
+   (hardwallet/remove-key-with-unpair cofx)))
+
+(handlers/register-handler-fx
  :hardwallet/navigate-to-enter-pin-screen
  (fn [cofx _]
    (hardwallet/navigate-to-enter-pin-screen cofx)))
@@ -1383,6 +1477,16 @@
  :hardwallet/sign
  (fn [cofx _]
    (hardwallet/sign cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet/prepare-to-sign
+ (fn [cofx _]
+   (hardwallet/prepare-to-sign cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet/unblock-pin
+ (fn [cofx _]
+   (hardwallet/unblock-pin cofx)))
 
 ;; browser module
 
@@ -1454,12 +1558,12 @@
 (handlers/register-handler-fx
  :browser/loading-started
  (fn [cofx _]
-   (browser/update-browser-option cofx :error? false)))
+   (browser/update-browser-options cofx {:error? false :loading? true})))
 
 (handlers/register-handler-fx
  :browser.callback/resolve-ens-multihash-success
- (fn [cofx [_ proto-code hash]]
-   (browser/resolve-ens-multihash-success cofx proto-code hash)))
+ (fn [cofx [_ m]]
+   (browser/resolve-ens-multihash-success cofx m)))
 
 (handlers/register-handler-fx
  :browser.callback/resolve-ens-multihash-error
@@ -1613,6 +1717,11 @@
  (fn [cofx [_ chat-id envelope-hash]]
    (transport.message/set-contact-message-envelope-hash cofx chat-id envelope-hash)))
 
+(handlers/register-handler-fx
+ :transport.callback/node-info-fetched
+ (fn [cofx [_ node-info]]
+   (transport/set-node-info cofx node-info)))
+
 ;; contact module
 
 (handlers/register-handler-fx
@@ -1626,30 +1735,41 @@
 (handlers/register-handler-fx
  :contact.ui/block-contact-pressed
  (fn [cofx [_ public-key]]
-   (contact/block-contact-confirmation cofx public-key)))
+   (contact.block/block-contact-confirmation cofx public-key)))
 
 (handlers/register-handler-fx
  :contact.ui/block-contact-confirmed
  [(re-frame/inject-cofx :data-store/get-user-messages)
   (re-frame/inject-cofx :data-store/get-user-statuses)]
  (fn [cofx [_ public-key]]
-   (contact/block-contact cofx public-key)))
+   (contact.block/block-contact cofx public-key)))
 
 (handlers/register-handler-fx
  :contact.ui/unblock-contact-pressed
  (fn [cofx [_ public-key]]
-   (contact/unblock-contact cofx public-key)))
+   (contact.block/unblock-contact cofx public-key)))
 
 (handlers/register-handler-fx
  :contact/qr-code-scanned
  [(re-frame/inject-cofx :random-id-generator)]
- (fn [cofx [_ _ contact-identity]]
-   (contact/handle-qr-code cofx contact-identity)))
+ (fn [{:keys [db] :as cofx}  [_ _ contact-identity]]
+   (let [current-account (:account/account db)
+         fx              {:db (assoc db :contacts/new-identity contact-identity)}
+         validation-result (new-chat.db/validate-pub-key db contact-identity)]
+     (if (some? validation-result)
+       {:utils/show-popup {:title (i18n/label :t/unable-to-read-this-code)
+                           :content validation-result
+                           :on-dismiss #(re-frame/dispatch [:navigate-to-clean :home])}}
+       (fx/merge cofx
+                 fx
+                 (if config/partitioned-topic-enabled?
+                   (contact/add-contacts-filter contact-identity :open-chat)
+                   (chat/start-chat contact-identity {:navigation-reset? true})))))))
 
 (handlers/register-handler-fx
  :contact/filters-added
  (fn [cofx [_ contact-identity]]
-   (contact/open-chat cofx contact-identity)))
+   (chat/start-chat cofx contact-identity {:navigation-reset? true})))
 
 (handlers/register-handler-fx
  :contact.ui/start-group-chat-pressed
@@ -1660,13 +1780,13 @@
  :contact.ui/send-message-pressed
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx [_ {:keys [public-key]}]]
-   (contact/open-chat cofx public-key)))
+   (chat/start-chat cofx public-key {:navigation-reset? true})))
 
 (handlers/register-handler-fx
  :contact.ui/contact-code-submitted
  [(re-frame/inject-cofx :random-id-generator)]
- (fn [cofx _]
-   (contact/add-new-identity-to-contacts cofx)))
+ (fn [{{:contacts/keys [new-identity]} :db :as cofx} _]
+   (chat/start-chat cofx new-identity {:navigation-reset? true})))
 
 ;; search module
 
@@ -1815,11 +1935,6 @@
  (fn [cofx _]
    (stickers/pending-timeout cofx)))
 
-(handlers/register-handler-fx
- :transport.callback/node-info-fetched
- (fn [cofx [_ node-info]]
-   (transport/set-node-info cofx node-info)))
-
 ;; Tribute to Talk
 (handlers/register-handler-fx
  :tribute-to-talk.ui/menu-item-pressed
@@ -1862,13 +1977,268 @@
    (tribute-to-talk/remove cofx)))
 
 (handlers/register-handler-fx
+ :tribute-to-talk.callback/check-manifest-success
+ (fn [cofx  [_ identity contenthash]]
+   (tribute-to-talk/fetch-manifest cofx identity contenthash)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.callback/no-manifest-found
+ (fn [cofx  [_ identity]]
+   (tribute-to-talk/update-settings cofx nil)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.callback/fetch-manifest-success
+ (fn [cofx  [_ identity {:keys [tribute-to-talk]}]]
+   (tribute-to-talk/update-settings cofx tribute-to-talk)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.callback/fetch-manifest-failure
+ (fn [cofx  [_ identity contenthash]]
+   (tribute-to-talk/fetch-manifest cofx identity contenthash)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.ui/check-manifest
+ (fn [{:keys [db] :as cofx}  [_ identity]]
+   (tribute-to-talk/check-manifest cofx identity)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.callback/manifest-uploaded
+ (fn [cofx [_ hash]]
+   (tribute-to-talk/set-manifest-signing-flow cofx hash)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.callback/manifest-upload-failed
+ (fn [cofx [_ error]]
+   (tribute-to-talk/on-manifest-upload-failed cofx error)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.callback/set-manifest-transaction-completed
+ (fn [cofx [_ id transaction-hash method]]
+   (tribute-to-talk/on-set-manifest-transaction-completed cofx
+                                                          transaction-hash)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk.callback/set-manifest-transaction-failed
+ (fn [cofx [_ error]]
+   (tribute-to-talk/on-set-manifest-transaction-failed cofx
+                                                       error)))
+
+(handlers/register-handler-fx
+ :tribute-to-talk/check-set-manifest-transaction-timeout
+ (fn [cofx _]
+   (tribute-to-talk/check-set-manifest-transaction cofx)))
+
+;; bottom-sheet events
+(handlers/register-handler-fx
  :bottom-sheet/show-sheet
- (fn [cofx [_ view]]
+ (fn [cofx [_ view options]]
    (bottom-sheet/show-bottom-sheet
     cofx
-    {:view view})))
+    {:view view
+     :options options})))
 
 (handlers/register-handler-fx
  :bottom-sheet/hide-sheet
  (fn [cofx _]
    (bottom-sheet/hide-bottom-sheet cofx)))
+
+;;custom tokens
+
+(handlers/register-handler-fx
+ :wallet.custom-token/decimals-result
+ (fn [cofx [_ result]]
+   (custom-tokens/decimals-result cofx result)))
+
+(handlers/register-handler-fx
+ :wallet.custom-token/symbol-result
+ (fn [cofx [_ contract result]]
+   (custom-tokens/symbol-result cofx contract result)))
+
+(handlers/register-handler-fx
+ :wallet.custom-token/name-result
+ (fn [cofx [_ contract result]]
+   (custom-tokens/name-result cofx contract result)))
+
+(handlers/register-handler-fx
+ :wallet.custom-token/balance-result
+ (fn [cofx [_ contract result]]
+   (custom-tokens/balance-result cofx contract result)))
+
+(handlers/register-handler-fx
+ :wallet.custom-token/total-supply-result
+ (fn [cofx [_ contract result]]
+   (custom-tokens/total-supply-result cofx contract result)))
+
+(handlers/register-handler-fx
+ :wallet.custom-token/contract-address-is-pasted
+ (fn [cofx [_ contract]]
+   (custom-tokens/contract-address-is-changed cofx contract)))
+
+(handlers/register-handler-fx
+ :wallet.custom-token.ui/contract-address-paste
+ (fn [_ _]
+   {:wallet.custom-token/contract-address-paste nil}))
+
+(handlers/register-handler-fx
+ :wallet.custom-token.ui/field-is-edited
+ (fn [cofx [_ field-key value]]
+   (custom-tokens/field-is-edited cofx field-key value)))
+
+(handlers/register-handler-fx
+ :wallet.custom-token.ui/add-pressed
+ (fn [cofx _]
+   (fx/merge cofx
+             (custom-tokens/add-custom-token)
+             (navigation/navigate-back))))
+
+(handlers/register-handler-fx
+ :wallet.custom-token.ui/remove-pressed
+ (fn [cofx [_ token navigate-back?]]
+   (fx/merge cofx
+             (custom-tokens/remove-custom-token token)
+             (when navigate-back?
+               (navigation/navigate-back)))))
+
+;; ethereum subscriptions events
+
+(handlers/register-handler-fx
+ :ethereum.callback/subscription-success
+ (fn [cofx [_ id handler]]
+   (ethereum.subscriptions/register-subscription cofx id handler)))
+
+(handlers/register-handler-fx
+ :ethereum.signal/new-block
+ (fn [cofx [_ block]]
+   (ethereum.subscriptions/new-block cofx block)))
+
+;; ethereum transactions events
+(handlers/register-handler-fx
+ :ethereum.transactions.callback/fetch-history-success
+ (fn [cofx [_ transactions]]
+   (ethereum.transactions/handle-history cofx transactions)))
+
+(handlers/register-handler-fx
+ :ethereum.transactions.callback/etherscan-error
+ (fn [cofx [event error]]
+   (log/info event error)))
+
+(handlers/register-handler-fx
+ :ethereum.transactions.callback/fetch-token-history-success
+ (fn [cofx [_ transactions]]
+   (ethereum.transactions/handle-token-history cofx transactions)))
+
+(handlers/register-handler-fx
+ :ethereum.transactions/new
+ (fn [cofx [_ transaction]]
+   (ethereum.transactions/new cofx transaction)))
+
+;; wallet events
+
+(handlers/register-handler-fx
+ :wallet.ui/pull-to-refresh
+ (fn [cofx _]
+   (wallet/update-prices cofx)))
+
+(handlers/register-handler-fx
+ :wallet.transactions/add-filter
+ (fn [{:keys [db]} [_ id]]
+   {:db (update-in db [:wallet :filters] conj id)}))
+
+(handlers/register-handler-fx
+ :wallet.transactions/remove-filter
+ (fn [{:keys [db]} [_ id]]
+   {:db (update-in db [:wallet :filters] disj id)}))
+
+(handlers/register-handler-fx
+ :wallet.transactions/add-all-filters
+ (fn [{:keys [db]} _]
+   {:db (assoc-in db [:wallet :filters]
+                  wallet.db/default-wallet-filters)}))
+
+(handlers/register-handler-fx
+ :wallet.settings/toggle-visible-token
+ (fn [cofx [_ symbol checked?]]
+   (wallet/toggle-visible-token cofx symbol checked?)))
+
+(handlers/register-handler-fx
+ :wallet/token-found
+ (fn [cofx [_ symbol balance]]
+   (wallet/configure-token-balance-and-visibility cofx symbol balance)))
+
+(handlers/register-handler-fx
+ :wallet.settings.ui/navigate-back-pressed
+ (fn [cofx [_ on-close]]
+   (fx/merge cofx
+             (when on-close
+               {:dispatch on-close})
+             (navigation/navigate-back)
+             (wallet/update-balances))))
+
+(handlers/register-handler-fx
+ :wallet.callback/update-balance-success
+ (fn [cofx [_ balance]]
+   (wallet/update-balance cofx balance)))
+
+(handlers/register-handler-fx
+ :wallet.callback/update-balance-fail
+ (fn [cofx [_ err]]
+   (wallet/on-update-balance-fail cofx err)))
+
+(handlers/register-handler-fx
+ :wallet.callback/update-token-balance-success
+ (fn [cofx [_ symbol balance]]
+   (wallet/update-token-balance cofx symbol balance)))
+
+(handlers/register-handler-fx
+ :wallet.callback/update-token-balance-fail
+ (fn [cofx [_ symbol err]]
+   (wallet/on-update-token-balance-fail cofx symbol err)))
+
+(handlers/register-handler-fx
+ :wallet.callback/update-prices-success
+ (fn [cofx [_ prices]]
+   (wallet/on-update-prices-success cofx prices)))
+
+(handlers/register-handler-fx
+ :wallet.callback/update-prices-fail
+ (fn [cofx [_ err]]
+   (wallet/on-update-prices-fail cofx err)))
+
+(handlers/register-handler-fx
+ :wallet.ui/show-transaction-details
+ (fn [cofx [_ hash]]
+   (wallet/open-transaction-details cofx hash)))
+
+(handlers/register-handler-fx
+ :wallet/show-sign-transaction
+ (fn [cofx [_ {:keys [id method]} from-chat?]]
+   (wallet/open-send-transaction-modal cofx id method from-chat?)))
+
+(handlers/register-handler-fx
+ :wallet/update-gas-price-success
+ (fn [cofx [_ price edit?]]
+   (wallet/update-gas-price cofx price edit?)))
+
+(handlers/register-handler-fx
+ :TODO.remove/update-estimated-gas
+ (fn [{:keys [db]} [_ obj]]
+   {:wallet/update-estimated-gas
+    {:obj           obj
+     :success-event :wallet/update-estimated-gas-success}}))
+
+(handlers/register-handler-fx
+ :wallet/update-estimated-gas-success
+ (fn [cofx [_ gas]]
+   (wallet/update-estimated-gas-price cofx gas)))
+
+(handlers/register-handler-fx
+ :wallet.setup.ui/navigate-back-pressed
+ (fn [{:keys [db] :as cofx}]
+   (fx/merge cofx
+             {:db (assoc-in db [:wallet :send-transaction] {})}
+             (navigation/navigate-back))))
+
+(handlers/register-handler-fx
+ :shake-event
+ (fn [cofx _]
+   (logging/show-logs-dialog cofx)))

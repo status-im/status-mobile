@@ -15,6 +15,11 @@ class PlusButton(BaseButton):
         super(PlusButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id("new-chat-button")
 
+class DeleteChatButton(BaseButton):
+    def __init__(self, driver):
+        super(DeleteChatButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("delete-chat-button")
+
 
 class StartNewChatButton(BaseButton):
     def __init__(self, driver):
@@ -96,7 +101,7 @@ class ChatElement(BaseButton):
     def swipe_and_delete(self):
         counter = 0
         while counter < 3:
-            self.swipe_element()
+            self.swipe_left_on_element()
             if self.swipe_delete_button.is_element_present():
                 break
             time.sleep(3)
@@ -145,6 +150,7 @@ class HomeView(BaseView):
         self.new_group_chat_button = NewGroupChatButton(self.driver)
         self.join_public_chat_button = JoinPublicChatButton(self.driver)
         self.invite_friends_button = InviteFriendsButton(self.driver)
+        self.delete_chat_button = DeleteChatButton(self.driver)
 
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing complete:')
@@ -200,7 +206,7 @@ class HomeView(BaseView):
 
     def open_status_test_dapp(self, allow_all=True):
         dapp_view = self.dapp_tab_button.click()
-        dapp_view.open_url('simpledapp.eth')
+        dapp_view.open_url('status-im.github.io/dapp')
         status_test_dapp = dapp_view.get_status_test_dapp_view()
         for _ in range(2):
             if allow_all:
@@ -208,3 +214,8 @@ class HomeView(BaseView):
             else:
                 status_test_dapp.deny_button.click()
         return status_test_dapp
+
+    def delete_chat_long_press(self, username):
+        self.get_chat_with_user(username).long_press_element()
+        self.delete_chat_button.click()
+        self.delete_button.click()

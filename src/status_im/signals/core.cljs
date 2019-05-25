@@ -1,17 +1,17 @@
 (ns status-im.signals.core
   (:require [status-im.accounts.db :as accounts.db]
             [status-im.accounts.login.core :as accounts.login]
-            [status-im.init.core :as init]
+            [status-im.contact-recovery.core :as contact-recovery]
+            [status-im.ethereum.subscriptions :as ethereum.subscriptions]
+            [status-im.hardwallet.core :as hardwallet]
+            [status-im.mailserver.core :as mailserver]
             [status-im.node.core :as node]
             [status-im.pairing.core :as pairing]
-            [status-im.contact-recovery.core :as contact-recovery]
-            [status-im.mailserver.core :as mailserver]
             [status-im.transport.message.core :as transport.message]
             [status-im.utils.fx :as fx]
-            [status-im.utils.types :as types]
-            [taoensso.timbre :as log]
             [status-im.utils.security :as security]
-            [status-im.hardwallet.core :as hardwallet]))
+            [status-im.utils.types :as types]
+            [taoensso.timbre :as log]))
 
 (fx/defn status-node-started
   [{db :db :as cofx}]
@@ -73,4 +73,6 @@
                                        (mailserver/resend-request cofx {:request-id (:hash event)}))
       "messages.decrypt.failed" (contact-recovery/handle-contact-recovery-fx cofx (:sender event))
       "discovery.summary"  (summary cofx event)
+      "subscriptions.data" (ethereum.subscriptions/handle-signal cofx event)
+      "subscriptions.error" (ethereum.subscriptions/handle-error cofx event)
       (log/debug "Event " type " not handled"))))

@@ -1,7 +1,9 @@
 import pytest
 import random
+import time
 import string
 import emoji
+from support.api.network_api import NetworkApi
 from datetime import datetime
 from selenium.common.exceptions import TimeoutException
 from tests import marks, get_current_time
@@ -201,7 +203,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2.element_starts_with_text(url_message, 'button').click()
         web_view = chat_2.open_in_status_button.click()
         try:
-            web_view.find_full_text('Access a Better Web, Anywhere')
+            web_view.find_full_text('Private, Secure Communication')
         except TimeoutException:
             self.errors.append('Device 2: URL was not opened from 1-1 chat')
         web_view.back_to_home_button.click()
@@ -216,7 +218,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1.element_starts_with_text(url_message, 'button').click()
         web_view = chat_1.open_in_status_button.click()
         try:
-            web_view.find_full_text('Access a Better Web, Anywhere')
+            web_view.find_full_text('Private, Secure Communication')
         except TimeoutException:
             self.errors.append('Device 1: URL was not opened from 1-1 chat')
         self.verify_no_errors()
@@ -636,3 +638,63 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
             self.errors.append('Wrong fiat value while requesting assets from wallet with user selected currency.')
 
         self.verify_no_errors()
+
+    @marks.testrail_id(5782)
+    @marks.high
+    def test_install_pack_and_send_sticker(self):
+        user = transaction_recipients['J']
+        sign_in = SignInView(self.driver)
+        home = sign_in.recover_access(user['passphrase'])
+        home.join_public_chat(home.get_public_chat_name())
+        chat = sign_in.get_chat_view()
+        chat.show_stickers_button.click()
+        chat.get_stickers.click()
+        chat.element_by_text('Install').click()
+        transaction_view = chat.get_send_transaction_view()
+        transaction_view.back_button.click()
+        time.sleep(2)
+        chat.swipe_left()
+        chat.sticker_icon.click()
+        chat.chat_item.is_element_displayed()
+
+    @marks.testrail_id(5783)
+    @marks.high
+    def test_purchase_pack_and_send_sticker(self):
+        sign_in_view = SignInView(self.driver)
+        home_view = sign_in_view.create_user()
+
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        wallet_address = wallet_view.get_wallet_address()
+        home_view = wallet_view.get_back_to_home_view()
+
+        # get test ETH, switch to home and wallet to get updated balance
+        self.network_api.get_donate(wallet_address[2:])
+        self.network_api.verify_balance_is_updated(initial_balance=0, recipient_address=wallet_address[2:])
+        home_view.wallet_button.click()
+        wallet_view.get_back_to_home_view()
+
+        # get STT, switch to home and wallet to get updated balance
+        status_test_dapp = home_view.open_status_test_dapp()
+        status_test_dapp.assets_button.click()
+        transaction_view = status_test_dapp.request_stt_button.click()
+        transaction_view.sign_transaction()
+        home_view = status_test_dapp.get_back_to_home_view()
+        wallet_view = home_view.wallet_button.click()
+        home_view = wallet_view.get_back_to_home_view()
+
+        # join to public chat, buy and install stickers
+        home_view.join_public_chat(home_view.get_public_chat_name())
+        chat = sign_in_view.get_chat_view()
+        chat.show_stickers_button.click()
+        chat.get_stickers.click()
+        chat.element_by_accessibility_id('sticker-pack-price').find_elements()[0].click()
+        transaction_view.sign_transaction()
+        chat.element_by_text('Install').wait_for_element(120).click()
+
+        # check that can use installed pack
+        transaction_view.back_button.click()
+        time.sleep(2)
+        chat.swipe_left()
+        chat.sticker_icon.click()
+        chat.chat_item.is_element_displayed()

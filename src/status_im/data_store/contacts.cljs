@@ -1,8 +1,6 @@
 (ns status-im.data-store.contacts
-  (:require [goog.object :as object]
-            [re-frame.core :as re-frame]
-            [status-im.data-store.realm.core :as core]
-            [clojure.set :as clojure.set]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.data-store.realm.core :as core]))
 
 (defn- deserialize-contact [contact]
   (-> contact

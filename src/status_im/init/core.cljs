@@ -1,37 +1,28 @@
 (ns status-im.init.core
   (:require [re-frame.core :as re-frame]
-            [status-im.chat.models.loading :as chat-loading]
-            [status-im.accounts.core :as accounts.core]
             [status-im.accounts.login.core :as accounts.login]
             [status-im.accounts.update.core :as accounts.update]
-            [status-im.constants :as constants]
-            [status-im.react-native.js-dependencies :as rn-dependencies]
+            [status-im.browser.core :as browser]
+            [status-im.chat.models :as chat-model]
+            [status-im.contact.core :as contact]
             [status-im.data-store.core :as data-store]
             [status-im.data-store.realm.core :as realm]
+            [status-im.ethereum.core :as ethereum]
             [status-im.extensions.registry :as extensions.registry]
             [status-im.i18n :as i18n]
-            [status-im.browser.core :as browser]
-            [status-im.contact.core :as contact]
             [status-im.models.dev-server :as models.dev-server]
-            [status-im.protocol.core :as protocol]
-            [status-im.pairing.core :as pairing]
-            [status-im.models.transactions :as transactions]
-            [status-im.models.wallet :as models.wallet]
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
             [status-im.notifications.core :as notifications]
+            [status-im.pairing.core :as pairing]
+            [status-im.react-native.js-dependencies :as rn-dependencies]
+            [status-im.stickers.core :as stickers]
             [status-im.ui.screens.db :refer [app-db]]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.config :as config]
-            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]
-            [status-im.utils.fx :as fx]
-            [status-im.chat.models :as chat-model]
-            [status-im.accounts.db :as accounts.db]
-            [status-im.stickers.core :as stickers]))
+            [taoensso.timbre :as log]))
 
 (defn init-store!
   "Try to decrypt the database, move on if successful otherwise go back to
@@ -140,7 +131,7 @@
   [cofx]
   (let [{{:accounts/keys [accounts] :as db} :db} cofx]
     (if (empty? accounts)
-      (navigation/navigate-to-clean cofx :intro nil)
+      (navigation/navigate-to-cofx cofx :intro nil)
       (let [account-with-notification
             (when-not platform/desktop?
               (notifications/lookup-contact-pubkey-from-hash
@@ -188,7 +179,7 @@
                         :accounts/accounts accounts
                         :mailserver/mailservers mailservers
                         :network-status network-status
-                        :network network
+                        :network account-network-id
                         :network/type (:network/type db)
                         :chain (ethereum/network->chain-name account-network)
                         :universal-links/url url
@@ -270,4 +261,3 @@
 (re-frame/reg-fx
  :init/reset-account-data
  reset-account-data!)
-

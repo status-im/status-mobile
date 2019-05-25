@@ -3,6 +3,7 @@
 ########################################################################
 # This install script will setup your development dependencies on OS X
 # or Ubuntu. Ubuntu 18.04 is the only tested version.
+# It is not required or supported in NixOS.
 #
 # Usage: scripts/setup
 ########################################################################
@@ -19,12 +20,15 @@ exit_unless_os_supported
 ####
 setup_header "Checking prerequisites..."
 
-if ! program_exists "curl"; then
+_need_curl=0
+! is_nixos && ! program_exists nix && _need_curl=1
+
+if [ $_need_curl -eq 1 ] && ! program_exists "curl"; then
   cecho "@b@yellow[[Please install curl before running setup.]]"
   exit 1
 fi
 
-if is_linux && [ -z "$CI_ENVIRONMENT" ]; then
+if is_linux && [ -z "$JENKINS_URL" ]; then
   watches=$(cat /proc/sys/fs/inotify/max_user_watches)
   required_watches=524288
   if [ $watches -lt $required_watches ]; then
@@ -45,7 +49,7 @@ fi
 ####
 setup_header "Installing requirements..."
 
-if ! program_exists nix; then
+if [ "$IN_NIX_SHELL" != 'pure' ] && ! is_nixos && ! program_exists nix; then
   required_version=$(toolversion nix)
   NIX_INSTALLER_NO_MODIFY_PROFILE=1 bash <(curl https://nixos.org/releases/nix/nix-${required_version}/install) --no-daemon
   if [ $? -eq 0 ]; then

@@ -1,27 +1,28 @@
 (ns status-im.accounts.login.core
   (:require [re-frame.core :as re-frame]
             [status-im.accounts.db :as accounts.db]
+            [status-im.chaos-mode.core :as chaos-mode]
             [status-im.data-store.core :as data-store]
+            [status-im.ethereum.subscriptions :as ethereum.subscriptions]
+            [status-im.ethereum.transactions.core :as transactions]
+            [status-im.fleet.core :as fleet]
+            [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
+            [status-im.node.core :as node]
+            [status-im.protocol.core :as protocol]
+            [status-im.tribute-to-talk.core :as tribute-to-talk]
+            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
-            [status-im.fleet.core :as fleet]
             [status-im.utils.fx :as fx]
-            [status-im.react-native.js-dependencies :as rn-dependencies]
-            [status-im.utils.keychain.core :as keychain]
-            [status-im.utils.types :as types]
-            [taoensso.timbre :as log]
-            [status-im.utils.universal-links.core :as universal-links]
-            [status-im.utils.security :as security]
-            [status-im.utils.platform :as platform]
-            [status-im.protocol.core :as protocol]
-            [status-im.models.wallet :as models.wallet]
             [status-im.utils.handlers :as handlers]
-            [status-im.models.transactions :as transactions]
-            [status-im.i18n :as i18n]
-            [status-im.node.core :as node]
-            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
-            [status-im.chaos-mode.core :as chaos-mode]))
+            [status-im.utils.keychain.core :as keychain]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.security :as security]
+            [status-im.utils.types :as types]
+            [status-im.utils.universal-links.core :as universal-links]
+            [status-im.wallet.core :as wallet]
+            [taoensso.timbre :as log]))
 
 (def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
 (def contract-address "0xfbf4c8e2B41fAfF8c616a0E49Fb4365a5355Ffaf")
@@ -83,9 +84,11 @@
 
 (fx/defn initialize-wallet [cofx]
   (fx/merge cofx
-            (models.wallet/initialize-tokens)
-            (models.wallet/update-wallet)
-            (transactions/start-sync)))
+            (wallet/initialize-tokens)
+            (wallet/update-balances)
+            (wallet/update-prices)
+            (transactions/initialize)
+            (ethereum.subscriptions/initialize)))
 
 (fx/defn user-login [{:keys [db] :as cofx} create-database?]
   (let [{:keys [address password]} (accounts.db/credentials cofx)]
@@ -144,12 +147,13 @@
          (fn [_]
            (when save-password?
              {:keychain/save-user-password [address password]}))
+         (tribute-to-talk/init)
          (mobile-network/on-network-status-change)
          (protocol/initialize-protocol)
          (universal-links/process-stored-event)
          (chaos-mode/check-chaos-mode)
-         #(when-not platform/desktop?
-            (initialize-wallet %)))
+         (when-not platform/desktop?
+           (initialize-wallet)))
         (account-and-db-password-do-not-match cofx error)))))
 
 (fx/defn show-migration-error-dialog
@@ -267,7 +271,7 @@
               {:db (assoc-in db [:hardwallet :pin :enter-step] :login)}
               (if (empty? navigation-stack)
                 (navigation/navigate-to-cofx :accounts nil)
-                (navigation/navigate-to-cofx :enter-pin nil)))))
+                (navigation/navigate-to-cofx :enter-pin-login nil)))))
 
 (fx/defn get-user-password
   [_ address]

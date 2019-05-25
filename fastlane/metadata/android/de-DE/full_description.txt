@@ -11,8 +11,6 @@ Wir wünschen uns eine Welt, in der die Menschen mehr Kontrolle über den Wert h
 
 <b>Beta-Funktionen:</b>
 
-■ Light Client –– Bei der Aktivierung von Light Client und Whisper-Protokollen führt Status eine vollständige Umsetzung von Go Ethereum aus.
-
 ■ Encrypted Messaging –– Über dem Whisper-Protokoll errichtet, ermöglicht dezentrale One-on-One, Gruppen-Chats und Social Payments.
 
 ■ Browse DApps –– Intergagiert mithilfe von Status Web 3.0 Browser nahtlos mit dem aufstrebenden Ökosystem von DApps.
@@ -21,4 +19,4 @@ Wir wünschen uns eine Welt, in der die Menschen mehr Kontrolle über den Wert h
 
 
 <b>Machen Sie mit</b>
-Als Open-Source-Projekt sind das Downloaden und Testen von Status die beste Möglichkeit, an der Entwicklung beteiligt zu sein. Mithilfe des neuen Vertreters des Ethereum-Paradigmas wollen wir den Übergang zu einem offeneren Internet- und Finanzsystem erleichtern. Mit den hochgesteckten Zielen, unser kollektives Menschenrecht auf Privatsphäre zu bewahren, das Zensur-Risiko zu entschärfen und wirtschaftlichen Handel auf transparente, offene Art und Weise zu fördern, bildet Status eine Gemeinschaft, in der jeder willkommen ist, der beitreten und seinen Beitrag leisten möchte. Wir würden uns sehr freuen, von Ihnen zu hören. Besuchen Sie uns auf https://chat.status.im/
+Als Open-Source-Projekt sind das Downloaden und Testen von Status die beste Möglichkeit, an der Entwicklung beteiligt zu sein. Mithilfe des neuen Vertreters des Ethereum-Paradigmas wollen wir den Übergang zu einem offeneren Internet- und Finanzsystem erleichtern. Mit den hochgesteckten Zielen, unser kollektives Menschenrecht auf Privatsphäre zu bewahren, das Zensur-Risiko zu entschärfen und wirtschaftlichen Handel auf transparente, offene Art und Weise zu fördern, bildet Status eine Gemeinschaft, in der jeder willkommen ist, der beitreten und seinen Beitrag leisten möchte. Wir würden uns sehr freuen, von Ihnen zu hören. Besuchen Sie uns auf https://get.status.im/chat/public/status

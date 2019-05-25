@@ -121,6 +121,12 @@ class ClearButton(BaseButton):
         super(ClearButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="CLEAR"]')
 
+class BlockButton(BaseButton):
+
+    def __init__(self, driver):
+        super(BlockButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="BLOCK"]')
+
 
 class LeaveButton(BaseButton):
 
@@ -175,6 +181,24 @@ class CommandsButton(BaseButton):
         self.locator = self.Locator.accessibility_id('chat-commands-button')
 
 
+class ShowStickersButton(BaseButton):
+    def __init__(self, driver):
+        super(ShowStickersButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('show-stickers-icon')
+
+
+class GetStickers(BaseButton):
+    def __init__(self, driver):
+        super(GetStickers, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[contains(@text, "Get Stickers")]')
+
+
+class StickerIcon(BaseButton):
+    def __init__(self, driver):
+        super(StickerIcon, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('sticker-icon')
+
+
 class ViewProfileButton(BaseButton):
     def __init__(self, driver):
         super(ViewProfileButton, self).__init__(driver)
@@ -199,6 +223,10 @@ class ProfileSendTransactionButton(BaseButton):
         super(ProfileSendTransactionButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('send-transaction-button')
 
+class ProfileBlockContactButton(BaseButton):
+    def __init__(self, driver):
+        super(ProfileBlockContactButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('block-contact')
 
 class JoinChatButton(BaseButton):
     def __init__(self, driver):
@@ -336,11 +364,16 @@ class ChatView(BaseView):
         self.send_command = SendCommand(self.driver)
         self.request_command = RequestCommand(self.driver)
 
+        self.show_stickers_button = ShowStickersButton(self.driver)
+        self.get_stickers = GetStickers(self.driver)
+        self.sticker_icon = StickerIcon(self.driver)
+
         self.chat_options = ChatMenuButton(self.driver)
         self.members_button = MembersButton(self.driver)
         self.delete_chat_button = DeleteChatButton(self.driver)
         self.clear_history_button = ClearHistoryButton(self.driver)
         self.clear_button = ClearButton(self.driver)
+        self.block_button = BlockButton(self.driver)
 
         # Group chats
         self.group_info = GroupInfoButton(self.driver)
@@ -366,6 +399,7 @@ class ChatView(BaseView):
         self.profile_send_message = ProfileSendMessageButton(self.driver)
         self.profile_send_transaction = ProfileSendTransactionButton(self.driver)
         self.profile_address_text = ProfileAddressText(self.driver)
+        self.profile_block_contact = ProfileBlockContactButton(self.driver)
 
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing complete:')

@@ -60,7 +60,7 @@
                      [:db :chats "test" :input-text])))
       (is (= "/test-command first-value second-value \"last value\""
              (get-in (input/set-command-parameter (create-cofx "/test-command first-value second-value")
-                                                  false 2 "last value")
+                                                  true 2 "last value")
                      [:db :chats "test" :input-text]))))))
 
 (deftest parse-parameters-test

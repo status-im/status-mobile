@@ -132,7 +132,25 @@
           nil
           nil
           nil
-          nil))))
+          nil
+          nil
+          false
+          false))))
+  (testing "empty state pub-chat"
+    (is (=
+         [{:type       :gap
+           :value      ":first-gap"
+           :first-gap? true}]
+         (db/messages-with-datemarks-and-statuses
+          nil
+          nil
+          nil
+          nil
+          nil
+          {:lowest-request-from 10
+           :highest-request-to  30}
+          true
+          true))))
   (testing "simple case"
     (is (=
          '({:whisper-timestamp 40
@@ -207,6 +225,9 @@
             :timestamp-str     "14:00"
             :user-statuses     nil
             :datemark          "today"}
+           {:type  :gap
+            :value ":gapid1"
+            :gaps  {:ids [:gapid1]}}
            {:whisper-timestamp 30
             :timestamp         30
             :content           nil
@@ -217,8 +238,6 @@
             :type              :datemark
             :whisper-timestamp 30
             :timestamp         30}
-           {:type              :gap
-            :value             "25"}
            {:whisper-timestamp 20
             :timestamp         20
             :content           nil
@@ -266,12 +285,14 @@
                 :timestamp         40}}
           nil
           nil
-          {:from    25
-           :exists? true}))))
+          [{:from 25
+            :to   30
+            :id   :gapid1}]))))
   (testing "simple case with gap after all messages"
     (is (=
          '({:type  :gap
-            :value "100"}
+            :value ":gapid1"
+            :gaps  {:ids (:gapid1)}}
            {:whisper-timestamp 40
             :timestamp         40
             :content           nil
@@ -335,5 +356,6 @@
                 :timestamp         40}}
           nil
           nil
-          {:from    100
-           :exists? true})))))
+          [{:from 100
+            :to   110
+            :id   :gapid1}])))))

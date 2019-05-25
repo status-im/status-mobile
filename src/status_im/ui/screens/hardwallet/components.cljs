@@ -73,8 +73,10 @@
          [react/text {:style styles/maintain-card-second-step-text}
           (str second-number ". " (i18n/label second-label))])
        (when third-label
-         [react/text {:style styles/maintain-card-third-step-text}
-          (str third-number ". " (i18n/label third-label))])]
+         [react/view {:flex 1}
+          [react/text {:style           styles/maintain-card-third-step-text
+                       :number-of-lines 1}
+           (str third-number ". " (i18n/label third-label))]])]
       [react/text {:style           styles/maintain-card-text
                    :number-of-lines 2}
        (i18n/label :t/maintain-card-to-phone-contact)])))

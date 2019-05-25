@@ -91,6 +91,24 @@
          {:on-press #(re-frame/dispatch [:hardwallet.ui/card-ready-next-button-pressed])
           :forward? true}]]]]]))
 
+(defn- import-account []
+  [react/view styles/card-ready-container
+   [react/view styles/card-ready-inner-container
+    [react/view (assoc styles/center-container :margin-top 68)
+     [react/text {:style styles/center-title-text}
+      (i18n/label :t/card-is-paired)]
+     [react/text {:style styles/estimated-time-text}
+      (i18n/label :t/ready-to-import-keycard-account)]]
+    [react/view]]
+   [react/view styles/back-and-next-buttons-container
+    [components.common/bottom-button
+     {:on-press #(re-frame/dispatch [:hardwallet.ui/import-account-back-button-pressed])
+      :back?    true
+      :label    (i18n/label :t/back)}]
+    [components.common/bottom-button
+     {:on-press #(re-frame/dispatch [:hardwallet.ui/import-account-next-button-pressed])
+      :forward? true}]]])
+
 (defview display-recovery-phrase []
   (letsubs [mnemonic [:hardwallet-mnemonic]]
     (let [mnemonic-vec (vec (map-indexed vector (clojure.string/split mnemonic #" ")))]
@@ -204,27 +222,42 @@
       (display-recovery-phrase)
       (enter-recovery-phrase))))
 
+(defview enter-pair-code-input [ref]
+  {:component-will-update #(.clear @ref)}
+  [text-input/text-input-with-label
+   {:on-change-text #(re-frame/dispatch [:hardwallet.ui/pair-code-input-changed %])
+    :auto-focus     true
+    :ref            (partial reset! ref)
+    :placeholder    ""}])
+
 (defview enter-pair-code []
   (letsubs [pair-code [:hardwallet-pair-code]
-            width [:dimensions/window-width]]
-    [react/view styles/enter-pair-code-container
-     [react/view styles/enter-pair-code-title-container
-      [react/view
-       [react/text {:style styles/enter-pair-code-title-text}
-        (i18n/label :t/enter-pair-code)]
-       [react/text {:style styles/enter-pair-code-explanation-text}
-        (i18n/label :t/enter-pair-code-description)]]
-      [react/view (styles/enter-pair-code-input-container width)
-       [text-input/text-input-with-label
-        {:on-change-text #(re-frame/dispatch [:hardwallet.ui/pair-code-input-changed %])
-         :placeholder    ""}]]]
-     [react/view styles/next-button-container
-      [react/view components.styles/flex]
-      [react/view {:margin-right 20}
-       [components.common/bottom-button
-        {:on-press  #(re-frame/dispatch [:hardwallet.ui/pair-code-next-button-pressed])
-         :disabled? (empty? pair-code)
-         :forward?  true}]]]]))
+            error [:hardwallet-setup-error]
+            width [:dimensions/window-width]
+            ref (atom nil)]
+    [react/scroll-view
+     [react/view styles/enter-pair-code-container
+      [react/view styles/enter-pair-code-title-container
+       [react/view
+        [react/text {:style styles/enter-pair-code-title-text}
+         (i18n/label :t/enter-pair-code)]
+        [react/text {:style styles/enter-pair-code-explanation-text}
+         (i18n/label :t/enter-pair-code-description)]]
+       (when error
+         [react/view
+          [react/text {:style {:font-weight "700"
+                               :padding-top 10
+                               :color       colors/red}}
+           error]])
+       [react/view (styles/enter-pair-code-input-container width)
+        [enter-pair-code-input ref]]]
+      [react/view styles/next-button-container
+       [react/view components.styles/flex]
+       [react/view {:margin-right 20}
+        [components.common/bottom-button
+         {:on-press  #(re-frame/dispatch [:hardwallet.ui/pair-code-next-button-pressed])
+          :disabled? (empty? pair-code)
+          :forward?  true}]]]]]))
 
 (defn- card-with-button-view
   [{:keys [text-label button-label button-container-style on-press show-icon?]}]
@@ -411,6 +444,17 @@
                  :estimated-time-seconds 30
                  :step-number            3}])
 
+(defn- importing-account []
+  [react/view styles/loading-view-container
+   [react/view styles/center-container
+    [react/text {:style styles/center-title-text}
+     (i18n/label :t/importing-keycard-account)]
+    [react/text {:style styles/estimated-time-text}
+     (i18n/label :t/this-will-take-few-seconds)]]
+   [react/view styles/waiting-indicator-container
+    [react/activity-indicator {:animating true
+                               :size      :large}]]])
+
 (defn- content [step]
   (case step
     :begin [begin]
@@ -430,6 +474,8 @@
     :recovery-phrase-confirm-word1 [recovery-phrase-confirm-word step]
     :recovery-phrase-confirm-word2 [recovery-phrase-confirm-word step]
     :error [error]
+    :import-account [import-account]
+    :importing-account [importing-account]
     [begin]))
 
 (defview hardwallet-setup []

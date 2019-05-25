@@ -11,8 +11,9 @@
  :show-group-chat-profile
  (fn [{:keys [db] :as cofx} [_ chat-id]]
    (fx/merge cofx
-             {:db (assoc db
-                         :new-chat-name (get-in db [:chats chat-id :name]))}
+             {:db (-> db
+                      (assoc :new-chat-name (get-in db [:chats chat-id :name]))
+                      (assoc :current-chat-id chat-id))}
              (navigation/navigate-to-cofx :group-chat-profile nil))))
 
 (handlers/register-handler-fx

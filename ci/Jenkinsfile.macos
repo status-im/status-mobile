@@ -22,13 +22,16 @@ pipeline {
   }
 
   environment {
-    TARGET_PLATFORM = 'macos'
-    CI_ENVIRONMENT = 'jenkins'
-    LANG = 'en_US.UTF-8'
-    LANGUAGE = 'en_US.UTF-8'
-    LC_ALL = 'en_US.UTF-8'
+    LANG     = "en_US.UTF-8"
+    LC_ALL   = "en_US.UTF-8"
+    LANGUAGE = "en_US.UTF-8"
+    TARGET_OS = 'macos'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     VERBOSE_LEVEL = '3'
+    /* We use EXECUTOR_NUMBER to avoid multiple instances clashing */
+    LEIN_HOME         = "/var/tmp/lein-${EXECUTOR_NUMBER}"
+    YARN_CACHE_FOLDER = "/var/tmp/yarn-${EXECUTOR_NUMBER}"
+    GRADLE_USER_HOME  = "/var/tmp/gradle-${EXECUTOR_NUMBER}"
   }
 
   stages {
@@ -48,12 +51,12 @@ pipeline {
     }
     stage('Lint') {
       steps {
-        script { cmn.utils.nix_sh('lein cljfmt check') }
+        script { cmn.nix.shell('lein cljfmt check') }
       }
     }
     stage('Tests') {
       steps {
-        script { cmn.utils.nix_sh('lein test-cljs') }
+        script { cmn.nix.shell('lein test-cljs') }
       }
     }
     stage('Build') {

@@ -14,9 +14,6 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.list-item.views :as list-item]
-            [clojure.string :as string]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.list.views :as list]))
 
 (defview command-short-preview [message]
@@ -90,16 +87,21 @@
                    :accessibility-label :chat-name-text}
        chat-name]]]))
 
-(defn home-list-chat-item-inner-view
-  [{:keys [chat-id chat-name
-           name color online
-           group-chat public?
-           public-key contact
-           timestamp
-           last-message-content
-           last-message-content-type]}]
-  (let [truncated-chat-name (utils/truncate-str chat-name 30)]
-    [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])}
+(defn home-list-item [[home-item-id home-item]]
+  (let [{:keys [chat-id chat-name
+                name color online
+                group-chat public?
+                public-key contact
+                timestamp
+                last-message-content
+                last-message-content-type]} home-item
+        truncated-chat-name                 (utils/truncate-str chat-name 30)
+        chat-actions                        (cond
+                                              (and group-chat public?)       :public-chat-actions
+                                              (and group-chat (not public?)) :group-chat-actions
+                                              :else                          :private-chat-actions)]
+    [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
+                                :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet chat-actions {:chat-id chat-id}])}
      [react/view styles/chat-container
       [react/view styles/chat-icon-container
        [chat-icon.screen/chat-icon-view-chat-list contact group-chat truncated-chat-name color online false]]
@@ -112,29 +114,3 @@
         [message-content-text {:content      last-message-content
                                :content-type last-message-content-type}]
         [unviewed-indicator chat-id]]]]]))
-
-(defn home-list-item [[home-item-id home-item]]
-  (let [delete-action   (if (and (:group-chat home-item)
-                                 (not (:public? home-item)))
-                          :group-chats.ui/remove-chat-pressed
-                          :chat.ui/remove-chat)]
-    [list/deletable-list-item {:type      :chats
-                               :id        home-item-id
-                               :on-delete #(do
-                                             (re-frame/dispatch [:set-swipe-position :chats home-item-id false])
-                                             (re-frame/dispatch [delete-action home-item-id]))}
-     [home-list-chat-item-inner-view home-item]]))
-
-(defn home-list-browser-item-inner-view [{:keys [dapp url name browser-id]}]
-  (let [photo-path (:photo-path dapp)]
-    [list-item/list-item
-     (merge
-      {:title name
-       :subtitle (or url (i18n/label :t/dapp))
-       :on-press #(re-frame/dispatch [:browser.ui/browser-item-selected browser-id])}
-      (if dapp
-        (if (and photo-path (not (string/blank? (:photo-path dapp))))
-          {:image-path photo-path}
-          {:image [chat-icon/default-browser-icon name]})
-        {:image [react/view styles/browser-icon-container
-                 [vector-icons/icon :main-icons/browser {:color colors/gray}]]}))]))

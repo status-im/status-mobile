@@ -4,7 +4,8 @@
             [status-im.ui.components.chat-icon.styles :as styles]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.photos :as photos])
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn default-chat-icon [name styles]
@@ -80,6 +81,12 @@
     :default-chat-icon-text styles/default-chat-icon-text}
    hide-dapp?])
 
+(defn custom-icon-view-list
+  [name color & [size]]
+  [react/view (styles/container-list-size (or size 40))
+   [default-chat-icon name {:default-chat-icon      (styles/default-chat-icon-profile color (or size 40))
+                            :default-chat-icon-text styles/default-chat-icon-text}]])
+
 (defn contact-icon-view
   [{:keys [photo-path name dapp?]} {:keys [container] :as styles}]
   [react/view container
@@ -138,9 +145,9 @@
                        :default-chat-icon      (styles/default-chat-icon-profile color size)
                        :default-chat-icon-text styles/default-chat-icon-text} override-styles)]
     [react/view (:container styles)
-     (when edit?
+     (when (and edit? (not platform/desktop?))
        [react/view (styles/profile-icon-mask size)])
-     (when edit?
+     (when (and edit? (not platform/desktop?))
        [react/view (styles/profile-icon-edit-text-containter size)
         [react/i18n-text {:style styles/profile-icon-edit-text :key :edit}]])
      (if (and photo-path (seq photo-path))

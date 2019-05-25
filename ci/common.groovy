@@ -1,8 +1,11 @@
 import groovy.json.JsonBuilder
 
+/* Libraries -----------------------------------------------------------------*/
+
 gh = load 'ci/github.groovy'
 ci = load 'ci/jenkins.groovy'
 gh = load 'ci/github.groovy'
+nix = load 'ci/nix.groovy'
 utils = load 'ci/utils.groovy'
 ghcmgr = load 'ci/ghcmgr.groovy'
 
@@ -36,25 +39,15 @@ def notifyPR(success) {
   } catch (ex) { /* fallback to posting directly to GitHub */
     println "Failed to use GHCMGR: ${ex}"
     switch (success) {
-      case true:  gh.NotifyPRSuccess(); break
-      case false: gh.NotifyPRFailure(); break
+      case true:  gh.notifyPRSuccess(); break
+      case false: gh.notifyPRFailure(); break
     }
-  }
-}
-
-def prepNixEnvironment() {
-  if (env.TARGET_PLATFORM == 'linux' || env.TARGET_PLATFORM == 'windows' || env.TARGET_PLATFORM == 'android') {
-    def glibcLocales = sh(
-      returnStdout: true,
-      script: ". ~/.nix-profile/etc/profile.d/nix.sh && nix-build --no-out-link '<nixpkgs>' -A glibcLocales"
-    ).trim()
-    env.LOCALE_ARCHIVE_2_27 = "${glibcLocales}/lib/locale/locale-archive"
   }
 }
 
 def prep(type = 'nightly') {
   /* build/downloads all nix deps in advance */
-  prepNixEnvironment()
+  nix.prepEnv()
   /* rebase unless this is a release build */
   utils.doGitRebase()
   /* ensure that we start from a known state */
@@ -62,19 +55,22 @@ def prep(type = 'nightly') {
   /* pick right .env and update from params */
   utils.updateEnv(type)
 
-  if (env.TARGET_PLATFORM == 'android' || env.TARGET_PLATFORM == 'ios') {
+  if (env.TARGET_OS == 'android' || env.TARGET_OS == 'ios') {
     /* Run at start to void mismatched numbers */
     utils.genBuildNumber()
-    /* install ruby dependencies */
-    utils.nix_sh 'bundle install --quiet'
   }
 
-  def prepareTarget=env.TARGET_PLATFORM
-  if (env.TARGET_PLATFORM == 'macos' || env.TARGET_PLATFORM == 'linux' || env.TARGET_PLATFORM == 'windows') {
+  if (env.TARGET_OS == 'ios') {
+    /* install ruby dependencies */
+    nix.shell 'bundle install --gemfile=fastlane/Gemfile --quiet'
+  }
+
+  def prepareTarget=env.TARGET_OS
+  if (env.TARGET_OS == 'macos' || env.TARGET_OS == 'linux' || env.TARGET_OS == 'windows') {
     prepareTarget='desktop'
   }
   /* node deps, pods, and status-go download */
-  utils.nix_sh "scripts/prepare-for-platform.sh ${prepareTarget}"
+  utils.nix.shell("scripts/prepare-for-platform.sh ${prepareTarget}", pure: false)
 }
 
 return this

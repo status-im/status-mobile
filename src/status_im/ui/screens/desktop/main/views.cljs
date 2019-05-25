@@ -20,8 +20,8 @@
     "Status.im"]])
 
 (views/defview tab-views []
-  (views/letsubs [tab [:get-in [:desktop/desktop :tab-view-id]]]
-    (let [component (case tab
+  (views/letsubs [{:keys [tab-view-id]} [:desktop/desktop]]
+    (let [component (case tab-view-id
                       :profile profile.views/profile-data
                       :home home.views/chat-list-view-wrapper
                       react/view)]
@@ -29,7 +29,7 @@
        [component]])))
 
 (views/defview popup-view []
-  (views/letsubs [popup [:get-in [:desktop :popup]]]
+  (views/letsubs [{:keys [popup]} [:desktop]]
     (when popup
       [react/view {:style styles/absolute}
        [react/touchable-highlight {:on-press #(re-frame/dispatch [:set-in [:desktop :popup] nil])
@@ -39,7 +39,7 @@
         [popup]]])))
 
 (views/defview main-view []
-  (views/letsubs [view-id [:get :view-id]]
+  (views/letsubs [view-id [:view-id]]
     (let [component (case view-id
                       :chat         chat.views/chat-view
                       :desktop/new-one-to-one  add-new.views/new-one-to-one

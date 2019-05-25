@@ -19,6 +19,10 @@
    :bottom           bottom
    :position         :absolute
    :elevation        2
+   :shadow-offset    {:width 0 :height 1}
+   :shadow-radius    12
+   :shadow-opacity   0.12
+   :shadow-color     colors/white
    :max-height       max-height})
 
 (def header-container

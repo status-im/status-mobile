@@ -1,13 +1,13 @@
 (ns status-im.protocol.core
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.transport.core :as transport]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
-            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.transport.core :as transport]
             [status-im.utils.fx :as fx]
             [status-im.utils.semaphores :as semaphores]
-            [status-im.utils.utils :as utils]
-            [status-im.i18n :as i18n]))
+            [status-im.utils.utils :as utils]))
 
 (fx/defn update-sync-state
   [{{:keys [sync-state sync-data] :as db} :db} error sync]
@@ -33,7 +33,6 @@
   [{{:keys [web3] :as db} :db :as cofx}]
   (if (:account/account db)
     {:web3/get-syncing      web3
-     :web3/get-block-number web3
      :utils/dispatch-later  [{:ms       10000
                               :dispatch [:protocol/state-sync-timed-out]}]}
     (semaphores/free cofx :check-sync-state?)))

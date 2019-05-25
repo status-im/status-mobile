@@ -45,7 +45,7 @@
   {:text-align         :center
    :color              colors/gray
    :margin-bottom      21
-   :padding-horizontal 80
+   :padding-horizontal 70
    :padding-top        20})
 
 (def bottom-action-container
@@ -59,7 +59,7 @@
    :margin-bottom    40})
 
 (def bottom-action-text
-  {:typography     :main
+  {:typography     :main-medium
    :color          colors/blue
    :text-transform :uppercase})
 

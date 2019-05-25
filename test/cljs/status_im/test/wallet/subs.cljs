@@ -1,7 +1,7 @@
 (ns status-im.test.wallet.subs
   (:require [cljs.test :refer-macros [deftest is]]
             [status-im.utils.money :as money]
-            [status-im.ui.screens.wallet.subs :as s]))
+            [status-im.subs :as s]))
 
 (deftest test-balance-total-value
   (is (= (s/get-balance-total-value {:ETH (money/bignumber 1000000000000000000)

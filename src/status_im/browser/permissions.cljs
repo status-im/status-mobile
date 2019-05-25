@@ -1,12 +1,12 @@
 (ns status-im.browser.permissions
   (:require [status-im.constants :as constants]
             [status-im.data-store.dapp-permissions :as dapp-permissions]
-            [status-im.i18n :as i18n]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.fx :as fx]
-            [status-im.qr-scanner.core :as qr-scanner]
+            [status-im.ethereum.core :as ethereum]
             [status-im.extensions.registry :as extensions.registry]
-            [status-im.ui.screens.navigation :as navigation]))
+            [status-im.i18n :as i18n]
+            [status-im.qr-scanner.core :as qr-scanner]
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.fx :as fx]))
 
 (declare process-next-permission)
 (declare send-response-to-bridge)
@@ -34,7 +34,7 @@
 
     (= permission constants/dapp-permission-qr-code)
     (fx/merge (assoc-in cofx [:db :browser/options :yielding-control?] true)
-              (qr-scanner/scan-qr-code {:modal? false}
+              (qr-scanner/scan-qr-code {}
                                        {:handler        :browser.bridge.callback/qr-code-scanned
                                         :cancel-handler :browser.bridge.callback/qr-code-canceled
                                         :data           {:dapp-name  dapp-name

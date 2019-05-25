@@ -9,7 +9,7 @@
 (spec/def :extension/name ::not-blank-string)
 (spec/def :extension/url ::not-blank-string)
 (spec/def :extension/active? boolean?)
-(spec/def :extension/data (spec/nilable string?))
+(spec/def :extension/data (spec/nilable map?))
 (spec/def :extension/extension (spec/keys :req-un [:extension/id
                                                    :extension/name
                                                    :extension/url

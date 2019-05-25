@@ -17,7 +17,7 @@
             [re-frame.core :as re-frame]))
 
 (defview hardwallet-login []
-  (letsubs [{:keys [photo-path name processing]} [:get :accounts/login]
+  (letsubs [{:keys [photo-path name processing]} [:accounts/login]
             nfc-enabled? [:hardwallet/nfc-enabled?]]
     [react/keyboard-avoiding-view styles/container
      [status-bar/status-bar]

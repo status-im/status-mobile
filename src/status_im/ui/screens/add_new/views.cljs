@@ -11,7 +11,8 @@
             [status-im.ui.components.styles :as styles]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [status-im.utils.platform :as platform]))
 
 (defn- options-list [{:keys [dev-mode?]}]
   [react/view action-button.styles/actions-list
@@ -35,22 +36,23 @@
      :icon                :main-icons/public-chat
      :icon-opts           {:color colors/blue}
      :on-press            #(re-frame/dispatch [:navigate-to :new-public-chat])}]
-   [action-button/action-separator]
-   [action-button/action-button
-    {:label               (i18n/label :t/invite-friends)
-     :accessibility-label :invite-friends-button
-     :icon                :main-icons/share
-     :icon-opts           {:color colors/blue}
-     :on-press            #(list-selection/open-share {:message (i18n/label :t/get-status-at)})}]
-   [action-button/action-separator]
-   [action-button/action-button
-    {:label               (i18n/label :t/scan-qr)
-     :accessibility-label :scan-qr-code-button
-     :icon                :main-icons/qr
-     :icon-opts           {:color colors/blue}
-     :on-press            #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
-                                               {:toolbar-title (i18n/label :t/scan-qr)}
-                                               :handle-qr-code])}]])
+   (when-not platform/desktop?
+     [action-button/action-separator]
+     [action-button/action-button
+      {:label               (i18n/label :t/invite-friends)
+       :accessibility-label :invite-friends-button
+       :icon                :main-icons/share
+       :icon-opts           {:color colors/blue}
+       :on-press            #(list-selection/open-share {:message (i18n/label :t/get-status-at)})}]
+     [action-button/action-separator]
+     [action-button/action-button
+      {:label               (i18n/label :t/scan-qr)
+       :accessibility-label :scan-qr-code-button
+       :icon                :main-icons/qr
+       :icon-opts           {:color colors/blue}
+       :on-press            #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
+                                                 {:toolbar-title (i18n/label :t/scan-qr)}
+                                                 :handle-qr-code])}])])
 
 (views/defview add-new []
   (views/letsubs [account     [:account/account]

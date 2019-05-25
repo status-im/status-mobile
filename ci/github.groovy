@@ -10,7 +10,7 @@ utils = load 'ci/utils.groovy'
 
 def notify(message) {
   def githubIssuesUrl = 'https://api.github.com/repos/status-im/status-react/issues'
-  def changeId = changeId() 
+  def changeId = utils.changeId() 
   if (changeId == null) { return }
   def msgObj = [body: message]
   def msgJson = new JsonBuilder(msgObj).toPrettyString()
@@ -62,7 +62,7 @@ def notifyPRSuccess() {
   def type = utils.getBuildType() == 'e2e' ? ' e2e' : ''
   msg += "[${env.JOB_NAME}${currentBuild.displayName}](${currentBuild.absoluteUrl}) ${d} "
   msg += "${utils.buildDuration()} ${d} ${GIT_COMMIT.take(8)} ${d} "
-  msg += "[:package: ${env.TARGET_PLATFORM}${type} package](${env.PKG_URL})"
+  msg += "[:package: ${env.TARGET_OS}${type} package](${env.PKG_URL})"
   notify(msg)
 }
 

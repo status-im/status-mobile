@@ -55,6 +55,12 @@ Rationale:
 
 These guidelines make db.cljs namespaces the place to go when making changes to the db layout and minimize breaking changes when adding/refactoring features
 
+# Subscriptions
+
+- all subscriptions must be defined in the single `status-im.subs` namespace
+- subscriptions must subscribe only on other subscriptions, and never on app-db itself
+- `reg-root-key-sub` should be used for the root keys subscriptions
+
 # Events
 
 - all events must be defined in the single `status-im.events` namespace which can be considered as an index of everything going on in the app

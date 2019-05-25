@@ -1,36 +1,29 @@
 (ns status-im.chat.models.message
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.accounts.db :as accounts.db]
-            [status-im.native-module.core :as status]
-            [status-im.constants :as constants]
-            [status-im.i18n :as i18n]
-            [status-im.utils.core :as utils]
-            [status-im.utils.config :as config]
-            [status-im.contact.db :as contact.db]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.datetime :as time]
-            [status-im.transport.message.group-chat :as message.group-chat]
+            [status-im.chat.commands.receiving :as commands-receiving]
+            [status-im.chat.db :as chat.db]
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.loading :as chat-loading]
             [status-im.chat.models.message-content :as message-content]
-            [status-im.chat.commands.receiving :as commands-receiving]
-            [status-im.chat.db :as chat.db]
-            [status-im.mailserver.core :as mailserver]
-            [status-im.utils.clocks :as utils.clocks]
-            [status-im.utils.money :as money]
-            [status-im.utils.types :as types]
-            [status-im.notifications.core :as notifications]
-            [status-im.transport.utils :as transport.utils]
-            [status-im.transport.message.protocol :as protocol]
+            [status-im.constants :as constants]
+            [status-im.contact.db :as contact.db]
             [status-im.data-store.messages :as messages-store]
             [status-im.data-store.user-statuses :as user-statuses-store]
-            [status-im.utils.platform :as platform]
+            [status-im.mailserver.core :as mailserver]
+            [status-im.native-module.core :as status]
+            [status-im.notifications.core :as notifications]
+            [status-im.transport.message.group-chat :as message.group-chat]
+            [status-im.transport.message.protocol :as protocol]
+            [status-im.transport.message.transit :as transit]
+            [status-im.transport.utils :as transport.utils]
             [status-im.ui.components.react :as react]
+            [status-im.utils.clocks :as utils.clocks]
+            [status-im.utils.datetime :as time]
             [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]
-            [status-im.data-store.messages :as messages-store]
-            [status-im.transport.message.transit :as transit]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.types :as types]
+            [taoensso.timbre :as log]))
 
 (defn- wrap-group-message
   "Wrap a group message in a membership update"
@@ -289,9 +282,9 @@
          (map (partial update-last-message (:chats db)) chat-ids)))
 
 (fx/defn declare-syncd-public-chats!
-  [{:keys [db] :as cofx} chat-ids]
+  [cofx chat-ids]
   (apply fx/merge cofx
-         (map (partial chat-model/join-time-messages-checked db) chat-ids)))
+         (map (partial chat-model/join-time-messages-checked cofx) chat-ids)))
 
 (defn- chat-ids->never-synced-public-chat-ids [chats chat-ids]
   (let [never-synced-public-chat-ids (mailserver/chats->never-synced-public-chats chats)]
@@ -466,8 +459,9 @@
   (let [{:keys [chats]}  db
         {:keys [last-clock-value] :as chat} (get chats chat-id)
         message-data                        (-> message
-                                                (assoc :from        (accounts.db/current-public-key cofx)
-                                                       :timestamp   now
+                                                (assoc :from (accounts.db/current-public-key cofx)
+                                                       :timestamp now
+                                                       :whisper-timestamp (quot now 1000)
                                                        :clock-value (utils.clocks/send
                                                                      last-clock-value))
                                                 (add-message-type chat))]

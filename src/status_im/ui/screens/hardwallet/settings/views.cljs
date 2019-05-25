@@ -8,10 +8,7 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.screens.hardwallet.components :as components]
-            [status-im.ui.screens.hardwallet.pin.views :as pin.views]
-            [status-im.ui.components.common.common :as components.common]
-            [reagent.core :as reagent]))
+            [status-im.ui.components.common.common :as components.common]))
 
 (defn- action-row [{:keys [icon label on-press color-theme]}]
   [react/touchable-highlight
@@ -45,7 +42,8 @@
                                 :size      :large}]]))
 
 (defn- reset-card-next-button [disabled?]
-  [react/view {:margin-right 18}
+  [react/view {:margin-right  18
+               :margin-bottom 15}
    [components.common/bottom-button
     {:on-press   #(re-frame/dispatch [:keycard-settings.ui/reset-card-next-button-pressed])
      :disabled?  disabled?
@@ -75,7 +73,7 @@
                    :justify-content  :space-between
                    :align-items      :center
                    :width            "100%"
-                   :height           52
+                   :height           68
                    :border-top-width 1
                    :border-color     colors/gray-light}
        [react/view {:flex 1}]
@@ -127,7 +125,7 @@
                           :label    :t/unpair-card
                           :on-press #(re-frame/dispatch [:keycard-settings.ui/unpair-card-pressed])}]])])]
       (when pairing
-        [react/view {:margin-bottom 20
+        [react/view {:margin-bottom 35
                      :margin-left   16}
          [action-row {:icon        :main-icons/logout
                       :color-theme :red

@@ -159,12 +159,18 @@ class BaseElement(object):
             self.template = file_name
         return not ImageChops.difference(self.image, self.template).getbbox()
 
-    def swipe_element(self):
+    def swipe_left_on_element(self):
         element = self.find_element()
         location, size = element.location, element.size
         x, y = location['x'], location['y']
         width, height = size['width'], size['height']
         self.driver.swipe(start_x=x + width * 0.75, start_y=y + height / 2, end_x=x, end_y=y + height / 2)
+
+    def swipe_to_web_element(self):
+        element = self.find_element()
+        location = element.location
+        x, y = location['x'], location['y']
+        self.driver.swipe(start_x=x, start_y=y, end_x=x, end_y=400)
 
     def long_press_element(self):
         element = self.find_element()

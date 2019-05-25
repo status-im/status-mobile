@@ -10,8 +10,8 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 OS=$(uname -s)
-if [ -z $TARGET_SYSTEM_NAME ]; then
-  TARGET_SYSTEM_NAME=$OS
+if [ -z "$TARGET_OS" ]; then
+  TARGET_OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 fi
 WINDOWS_CROSSTOOLCHAIN_PKG_NAME='mxetoolchain-x86_64-w64-mingw32'
 
@@ -51,7 +51,7 @@ function is_linux() {
 }
 
 function is_windows_target() {
-  [[ "$TARGET_SYSTEM_NAME" =~ Windows ]]
+  [[ "$TARGET_OS" =~ windows ]]
 }
 
 function joinPath() {
@@ -79,9 +79,6 @@ if is_windows_target; then
   CMAKE_EXTRA_FLAGS="$CMAKE_EXTRA_FLAGS -DCMAKE_C_COMPILER='x86_64-w64-mingw32.shared-gcc'"
   CMAKE_EXTRA_FLAGS="$CMAKE_EXTRA_FLAGS -DCMAKE_CXX_COMPILER='x86_64-w64-mingw32.shared-g++'"
   CMAKE_EXTRA_FLAGS="$CMAKE_EXTRA_FLAGS -DCMAKE_RC_COMPILER='x86_64-w64-mingw32.shared-windres'"
-elif is_macos; then
-  CMAKE_EXTRA_FLAGS="$CMAKE_EXTRA_FLAGS -DCMAKE_C_COMPILER='gcc'"
-  CMAKE_EXTRA_FLAGS="$CMAKE_EXTRA_FLAGS -DCMAKE_CXX_COMPILER='g++'"
 fi
 
 STATUSREACTPATH="$(cd "$SCRIPTPATH" && cd '..' && pwd)"
@@ -448,7 +445,7 @@ function bundleMacOS() {
 
     local qtbaseplugins=(bearer platforms printsupport styles)
     local qtfullplugins=(iconengines imageformats webview)
-    if program_exists nix && [ -n "$IN_NIX_SHELL" ]; then
+    if [ -n "$IN_NIX_SHELL" ]; then
       # Since in the Nix qt.full package the different Qt modules are spread across several directories,
       # macdeployqt cannot find some qtbase plugins, so we copy them in its place
       mkdir -p "$contentsPath/PlugIns"

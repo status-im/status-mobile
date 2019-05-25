@@ -1,12 +1,11 @@
 (ns status-im.data-store.chats
   (:require [goog.object :as object]
             [re-frame.core :as re-frame]
-            [status-im.utils.ethereum.core :as utils.ethereum]
-            [status-im.utils.clocks :as utils.clocks]
-            [status-im.data-store.realm.core :as core]
             [status-im.data-store.messages :as messages]
-            [status-im.utils.core :as utils]
-            [cljs.tools.reader.edn :as edn]))
+            [status-im.data-store.realm.core :as core]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.utils.clocks :as utils.clocks]
+            [status-im.utils.core :as utils]))
 
 (defn remove-empty-vals
   "Remove key/value when empty seq or nil"
@@ -27,7 +26,7 @@
      (sort (keys event))))))
 
 ; Build an event id from a message
-(def event-id (comp utils.ethereum/sha3 event->string))
+(def event-id (comp ethereum/sha3 event->string))
 
 (defn marshal-membership-updates [updates]
   (mapcat (fn [{:keys [signature events from]}]

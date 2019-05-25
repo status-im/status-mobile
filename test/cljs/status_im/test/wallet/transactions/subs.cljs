@@ -4,9 +4,9 @@
             [re-frame.core :as re-frame]
             [day8.re-frame.test :refer [run-test-sync]]
             status-im.ui.screens.db
-            status-im.ui.screens.subs
+            status-im.subs
             [status-im.ui.screens.events :as events]
-            [status-im.ui.screens.wallet.transactions.subs :as transactions-subs]))
+            [status-im.subs :as transactions-subs]))
 
 (def transactions [{:timestamp "1505912551000"}
                    {:timestamp "1505764322000"}

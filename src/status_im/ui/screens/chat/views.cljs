@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.chat.views
   (:require [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
             [status-im.chat.models :as models.chat]
             [status-im.contact.db :as contact.db]
             [status-im.group-chats.db :as group-chats.db]
@@ -26,7 +27,10 @@
             [status-im.ui.screens.chat.styles.main :as style]
             [status-im.ui.screens.chat.toolbar-content :as toolbar-content]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils])
+            [status-im.utils.utils :as utils]
+            [status-im.utils.datetime :as datetime]
+            [status-im.ui.screens.chat.message.gap :as gap]
+            [reagent.core :as reagent])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn add-contact-bar [public-key]
@@ -70,36 +74,9 @@
   [{{:keys [value]} :row}]
   [message-datemark/chat-datemark-mobile value])
 
-(defview gap []
-  (letsubs [in-progress? [:chats/fetching-gap-in-progress?]
-            connected?   [:mailserver/connected?]]
-    [react/view {:align-self          :stretch
-                 :margin-top          24
-                 :margin-bottom       24
-                 :height              48
-                 :align-items         :center
-                 :justify-content     :center
-                 :border-color        colors/gray-light
-                 :border-top-width    1
-                 :border-bottom-width 1
-                 :background-color    :white}
-     [react/touchable-highlight
-      {:on-press (when (and connected? (not in-progress?))
-                   #(re-frame/dispatch [:chat.ui/fill-the-gap]))}
-      [react/view {:flex            1
-                   :align-items     :center
-                   :justify-content :center}
-       (if in-progress?
-         [react/activity-indicator]
-         [react/text
-          {:style {:color (if connected?
-                            colors/blue
-                            colors/gray)}}
-          (i18n/label :t/fetch-messages)])]]]))
-
 (defmethod message-row :gap
-  [_]
-  [gap])
+  [{:keys [row idx list-ref]}]
+  [gap/gap row idx list-ref])
 
 (defmethod message-row :default
   [{:keys [group-chat current-public-key modal? row]}]
@@ -127,9 +104,12 @@
       {:on-press (fn [_]
                    (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
                                                                    :show-stickers? false}])
-                   (react/dismiss-keyboard!))}
-      [react/animated-view {:style (style/message-view-animated opacity)}
-       message-view]]]))
+                   (when-not platform/desktop?
+                     (react/dismiss-keyboard!)))}
+      (if platform/desktop?
+        message-view
+        [react/animated-view {:style (style/message-view-animated opacity)}
+         message-view])]]))
 
 (defn join-chat-button [chat-id]
   [buttons/secondary-button {:style style/join-button
@@ -173,7 +153,9 @@
            universal-link]} no-messages]
   (letsubs [intro-status [:chats/current-chat-intro-status]
             height       [:chats/content-layout-height]
-            input-height [:chats/current-chat-ui-prop :input-height]]
+            input-height [:chats/current-chat-ui-prop :input-height]
+            {:keys [:lowest-request-from :highest-request-to]} [:chats/range]
+            all-loaded?  [:chats/all-loaded?]]
     (let [icon-text  (if public? chat-id name)
           intro-name (if public? chat-name name)]
       ;; TODO This when check ought to be unnecessary but for now it prevents
@@ -217,7 +199,15 @@
               (when public?
                 [react/nested-text {:style (merge style/intro-header-description
                                                   {:margin-bottom 36})}
-                 (i18n/label :t/empty-chat-description-public)
+                 (let [quiet-hours (quot (- highest-request-to lowest-request-from)
+                                         (* 60 60))
+                       quiet-time  (if (<= quiet-hours 24)
+                                     (i18n/label :t/quiet-hours
+                                                 {:quiet-hours quiet-hours})
+                                     (i18n/label :t/quiet-days
+                                                 {:quiet-days (quot quiet-hours 24)}))]
+                   (i18n/label :t/empty-chat-description-public
+                               {:quiet-hours quiet-time}))
                  [{:style    {:color colors/blue}
                    :on-press #(list-selection/open-share
                                {:message
@@ -247,12 +237,34 @@
              (i18n/label :t/empty-chat-description-one-to-one)
              [{} intro-name]])]]))))
 
+(defonce messages-list-ref (atom nil))
+
+(def ^:const initial-limit 5)
+(def ^:const second-initial-limit-step 6)
+(def second-limit (+ initial-limit second-initial-limit-step))
+(def ^:const third-initial-limit-step 11)
+(def ^:const default-limit-step 20)
+(def ^:const initial-threshold 0.5)
+(def ^:const default-threshold 2)
+
+(defonce messages-limit (reagent/atom initial-limit))
+
+(defn increment-limit [lim]
+  (+ lim
+     (case lim
+       initial-limit second-initial-limit-step
+       second-limit third-initial-limit-step
+       default-limit-step)))
+
 (defview messages-view
   [{:keys [group-chat chat-id pending-invite-inviter-name] :as chat}
    modal?]
   (letsubs [messages           [:chats/current-chat-messages-stream]
             current-public-key [:account/public-key]]
-    {:component-did-mount
+    {:component-will-mount
+     (fn []
+       (reset! messages-limit initial-limit))
+     :component-did-mount
      (fn [args]
        (when-not (:messages-initialized? (second (.-argv (.-props args))))
          (re-frame/dispatch [:chat.ui/load-more-messages]))
@@ -260,25 +272,86 @@
                            {:messages-focused? true
                             :input-focused?    false}]))}
     (let [no-messages (empty? messages)
+          m-limit     @messages-limit
+          threshold   (if (= m-limit initial-limit)
+                        initial-threshold
+                        default-threshold)
           flat-list-conf
-          {:data                      messages
+          {:data                      (take m-limit messages)
+           :ref                       #(reset! messages-list-ref %)
            :footer                    [chat-intro-header-container chat no-messages]
            :key-fn                    #(or (:message-id %) (:value %))
-           :render-fn                 (fn [message]
+           :render-fn                 (fn [message idx]
                                         [message-row
                                          {:group-chat         group-chat
                                           :modal?             modal?
                                           :current-public-key current-public-key
-                                          :row                message}])
+                                          :row                message
+                                          :idx                idx
+                                          :list-ref           messages-list-ref}])
            :inverted                  true
-           :onEndReached              #(re-frame/dispatch
-                                        [:chat.ui/load-more-messages])
-           :enableEmptySections       true
+           :onEndReachedThreshold     threshold
+           :onEndReached              (fn []
+                                        (swap! messages-limit increment-limit)
+                                        (when (> @messages-limit (count messages))
+                                          (re-frame/dispatch
+                                           [:chat.ui/load-more-messages])))
            :keyboardShouldPersistTaps :handled}
           group-header {:header [group-chat-footer chat-id]}]
       (if pending-invite-inviter-name
         [list/flat-list (merge flat-list-conf group-header)]
         [list/flat-list flat-list-conf]))))
+
+(def load-step 5)
+
+(defn load-more [all-messages-count messages-to-load]
+  (let [next-count (min all-messages-count (+ @messages-to-load load-step))]
+    (reset! messages-to-load next-count)))
+
+(defview messages-view-desktop [{:keys [chat-id group-chat]}
+                                modal?]
+  (letsubs [messages           [:chats/current-chat-messages-stream]
+            current-public-key [:account/public-key]
+            messages-to-load   (reagent/atom load-step)
+            chat-id*           (reagent/atom nil)]
+    {:component-did-update #(if (:messages-initialized? (second (.-argv (.-props %1))))
+                              (load-more (count messages) messages-to-load)
+                              (re-frame/dispatch [:chat.ui/load-more-messages]))
+     :component-did-mount  #(if (:messages-initialized? (second (.-argv (.-props %1))))
+                              (load-more (count messages) messages-to-load)
+                              (re-frame/dispatch [:chat.ui/load-more-messages]))}
+    (let [messages-list-ref    (atom nil)
+          scroll-timer  (atom nil)
+          scroll-height (atom nil)
+          _             (when (or (not @chat-id*) (not= @chat-id* chat-id))
+                          (do
+                            (reset! messages-to-load load-step)
+                            (reset! chat-id* chat-id)))]
+      [react/view {:style style/chat-view}
+       [react/scroll-view {:scrollEventThrottle              16
+                           :headerHeight                     style/messages-list-vertical-padding
+                           :footerWidth                      style/messages-list-vertical-padding
+                           :enableArrayScrollingOptimization true
+                           :inverted                         true
+                           :ref                              #(reset! messages-list-ref %)
+                           :on-scroll                        (fn [e]
+                                                               (let [ne (.-nativeEvent e)
+                                                                     y  (.-y (.-contentOffset ne))]
+                                                                 (when (<= y 0)
+                                                                   (when @scroll-timer (js/clearTimeout @scroll-timer))
+                                                                   (reset! scroll-timer (js/setTimeout #(re-frame/dispatch [:chat.ui/load-more-messages]) 300)))
+                                                                 (reset! scroll-height (+ y (.-height (.-layoutMeasurement ne))))))}
+        [react/view
+         (doall
+          (for [{:keys [from content] :as message-obj} (take @messages-to-load messages)]
+            ^{:key message-obj}
+            [message-row
+             {:group-chat         group-chat
+              :modal?             modal?
+              :current-public-key current-public-key
+              :row                message-obj
+              :idx                #(or (:message-id message-obj) (:value message-obj))
+              :list-ref           messages-list-ref}]))]]])))
 
 (defn show-input-container? [my-public-key current-chat]
   (or (not (models.chat/group-chat? current-chat))
@@ -308,7 +381,10 @@
                                  (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
         [chat-toolbar current-chat public? modal?]
         [messages-view-animation
-         [messages-view current-chat modal?]]
+         ;;TODO(kozieiev) : When FlatList in react-native-desktop become viable it should be used instead of optimized ScrollView for chat
+         (if platform/desktop?
+           [messages-view-desktop current-chat modal?]
+           [messages-view current-chat modal?])]
         (when (show-input-container? my-public-key current-chat)
           [input/container])
         (when show-stickers?

@@ -35,6 +35,8 @@ import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 import io.realm.react.RealmReactPackage;
 import me.alwx.HttpServer.HttpServerReactPackage;
+import com.chirag.RNMail.*;
+import com.clipsub.RNShake.RNShakeEventPackage;
 
 public class MainApplication extends MultiDexApplication implements ReactApplication {
 
@@ -50,6 +52,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
             Function<String, String> callRPC = statusPackage.getCallRPC();
             return Arrays.asList(
                     new MainReactPackage(),
+                    new RNMail(),
                     new RNFirebasePackage(),
                     new RNFirebaseMessagingPackage(),
                     new RNFirebaseNotificationsPackage(),
@@ -70,7 +73,8 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new WebViewBridgePackage(BuildConfig.DEBUG_WEBVIEW == "1", callRPC),
                     new RNCWebViewPackage(),
                     new ReactNativeConfigPackage(),
-                    new KeychainPackage());
+                    new KeychainPackage(),
+                    new RNShakeEventPackage());
         }
 
         @Override

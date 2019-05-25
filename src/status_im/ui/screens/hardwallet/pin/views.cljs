@@ -109,8 +109,11 @@
     [pin-view {:pin               pin
                :title-label       (case step
                                     :confirmation :t/repeat-pin
+                                    :current :t/current-pin
                                     :t/create-a-pin)
-               :description-label :t/create-pin-description
+               :description-label (case step
+                                    :current :t/current-pin-description
+                                    :t/create-pin-description)
                :step              step
                :status            status
                :error-label       error-label}]))
@@ -129,7 +132,7 @@
       nil
       [toolbar/nav-button (assoc toolbar.actions/default-back
                                  :handler
-                                 #(re-frame/dispatch [:hardwallet.ui/navigate-back-button-clicked]))]
+                                 #(re-frame/dispatch [:hardwallet.ui/enter-pin-navigate-back-button-clicked]))]
       nil]
      (if (zero? pin-retry-counter)
        [pin-view {:pin               pin
@@ -144,12 +147,14 @@
                   :title-label       (case step
                                        :current :t/current-pin
                                        :login :t/current-pin
+                                       :import-account :t/current-pin
                                        :original :t/create-a-pin
                                        :confirmation :t/repeat-pin
                                        :t/current-pin)
                   :description-label (case step
                                        :current :t/current-pin-description
                                        :sign :t/current-pin-description
+                                       :import-account :t/current-pin-description
                                        :login :t/login-pin-description
                                        :t/new-pin-description)
                   :step              step

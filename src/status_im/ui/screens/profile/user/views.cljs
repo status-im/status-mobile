@@ -1,33 +1,30 @@
 (ns status-im.ui.screens.profile.user.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [re-frame.core :as re-frame]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.ui.components.list.views :as list.views]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.action-button.styles :as action-button.styles]
             [status-im.ui.components.button.view :as button]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.common.styles :as common.styles]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.list.views :as list.views]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
-            [status-im.ui.components.toolbar.styles :as toolbar.styles]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.screens.profile.components.styles
+             :as
+             profile.components.styles]
             [status-im.ui.screens.profile.components.views :as profile.components]
-            [status-im.ui.screens.profile.components.styles :as profile.components.styles]
             [status-im.ui.screens.profile.user.styles :as styles]
-            [status-im.utils.build :as build]
             [status-im.utils.config :as config]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]
-            [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.common.common :as components.common]
             [status-im.utils.identicon :as identicon]
-            [clojure.string :as string]
-            [status-im.utils.universal-links.core :as universal-links]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.universal-links.core :as universal-links]
+            [status-im.utils.utils :as utils])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn my-profile-toolbar []
   [toolbar/toolbar
@@ -85,16 +82,18 @@
       :style               styles/share-link-button}]))
 
 (defview qr-viewer []
-  (letsubs [{:keys [value contact]} [:get :qr-modal]]
+  (letsubs [{:keys [value contact]} [:qr-modal]]
     [react/view styles/qr-code-viewer
      [status-bar/status-bar {:type :modal-white}]
      [qr-viewer-toolbar (:name contact) value]
      [qr-code-viewer/qr-code-viewer
-      {:style         styles/qr-code
-       :footer-button qr-code-share-button
-       :value         value
-       :hint          (i18n/label :t/qr-code-public-key-hint)
-       :legend        (str value)}]]))
+      (merge
+       {:style         styles/qr-code
+        :value         value
+        :hint          (i18n/label :t/qr-code-public-key-hint)
+        :legend        (str value)}
+       (when-not platform/desktop?
+         {:footer-button qr-code-share-button}))]]))
 
 (defn- show-qr [contact source value]
   #(re-frame/dispatch [:navigate-to :profile-qr-viewer {:contact contact
@@ -102,9 +101,12 @@
                                                         :value   value}]))
 
 (defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]}
-                            {:keys [dev-mode?
-                                    settings]} currency logged-in?]
-  (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
+                            {:keys [settings] :as account}
+                            currency
+                            logged-in?
+                            extensions]
+  (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))
+        extensions-settings (vals (get extensions :settings))]
     [react/view
      [profile.components/settings-title (i18n/label :t/settings)]
      [profile.components/settings-item {:label-kw            :t/ens-names
@@ -143,14 +145,21 @@
        :accessibility-label :pairing-settings-button}]
      [profile.components/settings-item-separator]
      [profile.components/settings-switch-item
-      {:label-kw  :t/web3-opt-in
-       :value     (or (nil? (:web3-opt-in? settings)) (:web3-opt-in? settings))
-       :action-fn #(re-frame/dispatch [:accounts.ui/web3-opt-in-mode-switched %])}]
+      {:label-kw  :t/preview-privacy
+       :value     (boolean (:preview-privacy? settings))
+       :action-fn #(re-frame/dispatch [:accounts.ui/preview-privacy-mode-switched %])}]
      [profile.components/settings-item-separator]
      [profile.components/settings-item
       {:label-kw            :t/dapps-permissions
        :accessibility-label :dapps-permissions-button
        :action-fn           #(re-frame/dispatch [:navigate-to :dapps-permissions])}]
+     (when extensions-settings
+       (for [{:keys [label] :as st} extensions-settings]
+         [react/view
+          [profile.components/settings-item-separator]
+          [profile.components/settings-item
+           {:item-text           label
+            :action-fn           #(re-frame/dispatch [:navigate-to :my-profile-ext-settings st])}]]))
      [profile.components/settings-item-separator]
      [profile.components/settings-item
       {:label-kw            :t/need-help
@@ -195,7 +204,7 @@
     {:label-kw            :t/log-level
      :action-fn           #(re-frame/dispatch [:navigate-to :log-level-settings])
      :accessibility-label :log-level-settings-button}]
-   (when (and dev-mode? (not platform/ios?))
+   (when dev-mode?
      [react/view styles/my-profile-settings-send-logs-wrapper
       [react/view styles/my-profile-settings-send-logs
        [profile.components/settings-item {:label-kw            :t/send-logs
@@ -233,7 +242,7 @@
      :action-fn #(re-frame/dispatch [:accounts.ui/chaos-mode-switched %])}]])
 
 (defview advanced [params on-show]
-  (letsubs [advanced? [:get :my-profile/advanced?]]
+  (letsubs [advanced? [:my-profile/advanced?]]
     {:component-will-unmount #(re-frame/dispatch [:set :my-profile/advanced? false])}
     [react/view {:padding-bottom 16}
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:set :my-profile/advanced? (not advanced?)])
@@ -266,30 +275,57 @@
     :accessory-value     active-contacts-count
     :action-fn           #(re-frame/dispatch [:navigate-to :contacts-list])}])
 
-(defn tribute-to-talk-item [snt-amount seen?]
+(defn tribute-to-talk-item [state snt-amount seen?]
   [list.views/big-list-item
-   (cond->
-    {:text                (i18n/label :t/tribute-to-talk)
-     :icon                :main-icons/tribute-to-talk
-     :accessibility-label :notifications-button
-     :new?                (not seen?)
-     :action-fn           #(re-frame/dispatch
-                            [:tribute-to-talk.ui/menu-item-pressed])}
-     snt-amount
-     (assoc :accessory-value (str snt-amount " SNT"))
-     (not (and seen? snt-amount))
-     (assoc :subtext      (i18n/label :t/tribute-to-talk-desc)))])
+   (cond-> {:text                (i18n/label :t/tribute-to-talk)
+            :accessibility-label :notifications-button
+            :new?                (not seen?)
+            :action-fn           #(re-frame/dispatch
+                                   [:tribute-to-talk.ui/menu-item-pressed])}
+     (and (not (and seen?
+                    snt-amount
+                    (#{:signing :pending :transaction-failed} state))))
+     (assoc :subtext (i18n/label :t/tribute-to-talk-desc))
+
+     (#{:signing :pending} state)
+     (assoc :activity-indicator {:animating true
+                                 :color colors/blue}
+            :subtext (case state
+                       :pending (i18n/label :t/pending-confirmation)
+                       :signing (i18n/label :t/waiting-to-sign)))
+
+     (= state :transaction-failed)
+     (assoc :icon :main-icons/warning
+            :icon-color colors/red
+            :subtext (i18n/label :t/transaction-failed))
+
+     (not (#{:signing :pending :transaction-failed} state))
+     (assoc :icon :main-icons/tribute-to-talk)
+
+     (and (= state :completed)
+          (not-empty snt-amount))
+     (assoc :accessory-value (str snt-amount " SNT")))])
+
+(defview extensions-settings []
+  (letsubs [{:keys [label view on-close]} [:get-screen-params :my-profile-ext-settings]]
+    [react/keyboard-avoiding-view {:style {:flex 1}}
+     [status-bar/status-bar {:type :main}]
+     [toolbar/simple-toolbar label]
+     [react/scroll-view
+      [view]]]))
 
 (defview my-profile []
   (letsubs [{:keys [public-key photo-path] :as current-account} [:account/account]
-            editing?        [:get :my-profile/editing?]
-            changed-account [:get :my-profile/profile]
+            editing?        [:my-profile/editing?]
+            extensions      [:extensions/profile]
+            changed-account [:my-profile/profile]
             currency        [:wallet/currency]
-            login-data      [:get :accounts/login]
+            login-data      [:accounts/login]
             scroll          (reagent/atom nil)
             active-contacts-count [:contacts/active-count]
             {tribute-to-talk-seen? :seen?
-             snt-amount :snt-amount} [:tribute-to-talk/settings]]
+             snt-amount :snt-amount
+             tribute-to-talk-state :state} [:tribute-to-talk/ui]]
     (let [shown-account    (merge current-account changed-account)
           ;; We scroll on the component once rendered. setTimeout is necessary,
           ;; likely to allow the animation to finish.
@@ -323,7 +359,10 @@
          [share-profile-item (dissoc current-account :mnemonic)]
          [contacts-list-item active-contacts-count]
          (when config/tr-to-talk-enabled?
-           [tribute-to-talk-item snt-amount tribute-to-talk-seen?])
-         [my-profile-settings current-account shown-account currency (nil? login-data)]
+           [tribute-to-talk-item
+            tribute-to-talk-state
+            snt-amount
+            tribute-to-talk-seen?])
+         [my-profile-settings current-account shown-account currency (nil? login-data) extensions]
          (when (nil? login-data)
            [advanced shown-account on-show-advanced])]]])))

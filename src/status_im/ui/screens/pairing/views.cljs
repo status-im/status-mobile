@@ -77,7 +77,8 @@
       [icons/icon :main-icons/add (icon-style (styles/pairing-button-icon true))]]]
     [react/view {:style styles/pairing-actions-text}
      [react/view
-      [react/text {:style styles/pair-this-device-title} (i18n/label :t/pair-this-device)]]
+      [react/text {:style               styles/pair-this-device-title
+                   :accessibility-label :advertise-device} (i18n/label :t/pair-this-device)]]
      [react/view
       [react/text (i18n/label :t/pair-this-device-description)]]]]])
 
@@ -140,7 +141,7 @@
        ;; Replacing therefore with checkbox until I have more time to investigate
        (checkbox.views/checkbox {:checked? enabled?
                                  :on-value-change (partial toggle-enabled! installation-id enabled?)})
-       [react/switch {:on-tint-color   colors/blue
+       [react/switch {:track-color     #js {:true colors/blue :false nil}
                       :value           enabled?
                       :on-value-change (partial toggle-enabled! installation-id enabled?)}])]]])
 
@@ -160,11 +161,12 @@
      [react/text (i18n/label :t/pairing-please-set-a-name)]]
     [text-input/text-input-with-label
      {:placeholder     (i18n/label :t/specify-name)
-      :style           styles/input
-      :container       styles/input-container
-      :default-value   @installation-name
-      :on-change-text  #(reset! installation-name %)
-      :auto-focus      true}]]
+      :style               styles/input
+      :accessibility-label :device-name
+      :container           styles/input-container
+      :default-value       @installation-name
+      :on-change-text      #(reset! installation-name %)
+      :auto-focus          true}]]
    [react/view styles/bottom-container
     [react/view components.styles/flex]
     [components.common/bottom-button

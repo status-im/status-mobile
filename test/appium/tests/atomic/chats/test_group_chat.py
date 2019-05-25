@@ -189,8 +189,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         # device 2: open the chat and check messages
         device_2_chat = device_2_home.get_chat_with_user(chat_name).click()
         device_2_chat.join_chat_button.click()
-        if device_2_chat.chat_element_by_text(message_for_device_2).is_element_displayed():
-            self.errors.append('Message that was sent after device 2 has joined is visible')
+        if not device_2_chat.chat_element_by_text(message_for_device_2).is_element_displayed():
+            self.errors.append('Message that was sent after device 2 has joined is not visible')
         self.verify_no_errors()
 
     @marks.testrail_id(5756)

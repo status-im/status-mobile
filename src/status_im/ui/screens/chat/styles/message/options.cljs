@@ -9,6 +9,7 @@
    :align-items        :center
    :padding-horizontal 16
    :ios                {:height 36}
+   :desktop            {:height 36}
    :android            {:height 36}})
 
 (def title

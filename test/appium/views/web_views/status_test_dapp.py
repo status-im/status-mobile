@@ -1,4 +1,5 @@
 from views.web_views.base_web_view import BaseWebView, BaseButton
+import time
 
 
 class AssetsButton(BaseButton):
@@ -58,11 +59,17 @@ class TransactionsButton(BaseButton):
     class SendTwoTxOneByOneButton(BaseButton):
         def __init__(self, driver):
             super(TransactionsButton.SendTwoTxOneByOneButton, self).__init__(driver)
-            self.locator = self.Locator.text_selector('Send two Txs, one after another, 0.00001 and 0.00002 ETH')
+            self.locator = self.Locator.webview_selector('Send two Txs, one after another, 0.00001 and 0.00002 ETH')
 
         def navigate(self):
             from views.send_transaction_view import SendTransactionView
             return SendTransactionView(self.driver)
+
+        def click(self):
+            self.swipe_to_web_element()
+            time.sleep(2)
+            self.wait_for_visibility_of_element().click()
+            return self.navigate()
 
     class SendTwoTxInBatchButton(BaseButton):
         def __init__(self, driver):
@@ -89,6 +96,9 @@ class StatusAPIButton(BaseButton):
         def __init__(self, driver):
             super(StatusAPIButton.RequestContactCodeButton, self).__init__(driver)
             self.locator = self.Locator.text_part_selector('Request contact code')
+
+    def click(self):
+        self.wait_for_visibility_of_element().click()
 
 
 class SendOneTransactionInBatchButton(BaseButton):

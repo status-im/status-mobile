@@ -20,16 +20,20 @@
                                                                   :confirmation []
                                                                   :enter-step   :original}}}}))))
   (testing "confirmation entered"
-    (is (= {:db                    {:hardwallet {:pin {:original     [1 2 3 4 5 6]
-                                                       :confirmation [1 2 3 4 5 6]
-                                                       :enter-step   :confirmation
-                                                       :status       :verifying}}}
+    (is (= {:db                    {:hardwallet {:pin             {:original     [1 2 3 4 5 6]
+                                                                   :confirmation [1 2 3 4 5 6]
+                                                                   :current      [1 1 1 1 1 1]
+                                                                   :enter-step   :confirmation
+                                                                   :status       :verifying}
+                                                 :card-connected? true}}
             :hardwallet/change-pin {:new-pin     "123456"
-                                    :current-pin ""
+                                    :current-pin "111111"
                                     :pairing     nil}}
-           (hardwallet/process-pin-input {:db {:hardwallet {:pin     {:original     [1 2 3 4 5 6]
-                                                                      :confirmation [1 2 3 4 5 6]
-                                                                      :enter-step   :confirmation}}}}))))
+           (hardwallet/process-pin-input {:db {:hardwallet {:pin             {:original     [1 2 3 4 5 6]
+                                                                              :confirmation [1 2 3 4 5 6]
+                                                                              :current      [1 1 1 1 1 1]
+                                                                              :enter-step   :confirmation}
+                                                            :card-connected? true}}}))))
 
   (testing "confirmation doesn't match"
     (is (= {:db {:hardwallet {:pin {:original     []

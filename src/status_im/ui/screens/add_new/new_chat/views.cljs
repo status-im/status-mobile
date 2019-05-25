@@ -10,7 +10,8 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar.view]
             [status-im.ui.screens.add-new.styles :as add-new.styles]
-            [status-im.ui.screens.add-new.new-chat.styles :as styles]))
+            [status-im.ui.screens.add-new.new-chat.styles :as styles]
+            [status-im.utils.platform :as platform]))
 
 (defn- render-row [row _ _]
   [contact-view/contact-view {:contact       row
@@ -32,13 +33,14 @@
                           :style               add-new.styles/input
                           :accessibility-label :enter-contact-code-input
                           :return-key-type     :go}]]
-      [react/touchable-highlight {:on-press            #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
-                                                                            {:toolbar-title (i18n/label :t/new-contact)}
-                                                                            :contact/qr-code-scanned])
-                                  :style               add-new.styles/button-container
-                                  :accessibility-label :scan-contact-code-button}
-       [react/view
-        [vector-icons/icon :main-icons/qr {:color colors/blue}]]]]
+      (when-not platform/desktop?
+        [react/touchable-highlight {:on-press            #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
+                                                                              {:toolbar-title (i18n/label :t/new-contact)}
+                                                                              :contact/qr-code-scanned])
+                                    :style               add-new.styles/button-container
+                                    :accessibility-label :scan-contact-code-button}
+         [react/view
+          [vector-icons/icon :main-icons/qr {:color colors/blue}]]])]
      [react/text {:style styles/error-message}
       error-message]
      (when (seq contacts)

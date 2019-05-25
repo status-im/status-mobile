@@ -84,8 +84,8 @@
          (mapcat
           (fn [{:keys [topic chat-id filter]}]
             [(add-filter chat-id filter)
-             (mailserver/upsert-mailserver-topic {:topic   topic
-                                                  :chat-id chat-id})])
+             (mailserver/upsert-mailserver-topic {:topic    topic
+                                                  :chat-ids [chat-id]})])
           filters)]
      (apply fx/merge cofx
             {:db (dissoc db :filters/after-adding-discovery-filter)}

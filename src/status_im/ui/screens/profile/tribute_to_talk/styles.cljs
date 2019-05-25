@@ -224,18 +224,34 @@
   {:background-color   colors/blue-light
    :padding-horizontal 12
    :padding-top        8
-   :width              222
    :margin-top         4
    :border-radius      8})
 
 (def pay-to-chat-container
-  {:justify-content :center
+  {:justify-content :flex-start
    :align-items     :center
+   :flex-direction  :row
    :height          44})
 
 (def pay-to-chat-text
   {:typography :main-medium
    :color      colors/blue})
+
+(defn payment-status-icon [pending?]
+  {:width 24
+   :height 24
+   :border-radius 12
+   :justify-content :center
+   :align-items :center
+   :background-color (if pending?
+                       (colors/alpha colors/black 0.1)
+                       colors/green)})
+
+(def payment-status-text
+  {:font-size 15
+   :color colors/gray
+   :margin-left 6
+   :line-height 22})
 
 (def edit-container
   {:justify-content :space-between

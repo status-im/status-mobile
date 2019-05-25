@@ -103,13 +103,9 @@
    :width  icon-size
    :height icon-size})
 
-(defn bottom-button [disabled?]
+(def bottom-button
   {:flex-direction :row
-   :align-items    :center
-   :opacity        (if disabled? 0.4 1)})
-
-(def bottom-button-label
-  {:color colors/blue})
+   :align-items    :center})
 
 (defn button [style background? disabled?]
   (merge

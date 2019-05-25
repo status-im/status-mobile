@@ -10,30 +10,29 @@
             status-im.ui.screens.add-new.new-chat.navigation
             status-im.ui.screens.profile.events
             status-im.ui.screens.extensions.add.events
-            status-im.ui.screens.wallet.events
             status-im.ui.screens.wallet.collectibles.events
             status-im.ui.screens.wallet.send.events
             status-im.ui.screens.wallet.request.events
-            status-im.ui.screens.wallet.settings.events
-            status-im.ui.screens.wallet.transactions.events
             status-im.ui.screens.wallet.choose-recipient.events
             status-im.ui.screens.wallet.collectibles.cryptokitties.events
             status-im.ui.screens.wallet.collectibles.cryptostrikers.events
             status-im.ui.screens.wallet.collectibles.etheremon.events
             status-im.ui.screens.wallet.collectibles.superrare.events
             status-im.ui.screens.wallet.collectibles.kudos.events
+            status-im.ui.screens.wallet.navigation
             status-im.utils.keychain.events
             [re-frame.core :as re-frame]
-            [status-im.hardwallet.core :as hardwallet]
             [status-im.chat.models :as chat]
-            [status-im.native-module.core :as status]
+            [status-im.hardwallet.core :as hardwallet]
             [status-im.mailserver.core :as mailserver]
+            [status-im.native-module.core :as status]
             [status-im.ui.components.permissions :as permissions]
             [status-im.utils.dimensions :as dimensions]
+            [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.http :as http]
             [status-im.utils.utils :as utils]
-            [status-im.utils.fx :as fx]))
+            [status-im.wallet.core :as wallet]))
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
@@ -184,17 +183,20 @@
  :screens/on-will-focus
  (fn [{:keys [db] :as cofx} [_ view-id]]
    (fx/merge cofx
-             (if (= view-id :qr-scanner)
-               {:db (-> db
-                        (assoc :view-id view-id)
-                        (assoc-in [:navigation/screen-params view-id :barcode-read?] false))}
-               {:db (assoc db :view-id view-id)})
+             {:db (assoc db :view-id view-id)}
              #(case view-id
                 :keycard-settings (hardwallet/settings-screen-did-load %)
                 :reset-card (hardwallet/reset-card-screen-did-load %)
-                :enter-pin (hardwallet/enter-pin-screen-did-load %)
+                :enter-pin-login (hardwallet/enter-pin-screen-did-load %)
+                :enter-pin-sign (hardwallet/enter-pin-screen-did-load %)
+                :enter-pin-settings (hardwallet/enter-pin-screen-did-load %)
+                :enter-pin-modal (hardwallet/enter-pin-screen-did-load %)
                 :hardwallet-connect (hardwallet/hardwallet-connect-screen-did-load %)
+                :hardwallet-connect-sign (hardwallet/hardwallet-connect-screen-did-load %)
+                :hardwallet-connect-settings (hardwallet/hardwallet-connect-screen-did-load %)
+                :hardwallet-connect-modal (hardwallet/hardwallet-connect-screen-did-load %)
                 :hardwallet-authentication-method (hardwallet/authentication-method-screen-did-load %)
+                :wallet-send-transaction (wallet/send-transaction-screen-did-load %)
                 :accounts (hardwallet/accounts-screen-did-load %)
                 :chat (mark-messages-seen %)
                 nil))))

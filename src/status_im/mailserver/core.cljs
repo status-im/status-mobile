@@ -18,7 +18,8 @@
             [status-im.accounts.update.core :as accounts.update]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.transport.partitioned-topic :as transport.topic]
-            [status-im.ui.screens.mobile-network-settings.utils :as mobile-network-utils]))
+            [status-im.ui.screens.mobile-network-settings.utils :as mobile-network-utils]
+            [status-im.utils.random :as rand]))
 
 ;; How do mailserver work ?
 ;;
@@ -35,6 +36,7 @@
 
 (def one-day (* 24 3600))
 (def seven-days (* 7 one-day))
+(def max-gaps-range (* 30 one-day))
 (def max-request-range one-day)
 (def maximum-number-of-attempts 2)
 (def request-timeout 30)
@@ -227,6 +229,13 @@
               (when-not (or sym-key-id generating-sym-key?)
                 (generate-mailserver-symkey mailserver)))))
 
+(defn executing-gap-request?
+  [{:mailserver/keys [current-request fetching-gaps-in-progress]}]
+  (= (get fetching-gaps-in-progress (:chat-id current-request))
+     (select-keys
+      current-request
+      [:from :to :force-to? :topics :chat-id])))
+
 (fx/defn connect-to-mailserver
   "Add mailserver as a peer using `::add-peer` cofx and generate sym-key when
    it doesn't exists
@@ -235,12 +244,15 @@
    A connection-check is made after `connection timeout` is reached and
    mailserver-state is changed to error if it is not connected by then"
   [{:keys [db] :as cofx}]
-  (let [{:keys [address] :as mailserver} (fetch-current cofx)
+  (let [{:keys [address]} (fetch-current cofx)
         {:keys [peers-summary]} db
-        added? (registered-peer? peers-summary
-                                 address)]
+        added?       (registered-peer? peers-summary address)
+        gap-request? (executing-gap-request? db)]
     (fx/merge cofx
-              {:db (dissoc db :mailserver/current-request)}
+              {:db (cond-> (dissoc db :mailserver/current-request)
+                     gap-request?
+                     (-> (assoc :mailserver/fetching-gaps-in-progress {})
+                         (dissoc :mailserver/planned-gap-requests)))}
               (if added?
                 (mark-trusted-peer)
                 (add-peer)))))
@@ -308,6 +320,7 @@
               " from " actual-from
               " force-to? " force-to?
               " to " to
+              " range " (- to from)
               " cursor " cursor
               " limit " actual-limit)
     (.requestMessages (transport.utils/shh web3)
@@ -361,25 +374,32 @@
            :force-to? (not (nil? force-request-to))})))))
 
 (defn aggregate-requests
-  [acc {:keys [topic from to force-to?]}]
-  (update acc [from to force-to?]
-          (fn [{:keys [topics]}]
-            {:topics    ((fnil conj #{}) topics topic)
-             :from      from
-             :to        to
-             ;; To is sent to the mailserver only when force-to? is true,
-             ;; also we use to calculate when the last-request was sent.
-             :force-to? force-to?})))
+  [acc {:keys [topic from to force-to? gap chat-id]}]
+  (when from
+    (update acc [from to force-to?]
+            (fn [{:keys [topics]}]
+              {:topics    ((fnil conj #{}) topics topic)
+               :from      from
+               :to        to
+               ;; To is sent to the mailserver only when force-to? is true,
+               ;; also we use to calculate when the last-request was sent.
+               :force-to? force-to?
+               :gap       gap
+               :chat-id   chat-id}))))
 
 (defn prepare-messages-requests
   [{{:keys [:mailserver/requests-from
             :mailserver/requests-to
-            :mailserver/topics]} :db}
+            :mailserver/topics
+            :mailserver/planned-gap-requests]} :db}
    default-request-to]
   (transduce
    (keep (topic->request default-request-to requests-from requests-to))
    (completing aggregate-requests vals)
-   {}
+   (reduce
+    aggregate-requests
+    {}
+    (vals planned-gap-requests))
    topics))
 
 (fx/defn process-next-messages-request
@@ -494,8 +514,11 @@
   "if the chat is the only chat of the mailserver topic delete the mailserver topic
    and process-next-messages-requests again to remove pending request for that topic
    otherwise remove the chat-id of the chat from the mailserver topic and save"
-  [{:keys [db now] :as cofx} chat-id]
-  (let [topic (get-in db [:transport/chats chat-id :topic])
+  [{:keys [db] :as cofx} chat-id]
+  (let [{:keys [public?] :as chat} (get-in db [:chats chat-id])
+        topic (if (and chat (not public?))
+                transport.topic/discovery-topic-hash
+                (get-in db [:transport/chats chat-id :topic]))
         {:keys [chat-ids] :as mailserver-topic} (update (get-in db [:mailserver/topics topic])
                                                         :chat-ids
                                                         disj chat-id)]
@@ -509,99 +532,222 @@
                         {:topic topic
                          :mailserver-topic mailserver-topic})]})))
 
-(defn calculate-gap
-  [{:keys [gap-from
-           gap-to
-           last-request] :as config}
-   {:keys [request-from
-           request-to]}]
-  (merge config
-         (cond
-           (nil? gap-from)
-           {:gap-from     request-to
-            :gap-to       request-to
-            :last-request request-to}
+(fx/defn remove-gaps
+  [{:keys [db]} chat-id]
+  {:db (update db :mailserver/gaps dissoc chat-id)
+   :data-store/tx [(data-store.mailservers/delete-all-gaps-by-chat chat-id)]})
 
-           ;;------GF     GT--------LRT     F---T
-           (> request-from last-request)
-           {:gap-from     last-request
-            :gap-to       request-from
-            :last-request request-to}
+(fx/defn remove-range
+  [{:keys [db]} chat-id]
+  {:db (update db :mailserver/ranges dissoc chat-id)
+   :data-store/tx [(data-store.mailservers/delete-range chat-id)]})
 
-           ;;------GF     GT--------LRT
-           ;;                  F----------T
-           (and (>= last-request request-from gap-to)
-                (> request-to last-request))
-           {:last-request request-to}
+(defn update-mailserver-topic
+  [{:keys [last-request] :as config}
+   {:keys [request-to]}]
+  (cond-> config
+    (> request-to last-request)
+    (assoc :last-request request-to)))
 
-           ;;------GF     GT--------LRT
-           ;;                F----T
-           (and (>= last-request request-from gap-to)
-                (>= last-request request-to gap-to))
-           config
+(defn check-existing-gaps
+  [chat-id chat-gaps request]
+  (let [request-from (:from request)
+        request-to (:to request)]
+    (reduce
+     (fn [acc {:keys [from to id] :as gap}]
+       (cond
+         ;; F----T
+         ;;         RF---RT
+         (< to request-from)
+         acc
 
-           ;;------GF     GT--------LRT
-           ;;          F-------T
-           (and (> gap-to request-from gap-from)
-                (>= last-request request-to gap-to))
-           {:gap-to request-from}
+         ;;          F----T
+         ;; RF---RT
+         (< request-to from)
+         (reduced acc)
 
-           ;;------GF     GT--------LRT
-           ;;         F-T
-           (and (> gap-to request-from gap-from)
-                (> gap-to request-to gap-from))
-           config
+         ;;     F------T
+         ;; RF-----RT
+         (and (<= request-from from)
+              (< from request-to to))
+         (let [updated-gap (assoc gap
+                                  :from request-to
+                                  :to to)]
+           (reduced
+            (update acc :updated-gaps assoc id updated-gap)))
 
-           ;;------GF     GT--------LRT
-           ;;   F------T
-           (and (>= gap-from request-from)
-                (> gap-to request-to gap-from))
-           {:gap-from request-to}
+         ;;   F------T
+         ;; RF----------RT
+         (and (<= request-from from)
+              (<= to request-to))
+         (update acc :deleted-gaps conj (:id gap))
 
-           ;;---------GF=GT=LRT
-           ;; F---T
-           (and (>= gap-from request-from)
-                (>= gap-from request-to)
-                (= gap-from last-request))
-           {:gap-from request-to}
+         ;; F---------T
+         ;;     RF-------RT
+         (and (< from request-from to)
+              (<= to request-to))
+         (let [updated-gap (assoc gap
+                                  :from from
+                                  :to request-from)]
+           (update acc :updated-gaps assoc id updated-gap))
 
-           ;;------GF     GT--------LRT
-           ;; F---T
-           (and (>= gap-from request-from)
-                (>= gap-from request-to))
-           config
+         ;; F---------T
+         ;;   RF---RT
+         (and (< from request-from)
+              (< request-to to))
+         (reduced
+          (-> acc
+              (update :deleted-gaps conj (:id gap))
+              (update :new-gaps concat [{:chat-id chat-id
+                                         :from    from
+                                         :to      request-from}
+                                        {:chat-id chat-id
+                                         :from    request-to
+                                         :to      to}])))
 
-           ;;------GF     GT--------LRT
-           ;;   F-------------T
-           (and (>= gap-from request-from)
-                (>= last-request request-to gap-to))
-           {:gap-from     last-request
-            :gap-to       last-request
-            :last-request last-request}
+         :else acc))
+     {}
+     (sort-by :from (vals chat-gaps)))))
 
-           ;;------GF     GT--------LRT
-           ;;   F------------------------T
-           (and (>= gap-from request-from)
-                (>= request-to last-request))
-           {:gap-from     request-to
-            :gap-to       request-to
-            :last-request request-to}
+(defn check-all-gaps
+  [gaps chat-ids request]
+  (transduce
+   (map (fn [chat-id]
+          (let [chat-gaps (get gaps chat-id)]
+            [chat-id (check-existing-gaps chat-id chat-gaps request)])))
+   (completing
+    (fn [acc [chat-id {:keys [new-gaps updated-gaps deleted-gaps]}]]
+      (cond-> acc
+        (seq new-gaps)
+        (assoc-in [:new-gaps chat-id] new-gaps)
 
-           ;;------GF     GT--------LRT
-           ;;          F-----------------T
-           (and (> gap-to request-from gap-from)
-                (>= request-to last-request))
-           {:gap-to       request-from
-            :last-request request-to})))
+        (seq updated-gaps)
+        (assoc-in [:updated-gaps chat-id] updated-gaps)
+
+        (seq deleted-gaps)
+        (assoc-in [:deleted-gaps chat-id] deleted-gaps))))
+   {}
+   chat-ids))
+
+(fx/defn update-ranges
+  [{:keys [db] :as cofx}]
+  (let [{:keys [topics from to]}
+        (get db :mailserver/current-request)
+        chat-ids       (mapcat
+                        :chat-ids
+                        (-> (:mailserver/topics db)
+                            (select-keys topics)
+                            vals))
+        ranges         (:mailserver/ranges db)
+        updated-ranges (into
+                        {}
+                        (keep
+                         (fn [chat-id]
+                           (let [chat-id (str chat-id)
+                                 {:keys [lowest-request-from
+                                         highest-request-to]
+                                  :as   range}
+                                 (get ranges chat-id)]
+                             [chat-id
+                              (cond-> (assoc range :chat-id chat-id)
+                                (or (nil? highest-request-to)
+                                    (> to highest-request-to))
+                                (assoc :highest-request-to to)
+
+                                (or (nil? lowest-request-from)
+                                    (< from lowest-request-from))
+                                (assoc :lowest-request-from from))])))
+                        chat-ids)]
+    (fx/merge
+     cofx
+     {:db            (update db :mailserver/ranges merge updated-ranges)
+      :data-store/tx (map data-store.mailservers/save-chat-requests-range
+                          (vals updated-ranges))})))
+
+(defn prepare-new-gaps [new-gaps ranges {:keys [from to] :as req} chat-ids]
+  (into
+   {}
+   (comp
+    (map (fn [chat-id]
+           (let [gaps (get new-gaps chat-id)
+                 {:keys [highest-request-to lowest-request-from]}
+                 (get ranges chat-id)]
+             [chat-id (cond-> gaps
+                        (and
+                         (not (nil? highest-request-to))
+                         (< highest-request-to from))
+                        (conj {:chat-id chat-id
+                               :from    highest-request-to
+                               :to      from})
+                        (and
+                         (not (nil? lowest-request-from))
+                         (< to lowest-request-from))
+                        (conj {:chat-id chat-id
+                               :from    to
+                               :to      lowest-request-from}))])))
+    (keep (fn [[chat-id gaps]]
+            [chat-id
+             (into {}
+                   (map (fn [gap]
+                          (let [id (rand/guid)]
+                            [id (assoc gap :id id)])))
+                   gaps)])))
+   chat-ids))
+
+(fx/defn update-gaps
+  [{:keys [db]}]
+  (let [{:keys [topics] :as request} (get db :mailserver/current-request)
+        chat-ids          (into #{}
+                                (comp
+                                 (keep #(get-in db [:mailserver/topics %]))
+                                 (mapcat :chat-ids)
+                                 (map str))
+                                topics)
+
+        {:keys [updated-gaps new-gaps deleted-gaps]}
+        (check-all-gaps (get db :mailserver/gaps) chat-ids request)
+
+        ranges            (:mailserver/ranges db)
+        prepared-new-gaps (prepare-new-gaps new-gaps ranges request chat-ids)]
+    {:db
+     (reduce (fn [db chat-id]
+               (let [chats-deleted-gaps (get deleted-gaps chat-id)
+                     chats-updated-gaps (merge (get updated-gaps chat-id)
+                                               (get prepared-new-gaps chat-id))]
+                 (update-in db [:mailserver/gaps chat-id]
+                            (fn [chat-gaps]
+                              (-> (apply dissoc chat-gaps chats-deleted-gaps)
+                                  (merge chats-updated-gaps))))))
+             db
+             chat-ids)
+
+     :data-store/tx
+     (conj
+      (map
+       data-store.mailservers/save-mailserver-requests-gap
+       (concat (mapcat vals (vals updated-gaps))
+               (mapcat vals (vals prepared-new-gaps))))
+      (data-store.mailservers/delete-mailserver-requests-gaps
+       (mapcat val deleted-gaps)))}))
+
+(fx/defn update-chats-and-gaps
+  [cofx cursor]
+  (when (or (nil? cursor)
+            (and (string? cursor)
+                 (clojure.string/blank? cursor)))
+    (fx/merge
+     cofx
+     (update-gaps)
+     (update-ranges))))
 
 (defn get-updated-mailserver-topics [db requested-topics from to]
   (into
    {}
    (keep (fn [topic]
            (when-let [config (get-in db [:mailserver/topics topic])]
-             [topic (calculate-gap config
-                                   {:request-from from
-                                    :request-to   to})])))
+             [topic (update-mailserver-topic config
+                                             {:request-from from
+                                              :request-to   to})])))
    requested-topics))
 
 (fx/defn update-mailserver-topics
@@ -622,16 +768,11 @@
         (if (seq cursor)
           (when-let [mailserver (get-mailserver-when-ready cofx)]
             (let [request-with-cursor (assoc request :cursor cursor)]
-              {:db (assoc db :mailserver/current-request request-with-cursor)
-               :mailserver/request-messages {:web3 (:web3 db)
-                                             :mailserver    mailserver
-                                             :request request-with-cursor}}))
-          (let [{:keys [chat-id] :as current-request} (db :mailserver/current-request)
-                gaps                    (db :mailserver/fetching-gaps-in-progress)
-                fetching-gap-completed? (= (get gaps chat-id)
-                                           (select-keys
-                                            current-request
-                                            [:from :to :force-to? :topics :chat-id]))]
+              {:db                          (assoc db :mailserver/current-request request-with-cursor)
+               :mailserver/request-messages {:web3       (:web3 db)
+                                             :mailserver mailserver
+                                             :request    request-with-cursor}}))
+          (let [{:keys [gap chat-id]} request]
             (fx/merge cofx
                       {:db            (-> db
                                           (dissoc :mailserver/current-request)
@@ -642,9 +783,11 @@
                                           (update :mailserver/topics merge mailserver-topics)
                                           (update :mailserver/fetching-gaps-in-progress
                                                   (fn [gaps]
-                                                    (if fetching-gap-completed?
-                                                      (dissoc gaps chat-id)
-                                                      gaps))))
+                                                    (if gap
+                                                      (update gaps chat-id dissoc gap)
+                                                      gaps)))
+                                          (update :mailserver/planned-gap-requests
+                                                  dissoc gap))
                        :data-store/tx (mapv (fn [[topic mailserver-topic]]
                                               (data-store.mailservers/save-mailserver-topic-tx
                                                {:topic            topic
@@ -685,6 +828,7 @@
               :dispatch-n                (map
                                           #(identity [:chat.ui/join-time-messages-checked %])
                                           never-synced-chats-in-request)}
+             (update-chats-and-gaps cursor)
              (update-mailserver-topics {:request-id requestID
                                         :cursor     cursor}))
             (fx/merge
@@ -696,11 +840,13 @@
                                              {:ms       1000
                                               :dispatch [:chat.ui/join-time-messages-checked %]})
                                            never-synced-chats-in-request))}
+             (update-chats-and-gaps cursor)
              (update-mailserver-topics {:request-id requestID
                                         :cursor     cursor})))
           (fx/merge
            cofx
            {:mailserver/increase-limit []}
+           (update-chats-and-gaps cursor)
            (update-mailserver-topics {:request-id requestID
                                       :cursor     cursor}))))
       (handle-request-error cofx errorMessage))))
@@ -721,23 +867,46 @@
       add the chat-id to the topic and reset last-request
       there was no filter for the chat and messages for that
       so the whole history for that topic needs to be re-fetched"
-  [{:keys [db now] :as cofx} {:keys [topic chat-id]}]
-  (let [{:keys [chat-ids last-request] :as current-mailserver-topic}
-        (get-in db [:mailserver/topics topic] {:chat-ids #{}})]
-    (when-let [mailserver-topic (when-not (chat-ids chat-id)
-                                  (-> current-mailserver-topic
-                                      (assoc :last-request (- (quot now 1000)
-                                                              (* 24 60 60)))
-                                      (update :chat-ids conj chat-id)))]
-      (fx/merge cofx
-                {:db (assoc-in db [:mailserver/topics topic] mailserver-topic)
-                 :data-store/tx [(data-store.mailservers/save-mailserver-topic-tx
-                                  {:topic topic
-                                   :mailserver-topic mailserver-topic})]}))))
+  [{:keys [db now] :as cofx} {:keys [topic chat-ids fetch?]
+                              :or   {fetch? true}}]
+  (let [current-mailserver-topic (get-in db [:mailserver/topics topic]
+                                         {:chat-ids #{}})
+        existing-ids             (:chat-ids current-mailserver-topic)
+        chat-id                  (first chat-ids)]
+    (when-not (every? (partial contains? existing-ids) chat-ids)
+      (let [{:keys [new-account? public-key]} (:account/account db)
+            now-s        (quot now 1000)
+            previous-last-request (get current-mailserver-topic :last-request)
+            last-request (cond (and new-account?
+                                    (nil? previous-last-request)
+                                    (or (= chat-id :discovery-topic)
+                                        (and
+                                         (string? chat-id)
+                                         (string/starts-with?
+                                          chat-id
+                                          public-key))))
+                               (- now-s 10)
+
+                               (not fetch?)
+                               ;; in case a topic has been already requested
+                               ;; reset `last-request` so that creation
+                               ;; of an extra gap is prevented
+                               (max (or previous-last-request (- now-s 10))
+                                    (- now-s max-request-range))
+
+                               :else
+                               (- now-s max-request-range))
+            mailserver-topic (-> current-mailserver-topic
+                                 (assoc :last-request last-request)
+                                 (update :chat-ids clojure.set/union (set chat-ids)))]
+        (fx/merge cofx
+                  {:db            (assoc-in db [:mailserver/topics topic] mailserver-topic)
+                   :data-store/tx [(data-store.mailservers/save-mailserver-topic-tx
+                                    {:topic            topic
+                                     :mailserver-topic mailserver-topic})]})))))
 
 (fx/defn fetch-history
   [{:keys [db] :as cofx} chat-id {:keys [from to]}]
-
   (log/debug "fetch-history" "chat-id:" chat-id "from-timestamp:" from)
   (let [public-key (accounts.db/current-public-key cofx)
         topic  (or (get-in db [:transport/chats chat-id :topic])
@@ -750,32 +919,38 @@
               (process-next-messages-request))))
 
 (fx/defn fill-the-gap
-  [{:keys [db] :as cofx} {:keys [exists? from to topic chat-id]}]
-  (let [mailserver (get-mailserver-when-ready cofx)
-        request    {:from      from
-                    :to        to
-                    :force-to? true
-                    :topics    [topic]
-                    :chat-id   chat-id}]
-    (when exists?
-      {:db
-       (-> db
-           (assoc
-            :mailserver/pending-requests 1
-            :mailserver/current-request request
-            :mailserver/request-to to)
-
-           (update :mailserver/fetching-gaps-in-progress
-                   assoc chat-id request))
-
-       :mailserver/request-messages
-       {:web3       (:web3 db)
-        :mailserver mailserver
-        :request    request}})))
+  [{:keys [db] :as cofx} {:keys [gaps topic chat-id]}]
+  (let [mailserver      (get-mailserver-when-ready cofx)
+        requests        (into {}
+                              (map
+                               (fn [{:keys [from to id]}]
+                                 [id
+                                  {:from      (max from
+                                                   (- to max-request-range))
+                                   :to        to
+                                   :force-to? true
+                                   :topics    [topic]
+                                   :topic     topic
+                                   :chat-id   chat-id
+                                   :gap       id}]))
+                              gaps)
+        first-request   (val (first requests))
+        current-request (:mailserver/current-request db)]
+    (cond-> {:db (-> db
+                     (assoc :mailserver/planned-gap-requests requests)
+                     (update :mailserver/fetching-gaps-in-progress
+                             assoc chat-id requests))}
+      (not current-request)
+      (-> (assoc-in [:db :mailserver/current-request] first-request)
+          (assoc :mailserver/request-messages
+                 {:web3       (:web3 db)
+                  :mailserver mailserver
+                  :request    first-request})))))
 
 (fx/defn resend-request
   [{:keys [db] :as cofx} {:keys [request-id]}]
-  (let [current-request (:mailserver/current-request db)]
+  (let [current-request (:mailserver/current-request db)
+        gap-request? (executing-gap-request? db)]
     ;; no inflight request, do nothing
     (when (and current-request
                ;; the request was never successful
@@ -792,16 +967,28 @@
         (fx/merge cofx
                   {:db (update db :mailserver/current-request dissoc :attempts)}
                   (change-mailserver))
-        (if-let [mailserver (get-mailserver-when-ready cofx)]
-          (let [{:keys [topics from to cursor limit] :as request} current-request
-                web3 (:web3 db)]
-            (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to "cursor" cursor "limit" (decrease-limit))
-            {:db (update-in db [:mailserver/current-request :attempts] inc)
-             :mailserver/decrease-limit []
-             :mailserver/request-messages {:web3 web3
-                                           :mailserver mailserver
-                                           :request (assoc request :limit (decrease-limit))}})
-          {:mailserver/decrease-limit []})))))
+        (let [mailserver (get-mailserver-when-ready cofx)
+              offline? (= :offline (:network-status db))]
+          (cond
+            (and gap-request? offline?)
+            {:db (-> db
+                     (dissoc :mailserver/current-request)
+                     (update :mailserver/fetching-gaps-in-progress
+                             dissoc (:chat-id current-request))
+                     (dissoc :mailserver/planned-gap-requests))}
+
+            mailserver
+            (let [{:keys [topics from to cursor limit] :as request} current-request
+                  web3 (:web3 db)]
+              (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to "cursor" cursor "limit" (decrease-limit))
+              {:db                          (update-in db [:mailserver/current-request :attempts] inc)
+               :mailserver/decrease-limit   []
+               :mailserver/request-messages {:web3       web3
+                                             :mailserver mailserver
+                                             :request    (assoc request :limit (decrease-limit))}})
+
+            :else
+            {:mailserver/decrease-limit []}))))))
 
 (fx/defn initialize-mailserver
   [cofx custom-mailservers]
@@ -955,3 +1142,25 @@
     (fx/merge cofx
               (accounts.update/update-settings (assoc-in settings [:mailserver current-fleet] mailserver-id)
                                                {}))))
+
+(fx/defn initialize-ranges
+  [{:keys [:data-store/all-chat-requests-ranges db]}]
+  {:db (assoc db :mailserver/ranges all-chat-requests-ranges)})
+
+(fx/defn load-gaps
+  [{:keys [db now :data-store/all-gaps]} chat-id]
+  (when-not (get-in db [:chats chat-id :gaps-loaded?])
+    (let [now-s         (quot now 1000)
+          gaps          (all-gaps chat-id)
+          outdated-gaps (into [] (comp (filter #(< (:to %)
+                                                   (- now-s max-gaps-range)))
+                                       (map :id))
+                              (vals gaps))
+          gaps          (apply dissoc gaps outdated-gaps)]
+      {:db
+       (-> db
+           (assoc-in [:chats chat-id :gaps-loaded?] true)
+           (assoc-in [:mailserver/gaps chat-id] gaps))
+       :data-store/tx
+       [(data-store.mailservers/delete-mailserver-requests-gaps
+         outdated-gaps)]})))

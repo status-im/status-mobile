@@ -24,6 +24,9 @@
     (let [opts (cond-> {:show?     show?
                         :on-cancel #(re-frame/dispatch [:bottom-sheet/hide])}
 
+                 (map? view)
+                 (merge view)
+
                  (= view :mobile-network)
                  (merge mobile-network-settings/settings-sheet)
 
@@ -31,12 +34,21 @@
                  (merge mobile-network-settings/offline-sheet)
 
                  (= view :add-new)
-                 (merge home.sheet/add-new))]
+                 (merge home.sheet/add-new)
+
+                 (= view :public-chat-actions)
+                 (merge home.sheet/public-chat-actions)
+
+                 (= view :private-chat-actions)
+                 (merge home.sheet/private-chat-actions)
+
+                 (= view :group-chat-actions)
+                 (merge home.sheet/group-chat-actions))]
 
       [bottom-sheet/bottom-sheet opts])))
 
 (defn main []
-  (let [view-id        (re-frame/subscribe [:get :view-id])
+  (let [view-id        (re-frame/subscribe [:view-id])
         main-component (atom nil)]
     (reagent/create-class
      {:component-did-mount
@@ -66,7 +78,8 @@
                                   (if js/goog.DEBUG
                                     @initial-view-id
                                     @view-id))))
-        (react/dismiss-keyboard!))
+        (when-not platform/desktop?
+          (react/dismiss-keyboard!)))
       :component-did-update
       (fn []
         (log/debug :main-component-did-update @view-id))
@@ -81,7 +94,7 @@
                                       platform/android?
                                       (not js/goog.DEBUG)
                                       (not (contains? #{:intro :login :progress} @view-id)))
-                                 (navigation/navigate-to @view-id)))
+                                 (navigation/navigate-to @view-id nil)))
              ;; see https://reactnavigation.org/docs/en/state-persistence.html#development-mode
              :persistenceKey (when js/goog.DEBUG rand-label)}]
            [bottom-sheet]]))})))

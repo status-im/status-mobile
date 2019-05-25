@@ -4,11 +4,14 @@
             [status-im.utils.platform :as platform]
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.config :as config]))
 
 (defn show-desktop-menu [items]
   (.show rn-dependencies/desktop-menu
-         (clj->js (mapv #(hash-map :text (:text %1) :onPress (:on-select %1)) items))))
+         (if config/mobile-ui-for-desktop?
+           (clj->js (mapv #(hash-map :text (:label %1) :onPress (:action %1)) items))
+           (clj->js (mapv #(hash-map :text (:text %1) :onPress (:on-select %1)) items)))))
 
 (defn get-chat-menu-items [group-chat public? chat-id]
   (->> [(when (and (not group-chat) (not public?))
@@ -21,6 +24,10 @@
          :on-select #(re-frame/dispatch [:chat.ui/clear-history-pressed])}
         {:text (i18n/label :t/fetch-history)
          :on-select #(re-frame/dispatch [:chat.ui/fetch-history-pressed chat-id])}
+        #_{:text      "Fetch 48-60h"
+           :on-select #(re-frame/dispatch [:chat.ui/fetch-history-pressed48-60 chat-id])}
+        #_{:text      "Fetch 84-96h"
+           :on-select #(re-frame/dispatch [:chat.ui/fetch-history-pressed84-96 chat-id])}
         {:text (i18n/label :t/delete-chat)
          :on-select #(re-frame/dispatch [(if (and group-chat (not public?))
                                            :group-chats.ui/remove-chat-pressed

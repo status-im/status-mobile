@@ -43,7 +43,7 @@
   {:width         image-size
    :height        image-size
    :margin-right  16
-   :border-radius 40
+   :border-radius (/ image-size 2)
    :border-color  (colors/alpha colors/gray 0.1)
    :border-width  1})
 

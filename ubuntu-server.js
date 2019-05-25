@@ -114,6 +114,18 @@ function rnUbuntuServer(readable, writable) {
   });
 }
 
+var closeDangerousConnection = function(sock) {
+  var remoteAddress = sock.remoteAddress;
+  if(remoteAddress.indexOf("127.0.0.1") == -1) {
+    console.log("WARN: connection not from localhost, will be closed: ", remoteAddress);
+    sock.destroy();
+    return true;
+  } else {
+    console.log("Connection from: ", remoteAddress);
+    return false;
+  }
+}
+
 if (process.argv.indexOf('--pipe') != -1) {
   console.log = console.error
   rnUbuntuServer(process.stdin, process.stdout);
@@ -127,6 +139,7 @@ if (process.argv.indexOf('--pipe') != -1) {
 
   var server = net.createServer((sock) => {
     DEBUG && console.error("-- Connection from RN client");
-    rnUbuntuServer(sock, sock);
+    if(!closeDangerousConnection(sock))
+      rnUbuntuServer(sock, sock);
   }).listen(port, function() { console.error("-- Server starting") });
 }

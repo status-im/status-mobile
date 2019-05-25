@@ -11,8 +11,8 @@
               :screens [:wallet-send-transaction
                         :recent-recipients
                         :wallet-transaction-sent
-                        :enter-pin
-                        :hardwallet-connect
+                        :enter-pin-sign
+                        :hardwallet-connect-sign
                         :recipient-qr-code
                         :wallet-send-assets]}
              {:name    :request-transaction-stack
@@ -23,5 +23,9 @@
              :unsigned-transactions
              :transactions-history
              :wallet-transaction-details
-             :wallet-settings-hook]
+             :wallet-settings-hook
+             :extension-screen-holder
+             :wallet-settings-assets
+             :wallet-add-custom-token
+             :wallet-custom-token-details]
    :config  {:initialRouteName :wallet}})

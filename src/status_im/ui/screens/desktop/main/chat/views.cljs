@@ -25,7 +25,8 @@
             [status-im.utils.identicon :as identicon]
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.desktop.main.chat.emoji :as emoji]
-            [status-im.ui.components.icons.vector-icons :as icons])
+            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.screens.chat.message.gap :as gap])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn toolbar-chat-view
@@ -186,9 +187,16 @@
 (defmethod message :default
   [text me? {:keys [message-id chat-id message-status user-statuses from
                     current-public-key content-type outgoing type value] :as message}]
-  (if (= type :datemark)
+  (cond
+    (= type :datemark)
     ^{:key (str "datemark" message-id)}
     [message.datemark/chat-datemark value]
+
+    (= type :gap)
+    ^{:key (str "gap" value)}
+    [gap/gap message nil nil]
+
+    :else
     (when (contains? constants/desktop-content-types content-type)
       (reagent.core/create-class
        {:component-did-mount
@@ -301,7 +309,7 @@
 (views/defview chat-text-input [chat-id input-text]
   (views/letsubs [inp-ref       (atom nil)
                   disconnected? [:disconnected?]
-                  show-emoji?   [:get-in [:desktop :show-emoji?]]]
+                  {:keys [show-emoji?]}   [:desktop]]
     {:component-will-update
      (fn [e [_ new-chat-id new-input-text]]
        (let [[_ old-chat-id] (.. e -props -argv)]
@@ -358,7 +366,7 @@
 (views/defview chat-view []
   (views/letsubs [{:keys [input-text chat-id pending-invite-inviter-name] :as current-chat}
                   [:chats/current-chat]
-                  show-emoji?        [:get-in [:desktop :show-emoji?]]
+                  {:keys [show-emoji?]} [:desktop]
                   current-public-key [:account/public-key]]
     [react/view {:style styles/chat-view}
      [toolbar-chat-view current-chat]

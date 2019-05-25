@@ -10,7 +10,8 @@
    [status-im.transport.message.public-chat :as transport.public-chat]
    [status-im.data-store.accounts :as data-store.accounts]
    [status-im.transport.chat.core :as transport.chat]
-   [status-im.accounts.db :as accounts.db]))
+   [status-im.accounts.db :as accounts.db]
+   [status-im.mailserver.core :as mailserver]))
 
 (defn topic [pk]
   (str pk "-contact-code"))
@@ -46,15 +47,17 @@
                                      (and is-active
                                           (contains? members-joined my-public-key)
                                           (contains? members their-public-key)))
-                                   (vals (:chats db)))]
+                                   (vals (:chats db)))
+        their-topic (topic their-public-key)]
     (when (and (not (contact.db/active? db their-public-key))
                (not= my-public-key their-public-key)
                (not (get-in db [:chats their-public-key :is-active]))
                (empty? active-group-chats))
-
       (fx/merge
        cofx
-       (transport.chat/unsubscribe-from-chat (topic their-public-key))))))
+       (mailserver/remove-gaps their-topic)
+       (mailserver/remove-range their-topic)
+       (transport.chat/unsubscribe-from-chat their-topic)))))
 
 ;; Publish contact code every 12hrs
 (def publish-contact-code-interval (* 12 60 60 1000))

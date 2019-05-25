@@ -225,7 +225,7 @@ class OkGotItButton(BaseButton):
 
     def __init__(self, driver):
         super(OkGotItButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Ok, got it')
+        self.locator = self.Locator.text_selector('OK, got it')
 
 
 class DebugModeToggle(BaseButton):

@@ -77,6 +77,7 @@ PODS:
   - SQLCipher/common (3.4.2)
   - SQLCipher/standard (3.4.2):
     - SQLCipher/common
+  - SSZipArchive (2.1.4)
   - yoga (0.59.3.React)
 
 DEPENDENCIES:
@@ -88,6 +89,7 @@ DEPENDENCIES:
   - react-native-webview (from `../node_modules/react-native-webview`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - SQLCipher (~> 3.0)
+  - SSZipArchive
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -102,6 +104,7 @@ SPEC REPOS:
     - nanopb
     - Protobuf
     - SQLCipher
+    - SSZipArchive
 
 EXTERNAL SOURCES:
   React:
@@ -127,14 +130,15 @@ SPEC CHECKSUMS:
   GoogleUtilities: 06b66f9567769a7958db20a92f0128b2843e49d5
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
-  React: b52fdb80565505b7e4592b313a38868f5df51641
-  react-native-background-timer: f7bc6cb474ca47d81f3be8a1b4c986ac7ee136b3
-  react-native-camera: 70db6904b34e02054a25deb84dde9196e94caaee
-  react-native-webview: 763be2e9f8b103d195170fafc2fd77805d5434b5
-  RNKeychain: 216f37338fcb9e5c3a2530f1e3295f737a690cb1
+  React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
+  react-native-background-timer: bb7a98c8e97fc7c290de2d423dd09ddb73dcbcbb
+  react-native-camera: 68ad5143d2d0636236d46c7de8d2a6455ca52a36
+  react-native-webview: a42108b827082f8f0333529b0772102031d5960d
+  RNKeychain: 627c6095cef215dd3d9804a9a9cf45ab96aa3997
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
-  yoga: 1a492113f66a35e9e583bb0434f4b8cc668dd839
+  SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
+  yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
-PODFILE CHECKSUM: 2e0971124458d413e18b407b2337bf2c1d32f357
+PODFILE CHECKSUM: 1b73a7ab29d939e99e86434864c837afaf55851c
 
-COCOAPODS: 1.6.1
+COCOAPODS: 1.5.3

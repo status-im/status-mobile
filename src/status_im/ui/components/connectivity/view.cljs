@@ -1,49 +1,65 @@
 (ns status-im.ui.components.connectivity.view
   (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
-  (:require [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
+  (:require [reagent.core :as reagent]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.connectivity.styles :as styles]
-            [status-im.utils.platform :as utils.platform]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.animation :as animation]
             [status-im.utils.utils :as utils]))
 
+(defn easing [direction n]
+  {:toValue         n
+   :easing          ((if (= :in direction)
+                       (animation/easing-in)
+                       (animation/easing-out))
+                     (.-quad (animation/easing)))
+   :duration        400
+   :useNativeDriver true})
+
+(defn animated-bar-style [margin-value width color]
+  {:position         :absolute
+   :width            width
+   :transform        [{:translateX
+                       (animation/interpolate
+                        margin-value
+                        {:inputRange  [0 1]
+                         :outputRange [0 width]})}]
+   :height           3
+   :background-color color})
+
 (views/defview loading-indicator [parent-width]
-  (views/letsubs [anim-width (animation/create-value (* 0.15 parent-width))
-                  anim-x (animation/create-value 0)
-                  easing-in (fn [n] {:toValue (* n parent-width)
-                                     :easing (.in (animation/easing) (.-quad (animation/easing)))
-                                     :duration 400})
-                  easing-out (fn [n] {:toValue (* n parent-width)
-                                      :easing   (.out (animation/easing) (.-quad (animation/easing)))
-                                      :duration 400})]
-    {:component-did-mount (fn [_]
-                            (animation/start
-                             (animation/anim-loop
-                              (animation/anim-sequence
-                               [(animation/parallel
-                                 [(animation/timing anim-width (easing-in 0.6))
-                                  (animation/timing anim-x (easing-in 0.2))])
-                                (animation/parallel
-                                 [(animation/timing anim-width (easing-out 0.15))
-                                  (animation/timing anim-x (easing-out 0.85))])
-                                (animation/parallel
-                                 [(animation/timing anim-width (easing-in 0.6))
-                                  (animation/timing anim-x (easing-in 0.2))])
-                                (animation/parallel
-                                 [(animation/timing anim-width (easing-out 0.15))
-                                  (animation/timing anim-x (easing-out 0))])]))))}
+  (views/letsubs [blue-bar-left-margin (animation/create-value 0)
+                  white-bar-left-margin (animation/create-value 0)]
+    {:component-did-mount
+     (fn [_]
+       (animation/start
+        (animation/anim-loop
+         (animation/anim-sequence
+          [(animation/parallel
+            [(animation/timing blue-bar-left-margin (easing :in 0.19))
+             (animation/timing white-bar-left-margin (easing :in 0.65))])
+           (animation/parallel
+            [(animation/timing blue-bar-left-margin (easing :out 0.85))
+             (animation/timing white-bar-left-margin (easing :out 0.85))])
+           (animation/parallel
+            [(animation/timing blue-bar-left-margin (easing :in 0.19))
+             (animation/timing white-bar-left-margin (easing :in 0.65))])
+           (animation/parallel
+            [(animation/timing blue-bar-left-margin (easing :out 0))
+             (animation/timing white-bar-left-margin (easing :out 0))])]))))}
     [react/view {:style {:width parent-width
                          :position :absolute
                          :top -3
                          :height 3
                          :background-color colors/white}}
-     [react/animated-view {:style {:margin-left anim-x
-                                   :width anim-width
-                                   :height 3
-                                   :background-color colors/blue}}]]))
+     [react/animated-view {:style (animated-bar-style blue-bar-left-margin
+                                                      parent-width
+                                                      colors/blue)}]
+     [react/animated-view {:style (assoc (animated-bar-style white-bar-left-margin
+                                                             parent-width
+                                                             colors/white)
+                                         :left (* 0.15 parent-width))}]]))
 
 (defonce show-connected? (reagent/atom true))
 
@@ -117,7 +133,7 @@
 
 (defview connectivity-view []
   (letsubs [status-properties [:connectivity/status-properties]
-            view-id           [:get :view-id]
+            view-id           [:view-id]
             window-width      [:dimensions/window-width]]
     (let [{:keys [loading-indicator?]} status-properties]
       [react/view {:style {:align-self :flex-start}}

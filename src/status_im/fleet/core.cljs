@@ -17,6 +17,10 @@
                   (get-in db [:account/account :settings :fleet]))
                 config/fleet))))
 
+(defn current-fleet-sub [settings]
+  (keyword (or (get settings :fleet)
+               config/fleet)))
+
 (def fleets-with-les
   [:les.dev.ropsten :les.dev.mainnet])
 

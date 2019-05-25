@@ -70,8 +70,8 @@
 (defn send-data-notification [m callback]
   (native-module/send-data-notification m callback))
 
-(defn send-logs [dbJson]
-  (native-module/send-logs dbJson))
+(defn send-logs [dbJson js-logs callback]
+  (native-module/send-logs dbJson js-logs callback))
 
 (defn add-peer [enode callback]
   (native-module/add-peer enode callback))
@@ -87,6 +87,9 @@
 
 (defn get-device-UUID [callback]
   (native-module/get-device-UUID callback))
+
+(defn set-blank-preview-flag [flag]
+  (native-module/set-blank-preview-flag flag))
 
 (defn is24Hour []
   (native-module/is24Hour))

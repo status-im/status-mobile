@@ -22,7 +22,8 @@
             status-im.ui.screens.wallet.collectibles.superrare.views
             status-im.ui.screens.wallet.collectibles.kudos.views
             [status-im.ui.components.status-bar.view :as status-bar.view]
-            [status-im.ui.screens.wallet.transactions.views :as transactions.views]))
+            [status-im.ui.screens.wallet.transactions.views :as transactions.views]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]))
 
 (defn toolbar-modal [modal-history?]
   [react/view
@@ -79,11 +80,13 @@
     :action              #(re-frame/dispatch [:navigate-to :transactions-history])}])
 
 (defn- render-asset [currency]
-  (fn [{:keys [symbol symbol-display icon decimals amount] :as token}]
+  (fn [{:keys [symbol icon decimals amount color] :as token}]
     (let [asset-value (re-frame/subscribe [:asset-value symbol decimals (-> currency :code keyword)])]
       [react/view {:style styles/asset-item-container}
        [list/item
-        [list/item-image icon]
+        (if icon
+          [list/item-image icon]
+          [chat-icon/custom-icon-view-list (:name token) color])
         [react/view {:style styles/asset-item-value-container}
          [react/text {:style               styles/asset-item-value
                       :number-of-lines     1

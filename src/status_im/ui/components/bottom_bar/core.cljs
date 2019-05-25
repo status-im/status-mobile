@@ -28,25 +28,28 @@
       callback))))
 
 (def tabs-list-data
-  [{:nav-stack           :chat-stack
-    :content             {:title (i18n/label :t/chats)
-                          :icon  :main-icons/message}
-    :count-subscription  :chats/unread-messages-number
-    :accessibility-label :home-tab-button}
-   {:nav-stack           :browser-stack
-    :content             {:title (i18n/label :t/dapps)
-                          :icon  :main-icons/dapp}
-    :accessibility-label :dapp-tab-button}
-   {:nav-stack           :wallet-stack
-    :content             {:title (i18n/label :t/wallet)
-                          :icon  :main-icons/wallet}
-    :count-subscription  :get-wallet-unread-messages-number
-    :accessibility-label :wallet-tab-button}
-   {:nav-stack           :profile-stack
-    :content             {:title (i18n/label :t/profile)
-                          :icon  :main-icons/user-profile}
-    :count-subscription  :get-profile-unread-messages-number
-    :accessibility-label :profile-tab-button}])
+  (->>
+   [{:nav-stack           :chat-stack
+     :content             {:title (i18n/label :t/chats)
+                           :icon  :main-icons/message}
+     :count-subscription  :chats/unread-messages-number
+     :accessibility-label :home-tab-button}
+    (when-not platform/desktop?
+      {:nav-stack           :browser-stack
+       :content             {:title (i18n/label :t/dapps)
+                             :icon  :main-icons/dapp}
+       :accessibility-label :dapp-tab-button})
+    (when-not platform/desktop?
+      {:nav-stack           :wallet-stack
+       :content             {:title (i18n/label :t/wallet)
+                             :icon  :main-icons/wallet}
+       :accessibility-label :wallet-tab-button})
+    {:nav-stack           :profile-stack
+     :content             {:title (i18n/label :t/profile)
+                           :icon  :main-icons/user-profile}
+     :count-subscription  :get-profile-unread-messages-number
+     :accessibility-label :profile-tab-button}]
+   (remove nil?)))
 
 (defn new-tab
   [{:keys [icon label active? nav-stack
@@ -56,7 +59,7 @@
     [react/touchable-highlight
      {:style               tabs.styles/touchable-container
       :disabled            active?
-      :on-press            #(re-frame/dispatch [:navigate-to nav-stack])
+      :on-press            #(re-frame/dispatch-sync [:navigate-to nav-stack])
       :accessibility-label accessibility-label}
      [react/view
       {:style tabs.styles/new-tab-container}
@@ -126,17 +129,20 @@
           (minimize-bar new-view-id))))
     :reagent-render
     (fn [keyboard-shown? view-id tab]
-      (if platform/ios?
-        [tabs-animation-wrapper-ios
-         [react/animated-view
-          {:style (tabs.styles/animated-container visible? keyboard-shown?)}
-          [tabs tab]]]
-        [tabs-animation-wrapper-android
-         keyboard-shown?
-         view-id
-         [react/animated-view
-          {:style (tabs.styles/animated-container visible? keyboard-shown?)}
-          [tabs tab]]]))}))
+      (when-not (contains? #{:enter-pin-login
+                             :enter-pin-sign
+                             :enter-pin-settings} view-id)
+        (if platform/ios?
+          [tabs-animation-wrapper-ios
+           [react/animated-view
+            {:style (tabs.styles/animated-container visible? keyboard-shown?)}
+            [tabs tab]]]
+          [tabs-animation-wrapper-android
+           keyboard-shown?
+           view-id
+           [react/animated-view
+            {:style (tabs.styles/animated-container visible? keyboard-shown?)}
+            [tabs tab]]])))}))
 
 (def disappearance-duration 150)
 (def appearance-duration 100)

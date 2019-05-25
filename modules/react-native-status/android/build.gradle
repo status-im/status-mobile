@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 def getStatusGoVersion = { ->
     version = new File('../STATUS_GO_VERSION').text
-    return version.replaceAll("\\s","")
+    return version.tokenize('\n').last().replaceAll("\\s","")
 }
 
 android {

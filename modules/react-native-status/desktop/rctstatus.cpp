@@ -201,7 +201,7 @@ void showFileInGraphicalShell(QWidget *parent, const QFileInfo &fileInfo)
 #endif
 }
 
-void RCTStatus::sendLogs(QString dbJSON) {
+void RCTStatus::sendLogs(QString dbJSON, QString jsLogs, double callbackId) {
     Q_D(RCTStatus);
 
     qCDebug(RCTSTATUS) << "::sendLogs call - logFilePath:" << getLogFilePath()
@@ -230,6 +230,7 @@ void RCTStatus::sendLogs(QString dbJSON) {
     QFile      gethLogFile(d_gethLogFilePath);
     QFile      logFile(getLogFilePath());
     zipWriter.addFile("db.json", dbJSON.toUtf8());
+    zipWriter.addFile("js_logs.log", jsLogs.toUtf8());
     if (gethLogFile.exists()) {
         zipWriter.addFile(QFileInfo(gethLogFile).fileName(), &gethLogFile);
     }

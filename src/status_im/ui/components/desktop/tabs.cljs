@@ -43,9 +43,9 @@
       [content active? cnt]]]))
 
 (views/defview main-tabs []
-  (views/letsubs [current-tab [:get-in [:desktop/desktop :tab-view-id]]]
+  (views/letsubs [{:keys [tab-view-id]} [:desktop/desktop]]
     [react/view
      [react/view {:style tabs.styles/tabs-container}
       (for [[index {:keys [content view-id count-subscription]}] tabs-list-indexed]
         ^{:key index}
-        [tab index content view-id (= current-tab view-id) count-subscription])]]))
+        [tab index content view-id (= tab-view-id view-id) count-subscription])]]))

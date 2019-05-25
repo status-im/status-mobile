@@ -58,7 +58,7 @@
 (def default-public-chats (types/json->clj (slurp "resources/default_public_chats.json")))
 
 (views/defview new-public-chat []
-  (views/letsubs [topic [:get :public-group-topic]
+  (views/letsubs [topic [:public-group-topic]
                   error [:public-chat.new/topic-error-message]]
     [react/keyboard-avoiding-view styles/group-container
      [status-bar/status-bar]

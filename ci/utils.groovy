@@ -1,3 +1,5 @@
+nix = load 'ci/nix.groovy'
+
 def getVersion(type = null) {
   /* if type is undefined we get VERSION from repo root */
   def path = "${env.WORKSPACE}/VERSION"
@@ -13,17 +15,6 @@ def getToolVersion(name) {
     script: "${env.WORKSPACE}/scripts/toolversion ${name}"
   ).trim()
   return version
-}
-
-def nix_sh(cmd) {
-  sh """
-    set +x
-    . ~/.nix-profile/etc/profile.d/nix.sh
-    set -x
-    nix-shell --argstr target-os \'${env.TARGET_PLATFORM}\' \\
-              --run \'${cmd}\' \\
-              \'${env.WORKSPACE}/shell.nix\'
-  """
 }
 
 def branchName() {
@@ -52,14 +43,22 @@ def pkgFilename(type, ext) {
 
 def doGitRebase() {
   /* rebasing on relases defeats the point of having a release branch */
-  if (params.BUILD_TYPE == 'release') {
+  if (branchName() == 'canary-branch') {
+    println 'Skipping rebase for canary build...'
+    return
+  }
+  if (params.BUILD_TYPE == 'release' || branchName().startsWith('release/')) {
     println 'Skipping rebase due to release build...'
     return
   }
+  def rebaseBranch = 'develop'
+  if (env.CHANGE_TARGET) { /* This is available for PR builds */
+    rebaseBranch = env.CHANGE_TARGET
+  }
   sh 'git status'
-  sh 'git fetch --force origin develop:develop'
+  sh "git fetch --force origin ${rebaseBranch}:${rebaseBranch}"
   try {
-    sh 'git rebase develop'
+    sh "git rebase ${rebaseBranch}"
   } catch (e) {
     sh 'git rebase --abort'
     throw e
@@ -107,10 +106,10 @@ def installJSDeps(platform) {
   def maxAttempts = 10
   def installed = false
   /* prepare environment for specific platform build */
-  nix_sh "scripts/prepare-for-platform.sh ${platform}"
+  nix.shell "scripts/prepare-for-platform.sh ${platform}"
   while (!installed && attempt <= maxAttempts) {
     println "#${attempt} attempt to install npm deps"
-    nix_sh 'yarn install --frozen-lockfile'
+    nix.shell 'yarn install --frozen-lockfile'
     installed = fileExists('node_modules/web3/index.js')
     attemp = attempt + 1
   }

@@ -40,7 +40,7 @@
             "test-cljs"          ["with-profile" "test" "doo" "node" "test" "once"]
             "test-protocol"      ["with-profile" "test" "doo" "node" "protocol" "once"]
             "test-env-dev-utils" ["with-profile" "test" "doo" "node" "env-dev-utils" "once"]}
-  :profiles {:dev      {:dependencies [[cider/piggieback "0.3.9"]]
+  :profiles {:dev      {:dependencies [[cider/piggieback "0.4.0"]]
                         :cljsbuild    {:builds
                                        {:ios
                                         {:source-paths ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src"]
@@ -64,7 +64,7 @@
                         :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]
                                        :timeout          240000}}
              :figwheel [:dev
-                        {:dependencies [[figwheel-sidecar "0.5.18-SNAPSHOT"]
+                        {:dependencies [[figwheel-sidecar "0.5.18"]
                                         [re-frisk-remote "0.5.5"]
                                         [re-frisk-sidecar "0.5.7"]
                                         [day8.re-frame/tracing "0.5.0"]

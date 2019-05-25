@@ -37,8 +37,8 @@
    :flex             1
    :width            "95%"
    :background-color :white
-   :padding-left     20
-   :margin-right     20})
+   :padding-left     10
+   :margin-right     10})
 
 (def maintain-card-current-step-text
   {:typography :caption

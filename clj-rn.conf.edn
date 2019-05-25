@@ -43,7 +43,9 @@
               "text-encoding"
               "js-sha3"
               "react-navigation"
-              "hi-base32"]
+              "hi-base32"
+              "react-native-mail"
+              "react-native-shake"]
 
  ;; Desktop modules
  :desktop-modules ["realm"
@@ -83,6 +85,7 @@
                    "text-encoding"
                    "js-sha3"
                    "web3-utils"
+                   "react-navigation"
                    "hi-base32"]
 
  ;; Resoures

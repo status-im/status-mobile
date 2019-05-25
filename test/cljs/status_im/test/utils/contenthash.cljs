@@ -7,7 +7,7 @@
 
 (deftest contenthash-decode
   (testing "decoding a valid ipfs hash"
-    (is (= (contenthash/decode "0xe301122029f2d17be6139079dc48696d1f582a8530eb9805b561eda517e22a892c7e3f1f")
+    (is (= (contenthash/decode "0xe3010170122029f2d17be6139079dc48696d1f582a8530eb9805b561eda517e22a892c7e3f1f")
            {:namespace :ipfs
             :hash "QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4"})))
   (testing "decoding an invalid ipfs hash"
@@ -23,6 +23,11 @@
             {:namespace :ipfs
              :hash "QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4"})
            "0xe301122029f2d17be6139079dc48696d1f582a8530eb9805b561eda517e22a892c7e3f1f")))
+  (testing "encoding a valid ipfs cid"
+    (is (= (contenthash/encode
+            {:namespace :ipfs
+             :hash "zb2rhZfjRh2FHHB2RkHVEvL2vJnCTcu7kwRqgVsf9gpkLgteo"})
+           "0xe301015512202cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824")))
   (testing "encoding an invalid ipfs hash"
     (is (nil? (contenthash/encode {:namespace :ipfs
                                    :hash "0xe301122029f2d17be6139079dc48696d1f582a8530eb9805b561eda517e2"}))))

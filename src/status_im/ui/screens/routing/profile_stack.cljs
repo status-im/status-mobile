@@ -17,6 +17,7 @@
                      :dapps-permissions
                      :manage-dapps-permissions
                      :extensions-settings
+                     :extension-screen-holder
                      :edit-extension
                      :show-extension
                      :network-settings
@@ -28,14 +29,12 @@
                      :mobile-network-settings
                      :backup-seed
                      :tribute-to-talk
-                     :qr-scanner]
+                     :qr-scanner
+                     :my-profile-ext-settings]
 
               config/hardwallet-enabled?
-              (concat [:hardwallet-authentication-method
-                       :hardwallet-connect
-                       :hardwallet-setup
-                       :hardwallet-success
-                       :keycard-settings
+              (concat [:keycard-settings
                        :reset-card
-                       :enter-pin]))
+                       :hardwallet-connect-settings
+                       :enter-pin-settings]))
    :config  {:initialRouteName :my-profile}})

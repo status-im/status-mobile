@@ -60,7 +60,7 @@
 
 (defview recover []
   (letsubs [recovered-account [:get-recover-account]
-            node-status? [:get :node/status]]
+            node-status? [:node-status]]
     (let [{:keys [passphrase password passphrase-valid? password-valid?
                   password-error passphrase-error passphrase-warning processing?]} recovered-account
           node-stopped? (or (nil? node-status?)

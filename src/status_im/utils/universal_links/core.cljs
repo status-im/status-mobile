@@ -1,11 +1,13 @@
 (ns status-im.utils.universal-links.core
   (:require [cljs.spec.alpha :as spec]
             [goog.string :as gstring]
-            [goog.string.format]
             [re-frame.core :as re-frame]
             [status-im.accounts.db :as accounts.db]
             [status-im.chat.models :as chat]
+            [status-im.constants :as constants]
+            [status-im.ethereum.eip681 :as eip681]
             [status-im.extensions.registry :as extensions.registry]
+            [status-im.pairing.core :as pairing]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
@@ -13,9 +15,8 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]
             [status-im.utils.platform :as platform]
-            [status-im.constants :as constants]))
+            [taoensso.timbre :as log]))
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link
@@ -65,7 +66,10 @@
 
 (fx/defn handle-public-chat [cofx public-chat]
   (log/info "universal-links: handling public chat" public-chat)
-  (chat/start-public-chat cofx public-chat {}))
+  (fx/merge
+   cofx
+   (chat/start-public-chat public-chat {})
+   (pairing/sync-public-chat public-chat)))
 
 (fx/defn handle-view-profile [{:keys [db] :as cofx} public-key]
   (log/info "universal-links: handling view profile" public-key)
@@ -78,6 +82,13 @@
 (fx/defn handle-extension [cofx url]
   (log/info "universal-links: handling url profile" url)
   (extensions.registry/load cofx url false))
+
+(fx/defn handle-eip681 [cofx url]
+  (let [wallet-set-up-passed? (get-in cofx [:db :account/account :wallet-set-up-passed?])]
+    (if (not wallet-set-up-passed?)
+      {:dispatch [:navigate-to :wallet-onboarding-setup]}
+      {:dispatch-n [[:navigate-to :wallet-send-transaction]
+                    [:wallet/fill-request-from-url url :deep-link]]})))
 
 (defn handle-not-found [full-url]
   (log/info "universal-links: no handler for " full-url))
@@ -104,6 +115,9 @@
 
     (and config/extensions-enabled? (match-url url extension-regex))
     (handle-extension cofx url)
+
+    (some? (eip681/parse-uri url))
+    (handle-eip681 cofx url)
 
     :else (handle-not-found url)))
 

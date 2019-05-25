@@ -1,9 +1,11 @@
 (ns status-im.ui.screens.wallet.transaction-fee.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.tokens :as tokens]
             [status-im.i18n :as i18n]
             [status-im.ui.components.bottom-buttons.view :as bottom-buttons]
             [status-im.ui.components.button.view :as button]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as act]
@@ -11,12 +13,9 @@
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.ui.screens.wallet.send.styles :as styles]
-            [status-im.ui.screens.wallet.styles :as wallet.styles]
-            [status-im.utils.money :as money]
-            [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]))
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.utils.money :as money])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- toolbar [title]
   [toolbar/toolbar
@@ -26,7 +25,7 @@
 
 (defview transaction-fee []
   (letsubs [send-transaction            [:wallet.send/transaction]
-            network                     [:account/network]
+            chain                       [:ethereum/chain-keyword]
             {gas-edit       :gas
              max-fee        :max-fee
              gas-price-edit :gas-price} [:wallet/edit]
@@ -34,7 +33,6 @@
     (let [{:keys [amount symbol]} send-transaction
           gas                (:value gas-edit)
           gas-price          (:value gas-price-edit)
-          chain              (ethereum/network->chain-keyword network)
           native-currency    (tokens/native-currency chain)
           {:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)]
       [components/simple-screen {:status-bar-type :modal-wallet}

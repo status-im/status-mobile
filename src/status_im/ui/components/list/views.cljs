@@ -18,9 +18,8 @@
 
   [section-list {:sections [{:title \"\" :key :unik :render-fn render :data {:title  \"\" :subtitle \"\"}}]}]
   "
-  (:require-macros [status-im.utils.views :as views])
-  (:require [reagent.core :as reagent]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
+            [reagent.core :as reagent]
             [status-im.i18n :as i18n]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.checkbox.view :as checkbox]
@@ -28,8 +27,9 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.styles :as styles]
             [status-im.ui.components.react :as react]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.screens.home.animations.responder :as responder]))
+            [status-im.ui.screens.home.animations.responder :as responder]
+            [status-im.utils.platform :as platform])
+  (:require-macros [status-im.utils.views :as views]))
 
 (def flat-list-class (react/get-class "FlatList"))
 (def section-list-class (react/get-class "SectionList"))
@@ -68,7 +68,7 @@
 (defn item-primary
   ([s] (item-primary nil s))
   ([{:keys [style] :as props} s]
-   [react/text (merge {:style styles/primary-text}
+   [react/text (merge {:style (merge styles/primary-text style)}
                       (dissoc props :style))
     s]))
 
@@ -80,16 +80,23 @@
     s]))
 
 (defn item-secondary
-  [secondary]
-  [react/text {:style styles/secondary-text :ellipsize-mode :middle :number-of-lines 1} secondary])
+  ([s] (item-secondary nil s))
+  ([{:keys [style]} s]
+   [react/text
+    {:style           (merge styles/secondary-text style)
+     :ellipsize-mode  :middle
+     :number-of-lines 1}
+    s]))
 
 (defn item-content
   [& children]
   (into [react/view {:style styles/item-content-view}] (keep identity children)))
 
 (defn list-item-with-checkbox
-  [{:keys [on-value-change style checked?] :as props} item]
-  [react/touchable-highlight {:on-press #(on-value-change (not checked?))}
+  [{:keys [on-value-change style checked? on-long-press] :as props} item]
+  [react/touchable-highlight (merge {:on-press #(on-value-change (not checked?))}
+                                    (when on-long-press
+                                      {:on-long-press on-long-press}))
    (conj item
          [react/view {:style (merge style styles/item-checkbox)}
           [checkbox/checkbox props]])])
@@ -108,14 +115,14 @@
 
 (defn big-list-item
   [{:keys [style text text-color subtext value action-fn active? destructive? hide-chevron?
-           accessory-value text-color new?
+           accessory-value text-color new? activity-indicator
            accessibility-label icon icon-color image-source icon-content]
     :or   {icon-color colors/blue
            text-color colors/black
            value ""
            active? true
            style {}}}]
-  {:pre [(or icon image-source)
+  {:pre [(or icon image-source activity-indicator)
          (and action-fn text)
          (or (nil? accessibility-label) (keyword? accessibility-label))]}
   [react/touchable-highlight
@@ -124,11 +131,16 @@
     :accessibility-label accessibility-label
     :disabled (not active?)}
    [react/view (styles/settings-item subtext)
-    (if icon
+    (cond
+      icon
       [react/view (styles/settings-item-icon icon-color subtext)
        [vector-icons/icon icon {:color icon-color}]]
+      image-source
       [react/image {:source {:uri image-source}
-                    :style   styles/big-item-image}])
+                    :style   styles/big-item-image}]
+      activity-indicator
+      [react/view (styles/settings-item-icon icon-color subtext)
+       [react/activity-indicator activity-indicator]])
     (if subtext
       [react/view {:style styles/settings-item-text-container}
        [react/view {:style styles/settings-item-main-text-container}
@@ -247,8 +259,8 @@
           {:sections            (clj->js (map wrap-per-section-render-fn sections))
            :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)})])
 
-(defn render-action [{:keys [label accessibility-label icon action disabled?]}
-                     {:keys [action-style action-label-style icon-opts]}]
+(defn render-action [{:keys [label subtext accessibility-label icon action disabled?]}
+                     {:keys [action-style action-label-style action-subtext-style icon-opts]}]
   [react/touchable-highlight {:on-press action}
    [react/view {:accessibility-label accessibility-label}
     [item
@@ -259,10 +271,21 @@
                  :icon-opts (merge {:color :white}
                                    icon-opts
                                    (when disabled? {:color colors/gray}))}]
-     [item-primary-only {:style (merge styles/action-label
-                                       action-label-style
+     (if-not subtext
+       [item-primary-only {:style (merge styles/action-label
+                                         (action-label-style false)
+                                         (when disabled? styles/action-label-disabled))}
+        label]
+       [item-content
+        [item-primary {:style (merge styles/action-label
+                                     (action-label-style true)
+                                     (when disabled? styles/action-label-disabled))}
+         label]
+        [item-secondary {:style (merge styles/action-label
+                                       action-subtext-style
                                        (when disabled? styles/action-label-disabled))}
-      label]
+         subtext]])
+
      item-icon-forward]]])
 
 (defn action-list [actions {:keys [container-style action-separator-style] :as styles}]

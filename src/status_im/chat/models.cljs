@@ -19,7 +19,9 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
             [status-im.utils.priority-map :refer [empty-message-map]]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.mailserver.core :as mailserver]
+            [status-im.transport.partitioned-topic :as transport.topic]))
 
 (defn- get-chat [cofx chat-id]
   (get-in cofx [:db :chats chat-id]))
@@ -38,6 +40,12 @@
    (:public? chat))
   ([cofx chat-id]
    (public-chat? (get-chat cofx chat-id))))
+
+(defn active-chat?
+  ([chat]
+   (:is-active chat))
+  ([cofx chat-id]
+   (active-chat? (get-chat cofx chat-id))))
 
 (defn group-chat?
   ([chat]
@@ -62,7 +70,7 @@
   [{:keys [current-chat-id] :as db} ui-element]
   (update-in db [:chat-ui-props current-chat-id ui-element] not))
 
-(defn join-time-messages-checked
+(fx/defn join-time-messages-checked
   "The key :might-have-join-time-messages? in public chats signals that
   the public chat is freshly (re)created and requests for messages to the
   mailserver for the topic has not completed yet. Likewise, the key
@@ -71,12 +79,13 @@
   by mailserver, corresponding event :chat.ui/join-time-messages-checked
   dissociates these two fileds via this function, thereby signalling that the
   public chat is not fresh anymore."
-  [{:keys [chats] :as db} chat-id]
-  (if (:might-have-join-time-messages? (get chats chat-id))
-    (-> db
-        (update-in [:chats chat-id] dissoc :join-time-mail-request-id)
-        (update-in [:chats chat-id] dissoc :might-have-join-time-messages?))
-    db))
+  [{:keys [db] :as cofx} chat-id]
+  (when (:might-have-join-time-messages? (get-chat cofx chat-id))
+    {:db (update-in db
+                    [:chats chat-id]
+                    dissoc
+                    :join-time-mail-request-id
+                    :might-have-join-time-messages?)}))
 
 (defn- create-new-chat
   [chat-id {:keys [db now]}]
@@ -168,6 +177,10 @@
   (fx/merge cofx
             #(when (public-chat? % chat-id)
                (transport.chat/unsubscribe-from-chat % chat-id))
+            #(when (group-chat? % chat-id)
+               (mailserver/remove-chat-from-mailserver-topic % chat-id))
+            (mailserver/remove-gaps chat-id)
+            (mailserver/remove-range chat-id)
             (deactivate-chat chat-id)
             (clear-history chat-id)
             #(when (one-to-one-chat? % chat-id)
@@ -247,13 +260,12 @@
 (fx/defn preload-chat-data
   "Takes chat-id and coeffects map, returns effects necessary when navigating to chat"
   [{:keys [db] :as cofx} chat-id]
-  (let [chat (get-in db [:chats chat-id])]
-    (fx/merge cofx
-              {:db (-> (assoc db :current-chat-id chat-id)
-                       (set-chat-ui-props {:validation-messages nil}))}
-              (contact-code/listen-to-chat chat-id)
-              (when platform/desktop?
-                (mark-messages-seen chat-id)))))
+  (fx/merge cofx
+            {:db (-> (assoc db :current-chat-id chat-id)
+                     (set-chat-ui-props {:validation-messages nil}))}
+            (contact-code/listen-to-chat chat-id)
+            (when platform/desktop?
+              (mark-messages-seen chat-id))))
 
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
@@ -283,20 +295,23 @@
   ;; don't allow to open chat with yourself
   (when (not= (accounts.db/current-public-key cofx) chat-id)
     (fx/merge cofx
-              (upsert-chat {:chat-id chat-id
+              (upsert-chat {:chat-id   chat-id
                             :is-active true})
               (navigate-to-chat chat-id opts))))
 
 (fx/defn start-public-chat
   "Starts a new public chat"
   [cofx topic {:keys [dont-navigate?] :as opts}]
-  (fx/merge cofx
-            (add-public-chat topic)
-            #(when-not dont-navigate?
-               (navigate-to-chat % topic opts))
-            (public-chat/join-public-chat topic)
-            (when platform/desktop?
-              (desktop.events/change-tab :home))))
+  (if (active-chat? cofx topic)
+    (when-not dont-navigate?
+      (navigate-to-chat cofx topic opts))
+    (fx/merge cofx
+              (add-public-chat topic)
+              #(when-not dont-navigate?
+                 (navigate-to-chat % topic opts))
+              (public-chat/join-public-chat topic)
+              #(when platform/desktop?
+                 (desktop.events/change-tab % :home)))))
 
 (fx/defn disable-chat-cooldown
   "Turns off chat cooldown (protection against message spamming)"

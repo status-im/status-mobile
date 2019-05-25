@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+###################################################################################################
+#
+# Impure setup (any setup here should be minimized and instead be moved to Nix for a pure setup)
+#
+###################################################################################################
+
 set -e
 
 GIT_ROOT=$(git rev-parse --show-toplevel)
@@ -16,7 +22,7 @@ RCTSTATUS_DIR="$GIT_ROOT/modules/react-native-status/ios/RCTStatus"
 #if no arguments passed, inform user about possible ones
 
 if [ $# -eq 0 ]; then
-  echo -e "${GREEN}This script should be invoked with platform argument: 'android', 'ios', or 'desktop'${NC}"
+  echo -e "${GREEN}This script should be invoked with platform argument: 'android', 'ios', 'desktop', 'windows', 'linux', 'macos' or 'darwin'${NC}"
   echo "If invoked with 'android' argument it will link: "
   echo "mobile_files/package.json.orig -> package.json"
   echo "etc.."
@@ -25,6 +31,9 @@ else
   case $1 in
     android | ios)
       PLATFORM='mobile'
+      ;;
+    windows | linux | macos | darwin)
+      PLATFORM='desktop'
       ;;
     *)
       PLATFORM=$1

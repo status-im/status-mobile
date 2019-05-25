@@ -10,29 +10,33 @@
     :intro
     :hardwallet-authentication-method
     :hardwallet-connect
-    :enter-pin
+    :enter-pin-login
     :hardwallet-setup
     :hardwallet-success})
 
-(defn intro-login-stack [view-id]
-  {:name    :intro-login-stack
+(defn login-stack [view-id]
+  {:name    :login-stack
    :screens (cond-> [:login
                      :progress
                      :create-account
                      :recover
                      :accounts]
-              (= :intro view-id)
-              (conj :intro)
 
               config/hardwallet-enabled?
               (concat [:hardwallet-authentication-method
                        :hardwallet-connect
-                       :enter-pin
+                       :enter-pin-login
                        :hardwallet-setup
                        :hardwallet-success]))
    :config  (if
              ;; add view-id here if you'd like that view to be
              ;; first view when app is started
-             (#{:intro :login :progress :accounts} view-id)
+             (#{:login :progress :accounts :enter-pin-login} view-id)
               {:initialRouteName view-id}
               {:initialRouteName :login})})
+
+(defn intro-stack []
+  (-> (login-stack :intro)
+      (update :screens conj :intro)
+      (assoc :name :intro-stack)
+      (assoc :config {:initialRouteName :intro})))

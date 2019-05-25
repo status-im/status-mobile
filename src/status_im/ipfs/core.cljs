@@ -4,7 +4,7 @@
 
 ;; we currently use an ipfs gateway but this detail is not relevant
 ;; outside of this namespace
-(def ^:const ipfs-add-url "https://ipfs.infura.io:5001/api/v0/add")
+(def ^:const ipfs-add-url "https://ipfs.infura.io:5001/api/v0/add?cid-version=1")
 (def ^:const ipfs-cat-url "https://ipfs.infura.io/ipfs/")
 
 (fx/defn cat
@@ -14,9 +14,9 @@
                           :success-event-creator
                           (fn [{:keys [status body]}]
                             (if (= 200 status)
-                              (on-success {:value body})
+                              (on-success body)
                               (when on-failure
-                                (on-failure {:value status}))))}
+                                (on-failure status))))}
                    on-failure
                    (assoc :failure-event-creator on-failure))})
 
@@ -30,18 +30,19 @@
        :size Size})))
 
 (fx/defn add
+  "Add `value` on ipfs, and returns its b58 encoded CID"
   [cofx {:keys [value on-success on-failure]}]
   (let [formdata (doto (js/FormData.)
                    ;; the key is ignored so there is no need to provide one
-                   (.append nil value))]
+                   (.append "file" value))]
     {:http-raw-post (cond-> {:url  ipfs-add-url
                              :body formdata
                              :timeout-ms 5000
                              :success-event-creator
                              (fn [{:keys [status body]}]
                                (if (= 200 status)
-                                 (on-success {:value (parse-ipfs-add-response body)})
+                                 (on-success (parse-ipfs-add-response body))
                                  (when on-failure
-                                   (on-failure {:value status}))))}
+                                   (on-failure status))))}
                       on-failure
                       (assoc :failure-event-creator on-failure))}))

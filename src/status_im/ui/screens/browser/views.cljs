@@ -3,10 +3,11 @@
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.browser.core :as browser]
+            [status-im.ethereum.core :as ethereum]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]
@@ -17,11 +18,8 @@
             [status-im.ui.screens.browser.permissions.views :as permissions.views]
             [status-im.ui.screens.browser.site-blocked.views :as site-blocked.views]
             [status-im.ui.screens.browser.styles :as styles]
-            [status-im.ui.screens.wallet.actions :as wallet.actions]
-            [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.http :as http]
-            [status-im.utils.js-resources :as js-res]
-            [status-im.ui.components.connectivity.view :as connectivity])
+            [status-im.utils.js-resources :as js-res])
   (:require-macros
    [status-im.utils.slurp :refer [slurp]]
    [status-im.utils.views :as views]))
@@ -94,7 +92,7 @@
      :accessibility-label :modal-chat-button}
     [icons/icon :main-icons/message]]
    [react/touchable-highlight
-    {:on-press #(wallet.actions/share-link browser-id)
+    {:on-press #(browser/share-link url)
      :accessibility-label :modal-share-link-button}
     [icons/icon :main-icons/share]]
    [react/touchable-highlight {:on-press #(.reload @webview)
@@ -106,7 +104,7 @@
 (views/defview browser-component
   [{:keys [webview error? url browser browser-id unsafe? can-go-back?
            can-go-forward? resolving? network-id address url-original
-           show-permission show-tooltip opt-in? dapp? rpc-url name]}]
+           show-permission show-tooltip opt-in? dapp? name]}]
   {:should-component-update (fn [_ _ args]
                               (let [[_ props] args]
                                 (not (nil? (:url props)))))}
@@ -135,7 +133,6 @@
                                                     (if opt-in?
                                                       (js-res/web3-opt-in-init (str network-id))
                                                       (js-res/web3-init
-                                                       rpc-url
                                                        (ethereum/normalized-address address)
                                                        (str network-id)))
                                                     (get-inject-js url))
@@ -154,8 +151,7 @@
                   window-width [:dimensions/window-width]
                   {:keys [address settings]} [:account/account]
                   {:keys [browser-id dapp? name unsafe?] :as browser} [:get-current-browser]
-                  {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:get :browser/options]
-                  rpc-url    [:get :rpc-url]
+                  {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:browser/options]
                   network-id [:get-network-id]]
     (let [can-go-back?    (browser/can-go-back? browser)
           can-go-forward? (browser/can-go-forward? browser)
@@ -183,5 +179,4 @@
                            :show-permission show-permission
                            :show-tooltip    show-tooltip
                            :opt-in?         opt-in?
-                           :rpc-url         rpc-url
                            :name            name}]])))

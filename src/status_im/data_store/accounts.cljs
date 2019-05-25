@@ -27,7 +27,7 @@
 (defn- deserialize-extensions [extensions]
   (reduce-kv
    (fn [acc _ {:keys [url] :as extension}]
-     (assoc acc url extension))
+     (assoc acc url (update extension :data core/deserialize)))
    {}
    extensions))
 
@@ -49,7 +49,7 @@
        networks))
 
 (defn- serialize-extensions [extensions]
-  (or (vals extensions) '()))
+  (or (map #(update % :data core/serialize) (vals extensions)) '()))
 
 (defn- serialize-account [account]
   (-> account
@@ -65,6 +65,14 @@
   [account]
   (fn [realm]
     (core/create realm :account (serialize-account account) true)))
+
+(defn delete-account-tx
+  "Returns tx function for deleting account"
+  [address]
+  (fn [realm]
+    (let [account (core/single (core/get-by-field realm :account :address address))]
+      (when account
+        (core/delete realm account)))))
 
 (re-frame/reg-cofx
  :data-store/get-all-accounts

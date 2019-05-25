@@ -28,6 +28,8 @@
 (def snoopy-buffer          (js/require "rn-snoopy/stream/buffer"))
 (def background-timer       (.-default (js/require "react-native-background-timer")))
 (def react-navigation       (js/require "react-navigation"))
+(def react-native-shake     (js/require "react-native-shake"))
+(def react-native-mail      (.-default (js/require "react-native-mail")))
 (def desktop-linking        #js {:addEventListener (fn [])})
 (def desktop-menu           #js {:addEventListener (fn [])})
 (def desktop-config         #js {:addEventListener (fn [])})

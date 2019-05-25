@@ -1,33 +1,35 @@
 (ns status-im.ui.screens.wallet.components.views
-  (:require-macros [status-im.utils.views :as views])
   (:require [clojure.string :as string]
-            [reagent.core :as reagent]
             [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.eip55 :as eip55]
+            [status-im.ethereum.tokens :as tokens]
             [status-im.i18n :as i18n]
             [status-im.ui.components.bottom-buttons.view :as bottom-buttons]
             [status-im.ui.components.button.view :as button]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.list.styles :as list.styles]
-            [status-im.ui.components.list-selection :as list-selection]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.screens.wallet.components.styles :as styles]
-            [status-im.ui.screens.wallet.choose-recipient.views :as choose-recipient]
-            [status-im.ui.screens.wallet.styles :as wallet.styles]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.money :as money]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
-            [status-im.utils.core :as utils.core]
-            [status-im.utils.utils :as utils.utils]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.list.styles :as list.styles]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]))
+            [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.screens.wallet.choose-recipient.views
+             :as
+             choose-recipient]
+            [status-im.ui.screens.wallet.components.styles :as styles]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.utils.core :as utils.core]
+            [status-im.utils.money :as money]
+            [status-im.utils.utils :as utils.utils])
+  (:require-macros [status-im.utils.views :as views]))
 
 ;; Wallet tab has a different coloring scheme (dark) that forces color changes (background, text)
 ;; It might be replaced by some theme mechanism
@@ -114,12 +116,14 @@
     :request :wallet.request/set-symbol
     (throw (str "Unknown type: " k))))
 
-(defn- render-token [{:keys [symbol name icon decimals amount] :as token} type]
+(defn- render-token [{:keys [symbol name icon decimals amount color] :as token} type]
   [list/touchable-item  #(do (re-frame/dispatch [(type->handler type) symbol])
                              (re-frame/dispatch [:navigate-back]))
    [react/view
     [list/item
-     [list/item-image icon]
+     (if icon
+       [list/item-image icon]
+       [chat-icon/custom-icon-view-list name color])
      [list/item-content
       [react/view {:flex-direction :row}
        [react/text {:style styles/text}
@@ -152,16 +156,18 @@
 
 (views/defview asset-selector [{:keys [disabled? type symbol error]}]
   (views/letsubs [balance    [:balance]
-                  network    [:network]
+                  chain      [:ethereum/chain-keyword]
                   all-tokens [:wallet/all-tokens]]
-    (let [{:keys [name icon decimals] :as token} (tokens/asset-for all-tokens (ethereum/network->chain-keyword network) symbol)]
+    (let [{:keys [name icon decimals color] :as token} (tokens/asset-for all-tokens chain symbol)]
       (when name
         [react/view
          [cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
           (i18n/label :t/wallet-asset)
           [react/view {:style               styles/asset-content-container
                        :accessibility-label :choose-asset-button}
-           [list/item-image (assoc icon :style styles/asset-icon :image-style {:width 32 :height 32})]
+           (if icon
+             [list/item-image (assoc icon :style styles/asset-icon :image-style {:width 32 :height 32})]
+             [chat-icon/custom-icon-view-list name color 32])
            [react/view styles/asset-text-content
             [react/view styles/asset-label-content
              [react/text {:style (merge styles/text-content styles/asset-label)}
@@ -176,7 +182,7 @@
 (defn- recipient-address [address modal?]
   [react/text {:style               (merge styles/recipient-address (when-not address styles/recipient-no-address))
                :accessibility-label :recipient-address-text}
-   (or (ethereum/normalized-address address)
+   (or (eip55/address->checksum (ethereum/normalized-address address))
        (if modal?
          (i18n/label :t/new-contract)
          (i18n/label :t/specify-recipient)))])
@@ -195,7 +201,7 @@
          name]
         [react/text {:style               (styles/participant (and (not name) address?))
                      :accessibility-label (if request? :contact-address-text :recipient-address-text)}
-         (ethereum/normalized-address address)]]])))
+         (eip55/address->checksum (ethereum/normalized-address address))]]])))
 
 (defn render-contact [contact request?]
   [list/touchable-item #(re-frame/dispatch [:wallet/fill-request-from-contact contact request?])
@@ -206,7 +212,7 @@
       (:name contact)]
      [react/text {:style list.styles/secondary-text
                   :accessibility-label :contact-address-text}
-      (ethereum/normalized-address (:address contact))]]]])
+      (eip55/address->checksum (ethereum/normalized-address (:address contact)))]]]])
 
 (views/defview recent-recipients []
   (views/letsubs [contacts           [:contacts/active]

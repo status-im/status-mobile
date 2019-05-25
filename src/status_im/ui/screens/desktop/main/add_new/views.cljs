@@ -25,7 +25,7 @@
    [react/view {:style styles/tooltip-triangle}]])
 
 (views/defview new-one-to-one []
-  (views/letsubs [new-contact-identity [:get :contacts/new-identity]
+  (views/letsubs [new-contact-identity [:contacts/new-identity]
                   contacts             [:contacts/active]
                   chat-error           [:new-identity-error]]
     {:component-will-unmount #(re-frame/dispatch [:new-chat/set-new-identity nil])}
@@ -85,7 +85,7 @@
       (i18n/label :start-chat)]]]])
 
 (views/defview new-public-chat []
-  (views/letsubs [topic                [:get :public-group-topic]
+  (views/letsubs [topic                [:public-group-topic]
                   topic-error          [:public-chat.new/topic-error-message]]
     [react/view {:style styles/new-view}
      [react/view {:style styles/new-contact-title}

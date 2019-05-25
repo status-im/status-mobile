@@ -16,7 +16,8 @@
           :wallet styles/view-wallet
           :wallet-tab styles/view-wallet-tab
           styles/view-default)]
-    [react/view {:style (cond-> view-style flat? (assoc :elevation 0))}]))
+    (when-not platform/desktop?
+      [react/view {:style (cond-> view-style flat? (assoc :elevation 0))}])))
 
 (defn get-config [view-id]
   (get
@@ -34,6 +35,7 @@
     :open-dapp                       {:type :main}
     :my-profile                      {:type :main}
     :profile-stack                   {:type :main}
+    :my-profile-ext-settings         {:type :main}
     :contacts-list                   {:type :main}
     :browser                         {:type :main}
     :mobile-network-settings         {:type :main}
@@ -49,6 +51,7 @@
     :fleet-settings                  {:type :main}
     :log-level-settings              {:type :main}
     :stickers-pack-modal             {:type :main}
+    :tribute-learn-more              {:type :main}
     :show-extension-modal            {:type :main}
     :wallet                          {:type :wallet-tab}
     :wallet-stack                    {:type :wallet-tab}
@@ -67,7 +70,8 @@
     :wallet-transaction-fee          {:type :modal-wallet}
     :wallet-onboarding-setup-modal   {:type :modal-wallet}
     :wallet-send-transaction-modal   {:type :modal-wallet}
-    :wallet-settings-assets          {:type :modal-wallet}
+    :wallet-settings-assets          {:type :wallet}
+    :wallet-add-custom-token         {:type :wallet}
     :wallet-sign-message-modal       {:type :modal-wallet}
     :wallet-settings-hook            {:type :wallet}
     :wallet-transaction-sent         {:type :transparent}

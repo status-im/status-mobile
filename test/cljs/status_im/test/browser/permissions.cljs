@@ -2,16 +2,18 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.browser.permissions :as permissions]
             [status-im.utils.types :as types]
-            [status-im.browser.core :as browser]))
+            [status-im.browser.core :as browser]
+            [status-im.test.browser.core :as core.tests]))
 
 (deftest permissions-test
   (let [dapp-name  "test.com"
         dapp-name2 "test2.org"
         cofx       {:db (assoc-in (:db (browser/open-url {:db {}} dapp-name))
-                                  [:account/account :public-key] "public-key")}]
+                                  [:account/account :public-key] "public-key")}
+        dapp-id (core.tests/get-dapp-id cofx dapp-name)]
     (testing "dapps permissions are initialized"
       (is (zero? (count (get-in cofx [:db :dapps/permissions]))))
-      (is (= dapp-name (get-in cofx [:db :browser/options :browser-id]))))
+      (is (= dapp-id (get-in cofx [:db :browser/options :browser-id]))))
 
     (testing "receiving an unsupported permission"
       (let [result-ask (browser/process-bridge-message cofx

@@ -4,24 +4,23 @@
             [status-im.browser.permissions :as browser.permissions]
             [status-im.constants :as constants]
             [status-im.data-store.browser :as browser-store]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.resolver :as resolver]
             [status-im.i18n :as i18n]
-            [status-im.js-dependencies :as dependencies]
+            [status-im.js-dependencies :as js-dependencies]
             [status-im.native-module.core :as status]
             [status-im.ui.components.list-selection :as list-selection]
-            [status-im.ui.screens.browser.default-dapps :as default-dapps]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.ens :as ens]
-            [status-im.utils.ethereum.resolver :as resolver]
+            [status-im.utils.contenthash :as contenthash]
             [status-im.utils.fx :as fx]
             [status-im.utils.http :as http]
             [status-im.utils.multihash :as multihash]
             [status-im.utils.platform :as platform]
             [status-im.utils.random :as random]
             [status-im.utils.types :as types]
-            [status-im.utils.universal-links.core :as utils.universal-links]
-            [taoensso.timbre :as log]
-            [status-im.js-dependencies :as js-dependencies]))
+            [status-im.utils.universal-links.core :as universal-links]
+            [taoensso.timbre :as log]))
 
 (fx/defn initialize-browsers
   [{:keys [db all-stored-browsers]}]
@@ -59,42 +58,37 @@
   {:db            (update-in db [:browser/browsers] dissoc browser-id)
    :data-store/tx [(browser-store/remove-browser-tx browser-id)]})
 
-(defn check-if-dapp-in-list [{:keys [history history-index name] :as browser}]
-  (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))
-        dapp         (first (filter #(= history-host (http/url-host (http/normalize-url (:dapp-url %))))
-                                    (apply concat (mapv :data default-dapps/all))))]
-    (if dapp
-      ;;TODO(yenda): the consequence of this is that if user goes to a different
-      ;;url from a dapp browser, the name of the browser in the home screen will
-      ;;change
-      (assoc browser :dapp? true :name (:name dapp))
-      (assoc browser :dapp? false :name (or name (i18n/label :t/browser))))))
+(defn update-dapp-name [{:keys [name] :as browser}]
+  (assoc browser :dapp? false :name (or name (i18n/label :t/browser))))
 
 (defn check-if-phishing-url [{:keys [history history-index] :as browser}]
   (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))]
-    (cond-> browser history-host (assoc :unsafe? (dependencies/phishing-detect history-host)))))
+    (cond-> browser history-host (assoc :unsafe? (js-dependencies/phishing-detect history-host)))))
+
+(defn- content->hash [hex]
+  (when (and hex (not= hex "0x"))
+    ;; TODO(julien) Remove once our ENS DApp are migrated
+    (multihash/base58 (multihash/create :sha2-256 (subs hex 2)))))
 
 (defn resolve-ens-content-callback [hex]
-  (let [hash (when hex (multihash/base58 (multihash/create :sha2-256 (subs hex 2))))]
+  (let [hash (content->hash hex)]
     (if (and hash (not= hash resolver/default-hash))
-      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success constants/ipfs-proto-code hash])
+      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success {:namespace :ipfs :hash hash}])
       (re-frame/dispatch [:browser.callback/resolve-ens-contenthash]))))
 
 (defn resolve-ens-contenthash-callback [hex]
-  (let [proto-code (when hex (subs hex 2 4))
-        hash (when hex (multihash/base58 (multihash/create :sha2-256 (subs hex 12))))]
-    (if (and proto-code (#{constants/swarm-proto-code constants/ipfs-proto-code} proto-code) hash (not= hash resolver/default-hash))
-      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success proto-code hash])
+  (let [{:keys [hash] :as m} (contenthash/decode hex)]
+    (if (and hash (not= hash resolver/default-hash))
+      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success m])
       (re-frame/dispatch [:browser.callback/resolve-ens-multihash-error]))))
 
 (fx/defn resolve-url
-  [{{:keys [network] :as db} :db} {:keys [error? resolved-url]}]
+  [{:keys [db]} {:keys [error? resolved-url]}]
   (when (not error?)
     (let [current-url (get-current-url (get-current-browser db))
           host (http/url-host current-url)]
       (if (and (not resolved-url) (ens/is-valid-eth-name? host))
-        (let [network (get-in db [:account/account :networks network])
-              chain   (ethereum/network->chain-keyword network)]
+        (let [chain   (ethereum/chain-keyword db)]
           {:db                            (update db :browser/options assoc :resolving? true)
            :browser/resolve-ens-content {:registry (get ens/ens-registries
                                                         chain)
@@ -103,11 +97,10 @@
         {:db (update db :browser/options assoc :url (or resolved-url current-url) :resolving? false)}))))
 
 (fx/defn resolve-ens-contenthash
-  [{{:keys [network] :as db} :db}]
+  [{:keys [db]}]
   (let [current-url (get-current-url (get-current-browser db))
         host (http/url-host current-url)]
-    (let [network (get-in db [:account/account :networks network])
-          chain   (ethereum/network->chain-keyword network)]
+    (let [chain   (ethereum/chain-keyword db)]
       {:db                            (update db :browser/options assoc :resolving? true)
        :browser/resolve-ens-contenthash {:registry (get ens/ens-registries
                                                         chain)
@@ -118,7 +111,7 @@
   [{:keys [db now]}
    {:keys [browser-id] :as browser}]
   (let [updated-browser (-> (assoc browser :timestamp now)
-                            (check-if-dapp-in-list)
+                            (update-dapp-name)
                             (check-if-phishing-url))]
     {:db            (update-in db
                                [:browser/browsers browser-id]
@@ -158,17 +151,25 @@
                              :history new-history
                              :history-index new-index)))))
 
+(defmulti storage-gateway :namespace)
+
+(defmethod storage-gateway :ipfs
+  [{:keys [hash]}]
+  (let [base32hash (-> (.encode js-dependencies/hi-base32 (alphabase.base58/decode hash))
+                       (string/replace #"=" "")
+                       (string/lower-case))]
+    (str base32hash ".infura.status.im")))
+
+(defmethod storage-gateway :swarm
+  [{:keys [hash]}]
+  (str "swarm-gateways.net/bzz:/" hash))
+
 (fx/defn resolve-ens-multihash-success
-  [{:keys [db] :as cofx} proto-code hash]
+  [{:keys [db] :as cofx} m]
   (let [current-url (get-current-url (get-current-browser db))
-        host (http/url-host current-url)
-        path  (subs current-url (+ (.indexOf current-url host) (count host)))
-        gateway (if (= constants/ipfs-proto-code proto-code)
-                  (let [base32hash (-> (.encode js-dependencies/hi-base32 (alphabase.base58/decode hash))
-                                       (string/replace #"=" "")
-                                       (string/lower-case))]
-                    (str base32hash ".infura.status.im"))
-                  (str "swarm-gateways.net/bzz:/" hash))]
+        host        (http/url-host current-url)
+        path        (subs current-url (+ (.indexOf current-url host) (count host)))
+        gateway     (storage-gateway m)]
     (fx/merge cofx
               {:db (-> (update db :browser/options
                                assoc
@@ -195,8 +196,8 @@
 
 (fx/defn handle-message-link
   [cofx link]
-  (if (utils.universal-links/universal-link? link)
-    (utils.universal-links/handle-url cofx link)
+  (if (universal-links/universal-link? link)
+    (universal-links/handle-url cofx link)
     {:browser/show-browser-selection link}))
 
 (fx/defn update-browser-on-nav-change
@@ -221,10 +222,10 @@
 (fx/defn navigation-state-changed
   [cofx event error?]
   (let [{:strs [url loading title]} (js->clj event)
-        deep-link? (utils.universal-links/deep-link? url)]
-    (if (utils.universal-links/universal-link? url)
+        deep-link? (universal-links/deep-link? url)]
+    (if (universal-links/universal-link? url)
       (when-not (and deep-link? platform/ios?) ;; ios webview handles this
-        (utils.universal-links/handle-url cofx url))
+        (universal-links/handle-url cofx url))
       (fx/merge cofx
                 (update-browser-option :loading? loading)
                 (update-browser-name title)
@@ -237,8 +238,8 @@
   [cofx url]
   (let [browser (get-current-browser (:db cofx))
         normalized-url (http/normalize-and-decode-url url)]
-    (if (utils.universal-links/universal-link? normalized-url)
-      (utils.universal-links/handle-url cofx normalized-url)
+    (if (universal-links/universal-link? normalized-url)
+      (universal-links/handle-url cofx normalized-url)
       (fx/merge cofx
                 (update-browser-option :url-editing? false)
                 (update-browser-history browser normalized-url)
@@ -250,12 +251,11 @@
   If the browser is reused, the history is flushed"
   [{:keys [db] :as cofx} url]
   (let [normalized-url (http/normalize-and-decode-url url)
-        host (http/url-host normalized-url)
-        browser {:browser-id    (or host (random/id))
+        browser {:browser-id    (random/id)
                  :history-index 0
                  :history       [normalized-url]}]
-    (if (utils.universal-links/universal-link? normalized-url)
-      (utils.universal-links/handle-url cofx normalized-url)
+    (if (universal-links/universal-link? normalized-url)
+      (universal-links/handle-url cofx normalized-url)
       (fx/merge cofx
                 {:db (assoc db :browser/options
                             {:browser-id (:browser-id browser)})}
@@ -394,3 +394,8 @@
  :browser/show-web-browser-selection
  (fn [link]
    (list-selection/browse-in-web-browser link)))
+
+(defn share-link [url]
+  (let [link    (universal-links/generate-link :browse :external url)
+        message (i18n/label :t/share-dapp-text {:link link})]
+    (list-selection/open-share {:message message})))

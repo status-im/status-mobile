@@ -16,7 +16,8 @@
             status-im.browser.db
             status-im.ui.screens.add-new.db
             status-im.ui.screens.add-new.new-public-chat.db
-            status-im.ui.components.bottom-sheet.core))
+            status-im.ui.components.bottom-sheet.core
+            [status-im.wallet.db :as wallet.db]))
 
 ;; initial state of app-db
 (def app-db {:keyboard-height                    0
@@ -32,8 +33,7 @@
              :selected-participants              #{}
              :sync-state                         :done
              :app-state                          "active"
-             :wallet.transactions                constants/default-wallet-transactions
-             :wallet-selected-asset              {}
+             :wallet                              wallet.db/default-wallet
              :wallet/all-tokens                  {}
              :prices                             {}
              :peers-count                        0
@@ -61,7 +61,7 @@
              :push-notifications/stored          {}
              :registry                           {}
              :stickers/packs-owned               #{}
-             :stickers/packs-pendning            #{}
+             :stickers/packs-pending            #{}
              :hardwallet                         {:nfc-supported? false
                                                   :nfc-enabled?   false
                                                   :pin            {:original     []
@@ -101,7 +101,6 @@
 
 ;; contents of eth_syncing or `nil` if the node isn't syncing now
 (spec/def :node/chain-sync-state (spec/nilable map?))
-(spec/def :node/latest-block-number (spec/nilable number?))
 
 ;;;;NAVIGATION
 
@@ -193,13 +192,14 @@
 
 (spec/def :stickers/packs (spec/nilable map?))
 (spec/def :stickers/packs-owned (spec/nilable set?))
-(spec/def :stickers/packs-pendning (spec/nilable set?))
+(spec/def :stickers/packs-pending (spec/nilable set?))
 (spec/def :stickers/packs-installed (spec/nilable map?))
 (spec/def :stickers/selected-pack (spec/nilable any?))
 (spec/def :stickers/recent (spec/nilable vector?))
+(spec/def :extensions/profile (spec/nilable any?))
+(spec/def :wallet/custom-token-screen (spec/nilable map?))
 
 (spec/def ::db (spec/keys :opt [:contacts/contacts
-                                :contacts/dapps
                                 :contacts/new-identity
                                 :contacts/new-identity-error
                                 :contacts/identity
@@ -233,7 +233,6 @@
                                 :node/restart?
                                 :node/address
                                 :node/chain-sync-state
-                                :node/latest-block-number
                                 :universal-links/url
                                 :push-notifications/stored
                                 :browser/browsers
@@ -270,9 +269,12 @@
                                 :stickers/selected-pack
                                 :stickers/recent
                                 :stickers/packs-owned
-                                :stickers/packs-pendning
+                                :stickers/packs-pending
                                 :bottom-sheet/show?
-                                :bottom-sheet/view]
+                                :bottom-sheet/view
+                                :bottom-sheet/options
+                                :extensions/profile
+                                :wallet/custom-token-screen]
                           :opt-un [::modal
                                    ::was-modal?
                                    ::rpc-url
@@ -326,8 +328,6 @@
                                    :chat/id->command
                                    :chat/access-scope->command-id
                                    :wallet/wallet
-                                   :wallet/wallet.transactions
-                                   :wallet/wallet-selected-asset
                                    :prices/prices
                                    :prices/prices-loading?
                                    :notifications/notifications

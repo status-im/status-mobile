@@ -106,7 +106,8 @@
    [react/text
     {:style styles/no-contact-text}
     (i18n/label :t/group-chat-no-contacts)]
-   [buttons/secondary-button {:on-press handle-invite-friends-pressed} (i18n/label :t/invite-friends)]])
+   (when-not platform/desktop?
+     [buttons/secondary-button {:on-press handle-invite-friends-pressed} (i18n/label :t/invite-friends)])])
 
 (views/defview bottom-container [{:keys [on-press disabled label accessibility-label]}]
   [react/view {:style main-tabs.styles/tabs-container}
@@ -140,7 +141,7 @@
 ;; Set name of new group-chat
 (views/defview new-group []
   (views/letsubs [contacts   [:selected-group-contacts]
-                  group-name [:get :new-chat-name]]
+                  group-name [:new-chat-name]]
     (let [save-btn-enabled? (and (spec/valid? :global/not-empty-string group-name) (pos? (count contacts)))]
       [react/keyboard-avoiding-view (merge {:behavior :padding}
                                            styles/group-container)

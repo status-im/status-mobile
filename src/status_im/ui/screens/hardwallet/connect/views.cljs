@@ -9,7 +9,8 @@
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.toolbar.actions :as toolbar.actions]))
 
 (defview nfc-enabled []
   (letsubs [card-read-in-progress? [:hardwallet/card-read-in-progress?]]
@@ -48,7 +49,9 @@
                   :flex-direction  :column
                   :justify-content :space-between}
       [toolbar/toolbar {}
-       toolbar/default-nav-back
+       [toolbar/nav-button (assoc toolbar.actions/default-back
+                                  :handler
+                                  #(re-frame/dispatch [:hardwallet.ui/hardwallet-connect-navigate-back-button-clicked]))]
        nil]
       [react/view styles/hardwallet-connect
        (if nfc-enabled?

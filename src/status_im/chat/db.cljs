@@ -6,7 +6,8 @@
             [status-im.chat.commands.input :as commands.input]
             [status-im.group-chats.db :as group-chats.db]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.transport.partitioned-topic :as topic]))
+            [status-im.transport.partitioned-topic :as topic]
+            [status-im.mailserver.core :as mailserver]))
 
 (defn group-chat-name
   [{:keys [public? name]}]
@@ -43,12 +44,14 @@
 
 (defn active-chats
   [contacts chats {:keys [public-key]}]
-  (reduce (fn [acc [chat-id {:keys [is-active] :as chat}]]
-            (if is-active
-              (assoc acc chat-id (enrich-active-chat contacts chat public-key))
-              acc))
-          {}
-          chats))
+  (reduce-kv (fn [acc chat-id {:keys [is-active] :as chat}]
+               (if is-active
+                 (assoc acc
+                        chat-id
+                        (enrich-active-chat contacts chat public-key))
+                 acc))
+             {}
+             chats))
 
 (defn topic-by-current-chat
   [{:keys [current-chat-id chats] :as db}]
@@ -57,15 +60,6 @@
     (if public?
       (get-in db [:transport/chats current-chat-id :topic])
       (topic/public-key->discovery-topic-hash public-key))))
-
-(defn messages-gap
-  [mailserver-topics topic]
-  (let [{:keys [gap-from gap-to]}
-        (get mailserver-topics topic)]
-    {:from    gap-from
-     :to      gap-to
-     :exists? (and gap-from gap-to
-                   (> gap-to gap-from))}))
 
 (defn sort-message-groups
   "Sorts message groups according to timestamp of first message in group"
@@ -95,10 +89,14 @@
 (defn datemark? [{:keys [type]}]
   (= type :datemark))
 
+(defn gap? [{:keys [type]}]
+  (= type :gap))
+
 (defn transform-message
   [messages message-statuses referenced-messages]
   (fn [{:keys [message-id timestamp-str] :as reference}]
-    (if (datemark? reference)
+    (if (or (datemark? reference)
+            (gap? reference))
       reference
       (let [{:keys [content] :as message} (get messages message-id)
             {:keys [response-to response-to-v2]} content
@@ -113,41 +111,74 @@
           (assoc-in [:content :response-to] quote))))))
 
 (defn check-gap
-  [{:keys [exists? from]} previous-message next-message gap-added?]
-  (let [previous-timestamp (:whisper-timestamp previous-message)
-        next-whisper-timestamp     (:whisper-timestamp next-message)
-        next-timestamp (quot (:timestamp next-message) 1000)
-        ignore-next-message? (> (js/Math.abs
-                                 (- next-whisper-timestamp next-timestamp))
-                                120)]
-    (and (not gap-added?)
-         (or (and exists? previous-timestamp next-whisper-timestamp
-                  (not ignore-next-message?)
-                  (< previous-timestamp from next-whisper-timestamp))
-             (and exists? (nil? next-message))))))
+  [gaps previous-message next-message]
+  (let [previous-timestamp     (:whisper-timestamp previous-message)
+        next-whisper-timestamp (:whisper-timestamp next-message)
+        next-timestamp         (quot (:timestamp next-message) 1000)
+        ignore-next-message?   (> (js/Math.abs
+                                   (- next-whisper-timestamp next-timestamp))
+                                  120)]
+    (reduce
+     (fn [acc {:keys [from to id]}]
+       (if (and next-message
+                (not ignore-next-message?)
+                (or
+                 (and (nil? previous-timestamp)
+                      (< from next-whisper-timestamp))
+                 (and
+                  (< previous-timestamp from)
+                  (< to next-whisper-timestamp))
+                 (and
+                  (< from previous-timestamp)
+                  (< to next-whisper-timestamp))))
+         (-> acc
+             (update :gaps-number inc)
+             (update-in [:gap :ids] conj id))
+         (reduced acc)))
+     {:gaps-number 0
+      :gap         nil}
+     gaps)))
 
-(defn add-gap [messages gap]
+(defn add-gap [messages gaps]
   (conj messages
         {:type  :gap
-         :value (str (:from gap))}))
+         :value (clojure.string/join (:ids gaps))
+         :gaps gaps}))
 
 (defn messages-with-datemarks-and-statuses
   "Converts message groups into sequence of messages interspersed with datemarks,
   with correct user statuses associated into message"
-  [message-groups messages message-statuses referenced-messages messages-gap]
+  [message-groups messages message-statuses referenced-messages messages-gaps
+   {:keys [highest-request-to lowest-request-from]} all-loaded? public?]
   (transduce
    (comp
     (mapcat add-datemark)
     (map (transform-message messages message-statuses referenced-messages)))
-   (completing
-    (fn [{:keys [messages datemark-reference previous-message gap-added?]}
-         message]
+   (fn
+     ([]
+      (let [acc {:messages         (list)
+                 :previous-message nil
+                 :gaps             messages-gaps}]
+        (if (and
+             public?
+             all-loaded?
+             (not (nil? highest-request-to))
+             (not (nil? lowest-request-from))
+             (< (- highest-request-to lowest-request-from)
+                mailserver/max-gaps-range))
+          (update acc :messages conj {:type       :gap
+                                      :value      (str :first-gap)
+                                      :first-gap? true})
+          acc)))
+     ([{:keys [messages datemark-reference previous-message gaps]} message]
       (let [new-datemark? (datemark? message)
-            add-gap?      (check-gap messages-gap previous-message message gap-added?)]
+            {:keys [gaps-number gap]}
+            (check-gap gaps previous-message message)
+            add-gap?      (pos? gaps-number)]
         {:messages           (cond-> messages
 
                                add-gap?
-                               (add-gap messages-gap)
+                               (add-gap gap)
 
                                :always
                                (conj
@@ -160,14 +191,13 @@
          :datemark-reference (if new-datemark?
                                message
                                datemark-reference)
-         :gap-added?         (or gap-added? add-gap?)}))
-    (fn [{:keys [messages previous-message gap-added?]}]
-      (let [add-gap? (check-gap messages-gap previous-message nil gap-added?)]
-        (cond-> messages
-          add-gap?
-          (add-gap messages-gap)))))
-   {:messages         (list)
-    :previous-message nil}
+         :gaps               (if add-gap?
+                               (drop gaps-number gaps)
+                               gaps)}))
+     ([{:keys [messages gaps]}]
+      (cond-> messages
+        (seq gaps)
+        (add-gap {:ids (map :id gaps)}))))
    message-groups))
 
 (defn- set-previous-message-info [stream]

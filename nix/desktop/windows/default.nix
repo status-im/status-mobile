@@ -1,7 +1,9 @@
-{ stdenv, pkgs }:
+{ stdenv, callPackage,
+  conan, nsis, go }:
 
-with pkgs;
 with stdenv;
+
+assert isLinux;
 
 let
   baseImage = callPackage ./base-image { };
@@ -16,6 +18,7 @@ in
   ];
 
   shellHook = ''
-    export STATUSREACT_WINDOWS_BASEIMAGE_PATH="${baseImage}/src"
+    ${baseImage.shellHook}
+    unset QT_PATH
   '';
 }

@@ -2,12 +2,11 @@
   "The main purpose of these tests is to signal that some steps of the sign in
   flow has been changed. Such changes should be reflected in both these tests
   and documents which describe the whole \"sign in\" flow."
-  (:require [cljs.test :refer-macros [deftest is are testing]]
+  (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.accounts.login.core :as login.core]
             [status-im.events :as events]
-            [status-im.ui.screens.browser.default-dapps :as default-dapps]
-            [status-im.test.sign-in.data :as data]
-            [status-im.signals.core :as signals]))
+            [status-im.signals.core :as signals]
+            [status-im.test.sign-in.data :as data]))
 
 (deftest on-password-input-submitted
   (testing
@@ -41,7 +40,6 @@
                   :all-installations    []
                   :all-stored-browsers  []
                   :all-dapp-permissions []
-                  :default-dapps        default-dapps/all
                   :get-all-stored-chats data/get-chats}
           efx    (events/account-change-success cofx [nil "address"])
           new-db (:db efx)]
@@ -52,7 +50,7 @@
       (testing "Request notifications permissions."
         (is (contains? efx :notifications/request-notifications-permissions)))
       (testing "Navigate to :home."
-        (is (= :home (efx :status-im.ui.screens.navigation/navigate-to))))
+        (is (= [:home nil] (efx :status-im.ui.screens.navigation/navigate-to))))
       (testing "Account selected."
         (is (contains? new-db :account/account)))
       (testing "Chats initialized."
@@ -201,13 +199,11 @@
                (set (:utils/dispatch-later efx)))))
       (testing "Check the rest of effects."
         (is (contains? efx :web3/set-default-account))
-        (is (contains? efx :web3/get-block-number))
         (is (contains? efx :web3/fetch-node-version))
-        (is (contains? efx :get-balance))
         (is (contains? efx :web3/get-syncing))
-        (is (contains? efx :get-tokens-balance))
-        (is (contains? efx :get-prices))
-        (is (contains? efx :status-im.models.transactions/start-sync-transactions))))))
+        (is (contains? efx :wallet/get-balance))
+        (is (contains? efx :wallet/get-tokens-balance))
+        (is (contains? efx :wallet/get-prices))))))
 
 (deftest login-failed
   (testing

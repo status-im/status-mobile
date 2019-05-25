@@ -49,9 +49,9 @@
   (when status
     (.sendDataNotification status data-payload tokens on-result)))
 
-(defn send-logs [dbJson]
+(defn send-logs [dbJson js-logs callback]
   (when status
-    (.sendLogs status dbJson)))
+    (.sendLogs status dbJson js-logs callback)))
 
 (defn add-peer [enode on-result]
   (when (and @node-started status)
@@ -132,6 +132,9 @@
    status
    (fn [UUID]
      (callback (string/upper-case UUID)))))
+
+(defn set-blank-preview-flag [flag]
+  (.setBlankPreviewFlag status flag))
 
 (defn extract-group-membership-signatures [signature-pairs callback]
   (when status

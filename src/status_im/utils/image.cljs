@@ -1,11 +1,7 @@
 (ns status-im.utils.image
-  (:require [clojure.string :as string]
-            [status-im.react-native.resources :as resources]))
+  (:require [clojure.string :as string]))
 
 (defn source [photo-path]
-  (if (and (not (string/blank? photo-path))
-           (string/starts-with? photo-path "contacts://"))
-    (->> (string/replace photo-path #"contacts://" "")
-         (keyword)
-         (get resources/contacts))
+  (when-not (and (not (string/blank? photo-path))
+                 (string/starts-with? photo-path "contacts://"))
     {:uri photo-path}))

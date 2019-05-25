@@ -3,5 +3,6 @@
 (def browser-stack
   {:name       :browser-stack
    :screens    [:open-dapp
-                :browser]
+                :browser
+                :qr-scanner]
    :config     {:initialRouteName :open-dapp}})

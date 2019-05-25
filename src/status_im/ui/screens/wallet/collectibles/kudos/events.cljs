@@ -1,13 +1,13 @@
 (ns status-im.ui.screens.wallet.collectibles.kudos.events
-  (:require [status-im.ui.screens.wallet.collectibles.events :as collectibles]
-            [status-im.utils.http :as http]
-            [status-im.utils.ethereum.erc721 :as erc721]
-            [status-im.utils.ethereum.tokens :as tokens]
+  (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.utils.handlers :as handlers]
             [status-im.constants :as constants]
-            [status-im.utils.ethereum.core :as ethereum]
-            [clojure.string :as string]))
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.erc721 :as erc721]
+            [status-im.ethereum.tokens :as tokens]
+            [status-im.ui.screens.wallet.collectibles.events :as collectibles]
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.http :as http]))
 
 (def kudos :KDO)
 
