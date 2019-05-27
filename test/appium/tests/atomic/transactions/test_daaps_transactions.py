@@ -297,6 +297,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         home_view = singin_view.create_user()
         wallet = home_view.wallet_button.click()
         wallet.set_up_wallet()
+        wallet.select_asset("STT")
         wallet_address = wallet.get_wallet_address()
         recipient = '0x' + basic_user['address']
 

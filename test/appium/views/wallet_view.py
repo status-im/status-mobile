@@ -268,6 +268,13 @@ class WalletView(BaseView):
     def asset_checkbox_by_name(self, asset_name):
         return AssetCheckBox(self.driver, asset_name)
 
+    def select_asset(self, *args):
+        self.options_button.click()
+        self.manage_assets_button.click()
+        for asset in args:
+            self.asset_checkbox_by_name(asset).click()
+        self.cross_icon.click()
+
     def send_transaction(self, **kwargs):
         send_transaction_view = self.send_transaction_button.click()
         send_transaction_view.select_asset_button.click()

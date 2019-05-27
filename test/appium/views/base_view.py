@@ -484,7 +484,7 @@ class BaseView(object):
 
     @staticmethod
     def get_unique_amount():
-        return '0.0%s' % datetime.now().strftime('%-m%-d%-H%-M%-S').strip('0')
+        return '0.00%s' % datetime.now().strftime('%-d%-H%-M%-S').strip('0')
 
     @staticmethod
     def get_public_chat_name():
