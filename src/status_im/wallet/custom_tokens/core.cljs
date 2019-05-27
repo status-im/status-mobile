@@ -126,7 +126,7 @@
   {:db (update db
                :wallet/custom-token-screen
                merge
-               {:decimals     (str (decode/uint result))
+               {:decimals     (str result)
                 :in-progress? nil})})
 
 (fx/defn symbol-result
