@@ -84,18 +84,14 @@ class TestWalletManagement(SingleDeviceTestCase):
         sign_in.create_user()
         wallet = sign_in.wallet_button.click()
         wallet.set_up_wallet()
-        wallet.options_button.click()
-        wallet.manage_assets_button.click()
-        select_asset = 'MDS'
-        deselect_asset = 'STT'
-        wallet.asset_checkbox_by_name(select_asset).click()
-        wallet.asset_checkbox_by_name(deselect_asset).click()
-        wallet.cross_icon.click()
-        wallet.asset_by_name(select_asset).scroll_to_element()
-        if not wallet.asset_by_name(select_asset).is_element_displayed():
-            self.errors.append('%s asset is not shown in wallet' % select_asset)
-        if wallet.asset_by_name(deselect_asset).is_element_displayed():
-            self.errors.append('%s asset is shown in wallet but was deselected' % deselect_asset)
+        asset = "MDS"
+        wallet.select_asset(asset)
+        wallet.asset_by_name(asset).scroll_to_element()
+        if not wallet.asset_by_name(asset).is_element_displayed():
+            self.errors.append('%s asset is not shown in wallet' % asset)
+        wallet.select_asset(asset)
+        if wallet.asset_by_name(asset).is_element_displayed():
+            self.errors.append('%s asset is shown in wallet but was deselected' % asset)
         self.verify_no_errors()
 
     @marks.testrail_id(5358)
@@ -127,11 +123,8 @@ class TestWalletManagement(SingleDeviceTestCase):
         profile.switch_network('Mainnet with upstream RPC')
         wallet = sign_in.wallet_button.click()
         wallet.set_up_wallet()
-        wallet.options_button.click()
-        wallet.manage_assets_button.click()
         asset_name = 'CryptoKitties'
-        wallet.asset_checkbox_by_name(asset_name).click()
-        wallet.cross_icon.click()
+        wallet.select_asset(asset_name)
         send_transaction = wallet.send_transaction_button.click()
         send_transaction.select_asset_button.click()
         if send_transaction.asset_by_name(asset_name).is_element_displayed():

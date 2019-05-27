@@ -438,6 +438,12 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
             self.errors.append("'Insufficient funds' error is now shown when sending 1 ETH from chat with balance 0")
         send_transaction.cross_icon.click()
         chat_view.commands_button.click()
+
+        # enable STT in wallet
+        chat_view.wallet_button.click()
+        wallet_view.select_asset("STT")
+        wallet_view.home_button.click()
+
         chat_view.send_command.click()
         chat_view.asset_by_name('STT').click()
         chat_view.send_as_keyevent('1')

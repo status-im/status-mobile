@@ -270,6 +270,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view.create_user()
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
+        wallet_view.select_asset("STT")
         send_transaction = wallet_view.send_transaction_button.click()
         send_transaction.amount_edit_box.set_value(1)
         error_text = send_transaction.element_by_text('Insufficient funds')
