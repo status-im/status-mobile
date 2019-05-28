@@ -1199,7 +1199,6 @@
  :<- [:wallet.transactions.details/current-transaction]
  :<- [:ethereum/current-block]
  (fn [[transaction current-block]]
-   :wallet.transactions.details/current-transaction
    (let [confirmations (wallet.db/get-confirmations transaction
                                                     current-block)]
      (assoc transaction
