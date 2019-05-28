@@ -553,7 +553,7 @@
 
 (fx/defn eth-transaction-call
   [{:keys [db] :as cofx}
-   {:keys [contract method params on-success on-error details] :as transaction}]
+   {:keys [contract method params on-result on-error details] :as transaction}]
   (let [current-address (ethereum/current-address db)
         transaction (merge {:to        contract
                             :from      current-address
@@ -562,7 +562,7 @@
                             :symbol    :ETH
                             :method    "eth_sendTransaction"
                             :amount    (money/bignumber 0)
-                            :on-success on-success
+                            :on-result on-result
                             :on-error  on-error}
                            details)
         go-to-view-id (if (get-in db [:account/account :wallet-set-up-passed?])
