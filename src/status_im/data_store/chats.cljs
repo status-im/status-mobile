@@ -106,8 +106,7 @@
   (fn [realm]
     (let [chat (get-chat-by-id chat-id realm)]
       (doto chat
-        (aset "is-active" false)
-        (aset "removed-at" now)))))
+        (aset "is-active" false)))))
 
 (defn add-chat-contacts-tx
   "Returns tx function for adding chat contacts"

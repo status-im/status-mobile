@@ -28,18 +28,14 @@
     :admins                    #{}
     :members-joined            #{}
     :name                      "status"
-    :removed-from-at           nil
     :membership-updates        ()
     :unviewed-messages-count   0
     :last-message-content-type "text/plain"
     :is-active                 true
     :last-message-content      {:chat-id "status" :text "darn typos...! "}
     :debug?                    false
-    :added-to-at               nil
     :group-chat                true
     :public?                   true
-    :removed-at                nil
-    :message-overhead          0
     :chat-id                   "status"
     :timestamp                 1547361080397
     :deleted-at-clock-value    nil}
@@ -51,7 +47,6 @@
     :admins                    #{}
     :members-joined            #{}
     :name                      "rv"
-    :removed-from-at           nil
     :membership-updates        ()
     :unviewed-messages-count   0
     :last-message-content-type "text/plain"
@@ -59,11 +54,8 @@
     :last-message-content      {:chat-id "0x04173f7cdea0076a7998abb674cc79fe61337c42db77043c01d5b0f3e3ac1e5a45bca0c93bb9f3c3d38b7cc9a7337cd64f9f9b2114fe4bbdfe1ae2633ba14d8c9c"
                                 :text    "Hey"}
     :debug?                    false
-    :added-to-at               nil
     :group-chat                false
     :public?                   false
-    :removed-at                nil
-    :message-overhead          0
     :chat-id                   "0x043ae31038ff45a31b096a91d3f8290e079366fbbae76a00fbbd349cd0e5b8d7598965d206772ec4504f68908649a08383cdc51a52cdae5e9ccc744ace4d37020f"
     :timestamp                 1547271770816
     :deleted-at-clock-value    nil}
@@ -75,7 +67,6 @@
     :admins                    #{}
     :members-joined            #{}
     :name                      "Darkviolet Lightgreen Halcyon"
-    :removed-from-at           nil
     :membership-updates        ()
     :unviewed-messages-count   0
     :last-message-content-type "text/plain"
@@ -83,11 +74,8 @@
     :last-message-content      {:chat-id "0x04173f7cdea0076a7998abb674cc79fe61337c42db77043c01d5b0f3e3ac1e5a45bca0c93bb9f3c3d38b7cc9a7337cd64f9f9b2114fe4bbdfe1ae2633ba14d8c9c"
                                 :text    "Djndjd"}
     :debug?                    false
-    :added-to-at               nil
     :group-chat                false
     :public?                   false
-    :removed-at                nil
-    :message-overhead          0
     :chat-id                   "0x04d6e56a475cd35f512d6ce0bf76c2c2af435c85ff48c2b9bdefd129f620e051a436f50961eae5717b2a750e59c3f5b60647d927da46d0b8b11621640b5678fc24"
     :timestamp                 1547186895328
     :deleted-at-clock-value    nil}])
