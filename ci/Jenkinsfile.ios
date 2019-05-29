@@ -39,7 +39,7 @@ pipeline {
   stages {
     stage('Prep') {
       steps {
-        script { 
+        script {
           /* Necessary to load methods */
           mobile = load 'ci/mobile.groovy'
           cmn    = load 'ci/common.groovy'

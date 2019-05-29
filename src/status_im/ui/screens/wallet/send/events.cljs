@@ -240,7 +240,7 @@
                [address data] (wallet/normalize-sign-message-params params)]
            (if (and address data)
              (let [signing-phrase (-> (get-in db [:account/account :signing-phrase])
-                                      (clojure.string/replace-all #" " "     "))
+                                      (clojure.string/replace #" " "     "))
                    screen-params {:id             (str (or id message-id))
                                   :from           address
                                   :data           data

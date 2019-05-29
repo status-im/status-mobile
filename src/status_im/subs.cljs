@@ -1304,7 +1304,7 @@
  :<- [:account/account]
  (fn [{:keys [signing-phrase]}]
    (when signing-phrase
-     (clojure.string/replace-all signing-phrase #" " "     "))))
+     (clojure.string/replace signing-phrase #" " "     "))))
 
 (re-frame/reg-sub
  :wallet/settings

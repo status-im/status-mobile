@@ -2,8 +2,15 @@
   :url "https://github.com/status-im/status-react/"
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.10.238"]
+  :dependencies [[org.clojure/clojure "1.10.0"]
+                 [org.clojure/clojurescript "1.10.520"
+                  :exclusions
+                  [com.google.javascript/closure-compiler-unshaded
+                   org.clojure/google-closure-library]]
+                 ;; [com.google.javascript/closure-compiler-unshaded "v20180319"]
+                 ;;  v20180506
+                 [com.google.javascript/closure-compiler-unshaded "v20190325"]
+                 [org.clojure/google-closure-library "0.0-20190213-2033d5d9"]
                  [org.clojure/core.async "0.4.474"]
                  [reagent "0.7.0" :exclusions [cljsjs/react cljsjs/react-dom cljsjs/react-dom-server cljsjs/create-react-class]]
                  [status-im/re-frame "0.10.5"]
@@ -103,11 +110,15 @@
                                                          :main               "env.ios.main"
                                                          :output-dir         "target/ios-prod"
                                                          :static-fns         true
+                                                         :fn-invoke-direct   true
                                                          :optimize-constants true
-                                                         :optimizations      :simple
+                                                         :optimizations      :advanced
+                                                         :pseudo-names       false
+                                                         :pretty-print       false
                                                          :closure-defines    {"goog.DEBUG" false}
                                                          :parallel-build     false
                                                          :elide-asserts      true
+                                                         :externs            ["externs.js"]
                                                          :language-in        :ecmascript5}
                                       :warning-handlers [status-im.utils.build/warning-handler]}
                                      :android
@@ -116,11 +127,15 @@
                                                          :main               "env.android.main"
                                                          :output-dir         "target/android-prod"
                                                          :static-fns         true
+                                                         :fn-invoke-direct   true
                                                          :optimize-constants true
-                                                         :optimizations      :simple
+                                                         :optimizations      :advanced
+                                                         :pseudo-names       false
+                                                         :pretty-print       false
                                                          :closure-defines    {"goog.DEBUG" false}
                                                          :parallel-build     false
                                                          :elide-asserts      true
+                                                         :externs            ["externs.js"]
                                                          :language-in        :ecmascript5}
                                       :warning-handlers [status-im.utils.build/warning-handler]}
                                      :desktop

@@ -334,7 +334,8 @@
     (conj (butlast (:coll (reduce offset-reducer {:cnt 0 :coll []} lengths))) 0)))
 
 (defn hex-to-bytes [hex]
-  (let [len (* (hex-to-number (subs hex 0 64)) 2)]
+  (let [number (hex-to-number (subs hex 0 64))
+        len    (* (if (nil? number) 0 number) 2)]
     (substr hex 64 len)))
 
 (defn dyn-hex-to-value [hex type]

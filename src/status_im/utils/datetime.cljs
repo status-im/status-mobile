@@ -28,16 +28,16 @@
 
 ;; xx-YY locale, xx locale or en fallback
 (defn- locale-symbols [locale-name]
-  (if-let [loc (get goog.i18n (str "DateTimeSymbols_" locale-name))]
+  (if-let [loc (get goog/i18n (str "DateTimeSymbols_" locale-name))]
     loc
     (let [name-first (s/replace (or locale-name "") #"-.*$" "")
-          loc (get goog.i18n (str "DateTimeSymbols_" name-first))]
-      (or loc goog.i18n.DateTimeSymbols_en))))
+          loc (get goog/i18n (str "DateTimeSymbols_" name-first))]
+      (or loc goog/i18n.DateTimeSymbols_en))))
 
 ;; detects if given locale symbols timeformat generates AM/PM ("a")
 (defn- is24Hour-locsym [locsym]
   (not (s/includes?
-        (nth (get locsym 'TIMEFORMATS) 2)
+        (nth (.-TIMEFORMATS locsym) 2)
         "a")))
 
 ;; returns is24Hour from device or from given locale symbols
@@ -53,15 +53,16 @@
 
 ;; date formats
 (defn- short-date-format [locsym] "dd MMM")
-(defn- medium-date-format [locsym] (nth (get locsym 'DATEFORMATS) 2)) ; get medium format from current locale symbols
+(defn- medium-date-format [locsym] (nth (.-DATEFORMATS locsym) 2)) ; get medium format from current locale symbols
 
 ;; date-time formats
-(defn- medium-date-time-format [locsym] (str (medium-date-format locsym) ", " (time-format locsym)))
+(defn- medium-date-time-format [locsym]
+  (str (medium-date-format locsym) ", " (time-format locsym)))
 
 ;; get formatter for current locale symbols and format function
 (defn- mk-fmt [locale format-fn]
   (let [locsym (locale-symbols locale)]
-    (goog.i18n.DateTimeFormat. (format-fn locsym) locsym)))
+    (goog/i18n.DateTimeFormat. (format-fn locsym) locsym)))
 
 ;; generate formatters for different formats
 (def date-time-fmt

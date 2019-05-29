@@ -854,7 +854,7 @@
                                                :content (i18n/label :t/something-went-wrong)}}
             (navigation/navigate-to-cofx :keycard-settings nil)))
 
-(defn- verify-pin
+(defn verify-pin
   [{:keys [db] :as cofx}]
   (let [pin (vector->string (get-in db [:hardwallet :pin :current]))
         pairing (get-pairing db)
@@ -870,7 +870,7 @@
                                                :hardwallet-connect
                                                :hardwallet-connect-settings) nil)))))
 
-(defn- unblock-pin
+(defn unblock-pin
   [{:keys [db] :as cofx}]
   (let [puk (vector->string (get-in db [:hardwallet :pin :puk]))
         instance-uid (get-in db [:hardwallet :application-info :instance-uid])
