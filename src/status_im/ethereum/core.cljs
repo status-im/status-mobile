@@ -35,7 +35,6 @@
 
 (def hex-prefix "0x")
 
-
 (defn normalized-address [address]
   (when address
     (if (string/starts-with? address hex-prefix)
@@ -51,7 +50,7 @@
 (defn coordinates [public-key]
   (when-let [hex (naked-address public-key)]
     (when (= public-key-length (count (subs hex 2)))
-      {:x (normalized-address (subs hex 2 65))
+      {:x (normalized-address (subs hex 1 65))
        :y (normalized-address (subs hex 66))})))
 
 (defn address? [s]

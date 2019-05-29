@@ -3,7 +3,7 @@
 
 (def domain "stateofus.eth")
 
-(defn- subdomain [username]
+(defn subdomain [username]
   (str username "." domain))
 
 (def registrars
@@ -15,6 +15,7 @@
     (= s (string/lower-case s))))
 
 (defn valid-username? [username]
-  (and (< 4 (count username))
-       (lower-case? username)
-       (re-find #"^[a-z]+$" username)))
+  (boolean
+   (and (< 4 (count username))
+        (lower-case? username)
+        (re-find #"^[a-z0-9]+$" username))))

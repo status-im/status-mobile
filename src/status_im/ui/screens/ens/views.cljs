@@ -95,7 +95,7 @@
   (#{:registrable :owned :connected} state))
 
 (defn- final-state? [state]
-  (#{:connected :registered :registration-failed} state))
+  (#{:connected :saved :registration-failed} state))
 
 (defn- main-icon [state]
   (cond
@@ -142,21 +142,22 @@
     (i18n/label :t/ens-want-custom-domain)))
 
 (defn- help-message [state custom-domain?]
-  (if custom-domain?
-    (case state
-      :owned
-      (i18n/label :t/ens-custom-username-owned)
-      :unregistrable
+  (case state
+    (:initial :typing)
+    (if custom-domain?
+      (i18n/label :t/ens-custom-username-hints)
+      (i18n/label :t/ens-username-hints))
+    :invalid
+    (i18n/label :t/ens-username-invalid)
+    :unregistrable
+    (if custom-domain?
       (i18n/label :t/ens-custom-username-unregistrable)
-      (i18n/label :t/ens-custom-username-typing))
-    (case state
-      :invalid
-      (i18n/label :t/ens-username-invalid)
-      :registrable
-      (i18n/label :t/ens-username-registrable)
-      :unregistrable
-      (i18n/label :t/ens-username-unregistrable)
-      (i18n/label :t/ens-username-hints))))
+      (i18n/label :t/ens-username-unregistrable))
+    :registrable
+    (i18n/label :t/ens-username-registrable)
+    :owned
+    (i18n/label :t/ens-username-owned)
+    ""))
 
 (defn- on-username-change [custom-domain? username]
   (re-frame/dispatch [:ens/set-username custom-domain? username]))
@@ -214,7 +215,7 @@
               :content public-key}]]
    [agreement props]])
 
-;; states: initial, typing, (invalid, unregistrable, registrable, owned, connected), registering (from registrable), (connected, registered, :registration-failed)
+;; states: initial, typing, (invalid, unregistrable, registrable, owned, connected), registering (from registrable), (saved, registered, :registration-failed)
 
 (defn- icon [{:keys [state]}]
   [react/view {:style {:margin-top 68 :margin-bottom 24  :width 60 :height 60 :border-radius 30 :background-color colors/blue :align-items :center :justify-content :center}}
@@ -226,7 +227,7 @@
                       :on-submit-editing #(on-registration props)
                       :auto-capitalize   :none
                       :auto-correct      false
-                      :default-value             username
+                      :default-value     username
                       :auto-focus        true
                       :placeholder       (default-name custom-domain?)
                       :style             {:flex 1 (if (= state :registering) :padding-horizontal :padding-left) 48 :text-align :center :font-size 22}}]
@@ -236,8 +237,8 @@
   (case state
     :registered
     (i18n/label :t/ens-registered-title)
-    :connected
-    (i18n/label :t/ens-connected-title)
+    :saved
+    (i18n/label :t/ens-saved-title)
     (i18n/label :t/ens-registration-failed-title)))
 
 (defn- final-state-details [{:keys [state username]}]
@@ -248,12 +249,13 @@
     :registration-failed
     [react/text {:style {:color colors/gray :font-size 14 :text-align :center}}
      (i18n/label :t/ens-registration-failed)]
-    :connected
-    [react/view {:flex-direction :row :align-items :center}
-     [react/text {:style {:text-align-vertical :center}}
-      (stateofus/domain username)]
-     [react/text {:style {:text-align-vertical :center}}
-      (i18n/label :t/ens-connected)]]
+    :saved
+    [react/view {:style {:flex-direction :row :align-items :center}}
+     [react/nested-text
+      {:style {}}
+      (stateofus/subdomain username)
+      [{:style {:color colors/gray}}
+       (i18n/label :t/ens-saved)]]]
     [react/view {:flex-direction :row :margin-left 6 :margin-top 14 :align-items :center}
      [react/text {:style {:text-align-vertical :center}}
       (str (i18n/label :t/ens-terms-registration) " ->")]]))
@@ -312,15 +314,9 @@
    [toolbar/content-title (i18n/label :t/ens-your-username)]])
 
 (views/defview register []
-  (views/letsubs [{:keys [registrar]}          [:get-screen-params :ens-register]
-                  state                        [:ens/state]
-                  username                     [:ens/username]
-                  custom-domain?               [:ens/custom-domain?]
-                  {:keys [address public-key]} [:account/account]]
-    (let [custom-domain? (or custom-domain? false)
-          checked       (reagent/atom false)
-          props          {:state state :username username :custom-domain? custom-domain? :contract registrar
-                          :checked checked :address (ethereum/normalized-address address) :public-key public-key}]
+  (views/letsubs [{:keys [address state] :as props} [:ens.registration/screen]]
+    (let [checked (reagent/atom false)
+          props   (merge props {:checked checked :address (ethereum/normalized-address address)})]
       [react/keyboard-avoiding-view {:flex 1}
        [toolbar]
        (if (final-state? state)
@@ -339,7 +335,7 @@
      title]
     content]])
 
-(defn- welcome [props]
+(defn- welcome []
   [react/scroll-view {:style {:flex 1}}
    [react/view {:style {:flex 1 :align-items :center}}
     [react/image {:source (:ens-header resources/ui)
@@ -368,31 +364,31 @@
      (i18n/label :t/ens-powered-by)]]
    [react/view {:align-items :center :padding-top 8 :padding-bottom 16 :background-color colors/white :position :absolute :left 0 :right 0 :bottom 0
                 :border-top-width 1 :border-top-color colors/gray-lighter}
-    [components.common/button {:on-press #(re-frame/dispatch [:navigate-to :ens-register props])
+    [components.common/button {:on-press #(re-frame/dispatch [:navigate-to :ens-register])
                                :label    (i18n/label :t/get-started)}]]])
 
-(defn- registered [props usernames]
-  [react/view ;{:style {:flex 1}}
-   [react/view ;{:style {:flex 1}}
-    [item {:text   "Add username"
-           :action #(re-frame/dispatch [:navigate-to :ens-register props])}]]
+(defn- registered [usernames]
+  [react/view {:style {:flex 1}}
+   [react/view {:style {:flex 1}}
+    [item {:text   (i18n/label :t/ens-add-username)
+           :action #(re-frame/dispatch [:navigate-to :ens-register])}]]
    ;[react/view {:style {:flex 1}}]
    [react/text {:style {:color colors/gray}}
-    "Your usernames"]
+    (i18n/label :t/ens-your-usernames)]
    (if (seq usernames)
      [react/view {:style {:margin-top 8}}
-      (for [{:keys [domain]} usernames]
-        [react/view])]
+      (for [{:keys [domain] :as username} usernames]
+        ^{:key username}
+        [react/view
+         domain])]
      [react/text {:style {:color colors/gray :font-size 15}}
-      "You don't have any username connected"])])
+      (i18n/label :t/ens-no-usernames)])])
 
 (views/defview main []
-  (views/letsubs [props     [:get-screen-params :ens-main]
-                  usernames (list)]
+  (views/letsubs [usernames [:account/usernames]]
     [react/view {:style {:flex 1}}
      [toolbar/simple-toolbar
       (i18n/label :t/ens-usernames)]
-     [registered props
-      usernames]
-     #_[welcome props]]))
-
+     (if (seq usernames)
+       [registered usernames]
+       [welcome])]))

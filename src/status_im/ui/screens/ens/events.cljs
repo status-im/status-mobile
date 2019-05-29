@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.accounts.update.core :as update]
+            [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.resolver :as resolver]
@@ -18,19 +19,19 @@
    (ens/get-addr registry name cb)))
 
 (defn- on-resolve [registry custom-domain? username address public-key s]
-  (if (and (seq address) (= address (ethereum/normalized-address s)))
-    (resolver/pubkey registry name
+  (cond
+    (= (ethereum/normalized-address address) (ethereum/normalized-address s))
+    (resolver/pubkey registry username
                      (fn [ss]
                        (if (= ss public-key)
                          (re-frame/dispatch [:ens/set-state :connected])
-                         (re-frame/dispatch [:ens/set-state :registrable]))))
-    (if (and (nil? s) (not custom-domain?)) ;; No address for a stateofus subdomain: it can be registered
-      (re-frame/dispatch [:ens/set-state :registrable])
-      (re-frame/dispatch [:ens/set-state :unregistrable]))))
+                         (re-frame/dispatch [:ens/set-state :owned]))))
 
-(defn- chain [{:keys [network] :as db}]
-  (let [network (get-in db [:account/account :networks network])]
-    (ethereum/network->chain-keyword network)))
+    (and (nil? s) (not custom-domain?)) ;; No address for a stateofus subdomain: it can be registered
+    (re-frame/dispatch [:ens/set-state :registrable])
+
+    :else
+    (re-frame/dispatch [:ens/set-state :unregistrable])))
 
 (defn- assoc-state [db state]
   (assoc-in db [:ens :state] state))
@@ -70,7 +71,7 @@
       (when valid?
         (let [{:keys [account/account]}        db
               {:keys [address public-key]}     account
-              registry (get ens/ens-registries (chain db))
+              registry (get ens/ens-registries (ethereum/chain-keyword db))
               name     (if custom-domain? username (stateofus/subdomain username))]
           {::ens/resolve [registry name #(on-resolve registry custom-domain? name address public-key %)]}))))))
 
@@ -91,34 +92,20 @@
             (assoc-username ""))}))
 
 (handlers/register-handler-fx
- :ens/on-registration-success
+ :ens/save-username
  (fn [{:keys [db] :as cofx} [_ username]]
-   (let [new-account (update-in db [:account/account :usernames] #((fnil conj []) %1 %2) username)]
+   (let [db (update-in db [:account/account :usernames] #((fnil conj []) %1 %2) username)]
      (fx/merge
       cofx
-      {:db (assoc db :account/account new-account)
+      {:db       db
        :dispatch [:navigate-back]}
-      (update/account-update (get-in new-account [:account/account :usernames])
-                             {:success-event [:ens/set-state :registered]})))))
+      (update/account-update {:usernames (get-in db [:account/account :usernames])}
+                             {:success-event [:ens/set-state :saved]})))))
 
 (handlers/register-handler-fx
  :ens/on-registration-failure
  (fn [{:keys [db]} _]
    {:db (assoc-state db :registration-failed)}))
-
-#_(defn- prepare-extension-transaction [{:keys [contract username address public-key]}]
-    (let [method        "register(bytes32,address,bytes32,bytes32)"
-          {:keys [x y]} (ethereum/coordinates public-key)
-          data          (abi-spec/encode method [(ethereum/sha3 username) address x y])]
-      {:to-name         "Stateofus registrar"
-       :symbol          :ETH
-       :method          method
-       :amount          (money/bignumber 0)
-       :to              contract
-       :gas             (money/bignumber 200000)
-       :data            data
-       :on-result       [:ens/on-registration-success]
-       :on-error        [:ens/on-registration-failure]}))
 
 (handlers/register-handler-fx
  :ens/register
@@ -126,11 +113,14 @@
    (let [{:keys [x y]} (ethereum/coordinates public-key)]
      (wallet/eth-transaction-call
       cofx
-      {:to-name   "Stateofus registrar"
-       :contract  contract
-       :method    "register(bytes32,address,bytes32,bytes32)"
-       :params    [(ethereum/sha3 username) address x y]
-       :amount    (money/bignumber 0)
-       :gas       (money/bignumber 200000)
-       :on-result [:ens/on-registration-success]
-       :on-error  [:ens/on-registration-failure]}))))
+      {:contract   "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
+       :method     "approveAndCall(address,uint256,bytes)"
+       :params     [contract
+                    (money/unit->token 10 18)
+                    (abi-spec/encode "register(bytes32,address,bytes32,bytes32)"
+                                     [(ethereum/sha3 username) address x y])]
+       :to-name    "Stateofus registrar"
+       :amount     (money/bignumber 0)
+       :gas        (money/bignumber 200000)
+       :on-result  [:ens/save-username username]
+       :on-error   [:ens/on-registration-failure]}))))

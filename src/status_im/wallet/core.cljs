@@ -257,11 +257,13 @@
   [from {:keys [amount to gas gas-price data nonce]}]
   (cond-> {:from     (ethereum/normalized-address from)
            :to       (ethereum/normalized-address to)
-           :value    (str "0x" (abi-spec/number-to-hex amount))
-           :gas      (str "0x" (abi-spec/number-to-hex gas))
-           :gasPrice (str "0x" (abi-spec/number-to-hex gas-price))}
+           :value    (str "0x" (abi-spec/number-to-hex amount))}
     data
     (assoc :data data)
+    gas
+    (assoc :gas (str "0x" (abi-spec/number-to-hex gas)))
+    gas-price
+    (assoc :gasPrice (str "0x" (abi-spec/number-to-hex gas-price)))
     nonce
     (assoc :nonce nonce)))
 
@@ -569,15 +571,18 @@
                         :wallet-send-modal-stack
                         :wallet-send-modal-stack-with-onboarding)]
     (fx/merge cofx
-              {:db (-> db
-                       (assoc-in [:navigation/screen-params :wallet-send-modal-stack :modal?] true)
-                       (assoc-in [:wallet :send-transaction]
-                                 transaction))
-               :wallet/update-estimated-gas
-               {:obj           (select-keys transaction [:to :from :data])
-                :success-event :wallet/update-estimated-gas-success}
+              (merge
+               {:db (-> db
+                        (assoc-in [:navigation/screen-params :wallet-send-modal-stack :modal?] true)
+                        (assoc-in [:wallet :send-transaction]
+                                  transaction))
 
-               :wallet/update-gas-price
-               {:success-event :wallet/update-gas-price-success
-                :edit?         false}}
+                :wallet/update-gas-price
+                {:success-event :wallet/update-gas-price-success
+                 :edit?         false}}
+               (when-not gas
+                 {:wallet/update-estimated-gas
+                  {:obj           (select-keys transaction [:to :from :data])
+                   :success-event :wallet/update-estimated-gas-success}}))
+
               (navigation/navigate-to-cofx go-to-view-id {}))))

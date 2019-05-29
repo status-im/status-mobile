@@ -159,6 +159,9 @@
 ;;ethereum
 (reg-root-key-sub :ethereum/current-block :ethereum/current-block)
 
+;;ens
+(reg-root-key-sub :ens :ens)
+
 ;;GENERAL ==============================================================================================================
 
 (re-frame/reg-sub
@@ -1696,19 +1699,8 @@
 ;;ENS ==================================================================================================================
 
 (re-frame/reg-sub
- :ens/state
- (fn [db]
-   (get-in db [:ens :state])))
-
-(re-frame/reg-sub
- :ens/username
- (fn [db]
-   (get-in db [:ens :username])))
-
-(re-frame/reg-sub
- :ens/custom-domain?
- (fn [db]
-   (get-in db [:ens :custom-domain?])))
+ :ens
+ :ens)
 
 (re-frame/reg-sub
  :ens.stateofus/registrar
@@ -1716,3 +1708,22 @@
  (fn [network]
    (let [chain (ethereum/network->chain-keyword network)]
      (get stateofus/registrars chain))))
+
+(re-frame/reg-sub
+ :account/usernames
+ :<- [:account/account]
+ (fn [acc]
+   (:usernames acc)))
+
+(re-frame/reg-sub
+ :ens.registration/screen
+ :<- [:ens]
+ :<- [:ens.stateofus/registrar]
+ :<- [:account/account]
+ (fn [[{:keys [state username custom-domain?]} registrar {:keys [address public-key]}]]
+   {:state          state
+    :username       username
+    :custom-domain? (or custom-domain? false)
+    :contract       registrar
+    :address        address
+    :public-key     public-key}))
