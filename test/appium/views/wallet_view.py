@@ -215,6 +215,7 @@ class WalletView(BaseView):
         return float(re.sub('[~,]', '', self.usd_total_value.text))
 
     def get_eth_value(self):
+        self.eth_asset_value.scroll_to_element()
         return float(self.eth_asset_value.text)
 
     def get_stt_value(self):
