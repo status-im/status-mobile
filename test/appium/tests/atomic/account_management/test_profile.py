@@ -384,3 +384,77 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         chat_2.chat_message_input.send_keys(message_1)
         chat_2.send_message_button.click()
         chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element()
+
+@marks.all
+@marks.account
+class TestProfileMultipleDevice(MultipleDeviceTestCase):
+
+    @marks.testrail_id(6835)
+    @marks.high
+    def test_pair_devices(self):
+
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        device_1_home = device_1.create_user()
+        device_1_home.profile_button.click()
+        device_1_profile = device_1_home.get_profile_view()
+        device_1_profile.backup_recovery_phrase_button.click()
+        device_1_profile.ok_continue_button.click()
+        recovery_phrase = device_1_profile.get_recovery_phrase()
+        device_1_profile.back_button.click()
+        device_1_profile.get_back_to_home_view()
+        device_1_name = 'device_%s' % device_1.driver.number
+        device_2_name = 'device_%s' % device_2.driver.number
+        message_before_sync = 'sent before sync'
+        message_after_sync = 'sent after sync'
+
+        # device 1: add contact, start 1-1 chat with basic user
+        device_1_chat = device_1_home.add_contact(basic_user['public_key'])
+        device_1_chat.chat_message_input.send_keys(message_before_sync)
+        device_1_chat.send_message_button.click()
+
+        # device 2: go to profile > Devices, set device name, discover device 2 to device 1
+        device_2_home = device_2.recover_access(passphrase=' '.join(recovery_phrase.values()))
+        device_2_home.profile_button.click()
+        device_2_profile = device_2_home.get_profile_view()
+        device_2_profile.devices_button.scroll_to_element()
+        device_2_profile.devices_button.click()
+        device_2_profile.device_name_input.set_value(device_2_name)
+        device_2_profile.continue_button.click_until_presence_of_element(device_2_profile.advertise_device_button, 2)
+        device_2_profile.advertise_device_button.click()
+
+        # device 1: go to profile > Devices, set device name, enable device 2 and sync
+        device_1_profile.profile_button.click()
+        device_1_profile.devices_button.scroll_to_element()
+        device_1_profile.devices_button.click()
+        device_1_profile.device_name_input.send_keys(device_1_name)
+        device_1_profile.continue_button.click_until_presence_of_element(device_1_profile.advertise_device_button, 2)
+        device_1_profile.get_toggle_device_by_name(device_2_name).click()
+        device_1_profile.sync_all_button.click()
+        device_1_profile.sync_all_button.wait_for_visibility_of_element(15)
+
+        # device 2: check that contact is appeared in Contact list
+        device_2_profile.back_button.click()
+        device_2_profile.contacts_button.scroll_to_element(9, 'up')
+        device_2_profile.contacts_button.click()
+        if not device_2_profile.element_by_text(basic_user['username']).is_element_displayed():
+            self.errors.append('"%s" is not found in Contacts after initial sync' % basic_user['username'])
+
+        # device 1: send message to 1-1 chat with basic user and add another contact
+        device_1_chat.get_back_to_home_view()
+        device_1_chat.chat_message_input.send_keys(message_after_sync)
+        device_1_chat.send_message_button.click()
+        device_1_chat.back_button.click()
+        device_1_home.add_contact(transaction_senders['A']['public_key'])
+
+        # device 2: check that messages appeared in 1-1 chat and new contacts are synced
+        if not device_2_profile.element_by_text(transaction_senders['A']['username']):
+            self.errors.append('"%s" is not found in Contacts after adding when devices are paired' % transaction_senders['A']['username'])
+        device_2_profile.get_back_to_home_view()
+        chat = device_2_home.get_chat_with_user(basic_user['username']).click()
+        if chat.chat_element_by_text(message_before_sync).is_element_displayed():
+            self.errors.append('"%s" message sent before pairing is synced' % message_before_sync)
+        if not chat.chat_element_by_text(message_after_sync).is_element_displayed():
+            self.errors.append('"%s" message in 1-1 is not synced' % message_after_sync)
+
+        self.verify_no_errors()

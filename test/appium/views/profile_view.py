@@ -412,6 +412,47 @@ class RemovePictureButton(BaseButton):
         super().__init__(driver)
         self.locator = self.Locator.text_selector('Remove current photo')
 
+class DevicesButton(BaseButton):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.accessibility_id('pairing-settings-button')
+
+class DeviceNameInput(BaseEditBox):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.accessibility_id('device-name')
+
+class ContinueButton(BaseButton):
+    def __init__(self, driver):
+        super(ContinueButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Continue')
+
+class GoToPairingSettingsButton(BaseButton):
+    def __init__(self, driver):
+        super(GoToPairingSettingsButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('GO TO PAIRING SETTINGS')
+
+class AdvertiseDeviceButton(BaseButton):
+    def __init__(self, driver):
+        super(AdvertiseDeviceButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('advertise-device')
+
+class SyncedDeviceToggle(BaseButton):
+    def __init__(self, driver, device_name):
+        super(SyncedDeviceToggle, self).__init__(driver)
+        self.device_name = device_name
+        self.locator = self.Locator.xpath_selector('//android.widget.TextView[@text="%s"]/../android.widget.Switch' % device_name)
+
+class SyncAllButton(BaseButton):
+    def __init__(self, driver):
+        super(SyncAllButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Sync all devices')
+
+class ContactsButton(BaseButton):
+    def __init__(self, driver):
+        super(ContactsButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Contacts')
+
 
 class ProfileView(BaseView):
 
@@ -452,6 +493,7 @@ class ProfileView(BaseView):
         self.share_button = ShareButton(self.driver)
         self.advanced_button = AdvancedButton(self.driver)
         self.debug_mode_toggle = DebugModeToggle(self.driver)
+        self.contacts_button = ContactsButton(self.driver)
 
         # Backup seed phrase
         self.backup_recovery_phrase_button = BackupRecoveryPhraseButton(self.driver)
@@ -478,6 +520,15 @@ class ProfileView(BaseView):
         self.mail_server_address_input = MailServerAddressInput(self.driver)
         self.mail_server_connect_button = MailServerConnectButton(self.driver)
         self.mail_server_auto_selection_button = MailServerAutoSelectionButton(self.driver)
+
+        # Pairing
+        self.devices_button = DevicesButton(self.driver)
+        self.device_name_input = DeviceNameInput(self.driver)
+        self.continue_button = ContinueButton(self.driver)
+        self.go_to_pairing_settings_button = GoToPairingSettingsButton(self.driver)
+        self.advertise_device_button = AdvertiseDeviceButton(self.driver)
+        self.sync_all_button = SyncAllButton(self.driver)
+
 
     def switch_network(self, network):
         self.advanced_button.click()
@@ -573,6 +624,9 @@ class ProfileView(BaseView):
 
     def mail_server_by_name(self, server_name):
         return MailServerElement(self.driver, server_name)
+
+    def get_toggle_device_by_name(self, device_name):
+        return SyncedDeviceToggle(self.driver, device_name)
 
     @property
     def current_active_network(self):
