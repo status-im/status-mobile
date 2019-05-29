@@ -14,7 +14,7 @@
     :shh/add-new-sym-keys :shh/get-new-sym-keys :shh/post
     :shh/send-direct-message :shh/remove-filter
     :shh/generate-sym-key-from-password  :transport/confirm-messages-processed
-    :group-chats/extract-membership-signature :utils/dispatch-later})
+    :group-chats/extract-membership-signature :utils/dispatch-later :json-rpc/call})
 
 (defn- safe-merge [fx new-fx]
   (if (:merging-fx-with-common-keys fx)

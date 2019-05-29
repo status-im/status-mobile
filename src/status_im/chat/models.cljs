@@ -5,6 +5,7 @@
             [status-im.data-store.messages :as messages-store]
             [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.contact-code.core :as contact-code]
+            [taoensso.timbre :as log]
             [status-im.i18n :as i18n]
             [status-im.transport.chat.core :as transport.chat]
             [status-im.transport.utils :as transport.utils]
@@ -20,6 +21,7 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.priority-map :refer [empty-message-map]]
             [status-im.utils.utils :as utils]
+            [status-im.utils.config :as config]
             [status-im.mailserver.core :as mailserver]
             [status-im.transport.partitioned-topic :as transport.topic]))
 
@@ -101,34 +103,30 @@
               (or (get (:chats db) chat-id)
                   (create-new-chat chat-id cofx))
               chat-props)]
-
     {:db            (update-in db [:chats chat-id] merge chat)
      :data-store/tx [(chats-store/save-chat-tx chat)]}))
 
 (fx/defn add-public-chat
   "Adds new public group chat to db & realm"
   [cofx topic]
-  (upsert-chat cofx
-               {:chat-id                        topic
-                :is-active                      true
-                :name                           topic
-                :group-chat                     true
-                :contacts                       #{}
-                :public?                        true
-                :might-have-join-time-messages? true
-                :unviewed-messages-count        0
-                :loaded-unviewed-messages-ids   #{}}))
-
-(fx/defn add-group-chat
-  "Adds new private group chat to db & realm"
-  [cofx chat-id chat-name admin participants]
-  (upsert-chat cofx
-               {:chat-id     chat-id
-                :name        chat-name
-                :is-active   true
-                :group-chat  true
-                :group-admin admin
-                :contacts    participants}))
+  (if config/use-status-go-protocol?
+    {:json-rpc/call [{:method "status_joinPublicChat"
+                      :params [topic]
+                      :on-success
+                      #(log/debug "successfully joined a public chat:" topic)
+                      :on-error
+                      (fn [error]
+                        (log/error "can't join a public chat:" error))}]}
+    (upsert-chat cofx
+                 {:chat-id                        topic
+                  :is-active                      true
+                  :name                           topic
+                  :group-chat                     true
+                  :contacts                       #{}
+                  :public?                        true
+                  :might-have-join-time-messages? true
+                  :unviewed-messages-count        0
+                  :loaded-unviewed-messages-ids   #{}})))
 
 (fx/defn clear-history
   "Clears history of the particular chat"
@@ -159,27 +157,37 @@
            (assoc-in [:current-chat-id] nil))
    :data-store/tx [(chats-store/deactivate-chat-tx chat-id now)]})
 
-;; TODO: There's a race condition here, as the removal of the filter (async)
-;; is done at the same time as the removal of the chat, so a message
-;; might come between and restore the chat. Multiple way to handle this
-;; (remove chat only after the filter has been removed, probably the safest,
-;; flag the chat to ignore new messages, change receive method for public/group chats)
-;; For now to keep the code simplier and avoid significant changes, best to leave as it is.
 (fx/defn remove-chat
   "Removes chat completely from app, producing all necessary effects for that"
   [{:keys [db now] :as cofx} chat-id]
-  (fx/merge cofx
-            #(when (public-chat? % chat-id)
-               (transport.chat/unsubscribe-from-chat % chat-id))
-            #(when (group-chat? % chat-id)
-               (mailserver/remove-chat-from-mailserver-topic % chat-id))
-            (mailserver/remove-gaps chat-id)
-            (mailserver/remove-range chat-id)
-            (deactivate-chat chat-id)
-            (clear-history chat-id)
-            #(when (one-to-one-chat? % chat-id)
-               (contact-code/stop-listening % chat-id))
-            (navigation/navigate-to-cofx :home {})))
+  (if config/use-status-go-protocol?
+    (fx/merge cofx
+              {:json-rpc/call [{:method "status_removeChat"
+                                :params [chat-id]
+                                :on-success
+                                #(log/debug "successfully removed a chat:" chat-id)
+                                :on-error
+                                (fn [error]
+                                  (log/error "can't remove a chat:" error))}]}
+              (navigation/navigate-to-cofx :home {}))
+    (fx/merge cofx
+              ;; TODO: There's a race condition here, as the removal of the filter (async)
+              ;; is done at the same time as the removal of the chat, so a message
+              ;; might come between and restore the chat. Multiple way to handle this
+              ;; (remove chat only after the filter has been removed, probably the safest,
+              ;; flag the chat to ignore new messages, change receive method for public/group chats)
+              ;; For now to keep the code simplier and avoid significant changes, best to leave as it is.
+              #(when (public-chat? % chat-id)
+                 (transport.chat/unsubscribe-from-chat % chat-id))
+              #(when (group-chat? % chat-id)
+                 (mailserver/remove-chat-from-mailserver-topic % chat-id))
+              (mailserver/remove-gaps chat-id)
+              (mailserver/remove-range chat-id)
+              (deactivate-chat chat-id)
+              (clear-history chat-id)
+              #(when (one-to-one-chat? % chat-id)
+                 (contact-code/stop-listening % chat-id))
+              (navigation/navigate-to-cofx :home {}))))
 
 (fx/defn send-messages-seen
   [{:keys [db] :as cofx} chat-id message-ids]
@@ -287,10 +295,20 @@
   [{:keys [db] :as cofx} chat-id opts]
   ;; don't allow to open chat with yourself
   (when (not= (accounts.db/current-public-key cofx) chat-id)
-    (fx/merge cofx
-              (upsert-chat {:chat-id   chat-id
-                            :is-active true})
-              (navigate-to-chat chat-id opts))))
+    (if config/use-status-go-protocol?
+      (fx/merge cofx
+                {:json-rpc/call [{:method "status_startOneOnOneChat"
+                                  :params [chat-id]
+                                  :on-success
+                                  #(log/debug "successfully started a 1-1 chat with:" chat-id)
+                                  :on-error
+                                  (fn [error]
+                                    (log/error "can't start a 1-1 chat:" error))}]}
+                (navigate-to-chat chat-id opts))
+      (fx/merge cofx
+                (upsert-chat {:chat-id   chat-id
+                              :is-active true})
+                (navigate-to-chat chat-id opts)))))
 
 (fx/defn start-public-chat
   "Starts a new public chat"
