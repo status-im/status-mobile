@@ -48,29 +48,6 @@
       (testing "it adds the fx to store a chat"
         (is store-chat-fx)))))
 
-(deftest add-group-chat
-  (let [chat-id "chat-id"
-        chat-name "chat-name"
-        admin "admin"
-        participants ["a"]
-        fx (chat/add-group-chat {:db {}} chat-id chat-name admin participants)
-        store-fx   (:data-store/tx fx)
-        group-chat (get-in fx [:db :chats chat-id])]
-    (testing "it saves the chat in the database"
-      (is store-fx))
-    (testing "it sets the name"
-      (is (= chat-name (:name group-chat))))
-    (testing "it sets the admin"
-      (is (= admin (:group-admin group-chat))))
-    (testing "it sets the participants"
-      (is (= participants (:contacts group-chat))))
-    (testing "it sets the chat-id"
-      (is (= chat-id (:chat-id group-chat))))
-    (testing "it sets the group-chat flag"
-      (is (:group-chat group-chat)))
-    (testing "it does not sets the public flag"
-      (is (not (:public? group-chat))))))
-
 (deftest add-public-chat
   (let [topic "topic"
         fx (chat/add-public-chat {:db {}} topic)

@@ -1,11 +1,14 @@
 (ns status-im.chat.models.loading
-  (:require [status-im.accounts.db :as accounts.db]
+  (:require [re-frame.core :as re-frame]
+            [status-im.accounts.db :as accounts.db]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.models :as chat-model]
+            [status-im.mailserver.core :as mailserver]
+            [status-im.utils.config :as config]
             [status-im.utils.datetime :as time]
             [status-im.utils.fx :as fx]
             [status-im.utils.priority-map :refer [empty-message-map]]
-            [status-im.mailserver.core :as mailserver]))
+            [taoensso.timbre :as log]))
 
 (def index-messages (partial into empty-message-map
                              (map (juxt :message-id identity))))
@@ -60,10 +63,37 @@
          message-id)))
    statuses))
 
-(fx/defn initialize-chats
-  "Initialize persisted chats on startup"
+(fx/defn update-chats-in-app-db
+  {:events [:chats-list/load-success]}
+  [{:keys [db] :as cofx} chats]
+  (fx/merge cofx
+            {:db (assoc db :chats chats)}
+            (commands/load-commands commands/register)))
+
+(defn- unkeywordize-chat-names
+  [chats]
+  (reduce-kv
+   (fn [acc chat-keyword chat]
+     (assoc acc (name chat-keyword) chat))
+   {}
+   chats))
+
+(defn load-chats-from-rpc
+  [cofx]
+  (fx/merge cofx
+            {:json-rpc/call [{:method "status_chats"
+                              :params []
+                              :on-error
+                              #(log/error "can't retrieve chats list from status-go:" %)
+                              :on-success
+                              #(re-frame/dispatch
+                                [:chats-list/load-success
+                                 (unkeywordize-chat-names (:chats %))])}]}))
+
+(defn initialize-chats-legacy
+  "Use realm + clojure to manage chats"
   [{:keys [db get-all-stored-chats] :as cofx}
-   {:keys [from to] :or {from 0 to nil}}]
+   from to]
   (let [old-chats (:chats db)
         chats (reduce (fn [acc {:keys [chat-id] :as chat}]
                         (assoc acc chat-id
@@ -74,9 +104,15 @@
                       {}
                       (get-all-stored-chats from to))
         chats (merge old-chats chats)]
-    (fx/merge cofx
-              {:db (assoc db :chats chats)}
-              (commands/load-commands commands/register))))
+    (update-chats-in-app-db cofx chats)))
+
+(fx/defn initialize-chats
+  "Initialize persisted chats on startup"
+  [cofx
+   {:keys [from to] :or {from 0 to nil}}]
+  (if config/use-status-go-protocol?
+    (load-chats-from-rpc cofx)
+    (initialize-chats-legacy cofx from to)))
 
 (defn load-more-messages
   "Loads more messages for current chat"
@@ -84,7 +120,9 @@
     get-stored-messages :get-stored-messages
     get-stored-user-statuses :get-stored-user-statuses
     get-referenced-messages :get-referenced-messages :as cofx}]
-  (when-not (get-in db [:chats current-chat-id :all-loaded?])
+  ;; TODO: re-implement functionality for status-go protocol
+  (when-not (or config/use-status-go-protocol?
+                (get-in db [:chats current-chat-id :all-loaded?]))
     (let [previous-pagination-info   (get-in db [:chats current-chat-id :pagination-info])
           {:keys [messages
                   pagination-info

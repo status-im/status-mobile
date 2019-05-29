@@ -1,6 +1,7 @@
 (ns status-im.signals.core
   (:require [status-im.accounts.db :as accounts.db]
             [status-im.accounts.login.core :as accounts.login]
+            [status-im.chat.models.loading :as chat.loading]
             [status-im.contact-recovery.core :as contact-recovery]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
             [status-im.hardwallet.core :as hardwallet]
@@ -75,4 +76,5 @@
       "discovery.summary"  (summary cofx event)
       "subscriptions.data" (ethereum.subscriptions/handle-signal cofx event)
       "subscriptions.error" (ethereum.subscriptions/handle-error cofx event)
+      "status.chats.did-change" (chat.loading/load-chats-from-rpc cofx)
       (log/debug "Event " type " not handled"))))
