@@ -21,4 +21,5 @@
    :selection-modal-screen
    :wallet-transactions-filter
    :profile-qr-viewer
-   :welcome])
+   :welcome
+   :keycard-welcome])

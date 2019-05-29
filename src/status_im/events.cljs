@@ -917,11 +917,6 @@
    (hardwallet/set-nfc-support cofx supported?)))
 
 (handlers/register-handler-fx
- :hardwallet.callback/check-nfc-enabled-success
- (fn [cofx [_ enabled?]]
-   (hardwallet/set-nfc-enabled cofx enabled?)))
-
-(handlers/register-handler-fx
  :hardwallet.callback/on-card-connected
  (fn [cofx [_ data]]
    (hardwallet/on-card-connected cofx data)))
@@ -952,14 +947,14 @@
    (hardwallet/on-install-applet-and-init-card-error cofx error)))
 
 (handlers/register-handler-fx
- :hardwallet.callback/on-pairing-success
+ :hardwallet.callback/on-pair-success
  (fn [cofx [_ pairing]]
-   (hardwallet/on-pairing-success cofx pairing)))
+   (hardwallet/on-pair-success cofx pairing)))
 
 (handlers/register-handler-fx
- :hardwallet.callback/on-pairing-error
+ :hardwallet.callback/on-pair-error
  (fn [cofx [_ error]]
-   (hardwallet/on-pairing-error cofx error)))
+   (hardwallet/on-pair-error cofx error)))
 
 (handlers/register-handler-fx
  :hardwallet.callback/on-generate-mnemonic-success
@@ -1155,11 +1150,6 @@
    {:db (assoc-in db [:hardwallet :setup-step] :recovery-phrase)}))
 
 (handlers/register-handler-fx
- :hardwallet/load-preparing-screen
- (fn [cofx _]
-   (hardwallet/load-preparing-screen cofx)))
-
-(handlers/register-handler-fx
  :hardwallet/connection-error
  (fn [_ _]
    {:utils/show-popup {:title      (i18n/label :t/cant-read-card)
@@ -1172,21 +1162,6 @@
    (fx/merge cofx
              {:db (assoc-in db [:hardwallet :setup-step] :begin)}
              (navigation/navigate-to-cofx :hardwallet-setup nil))))
-
-(handlers/register-handler-fx
- :hardwallet.ui/secret-keys-next-button-pressed
- (fn [_ _]
-   {:ui/show-confirmation {:title               (i18n/label :t/secret-keys-confirmation-title)
-                           :content             (i18n/label :t/secret-keys-confirmation-text)
-                           :confirm-button-text (i18n/label :t/secret-keys-confirmation-confirm)
-                           :cancel-button-text  (i18n/label :t/secret-keys-confirmation-cancel)
-                           :on-accept           #(re-frame/dispatch [:hardwallet.ui/secret-keys-dialog-confirm-pressed])
-                           :on-cancel           #()}}))
-
-(handlers/register-handler-fx
- :hardwallet.ui/secret-keys-dialog-confirm-pressed
- (fn [cofx _]
-   (hardwallet/load-pairing-screen cofx)))
 
 (handlers/register-handler-fx
  :hardwallet/load-pairing-screen

@@ -40,7 +40,7 @@
     [react/view styles/authentication-methods
      [authentication-method-row {:title    (i18n/label :t/keycard)
                                  :icon     :main-icons/keycard
-                                 :on-press #(re-frame/dispatch [:hardwallet.ui/status-hardwallet-option-pressed])}]
+                                 :on-press #(re-frame/dispatch [:onboarding.ui/keycard-option-pressed])}]
      [authentication-method-row {:title    (i18n/label :t/password)
                                  :icon     :main-icons/password
                                  :on-press #(re-frame/dispatch [:hardwallet.ui/password-option-pressed])}]]]])

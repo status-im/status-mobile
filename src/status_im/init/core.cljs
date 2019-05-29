@@ -229,7 +229,7 @@
 
 (defn finishing-hardwallet-setup? [cofx]
   (= (get-in cofx [:db :view-id])
-     :hardwallet-success))
+     :keycard-welcome))
 
 (fx/defn initialize-account [{:keys [db] :as cofx} address]
   (let [stored-pns (:push-notifications/stored db)]

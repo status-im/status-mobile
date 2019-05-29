@@ -56,7 +56,11 @@
 (re-frame/reg-sub
  :hardwallet-mnemonic
  (fn [db]
-   (get-in db [:hardwallet :secrets :mnemonic])))
+   (map-indexed vector
+                (partition 3
+                           (map-indexed vector (clojure.string/split
+                                                (get-in db [:hardwallet :secrets :mnemonic])
+                                                #" "))))))
 
 (re-frame/reg-sub
  :hardwallet-application-info
