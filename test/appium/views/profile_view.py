@@ -600,6 +600,14 @@ class ProfileView(BaseView):
         picture.click()
         self.confirm_edit_button.click()
 
+    def edit_profile_username(self, user_name: str):
+        self.edit_button.click()
+        self.swipe_down()
+        self.username_input.clear()
+        self.username_input.set_value(user_name)
+        self.confirm_edit_button.click()
+
+
     def remove_profile_picture(self):
         if not AbstractTestCase().environment == 'sauce':
             raise NotImplementedError('Test case is implemented to run on SauceLabs only')
@@ -627,6 +635,16 @@ class ProfileView(BaseView):
 
     def get_toggle_device_by_name(self, device_name):
         return SyncedDeviceToggle(self.driver, device_name)
+
+    def discover_and_advertise_device(self, device_name):
+        self.profile_button.click()
+        # device_2_profile = device_2_home.get_profile_view()
+        self.devices_button.scroll_to_element()
+        self.devices_button.click()
+        self.device_name_input.set_value(device_name)
+        self.continue_button.click_until_presence_of_element(self.advertise_device_button, 2)
+        self.advertise_device_button.click()
+
 
     @property
     def current_active_network(self):

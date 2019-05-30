@@ -391,7 +391,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(6835)
     @marks.high
-    def test_pair_devices(self):
+    def test_pair_devices_sync_one_to_one_contacts(self):
 
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -415,20 +415,9 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         # device 2: go to profile > Devices, set device name, discover device 2 to device 1
         device_2_home = device_2.recover_access(passphrase=' '.join(recovery_phrase.values()))
-        device_2_home.profile_button.click()
         device_2_profile = device_2_home.get_profile_view()
-        device_2_profile.devices_button.scroll_to_element()
-        device_2_profile.devices_button.click()
-        device_2_profile.device_name_input.set_value(device_2_name)
-        device_2_profile.continue_button.click_until_presence_of_element(device_2_profile.advertise_device_button, 2)
-        device_2_profile.advertise_device_button.click()
-
-        # device 1: go to profile > Devices, set device name, enable device 2 and sync
-        device_1_profile.profile_button.click()
-        device_1_profile.devices_button.scroll_to_element()
-        device_1_profile.devices_button.click()
-        device_1_profile.device_name_input.send_keys(device_1_name)
-        device_1_profile.continue_button.click_until_presence_of_element(device_1_profile.advertise_device_button, 2)
+        device_2_profile.discover_and_advertise_device(device_2_name)
+        device_1_profile.discover_and_advertise_device(device_1_name)
         device_1_profile.get_toggle_device_by_name(device_2_name).click()
         device_1_profile.sync_all_button.click()
         device_1_profile.sync_all_button.wait_for_visibility_of_element(15)
@@ -456,5 +445,95 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('"%s" message sent before pairing is synced' % message_before_sync)
         if not chat.chat_element_by_text(message_after_sync).is_element_displayed():
             self.errors.append('"%s" message in 1-1 is not synced' % message_after_sync)
+
+        self.verify_no_errors()
+
+    @marks.testrail_id(5680)
+    @marks.high
+    def test_pair_devices_sync_name_photo_public_group_chats(self):
+
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        username_before_sync = 'username_before_sync'
+        device_1_home = device_1.create_user(username_before_sync)
+        device_1_home.profile_button.click()
+        device_1_profile = device_1_home.get_profile_view()
+        device_1_profile.backup_recovery_phrase_button.click()
+        device_1_profile.ok_continue_button.click()
+        recovery_phrase = device_1_profile.get_recovery_phrase()
+        device_1_profile.back_button.click()
+        device_1_profile.get_back_to_home_view()
+        device_1_name = 'device_%s' % device_1.driver.number
+        device_2_name = 'device_%s' % device_2.driver.number
+        public_chat_before_sync_name = 'b-public-%s' % device_1_home.get_public_chat_name()
+        public_chat_after_sync_name = 'a-public-%s' % device_1_home.get_public_chat_name()
+        group_chat_name = 'group-%s' % device_1_home.get_public_chat_name()
+        profile_picture_before_sync = 'sauce_logo.png'
+        profile_picture_after_sync = 'sauce_logo_red.png'
+        username_after_sync = 'username_after_sync'
+        message_after_sync = 'sent after sync'
+
+        # device 1: join public chat, create group chat, edit user picture
+        device_1_public_chat = device_1_home.join_public_chat(public_chat_before_sync_name)
+        device_1_public_chat.back_button.click()
+        device_1_one_to_one = device_1_home.add_contact(basic_user['public_key'])
+        device_1_one_to_one.back_button.click()
+        device_1_group_chat = device_1_home.create_group_chat([basic_user['username']], group_chat_name)
+        device_1_group_chat.back_button.click()
+        device_1_home.profile_button.click()
+        device_1_profile = device_1_home.get_profile_view()
+        device_1_profile.edit_profile_picture(profile_picture_before_sync)
+
+        # device 2: go to profile > Devices, set device name, discover device 2 to device 1
+        device_2_home = device_2.recover_access(passphrase=' '.join(recovery_phrase.values()))
+        device_2_profile = device_2_home.get_profile_view()
+        device_2_profile.discover_and_advertise_device(device_2_name)
+
+        # device 1: enable pairing of `device 2` and sync
+        device_1_profile.discover_and_advertise_device(device_1_name)
+        device_1_profile.get_toggle_device_by_name(device_2_name).click()
+        device_1_profile.sync_all_button.click()
+        device_1_profile.sync_all_button.wait_for_visibility_of_element(15)
+
+        # device 2: check that public chat and profile details are updated
+        device_2_home = device_2_profile.get_back_to_home_view()
+        if not device_2_home.element_by_text('#%s' % public_chat_before_sync_name).is_element_displayed():
+            pytest.fail('Public chat "%s" doesn\'t appear after initial sync'% public_chat_before_sync_name)
+        device_2_home.profile_button.click()
+        device_2_profile.contacts_button.scroll_to_element(9, 'up')
+        if not device_2_profile.element_by_text(username_before_sync).is_element_displayed():
+            pytest.fail('Profile username was not updated after initial sync')
+        device_2_profile.swipe_down()
+        if not device_2_profile.profile_picture.is_element_image_equals_template(profile_picture_before_sync):
+            pytest.fail('Profile picture was not updated after initial sync')
+
+        # device 1: send message to group chat, edit profile details and join to new public chat
+        device_1_home = device_1_profile.get_back_to_home_view()
+        device_1_public_chat = device_1_home.join_public_chat(public_chat_after_sync_name)
+        device_1_public_chat.back_button.click()
+        device_1_home.element_by_text(group_chat_name).click()
+        device_1_group_chat.chat_message_input.send_keys(message_after_sync)
+        device_1_group_chat.send_message_button.click()
+        device_1_group_chat.back_button.click()
+        device_1_profile = device_1_home.profile_button.click()
+        device_1_profile.edit_profile_picture(profile_picture_after_sync)
+        device_1_profile.edit_profile_username(username_after_sync)
+
+        # device 2: check that message in group chat is shown, profile details and public chats are synced
+        if not device_2_profile.element_by_text(username_after_sync).is_element_displayed():
+            pytest.fail('Profile username was not updated after changing when devices are paired')
+        device_2_profile.swipe_down()
+        if not device_2_profile.profile_picture.is_element_image_equals_template(profile_picture_after_sync):
+            pytest.fail('Profile picture was not updated after changing when devices are paired')
+
+        device_2_profile.get_back_to_home_view()
+        if not device_2_home.element_by_text('#%s' % public_chat_after_sync_name).is_element_displayed():
+            pytest.fail('Public chat "%s" doesn\'t appear on other device when devices are paired'% public_chat_before_sync_name)
+
+        device_2_home.element_by_text(group_chat_name).click()
+        device_2_group_chat = device_2_home.get_chat_view()
+
+        if not device_2_group_chat.chat_element_by_text(message_after_sync).is_element_displayed():
+            pytest.fail('"%s" message in group chat is not synced' % message_after_sync)
 
         self.verify_no_errors()
