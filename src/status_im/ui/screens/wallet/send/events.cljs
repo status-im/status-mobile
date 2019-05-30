@@ -43,8 +43,8 @@
 (re-frame/reg-fx
  ::send-transaction
  (fn [[params all-tokens symbol chain on-completed masked-password]]
-   (case symbol
-     :ETH (send-ethers params on-completed masked-password)
+   (if (= symbol :ETH)
+     (send-ethers params on-completed masked-password)
      (send-tokens all-tokens symbol chain params on-completed masked-password))))
 
 (re-frame/reg-fx
@@ -121,7 +121,7 @@
  :wallet.callback/transaction-completed
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [{:keys [db now] :as cofx} [_ {:keys [result error]}]]
-   (let [{:keys [id method public-key to symbol amount-text on-result on-error
+   (let [{:keys [id method public-key to symbol asset amount-text on-result on-error
                  send-transaction-message?]}
          (get-in db [:wallet :send-transaction])
          db' (assoc-in db [:wallet :send-transaction :in-progress?] false)
@@ -145,7 +145,7 @@
                      %
                      public-key
                      {:address to
-                      :asset   (name symbol)
+                      :asset   (name (or asset symbol))
                       :amount  amount-text
                       :tx-hash result}))
                  #(when-not on-result

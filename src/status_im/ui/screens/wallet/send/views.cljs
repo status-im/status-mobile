@@ -152,7 +152,7 @@
 
 (defn- render-send-transaction-view [{:keys [chain modal? transaction scroll advanced? keycard? signing-phrase all-tokens amount-input network-status]}]
   (let [{:keys [amount amount-text amount-error asset-error show-password-input? to to-name sufficient-funds?
-                sufficient-gas? in-progress? from-chat? symbol]} transaction
+                sufficient-gas? in-progress? from-chat? asset symbol]} transaction
         native-currency (tokens/native-currency chain)
         {:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)
         online? (= :online network-status)]
@@ -177,7 +177,7 @@
          {:disabled? (or from-chat? modal? show-password-input?)
           :error     asset-error
           :type      :send
-          :symbol    symbol}]
+          :symbol    (or asset symbol)}]
         [wallet.components/amount-selector
          {:disabled?     (or from-chat? modal? show-password-input?)
           :error         (or amount-error
