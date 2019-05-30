@@ -47,6 +47,7 @@
                   :block block
                   :transactions (keep-user-transactions wallet-address
                                                         transactions)}}
+                (transactions/check-watched-transactions)
                 (when (or (not current-block)
                           (not= number (inc current-block)))
                   ;; in case we skipped some blocks or got an uncle, re-fetch history

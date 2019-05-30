@@ -142,10 +142,46 @@
 ;; transactions api
 ;; -----------------------------------------------
 
+(fx/defn watch-transaction
+  "Set a watch for the given transaction
+   `watch-params` needs to contain a `trigger-fn` and `on-trigger` functions
+   `trigger-fn` is a function that returns true if the watch has been triggered
+   `on-trigger` is a function that returns the effects to apply when the
+   transaction has been triggered"
+  [{:keys [db]} transaction-id {:keys [trigger-fn on-trigger] :as watch-params}]
+  (when (and (fn? trigger-fn)
+             (fn? on-trigger))
+    {:db (assoc-in db [:ethereum/watched-transactions transaction-id]
+                   watch-params)}))
+
+(fx/defn check-transaction
+  "Check if the transaction has been triggered and applies the effects returned
+   by `on-trigger` if that is the case"
+  [{:keys [db] :as cofx} {:keys [hash] :as transaction}]
+  (when-let [watch-params
+             (get-in db [:ethereum/watched-transactions hash])]
+    (let [{:keys [trigger-fn on-trigger]} watch-params]
+      (when (trigger-fn db transaction)
+        (fx/merge cofx
+                  {:db (update db :ethereum/watched-transactions
+                               dissoc hash)}
+                  (on-trigger transaction))))))
+
+(fx/defn check-watched-transactions
+  [{:keys [db] :as cofx}]
+  (let [watched-transactions
+        (select-keys (get-in db [:wallet :transactions])
+                     (keys (get db :ethereum/watched-transactions)))]
+    (apply fx/merge cofx
+           (map (fn [[_ transaction]]
+                  (check-transaction transaction))
+                watched-transactions))))
+
 (fx/defn new
   [{:keys [db] :as cofx} {:keys [hash] :as transaction}]
   (fx/merge cofx
             {:db (assoc-in db [:wallet :transactions hash] transaction)}
+            (check-transaction transaction)
             wallet/update-balances))
 
 (fx/defn handle-history
