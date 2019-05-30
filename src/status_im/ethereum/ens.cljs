@@ -105,8 +105,12 @@
     :method "contenthash(bytes32)"
     :params [(namehash ens-name)]
     :on-success
-    (fn [hash]
-      (cb hash))}))
+    (fn [raw-hash]
+      ;; NOTE: it would be better if our abi-spec/decode was able to do that
+      (let [hash (subs raw-hash 130)
+            [cid & hash-and-zeros] (string/split hash "1b20")
+            hash (str "0x" cid "1b20" (subs (apply str hash-and-zeros) 0 64))]
+        (cb hash)))}))
 
 (defn content
   [resolver ens-name cb]

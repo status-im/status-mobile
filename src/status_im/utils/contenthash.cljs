@@ -23,17 +23,36 @@
                             hash))]
       (str "0xe301" (hex/encode (b58/decode b58-hash))))))
 
-(defn decode [hex]
-  (when (and hex (not= hex "0x")
-             (string/starts-with? hex "0xe30101")
-             ;; TODO properly decode the CID
-             ;; extract the content-type using varint ns
-             (= 78 (count hex)))
-    {:namespace :ipfs
-     :hash  (-> hex
-                (subs 10)
-                hex/decode
-                b58/encode)}))
+(defn decode
+  "TODO properly decode the CID
+   extract the content-type using varint ns"
+  [hex]
+  (when (and hex (not= hex "0x"))
+    (cond
+      (and (string/starts-with? hex "0xe40101"))
+      ;; content type can be 2 or 4 bytes
+      ;; we expect 1b20 (hash algorithm and hash length 64)
+      ;; before the hash so we split the contenthash there
+      (when-let [hash (second (string/split hex "1b20"))]
+        (when (= 0x20 (count hash)))
+        {:namespace :swarm
+         :hash hash})
+      (and (= 78 (count hex))
+           (string/starts-with? hex "0xe3010170"))
+      ;; for retrocompatibility with old CIDv0
+      {:namespace :ipfs
+       :hash (-> hex
+                 (subs 10)
+                 hex/decode
+                 b58/encode)}
+      (and (= 78 (count hex))
+           (string/starts-with? hex "0xe30101"))
+      ;; new CIDv1
+      {:namespace :ipfs
+       :hash  (str "z" (-> hex
+                           (subs 6)
+                           hex/decode
+                           b58/encode))})))
 
 (fx/defn cat
   [cofx {:keys [contenthash on-success on-failure]}]
