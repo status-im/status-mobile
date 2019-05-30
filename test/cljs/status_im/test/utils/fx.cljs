@@ -29,6 +29,13 @@
   [{:keys [db]} b]
   (identity nil))
 
+(fx/defn hello6
+  "lol lazy function does nothing"
+  {:events [:test2]}
+  [{:keys [db]} {:keys [a b]}]
+  {:db {:a (identity a)
+        :b b}})
+
 (deftest merge-fxs-test
   (testing "merge function for fxs"
     (let [cofx {:db {:c 2}}]

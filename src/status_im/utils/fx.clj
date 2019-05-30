@@ -2,12 +2,12 @@
   (:refer-clojure :exclude [defn]))
 
 (defn- register-events
-  [events interceptors name args]
+  [events interceptors name argsyms]
   (mapv (fn [event]
           `(status-im.utils.handlers/register-handler-fx
             ~event
             ~interceptors
-            (fn [cofx# [_# ~@args]] (~name cofx# ~@args))))
+            (fn [cofx# [_# ~@argsyms]] (~name cofx# ~@argsyms))))
         events))
 
 (defmacro defn
@@ -55,5 +55,5 @@
               (let [~cofx cofx#]
                 ~@fdecl)
               (throw (js/Error. (str "fx/defn expects a map of cofx as first argument got " cofx# " in function " ~name))))))
-         ~@(register-events events interceptors (with-meta name m) args))
+         ~@(register-events events interceptors (with-meta name m) argsyms))
       (throw (Exception. (str "fx/defn expects a vector of keyword as value for :events key in attr-map in function " name))))))
