@@ -21,6 +21,7 @@
 (def desktop-config         (js/require "react-native-desktop-config"))
 (def desktop-shortcuts      (js/require "react-native-desktop-shortcuts"))
 (def react-native-firebase  (fn [] #js {}))
+(def touchid                (fn [] #js {}))
 (def camera                 (fn [] #js {:default #js {:constants {:Aspect "Portrait"}}}))
 (def status-keycard         (fn [] #js {:default #js {}}))
 (def dialogs                (fn [] #js {}))

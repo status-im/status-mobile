@@ -1122,6 +1122,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     HashMap<String, Object> constants = new HashMap<String, Object>();
 
     constants.put("is24Hour", this.is24Hour());
+    constants.put("model", Build.MODEL);
+    constants.put("brand", Build.BRAND);
+    constants.put("buildId", Build.ID);
+    constants.put("deviceId", Build.BOARD);
     return constants;
   }
 

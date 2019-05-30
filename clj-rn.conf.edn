@@ -23,6 +23,7 @@
               "react-native-webview-bridge"
               "react-native-webview"
               "react-native-firebase"
+              "react-native-touch-id"
               "homoglyph-finder"
               "web3"
               "web3-utils"

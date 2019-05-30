@@ -78,6 +78,8 @@ PODS:
   - SQLCipher/standard (3.4.2):
     - SQLCipher/common
   - SSZipArchive (2.1.4)
+  - TouchID (4.4.1):
+    - React
   - yoga (0.59.3.React)
 
 DEPENDENCIES:
@@ -90,6 +92,7 @@ DEPENDENCIES:
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - SQLCipher (~> 3.0)
   - SSZipArchive
+  - TouchID (from `../node_modules/react-native-touch-id`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -117,6 +120,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-webview"
   RNKeychain:
     :path: "../node_modules/react-native-keychain"
+  TouchID:
+    :path: "../node_modules/react-native-touch-id"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -137,8 +142,9 @@ SPEC CHECKSUMS:
   RNKeychain: 627c6095cef215dd3d9804a9a9cf45ab96aa3997
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
+  TouchID: b0640fedb86fa2db2fe1df15b61594ad49e76288
   yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
-PODFILE CHECKSUM: 1b73a7ab29d939e99e86434864c837afaf55851c
+PODFILE CHECKSUM: 13006106aa0716d54fffebf8dcb42006f0fb8798
 
 COCOAPODS: 1.5.3

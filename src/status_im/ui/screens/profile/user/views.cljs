@@ -23,6 +23,7 @@
             [status-im.utils.identicon :as identicon]
             [status-im.utils.platform :as platform]
             [status-im.utils.universal-links.core :as universal-links]
+            [status-im.biometric-auth.core :as biometric-auth]
             [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -180,7 +181,7 @@
                                           :active?             logged-in?
                                           :action-fn           #(re-frame/dispatch [:accounts.logout.ui/logout-pressed])}]]]]))
 
-(defview advanced-settings [{:keys [network networks dev-mode? settings]} on-show]
+(defview advanced-settings [{:keys [network networks dev-mode? settings]} on-show supported-biometric-auth]
   {:component-did-mount on-show}
   [react/view
    (when (and config/extensions-enabled? dev-mode?)
@@ -239,10 +240,18 @@
    [profile.components/settings-switch-item
     {:label-kw  :t/chaos-mode
      :value     (:chaos-mode? settings)
-     :action-fn #(re-frame/dispatch [:accounts.ui/chaos-mode-switched %])}]])
+     :action-fn #(re-frame/dispatch [:accounts.ui/chaos-mode-switched %])}]
+   (when dev-mode?
+     [profile.components/settings-item-separator]
+     [profile.components/settings-switch-item
+      {:label-kw  :t/biometric-auth-setting-label
+       :value     (:biometric-auth? settings)
+       :active?   (some? supported-biometric-auth)
+       :action-fn #(re-frame/dispatch [:accounts.ui/biometric-auth-switched %])}])])
 
 (defview advanced [params on-show]
-  (letsubs [advanced? [:my-profile/advanced?]]
+  (letsubs [advanced? [:my-profile/advanced?]
+            supported-biometric-auth [:supported-biometric-auth]]
     {:component-will-unmount #(re-frame/dispatch [:set :my-profile/advanced? false])}
     [react/view {:padding-bottom 16}
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:set :my-profile/advanced? (not advanced?)])
@@ -254,7 +263,7 @@
           (i18n/label :t/wallet-advanced)]
          [icons/icon (if advanced? :main-icons/dropdown-up :main-icons/dropdown) {:color colors/blue}]]]]]
      (when advanced?
-       [advanced-settings params on-show])]))
+       [advanced-settings params on-show supported-biometric-auth])]))
 
 (defn share-profile-item
   [{:keys [public-key photo-path] :as current-account}]

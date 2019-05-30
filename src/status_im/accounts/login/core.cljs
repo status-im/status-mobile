@@ -19,6 +19,7 @@
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
+            [status-im.biometric-auth.core :as biometric-auth]
             [status-im.utils.types :as types]
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.wallet.core :as wallet]
@@ -297,7 +298,7 @@
   [_ address]
   {:keychain/can-save-user-password? nil
    :keychain/get-user-password       [address
-                                      #(re-frame/dispatch [:accounts.login.callback/get-user-password-success %])]})
+                                      #(re-frame/dispatch [:accounts.login.callback/get-user-password-success % address])]})
 
 (fx/defn open-login [{:keys [db] :as cofx} address photo-path name]
   (let [keycard-account? (get-in db [:accounts/accounts address :keycard-instance-uid])]
@@ -315,13 +316,26 @@
                 (get-user-password address)))))
 
 (fx/defn open-login-callback
+  {:events [:accounts.login.callback/biometric-auth-done]}
+  [{:keys [db] :as cofx} password biometric-auth-result]
+  (let [{:keys [bioauth-success bioauth-notrequired bioauth-message]} biometric-auth-result]
+    (if (and password
+             (or bioauth-success bioauth-notrequired))
+      (fx/merge cofx
+                {:db (assoc-in db [:accounts/login :password] password)}
+                (navigation/navigate-to-cofx :progress nil)
+                (user-login false))
+      (fx/merge cofx
+                (when bioauth-message
+                  {:utils/show-popup {:title (i18n/label :t/biometric-auth-login-error-title) :content bioauth-message}})
+                (navigation/navigate-to-cofx :login nil)))))
+
+(fx/defn do-biometric-auth
   [{:keys [db] :as cofx} password]
-  (if password
-    (fx/merge cofx
-              {:db (assoc-in db [:accounts/login :password] password)}
-              (navigation/navigate-to-cofx :progress nil)
-              (user-login false))
-    (navigation/navigate-to-cofx cofx :login nil)))
+  (biometric-auth/authenticate-fx cofx
+                                  #(re-frame/dispatch [:accounts.login.callback/biometric-auth-done password %])
+                                  {:reason (i18n/label :t/biometric-auth-reason-login)
+                                   :ios-fallback-label (i18n/label :t/biometric-auth-login-ios-fallback-label)}))
 
 (re-frame/reg-fx
  :accounts.login/login

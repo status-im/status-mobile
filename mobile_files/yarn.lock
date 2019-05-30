@@ -5635,6 +5635,11 @@ react-native-tab-view@^1.0.0:
     process "^0.11.9"
     util "^0.10.3"
 
+react-native-touch-id@^4.4.1:
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/react-native-touch-id/-/react-native-touch-id-4.4.1.tgz#8b1bb2d04c30bac36bb9696d2d723e719c4a8b08"
+  integrity sha512-1jTl8fC+0fxvqegy/XXTyo6vMvPhjzkoDdaqoYZx0OH8AT250NuXnNPyKktvigIcys3+2acciqOeaCall7lrvg==
+
 "react-native-udp@git+https://github.com/status-im/react-native-udp.git#2.3.1-1":
   version "2.3.1"
   resolved "git+https://github.com/status-im/react-native-udp.git#6e9a817326208f6ca36fa42b20f5e530c1b39d37"

@@ -156,6 +156,13 @@
   (when (status)
     (.-is24Hour (status))))
 
+(defn get-device-model-info []
+  (when status
+    {:model     (.-model status)
+     :brand     (.-brand status)
+     :build-id  (.-buildId status)
+     :device-id (.-deviceId status)}))
+
 (defn update-mailservers [enodes on-result]
   (when (status)
     (.updateMailservers (status) enodes on-result)))

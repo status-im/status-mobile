@@ -32,7 +32,10 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.http :as http]
             [status-im.utils.utils :as utils]
-            [status-im.wallet.core :as wallet]))
+            [status-im.wallet.core :as wallet]
+            [status-im.i18n :as i18n]
+            [status-im.biometric-auth.core :as biometric-auth]
+            [status-im.constants :as const]))
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
@@ -136,18 +139,51 @@
  (fn [{:keys [db]} [_ path v]]
    {:db (assoc-in db path v)}))
 
-(fx/defn on-return-from-background [cofx]
+(def authentication-options
+  {:reason (i18n/label :t/biometric-auth-reason-login)})
+
+(defn- on-biometric-auth-result [{:keys [bioauth-success bioauth-code bioauth-message]}]
+  (when-not bioauth-success
+    (if (= bioauth-code "USER_FALLBACK")
+      (re-frame/dispatch [:accounts.logout.ui/logout-confirmed])
+      (utils/show-confirmation {:title (i18n/label :t/biometric-auth-confirm-title)
+                                :content (or bioauth-message (i18n/label :t/biometric-auth-confirm-message))
+                                :confirm-button-text (i18n/label :t/biometric-auth-confirm-try-again)
+                                :cancel-button-text (i18n/label :t/biometric-auth-confirm-logout)
+                                :on-accept #(biometric-auth/authenticate on-biometric-auth-result authentication-options)
+                                :on-cancel #(re-frame/dispatch [:accounts.logout.ui/logout-confirmed])}))))
+
+(fx/defn on-return-from-background [{:keys [db now] :as cofx}]
+  (let [app-in-background-since (get db :app-in-background-since)
+        signed-up? (get-in db [:account/account :signed-up?])
+        biometric-auth? (get-in db [:account/account :settings :biometric-auth?])
+        requires-bio-auth (and
+                           signed-up?
+                           biometric-auth?
+                           (some? app-in-background-since)
+                           (>= (- now app-in-background-since)
+                               const/ms-in-bg-for-require-bioauth))]
+    (fx/merge cofx
+              {:db (assoc db :app-in-background-since nil)}
+              (mailserver/process-next-messages-request)
+              (hardwallet/return-back-from-nfc-settings)
+              #(when requires-bio-auth
+                 (biometric-auth/authenticate-fx % on-biometric-auth-result authentication-options)))))
+
+(fx/defn on-going-in-background [{:keys [db now] :as cofx}]
   (fx/merge cofx
-            (mailserver/process-next-messages-request)
-            (hardwallet/return-back-from-nfc-settings)))
+            {:db (assoc db :app-in-background-since now)}))
 
 (defn app-state-change [state {:keys [db] :as cofx}]
-  (let [app-coming-from-background? (= state "active")]
+  (let [app-coming-from-background? (= state "active")
+        app-going-in-background? (= state "background")]
     (fx/merge cofx
               {::app-state-change-fx state
                :db                   (assoc db :app-state state)}
               #(when app-coming-from-background?
-                 (on-return-from-background %)))))
+                 (on-return-from-background %))
+              #(when app-going-in-background?
+                 (on-going-in-background %)))))
 
 (handlers/register-handler-fx
  :app-state-change

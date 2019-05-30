@@ -60,6 +60,7 @@
             [status-im.wallet.core :as wallet]
             [status-im.wallet.db :as wallet.db]
             [status-im.web3.core :as web3]
+            [status-im.biometric-auth.core :as biomentric-auth]
             [taoensso.timbre :as log]
             [status-im.wallet.custom-tokens.core :as custom-tokens]))
 
@@ -203,6 +204,20 @@
       (accounts/switch-chaos-mode chaos-mode?)))))
 
 (handlers/register-handler-fx
+ :accounts.ui/biometric-auth-switched
+ (fn [cofx [_ biometric-auth?]]
+   (if biometric-auth?
+     (biomentric-auth/authenticate-fx
+      cofx
+      (fn [{:keys [bioauth-success bioauth-message]}]
+        (when bioauth-success
+          (re-frame/dispatch [:accounts.ui/switch-biometric-auth true]))
+        (when bioauth-message
+          (utils/show-popup (i18n/label :t/biometric-auth-reason-verify) bioauth-message)))
+      {:reason (i18n/label :t/biometric-auth-reason-verify)})
+     (accounts/switch-biometric-auth cofx false))))
+
+(handlers/register-handler-fx
  :accounts.ui/notifications-enabled
  (fn [cofx [_ desktop-notifications?]]
    (accounts/enable-notifications cofx desktop-notifications?)))
@@ -325,8 +340,11 @@
 
 (handlers/register-handler-fx
  :accounts.login.callback/get-user-password-success
- (fn [cofx [_ password]]
-   (accounts.login/open-login-callback cofx password)))
+ (fn [{:keys [db] :as cofx} [_ password address]]
+   (let [biometric-auth? (get-in db [:accounts/accounts address :settings :biometric-auth?])]
+     (if (and password biometric-auth?)
+       (accounts.login/do-biometric-auth cofx password)
+       (accounts.login/open-login-callback cofx password {:bioauth-notrequired true})))))
 
 ;; accounts logout module
 

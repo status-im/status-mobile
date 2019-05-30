@@ -4,6 +4,7 @@
             [status-im.react-native.js-dependencies :as rn]
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
+            [status-im.biometric-auth.core :as biometric-auth]
             [status-im.native-module.core :as status]))
 
 (def key-bytes 64)
@@ -84,6 +85,10 @@
          (enum-val "ACCESS_CONTROL" "BIOMETRY_ANY_OR_DEVICE_PASSCODE")}))
       (.then callback)))
 
+;; Android and iOS
+(defn- biometric-auth-available? [callback]
+  (biometric-auth/get-supported #(callback (some? %))))
+
 ;; Stores the password for the address to the Keychain
 (defn save-user-password [address password callback]
   (-> (.setInternetCredentials (rn/keychain) address address password keychain-secure-hardware (clj->js keychain-restricted-availability))
@@ -112,11 +117,14 @@
 ;; Resolves to `false` if the device doesn't have neither a passcode nor a biometry auth.
 (defn can-save-user-password? [callback]
   (cond
-    platform/ios? (device-encrypted? callback)
+    platform/ios? (check-conditions callback
+                                    device-encrypted?
+                                    biometric-auth-available?)
 
     platform/android?  (check-conditions
                         callback
                         secure-hardware-available?
+                        biometric-auth-available?
                         device-not-rooted?)
 
     :else (callback false)))

@@ -80,6 +80,15 @@
                  (assoc settings :chaos-mode? chaos-mode?)
                  {})))))
 
+(fx/defn switch-biometric-auth
+  {:events [:accounts.ui/switch-biometric-auth]}
+  [{:keys [db] :as cofx} biometric-auth?]
+  (when (:account/account db)
+    (let [settings (get-in db [:account/account :settings])]
+      (accounts.update/update-settings cofx
+                                       (assoc settings :biometric-auth? biometric-auth?)
+                                       {}))))
+
 (fx/defn enable-notifications [cofx desktop-notifications?]
   (accounts.update/account-update cofx
                                   {:desktop-notifications? desktop-notifications?}

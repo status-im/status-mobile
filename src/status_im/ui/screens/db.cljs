@@ -93,6 +93,7 @@
 (spec/def ::network-status (spec/nilable keyword?))
 
 (spec/def ::app-state string?)
+(spec/def ::app-in-background-since (spec/nilable number?))
 
 ;;;;NODE
 
@@ -175,6 +176,10 @@
 ;;;;UUID
 
 (spec/def ::device-UUID (spec/nilable string?))
+
+;;;; Supported Biometric authentication types
+
+(spec/def ::supported-biometric-auth (spec/nilable #{:FaceID :TouchID :fingerprint}))
 
 ;;;;UNIVERSAL LINKS
 
@@ -295,6 +300,7 @@
                                    ::network
                                    ::chain
                                    ::app-state
+                                   ::app-in-background-since
                                    ::semaphores
                                    ::hardwallet
                                    :navigation/view-id
@@ -332,6 +338,7 @@
                                    :prices/prices-loading?
                                    :notifications/notifications
                                    ::device-UUID
+                                   ::supported-biometric-auth
                                    ::collectible
                                    ::collectibles
                                    ::extensions-store

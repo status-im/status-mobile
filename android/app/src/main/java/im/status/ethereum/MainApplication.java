@@ -17,6 +17,7 @@ import com.ocetnik.timer.BackgroundTimerPackage;
 import com.reactcommunity.rnlanguages.RNLanguagesPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.rnfs.RNFSPackage;
+import com.rnfingerprint.FingerprintAuthPackage;
 
 import net.rhogan.rnsecurerandom.RNSecureRandomPackage;
 
@@ -74,7 +75,8 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new RNCWebViewPackage(),
                     new ReactNativeConfigPackage(),
                     new KeychainPackage(),
-                    new RNShakeEventPackage());
+                    new RNShakeEventPackage(),
+                    new FingerprintAuthPackage());
         }
 
         @Override

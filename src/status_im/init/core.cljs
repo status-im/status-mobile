@@ -22,6 +22,7 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.platform :as platform]
+            [status-im.biometric-auth.core :as biometric-auth]
             [taoensso.timbre :as log]))
 
 (defn init-store!
@@ -66,6 +67,7 @@
 (fx/defn start-app [cofx]
   (fx/merge cofx
             {:init/get-device-UUID                  nil
+             :init/get-supported-biometric-auth     nil
              :init/restore-native-settings          nil
              :ui/listen-to-window-dimensions-change nil
              :notifications/init                    nil
@@ -79,7 +81,7 @@
   [{{:keys      [view-id hardwallet
                  initial-props desktop/desktop
                  network-status network peers-count peers-summary device-UUID
-                 push-notifications/stored network/type]
+                 supported-biometric-auth push-notifications/stored network/type]
      :node/keys [status]
      :or        {network (get app-db :network)}} :db}]
   {:db (assoc app-db
@@ -94,6 +96,7 @@
               :network/type type
               :hardwallet hardwallet
               :device-UUID device-UUID
+              :supported-biometric-auth supported-biometric-auth
               :view-id view-id
               :push-notifications/stored stored)})
 
@@ -108,6 +111,11 @@
 (fx/defn set-device-uuid
   [{:keys [db]} device-uuid]
   {:db (assoc db :device-UUID device-uuid)})
+
+(fx/defn set-supported-biometric-auth
+  {:events [:init.callback/get-supported-biometric-auth-success]}
+  [{:keys [db]} supported-biometric-auth]
+  {:db (assoc db :supported-biometric-auth supported-biometric-auth)})
 
 (fx/defn handle-init-store-error
   [encryption-key cofx]
@@ -159,7 +167,7 @@
          :keys                 [accounts/accounts accounts/create networks/networks network
                                 network-status peers-count peers-summary view-id navigation-stack
                                 mailserver/mailservers
-                                desktop/desktop hardwallet custom-fleets
+                                desktop/desktop hardwallet custom-fleets supported-biometric-auth
                                 device-UUID semaphores accounts/login]
          :node/keys            [status on-ready]
          :or                   {network (get app-db :network)}} db
@@ -187,6 +195,7 @@
                         :peers-summary peers-summary
                         :peers-count peers-count
                         :device-UUID device-UUID
+                        :supported-biometric-auth supported-biometric-auth
                         :semaphores semaphores
                         :hardwallet hardwallet
                         :web3 web3)
@@ -253,6 +262,11 @@
  :init/get-device-UUID
  (fn []
    (status/get-device-UUID #(re-frame/dispatch [:init.callback/get-device-UUID-success %]))))
+
+(re-frame/reg-fx
+ :init/get-supported-biometric-auth
+ (fn []
+   (biometric-auth/get-supported #(re-frame/dispatch [:init.callback/get-supported-biometric-auth-success %]))))
 
 (re-frame/reg-fx
  :init/reset-data

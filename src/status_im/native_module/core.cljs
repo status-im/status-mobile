@@ -94,6 +94,9 @@
 (defn is24Hour []
   (native-module/is24Hour))
 
+(defn get-device-model-info []
+  (native-module/get-device-model-info))
+
 (def extract-group-membership-signatures native-module/extract-group-membership-signatures)
 
 (def sign-group-membership native-module/sign-group-membership)

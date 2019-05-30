@@ -548,16 +548,63 @@ RCT_EXPORT_METHOD(setBlankPreviewFlag:(BOOL *)newValue)
   [userDefaults synchronize];
 }
 
+//// deviceinfo
+
 - (bool) is24Hour
 {
     NSString *format = [NSDateFormatter dateFormatFromTemplate:@"j" options:0 locale:[NSLocale currentLocale]];
     return ([format rangeOfString:@"a"].location == NSNotFound);
 }
 
+- (NSString *)getBuildId {
+    return @"not available";
+}
+
+- (NSString*) deviceId
+{
+    struct utsname systemInfo;
+
+    uname(&systemInfo);
+
+    NSString* deviceId = [NSString stringWithCString:systemInfo.machine
+                                            encoding:NSUTF8StringEncoding];
+
+    if ([deviceId isEqualToString:@"i386"] || [deviceId isEqualToString:@"x86_64"] ) {
+        deviceId = [NSString stringWithFormat:@"%s", getenv("SIMULATOR_MODEL_IDENTIFIER")];
+    }
+
+    return deviceId;
+}
+
+- (NSString*) deviceName
+{
+
+    NSString* deviceName = nil;
+
+    if ([self.deviceId rangeOfString:@"iPod"].location != NSNotFound) {
+        deviceName = @"iPod Touch";
+    }
+    else if([self.deviceId rangeOfString:@"iPad"].location != NSNotFound) {
+        deviceName = @"iPad";
+    }
+    else if([self.deviceId rangeOfString:@"iPhone"].location != NSNotFound){
+        deviceName = @"iPhone";
+    }
+    else if([self.deviceId rangeOfString:@"AppleTV"].location != NSNotFound){
+        deviceName = @"Apple TV";
+    }
+
+    return deviceName;
+}
+
 - (NSDictionary *)constantsToExport
 {
     return @{
              @"is24Hour": @(self.is24Hour),
+             @"model": self.deviceName ?: [NSNull null],
+             @"brand": @"Apple",
+             @"buildId": [self getBuildId],
+             @"deviceId": self.deviceId ?: [NSNull null],
              };
 }
 

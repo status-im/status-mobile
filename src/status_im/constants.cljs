@@ -5,6 +5,8 @@
 
 (def ethereum-rpc-url "http://localhost:8545")
 
+(def ms-in-bg-for-require-bioauth 5000)
+
 (def content-type-text "text/plain")
 (def content-type-sticker "sticker")
 (def content-type-status "status")

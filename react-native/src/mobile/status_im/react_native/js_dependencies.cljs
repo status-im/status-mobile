@@ -10,6 +10,7 @@
 (def status-keycard         (js-require/js-require "react-native-status-keycard"))
 (def realm                  (js/require "realm"))
 (def webview-bridge         (js-require/js-require "react-native-webview-bridge"))
+(defn touchid []            (.-default (js/require "react-native-touch-id")))
 (def webview                (js-require/js-require "react-native-webview"))
 (def securerandom           (js-require/js-require "react-native-securerandom"))
 (defn secure-random []      (.-generateSecureRandom (securerandom)))

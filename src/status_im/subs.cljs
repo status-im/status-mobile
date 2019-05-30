@@ -89,6 +89,7 @@
 (reg-root-key-sub :get-pairing-installations :pairing/installations)
 (reg-root-key-sub :network/type :network/type)
 (reg-root-key-sub :tooltips :tooltips)
+(reg-root-key-sub :supported-biometric-auth :supported-biometric-auth)
 
 ;;profile
 (reg-root-key-sub :my-profile/seed :my-profile/seed)
