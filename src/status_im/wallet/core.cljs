@@ -499,12 +499,14 @@
 (fx/defn update-gas-price
   [{:keys [db] :as cofx} price edit?]
   (if edit?
+    (def suggested-gas (< price 1) price
+                       :else 1)
     (edit-value
      :gas-price
      (money/to-fixed
-      (money/wei-> :gwei price))
+      (money/wei-> :gwei suggested-gas))
      cofx)
-    {:db (assoc-in db [:wallet :send-transaction :gas-price] price)}))
+    {:db (assoc-in db [:wallet :send-transaction :gas-price] suggested-gas)}))
 
 (fx/defn update-estimated-gas-price
   [{:keys [db]} gas]
