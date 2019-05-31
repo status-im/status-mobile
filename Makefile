@@ -26,6 +26,8 @@ HELP_FUN = \
 		   }
 HOST_OS := $(shell uname | tr '[:upper:]' '[:lower:]')
 
+# Defines which variables will be kept for Nix pure shell, use semicolon as divider
+export NIX_KEEP ?= BUILD_ENV
 export NIX_CONF_DIR = $(PWD)/nix
 
 export REACT_SERVER_PORT ?= 5001 # any value different from default 5000 will work; this has to be specified for both the Node.JS server process and the Qt process
@@ -101,21 +103,22 @@ prod-build:
 	lein prod-build
 
 prod-build-android: export TARGET_OS ?= android
+prod-build-android: export BUILD_ENV ?= prod
 prod-build-android:
-	BUILD_ENV=prod lein prod-build-android && \
+	lein prod-build-android && \
 	node prepare-modules.js
 
 prod-build-ios: export TARGET_OS ?= ios
-prod-build-ios: export BUILD_ENV = prod
+prod-build-ios: export BUILD_ENV ?= prod
 prod-build-ios:
-	BUILD_ENV=prod lein prod-build-ios && \
+	lein prod-build-ios && \
 	node prepare-modules.js
 
 prod-build-desktop: export TARGET_OS ?= $(HOST_OS)
-prod-build-desktop: export BUILD_ENV = prod
+prod-build-desktop: export BUILD_ENV ?= prod
 prod-build-desktop:
 	git clean -qdxf -f ./index.desktop.js desktop/ && \
-	BUILD_ENV=prod lein prod-build-desktop && \
+	lein prod-build-desktop && \
 	node prepare-modules.js
 
 #--------------

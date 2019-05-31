@@ -6,13 +6,19 @@ def bundle() {
   /* Disable Gradle Daemon https://stackoverflow.com/questions/38710327/jenkins-builds-fail-using-the-gradle-daemon */
   def gradleOpt = "-PbuildUrl='${currentBuild.absoluteUrl}' -Dorg.gradle.daemon=false "
   def target = "release"
+  /* we don't need x86 for any builds except e2e */
+  env.NDK_ABI_FILTERS="armeabi-v7a;arm64-v8a"
 
-  if (params.BUILD_TYPE == 'pr') {
-    /* PR builds shouldn't replace normal releases */
-    target = 'pr'
-  } else if (btype == 'release') {
-    gradleOpt += "-PreleaseVersion='${utils.getVersion()}'"
+  switch (btype) {
+    case 'pr': /* PR builds shouldn't replace normal releases */
+      target = 'pr'; break;
+    case 'e2e':
+      target = 'pr';
+      env.NDK_ABI_FILTERS="x86"; break
+    case 'release':
+      gradleOpt += "-PreleaseVersion='${utils.getVersion('mobile_files')}'"
   }
+
   dir('android') {
     withCredentials([
       string(
@@ -28,7 +34,7 @@ def bundle() {
       nix.shell(
         "./gradlew assemble${target.capitalize()} ${gradleOpt}",
         keep: [
-          'REALM_DISABLE_ANALYTICS',
+          'REALM_DISABLE_ANALYTICS', 'NDK_ABI_FILTERS',
           'STATUS_RELEASE_STORE_FILE', 'STATUS_RELEASE_STORE_PASSWORD',
           'STATUS_RELEASE_KEY_ALIAS', 'STATUS_RELEASE_KEY_PASSWORD'
         ]

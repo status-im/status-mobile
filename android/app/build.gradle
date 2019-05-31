@@ -149,8 +149,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-
-
     defaultConfig {
         applicationId "im.status.ethereum"
         minSdkVersion 23
@@ -159,7 +157,7 @@ android {
         versionCode getVersionCode()
         versionName getVersionName()
         ndk {
-            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86-64"
+            abiFilters getEnvOrConfig('NDK_ABI_FILTERS').split(';')
         }
     }
     /**
@@ -179,7 +177,6 @@ android {
         exclude 'META-INF/rxjava.properties'
         exclude '/lib/mips64/**'
         exclude '/lib/arm64-v8a/**'
-        exclude '/lib/x86_64/**'
         /** Fix for: Execution failed for task ':app:transformNativeLibsWithStripDebugSymbolForDebug'.
         *   with recent version of ndk (17.0.4754217)
         */
@@ -204,7 +201,7 @@ android {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false  // If true, also generate a universal APK
-            include "armeabi-v7a", "x86"
+            include "armeabi-v7a", "arm64-v8a", "x86"
         }
     }
     buildTypes {
