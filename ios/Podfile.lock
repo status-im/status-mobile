@@ -56,7 +56,7 @@ PODS:
   - Protobuf (3.6.1)
   - React (0.59.3):
     - React/Core (= 0.59.3)
-  - react-native-background-timer (2.1.0-alpha.6):
+  - react-native-background-timer (2.1.1):
     - React
   - react-native-camera (1.1.5):
     - React
