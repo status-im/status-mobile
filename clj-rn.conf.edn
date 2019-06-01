@@ -98,7 +98,7 @@
                                        "cider.piggieback/wrap-cljs-repl"]}
 
  :builds [{:id           :desktop
-           :source-paths ["react-native/src/desktop" "src" "env/dev" "components/src"]
+           :source-paths ["react-native/src/desktop" "src" "env/dev" "components/src" "dev"]
            :compiler     {:output-to     "target/desktop/app.js"
                           :main          "env.desktop.main"
                           :output-dir    "target/desktop"
@@ -106,7 +106,7 @@
                           :optimizations :none}
            :figwheel     true}
           {:id           :ios
-           :source-paths ["react-native/src/mobile" "src" "env/dev" "components/src"]
+           :source-paths ["react-native/src/mobile" "src" "env/dev" "components/src" "dev"]
            :compiler     {:output-to     "target/ios/app.js"
                           :main          "env.ios.main"
                           :output-dir    "target/ios"
@@ -114,7 +114,7 @@
                           :optimizations :none}
            :figwheel     true}
           {:id               :android
-           :source-paths     ["react-native/src/mobile" "src" "env/dev" "components/src"]
+           :source-paths     ["react-native/src/mobile" "src" "env/dev" "components/src" "dev"]
            :compiler         {:output-to     "target/android/app.js"
                               :main          "env.android.main"
                               :output-dir    "target/android"

@@ -50,20 +50,20 @@
   :profiles {:dev      {:dependencies [[cider/piggieback "0.4.0"]]
                         :cljsbuild    {:builds
                                        {:ios
-                                        {:source-paths ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src"]
+                                        {:source-paths ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "dev"]
                                          :compiler     {:output-to     "target/ios/app.js"
                                                         :main          "env.ios.main"
                                                         :output-dir    "target/ios"
                                                         :optimizations :none}}
                                         :android
-                                        {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src"]
+                                        {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "dev"]
                                          :compiler         {:output-to     "target/android/app.js"
                                                             :main          "env.android.main"
                                                             :output-dir    "target/android"
                                                             :optimizations :none}
                                          :warning-handlers [status-im.utils.build/warning-handler]}
                                         :desktop
-                                        {:source-paths ["components/src" "react-native/src/cljsjs" "react-native/src/desktop" "src"]
+                                        {:source-paths ["components/src" "react-native/src/cljsjs" "react-native/src/desktop" "src" "dev"]
                                          :compiler     {:output-to     "target/desktop/app.js"
                                                         :main          "env.desktop.main"
                                                         :output-dir    "target/desktop"
@@ -76,12 +76,12 @@
                                         [re-frisk-sidecar "0.5.7"]
                                         [day8.re-frame/tracing "0.5.0"]
                                         [hawk "0.2.11"]]
-                         :source-paths ["src" "env/dev" "react-native/src/cljsjs" "components/src"]}]
+                         :source-paths ["src" "env/dev" "react-native/src/cljsjs" "components/src" "dev"]}]
              :test     {:dependencies [[day8.re-frame/test "0.1.5"]]
                         :plugins      [[lein-doo "0.1.9"]]
                         :cljsbuild    {:builds
                                        [{:id           "test"
-                                         :source-paths ["components/src" "src" "test/cljs"]
+                                         :source-paths ["components/src" "src" "test/cljs" "dev"]
                                          :compiler     {:main          status-im.test.runner
                                                         :output-to     "target/test/test.js"
                                                         :output-dir    "target/test"
@@ -89,7 +89,7 @@
                                                         :preamble      ["js/hook-require.js"]
                                                         :target        :nodejs}}
                                         {:id           "protocol"
-                                         :source-paths ["components/src" "src" "test/cljs"]
+                                         :source-paths ["components/src" "src" "test/cljs" "dev"]
                                          :compiler     {:main             status-im.test.protocol.runner
                                                         :output-to        "target/test/test.js"
                                                         :output-dir       "target/test"
@@ -97,7 +97,7 @@
                                                         :preamble         ["js/hook-require.js"]
                                                         :target           :nodejs}}
                                         {:id           "env-dev-utils"
-                                         :source-paths ["env/dev/env/utils.cljs" "test/env/dev"]
+                                         :source-paths ["env/dev/env/utils.cljs" "test/env/dev" "dev"]
                                          :compiler     {:main          env.test.runner
                                                         :output-to     "target/test/test.js"
                                                         :output-dir    "target/test"
@@ -105,7 +105,7 @@
                                                         :target        :nodejs}}]}}
              :prod     {:cljsbuild {:builds
                                     {:ios
-                                     {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod"]
+                                     {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod" "prod"]
                                       :compiler         {:output-to          "index.ios.js"
                                                          :main               "env.ios.main"
                                                          :output-dir         "target/ios-prod"
@@ -122,7 +122,7 @@
                                                          :language-in        :ecmascript5}
                                       :warning-handlers [status-im.utils.build/warning-handler]}
                                      :android
-                                     {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod"]
+                                     {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod" "prod"]
                                       :compiler         {:output-to          "index.android.js"
                                                          :main               "env.android.main"
                                                          :output-dir         "target/android-prod"
@@ -139,7 +139,7 @@
                                                          :language-in        :ecmascript5}
                                       :warning-handlers [status-im.utils.build/warning-handler]}
                                      :desktop
-                                     {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/desktop" "src" "env/prod"]
+                                     {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/desktop" "src" "env/prod" "prod"]
                                       :compiler         {:output-to          "index.desktop.js"
                                                          :main               "env.desktop.main"
                                                          :output-dir         "target/desktop-prod"

@@ -71,6 +71,7 @@ def prep(type = 'nightly') {
   }
   /* node deps, pods, and status-go download */
   utils.nix.shell("scripts/prepare-for-platform.sh ${prepareTarget}", pure: false)
+  sh("cp -R translations status-modules/translations && cp -R status-modules node_modules/status-modules")
 }
 
 return this

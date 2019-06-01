@@ -65,6 +65,8 @@ release: release-android release-ios ##@build build release for Android and iOS
 release-android: export TARGET_OS ?= android
 release-android: ##@build build release for Android
 	@$(MAKE) prod-build-android && \
+	cp -R translations status-modules/translations && \
+	cp -R status-modules node_modules/status-modules && \
 	react-native run-android --variant=release
 
 release-ios: export TARGET_OS ?= ios
@@ -72,16 +74,22 @@ release-ios: ##@build build release for iOS release
 	# Open XCode inside the Nix context
 	@$(MAKE) prod-build-ios && \
 	echo "Build in XCode, see https://status.im/build_status/ for instructions" && \
+	cp -R translations status-modules/translations && \
+	cp -R status-modules node_modules/status-modules && \
 	open ios/StatusIm.xcworkspace
 
 release-desktop: export TARGET_OS ?= $(HOST_OS)
 release-desktop: ##@build build release for desktop release
 	@$(MAKE) prod-build-desktop && \
+	cp -R translations status-modules/translations && \
+	cp -R status-modules node_modules/status-modules && \
 	scripts/build-desktop.sh
 
 release-windows-desktop: export TARGET_OS ?= windows
 release-windows-desktop: ##@build build release for desktop release
 	@$(MAKE) prod-build-desktop && \
+	cp -R translations status-modules/translations && \
+	cp -R status-modules node_modules/status-modules && \
 	scripts/build-desktop.sh
 
 prod-build: export TARGET_OS ?= all

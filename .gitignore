@@ -163,3 +163,6 @@ conan.cmake
 # nix
 /.ran-setup
 /.nix-gcroots/
+
+#modules
+status-modules/translations

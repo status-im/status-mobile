@@ -234,7 +234,7 @@
 
 (defn hawk-handler-translations
   [ctx e]
-  (let [path "src/status_im/i18n.cljs"
+  (let [path "dev/status_im/i18n_resources.cljs"
         i18n (slurp path)]
     (spit path (str i18n " ;;"))
     (spit path i18n))
