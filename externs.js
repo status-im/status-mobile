@@ -558,4 +558,6 @@ var TopLevel = {
     "FIRSTWEEKCUTOFFDAY": function () {},
     "decimalPlaces": function () {},
     "_android": function () {},
+    "isSupported" : function () {},
+    "authenticate" : function () {},
 }

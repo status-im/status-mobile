@@ -317,18 +317,17 @@
 
 (fx/defn open-login-callback
   {:events [:accounts.login.callback/biometric-auth-done]}
-  [{:keys [db] :as cofx} password biometric-auth-result]
-  (let [{:keys [bioauth-success bioauth-notrequired bioauth-message]} biometric-auth-result]
-    (if (and password
-             (or bioauth-success bioauth-notrequired))
-      (fx/merge cofx
-                {:db (assoc-in db [:accounts/login :password] password)}
-                (navigation/navigate-to-cofx :progress nil)
-                (user-login false))
-      (fx/merge cofx
-                (when bioauth-message
-                  {:utils/show-popup {:title (i18n/label :t/biometric-auth-login-error-title) :content bioauth-message}})
-                (navigation/navigate-to-cofx :login nil)))))
+  [{:keys [db] :as cofx} password {:keys [bioauth-success bioauth-notrequired bioauth-message]}]
+  (if (and password
+           (or bioauth-success bioauth-notrequired))
+    (fx/merge cofx
+              {:db (assoc-in db [:accounts/login :password] password)}
+              (navigation/navigate-to-cofx :progress nil)
+              (user-login false))
+    (fx/merge cofx
+              (when bioauth-message
+                {:utils/show-popup {:title (i18n/label :t/biometric-auth-login-error-title) :content bioauth-message}})
+              (navigation/navigate-to-cofx :login nil))))
 
 (fx/defn do-biometric-auth
   [{:keys [db] :as cofx} password]
