@@ -44,7 +44,6 @@
   ],
   "dependencies": {
     "assert": "1.4.1",
-    "asyncstorage-down": "4.0.1",
     "babel-preset-react-native": "5.0.2",
     "bignumber.js": "git+https://github.com/status-im/bignumber.js.git#v4.0.2-status",
     "buffer": "3.6.0",

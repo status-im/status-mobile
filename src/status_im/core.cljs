@@ -12,7 +12,7 @@
             cljs.core.specs.alpha))
 
 (if js/goog.DEBUG
-  (.ignoreWarnings (.-YellowBox js-dependencies/react-native) #js ["re-frame: overwriting"])
+  (.ignoreWarnings (.-YellowBox js-dependencies/react-native) #js ["re-frame: overwriting" "Warning: Async Storage has been extracted from react-native core and will be removed in a future release. It can now be installed and imported from '@react-native-community/async-storage' instead of 'react-native'. See https://github.com/react-native-community/react-native-async-storage"])
   (aset js/console "disableYellowBox" true))
 
 (defn init [app-root]
