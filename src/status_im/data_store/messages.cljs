@@ -1,14 +1,18 @@
 (ns status-im.data-store.messages
-  (:require [re-frame.core :as re-frame]
-            [clojure.set :as clojure.set]
+  (:require [clojure.set :as clojure.set]
             [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.data-store.realm.core :as core]
-            [status-im.utils.core :as utils]
             [status-im.js-dependencies :as dependencies]
-            [taoensso.timbre :as log]))
+            [status-im.utils.core :as utils]))
 
-(defn- transform-message [{:keys [content] :as message}]
+(defn get-message-by-id
+  [message-id realm]
+  (.objectForPrimaryKey realm "message" message-id))
+
+(defn- transform-message
+  [{:keys [content outgoing-status] :as message}]
   (when-let [parsed-content (utils/safe-read-message-content content)]
     (-> message
         (update :message-type keyword)
@@ -60,7 +64,7 @@
     (keep (fn [{:keys [response-to response-to-v2]}]
             (when-let [js-message
                        (if response-to-v2
-                         (.objectForPrimaryKey @core/account-realm "message" response-to-v2)
+                         (get-message-by-id response-to-v2 @core/account-realm)
                          (core/single (core/get-by-field
                                        @core/account-realm
                                        :message :old-message-id response-to)))]
@@ -124,18 +128,15 @@
   "Returns tx function for deleting message"
   [message-id]
   (fn [realm]
-    (when-let [message (core/get-by-field realm :message :message-id message-id)]
-      (core/delete realm message)
-      (core/delete realm (core/get-by-field realm :user-status :message-id message-id)))))
+    (core/delete realm (get-message-by-id message-id realm))))
 
 (defn delete-chat-messages-tx
   "Returns tx function for deleting messages with user statuses for given chat-id"
   [chat-id]
   (fn [realm]
-    (core/delete realm (core/get-by-field realm :message :chat-id chat-id))
-    (core/delete realm (core/get-by-field realm :user-status :chat-id chat-id))))
+    (core/delete realm (core/get-by-field realm :message :chat-id chat-id))))
 
 (defn message-exists? [message-id]
   (if @core/account-realm
-    (not (nil? (.objectForPrimaryKey @core/account-realm "message" message-id)))
+    (not (nil? (get-message-by-id message-id @core/account-realm)))
     false))

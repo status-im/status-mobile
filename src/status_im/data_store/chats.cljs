@@ -88,7 +88,7 @@
     (core/delete realm (core/get-by-field realm :chat :chat chat-id))))
 
 (defn- get-chat-by-id [chat-id realm]
-  (core/single (core/get-by-field realm :chat :chat-id chat-id)))
+  (.objectForPrimaryKey realm "chat" chat-id))
 
 (defn clear-history-tx
   "Returns tx function for clearing the history of chat"

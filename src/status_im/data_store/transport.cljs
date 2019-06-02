@@ -41,6 +41,5 @@
   "Returns tx function for deleting transport"
   [chat-id]
   (fn [realm]
-    (let [transport (core/single
-                     (core/get-by-field realm :transport :chat-id chat-id))]
+    (let [transport (.objectForPrimaryKey realm "transport" chat-id)]
       (core/delete realm transport))))

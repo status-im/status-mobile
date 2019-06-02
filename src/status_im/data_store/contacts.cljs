@@ -44,7 +44,7 @@
       ((save-contact-tx contact) realm))))
 
 (defn- get-contact-by-id [public-key realm]
-  (core/single (core/get-by-field realm :contact :public-key public-key)))
+  (.objectForPrimaryKey realm "contact" public-key))
 
 (defn- get-messages-by-messages-ids
   [message-ids]

@@ -19,4 +19,4 @@
   "Returns tx function for removing dapp permissions"
   [dapp]
   (fn [realm]
-    (core/delete realm (core/single (core/get-by-field realm :dapp-permissions :dapp dapp)))))
+    (core/delete realm (.objectForPrimaryKey realm "dapp" dapp))))

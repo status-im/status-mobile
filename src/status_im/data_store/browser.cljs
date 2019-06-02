@@ -20,5 +20,7 @@
   "Returns tx function for removing browser"
   [browser-id]
   (fn [realm]
-    (let [browser (core/single (core/get-by-field realm :browser :browser-id browser-id))]
+    (let [browser (.objectForPrimaryKey realm
+                                        "browser"
+                                        browser-id)]
       (core/delete realm browser))))

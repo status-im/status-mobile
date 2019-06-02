@@ -61,8 +61,9 @@
   "Returns tx function for deleting mailserver topic"
   [topic]
   (fn [realm]
-    (let [mailserver-topic (core/single
-                            (core/get-by-field realm :mailserver-topic :topic topic))]
+    (let [mailserver-topic (.objectForPrimaryKey realm
+                                                 "mailserver-topic"
+                                                 topic)]
       (core/delete realm mailserver-topic))))
 
 (defn save-chat-requests-range
