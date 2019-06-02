@@ -1,15 +1,15 @@
 (ns ^{:doc "Definition of the StatusMessage protocol"}
  status-im.transport.message.core
-  (:require [re-frame.core :as re-frame]
-            [goog.object :as o]
+  (:require [goog.object :as o]
+            [re-frame.core :as re-frame]
             [status-im.chat.models.message :as models.message]
-            [status-im.utils.config :as config]
+            [status-im.contact.device-info :as device-info]
             [status-im.data-store.transport :as transport-store]
             [status-im.transport.message.contact :as contact]
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.transit :as transit]
             [status-im.transport.utils :as transport.utils]
-            [status-im.contact.device-info :as device-info]
+            [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
@@ -80,19 +80,27 @@
     {:db            (assoc-in db [:transport/chats chat-id :resend?] nil)
      :data-store/tx [(transport-store/save-transport-tx {:chat-id chat-id
                                                          :chat    updated-chat})]}))
-(fx/defn check-confirmations [{:keys [db] :as cofx} status chat-id message-id]
+
+(fx/defn check-confirmations
+  [{:keys [db] :as cofx} status chat-id message-id]
   (when-let [{:keys [pending-confirmations not-sent]}
              (get-in db [:transport/message-ids->confirmations message-id])]
     (if (zero? (dec pending-confirmations))
       (fx/merge cofx
-                {:db (update db :transport/message-ids->confirmations dissoc message-id)}
-                (models.message/update-message-status chat-id message-id (if not-sent
-                                                                           :not-sent
-                                                                           status)))
+                {:db (update db
+                             :transport/message-ids->confirmations
+                             dissoc message-id)}
+                (models.message/update-message-status chat-id
+                                                      message-id
+                                                      (if not-sent
+                                                        :not-sent
+                                                        status)))
       (let [confirmations {:pending-confirmations (dec pending-confirmations)
                            :not-sent  (or not-sent
                                           (= :not-sent status))}]
-        {:db (assoc-in db [:transport/message-ids->confirmations message-id] confirmations)}))))
+        {:db (assoc-in db
+                       [:transport/message-ids->confirmations message-id]
+                       confirmations)}))))
 
 (fx/defn update-envelope-status
   [{:keys [db] :as cofx} envelope-hash status]

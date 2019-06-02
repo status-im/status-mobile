@@ -115,11 +115,10 @@
       (is (= #{"1" "2"}
              (set (keys (db/active-chats {} chats {}))))))))
 
-(deftest messages-with-datemarks-and-statuses
+(deftest messages-with-datemarks
   (testing "empty state"
     (is (empty?
-         (db/messages-with-datemarks-and-statuses
-          nil
+         (db/messages-with-datemarks
           nil
           nil
           nil
@@ -132,8 +131,7 @@
          [{:type       :gap
            :value      ":first-gap"
            :first-gap? true}]
-         (db/messages-with-datemarks-and-statuses
-          nil
+         (db/messages-with-datemarks
           nil
           nil
           nil
@@ -148,13 +146,11 @@
             :timestamp         40
             :content           nil
             :timestamp-str     "14:00"
-            :user-statuses     nil
             :datemark          "today"}
            {:whisper-timestamp 30
             :timestamp         30
             :content           nil
             :timestamp-str     "13:00"
-            :user-statuses     nil
             :datemark          "today"}
            {:value             "today"
             :type              :datemark
@@ -164,19 +160,17 @@
             :timestamp         20
             :content           nil
             :timestamp-str     "12:00"
-            :user-statuses     nil
             :datemark          "yesterday"}
            {:whisper-timestamp 10
             :timestamp         10
             :content           nil
             :timestamp-str     "11:00"
-            :user-statuses     nil
             :datemark          "yesterday"}
            {:value             "yesterday"
             :type              :datemark
             :whisper-timestamp 10
             :timestamp         10})
-         (db/messages-with-datemarks-and-statuses
+         (db/messages-with-datemarks
           {"yesterday"
            (list
             {:message-id        :m1
@@ -205,6 +199,8 @@
                 :timestamp         30}
            :m4 {:whisper-timestamp 40
                 :timestamp         40}}
+          nil
+          nil
           nil
           nil
           nil))))
@@ -214,7 +210,6 @@
             :timestamp         40
             :content           nil
             :timestamp-str     "14:00"
-            :user-statuses     nil
             :datemark          "today"}
            {:type  :gap
             :value ":gapid1"
@@ -223,7 +218,6 @@
             :timestamp         30
             :content           nil
             :timestamp-str     "13:00"
-            :user-statuses     nil
             :datemark          "today"}
            {:value             "today"
             :type              :datemark
@@ -233,19 +227,17 @@
             :timestamp         20
             :content           nil
             :timestamp-str     "12:00"
-            :user-statuses     nil
             :datemark          "yesterday"}
            {:whisper-timestamp 10
             :timestamp         10
             :content           nil
             :timestamp-str     "11:00"
-            :user-statuses     nil
             :datemark          "yesterday"}
            {:value             "yesterday"
             :type              :datemark
             :whisper-timestamp 10
             :timestamp         10})
-         (db/messages-with-datemarks-and-statuses
+         (db/messages-with-datemarks
           {"yesterday"
            (list
             {:message-id        :m1
@@ -275,10 +267,12 @@
            :m4 {:whisper-timestamp 40
                 :timestamp         40}}
           nil
-          nil
           [{:from 25
             :to   30
-            :id   :gapid1}]))))
+            :id   :gapid1}]
+          nil
+          nil
+          nil))))
   (testing "simple case with gap after all messages"
     (is (=
          '({:type  :gap
@@ -288,13 +282,11 @@
             :timestamp         40
             :content           nil
             :timestamp-str     "14:00"
-            :user-statuses     nil
             :datemark          "today"}
            {:whisper-timestamp 30
             :timestamp         30
             :content           nil
             :timestamp-str     "13:00"
-            :user-statuses     nil
             :datemark          "today"}
            {:value             "today"
             :type              :datemark
@@ -304,19 +296,17 @@
             :timestamp         20
             :content           nil
             :timestamp-str     "12:00"
-            :user-statuses     nil
             :datemark          "yesterday"}
            {:whisper-timestamp 10
             :timestamp         10
             :content           nil
             :timestamp-str     "11:00"
-            :user-statuses     nil
             :datemark          "yesterday"}
            {:value             "yesterday"
             :type              :datemark
             :whisper-timestamp 10
             :timestamp         10})
-         (db/messages-with-datemarks-and-statuses
+         (db/messages-with-datemarks
           {"yesterday"
            (list
             {:message-id        :m1
@@ -346,7 +336,9 @@
            :m4 {:whisper-timestamp 40
                 :timestamp         40}}
           nil
-          nil
           [{:from 100
             :to   110
-            :id   :gapid1}])))))
+            :id   :gapid1}]
+          nil
+          nil
+          nil)))))

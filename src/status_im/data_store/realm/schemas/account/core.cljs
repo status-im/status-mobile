@@ -545,6 +545,21 @@
           contact-recovery/v1
           mailserver-requests-gap/v1])
 
+(def v46 [chat/v15
+          chat-requests-range/v1
+          transport/v9
+          contact/v8
+          message/v11
+          mailserver/v11
+          mailserver-topic/v2
+          membership-update/v1
+          installation/v3
+          browser/v8
+          dapp-permissions/v9
+          contact-device-info/v1
+          contact-recovery/v1
+          mailserver-requests-gap/v1])
+
 ;; put schemas ordered by version
 (def schemas [{:schema        v1
                :schemaVersion 1
@@ -680,4 +695,7 @@
                :migration     (constantly nil)}
               {:schema        v45
                :schemaVersion 45
-               :migration     (constantly nil)}])
+               :migration     (constantly nil)}
+              {:schema        v46
+               :schemaVersion 46
+               :migration     migrations/v46}])

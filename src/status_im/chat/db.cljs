@@ -1,13 +1,13 @@
 (ns status-im.chat.db
   (:require [clojure.set :as clojure.set]
             [clojure.string :as string]
-            [status-im.contact.db :as contact.db]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.input :as commands.input]
+            [status-im.contact.db :as contact.db]
             [status-im.group-chats.db :as group-chats.db]
-            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.mailserver.core :as mailserver]
             [status-im.transport.partitioned-topic :as topic]
-            [status-im.mailserver.core :as mailserver]))
+            [status-im.utils.gfycat.core :as gfycat]))
 
 (defn group-chat-name
   [{:keys [public? name]}]
@@ -93,7 +93,7 @@
   (= type :gap))
 
 (defn transform-message
-  [messages message-statuses referenced-messages]
+  [messages referenced-messages]
   (fn [{:keys [message-id timestamp-str] :as reference}]
     (if (or (datemark? reference)
             (gap? reference))
@@ -104,8 +104,7 @@
                           (quoted-message-data messages referenced-messages))]
         (cond-> (-> message
                     (update :content dissoc :response-to :response-to-v2)
-                    (assoc :timestamp-str timestamp-str
-                           :user-statuses (get message-statuses message-id)))
+                    (assoc :timestamp-str timestamp-str))
           ;; quoted message reference
           quote
           (assoc-in [:content :response-to] quote))))))
@@ -145,15 +144,15 @@
          :value (clojure.string/join (:ids gaps))
          :gaps gaps}))
 
-(defn messages-with-datemarks-and-statuses
+(defn messages-with-datemarks
   "Converts message groups into sequence of messages interspersed with datemarks,
   with correct user statuses associated into message"
-  [message-groups messages message-statuses referenced-messages messages-gaps
+  [message-groups messages referenced-messages messages-gaps
    {:keys [highest-request-to lowest-request-from]} all-loaded? public?]
   (transduce
    (comp
     (mapcat add-datemark)
-    (map (transform-message messages message-statuses referenced-messages)))
+    (map (transform-message messages referenced-messages)))
    (fn
      ([]
       (let [acc {:messages         (list)

@@ -1,6 +1,5 @@
 (ns status-im.contact.block
   (:require [re-frame.core :as re-frame]
-            [status-im.accounts.db :as accounts.db]
             [status-im.chat.models :as chat.models]
             [status-im.chat.models.loading :as chat.models.loading]
             [status-im.chat.models.message :as chat.models.message]
@@ -16,30 +15,13 @@
             {:db (dissoc db :current-chat-id)}
             (navigation/navigate-to-clean :home {})))
 
-(defn get-removed-unseen-count
-  [current-public-key user-statuses removed-messages-ids]
-  (- (count removed-messages-ids)
-     (count (filter (fn [[_ statuses]]
-                      (= :seen
-                         (:status (get statuses
-                                       current-public-key))))
-                    user-statuses))))
-
 (fx/defn clean-up-chat
-  [{:keys [db get-stored-user-statuses] :as cofx} chat-id removed-chat-messages]
-  (let [current-public-key (accounts.db/current-public-key cofx)
-        removed-messages-ids (map :message-id removed-chat-messages)
-        user-statuses (get-stored-user-statuses chat-id
-                                                removed-messages-ids)
-        removed-unseen-count (get-removed-unseen-count current-public-key
-                                                       user-statuses
-                                                       removed-messages-ids)
+  [{:keys [db] :as cofx} chat-id removed-chat-messages]
+  (let [removed-messages-ids (map :message-id removed-chat-messages)
+        removed-unseen-count (count (remove :seen removed-chat-messages))
         db (-> db
                ;; remove messages
                (update-in [:chats chat-id :messages]
-                          #(apply dissoc % removed-messages-ids))
-               ;; remove message statuses
-               (update-in [:chats chat-id :messages-statuses]
                           #(apply dissoc % removed-messages-ids))
                ;; remove message groups
                (update-in [:chats chat-id]

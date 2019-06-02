@@ -38,10 +38,7 @@
       (js-delete (aget messages i) "user-statuses"))))
 
 (defn message-by-id [realm message-id]
-  (some-> realm
-          (.objects "message")
-          (.filtered (str "message-id = \"" message-id "\""))
-          (aget 0)))
+  (.objectForPrimaryKey realm "message" message-id))
 
 (defn v8 [old-realm new-realm]
   (log/debug "migrating v8 account database")
@@ -417,3 +414,19 @@
     (when mailserver-topic
       (aset mailserver-topic "chat-ids" chat-ids-str))))
 
+(defn v46
+  "Migrate user-statuses"
+  [old-realm new-realm]
+  (log/debug "migrating v46 account database")
+  (let [old-user-statuses (.objects old-realm "user-status")]
+    (dotimes [i (.-length old-user-statuses)]
+      (let [user-status (aget old-user-statuses i)
+            status (aget user-status "status")
+            message-id (aget user-status "message-id")
+            message (message-by-id new-realm message-id)]
+        (cond
+          (= status "seen")
+          (aset message "seen" true)
+
+          (#{"sent" "sending" "not-sent"} status)
+          (aset message "outgoing-status" status))))))

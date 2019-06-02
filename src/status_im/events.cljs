@@ -804,12 +804,6 @@
    (chat/join-time-messages-checked cofx chat-id)))
 
 (handlers/register-handler-fx
- :chat.ui/show-message-details
- (fn [{:keys [db]} [_ details]]
-   {:db (chat/set-chat-ui-props db {:show-bottom-info? true
-                                    :bottom-info       details})}))
-
-(handlers/register-handler-fx
  :chat.ui/show-message-options
  (fn [{:keys [db]} [_ options]]
    {:db (chat/set-chat-ui-props db {:show-message-options? true
@@ -823,8 +817,8 @@
 (handlers/register-handler-fx
  :chat.ui/load-more-messages
  [(re-frame/inject-cofx :data-store/get-messages)
-  (re-frame/inject-cofx :data-store/get-user-statuses)
   (re-frame/inject-cofx :data-store/get-referenced-messages)
+  (re-frame/inject-cofx :data-store/get-unviewed-message-ids)
   (re-frame/inject-cofx :data-store/all-gaps)]
  (fn [cofx _]
    (chat.loading/load-more-messages cofx)))
@@ -1736,8 +1730,7 @@
 
 (handlers/register-handler-fx
  :contact.ui/block-contact-confirmed
- [(re-frame/inject-cofx :data-store/get-user-messages)
-  (re-frame/inject-cofx :data-store/get-user-statuses)]
+ [(re-frame/inject-cofx :data-store/get-user-messages)]
  (fn [cofx [_ public-key]]
    (contact.block/block-contact cofx public-key)))
 

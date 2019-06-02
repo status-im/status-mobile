@@ -95,11 +95,11 @@
                   :number-of-lines 5}
       (core-utils/truncate-str text constants/chars-collapse-threshold)]]))
 
-(defn- message-sent? [user-statuses current-public-key]
-  (not= (get-in user-statuses [current-public-key :status]) :not-sent))
+(defn- message-sent? [outgoing-status]
+  (not (#{:not-sent :sending} outgoing-status)))
 
 (views/defview message-without-timestamp
-  [text {:keys [chat-id message-id old-message-id content group-chat expanded? current-public-key user-statuses] :as message} style]
+  [text {:keys [chat-id message-id old-message-id content group-chat expanded? current-public-key outgoing-status] :as message} style]
   [react/view {:flex 1 :margin-vertical 5}
    [react/touchable-highlight {:on-press (fn [arg]
                                            (when (= "right" (.-button (.-nativeEvent arg)))
@@ -107,7 +107,7 @@
                                               [{:text      (i18n/label :t/sharing-copy-to-clipboard)
                                                 :on-select #(do (utils/show-popup "" "Message copied to clipboard") (react/copy-to-clipboard text))}
                                                {:text      (i18n/label :t/message-reply)
-                                                :on-select #(when (message-sent? user-statuses current-public-key)
+                                                :on-select #(when (message-sent? outgoing-status)
                                                               (re-frame/dispatch [:chat.ui/reply-to-message message-id old-message-id]))}])))}
     (let [collapsible? (and (:should-collapse? content) group-chat)
           char-limit   (if (and collapsible? (not expanded?))
@@ -185,7 +185,7 @@
   [message-content-status text message])
 
 (defmethod message :default
-  [text me? {:keys [message-id chat-id message-status user-statuses from
+  [text me? {:keys [message-id chat-id message-status from
                     current-public-key content-type outgoing type value] :as message}]
   (cond
     (= type :datemark)
@@ -199,17 +199,7 @@
     :else
     (when (contains? constants/desktop-content-types content-type)
       (reagent.core/create-class
-       {:component-did-mount
-        #(when (and message-id
-                    chat-id
-                    (not outgoing)
-                    (not= :seen message-status)
-                    (not= :seen (keyword (get-in user-statuses [current-public-key :status]))))
-           ;;TODO(rasom): revisit this when seen messages will be reimplemented
-           #_(re-frame/dispatch [:send-seen! {:chat-id    chat-id
-                                              :from       from
-                                              :message-id message-id}]))
-        :reagent-render
+       {:reagent-render
         (fn []
           ^{:key (str "message" message-id)}
           [react/view

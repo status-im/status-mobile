@@ -71,12 +71,6 @@
       ;; no need for legacy conversions for rest of the content types
       #js [content content-type message-type clock-value timestamp])))
 
-(deftype MessagesSeenHandler []
-  Object
-  (tag [this v] "c5")
-  (rep [this {:keys [message-ids]}]
-    (clj->js message-ids)))
-
 (deftype GroupMembershipUpdateHandler []
   Object
   (tag [this v] "g5")
@@ -101,7 +95,6 @@
                               contact/ContactRequestConfirmed  (ContactRequestConfirmedHandler.)
                               contact/ContactUpdate            (ContactUpdateHandler.)
                               protocol/Message                 (MessageHandler.)
-                              protocol/MessagesSeen            (MessagesSeenHandler.)
                               group-chat/GroupMembershipUpdate (GroupMembershipUpdateHandler.)
                               pairing/SyncInstallation         (SyncInstallationHandler.)
                               pairing/PairInstallation         (PairInstallationHandler.)}}))
@@ -148,8 +141,7 @@
                                        (protocol/Message. new-content new-content-type message-type clock-value timestamp)))
                               "c7" (fn [[content content-type message-type clock-value timestamp]]
                                      (protocol/Message. content content-type message-type clock-value timestamp))
-                              "c5" (fn [message-ids]
-                                     (protocol/MessagesSeen. message-ids))
+                              "c5" (fn [])
                               "c6" (fn [[name profile-image address fcm-token device-info]]
                                      (contact/ContactUpdate. name profile-image address fcm-token device-info))
                               "g5" (fn [[chat-id membership-updates message]]

@@ -595,12 +595,6 @@
    (or message-groups {})))
 
 (re-frame/reg-sub
- :chats/current-chat-message-statuses
- :<- [:chats/current-chat]
- (fn [{:keys [message-statuses]}]
-   (or message-statuses {})))
-
-(re-frame/reg-sub
  :chats/current-chat-referenced-messages
  :<- [:chats/current-chat]
  (fn [{:keys [referenced-messages]}]
@@ -636,17 +630,16 @@
  :chats/current-chat-messages-stream
  :<- [:chats/current-chat-messages]
  :<- [:chats/current-chat-message-groups]
- :<- [:chats/current-chat-message-statuses]
  :<- [:chats/current-chat-referenced-messages]
  :<- [:chats/messages-gaps]
  :<- [:chats/range]
  :<- [:chats/all-loaded?]
  :<- [:chats/public?]
- (fn [[messages message-groups message-statuses referenced-messages
+ (fn [[messages message-groups referenced-messages
        messages-gaps range all-loaded? public?]]
    (-> (chat.db/sort-message-groups message-groups messages)
-       (chat.db/messages-with-datemarks-and-statuses
-        messages message-statuses referenced-messages
+       (chat.db/messages-with-datemarks
+        messages referenced-messages
         messages-gaps range all-loaded? public?)
        chat.db/messages-stream)))
 

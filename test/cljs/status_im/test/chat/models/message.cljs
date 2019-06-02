@@ -50,8 +50,7 @@
                                            :chat-id "chat-id"
                                            :content "b"
                                            :clock-value 1}])
-            message (get-in actual [:db :chats "chat-id" :messages "id"])
-            status  (get-in actual [:db :chats "chat-id" :message-statuses "id" "me" :status])]
+            message (get-in actual [:db :chats "chat-id" :messages "id"])]
         (testing "it adds the message"
           (is message))
         (testing "it marks the message as outgoing"
@@ -59,9 +58,7 @@
         (testing "it stores the message"
           (is (:data-store/tx actual)))
         (testing "it does not send a seen confirmation"
-          (is (not (:shh/post actual))))
-        (testing "it marks it as sent"
-          (is (= :sent status)))))))
+          (is (not (:shh/post actual))))))))
 
 (deftest receive-many-clock-value
   (let [db {:account/account {:public-key "me"}

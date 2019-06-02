@@ -101,16 +101,15 @@
                  (get-in cofx [:db :transport/message-envelopes "hash-1"]))))
         (testing "the message is sent"
           (is (= :sent
-
                  (get-in
                   (message/update-envelope-status cofx "hash-1" :sent)
-                  [:db :chats chat-id :message-statuses message-id from :status]))))
+                  [:db :chats chat-id :messages message-id :outgoing-status]))))
 
         (testing "the message is not sent"
           (is (= :not-sent
                  (get-in
                   (message/update-envelope-status cofx "hash-1" :not-sent)
-                  [:db :chats chat-id :message-statuses message-id from :status]))))))
+                  [:db :chats chat-id :messages message-id :outgoing-status]))))))
     (testing "multi envelope message"
       (testing "only inserts"
         (let [cofx (fx/merge
@@ -136,7 +135,7 @@
             (is (= :sent
                    (get-in
                     cofx
-                    [:db :chats chat-id :message-statuses message-id from :status]))))))
+                    [:db :chats chat-id :messages message-id :outgoing-status]))))))
       (testing "message not sent"
         (let [cofx (fx/merge
                     initial-cofx
@@ -152,4 +151,4 @@
             (is (= :not-sent
                    (get-in
                     cofx
-                    [:db :chats chat-id :message-statuses message-id from :status])))))))))
+                    [:db :chats chat-id :messages message-id :outgoing-status])))))))))

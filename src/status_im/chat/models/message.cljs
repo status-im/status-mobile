@@ -9,7 +9,6 @@
             [status-im.constants :as constants]
             [status-im.contact.db :as contact.db]
             [status-im.data-store.messages :as messages-store]
-            [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.mailserver.core :as mailserver]
             [status-im.native-module.core :as status]
             [status-im.notifications.core :as notifications]
@@ -39,9 +38,9 @@
   [{:keys [content content-type] :as message} chat-id current-chat?]
   (let [emoji? (message-content/emoji-only-content? content)]
     ;; TODO janherich: enable the animations again once we can do them more efficiently
-    (cond-> (assoc message :appearing? true)
-      (not current-chat?)
-      (assoc :appearing? false)
+    (cond-> message
+      current-chat?
+      (assoc :seen true)
 
       emoji?
       (assoc :content-type constants/content-type-emoji)
@@ -73,21 +72,12 @@
                                              (assoc groups new-datemark message-refs))))
                              {}))}))
 
-(fx/defn add-own-status
-  [{:keys [db] :as cofx} chat-id message-id status]
-  (let [me     (accounts.db/current-public-key cofx)
-        status {:chat-id          chat-id
-                :message-id       message-id
-                :public-key       me
-                :status           status}]
-    {:db            (assoc-in db
-                              [:chats chat-id :message-statuses message-id me]
-                              status)
-     :data-store/tx [(user-statuses-store/save-status-tx status)]}))
-
-(defn add-outgoing-status [{:keys [from] :as message} current-public-key]
-  (assoc message :outgoing (and (= from current-public-key)
-                                (not (system-message? message)))))
+(defn add-outgoing-status
+  [{:keys [from] :as message} current-public-key]
+  (if (and (= from current-public-key)
+           (not (system-message? message)))
+    (assoc message :outgoing true)
+    message))
 
 (defn build-desktop-notification
   [{:keys [db] :as cofx} {:keys [chat-id timestamp content from] :as message}]
@@ -145,11 +135,6 @@
               (when-not batch?
                 (chat-loading/group-chat-messages chat-id [message])))))
 
-(fx/defn send-message-seen
-  [cofx chat-id message-id send-seen?]
-  (when send-seen?
-    (protocol/send (protocol/map->MessagesSeen {:message-ids #{message-id}}) chat-id cofx)))
-
 (defn ensure-clock-value [{:keys [clock-value] :as message} {:keys [last-clock-value]}]
   (if clock-value
     message
@@ -170,35 +155,24 @@
    old-id->message
    {:keys [from message-id chat-id js-obj content dedup-id] :as raw-message}]
   (let [{:keys [web3 current-chat-id view-id]} db
-        current-public-key            (accounts.db/current-public-key cofx)
-        current-chat?                 (and (or (= :chat view-id)
-                                               (= :chat-modal view-id))
-                                           (= current-chat-id chat-id))
-        {:keys [group-chat] :as chat} (get-in db [:chats chat-id])
-        message                       (-> raw-message
-                                          (commands-receiving/enhance-receive-parameters cofx)
-                                          (ensure-clock-value chat)
-                                          (check-response-to old-id->message)
-                                          ;; TODO (cammellos): Refactor so it's not computed twice
-                                          (add-outgoing-status current-public-key))]
+        current-public-key             (accounts.db/current-public-key cofx)
+        current-chat?                  (and (or (= :chat view-id)
+                                                (= :chat-modal view-id))
+                                            (= current-chat-id chat-id))
+        {:keys [group-chat] :as chat}  (get-in db [:chats chat-id])
+        {:keys [outgoing] :as message} (-> raw-message
+                                           (commands-receiving/enhance-receive-parameters cofx)
+                                           (ensure-clock-value chat)
+                                           (check-response-to old-id->message)
+                                           ;; TODO (cammellos): Refactor so it's not computed twice
+                                           (add-outgoing-status current-public-key))]
     (fx/merge cofx
               (add-message {:batch?       true
                             :message      message
                             :dedup-id     dedup-id
                             :current-chat current-chat?
                             :raw-message  js-obj})
-              ;; Checking :outgoing here only works for now as we don't have a :seen
-              ;; status for public chats, if we add processing of our own messages
-              ;; for 1-to-1 care needs to be taken not to override the :seen status
-              (add-own-status chat-id message-id (cond (:outgoing message) :sent
-                                                       current-chat? :seen
-                                                       :else :received))
-              (commands-receiving/receive message)
-              ;;TODO(rasom): uncomment when seen messages will be revisited
-              #_(send-message-seen chat-id message-id (and (not group-chat)
-                                                           current-chat?
-                                                           (not (= constants/system from))
-                                                           (not (:outgoing message)))))))
+              (commands-receiving/receive message))))
 
 (fx/defn update-group-messages [cofx chat->message chat-id]
   (fx/merge cofx
@@ -374,7 +348,8 @@
     (get-in message [:content :params :coin :icon :source])
     (update-in [:content :params :coin] dissoc :icon)))
 
-(fx/defn upsert-and-send [{:keys [now] :as cofx} {:keys [chat-id from] :as message}]
+(fx/defn upsert-and-send
+  [{:keys [now] :as cofx} {:keys [chat-id from] :as message}]
   (let [message         (remove-icon message)
         send-record     (protocol/map->Message (select-keys message transport-keys))
         old-message-id  (transport.utils/old-message-id send-record)
@@ -384,6 +359,7 @@
         raw-payload     (transport.utils/from-utf8 (transit/serialize wrapped-record))
         message-id      (transport.utils/message-id from raw-payload)
         message-with-id (assoc message
+                               :outgoing-status :sending
                                :message-id message-id
                                :old-message-id old-message-id
                                :raw-payload-hash (transport.utils/sha3 raw-payload))]
@@ -398,10 +374,10 @@
               (add-message {:batch?           false
                             :message          message-with-id
                             :current-chat?    true})
-              (add-own-status chat-id message-id :sending)
               (send chat-id message-id wrapped-record))))
 
-(fx/defn send-push-notification [cofx chat-id message-id fcm-tokens status]
+(fx/defn send-push-notification
+  [cofx chat-id message-id fcm-tokens status]
   (log/debug "#6772 - send-push-notification" message-id fcm-tokens)
   (when (and (seq fcm-tokens) (= status :sent))
     (let [payload {:from (accounts.db/current-public-key cofx)
@@ -410,17 +386,15 @@
       {:send-notification {:data-payload (notifications/encode-notification-payload payload)
                            :tokens       fcm-tokens}})))
 
-(fx/defn update-message-status [{:keys [db]} chat-id message-id status]
-  (let [from           (get-in db [:chats chat-id :messages message-id :from])
-        updated-status (-> db
-                           (get-in [:chats chat-id :message-statuses message-id from])
-                           (assoc :status status))]
-    {:db            (assoc-in db
-                              [:chats chat-id :message-statuses message-id from]
-                              updated-status)
-     :data-store/tx [(user-statuses-store/save-status-tx updated-status)]}))
+(fx/defn update-message-status
+  [{:keys [db]} chat-id message-id status]
+  {:db (assoc-in db
+                 [:chats chat-id :messages message-id :outgoing-status]
+                 status)
+   :data-store/tx [(messages-store/update-outgoing-status-tx message-id status)]})
 
-(fx/defn resend-message [cofx chat-id message-id]
+(fx/defn resend-message
+  [cofx chat-id message-id]
   (let [message (get-in cofx [:db :chats chat-id :messages message-id])
         send-record (-> message
                         (select-keys transport-keys)

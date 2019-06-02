@@ -53,20 +53,6 @@
         (.objects "message")
         (.filtered (str "(" (core/in-query "message-id" message-ids) ")")))))
 
-(defn- get-statuses-by-messages-ids
-  [message-ids]
-  (when-not (empty message-ids)
-    (-> @core/account-realm
-        (.objects "user-status")
-        (.filtered (str "(" (core/in-query "message-id" message-ids) ")")))))
-
-(defn- get-user-statuses
-  [public-key]
-  (core/get-by-field @core/account-realm
-                     :user-status
-                     :public-key
-                     public-key))
-
 (defn- get-chat
   [public-key]
   (core/single
@@ -83,12 +69,6 @@
     (when-let [user-messages
                (get-messages-by-messages-ids messages-ids)]
       (core/delete realm user-messages))
-    (when-let [user-messages-statuses
-               (get-statuses-by-messages-ids messages-ids)]
-      (core/delete realm user-messages-statuses))
-    (when-let [user-statuses
-               (get-user-statuses public-key)]
-      (core/delete realm user-statuses))
     (when-let [chat
                (get-chat public-key)]
       (core/delete realm chat))))

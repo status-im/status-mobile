@@ -2,7 +2,6 @@
  status-im.transport.message.protocol
   (:require [cljs.spec.alpha :as spec]
             [status-im.accounts.db :as accounts.db]
-            [status-im.chat.core :as chat]
             [status-im.transport.db :as transport.db]
             [status-im.transport.partitioned-topic :as transport.topic]
             [status-im.transport.utils :as transport.utils]
@@ -137,14 +136,3 @@
     (if (spec/valid? :message/message this)
       this
       (log/warn "failed to validate Message" (spec/explain-str :message/message this)))))
-
-(defrecord MessagesSeen [message-ids]
-  StatusMessage
-  (send [this chat-id cofx]
-    (send-with-pubkey cofx {:chat-id chat-id
-                            :payload this}))
-  (receive [this chat-id signature _ cofx]
-    (chat/receive-seen cofx chat-id signature this))
-  (validate [this]
-    (when (spec/valid? :message/message-seen this)
-      this)))

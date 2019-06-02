@@ -53,16 +53,6 @@
               (remove #(some message-id->messages (vals %))))
         (vals message-id->messages)))
 
-(defn get-unviewed-messages-ids
-  [statuses public-key]
-  (keep
-   (fn [[message-id statuses]]
-     (let [{:keys [status]}
-           (get statuses public-key)]
-       (when (= (keyword status) :received)
-         message-id)))
-   statuses))
-
 (fx/defn update-chats-in-app-db
   {:events [:chats-list/load-success]}
   [{:keys [db] :as cofx} chats]
@@ -118,8 +108,8 @@
   "Loads more messages for current chat"
   [{{:keys [current-chat-id] :as db} :db
     get-stored-messages :get-stored-messages
-    get-stored-user-statuses :get-stored-user-statuses
-    get-referenced-messages :get-referenced-messages :as cofx}]
+    get-referenced-messages :get-referenced-messages
+    get-unviewed-message-ids :get-unviewed-message-ids :as cofx}]
   ;; TODO: re-implement functionality for status-go protocol
   (when-not (or config/use-status-go-protocol?
                 (get-in db [:chats current-chat-id :all-loaded?]))
@@ -135,14 +125,12 @@
           referenced-messages        (into empty-message-map
                                            (get-referenced-messages (get-referenced-ids indexed-messages)))
           new-message-ids            (keys indexed-messages)
-          new-statuses               (get-stored-user-statuses current-chat-id new-message-ids)
           public-key                 (accounts.db/current-public-key cofx)
-          loaded-unviewed-messages   (get-unviewed-messages-ids new-statuses public-key)]
+          loaded-unviewed-messages   (get-unviewed-message-ids)]
       (fx/merge cofx
                 {:db (-> db
                          (assoc-in [:chats current-chat-id :messages-initialized?] true)
                          (update-in [:chats current-chat-id :messages] merge indexed-messages)
-                         (update-in [:chats current-chat-id :message-statuses] merge new-statuses)
                          (update-in [:chats current-chat-id :referenced-messages]
                                     #(into (apply dissoc % new-message-ids) referenced-messages))
                          (assoc-in [:chats current-chat-id :pagination-info] pagination-info)

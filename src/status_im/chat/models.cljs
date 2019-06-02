@@ -5,11 +5,9 @@
             [status-im.contact.core :as contact.core]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
-            [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
             [status-im.transport.chat.core :as transport.chat]
-            [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.public-chat :as public-chat]
             [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.ui.components.colors :as colors]
@@ -17,14 +15,12 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.clocks :as utils.clocks]
+            [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
             [status-im.utils.priority-map :refer [empty-message-map]]
             [status-im.utils.utils :as utils]
-            [status-im.utils.config :as config]
-            [status-im.mailserver.core :as mailserver]
-            [status-im.transport.partitioned-topic :as transport.topic]
             [taoensso.timbre :as log]))
 
 (defn- get-chat [cofx chat-id]
@@ -191,11 +187,6 @@
                  (contact-code/stop-listening % chat-id))
               (navigation/navigate-to-cofx :home {}))))
 
-(fx/defn send-messages-seen
-  [{:keys [db] :as cofx} chat-id message-ids]
-  (when (not (get-in db [:chats chat-id :group-chat]))
-    (protocol/send (protocol/map->MessagesSeen {:message-ids message-ids}) chat-id cofx)))
-
 (defn- unread-messages-number [chats]
   (apply + (map :unviewed-messages-count chats)))
 
@@ -238,26 +229,17 @@
   "Marks all unviewed loaded messages as seen in particular chat"
   [{:keys [db] :as cofx} chat-id]
   (let [public-key          (accounts.db/current-public-key cofx)
-        loaded-unviewed-ids (get-in db [:chats chat-id :loaded-unviewed-messages-ids])
-        updated-statuses    (map (fn [message-id]
-                                   {:chat-id    chat-id
-                                    :message-id message-id
-                                    :status-id  (str chat-id "-" message-id)
-                                    :public-key public-key
-                                    :status     :seen})
-                                 loaded-unviewed-ids)]
+        loaded-unviewed-ids (get-in db [:chats chat-id :loaded-unviewed-messages-ids])]
     (when (seq loaded-unviewed-ids)
       (fx/merge cofx
-                {:db            (reduce (fn [acc {:keys [message-id status]}]
-                                          (assoc-in acc [:chats chat-id :message-statuses
-                                                         message-id public-key :status]
-                                                    status))
+                {:db            (reduce (fn [acc message-id]
+                                          (assoc-in acc [:chats chat-id :messages
+                                                         message-id :seen]
+                                                    true))
                                         db
-                                        updated-statuses)
-                 :data-store/tx [(user-statuses-store/save-statuses-tx updated-statuses)]}
+                                        loaded-unviewed-ids)
+                 :data-store/tx [(messages-store/mark-messages-seen-tx loaded-unviewed-ids)]}
                 (update-chats-unviewed-messages-count {:chat-id chat-id})
-                ;;TODO(rasom): uncomment when seen messages will be revisited
-                #_(send-messages-seen chat-id loaded-unviewed-ids)
                 (when platform/desktop?
                   (update-dock-badge-label))))))
 

@@ -65,7 +65,7 @@
     "react-native-webview": "^5.2.1",
     "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#fix/classnames-colision",
     "react-navigation": "^2.12.1",
-    "realm": "^2.26.1",
+    "realm": "2.28.0",
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status",
     "string_decoder": "0.10.31",
     "text-encoding": "^0.6.4",

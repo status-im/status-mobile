@@ -68,3 +68,13 @@
       (assoc-in [:properties :whisper-timestamp]
                 {:type :int
                  :optional true})))
+
+(def v11
+  (-> v10
+      (update :properties dissoc :outgoing)
+      (assoc-in [:properties :seen]
+                {:type :bool
+                 :default false})
+      (assoc-in [:properties :outgoing-status]
+                {:type :string
+                 :optional true})))

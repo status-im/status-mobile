@@ -14,9 +14,13 @@
 (defn- transform-message
   [{:keys [content outgoing-status] :as message}]
   (when-let [parsed-content (utils/safe-read-message-content content)]
-    (-> message
-        (update :message-type keyword)
-        (assoc :content parsed-content))))
+    (let [outgoing-status (when-not (empty? outgoing-status)
+                            (keyword outgoing-status))]
+      (-> message
+          (update :message-type keyword)
+          (assoc :content parsed-content
+                 :outgoing-status outgoing-status
+                 :outgoing outgoing-status)))))
 
 (defn- exclude-messages [query message-ids]
   (let [string-queries (map #(str "message-id != \"" % "\"") message-ids)]
@@ -105,6 +109,19 @@
  (fn [cofx _]
    (assoc cofx :get-user-messages get-user-messages)))
 
+(defn get-unviewed-message-ids
+  []
+  (.reduce (core/get-by-field @core/account-realm
+                              :message :seen false)
+           (fn [acc message-object _ _]
+             (aget message-object "message-id"))
+           []))
+
+(re-frame/reg-cofx
+ :data-store/get-unviewed-message-ids
+ (fn [cofx _]
+   (assoc cofx :get-unviewed-message-ids get-unviewed-message-ids)))
+
 (defn prepare-content [content]
   (if (string? content)
     content
@@ -140,3 +157,25 @@
   (if @core/account-realm
     (not (nil? (get-message-by-id message-id @core/account-realm)))
     false))
+
+(defn mark-messages-seen-tx
+  "Returns tx function for marking messages as seen"
+  [message-ids]
+  (fn [realm]
+    (doseq [message-id message-ids]
+      (let [message (get-message-by-id message-id realm)]
+        (aset message "seen" true)))))
+
+(defn mark-message-seen-tx
+  "Returns tx function for marking messages as seen"
+  [message-id]
+  (fn [realm]
+    (let [message (get-message-by-id message-id realm)]
+      (aset message "seen" true))))
+
+(defn update-outgoing-status-tx
+  "Returns tx function for marking messages as seen"
+  [message-id outgoing-status]
+  (fn [realm]
+    (let [message (get-message-by-id message-id realm)]
+      (aset message "outgoing-status" (name outgoing-status)))))

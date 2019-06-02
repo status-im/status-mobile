@@ -17,7 +17,6 @@
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.chat.actions :as actions]
-            [status-im.ui.screens.chat.bottom-info :as bottom-info]
             [status-im.ui.screens.chat.input.input :as input]
             [status-im.ui.screens.chat.message.datemark :as message-datemark]
             [status-im.ui.screens.chat.message.gap :as gap]
@@ -459,7 +458,6 @@
   (letsubs [{:keys [public? chat-id show-input?] :as current-chat}
             [:chats/current-chat]
             current-chat-id                            [:chats/current-chat-id]
-            show-bottom-info?                          [:chats/current-chat-ui-prop :show-bottom-info?]
             show-message-options?                      [:chats/current-chat-ui-prop :show-message-options?]
             show-stickers?                             [:chats/current-chat-ui-prop :show-stickers?]]
     ;; this check of current-chat-id is necessary only because in a fresh public chat creation sometimes
@@ -487,8 +485,6 @@
           [input/container])
         (when show-stickers?
           [stickers/stickers-view])
-        (when show-bottom-info?
-          [bottom-info/bottom-info-view])
         (when show-message-options?
           [message-options/view])]])))
 

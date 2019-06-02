@@ -1,30 +1,28 @@
 (ns status-im.ui.screens.chat.message.message
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.list-selection :as list-selection]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.action-sheet :as action-sheet]
             [status-im.chat.commands.core :as commands]
-            [status-im.chat.commands.receiving :as commands-receiving]
-            [status-im.ui.screens.chat.styles.message.message :as style]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.components.popup-menu.views :as desktop.pop-up]
-            [status-im.constants :as constants]
-            [status-im.ui.screens.chat.utils :as chat.utils]
-            [status-im.utils.identicon :as identicon]
-            [status-im.utils.platform :as platform]
-            [status-im.i18n :as i18n]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.chat.commands.protocol :as protocol]
-            [status-im.extensions.core :as extensions]))
+            [status-im.chat.commands.receiving :as commands-receiving]
+            [status-im.constants :as constants]
+            [status-im.extensions.core :as extensions]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.action-sheet :as action-sheet]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.popup-menu.views :as desktop.pop-up]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.screens.chat.styles.message.message :as style]
+            [status-im.ui.screens.chat.utils :as chat.utils]
+            [status-im.utils.platform :as platform])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn install-extension-message [extension-id outgoing]
   [react/touchable-highlight {:on-press #(re-frame/dispatch
                                           [:extensions.ui/install-extension-button-pressed extension-id])}
    [react/view style/extension-container
-    [icons/icon :main-icons/info {:color (if outgoing colors/white colors/gray)}]
+    [vector-icons/icon :main-icons/info {:color (if outgoing colors/white colors/gray)}]
     [react/text {:style (style/extension-text outgoing)}
      (i18n/label :to-see-this-message)]
     [react/text {:style (style/extension-install outgoing)}
@@ -155,54 +153,33 @@
    [react/text {:style style/delivery-text}
     (i18n/message-status-label status)]])
 
-(defview group-message-delivery-status [{:keys [message-id current-public-key user-statuses] :as msg}]
-  (letsubs [{participants :contacts} [:chats/current-chat]
-            contacts                 [:contacts/contacts]]
-    (let [outgoing-status         (or (get-in user-statuses [current-public-key :status]) :sending)
-          delivery-statuses       (dissoc user-statuses current-public-key)
-          delivery-statuses-count (count delivery-statuses)
-          seen-by-everyone        (and (= delivery-statuses-count (count participants))
-                                       (every? (comp (partial = :seen) :status second) delivery-statuses)
-                                       :seen-by-everyone)]
-      (if (or seen-by-everyone (zero? delivery-statuses-count))
-        [text-status (or seen-by-everyone outgoing-status)]
-        [react/touchable-highlight
-         {:on-press #(re-frame/dispatch [:chat.ui/show-message-details {:message-status outgoing-status
-                                                                        :user-statuses  delivery-statuses
-                                                                        :participants   participants}])}
-         [react/view style/delivery-view
-          (for [[public-key] (take 3 delivery-statuses)]
-            ^{:key public-key}
-            [react/image {:source {:uri (or (get-in contacts [public-key :photo-path])
-                                            (identicon/identicon public-key))}
-                          :style  {:width         16
-                                   :height        16
-                                   :border-radius 8}}])
-          (if (> delivery-statuses-count 3)
-            [react/text {:style style/delivery-text}
-             (str "+ " (- delivery-statuses-count 3))])]]))))
-
-(defn message-activity-indicator []
+(defn message-activity-indicator
+  []
   [react/view style/message-activity-indicator
    [react/activity-indicator {:animating true}]])
 
-(defn message-not-sent-text [chat-id message-id]
-  [react/touchable-highlight {:on-press (fn [] (cond
-                                                 platform/ios?
-                                                 (action-sheet/show {:title   (i18n/label :message-not-sent)
-                                                                     :options [{:label  (i18n/label :resend-message)
-                                                                                :action #(re-frame/dispatch [:chat.ui/resend-message chat-id message-id])}
-                                                                               {:label        (i18n/label :delete-message)
-                                                                                :destructive? true
-                                                                                :action       #(re-frame/dispatch [:chat.ui/delete-message chat-id message-id])}]})
-                                                 platform/desktop?
-                                                 (desktop.pop-up/show-desktop-menu
-                                                  (desktop.pop-up/get-message-menu-items chat-id message-id))
+(defn message-not-sent-text
+  [chat-id message-id]
+  [react/touchable-highlight
+   {:on-press (fn [] (cond
+                       platform/ios?
+                       (action-sheet/show
+                        {:title   (i18n/label :message-not-sent)
+                         :options [{:label  (i18n/label :resend-message)
+                                    :action #(re-frame/dispatch
+                                              [:chat.ui/resend-message chat-id message-id])}
+                                   {:label        (i18n/label :delete-message)
+                                    :destructive? true
+                                    :action       #(re-frame/dispatch
+                                                    [:chat.ui/delete-message chat-id message-id])}]})
+                       platform/desktop?
+                       (desktop.pop-up/show-desktop-menu
+                        (desktop.pop-up/get-message-menu-items chat-id message-id))
 
-                                                 :else
-                                                 (re-frame/dispatch
-                                                  [:chat.ui/show-message-options {:chat-id    chat-id
-                                                                                  :message-id message-id}])))}
+                       :else
+                       (re-frame/dispatch
+                        [:chat.ui/show-message-options {:chat-id    chat-id
+                                                        :message-id message-id}])))}
    [react/view style/not-sent-view
     [react/text {:style style/not-sent-text}
      (i18n/message-status-label (if platform/desktop?
@@ -221,22 +198,18 @@
         [vector-icons/icon :main-icons/warning {:color colors/red}]]])))
 
 (defn message-delivery-status
-  [{:keys [chat-id message-id current-public-key user-statuses content last-outgoing? outgoing message-type] :as message}]
-  (let [outgoing-status (or (get-in user-statuses [current-public-key :status]) :not-sent)
-        delivery-status (get-in user-statuses [chat-id :status])
-        status          (or delivery-status outgoing-status)]
-    (when (not= :system-message message-type)
-      (case status
-        :sending  [message-activity-indicator]
-        :not-sent [message-not-sent-text chat-id message-id]
-        (if (and (not outgoing)
-                 (:command content))
-          [command-status content]
-          (when last-outgoing?
-            (if (= message-type :group-user-message)
-              [group-message-delivery-status message]
-              (if outgoing
-                [text-status status]))))))))
+  [{:keys [chat-id message-id outgoing-status
+           content last-outgoing? message-type] :as message}]
+  (when (not= :system-message message-type)
+    (case outgoing-status
+      :sending  [message-activity-indicator]
+      :not-sent [message-not-sent-text chat-id message-id]
+      (if (and (not outgoing-status)
+               (:command content))
+        [command-status content]
+        (when last-outgoing?
+          (if outgoing-status
+            [text-status outgoing-status]))))))
 
 (defview message-author-name [from message-username]
   (letsubs [username [:contacts/contact-name-by-identity from]]
@@ -271,20 +244,23 @@
   [{:keys [message-id old-message-id content] :as message}]
   (list-selection/chat-message message-id old-message-id (:text content) (i18n/label :t/message)))
 
-(defn chat-message [{:keys [outgoing group-chat modal? current-public-key content-type content] :as message}]
+(defn chat-message
+  [{:keys [outgoing group-chat modal? current-public-key content-type content] :as message}]
   [react/view
-   [react/touchable-highlight {:on-press      (fn [arg]
-                                                (if (and platform/desktop? (= "right" (.-button (.-nativeEvent arg))))
-                                                  (open-chat-context-menu message)
-                                                  (do
-                                                    (when (= content-type constants/content-type-sticker)
-                                                      (re-frame/dispatch [:stickers/open-sticker-pack (:pack content)]))
-                                                    (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
-                                                                                                    :show-stickers?    false}])
-                                                    (when-not platform/desktop?
-                                                      (react/dismiss-keyboard!)))))
-                               :on-long-press #(when (or (= content-type constants/content-type-text) (= content-type constants/content-type-emoji))
-                                                 (open-chat-context-menu message))}
+   [react/touchable-highlight
+    {:on-press      (fn [arg]
+                      (if (and platform/desktop? (= "right" (.-button (.-nativeEvent arg))))
+                        (open-chat-context-menu message)
+                        (do
+                          (when (= content-type constants/content-type-sticker)
+                            (re-frame/dispatch [:stickers/open-sticker-pack (:pack content)]))
+                          (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
+                                                                          :show-stickers?    false}])
+                          (when-not platform/desktop?
+                            (react/dismiss-keyboard!)))))
+     :on-long-press #(when (or (= content-type constants/content-type-text)
+                               (= content-type constants/content-type-emoji))
+                       (open-chat-context-menu message))}
     [react/view {:accessibility-label :chat-item}
      (let [incoming-group (and group-chat (not outgoing))]
        [message-content message-body (merge message
