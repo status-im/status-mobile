@@ -68,3 +68,7 @@
 (def v8 (assoc-in v7 [:properties :one-to-one]
                   {:type     :bool
                    :optional true}))
+
+(def v9 (update v8 :properties
+                dissoc
+                :ack :seen :pending-ack :pending-send))

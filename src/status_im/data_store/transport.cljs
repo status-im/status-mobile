@@ -1,15 +1,9 @@
 (ns status-im.data-store.transport
-  (:require [cljs.tools.reader.edn :as edn]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.data-store.realm.core :as core]))
 
 (defn deserialize-chat [serialized-chat]
-  (-> serialized-chat
-      (dissoc :chat-id)
-      (update :ack edn/read-string)
-      (update :seen edn/read-string)
-      (update :pending-ack edn/read-string)
-      (update :pending-send edn/read-string)))
+  (dissoc serialized-chat :chat-id))
 
 (re-frame/reg-cofx
  :data-store/transport
@@ -29,12 +23,7 @@
   (fn [realm]
     (core/create realm
                  :transport
-                 (-> chat
-                     (assoc :chat-id chat-id)
-                     (update :ack pr-str)
-                     (update :seen pr-str)
-                     (update :pending-ack pr-str)
-                     (update :pending-send pr-str))
+                 (assoc chat :chat-id chat-id)
                  true)))
 
 (defn delete-transport-tx

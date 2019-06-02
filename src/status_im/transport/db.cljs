@@ -9,10 +9,6 @@
             [status-im.constants :as constants]))
 
 ;; required
-(spec/def ::ack (spec/coll-of string? :kind vector?))
-(spec/def ::seen (spec/coll-of string? :kind vector?))
-(spec/def ::pending-ack (spec/coll-of string? :kind vector?))
-(spec/def ::pending-send (spec/coll-of string? :kind vector?))
 (spec/def ::resend? (spec/nilable #{"contact-request" "contact-request-confirmation" "contact-update"}))
 
 ;; optional
@@ -39,7 +35,7 @@
 (spec/def :pairing/installation-id :global/not-empty-string)
 (spec/def :pairing/device-type :global/not-empty-string)
 
-(spec/def :transport/chat (spec/keys :req-un [::ack ::seen ::pending-ack ::pending-send ::topic]
+(spec/def :transport/chat (spec/keys :req-un [::topic]
                                      :opt-un [::sym-key-id ::sym-key ::resend?]))
 (spec/def :transport/chats (spec/map-of :global/not-empty-string :transport/chat))
 (spec/def :transport/filters (spec/map-of :transport/filter-id (spec/coll-of :transport/filter)))
@@ -48,11 +44,7 @@
   "Initialize datastructure for chat representation at the transport level
   Currently only :topic is actually used"
   [{:keys [topic resend? one-to-one now]}]
-  {:ack          []
-   :seen         []
-   :pending-ack  []
-   :pending-send []
-   :one-to-one   (boolean one-to-one)
+  {:one-to-one   (boolean one-to-one)
    :resend?      resend?
    :topic        topic})
 
