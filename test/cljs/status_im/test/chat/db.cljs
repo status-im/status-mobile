@@ -38,10 +38,6 @@
         (is (not (:last-outgoing? actual-m1)))
         (is (:last-outgoing? actual-m2))
         (is (not (:last-outgoing? actual-m3))))
-      (testing "it marks the message with :same-direction? when from the same author"
-        (is (not (:same-direction? actual-m1)))
-        (is (not (:same-direction? actual-m2))
-            (is (:same-direction? actual-m3))))
       (testing "it marks messages from the same author next to another with :first-in-group?"
         (is (:first-in-group? actual-m1))
         (is (not (:first-in-group? actual-m2)))
@@ -87,11 +83,6 @@
         (is (not (:last-outgoing? actual-m2)))
         (is (not (:last-outgoing? actual-m3)))
         (is (not (:last-outgoing? actual-m4))))
-      (testing "it resets :same-direction? after a datemark"
-        (is (not (:same-direction? actual-m1)))
-        (is (not (:same-direction? actual-m2))
-            (is (:same-direction? actual-m3)))
-        (is (:same-direction? actual-m4)))
       (testing "it sets :first-in-group? after a datemark"
         (is (:first-in-group? actual-m1))
         (is (:first-in-group? actual-m4)))

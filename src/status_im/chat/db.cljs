@@ -226,7 +226,6 @@
         last-in-group?           (or (= :system-message message-type)
                                      (not= from (:from previous-message))
                                      (> (- (:timestamp previous-message) timestamp) group-ms))
-        same-direction?          (= outgoing (:outgoing previous-message))
         ;; Have we seen an outgoing message already?
         last-outgoing?           (and (not last-outgoing-seen)
                                       outgoing)
@@ -237,7 +236,6 @@
                                      last-in-group?)
         new-message              (assoc message
                                         :display-photo?  (display-photo? message)
-                                        :same-direction? same-direction?
                                         :last-in-group?  last-in-group?
                                         :last-outgoing?  last-outgoing?)]
     {:stream             (cond-> stream
@@ -253,7 +251,7 @@
 (defn messages-stream
   "Enhances the messages in message sequence interspersed with datemarks
   with derived stream context information, like:
-  `:first-in-group?`, `last-in-group?`, `:same-direction?`, `:last?` and `:last-outgoing?` flags."
+  `:first-in-group?`, `last-in-group?`, `:last?` and `:last-outgoing?` flags."
   [ordered-messages]
   (when (seq ordered-messages)
     (let [initial-message (first ordered-messages)
