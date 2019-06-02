@@ -1,12 +1,11 @@
 (ns ^{:doc "Whisper API and events for managing keys and posting messages"}
  status-im.transport.shh
   (:require [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
+            [status-im.ethereum.core :as ethereum]
             [status-im.transport.message.transit :as transit]
-            [status-im.transport.utils :as transport.utils]
-            [taoensso.timbre :as log]
             [status-im.transport.partitioned-topic :as transport.topic]
-            [status-im.utils.config :as config]))
+            [status-im.transport.utils :as transport.utils]
+            [taoensso.timbre :as log]))
 
 (defn get-new-key-pair [{:keys [web3 on-success on-error]}]
   (if web3
@@ -73,7 +72,7 @@
   (.. web3
       -shh
       (sendDirectMessage
-       (clj->js (update direct-message :payload (comp transport.utils/from-utf8
+       (clj->js (update direct-message :payload (comp ethereum/utf8-to-hex
                                                       transit/serialize)))
        (handle-response success-event error-event count))))
 
@@ -101,7 +100,7 @@
                            :chat (transport.topic/public-key->discovery-topic src)
                            :payload (-> payload
                                         transit/serialize
-                                        transport.utils/from-utf8)})]
+                                        ethereum/utf8-to-hex)})]
      (.. web3
          -shh
          (sendPairingMessage
@@ -123,7 +122,7 @@
                        :sig src
                        :payload (-> payload
                                     transit/serialize
-                                    transport.utils/from-utf8)})]
+                                    ethereum/utf8-to-hex)})]
 
          (.. web3
              -shh
@@ -147,7 +146,7 @@
                     :sig src
                     :payload (-> payload
                                  transit/serialize
-                                 transport.utils/from-utf8)}]
+                                 ethereum/utf8-to-hex)}]
        (send-public-message! web3 message success-event error-event)))))
 
 (re-frame/reg-fx
@@ -156,7 +155,7 @@
    (doseq [{:keys [web3 message success-event error-event]
             :or   {error-event :transport/send-status-message-error}} post-calls]
      (post-message {:web3            web3
-                    :whisper-message (update message :payload (comp transport.utils/from-utf8
+                    :whisper-message (update message :payload (comp ethereum/utf8-to-hex
                                                                     transit/serialize))
                     :on-success      (if success-event
                                        #(re-frame/dispatch (conj success-event % 1))

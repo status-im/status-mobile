@@ -2,6 +2,7 @@
  status-im.transport.message.protocol
   (:require [cljs.spec.alpha :as spec]
             [status-im.accounts.db :as accounts.db]
+            [status-im.ethereum.core :as ethereum]
             [status-im.transport.db :as transport.db]
             [status-im.transport.partitioned-topic :as transport.topic]
             [status-im.transport.utils :as transport.utils]
@@ -122,7 +123,7 @@
                                                     (.-payload (:js-obj cofx)))
                                        :chat-id chat-id
                                        :whisper-timestamp timestamp
-                                       :raw-payload-hash (transport.utils/sha3
+                                       :raw-payload-hash (ethereum/sha3
                                                           (.-payload (:js-obj cofx)))
                                        :from signature
                                        :dedup-id (:dedup-id cofx)

@@ -1,12 +1,8 @@
 (ns status-im.web3.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.utils.fx :as fx]
+  (:require [status-im.ethereum.core :as ethereum]
             [status-im.js-dependencies :as dependencies]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.node.core :as node]
-            [status-im.protocol.core :as protocol]
-            [taoensso.timbre :as log]
-            [status-im.native-module.core :as status]))
+            [status-im.native-module.core :as status]
+            [taoensso.timbre :as log]))
 
 (defn make-internal-web3
   "This Web3 object will allow access to private RPC calls
@@ -27,19 +23,7 @@
   (let [web3 (make-internal-web3)]
     (assoc cofx :web3 web3)))
 
-(fx/defn update-syncing-progress [cofx error sync]
-  (fx/merge cofx
-            (protocol/update-sync-state error sync)
-            (node/update-sync-state error sync)))
-
 ;;; FX
-(defn get-syncing [web3]
-  (when web3
-    (.getSyncing
-     (.-eth web3)
-     (fn [error sync]
-       (re-frame/dispatch [:web3.callback/get-syncing-success error sync])))))
-
 (defn set-default-account
   [web3 address]
   (set! (.-defaultAccount (.-eth web3))

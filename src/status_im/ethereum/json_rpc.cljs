@@ -23,6 +23,8 @@
    "eth_getTransactionReceipt" {}
    "eth_newBlockFilter" {:subscription? true}
    "eth_newFilter" {:subscription? true}
+   "eth_syncing" {}
+   "net_version" {}
    "status_joinPublicChat" {}
    "status_chats" {}
    "status_startOneOnOneChat" {}

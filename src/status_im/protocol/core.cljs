@@ -2,8 +2,10 @@
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
+            [status-im.node.core :as node]
             [status-im.transport.core :as transport]
             [status-im.utils.fx :as fx]
             [status-im.utils.semaphores :as semaphores]
@@ -29,10 +31,24 @@
            (not= sync-state new-state)
            (assoc :sync-state new-state))}))
 
+(fx/defn update-syncing-progress
+  {:events [:ethereum.callback/get-syncing-success]}
+  [cofx error sync]
+  (fx/merge cofx
+            (update-sync-state error sync)
+            (node/update-sync-state error sync)))
+
 (fx/defn check-sync-state
-  [{{:keys [web3] :as db} :db :as cofx}]
+  [{:keys [db] :as cofx}]
   (if (:account/account db)
-    {:web3/get-syncing      web3
+    {:json-rpc/call
+     [{:method "eth_syncing"
+       :on-success
+       (fn [sync]
+         (re-frame/dispatch [:ethereum.callback/get-syncing-success nil sync]))
+       :on-error
+       (fn [error]
+         (re-frame/dispatch [:ethereum.callback/get-syncing-success error nil]))}]
      :utils/dispatch-later  [{:ms       10000
                               :dispatch [:protocol/state-sync-timed-out]}]}
     (semaphores/free cofx :check-sync-state?)))
@@ -40,23 +56,33 @@
 (fx/defn start-check-sync-state
   [{{:keys [network account/account] :as db} :db :as cofx}]
   (when (and (not (semaphores/locked? cofx :check-sync-state?))
-             (not (ethereum/network-with-upstream-rpc? (get-in account [:networks network]))))
+             (not (ethereum/network-with-upstream-rpc?
+                   (get-in account [:networks network]))))
     (fx/merge cofx
               (check-sync-state)
               (semaphores/lock :check-sync-state?))))
 
 (fx/defn initialize-protocol
   [{:data-store/keys [transport mailserver-topics mailservers]
-    :keys [db web3] :as cofx}]
+    :keys [db] :as cofx}]
   (let [network (get-in db [:account/account :network])
         network-id (str (get-in db [:account/account :networks network :config :NetworkId]))]
     (fx/merge cofx
-              {:db                              (assoc db
-                                                       :rpc-url constants/ethereum-rpc-url
-                                                       :transport/chats transport
-                                                       :mailserver/topics mailserver-topics)
-               :protocol/assert-correct-network {:web3 web3
-                                                 :network-id network-id}}
+              {:db (assoc db
+                          :rpc-url constants/ethereum-rpc-url
+                          :transport/chats transport
+                          :mailserver/topics mailserver-topics)
+               :json-rpc/call
+               [{:method "net_version"
+                 :on-success
+                 (fn [fetched-network-id]
+                   (when (not= network-id fetched-network-id)
+                     (utils/show-popup
+                      (i18n/label :t/ethereum-node-started-incorrectly-title)
+                      (i18n/label :t/ethereum-node-started-incorrectly-description
+                                  {:network-id         network-id
+                                   :fetched-network-id fetched-network-id})
+                      #(re-frame/dispatch [:protocol.ui/close-app-confirmed]))))}]}
               (start-check-sync-state)
               (mailserver/initialize-mailserver mailservers)
               (transport/init-whisper))))
@@ -64,19 +90,3 @@
 (fx/defn handle-close-app-confirmed
   [_]
   {:ui/close-application nil})
-
-(re-frame/reg-fx
- :protocol/assert-correct-network
- (fn [{:keys [web3 network-id]}]
-   ;; ensure that node was started correctly
-   (when (and network-id web3) ; necessary because of the unit tests
-     (.getNetwork (.-version web3)
-                  (fn [error fetched-network-id]
-                    (when (and (not error) ; error most probably means we are offline
-                               (not= network-id fetched-network-id))
-                      (utils/show-popup
-                       (i18n/label :t/ethereum-node-started-incorrectly-title)
-                       (i18n/label :t/ethereum-node-started-incorrectly-description
-                                   {:network-id         network-id
-                                    :fetched-network-id fetched-network-id})
-                       #(re-frame/dispatch [:protocol.ui/close-app-confirmed]))))))))

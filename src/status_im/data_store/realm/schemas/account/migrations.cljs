@@ -1,14 +1,15 @@
 (ns status-im.data-store.realm.schemas.account.migrations
-  (:require [taoensso.timbre :as log]
-            [cljs.reader :as reader]
-            [status-im.chat.models.message-content :as message-content]
-            [status-im.transport.utils :as transport.utils]
+  (:require [cljs.reader :as reader]
             [cljs.tools.reader.edn :as edn]
             [clojure.string :as string]
-            [status-im.constants :as constants]
             [cognitect.transit :as transit]
+            [status-im.chat.models.message-content :as message-content]
+            [status-im.constants :as constants]
+            [status-im.ethereum.core :as ethereum]
             [status-im.js-dependencies :as dependencies]
-            [status-im.utils.clocks :as utils.clocks]))
+            [status-im.transport.utils :as transport.utils]
+            [status-im.utils.clocks :as utils.clocks]
+            [taoensso.timbre :as log]))
 
 (defn v1 [old-realm new-realm]
   (log/debug "migrating v1 account database: " old-realm new-realm))
@@ -187,13 +188,10 @@
    "status-im.data-store.realm.schemas.account.migrations"
    "status-im.transport.message.protocol"))
 
-(defn sha3 [s]
-  (.sha3 (dependencies/web3-prototype) s))
-
 (defn old-message-id
   "Calculates the same `message-id` as was used in `0.9.31`"
   [message]
-  (sha3 (replace-ns (pr-str message))))
+  (ethereum/sha3 (replace-ns (pr-str message))))
 
 ;; The code below copied from status-im.transport.message.transit
 ;; in order to make sure that future changes will not have any impact
@@ -239,7 +237,7 @@
 
 (defn raw-payload
   [message]
-  (transport.utils/from-utf8 (serialize message)))
+  (ethereum/utf8-to-hex (serialize message)))
 
 (defn v27 [old-ream new-realm]
   (let [messages (.objects new-realm "message")
@@ -264,7 +262,7 @@
             old-message-id  (old-message-id message-record)
             raw-payload     (raw-payload message-record)
             message-id      (transport.utils/message-id from raw-payload)
-            raw-payload-hash (transport.utils/sha3 raw-payload)]
+            raw-payload-hash (ethereum/sha3 raw-payload)]
         (vswap! old-ids->new-ids assoc prev-message-id message-id)
         (if (.objectForPrimaryKey
              new-realm

@@ -235,7 +235,7 @@
 
 (defn- event-topic-enc [event params]
   (let [eventid (str event "(" (string/join "," params) ")")]
-    (abi-spec/sha3 eventid)))
+    (ethereum/sha3 eventid)))
 
 (defn- get-no-indexed
   "Return a vector without indexed elements"
@@ -392,7 +392,7 @@
                {:db (assoc-in db [:wallet :send-transaction]
                               {:id                id
                                :from             (ethereum/current-address db)
-                               :data             (or data (str "0x" (abi-spec/from-utf8 message)))
+                               :data             (or data (ethereum/utf8-to-hex message))
                                :on-result        [:extensions/wallet-ui-on-success on-success]
                                :on-error         [:extensions/wallet-ui-on-failure on-failure]
                                :method           constants/web3-personal-sign})}

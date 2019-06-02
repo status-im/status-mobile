@@ -245,7 +245,7 @@
                                   :from           address
                                   :data           data
                                   :typed?         typed?
-                                  :decoded-data   (if typed? (types/json->clj data) (transport.utils/to-utf8 data))
+                                  :decoded-data   (if typed? (types/json->clj data) (ethereum/hex-to-utf8 data))
                                   :on-result      [:wallet.dapp/transaction-on-result message-id]
                                   :on-error       [:wallet.dapp/transaction-on-error message-id]
                                   :method         method

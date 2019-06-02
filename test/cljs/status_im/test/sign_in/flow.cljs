@@ -182,7 +182,8 @@
                         :data-store/mailserver-topics data/topics}
           login-result "{\"error\":\"\"}"
           efx          (login.core/user-login-callback cofx login-result)
-          new-db       (:db efx)]
+          new-db       (:db efx)
+          json-rpc     (into #{} (map :method (:json-rpc/call efx)))]
       (testing ":accounts/login cleared."
         (is (not (contains? new-db :accounts/login))))
       (testing "Check messaging related effects."
@@ -191,7 +192,6 @@
         (is (contains? efx :shh/add-discovery-filters))
         (is (contains? efx :mailserver/add-peer))
         (is (contains? efx :mailserver/update-mailservers))
-        (is (contains? efx :protocol/assert-correct-network))
         (is (= #{{:ms       10000
                   :dispatch [:mailserver/check-connection-timeout]}
                  {:ms       10000
@@ -200,7 +200,8 @@
       (testing "Check the rest of effects."
         (is (contains? efx :web3/set-default-account))
         (is (contains? efx :web3/fetch-node-version))
-        (is (contains? efx :web3/get-syncing))
+        (is (json-rpc "net_version"))
+        (is (json-rpc "eth_syncing"))
         (is (contains? efx :wallet/get-balance))
         (is (contains? efx :wallet/get-tokens-balance))
         (is (contains? efx :wallet/get-prices))))))

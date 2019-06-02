@@ -4,7 +4,6 @@
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.data-store.realm.core :as core]
-            [status-im.js-dependencies :as dependencies]
             [status-im.utils.core :as utils]))
 
 (defn get-message-by-id
@@ -85,9 +84,6 @@
  :data-store/get-messages
  (fn [cofx _]
    (assoc cofx :get-stored-messages get-by-chat-id)))
-
-(defn- sha3 [s]
-  (.sha3 (dependencies/web3-prototype) s))
 
 (re-frame/reg-cofx
  :data-store/get-referenced-messages

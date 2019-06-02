@@ -10,10 +10,6 @@
 
 ;;;; FX
 (re-frame/reg-fx
- :web3/get-syncing
- web3/get-syncing)
-
-(re-frame/reg-fx
  :web3/set-default-account
  (fn [[web3 address]]
    (web3/set-default-account web3 address)))

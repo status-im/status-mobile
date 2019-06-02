@@ -1,7 +1,6 @@
 (ns status-im.contact.db
   (:require [cljs.spec.alpha :as spec]
             [status-im.ethereum.core :as ethereum]
-            [status-im.js-dependencies :as js-dependencies]
             [status-im.tribute-to-talk.db :as tribute-to-talk.db]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]

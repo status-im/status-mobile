@@ -963,13 +963,6 @@
  (fn [cofx _]
    (protocol/check-sync-state cofx)))
 
-;; web3 module
-
-(handlers/register-handler-fx
- :web3.callback/get-syncing-success
- (fn [cofx [_ error sync]]
-   (web3/update-syncing-progress cofx error sync)))
-
 ;; notifications module
 
 (handlers/register-handler-fx

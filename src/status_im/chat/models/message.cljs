@@ -9,6 +9,7 @@
             [status-im.constants :as constants]
             [status-im.contact.db :as contact.db]
             [status-im.data-store.messages :as messages-store]
+            [status-im.ethereum.core :as ethereum]
             [status-im.mailserver.core :as mailserver]
             [status-im.native-module.core :as status]
             [status-im.notifications.core :as notifications]
@@ -356,13 +357,13 @@
         wrapped-record  (if (= (:message-type send-record) :group-user-message)
                           (wrap-group-message cofx chat-id send-record)
                           send-record)
-        raw-payload     (transport.utils/from-utf8 (transit/serialize wrapped-record))
+        raw-payload     (ethereum/utf8-to-hex (transit/serialize wrapped-record))
         message-id      (transport.utils/message-id from raw-payload)
         message-with-id (assoc message
                                :outgoing-status :sending
                                :message-id message-id
                                :old-message-id old-message-id
-                               :raw-payload-hash (transport.utils/sha3 raw-payload))]
+                               :raw-payload-hash (ethereum/sha3 raw-payload))]
 
     (fx/merge cofx
               (chat-model/upsert-chat

@@ -1,7 +1,9 @@
 (ns status-im.ethereum.abi-spec
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
+            [status-im.ethereum.core :as ethereum]
             [status-im.js-dependencies :as dependencies]))
+
 ;; Utility functions for encoding
 
 (defn utils [] (dependencies/web3-utils))
@@ -24,9 +26,9 @@
   (when x
     (subs (.toTwosComplement (utils) x) 2)))
 
-(defn from-utf8 [x]
+(defn utf8-to-hex [x]
   (when x
-    (subs (.fromUtf8 (utils) x) 2)))
+    (subs (ethereum/utf8-to-hex x) 2)))
 
 (defn hex-to-boolean [x]
   (= x "0x0"))
@@ -40,7 +42,7 @@
     (subs (.numberToHex (utils) x) 2)))
 
 (defn hex-to-utf8 [x]
-  (.hexToUtf8 (utils) (str "0x" x)))
+  (ethereum/hex-to-utf8 (str "0x" x)))
 
 (defn hex-to-number [x]
   (when x
@@ -49,9 +51,6 @@
         (.hexToNumber (utils) hex-x)
         (catch :default err
           (.hexToNumberString (utils) hex-x))))))
-
-(defn sha3 [s]
-  (.sha3 (utils) (str s)))
 
 (defn is-hex? [value]
   (when value
@@ -102,7 +101,7 @@
   (let [encoded-value? (is-hex? value)
         encoded-value  (if encoded-value?
                          (subs value 2)
-                         (from-utf8 value))]
+                         (utf8-to-hex value))]
     (str (when dynamic? (enc {:type :int :value (/ (count encoded-value) 2)}))
          (right-pad encoded-value))))
 
@@ -273,7 +272,7 @@
            params))))
 
 (defn signature->method-id [signature]
-  (apply str (take 10 (sha3 signature))))
+  (apply str (take 10 (ethereum/sha3 signature))))
 
 (defn encode [method params]
   (let [method-id (signature->method-id method)]

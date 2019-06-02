@@ -1,16 +1,16 @@
 (ns status-im.notifications.core
   (:require [goog.object :as object]
             [re-frame.core :as re-frame]
-            [status-im.react-native.js-dependencies :as rn]
-            [status-im.js-dependencies :as dependencies]
-            [taoensso.timbre :as log]
-            [status-im.i18n :as i18n]
             [status-im.accounts.db :as accounts.db]
-            [status-im.contact.db :as contact.db]
             [status-im.chat.models :as chat-model]
-            [status-im.utils.platform :as platform]
+            [status-im.contact.db :as contact.db]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.i18n :as i18n]
+            [status-im.react-native.js-dependencies :as rn]
             [status-im.utils.fx :as fx]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.utils :as utils]
+            [taoensso.timbre :as log]))
 
 ;; Work in progress namespace responsible for push notifications and interacting
 ;; with Firebase Cloud Messaging.
@@ -51,15 +51,12 @@
         (and (= (.-length from) pn-pubkey-hash-length)
              (= (.-length to) pn-pubkey-hash-length)))))
 
-(defn sha3 [s]
-  (.sha3 (dependencies/web3-prototype) s))
-
 (defn anonymize-pubkey
   [pubkey]
   "Anonymize a public key, if needed, by hashing it and taking the first 4 bytes"
   (if (= (count pubkey) pn-pubkey-hash-length)
     pubkey
-    (apply str (take pn-pubkey-hash-length (sha3 pubkey)))))
+    (apply str (take pn-pubkey-hash-length (ethereum/sha3 pubkey)))))
 
 (defn encode-notification-payload
   [{:keys [from to id] :as payload}]

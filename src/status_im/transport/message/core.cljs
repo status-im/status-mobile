@@ -5,6 +5,7 @@
             [status-im.chat.models.message :as models.message]
             [status-im.contact.device-info :as device-info]
             [status-im.data-store.transport :as transport-store]
+            [status-im.ethereum.core :as ethereum]
             [status-im.transport.message.contact :as contact]
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.transit :as transit]
@@ -36,7 +37,7 @@
          dedup-id :id
          raw-payload :raw-payload} (unwrap-message js-message)
         status-message (-> payload
-                           transport.utils/to-utf8
+                           ethereum/hex-to-utf8
                            transit/deserialize)]
     (when (and sig
                status-message

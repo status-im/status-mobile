@@ -4,6 +4,22 @@
             [status-im.js-dependencies :as dependencies]
             [status-im.utils.money :as money]))
 
+(defn utils [] (dependencies/web3-utils))
+
+(defn sha3 [s]
+  (when s
+    (.sha3 (utils) (str s))))
+
+(defn utf8-to-hex [s]
+  (try
+    (.utf8ToHex (utils) (str s))
+    (catch :default err nil)))
+
+(defn hex-to-utf8 [s]
+  (try
+    (.hexToUtf8 (utils) s)
+    (catch :default err nil)))
+
 ;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
 
 (def chains
@@ -51,7 +67,7 @@
 
 (defn address? [s]
   (when s
-    (.isAddress (dependencies/web3-prototype) s)))
+    (.isAddress (utils) s)))
 
 (defn network->chain-id [network]
   (get-in network [:config :NetworkId]))
@@ -75,12 +91,6 @@
     :mainnet :SNT
     :STT))
 
-(defn sha3
-  ([s]
-   (.sha3 (dependencies/web3-prototype) (str s)))
-  ([s opts]
-   (.sha3 (dependencies/web3-prototype) (str s) (clj->js opts))))
-
 (def default-transaction-gas (money/bignumber 21000))
 
 (defn estimate-gas [symbol]
@@ -97,12 +107,9 @@
 (defn public-key->address [public-key]
   (let [length (count public-key)
         normalized-key (case length
-                         132 (subs public-key 4)
-                         130 (subs public-key 2)
-                         128 public-key
+                         132 (str "0x" (subs public-key 4))
+                         130 public-key
+                         128 (str "0x" public-key)
                          nil)]
     (when normalized-key
-      (subs (.sha3 (dependencies/web3-prototype)
-                   normalized-key
-                   #js {:encoding "hex"})
-            26))))
+      (subs (sha3 normalized-key) 26))))
