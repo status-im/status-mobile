@@ -52,7 +52,7 @@
     "react-native-touch-id": "4.4.1",
     "react-native-webview": "5.2.1",
     "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#fix/classnames-colision",
-    "react-navigation": "2.12.1",
+    "react-navigation": "2.18.3",
     "realm": "2.26.1",
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status",
     "text-encoding": "0.6.4",
