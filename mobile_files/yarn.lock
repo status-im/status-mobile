@@ -5034,10 +5034,10 @@ react-native-background-timer@2.1.1:
   version "0.11.2"
   resolved "git+https://github.com/status-im/react-native-config.git#f48d41012f812e1fc9dd6a78e874e3271e5e385e"
 
-react-native-dialogs@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/react-native-dialogs/-/react-native-dialogs-1.0.2.tgz#d16d68cecbd57f74904fb2d58fd846622d5fec9a"
-  integrity sha512-3hH6s67RD6w9MVttqWARnto3wnmSgnwPCzsk4aVaQbFjtgVZQecn+oP+jqj01G6OvxAtuG7aSe62fYGs5xileA==
+react-native-dialogs@1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/react-native-dialogs/-/react-native-dialogs-1.0.5.tgz#b64e8d00e8942009861f432d2cce930e84db8737"
+  integrity sha512-C3Oeqc8g66F75TqWwvNEc/3+6+vBPuLp35wmcbnsCBihi5qKl3iilCAoTQA3JNUswhKKV6MUj3HdF4Uq8s5fdA==
 
 react-native-dismiss-keyboard@1.0.0:
   version "1.0.0"

@@ -29,7 +29,7 @@
     "react-native-background-timer": "2.1.1",
     "react-native-camera": "git+https://github.com/status-im/react-native-camera.git#v1.1.5-1-status",
     "react-native-config": "git+https://github.com/status-im/react-native-config.git#0.11.2-1",
-    "react-native-dialogs": "1.0.2",
+    "react-native-dialogs": "1.0.5",
     "react-native-fetch-polyfill": "1.1.2",
     "react-native-firebase": "git+https://github.com/status-im/react-native-firebase.git#v5.0.0-rc1-status",
     "react-native-fs": "2.11.15",
