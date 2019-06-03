@@ -26,6 +26,7 @@
             [status-im.test.ethereum.ens]
             [status-im.test.ethereum.mnemonic]
             [status-im.test.extensions.core]
+            [status-im.test.ethereum.stateofus]
             [status-im.test.extensions.ethereum]
             [status-im.test.fleet.core]
             [status-im.test.group-chats.core]
@@ -105,6 +106,7 @@
  'status-im.test.ethereum.eip681
  'status-im.test.ethereum.ens
  'status-im.test.ethereum.mnemonic
+ 'status-im.test.ethereum.stateofus
  'status-im.test.extensions.core
  'status-im.test.extensions.ethereum
  'status-im.test.fleet.core

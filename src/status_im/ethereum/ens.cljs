@@ -41,8 +41,7 @@
     :outputs ["address"]
     :on-success
     (fn [[address]]
-      (when-not (= address default-address)
-        (cb address)))}))
+      (cb (when-not (= address default-address) address)))}))
 
 (defn owner
   [registry ens-name cb]

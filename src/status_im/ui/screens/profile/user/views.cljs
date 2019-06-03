@@ -112,10 +112,6 @@
         extensions-settings (vals (get extensions :settings))]
     [react/view
      [profile.components/settings-title (i18n/label :t/settings)]
-     [profile.components/settings-item {:label-kw            :t/ens-names
-                                        :action-fn           #(re-frame/dispatch [:profile.ui/ens-names-button-pressed])
-                                        :accessibility-label :ens-names-button}]
-     [profile.components/settings-item-separator]
      [profile.components/settings-item {:label-kw            :t/main-currency
                                         :value               (:code currency)
                                         :action-fn           #(re-frame/dispatch [:navigate-to :currency-settings])
@@ -286,6 +282,22 @@
     :accessory-value     active-contacts-count
     :action-fn           #(re-frame/dispatch [:navigate-to :contacts-list])}])
 
+(defn- ens-item [ens {:keys [registrar] :as props}]
+  [list.views/big-list-item
+   (let [enabled? (not (nil? registrar))]
+     (merge
+      {:text                (or ens (i18n/label :t/ens-usernames))
+       :subtext             (if enabled?
+                              (if ens (i18n/label :t/ens-your-your-name) (i18n/label :t/ens-usernames-details))
+                              (i18n/label :t/ens-network-restriction))
+       :icon                :main-icons/username
+       :accessibility-label :ens-button}
+      (if enabled?
+        {:action-fn #(re-frame/dispatch [:navigate-to :ens-main props])}
+        {:icon-color    colors/gray
+         :active?       false
+         :hide-chevron? (not enabled?)})))])
+
 (defn tribute-to-talk-item
   [opts]
   [list.views/big-list-item
@@ -312,7 +324,8 @@
             login-data      [:accounts/login]
             scroll          (reagent/atom nil)
             active-contacts-count [:contacts/active-count]
-            tribute-to-talk [:tribute-to-talk/profile]]
+            tribute-to-talk [:tribute-to-talk/profile]
+            stateofus-registrar [:ens.stateofus/registrar]]
     (let [shown-account    (merge current-account changed-account)
           ;; We scroll on the component once rendered. setTimeout is necessary,
           ;; likely to allow the animation to finish.
@@ -344,6 +357,7 @@
                                     profile-icon-options)
             :on-change-text-event :my-profile/update-name}]]
          [share-profile-item (dissoc current-account :mnemonic)]
+         [ens-item nil {:registrar stateofus-registrar}]
          [contacts-list-item active-contacts-count]
          (when tribute-to-talk
            [tribute-to-talk-item tribute-to-talk])

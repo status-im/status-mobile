@@ -16,7 +16,8 @@
    :warning-sign        (js-require/js-require "./resources/images/ui/warning-sign.png")
    :phone-nfc-on        (js-require/js-require "./resources/images/ui/phone-nfc-on.png")
    :phone-nfc-off       (js-require/js-require "./resources/images/ui/phone-nfc-off.png")
-   :dapp-store          (js-require/js-require "./resources/images/ui/dapp-store.png")})
+   :dapp-store          (js-require/js-require "./resources/images/ui/dapp-store.png")
+   :ens-header          (js-require/js-require "./resources/images/ui/ens-header.png")})
 
 (def loaded-images (atom {}))
 

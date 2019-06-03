@@ -75,14 +75,13 @@
 (def settings-item-separator
   {:margin-left 16})
 
-(defn settings-item
-  [large?]
-  {:padding-left       16
-   :padding-right      8
-   :flex               1
-   :flex-direction     :row
-   :align-items        :center
-   :height             (if large? 82 52)})
+(def settings-item
+  {:padding-left   16
+   :padding-right  8
+   :flex           1
+   :flex-direction :row
+   :align-items    :center
+   :height         64})
 
 (defn settings-item-icon
   [icon-color large?]
@@ -111,7 +110,6 @@
 
 (def settings-item-main-text-container
   {:flex-direction :row
-   :height         18
    :align-items    :center})
 
 (def settings-item-subtext

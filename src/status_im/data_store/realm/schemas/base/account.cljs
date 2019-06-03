@@ -246,3 +246,5 @@
 (def v23 (assoc-in v22
                    [:properties :keycard-key-uid]
                    {:type :string :optional true}))
+
+(def v24 (update v23 :properties merge {:usernames {:type "string[]" :optional true}}))

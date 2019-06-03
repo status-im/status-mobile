@@ -5,6 +5,10 @@
   {:name    :profile-stack
    :screens (cond-> [:my-profile
                      :contacts-list
+                     :ens-main
+                     :ens-register
+                     :ens-terms
+                     :ens-name-details
                      :blocked-users-list
                      :profile-photo-capture
                      :about-app

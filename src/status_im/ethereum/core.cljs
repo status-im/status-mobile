@@ -65,6 +65,14 @@
   (when s
     (string/replace s hex-prefix "")))
 
+(def ^:const public-key-length 128)
+
+(defn coordinates [public-key]
+  (when-let [hex (naked-address public-key)]
+    (when (= public-key-length (count (subs hex 2)))
+      {:x (normalized-address (subs hex 1 65))
+       :y (normalized-address (subs hex 66))})))
+
 (defn address? [s]
   (when s
     (.isAddress (utils) s)))

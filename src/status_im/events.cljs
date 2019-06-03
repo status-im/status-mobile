@@ -1,5 +1,6 @@
 (ns status-im.events
-  (:require [re-frame.core :as re-frame]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [status-im.accounts.core :as accounts]
             [status-im.accounts.create.core :as accounts.create]
             [status-im.accounts.login.core :as accounts.login]
@@ -21,6 +22,8 @@
             [status-im.contact-recovery.core :as contact-recovery]
             [status-im.contact.block :as contact.block]
             [status-im.contact.core :as contact]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.ens :as ethereum.ens]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
             [status-im.ethereum.transactions.core :as ethereum.transactions]
             [status-im.fleet.core :as fleet]
@@ -1547,11 +1550,6 @@
    (group-chats/handle-membership-update cofx group-update message-info sender-signature)))
 
 ;; profile module
-
-(handlers/register-handler-fx
- :profile.ui/ens-names-button-pressed
- (fn [cofx]
-   (browser/open-url cofx "names.statusnet.eth")))
 
 (handlers/register-handler-fx
  :profile.ui/keycard-settings-button-pressed
