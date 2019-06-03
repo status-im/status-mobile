@@ -128,9 +128,12 @@
 
                        (vector? text-element)
                        (let [[options nested-text-elements] text-element]
-                         [nested-text (prepare-text-props
-                                       (utils.core/deep-merge options-with-style
-                                                              options))
+                         [(if (string? nested-text-elements)
+                            text-class
+                            nested-text)
+                          (prepare-text-props
+                           (utils.core/deep-merge options-with-style
+                                                  options))
                           nested-text-elements]))))
              [text-class options-with-style]
              nested-text-elements))))
