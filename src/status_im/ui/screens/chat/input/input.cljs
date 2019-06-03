@@ -113,7 +113,7 @@
             on-update     (input-helper-view-on-update {:opacity-value opacity-value
                                                         :placeholder   placeholder})]
     {:component-did-update on-update}
-    [(react/animated-view) {:style (style/input-helper-view width opacity-value)}
+    [react/animated-view {:style (style/input-helper-view width opacity-value)}
      [react/text {:style (style/input-helper-text width)}
       placeholder]]))
 
@@ -131,7 +131,7 @@
           set-container-width-fn #(reagent/set-state component {:container-width %})
           {:keys [width]} (reagent/state component)]
       [react/view {:style style/input-root}
-       [(react/animated-view) {:style style/input-animated}
+       [react/animated-view {:style style/input-animated}
         [invisible-input {:set-layout-width-fn set-layout-width-fn}]
         (if platform/desktop?
           [basic-text-input-desktop {:set-container-width-fn set-container-width-fn
@@ -156,7 +156,7 @@
 (defview reply-message [from message-text]
   (letsubs [username           [:contacts/contact-name-by-identity from]
             current-public-key [:account/public-key]]
-    [(react/scroll-view) {:style style/reply-message-content}
+    [react/scroll-view {:style style/reply-message-content}
      (chat-utils/format-reply-author from username current-public-key style/reply-message-author)
      [react/text {:style (message-style/style-message-text false)} message-text]]))
 

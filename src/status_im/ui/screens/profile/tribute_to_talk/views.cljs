@@ -27,7 +27,7 @@
 
 (defn intro
   []
-  [(react/scroll-view)
+  [react/scroll-view
    [react/view {:style styles/intro-container}
     [react/view {:style {:flex       1
                          :min-height 32}}]
@@ -65,7 +65,7 @@
 
 (defn number-view
   [numpad-symbol {:keys [on-press]}]
-  [(react/touchable-opacity)
+  [react/touchable-opacity
    {:on-press #(on-press numpad-symbol)}
    [react/view {:style styles/number-container}
     (if (= numpad-symbol :remove)
@@ -94,7 +94,7 @@
 
 (defn set-snt-amount
   [snt-amount]
-  [(react/scroll-view)
+  [react/scroll-view
    {:content-container-style  styles/set-snt-amount-container}
    [react/view {:style (styles/horizontal-separator 16 32)}]
    [snt-amount-label snt-amount]
@@ -197,7 +197,7 @@
 
 (defn edit
   [snt-amount fiat-value]
-  [(react/scroll-view) {:content-container-style styles/edit-container}
+  [react/scroll-view {:content-container-style styles/edit-container}
    [react/view {:style styles/edit-screen-top-row}
     [react/view {:style {:flex-direction  :row
                          :justify-content :flex-start
@@ -284,7 +284,7 @@
         (i18n/label :t/tribute-to-talk)]
        [react/text {:style styles/step-n}
         (i18n/label :t/learn-more)]]])
-   [(react/scroll-view) {:content-container-style styles/learn-more-container}
+   [react/scroll-view {:content-container-style styles/learn-more-container}
     [react/image {:source (resources/get-image :tribute-to-talk)
                   :style styles/learn-more-image}]
     [react/text {:style styles/learn-more-title-text}

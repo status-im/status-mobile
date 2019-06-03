@@ -47,8 +47,8 @@
      [tooltip/tooltip error (styles/error error)])])
 
 (defn touchable-opacity [{:keys [style on-press]} & children]
-  (into [(react/touchable-opacity) (merge (when on-press {:on-press #(on-press {})})
-                                          (when style {:style style}))] children))
+  (into [react/touchable-opacity (merge (when on-press {:on-press #(on-press {})})
+                                        (when style {:style style}))] children))
 
 (defn image [{:keys [source uri style]}]
   [react/image (merge {:style (merge {:width 100 :height 100} style)} {:source (if source source {:uri uri})})])
@@ -119,7 +119,7 @@
   (apply abstract-view react/view o children))
 
 (defn scroll-view [o & children]
-  (apply abstract-view (react/scroll-view) o children))
+  (apply abstract-view react/scroll-view o children))
 
 (defn keyboard-avoiding-view [o & children]
   (apply abstract-view react/keyboard-avoiding-view o children))

@@ -45,7 +45,7 @@
        [status-bar/status-bar]
        [react/keyboard-avoiding-view components.styles/flex
         [toolbar/simple-toolbar (i18n/label (if id :t/bootnode-details :t/add-bootnode))]
-        [(react/scroll-view) {:keyboard-should-persist-taps :handled}
+        [react/scroll-view {:keyboard-should-persist-taps :handled}
          [react/view styles/edit-bootnode-view
           [text-input/text-input-with-label
            {:label           (i18n/label :t/name)

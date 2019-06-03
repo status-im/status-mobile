@@ -33,7 +33,7 @@
        [status-bar/status-bar]
        [react/keyboard-avoiding-view components.styles/flex
         [toolbar/simple-toolbar (i18n/label :t/add-network)]
-        [(react/scroll-view)
+        [react/scroll-view
          [react/view styles/edit-network-view
           [text-input/text-input-with-label
            {:label          (i18n/label :t/name)

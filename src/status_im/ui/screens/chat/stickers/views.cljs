@@ -30,16 +30,16 @@
   [react/view {:style {:flex 1 :align-items :center :justify-content :center}}
    [vector-icons/icon :stickers-icons/stickers-big {:color colors/gray}]
    [react/text {:style {:margin-top 8 :font-size 17}} (i18n/label :t/you-dont-have-stickers)]
-   [(react/touchable-opacity) {:on-press #(do
-                                            (re-frame/dispatch [:stickers/load-packs])
-                                            (re-frame/dispatch [:navigate-to :stickers]))}
+   [react/touchable-opacity {:on-press #(do
+                                          (re-frame/dispatch [:stickers/load-packs])
+                                          (re-frame/dispatch [:navigate-to :stickers]))}
     [react/view {:margin-top 6 :height 44 :justify-content :center}
      [react/text {:style {:color colors/blue}}
       (i18n/label :t/get-stickers)]]]])
 
 (defn- stickers-panel [stickers window-width]
   [react/view {:width window-width :flex 1}
-   [(react/scroll-view)
+   [react/scroll-view
     [react/view {:style styles/stickers-panel}
      (for [{:keys [uri] :as sticker} stickers]
        ^{:key uri}
@@ -80,12 +80,12 @@
     {:component-will-update (fn [_ [_ installed-packs selected-pack]]
                               (update-scroll-position @ref installed-packs selected-pack window-width))
      :component-did-mount   #(update-scroll-position @ref installed-packs selected-pack window-width)}
-    [(react/scroll-view) {:style                             {:flex 1} :horizontal true :paging-enabled true
-                          :ref                               #(reset! ref %)
-                          :shows-horizontal-scroll-indicator false
-                          :on-momentum-scroll-end            #(on-scroll % installed-packs window-width)
-                          :scrollEventThrottle               8
-                          :on-scroll                         #(reset! scroll-x (.-nativeEvent.contentOffset.x %))}
+    [react/scroll-view {:style                             {:flex 1} :horizontal true :paging-enabled true
+                        :ref                               #(reset! ref %)
+                        :shows-horizontal-scroll-indicator false
+                        :on-momentum-scroll-end            #(on-scroll % installed-packs window-width)
+                        :scrollEventThrottle               8
+                        :on-scroll                         #(reset! scroll-x (.-nativeEvent.contentOffset.x %))}
      ^{:key "recent"}
      [recent-stickers-panel window-width]
      (for [{:keys [stickers id]} installed-packs]
@@ -129,8 +129,8 @@
                               (do
                                 (anim/set-value bottom-anim-value (styles/stickers-panel-height))
                                 (anim/set-value alpha-value 1)))}
-    [(react/animated-view) {:style {:background-color :white :height (if input-focused? 0 bottom-anim-value)
-                                    :opacity          alpha-value}}
+    [react/animated-view {:style {:background-color :white :height (if input-focused? 0 bottom-anim-value)
+                                  :opacity          alpha-value}}
      (cond
        (= selected-pack :recent) [stickers-paging-panel installed-packs selected-pack]
        (not (seq installed-packs)) [no-stickers-yet-panel]
@@ -142,7 +142,7 @@
                   :selected? false :background-color colors/blue}
        [vector-icons/icon :main-icons/add {:width 20 :height 20 :color colors/white}]]
       [react/view {:width 2}]
-      [(react/scroll-view) {:horizontal true :style {:padding-left 2}}
+      [react/scroll-view {:horizontal true :style {:padding-left 2}}
        [react/view
         [react/view {:style {:flex-direction :row}}
          [pack-icon {:id :recent :background-color colors/white}

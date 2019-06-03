@@ -90,7 +90,7 @@
     (list-selection/open-share {:message (i18n/label :t/get-status-at)})))
 
 (defn toggle-list [contacts render-function]
-  [(react/scroll-view) {:flex 1}
+  [react/scroll-view {:flex 1}
    (if utils.platform/desktop?
      (for [contact contacts]
        ^{:key (:public-key contact)}
@@ -152,7 +152,7 @@
                     {:selected (count contacts)
                      :max      (dec constants/max-group-chat-participants)})]
        [group-name-view]
-       [(react/scroll-view)
+       [react/scroll-view
         [list/list-with-label {:flex 1}
          (i18n/label :t/members-title)
          [list/flat-list {:data                         contacts

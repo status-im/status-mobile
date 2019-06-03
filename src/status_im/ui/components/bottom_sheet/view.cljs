@@ -110,8 +110,8 @@
         {:on-press #(cancel opts on-cancel)
          :style    styles/container}
 
-        [(react/animated-view) (styles/shadow opacity-value)]]
-       [(react/animated-view)
+        [react/animated-view (styles/shadow opacity-value)]]
+       [react/animated-view
         {:style (styles/content-container height bottom-value)}
         [react/view styles/content-header
          [react/view styles/handle]]

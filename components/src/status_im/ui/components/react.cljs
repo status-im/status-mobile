@@ -53,7 +53,7 @@
 
 (def status-bar-class (when-not platform/desktop? (get-react-property "StatusBar")))
 
-(def scroll-view (get-class "ScrollView"))
+(def scroll-view-class (get-class "ScrollView"))
 (def web-view (get-class "WebView"))
 (def keyboard-avoiding-view-class (get-class "KeyboardAvoidingView"))
 
@@ -84,7 +84,7 @@
 
 (def touchable-highlight-class (get-class "TouchableHighlight"))
 (def touchable-without-feedback-class (get-class "TouchableWithoutFeedback"))
-(def touchable-opacity (get-class "TouchableOpacity"))
+(def touchable-opacity-class (get-class "TouchableOpacity"))
 (def activity-indicator-class (get-class "ActivityIndicator"))
 
 (defn activity-indicator [props]
@@ -94,8 +94,12 @@
 
 (def pan-responder (lazy-get-react-property "PanResponder"))
 (def animated (lazy-get-react-property "Animated"))
-(defn animated-view []
+
+(defn animated-view-class []
   (reagent/adapt-react-class (.-View (animated))))
+
+(defn animated-view [props & content]
+  (vec (conj content props (animated-view-class))))
 
 (def dimensions (lazy-get-react-property "Dimensions"))
 (def keyboard (lazy-get-react-property "Keyboard"))
@@ -161,6 +165,9 @@
    [image {:source     {:uri (keyword (str "icon_" (name n)))}
            :resizeMode "contain"
            :style      style}]))
+
+(defn touchable-opacity [props content]
+  [(touchable-opacity-class) props content])
 
 (defn touchable-highlight [props content]
   [(touchable-highlight-class)
@@ -232,10 +239,13 @@
                        [view props])]
     (vec (concat view-element children))))
 
+(defn scroll-view [props & children]
+  (vec (conj children props (scroll-view-class))))
+
 (views/defview with-activity-indicator
   [{:keys [timeout style enabled? preview]} comp]
   (views/letsubs
-    [loading (reagent/atom true)]
+      [loading (reagent/atom true)]
     {:component-did-mount (fn []
                             (if (or (nil? timeout)
                                     (> 100 timeout))

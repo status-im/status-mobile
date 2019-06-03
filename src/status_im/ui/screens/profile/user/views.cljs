@@ -300,7 +300,7 @@
     [react/keyboard-avoiding-view {:style {:flex 1}}
      [status-bar/status-bar {:type :main}]
      [toolbar/simple-toolbar label]
-     [(react/scroll-view)
+     [react/scroll-view
       [view]]]))
 
 (defview my-profile []
@@ -330,8 +330,8 @@
         (if editing?
           [my-profile-edit-toolbar on-show-edit]
           [my-profile-toolbar])
-        [(react/scroll-view) {:ref                          #(reset! scroll %)
-                              :keyboard-should-persist-taps :handled}
+        [react/scroll-view {:ref                          #(reset! scroll %)
+                            :keyboard-should-persist-taps :handled}
          [react/view profile.components.styles/profile-form
           [profile.components/profile-header
            {:contact              current-account

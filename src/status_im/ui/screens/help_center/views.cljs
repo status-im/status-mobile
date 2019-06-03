@@ -14,7 +14,7 @@
    [status-bar/status-bar]
    [toolbar/simple-toolbar
     (i18n/label :t/help-center)]
-   [(react/scroll-view)
+   [react/scroll-view
     [react/view
      [profile.components/settings-item-separator]
      [profile.components/settings-item

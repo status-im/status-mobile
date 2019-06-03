@@ -401,7 +401,7 @@
            {:on-press            on-press-handler
             :style               transactions-styles/command-request-image-touchable
             :accessibility-label (request-button-label (:name command))}
-           [(react/animated-view) {:style (transactions-styles/command-request-image-view command scale-anim-val)}
+           [react/animated-view {:style (transactions-styles/command-request-image-view command scale-anim-val)}
             (when command-icon
               [react/icon command-icon transactions-styles/command-request-image])]]))})))
 

@@ -95,7 +95,7 @@
       (let [{:keys [show? height]} @search-input-state]
         (when (or show?
                   search-filter)
-          [(react/animated-view)
+          [react/animated-view
            {:style {:height height}}
            [search-input search-filter
             {:on-cancel #(do

@@ -15,10 +15,10 @@
   [{:keys [style hint-style footer-style footer-button value hint legend
            show-tribute-to-talk-warning?]}]
   (letsubs [{:keys [width]} [:dimensions/window]]
-    [(react/scroll-view) {:content-container-style {:align-items       :center
-                                                    :margin-top        16
-                                                    :justify-content   :center}
-                          :style (merge {:flex 1} style)}
+    [react/scroll-view {:content-container-style {:align-items       :center
+                                                  :margin-top        16
+                                                  :justify-content   :center}
+                        :style (merge {:flex 1} style)}
      (when show-tribute-to-talk-warning?
        [react/view {:style {:margin-horizontal 16}}
         [tribute-to-talk/enabled-note]])

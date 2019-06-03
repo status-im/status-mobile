@@ -310,7 +310,7 @@
           swipe-pan-responder (responder/swipe-pan-responder offset-x styles/delete-button-width id swiped?)
           swipe-pan-handler   (responder/pan-handlers swipe-pan-responder)]
       [react/view swipe-pan-handler
-       [(react/animated-view) {:style {:flex 1 :right offset-x}}
+       [react/animated-view {:style {:flex 1 :right offset-x}}
         body
         [react/touchable-highlight {:style    styles/delete-icon-highlight
                                     :on-press on-delete}

@@ -25,7 +25,7 @@
 (defview secret-keys []
   (letsubs [secrets [:hardwallet-secrets]]
     [react/view styles/secret-keys-container
-     [(react/scroll-view)
+     [react/scroll-view
       [react/view styles/secret-keys-inner-container
        [react/view
         [react/image {:source (resources/get-image :secret-keys)
@@ -235,7 +235,7 @@
             error [:hardwallet-setup-error]
             width [:dimensions/window-width]
             ref (atom nil)]
-    [(react/scroll-view)
+    [react/scroll-view
      [react/view styles/enter-pair-code-container
       [react/view styles/enter-pair-code-title-container
        [react/view
@@ -282,7 +282,7 @@
 
 (defn begin []
   [react/view styles/card-blank-container
-   [(react/scroll-view)
+   [react/scroll-view
     [react/view styles/hardwallet-card-image-container
      [react/text {:style styles/card-is-empty-text}
       (i18n/label :t/card-is-blank)]

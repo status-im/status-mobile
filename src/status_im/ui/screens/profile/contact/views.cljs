@@ -85,7 +85,7 @@
     [react/view profile.components.styles/profile
      [status-bar/status-bar]
      [profile-contact-toolbar]
-     [(react/scroll-view)
+     [react/scroll-view
       [react/view profile.components.styles/profile-form
        [profile.components/profile-header
         {:contact              contact

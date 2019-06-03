@@ -105,7 +105,7 @@
          (if editing?
            [group-chat-profile-edit-toolbar]
            [group-chat-profile-toolbar admin?])
-         [(react/scroll-view)
+         [react/scroll-view
           [react/view profile.components.styles/profile-form
            [profile.components/profile-header
             {:contact              shown-chat

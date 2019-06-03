@@ -32,7 +32,7 @@
          [status-bar/status-bar]
          [react/keyboard-avoiding-view components.styles/flex
           [toolbar/simple-toolbar (i18n/label :t/extension) modal?]
-          [(react/scroll-view) {:keyboard-should-persist-taps :handled}
+          [react/scroll-view {:keyboard-should-persist-taps :handled}
            [react/view styles/wrapper
             [react/view {:style {:border-radius 8 :margin 10 :padding 8 :background-color colors/red}}
              [react/text {:style {:color colors/white}}
@@ -91,7 +91,7 @@
        [status-bar/status-bar]
        [react/keyboard-avoiding-view components.styles/flex
         [toolbar/simple-toolbar (i18n/label :t/extension-find)]
-        [(react/scroll-view) {:keyboard-should-persist-taps :handled}
+        [react/scroll-view {:keyboard-should-persist-taps :handled}
          [react/view styles/wrapper
           [text-input/text-input-with-label
            {:label          (i18n/label :t/extension-address)

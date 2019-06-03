@@ -36,7 +36,7 @@
        [wallet.components/toolbar (i18n/label :t/new-request)]
        [react/view components.styles/flex
         [common/network-info {:text-color :white}]
-        [(react/scroll-view) {:ref #(reset! scroll %) :keyboardShouldPersistTaps :always}
+        [react/scroll-view {:ref #(reset! scroll %) :keyboardShouldPersistTaps :always}
          [react/view styles/request-details-wrapper
           [wallet.components/recipient-selector
            {:contact-only? true

@@ -57,10 +57,10 @@
             bottom-value    (animation/create-value -250)
             opacity-value   (animation/create-value 0)]
     {:component-did-mount #(send.animations/animate-sign-panel opacity-value bottom-value)}
-    [(react/animated-view) {:style (styles/animated-sign-panel bottom-value)}
+    [react/animated-view {:style (styles/animated-sign-panel bottom-value)}
      (when (:wrong-password? @value-atom)
        [tooltip/tooltip (i18n/label :t/wrong-password) styles/password-error-tooltip])
-     [(react/animated-view) {:style (styles/sign-panel opacity-value)}
+     [react/animated-view {:style (styles/sign-panel opacity-value)}
       [react/view styles/spinner-container
        (when spinning?
          [react/activity-indicator {:animating true
@@ -89,7 +89,7 @@
     [wallet.components/simple-screen {:status-bar-type :modal-wallet}
      [toolbar true (i18n/label :t/sign-message)]
      [react/view components.styles/flex
-      [(react/scroll-view)
+      [react/scroll-view
        (when (= network-status :offline)
          [wallet.main.views/snackbar :t/error-cant-sign-message-offline])
        [react/view styles/send-transaction-form

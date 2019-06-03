@@ -54,7 +54,7 @@
          [react/text {:style styles/account-creating-text}
           (i18n/label :t/creating-your-account)]]])
      (when (#{:enter-password :confirm-password :enter-name} step)
-       [(react/scroll-view) {:flex 1}
+       [react/scroll-view {:flex 1}
         [react/view {:style styles/logo-container}
          [components.common/logo styles/logo]]
         ^{:key (str "step" step)}

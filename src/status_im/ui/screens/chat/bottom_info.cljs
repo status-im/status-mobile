@@ -37,7 +37,7 @@
       :display-name "container"
       :reagent-render
       (fn [height & children]
-        [(react/animated-view) {:style (styles/bottom-info-container height)}
+        [react/animated-view {:style (styles/bottom-info-container height)}
          (into [react/view] children)])})))
 
 (defn- message-status-row [{:keys [photo-path name]} {:keys [public-key status]}]

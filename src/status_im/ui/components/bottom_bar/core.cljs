@@ -134,13 +134,13 @@
                              :enter-pin-settings} view-id)
         (if platform/ios?
           [tabs-animation-wrapper-ios
-           [(react/animated-view)
+           [react/animated-view
             {:style (tabs.styles/animated-container visible? keyboard-shown?)}
             [tabs tab]]]
           [tabs-animation-wrapper-android
            keyboard-shown?
            view-id
-           [(react/animated-view)
+           [react/animated-view
             {:style (tabs.styles/animated-container visible? keyboard-shown?)}
             [tabs tab]]])))}))
 
