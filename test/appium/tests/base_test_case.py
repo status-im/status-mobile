@@ -123,7 +123,7 @@ class AbstractTestCase:
 
     def verify_no_errors(self):
         if self.errors:
-            pytest.fail('. '.join([self.errors.pop(0) for _ in range(len(self.errors))]))
+            pytest.fail('\n '.join([self.errors.pop(0) for _ in range(len(self.errors))]))
 
     def is_alert_present(self, driver):
         try:
@@ -136,7 +136,7 @@ class AbstractTestCase:
 
     def add_alert_text_to_report(self, driver):
         if self.is_alert_present(driver):
-            test_suite_data.current_test.testruns[-1].error += ", also Unexpected Alert is shown: '%s'" \
+            test_suite_data.current_test.testruns[-1].error += "; also Unexpected Alert is shown: '%s'" \
                                                                        % self.get_alert_text(driver)
 
 
