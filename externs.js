@@ -425,6 +425,7 @@ var TopLevel = {
     "setAutoCancel" : function () {},
     "setBackgroundColor" : function () {},
     "setBarStyle" : function () {},
+    "setBlankPreviewFlag" : function () {},
     "setCategory" : function () {},
     "setChannelId" : function () {},
     "setCurrentDapp" : function () {},
