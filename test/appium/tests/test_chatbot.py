@@ -36,7 +36,7 @@ class TestChatBot(SingleDeviceTestCase):
             chat.chat_message_input.send_keys(message % (counter, key))
             chat.send_message_button.click()
 
-    @pytest.mark.parametrize('number', list(range(24)))
+    @pytest.mark.parametrize('number', list(range(int(pytest.config.getoption('device_number')))))
     def test_chatbot_public_chat(self, number):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()

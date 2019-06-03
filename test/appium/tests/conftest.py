@@ -81,6 +81,14 @@ def pytest_addoption(parser):
                      action='store',
                      default=600,
                      help='Running time in seconds')
+    parser.addoption('--chat_name',
+                     action='store',
+                     default='test_chat',
+                     help='Public chat name')
+    parser.addoption('--device_number',
+                     action='store',
+                     default=2,
+                     help='Public chat name')
 
     # running tests using appium docker instance
 
@@ -251,7 +259,10 @@ def get_testrail_case_id(item):
 
 
 def pytest_runtest_setup(item):
-    testrail_id = [mark.args[0] for mark in item.iter_markers(name='testrail_id')][0]
+    try:
+        testrail_id = [mark.args[0] for mark in item.iter_markers(name='testrail_id')][0]
+    except IndexError:
+        pass
     run_testrail_ids = item.config.getoption("run_testrail_ids")
     if run_testrail_ids:
         if str(testrail_id) not in run_testrail_ids:
