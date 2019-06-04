@@ -31,9 +31,7 @@ pipeline {
     REALM_DISABLE_ANALYTICS = 1
     BUNDLE_PATH = "${HOME}/.bundle"
     /* We use EXECUTOR_NUMBER to avoid multiple instances clashing */
-    LEIN_HOME         = "/var/tmp/lein-${EXECUTOR_NUMBER}"
-    YARN_CACHE_FOLDER = "/var/tmp/yarn-${EXECUTOR_NUMBER}"
-    GRADLE_USER_HOME  = "/var/tmp/gradle-${EXECUTOR_NUMBER}"
+    LEIN_HOME   = "/var/tmp/lein-${EXECUTOR_NUMBER}"
   }
 
   stages {
@@ -56,12 +54,12 @@ pipeline {
         stage('Checks') { stages {
           stage('Lint') {
             steps {
-              script { cmn.nix.shell('lein cljfmt check') }
+              script { cmn.nix.shell('lein cljfmt check', attr: 'targets.leiningen.shell') }
             }
           }
           stage('Tests') {
             steps {
-              script { cmn.nix.shell('lein test-cljs') }
+              script { cmn.nix.shell('lein test-cljs', attr: 'targets.leiningen.shell') }
             }
           }
         } }
@@ -107,5 +105,6 @@ pipeline {
   post {
     success { script { load('ci/github.groovy').notifyPR(true) } }
     failure { script { load('ci/github.groovy').notifyPR(false) } }
+    always { sh 'make _fix-perms' }
   }
 }

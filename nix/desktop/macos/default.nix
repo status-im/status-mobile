@@ -1,10 +1,9 @@
 { stdenv, callPackage,
   darwin, qt5, status-go }:
 
-with stdenv;
 with darwin.apple_sdk.frameworks;
 
-assert isDarwin;
+assert stdenv.isDarwin;
 
 let
   baseImage = callPackage ./base-image { };

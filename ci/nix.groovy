@@ -15,21 +15,112 @@ def shell(Map opts = [:], String cmd) {
   /* Previous merge overwrites the array */
   opts.keep = (opts.keep + defaults.keep).unique()
 
-  def isPure = opts.pure && env.TARGET_OS != 'windows' && env.TARGET_OS != 'ios'
-  def keepFlags = opts.keep.collect { var -> "--keep ${var} " }
-  def argsFlags = opts.args.collect { key,val -> "--argstr ${key} \'${val}\'" }
+  if (env.TARGET_OS in ['windows', 'ios']) {
+    opts.pure = false
+  }
   sh """
     set +x
     . ~/.nix-profile/etc/profile.d/nix.sh
     set -x
     IN_CI_ENVIRONMENT=1 \\
-    nix-shell \\
-        ${isPure ? "--pure" : ""} \\
-        ${keepFlags.join(" ")} \\
-        ${argsFlags.join(" ")} \\
-        --run \'${cmd}\' \\
-        \'${env.WORKSPACE}/shell.nix\'
+    nix-shell --run \'${cmd}\' ${_getNixCommandArgs(opts, true)}
   """
+}
+
+/**
+ * Arguments:
+ *  - pure - Use --pure mode with Nix for more deterministic behaviour
+ *  - keep - List of env variables to pass through to Nix build
+ *  - args - Map of arguments to provide to --argstr
+ *  - attr - Name of attribute to use with --attr flag
+ *  - safeEnv - Name of env variables to pass securely through to Nix build (they won't get captured in Nix derivation file)
+ *  - sbox - List of host file paths to pass to the Nix expression
+ **/
+def build(Map opts = [:]) {
+  env.IN_CI_ENVIRONMENT = '1'
+
+  def defaults = [
+    pure: true,
+    args: ['target-os': env.TARGET_OS],
+    keep: ['IN_CI_ENVIRONMENT'],
+    safeEnv: [],
+    attr: null,
+    sbox: []
+  ]
+  /* merge defaults with received opts */
+  opts = defaults + opts
+  /* Previous merge overwrites the array */
+  opts.args = defaults.args + opts.args
+  opts.keep = (opts.keep + defaults.keep).unique()
+
+  return sh(
+    returnStdout: true,
+    script: """
+      set +x
+      . ~/.nix-profile/etc/profile.d/nix.sh
+      set -x
+      nix-build ${_getNixCommandArgs(opts, false)}
+    """
+    ).trim()
+}
+
+private makeNixBuildEnvFile(Map opts = [:]) {
+  File envFile = File.createTempFile("nix-env", ".tmp")
+  if (!opts.safeEnv.isEmpty()) {
+    // Export the environment variables we want to keep into a temporary script we can pass to Nix and source it from the build script
+    def exportCommandList = opts.safeEnv.collect { envVarName -> """
+      echo \"export ${envVarName}=\\\"\$(printenv ${envVarName})\\\"\" >> ${envFile.absolutePath}
+    """ }
+    def exportCommands = exportCommandList.join("")
+    sh """
+      ${exportCommands}
+      chmod u+x ${envFile.absolutePath}
+    """
+
+    opts.args = opts.args + [ 'secrets-file': envFile.absolutePath ]
+    opts.sbox = opts.sbox + envFile.absolutePath
+  }
+
+  return envFile
+}
+
+private def _getNixCommandArgs(Map opts = [:], boolean isShell) {
+  def keepFlags = []
+  def entryPoint = "\'${env.WORKSPACE}/shell.nix\'"
+  if (!isShell || opts.attr != null) {
+    entryPoint = "\'${env.WORKSPACE}/default.nix\'"
+  }
+  def extraSandboxPathsFlag = ''
+
+  if (isShell) {
+    keepFlags = opts.keep.collect { var -> "--keep ${var} " }
+  } else {
+    def envVarsList = opts.keep.collect { var -> "${var}=\"${env[var]}\";" }
+    keepFlags = ["--arg env \'{${envVarsList.join("")}}\'"]
+
+    /* Export the environment variables we want to keep into
+     * a Nix attribute set we can pass to Nix and source it from the build script */
+    def envFile = makeNixBuildEnvFile(opts)
+    envFile.deleteOnExit()
+  }
+
+  def argsFlags = opts.args.collect { key,val -> "--argstr ${key} \'${val}\'" }
+  def attrFlag = ''
+  if (opts.attr != null) {
+    attrFlag = "--attr '${opts.attr}'"
+  }
+  if (opts.sbox != null && !opts.sbox.isEmpty()) {
+    extraSandboxPathsFlag = "--option extra-sandbox-paths \"${opts.sbox.join(' ')}\""
+  }
+
+  return [
+    opts.pure ? "--pure" : "",
+    keepFlags.join(" "),
+    argsFlags.join(" "),
+    extraSandboxPathsFlag,
+    attrFlag,
+    entryPoint,
+  ].join(" ")
 }
 
 def prepEnv() {

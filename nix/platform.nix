@@ -1,10 +1,10 @@
 { target-os, stdenv }:
 
-with stdenv;
-
-assert lib.assertOneOf "target-os" target-os [ "linux" "android" "windows" "macos" "darwin" "ios" "all" ];
+assert stdenv.lib.assertOneOf "target-os" target-os [ "linux" "android" "windows" "macos" "darwin" "ios" "all" ];
 
 let
+  inherit (stdenv) isDarwin isLinux;
+
   # based on the value passed in through target-os, check if we're targetting a desktop platform
   targetDesktop = {
     "linux" = true;

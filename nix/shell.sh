@@ -2,6 +2,12 @@
 
 #
 # This script is used by the Makefile to have an implicit nix-shell.
+# The following environment variables modify the script behavior:
+# - TARGET_OS: This attribute is passed as `target-os` to Nix, limiting the scope
+#     of the Nix expressions.
+# - _NIX_ATTR: This attribute can be used to specify an attribute set
+#     from inside the expression in `default.nix`, allowing drilling down into a specific attribute.
+# - _NIX_KEEP: This variable allows specifying which env vars to keep for Nix pure shell. 
 #
 
 GREEN='\033[0;32m'
@@ -23,13 +29,23 @@ fi
 
 if command -v "nix" >/dev/null 2>&1; then
   platform=${TARGET_OS:=all}
-  if [ "$platform" != 'all' ]; then
+  if [ "$platform" != 'all' ] && [ "$platform" != 'android' ] && [ "$platform" != 'ios' ]; then
     # This is a dirty workaround to the fact that 'yarn install' is an impure operation, so we need to call it from an impure shell. Hopefull we'll be able to fix this later on with something like yarn2nix
-    nix-shell --show-trace --argstr target-os ${TARGET_OS} --run "scripts/prepare-for-platform.sh $platform" || exit
+    nix-shell --show-trace --argstr target-os ${TARGET_OS} --run "scripts/prepare-for-desktop-platform.sh" || exit
   fi
+
+  entry_point='shell.nix'
+  attrset_option=''
+  if [ -n "${_NIX_ATTR}" ]; then
+    entry_point='default.nix'
+    attrset_option="-A ${_NIX_ATTR}"
+  fi
+
+  attrStr="${_NIX_ATTR}"
+  [ -n "$attrStr" ] && attrStr="$attrStr "
   if [[ $@ == "ENTER_NIX_SHELL" ]]; then
-    echo -e "${GREEN}Configuring Nix shell for target '${TARGET_OS}'...${NC}"
-    exec nix-shell --show-trace --argstr target-os ${TARGET_OS}
+    echo -e "${GREEN}Configuring ${attrStr}Nix shell for target '${TARGET_OS}'...${NC}"
+    exec nix-shell --show-trace --argstr target-os ${TARGET_OS} ${attrset_option} ${entry_point}
   else
     is_pure=''
     if [[ "${TARGET_OS}" != 'all' ]] && [[ "${TARGET_OS}" != 'ios' ]] && [[ "${TARGET_OS}" != 'windows' ]]; then
@@ -39,10 +55,10 @@ if command -v "nix" >/dev/null 2>&1; then
     # This variable allows specifying which env vars to keep for Nix pure shell
     # The separator is a semicolon
     keep_opts=''
-    if [[ -n "${NIX_KEEP}" ]]; then
-      keep_opts="--keep ${NIX_KEEP//;/ --keep }"
+    if [[ -n "${_NIX_KEEP}" ]]; then
+      keep_opts="--keep ${_NIX_KEEP//;/ --keep }"
     fi
-    echo -e "${GREEN}Configuring ${pure_desc}Nix shell for target '${TARGET_OS}'...${NC}"
-    exec nix-shell ${is_pure} ${keep_opts} --show-trace --argstr target-os ${TARGET_OS} --run "$@"
+    echo -e "${GREEN}Configuring ${pure_desc}${attrStr}Nix shell for target '${TARGET_OS}'...${NC}"
+    exec nix-shell ${is_pure} ${keep_opts} --show-trace --argstr target-os ${TARGET_OS} ${attrset_option} --run "$@" ${entry_point}
   fi
 fi

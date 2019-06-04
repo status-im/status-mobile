@@ -26,19 +26,35 @@ pipeline {
     stage('Setup') {
       steps {
         sh 'scripts/setup'
-        sh """
+        sh '''
           . ~/.nix-profile/etc/profile.d/nix.sh && \
           nix-env -i openssh
-        """
+        '''
       }
     }
-    stage('Build') {
+    stage('Build prod-build-android') {
       steps {
-        sh """
+        // Run a Nix build to build/fetch everything that is necessary to produce a prod-build for TARGET_OS=android (e.g. maven and node repos)
+        sh '''
+          args="--argstr target-os android --show-trace -A targets.mobile.prod-build"
+
           . ~/.nix-profile/etc/profile.d/nix.sh && \
-          nix build -v --no-link && \
-          nix-shell --pure --run echo
-        """
+          nix-build --pure --no-out-link $args
+
+          prodBuildDrv=$(nix-instantiate --quiet $args) && \
+          prodBuildSrcPath=$(nix-store -q --binding src $prodBuildDrv) && \
+          prodBuildOutPath=$(nix-store -q --outputs $prodBuildDrv) && \
+          nix-store --delete $prodBuildDrv $prodBuildSrcPath $prodBuildOutPath
+        '''
+      }
+    }
+    stage('Build nix shell deps') {
+      steps {
+        // Run a Nix build to build/fetch everything that is necessary to instantiate shell.nix for TARGET_OS=all
+        sh '''
+          . ~/.nix-profile/etc/profile.d/nix.sh && \
+          nix-build --pure --no-out-link --show-trace -A shell default.nix
+        '''
       }
     }
     stage('Upload') {
@@ -46,11 +62,24 @@ pipeline {
         sshagent(credentials: ['nix-cache-ssh']) {
           sh """
             . ~/.nix-profile/etc/profile.d/nix.sh && \
-            find /nix/store/ -mindepth 1 -maxdepth 1 -not -name '.links' -and -not -name '*.lock' | \
+            find /nix/store/ -mindepth 1 -maxdepth 1 \
+              -not -name '.links' -and -not -name '*.lock' \
+              -and -not -name '*-status-react-prod-build-source' \
+              -and -not -name '*-status-react-release-android-source' \
+              -and -not -name '*-prod-build-*' \
+              -and -not -name '*-release-android' | \
               xargs nix-copy-closure -v --to ${NIX_CACHE_USER}@${NIX_CACHE_HOST}
           """
         }
       }
     }
+  }
+  post {
+    always {
+      sh '''
+        . ~/.nix-profile/etc/profile.d/nix.sh && \
+        nix-store --optimize
+      '''
+   }
   }
 }

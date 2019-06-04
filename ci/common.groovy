@@ -36,6 +36,10 @@ def prep(type = 'nightly') {
   utils.doGitRebase()
   /* ensure that we start from a known state */
   sh 'make clean'
+  /* Disable git hooks in CI, it's not useful, takes time and creates weird errors at times
+     (e.g. bin/sh: 2: /etc/ssl/certs/ca-certificates.crt: Permission denied) */
+  sh 'make disable-githooks'
+
   /* pick right .env and update from params */
   utils.updateEnv(type)
 
@@ -44,18 +48,23 @@ def prep(type = 'nightly') {
     utils.genBuildNumber()
   }
 
+  nix.shell('watchman watch-del-all', attr: 'targets.watchman.shell')
+
   if (env.TARGET_OS == 'ios') {
     /* install ruby dependencies */
-    nix.shell 'bundle install --gemfile=fastlane/Gemfile --quiet'
+    nix.shell(
+      'bundle install --gemfile=fastlane/Gemfile --quiet',
+      attr: 'targets.mobile.fastlane.shell')
   }
 
-  def prepareTarget=env.TARGET_OS
   if (env.TARGET_OS == 'macos' || env.TARGET_OS == 'linux' || env.TARGET_OS == 'windows') {
-    prepareTarget='desktop'
+    /* node deps, pods, and status-go download */
+    utils.nix.shell('scripts/prepare-for-desktop-platform.sh', pure: false)
+    sh('scripts/copy-translations.sh')
+  } else if (env.TARGET_OS != 'android') {
+    // run script in the nix shell so that node_modules gets instantiated before attempting the copies
+    utils.nix.shell('scripts/copy-translations.sh chmod')
   }
-  /* node deps, pods, and status-go download */
-  utils.nix.shell("scripts/prepare-for-platform.sh ${prepareTarget}", pure: false)
-  sh("cp -R translations status-modules/translations && cp -R status-modules node_modules/status-modules")
 }
 
 return this

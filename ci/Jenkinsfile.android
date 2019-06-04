@@ -32,9 +32,7 @@ pipeline {
     /* since we are mounting it we need to specify location */
     STATUS_RELEASE_STORE_FILE = '/home/jenkins/status-im.keystore'
     /* We use EXECUTOR_NUMBER to avoid multiple instances clashing */
-    LEIN_HOME         = "/var/tmp/lein-${EXECUTOR_NUMBER}"
-    YARN_CACHE_FOLDER = "/var/tmp/yarn-${EXECUTOR_NUMBER}"
-    GRADLE_USER_HOME  = "/var/tmp/gradle-${EXECUTOR_NUMBER}"
+    LEIN_HOME = "/var/tmp/lein-${EXECUTOR_NUMBER}"
     /* coverage report identification */
     COVERALLS_SERVICE_NAME = "jenkins"
     COVERALLS_SERVICE_JOB_ID = "${JOB_NAME}#${BUILD_NUMBER}"
@@ -55,17 +53,25 @@ pipeline {
         }
       }
     }
+    stage('Implicit dependencies') {
+      steps {
+        /* Build implicit dependencies if needed (we run `lein deps :tree` but it's not really required, for this purpose)
+           Implicit dependencies include building a patched node_modules, fetching maven dependencies, and anything else required.
+           We do this before the parallel steps so we have a known starting situation. */
+        script { cmn.nix.shell('lein deps :tree', attr: 'targets.leiningen.shell') }
+      }
+    }
     stage('Parallel') {
       parallel {
         stage('Checks') { stages {
           stage('Lint') {
             steps {
-              script { cmn.nix.shell('lein cljfmt check') }
+              script { cmn.nix.shell('lein cljfmt check', attr: 'targets.leiningen.shell') }
             }
           }
           stage('Tests') {
             steps {
-              script { cmn.nix.shell('lein test-cljs') }
+              script { cmn.nix.shell('lein test-cljs', attr: 'targets.leiningen.shell') }
             }
           }
           stage('Coverage') {
@@ -77,7 +83,7 @@ pipeline {
         stage('Build') { stages {
           stage('Clojure') {
             steps {
-              script { cmn.nix.shell('make prod-build-android')}
+              script { cmn.nix.build(attr: "targets.mobile.prod-build") }
             }
           }
           stage('Bundle') {
@@ -110,14 +116,12 @@ pipeline {
       }
     }
     stage('Cleanup') {
-      steps {
-        sh 'make watchman-clean'
-        sh 'make clean'
-      }
+      steps { sh 'make clean' }
     }
   }
   post {
     success { script { load('ci/github.groovy').notifyPR(true) } }
     failure { script { load('ci/github.groovy').notifyPR(false) } }
+    always { sh 'make _fix-perms' }
   }
 }

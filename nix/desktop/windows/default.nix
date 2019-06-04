@@ -1,16 +1,14 @@
 { stdenv, callPackage,
   conan, nsis, go }:
 
-with stdenv;
-
-assert isLinux;
+assert stdenv.isLinux;
 
 let
   baseImage = callPackage ./base-image { };
 
 in
 {
-  buildInputs = lib.optionals isLinux [
+  buildInputs = stdenv.lib.optionals stdenv.isLinux [
     conan
     nsis
     baseImage

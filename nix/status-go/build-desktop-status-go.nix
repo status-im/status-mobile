@@ -9,8 +9,6 @@
   outputFileName,
   hostSystem } @ args':
 
-with stdenv;
-
 let
   buildStatusGo = callPackage ./build-status-go.nix { inherit buildGoPackage go xcodeWrapper utils; };
 
@@ -35,7 +33,7 @@ let
     outputs = [ "out" ];
 
     meta = {
-      platforms = with lib.platforms; linux ++ darwin;
+      platforms = with stdenv.lib.platforms; linux ++ darwin;
     };
   });
 

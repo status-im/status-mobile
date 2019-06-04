@@ -23,7 +23,9 @@ pipeline {
     stage('Prep') {
       steps { script {
         nix = load('ci/nix.groovy')
-        nix.shell('bundle install --gemfile=fastlane/Gemfile')
+        nix.shell(
+          'bundle install --gemfile=fastlane/Gemfile',
+          attr: 'targets.mobile.fastlane.shell')
       } }
     }
     stage('Clean Users'){
@@ -37,6 +39,7 @@ pipeline {
         ]) {
           nix.shell(
             'bundle exec --gemfile=fastlane/Gemfile fastlane ios clean',
+            attr: 'targets.mobile.fastlane.shell',
             keep: ['FASTLANE_APPLE_ID', 'FASTLANE_PASSWORD']
           )
         }

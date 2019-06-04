@@ -8,15 +8,15 @@
   goBuildFlags, goBuildLdFlags,
   config } @ args':
 
-with stdenv;
-
 let
+  inherit (stdenv.lib) concatStringsSep makeBinPath optional;
+
   targetConfig = config;
   buildStatusGo = callPackage ./build-status-go.nix { inherit buildGoPackage go xcodeWrapper utils; };
 
   args = removeAttrs args' [ "config" "goBuildFlags" "goBuildLdFlags" ]; # Remove mobile-only arguments from args
   buildStatusGoMobileLib = buildStatusGo (args // {
-    nativeBuildInputs = [ gomobile ] ++ lib.optional (targetConfig.name == "android") openjdk;
+    nativeBuildInputs = [ gomobile ] ++ optional (targetConfig.name == "android") openjdk;
 
     buildMessage = "Building mobile library for ${targetConfig.name}";
     # Build mobile libraries
@@ -24,10 +24,10 @@ let
       mkdir $NIX_BUILD_TOP/go-build
 
       GOPATH=${gomobile.dev}:$GOPATH \
-      PATH=${lib.makeBinPath [ gomobile.bin ]}:$PATH \
-      ${lib.concatStringsSep " " targetConfig.envVars} \
+      PATH=${makeBinPath [ gomobile.bin ]}:$PATH \
+      ${concatStringsSep " " targetConfig.envVars} \
       NIX_GOWORKDIR=$NIX_BUILD_TOP/go-build \
-      gomobile bind ${goBuildFlags} -target=${targetConfig.name} ${lib.concatStringsSep " " targetConfig.gomobileExtraFlags} \
+      gomobile bind ${goBuildFlags} -target=${targetConfig.name} ${concatStringsSep " " targetConfig.gomobileExtraFlags} \
                     -o ${targetConfig.outputFileName} \
                     ${goBuildLdFlags} \
                     ${goPackagePath}/mobile
@@ -43,7 +43,7 @@ let
     outputs = [ "out" ];
 
     meta = {
-      platforms = with lib.platforms; linux ++ darwin;
+      platforms = with stdenv.lib.platforms; linux ++ darwin;
     };
   });
 

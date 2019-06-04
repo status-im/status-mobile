@@ -19,7 +19,7 @@ let
     installPhase = ''
       mkdir -p $out/bin
       makeWrapper ${env}/bin/fastlane $out/bin/fastlane \
-      --set FASTLANE_SKIP_UPDATE_CHECK 1
+        --set FASTLANE_SKIP_UPDATE_CHECK 1
     '';
 
     meta = with stdenv.lib; {
@@ -35,7 +35,9 @@ let
 
 in fastlane // {
   shellHook = ''
-    export FASTLANE_PLUGINFILE_PATH=$PWD/fastlane/Pluginfile
+    [ -z "$STATUS_REACT_HOME" ] && echo "STATUS_REACT_HOME is empty!" && exit 1
+
+    export FASTLANE_PLUGINFILE_PATH=$STATUS_REACT_HOME/fastlane/Pluginfile
   '';
 }
 

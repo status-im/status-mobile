@@ -17,7 +17,14 @@ rm -rf $output_dir && mkdir -p $output_dir
 # Specify the package.json file containing the dependencies to install
 cat << EOF > $input
 [
-    { "realm": "https://github.com/status-im/realm-js/archive/v2.20.1.tar.gz" }
+  { "realm": "https://github.com/status-im/realm-js/archive/v2.20.1.tar.gz" }
+]
+EOF
+
+# Specify the package.json file containing the build dependencies to install
+cat << EOF > $supplement_input
+[
+  "node-pre-gyp"
 ]
 EOF
 

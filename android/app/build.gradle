@@ -107,6 +107,10 @@ def enableProguardInReleaseBuilds = false
 
 def getVersionCode = { ->
     new ByteArrayOutputStream().withStream { stdOut ->
+        if (project.hasProperty("versionCode")) {
+            return project.versionCode.toString().toInteger()
+        }
+
         exec {
             commandLine "bash", "../../scripts/build_no.sh"
             standardOutput = stdOut
