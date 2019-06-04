@@ -46,8 +46,6 @@
      [react/text {:style               styles/last-message-text
                   :number-of-lines     1
                   :accessibility-label :chat-message-text}
-      #_(if-let [render-recipe (:render-recipe content)]
-          (chat.utils/render-chunks render-recipe message))
       (:text content)]
 
      :else
@@ -112,8 +110,7 @@
          [message-timestamp timestamp]]]
        [react/view styles/item-lower-container
         (let [{:keys [tribute-status tribute-label]} (:tribute-to-talk contact)]
-          (if (or group-chat
-                  (#{:none :paid} tribute-status))
+          (if (not (#{:require :pending} tribute-status))
             [message-content-text {:content      last-message-content
                                    :content-type last-message-content-type}]
             [react/text {:style styles/last-message-text} tribute-label]))
