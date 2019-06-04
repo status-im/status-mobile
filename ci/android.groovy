@@ -11,7 +11,7 @@ def bundle() {
     /* PR builds shouldn't replace normal releases */
     target = 'pr'
   } else if (btype == 'release') {
-    gradleOpt += "-PreleaseVersion='${utils.getVersion('mobile_files')}'"
+    gradleOpt += "-PreleaseVersion='${utils.getVersion()}'"
   }
   dir('android') {
     withCredentials([

@@ -185,7 +185,7 @@ function compile() {
 function bundleWindows() {
   local buildType="$1"
 
-  local version_file="${STATUSREACTPATH}/desktop_files/VERSION"
+  local version_file="${STATUSREACTPATH}/VERSION"
   VERSION=$(cat $version_file)
   if [ -z "$VERSION" ]; then
     echo "${RED}Could not read version from ${version_file}!${NC}"

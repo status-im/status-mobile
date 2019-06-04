@@ -182,7 +182,7 @@ def publishRelease(Map args) {
 
 def publishReleaseMobile() {
   publishRelease(
-    version: utils.getVersion('mobile_files')+'-mobile',
+    version: utils.getVersion()+'-mobile',
     pkgDir: 'pkg',
     files: [ /* upload only mobile release files */
       utils.pkgFilename(btype, 'ipa'),

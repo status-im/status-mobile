@@ -18,7 +18,7 @@ def bundle() {
   }
   /* configure build metadata */
   nix.shell(
-    plutil('CFBundleShortVersionString', utils.getVersion('mobile_files')) +
+    plutil('CFBundleShortVersionString', utils.getVersion()) +
     plutil('CFBundleVersion', utils.genBuildNumber()) +
     plutil('CFBundleBuildUrl', currentBuild.absoluteUrl)
   )

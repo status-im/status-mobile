@@ -1,11 +1,7 @@
 nix = load 'ci/nix.groovy'
 
-def getVersion(type = null) {
-  /* if type is undefined we get VERSION from repo root */
+def getVersion() {
   def path = "${env.WORKSPACE}/VERSION"
-  if (type != null) {
-    path = "${env.WORKSPACE}/${type}/VERSION"
-  }
   return readFile(path).trim()
 }
 

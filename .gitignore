@@ -42,7 +42,6 @@ project.xcworkspace
 #
 node_modules/
 npm-debug.log
-.babelrc
 yarn-error.log
 default.realm/
 
@@ -119,7 +118,6 @@ fastlane/README.md
 .dir-locals.el
 
 #ignore platform-specific files in the root since they are only symlinks to files in folders 'desktop_files' and 'mobile_files'
-/VERSION
 /package-lock.json
 /package.json
 /metro.config.js

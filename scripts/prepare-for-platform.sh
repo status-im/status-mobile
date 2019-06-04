@@ -44,20 +44,14 @@ fi
 
 $GIT_ROOT/scripts/run-environment-check.sh $1
 
-if [ ! -f .babelrc ] || [ $(readlink .babelrc) != "${PLATFORM_FOLDER}/.babelrc" ]; then
+if [ ! -f package.json ] || [ $(readlink package.json) != "${PLATFORM_FOLDER}/package.json.orig" ]; then
   echo "Creating link: package.json -> ${PLATFORM_FOLDER}/package.json.orig"
   ln -sf ${PLATFORM_FOLDER}/package.json.orig package.json
 
   echo "Creating link: yarn.lock -> ${PLATFORM_FOLDER}/yarn.lock"
   ln -sf ${PLATFORM_FOLDER}/yarn.lock yarn.lock
 
-  echo "Creating link: VERSION -> ${PLATFORM_FOLDER}/VERSION"
-  ln -sf ${PLATFORM_FOLDER}/VERSION VERSION
-
-  echo "Creating link: .babelrc -> ${PLATFORM_FOLDER}/.babelrc"
-  ln -sf ${PLATFORM_FOLDER}/.babelrc .babelrc
-
-  echo "Creating link: .babelrc -> ${PLATFORM_FOLDER}/.babelrc"
+  echo "Creating link: metro.config.js -> ${PLATFORM_FOLDER}/metro.config.js"
   ln -sf ${PLATFORM_FOLDER}/metro.config.js metro.config.js
 fi
 
