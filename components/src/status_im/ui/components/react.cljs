@@ -113,34 +113,35 @@
       (update :style typography/get-style)
       (assoc :max-font-size-multiplier max-font-size-multiplier)))
 
+(defn prepare-nested-text-props [props]
+  (-> props
+      (update :style typography/get-nested-style)
+      (assoc :nested? true)))
+
 ;; Accessor methods for React Components
 (defn text
   "For nested text elements, use nested-text instead"
   ([text-element]
-   [text {} text-element])
+   (text {} text-element))
   ([options text-element]
    [text-class (prepare-text-props options) text-element]))
 
 (defn nested-text
-  ([options & nested-text-elements]
-   (let [options-with-style (prepare-text-props options)]
-     (reduce (fn [acc text-element]
-               (conj acc
-                     (cond
-                       (string? text-element)
-                       [text-class options-with-style text-element]
-
-                       (vector? text-element)
-                       (let [[options nested-text-elements] text-element]
-                         [(if (string? nested-text-elements)
-                            text-class
-                            nested-text)
-                          (prepare-text-props
-                           (utils.core/deep-merge options-with-style
-                                                  options))
-                          nested-text-elements]))))
-             [text-class options-with-style]
-             nested-text-elements))))
+  "Returns nested text elements with proper styling and typography
+  Do not use the nested? option, it is for internal usage of the function only"
+  [options & nested-text-elements]
+  (let [options-with-style (if (:nested? options)
+                             (prepare-nested-text-props options)
+                             (prepare-text-props options))]
+    (reduce (fn [acc text-element]
+              (conj acc
+                    (if (string? text-element)
+                      text-element
+                      (let [[options & nested-text-elements] text-element]
+                        (apply nested-text (prepare-nested-text-props options)
+                               nested-text-elements)))))
+            [text-class (dissoc options-with-style :nested?)]
+            nested-text-elements)))
 
 (defn text-input
   [options text]
