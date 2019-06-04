@@ -6,7 +6,7 @@
 # the combined versions of all the specified tools.
 ################################################################################
 
-GIT_ROOT=$(git rev-parse --show-toplevel)
+GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 toolversion="${GIT_ROOT}/scripts/toolversion"
 
 usage () {

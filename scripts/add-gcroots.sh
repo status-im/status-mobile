@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-GIT_ROOT=$(git rev-parse --show-toplevel)
+GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 
 rm -rf .nix-gcroots
 mkdir .nix-gcroots

@@ -84,6 +84,10 @@ project.ext.react = [
     bundleConfig: "packager/config.js"
 ]
 
+configurations.all {
+    exclude group: 'com.facebook.react', module: 'react-native'
+}
+
 apply from: "../../node_modules/react-native/react.gradle"
 
 /**
@@ -250,10 +254,6 @@ android {
     }
 }
 
-configurations.all {
-    exclude group: 'com.facebook.react', module: 'react-native'
-}
-
 dependencies {
     implementation project(':react-native-background-timer')
     implementation project(':react-native-svg')
@@ -305,7 +305,7 @@ task hemroidBuild(type: Exec) {
     def rootDir = project.rootDir
     def localProperties = new File(rootDir, "local.properties")
 
-    def ndkDir = "$System.env.ANDROID_NDK"
+    def ndkDir = System.env.ANDROID_NDK
     if (localProperties.exists()) {
         Properties properties = new Properties()
         localProperties.withInputStream { instr ->

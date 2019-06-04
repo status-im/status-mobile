@@ -14,7 +14,7 @@
 # Fail on first error
 set -e
 
-GIT_ROOT=$(git rev-parse --show-toplevel)
+GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 BUILD_NUMBER_FILE="${GIT_ROOT}/BUILD_NUMBER"
 
 if [[ -f "${BUILD_NUMBER_FILE}" ]]; then

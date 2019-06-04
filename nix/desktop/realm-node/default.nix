@@ -22,7 +22,6 @@ let nodePackages = import ./output { inherit pkgs nodejs; };
       "$out/lib/node_modules/realm/compiled/node-v64_linux_x64/realm.node";
 in nodePackages // {
   ${realm-patched-name} = nodePackages.${realm-patched-name}.override(oldAttrs: {
-    buildInputs = oldAttrs.buildInputs ++ [ pkgs.nodePackages.node-pre-gyp ];
     reconstructLock = true;
     preRebuild = ''
       # Do not attempt to do any http calls!

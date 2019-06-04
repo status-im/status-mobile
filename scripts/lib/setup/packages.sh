@@ -4,7 +4,7 @@
 # Install checks
 ########
 
-GIT_ROOT=$(git rev-parse --show-toplevel)
+GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 
 function program_exists() {
   local program=$1

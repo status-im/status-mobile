@@ -8,7 +8,7 @@
 
 set -e
 
-GIT_ROOT=$(git rev-parse --show-toplevel)
+GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 TOOL_VERSIONS_FILE="${GIT_ROOT}/.TOOLVERSIONS"
 
 usage () {

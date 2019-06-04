@@ -40,7 +40,7 @@
             "prod-build-ios"     ^{:doc "Recompile code for iOS with prod profile."}
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "ios"]]
-            "prod-build-desktop"     ^{:doc "Recompile code for desktop with prod profile."}
+            "prod-build-desktop" ^{:doc "Recompile code for desktop with prod profile."}
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "desktop"]]
             "figwheel-repl"      ["with-profile" "+figwheel" "run" "-m" "clojure.main" "env/dev/run.clj"]

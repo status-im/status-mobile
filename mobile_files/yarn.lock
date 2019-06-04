@@ -5493,10 +5493,10 @@ react-native-crypto@2.1.1:
     pbkdf2 "3.0.8"
     public-encrypt "^4.0.0"
 
-react-native-dialogs@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/react-native-dialogs/-/react-native-dialogs-1.0.2.tgz#d16d68cecbd57f74904fb2d58fd846622d5fec9a"
-  integrity sha512-3hH6s67RD6w9MVttqWARnto3wnmSgnwPCzsk4aVaQbFjtgVZQecn+oP+jqj01G6OvxAtuG7aSe62fYGs5xileA==
+react-native-dialogs@1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-dialogs/-/react-native-dialogs-1.0.4.tgz#c3bcee4a8a4ca2e97131bd5ffaed8db6ab1dec48"
+  integrity sha512-Q3e4bAPp13jnPkStKYzyE/pb6xVY1spSlGHzq3zljV7uMXqFHjuTBRiM/qfm2bSZplR/znzVS/y2TtcW+1aufQ==
 
 react-native-dismiss-keyboard@1.0.0:
   version "1.0.0"
@@ -5683,7 +5683,7 @@ react-native-touch-id@^4.4.1:
   resolved "https://registry.yarnpkg.com/react-native-touch-id/-/react-native-touch-id-4.4.1.tgz#8b1bb2d04c30bac36bb9696d2d723e719c4a8b08"
   integrity sha512-1jTl8fC+0fxvqegy/XXTyo6vMvPhjzkoDdaqoYZx0OH8AT250NuXnNPyKktvigIcys3+2acciqOeaCall7lrvg==
 
-"react-native-udp@git+https://github.com/status-im/react-native-udp.git#2.3.1-1":
+"react-native-udp@git+https://github.com/status-im/react-native-udp.git#v2.3.1-1-status":
   version "2.3.1"
   resolved "git+https://github.com/status-im/react-native-udp.git#6e9a817326208f6ca36fa42b20f5e530c1b39d37"
   dependencies:

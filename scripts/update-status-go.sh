@@ -2,7 +2,7 @@
 
 set -eof pipefail
 
-GIT_ROOT=$(git rev-parse --show-toplevel)
+GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 
 usage() {
     printf "%s is a tool for upgrading status-go to a given version.\n" "$(basename "$0")"

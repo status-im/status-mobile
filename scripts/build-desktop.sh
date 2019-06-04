@@ -81,12 +81,12 @@ if is_windows_target; then
   CMAKE_EXTRA_FLAGS="$CMAKE_EXTRA_FLAGS -DCMAKE_RC_COMPILER='x86_64-w64-mingw32.shared-windres'"
 fi
 
-STATUSREACTPATH="$(cd "$SCRIPTPATH" && cd '..' && pwd)"
-WORKFOLDER="$(joinExistingPath "$STATUSREACTPATH" 'StatusImPackage')"
+WORKFOLDER="$(joinExistingPath "$STATUS_REACT_HOME" 'StatusImPackage')"
+JS_BUNDLE_PATH="$WORKFOLDER/index.desktop.bundle"
 
 function init() {
-  if [ -z $STATUSREACTPATH ]; then
-    echo "${RED}STATUSREACTPATH environment variable is not defined!${NC}"
+  if [ -z $STATUS_REACT_HOME ]; then
+    echo "${RED}STATUS_REACT_HOME environment variable is not defined!${NC}"
     exit 1
   fi
 
@@ -101,7 +101,7 @@ function init() {
     rm -rf ./desktop/toolchain/
     # TODO: Use Conan for Linux and MacOS builds too
     if is_windows_target; then
-      export PATH=$STATUSREACTPATH:$PATH
+      export PATH=$STATUS_REACT_HOME:$PATH
       if ! program_exists 'conan'; then
         echo "${RED}Conan package manager not found. Exiting...${NC}"
         exit 1
@@ -136,8 +136,8 @@ function buildClojureScript() {
   echo ""
 
   # from index.desktop.js create javascript bundle and resources folder
-  echo "Generating Status.jsbundle and assets folder..."
-  react-native bundle --entry-file index.desktop.js --bundle-output "$WORKFOLDER/Status.jsbundle" \
+  echo "Generating $JS_BUNDLE_PATH and assets folder..."
+  react-native bundle --entry-file index.desktop.js --bundle-output "$JS_BUNDLE_PATH" \
                       --dev false --platform desktop --assets-dest "$WORKFOLDER/assets"
   echo -e "${GREEN}Generating done.${NC}"
   echo ""
@@ -145,9 +145,8 @@ function buildClojureScript() {
 
 function compile() {
   # Temporarily add path to javascript bundle to package.json
-  local JS_BUNDLE_PATH="$WORKFOLDER/Status.jsbundle"
   local jsBundleLine="\"desktopJSBundlePath\": \"$JS_BUNDLE_PATH\""
-  local jsPackagePath=$(joinExistingPath "$STATUSREACTPATH" 'desktop_files/package.json.orig')
+  local jsPackagePath=$(joinExistingPath "$STATUS_REACT_HOME" 'desktop_files/package.json.orig')
   local tmp=$(mktemp)
   jq ".=(. + {$jsBundleLine})" "$jsPackagePath" > "$tmp" && mv "$tmp" "$jsPackagePath"
   echo -e "${YELLOW}Added 'desktopJSBundlePath' line to $jsPackagePath:${NC}"
@@ -158,7 +157,7 @@ function compile() {
   pushd desktop
     rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile modules reportApp/CMakeFiles desktop/node_modules/google-breakpad/CMakeFiles desktop/node_modules/react-native-keychain/desktop/qtkeychain-prefix/src/qtkeychain-build/CMakeFiles desktop/node_modules/react-native-keychain/desktop/qtkeychain
     if is_windows_target; then
-      export PATH=$STATUSREACTPATH:$PATH
+      export PATH=$STATUS_REACT_HOME:$PATH
 
       # Get the toolchain bin folder from toolchain/conanbuildinfo.json
       local bin_dirs=$(jq -r '.dependencies[0].bin_paths | .[]' toolchain/conanbuildinfo.json)
@@ -185,14 +184,14 @@ function compile() {
 function bundleWindows() {
   local buildType="$1"
 
-  local version_file="${STATUSREACTPATH}/VERSION"
+  local version_file="${STATUS_REACT_HOME}/VERSION"
   VERSION=$(cat $version_file)
   if [ -z "$VERSION" ]; then
     echo "${RED}Could not read version from ${version_file}!${NC}"
     exit 1
   fi
 
-  pushd $STATUSREACTPATH/desktop/bin
+  pushd $STATUS_REACT_HOME/desktop/bin
     rm -rf cmake_install.cmake Makefile CMakeFiles Status_autogen
   popd
 
@@ -206,7 +205,7 @@ function bundleWindows() {
   fi
 
   # TODO this needs to be fixed: status-react/issues/5378
-  local top_srcdir=$(joinExistingPath "$STATUSREACTPATH" '.')
+  local top_srcdir=$(joinExistingPath "$STATUS_REACT_HOME" '.')
   VERSION_MAJOR="$(cut -d'.' -f1 <<<"$VERSION")"
   VERSION_MINOR="$(cut -d'.' -f2 <<<"$VERSION")"
   VERSION_BUILD="$(cut -d'.' -f3 <<<"$VERSION")"
@@ -263,8 +262,8 @@ function bundleLinux() {
     -no-translations -bundle-non-qt-libs \
     -qmake="$qmakePath" \
     -executable="$(joinExistingPath "$usrBinPath" 'reportApp')" \
-    -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'node_modules/react-native')" \
-    -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'desktop/reportApp')" \
+    -qmldir="$(joinExistingPath "$STATUS_REACT_HOME" 'node_modules/react-native')" \
+    -qmldir="$(joinExistingPath "$STATUS_REACT_HOME" 'desktop/reportApp')" \
     -extra-plugins=imageformats/libqsvg.so
 
   pushd $WORKFOLDER
@@ -410,7 +409,7 @@ if is_macos; then
       fixupRPathsInDylib "$dylib" "$contentsDir"
 
       # Sanity check for absolute paths
-      local dependencies=$(otool -L "$dylib" | grep -E "\s+${STATUSREACTPATH}")
+      local dependencies=$(otool -L "$dylib" | grep -E "\s+${STATUS_REACT_HOME}")
       if [ -n "$dependencies" ]; then
         echo "Absolute path detected in dependencies of $dylib. Aborting..."
         echo "${dependencies[@]}"
@@ -456,8 +455,8 @@ function bundleMacOS() {
     macdeployqt Status.app \
       -verbose=$VERBOSE_LEVEL \
       -executable="$(joinExistingPath "$usrBinPath" 'reportApp')" \
-      -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'node_modules/react-native')" \
-      -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'desktop/reportApp')"
+      -qmldir="$(joinExistingPath "$STATUS_REACT_HOME" 'node_modules/react-native')" \
+      -qmldir="$(joinExistingPath "$STATUS_REACT_HOME" 'desktop/reportApp')"
 
     # macdeployqt doesn't fix rpaths for all the libraries (although it copies them all), so we'll just walk through them and update rpaths to not point to /nix
     echo "Fixing remaining rpaths in modules..."

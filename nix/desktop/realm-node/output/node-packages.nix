@@ -994,13 +994,13 @@ let
         sha512 = "NhZ4CsKx7cYm2vSrBAr2PvFOe6sWDf0UYLRqA6svUYg7+/TSfVAu49jYC4BvQ4Sms9SZgdqGBgroqfDhJdTyKQ==";
       };
     };
-    "node-machine-id-1.1.10" = {
+    "node-machine-id-1.1.12" = {
       name = "node-machine-id";
       packageName = "node-machine-id";
-      version = "1.1.10";
+      version = "1.1.12";
       src = fetchurl {
-        url = "https://registry.npmjs.org/node-machine-id/-/node-machine-id-1.1.10.tgz";
-        sha512 = "6SVxo3Ic2Qc09z1rCJh3No7ubizPLszImsMQnZZWfzeOC6SYU4orN214++c3ikB8uaP/A6dwSlO88A3ohI5oNA==";
+        url = "https://registry.npmjs.org/node-machine-id/-/node-machine-id-1.1.12.tgz";
+        sha512 = "QNABxbrPa3qEIfrE6GOJ7BYIuignnJw7iQ2YPbc3Nla1HzRJjXzZOiikfF8m7eAMfichLt3M4VgLOetqgDmgGQ==";
       };
     };
     "node-pre-gyp-0.11.0" = {
@@ -1210,13 +1210,13 @@ let
         sha512 = "8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==";
       };
     };
-    "psl-1.1.31" = {
+    "psl-1.1.32" = {
       name = "psl";
       packageName = "psl";
-      version = "1.1.31";
+      version = "1.1.32";
       src = fetchurl {
-        url = "https://registry.npmjs.org/psl/-/psl-1.1.31.tgz";
-        sha512 = "/6pt4+C+T+wZUieKR620OpzN/LlnNKuWjy1iFLQ/UG35JqHlR/89MP1d96dUfkf6Dne3TuLQzOYEYshJ+Hx8mw==";
+        url = "https://registry.npmjs.org/psl/-/psl-1.1.32.tgz";
+        sha512 = "MHACAkHpihU/REGGPLj4sEfc/XKW2bheigvHO1dUqjaKigMp1C8+WLQYRGgeKFMsw5PMfegZcaN8IDXK/cD0+g==";
       };
     };
     "punycode-1.4.1" = {
@@ -1789,7 +1789,7 @@ in
       sources."nan-2.14.0"
       sources."needle-2.4.0"
       sources."node-fetch-1.7.3"
-      sources."node-machine-id-1.1.10"
+      sources."node-machine-id-1.1.12"
       sources."node-pre-gyp-0.11.0"
       sources."nopt-4.0.1"
       sources."npm-bundled-1.0.6"
@@ -1812,7 +1812,7 @@ in
       sources."progress-2.0.3"
       sources."promise-7.3.1"
       sources."prop-types-15.7.2"
-      sources."psl-1.1.31"
+      sources."psl-1.1.32"
       sources."punycode-2.1.1"
       sources."qs-6.5.2"
       sources."querystringify-2.1.1"

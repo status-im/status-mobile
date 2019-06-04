@@ -63,7 +63,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        script { cmn.nix.shell('lein prod-build-ios') }
+        script { cmn.nix.shell('make prod-build-ios') }
       }
     }
     stage('Bundle') {

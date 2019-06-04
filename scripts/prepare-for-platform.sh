@@ -8,7 +8,7 @@
 
 set -e
 
-GIT_ROOT=$(git rev-parse --show-toplevel)
+GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
