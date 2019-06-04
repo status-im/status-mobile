@@ -28,7 +28,7 @@
   :githooks {:auto-install true
              :pre-commit   ["lein cljfmt check src/status_im/core.cljs $(git diff --diff-filter=d --cached --name-only src test/cljs)"]}
   :cljfmt {:indents {letsubs [[:inner 0]]}}
-  :clean-targets ["target/" "index.ios.js" "index.android.js"]
+  :clean-targets ["target/" "index.ios.js" "index.android.js" "status-modules/cljs"]
   :aliases {"prod-build"         ^{:doc "Recompile code with prod profile."}
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "ios"]
@@ -90,12 +90,12 @@
                                                         :target        :nodejs}}
                                         {:id           "protocol"
                                          :source-paths ["components/src" "src" "test/cljs" "dev"]
-                                         :compiler     {:main             status-im.test.protocol.runner
-                                                        :output-to        "target/test/test.js"
-                                                        :output-dir       "target/test"
-                                                        :optimizations    :none
-                                                        :preamble         ["js/hook-require.js"]
-                                                        :target           :nodejs}}
+                                         :compiler     {:main          status-im.test.protocol.runner
+                                                        :output-to     "target/test/test.js"
+                                                        :output-dir    "target/test"
+                                                        :optimizations :none
+                                                        :preamble      ["js/hook-require.js"]
+                                                        :target        :nodejs}}
                                         {:id           "env-dev-utils"
                                          :source-paths ["env/dev/env/utils.cljs" "test/env/dev" "dev"]
                                          :compiler     {:main          env.test.runner
@@ -106,8 +106,7 @@
              :prod     {:cljsbuild {:builds
                                     {:ios
                                      {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod" "prod"]
-                                      :compiler         {:output-to          "index.ios.js"
-                                                         :main               "env.ios.main"
+                                      :compiler         {:main               "env.ios.main"
                                                          :output-dir         "target/ios-prod"
                                                          :static-fns         true
                                                          :fn-invoke-direct   true
@@ -119,12 +118,15 @@
                                                          :parallel-build     false
                                                          :elide-asserts      true
                                                          :externs            ["externs.js"]
-                                                         :language-in        :ecmascript5}
+                                                         :language-in        :es-2015
+                                                         :language-out       :es-2015
+                                                         :modules            {:cljs-base {:output-to "index.ios.js"}
+                                                                              :i18n      {:entries   #{"status_im.goog.i18n"}
+                                                                                          :output-to "status-modules/cljs/i18n-raw.js"}}}
                                       :warning-handlers [status-im.utils.build/warning-handler]}
                                      :android
                                      {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod" "prod"]
-                                      :compiler         {:output-to          "index.android.js"
-                                                         :main               "env.android.main"
+                                      :compiler         {:main               "env.android.main"
                                                          :output-dir         "target/android-prod"
                                                          :static-fns         true
                                                          :fn-invoke-direct   true
@@ -136,18 +138,28 @@
                                                          :parallel-build     false
                                                          :elide-asserts      true
                                                          :externs            ["externs.js"]
-                                                         :language-in        :ecmascript5}
+                                                         :language-in        :es-2015
+                                                         :language-out       :es-2015
+                                                         :modules            {:cljs-base {:output-to "index.android.js"}
+                                                                              :i18n      {:entries   #{"status_im.goog.i18n"}
+                                                                                          :output-to "status-modules/cljs/i18n-raw.js"}}}
                                       :warning-handlers [status-im.utils.build/warning-handler]}
                                      :desktop
                                      {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/desktop" "src" "env/prod" "prod"]
-                                      :compiler         {:output-to          "index.desktop.js"
-                                                         :main               "env.desktop.main"
+                                      :compiler         {:main               "env.desktop.main"
                                                          :output-dir         "target/desktop-prod"
                                                          :static-fns         true
+                                                         :fn-invoke-direct   true
                                                          :optimize-constants true
                                                          :optimizations      :simple
                                                          :closure-defines    {"goog.DEBUG" false}
+                                                         :pseudo-names       false
+                                                         :pretty-print       false
                                                          :parallel-build     false
                                                          :elide-asserts      true
-                                                         :language-in        :ecmascript5}
+                                                         :language-in        :es-2015
+                                                         :language-out       :es-2015
+                                                         :modules            {:cljs-base {:output-to "index.desktop.js"}
+                                                                              :i18n      {:entries   #{"status_im.goog.i18n"}
+                                                                                          :output-to "status-modules/cljs/i18n-raw.js"}}}
                                       :warning-handlers [status-im.utils.build/warning-handler]}}}}})

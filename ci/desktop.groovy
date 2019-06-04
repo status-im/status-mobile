@@ -27,6 +27,7 @@ def cleanupAndDeps() {
 def buildClojureScript() {
   nix.shell(
     '''
+      cp params_prod.edn params.edn && \
       make prod-build-desktop && \
       ./scripts/build-desktop.sh buildClojureScript
     ''',

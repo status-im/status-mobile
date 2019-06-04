@@ -100,16 +100,22 @@ prod-build:
 
 prod-build-android: export TARGET_OS ?= android
 prod-build-android:
-	lein prod-build-android
+	cp params_prod.edn params.edn && \
+	lein prod-build-android && \
+	node prepare-modules.js
 
 prod-build-ios: export TARGET_OS ?= ios
 prod-build-ios:
-	lein prod-build-ios
+	cp params_prod.edn params.edn && \
+	lein prod-build-ios && \
+	node prepare-modules.js
 
 prod-build-desktop: export TARGET_OS ?= $(HOST_OS)
 prod-build-desktop:
 	git clean -qdxf -f ./index.desktop.js desktop/ && \
-	lein prod-build-desktop
+	cp params_prod.edn params.edn && \
+	lein prod-build-desktop && \
+	node prepare-modules.js
 
 #--------------
 # REPL
