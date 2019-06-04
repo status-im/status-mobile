@@ -64,7 +64,10 @@ pipeline {
     }
     stage('Build') {
       steps {
-        script { cmn.nix.shell('lein prod-build-android')}
+        script {
+          cmn.nix.shell('lein prod-build-android')
+          cmn.nix.shell('node prepare-modules.js')
+        }
       }
     }
     stage('Bundle') {

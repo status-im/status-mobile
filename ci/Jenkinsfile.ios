@@ -63,7 +63,10 @@ pipeline {
     }
     stage('Build') {
       steps {
-        script { cmn.nix.shell('lein prod-build-ios') }
+        script {
+          cmn.nix.shell('lein prod-build-ios')
+          cmn.nix.shell('node prepare-modules.js')
+        }
       }
     }
     stage('Bundle') {

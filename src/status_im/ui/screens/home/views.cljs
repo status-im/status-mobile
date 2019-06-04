@@ -3,7 +3,6 @@
             [reagent.core :as reagent]
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.list.views :as list]
@@ -16,7 +15,8 @@
             [status-im.ui.components.bottom-bar.styles :as tabs.styles]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.list-selection :as list-selection])
+            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.screens.wallet.core :as wallet.core])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview les-debug-info []
@@ -148,4 +148,5 @@
 
 (views/defview home-wrapper []
   (views/letsubs [loading? [:chats/loading?]]
+    {:component-did-mount (fn [] (wallet.core/load-module))}
     [home loading?]))

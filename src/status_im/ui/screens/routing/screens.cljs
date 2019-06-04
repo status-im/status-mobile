@@ -63,22 +63,7 @@
             [status-im.ui.screens.progress.views :as progress]
             [status-im.ui.screens.qr-scanner.views :as qr-scanner]
             [status-im.ui.screens.stickers.views :as stickers]
-            [status-im.ui.screens.wallet.collectibles.views :as collectibles]
-            [status-im.ui.screens.wallet.components.views :as wallet.components]
-            [status-im.ui.screens.wallet.main.views :as wallet.main]
-            [status-im.ui.screens.wallet.onboarding.views :as wallet.onboarding]
-            [status-im.ui.screens.wallet.request.views :as request]
-            [status-im.ui.screens.wallet.send.views :as send]
-            [status-im.ui.screens.wallet.settings.views :as wallet-settings]
-            [status-im.ui.screens.wallet.sign-message.views :as sign-message]
-            [status-im.ui.screens.wallet.transaction-fee.views
-             :as
-             wallet.transaction-fee]
-            [status-im.ui.screens.wallet.transaction-sent.views
-             :as
-             transaction-sent]
-            [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
-            [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]))
+            [status-im.ui.screens.wallet.core :as wallet]))
 
 (def all-screens
   {:login                            login/login
@@ -120,33 +105,33 @@
    :tribute-learn-more               [:modal tr-to-talk/learn-more]
    :chat-modal                       [:modal chat/chat-modal]
    :show-extension-modal             [:modal extensions.add/show-extension-modal]
-   :wallet-send-transaction-modal    [:modal send/send-transaction-modal]
-   :wallet-transaction-sent-modal    [:modal transaction-sent/transaction-sent-modal]
-   :wallet-transaction-fee           [:modal wallet.transaction-fee/transaction-fee]
-   :wallet-onboarding-setup-modal    [:modal wallet.onboarding/modal]
-   :wallet-sign-message-modal        [:modal sign-message/sign-message-modal]
-   :wallet                           wallet.main/wallet
-   :collectibles-list                collectibles/collectibles-list
-   :wallet-onboarding-setup          wallet.onboarding/screen
-   :wallet-send-transaction-chat     send/send-transaction
-   :contact-code                     wallet.components/contact-code
-   :wallet-send-transaction          send/send-transaction
-   :recent-recipients                wallet.components/recent-recipients
-   :wallet-transaction-sent          transaction-sent/transaction-sent
-   :recipient-qr-code                wallet.components/recipient-qr-code
-   :wallet-send-assets               wallet.components/send-assets
-   :wallet-request-transaction       request/request-transaction
-   :wallet-send-transaction-request  request/send-transaction-request
-   :wallet-request-assets            wallet.components/request-assets
-   :unsigned-transactions            wallet-transactions/transactions
-   :transactions-history             wallet-transactions/transactions
-   :wallet-transaction-details       wallet-transactions/transaction-details
-   :wallet-settings-hook             wallet-settings/settings-hook
+   :wallet-send-transaction-modal    [:modal wallet/send-transaction-modal]
+   :wallet-transaction-sent-modal    [:modal wallet/transaction-sent-modal]
+   :wallet-transaction-fee           [:modal wallet/transaction-fee]
+   :wallet-onboarding-setup-modal    [:modal wallet/onboarding-modal]
+   :wallet-sign-message-modal        [:modal wallet/sign-message-modal]
+   :wallet                           wallet/wallet
+   :collectibles-list                wallet/collectibles
+   :wallet-onboarding-setup          wallet/onboarding
+   :wallet-send-transaction-chat     wallet/send-transaction
+   :contact-code                     wallet/contact-code
+   :wallet-send-transaction          wallet/send-transaction
+   :recent-recipients                wallet/recent-recipients
+   :wallet-transaction-sent          wallet/transaction-sent
+   :recipient-qr-code                wallet/recipient-qr-code
+   :wallet-send-assets               wallet/send-assets
+   :wallet-request-transaction       wallet/request-transaction
+   :wallet-send-transaction-request  wallet/send-transaction-request
+   :wallet-request-assets            wallet/request-assets
+   :unsigned-transactions            wallet/transactions
+   :transactions-history             wallet/transactions
+   :wallet-transaction-details       wallet/transaction-details
+   :wallet-settings-hook             wallet/settings-hook
    :selection-modal-screen           [:modal screens.extensions/selection-modal-screen]
-   :wallet-settings-assets           wallet-settings/manage-assets
-   :wallet-add-custom-token          custom-tokens/add-custom-token
-   :wallet-custom-token-details      custom-tokens/custom-token-details
-   :wallet-transactions-filter       [:modal wallet-transactions/filter-history]
+   :wallet-settings-assets           wallet/manage-assets
+   :wallet-add-custom-token          wallet/add-custom-token
+   :wallet-custom-token-details      wallet/custom-token-details
+   :wallet-transactions-filter       [:modal wallet/filter-history]
    :my-profile                       profile.user/my-profile
    :my-profile-ext-settings          profile.user/extensions-settings
    :contacts-list                    contacts-list/contacts-list

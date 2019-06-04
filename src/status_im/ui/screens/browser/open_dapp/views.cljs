@@ -8,7 +8,7 @@
    [status-im.ui.screens.browser.open-dapp.styles :as styles]
    [status-im.ui.components.list.views :as list]
    [status-im.ui.components.common.common :as components.common]
-   [status-im.ui.screens.wallet.components.views :as components]
+   [status-im.ui.screens.wallet.core :as wallet.core]
    [status-im.ui.components.bottom-bar.styles :as tabs.styles]
    [status-im.react-native.resources :as resources]
    [status-im.ui.components.list-item.views :as list-item]
@@ -32,7 +32,7 @@
                 [vector-icons/icon :main-icons/browser {:color colors/gray}]]}]])
 
 (def dapp-image-data {:image (resources/get-image :dapp-store) :width 768 :height 333})
-(def dapp-image (components.common/image-contain nil dapp-image-data))
+(defn dapp-image [] [components.common/image-contain nil dapp-image-data])
 
 (def privacy-otions-visible? (reagent/atom true))
 
@@ -92,7 +92,7 @@
                         :style               styles/input
                         :accessibility-label :dapp-url-input
                         :return-key-type     :go}]
-     [components/separator]
+     [wallet.core/separator]
      (if (empty? browsers)
        [list-header true]
        [react/scroll-view

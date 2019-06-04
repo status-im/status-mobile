@@ -185,6 +185,7 @@ def changeId() {
 }
 
 def updateEnv(type) {
+  sh "cp params_prod.edn params.edn"
   def envFile = "${env.WORKSPACE}/.env"
   /* select .env based on type of build */
   def selectedEnv = '.env.jenkins'

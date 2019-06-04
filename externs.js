@@ -560,5 +560,5 @@ var TopLevel = {
     "decimalPlaces": function () {},
     "_android": function () {},
     "isSupported" : function () {},
-    "authenticate" : function () {},
+    "authenticate" : function () {}
 }

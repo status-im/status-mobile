@@ -23,5 +23,5 @@
      :icon                :main-icons/address
      :icon-opts           {:color colors/blue}
      :accessibility-label :open-collectible-button
-     :on-press            #(re-frame/dispatch [:open-collectible-in-browser
+     :on-press            #(re-frame/dispatch [:extensions/open-url
                                                (str "https://superrare.co/artwork/" name "-" tokenId)])}]])

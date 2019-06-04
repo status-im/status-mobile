@@ -19,9 +19,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.svgimage :as svgimage]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.ui.screens.wallet.choose-recipient.events
-             :as
-             choose-recipient.events]
+            [status-im.ui.screens.wallet.choose-recipient.request-details :as request-details]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
@@ -326,7 +324,7 @@
                                     :amount (money/formatted->internal value symbol decimals)
                                     :amount-text amount
                                     :amount-error error)
-                         (choose-recipient.events/fill-request-details
+                         (request-details/fill-request-details
                           (transaction-details recipient-contact symbol) false)
                          (update-in [:wallet :send-transaction]
                                     dissoc :id :password :wrong-password?))

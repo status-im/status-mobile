@@ -1,14 +1,14 @@
 (ns status-im.ui.screens.wallet.choose-recipient.events
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.contact.db :as contact.db]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.ens :as ens]
             [status-im.i18n :as i18n]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.money :as money]))
+            [status-im.ui.screens.wallet.choose-recipient.request-details
+             :as request-details]))
 
 (handlers/register-handler-fx
  :wallet/toggle-flashlight
@@ -16,28 +16,6 @@
    (let [flashlight-state (get-in db [:wallet :send-transaction :camera-flashlight])
          toggled-state (if (= :on flashlight-state) :off :on)]
      {:db (assoc-in db [:wallet :send-transaction :camera-flashlight] toggled-state)})))
-
-(defn- find-address-name [db address]
-  (:name (contact.db/find-contact-by-address (:contacts/contacts db) address)))
-
-(defn- fill-request-details [db {:keys [address name value symbol gas gasPrice public-key from-chat?]} request?]
-  {:pre [(not (nil? address))]}
-  (let [name (or name (find-address-name db address))
-        data-path (if request?
-                    [:wallet :request-transaction]
-                    [:wallet :send-transaction])]
-    (update-in db data-path
-               (fn [{old-symbol :symbol :as old-transaction}]
-                 (let [symbol-changed? (not= old-symbol symbol)]
-                   (cond-> (assoc old-transaction :to address :to-name name :public-key public-key)
-                     value (assoc :amount value)
-                     symbol (assoc :symbol symbol)
-                     (and gas symbol-changed?) (assoc :gas (money/bignumber gas))
-                     from-chat? (assoc :from-chat? from-chat?)
-                     (and gasPrice symbol-changed?)
-                     (assoc :gas-price (money/bignumber gasPrice))
-                     (and symbol (not gasPrice) symbol-changed?)
-                     (assoc :gas-price (ethereum/estimate-gas symbol))))))))
 
 (defn- extract-details
   "First try to parse as EIP681 URI, if not assume this is an address directly.
@@ -103,7 +81,7 @@
          symbol-changed?                        (and old-symbol new-symbol (not= old-symbol new-symbol))]
      (cond-> {:db db}
        (not= :deep-link origin) (assoc :dispatch [:navigate-back]) ;; Only navigate-back when called from within wallet
-       (and address valid-network?) (update :db #(fill-request-details % details false))
+       (and address valid-network?) (update :db #(request-details/fill-request-details % details false))
        symbol-changed? (changed-asset old-symbol new-symbol)
        (and old-amount new-amount (not= old-amount new-amount)) (changed-amount-warning old-amount new-amount)
         ;; NOTE(goranjovic) - the next line is there is because QR code scanning switches the amount to ETH
@@ -118,5 +96,5 @@
 (handlers/register-handler-fx
  :wallet/fill-request-from-contact
  (fn [{db :db} [_ {:keys [address name public-key]} request?]]
-   {:db         (fill-request-details db {:address address :name name :public-key public-key} request?)
+   {:db         (request-details/fill-request-details db {:address address :name name :public-key public-key} request?)
     :dispatch   [:navigate-back]}))

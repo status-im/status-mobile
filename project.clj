@@ -28,7 +28,7 @@
   :githooks {:auto-install true
              :pre-commit   ["lein cljfmt check src/status_im/core.cljs $(git diff --diff-filter=d --cached --name-only src test/cljs)"]}
   :cljfmt {:indents {letsubs [[:inner 0]]}}
-  :clean-targets ["target/" "index.ios.js" "index.android.js"]
+  :clean-targets ["target/" "index.ios.js" "index.android.js" "status-modules/cljs"]
   :aliases {"prod-build"         ^{:doc "Recompile code with prod profile."}
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "ios"]
@@ -90,12 +90,12 @@
                                                         :target        :nodejs}}
                                         {:id           "protocol"
                                          :source-paths ["components/src" "src" "test/cljs" "dev"]
-                                         :compiler     {:main             status-im.test.protocol.runner
-                                                        :output-to        "target/test/test.js"
-                                                        :output-dir       "target/test"
-                                                        :optimizations    :none
-                                                        :preamble         ["js/hook-require.js"]
-                                                        :target           :nodejs}}
+                                         :compiler     {:main          status-im.test.protocol.runner
+                                                        :output-to     "target/test/test.js"
+                                                        :output-dir    "target/test"
+                                                        :optimizations :none
+                                                        :preamble      ["js/hook-require.js"]
+                                                        :target        :nodejs}}
                                         {:id           "env-dev-utils"
                                          :source-paths ["env/dev/env/utils.cljs" "test/env/dev" "dev"]
                                          :compiler     {:main          env.test.runner
@@ -106,8 +106,7 @@
              :prod     {:cljsbuild {:builds
                                     {:ios
                                      {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod" "prod"]
-                                      :compiler         {:output-to          "index.ios.js"
-                                                         :main               "env.ios.main"
+                                      :compiler         {:main               "env.ios.main"
                                                          :output-dir         "target/ios-prod"
                                                          :static-fns         true
                                                          :fn-invoke-direct   true
@@ -119,12 +118,58 @@
                                                          :parallel-build     false
                                                          :elide-asserts      true
                                                          :externs            ["externs.js"]
-                                                         :language-in        :ecmascript5}
+                                                         :language-in        :es-2015
+                                                         :language-out       :es-2015
+                                                         :modules            {:cljs-base {:output-to "index.ios.js"}
+                                                                              :module    {:entries   #{"status_im.ui.screens.wallet.settings.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.cryptokitties.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.cryptokitties.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.cryptostrikers.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.cryptostrikers.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.superrare.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.superrare.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.etheremon.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.etheremon.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.kudos.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.kudos.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.styles"
+                                                                                                       "status_im.ui.screens.wallet.custom_tokens.views"
+                                                                                                       "status_im.ui.screens.wallet.core"
+                                                                                                       "status_im.ui.screens.wallet.components.views"
+                                                                                                       "status_im.ui.screens.wallet.components.styles"
+                                                                                                       "status_im.ui.screens.wallet.transactions.views"
+                                                                                                       "status_im.ui.screens.wallet.transactions.styles"
+                                                                                                       "status_im.ui.screens.wallet.transaction_sent.views"
+                                                                                                       "status_im.ui.screens.wallet.transaction_sent.styles"
+                                                                                                       "status_im.ui.screens.wallet.navigation"
+                                                                                                       "status_im.ui.screens.wallet.choose_recipient.events"
+                                                                                                       "status_im.ui.screens.wallet.choose_recipient.request_details"
+                                                                                                       "status_im.ui.screens.wallet.choose_recipient.views"
+                                                                                                       "status_im.ui.screens.wallet.choose_recipient.styles"
+                                                                                                       "status_im.ui.screens.wallet.transaction_fee.views"
+                                                                                                       "status_im.ui.screens.wallet.request.events"
+                                                                                                       "status_im.ui.screens.wallet.request.db"
+                                                                                                       "status_im.ui.screens.wallet.request.views"
+                                                                                                       "status_im.ui.screens.wallet.request.styles"
+                                                                                                       "status_im.ui.screens.wallet.utils"
+                                                                                                       "status_im.ui.screens.wallet.main.views"
+                                                                                                       "status_im.ui.screens.wallet.main.styles"
+                                                                                                       "status_im.ui.screens.wallet.sign_message.views"
+                                                                                                       "status_im.ui.screens.wallet.send.events"
+                                                                                                       "status_im.ui.screens.wallet.send.db"
+                                                                                                       "status_im.ui.screens.wallet.send.animations"
+                                                                                                       "status_im.ui.screens.wallet.send.views"
+                                                                                                       "status_im.ui.screens.wallet.send.styles"
+                                                                                                       "status_im.ui.screens.wallet.styles"
+                                                                                                       "status_im.ui.screens.wallet.onboarding.views"
+                                                                                                       "status_im.ui.screens.wallet.onboarding.styles"}
+                                                                                          :output-to "status-modules/cljs/wallet-raw.js"}}}
                                       :warning-handlers [status-im.utils.build/warning-handler]}
                                      :android
                                      {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod" "prod"]
-                                      :compiler         {:output-to          "index.android.js"
-                                                         :main               "env.android.main"
+                                      :compiler         {:main               "env.android.main"
                                                          :output-dir         "target/android-prod"
                                                          :static-fns         true
                                                          :fn-invoke-direct   true
@@ -136,18 +181,114 @@
                                                          :parallel-build     false
                                                          :elide-asserts      true
                                                          :externs            ["externs.js"]
-                                                         :language-in        :ecmascript5}
+                                                         :language-in        :es-2015
+                                                         :language-out       :es-2015
+                                                         :modules            {:cljs-base {:output-to "index.android.js"}
+                                                                              :module    {:entries   #{"status_im.ui.screens.wallet.settings.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.cryptokitties.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.cryptokitties.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.cryptostrikers.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.cryptostrikers.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.superrare.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.superrare.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.etheremon.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.etheremon.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.kudos.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.kudos.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.styles"
+                                                                                                       "status_im.ui.screens.wallet.custom_tokens.views"
+                                                                                                       "status_im.ui.screens.wallet.core"
+                                                                                                       "status_im.ui.screens.wallet.components.views"
+                                                                                                       "status_im.ui.screens.wallet.components.styles"
+                                                                                                       "status_im.ui.screens.wallet.transactions.views"
+                                                                                                       "status_im.ui.screens.wallet.transactions.styles"
+                                                                                                       "status_im.ui.screens.wallet.transaction_sent.views"
+                                                                                                       "status_im.ui.screens.wallet.transaction_sent.styles"
+                                                                                                       "status_im.ui.screens.wallet.navigation"
+                                                                                                       "status_im.ui.screens.wallet.choose_recipient.events"
+                                                                                                       "status_im.ui.screens.wallet.choose_recipient.request_details"
+                                                                                                       "status_im.ui.screens.wallet.choose_recipient.views"
+                                                                                                       "status_im.ui.screens.wallet.choose_recipient.styles"
+                                                                                                       "status_im.ui.screens.wallet.transaction_fee.views"
+                                                                                                       "status_im.ui.screens.wallet.request.events"
+                                                                                                       "status_im.ui.screens.wallet.request.db"
+                                                                                                       "status_im.ui.screens.wallet.request.views"
+                                                                                                       "status_im.ui.screens.wallet.request.styles"
+                                                                                                       "status_im.ui.screens.wallet.utils"
+                                                                                                       "status_im.ui.screens.wallet.main.views"
+                                                                                                       "status_im.ui.screens.wallet.main.styles"
+                                                                                                       "status_im.ui.screens.wallet.sign_message.views"
+                                                                                                       "status_im.ui.screens.wallet.send.events"
+                                                                                                       "status_im.ui.screens.wallet.send.db"
+                                                                                                       "status_im.ui.screens.wallet.send.animations"
+                                                                                                       "status_im.ui.screens.wallet.send.views"
+                                                                                                       "status_im.ui.screens.wallet.send.styles"
+                                                                                                       "status_im.ui.screens.wallet.styles"
+                                                                                                       "status_im.ui.screens.wallet.onboarding.views"
+                                                                                                       "status_im.ui.screens.wallet.onboarding.styles"}
+                                                                                          :output-to "status-modules/cljs/wallet-raw.js"}}}
                                       :warning-handlers [status-im.utils.build/warning-handler]}
                                      :desktop
                                      {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/desktop" "src" "env/prod" "prod"]
-                                      :compiler         {:output-to          "index.desktop.js"
-                                                         :main               "env.desktop.main"
+                                      :compiler         {:main               "env.desktop.main"
                                                          :output-dir         "target/desktop-prod"
                                                          :static-fns         true
+                                                         :fn-invoke-direct   true
                                                          :optimize-constants true
-                                                         :optimizations      :simple
+                                                         :optimizations      :advanced
                                                          :closure-defines    {"goog.DEBUG" false}
+                                                         :pseudo-names       false
+                                                         :pretty-print       false
                                                          :parallel-build     false
                                                          :elide-asserts      true
-                                                         :language-in        :ecmascript5}
+                                                         :language-in        :es-2015
+                                                         :language-out       :es-2015
+                                                         :modules            {:cljs-base {:output-to "index.desktop.js"}
+                                                                              :module    {:entries   #{"status_im.ui.screens.wallet.settings.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.cryptokitties.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.cryptokitties.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.cryptostrikers.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.cryptostrikers.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.superrare.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.superrare.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.etheremon.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.etheremon.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.kudos.events"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.kudos.views"
+                                                                                                       "status_im.ui.screens.wallet.collectibles.styles"
+                                                                                                       "status_im.ui.screens.wallet.custom_tokens.views"
+                                                                                                       "status_im.ui.screens.wallet.core"
+                                                                                                       "status_im.ui.screens.wallet.components.views"
+                                                                                                       "status_im.ui.screens.wallet.components.styles"
+                                                                                                       "status_im.ui.screens.wallet.transactions.views"
+                                                                                                       "status_im.ui.screens.wallet.transactions.styles"
+                                                                                                       "status_im.ui.screens.wallet.transaction_sent.views"
+                                                                                                       "status_im.ui.screens.wallet.transaction_sent.styles"
+                                                                                                       "status_im.ui.screens.wallet.navigation"
+                                                                                                       "status_im.ui.screens.wallet.choose_recipient.events"
+                                                                                                       "status_im.ui.screens.wallet.choose_recipient.request_details"
+                                                                                                       "status_im.ui.screens.wallet.choose_recipient.views"
+                                                                                                       "status_im.ui.screens.wallet.choose_recipient.styles"
+                                                                                                       "status_im.ui.screens.wallet.transaction_fee.views"
+                                                                                                       "status_im.ui.screens.wallet.request.events"
+                                                                                                       "status_im.ui.screens.wallet.request.db"
+                                                                                                       "status_im.ui.screens.wallet.request.views"
+                                                                                                       "status_im.ui.screens.wallet.request.styles"
+                                                                                                       "status_im.ui.screens.wallet.utils"
+                                                                                                       "status_im.ui.screens.wallet.main.views"
+                                                                                                       "status_im.ui.screens.wallet.main.styles"
+                                                                                                       "status_im.ui.screens.wallet.sign_message.views"
+                                                                                                       "status_im.ui.screens.wallet.send.events"
+                                                                                                       "status_im.ui.screens.wallet.send.db"
+                                                                                                       "status_im.ui.screens.wallet.send.animations"
+                                                                                                       "status_im.ui.screens.wallet.send.views"
+                                                                                                       "status_im.ui.screens.wallet.send.styles"
+                                                                                                       "status_im.ui.screens.wallet.styles"
+                                                                                                       "status_im.ui.screens.wallet.onboarding.views"
+                                                                                                       "status_im.ui.screens.wallet.onboarding.styles"}
+                                                                                          :output-to "status-modules/cljs/wallet-raw.js"}}}
                                       :warning-handlers [status-im.utils.build/warning-handler]}}}}})

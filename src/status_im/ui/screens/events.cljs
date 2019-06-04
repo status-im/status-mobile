@@ -10,16 +10,6 @@
             status-im.ui.screens.add-new.new-chat.navigation
             status-im.ui.screens.profile.events
             status-im.ui.screens.extensions.add.events
-            status-im.ui.screens.wallet.collectibles.events
-            status-im.ui.screens.wallet.send.events
-            status-im.ui.screens.wallet.request.events
-            status-im.ui.screens.wallet.choose-recipient.events
-            status-im.ui.screens.wallet.collectibles.cryptokitties.events
-            status-im.ui.screens.wallet.collectibles.cryptostrikers.events
-            status-im.ui.screens.wallet.collectibles.etheremon.events
-            status-im.ui.screens.wallet.collectibles.superrare.events
-            status-im.ui.screens.wallet.collectibles.kudos.events
-            status-im.ui.screens.wallet.navigation
             status-im.utils.keychain.events
             [re-frame.core :as re-frame]
             [status-im.chat.models :as chat]

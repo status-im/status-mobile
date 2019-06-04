@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.wallet.collectibles.events
   (:require [re-frame.core :as re-frame]
-            [status-im.browser.core :as browser]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.erc721 :as erc721]
@@ -67,8 +66,3 @@
  :load-collectible-failure
  (fn [{db :db} [_]]
    {:db db}))
-
-(handlers/register-handler-fx
- :open-collectible-in-browser
- (fn [cofx [_ url]]
-   (browser/open-url cofx url)))
