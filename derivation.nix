@@ -7,36 +7,40 @@ let
   platform = pkgs.callPackage ./nix/platform.nix { inherit target-os; };
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
   stdenv = pkgs.stdenvNoCC;
-  gradle = pkgs.gradle_4_10;
+  maven = pkgs.maven;
   baseGo = pkgs.go_1_11;
   go = pkgs.callPackage ./nix/go { inherit baseGo; };
   buildGoPackage = pkgs.buildGoPackage.override { inherit go; };
-  statusDesktop = pkgs.callPackage ./nix/desktop { inherit target-os stdenv status-go pkgs nodejs go; inherit (pkgs) darwin; go = baseGo; };
-  statusMobile = pkgs.callPackage ./nix/mobile { inherit target-os config stdenv pkgs nodejs status-go gradle; inherit (pkgs.xcodeenv) composeXcodeWrapper; };
-  status-go = pkgs.callPackage ./nix/status-go { inherit target-os go buildGoPackage; inherit (pkgs.xcodeenv) composeXcodeWrapper; inherit (statusMobile) xcodewrapperArgs; androidPkgs = statusMobile.androidComposition; };
+  desktop = pkgs.callPackage ./nix/desktop { inherit target-os stdenv status-go pkgs nodejs; inherit (pkgs) darwin; go = baseGo; };
+  mobile = pkgs.callPackage ./nix/mobile { inherit target-os config stdenv pkgs nodejs yarn status-go maven localMavenRepoBuilder mkFilter prod-build-fn; inherit (pkgs.xcodeenv) composeXcodeWrapper; };
+  status-go = pkgs.callPackage ./nix/status-go { inherit target-os go buildGoPackage; inherit (mobile.ios) xcodeWrapper; androidPkgs = mobile.android.androidComposition; };
+  mkFilter = import ./nix/tools/mkFilter.nix { inherit (stdenv) lib; };
+  localMavenRepoBuilder = pkgs.callPackage ./nix/tools/maven/maven-repo-builder.nix { inherit (pkgs) stdenv; };
+  prod-build-fn = pkgs.callPackage ./nix/targets/prod-build.nix { inherit stdenv pkgs target-os nodejs localMavenRepoBuilder mkFilter; };
   nodejs = pkgs.nodejs-10_x;
   yarn = pkgs.yarn.override { inherit nodejs; };
   nodePkgBuildInputs = [
     nodejs
+    pkgs.nodePackages_10_x.react-native-cli
     pkgs.python27 # for e.g. gyp
     yarn
   ];
   selectedSources =
-    stdenv.lib.optional platform.targetDesktop statusDesktop ++
-    stdenv.lib.optional platform.targetMobile statusMobile;
+    stdenv.lib.optional platform.targetDesktop desktop ++
+    stdenv.lib.optional platform.targetMobile mobile;
 
-in with stdenv; mkDerivation rec {
-  name = "status-react-build-env";
+in {
+  inherit mobile;
 
-  buildInputs = with pkgs; [
-    clojure
-    leiningen
-    maven
-    watchman
-  ] ++ nodePkgBuildInputs
-    ++ lib.optional isDarwin cocoapods
-    ++ lib.optional (isDarwin && !platform.targetIOS) clang
-    ++ lib.optional (!isDarwin) gcc8
-    ++ lib.catAttrs "buildInputs" selectedSources;
-  shellHook = lib.concatStrings (lib.catAttrs "shellHook" selectedSources);
+  shell = with stdenv; mkDerivation rec {
+    name = "status-react-build-env";
+
+    buildInputs = with pkgs;
+      nodePkgBuildInputs
+      ++ lib.optional isDarwin cocoapods
+      ++ lib.optional (isDarwin && !platform.targetIOS) clang
+      ++ lib.optional (!isDarwin) gcc8
+      ++ lib.catAttrs "buildInputs" selectedSources;
+    shellHook = lib.concatStrings (lib.catAttrs "shellHook" selectedSources);
+  };
 }

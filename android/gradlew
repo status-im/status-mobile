@@ -16,4 +16,10 @@ if [ "$(uname)" = "Darwin" ] && [ "$HOME" = "$PWD" ]; then
   cd "$(dirname "$0")"
 fi
 
-exec gradle "$@"
+# Map mavenLocal() to the Nix maven repo we set up in nix/mobile/android/maven-and-npm-deps/default.nix
+if [ -n "$STATUSREACT_NIX_MAVEN_REPO" ]; then
+  repoOpts="-Dmaven.repo.local=${STATUSREACT_NIX_MAVEN_REPO}"
+else
+  repoOpts=''
+fi
+exec gradle $repoOpts "$@"

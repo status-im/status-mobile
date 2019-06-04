@@ -41,6 +41,7 @@ project.xcworkspace
 # node.js
 #
 node_modules/
+node_modules.tmp/
 npm-debug.log
 yarn-error.log
 default.realm/
@@ -161,6 +162,7 @@ conan.cmake
 # nix
 /.ran-setup
 /.nix-gcroots/
+/.m2~
 
 # modules
 status-modules/translations

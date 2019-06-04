@@ -3,7 +3,7 @@
   target-os ? "all" }:
 
 let
-  projectDeps = import ./default.nix { inherit target-os pkgs nixpkgs-bootstrap; inherit (nixpkgs-bootstrap) config; };
+  projectDeps = (import ./default.nix { inherit target-os pkgs nixpkgs-bootstrap; inherit (nixpkgs-bootstrap) config; }).shell;
   platform = pkgs.callPackage ./nix/platform.nix { inherit target-os; };
   useFastlanePkg = (platform.targetAndroid && !stdenv.isDarwin);
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
@@ -30,6 +30,11 @@ in mkShell {
     ps # used in scripts/start-react-native.sh
     unzip
     wget
+
+    clojure
+    leiningen
+    maven
+    watchman
   ] ++
   (if useFastlanePkg then [ fastlane ] else with pkgs; lib.optionals platform.targetMobile [ bundler ruby ]); # bundler/ruby used for fastlane on macOS
   inputsFrom = [ projectDeps ];
@@ -38,7 +43,6 @@ in mkShell {
     set -e
 
     export STATUS_REACT_HOME=$(git rev-parse --show-toplevel)
-    export PATH=$STATUS_REACT_HOME/node_modules/.bin:$PATH
 
     ${projectDeps.shellHook}
     ${stdenv.lib.optionalString useFastlanePkg fastlane.shellHook}

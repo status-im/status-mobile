@@ -1,4 +1,4 @@
-.PHONY: add-gcroots clean clean-nix react-native-android react-native-ios react-native-desktop test release _list
+.PHONY: add-gcroots clean clean-nix disable-githooks react-native-android react-native-ios react-native-desktop test release _list _fix-perms
 
 help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
@@ -41,10 +41,13 @@ endif
 
 # Main targets
 
+_fix-perms: SHELL := /bin/sh
+_fix-perms: ##@prepare Fix permissions so that directory can be cleaned
+	$(shell test -d node_modules && chmod -R 744 node_modules)
+	$(shell test -d node_modules.tmp && chmod -R 744 node_modules.tmp)
+
 clean: SHELL := /bin/sh
-clean: ##@prepare Remove all output folders
-	@test -d node_modules && chmod -R 744 node_modules; \
-	test -d node_modules.tmp && chmod -R 744 node_modules.tmp; \
+clean: _fix-perms ##@prepare Remove all output folders
 	git clean -dxf -f
 
 clean-nix: SHELL := /bin/sh
@@ -54,6 +57,7 @@ clean-nix: ##@prepare Remove complete nix setup
 watchman-clean:
 	watchman watch-del $(PWD)
 
+add-gcroots: SHELL := /bin/sh
 add-gcroots: ##@prepare Add Nix GC roots to avoid status-react expressions being garbage collected
 	scripts/add-gcroots.sh
 
@@ -64,60 +68,65 @@ else
 	@echo "Nix shell is already active"
 endif
 
+disable-githooks: SHELL := /bin/sh
+disable-githooks:
+	@rm -f ${env.WORKSPACE}/.git/hooks/pre-commit && \
+	sed -i'~' -e 's|\[rasom/lein-githooks|;; [rasom/lein-githooks|' \
+		-e 's|:githooks|;; :githooks|' \
+		-e 's|:pre-commit|;; :pre-commit|' project.clj; \
+	rm project.clj~
+
 #----------------
 # Release builds
 #----------------
 release: release-android release-ios ##@build build release for Android and iOS
 
+release-android: SHELL := /bin/sh
 release-android: export TARGET_OS ?= android
 release-android: export BUILD_ENV ?= prod
 release-android: ##@build build release for Android
-	@$(MAKE) prod-build-android && \
-	cp -R translations status-modules/translations && \
-	cp -R status-modules node_modules/status-modules && \
-	react-native run-android --variant=release
+	scripts/release-$(TARGET_OS).sh
 
 release-ios: export TARGET_OS ?= ios
 release-ios: export BUILD_ENV ?= prod
 release-ios: ##@build build release for iOS release
 	# Open XCode inside the Nix context
-	@$(MAKE) prod-build-ios && \
+	@watchman watch-del $${STATUS_REACT_HOME} && \
+	git clean -dxf -f target/ios && \
+	$(MAKE) prod-build-ios && \
 	echo "Build in XCode, see https://status.im/build_status/ for instructions" && \
-	cp -R translations status-modules/translations && \
-	cp -R status-modules node_modules/status-modules && \
+	scripts/copy-translations.sh && \
 	open ios/StatusIm.xcworkspace
 
 release-desktop: export TARGET_OS ?= $(HOST_OS)
 release-desktop: ##@build build release for desktop release
 	@$(MAKE) prod-build-desktop && \
-	cp -R translations status-modules/translations && \
-	cp -R status-modules node_modules/status-modules && \
-	scripts/build-desktop.sh
+	scripts/copy-translations.sh && \
+	scripts/build-desktop.sh; \
+	watchman watch-del $${STATUS_REACT_HOME}
 
 release-windows-desktop: export TARGET_OS ?= windows
 release-windows-desktop: ##@build build release for desktop release
 	@$(MAKE) prod-build-desktop && \
-	cp -R translations status-modules/translations && \
-	cp -R status-modules node_modules/status-modules && \
-	scripts/build-desktop.sh
+	scripts/copy-translations.sh && \
+	scripts/build-desktop.sh; \
+	watchman watch-del $${STATUS_REACT_HOME}
 
-prod-build: export TARGET_OS ?= all
-prod-build:
-	scripts/prepare-for-platform.sh android && \
-	scripts/prepare-for-platform.sh ios && \
-	lein prod-build
-
+prod-build-android: SHELL := /bin/sh
 prod-build-android: export TARGET_OS ?= android
 prod-build-android: export BUILD_ENV ?= prod
 prod-build-android:
-	lein prod-build-android && \
-	node prepare-modules.js
+	@git clean -dxf -f ./index.$(TARGET_OS).js && \
+	_NIX_RESULT_PATH=$(shell . ~/.nix-profile/etc/profile.d/nix.sh && nix-build --argstr target-os $(TARGET_OS) --pure --no-out-link --show-trace -A targets.mobile.prod-build) && \
+	[ -n "$${_NIX_RESULT_PATH}" ] && cp -av $${_NIX_RESULT_PATH}/* .
 
 prod-build-ios: export TARGET_OS ?= ios
 prod-build-ios: export BUILD_ENV ?= prod
 prod-build-ios:
+	@git clean -dxf -f ./index.$(TARGET_OS).js && \
 	lein prod-build-ios && \
-	node prepare-modules.js
+	node prepare-modules.js && \
+	sed -i'' "s|$${STATUS_REACT_HOME}|.|g" index.$(TARGET_OS).js
 
 prod-build-desktop: export TARGET_OS ?= $(HOST_OS)
 prod-build-desktop: export BUILD_ENV ?= prod
@@ -125,6 +134,7 @@ prod-build-desktop:
 	git clean -qdxf -f ./index.desktop.js desktop/ && \
 	lein prod-build-desktop && \
 	node prepare-modules.js
+	sed -i'' "s|$${STATUS_REACT_HOME}|.|g" index.desktop.js
 
 #--------------
 # REPL
@@ -165,6 +175,7 @@ _run-%:
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
 	npx react-native run-$(SYSTEM)
 
+# TODO: Migrate this to a Nix recipe, much the same way as nix/mobile/android/targets/release-android.nix
 run-android: export TARGET_OS ?= android
 run-android: ##@run Run Android build
 	npx react-native run-android --appIdSuffix debug

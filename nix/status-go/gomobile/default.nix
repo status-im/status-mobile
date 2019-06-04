@@ -1,12 +1,11 @@
 { stdenv, target-os, callPackage, utils, fetchgit,
   buildGoPackage, glibc, ncurses5, zlib, makeWrapper, patchelf,
-  platform-tools, composeXcodeWrapper, xcodewrapperArgs ? {}
+  platform-tools, xcodeWrapper
 }:
 
 with stdenv;
 
 let
-  xcodeWrapper = composeXcodeWrapper xcodewrapperArgs;
   platform = callPackage ../../platform.nix { inherit target-os; };
 
 in buildGoPackage rec {

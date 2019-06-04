@@ -35,9 +35,14 @@ pipeline {
     stage('Build') {
       steps {
         sh """
+          args="--argstr target-os android --show-trace -A targets.mobile.prod-build"
           . ~/.nix-profile/etc/profile.d/nix.sh && \
-          nix build -v --no-link && \
-          nix-shell --pure --run echo
+          nix build -v --no-link --show-trace && \
+          nix-shell --pure --run echo --show-trace && \
+          nix-build --pure --no-out-link \$args
+
+          prodBuildDrv=\$(nix-instantiate --quiet \$args) && \
+          nix-store --delete \$prodBuildDrv
         """
       }
     }
@@ -47,7 +52,8 @@ pipeline {
           sh """
             . ~/.nix-profile/etc/profile.d/nix.sh && \
             find /nix/store/ -mindepth 1 -maxdepth 1 -not -name '.links' -and -not -name '*.lock' | \
-              xargs nix-copy-closure -v --to ${NIX_CACHE_USER}@${NIX_CACHE_HOST}
+              xargs nix-copy-closure -v --to ${NIX_CACHE_USER}@${NIX_CACHE_HOST} && \
+            nix-store --optimize
           """
         }
       }

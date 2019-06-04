@@ -21,7 +21,7 @@ let nodePackages = import ./output { inherit pkgs nodejs; };
       "$out/lib/node_modules/realm/compiled/node-v64_darwin_x64/realm.node" else
       "$out/lib/node_modules/realm/compiled/node-v64_linux_x64/realm.node";
 in nodePackages // {
-  ${realm-patched-name} = nodePackages.${realm-patched-name}.override(oldAttrs: {
+  "${realm-patched-name}" = nodePackages."${realm-patched-name}".override(oldAttrs: {
     reconstructLock = true;
     preRebuild = ''
       # Do not attempt to do any http calls!
