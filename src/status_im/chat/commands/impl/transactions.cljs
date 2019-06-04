@@ -87,7 +87,7 @@
   [label-key {:keys [content]}]
   (let [{:keys [amount coin]} (:params content)]
     [react/text {:number-of-lines 1}
-     (i18n/label label-key {:amount (i18n/label-number amount)
+     (i18n/label label-key {:amount amount
                             :asset  (wallet.utils/display-symbol coin)})]))
 
 (def personal-send-request-params
