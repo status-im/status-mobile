@@ -162,5 +162,6 @@ conan.cmake
 /.ran-setup
 /.nix-gcroots/
 
-#modules
+# modules
 status-modules/translations
+status-modules/cljs

@@ -63,6 +63,7 @@ endif
 release: release-android release-ios ##@build build release for Android and iOS
 
 release-android: export TARGET_OS ?= android
+release-android: export BUILD_ENV ?= prod
 release-android: ##@build build release for Android
 	@$(MAKE) prod-build-android && \
 	cp -R translations status-modules/translations && \
@@ -70,6 +71,7 @@ release-android: ##@build build release for Android
 	react-native run-android --variant=release
 
 release-ios: export TARGET_OS ?= ios
+release-ios: export BUILD_ENV ?= prod
 release-ios: ##@build build release for iOS release
 	# Open XCode inside the Nix context
 	@$(MAKE) prod-build-ios && \
@@ -100,16 +102,21 @@ prod-build:
 
 prod-build-android: export TARGET_OS ?= android
 prod-build-android:
-	lein prod-build-android
+	BUILD_ENV=prod lein prod-build-android && \
+	node prepare-modules.js
 
 prod-build-ios: export TARGET_OS ?= ios
+prod-build-ios: export BUILD_ENV = prod
 prod-build-ios:
-	lein prod-build-ios
+	BUILD_ENV=prod lein prod-build-ios && \
+	node prepare-modules.js
 
 prod-build-desktop: export TARGET_OS ?= $(HOST_OS)
+prod-build-desktop: export BUILD_ENV = prod
 prod-build-desktop:
 	git clean -qdxf -f ./index.desktop.js desktop/ && \
-	lein prod-build-desktop
+	BUILD_ENV=prod lein prod-build-desktop && \
+	node prepare-modules.js
 
 #--------------
 # REPL
