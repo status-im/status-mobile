@@ -89,7 +89,7 @@ def uploadToDiawi() {
       keep: ['FASTLANE_DISABLE_COLORS', 'APK_PATH', 'DIAWI_TOKEN']
     )
   }
-  diawiUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
+  diawiUrl = readFile "${SRC}/fastlane/diawi.out"
   return diawiUrl
 }
 

@@ -27,7 +27,7 @@ def shell(Map opts = [:], String cmd) {
         ${keepFlags.join(" ")} \\
         ${argsFlags.join(" ")} \\
         --run \'${cmd}\' \\
-        \'${env.WORKSPACE}/shell.nix\'
+        \'${SRC}/shell.nix\'
   """
 }
 

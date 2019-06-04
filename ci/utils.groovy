@@ -2,9 +2,9 @@ nix = load 'ci/nix.groovy'
 
 def getVersion(type = null) {
   /* if type is undefined we get VERSION from repo root */
-  def path = "${env.WORKSPACE}/VERSION"
+  def path = "${SRC}/VERSION"
   if (type != null) {
-    path = "${env.WORKSPACE}/${type}/VERSION"
+    path = "${SRC}/${type}/VERSION"
   }
   return readFile(path).trim()
 }
@@ -12,7 +12,7 @@ def getVersion(type = null) {
 def getToolVersion(name) {
   def version = sh(
     returnStdout: true,
-    script: "${env.WORKSPACE}/scripts/toolversion ${name}"
+    script: "${SRC}/scripts/toolversion ${name}"
   ).trim()
   return version
 }
@@ -185,7 +185,7 @@ def changeId() {
 }
 
 def updateEnv(type) {
-  def envFile = "${env.WORKSPACE}/.env"
+  def envFile = "${SRC}/.env"
   /* select .env based on type of build */
   def selectedEnv = '.env.jenkins'
   switch (type) {

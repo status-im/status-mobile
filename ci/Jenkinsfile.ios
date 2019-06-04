@@ -13,6 +13,8 @@ pipeline {
     timestamps()
     /* Prevent Jenkins jobs from running forever */
     timeout(time: 45, unit: 'MINUTES')
+    /* make project dir the same for consisten nix src */
+    checkoutToSubdirectory('status-react')
     /* Limit builds retained */
     buildDiscarder(logRotator(
       numToKeepStr: '10',
@@ -22,11 +24,14 @@ pipeline {
   }
 
   environment {
+    /* change workspace to keep it consistent for nix src */
+    SRC = "${WORKSPACE}/status-react"
+    /* locale */
     LANG     = "en_US.UTF-8"
     LC_ALL   = "en_US.UTF-8"
     LANGUAGE = "en_US.UTF-8"
     TARGET_OS = 'ios'
-    NIX_CONF_DIR = "${env.WORKSPACE}/nix"
+    NIX_CONF_DIR = "${SRC}/nix"
     FASTLANE_DISABLE_COLORS = 1
     REALM_DISABLE_ANALYTICS = 1
     BUNDLE_PATH = "${HOME}/.bundle"
@@ -38,46 +43,46 @@ pipeline {
 
   stages {
     stage('Prep') {
-      steps {
+      steps { dir(SRC) {
         script {
           /* Necessary to load methods */
-          mobile = load 'ci/mobile.groovy'
-          cmn    = load 'ci/common.groovy'
+          mobile = load("${SRC}/ci/mobile.groovy")
+          cmn    = load("${SRC}/ci/common.groovy")
           btype  = cmn.utils.getBuildType()
           print "Running ${btype} build!"
           cmn.ci.abortPreviousRunningBuilds()
           /* Cleanup and Prep */
           cmn.prep(btype)
         }
-      }
+      } }
     }
     stage('Lint') {
-      steps {
+      steps { dir(SRC) {
         script { cmn.nix.shell('lein cljfmt check') }
-      }
+      } }
     }
     stage('Tests') {
-      steps {
+      steps { dir(SRC) {
         script { cmn.nix.shell('lein test-cljs') }
-      }
+      } }
     }
     stage('Build') {
-      steps {
+      steps { dir(SRC) {
         script { cmn.nix.shell('lein prod-build-ios') }
-      }
+      } }
     }
     stage('Bundle') {
-      steps {
+      steps { dir(SRC) {
         script { api = mobile.ios.bundle() }
-      }
+      } }
     }
     stage('Archive') {
-      steps {
+      steps { dir(SRC) {
         archiveArtifacts api
-      }
+      } }
     }
     stage('Upload') {
-      steps {
+      steps { dir(SRC) {
         script {
           env.PKG_URL = cmn.utils.uploadArtifact(api)
           /* e2e builds get tested in SauceLabs */
@@ -87,16 +92,20 @@ pipeline {
             env.DIAWI_URL = mobile.ios.uploadToDiawi()
           }
         }
-      }
+      } }
     }
     stage('Cleanup') {
-      steps {
+      steps { dir(SRC) {
         sh 'make clean'
-      }
+      } }
     }
   }
   post {
-    success { script { load('ci/common.groovy').notifyPR(true) } }
-    failure { script { load('ci/common.groovy').notifyPR(false) } }
+    success { dir(SRC) { script {
+      load('ci/common.groovy').notifyPR(true)
+    } } }
+    failure { dir(SRC) { script {
+      load('ci/common.groovy').notifyPR(false)
+    } } }
   }
 }
