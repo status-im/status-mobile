@@ -4,6 +4,7 @@ from support.utilities import generate_timestamp
 from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
+from datetime import datetime, timedelta
 
 
 @marks.chat
@@ -179,3 +180,22 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         home = chat.get_back_to_home_view()
         if not home.chat_name_text.text == tag_message:
             self.driver.fail('Could not find the public chat in user chat list.')
+
+    @marks.testrail_id(6205)
+    @marks.high
+    def test_fetch_more_history_in_empty_chat(self):
+        signin = SignInView(self.driver)
+        yesterday = (datetime.today() - timedelta(days=1)).strftime("%b %-d, %Y")
+        before_yesterday = (datetime.today() - timedelta(days=2)).strftime("%b %-d, %Y")
+        quiet_time_yesterday, quiet_time_before_yesterday = '24 hours', '2 days'
+        home_view = signin.create_user()
+        chat = home_view.join_public_chat('montagne-angerufen-two')
+        for message in (yesterday, quiet_time_yesterday):
+            if not chat.element_by_text_part(message).is_element_displayed():
+                self.driver.fail('"%s" is not shown' % message)
+        chat.element_starts_with_text("↓ Fetch more messages").click()
+        chat.wait_for_element_starts_with_text("↓ Fetch more messages", 30)
+        for message in (before_yesterday, quiet_time_before_yesterday):
+            if not chat.element_by_text_part(message).is_element_displayed():
+                self.driver.fail('"%s" is not shown' % message)
+        self.verify_no_errors()

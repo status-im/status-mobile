@@ -164,6 +164,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view.sign_in()
         profile_view = sign_in_view.profile_button.click()
         profile_view.advanced_button.click()
+        profile_view.network_settings_button.scroll_to_element(10, 'up')
         profile_view.find_text_part('custom_ropsten')
 
     @marks.logcat
@@ -258,8 +259,9 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile = home_view.profile_button.click()
         profile.switch_network(network_name)
         profile = home_view.profile_button.click()
+        profile.network_settings_button.scroll_to_element()
         if not profile.current_active_network == network_name:
-            self.driver.fail('Oops! Wrong network selected!')
+             self.driver.fail('Oops! Wrong network selected!')
 
     @marks.testrail_id(5453)
     @marks.medium

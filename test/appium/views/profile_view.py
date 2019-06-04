@@ -533,7 +533,7 @@ class ProfileView(BaseView):
     def switch_network(self, network):
         self.advanced_button.click()
         self.debug_mode_toggle.click()
-        self.network_settings_button.scroll_to_element()
+        self.network_settings_button.scroll_to_element(10, 'up')
         self.network_settings_button.click()
         network_button = NetworkSettingsButton.NetworkButton(self.driver, network)
         network_button.click()
@@ -649,5 +649,5 @@ class ProfileView(BaseView):
     @property
     def current_active_network(self):
         self.advanced_button.click()
-        self.active_network_name.scroll_to_element()
+        self.active_network_name.scroll_to_element(10, 'up')
         return self.active_network_name.text
