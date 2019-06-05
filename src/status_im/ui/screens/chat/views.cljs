@@ -364,6 +364,7 @@
                                           :idx                idx
                                           :list-ref           messages-list-ref}])
            :inverted                  true
+           :initialNumToRender        0
            :onEndReachedThreshold     5
            :onEndReached              #(re-frame/dispatch
                                         [:chat.ui/load-more-messages])
