@@ -4,22 +4,17 @@
             [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
-            [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.hex :as hex]
-            [status-im.utils.money :as money]
             [status-im.utils.types :as types]
-            [status-im.wallet.core :as wallet]))
+            [status-im.signing.core :as signing]))
 
 (handlers/register-handler-fx
  :extensions/wallet-ui-on-success
- (fn [cofx [_ on-success _ result _]]
-   (fx/merge cofx
-             (when on-success (on-success {:value result}))
-             (navigation/navigate-back))))
+ (fn [_ [_ on-success result]]
+   (when on-success (on-success {:value result}))))
 
 (handlers/register-handler-fx
  :extensions/wallet-ui-on-failure
@@ -42,35 +37,11 @@
                       #(f db (assoc arguments address-keyword %))))
       (f db arguments))))
 
-(defn prepare-extension-transaction [params contacts on-success on-failure]
-  (let [{:keys [to value data gas gasPrice nonce]} params
-        contact (get contacts (hex/normalize-hex to))]
-    (cond-> {:id               "extension-id"
-             :to-name          (or (when (nil? to)
-                                     (i18n/label :t/new-contract))
-                                   contact)
-             :symbol           :ETH
-             :method           constants/web3-send-transaction
-             :to               to
-             :amount           (money/bignumber (or value 0))
-             :gas              (cond
-                                 gas
-                                 (money/bignumber gas)
-                                 (and value (empty? data))
-                                 (money/bignumber 21000))
-             :gas-price        (when gasPrice
-                                 (money/bignumber gasPrice))
-             :data             data
-             :on-result        [:extensions/wallet-ui-on-success on-success]
-             :on-error         [:extensions/wallet-ui-on-failure on-failure]}
-      nonce
-      (assoc :nonce nonce))))
-
 (defn- execute-send-transaction [db {:keys [method params on-success on-failure] :as arguments}]
-  (let [tx-object (assoc (select-keys arguments [:to :gas :gas-price :value :nonce])
-                         :data (when (and method params) (abi-spec/encode method params)))
-        transaction (prepare-extension-transaction tx-object (:contacts/contacts db) on-success on-failure)]
-    (wallet/open-modal-wallet-for-transaction db transaction tx-object)))
+  (signing/sign {:db db} {:tx-obj    (assoc (select-keys arguments [:to :gas :gas-price :value :nonce])
+                                            :data (when (and method params) (abi-spec/encode method params)))
+                          :on-result [:extensions/wallet-ui-on-success on-success]
+                          :on-error  [:extensions/wallet-ui-on-failure on-failure]}))
 
 (handlers/register-handler-fx
  :extensions/ethereum-send-transaction
@@ -381,22 +352,16 @@
      (when on-failure
        (on-failure {:value (str "'" name "' is not a valid name")})))))
 
-;; EXTENSION SIGN -> SIGN MESSAGE
 (handlers/register-handler-fx
  :extensions/ethereum-sign
  (fn [{db :db :as cofx} [_ _ {:keys [message data id on-success on-failure]}]]
    (if (and message data)
      (when on-failure
        (on-failure {:error "only one of :message and :data can be used"}))
-     (fx/merge cofx
-               {:db (assoc-in db [:wallet :send-transaction]
-                              {:id                id
-                               :from             (ethereum/current-address db)
-                               :data             (or data (ethereum/utf8-to-hex message))
-                               :on-result        [:extensions/wallet-ui-on-success on-success]
-                               :on-error         [:extensions/wallet-ui-on-failure on-failure]
-                               :method           constants/web3-personal-sign})}
-               (navigation/navigate-to-cofx :wallet-sign-message-modal nil)))))
+     (signing/sign cofx {:message   {:address (ethereum/current-address db)
+                                     :data    (or data (ethereum/utf8-to-hex message))}
+                         :on-result [:extensions/wallet-ui-on-success on-success]
+                         :on-error  [:extensions/wallet-ui-on-failure on-failure]}))))
 
 (handlers/register-handler-fx
  :extensions/ethereum-create-address

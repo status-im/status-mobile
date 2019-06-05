@@ -53,10 +53,10 @@
                    ;; See https://github.com/facebook/react-native/issues/13760
                    :overflow      :hidden}})
 
-(def primary-button
+(defn primary-button [disabled?]
   (merge
    button-borders
-   {:background-color colors/blue}))
+   {:background-color (if disabled? (colors/alpha colors/gray 0.1) colors/blue)}))
 
 (def primary-button-text {:color colors/white})
 

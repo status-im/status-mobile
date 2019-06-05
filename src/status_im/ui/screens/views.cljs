@@ -13,7 +13,8 @@
             [status-im.utils.platform :as platform]
             [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
             [status-im.ui.screens.home.sheet.views :as home.sheet]
-            [status-im.ui.screens.routing.core :as routing]))
+            [status-im.ui.screens.routing.core :as routing]
+            [status-im.ui.screens.signing.views :as signing]))
 
 (defonce rand-label (when js/goog.DEBUG (rand/id)))
 
@@ -97,5 +98,5 @@
                                  (navigation/navigate-to @view-id nil)))
              ;; see https://reactnavigation.org/docs/en/state-persistence.html#development-mode
              :persistenceKey (when js/goog.DEBUG rand-label)}]
+           [signing/signing]
            [bottom-sheet]]))})))
-

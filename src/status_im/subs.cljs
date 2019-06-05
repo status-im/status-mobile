@@ -40,6 +40,7 @@
             [status-im.utils.universal-links.core :as links]
             [status-im.wallet.core :as wallet]
             [status-im.wallet.db :as wallet.db]
+            [status-im.signing.gas :as signing.gas]
             status-im.ui.screens.hardwallet.connect.subs
             status-im.ui.screens.hardwallet.settings.subs
             status-im.ui.screens.hardwallet.pin.subs
@@ -162,6 +163,11 @@
 
 ;;ethereum
 (reg-root-key-sub :ethereum/current-block :ethereum/current-block)
+
+;;signing
+(reg-root-key-sub :signing/tx :signing/tx)
+(reg-root-key-sub :signing/sign :signing/sign)
+(reg-root-key-sub :signing/edit-fee :signing/edit-fee)
 
 ;;GENERAL ==============================================================================================================
 
@@ -1303,51 +1309,16 @@
    (:send-transaction wallet)))
 
 (re-frame/reg-sub
- :wallet.send/advanced?
+ :wallet.send/symbol
  :<- [::send-transaction]
  (fn [send-transaction]
-   (:advanced? send-transaction)))
+   (:symbol send-transaction)))
 
 (re-frame/reg-sub
  :wallet.send/camera-flashlight
  :<- [::send-transaction]
  (fn [send-transaction]
    (:camera-flashlight send-transaction)))
-
-(re-frame/reg-sub
- :wallet.send/wrong-password?
- :<- [::send-transaction]
- (fn [send-transaction]
-   (:wrong-password? send-transaction)))
-
-(re-frame/reg-sub
- :wallet.send/sign-password-enabled?
- :<- [::send-transaction]
- (fn [{:keys [password]}]
-   (and (not (nil? password)) (not= password ""))))
-
-(defn edit-or-transaction-data
-  "Set up edit data structure, defaulting to transaction when not available"
-  [transaction edit]
-  (cond-> edit
-    (not (get-in edit [:gas-price :value]))
-    (wallet/build-edit
-     :gas-price
-     (money/to-fixed (money/wei-> :gwei (:gas-price transaction))))
-
-    (not (get-in edit [:gas :value]))
-    (wallet/build-edit
-     :gas
-     (money/to-fixed (:gas transaction)))))
-
-(re-frame/reg-sub
- :wallet/edit
- :<- [::send-transaction]
- :<- [:wallet]
- (fn [[send-transaction {:keys [edit]}]]
-   (edit-or-transaction-data
-    send-transaction
-    edit)))
 
 (defn check-sufficient-funds
   [{:keys [sufficient-funds?] :as transaction} balance symbol amount]
@@ -1377,16 +1348,8 @@
  :<- [:balance]
  (fn [[{:keys [amount symbol] :as transaction} balance]]
    (-> transaction
-       (wallet/add-max-fee)
        (check-sufficient-funds balance symbol amount)
        (check-sufficient-gas balance symbol amount))))
-
-(re-frame/reg-sub
- :wallet.send/signing-phrase-with-padding
- :<- [:account/account]
- (fn [{:keys [signing-phrase]}]
-   (when signing-phrase
-     (clojure.string/replace signing-phrase #" " "     "))))
 
 (re-frame/reg-sub
  :wallet/settings
@@ -1868,3 +1831,66 @@
                             (or (string/blank? screen-snt-amount)
                                 (#{"0" "0.0" "0.00"} screen-snt-amount)
                                 (string/ends-with? screen-snt-amount ".")))))))))
+
+;;SIGNING =============================================================================================================
+
+(re-frame/reg-sub
+ :signing/fee
+ :<- [:signing/tx]
+ (fn [{:keys [gas gasPrice]}]
+   (signing.gas/calculate-max-fee gas gasPrice)))
+
+(re-frame/reg-sub
+ :signing/phrase
+ :<- [:account/account]
+ (fn [{:keys [signing-phrase]}]
+   signing-phrase))
+
+(defn- too-precise-amount?
+  "Checks if number has any extra digit beyond the allowed number of decimals.
+  It does so by checking the number against its rounded value."
+  [amount decimals]
+  (let [bn (money/bignumber amount)]
+    (not (.eq bn (.round bn decimals)))))
+
+(defn get-amount-error [amount decimals]
+  (when (and (not (empty? amount)) decimals)
+    (let [normalized-amount (money/normalize amount)
+          value             (money/bignumber normalized-amount)]
+      (cond
+        (not (money/valid? value))
+        {:amount-error (i18n/label :t/validation-amount-invalid-number)}
+
+        (too-precise-amount? normalized-amount decimals)
+        {:amount-error (i18n/label :t/validation-amount-is-too-precise {:decimals decimals})}
+
+        :else nil))))
+
+(defn get-sufficient-funds-error
+  [balance symbol amount]
+  (when-not (money/sufficient-funds? amount (get balance symbol))
+    {:amount-error (i18n/label :t/wallet-insufficient-funds)}))
+
+(defn get-sufficient-gas-error
+  [balance symbol amount gas gasPrice]
+  (if (and gas gasPrice)
+    (let [fee               (.times gas gasPrice)
+          available-ether   (money/bignumber (get balance :ETH 0))
+          available-for-gas (if (= :ETH symbol)
+                              (.minus available-ether (money/bignumber amount))
+                              available-ether)]
+      (when-not (money/sufficient-funds? fee (money/bignumber available-for-gas))
+        {:gas-error (i18n/label :t/wallet-insufficient-gas)}))
+    {:gas-error (i18n/label :t/invalid-number)}))
+
+(re-frame/reg-sub
+ :signing/amount-errors
+ :<- [:signing/tx]
+ :<- [:balance]
+ (fn [[{:keys [amount token gas gasPrice approve?]} balance]]
+   (if (and amount token (not approve?))
+     (let [amount-bn (money/formatted->internal (money/bignumber amount) (:symbol token) (:decimals token))
+           amount-error (or (get-amount-error amount (:decimals token))
+                            (get-sufficient-funds-error balance (:symbol token) amount-bn))]
+       (or amount-error (get-sufficient-gas-error balance (:symbol token) amount-bn gas gasPrice)))
+     (get-sufficient-gas-error balance nil nil gas gasPrice))))

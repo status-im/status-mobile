@@ -74,8 +74,6 @@
     :wallet-add-custom-token         {:type :wallet}
     :wallet-sign-message-modal       {:type :modal-wallet}
     :wallet-settings-hook            {:type :wallet}
-    :wallet-transaction-sent         {:type :transparent}
-    :wallet-transaction-sent-modal   {:type :modal-wallet}
     :wallet-transactions-filter      {:type :modal-main}}
    view-id))
 

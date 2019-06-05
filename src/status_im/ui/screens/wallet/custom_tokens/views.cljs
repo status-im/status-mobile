@@ -52,6 +52,7 @@
         :default-value  contract
         :multiline      true
         :height         78
+        :auto-focus     false
         :placeholder    (i18n/label :t/specify-address)}]
       [react/view {:height 16}]
       [text-input/text-input-with-label
@@ -59,6 +60,7 @@
         :label          (i18n/label :t/name)
         :default-value  name
         :error          error-name
+        :auto-focus     false
         :placeholder    (i18n/label :t/name-of-token)}]
       [react/view {:height 16}]
       [react/view {:style {:flex-direction :row}}
@@ -68,6 +70,7 @@
           :label          (i18n/label :t/symbol)
           :error          error-symbol
           :default-value  symbol
+          :auto-focus     false
           :placeholder    "ABC"}]]
        [react/view {:flex 1 :margin-left 33}
         [text-input/text-input-with-label
@@ -76,6 +79,7 @@
           :default-value  decimals
           :keyboard-type  :number-pad
           :max-length     2
+          :auto-focus     false
           :placeholder    "18"}]]]
       [react/view {:height 16}]
       [text-input/text-input-with-label

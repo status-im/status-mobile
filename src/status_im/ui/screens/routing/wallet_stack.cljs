@@ -5,12 +5,10 @@
    :screens [:wallet
              :collectibles-list
              :wallet-onboarding-setup
-             :wallet-send-transaction-chat
              :contact-code
              {:name    :send-transaction-stack
               :screens [:wallet-send-transaction
                         :recent-recipients
-                        :wallet-transaction-sent
                         :enter-pin-sign
                         :hardwallet-connect-sign
                         :recipient-qr-code

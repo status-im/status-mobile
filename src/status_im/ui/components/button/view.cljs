@@ -18,13 +18,13 @@
     [react/text {:style      (merge styles/button-text
                                     text-style
                                     (when disabled?
-                                      {:opacity 0.4}))}
+                                      {:color colors/gray}))}
      label]
     icon]])
 
-(defn primary-button [{:keys [style text-style] :as m} label]
+(defn primary-button [{:keys [style text-style disabled?] :as m} label]
   [button (assoc m
-                 :style        (merge styles/primary-button style)
+                 :style        (merge (styles/primary-button disabled?) style)
                  :text-style   (merge styles/primary-button-text text-style))
    label])
 

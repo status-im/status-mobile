@@ -102,7 +102,7 @@
                  height content on-cancel]
           :or   {on-cancel #(re-frame/dispatch [:bottom-sheet/hide])}
           :as   opts}]
-      [react/view
+      [react/keyboard-avoiding-view
        (merge
         (pan-handlers (swipe-pan-responder opts))
         {:style styles/container})

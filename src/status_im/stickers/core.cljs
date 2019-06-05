@@ -11,7 +11,7 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.multihash :as multihash]
             [status-im.utils.utils :as utils]
-            [status-im.wallet.core :as wallet]))
+            [status-im.signing.core :as signing]))
 
 (defn pack-data-callback
   [id open?]
@@ -142,17 +142,15 @@
 (fx/defn approve-pack
   [{db :db :as cofx} pack-id price]
   (let [address           (ethereum/current-address db)
-        chain             (ethereum/chain-keyword db)
         stickers-contract (contracts/get-address db :status/stickers)
         snt-contract      (contracts/get-address db :status/snt)]
-    (wallet/eth-transaction-call
+    (signing/eth-transaction-call
      cofx
      {:contract snt-contract
       :method "approveAndCall(address,uint256,bytes)"
       :params [stickers-contract
                price
-               (abi-spec/encode "buyToken(uint256,address)"
-                                [pack-id address])]
+               (abi-spec/encode "buyToken(uint256,address)" [pack-id address])]
       :on-result [:stickers/pending-pack pack-id]})))
 
 (fx/defn pending-pack
@@ -163,7 +161,6 @@
       (fx/merge cofx
                 {:db (update db :stickers/packs-pending conj id)
                  :stickers/owned-packs-fx [contract address]}
-                (navigation/navigate-to-clean :wallet-transaction-sent-modal {})
                 #(when (zero? (count (:stickers/packs-pending db)))
                    {:stickers/set-pending-timout-fx nil})))))
 

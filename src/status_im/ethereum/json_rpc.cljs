@@ -13,7 +13,7 @@
    "eth_getBalance"
    {:on-result money/bignumber}
    "eth_estimateGas"
-   {:on-result money/bignumber}
+   {:on-result #(money/bignumber (int (* % 1.2)))}
    "eth_gasPrice"
    {:on-result money/bignumber}
    "eth_getBlockByHash"

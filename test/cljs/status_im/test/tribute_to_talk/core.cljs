@@ -61,39 +61,6 @@
                        :tribute-to-talk {:snt-amount "1000000000000000000"}}}
         :wallet {:balance {:STT (money/bignumber "1000000000000000000")}}}})
 
-(deftest pay-tribute
-  (testing "transaction with enough funds"
-    (let [results (tribute-to-talk/pay-tribute
-                   user-cofx
-                   recipient-pk)]
-      (is (=  (dissoc (get-in results [:db :wallet :send-transaction]) :amount)
-              {:on-result
-               [:tribute-to-talk.callback/pay-tribute-transaction-sent
-                "0x04263d74e55775280e75b4a4e9a45ba59fc372793a869c5d9c4fa2100556d9963e3f4fbfa1724ec94a46e6da057540ab248ed1f5eb956e36e3129ecd50fade2c97"],
-               :to-name "bob",
-               :amount-text "1",
-               :method "eth_sendTransaction",
-               :symbol :ETH,
-               :send-transaction-message? true,
-               :from-chat? true,
-               :from "0x954d4393515747ea75808a0301fb73317ae1e460",
-               :id "approve",
-               :sufficient-funds? true,
-               :on-error nil,
-               :public-key
-               "0x04263d74e55775280e75b4a4e9a45ba59fc372793a869c5d9c4fa2100556d9963e3f4fbfa1724ec94a46e6da057540ab248ed1f5eb956e36e3129ecd50fade2c97",
-               :asset :STT,
-               :to "0xc55cf4b03948d7ebc8b9e8bad92643703811d162",
-               :data
-               "0xa9059cbb000000000000000000000000dff1a5e4e57d9723b3294e0f4413372e3ea9a8ff0000000000000000000000000000000000000000000000000de0b6b3a7640000"}))))
-
-  (testing "insufficient funds"
-    (is (= (get-in (tribute-to-talk/pay-tribute
-                    (assoc-in user-cofx [:db :wallet] nil)
-                    recipient-pk)
-                   [:db :wallet :send-transaction :sufficient-funds?])
-           false))))
-
 (deftest tribute-transaction-trigger
   (testing "transaction error"
     (is (tribute-to-talk/tribute-transaction-trigger

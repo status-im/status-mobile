@@ -1064,5 +1064,13 @@
     "default" : "Default",
     "token-details" : "Token details",
     "remove-token" : "Remove token",
-    "report-bug-email-template": "1. Issue Description\n(Describe the feature you would like, or briefly summarise the bug and what you did, what you expected to happen, and what actually happens. Sections below)\n\n\n2. Steps to reproduce\n(Describe how we can replicate the bug step by step.)\n-Open Status\n-...\n-Step 3, etc.\n\n\n3. Expected behavior\n(Describe what you expected to happen.)\n\n\n4. Actual behavior\n(Describe what actually happened.)\n\n\n5. Attach screenshots that can demo the problem, please\n"
+    "report-bug-email-template": "1. Issue Description\n(Describe the feature you would like, or briefly summarise the bug and what you did, what you expected to happen, and what actually happens. Sections below)\n\n\n2. Steps to reproduce\n(Describe how we can replicate the bug step by step.)\n-Open Status\n-...\n-Step 3, etc.\n\n\n3. Expected behavior\n(Describe what you expected to happen.)\n\n\n4. Actual behavior\n(Describe what actually happened.)\n\n\n5. Attach screenshots that can demo the problem, please\n",
+    "update" : "Update",
+    "sending" : "Sending",
+    "authorize" : "Authorize",
+    "contract-interaction" : "Contract interaction",
+    "signing-phrase" : "Signing phrase",
+    "network-fee" : "Network fee",
+    "sign-with-password" : "Sign with password",
+    "signing-a-message" : "Signing a message"
 }

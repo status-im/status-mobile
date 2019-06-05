@@ -37,7 +37,6 @@
             [status-im.test.models.bootnode]
             [status-im.test.models.contact]
             [status-im.test.models.network]
-            [status-im.test.models.wallet]
             [status-im.test.node.core]
             [status-im.test.pairing.core]
             [status-im.test.search.core]
@@ -67,7 +66,9 @@
             [status-im.test.wallet.subs]
             [status-im.test.wallet.transactions.subs]
             [status-im.test.wallet.transactions]
-            [status-im.test.contacts.db]))
+            [status-im.test.contacts.db]
+            [status-im.test.signing.core]
+            [status-im.test.signing.gas]))
 
 (enable-console-print!)
 
@@ -116,11 +117,12 @@
  'status-im.test.models.bootnode
  'status-im.test.models.contact
  'status-im.test.models.network
- 'status-im.test.models.wallet
  'status-im.test.node.core
  'status-im.test.pairing.core
  'status-im.test.search.core
  'status-im.test.sign-in.flow
+ 'status-im.test.signing.core
+ 'status-im.test.signing.gas
  'status-im.test.transport.core
  'status-im.test.tribute-to-talk.core
  'status-im.test.tribute-to-talk.db

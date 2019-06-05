@@ -232,7 +232,6 @@
                 :hardwallet-connect-settings (hardwallet/hardwallet-connect-screen-did-load %)
                 :hardwallet-connect-modal (hardwallet/hardwallet-connect-screen-did-load %)
                 :hardwallet-authentication-method (hardwallet/authentication-method-screen-did-load %)
-                :wallet-send-transaction (wallet/send-transaction-screen-did-load %)
                 :accounts (hardwallet/accounts-screen-did-load %)
                 :chat (mark-messages-seen %)
                 nil))))

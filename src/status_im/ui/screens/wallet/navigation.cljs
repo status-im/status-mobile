@@ -1,38 +1,24 @@
 (ns status-im.ui.screens.wallet.navigation
-  (:require [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
+  (:require [status-im.constants :as constants]
             [status-im.ui.screens.navigation :as navigation]))
 
 (def transaction-send-default
-  (let [symbol :ETH
-        request (atom nil)]
-    (fn []
-      (or @request
-          (reset!
-           request
-           {:gas    (ethereum/estimate-gas symbol)
-            :method constants/web3-send-transaction
-            :symbol symbol})))))
-
-(def transaction-request-default
-  {:symbol :ETH})
+  {:method constants/web3-send-transaction
+   :symbol :ETH})
 
 (defmethod navigation/preload-data! :wallet-request-transaction
   [db [event]]
   (if (= event :navigate-back)
     db
     (-> db
-        (assoc-in [:wallet :request-transaction] transaction-request-default)
-        (assoc-in [:wallet :send-transaction] (transaction-send-default)))))
+        (assoc-in [:wallet :request-transaction] {:symbol :ETH})
+        (assoc-in [:wallet :send-transaction] transaction-send-default))))
 
 (defmethod navigation/preload-data! :wallet-send-transaction
   [db [event]]
   (if (= event :navigate-back)
     db
-    (do
-      (re-frame/dispatch [:wallet/update-gas-price])
-      (assoc-in db [:wallet :send-transaction] (transaction-send-default)))))
+    (assoc-in db [:wallet :send-transaction] transaction-send-default)))
 
 (defmethod navigation/preload-data! :wallet-add-custom-token
   [db [event]]

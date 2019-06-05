@@ -2103,28 +2103,6 @@
    (wallet/open-transaction-details cofx hash)))
 
 (handlers/register-handler-fx
- :wallet/show-sign-transaction
- (fn [cofx [_ {:keys [id method]} from-chat?]]
-   (wallet/open-send-transaction-modal cofx id method from-chat?)))
-
-(handlers/register-handler-fx
- :wallet/update-gas-price-success
- (fn [cofx [_ price edit?]]
-   (wallet/update-gas-price cofx price edit?)))
-
-(handlers/register-handler-fx
- :TODO.remove/update-estimated-gas
- (fn [{:keys [db]} [_ obj]]
-   {:wallet/update-estimated-gas
-    {:obj           obj
-     :success-event :wallet/update-estimated-gas-success}}))
-
-(handlers/register-handler-fx
- :wallet/update-estimated-gas-success
- (fn [cofx [_ gas]]
-   (wallet/update-estimated-gas-price cofx gas)))
-
-(handlers/register-handler-fx
  :wallet.setup.ui/navigate-back-pressed
  (fn [{:keys [db] :as cofx}]
    (fx/merge cofx
@@ -2135,3 +2113,8 @@
  :shake-event
  (fn [cofx _]
    (logging/show-logs-dialog cofx)))
+
+(re-frame/reg-fx
+ :dismiss-keyboard
+ (fn []
+   (react/dismiss-keyboard!)))

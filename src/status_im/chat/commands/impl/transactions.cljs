@@ -6,7 +6,6 @@
              :as
              transactions-styles]
             [status-im.chat.commands.protocol :as protocol]
-            [status-im.contact.db :as db.contact]
             [status-im.data-store.messages :as messages-store]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.tokens :as tokens]
@@ -18,16 +17,13 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.svgimage :as svgimage]
-            [status-im.ui.screens.navigation :as navigation]
-            [status-im.ui.screens.wallet.choose-recipient.events
-             :as
-             choose-recipient.events]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.datetime :as datetime]
-            [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]
-            [status-im.wallet.db :as wallet.db])
+            [status-im.wallet.db :as wallet.db]
+            [status-im.signing.core :as signing]
+            [status-im.ethereum.abi-spec :as abi-spec])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 ;; common `send/request` functionality
@@ -287,8 +283,8 @@
   (description [_] (i18n/label :t/send-command-payment))
   (parameters [_] personal-send-request-params)
   (validate [_ parameters cofx]
-    ;; Only superficial/formatting validation, "real validation" will be performed
-    ;; by the wallet, where we yield control in the next step
+   ;; Only superficial/formatting validation, "real validation" will be performed
+   ;; by the wallet, where we yield control in the next step
     (personal-send-request-validation parameters cofx))
   (on-send [_ {:keys [chat-id] :as send-message} {:keys [db]}]
     (when-let [responding-to (get-in db [:chats chat-id :metadata :responding-to-command])]
@@ -304,39 +300,21 @@
     (send-preview command-message))
   protocol/Yielding
   (yield-control [_ {{{amount :amount asset :asset} :params} :content} {:keys [db] :as cofx}]
-    ;; Prefill wallet and navigate there
-    (let [recipient-contact (or
-                             (get-in db [:contacts/contacts (:current-chat-id db)])
-                             (db.contact/public-key->new-contact (:current-chat-id db)))
-
-          sender-account        (:account/account db)
-          chain                 (keyword (:chain db))
-          symbol-param          (keyword asset)
-          all-tokens            (:wallet/all-tokens db)
-          {:keys [symbol decimals]} (tokens/asset-for all-tokens chain symbol-param)
-          {:keys [value error]}     (wallet.db/parse-amount amount decimals)
-          next-view-id              (if (:wallet-set-up-passed? sender-account)
-                                      :wallet-send-modal-stack
-                                      :wallet-send-modal-stack-with-onboarding)]
-      (fx/merge cofx
-                {:db (-> db
-                         (assoc-in [:navigation/screen-params :wallet-send-modal-stack :modal?] true)
-                         (update-in [:wallet :send-transaction]
-                                    assoc
-                                    :amount (money/formatted->internal value symbol decimals)
-                                    :amount-text amount
-                                    :amount-error error)
-                         (choose-recipient.events/fill-request-details
-                          (transaction-details recipient-contact symbol) false)
-                         (update-in [:wallet :send-transaction]
-                                    dissoc :id :password :wrong-password?))
-                 ;; TODO(janherich) - refactor wallet send events, updating gas price
-                 ;; is generic thing which shouldn't be defined in wallet.send, then
-                 ;; we can include the utility helper without running into circ-dep problem
-                 :wallet/update-gas-price
-                 {:success-event :wallet/update-gas-price-success
-                  :edit?         false}}
-                (navigation/navigate-to-cofx next-view-id {}))))
+    (let [{:keys [symbol decimals address]} (tokens/asset-for (:wallet/all-tokens db) (keyword (:chain db)) (keyword asset))
+          {:keys [value]} (wallet.db/parse-amount amount decimals)
+          current-chat-id (:current-chat-id db)
+          amount-hex      (str "0x" (abi-spec/number-to-hex (money/formatted->internal value symbol decimals)))
+          to              (ethereum/public-key->address current-chat-id)
+          to-norm         (ethereum/normalized-address (if (= symbol :ETH) to address))
+          tx-obj          (if (= symbol :ETH)
+                            {:to    to-norm
+                             :value amount-hex}
+                            {:to   to-norm
+                             :data (abi-spec/encode "transfer(address,uint256)" [to amount-hex])})]
+      (signing/sign cofx {:tx-obj    tx-obj
+                          :on-result [:chat/send-transaction-result current-chat-id {:address to-norm
+                                                                                     :asset   (name symbol)
+                                                                                     :amount  amount}]})))
   protocol/EnhancedParameters
   (enhance-send-parameters [_ parameters cofx]
     (-> parameters

@@ -62,7 +62,8 @@
     (if navigate-to-browser?
       (fx/merge cofx
                 {:db (assoc-in db [:hardwallet :on-card-connected] nil)}
-                (wallet/discard-transaction)
+                ;;TODO use new signing flow
+                ;;(wallet/discard-transaction)
                 (navigation/navigate-to-cofx :browser nil))
       (if (= :enter-pin-login (:view-id db))
         (navigation/navigate-to-clean cofx :accounts nil)

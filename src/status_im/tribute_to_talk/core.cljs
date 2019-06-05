@@ -4,20 +4,17 @@
             [re-frame.core :as re-frame]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.contact.core :as contact]
-            [status-im.contact.db :as contact.db]
             [status-im.ethereum.contracts :as contracts]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.ethereum.tokens :as tokens]
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.tribute-to-talk.db :as tribute-to-talk.db]
             [status-im.tribute-to-talk.whitelist :as whitelist]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
-            [status-im.wallet.core :as wallet]
-            [status-im.wallet.db :as wallet.db]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.signing.core :as signing]))
 
 (defn add-transaction-hash
   [message db]
@@ -88,13 +85,13 @@
 (fx/defn set-tribute-signing-flow
   [{:keys [db] :as cofx} tribute]
   (if-let [contract (contracts/get-address db :status/tribute-to-talk)]
-    (wallet/eth-transaction-call
+    (signing/eth-transaction-call
      cofx
-     {:contract contract
-      :method "setTribute(uint256)"
-      :params [tribute]
+     {:contract  contract
+      :method    "setTribute(uint256)"
+      :params    [tribute]
       :on-result [:tribute-to-talk.callback/set-tribute-transaction-sent]
-      :on-error [:tribute-to-talk.callback/set-tribute-transaction-failed]})
+      :on-error  [:tribute-to-talk.callback/set-tribute-transaction-failed]})
     {:db (assoc-in db
                    [:navigation/screen-params :tribute-to-talk :state]
                    :transaction-failed)}))
@@ -263,28 +260,15 @@
 (fx/defn pay-tribute
   {:events [:tribute-to-talk.ui/on-pay-to-chat-pressed]}
   [{:keys [db] :as cofx} public-key]
-  (let [{:keys [name address public-key tribute-to-talk] :as recipient-contact}
+  (let [{:keys [address public-key tribute-to-talk]}
         (get-in db [:contacts/contacts public-key])
-        {:keys [snt-amount]} tribute-to-talk
-        symbol               (ethereum/snt-symbol db)
-        wallet-balance       (get-in db [:wallet :balance symbol]
-                                     (money/bignumber 0))
-        amount-text          (str (tribute-to-talk.db/from-wei snt-amount))]
-    (wallet/eth-transaction-call
+        {:keys [snt-amount]} tribute-to-talk]
+    (signing/eth-transaction-call
      cofx
-     {:contract (contracts/get-address db :status/snt)
-      :method   "transfer(address,uint256)"
-      :params   [address snt-amount]
-      :details  {:to-name     name
-                 :public-key  public-key
-                 :from-chat?  true
-                 :asset       symbol
-                 :amount-text amount-text
-                 :sufficient-funds?
-                 (money/sufficient-funds? snt-amount wallet-balance)
-                 :send-transaction-message? true}
-      :on-result [:tribute-to-talk.callback/pay-tribute-transaction-sent
-                  public-key]})))
+     {:contract  (contracts/get-address db :status/snt)
+      :method    "transfer(address,uint256)"
+      :params    [address snt-amount]
+      :on-result [:tribute-to-talk.callback/pay-tribute-transaction-sent public-key]})))
 
 (defn tribute-transaction-trigger
   [db {:keys [block error?]}]
@@ -306,12 +290,11 @@
 
 (fx/defn on-pay-tribute-transaction-sent
   {:events [:tribute-to-talk.callback/pay-tribute-transaction-sent]}
-  [{:keys [db] :as cofx} public-key id transaction-hash method]
+  [{:keys [db] :as cofx} public-key transaction-hash]
   (fx/merge cofx
             {:db (assoc-in db [:contacts/contacts public-key
                                :tribute-to-talk :transaction-hash]
                            transaction-hash)}
-            (navigation/navigate-to-clean :wallet-transaction-sent-modal {})
             (transactions/watch-transaction
              transaction-hash
              {:trigger-fn
@@ -340,14 +323,13 @@
 
 (fx/defn on-set-tribute-transaction-sent
   {:events [:tribute-to-talk.callback/set-tribute-transaction-sent]}
-  [{:keys [db] :as cofx} id transaction-hash method]
+  [{:keys [db] :as cofx} transaction-hash]
   (let [{:keys [snt-amount message]} (get-in db [:navigation/screen-params
                                                  :tribute-to-talk])]
     (fx/merge cofx
               {:db (assoc-in db [:navigation/screen-params
                                  :tribute-to-talk :state]
                              :pending)}
-              (navigation/navigate-to-clean :wallet-transaction-sent-modal {})
               (update-settings {:update {:transaction transaction-hash
                                          :snt-amount  snt-amount
                                          :message     message}})

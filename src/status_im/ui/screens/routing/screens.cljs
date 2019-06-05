@@ -70,13 +70,6 @@
             [status-im.ui.screens.wallet.request.views :as request]
             [status-im.ui.screens.wallet.send.views :as send]
             [status-im.ui.screens.wallet.settings.views :as wallet-settings]
-            [status-im.ui.screens.wallet.sign-message.views :as sign-message]
-            [status-im.ui.screens.wallet.transaction-fee.views
-             :as
-             wallet.transaction-fee]
-            [status-im.ui.screens.wallet.transaction-sent.views
-             :as
-             transaction-sent]
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
             [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]))
 
@@ -120,19 +113,13 @@
    :tribute-learn-more               [:modal tr-to-talk/learn-more]
    :chat-modal                       [:modal chat/chat-modal]
    :show-extension-modal             [:modal extensions.add/show-extension-modal]
-   :wallet-send-transaction-modal    [:modal send/send-transaction-modal]
-   :wallet-transaction-sent-modal    [:modal transaction-sent/transaction-sent-modal]
-   :wallet-transaction-fee           [:modal wallet.transaction-fee/transaction-fee]
    :wallet-onboarding-setup-modal    [:modal wallet.onboarding/modal]
-   :wallet-sign-message-modal        [:modal sign-message/sign-message-modal]
    :wallet                           wallet.main/wallet
    :collectibles-list                collectibles/collectibles-list
    :wallet-onboarding-setup          wallet.onboarding/screen
-   :wallet-send-transaction-chat     send/send-transaction
    :contact-code                     wallet.components/contact-code
    :wallet-send-transaction          send/send-transaction
    :recent-recipients                wallet.components/recent-recipients
-   :wallet-transaction-sent          transaction-sent/transaction-sent
    :recipient-qr-code                wallet.components/recipient-qr-code
    :wallet-send-assets               wallet.components/send-assets
    :wallet-request-transaction       request/request-transaction

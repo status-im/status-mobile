@@ -301,20 +301,13 @@
                                     (case current-view
                                       (:wallet
                                        :wallet-send-transaction
-                                       :wallet-transaction-sent
                                        :wallet-request-transaction
-                                       :wallet-send-transaction-chat
                                        :wallet-send-assets
                                        :wallet-request-assets
                                        :choose-recipient
                                        :recent-recipients
-                                       :wallet-send-transaction-modal
-                                       :wallet-transaction-sent-modal
                                        :wallet-send-transaction-request
-                                       :wallet-transaction-fee
-                                       :wallet-sign-message-modal
                                        :contact-code
-                                       :wallet-onboarding-setup
                                        :wallet-modal
                                        :wallet-onboarding-setup-modal
                                        :wallet-settings-hook)

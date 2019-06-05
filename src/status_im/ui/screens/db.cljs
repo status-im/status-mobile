@@ -204,6 +204,12 @@
 (spec/def :extensions/profile (spec/nilable any?))
 (spec/def :wallet/custom-token-screen (spec/nilable map?))
 
+(spec/def :signing/in-progress? (spec/nilable boolean?))
+(spec/def :signing/queue (spec/nilable any?))
+(spec/def :signing/tx (spec/nilable map?))
+(spec/def :signing/sign (spec/nilable map?))
+(spec/def :signing/edit-fee (spec/nilable map?))
+
 (spec/def ::db (spec/keys :opt [:contacts/contacts
                                 :contacts/new-identity
                                 :contacts/new-identity-error
@@ -279,7 +285,12 @@
                                 :bottom-sheet/view
                                 :bottom-sheet/options
                                 :extensions/profile
-                                :wallet/custom-token-screen]
+                                :wallet/custom-token-screen
+                                :signing/in-progress?
+                                :signing/queue
+                                :signing/sign
+                                :signing/tx
+                                :signing/edit-fee]
                           :opt-un [::modal
                                    ::was-modal?
                                    ::rpc-url

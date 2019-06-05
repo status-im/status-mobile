@@ -172,6 +172,11 @@
         (command-not-complete-fx input-text current-chat-id cofx))
       (plain-text-message-fx input-text current-chat-id cofx))))
 
+(fx/defn send-transaction-result
+  {:events [:chat/send-transaction-result]}
+  [cofx chat-id params result]
+  (commands.sending/send cofx chat-id (get-in cofx [:db :id->command ["send" #{:personal-chats}]]) (assoc params :tx-hash result)))
+
 ;; effects
 
 (re-frame/reg-fx

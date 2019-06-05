@@ -20,7 +20,8 @@
             [status-im.utils.random :as random]
             [status-im.utils.types :as types]
             [status-im.utils.universal-links.core :as universal-links]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.signing.core :as signing]))
 
 (fx/defn initialize-browsers
   [{:keys [db all-stored-browsers]}]
@@ -274,19 +275,55 @@
               (navigation/navigate-to-cofx :browser nil)
               (resolve-url nil))))
 
+(fx/defn web3-error-callback
+  {:events [:browser.dapp/transaction-on-error]}
+  [{{:keys [webview-bridge]} :db} message-id message]
+  {:browser/send-to-bridge
+   {:message {:type      constants/web3-send-async-callback
+              :messageId message-id
+              :error     message}
+    :webview webview-bridge}})
+
+(fx/defn dapp-complete-transaction
+  {:events [:browser.dapp/transaction-on-result]}
+  [{{:keys [webview-bridge]} :db} message-id id result]
+  ;;TODO check and test id
+  {:browser/send-to-bridge
+   {:message {:type      constants/web3-send-async-callback
+              :messageId message-id
+              :result    {:jsonrpc "2.0"
+                          :id      (int id)
+                          :result  result}}
+    :webview webview-bridge}})
+
+(defn normalize-sign-message-params
+  "NOTE (andrey) we need this function, because params may be mixed up"
+  [params]
+  (let [[first-param second-param] params]
+    (cond
+      (ethereum/address? first-param)
+      [first-param second-param]
+      (ethereum/address? second-param)
+      [second-param first-param])))
+
 (fx/defn web3-send-async
-  [{:keys [db]} {:keys [method] :as payload} message-id]
-  (if (or (= constants/web3-send-transaction method)
-          (constants/web3-sign-message? method))
-    {:db       (update-in db [:wallet :transactions-queue] conj {:message-id message-id :payload payload})
-     ;;TODO(yenda): refactor check-dapps-transactions-queue to remove this dispatch
-     :dispatch [:check-dapps-transactions-queue]}
-    {:browser/call-rpc [payload
-                        #(re-frame/dispatch [:browser.callback/call-rpc
-                                             {:type      constants/web3-send-async-callback
-                                              :messageId message-id
-                                              :error     %1
-                                              :result    %2}])]}))
+  [cofx {:keys [method params id] :as payload} message-id]
+  (let [message? (constants/web3-sign-message? method)]
+    (if (or message? (= constants/web3-send-transaction method))
+      (let [[address data] (when message? (normalize-sign-message-params params))]
+        (when (or (not message?) (and address data))
+          (signing/sign cofx (merge
+                              (if message?
+                                {:message {:address address :data data :typed? (not= constants/web3-personal-sign method)}}
+                                {:tx-obj  (first params)})
+                              {:on-result [:browser.dapp/transaction-on-result message-id id]
+                               :on-error  [:browser.dapp/transaction-on-error message-id]}))))
+      {:browser/call-rpc [payload
+                          #(re-frame/dispatch [:browser.callback/call-rpc
+                                               {:type      constants/web3-send-async-callback
+                                                :messageId message-id
+                                                :error     %1
+                                                :result    %2}])]})))
 
 (fx/defn send-to-bridge
   [cofx message]

@@ -19,8 +19,7 @@
    :color       colors/gray})
 
 (def accessory-text
-  {:color        colors/gray
-   :margin-right 8})
+  {:color        colors/gray})
 
 (defn radius [size] (/ size 2))
 
@@ -28,3 +27,8 @@
   {:border-radius (radius size)
    :width         size
    :height        size})
+
+(def error
+  {:bottom-value 0
+   :color        colors/red-light
+   :font-size    12})
