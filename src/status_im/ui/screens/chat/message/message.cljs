@@ -28,41 +28,20 @@
     [react/text {:style (style/extension-install outgoing)}
      (i18n/label :install-the-extension)]]])
 
-(defview message-content-command
-  [command-message]
-  (letsubs [id->command [:chats/id->command]
-            {:keys [contacts]} [:chats/current-chat]]
-    (let [{:keys [type] :as command} (commands-receiving/lookup-command-by-ref command-message id->command)
-          extension-id (get-in command-message [:content :params :extension-id])]
-      (if (and platform/mobile? extension-id
-               (extensions/valid-uri? extension-id)
-               (or (not type) (and type (satisfies? protocol/Extension type)
-                                   (not= extension-id (protocol/extension-id type)))))
-        ;; Show install message only for mobile and if message contains extension id and there is no extension installed
-        ;; or installed extension has differen extension id
-        [install-extension-message extension-id (:outgoing command-message)]
-        (if command
-          (commands/generate-preview command (commands/add-chat-contacts contacts command-message))
-          [react/text (str "Unhandled command: " (-> command-message :content :command-path first))])))))
+(defn message-timestamp
+  [{:keys [timestamp justify? rtl? color]}]
+  [react/text
+   {:style (cond-> {:font-size  10
+                    :align-self :flex-end
+                    :color color}
+             :justify-timestamp?
+             (assoc :position              :absolute
+                    :bottom                7
+                    (if rtl? :left :right) 12))}
+   timestamp])
 
-(defview message-timestamp
-  [t justify-timestamp? outgoing command? content content-type]
-  (when-not command?
-    [react/text {:style (style/message-timestamp-text
-                         justify-timestamp?
-                         outgoing
-                         (:rtl? content)
-                         (= content-type constants/content-type-emoji))} t]))
-
-(defn message-view
-  [{:keys [timestamp-str outgoing content content-type] :as message} message-content {:keys [justify-timestamp?]}]
-  [react/view (style/message-view message)
-   message-content
-   [message-timestamp timestamp-str justify-timestamp? outgoing (or (get content :command-path)
-                                                                    (get content :command-ref))
-    content content-type]])
-
-(defview quoted-message [{:keys [from text]} outgoing current-public-key]
+(defview quoted-message
+  [{:keys [from text]} outgoing current-public-key]
   (letsubs [username [:contacts/contact-name-by-identity from]]
     [react/view {:style (style/quoted-message-container outgoing)}
      [react/view {:style style/quoted-message-author-container}
@@ -73,80 +52,104 @@
                   :number-of-lines 5}
       text]]))
 
-(defview message-content-status [{:keys [content]}]
-  [react/view style/status-container
-   [react/text {:style style/status-text}
-    (:text content)]])
-
-(defn expand-button [expanded? chat-id message-id]
+(defn expand-button
+  [expanded? chat-id message-id]
   [react/text {:style    style/message-expand-button
                :on-press #(re-frame/dispatch [:chat.ui/message-expand-toggled chat-id message-id])}
    (i18n/label (if expanded? :show-less :show-more))])
 
-(defn text-message
-  [{:keys [chat-id message-id content timestamp-str group-chat outgoing current-public-key expanded?] :as message}]
-  [message-view message
-   (let [collapsible? (and (:should-collapse? content) group-chat)]
-     [react/view
-      (when (:response-to content)
-        [quoted-message (:response-to content) outgoing current-public-key])
-      (apply react/nested-text
-             (cond-> {:style (style/text-message collapsible? outgoing)
-                      :text-break-strategy :balanced}
-               (and collapsible? (not expanded?))
-               (assoc :number-of-lines constants/lines-collapse-threshold))
-             (conj (if-let [render-recipe (:render-recipe content)]
-                     (chat.utils/render-chunks render-recipe message)
-                     [(:text content)])
-                   [{:style (style/message-timestamp-placeholder outgoing)}
-                    (str "  " timestamp-str)]))
-
-      (when collapsible?
-        [expand-button expanded? chat-id message-id])])
-   {:justify-timestamp? true}])
-
-(defn emoji-message
-  [{:keys [content] :as message}]
-  [message-view message
-   [react/text {:style (style/emoji-message message)}
-    (:text content)]])
-
-(defmulti message-content (fn [_ message _] (message :content-type)))
+(defmulti message-content (fn [message] (message :content-type)))
 
 (defmethod message-content constants/content-type-text
-  [wrapper message]
-  [wrapper message [text-message message]])
+  [{:keys [chat-id message-id content timestamp-opts first-in-group?
+           group-chat outgoing current-public-key expanded?] :as message}]
+  [react/view
+   (cond-> {:padding-vertical   6
+            :padding-horizontal 12
+            :border-radius      8
+            :margin-top         (if (and first-in-group? (or outgoing (not group-chat))) 16 4)
+            :background-color   (if outgoing colors/blue colors/blue-light)})
+   (let [collapsible? (and (:should-collapse? content) group-chat)]
+     (when (:response-to content)
+       [quoted-message (:response-to content) outgoing current-public-key])
+     (apply react/nested-text
+            (cond-> {:style (style/text-message collapsible? outgoing)
+                     :text-break-strategy :balanced}
+              (and collapsible? (not expanded?))
+              (assoc :number-of-lines constants/lines-collapse-threshold))
+            (conj (if-let [render-recipe (:render-recipe content)]
+                    (chat.utils/render-chunks render-recipe message)
+                    [(:text content)])
+                  [{:style (style/message-timestamp-placeholder outgoing)}
+                   (str "  " (:timestamp timestamp-opts))]))
+     #_(when collapsible?
+         [expand-button expanded? chat-id message-id]))
+   [message-timestamp timestamp-opts]])
 
 (defmethod message-content constants/content-type-status
-  [wrapper message]
-  [wrapper message [message-content-status message]])
+  [{:keys [content]}]
+  [react/view style/status-container
+   [react/text {:style {:margin-top  9
+                        :font-size   14
+                        :color       colors/gray}}
+    (:text content)]])
 
 (defmethod message-content constants/content-type-command
-  [wrapper message]
-  [wrapper message
-   [message-view message [message-content-command message]]])
-
-;; Todo remove after couple of releases
-(defmethod message-content constants/content-type-command-request
-  [wrapper message]
-  [wrapper message
-   [message-view message [message-content-command message]]])
+  [{:keys [first-ingroup? group-chat outgoing content] :as message}]
+  (letsubs [id->command [:chats/id->command]
+            {:keys [contacts]} [:chats/current-chat]]
+    [react/view
+     (cond-> {:padding-vertical   6
+              :padding-horizontal 12
+              :border-radius      8
+              :margin-top         (if (and first-in-group? (or outgoing (not group-chat))) 16 4)
+              :background-color (if outgoing colors/blue colors/blue-light)
+              :padding-top    12
+              :padding-bottom 10})
+     (let [{:keys [type] :as command} (commands-receiving/lookup-command-by-ref message id->command)
+           extension-id (get-in content [:params :extension-id])]
+       (if (and platform/mobile? extension-id
+                (extensions/valid-uri? extension-id)
+                (or (not type) (and type (satisfies? protocol/Extension type)
+                                    (not= extension-id (protocol/extension-id type)))))
+         ;; Show install message only for mobile and if message contains extension id and there is no extension installed
+         ;; or installed extension has differen extension id
+         [install-extension-message extension-id outgoing]
+         (if command
+           (commands/generate-preview command (commands/add-chat-contacts contacts message))
+           [react/text (str "Unhandled command: " (-> content :command-path first))])))]))
 
 (defmethod message-content constants/content-type-emoji
-  [wrapper message]
-  [wrapper message [emoji-message message]])
+  [{:keys [content first-in-group? outgoing group-chat
+           content-type timestamp-opts justify-timestamp? outgoing] :as message}]
+  [react/view
+   (cond-> {:padding-vertical   6
+            :padding-horizontal 12
+            :border-radius      8
+            :margin-top         (if (and first-in-group? (or outgoing (not group-chat))) 16 4)}
+     (= content-type constants/content-type-emoji)
+     (assoc :flex-direction :row)
+     (not= content-type constants/content-type-emoji)
+     (assoc :background-color (if outgoing colors/blue colors/blue-light)))
+   [react/text {:style style/emoji-message}
+    (:text content)]
+   [message-timestamp timestamp-opts]])
 
 (defmethod message-content constants/content-type-sticker
-  [wrapper {:keys [content] :as message}]
-  [wrapper message
-   [react/image {:style {:margin 10 :width 140 :height 140}
-                 :source {:uri (:uri content)}}]])
+  [{:keys [content] :as message}]
+  [react/image {:style {:margin 10 :width 140 :height 140}
+                :source {:uri (:uri content)}}])
 
 (defmethod message-content :default
-  [wrapper {:keys [content-type] :as message}]
-  [wrapper message
-   [message-view message
-    [react/text (str "Unhandled content-type " content-type)]]])
+  [{:keys [content-type first-in-group? outgoing group-chat timestamp-opts] :as message}]
+  [react/view
+   (cond-> {:padding-vertical   6
+            :padding-horizontal 12
+            :border-radius      8
+            :background-color   (if outgoing colors/blue colors/blue-light)
+            :margin-top         (if (and first-in-group? (or outgoing (not group-chat))) 16 4)})
+   [react/text (str "Unhandled content-type " content-type)]
+   [message-timestamp timestamp-opts]])
 
 (defn- text-status [status]
   [react/view style/delivery-view
@@ -215,56 +218,69 @@
   (letsubs [username [:contacts/contact-name-by-identity from]]
     (chat.utils/format-author from (or username message-username) style/message-author-name)))
 
-(defn message-body
-  [{:keys [last-in-group?
-           display-photo?
-           display-username?
-           message-type
-           from
-           outgoing
-           modal?
-           username] :as message} content]
-  [react/view (style/group-message-wrapper message)
-   [react/view (style/message-body message)
-    (when display-photo?
-      [react/view style/message-author
-       (when last-in-group?
-         [react/touchable-highlight {:on-press #(when-not modal? (re-frame/dispatch [:chat.ui/show-profile from]))}
-          [react/view
-           [photos/member-photo from]]])])
-    [react/view (style/group-message-view outgoing message-type)
-     (when display-username?
-       [message-author-name from username])
-     [react/view {:style (style/timestamp-content-wrapper outgoing message-type)}
-      content]]]
-   [react/view (style/delivery-status outgoing)
-    [message-delivery-status message]]])
-
 (defn open-chat-context-menu
   [{:keys [message-id old-message-id content] :as message}]
   (list-selection/chat-message message-id old-message-id (:text content) (i18n/label :t/message)))
 
 (defn chat-message
-  [{:keys [outgoing group-chat modal? current-public-key content-type content] :as message}]
-  [react/view
-   [react/touchable-highlight
-    {:on-press      (fn [arg]
-                      (if (and platform/desktop? (= "right" (.-button (.-nativeEvent arg))))
-                        (open-chat-context-menu message)
-                        (do
-                          (when (= content-type constants/content-type-sticker)
-                            (re-frame/dispatch [:stickers/open-sticker-pack (:pack content)]))
-                          (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
-                                                                          :show-stickers?    false}])
-                          (when-not platform/desktop?
-                            (react/dismiss-keyboard!)))))
-     :on-long-press #(when (or (= content-type constants/content-type-text)
-                               (= content-type constants/content-type-emoji))
-                       (open-chat-context-menu message))}
-    [react/view {:accessibility-label :chat-item}
-     (let [incoming-group (and group-chat (not outgoing))]
-       [message-content message-body (merge message
-                                            {:current-public-key current-public-key
-                                             :group-chat         group-chat
-                                             :modal?             modal?
-                                             :incoming-group     incoming-group})])]]])
+  [{:keys [outgoing last? typing group-chat modal? from last-in-group?
+           current-public-key content-type content display-photo?
+           display-username? username first-in-group?] :as message}]
+  [react/touchable-highlight
+   {:on-press      (fn [arg]
+                     (if (and platform/desktop?
+                              (= "right" (.-button (.-nativeEvent arg))))
+                       (open-chat-context-menu message)
+                       (do
+                         (when (= content-type constants/content-type-sticker)
+                           (re-frame/dispatch [:stickers/open-sticker-pack
+                                               (:pack content)]))
+                         (re-frame/dispatch [:chat.ui/set-chat-ui-props
+                                             {:messages-focused? true
+                                              :show-stickers?    false}])
+                         (when-not platform/desktop?
+                           (react/dismiss-keyboard!)))))
+    :on-long-press #(when (#{constants/content-type-emoji
+                             constants/content-type-text}
+                           content-type)
+                      (open-chat-context-menu message))}
+   [react/view (merge {:accessibility-label :chat-item
+                       :flex-direction :column}
+                      (if outgoing
+                        {:margin-left 64}
+                        {:margin-right 64})
+                      (when (and last? (not typing))
+                        {:padding-bottom 16}))
+    [react/view (cond-> {:padding-top (if (and display-username?
+                                               first-in-group?)
+                                        6
+                                        2)}
+                  outgoing       (assoc :flex-direction :row-reverse
+                                        :align-self     :flex-end
+                                        :align-items    :flex-end)
+                  (not outgoing) (assoc :flex-direction :row
+                                        :align-self     :flex-start
+                                        :align-items    :flex-start)
+                  display-photo?  (assoc :padding-left 8))
+     (when display-photo?
+       [react/view style/message-author
+        (when last-in-group?
+          [react/touchable-highlight
+           {:on-press #(when-not modal?
+                         (re-frame/dispatch [:chat.ui/show-profile from]))}
+           [react/view
+            [photos/member-photo from]]])])
+     [react/view (cond-> {:flex-direction :column
+                          :max-width      (if platform/desktop? 500 320)}
+                   outgoing       (assoc :margin-right 8
+                                         :align-items :flex-end)
+                   (not outgoing) (assoc :margin-left 8
+                                         :align-items :flex-start))
+      (when display-username?
+        [message-author-name from username])
+      [react/view {:style {:flex-direction (if outgoing
+                                             :row-reverse
+                                             :row)}}
+       [message-content message]]]]
+    [react/view (style/delivery-status outgoing)
+     [message-delivery-status message]]]])

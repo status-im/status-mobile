@@ -3,10 +3,12 @@
             [clojure.string :as string]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.input :as commands.input]
+            [status-im.constants :as constants]
             [status-im.contact.db :as contact.db]
             [status-im.group-chats.db :as group-chats.db]
             [status-im.mailserver.core :as mailserver]
             [status-im.transport.partitioned-topic :as topic]
+            [status-im.ui.components.colors :as colors]
             [status-im.utils.gfycat.core :as gfycat]))
 
 (defn group-chat-name
@@ -98,13 +100,24 @@
     (if (or (datemark? reference)
             (gap? reference))
       reference
-      (let [{:keys [content] :as message} (get messages message-id)
+      (let [{:keys [content-type content outgoing] :as message}
+            (get messages message-id)
+            {:keys [rtl?]} content
             {:keys [response-to response-to-v2]} content
             quote (some-> (or response-to-v2 response-to)
                           (quoted-message-data messages referenced-messages))]
         (cond-> (-> message
                     (update :content dissoc :response-to :response-to-v2)
-                    (assoc :timestamp-str timestamp-str))
+                    (assoc :timestamp-opts
+                           {:timestamp timestamp-str
+                            :justify   (= content-type
+                                          constants/content-type-text)
+                            :color     (if (and outgoing
+                                                (not= content-type
+                                                      constants/content-type-emoji))
+                                         (colors/alpha colors/white 0.7)
+                                         colors/gray)
+                            :rtl?        rtl?}))
           ;; quoted message reference
           quote
           (assoc-in [:content :response-to] quote))))))
