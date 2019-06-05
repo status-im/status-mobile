@@ -276,8 +276,8 @@
                                          :align-items :flex-end)
                    (not outgoing) (assoc :margin-left 8
                                          :align-items :flex-start))
-      (when display-username?
-        [message-author-name from username])
+      #_(when display-username?
+          [message-author-name from username])
       [react/view {:style {:flex-direction (if outgoing
                                              :row-reverse
                                              :row)}}
