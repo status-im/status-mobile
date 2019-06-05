@@ -63,13 +63,13 @@
 (defmethod message-content constants/content-type-text
   [{:keys [chat-id message-id content timestamp-opts first-in-group?
            group-chat outgoing current-public-key expanded?] :as message}]
-  [react/view
-   (cond-> {:padding-vertical   6
-            :padding-horizontal 12
-            :border-radius      8
-            :margin-top         (if (and first-in-group? (or outgoing (not group-chat))) 16 4)
-            :background-color   (if outgoing colors/blue colors/blue-light)})
-   (let [collapsible? (and (:should-collapse? content) group-chat)]
+  (let [collapsible? (and (:should-collapse? content) group-chat)]
+    [react/view
+     (cond-> {:padding-vertical   6
+              :padding-horizontal 12
+              :border-radius      8
+              :margin-top         (if (and first-in-group? (or outgoing (not group-chat))) 16 4)
+              :background-color   (if outgoing colors/blue colors/blue-light)})
      (when (:response-to content)
        [quoted-message (:response-to content) outgoing current-public-key])
      (apply react/nested-text
@@ -82,9 +82,9 @@
                     [(:text content)])
                   [{:style (style/message-timestamp-placeholder outgoing)}
                    (str "  " (:timestamp timestamp-opts))]))
-     #_(when collapsible?
-         [expand-button expanded? chat-id message-id]))
-   [message-timestamp timestamp-opts]])
+     (when collapsible?
+       [expand-button expanded? chat-id message-id])
+     [message-timestamp timestamp-opts]]))
 
 (defmethod message-content constants/content-type-status
   [{:keys [content]}]
@@ -94,30 +94,30 @@
                         :color       colors/gray}}
     (:text content)]])
 
-(defmethod message-content constants/content-type-command
-  [{:keys [first-ingroup? group-chat outgoing content] :as message}]
-  (letsubs [id->command [:chats/id->command]
-            {:keys [contacts]} [:chats/current-chat]]
-    [react/view
-     (cond-> {:padding-vertical   6
-              :padding-horizontal 12
-              :border-radius      8
-              :margin-top         (if (and first-in-group? (or outgoing (not group-chat))) 16 4)
-              :background-color (if outgoing colors/blue colors/blue-light)
-              :padding-top    12
-              :padding-bottom 10})
-     (let [{:keys [type] :as command} (commands-receiving/lookup-command-by-ref message id->command)
-           extension-id (get-in content [:params :extension-id])]
-       (if (and platform/mobile? extension-id
-                (extensions/valid-uri? extension-id)
-                (or (not type) (and type (satisfies? protocol/Extension type)
-                                    (not= extension-id (protocol/extension-id type)))))
-         ;; Show install message only for mobile and if message contains extension id and there is no extension installed
-         ;; or installed extension has differen extension id
-         [install-extension-message extension-id outgoing]
-         (if command
-           (commands/generate-preview command (commands/add-chat-contacts contacts message))
-           [react/text (str "Unhandled command: " (-> content :command-path first))])))]))
+#_(defmethod message-content constants/content-type-command
+    [{:keys [first-ingroup? group-chat outgoing content] :as message}]
+    (letsubs [id->command [:chats/id->command]
+              {:keys [contacts]} [:chats/current-chat]]
+      [react/view
+       (cond-> {:padding-vertical   6
+                :padding-horizontal 12
+                :border-radius      8
+                :margin-top         (if (and first-in-group? (or outgoing (not group-chat))) 16 4)
+                :background-color (if outgoing colors/blue colors/blue-light)
+                :padding-top    12
+                :padding-bottom 10})
+       (let [{:keys [type] :as command} (commands-receiving/lookup-command-by-ref message id->command)
+             extension-id (get-in content [:params :extension-id])]
+         (if (and platform/mobile? extension-id
+                  (extensions/valid-uri? extension-id)
+                  (or (not type) (and type (satisfies? protocol/Extension type)
+                                      (not= extension-id (protocol/extension-id type)))))
+           ;; Show install message only for mobile and if message contains extension id and there is no extension installed
+           ;; or installed extension has differen extension id
+           [install-extension-message extension-id outgoing]
+           (if command
+             (commands/generate-preview command (commands/add-chat-contacts contacts message))
+             [react/text (str "Unhandled command: " (-> content :command-path first))])))]))
 
 (defmethod message-content constants/content-type-emoji
   [{:keys [content first-in-group? outgoing group-chat
@@ -227,23 +227,23 @@
            current-public-key content-type content display-photo?
            display-username? username first-in-group?] :as message}]
   [react/touchable-highlight
-   {:on-press      (fn [arg]
-                     (if (and platform/desktop?
-                              (= "right" (.-button (.-nativeEvent arg))))
-                       (open-chat-context-menu message)
-                       (do
-                         (when (= content-type constants/content-type-sticker)
-                           (re-frame/dispatch [:stickers/open-sticker-pack
-                                               (:pack content)]))
-                         (re-frame/dispatch [:chat.ui/set-chat-ui-props
-                                             {:messages-focused? true
-                                              :show-stickers?    false}])
-                         (when-not platform/desktop?
-                           (react/dismiss-keyboard!)))))
-    :on-long-press #(when (#{constants/content-type-emoji
-                             constants/content-type-text}
-                           content-type)
-                      (open-chat-context-menu message))}
+   {:on-press      #() #_(fn [arg]
+                           (if (and platform/desktop?
+                                    (= "right" (.-button (.-nativeEvent arg))))
+                             (open-chat-context-menu message)
+                             (do
+                               (when (= content-type constants/content-type-sticker)
+                                 (re-frame/dispatch [:stickers/open-sticker-pack
+                                                     (:pack content)]))
+                               (re-frame/dispatch [:chat.ui/set-chat-ui-props
+                                                   {:messages-focused? true
+                                                    :show-stickers?    false}])
+                               (when-not platform/desktop?
+                                 (react/dismiss-keyboard!)))))
+    :on-long-press #() #_#(when (#{constants/content-type-emoji
+                                   constants/content-type-text}
+                                 content-type)
+                            (open-chat-context-menu message))}
    [react/view (merge {:accessibility-label :chat-item
                        :flex-direction :column}
                       (if outgoing
@@ -262,14 +262,14 @@
                                         :align-self     :flex-start
                                         :align-items    :flex-start)
                   display-photo?  (assoc :padding-left 8))
-     (when display-photo?
-       [react/view style/message-author
-        (when last-in-group?
-          [react/touchable-highlight
-           {:on-press #(when-not modal?
-                         (re-frame/dispatch [:chat.ui/show-profile from]))}
-           [react/view
-            [photos/member-photo from]]])])
+     #_(when display-photo?
+         [react/view style/message-author
+          (when last-in-group?
+            [react/touchable-highlight
+             {:on-press #(when-not modal?
+                           (re-frame/dispatch [:chat.ui/show-profile from]))}
+             [react/view
+              [photos/member-photo from]]])])
      [react/view (cond-> {:flex-direction :column
                           :max-width      (if platform/desktop? 500 320)}
                    outgoing       (assoc :margin-right 8
