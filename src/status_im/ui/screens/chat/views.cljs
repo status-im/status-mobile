@@ -476,11 +476,10 @@
                     :on-layout (fn [e]
                                  (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
         [chat-toolbar current-chat public? modal?]
-        [messages-view-animation
-         ;;TODO(kozieiev) : When FlatList in react-native-desktop become viable it should be used instead of optimized ScrollView for chat
-         (if platform/desktop?
-           [messages-view-desktop current-chat modal?]
-           [messages-view current-chat modal?])]
+        ;;TODO(kozieiev) : When FlatList in react-native-desktop become viable it should be used instead of optimized ScrollView for chat
+        (if platform/desktop?
+          [messages-view-desktop current-chat modal?]
+          [messages-view current-chat modal?])
         (when show-input?
           [input/container])
         (when show-stickers?
