@@ -9,49 +9,13 @@
   [outgoing]
   {:color (if outgoing colors/white colors/text)})
 
-(defn message-padding-top
-  [{:keys [first-in-group? display-username?]}]
-  (if (and display-username?
-           first-in-group?)
-    6
-    2))
-
-(defn last-message-padding
-  [{:keys [last? typing]}]
-  (when (and last? (not typing))
-    {:padding-bottom 16}))
-
-(defn message-body
-  [{:keys [outgoing display-photo?] :as message}]
-  (let [align (if outgoing :flex-end :flex-start)
-        direction (if outgoing :row-reverse :row)]
-    (merge {:flex-direction direction
-            :padding-top    (message-padding-top message)
-            :align-self     align
-            :align-items    align}
-           (when display-photo?
-             {:padding-left  8}))))
-
-(def message-timestamp
-  {:font-size  10
-   :align-self :flex-end})
-
 (defn message-timestamp-placeholder
   [outgoing]
-  (assoc message-timestamp
-         :color (if outgoing
-                  colors/blue
-                  colors/blue-light)))
-
-(defn message-timestamp-text
-  [justify-timestamp? outgoing rtl? emoji?]
-  (merge message-timestamp
-         {:color (if (and outgoing (not emoji?))
-                   (colors/alpha colors/white 0.7)
-                   colors/gray)}
-         (when justify-timestamp? {:position              :absolute
-                                   :bottom                7
-                                   (if rtl? :left :right) 12})))
+  {:font-size  10
+   :align-self :flex-end
+   :color (if outgoing
+            colors/blue
+            colors/blue-light)})
 
 (def message-expand-button
   {:color         colors/gray
@@ -65,25 +29,9 @@
    :font-size   12
    :color       colors/text-gray})
 
-(defn group-message-wrapper [{:keys [outgoing] :as message}]
-  (merge {:flex-direction :column}
-         (if outgoing
-           {:margin-left 64}
-           {:margin-right 64})
-         (last-message-padding message)))
-
-(defn timestamp-content-wrapper [outgoing message-type]
-  {:flex-direction (if outgoing :row-reverse :row)})
-
 (defn group-message-view
   [outgoing message-type]
-  (let [align (if outgoing :flex-end :flex-start)]
-    (merge {:flex-direction :column
-            :max-width      (if platform/desktop? 500 320)
-            :align-items    align}
-           (if outgoing
-             {:margin-right 8}
-             {:margin-left 8}))))
+  (let [align (if outgoing :flex-end :flex-start)]))
 
 (defn delivery-status [outgoing]
   (if outgoing
@@ -128,28 +76,9 @@
          :line-height 22
          :margin-bottom (if collapsed? 2 0)))
 
-(defnstyle emoji-message
-  [{:keys [incoming-group]}]
+(defstyle emoji-message
   {:font-size 40
-   :desktop   {:line-height 46}
-   :margin-top (if incoming-group 4 0)})
-
-(defn message-view
-  [{:keys [content-type outgoing group-chat first-in-group?]}]
-  (merge {:padding-vertical   6
-          :padding-horizontal 12
-          :border-radius      8
-          :margin-top         (if (and first-in-group?
-                                       (or outgoing
-                                           (not group-chat)))
-                                16
-                                4)}
-         (if (= content-type constants/content-type-emoji)
-           {:flex-direction :row}
-           {:background-color (if outgoing colors/blue colors/blue-light)})
-         (when (= content-type constants/content-type-command)
-           {:padding-top    12
-            :padding-bottom 10})))
+   :desktop   {:line-height 46}})
 
 (def play-image
   {:width  33
@@ -157,11 +86,6 @@
 
 (def status-container
   {:padding-horizontal 5})
-
-(def status-text
-  {:margin-top  9
-   :font-size   14
-   :color       colors/gray})
 
 (defn message-container [window-width]
   {:position :absolute
