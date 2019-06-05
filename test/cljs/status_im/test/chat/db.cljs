@@ -115,230 +115,230 @@
       (is (= #{"1" "2"}
              (set (keys (db/active-chats {} chats {}))))))))
 
-(deftest messages-with-datemarks
-  (testing "empty state"
-    (is (empty?
-         (db/messages-with-datemarks
-          nil
-          nil
-          nil
-          nil
-          nil
-          false
-          false))))
-  (testing "empty state pub-chat"
-    (is (=
-         [{:type       :gap
-           :value      ":first-gap"
-           :first-gap? true}]
-         (db/messages-with-datemarks
-          nil
-          nil
-          nil
-          nil
-          {:lowest-request-from 10
-           :highest-request-to  30}
-          true
-          true))))
-  (testing "simple case"
-    (is (=
-         '({:whisper-timestamp 40
-            :timestamp         40
-            :content           nil
-            :timestamp-str     "14:00"
-            :datemark          "today"}
-           {:whisper-timestamp 30
-            :timestamp         30
-            :content           nil
-            :timestamp-str     "13:00"
-            :datemark          "today"}
-           {:value             "today"
-            :type              :datemark
-            :whisper-timestamp 30
-            :timestamp         30}
-           {:whisper-timestamp 20
-            :timestamp         20
-            :content           nil
-            :timestamp-str     "12:00"
-            :datemark          "yesterday"}
-           {:whisper-timestamp 10
-            :timestamp         10
-            :content           nil
-            :timestamp-str     "11:00"
-            :datemark          "yesterday"}
-           {:value             "yesterday"
-            :type              :datemark
-            :whisper-timestamp 10
-            :timestamp         10})
-         (db/messages-with-datemarks
-          {"yesterday"
-           (list
-            {:message-id        :m1
-             :timestamp-str     "11:00"
-             :whisper-timestamp 10
-             :timestamp         10}
-            {:message-id        :m2
-             :timestamp-str     "12:00"
-             :whisper-timestamp 20
-             :timestamp         20})
-           "today"
-           (list
-            {:message-id        :m3
-             :timestamp-str     "13:00"
-             :whisper-timestamp 30
-             :timestamp         30}
-            {:message-id        :m4
-             :timestamp-str     "14:00"
-             :whisper-timestamp 40
-             :timestamp         40})}
-          {:m1 {:whisper-timestamp 10
-                :timestamp         10}
-           :m2 {:whisper-timestamp 20
-                :timestamp         20}
-           :m3 {:whisper-timestamp 30
-                :timestamp         30}
-           :m4 {:whisper-timestamp 40
-                :timestamp         40}}
-          nil
-          nil
-          nil
-          nil
-          nil))))
-  (testing "simple case with gap"
-    (is (=
-         '({:whisper-timestamp 40
-            :timestamp         40
-            :content           nil
-            :timestamp-str     "14:00"
-            :datemark          "today"}
-           {:type  :gap
-            :value ":gapid1"
-            :gaps  {:ids [:gapid1]}}
-           {:whisper-timestamp 30
-            :timestamp         30
-            :content           nil
-            :timestamp-str     "13:00"
-            :datemark          "today"}
-           {:value             "today"
-            :type              :datemark
-            :whisper-timestamp 30
-            :timestamp         30}
-           {:whisper-timestamp 20
-            :timestamp         20
-            :content           nil
-            :timestamp-str     "12:00"
-            :datemark          "yesterday"}
-           {:whisper-timestamp 10
-            :timestamp         10
-            :content           nil
-            :timestamp-str     "11:00"
-            :datemark          "yesterday"}
-           {:value             "yesterday"
-            :type              :datemark
-            :whisper-timestamp 10
-            :timestamp         10})
-         (db/messages-with-datemarks
-          {"yesterday"
-           (list
-            {:message-id        :m1
-             :timestamp-str     "11:00"
-             :whisper-timestamp 10
-             :timestamp         10}
-            {:message-id        :m2
-             :timestamp-str     "12:00"
-             :whisper-timestamp 20
-             :timestamp         20})
-           "today"
-           (list
-            {:message-id        :m3
-             :timestamp-str     "13:00"
-             :whisper-timestamp 30
-             :timestamp         30}
-            {:message-id        :m4
-             :timestamp-str     "14:00"
-             :whisper-timestamp 40
-             :timestamp         40})}
-          {:m1 {:whisper-timestamp 10
-                :timestamp         10}
-           :m2 {:whisper-timestamp 20
-                :timestamp         20}
-           :m3 {:whisper-timestamp 30
-                :timestamp         30}
-           :m4 {:whisper-timestamp 40
-                :timestamp         40}}
-          nil
-          [{:from 25
-            :to   30
-            :id   :gapid1}]
-          nil
-          nil
-          nil))))
-  (testing "simple case with gap after all messages"
-    (is (=
-         '({:type  :gap
-            :value ":gapid1"
-            :gaps  {:ids (:gapid1)}}
-           {:whisper-timestamp 40
-            :timestamp         40
-            :content           nil
-            :timestamp-str     "14:00"
-            :datemark          "today"}
-           {:whisper-timestamp 30
-            :timestamp         30
-            :content           nil
-            :timestamp-str     "13:00"
-            :datemark          "today"}
-           {:value             "today"
-            :type              :datemark
-            :whisper-timestamp 30
-            :timestamp         30}
-           {:whisper-timestamp 20
-            :timestamp         20
-            :content           nil
-            :timestamp-str     "12:00"
-            :datemark          "yesterday"}
-           {:whisper-timestamp 10
-            :timestamp         10
-            :content           nil
-            :timestamp-str     "11:00"
-            :datemark          "yesterday"}
-           {:value             "yesterday"
-            :type              :datemark
-            :whisper-timestamp 10
-            :timestamp         10})
-         (db/messages-with-datemarks
-          {"yesterday"
-           (list
-            {:message-id        :m1
-             :timestamp-str     "11:00"
-             :whisper-timestamp 10
-             :timestamp         10}
-            {:message-id        :m2
-             :timestamp-str     "12:00"
-             :whisper-timestamp 20
-             :timestamp         20})
-           "today"
-           (list
-            {:message-id        :m3
-             :timestamp-str     "13:00"
-             :whisper-timestamp 30
-             :timestamp         30}
-            {:message-id        :m4
-             :timestamp-str     "14:00"
-             :whisper-timestamp 40
-             :timestamp         40})}
-          {:m1 {:whisper-timestamp 10
-                :timestamp         10}
-           :m2 {:whisper-timestamp 20
-                :timestamp         20}
-           :m3 {:whisper-timestamp 30
-                :timestamp         30}
-           :m4 {:whisper-timestamp 40
-                :timestamp         40}}
-          nil
-          [{:from 100
-            :to   110
-            :id   :gapid1}]
-          nil
-          nil
-          nil)))))
+#_(deftest messages-with-datemarks
+    (testing "empty state"
+      (is (empty?
+           (db/messages-with-datemarks
+            nil
+            nil
+            nil
+            nil
+            nil
+            false
+            false))))
+    (testing "empty state pub-chat"
+      (is (=
+           [{:type       :gap
+             :value      ":first-gap"
+             :first-gap? true}]
+           (db/messages-with-datemarks
+            nil
+            nil
+            nil
+            nil
+            {:lowest-request-from 10
+             :highest-request-to  30}
+            true
+            true))))
+    (testing "simple case"
+      (is (=
+           '({:whisper-timestamp 40
+              :timestamp         40
+              :content           nil
+              :timestamp-str     "14:00"
+              :datemark          "today"}
+             {:whisper-timestamp 30
+              :timestamp         30
+              :content           nil
+              :timestamp-str     "13:00"
+              :datemark          "today"}
+             {:value             "today"
+              :type              :datemark
+              :whisper-timestamp 30
+              :timestamp         30}
+             {:whisper-timestamp 20
+              :timestamp         20
+              :content           nil
+              :timestamp-str     "12:00"
+              :datemark          "yesterday"}
+             {:whisper-timestamp 10
+              :timestamp         10
+              :content           nil
+              :timestamp-str     "11:00"
+              :datemark          "yesterday"}
+             {:value             "yesterday"
+              :type              :datemark
+              :whisper-timestamp 10
+              :timestamp         10})
+           (db/messages-with-datemarks
+            {"yesterday"
+             (list
+              {:message-id        :m1
+               :timestamp-str     "11:00"
+               :whisper-timestamp 10
+               :timestamp         10}
+              {:message-id        :m2
+               :timestamp-str     "12:00"
+               :whisper-timestamp 20
+               :timestamp         20})
+             "today"
+             (list
+              {:message-id        :m3
+               :timestamp-str     "13:00"
+               :whisper-timestamp 30
+               :timestamp         30}
+              {:message-id        :m4
+               :timestamp-str     "14:00"
+               :whisper-timestamp 40
+               :timestamp         40})}
+            {:m1 {:whisper-timestamp 10
+                  :timestamp         10}
+             :m2 {:whisper-timestamp 20
+                  :timestamp         20}
+             :m3 {:whisper-timestamp 30
+                  :timestamp         30}
+             :m4 {:whisper-timestamp 40
+                  :timestamp         40}}
+            nil
+            nil
+            nil
+            nil
+            nil))))
+    (testing "simple case with gap"
+      (is (=
+           '({:whisper-timestamp 40
+              :timestamp         40
+              :content           nil
+              :timestamp-str     "14:00"
+              :datemark          "today"}
+             {:type  :gap
+              :value ":gapid1"
+              :gaps  {:ids [:gapid1]}}
+             {:whisper-timestamp 30
+              :timestamp         30
+              :content           nil
+              :timestamp-str     "13:00"
+              :datemark          "today"}
+             {:value             "today"
+              :type              :datemark
+              :whisper-timestamp 30
+              :timestamp         30}
+             {:whisper-timestamp 20
+              :timestamp         20
+              :content           nil
+              :timestamp-str     "12:00"
+              :datemark          "yesterday"}
+             {:whisper-timestamp 10
+              :timestamp         10
+              :content           nil
+              :timestamp-str     "11:00"
+              :datemark          "yesterday"}
+             {:value             "yesterday"
+              :type              :datemark
+              :whisper-timestamp 10
+              :timestamp         10})
+           (db/messages-with-datemarks
+            {"yesterday"
+             (list
+              {:message-id        :m1
+               :timestamp-str     "11:00"
+               :whisper-timestamp 10
+               :timestamp         10}
+              {:message-id        :m2
+               :timestamp-str     "12:00"
+               :whisper-timestamp 20
+               :timestamp         20})
+             "today"
+             (list
+              {:message-id        :m3
+               :timestamp-str     "13:00"
+               :whisper-timestamp 30
+               :timestamp         30}
+              {:message-id        :m4
+               :timestamp-str     "14:00"
+               :whisper-timestamp 40
+               :timestamp         40})}
+            {:m1 {:whisper-timestamp 10
+                  :timestamp         10}
+             :m2 {:whisper-timestamp 20
+                  :timestamp         20}
+             :m3 {:whisper-timestamp 30
+                  :timestamp         30}
+             :m4 {:whisper-timestamp 40
+                  :timestamp         40}}
+            nil
+            [{:from 25
+              :to   30
+              :id   :gapid1}]
+            nil
+            nil
+            nil))))
+    (testing "simple case with gap after all messages"
+      (is (=
+           '({:type  :gap
+              :value ":gapid1"
+              :gaps  {:ids (:gapid1)}}
+             {:whisper-timestamp 40
+              :timestamp         40
+              :content           nil
+              :timestamp-str     "14:00"
+              :datemark          "today"}
+             {:whisper-timestamp 30
+              :timestamp         30
+              :content           nil
+              :timestamp-str     "13:00"
+              :datemark          "today"}
+             {:value             "today"
+              :type              :datemark
+              :whisper-timestamp 30
+              :timestamp         30}
+             {:whisper-timestamp 20
+              :timestamp         20
+              :content           nil
+              :timestamp-str     "12:00"
+              :datemark          "yesterday"}
+             {:whisper-timestamp 10
+              :timestamp         10
+              :content           nil
+              :timestamp-str     "11:00"
+              :datemark          "yesterday"}
+             {:value             "yesterday"
+              :type              :datemark
+              :whisper-timestamp 10
+              :timestamp         10})
+           (db/messages-with-datemarks
+            {"yesterday"
+             (list
+              {:message-id        :m1
+               :timestamp-str     "11:00"
+               :whisper-timestamp 10
+               :timestamp         10}
+              {:message-id        :m2
+               :timestamp-str     "12:00"
+               :whisper-timestamp 20
+               :timestamp         20})
+             "today"
+             (list
+              {:message-id        :m3
+               :timestamp-str     "13:00"
+               :whisper-timestamp 30
+               :timestamp         30}
+              {:message-id        :m4
+               :timestamp-str     "14:00"
+               :whisper-timestamp 40
+               :timestamp         40})}
+            {:m1 {:whisper-timestamp 10
+                  :timestamp         10}
+             :m2 {:whisper-timestamp 20
+                  :timestamp         20}
+             :m3 {:whisper-timestamp 30
+                  :timestamp         30}
+             :m4 {:whisper-timestamp 40
+                  :timestamp         40}}
+            nil
+            [{:from 100
+              :to   110
+              :id   :gapid1}]
+            nil
+            nil
+            nil)))))

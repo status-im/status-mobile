@@ -349,7 +349,8 @@
        (re-frame/dispatch [:chat.ui/set-chat-ui-props
                            {:messages-focused? true
                             :input-focused?    false}]))}
-    (let [flat-list-conf
+    (let [no-messages (empty? messages)
+          flat-list-conf
           {:data                      messages
            :ref                       #(reset! messages-list-ref %)
            :footer                    [chat-intro-header-container chat no-messages]
