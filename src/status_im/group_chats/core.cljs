@@ -5,19 +5,20 @@
             [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.accounts.model :as accounts.model]
+            [status-im.pairing.core :as pairing]
             [status-im.chat.models :as models.chat]
             [status-im.chat.models.message :as models.message]
             [status-im.contact.core :as models.contact]
-            [status-im.contact-code.core :as contact-code]
+            [status-im.transport.filters.core :as transport.filters]
             [status-im.group-chats.db :as group-chats.db]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as native-module]
             [status-im.transport.message.group-chat :as message.group-chat]
             [status-im.transport.message.protocol :as protocol]
-            [status-im.transport.partitioned-topic :as transport.topic]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.fx :as fx]
             [status-im.mailserver.core :as mailserver]
+            [status-im.mailserver.topics :as mailserver.topics]
             [taoensso.timbre :as log]))
 
 ;; Description of the flow:
@@ -121,22 +122,21 @@
                                     removed-members)
          {:keys [web3]} (:db cofx)
          current-public-key (accounts.model/current-public-key cofx)
-         ;; If a member has joined is listening to the shared topic and we send there
-         ;; to ourselves we send always on contact-discovery to make sure all devices
-         ;; are informed, in case of dropped messages.
-         ;; We check that it has explicitly joined, regardless of the local
-         ;; version of the group chat, for backward compatibility
+         members-allowed (filter
+                          (fn [pk]
+                            (if (= pk current-public-key)
+                              (pairing/has-paired-installations? cofx)
+                              true))
+                          members)
          destinations (map (fn [member]
-                             {:public-key member
-                              :chat (transport.topic/public-key->discovery-topic member)})
-                           members)]
+                             {:public-key member})
+                           members-allowed)]
      (fx/merge
       cofx
       {:shh/send-group-message
        {:web3             web3
         :src              current-public-key
         :dsts             destinations
-        :available-topics (get-in cofx [:db :mailserver/topics])
         :success-event    [:transport/message-sent
                            chat-id
                            message-id
@@ -217,12 +217,7 @@
      {:group-chats/sign-membership {:chat-id chat-id
                                     :from    my-public-key
                                     :events  events}
-      :db                          (assoc db :group/selected-contacts #{})}
-     (mailserver/upsert-mailserver-topic
-      {:chat-ids [chat-id]
-       :topic    (transport.topic/discovery-topic-hash)
-       :fetch?   false})
-     (mailserver/process-next-messages-request))))
+      :db                          (assoc db :group/selected-contacts #{})})))
 
 (fx/defn remove-member
   "Format group update message and sign membership"
@@ -254,12 +249,7 @@
        cofx
        {:group-chats/sign-membership {:chat-id chat-id
                                       :from    my-public-key
-                                      :events  [event]}}
-       (mailserver/upsert-mailserver-topic
-        {:chat-ids [chat-id]
-         :topic    (transport.topic/discovery-topic-hash)
-         :fetch    false})
-       (mailserver/process-next-messages-request)))))
+                                      :events  [event]}}))))
 
 (fx/defn make-admin
   "Format group update with make admin message and sign membership"
@@ -459,27 +449,20 @@
            (membership-changes->system-messages cofx clock-values)
            (models.message/add-system-messages cofx)))))
 
-(fx/defn set-up-topic
+(fx/defn set-up-filter
   "Listen/Tear down the shared topic/contact-codes. Stop listening for members who
   have left the chat"
   [cofx chat-id previous-chat]
   (let [my-public-key (accounts.model/current-public-key cofx)
-        new-chat (get-in cofx [:db :chats chat-id])]
-    ;; If we left the chat, teardown, otherwise upsert
-    (if (and (group-chats.db/joined? my-public-key previous-chat)
-             (not (group-chats.db/joined? my-public-key new-chat)))
-      (apply fx/merge
-             cofx
-             (map #(contact-code/stop-listening %)
-                  (:members new-chat)))
-      (apply fx/merge
-             cofx
-             (concat
-              (map #(contact-code/listen-to-chat %)
-                   (:members new-chat))
-              (map #(contact-code/stop-listening %)
-                   (clojure.set/difference (:members previous-chat)
-                                           (:members new-chat))))))))
+        new-chat (get-in cofx [:db :chats chat-id])
+        members (:members-joined new-chat)]
+    ;; If we left the chat do nothing
+    (when-not (and (group-chats.db/joined? my-public-key previous-chat)
+                   (not (group-chats.db/joined? my-public-key new-chat)))
+      (fx/merge
+       cofx
+       (transport.filters/upsert-group-chat-topics)
+       (transport.filters/load-members members)))))
 
 (fx/defn handle-membership-update
   "Upsert chat and receive message if valid"
@@ -512,7 +495,7 @@
                                             :contacts                 (:contacts new-group)})
                   (add-system-messages chat-id previous-chat new-group)
 
-                  (set-up-topic chat-id previous-chat)
+                  (set-up-filter chat-id previous-chat)
                   #(when (and message
                               ;; don't allow anything but group messages
                               (instance? protocol/Message message)

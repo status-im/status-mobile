@@ -12,12 +12,13 @@
             [status-im.transport.db :as transport.db]
             [status-im.transport.message.protocol :as protocol]
             [clojure.string :as string]
+            [status-im.mailserver.topics :as mailserver.topics]
+            [status-im.mailserver.constants :as constants]
             [status-im.data-store.mailservers :as data-store.mailservers]
             [status-im.i18n :as i18n]
             [status-im.utils.handlers :as handlers]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.transport.partitioned-topic :as transport.topic]
             [status-im.ui.screens.mobile-network-settings.utils :as mobile-network-utils]
             [status-im.utils.random :as rand]))
 
@@ -34,20 +35,7 @@
 ;; as soon as the mailserver becomes available
 
 
-(def one-day (* 24 3600))
-(def seven-days (* 7 one-day))
-(def max-gaps-range (* 30 one-day))
-(def max-request-range one-day)
-(def maximum-number-of-attempts 2)
-(def request-timeout 30)
-(def min-limit 100)
-(def max-limit 2000)
-(def backoff-interval-ms 3000)
-(def default-limit max-limit)
-(def connection-timeout
-  "Time after which mailserver connection is considered to have failed"
-  10000)
-(def limit (atom default-limit))
+(def limit (atom constants/default-limit))
 (def success-counter (atom 0))
 
 (defn connected? [{:keys [db]} id]
@@ -147,10 +135,10 @@
    (update-mailservers! enodes)))
 
 (defn decrease-limit []
-  (max min-limit (/ @limit 2)))
+  (max constants/min-limit (/ @limit 2)))
 
 (defn increase-limit []
-  (min max-limit (* @limit 2)))
+  (min constants/max-limit (* @limit 2)))
 
 (re-frame/reg-fx
  :mailserver/set-limit
@@ -224,7 +212,7 @@
                ;; Any message sent before this takes effect will not be marked as sent
                ;; probably we should improve the UX so that is more transparent to the user
                :mailserver/update-mailservers [address]
-               :utils/dispatch-later [{:ms connection-timeout
+               :utils/dispatch-later [{:ms constants/connection-timeout
                                        :dispatch [:mailserver/check-connection-timeout]}]}
               (when-not (or sym-key-id generating-sym-key?)
                 (generate-mailserver-symkey mailserver)))))
@@ -327,7 +315,7 @@
                       (clj->js (cond-> {:topics         topics
                                         :mailServerPeer address
                                         :symKeyID       sym-key-id
-                                        :timeout        request-timeout
+                                        :timeout        constants/request-timeout
                                         :limit          actual-limit
                                         :cursor         cursor
                                         :from           actual-from}
@@ -341,7 +329,7 @@
                           (do
                             (log/error "mailserver: messages request error for topic " topics ": " error)
                             (utils/set-timeout #(re-frame/dispatch [:mailserver.callback/resend-request {:request-id nil}])
-                                               backoff-interval-ms)))))))
+                                               constants/backoff-interval-ms)))))))
 
 (re-frame/reg-fx
  :mailserver/request-messages
@@ -366,19 +354,19 @@
                 (> default-request-to last-request))
         (let [from (or force-request-from
                        (max last-request
-                            (- default-request-to max-request-range)))
+                            (- default-request-to constants/max-request-range)))
               to   (or force-request-to default-request-to)]
-          {:topic     topic
+          {:gap-topics #{topic}
            :from      from
            :to        to
            :force-to? (not (nil? force-request-to))})))))
 
 (defn aggregate-requests
-  [acc {:keys [topic from to force-to? gap chat-id]}]
+  [acc {:keys [gap-topics from to force-to? gap chat-id]}]
   (when from
     (update acc [from to force-to?]
             (fn [{:keys [topics]}]
-              {:topics    ((fnil conj #{}) topics topic)
+              {:topics    ((fnil clojure.set/union #{}) topics gap-topics)
                :from      from
                :to        to
                ;; To is sent to the mailserver only when force-to? is true,
@@ -405,8 +393,8 @@
 (fx/defn process-next-messages-request
   [{:keys [db now] :as cofx}]
   (when (and
+         (:filters/initialized db)
          (mobile-network-utils/syncing-allowed? cofx)
-         (transport.db/all-filters-added? cofx)
          (not (:mailserver/current-request db)))
     (when-let [mailserver (get-mailserver-when-ready cofx)]
       (let [request-to (or (:mailserver/request-to db)
@@ -509,28 +497,6 @@
     (fx/merge cofx
               (reset-request-to)
               (connect-to-mailserver))))
-
-(fx/defn remove-chat-from-mailserver-topic
-  "if the chat is the only chat of the mailserver topic delete the mailserver topic
-   and process-next-messages-requests again to remove pending request for that topic
-   otherwise remove the chat-id of the chat from the mailserver topic and save"
-  [{:keys [db] :as cofx} chat-id]
-  (let [{:keys [public?] :as chat} (get-in db [:chats chat-id])
-        topic (if (and chat (not public?))
-                (transport.topic/discovery-topic-hash)
-                (get-in db [:transport/chats chat-id :topic]))
-        {:keys [chat-ids] :as mailserver-topic} (update (get-in db [:mailserver/topics topic])
-                                                        :chat-ids
-                                                        disj chat-id)]
-    (if (empty? chat-ids)
-      (fx/merge cofx
-                {:db (update db :mailserver/topics dissoc topic)
-                 :data-store/tx [(data-store.mailservers/delete-mailserver-topic-tx topic)]}
-                (process-next-messages-request))
-      {:db (assoc-in db [:mailserver/topics topic] mailserver-topic)
-       :data-store/tx [(data-store.mailservers/save-mailserver-topic-tx
-                        {:topic topic
-                         :mailserver-topic mailserver-topic})]})))
 
 (fx/defn remove-gaps
   [{:keys [db]} chat-id]
@@ -860,77 +826,38 @@
       :on-accept #(re-frame/dispatch [:mailserver.ui/retry-request-pressed])
       :confirm-button-text (i18n/label :t/mailserver-request-retry)}}))
 
-(fx/defn upsert-mailserver-topic
-  "if the topic didn't exist
-      create the topic
-   else if chat-id is not in the topic
-      add the chat-id to the topic and reset last-request
-      there was no filter for the chat and messages for that
-      so the whole history for that topic needs to be re-fetched"
-  [{:keys [db now] :as cofx} {:keys [topic chat-ids fetch?]
-                              :or   {fetch? true}}]
-  (let [current-mailserver-topic (get-in db [:mailserver/topics topic]
-                                         {:chat-ids #{}})
-        existing-ids             (:chat-ids current-mailserver-topic)
-        chat-id                  (first chat-ids)]
-    (when-not (every? (partial contains? existing-ids) chat-ids)
-      (let [{:keys [new-account? public-key]} (:account/account db)
-            now-s        (quot now 1000)
-            previous-last-request (get current-mailserver-topic :last-request)
-            last-request (cond (and new-account?
-                                    (nil? previous-last-request)
-                                    (or (= chat-id :discovery-topic)
-                                        (and
-                                         (string? chat-id)
-                                         (string/starts-with?
-                                          chat-id
-                                          public-key))))
-                               (- now-s 10)
-
-                               (not fetch?)
-                               ;; in case a topic has been already requested
-                               ;; reset `last-request` so that creation
-                               ;; of an extra gap is prevented
-                               (max (or previous-last-request (- now-s 10))
-                                    (- now-s max-request-range))
-
-                               :else
-                               (- now-s max-request-range))
-            mailserver-topic (-> current-mailserver-topic
-                                 (assoc :last-request last-request)
-                                 (update :chat-ids clojure.set/union (set chat-ids)))]
-        (fx/merge cofx
-                  {:db            (assoc-in db [:mailserver/topics topic] mailserver-topic)
-                   :data-store/tx [(data-store.mailservers/save-mailserver-topic-tx
-                                    {:topic            topic
-                                     :mailserver-topic mailserver-topic})]})))))
-
 (fx/defn fetch-history
+  "Retrive a list of topics given a chat id, set them to the specified time interval
+  and start a mailserver request"
   [{:keys [db] :as cofx} chat-id {:keys [from to]}]
-  (log/debug "fetch-history" "chat-id:" chat-id "from-timestamp:" from)
-  (let [public-key (accounts.model/current-public-key cofx)
-        topic  (or (get-in db [:transport/chats chat-id :topic])
-                   (transport.topic/public-key->discovery-topic-hash public-key))]
+  (let [topics  (mailserver.topics/topics-for-chat
+                 db
+                 chat-id)]
+    (log/debug "fetch-history" "chat-id:" chat-id "from-timestamp:" from "topics:" topics)
     (fx/merge cofx
-              {:db (cond-> (assoc-in db [:mailserver/requests-from topic] from)
+              {:db (reduce
+                    (fn [db topic]
+                      (cond-> (assoc-in db [:mailserver/requests-from topic] from)
 
-                     to
-                     (assoc-in [:mailserver/requests-to topic] to))}
+                        to
+                        (assoc-in [:mailserver/requests-to topic] to)))
+                    db
+                    topics)}
               (process-next-messages-request))))
 
 (fx/defn fill-the-gap
-  [{:keys [db] :as cofx} {:keys [gaps topic chat-id]}]
+  [{:keys [db] :as cofx} {:keys [gaps topics chat-id]}]
   (let [mailserver      (get-mailserver-when-ready cofx)
         requests        (into {}
                               (map
                                (fn [{:keys [from to id]}]
                                  [id
                                   {:from      (max from
-                                                   (- to max-request-range))
+                                                   (- to constants/max-request-range))
                                    :to        to
                                    :force-to? true
-                                   :topics    [topic]
-                                   :topic     topic
+                                   :topics    topics
+                                   :gap-topics topics
                                    :chat-id   chat-id
                                    :gap       id}]))
                               gaps)
@@ -962,7 +889,7 @@
                    ;; this is the same request that we are currently processing
                    (= request-id (:request-id current-request))))
 
-      (if            (<= maximum-number-of-attempts
+      (if            (<= constants/maximum-number-of-attempts
                          (:attempts current-request))
         (fx/merge cofx
                   {:db (update db :mailserver/current-request dissoc :attempts)}
@@ -993,7 +920,7 @@
 (fx/defn initialize-mailserver
   [cofx custom-mailservers]
   (fx/merge cofx
-            {:mailserver/set-limit default-limit}
+            {:mailserver/set-limit constants/default-limit}
             (add-custom-mailservers custom-mailservers)
             (set-current-mailserver)))
 
@@ -1153,7 +1080,7 @@
     (let [now-s         (quot now 1000)
           gaps          (all-gaps chat-id)
           outdated-gaps (into [] (comp (filter #(< (:to %)
-                                                   (- now-s max-gaps-range)))
+                                                   (- now-s constants/max-gaps-range)))
                                        (map :id))
                               (vals gaps))
           gaps          (apply dissoc gaps outdated-gaps)]

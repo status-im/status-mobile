@@ -18,7 +18,6 @@
             [status-im.chat.models.input :as chat.input]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.chat.models.message :as chat.message]
-            [status-im.contact-code.core :as contact-code]
             [status-im.contact-recovery.core :as contact-recovery]
             [status-im.contact.block :as contact.block]
             [status-im.contact.core :as contact]
@@ -33,6 +32,8 @@
             [status-im.init.core :as init]
             [status-im.log-level.core :as log-level]
             [status-im.mailserver.core :as mailserver]
+            [status-im.mailserver.constants :as mailserver.constants]
+            [status-im.mailserver.topics :as mailserver.topics]
             [status-im.node.core :as node]
             [status-im.notifications.core :as notifications]
             [status-im.pairing.core :as pairing]
@@ -227,9 +228,9 @@
    (accounts/enable-notifications cofx desktop-notifications?)))
 
 (handlers/register-handler-fx
- :accounts.ui/toggle-pfs
+ :accounts.ui/toggle-device-to-device
  (fn [cofx [_ enabled?]]
-   (accounts/toggle-pfs cofx enabled?)))
+   (accounts/toggle-device-to-device cofx enabled?)))
 
 (handlers/register-handler-fx
  :accounts.ui/web3-opt-in-mode-switched
@@ -632,29 +633,29 @@
  :chat.ui/fetch-history-pressed
  (fn [{:keys [now] :as cofx} [_ chat-id]]
    (mailserver/fetch-history cofx chat-id
-                             {:from (- (quot now 1000) mailserver/one-day)})))
+                             {:from (- (quot now 1000) mailserver.constants/one-day)})))
 
 (handlers/register-handler-fx
  :chat.ui/fetch-history-pressed48-60
  (fn [{:keys [now] :as cofx} [_ chat-id]]
    (let [now (quot now 1000)]
      (mailserver/fetch-history cofx chat-id
-                               {:from (- now (* 2.5 mailserver/one-day))
-                                :to   (- now (* 2 mailserver/one-day))}))))
+                               {:from (- now (* 2.5 mailserver.constants/one-day))
+                                :to   (- now (* 2 mailserver.constants/one-day))}))))
 
 (handlers/register-handler-fx
  :chat.ui/fetch-history-pressed84-96
  (fn [{:keys [now] :as cofx} [_ chat-id]]
    (let [now (quot now 1000)]
      (mailserver/fetch-history cofx chat-id
-                               {:from (- now (* 4 mailserver/one-day))
-                                :to   (- now (* 3.5 mailserver/one-day))}))))
+                               {:from (- now (* 4 mailserver.constants/one-day))
+                                :to   (- now (* 3.5 mailserver.constants/one-day))}))))
 
 (handlers/register-handler-fx
  :chat.ui/fill-gaps
  (fn [{:keys [db] :as cofx} [_ gap-ids]]
    (let [chat-id           (:current-chat-id db)
-         topic             (chat.db/topic-by-current-chat db)
+         topics            (mailserver.topics/topics-for-current-chat db)
          gaps              (keep
                             (fn [id]
                               (get-in db [:mailserver/gaps chat-id id]))
@@ -662,7 +663,7 @@
      (mailserver/fill-the-gap
       cofx
       {:gaps    gaps
-       :topic   topic
+       :topics  topics
        :chat-id chat-id}))))
 
 (handlers/register-handler-fx
@@ -673,14 +674,14 @@
          {:keys [lowest-request-from]}
          (get-in db [:mailserver/ranges chat-id])
 
-         topic             (chat.db/topic-by-current-chat db)
+         topics            (mailserver.topics/topics-for-current-chat db)
          gaps              [{:id   :first-gap
                              :to   lowest-request-from
-                             :from (- lowest-request-from mailserver/one-day)}]]
+                             :from (- lowest-request-from mailserver.constants/one-day)}]]
      (mailserver/fill-the-gap
       cofx
       {:gaps    gaps
-       :topic   topic
+       :topics   topics
        :chat-id chat-id}))))
 
 (handlers/register-handler-fx
@@ -1595,9 +1596,7 @@
  :contact.ui/add-to-contact-pressed
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx [_ public-key]]
-   (if config/partitioned-topic-enabled?
-     (contact/add-contacts-filter cofx public-key :add-contact)
-     (contact/add-contact cofx public-key))))
+   (contact/add-contact cofx public-key)))
 
 (handlers/register-handler-fx
  :contact.ui/block-contact-pressed
@@ -1628,14 +1627,7 @@
                            :on-dismiss #(re-frame/dispatch [:navigate-to-clean :home])}}
        (fx/merge cofx
                  fx
-                 (if config/partitioned-topic-enabled?
-                   (contact/add-contacts-filter contact-identity :open-chat)
-                   (chat/start-chat contact-identity {:navigation-reset? true})))))))
-
-(handlers/register-handler-fx
- :contact/filters-added
- (fn [cofx [_ contact-identity]]
-   (chat/start-chat cofx contact-identity {:navigation-reset? true})))
+                 (chat/start-chat contact-identity {:navigation-reset? true}))))))
 
 (handlers/register-handler-fx
  :contact.ui/start-group-chat-pressed
@@ -1682,16 +1674,6 @@
  :set-initial-props
  (fn [cofx [_ initial-props]]
    {:db (assoc (:db cofx) :initial-props initial-props)}))
-
-(handlers/register-handler-fx
- :contact-code.callback/contact-code-published
- (fn [cofx arg]
-   (contact-code/published cofx)))
-
-(handlers/register-handler-fx
- :contact-code.callback/contact-code-publishing-failed
- (fn [cofx _]
-   (contact-code/publishing-failed cofx)))
 
 (handlers/register-handler-fx
  :pairing.ui/enable-installation-pressed

@@ -15,6 +15,8 @@
             [status-im.native-module.core :as native-module]
             [status-im.utils.identicon :as identicon]
             [status-im.contact.core :as contact]
+            [status-im.transport.filters.core :as transport.filters]
+            [status-im.data-store.contacts :as data-store.contacts]
             [status-im.data-store.accounts :as data-store.accounts]
             [status-im.transport.message.pairing :as transport.pairing]))
 
@@ -148,8 +150,8 @@
        (map #(transport.pairing/SyncInstallation. {} {} %))))
 
 (defn sync-installation-messages [{:keys [db] :as cofx}]
-  (let [contacts (:contacts/contacts db)
-        contact-batches (partition-all contact-batch-n (vals contacts))]
+  (let [contacts (contact.db/get-active-contacts (:contacts/contacts db))
+        contact-batches (partition-all contact-batch-n contacts)]
     (concat (mapv contact-batch->sync-installation-message contact-batches)
             [(sync-installation-account-message cofx)]
             (chats->sync-installation-messages cofx))))
@@ -215,7 +217,6 @@
      [{:web3    web3
        :src     current-public-key
        :dst     current-public-key
-       :topics  (get-in cofx [:db :mailserver/topics])
        :payload payload}]}))
 
 (fx/defn send-installation-message-fx [cofx payload]

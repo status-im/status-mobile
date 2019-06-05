@@ -1,14 +1,13 @@
 (ns status-im.chat.models
   (:require [re-frame.core :as re-frame]
             [status-im.accounts.model :as accounts.model]
-            [status-im.contact-code.core :as contact-code]
+            [status-im.transport.filters.core :as transport.filters]
             [status-im.contact.core :as contact.core]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
             [status-im.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
-            [status-im.transport.chat.core :as transport.chat]
-            [status-im.transport.message.public-chat :as public-chat]
+            [status-im.transport.message.protocol :as transport.protocol]
             [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.desktop.events :as desktop.events]
@@ -169,22 +168,14 @@
                                   (log/error "can't remove a chat:" error))}]}
               (navigation/navigate-to-cofx :home {}))
     (fx/merge cofx
-              ;; TODO: There's a race condition here, as the removal of the filter (async)
-              ;; is done at the same time as the removal of the chat, so a message
-              ;; might come between and restore the chat. Multiple way to handle this
-              ;; (remove chat only after the filter has been removed, probably the safest,
-              ;; flag the chat to ignore new messages, change receive method for public/group chats)
-              ;; For now to keep the code simplier and avoid significant changes, best to leave as it is.
-              #(when (public-chat? % chat-id)
-                 (transport.chat/unsubscribe-from-chat % chat-id))
-              #(when (group-chat? % chat-id)
-                 (mailserver/remove-chat-from-mailserver-topic % chat-id))
               (mailserver/remove-gaps chat-id)
               (mailserver/remove-range chat-id)
               (deactivate-chat chat-id)
               (clear-history chat-id)
-              #(when (one-to-one-chat? % chat-id)
-                 (contact-code/stop-listening % chat-id))
+              (transport.filters/stop-listening chat-id)
+              ;; TODO: this is not accurate, if there's a pending contact
+              ;; request it will not be sent anymore
+              (transport.protocol/remove-chat chat-id)
               (navigation/navigate-to-cofx :home {}))))
 
 (defn- unread-messages-number [chats]
@@ -249,7 +240,10 @@
   (fx/merge cofx
             {:db (-> (assoc db :current-chat-id chat-id)
                      (set-chat-ui-props {:validation-messages nil}))}
-            (contact-code/listen-to-chat chat-id)
+            ;; Group chat don't need this to load as all the loading of topics
+            ;; happens on membership changes
+            (when-not (group-chat? cofx chat-id)
+              (transport.filters/load-chat chat-id))
             (when platform/desktop?
               (mark-messages-seen chat-id))
             (tribute-to-talk/check-tribute chat-id)))
@@ -286,6 +280,7 @@
       (fx/merge cofx
                 (upsert-chat {:chat-id   chat-id
                               :is-active true})
+                (transport.filters/load-chat chat-id)
                 (navigate-to-chat chat-id opts)))))
 
 (fx/defn start-public-chat
@@ -296,9 +291,9 @@
       (navigate-to-chat cofx topic opts))
     (fx/merge cofx
               (add-public-chat topic)
+              (transport.filters/load-chat topic)
               #(when-not dont-navigate?
                  (navigate-to-chat % topic opts))
-              (public-chat/join-public-chat topic)
               #(when platform/desktop?
                  (desktop.events/change-tab % :home)))))
 

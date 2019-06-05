@@ -7058,9 +7058,9 @@ web3-utils@1.0.0-beta.36:
     underscore "1.8.3"
     utf8 "2.1.1"
 
-"web3@git+https://github.com/status-im/web3.js.git#0.20.2-status":
+"web3@git+https://github.com/status-im/web3.js.git#0.20.3-status.alpha.3":
   version "0.20.1"
-  resolved "git+https://github.com/status-im/web3.js.git#958dbabff2c77615e23f5de678a6fae0b0d70147"
+  resolved "git+https://github.com/status-im/web3.js.git#29677754c8b87c55c828df2694e35b0b760dca5f"
   dependencies:
     bignumber.js "git+https://github.com/status-im/bignumber.js.git#v4.0.2-status"
     crypto-js "^3.1.4"

@@ -187,9 +187,7 @@
       (testing ":accounts/login cleared."
         (is (not (contains? new-db :accounts/login))))
       (testing "Check messaging related effects."
-        (is (= 1 (count (get-in efx [:shh/restore-sym-keys-batch :transport]))))
-        (is (contains? efx :shh/generate-sym-key-from-password))
-        (is (contains? efx :shh/add-discovery-filters))
+        (is (contains? efx :filters/load-filters))
         (is (contains? efx :mailserver/add-peer))
         (is (contains? efx :mailserver/update-mailservers))
         (is (= #{{:ms       10000

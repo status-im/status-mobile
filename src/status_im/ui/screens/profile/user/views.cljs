@@ -216,13 +216,13 @@
       {:label-kw            :t/bootnodes
        :action-fn           #(re-frame/dispatch [:navigate-to :bootnodes-settings])
        :accessibility-label :bootnodes-settings-button}])
-   (when (and dev-mode? config/pfs-toggle-visible?)
+   (when dev-mode?
      [profile.components/settings-item-separator])
-   (when (and dev-mode? config/pfs-toggle-visible?)
+   (when dev-mode?
      [profile.components/settings-switch-item
-      {:label-kw  :t/pfs
+      {:label-kw  :t/device-to-device
        :value     (:pfs? settings)
-       :action-fn #(re-frame/dispatch [:accounts.ui/toggle-pfs %])}])
+       :action-fn #(re-frame/dispatch [:accounts.ui/toggle-device-to-device %])}])
    [profile.components/settings-item-separator]
    [profile.components/settings-switch-item
     {:label-kw  :t/dev-mode

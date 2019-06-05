@@ -94,13 +94,14 @@
                                   {:desktop-notifications? desktop-notifications?}
                                   {}))
 
-(fx/defn toggle-pfs [{:keys [db] :as cofx} enabled?]
+(fx/defn toggle-device-to-device [{:keys [db] :as cofx} enabled?]
   (let [settings (get-in db [:account/account :settings])
-        warning  {:utils/show-popup {:title (i18n/label :t/pfs-warning-title)
-                                     :content (i18n/label :t/pfs-warning-content)}}]
+        warning  {:utils/show-popup {:title (i18n/label :t/device-to-device-warning-title)
+                                     :content (i18n/label :t/device-to-device-warning-content)}}]
 
     (fx/merge cofx
               (when enabled? warning)
+              ;; Set to pfs? for backward compatibility
               (accounts.update/update-settings (assoc settings :pfs? enabled?)
                                                {}))))
 

@@ -214,12 +214,12 @@
        [logging-display]
 
        [react/view {:style styles/title-separator}]
-       [react/text {:style styles/adv-settings-subtitle} (i18n/label :t/pfs)]
+       [react/text {:style styles/adv-settings-subtitle} (i18n/label :t/device-to-device)]
        [react/view {:style (styles/profile-row false)}
-        [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :t/pfs)]
+        [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :t/device-to-device)]
         [react/switch {:track-color     #js {:true colors/blue :false nil}
                        :value           pfs?
-                       :on-value-change #(re-frame/dispatch [:accounts.ui/toggle-pfs (not pfs?)])}]]])))
+                       :on-value-change #(re-frame/dispatch [:accounts.ui/toggle-device-to-device (not pfs?)])}]]])))
 
 (views/defview installations []
   (views/letsubs [installations     [:pairing/installations]

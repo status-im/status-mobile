@@ -152,6 +152,30 @@
   (when (status)
     (.disableInstallation (status) installation-id callback)))
 
+(defn load-filters [chats callback]
+  (let [params {:jsonrpc "2.0"
+                :id 2
+                :method "shhext_loadFilters"
+                :params [chats]}
+        payload (.stringify js/JSON (clj->js params))]
+    (call-private-rpc payload callback)))
+
+(defn load-filter [chat callback]
+  (let [params {:jsonrpc "2.0"
+                :id 2
+                :method "shhext_loadFilter"
+                :params [chat]}
+        payload (.stringify js/JSON (clj->js params))]
+    (call-private-rpc payload callback)))
+
+(defn remove-filters [chats callback]
+  (let [params {:jsonrpc "2.0"
+                :id 2
+                :method "shhext_removeFilters"
+                :params [chats]}
+        payload (.stringify js/JSON (clj->js params))]
+    (call-private-rpc payload callback)))
+
 (defn is24Hour []
   (when (status)
     (.-is24Hour (status))))

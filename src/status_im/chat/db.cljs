@@ -5,8 +5,7 @@
             [status-im.chat.commands.input :as commands.input]
             [status-im.contact.db :as contact.db]
             [status-im.group-chats.db :as group-chats.db]
-            [status-im.mailserver.core :as mailserver]
-            [status-im.transport.partitioned-topic :as topic]
+            [status-im.mailserver.constants :as mailserver.constants]
             [status-im.utils.gfycat.core :as gfycat]))
 
 (defn group-chat-name
@@ -52,14 +51,6 @@
                  acc))
              {}
              chats))
-
-(defn topic-by-current-chat
-  [{:keys [current-chat-id chats] :as db}]
-  (let [{:keys [public?]} (get chats current-chat-id)
-        public-key (get-in db [:account/account :public-key])]
-    (if public?
-      (get-in db [:transport/chats current-chat-id :topic])
-      (topic/public-key->discovery-topic-hash public-key))))
 
 (defn sort-message-groups
   "Sorts message groups according to timestamp of first message in group"
@@ -164,7 +155,7 @@
              (not (nil? highest-request-to))
              (not (nil? lowest-request-from))
              (< (- highest-request-to lowest-request-from)
-                mailserver/max-gaps-range))
+                mailserver.constants/max-gaps-range))
           (update acc :messages conj {:type       :gap
                                       :value      (str :first-gap)
                                       :first-gap? true})

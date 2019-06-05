@@ -35,8 +35,7 @@
 (spec/def :pairing/installation-id :global/not-empty-string)
 (spec/def :pairing/device-type :global/not-empty-string)
 
-(spec/def :transport/chat (spec/keys :req-un [::topic]
-                                     :opt-un [::sym-key-id ::sym-key ::resend?]))
+(spec/def :transport/chat (spec/keys :opt-un [::resend?]))
 (spec/def :transport/chats (spec/map-of :global/not-empty-string :transport/chat))
 (spec/def :transport/filters (spec/map-of :transport/filter-id (spec/coll-of :transport/filter)))
 
@@ -126,15 +125,3 @@
               (spec/keys :req-un [:message.text/content])))
 
 (spec/def :message/message (spec/multi-spec content-type :content-type))
-
-(defn all-filters-added?
-  [{:keys [db]}]
-  (let [filters (set (keys (get db :transport/filters)))
-        chats   (into #{:discovery-topic}
-                      (keys (filter (fn [[chat-id {:keys [topic one-to-one]}]]
-                                      (if one-to-one
-                                        (and config/partitioned-topic-enabled?
-                                             chat-id)
-                                        topic))
-                                    (get db :transport/chats))))]
-    (empty? (sets/difference chats filters))))

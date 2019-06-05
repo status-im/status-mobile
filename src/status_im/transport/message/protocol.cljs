@@ -2,14 +2,23 @@
  status-im.transport.message.protocol
   (:require [cljs.spec.alpha :as spec]
             [status-im.accounts.model :as accounts.model]
+            [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.transport.db :as transport.db]
-            [status-im.transport.partitioned-topic :as transport.topic]
+            [status-im.data-store.transport :as transport-store]
             [status-im.transport.utils :as transport.utils]
             [status-im.tribute-to-talk.whitelist :as whitelist]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
+
+(defn has-paired-installations? [cofx]
+  (->>
+   (get-in cofx [:db :pairing/installations])
+   vals
+   (some :enabled?)))
+
+(defn discovery-topic-hash [] (transport.utils/get-topic constants/contact-discovery))
 
 (defprotocol StatusMessage
   "Protocol for the messages that are sent through the transport layer"
@@ -26,16 +35,22 @@
    :powTime                 config/pow-time})
 
 (fx/defn init-chat
-  "Initialises chat on protocol layer.
-  If topic is not passed as argument it is derived from `chat-id`"
+  "Initialises chat on protocol layer."
   [{:keys [db now]}
-   {:keys [chat-id topic one-to-one resend?]}]
-  {:db (assoc-in db
-                 [:transport/chats chat-id]
-                 (transport.db/create-chat {:topic      topic
-                                            :one-to-one one-to-one
-                                            :resend?    resend?
-                                            :now        now}))})
+   {:keys [chat-id resend?]}]
+  (let [transport-chat (transport.db/create-chat {:resend?    resend?})]
+    {:db (assoc-in db
+                   [:transport/chats chat-id]
+                   transport-chat)
+
+     :data-store/tx [(transport-store/save-transport-tx {:chat-id chat-id
+                                                         :chat    transport-chat})]}))
+
+(fx/defn remove-chat
+  [{:keys [db]} chat-id]
+  (when (get-in db [:transport/chats chat-id])
+    {:db                 (update db :transport/chats dissoc chat-id)
+     :data-store/tx      [(transport-store/delete-transport-tx chat-id)]}))
 
 (defn send-public-message
   "Sends the payload to topic"
@@ -47,21 +62,6 @@
                                 :chat    chat-id
                                 :payload payload}]}))
 
-(fx/defn send-with-sym-key
-  "Sends the payload using symetric key and topic from db (looked up by `chat-id`)"
-  [{:keys [db] :as cofx} {:keys [payload chat-id success-event]}]
-  ;; we assume that the chat contains the contact public-key
-  (let [{:keys [web3]} db
-        {:keys [sym-key-id topic]} (get-in db [:transport/chats chat-id])]
-    {:shh/post [{:web3          web3
-                 :success-event success-event
-                 :message       (merge {:sig      (accounts.model/current-public-key cofx)
-                                        :symKeyID sym-key-id
-                                        :payload  payload
-                                        :topic    (or topic
-                                                      (transport.topic/public-key->discovery-topic-hash chat-id))}
-                                       whisper-opts)}]}))
-
 (fx/defn send-direct-message
   "Sends the payload using to dst"
   [{:keys [db] :as cofx} dst success-event payload]
@@ -70,7 +70,6 @@
                                 :success-event  success-event
                                 :src            (accounts.model/current-public-key cofx)
                                 :dst            dst
-                                :topics         (:mailserver/topics db)
                                 :payload        payload}]}))
 
 (fx/defn send-with-pubkey
@@ -78,16 +77,12 @@
   [{:keys [db] :as cofx} {:keys [payload chat-id success-event]}]
   (let [{:keys [web3]} db]
     (let [pfs? (get-in db [:account/account :settings :pfs?])]
-      (if (and config/pfs-toggle-visible? pfs?)
+      (if pfs?
         (send-direct-message cofx
                              chat-id
                              success-event
                              payload)
-        (let [partitioned-topic-hash (transport.topic/public-key->discovery-topic-hash chat-id)
-              topics                 (db :mailserver/topics)
-              topic-hash             (if (contains? topics partitioned-topic-hash)
-                                       partitioned-topic-hash
-                                       (transport.topic/discovery-topic-hash))]
+        (let [topic-hash             (discovery-topic-hash)]
           {:shh/post [{:web3          web3
                        :success-event success-event
                        :message       (merge {:sig     (accounts.model/current-public-key cofx)
@@ -108,11 +103,12 @@
                                               message-type]}]
       (case message-type
         :public-group-user-message
-        (send-with-sym-key cofx params)
+        (send-public-message cofx chat-id (:success-event params) this)
 
         :user-message
         (fx/merge cofx
-                  (send-direct-message current-public-key nil this)
+                  (when (has-paired-installations? cofx)
+                    (send-direct-message current-public-key nil this))
                   (send-with-pubkey params)))))
   (receive [this chat-id signature timestamp cofx]
     (let [received-message-fx {:chat-received-message/add-fx

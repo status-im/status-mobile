@@ -9,6 +9,7 @@
             [status-im.node.core :as node]
             [status-im.pairing.core :as pairing]
             [status-im.transport.message.core :as transport.message]
+            [status-im.transport.filters.core :as transport.filters]
             [status-im.utils.fx :as fx]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
@@ -77,4 +78,5 @@
       "subscriptions.data" (ethereum.subscriptions/handle-signal cofx event)
       "subscriptions.error" (ethereum.subscriptions/handle-error cofx event)
       "status.chats.did-change" (chat.loading/load-chats-from-rpc cofx)
+      "whisper.filter.added" (transport.filters/handle-negotiated-filter cofx event)
       (log/debug "Event " type " not handled"))))

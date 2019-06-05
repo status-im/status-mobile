@@ -7139,7 +7139,7 @@ react-native-invertible-scroll-view@1.1.0:
     react-native-scrollable-mixin "^1.0.1"
 
 "react-native-keychain@git+https://github.com/status-im/react-native-keychain.git#v.3.0.0-3-status":
-  version "3.0.0-rc.4"
+  version "3.0.0-rc.3"
   resolved "git+https://github.com/status-im/react-native-keychain.git#5895bafa11e734325eaaffd56dda8ca50bfc5275"
 
 "react-native-languages@git+https://github.com/status-im/react-native-languages.git#v0.1.1-status":
@@ -7297,8 +7297,8 @@ react-native-udp@2.2.1:
     xcode "^1.0.0"
     xmldoc "^0.4.0"
     yargs "^9.0.0"
-    yeoman-environment "^1.2.7"
-    yeoman-generator "^0.20.3"
+    yeoman-environment "^2.3.4"
+    yeoman-generator "^3.2.0"
 
 react-navigation-deprecated-tab-navigator@1.3.0:
   version "1.3.0"
@@ -9089,9 +9089,9 @@ web3-utils@1.0.0-beta.36:
     underscore "1.8.3"
     utf8 "2.1.1"
 
-"web3@git+https://github.com/status-im/web3.js.git#0.20.2-status":
+"web3@git+https://github.com/status-im/web3.js.git#0.20.3-status.alpha.3":
   version "0.20.1"
-  resolved "git+https://github.com/status-im/web3.js.git#958dbabff2c77615e23f5de678a6fae0b0d70147"
+  resolved "git+https://github.com/status-im/web3.js.git#29677754c8b87c55c828df2694e35b0b760dca5f"
   dependencies:
     bignumber.js "git+https://github.com/status-im/bignumber.js.git#v4.0.2-status"
     crypto-js "^3.1.4"

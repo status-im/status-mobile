@@ -56,7 +56,6 @@
      [{:web3    web3
        :src     current-public-key
        :dst     public-key
-       :topics  (get-in cofx [:db :mailserver/topics])
        :payload ""}]}))
 
 (re-frame/reg-fx

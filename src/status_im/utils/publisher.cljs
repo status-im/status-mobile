@@ -2,7 +2,6 @@
   (:require [re-frame.core :as re-frame]
             [re-frame.db]
             [status-im.accounts.update.publisher :as accounts]
-            [status-im.contact-code.core :as contact-code]
             [status-im.utils.async :as async-util]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]))
@@ -21,7 +20,6 @@
                          :now  (datetime/timestamp)
                          :db   @re-frame.db/app-db}]
                (accounts/publish-update! cofx)
-               (contact-code/publish! cofx)
                (done-fn)))
            sync-interval-ms
            sync-timeout-ms)))

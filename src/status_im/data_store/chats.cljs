@@ -4,6 +4,7 @@
             [status-im.data-store.messages :as messages]
             [status-im.data-store.realm.core :as core]
             [status-im.ethereum.core :as ethereum]
+            [taoensso.timbre :as log]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.core :as utils]))
 
@@ -72,6 +73,7 @@
   "Returns tx function for saving chat"
   [chat]
   (fn [realm]
+    (log/debug "saving chat" chat)
     (core/create
      realm
      :chat

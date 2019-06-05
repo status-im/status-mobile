@@ -72,3 +72,5 @@
 (def v9 (update v8 :properties
                 dissoc
                 :ack :seen :pending-ack :pending-send))
+
+(def v10 (update v9 :properties dissoc :one-to-one :topic :sym-key-id :sym-key))

@@ -236,3 +236,26 @@
              (get-in fx2 [:db :chats "chat-id" :messages])))
       (is (= {}
              (get-in fx2 [:db :chats "chat-id" :message-groups]))))))
+
+(deftest add-outgoing-status
+  (testing "coming from us"
+    (testing "system-message"
+      (let [message (message/add-outgoing-status {:message-type :system-message
+                                                  :from "us"} "us")]
+        (is (not (:outgoing message)))
+        (is (not (:outgoing-status message)))))
+    (testing "has already a an outgoing status"
+      (testing "it does not override it"
+        (let [message (message/add-outgoing-status {:outgoing-status :sending
+                                                    :from "us"} "us")]
+          (is (:outgoing message))
+          (is (= :sending (:outgoing-status message))))))
+    (testing "does not have an outgoing status"
+      (testing "it sets it to sent"
+        (let [message (message/add-outgoing-status {:from "us"} "us")]
+          (is (:outgoing message))
+          (is (= :sent (:outgoing-status message)))))))
+  (testing "not coming from us"
+    (let [message (message/add-outgoing-status {:from "not-us"} "us")]
+      (is (not (:outgoing message)))
+      (is (not (:outgoing-status message))))))

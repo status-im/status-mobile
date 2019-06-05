@@ -260,6 +260,7 @@ var TopLevel = {
     "NavigationEvents" : function () {},
     "newKeyPair" : function () {},
     "newMessageFilter" : function () {},
+    "newRawMessageFilter": function() {},
     "newSymKey" : function () {},
     "nfcIsEnabled" : function () {},
     "nfcIsSupported" : function () {},

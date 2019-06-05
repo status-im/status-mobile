@@ -14,19 +14,8 @@
                                           :sym-key "sk3"}
                                      "4" {:topic "topic-4"}}
                    :semaphores      #{}}}]
-    (testing "it adds the discover filters"
-      (is (= {:web3 nil :private-key-id "1" :topics '({:topic   "topic-4"
-                                                       :chat-id "4"}
-                                                      {:topic   "0x2af2e6e7"
-                                                       :chat-id :discovery-topic}
-                                                      {:topic   "0xf8946aac"
-                                                       :chat-id :discovery-topic})}
-             (:shh/add-discovery-filters (transport/init-whisper cofx)))))
-
-    (testing "it restores the sym-keys"
-      (is (= [{:topic "topic-1", :sym-key "sk1", :chat-id "1"}
-              {:topic "topic-3", :sym-key "sk3", :chat-id "3"}]
-             (-> (transport/init-whisper cofx) :shh/restore-sym-keys-batch :transport))))
+    (testing "it loads the filters"
+      (is (:filters/load-filters (transport/init-whisper cofx))))
     (testing "custom mailservers"
       (let [ms-1            {:id "1"
                              :fleet :eth.beta

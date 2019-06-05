@@ -139,13 +139,10 @@
           (is (:shh/post  actual))
           (testing "it does not remove transport, only after send is successful"
             (is (get-in actual [:db :transport/chats chat-id])))))
-    (testing "it does not remove it from transport if it's a one-to-one"
-      (let [actual (chat/remove-chat cofx chat-id)]
-        (is (get-in actual [:db :transport/chats chat-id]))))
     (testing "it adds the relevant transactions for realm"
       (let [actual (chat/remove-chat cofx chat-id)]
         (is (:data-store/tx actual))
-        (is (= 8 (count (:data-store/tx actual))))))))
+        (is (= 6 (count (:data-store/tx actual))))))))
 
 (deftest multi-user-chat?
   (let [chat-id "1"]

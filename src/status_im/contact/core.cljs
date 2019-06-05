@@ -1,6 +1,6 @@
 (ns status-im.contact.core
   (:require [status-im.accounts.model :as accounts.model]
-            [status-im.contact-code.core :as contact-code]
+            [status-im.transport.filters.core :as transport.filters]
             [status-im.contact.db :as contact.db]
             [status-im.contact.device-info :as device-info]
             [status-im.ethereum.core :as ethereum]
@@ -8,7 +8,6 @@
             [status-im.mailserver.core :as mailserver]
             [status-im.transport.message.contact :as message.contact]
             [status-im.transport.message.protocol :as protocol]
-            [status-im.transport.partitioned-topic :as transport.topic]
             [status-im.tribute-to-talk.db :as tribute-to-talk]
             [status-im.tribute-to-talk.whitelist :as whitelist]
             [status-im.ui.screens.navigation :as navigation]
@@ -50,8 +49,7 @@
             {:db            (-> db
                                 (update-in [:contacts/contacts public-key] merge contact))
              :data-store/tx [(contacts-store/save-contact-tx contact)]}
-            #(when (contact.db/added? contact)
-               (contact-code/listen-to-chat % public-key))))
+            (transport.filters/load-contact contact)))
 
 (fx/defn send-contact-request
   [{:keys [db] :as cofx} {:keys [public-key] :as contact}]
@@ -70,10 +68,6 @@
       (fx/merge cofx
                 {:db (assoc-in db [:contacts/new-identity] "")}
                 (upsert-contact contact)
-                (mailserver/upsert-mailserver-topic
-                 {:chat-ids [public-key]
-                  :topic    (transport.topic/discovery-topic-hash)
-                  :fetch?   false})
                 (whitelist/add-to-whitelist public-key)
                 (send-contact-request contact)
                 (mailserver/process-next-messages-request)))))
@@ -86,24 +80,6 @@
       (fx/merge cofx
                 {:db (assoc-in db [:contacts/new-identity] "")}
                 (upsert-contact contact)))))
-
-(fx/defn add-contacts-filter [{:keys [db]} public-key action]
-  (when (not= (get-in db [:account/account :public-key]) public-key)
-    (let [current-public-key (get-in db [:account/account :public-key])]
-      {:db
-       (cond-> db
-         config/partitioned-topic-enabled?
-         (assoc :filters/after-adding-discovery-filter
-                {:action     action
-                 :public-key public-key}))
-
-       :shh/add-discovery-filters
-       {:web3           (:web3 db)
-        :private-key-id current-public-key
-        :topics         [{:topic    (transport.topic/partitioned-topic-hash public-key)
-                          :chat-id  public-key
-                          :minPow   1
-                          :callback (constantly nil)}]}})))
 
 (defn handle-contact-update
   [public-key

@@ -111,6 +111,7 @@
     get-unviewed-message-ids :get-unviewed-message-ids :as cofx}]
   ;; TODO: re-implement functionality for status-go protocol
   (when-not (or config/use-status-go-protocol?
+                (nil? current-chat-id)
                 (get-in db [:chats current-chat-id :all-loaded?]))
     (let [previous-pagination-info   (get-in db [:chats current-chat-id :pagination-info])
           {:keys [messages

@@ -252,35 +252,43 @@
                                                    :chat-id "status"}}
                      :contacts/contacts {"contact-1" {:name "contact-1"
                                                       :public-key "contact-1"
-                                                      :system-tags #{}}
+                                                      :system-tags #{:contact/added}}
                                          "contact-2" {:name "contact-2"
                                                       :public-key "contact-2"
-                                                      :system-tags #{}}
+                                                      :system-tags #{:contact/added}}
                                          "contact-3" {:name "contact-3"
                                                       :public-key "contact-3"
-                                                      :system-tags #{}}
+                                                      :system-tags #{:contact/added}}
                                          "contact-4" {:name "contact-4"
                                                       :public-key "contact-4"
-                                                      :system-tags #{}}
+                                                      :system-tags #{:contact/added}}
                                          "contact-5" {:name "contact-5"
                                                       :public-key "contact-5"
+                                                      :system-tags #{:contact/added}}
+                                         "contact-6" {:name "contact-6"
+                                                      :public-key "contact-6"
                                                       :system-tags #{:contact/blocked}}}}}
           expected [(transport.pairing/SyncInstallation. {"contact-1" {:name "contact-1"
                                                                        :public-key "contact-1"
-                                                                       :system-tags #{}}
+                                                                       :pending? false
+                                                                       :system-tags #{:contact/added}}
                                                           "contact-2" {:name "contact-2"
+                                                                       :pending? false
                                                                        :public-key "contact-2"
-                                                                       :system-tags #{}}
+                                                                       :system-tags #{:contact/added}}
                                                           "contact-3" {:name "contact-3"
+                                                                       :pending? false
                                                                        :public-key "contact-3"
-                                                                       :system-tags #{}}
+                                                                       :system-tags #{:contact/added}}
                                                           "contact-4" {:name "contact-4"
+                                                                       :pending? false
                                                                        :public-key "contact-4"
-                                                                       :system-tags #{}}}
+                                                                       :system-tags #{:contact/added}}}
                                                          {} {})
                     (transport.pairing/SyncInstallation. {"contact-5" {:name "contact-5"
                                                                        :public-key "contact-5"
-                                                                       :system-tags #{}}} {} {})
+                                                                       :pending? false
+                                                                       :system-tags #{:contact/added}}} {} {})
                     (transport.pairing/SyncInstallation. {} {:photo-path "photo-path"
                                                              :name "name"
                                                              :last-updated 1} {})

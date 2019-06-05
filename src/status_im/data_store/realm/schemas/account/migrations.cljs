@@ -422,9 +422,10 @@
             status (aget user-status "status")
             message-id (aget user-status "message-id")
             message (message-by-id new-realm message-id)]
-        (cond
-          (= status "seen")
-          (aset message "seen" true)
+        (when message
+          (cond
+            (= status "seen")
+            (aset message "seen" true)
 
-          (#{"sent" "sending" "not-sent"} status)
-          (aset message "outgoing-status" status))))))
+            (#{"sent" "sending" "not-sent"} status)
+            (aset message "outgoing-status" status)))))))

@@ -103,6 +103,12 @@
 
 (def enable-installation native-module/enable-installation)
 
+(def load-filters native-module/load-filters)
+
+(def load-filter native-module/load-filter)
+
+(def remove-filters native-module/remove-filters)
+
 (def disable-installation native-module/disable-installation)
 
 (def update-mailservers native-module/update-mailservers)

@@ -2,6 +2,7 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.transport.utils :as utils]
             [status-im.mailserver.core :as mailserver]
+            [status-im.mailserver.constants :as constants]
             [status-im.utils.random :as rand]))
 
 (def enode "enode://08d8eb6177b187049f6c97ed3f6c74fbbefb94c7ad10bafcaf4b65ce89c314dcfee0a8bc4e7a5b824dfa08b45b360cc78f34f0aff981f8386caa07652d2e601b@163.172.177.138:40404")
@@ -349,7 +350,7 @@
         (is (= :connecting
                (get-in (mailserver/resend-request
                         {:db {:mailserver/current-request
-                              {:attempts mailserver/maximum-number-of-attempts}}}
+                              {:attempts constants/maximum-number-of-attempts}}}
                         {})
                        [:db :mailserver/state])))))
     (testing "it did not reach the maximum number of attempts"
