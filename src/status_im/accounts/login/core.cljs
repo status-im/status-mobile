@@ -1,6 +1,6 @@
 (ns status-im.accounts.login.core
   (:require [re-frame.core :as re-frame]
-            [status-im.accounts.db :as accounts.db]
+            [status-im.accounts.model :as accounts.model]
             [status-im.chaos-mode.core :as chaos-mode]
             [status-im.data-store.core :as data-store]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
@@ -80,7 +80,7 @@
                                         (get-in [:db :hardwallet :account])
                                         (select-keys [:whisper-private-key :encryption-public-key])
                                         (assoc :on-result #(re-frame/dispatch [:accounts.login.callback/login-success %])))}
-    (let [{:keys [address password]} (accounts.db/credentials cofx)]
+    (let [{:keys [address password]} (accounts.model/credentials cofx)]
       {:accounts.login/login [address password]})))
 
 (fx/defn initialize-wallet [cofx]
@@ -94,7 +94,7 @@
 (fx/defn user-login-without-creating-db
   {:events [:accounts.login.ui/password-input-submitted]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [address password]} (accounts.db/credentials cofx)]
+  (let [{:keys [address password]} (accounts.model/credentials cofx)]
     (fx/merge
      cofx
      {:db                            (-> db
@@ -108,7 +108,7 @@
 
 (fx/defn user-login
   [{:keys [db] :as cofx} create-database?]
-  (let [{:keys [address password]} (accounts.db/credentials cofx)]
+  (let [{:keys [address password]} (accounts.model/credentials cofx)]
     (fx/merge
      cofx
      {:db                            (-> db
@@ -147,7 +147,7 @@
         error   (:error data)
         success (empty? error)
         {:keys [address password save-password?]}
-        (accounts.db/credentials cofx)
+        (accounts.model/credentials cofx)
         network-type (:network/type db)]
     ;; check if logged into account
     (when address
@@ -208,7 +208,7 @@
            (show-migration-error-dialog cofx realm-error)
 
            :database-does-not-exist
-           (let [{:keys [address password]} (accounts.db/credentials cofx)]
+           (let [{:keys [address password]} (accounts.model/credentials cofx)]
              {:data-store/change-account [address
                                           password
                                           true
@@ -251,7 +251,7 @@
 (fx/defn unknown-realm-error
   [cofx {:keys [realm-error erase-button]}]
   (let [{:keys [message]} realm-error
-        {:keys [address]} (accounts.db/credentials cofx)]
+        {:keys [address]} (accounts.model/credentials cofx)]
     {:ui/show-confirmation
      {:title               (i18n/label :unknown-realm-error)
       :content             (i18n/label

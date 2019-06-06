@@ -1,5 +1,5 @@
 (ns status-im.signals.core
-  (:require [status-im.accounts.db :as accounts.db]
+  (:require [status-im.accounts.model :as accounts.model]
             [status-im.accounts.login.core :as accounts.login]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.contact-recovery.core :as contact-recovery]
@@ -30,7 +30,7 @@
                 :login
                 (accounts.login/login)
                 :verify-account
-                (let [{:keys [address password]} (accounts.db/credentials cofx)]
+                (let [{:keys [address password]} (accounts.model/credentials cofx)]
                   (fn [_]
                     {:accounts.login/verify
                      [address password (:realm-error db)]}))
@@ -70,7 +70,7 @@
       "envelope.expired"   (transport.message/update-envelope-status cofx (:hash event) :not-sent)
       "bundles.added"      (pairing/handle-bundles-added cofx event)
       "mailserver.request.completed" (mailserver/handle-request-completed cofx event)
-      "mailserver.request.expired"   (when (accounts.db/logged-in? cofx)
+      "mailserver.request.expired"   (when (accounts.model/logged-in? cofx)
                                        (mailserver/resend-request cofx {:request-id (:hash event)}))
       "messages.decrypt.failed" (contact-recovery/handle-contact-recovery-fx cofx (:sender event))
       "discovery.summary"  (summary cofx event)

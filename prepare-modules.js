@@ -1,7 +1,8 @@
 var fs = require("fs");
 
 var modules = [
-    "i18n"
+    "i18n",
+    "network"
 ];
 
 modules.forEach(

@@ -1,6 +1,5 @@
 (ns status-im.chat.models.loading
   (:require [re-frame.core :as re-frame]
-            [status-im.accounts.db :as accounts.db]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.models :as chat-model]
             [status-im.mailserver.core :as mailserver]
@@ -125,7 +124,6 @@
           referenced-messages        (into empty-message-map
                                            (get-referenced-messages (get-referenced-ids indexed-messages)))
           new-message-ids            (keys indexed-messages)
-          public-key                 (accounts.db/current-public-key cofx)
           loaded-unviewed-messages   (get-unviewed-message-ids)]
       (fx/merge cofx
                 {:db (-> db

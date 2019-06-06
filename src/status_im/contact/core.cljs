@@ -1,5 +1,5 @@
 (ns status-im.contact.core
-  (:require [status-im.accounts.db :as accounts.db]
+  (:require [status-im.accounts.model :as accounts.model]
             [status-im.contact-code.core :as contact-code]
             [status-im.contact.db :as contact.db]
             [status-im.contact.device-info :as device-info]
@@ -119,7 +119,7 @@
   ;; for now
   (let [timestamp-ms       (* timestamp 1000)
         prev-last-updated  (get-in db [:contacts/contacts public-key :last-updated])
-        current-public-key (accounts.db/current-public-key cofx)]
+        current-public-key (accounts.model/current-public-key cofx)]
     (when (and (not= current-public-key public-key)
                (< prev-last-updated timestamp-ms))
       (let [contact          (get contacts public-key)

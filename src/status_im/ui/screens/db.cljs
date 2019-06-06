@@ -11,7 +11,7 @@
             status-im.ui.screens.group.db
             status-im.chat.specs
             status-im.ui.screens.profile.db
-            status-im.ui.screens.network-settings.db
+            status-im.network.module
             status-im.mailserver.db
             status-im.browser.db
             status-im.ui.screens.add-new.db

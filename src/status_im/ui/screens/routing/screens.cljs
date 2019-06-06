@@ -40,13 +40,7 @@
             [status-im.ui.screens.mobile-network-settings.view
              :as
              mobile-network-settings]
-            [status-im.ui.screens.network-settings.edit-network.views
-             :as
-             edit-network]
-            [status-im.ui.screens.network-settings.network-details.views
-             :as
-             network-details]
-            [status-im.ui.screens.network-settings.views :as network-settings]
+            [status-im.network.module :as network]
             [status-im.ui.screens.offline-messaging-settings.edit-mailserver.views
              :as
              edit-mailserver]
@@ -164,9 +158,9 @@
    :extensions-settings              screens.extensions/extensions-settings
    :edit-extension                   extensions.add/edit-extension
    :show-extension                   extensions.add/show-extension
-   :network-settings                 network-settings/network-settings
-   :network-details                  network-details/network-details
-   :edit-network                     edit-network/edit-network
+   :network-settings                 network/network-settings-view
+   :network-details                  network/network-details-view
+   :edit-network                     network/edit-network-view
    :log-level-settings               log-level-settings/log-level-settings
    :fleet-settings                   fleet-settings/fleet-settings
    :currency-settings                currency-settings/currency-settings

@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.network-settings.db
+(ns status-im.network.ui.db
   (:require [cljs.spec.alpha :as spec]))
 
 (spec/def :networks/id string?)

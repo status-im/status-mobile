@@ -1,7 +1,11 @@
 (ns status-im.notifications.core
   (:require [goog.object :as object]
             [re-frame.core :as re-frame]
-            [status-im.accounts.db :as accounts.db]
+            [status-im.react-native.js-dependencies :as rn]
+            [taoensso.timbre :as log]
+            [status-im.i18n :as i18n]
+            [status-im.accounts.model :as accounts.model]
+            [status-im.contact.db :as contact.db]
             [status-im.chat.models :as chat-model]
             [status-im.contact.db :as contact.db]
             [status-im.ethereum.core :as ethereum]
@@ -96,7 +100,7 @@
       (if-let [account-pubkey (hash->pubkey contact-pubkey-or-hash
                                             (-> db :accounts/accounts vals))]
         account-pubkey
-        (if (accounts.db/logged-in? cofx)
+        (if (accounts.model/logged-in? cofx)
           ;; TODO: for simplicity we're doing a linear lookup of the contacts,
           ;; but we might want to build a map of hashed pubkeys to pubkeys
           ;; for this purpose
@@ -145,7 +149,7 @@
      :id   id})
 
   (defn- get-contact-name [{:keys [db] :as cofx} from]
-    (if (accounts.db/logged-in? cofx)
+    (if (accounts.model/logged-in? cofx)
       (:name (hash->contact from (-> db :contacts/contacts vals)))
       (anonymize-pubkey from)))
 
@@ -210,7 +214,7 @@
     "Ignore push notifications from unknown contacts or removed chats"
     [{:keys [db] :as cofx} {:keys [from] :as rehydrated-payload}]
     (and (valid-notification-payload? rehydrated-payload)
-         (accounts.db/logged-in? cofx)
+         (accounts.model/logged-in? cofx)
          (some #(= (:public-key %) from)
                (contact.db/get-active-contacts (:contacts/contacts db)))
          (some #(= (:chat-id %) from)
@@ -244,7 +248,7 @@
 
   (fx/defn handle-push-notification-open
     [{:keys [db] :as cofx} decoded-payload {:keys [stored?] :as ctx}]
-    (let [current-public-key (accounts.db/current-public-key cofx)
+    (let [current-public-key (accounts.model/current-public-key cofx)
           nav-opts           (when stored? {:navigation-reset? true})
           rehydrated-payload (rehydrate-payload cofx decoded-payload)
           from               (:from rehydrated-payload)
@@ -334,7 +338,7 @@
 
 (fx/defn process-stored-event [{:keys [db] :as cofx} address stored-pns]
   (when-not platform/desktop?
-    (if (accounts.db/logged-in? cofx)
+    (if (accounts.model/logged-in? cofx)
       (let [current-account        (:account/account db)
             current-address        (:address current-account)
             current-account-pubkey (:public-key current-account)

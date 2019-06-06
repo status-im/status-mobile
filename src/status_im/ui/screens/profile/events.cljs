@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.profile.events
   (:require [re-frame.core :as re-frame]
             [status-im.browser.core :as browser]
-            [status-im.accounts.db :as accounts.db]
+            [status-im.accounts.model :as accounts.model]
             [status-im.ui.screens.profile.models :as profile.models]
             [status-im.ui.screens.profile.navigation]
             [status-im.ui.components.list-selection :as list-selection]
@@ -35,7 +35,7 @@
  (fn [{:keys [db] :as cofx}]
    {:db (-> db
             (assoc-in [:my-profile/profile :photo-path]
-                      (identicon/identicon (accounts.db/current-public-key cofx)))
+                      (identicon/identicon (accounts.model/current-public-key cofx)))
             (assoc :my-profile/editing? true))}))
 
 (handlers/register-handler-fx

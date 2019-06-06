@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.network-settings.styles
+(ns status-im.network.ui.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.components.styles :as components.styles]))

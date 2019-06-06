@@ -10,7 +10,7 @@
    [status-im.transport.message.public-chat :as transport.public-chat]
    [status-im.data-store.accounts :as data-store.accounts]
    [status-im.transport.chat.core :as transport.chat]
-   [status-im.accounts.db :as accounts.db]
+   [status-im.accounts.model :as accounts.model]
    [status-im.mailserver.core :as mailserver]))
 
 (defn topic [pk]
@@ -42,7 +42,7 @@
   "We can stop listening to contact codes when we don't have any active chat
   with the user (one-to-one or group-chat), and it is not in our contacts"
   [{:keys [db] :as cofx} their-public-key]
-  (let [my-public-key (accounts.db/current-public-key cofx)
+  (let [my-public-key (accounts.model/current-public-key cofx)
         active-group-chats (filter (fn [{:keys [is-active members members-joined]}]
                                      (and is-active
                                           (contains? members-joined my-public-key)
@@ -64,11 +64,11 @@
 
 (fx/defn init [cofx]
   (log/debug "initializing contact-code")
-  (let [current-public-key (accounts.db/current-public-key cofx)]
+  (let [current-public-key (accounts.model/current-public-key cofx)]
     (listen cofx current-public-key)))
 
 (defn publish! [{:keys [web3 now] :as cofx}]
-  (let [current-public-key (accounts.db/current-public-key cofx)
+  (let [current-public-key (accounts.model/current-public-key cofx)
         chat-id (topic current-public-key)
         peers-count (:peers-count @re-frame.db/app-db)
         last-published (get-in
