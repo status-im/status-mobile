@@ -337,41 +337,31 @@
           [group-chat-description-container chat]
           [one-to-one-chat-description-container chat])]])))
 
-(defview messages-view
+(defn messages-view
   [{:keys [group-chat chat-id pending-invite-inviter-name contact] :as chat}
-   modal?]
-  (letsubs [messages-list-ref  (atom nil)
-            messages           [:chats/current-chat-messages-stream]
-            photo-path         [:chats/photo-path chat-id]
-            current-public-key [:account/public-key]]
-    {:component-did-mount
-     (fn [args]
-       (re-frame/dispatch [:chat.ui/set-chat-ui-props
-                           {:messages-focused? true
-                            :input-focused?    false}]))}
-    (let [no-messages (empty? messages)
-          flat-list-conf
-          {:data                      messages
-           :ref                       #(reset! messages-list-ref %)
-           :footer                    [chat-intro-header-container chat no-messages]
-           :key-fn                    #(or (:message-id %) (:value %))
-           :render-fn                 (fn [message idx]
-                                        [message-row
-                                         {:group-chat         group-chat
-                                          :modal?             modal?
-                                          :current-public-key current-public-key
-                                          :row                message
-                                          :idx                idx
-                                          :list-ref           messages-list-ref}])
-           :inverted                  true
-           :initialNumToRender        0
-           :onEndReachedThreshold     5
-           :onEndReached              #(re-frame/dispatch  [:chat.ui/load-more-messages])
-           :keyboardShouldPersistTaps :handled}
-          group-header {:header [group-chat-footer chat-id]}]
-      (if pending-invite-inviter-name
-        [list/flat-list (merge flat-list-conf group-header)]
-        [list/flat-list flat-list-conf]))))
+   messages photo-path current-public-key modal?]
+  (let [messages-list-ref  (atom nil)
+        no-messages (empty? messages)
+        flat-list-conf
+        {:data                      messages
+         :ref                       #(reset! messages-list-ref %)
+         :footer                    [chat-intro-header-container chat no-messages]
+         :key-fn                    #(or (:message-id %) (:value %))
+         :render-fn                 (fn [message idx]
+                                      [message-row
+                                       {:group-chat         group-chat
+                                        :modal?             modal?
+                                        :current-public-key current-public-key
+                                        :row                message
+                                        :idx                idx
+                                        :list-ref           messages-list-ref}])
+         :inverted                  true
+         :onEndReached              #(re-frame/dispatch [:chat.ui/load-more-messages])
+         :keyboardShouldPersistTaps :handled}
+        group-header {:header [group-chat-footer chat-id]}]
+    (if pending-invite-inviter-name
+      [list/flat-list (merge flat-list-conf group-header)]
+      [list/flat-list flat-list-conf])))
 
 (def load-step 5)
 
@@ -398,7 +388,7 @@
                           (do
                             (reset! messages-to-load load-step)
                             (reset! chat-id* chat-id)))]
-      [react/view {:style style/chat-view}
+      [react/view {:flex 1}
        [react/scroll-view {:scrollEventThrottle              16
                            :headerHeight                     style/messages-list-vertical-padding
                            :footerWidth                      style/messages-list-vertical-padding
@@ -435,27 +425,20 @@
     ;; components (e.g. chat-toolbar) there can be a brief visual inconsistancy like showing 'add contact'
     ;; in public chat
     (when (= chat-id current-chat-id)
-      ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
-      ;; more details here: https://github.com/facebook/react-native/issues/11071
-      [react/scroll-view {:scroll-enabled               false
-                          :style                        style/scroll-root
-                          :content-container-style      style/scroll-root
-                          :keyboard-should-persist-taps :handled}
-       ^{:key current-chat-id}
-       [react/view {:style     style/chat-view
-                    :on-layout (fn [e]
-                                 (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
-        [chat-toolbar current-chat public? modal?]
-        ;;TODO(kozieiev) : When FlatList in react-native-desktop become viable it should be used instead of optimized ScrollView for chat
-        (if platform/desktop?
-          [messages-view-desktop current-chat modal?]
-          [messages-view current-chat modal?])
-        (when show-input?
-          [input/container])
-        (when show-stickers?
-          [stickers/stickers-view])
-        (when show-message-options?
-          [message-options/view])]])))
+      (let [messages           @(re-frame/subscribe [:chats/current-chat-messages-stream])
+            photo-path         @(re-frame/subscribe [:chats/photo-path chat-id])
+            current-public-key @(re-frame/subscribe [:account/public-key])]
+        [react/view {:flex 1}
+         [chat-toolbar current-chat public? modal?]
+         [messages-view-animation
+          ;;TODO(kozieiev) : When FlatList in react-native-desktop become viable it should be used instead of optimized ScrollView for chat
+          [messages-view current-chat messages photo-path current-public-key modal?]]
+         (when show-input?
+           [input/container])
+         (when show-stickers?
+           [stickers/stickers-view])
+         (when show-message-options?
+           [message-options/view])]))))
 
 (defview chat []
   [chat-root false])

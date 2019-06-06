@@ -811,8 +811,15 @@
 
 (handlers/register-handler-fx
  :chat.ui/navigate-to-chat
+ [(re-frame/inject-cofx :data-store/get-messages)
+  (re-frame/inject-cofx :data-store/get-referenced-messages)
+  (re-frame/inject-cofx :data-store/get-unviewed-message-ids)
+  (re-frame/inject-cofx :data-store/all-gaps)]
  (fn [cofx [_ chat-id opts]]
-   (chat/navigate-to-chat cofx chat-id opts)))
+   (fx/merge cofx
+             (chat/navigate-to-chat cofx chat-id opts)
+             (when (empty? (get-in cofx [:db :chats chat-id :messages]))
+               (chat.loading/load-more-messages)))))
 
 (handlers/register-handler-fx
  :chat.ui/load-more-messages

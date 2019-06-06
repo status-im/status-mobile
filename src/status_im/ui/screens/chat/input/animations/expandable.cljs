@@ -9,31 +9,23 @@
 
 (def top-offset 100)
 
-(defn expandable-view-on-update [anim-value animation-height]
-  (when animation-height
-    (animation/start
-     (animation/spring anim-value {:toValue  animation-height
-                                   :friction 10
-                                   :tension  60}))))
-
 (defview expandable-view [{:keys [key]} & elements]
-  (letsubs [anim-value         (animation/create-value 0)
-            input-height       [:chats/current-chat-ui-prop :input-height]
+  (letsubs [input-height       [:chats/current-chat-ui-prop :input-height]
             input-focused?     [:chats/current-chat-ui-prop :input-focused?]
             messages-focused?  [:chats/current-chat-ui-prop :messages-focused?]
             chat-input-margin  [:chats/input-margin]
             keyboard-height    [:keyboard-height]
-            chat-layout-height [:layout-height]]
+            chat-layout-height [:layout-height]
+            height (reagent/atom 0)]
     (let [input-height (or input-height (+ input-style/padding-vertical
                                            input-style/min-input-height
                                            input-style/padding-vertical
                                            input-style/border-height))
           bottom       (+ input-height chat-input-margin)
           max-height   (- chat-layout-height (when platform/ios? keyboard-height) input-height top-offset)]
-      [react/view style/overlap-container
-       [react/animated-view {:style (style/expandable-container anim-value bottom max-height)}
-        (into [react/scroll-view {:keyboard-should-persist-taps :always
-                                  :on-content-size-change       #(expandable-view-on-update anim-value %2)
-                                  :bounces                      false}]
-              (when (or input-focused? (not messages-focused?))
-                elements))]])))
+      [react/view {:style (style/expandable-container @height bottom max-height)}
+       (into [react/scroll-view {:keyboard-should-persist-taps :always
+                                 :on-content-size-change #(reset! height %2)
+                                 :bounces                      false}]
+             (when (or input-focused? (not messages-focused?))
+               elements))])))

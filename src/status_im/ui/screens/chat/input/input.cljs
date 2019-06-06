@@ -28,8 +28,7 @@
             cooldown-enabled?    [:chats/cooldown-enabled?]]
     [react/text-input
      (merge
-      {:ref                    #(when % (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-ref %}]))
-       :accessibility-label    :chat-message-input
+      {:accessibility-label    :chat-message-input
        :multiline              (not single-line-input?)
        :default-value          (or input-text "")
        :editable               (not cooldown-enabled?)

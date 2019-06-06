@@ -104,7 +104,7 @@
     (load-chats-from-rpc cofx)
     (initialize-chats-legacy cofx from to)))
 
-(defn load-more-messages
+(fx/defn load-more-messages
   "Loads more messages for current chat"
   [{{:keys [current-chat-id] :as db} :db
     get-stored-messages :get-stored-messages
