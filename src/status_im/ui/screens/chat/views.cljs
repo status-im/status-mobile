@@ -88,32 +88,6 @@
                                :modal? modal?
                                :current-public-key current-public-key)])
 
-(def animation-duration 200)
-
-(defview messages-view-animation [message-view]
-  ;; smooths out appearance of message-view
-  (letsubs [opacity (animation/create-value 0)]
-    {:component-did-mount (fn [_]
-                            (animation/start
-                             (animation/timing
-                              opacity
-                              {:toValue         1
-                               :duration        animation-duration
-                               :useNativeDriver true})))}
-    [react/with-activity-indicator
-     {:style   style/message-view-preview
-      :preview [react/view style/message-view-preview]}
-     [react/touchable-without-feedback
-      {:on-press (fn [_]
-                   (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
-                                                                   :show-stickers? false}])
-                   (when-not platform/desktop?
-                     (react/dismiss-keyboard!)))}
-      (if platform/desktop?
-        message-view
-        [react/animated-view {:style (style/message-view-animated opacity)}
-         message-view])]]))
-
 (defn tribute-to-talk-header
   [name]
   [react/nested-text {:style (assoc style/intro-header-description
@@ -430,9 +404,7 @@
             current-public-key @(re-frame/subscribe [:account/public-key])]
         [react/view {:flex 1}
          [chat-toolbar current-chat public? modal?]
-         [messages-view-animation
-          ;;TODO(kozieiev) : When FlatList in react-native-desktop become viable it should be used instead of optimized ScrollView for chat
-          [messages-view current-chat messages photo-path current-public-key modal?]]
+         [messages-view current-chat messages photo-path current-public-key modal?]
          (when show-input?
            [input/container])
          (when show-stickers?
