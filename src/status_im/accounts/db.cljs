@@ -1,31 +1,13 @@
 (ns status-im.accounts.db
   (:require status-im.utils.db
-            status-im.ui.screens.network-settings.db
+            status-im.network.module
             status-im.ui.screens.bootnodes-settings.db
             status-im.ui.screens.extensions.db
-            [clojure.string :as string]
             [cljs.spec.alpha :as spec]
-            [status-im.constants :as const]
-            [status-im.utils.security :as security]))
-
-(defn logged-in? [cofx]
-  (boolean
-   (get-in cofx [:db :account/account])))
-
-(defn credentials [cofx]
-  (select-keys (get-in cofx [:db :accounts/login]) [:address :password :save-password?]))
+            [status-im.constants :as const]))
 
 (defn valid-length? [password]
   (>= (count password) const/min-password-length))
-
-(defn account-creation-next-enabled? [{:keys [step password password-confirm name]}]
-  (or (and password (= :enter-password step) (spec/valid? ::password (security/safe-unmask-data password)))
-      (and password-confirm (= :confirm-password step) (spec/valid? ::password password-confirm))
-      (and name (= :enter-name step) (not (string/blank? name)))))
-
-(defn current-public-key
-  [cofx]
-  (get-in cofx [:db :account/account :public-key]))
 
 (spec/def ::password  (spec/and :global/not-empty-string valid-length?))
 

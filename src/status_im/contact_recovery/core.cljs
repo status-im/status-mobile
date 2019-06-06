@@ -9,7 +9,7 @@
    [status-im.data-store.contact-recovery :as data-store.contact-recovery]
    [status-im.utils.config :as config]
    [status-im.utils.fx :as fx]
-   [status-im.accounts.db :as accounts.db]
+   [status-im.accounts.model :as accounts.model]
    [status-im.contact.core :as models.contact]))
 
 ;; How long do we wait until we process a contact-recovery again?
@@ -25,7 +25,7 @@
   "Check that a contact-recovery for the given user is not already in process, if not
   fetch from db and check"
   [{:keys [db now] :as cofx} public-key]
-  (let [my-public-key (accounts.db/current-public-key cofx)]
+  (let [my-public-key (accounts.model/current-public-key cofx)]
     (when (and (not= public-key my-public-key)
                (not (get-in db [:contact-recovery/pop-up public-key])))
       {:db (update db :contact-recovery/pop-up conj public-key)
@@ -51,7 +51,7 @@
   "Send an empty message to the user, which will carry device information"
   [cofx public-key]
   (let [{:keys [web3]} (:db cofx)
-        current-public-key (accounts.db/current-public-key cofx)]
+        current-public-key (accounts.model/current-public-key cofx)]
     {:shh/send-direct-message
      [{:web3    web3
        :src     current-public-key

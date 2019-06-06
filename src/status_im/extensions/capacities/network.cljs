@@ -1,7 +1,7 @@
 (ns status-im.extensions.capacities.network
   (:require [status-im.utils.handlers :as handlers]
             [status-im.i18n :as i18n]
-            [status-im.network.core :as network]))
+            [status-im.network.module :as network]))
 
 (handlers/register-handler-fx
  :extensions/network-on-success

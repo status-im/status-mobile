@@ -4,7 +4,7 @@
             [clojure.spec.alpha :as spec]
             [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.accounts.db :as accounts.db]
+            [status-im.accounts.model :as accounts.model]
             [status-im.chat.models :as models.chat]
             [status-im.chat.models.message :as models.message]
             [status-im.contact.core :as models.contact]
@@ -120,7 +120,7 @@
          members (clojure.set/union (get-in cofx [:db :chats chat-id :contacts])
                                     removed-members)
          {:keys [web3]} (:db cofx)
-         current-public-key (accounts.db/current-public-key cofx)
+         current-public-key (accounts.model/current-public-key cofx)
          ;; If a member has joined is listening to the shared topic and we send there
          ;; to ourselves we send always on contact-discovery to make sure all devices
          ;; are informed, in case of dropped messages.
@@ -202,7 +202,7 @@
 (fx/defn create
   "Format group update message and sign membership"
   [{:keys [db random-guid-generator] :as cofx} group-name]
-  (let [my-public-key     (accounts.db/current-public-key cofx)
+  (let [my-public-key     (accounts.model/current-public-key cofx)
         chat-id           (str (random-guid-generator) my-public-key)
         selected-contacts (:group/selected-contacts db)
         clock-value       (utils.clocks/send 0)
@@ -227,7 +227,7 @@
 (fx/defn remove-member
   "Format group update message and sign membership"
   [{:keys [db] :as cofx} chat-id member]
-  (let [my-public-key     (accounts.db/current-public-key cofx)
+  (let [my-public-key     (accounts.model/current-public-key cofx)
         last-clock-value  (get-last-clock-value cofx chat-id)
         chat              (get-in cofx [:db :chats chat-id])
         remove-event       {:type        "member-removed"
@@ -243,7 +243,7 @@
 (fx/defn join-chat
   "Format group update message and sign membership"
   [cofx chat-id]
-  (let [my-public-key     (accounts.db/current-public-key cofx)
+  (let [my-public-key     (accounts.model/current-public-key cofx)
         last-clock-value  (get-last-clock-value cofx chat-id)
         chat              (get-in cofx [:db :chats chat-id])
         event             (member-joined-event last-clock-value my-public-key)]
@@ -264,7 +264,7 @@
 (fx/defn make-admin
   "Format group update with make admin message and sign membership"
   [{:keys [db] :as cofx} chat-id member]
-  (let [my-public-key     (accounts.db/current-public-key cofx)
+  (let [my-public-key     (accounts.model/current-public-key cofx)
         last-clock-value  (get-last-clock-value cofx chat-id)
         chat              (get-in cofx [:db :chats chat-id])
         event             {:type        "admins-added"
@@ -284,12 +284,12 @@
         events            [(members-added-event last-clock-value selected-participants)]]
 
     {:group-chats/sign-membership {:chat-id current-chat-id
-                                   :from    (accounts.db/current-public-key cofx)
+                                   :from    (accounts.model/current-public-key cofx)
                                    :events  events}}))
 (fx/defn remove
   "Remove & leave chat"
   [{:keys [db] :as cofx} chat-id]
-  (let [my-public-key (accounts.db/current-public-key cofx)]
+  (let [my-public-key (accounts.model/current-public-key cofx)]
     (fx/merge cofx
               (remove-member chat-id my-public-key)
               (models.chat/remove-chat chat-id))))
@@ -463,7 +463,7 @@
   "Listen/Tear down the shared topic/contact-codes. Stop listening for members who
   have left the chat"
   [cofx chat-id previous-chat]
-  (let [my-public-key (accounts.db/current-public-key cofx)
+  (let [my-public-key (accounts.model/current-public-key cofx)
         new-chat (get-in cofx [:db :chats chat-id])]
     ;; If we left the chat, teardown, otherwise upsert
     (if (and (group-chats.db/joined? my-public-key previous-chat)
@@ -495,7 +495,7 @@
       (let [previous-chat (get-in cofx [:db :chats chat-id])
             all-updates (clojure.set/union (set (:membership-updates previous-chat))
                                            (set (:membership-updates membership-update)))
-            my-public-key (accounts.db/current-public-key cofx)
+            my-public-key (accounts.model/current-public-key cofx)
             unwrapped-events (group-chats.db/unwrap-events all-updates)
             new-group (build-group unwrapped-events)
             member? (contains? (:contacts new-group) my-public-key)]
@@ -527,7 +527,7 @@
   [{:keys [db] :as cofx} {:keys [chat-id] :as signed-events}]
   (let [old-chat      (get-in db [:chats chat-id])
         updated-chat  (update old-chat :membership-updates conj signed-events)
-        my-public-key (accounts.db/current-public-key cofx)
+        my-public-key (accounts.model/current-public-key cofx)
         group-update  (chat->group-update chat-id updated-chat)
         new-group-fx  (handle-membership-update group-update nil my-public-key)
         ;; We need to send to users who have been removed as well

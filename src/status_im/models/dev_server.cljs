@@ -1,7 +1,7 @@
 (ns status-im.models.dev-server
   (:require [clojure.string :as string]
             [status-im.browser.core :as browser]
-            [status-im.network.core :as network]
+            [status-im.network.module :as network]
             [status-im.utils.fx :as fx]))
 
 (defn start

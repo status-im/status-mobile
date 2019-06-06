@@ -9,16 +9,12 @@
             [status-im.utils.config :as config]
             [status-im.utils.platform :as utils.platform]
             [status-im.chat.models :as models.chat]
-            [status-im.transport.message.public-chat :as transport.public-chat]
-            [status-im.accounts.db :as accounts.db]
+            [status-im.accounts.model :as accounts.model]
             [status-im.transport.message.protocol :as protocol]
-            [status-im.transport.utils :as transport.utils]
             [status-im.data-store.installations :as data-store.installations]
             [status-im.native-module.core :as native-module]
             [status-im.utils.identicon :as identicon]
             [status-im.contact.core :as contact]
-            [status-im.contact-code.core :as contact-code]
-            [status-im.data-store.contacts :as data-store.contacts]
             [status-im.data-store.accounts :as data-store.accounts]
             [status-im.transport.message.pairing :as transport.pairing]))
 
@@ -49,7 +45,7 @@
 
 (defn send-pair-installation [cofx payload]
   (let [{:keys [web3]} (:db cofx)
-        current-public-key (accounts.db/current-public-key cofx)]
+        current-public-key (accounts.model/current-public-key cofx)]
     {:shh/send-pairing-message {:web3    web3
                                 :src     current-public-key
                                 :payload payload}}))
@@ -109,7 +105,7 @@
                           :has-bundle?     true}]
     (when
      (and (= (:identity bundle)
-             (accounts.db/current-public-key cofx))
+             (accounts.model/current-public-key cofx))
           (not= (get-in db [:account/account :installation-id]) installation-id)
           (not (get-in db [:pairing/installations installation-id])))
       (fx/merge cofx
@@ -214,7 +210,7 @@
 
 (fx/defn send-sync-installation [cofx payload]
   (let [{:keys [web3]} (:db cofx)
-        current-public-key (accounts.db/current-public-key cofx)]
+        current-public-key (accounts.model/current-public-key cofx)]
     {:shh/send-direct-message
      [{:web3    web3
        :src     current-public-key
@@ -278,7 +274,7 @@
              contacts))
 
 (defn handle-sync-installation [{:keys [db] :as cofx} {:keys [contacts account chat]} sender]
-  (if (= sender (accounts.db/current-public-key cofx))
+  (if (= sender (accounts.model/current-public-key cofx))
     (let [success-event [:message/messages-persisted [(or (:dedup-id cofx) (:js-obj cofx))]]
           new-contacts  (when (seq contacts)
                           (vals (merge-contacts (:contacts/contacts db)
@@ -302,7 +298,7 @@
                                                               fcm-token
                                                               installation-id
                                                               device-type]} timestamp sender]
-  (if (and (= sender (accounts.db/current-public-key cofx))
+  (if (and (= sender (accounts.model/current-public-key cofx))
            (not= (get-in db [:account/account :installation-id]) installation-id))
     (let [installation {:installation-id   installation-id
                         :name              name

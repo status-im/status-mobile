@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.network-settings.edit-network.views
+(ns status-im.network.ui.edit-network.views
   (:require-macros [status-im.utils.views :as views])
   (:require
    [re-frame.core :as re-frame]
@@ -10,7 +10,7 @@
    [status-im.ui.components.toolbar.view :as toolbar]
    [status-im.ui.components.list.views :as list]
    [status-im.ui.components.text-input.view :as text-input]
-   [status-im.ui.screens.network-settings.edit-network.styles :as styles]
+   [status-im.network.ui.edit-network.styles :as styles]
    [clojure.string :as string]))
 
 (defn- render-network-type [manage-network type]

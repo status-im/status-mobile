@@ -1,7 +1,7 @@
 (ns ^{:doc "Mailserver events and API"}
  status-im.mailserver.core
   (:require [re-frame.core :as re-frame]
-            [status-im.accounts.db :as accounts.db]
+            [status-im.accounts.model :as accounts.model]
             [status-im.fleet.core :as fleet]
             [status-im.native-module.core :as status]
             [status-im.utils.platform :as platform]
@@ -504,7 +504,7 @@
   "when host reconnects, reset request-to and
   reconnect to mailserver"
   [{:keys [db] :as cofx} is-connected?]
-  (when (and (accounts.db/logged-in? cofx)
+  (when (and (accounts.model/logged-in? cofx)
              is-connected?)
     (fx/merge cofx
               (reset-request-to)
@@ -813,7 +813,7 @@
 (fx/defn handle-request-completed
   [{{:keys [chats]} :db :as cofx}
    {:keys [requestID lastEnvelopeHash cursor errorMessage]}]
-  (when (accounts.db/logged-in? cofx)
+  (when (accounts.model/logged-in? cofx)
     (if (empty? errorMessage)
       (let [never-synced-chats-in-request
             (->> (chats->never-synced-public-chats chats)
@@ -908,7 +908,7 @@
 (fx/defn fetch-history
   [{:keys [db] :as cofx} chat-id {:keys [from to]}]
   (log/debug "fetch-history" "chat-id:" chat-id "from-timestamp:" from)
-  (let [public-key (accounts.db/current-public-key cofx)
+  (let [public-key (accounts.model/current-public-key cofx)
         topic  (or (get-in db [:transport/chats chat-id :topic])
                    (transport.topic/public-key->discovery-topic-hash public-key))]
     (fx/merge cofx

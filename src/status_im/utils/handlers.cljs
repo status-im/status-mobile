@@ -1,10 +1,8 @@
 (ns status-im.utils.handlers
   (:require [cljs.spec.alpha :as spec]
-            [clojure.string :as string]
             [re-frame.core :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
-            [status-im.accounts.db :as accounts.db]
-            [cljs.core.async :as async]
+            [status-im.accounts.model :as accounts.model]
             [taoensso.timbre :as log]))
 
 (def pre-event-callback (atom nil))
@@ -40,7 +38,7 @@
    :id     :logged-in
    :before (fn logged-in-before
              [context]
-             (when (accounts.db/logged-in? (:coeffects context))
+             (when (accounts.model/logged-in? (:coeffects context))
                context))))
 
 (defn- check-spec-msg-path-problem [problem]

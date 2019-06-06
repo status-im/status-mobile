@@ -1,6 +1,6 @@
 (ns status-im.test.models.account
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.accounts.db :as accounts.db]))
+            [status-im.accounts.model :as accounts.db]))
 
 (deftest logged-in-test
   (testing "account/account is defined"

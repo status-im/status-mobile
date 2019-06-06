@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.network-settings.network-details.views
+(ns status-im.network.ui.network-details.views
   (:require-macros [status-im.utils.views :as views])
   (:require
    [re-frame.core :as rf]
@@ -8,8 +8,8 @@
    [status-im.i18n :as i18n]
    [status-im.ui.components.styles :as components.styles]
    [status-im.ui.components.common.common :as components.common]
-   [status-im.ui.screens.network-settings.styles :as st]
-   [status-im.ui.screens.network-settings.views :as network-settings]))
+   [status-im.network.ui.styles :as st]
+   [status-im.network.ui.views :as network-settings]))
 
 (views/defview network-details []
   (views/letsubs [{:keys [networks/selected-network]} [:get-screen-params]

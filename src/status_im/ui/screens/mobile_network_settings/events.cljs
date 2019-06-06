@@ -4,7 +4,7 @@
    [status-im.accounts.update.core :as accounts.update]
    [status-im.utils.fx :as fx]
    [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
-   [status-im.accounts.db :as accounts.db]
+   [status-im.accounts.model :as accounts.model]
    [status-im.ui.screens.navigation :as navigation]
    [status-im.mailserver.core :as mailserver]
    [status-im.ui.screens.mobile-network-settings.utils :as utils]))
@@ -16,7 +16,7 @@
 
 (fx/defn on-network-status-change
   [{:keys [db] :as cofx}]
-  (let [logged-in? (accounts.db/logged-in? cofx)
+  (let [logged-in? (accounts.model/logged-in? cofx)
         {:keys [remember-syncing-choice?]} (:account/account db)]
     (apply
      fx/merge
