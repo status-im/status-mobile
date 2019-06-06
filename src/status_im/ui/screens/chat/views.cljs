@@ -367,8 +367,7 @@
            :initialNumToRender        0
            :onEndReachedThreshold     5
            :onEndReached              #(re-frame/dispatch
-                                        [:chat.ui/load-more-messages])
-           :keyboardShouldPersistTaps :handled}
+        :keyboardShouldPersistTaps :handled}
           group-header {:header [group-chat-footer chat-id]}]
       (if pending-invite-inviter-name
         [list/flat-list (merge flat-list-conf group-header)]
