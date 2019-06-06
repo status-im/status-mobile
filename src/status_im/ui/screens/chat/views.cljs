@@ -339,33 +339,13 @@
 
 (defonce messages-list-ref (atom nil))
 
-(def ^:const initial-limit 5)
-(def ^:const second-initial-limit-step 6)
-(def second-limit (+ initial-limit second-initial-limit-step))
-(def ^:const third-initial-limit-step 11)
-(def ^:const default-limit-step 20)
-(def ^:const initial-threshold 0.5)
-(def ^:const default-threshold 2)
-
-(defonce messages-limit (reagent/atom initial-limit))
-
-(defn increment-limit [lim]
-  (+ lim
-     (case lim
-       initial-limit second-initial-limit-step
-       second-limit third-initial-limit-step
-       default-limit-step)))
-
 (defview messages-view
   [{:keys [group-chat chat-id pending-invite-inviter-name contact] :as chat}
    modal?]
   (letsubs [messages           [:chats/current-chat-messages-stream]
             photo-path         [:chats/photo-path chat-id]
             current-public-key [:account/public-key]]
-    {:component-will-mount
-     (fn []
-       (reset! messages-limit initial-limit))
-     :component-did-mount
+    {:component-did-mount
      (fn [args]
        (when-not (:messages-initialized? (second (.-argv (.-props args))))
          (re-frame/dispatch [:chat.ui/load-more-messages]))
@@ -373,12 +353,8 @@
                            {:messages-focused? true
                             :input-focused?    false}]))}
     (let [no-messages (empty? messages)
-          m-limit     @messages-limit
-          threshold   (if (= m-limit initial-limit)
-                        initial-threshold
-                        default-threshold)
           flat-list-conf
-          {:data                      (take m-limit messages)
+          {:data                      messages
            :ref                       #(reset! messages-list-ref %)
            :footer                    [chat-intro-header-container chat no-messages]
            :key-fn                    #(or (:message-id %) (:value %))
@@ -390,13 +366,9 @@
                                           :row                message
                                           :idx                idx
                                           :list-ref           messages-list-ref}])
+           :initialNumToRender        6
            :inverted                  true
-           :onEndReachedThreshold     threshold
-           :onEndReached              (fn []
-                                        (swap! messages-limit increment-limit)
-                                        (when (> @messages-limit (count messages))
-                                          (re-frame/dispatch
-                                           [:chat.ui/load-more-messages])))
+           :onEndReached              #(re-frame/dispatch [:chat.ui/load-more-messages])
            :keyboardShouldPersistTaps :handled}
           group-header {:header [group-chat-footer chat-id]}]
       (if pending-invite-inviter-name
