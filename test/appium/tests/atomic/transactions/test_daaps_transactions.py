@@ -160,7 +160,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.assets_button.click()
         status_test_dapp.request_eth_button.click()
-        status_test_dapp.element_by_text('Faucet request recieved').wait_for_visibility_of_element()
+        status_test_dapp.element_by_text_part('Faucet request').wait_for_visibility_of_element()
         status_test_dapp.ok_button.click()
         status_test_dapp.cross_icon.click()
         wallet_view = sign_in_view.wallet_button.click()
