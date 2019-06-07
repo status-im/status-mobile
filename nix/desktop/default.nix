@@ -1,5 +1,5 @@
 { stdenv, pkgs, callPackage, target-os,
-  cmake, extra-cmake-modules, file, status-go,
+  cmake, extra-cmake-modules, file, status-go, go,
   darwin, nodejs }:
 
 with stdenv;
@@ -8,7 +8,7 @@ let
   platform = callPackage ../platform.nix { inherit target-os; };
   linuxPlatform = callPackage ./linux { inherit status-go; };
   darwinPlatform = callPackage ./macos { inherit status-go darwin; };
-  windowsPlatform = callPackage ./windows { };
+  windowsPlatform = callPackage ./windows { inherit go; };
   snoreNotifySources = callPackage ./cmake/snorenotify { };
   qtkeychainSources = callPackage ./cmake/qtkeychain { };
   selectedSources =
@@ -20,16 +20,15 @@ let
     inherit pkgs nodejs;
   };
 
-in
-  {
-    buildInputs = [
-      cmake
-      extra-cmake-modules
-      file
-      snoreNotifySources
-      qtkeychainSources
-    ] ++ lib.catAttrs "buildInputs" selectedSources
-      ++ (builtins.attrValues nodeInputs);
+in {
+  buildInputs = [
+    cmake
+    extra-cmake-modules
+    file
+    snoreNotifySources
+    qtkeychainSources
+  ] ++ lib.catAttrs "buildInputs" selectedSources
+    ++ (builtins.attrValues nodeInputs);
 
-    shellHook = lib.concatStrings (lib.catAttrs "shellHook" (selectedSources ++ [ snoreNotifySources qtkeychainSources ]));
-  }
+  shellHook = lib.concatStrings (lib.catAttrs "shellHook" (selectedSources ++ [ snoreNotifySources qtkeychainSources ]));
+}

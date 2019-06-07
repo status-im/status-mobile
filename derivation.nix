@@ -10,7 +10,7 @@ let
   gradle = pkgs.gradle_4_10;
   go = pkgs.go_1_11;
   buildGoPackage = pkgs.buildGoPackage.override { inherit go; };
-  statusDesktop = pkgs.callPackage ./nix/desktop { inherit target-os status-go pkgs; inherit (pkgs) darwin; stdenv = stdenv'; nodejs = nodejs'; };
+  statusDesktop = pkgs.callPackage ./nix/desktop { inherit target-os status-go pkgs go; inherit (pkgs) darwin; stdenv = stdenv'; nodejs = nodejs'; };
   statusMobile = pkgs.callPackage ./nix/mobile { inherit target-os config pkgs status-go gradle; inherit (pkgs.xcodeenv) composeXcodeWrapper; stdenv = stdenv'; nodejs = nodejs'; };
   status-go = pkgs.callPackage ./nix/status-go { inherit target-os go buildGoPackage; inherit (pkgs.xcodeenv) composeXcodeWrapper; inherit (statusMobile) xcodewrapperArgs; androidPkgs = statusMobile.androidComposition; };
   nodejs' = pkgs.nodejs-10_x;
