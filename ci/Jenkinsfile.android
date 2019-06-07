@@ -52,24 +52,32 @@ pipeline {
         }
       }
     }
-    stage('Lint') {
-      steps {
-        script { cmn.nix.shell('lein cljfmt check') }
-      }
-    }
-    stage('Tests') {
-      steps {
-        script { cmn.nix.shell('lein test-cljs') }
-      }
-    }
-    stage('Build') {
-      steps {
-        script { cmn.nix.shell('make prod-build-android')}
-      }
-    }
-    stage('Bundle') {
-      steps {
-        script { apk = android.bundle() }
+    stage('Parallel') {
+      parallel {
+        stage('Checks') { stages {
+          stage('Lint') {
+            steps {
+              script { cmn.nix.shell('lein cljfmt check') }
+            }
+          }
+          stage('Tests') {
+            steps {
+              script { cmn.nix.shell('lein test-cljs') }
+            }
+          }
+        } }
+        stage('Build') { stages {
+          stage('Clojure') {
+            steps {
+              script { cmn.nix.shell('make prod-build-android')}
+            }
+          }
+          stage('Bundle') {
+            steps {
+              script { apk = android.bundle() }
+            }
+          }
+        } }
       }
     }
     stage('Archive') {

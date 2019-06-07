@@ -51,24 +51,32 @@ pipeline {
         }
       }
     }
-    stage('Lint') {
-      steps {
-        script { cmn.nix.shell('lein cljfmt check') }
-      }
-    }
-    stage('Tests') {
-      steps {
-        script { cmn.nix.shell('lein test-cljs') }
-      }
-    }
-    stage('Build') {
-      steps {
-        script { cmn.nix.shell('make prod-build-ios') }
-      }
-    }
-    stage('Bundle') {
-      steps {
-        script { api = ios.bundle() }
+    stage('Parallel') {
+      parallel {
+        stage('Checks') { stages {
+          stage('Lint') {
+            steps {
+              script { cmn.nix.shell('lein cljfmt check') }
+            }
+          }
+          stage('Tests') {
+            steps {
+              script { cmn.nix.shell('lein test-cljs') }
+            }
+          }
+        } }
+        stage('Build') { stages {
+          stage('Clojure') {
+            steps {
+              script { cmn.nix.shell('make prod-build-ios') }
+            }
+          }
+          stage('Bundle') {
+            steps {
+              script { api = ios.bundle() }
+            }
+          }
+        } }
       }
     }
     stage('Archive') {
