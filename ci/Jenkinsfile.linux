@@ -53,29 +53,37 @@ pipeline {
         }
       }
     }
-    stage('Lint') {
-      steps {
-        script { cmn.nix.shell('lein cljfmt check') }
-      }
-    }
-    stage('Tests') {
-      steps {
-        script { cmn.nix.shell('lein test-cljs') }
-      }
-    }
-    stage('Build') {
-      steps {
-        script { desktop.buildClojureScript() }
-      }
-    }
-    stage('Compile') {
-      steps {
-        script { desktop.compile() }
-      }
-    }
-    stage('Bundle') {
-      steps {
-        script { app = desktop.bundleLinux(btype) }
+    stage('Parallel') {
+      parallel {
+        stage('Checks') { stages {
+          stage('Lint') {
+            steps {
+              script { cmn.nix.shell('lein cljfmt check') }
+            }
+          }
+          stage('Tests') {
+            steps {
+              script { cmn.nix.shell('lein test-cljs') }
+            }
+          }
+        } }
+        stage('Build') { stages {
+          stage('Clojure') {
+            steps {
+              script { desktop.buildClojureScript() }
+            }
+          }
+          stage('Compile') {
+            steps {
+              script { desktop.compile() }
+            }
+          }
+          stage('Bundle') {
+            steps {
+              script { app = desktop.bundleLinux(btype) }
+            }
+          }
+        } }
       }
     }
     stage('Archive') {
