@@ -41,9 +41,9 @@ pipeline {
       steps {
         script {
           /* Necessary to load methods */
-          mobile = load 'ci/mobile.groovy'
-          cmn    = load 'ci/common.groovy'
-          btype  = cmn.utils.getBuildType()
+          ios   = load 'ci/ios.groovy'
+          cmn   = load 'ci/common.groovy'
+          btype = cmn.utils.getBuildType()
           print "Running ${btype} build!"
           cmn.ci.abortPreviousRunningBuilds()
           /* Cleanup and Prep */
@@ -68,7 +68,7 @@ pipeline {
     }
     stage('Bundle') {
       steps {
-        script { api = mobile.ios.bundle() }
+        script { api = ios.bundle() }
       }
     }
     stage('Archive') {
@@ -82,9 +82,9 @@ pipeline {
           env.PKG_URL = cmn.utils.uploadArtifact(api)
           /* e2e builds get tested in SauceLabs */
           if (btype == 'e2e') {
-            env.SAUCE_URL = mobile.ios.uploadToSauceLabs()
+            env.SAUCE_URL = ios.uploadToSauceLabs()
           } else {
-            env.DIAWI_URL = mobile.ios.uploadToDiawi()
+            env.DIAWI_URL = ios.uploadToDiawi()
           }
         }
       }
@@ -96,7 +96,7 @@ pipeline {
     }
   }
   post {
-    success { script { load('ci/common.groovy').notifyPR(true) } }
-    failure { script { load('ci/common.groovy').notifyPR(false) } }
+    success { script { load('ci/github.groovy').notifyPR(true) } }
+    failure { script { load('ci/github.groovy').notifyPR(false) } }
   }
 }

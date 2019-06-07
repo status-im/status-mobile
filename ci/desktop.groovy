@@ -1,14 +1,27 @@
 nix = load 'ci/nix.groovy'
-cmn = load 'ci/common.groovy'
 utils = load 'ci/utils.groovy'
 
 packageFolder = './StatusImPackage'
+
+def installJSDeps(platform) {
+  def attempt = 1
+  def maxAttempts = 10
+  def installed = false
+  /* prepare environment for specific platform build */
+  nix.shell "scripts/prepare-for-platform.sh ${platform}"
+  while (!installed && attempt <= maxAttempts) {
+    println "#${attempt} attempt to install npm deps"
+    nix.shell 'yarn install --frozen-lockfile'
+    installed = fileExists('node_modules/web3/index.js')
+    attemp = attempt + 1
+  }
+}
 
 def cleanupAndDeps() {
   sh 'make clean'
   sh 'cp .env.jenkins .env'
   nix.shell 'lein deps'
-  utils.installJSDeps('desktop')
+  installJSDeps('desktop')
 }
 
 def buildClojureScript() {

@@ -2,12 +2,9 @@ import groovy.json.JsonBuilder
 
 /* Libraries -----------------------------------------------------------------*/
 
-gh = load 'ci/github.groovy'
 ci = load 'ci/jenkins.groovy'
-gh = load 'ci/github.groovy'
 nix = load 'ci/nix.groovy'
 utils = load 'ci/utils.groovy'
-ghcmgr = load 'ci/ghcmgr.groovy'
 
 /* Small Helpers -------------------------------------------------------------*/
 
@@ -30,19 +27,6 @@ def updateBucketJSON(urls, fileName) {
   println "${fileName}:\n${contentJson}"
   new File(filePath).write(contentJson)
   return utils.uploadArtifact(filePath)
-}
-
-def notifyPR(success) {
-  if (utils.changeId() == null) { return }
-  try {
-    ghcmgr.postBuild(success)
-  } catch (ex) { /* fallback to posting directly to GitHub */
-    println "Failed to use GHCMGR: ${ex}"
-    switch (success) {
-      case true:  gh.notifyPRSuccess(); break
-      case false: gh.notifyPRFailure(); break
-    }
-  }
 }
 
 def prep(type = 'nightly') {

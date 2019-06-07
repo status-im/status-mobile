@@ -1,5 +1,3 @@
-nix = load 'ci/nix.groovy'
-
 def getVersion() {
   def path = "${env.WORKSPACE}/VERSION"
   return readFile(path).trim()
@@ -38,13 +36,8 @@ def pkgFilename(type, ext) {
 }
 
 def doGitRebase() {
-  /* rebasing on relases defeats the point of having a release branch */
-  if (branchName() == 'canary-branch') {
-    println 'Skipping rebase for canary build...'
-    return
-  }
-  if (params.BUILD_TYPE == 'release' || branchName().startsWith('release/')) {
-    println 'Skipping rebase due to release build...'
+  if (getBuildType() != 'pr') {
+    println 'Skipping rebase due for non-PR build...'
     return
   }
   def rebaseBranch = 'develop'
@@ -95,20 +88,6 @@ def pkgFind(glob) {
     error("File not found via glob: ${fullGlob} ${found.size()}")
   }
   return found[0].path
-}
-
-def installJSDeps(platform) {
-  def attempt = 1
-  def maxAttempts = 10
-  def installed = false
-  /* prepare environment for specific platform build */
-  nix.shell "scripts/prepare-for-platform.sh ${platform}"
-  while (!installed && attempt <= maxAttempts) {
-    println "#${attempt} attempt to install npm deps"
-    nix.shell 'yarn install --frozen-lockfile'
-    installed = fileExists('node_modules/web3/index.js')
-    attemp = attempt + 1
-  }
 }
 
 def uploadArtifact(path) {

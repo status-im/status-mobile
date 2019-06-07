@@ -42,9 +42,9 @@ pipeline {
       steps {
         script {
           /* Necessary to load methods */
-          mobile = load 'ci/mobile.groovy'
-          cmn    = load 'ci/common.groovy'
-          btype  = cmn.utils.getBuildType()
+          android = load 'ci/android.groovy'
+          cmn     = load 'ci/common.groovy'
+          btype   = cmn.utils.getBuildType()
           print "Running ${btype} build!"
           cmn.ci.abortPreviousRunningBuilds()
           /* Cleanup and Prep */
@@ -69,7 +69,7 @@ pipeline {
     }
     stage('Bundle') {
       steps {
-        script { apk = mobile.android.bundle() }
+        script { apk = android.bundle() }
       }
     }
     stage('Archive') {
@@ -84,11 +84,11 @@ pipeline {
           /* build type specific */
           switch (btype) {
             case 'release':
-              mobile.android.uploadToPlayStore(); break;
+              android.uploadToPlayStore(); break;
             case 'nightly':
-              env.DIAWI_URL = mobile.android.uploadToDiawi(); break;
+              env.DIAWI_URL = android.uploadToDiawi(); break;
             case 'e2e':
-              env.SAUCE_URL = mobile.android.uploadToSauceLabs()
+              env.SAUCE_URL = android.uploadToSauceLabs()
           }
         }
       }
@@ -100,7 +100,7 @@ pipeline {
     }
   }
   post {
-    success { script { load('ci/common.groovy').notifyPR(true) } }
-    failure { script { load('ci/common.groovy').notifyPR(false) } }
+    success { script { load('ci/github.groovy').notifyPR(true) } }
+    failure { script { load('ci/github.groovy').notifyPR(false) } }
   }
 }

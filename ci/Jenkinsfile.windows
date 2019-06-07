@@ -99,7 +99,7 @@ pipeline {
     }
   }
   post {
-    success { script { load('ci/common.groovy').notifyPR(true) } }
-    failure { script { load('ci/common.groovy').notifyPR(false) } }
+    success { script { load('ci/github.groovy').notifyPR(true) } }
+    failure { script { load('ci/github.groovy').notifyPR(false) } }
   }
 }
