@@ -1,10 +1,10 @@
-(ns status-im.ui.screens.extensions.add.views
+(ns status-im.extensions.ui.add.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [clojure.string :as string]
             [pluto.error :as error]
-            [status-im.extensions.core :as extensions]
+            [status-im.extensions.core :as core]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
@@ -14,7 +14,8 @@
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.text-input.view :as text-input]
-            [status-im.ui.screens.extensions.add.styles :as styles]))
+            [status-im.extensions.ui.add.styles :as styles]
+            status-im.extensions.ui.add.events))
 
 (defn cartouche [{:keys [header]} content]
   [react/view {:style styles/cartouche-container}
@@ -106,5 +107,5 @@
          [components.common/bottom-button
           {:forward?  true
            :label     (i18n/label :t/find)
-           :disabled? (and (not @pressed) (not (extensions/valid-uri? url)))
+           :disabled? (and (not @pressed) (not (core/valid-uri? url)))
            :on-press  #(do (reset! pressed true) (re-frame/dispatch [:extensions.ui/find-button-pressed (string/trim url)]))}]]]])))

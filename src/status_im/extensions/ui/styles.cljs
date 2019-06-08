@@ -1,25 +1,10 @@
-(ns status-im.ui.screens.extensions.styles
+(ns status-im.extensions.ui.styles
   (:require [status-im.ui.components.colors :as colors])
   (:require-macros [status-im.utils.styles :refer [defstyle]]))
 
 (def wrapper
   {:flex             1
    :background-color colors/white})
-
-(defstyle extension-item
-  {:flex-direction     :row
-   :background-color   :white
-   :align-items        :center
-   :padding-horizontal 16
-   :ios                {:height 64}
-   :android            {:height 56}})
-
-(def extension-item-inner
-  {:flex               1
-   :padding-horizontal 16})
-
-(defstyle extension-item-name-text
-  {:typography :title})
 
 (defn mailserver-icon [connected?]
   {:width            40

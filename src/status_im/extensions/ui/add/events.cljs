@@ -1,17 +1,7 @@
-(ns status-im.ui.screens.extensions.add.events
-  (:require [re-frame.core :as re-frame]
-            [status-im.extensions.core :as extensions]
-            [status-im.extensions.registry :as extensions.registry]
-            [status-im.ui.screens.navigation :as navigation]
+(ns status-im.extensions.ui.add.events
+  (:require [status-im.extensions.registry :as extensions.registry]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.fx :as fx]
-            [status-im.i18n :as i18n]))
-
-(re-frame/reg-fx
- :extensions/load
- (fn [{:keys [extensions follow-up]}]
-   (doseq [{:keys [url active?]} extensions]
-     (extensions/load-from url #(re-frame/dispatch [follow-up url (extensions/parse-extension % url) active?])))))
+            [status-im.utils.fx :as fx]))
 
 (handlers/register-handler-fx
  :extensions/stage

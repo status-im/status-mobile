@@ -67,7 +67,7 @@
 (defn list-header [empty?]
   [react/view (when empty? {:flex 1})
    [privacy-options]
-   [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/dapp-url-submitted "https://dap.ps"])}
+   [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/open-url "https://dap.ps"])}
     [react/view styles/dapp-store-container
      [dapp-image nil dapp-image-data]
      [react/text {:style styles/open-dapp-store} (i18n/label :t/open-dapp-store)]
@@ -85,7 +85,7 @@
     [react/keyboard-avoiding-view {:style {:flex 1}}
      [status-bar/status-bar]
      [react/text-input {:on-change-text      #(reset! url-text %)
-                        :on-submit-editing   #(re-frame/dispatch [:browser.ui/dapp-url-submitted @url-text])
+                        :on-submit-editing   #(re-frame/dispatch [:browser.ui/open-url @url-text])
                         :placeholder         (i18n/label :t/enter-url)
                         :auto-capitalize     :none
                         :auto-correct        false

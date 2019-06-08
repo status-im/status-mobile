@@ -14,12 +14,13 @@
         symbols)))
 
 (defmacro defmodule [module-name symbols]
-  (let [module      (gensym "module")
-        loaded?     (gensym "loaded?")
-        path        (str "status-modules/cljs/" module-name ".js")
-        k           (gensym)
-        get-symbol  'get-symbol
-        load-module 'load-module]
+  (let [module            (gensym "module")
+        loaded?           (gensym "loaded?")
+        path              (str "status-modules/cljs/" module-name ".js")
+        k                 (gensym)
+        get-symbol        'get-symbol
+        load-module       'load-module
+        load-module-later 'load-module-later]
     (if prod?
       `(do
          (defonce ~loaded? (atom false))
@@ -30,6 +31,10 @@
              (reset! ~module
                      (hash-map ~@(prepare-symbols symbols)))
              (reset! ~loaded? true)))
+         (defn ~load-module-later []
+           ((resolve 'status-im.utils.utils/set-timeout)
+            (fn [] (~load-module))
+            10))
          (defn ~get-symbol [~k]
            (~load-module)
            (get @~module ~k)))
@@ -42,6 +47,10 @@
              (reset! ~module
                      (hash-map ~@(prepare-symbols symbols)))
              (reset! ~loaded? true)))
+         (defn ~load-module-later []
+           ((resolve 'status-im.utils.utils/set-timeout)
+            (fn [] (~load-module))
+            10))
          (defn ~get-symbol [~k]
            (~load-module)
            (get @~module ~k))))))

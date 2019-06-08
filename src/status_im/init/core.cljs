@@ -8,11 +8,10 @@
             [status-im.data-store.core :as data-store]
             [status-im.data-store.realm.core :as realm]
             [status-im.ethereum.core :as ethereum]
-            [status-im.extensions.registry :as extensions.registry]
+            [status-im.extensions.module :as extensions.module]
             [status-im.i18n :as i18n]
             [status-im.models.dev-server :as models.dev-server]
             [status-im.native-module.core :as status]
-            [status-im.node.core :as node]
             [status-im.notifications.core :as notifications]
             [status-im.pairing.core :as pairing]
             [status-im.react-native.js-dependencies :as rn-dependencies]
@@ -243,7 +242,7 @@
                  (models.dev-server/start))
               (browser/initialize-browsers)
               (browser/initialize-dapp-permissions)
-              (extensions.registry/initialize)
+              (extensions.module/initialize)
               (stickers/init-stickers-packs)
               (accounts.update/update-sign-in-time)
               #(when-not (or (creating-account? %)

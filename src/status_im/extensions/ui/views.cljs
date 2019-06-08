@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.extensions.views
+(ns status-im.extensions.ui.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
@@ -8,7 +8,8 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
-            [status-im.ui.screens.extensions.styles :as styles]))
+            [status-im.extensions.ui.styles :as styles]
+            status-im.extensions.events))
 
 (def mailserver-icon
   [react/view (styles/mailserver-icon true)

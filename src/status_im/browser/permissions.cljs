@@ -2,7 +2,7 @@
   (:require [status-im.constants :as constants]
             [status-im.data-store.dapp-permissions :as dapp-permissions]
             [status-im.ethereum.core :as ethereum]
-            [status-im.extensions.registry :as extensions.registry]
+            [status-im.extensions.module :as extensions.module]
             [status-im.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.screens.navigation :as navigation]
@@ -28,7 +28,7 @@
   (cond
     (= permission constants/dapp-permission-install-extension)
     (fx/merge cofx
-              (extensions.registry/load (:uri params) true)
+              (extensions.module/load (:uri params) true)
               (send-response-to-bridge permission message-id true nil)
               (process-next-permission dapp-name))
 

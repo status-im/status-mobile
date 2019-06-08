@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.db
   (:require [cljs.spec.alpha :as spec]
             [status-im.constants :as constants]
-            [status-im.utils.platform :as platform]
             [status-im.utils.dimensions :as dimensions]
             [status-im.fleet.core :as fleet]
             status-im.transport.db

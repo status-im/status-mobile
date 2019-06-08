@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.extensions.add.styles
+(ns status-im.extensions.ui.add.styles
   (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.ui.components.styles :as styles]
             [status-im.ui.components.colors :as colors]))
