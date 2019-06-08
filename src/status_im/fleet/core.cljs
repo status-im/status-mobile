@@ -31,8 +31,8 @@
 (def default-les-fleets (slurp "resources/config/fleets-les.json"))
 
 (defn fleets [{:keys [custom-fleets]}]
-  (as-> [default-fleets
-         default-les-fleets] $
+  (as-> [(default-fleets)
+         (default-les-fleets)] $
     (mapv #(:fleets (types/json->clj %)) $)
     (conj $ custom-fleets)
     (reduce merge $)))

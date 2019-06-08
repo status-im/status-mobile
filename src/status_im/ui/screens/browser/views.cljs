@@ -24,8 +24,13 @@
    [status-im.utils.slurp :refer [slurp]]
    [status-im.utils.views :as views]))
 
+(def browser-config-edn
+  (slurp "./src/status_im/utils/browser_config.edn"))
+
 (def browser-config
-  (edn/read-string (slurp "./src/status_im/utils/browser_config.edn")))
+  (memoize
+   (fn []
+     (edn/read-string (browser-config-edn)))))
 
 (defn toolbar-content [url url-original {:keys [secure?]} url-editing?]
   (let [url-text (atom url)]
@@ -71,7 +76,7 @@
 (defn get-inject-js [url]
   (when url
     (let [domain-name (nth (re-find #"^\w+://(www\.)?([^/:]+)" url) 2)]
-      (get (:inject-js browser-config) domain-name))))
+      (get (:inject-js (browser-config)) domain-name))))
 
 (defn navigation [browser-id url webview can-go-back? can-go-forward?]
   [react/view styles/navbar
@@ -129,14 +134,14 @@
         :on-bridge-message                     #(re-frame/dispatch [:browser/bridge-message-received %])
         :on-load                               #(re-frame/dispatch [:browser/loading-started])
         :on-error                              #(re-frame/dispatch [:browser/error-occured])
-        :injected-on-start-loading-java-script (str (when-not opt-in? js-res/web3)
+        :injected-on-start-loading-java-script (str (when-not opt-in? (js-res/web3))
                                                     (if opt-in?
                                                       (js-res/web3-opt-in-init (str network-id))
                                                       (js-res/web3-init
                                                        (ethereum/normalized-address address)
                                                        (str network-id)))
                                                     (get-inject-js url))
-        :injected-java-script                  js-res/webview-js}])]
+        :injected-java-script                  (js-res/webview-js)}])]
    [navigation browser-id url-original webview can-go-back? can-go-forward?]
    [permissions.views/permissions-panel [(:dapp? browser) (:dapp browser)] show-permission]
    (when show-tooltip

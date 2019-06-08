@@ -165,3 +165,4 @@ conan.cmake
 # modules
 status-modules/translations
 status-modules/cljs
+status-modules/resources
