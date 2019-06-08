@@ -188,15 +188,6 @@
                     (re-frame/dispatch [:accounts.ui/dev-mode-switched true])
                     (re-frame/dispatch [:extensions.ui/install-extension-button-pressed url]))}}))
 
-(fx/defn initialize
-  [{{:account/keys [account] :as db} :db}]
-  (let [{:keys [extensions dev-mode?]} account
-        ext-vals (vals extensions)]
-    (when dev-mode?
-      {:db              (assoc db :extensions/store (into {} (map (fn [{:keys [id data]}] {id data}) ext-vals)))
-       :extensions/load {:extensions ext-vals
-                         :follow-up  :extensions/add-to-registry}})))
-
 (defn existing-hooks-for
   [type cofx extension-data]
   (let [added-hooks (reduce (fn [acc [_ {:keys [hooks]}]]

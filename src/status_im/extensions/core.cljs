@@ -2,14 +2,14 @@
   (:refer-clojure :exclude [list])
   (:require [clojure.string :as string]
             [pluto.core :as pluto]
-            [pluto.storages :as storages]
             [re-frame.core :as re-frame]
             [re-frame.registrar :as registrar]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.extensions.capacities.components :as components]
             [status-im.extensions.capacities.subs :as subs]
-            [status-im.extensions.capacities.events :as events]))
+            [status-im.extensions.capacities.events :as events]
+            [status-im.extensions.constants :as constants]))
 
 (def capacities
   {:components components/all
@@ -64,26 +64,13 @@
     (parse (pluto/read (:content value)) id)
     {:errors [{:type type :value value}]}))
 
-(def uri-prefix "https://get.status.im/extension/")
-(def link-prefix "status-im://extension/")
-
 (defn valid-uri? [s]
   (boolean
    (when s
      (let [s' (string/trim s)]
        (or
-        (re-matches (re-pattern (str "^" uri-prefix "\\w+@.+")) s')
-        (re-matches (re-pattern (str "^" link-prefix "\\w+@.+")) s'))))))
-
-(defn url->uri [s]
-  (when s
-    (-> s
-        (string/replace uri-prefix "")
-        (string/replace link-prefix ""))))
-
-(defn load-from [url f]
-  (when-let [uri (url->uri url)]
-    (storages/fetch uri f)))
+        (re-matches (re-pattern (str "^" constants/uri-prefix "\\w+@.+")) s')
+        (re-matches (re-pattern (str "^" constants/link-prefix "\\w+@.+")) s'))))))
 
 (fx/defn set-extension-url-from-qr
   [cofx url]

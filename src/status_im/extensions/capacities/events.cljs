@@ -5,7 +5,6 @@
             [status-im.chat.commands.sending :as commands-sending]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.ipfs.core :as ipfs]
-            [status-im.browser.core :as browser]
             [status-im.utils.fx :as fx]
             [status-im.accounts.update.core :as accounts.update]
             status-im.extensions.capacities.ethereum
@@ -307,11 +306,6 @@
    {::arithmetic m}))
 
 (handlers/register-handler-fx
- :extensions/open-url
- (fn [cofx [_ _ {:keys [url]}]]
-   (browser/open-url cofx url)))
-
-(handlers/register-handler-fx
  :extensions/profile-settings-close
  (fn [{:keys [db] :as cofx} [_ _ {:keys [on-close on-failure]}]]
    (let [view-id (:view-id db)]
@@ -408,7 +402,7 @@
                   :on-result :event}}
    'browser/open-url
    {:permissions [:read]
-    :data       :extensions/open-url
+    :data       :browser.ui/open-url
     :arguments   {:url :string}}
    'camera/picture
    {:permissions [:read]

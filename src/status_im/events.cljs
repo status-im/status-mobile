@@ -23,8 +23,6 @@
             [status-im.contact.core :as contact]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
             [status-im.ethereum.transactions.core :as ethereum.transactions]
-            [status-im.extensions.core :as extensions]
-            [status-im.extensions.registry :as extensions.registry]
             [status-im.fleet.core :as fleet]
             [status-im.group-chats.core :as group-chats]
             [status-im.hardwallet.core :as hardwallet]
@@ -537,48 +535,6 @@
  :bootnodes.ui/delete-confirmed
  (fn [cofx [_ bootnode-id]]
    (bootnodes/delete-bootnode cofx bootnode-id)))
-
-;; extensions module
-
-(handlers/register-handler-fx
- :extensions.callback/qr-code-scanned
- (fn [cofx [_ _ url]]
-   (extensions/set-extension-url-from-qr cofx url)))
-
-(handlers/register-handler-fx
- :extensions.ui/add-extension-pressed
- (fn [cofx [_ extension-key]]
-   (extensions/edit cofx extension-key)))
-
-(handlers/register-handler-fx
- :extensions.ui/uninstall-extension-pressed
- (fn [cofx [_ extension-key]]
-   (extensions.registry/uninstall cofx extension-key)))
-
-(handlers/register-handler-fx
- :extensions.ui/input-changed
- (fn [cofx [_ input-key value]]
-   (extensions/set-input cofx input-key value)))
-
-(handlers/register-handler-fx
- :extensions.ui/activation-checkbox-pressed
- (fn [cofx [_ extension-key active?]]
-   (extensions.registry/change-state cofx extension-key active?)))
-
-(handlers/register-handler-fx
- :extensions.ui/find-button-pressed
- (fn [cofx [_ url]]
-   (extensions.registry/load cofx url false)))
-
-(handlers/register-handler-fx
- :extensions.ui/install-extension-button-pressed
- (fn [cofx [_ url]]
-   (extensions.registry/install-from-message cofx url true)))
-
-(handlers/register-handler-fx
- :extensions.ui/install-button-pressed
- (fn [cofx [_ url data modal?]]
-   (extensions.registry/install cofx url data modal?)))
 
 ;; logging module
 
@@ -1514,19 +1470,9 @@
    (browser.permissions/process-next-permission cofx dapp-name)))
 
 (handlers/register-handler-fx
- :browser.ui/open-in-status-option-selected
- (fn [cofx [_ url]]
-   (browser/open-url cofx url)))
-
-(handlers/register-handler-fx
- :browser.ui/open-dapp-button-pressed
- (fn [cofx [_ dapp-url]]
-   (browser/open-url cofx dapp-url)))
-
-(handlers/register-handler-fx
- :browser.ui/dapp-url-submitted
- (fn [cofx [_ dapp-url]]
-   (browser/open-url cofx dapp-url)))
+ :browser.ui/open-url
+ (fn [cofx [_ url extension-params]]
+   (browser/open-url cofx (or (:url extension-params) url))))
 
 (handlers/register-handler-fx
  :browser.ui/open-modal-chat-button-pressed

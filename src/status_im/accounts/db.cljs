@@ -2,7 +2,7 @@
   (:require status-im.utils.db
             status-im.network.module
             status-im.ui.screens.bootnodes-settings.db
-            status-im.ui.screens.extensions.db
+            status-im.extensions.module
             [cljs.spec.alpha :as spec]
             [status-im.constants :as const]))
 

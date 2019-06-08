@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.extensions.db
+(ns status-im.extensions.ui.db
   (:require
    [clojure.string :as string]
    [cljs.spec.alpha :as spec]))

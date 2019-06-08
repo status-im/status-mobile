@@ -1,8 +1,5 @@
 (ns status-im.ui.screens.routing.screens
-  (:require [status-im.extensions.capacities.camera.views
-             :as
-             extensions.camera.views]
-            [status-im.extensions.capacities.views :as extensions.views]
+  (:require [status-im.extensions.module :as extensions.module]
             [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.screens.accounts.create.views :as accounts.create]
             [status-im.ui.screens.accounts.login.views :as login]
@@ -21,8 +18,6 @@
             [status-im.ui.screens.contacts-list.views :as contacts-list]
             [status-im.ui.screens.currency-settings.views :as currency-settings]
             [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
-            [status-im.ui.screens.extensions.add.views :as extensions.add]
-            [status-im.ui.screens.extensions.views :as screens.extensions]
             [status-im.ui.screens.fleet-settings.views :as fleet-settings]
             [status-im.ui.screens.group.views :as group]
             [status-im.ui.screens.hardwallet.authentication-method.views
@@ -99,8 +94,8 @@
    :new-chat                         new-chat/new-chat
    :qr-scanner                       qr-scanner/qr-scanner
    :profile-qr-viewer                [:modal profile.user/qr-viewer]
-   :take-picture                     extensions.camera.views/take-picture
-   :extension-screen-holder          extensions.views/screen-holder
+   :take-picture                     extensions.module/take-picture-view
+   :extension-screen-holder          extensions.module/screen-holder-view
    :new-group                        group/new-group
    :add-participants-toggle-list     group/add-participants-toggle-list
    :contact-toggle-list              group/contact-toggle-list
@@ -113,7 +108,7 @@
    :stickers-pack-modal              [:modal stickers/pack-modal]
    :tribute-learn-more               [:modal tr-to-talk/learn-more]
    :chat-modal                       [:modal chat/chat-modal]
-   :show-extension-modal             [:modal extensions.add/show-extension-modal]
+   :show-extension-modal             [:modal extensions.module/show-extension-modal-view]
    :wallet-send-transaction-modal    [:modal send/send-transaction-modal]
    :wallet-transaction-sent-modal    [:modal transaction-sent/transaction-sent-modal]
    :wallet-transaction-fee           [:modal wallet.transaction-fee/transaction-fee]
@@ -136,7 +131,7 @@
    :transactions-history             wallet-transactions/transactions
    :wallet-transaction-details       wallet-transactions/transaction-details
    :wallet-settings-hook             wallet-settings/settings-hook
-   :selection-modal-screen           [:modal screens.extensions/selection-modal-screen]
+   :selection-modal-screen           [:modal extensions.module/selection-modal-screen-view]
    :wallet-settings-assets           wallet-settings/manage-assets
    :wallet-add-custom-token          custom-tokens/add-custom-token
    :wallet-custom-token-details      custom-tokens/custom-token-details
@@ -155,9 +150,9 @@
    :help-center                      help-center/help-center
    :dapps-permissions                dapps-permissions/dapps-permissions
    :manage-dapps-permissions         dapps-permissions/manage
-   :extensions-settings              screens.extensions/extensions-settings
-   :edit-extension                   extensions.add/edit-extension
-   :show-extension                   extensions.add/show-extension
+   :extensions-settings              extensions.module/extensions-settings-view
+   :edit-extension                   extensions.module/edit-extension-view
+   :show-extension                   extensions.module/show-extension-view
    :network-settings                 network/network-settings-view
    :network-details                  network/network-details-view
    :edit-network                     network/edit-network-view

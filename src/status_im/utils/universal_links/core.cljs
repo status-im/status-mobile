@@ -6,7 +6,7 @@
             [status-im.chat.models :as chat]
             [status-im.constants :as constants]
             [status-im.ethereum.eip681 :as eip681]
-            [status-im.extensions.registry :as extensions.registry]
+            [status-im.extensions.module :as extensions.module]
             [status-im.pairing.core :as pairing]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
@@ -81,7 +81,7 @@
 
 (fx/defn handle-extension [cofx url]
   (log/info "universal-links: handling url profile" url)
-  (extensions.registry/load cofx url false))
+  (extensions.module/load cofx url false))
 
 (fx/defn handle-eip681 [cofx url]
   (let [wallet-set-up-passed? (get-in cofx [:db :account/account :wallet-set-up-passed?])]

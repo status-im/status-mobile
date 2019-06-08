@@ -3,7 +3,6 @@
   (:require [clojure.string :as string]
             [status-im.ui.screens.accounts.styles :as ast]
             [status-im.ui.screens.profile.components.views :as profile.components]
-            [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
@@ -15,11 +14,8 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.screens.chat.photos :as photos]
             [re-frame.core :as re-frame]
-            [cljs.spec.alpha :as spec]
             [status-im.utils.platform :as platform]
-            [status-im.accounts.db :as db]
-            [status-im.utils.security :as security]
-            [status-im.utils.keychain.core :as keychain]))
+            [status-im.utils.security :as security]))
 
 (defn login-toolbar [can-navigate-back?]
   [toolbar/toolbar

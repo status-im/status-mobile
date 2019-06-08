@@ -58,7 +58,7 @@
                                  :text-decoration-line :underline}
                       :on-press (case open-in
                                   :device #(.openURL (react/linking) uri)
-                                  :status #(re-frame/dispatch [:browser.ui/open-in-status-option-selected uri])
+                                  :status #(re-frame/dispatch [:browser.ui/open-url uri])
                                   #(re-frame/dispatch [:browser.ui/message-link-pressed uri]))}
                      (when style {:style style}))
    (or text uri)])

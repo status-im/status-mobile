@@ -131,7 +131,27 @@
                                                                                                    "status_im.network.events"
                                                                                                    "status_im.network.subs"
                                                                                                    "status_im.network.core"}
-                                                                                        :output-to "status-modules/cljs/network-raw.js"}}}
+                                                                                        :output-to "status-modules/cljs/network-raw.js"}
+                                                                              :extensions {:entries #{"status_im.extensions.ui.db"
+                                                                                                      "status_im.extensions.ui.add.events"
+                                                                                                      "status_im.extensions.ui.add.views"
+                                                                                                      "status_im.extensions.ui.add.styles"
+                                                                                                      "status_im.extensions.ui.views"
+                                                                                                      "status_im.extensions.ui.styles"
+                                                                                                      "status_im.extensions.events"
+                                                                                                      "status_im.extensions.registry"
+                                                                                                      "status_im.extensions.core"
+                                                                                                      "status_im.extensions.module"
+                                                                                                      "status_im.extensions.capacities.events"
+                                                                                                      "status_im.extensions.capacities.subs"
+                                                                                                      "status_im.extensions.capacities.camera.events"
+                                                                                                      "status_im.extensions.capacities.camera.views"
+                                                                                                      "status_im.extensions.capacities.components"
+                                                                                                      "status_im.extensions.capacities.views"
+                                                                                                      "status_im.extensions.capacities.ethereum"
+                                                                                                      "status_im.extensions.capacities.map"
+                                                                                                      "status_im.extensions.capacities.network"}
+                                                                                           :output-to "status-modules/cljs/extensions-raw.js"}}}
                                       :warning-handlers [status-im.utils.build/warning-handler]}
                                      :android
                                      {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod" "prod"]
@@ -160,7 +180,27 @@
                                                                                                    "status_im.network.events"
                                                                                                    "status_im.network.subs"
                                                                                                    "status_im.network.core"}
-                                                                                        :output-to "status-modules/cljs/network-raw.js"}}}
+                                                                                        :output-to "status-modules/cljs/network-raw.js"}
+                                                                              :extensions {:entries #{"status_im.extensions.ui.db"
+                                                                                                      "status_im.extensions.ui.add.events"
+                                                                                                      "status_im.extensions.ui.add.views"
+                                                                                                      "status_im.extensions.ui.add.styles"
+                                                                                                      "status_im.extensions.ui.views"
+                                                                                                      "status_im.extensions.ui.styles"
+                                                                                                      "status_im.extensions.events"
+                                                                                                      "status_im.extensions.registry"
+                                                                                                      "status_im.extensions.core"
+                                                                                                      "status_im.extensions.module"
+                                                                                                      "status_im.extensions.capacities.events"
+                                                                                                      "status_im.extensions.capacities.subs"
+                                                                                                      "status_im.extensions.capacities.camera.events"
+                                                                                                      "status_im.extensions.capacities.camera.views"
+                                                                                                      "status_im.extensions.capacities.components"
+                                                                                                      "status_im.extensions.capacities.views"
+                                                                                                      "status_im.extensions.capacities.ethereum"
+                                                                                                      "status_im.extensions.capacities.map"
+                                                                                                      "status_im.extensions.capacities.network"}
+                                                                                           :output-to "status-modules/cljs/extensions-raw.js"}}}
                                       :warning-handlers [status-im.utils.build/warning-handler]}
                                      :desktop
                                      {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/desktop" "src" "env/prod" "prod"]
@@ -179,5 +219,34 @@
                                                          :language-out       :es-2015
                                                          :modules            {:cljs-base {:output-to "index.desktop.js"}
                                                                               :i18n      {:entries   #{"status_im.goog.i18n"}
-                                                                                          :output-to "status-modules/cljs/i18n-raw.js"}}}
+                                                                                          :output-to "status-modules/cljs/i18n-raw.js"}
+                                                                              :network {:entries #{"status_im.network.ui.network_details.views"
+                                                                                                   "status_im.network.ui.edit_network.views"
+                                                                                                   "status_im.network.ui.edit_network.styles"
+                                                                                                   "status_im.network.ui.views"
+                                                                                                   "status_im.network.ui.styles"
+                                                                                                   "status_im.network.events"
+                                                                                                   "status_im.network.subs"
+                                                                                                   "status_im.network.core"}
+                                                                                        :output-to "status-modules/cljs/network-raw.js"}
+                                                                              :extensions {:entries #{"status_im.extensions.ui.db"
+                                                                                                      "status_im.extensions.ui.add.events"
+                                                                                                      "status_im.extensions.ui.add.views"
+                                                                                                      "status_im.extensions.ui.add.styles"
+                                                                                                      "status_im.extensions.ui.views"
+                                                                                                      "status_im.extensions.ui.styles"
+                                                                                                      "status_im.extensions.events"
+                                                                                                      "status_im.extensions.registry"
+                                                                                                      "status_im.extensions.core"
+                                                                                                      "status_im.extensions.module"
+                                                                                                      "status_im.extensions.capacities.events"
+                                                                                                      "status_im.extensions.capacities.subs"
+                                                                                                      "status_im.extensions.capacities.camera.events"
+                                                                                                      "status_im.extensions.capacities.camera.views"
+                                                                                                      "status_im.extensions.capacities.components"
+                                                                                                      "status_im.extensions.capacities.views"
+                                                                                                      "status_im.extensions.capacities.ethereum"
+                                                                                                      "status_im.extensions.capacities.map"
+                                                                                                      "status_im.extensions.capacities.network"}
+                                                                                           :output-to "status-modules/cljs/extensions-raw.js"}}}
                                       :warning-handlers [status-im.utils.build/warning-handler]}}}}})

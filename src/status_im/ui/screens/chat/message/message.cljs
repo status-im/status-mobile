@@ -4,7 +4,7 @@
             [status-im.chat.commands.protocol :as protocol]
             [status-im.chat.commands.receiving :as commands-receiving]
             [status-im.constants :as constants]
-            [status-im.extensions.core :as extensions]
+            [status-im.extensions.module :as extensions.module]
             [status-im.i18n :as i18n]
             [status-im.ui.components.action-sheet :as action-sheet]
             [status-im.ui.components.colors :as colors]
@@ -35,7 +35,7 @@
     (let [{:keys [type] :as command} (commands-receiving/lookup-command-by-ref command-message id->command)
           extension-id (get-in command-message [:content :params :extension-id])]
       (if (and platform/mobile? extension-id
-               (extensions/valid-uri? extension-id)
+               (extensions.module/valid-uri? extension-id)
                (or (not type) (and type (satisfies? protocol/Extension type)
                                    (not= extension-id (protocol/extension-id type)))))
         ;; Show install message only for mobile and if message contains extension id and there is no extension installed
