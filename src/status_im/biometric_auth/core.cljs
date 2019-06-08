@@ -71,9 +71,9 @@
 (defn get-supported [callback]
   (cond platform/ios? (do-get-supported callback)
         platform/android? (if android-device-blacklisted?
-                            (callback false)
+                            (callback nil)
                             (do-get-supported callback))
-        :else (callback false)))
+        :else (callback nil)))
 
 (defn authenticate
   ([cb]
