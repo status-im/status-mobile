@@ -55,17 +55,18 @@
 (defview map-webview [{:keys [interactive fly style marker on-change]}]
   (letsubs [webview (atom nil)]
     [map-component
-     {:style                                 style
-      :origin-whitelist                      ["*"]
-      :source                                {:html mapview-html :base-url (cond
-                                                                             platform/ios? "./mapview/"
-                                                                             platform/android? "file:///android_asset/"
-                                                                             :else nil)}
-      :java-script-enabled                   true
-      :bounces                               false
-      :over-scroll-mode                      "never"
-      :local-storage-enabled                 true
-      :render-error                          web-view-error
+     {:style                             style
+      :origin-whitelist                  ["*"]
+      :source                            {:html     (mapview-html)
+                                          :base-url (cond
+                                                      platform/ios? "./mapview/"
+                                                      platform/android? "file:///android_asset/"
+                                                      :else nil)}
+      :java-script-enabled               true
+      :bounces                           false
+      :over-scroll-mode                  "never"
+      :local-storage-enabled             true
+      :render-error                      web-view-error
 
       ;; load only local resources, for non-local resources open external browser
       :on-should-start-load-with-request     #(let [url (.-url %)]

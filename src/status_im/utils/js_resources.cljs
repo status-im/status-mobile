@@ -1,5 +1,5 @@
 (ns status-im.utils.js-resources
-  (:require-macros [status-im.utils.slurp :refer [slurp slurp-bot]])
+  (:require-macros [status-im.utils.slurp :refer [slurp]])
   (:require [status-im.utils.types :refer [json->clj]]
             [clojure.string :as s]))
 
@@ -9,17 +9,27 @@
   (and (string? url) (s/starts-with? url local-protocol)))
 
 (def webview-js (slurp "resources/js/webview.js"))
-(def web3 (str "; if (typeof Web3 == 'undefined') {"
-               (slurp "node_modules/web3/dist/web3.min.js")
-               "}"))
+(def web3-file (slurp "node_modules/web3/dist/web3.min.js"))
+(def web3
+  (let [w3 (atom nil)]
+    (fn []
+      (or @w3
+          (reset!
+           w3
+           (str "; if (typeof Web3 == 'undefined') {"
+                (web3-file)
+                "}"))))))
+
+(def web3-init-file (slurp "resources/js/web3_init.js"))
 (defn web3-init [current-account-address network-id]
   (str "var currentAccountAddress = \"" current-account-address "\";"
        "var networkId = \"" network-id "\";"
-       (slurp "resources/js/web3_init.js")))
+       (web3-init-file)))
 
+(def web3-opt-in-init-file (slurp "resources/js/web3_opt_in.js"))
 (defn web3-opt-in-init [network-id]
   (str "var networkId = \"" network-id "\";"
-       (slurp "resources/js/web3_opt_in.js")))
+       (web3-opt-in-init-file)))
 
 (defn local-storage-data [data]
   (str "var localStorageData = " (or data "{}") ";"))

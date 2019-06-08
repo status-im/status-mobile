@@ -55,7 +55,14 @@
      [list/item-icon {:icon      :main-icons/next
                       :icon-opts {:color :gray}}]]]])
 
-(def default-public-chats (types/json->clj (slurp "resources/default_public_chats.json")))
+(def default-public-chats-json
+  (slurp "resources/default_public_chats.json"))
+
+(def default-public-chats
+  (let [chats (atom nil)]
+    (fn []
+      (or @chats
+          (reset! chats (types/json->clj (default-public-chats-json)))))))
 
 (views/defview new-public-chat []
   (views/letsubs [topic [:public-group-topic]
@@ -71,7 +78,7 @@
      [react/view styles/chat-name-container
       [react/text {:style styles/section-title}
        (i18n/label :t/selected)]]
-     [list/flat-list {:data                         default-public-chats
+     [list/flat-list {:data                         (default-public-chats)
                       :key-fn                       identity
                       :render-fn                    render-topic
                       :keyboard-should-persist-taps :always

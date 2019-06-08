@@ -1,7 +1,9 @@
 (ns status-im.network.module
   (:require-macros [status-im.modules :as modules])
   (:require status-im.network.net-info
-            status-im.network.ui.db))
+            status-im.network.ui.db
+            [re-frame.core :as re-frame]
+            [status-im.ethereum.core :as ethereum]))
 
 (modules/defmodule network
   {:save                        'status-im.network.core/save
@@ -40,3 +42,11 @@
 
 (defn network-details-view []
   [(get-symbol :network-details-view)])
+
+;; Initialization
+
+(re-frame/reg-sub
+ :get-network-id
+ :<- [:network]
+ (fn [network]
+   (ethereum/network->chain-id network)))

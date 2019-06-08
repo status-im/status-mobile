@@ -2,12 +2,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]))
 
-(re-frame/reg-sub
- :get-network-id
- :<- [:network]
- (fn [network]
-   (ethereum/network->chain-id network)))
-
 (defn- filter-networks [network-type]
   (fn [network]
     (let [chain-id (ethereum/network->chain-id network)
