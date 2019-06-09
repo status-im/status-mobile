@@ -16,6 +16,7 @@
                  [status-im/re-frame "0.10.5"]
                  [com.andrewmcveigh/cljs-time "0.5.2"]
                  [com.taoensso/timbre "4.10.0"]
+                 [com.taoensso/encore "2.94.0"]
                  [hickory "0.7.1"]
                  [com.cognitect/transit-cljs "0.8.248"]
                  [status-im/pluto "iteration-4-9"]
