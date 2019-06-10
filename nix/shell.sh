@@ -32,11 +32,17 @@ if command -v "nix" >/dev/null 2>&1; then
     exec nix-shell --show-trace --argstr target-os ${TARGET_OS}
   else
     is_pure=''
-    if [ "${TARGET_OS}" != 'all' ] && [ "${TARGET_OS}" != 'ios' ] && [ "${TARGET_OS}" != 'windows' ]; then
+    if [[ "${TARGET_OS}" != 'all' ]] && [[ "${TARGET_OS}" != 'ios' ]] && [[ "${TARGET_OS}" != 'windows' ]]; then
       is_pure='--pure'
       pure_desc='pure '
     fi
+    # This variable allows specifying which env vars to keep for Nix pure shell
+    # The separator is a semicolon
+    keep_opts=''
+    if [[ -n "${NIX_KEEP}" ]]; then
+      keep_opts="--keep ${NIX_KEEP//;/ --keep }"
+    fi
     echo -e "${GREEN}Configuring ${pure_desc}Nix shell for target '${TARGET_OS}'...${NC}"
-    exec nix-shell ${is_pure} --show-trace --argstr target-os ${TARGET_OS} --run "$@"
+    exec nix-shell ${is_pure} ${keep_opts} --show-trace --argstr target-os ${TARGET_OS} --run "$@"
   fi
 fi
