@@ -51,10 +51,7 @@
       (fn []
         (.stop (react/http-bridge))
         (.removeEventListener (react/app-state) "change" app-state-change-handler)
-        (.removeEventListener rn-dependencies/react-native-languages "change" on-languages-change)
-        (.removeEventListener (rn-dependencies/react-native-shake)
-                              "ShakeEvent"
-                              on-shake))
+        (.removeEventListener rn-dependencies/react-native-languages "change" on-languages-change))
       :display-name "root"
       :reagent-render views/main})))
 
