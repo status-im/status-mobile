@@ -14,7 +14,7 @@
   [react/view (if platform/desktop?
                 {:style (styles/log-level-icon-container current?)}
                 (styles/log-level-icon-container current?))
-   [vector-icons/icon :main-icons/log-level
+   [vector-icons/icon :main-icons/mailserver
     (if platform/desktop? {:style (styles/log-level-icon current?)}
         (styles/log-level-icon current?))]])
 

@@ -20,7 +20,7 @@
     [action-button/action-button
      {:label               (i18n/label :t/start-new-chat)
       :accessibility-label :start-1-1-chat-button
-      :icon                :main-icons/private-chat
+      :icon                :main-icons/one-on-one-chat
       :icon-opts           {:color colors/blue}
       :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-chat])}]
     [action-button/action-button

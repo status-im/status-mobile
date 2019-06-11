@@ -58,9 +58,8 @@
              (i18n/label :t/mainnet-text))]]]))
 
 (defn logo
-  [{:keys [size icon-size]}]
-  [react/view {:style (styles/logo-container size)}
-   [vector-icons/icon :icons/logo (styles/logo icon-size)]])
+  [{:keys [size]}]
+  [vector-icons/icon :icons/logo (styles/logo size)])
 
 (defn bottom-button [{:keys [accessibility-label
                              label

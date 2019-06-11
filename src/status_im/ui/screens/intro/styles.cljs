@@ -12,8 +12,7 @@
    :justify-content :center})
 
 (def intro-logo
-  {:size      111
-   :icon-size 46})
+  {:size 111})
 
 (defstyle intro-text
   {:text-align  :center

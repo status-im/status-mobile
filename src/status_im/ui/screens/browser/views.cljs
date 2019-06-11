@@ -37,8 +37,8 @@
     [react/view styles/toolbar-content
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/lock-pressed secure?])}
       (if secure?
-        [icons/icon :tiny-icons/tiny-lock {:color colors/green}]
-        [icons/icon :tiny-icons/tiny-lock-broken])]
+        [icons/tiny-icon :tiny-icons/tiny-lock {:color colors/green}]
+        [icons/tiny-icon :tiny-icons/tiny-lock-broken])]
      (if url-editing?
        [react/text-input {:on-change-text    #(reset! url-text %)
                           :on-blur           #(re-frame/dispatch [:browser.ui/url-input-blured])

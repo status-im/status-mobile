@@ -99,9 +99,9 @@
    :justify-content  :center})
 
 (defn logo [icon-size]
-  {:color  :white
-   :width  icon-size
-   :height icon-size})
+  {:width  icon-size
+   :height icon-size
+   :container-style {}})
 
 (def bottom-button
   {:flex-direction :row

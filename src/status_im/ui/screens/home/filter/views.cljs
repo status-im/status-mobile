@@ -133,7 +133,7 @@
           :hide-chevron? true
           :action-fn     #()
           :icon          (case title
-                           "messages" :main-icons/private-chat
+                           "messages" :main-icons/one-on-one-chat
                            "browser" :main-icons/browser
                            "chats" :main-icons/message)
           :icon-color    colors/gray}]))

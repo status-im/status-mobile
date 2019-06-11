@@ -73,10 +73,10 @@
     [react/view styles/name-view
      (when public-group?
        [react/view styles/public-group-icon-container
-        [vector-icons/icon :tiny-icons/tiny-public {:color colors/gray}]])
+        [vector-icons/tiny-icon :tiny-icons/tiny-public {:color colors/gray}]])
      (when private-group?
        [react/view styles/private-group-icon-container
-        [vector-icons/icon :tiny-icons/tiny-group {:color colors/gray}]])
+        [vector-icons/tiny-icon :tiny-icons/tiny-group {:color colors/gray}]])
      [react/view {:flex-shrink 1
                   :align-items :center
                   :justify-content :center}

@@ -18,7 +18,7 @@
           (when on-value-change
             {:on-press #(on-value-change (not checked?))}))
    (if checked?
-     [icons/icon
+     [icons/tiny-icon
       :tiny-icons/tiny-check {:container-style (styles/icon-check-container true)
                               :color colors/white}]
      [react/view {:style  (styles/icon-check-container false)}])])

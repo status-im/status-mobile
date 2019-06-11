@@ -202,8 +202,9 @@
     [react/view {:style {:flex-direction  :row
                          :justify-content :flex-start
                          :align-items     :flex-start}}
-     [react/view {:style (styles/icon-view colors/blue)}
-      [icons/icon :icons/logo {:color colors/white :width 20 :height 20}]]
+     [icons/icon :icons/logo {:container-style (styles/icon-view colors/blue)
+                              :width           40
+                              :height          40}]
      [react/view {:style {:margin-left 16 :justify-content :flex-start}}
       [react/view {:style {:justify-content :center
                            :align-items :center}}
@@ -246,7 +247,7 @@
     [react/view {:style {:background-color colors/white
                          :justify-content :center
                          :align-items :center}}
-     [icons/icon :tiny-icons/tribute-to-talk {:color colors/blue}]]
+     [icons/tiny-icon :tiny-icons/tribute-to-talk {:color colors/blue}]]
     [react/text {:style {:color       colors/gray
                          :font-size   13
                          :margin-left 4}}
@@ -271,7 +272,7 @@
           (i18n/label :t/pay-to-chat)]]
         [react/view {:style styles/pay-to-chat-container}
          [react/view {:style (styles/payment-status-icon (= tribute-status :pending))}
-          [icons/icon (if (= tribute-status :pending) :tiny-icons/tiny-pending :tiny-icons/tiny-check)
+          [icons/tiny-icon (if (= tribute-status :pending) :tiny-icons/tiny-pending :tiny-icons/tiny-check)
            {:color (if (= tribute-status :pending) colors/black colors/white)}]]
          [react/text {:style styles/payment-status-text} tribute-label]])])])
 

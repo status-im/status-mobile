@@ -183,9 +183,9 @@
     [react/touchable-highlight {:on-press #(when exists?
                                              (re-frame/dispatch [:wallet.ui/show-transaction-details tx-hash]))}
      [react/view transactions-styles/command-send-status-container
-      [vector-icons/icon (if confirmed?
-                           :tiny-icons/tiny-check
-                           :tiny-icons/tiny-pending)
+      [vector-icons/tiny-icon (if confirmed?
+                                :tiny-icons/tiny-check
+                                :tiny-icons/tiny-pending)
        {:color           (if outgoing
                            colors/blue-light
                            colors/blue)

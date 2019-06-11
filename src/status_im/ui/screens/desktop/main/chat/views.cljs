@@ -86,10 +86,10 @@
   (views/letsubs [username [:contacts/contact-name-by-identity from]]
     [react/view {:style styles/quoted-message-container}
      [react/view {:style styles/quoted-message-author-container}
-      [vector-icons/icon :tiny-icons/tiny-reply {:style           (styles/reply-icon outgoing)
-                                                 :width           16
-                                                 :height          16
-                                                 :container-style (when outgoing {:opacity 0.4})}]
+      [vector-icons/tiny-icon :tiny-icons/tiny-reply {:style           (styles/reply-icon outgoing)
+                                                      :width           16
+                                                      :height          16
+                                                      :container-style (when outgoing {:opacity 0.4})}]
       (chat-utils/format-reply-author from username current-public-key (partial message.style/quoted-message-author outgoing))]
      [react/text {:style           (message.style/quoted-message-text outgoing)
                   :number-of-lines 5}

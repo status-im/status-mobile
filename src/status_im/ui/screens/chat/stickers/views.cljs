@@ -28,7 +28,9 @@
 
 (defn- no-stickers-yet-panel []
   [react/view {:style {:flex 1 :align-items :center :justify-content :center}}
-   [vector-icons/icon :stickers-icons/stickers-big {:color colors/gray}]
+   [vector-icons/icon :stickers-icons/stickers-big {:color colors/gray
+                                                    :width 64
+                                                    :height 64}]
    [react/text {:style {:margin-top 8 :font-size 17}} (i18n/label :t/you-dont-have-stickers)]
    [react/touchable-opacity {:on-press #(do
                                           (re-frame/dispatch [:stickers/load-packs])
@@ -146,7 +148,9 @@
        [react/view
         [react/view {:style {:flex-direction :row}}
          [pack-icon {:id :recent :background-color colors/white}
-          [vector-icons/icon :stickers-icons/recent {:color colors/gray}]]
+          [vector-icons/icon :stickers-icons/recent {:color colors/gray
+                                                     :width 44
+                                                     :height 44}]]
          (for [{:keys [id thumbnail]} installed-packs]
            ^{:key id}
            [pack-icon {:id id

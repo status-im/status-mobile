@@ -47,9 +47,9 @@
        [react/view {:style styles/chat-name-last-msg-box}
         [react/view {:style styles/chat-name-box}
          (when (and group-chat (not public?))
-           [icons/icon :tiny-icons/tiny-group])
+           [icons/tiny-icon :tiny-icons/tiny-group])
          (when public?
-           [icons/icon :tiny-icons/tiny-public])
+           [icons/tiny-icon :tiny-icons/tiny-public])
          [react/text {:ellipsize-mode  :tail
                       :number-of-lines 1
                       :style           (styles/chat-name current?)}
