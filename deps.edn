@@ -1,6 +1,6 @@
 {:paths ["components/src" "src" "react-native/src/cljsjs" "resources"]
- :deps  {org.clojure/clojure         {:mvn/version "1.9.0"} ;; Keep in sync with version from Nix
-         org.clojure/clojurescript   {:mvn/version "1.10.238"}
+ :deps  {org.clojure/clojure         {:mvn/version "1.10.0"} ;; Keep in sync with version from Nix
+         org.clojure/clojurescript   {:mvn/version "1.10.520"}
          org.clojure/core.async      {:mvn/version "0.4.474"}
          reagent                     {:mvn/version "0.7.0"
                                       :exclusions  [cljsjs/react cljsjs/react-dom cljsjs/react-dom-server cljsjs/create-react-class]}

@@ -15,4 +15,8 @@ if [ ! -z "$METRO_PID" ]; then
   [[ $term == 'y' ]] && kill $METRO_PID
 fi
 
-react-native start --config packager/config.js
+if [ $TARGET_OS == 'ios' ] || [ $TARGET_OS == 'android' ]; then
+  react-native start --config packager/config.js
+else
+  react-native start
+fi
