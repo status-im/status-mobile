@@ -20,6 +20,7 @@ pipeline {
         println "Current JOB: ${env.JOB_NAME}"
         /* load common lib */
         cmn = load('ci/common.groovy')
+        gh  = load('ci/github.groovy')
         /* just for a shorter access */
         btype = cmn.utils.getBuildType() 
       } }
@@ -95,7 +96,7 @@ pipeline {
       steps { script {
         switch (btype) {
           case 'nightly': build('misc/status.im'); break
-          case 'release': cmn.gh.publishReleaseMobile(); break
+          case 'release': gh.publishReleaseMobile(); break
         }
       } }
     }
