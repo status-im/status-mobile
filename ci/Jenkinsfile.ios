@@ -99,6 +99,7 @@ pipeline {
     }
     stage('Cleanup') {
       steps {
+        sh 'make watchman-clean'
         sh 'make clean'
       }
     }

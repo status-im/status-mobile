@@ -49,6 +49,9 @@ clean-nix: SHELL := /bin/sh
 clean-nix: ##@prepare Remove complete nix setup
 	sudo rm -rf /nix ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
 
+watchman-clean:
+	watchman watch-del $(PWD)
+
 add-gcroots: ##@prepare Add Nix GC roots to avoid status-react expressions being garbage collected
 	scripts/add-gcroots.sh
 
