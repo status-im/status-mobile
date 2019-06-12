@@ -41,7 +41,7 @@
     (if modal?
       {:dispatch [:navigate-to-clean :wallet-send-transaction-modal]}
       (if-not (chat-send? transaction)
-        (navigation/navigate-to-clean cofx :wallet nil)
+        (navigation/navigate-to-cofx cofx :wallet nil)
         (navigation/navigate-to-cofx cofx :wallet-send-transaction-modal nil)))))
 
 (fx/defn confirm-wallet-set-up

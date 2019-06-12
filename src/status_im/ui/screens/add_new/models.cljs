@@ -17,6 +17,4 @@
 
 (fx/defn handle-qr-code
   [cofx data]
-  (fx/merge cofx
-            (navigation/navigate-to-clean :home {})
-            (process-qr-code data)))
+  (process-qr-code cofx data))

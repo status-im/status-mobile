@@ -13,7 +13,7 @@
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db (dissoc db :current-chat-id)}
-            (navigation/navigate-to-clean :home {})))
+            (navigation/navigate-to-cofx :home {})))
 
 (fx/defn clean-up-chat
   [{:keys [db] :as cofx} chat-id removed-chat-messages]

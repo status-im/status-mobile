@@ -17,7 +17,8 @@
    [status-im.ui.screens.routing.modals :as modals]
    [status-im.ui.components.bottom-bar.core :as bottom-bar]
    [status-im.ui.components.status-bar.view :as status-bar]
-   [status-im.ui.components.bottom-bar.styles :as tabs.styles]))
+   [status-im.ui.components.bottom-bar.styles :as tabs.styles]
+   [status-im.react-native.js-dependencies :as js-dependencies]))
 
 (defonce view-id (reagent.core/atom nil))
 
@@ -116,6 +117,9 @@
    (cond->
     (merge {:headerMode        "none"
             :cardStyle         {:backgroundColor (when (or platform/ios? platform/desktop?) :white)}
+            #_:transitionConfig
+            #_(fn []
+                #js {:transitionSpec #js{:duration 10}})
             :onTransitionStart (fn [n]
                                  (let [idx    (.. n
                                                   -navigation
@@ -183,30 +187,34 @@
   [nav]
   [bottom-bar/bottom-bar nav view-id])
 
+(defn app-container [navigator]
+  (.createAppContainer js-dependencies/react-navigation navigator))
+
 (defn get-main-component [view-id]
   (log/debug :component view-id)
-  (switch-navigator
-   (into {}
-         [(build-screen (intro-login-stack/login-stack view-id))
-          (build-screen (intro-login-stack/intro-stack))
-          [:tabs-and-modals
-           {:screen
-            (stack-navigator
-             (merge
-              {:tabs
-               {:screen (tab-navigator
-                         (->> [(build-screen chat-stack/chat-stack)
-                               (build-screen browser-stack/browser-stack)
-                               (build-screen wallet-stack/wallet-stack)
-                               (build-screen profile-stack/profile-stack)]
-                              (into {}))
-                         {:initialRouteName :chat-stack
-                          :tabBarComponent  (reagent.core/reactify-component
-                                             wrap-bottom-bar)})}}
-              (stack-screens modals/modal-screens))
-             {:mode              :modal
-              :initialRouteName  :tabs
-              :onTransitionStart (fn [])})}]])
-   {:initialRouteName (if (= view-id :intro)
-                        :intro-stack
-                        :login-stack)}))
+  (app-container
+   (switch-navigator
+    (into {}
+          [(build-screen (intro-login-stack/login-stack view-id))
+           (build-screen (intro-login-stack/intro-stack))
+           [:tabs-and-modals
+            {:screen
+             (stack-navigator
+              (merge
+               {:tabs
+                {:screen (tab-navigator
+                          (->> [(build-screen chat-stack/chat-stack)
+                                (build-screen browser-stack/browser-stack)
+                                (build-screen wallet-stack/wallet-stack)
+                                (build-screen profile-stack/profile-stack)]
+                               (into {}))
+                          {:initialRouteName :chat-stack
+                           :tabBarComponent  (reagent.core/reactify-component
+                                              wrap-bottom-bar)})}}
+               (stack-screens modals/modal-screens))
+              {:mode              :modal
+               :initialRouteName  :tabs
+               :onTransitionStart (fn [])})}]])
+    {:initialRouteName (if (= view-id :intro)
+                         :intro-stack
+                         :login-stack)})))

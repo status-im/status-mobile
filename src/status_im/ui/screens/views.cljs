@@ -53,6 +53,19 @@
 
       [bottom-sheet/bottom-sheet opts])))
 
+(defonce state (atom nil))
+
+(defn persist-state [state-obj]
+  (js/Promise.
+   (fn [resolve reject]
+     (reset! state state-obj)
+     (resolve true))))
+
+(defn load-state []
+  (js/Promise.
+   (fn [resolve reject]
+     (resolve @state))))
+
 (defn main []
   (let [view-id        (re-frame/subscribe [:view-id])
         main-component (atom nil)]
@@ -94,14 +107,15 @@
         (when (and @view-id main-component)
           [react/view {:flex 1}
            [:> @main-component
-            {:ref            (fn [r]
-                               (navigation/set-navigator-ref r)
-                               (when (and
-                                      platform/android?
-                                      (not js/goog.DEBUG)
-                                      (not (contains? #{:intro :login :progress} @view-id)))
-                                 (navigation/navigate-to @view-id nil)))
+            {:ref                    (fn [r]
+                                       (navigation/set-navigator-ref r)
+                                       (when (and
+                                              platform/android?
+                                              (not js/goog.DEBUG)
+                                              (not (contains? #{:intro :login :progress} @view-id)))
+                                         (navigation/navigate-to @view-id nil)))
              ;; see https://reactnavigation.org/docs/en/state-persistence.html#development-mode
-             :persistenceKey (when js/goog.DEBUG rand-label)}]
+             :persistNavigationState (when js/goog.DEBUG persist-state)
+             :loadNavigationState    (when js/goog.DEBUG load-state)}]
            [signing/signing]
            [bottom-sheet]]))})))

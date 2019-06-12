@@ -135,7 +135,7 @@
 (handlers/register-handler-fx
  :navigate-to-clean
  (fn [cofx [_ view-id params]]
-   (navigate-to-clean cofx view-id params)))
+   (navigate-to-cofx cofx view-id params)))
 
 (handlers/register-handler-fx
  :navigate-to-tab

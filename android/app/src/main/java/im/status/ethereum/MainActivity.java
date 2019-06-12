@@ -21,6 +21,9 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.provider.Settings;
 import android.os.Bundle;
+import com.facebook.react.ReactActivityDelegate;
+import com.facebook.react.ReactRootView;
+import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.modules.core.PermissionListener;
@@ -229,5 +232,15 @@ public class MainActivity extends ReactActivity
             // Permission has been granted. Start camera preview Activity.
             com.github.alinz.reactnativewebviewbridge.WebViewBridgeManager.grantAccess(requestCode);
         }
+    }
+
+    @Override
+    protected ReactActivityDelegate createReactActivityDelegate() {
+        return new ReactActivityDelegate(this, getMainComponentName()) {
+            @Override
+            protected ReactRootView createRootView() {
+                return new RNGestureHandlerEnabledRootView(MainActivity.this);
+            }
+        };
     }
 }

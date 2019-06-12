@@ -263,13 +263,6 @@
               (navigation/navigate-to-cofx :chat-modal {})
               (preload-chat-data chat-id))
 
-    navigation-reset?
-    (fx/merge cofx
-              (navigation/navigate-reset {:index   1
-                                          :actions [{:routeName :home}
-                                                    {:routeName :chat}]})
-              (preload-chat-data chat-id))
-
     :else
     (fx/merge cofx
               (navigation/navigate-to-cofx :chat {})

@@ -146,7 +146,7 @@
     (fx/merge cofx
               #(if modal?
                  (navigation/navigate-back %)
-                 (navigation/navigate-to-clean % :my-profile nil))
+                 (navigation/navigate-to-cofx % :my-profile nil))
               #(when-not ephemeral?
                  (fx/merge %
                            (when hooks (accounts.update/account-update {:extensions new-extensions} {}))

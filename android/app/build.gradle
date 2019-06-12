@@ -279,6 +279,7 @@ dependencies {
     implementation project(':react-native-config')
     implementation project(':react-native-firebase')
     implementation project(':react-native-shake')
+    implementation project(':react-native-gesture-handler')
     implementation project(':RNMail')
     compile ('com.google.android.gms:play-services-base:16.0.1') {
         force = true

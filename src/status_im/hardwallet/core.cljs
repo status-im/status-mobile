@@ -66,7 +66,7 @@
                 ;;(wallet/discard-transaction)
                 (navigation/navigate-to-cofx :browser nil))
       (if (= :enter-pin-login (:view-id db))
-        (navigation/navigate-to-clean cofx :accounts nil)
+        (navigation/navigate-to-cofx cofx :accounts nil)
         (fx/merge cofx
                   {:db (assoc-in db [:hardwallet :on-card-connected] nil)}
                   (navigation/navigate-back))))))
