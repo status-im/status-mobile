@@ -89,7 +89,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction_view.sign_transaction()
 
         # Check that second 'Send transaction' screen appears
-        if not send_transaction_view.element_by_text('Sign transaction').is_element_displayed(10):
+        if not send_transaction_view.element_by_text('Sign with password').is_element_displayed(10):
             pytest.fail('Second send transaction screen did not appear!')
 
         send_transaction_view.sign_transaction()
@@ -109,7 +109,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction_view.sign_transaction()
 
         # Check that second 'Send transaction' screen appears
-        if not send_transaction_view.element_by_text('Sign transaction').is_element_displayed(20):
+        if not send_transaction_view.element_by_text('Sign with password').is_element_displayed(20):
             pytest.fail('Second send transaction screen did not appear!')
 
         send_transaction_view.sign_transaction()
