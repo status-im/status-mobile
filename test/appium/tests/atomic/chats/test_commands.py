@@ -75,6 +75,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(5306)
     @marks.critical
+    @marks.skip
     def test_send_eth_in_1_1_chat(self):
         recipient = transaction_recipients['A']
         sender = transaction_senders['A']

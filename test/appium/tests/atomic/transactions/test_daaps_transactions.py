@@ -22,9 +22,6 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.assets_button.click()
         send_transaction_view = status_test_dapp.request_stt_button.click()
-        wallet_view = send_transaction_view.get_wallet_view()
-        wallet_view.done_button.click()
-        wallet_view.yes_button.click()
         send_transaction_view.sign_transaction()
         self.network_api.verify_balance_is_updated(initial_balance, address)
 
@@ -39,10 +36,8 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.transactions_button.click()
         send_transaction_view = status_test_dapp.sign_message_button.click()
         send_transaction_view.find_full_text('Test message')
-        send_transaction_view.sign_transaction_button.click_until_presence_of_element(
-            send_transaction_view.enter_password_input)
         send_transaction_view.enter_password_input.send_keys(password)
-        send_transaction_view.sign_transaction_button.click()
+        send_transaction_view.sign_button.click()
 
     @marks.testrail_id(5333)
     @marks.critical
@@ -75,7 +70,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.transactions_button.click()
         send_transaction_view = status_test_dapp.sign_typed_message_button.click()
         send_transaction_view.enter_password_input.send_keys(common_password)
-        send_transaction_view.sign_transaction_button.click()
+        send_transaction_view.sign_button.click()
         status_test_dapp.find_text_part('0xde3048417e5881acc9ca8466ab0b3e2f9f965a70acabbda2d140e95a28b13d2d'
                                         '2d38eba6c0a5bfdc50e5d59e0ed3226c749732fd4a9374b57f34121eaff2a5081c')
 
@@ -148,7 +143,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction_view.sign_transaction_button.click_until_presence_of_element(
             send_transaction_view.enter_password_input)
         send_transaction_view.enter_password_input.send_keys(unique_password)
-        send_transaction_view.sign_transaction_button.click()
+        send_transaction_view.sign_button.click()
         send_transaction_view.check_no_values_in_logcat(password=unique_password)
 
     @marks.testrail_id(5372)

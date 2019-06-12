@@ -161,6 +161,20 @@ class ValidationWarnings(object):
         self.not_enough_eth_for_gas = NotEnoughEthForGas(driver)
 
 
+class SignWithPasswordButton(BaseButton):
+
+    def __init__(self, driver):
+        super(SignWithPasswordButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="Sign with password"]')
+
+
+class SignButton(BaseButton):
+
+    def __init__(self, driver):
+        super(SignButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="Sign"]')
+
+
 class SendTransactionView(BaseView):
     def __init__(self, driver):
         super(SendTransactionView, self).__init__(driver)
@@ -182,6 +196,8 @@ class SendTransactionView(BaseView):
 
         self.cancel_button = CancelButton(self.driver)
         self.sign_transaction_button = SignTransactionButton(self.driver)
+        self.sign_with_password = SignWithPasswordButton(self.driver)
+        self.sign_button = SignButton(self.driver)
         self.sign_in_phrase_text = SignInPhraseText(self.driver)
         self.password_input = PasswordInput(self.driver)
         self.enter_password_input = EnterPasswordInput(self.driver)
@@ -205,11 +221,10 @@ class SendTransactionView(BaseView):
             self.yes_button.click()
 
     def sign_transaction(self, sender_password: str = common_password):
-        self.sign_transaction_button.click_until_presence_of_element(self.enter_password_input)
+        self.sign_with_password.click()
         self.enter_password_input.send_keys(sender_password)
-        self.sign_transaction_button.click_until_presence_of_element(self.got_it_button)
-        self.progress_bar.wait_for_invisibility_of_element(20)
-        self.got_it_button.click()
+        self.sign_button.click()
+        self.ok_button.click()
 
     def get_transaction_fee_total(self):
         return self.transaction_fee_total_value.text.split()[0]

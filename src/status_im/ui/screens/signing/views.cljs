@@ -164,10 +164,12 @@
 (defn signing-view [tx window-height]
   (let [bottom-anim-value (anim/create-value (- window-height))
         alpha-value       (anim/create-value 0)
+        clear-timeout     (atom nil)
         current-tx        (reagent/atom nil)
         update?           (reagent/atom nil)]
     (reagent/create-class
      {:component-will-update (fn [_ [_ tx _]]
+                               (when @clear-timeout (js/clearTimeout @clear-timeout))
                                (cond
                                  @update?
                                  (do (reset! update? false)
@@ -183,7 +185,7 @@
                                      (show-panel-anim bottom-anim-value alpha-value))
 
                                  :else
-                                 (do (js/setTimeout #(reset! current-tx nil) 500)
+                                 (do (reset! clear-timeout (js/setTimeout #(reset! current-tx nil) 500))
                                      (hide-panel-anim bottom-anim-value alpha-value (- window-height)))))
       :reagent-render        (fn []
                                (when @current-tx

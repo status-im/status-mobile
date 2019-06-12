@@ -34,6 +34,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         recent_recipient = send_transaction.element_by_text(recipient['username'])
         send_transaction.recent_recipients_button.click_until_presence_of_element(recent_recipient)
         recent_recipient.click()
+        send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(sender['address'], transaction_amount)
 
@@ -55,6 +56,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
+        send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(sender['address'], transaction_amount)
 
@@ -82,6 +84,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
+        send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True)
 
@@ -132,6 +135,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
+        send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(recipient['address'], transaction_amount)
         transactions_view = wallet_view.transaction_history_button.click()
@@ -178,6 +182,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
+        send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction(unique_password)
         send_transaction.check_no_values_in_logcat(password=unique_password)
 
@@ -205,6 +210,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
+        send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True, decimals=7)
 
@@ -260,6 +266,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(basic_user['address'])
         send_transaction.done_button.click()
+        send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(sender['address'], valid_amount)
 
@@ -314,6 +321,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5359)
     @marks.critical
+    @marks.skip
     def test_modify_transaction_fee_values(self):
         sender = transaction_senders['U']
         sign_in_view = SignInView(self.driver)
@@ -362,6 +370,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.gas_price_input.set_value(gas_price)
         send_transaction.total_fee_input.click()
         send_transaction.done_button.click()
+        send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(sender['address'], amount)
 
@@ -432,6 +441,7 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
         send_transaction.chose_recipient_button.click()
         send_transaction.recent_recipients_button.click()
         send_transaction.element_by_text_part(recipient['username']).click()
+        send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction()
 
         wallet_1.home_button.click()

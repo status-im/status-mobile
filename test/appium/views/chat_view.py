@@ -476,7 +476,7 @@ class ChatView(BaseView):
             wallet_view.done_button.click()
             wallet_view.yes_button.click()
         else:
-            self.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
+            self.send_message_button.click_until_presence_of_element(send_transaction_view.sign_with_password)
         if kwargs.get('sign_transaction', True):
             send_transaction_view.sign_transaction(password)
             chat_elem = self.chat_element_by_text(amount)
