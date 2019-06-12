@@ -234,10 +234,12 @@ platform :ios do
   end
 
   desc "`fastlane ios clean` - remove inactive TestFlight users"
-  desc "uses custom plugin, installed via"
-  desc "`sudo get install fastlane-plugin-clean_testflight_testers`"
   lane :clean do
-    clean_testflight_testers(username: ENV["FASTLANE_APPLE_ID"])
+    clean_testflight_testers(
+      username: ENV["FASTLANE_APPLE_ID"],
+      days_of_inactivity: 30,
+      oldest_build_allowed: 2019032709
+    )
   end
 
   desc "`fastlane ios upload-diawi` - upload .ipa to diawi"

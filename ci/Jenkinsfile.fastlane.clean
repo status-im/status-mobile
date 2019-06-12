@@ -2,28 +2,32 @@ pipeline {
   agent { label 'macos' }
 
   environment {
-    LANG = "en_US.UTF-8"
-    LANGUAGE = "en_US.UTF-8"
-    LC_ALL = "en_US.UTF-8"
+    LANG      = 'en_US.UTF-8'
+    LANGUAGE  = 'en_US.UTF-8'
+    LC_ALL    = 'en_US.UTF-8'
+    TARGET_OS = 'ios'
     FASTLANE_DISABLE_COLORS = 1
   }
 
   options {
     timestamps()
+    /* Disable concurrent jobs */
+    disableConcurrentBuilds()
     /* Prevent Jenkins jobs from running forever */
     timeout(time: 45, unit: 'MINUTES')
-    buildDiscarder(logRotator(numToKeepStr: '100'))
+    /* Don't keep more than 50 builds */
+    buildDiscarder(logRotator(numToKeepStr: '50'))
   }
 
   stages {
-    stage('Install Deps'){
-      steps {
-        sh ('bundle install --gemfile=fastlane/Gemfile')
-      }
+    stage('Prep') {
+      steps { script {
+        nix = load('ci/nix.groovy')
+        nix.shell('bundle install --gemfile=fastlane/Gemfile')
+      } }
     }
-
     stage('Clean Users'){
-      steps {
+      steps { script {
         withCredentials([
           usernamePassword(
             credentialsId:  'fastlane-match-apple-id',
@@ -31,9 +35,12 @@ pipeline {
             passwordVariable: 'FASTLANE_PASSWORD'
           ),
         ]) {
-          sh ('bundle exec --gemfile=fastlane/Gemfile fastlane ios clean')
+          nix.shell(
+            'bundle exec --gemfile=fastlane/Gemfile fastlane ios clean',
+            keep: ['FASTLANE_APPLE_ID', 'FASTLANE_PASSWORD']
+          )
         }
-      }
+      } }
     }
   }
 }
