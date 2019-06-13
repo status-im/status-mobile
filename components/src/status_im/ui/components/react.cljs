@@ -116,6 +116,7 @@
 (defn prepare-nested-text-props [props]
   (-> props
       (update :style typography/get-nested-style)
+      (assoc :parseBasicMarkdown true)
       (assoc :nested? true)))
 
 ;; Accessor methods for React Components

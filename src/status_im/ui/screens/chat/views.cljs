@@ -366,7 +366,6 @@
                                           :row                message
                                           :idx                idx
                                           :list-ref           messages-list-ref}])
-           :initialNumToRender        6
            :inverted                  true
            :onEndReached              #(re-frame/dispatch [:chat.ui/load-more-messages])
            :keyboardShouldPersistTaps :handled}

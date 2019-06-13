@@ -92,7 +92,11 @@
         [quoted-message (:response-to content) outgoing current-public-key])
       (apply react/nested-text
              (cond-> {:style (style/text-message collapsible? outgoing)
-                      :text-break-strategy :balanced}
+                      :text-break-strategy :balanced
+                      :parseBasicMarkdown true
+                      :markdownCodeBackgroundColor colors/black
+                      :markdownCodeForegroundColor colors/green}
+
                (and collapsible? (not expanded?))
                (assoc :number-of-lines constants/lines-collapse-threshold))
              (conj (if-let [render-recipe (:render-recipe content)]
