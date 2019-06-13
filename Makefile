@@ -43,6 +43,8 @@ endif
 
 clean: SHELL := /bin/sh
 clean: ##@prepare Remove all output folders
+	@test -d node_modules && chmod -R 744 node_modules; \
+	test -d node_modules.tmp && chmod -R 744 node_modules.tmp; \
 	git clean -dxf -f
 
 clean-nix: SHELL := /bin/sh
