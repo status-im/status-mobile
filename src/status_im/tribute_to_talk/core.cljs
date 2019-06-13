@@ -227,7 +227,7 @@
   (when (and (not (get-in db [:chats public-key :group-chat]))
              (not (get-in db [:contacts/contacts public-key :tribute-to-talk
                               :transaction-hash]))
-             (not (whitelist/whitelisted?
+             (not (whitelist/whitelisted-by?
                    (get-in db [:contacts/contacts public-key]))))
     (if-let [contract (contracts/get-address db :status/tribute-to-talk)]
       (let [address (ethereum/public-key->address public-key)]

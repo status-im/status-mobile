@@ -75,3 +75,61 @@
     (is (not (tribute-to-talk/tribute-transaction-trigger
               {:ethereum/current-block 5}
               {:block "5"})))))
+
+(def public-key "0xabcdef")
+(def my-public-key "0x000001")
+(def test-db
+  {:chats
+   {public-key {:group-chat false}}
+   :contacts/contacts
+   {public-key {:tribute-to-talk {}
+                :system-tags #{}}}
+   :account/account
+   {:public-key my-public-key
+    :network "mainnet_rpc"
+    :networks {"mainnet_rpc" {:id "mainnet_rpc"
+                              :config {:NetworkId 1}}
+               "testnet_rpc" {:id "testnet_rpc"
+                              :config {:NetworkId 3}}}}})
+
+(deftest check-tribute
+  (testing "No contract in network, own public key"
+    (let [result (tribute-to-talk/check-tribute {:db test-db} my-public-key)]
+      (is (= (-> test-db
+                 (assoc :navigation/screen-params {:tribute-to-talk {:unavailable? true}})
+                 (assoc-in [:account/account :settings] {:tribute-to-talk {:mainnet nil}}))
+             (:db result)))))
+
+  (testing "No contract in network, another public key"
+    (let [result (tribute-to-talk/check-tribute {:db test-db} public-key)]
+      (is (= {:disabled? true}
+             (get-in result [:db :contacts/contacts public-key :tribute-to-talk])))))
+
+  (testing "Contract in network, another public key"
+    (let [result (tribute-to-talk/check-tribute {:db
+                                                 (assoc-in test-db [:account/account :network] "testnet_rpc")} public-key)]
+      (is (= "0xC61aa0287247a0398589a66fCD6146EC0F295432"
+             (get-in result [:tribute-to-talk/get-tribute :contract])))))
+
+  (testing "Added by other user"
+    (let [result (tribute-to-talk/check-tribute
+                  {:db (update-in test-db
+                                  [:contacts/contacts public-key :system-tags]
+                                  conj :contact/request-received)}
+                  public-key)]
+      (is (= result nil))))
+
+  (testing "Group chat"
+    (let [result (tribute-to-talk/check-tribute
+                  {:db (assoc-in test-db [:chats public-key :group-chat] true)}
+                  public-key)]
+      (is (= result nil))))
+
+  (testing "Added by this user"
+    (let [result (tribute-to-talk/check-tribute
+                  {:db (update-in test-db
+                                  [:contacts/contacts public-key :system-tags]
+                                  conj :contact/added)}
+                  public-key)]
+      (is (= {:disabled? true}
+             (get-in result [:db :contacts/contacts public-key :tribute-to-talk]))))))
