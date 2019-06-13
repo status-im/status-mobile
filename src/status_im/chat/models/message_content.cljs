@@ -1,6 +1,7 @@
 (ns status-im.chat.models.message-content
   (:require [clojure.string :as string]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (def stylings [[:bold   constants/regx-bold]
                [:italic constants/regx-italic]
@@ -36,8 +37,13 @@
       (seq matches))))
 
 (defn- right-to-left-text? [text]
-  (and (seq text)
+  (when platform/ios?
+    (and (seq text)
        (re-matches constants/regx-rtl-characters (first text))))
+  (when platform/android?
+    (and (seq text)
+       (re-matches constants/regx-rtl-characters (first text))))
+  )
 
 (defn- should-collapse? [text]
   (or (<= constants/chars-collapse-threshold (count text))

@@ -46,7 +46,8 @@
               "react-navigation"
               "hi-base32"
               "react-native-mail"
-              "react-native-shake"]
+              "react-native-shake"
+              "react-native-text-direction"]
  ;; Desktop modules
  :desktop-modules ["realm"
                    "react-native-languages"
