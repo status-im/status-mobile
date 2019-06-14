@@ -196,15 +196,15 @@
     version = "2.1.5";
   };
   fastlane = {
-    dependencies = ["CFPropertyList" "addressable" "babosa" "colored" "commander-fastlane" "dotenv" "emoji_regex" "excon" "faraday" "faraday-cookie_jar" "faraday_middleware" "fastimage" "gh_inspector" "google-api-client" "google-cloud-storage" "highline" "json" "mini_magick" "multi_json" "multi_xml" "multipart-post" "plist" "public_suffix" "rubyzip" "security" "simctl" "slack-notifier" "terminal-notifier" "terminal-table" "tty-screen" "tty-spinner" "word_wrap" "xcodeproj" "xcpretty" "xcpretty-travis-formatter"];
+    dependencies = ["CFPropertyList" "addressable" "babosa" "colored" "commander-fastlane" "dotenv" "emoji_regex" "excon" "faraday" "faraday-cookie_jar" "faraday_middleware" "fastimage" "gh_inspector" "google-api-client" "google-cloud-storage" "highline" "json" "jwt" "mini_magick" "multi_xml" "multipart-post" "plist" "public_suffix" "rubyzip" "security" "simctl" "slack-notifier" "terminal-notifier" "terminal-table" "tty-screen" "tty-spinner" "word_wrap" "xcodeproj" "xcpretty" "xcpretty-travis-formatter"];
     groups = ["default"];
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "03lzpws5xy5alla96sf4h7qapklylpaq8qzln8r1p11qbpgnrrlc";
+      sha256 = "1k828cyp287asy9ahii51aifcxnia049v2cs60650ngym9x5fr0w";
       type = "gem";
     };
-    version = "2.121.1";
+    version = "2.125.2";
   };
   fastlane-plugin-clean_testflight_testers = {
     groups = ["default"];
@@ -265,10 +265,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "038jcy9nm1liah5ywaxm5xx2adbd28y6p8fk2frgv63v80pj8mw4";
+      sha256 = "09g0dwzhz4f74x5dq6dp1fm7sc7d0g0ry4533yih360isjrl4mcy";
       type = "gem";
     };
-    version = "1.0.5";
+    version = "1.1.0";
   };
   google-cloud-storage = {
     dependencies = ["digest-crc" "google-api-client" "google-cloud-core" "googleauth"];
@@ -521,10 +521,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "1n1lb2sdwh9h27y244hxzg1lrxxg2m53pk1vq7p33bna003qkyrj";
+      sha256 = "1w9gw28ly3zyqydnm8phxchf4ymyjl2r7zf7c12z8kla10cpmhlc";
       type = "gem";
     };
-    version = "1.2.2";
+    version = "1.2.3";
   };
   security = {
     groups = ["default"];
@@ -594,20 +594,20 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0n9mcb1jdyhz11fg0s7wy3q57xkh77p1r60w7rjibjfpkyx9v8q3";
+      sha256 = "0prcxdy6qhqba4cv7hsy503b3bjciqk3j3hhzvcbij1kj2gh31c9";
       type = "gem";
     };
-    version = "0.6.1";
+    version = "0.7.0";
   };
   tty-screen = {
     groups = ["default"];
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0azpjgyhdm8ycblnx9crq3dgb2x8yg454a13n60zfpsc0n138sw1";
+      sha256 = "1143g05fs28ssgimaph6sdnsndd1wrpax9kjypvd2ripa1adm4kx";
       type = "gem";
     };
-    version = "0.6.5";
+    version = "0.7.0";
   };
   tty-spinner = {
     dependencies = ["tty-cursor"];
@@ -615,10 +615,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0248h3x77634b41w5xv6k10p7767li5b6pc90h23635xv7kdkdyd";
+      sha256 = "089qiqzjs1m727kalz8vn2wzgwzdn8mg5gyag901pmimxl64lnvc";
       type = "gem";
     };
-    version = "0.9.0";
+    version = "0.9.1";
   };
   uber = {
     groups = ["default"];
@@ -656,10 +656,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "1ssnc6rja9ii97z7m35y4zd0rd7cpv3bija20l7cpd7y4jyyx44q";
+      sha256 = "08kfiniak1pvg3gn5k6snpigzvhvhyg7slmm0s2qx5zkj62c1z2w";
       type = "gem";
     };
-    version = "1.5.0";
+    version = "1.6.0";
   };
   word_wrap = {
     groups = ["default"];
@@ -677,10 +677,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0ji3wmpr6xm4172vxh9y6731vm2xrvv7ccwk4ijd5n4if1dakm03";
+      sha256 = "1x2ypkxyfsr6k8qy75iy64p6af6b024fqnlmw8qvzzzixmwrr8q7";
       type = "gem";
     };
-    version = "1.8.2";
+    version = "1.10.0";
   };
   xcpretty = {
     dependencies = ["rouge"];
