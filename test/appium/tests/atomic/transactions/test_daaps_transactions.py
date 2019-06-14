@@ -311,6 +311,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         if send_transaction_view.enter_password_input.is_element_displayed():
             self.errors.append(sign_button_warning.format('sending 0 ETH with an empty ETH balance'))
 
+        send_transaction_view.cancel_button.click()
         asset_button = send_transaction_view.asset_by_name('STT')
         send_transaction_view.select_asset_button.click_until_presence_of_element(asset_button)
         asset_button.click()
@@ -326,6 +327,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         if send_transaction_view.enter_password_input.is_element_displayed():
             self.errors.append(sign_button_warning.format('sending 0 STT with an empty ETH balance'))
 
+        send_transaction_view.cancel_button.click()
         home_view = send_transaction_view.get_back_to_home_view()
         # Requesting test ETH and waiting till the balance updates
         self.network_api.faucet(wallet_address[2:])

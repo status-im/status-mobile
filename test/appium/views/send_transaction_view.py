@@ -13,7 +13,7 @@ class FirstRecipient(BaseButton):
 class CancelButton(BaseButton):
     def __init__(self, driver):
         super(CancelButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('cancel-button')
+        self.locator = self.Locator.xpath_selector("//*[@text='Cancel']")
 
 
 class SignTransactionButton(BaseButton):

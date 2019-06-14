@@ -108,6 +108,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
         send_transaction.sign_transaction_button.click()
+        send_transaction.sign_with_password.click()
         send_transaction.enter_password_input.click()
         send_transaction.enter_password_input.send_keys('wrong_password')
         send_transaction.sign_transaction_button.click()

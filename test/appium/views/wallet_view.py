@@ -303,6 +303,7 @@ class WalletView(BaseView):
             send_transaction_view.recent_recipients_button.click_until_presence_of_element(recent_recipient)
             recent_recipient.click()
         if kwargs.get('sign_transaction', True):
+            send_transaction_view.sign_transaction_button.click()
             send_transaction_view.sign_transaction()
 
     def receive_transaction(self, **kwargs):
