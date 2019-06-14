@@ -16,7 +16,7 @@ def bundle() {
       target = 'pr';
       env.NDK_ABI_FILTERS="x86"; break
     case 'release':
-      gradleOpt += "-PreleaseVersion='${utils.getVersion('mobile_files')}'"
+      gradleOpt += "-PreleaseVersion='${utils.getVersion()}'"
   }
 
   dir('android') {
