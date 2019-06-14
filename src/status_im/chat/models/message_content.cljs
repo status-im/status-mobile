@@ -1,7 +1,8 @@
 (ns status-im.chat.models.message-content
   (:require [clojure.string :as string]
             [status-im.constants :as constants]
-            [status-im.react-native.js-dependencies :as rn-dependencies]))
+            [status-im.react-native.js-dependencies :as rn-dependencies]
+            [status-im.utils.platform :as platform]))
 
 (def stylings [[:bold   constants/regx-bold]
                [:italic constants/regx-italic]
