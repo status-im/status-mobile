@@ -40,4 +40,4 @@
 (def desktop-menu           #js {:addEventListener (fn [])})
 (def desktop-config         #js {:addEventListener (fn [])})
 (def desktop-shortcuts      #js {:addEventListener (fn [])})
-(def text-direction-class (js-require/js-require "react-native-text-direction"))
+(def text-direction-class   (js-require/js-require "react-native-text-direction"))

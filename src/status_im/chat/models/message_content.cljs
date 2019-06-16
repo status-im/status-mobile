@@ -38,13 +38,8 @@
       (seq matches))))
 
 (defn- right-to-left-text? [text]
-  (when platform/ios?
     (and (seq text)
        (re-matches constants/regx-rtl-characters (first text))))
-  (when platform/android?
-    (and (seq text)
-       (re-matches constants/regx-rtl-characters (first text))))
-  )
 
 (defn- should-collapse? [text]
   (or (<= constants/chars-collapse-threshold (count text))
@@ -104,7 +99,25 @@
       (seq metadata) (as-> content
                            (assoc content :metadata metadata)
                        (assoc content :render-recipe (build-render-recipe content)))
-      (right-to-left-text? text) (assoc :rtl? true)
+      
+    ;Determine if the content is RTL and act accordingly
+    (when platform/ios?
+      (right-to-left-text? text) (assoc :rtl? true)) 
+    (when platform/android?
+      (try
+        (->
+          ((.-isAvailable RNTextDirection))
+          (.then
+            (fn [value]
+              (when value
+                (->
+                  ((.-isRTL RNTextDirection) text)
+                  (.then (fn [value] ( (or value (right-to-left-text? text) (assoc :rtl? true))))
+                  (.catch (fn [error] ( (right-to-left-text? text) (assoc :rtl? true))))))))
+          (.catch (fn [error] ( (right-to-left-text? text) (assoc :rtl? true)))))
+        (catch js/Object err ( (right-to-left-text? text) (assoc :rtl? true))))))
+        
+
       (should-collapse? text) (assoc :should-collapse? true))))
 
 (defn emoji-only-content?
