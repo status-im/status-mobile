@@ -106,7 +106,7 @@
     (when platform/android?
       (try
         (->
-          ((.-isAvailable RNTextDirection))
+          (.-isAvailable RNTextDirection)
           (.then
             (fn [value]
               (when value
