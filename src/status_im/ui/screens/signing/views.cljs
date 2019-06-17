@@ -7,7 +7,7 @@
             [reagent.core :as reagent]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.button.view :as button]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.wallet.utils :as wallet.utils]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.icons.vector-icons :as icons]

@@ -535,6 +535,7 @@
 
    :custom []})
 
+;; TODO all these should be improved, we don't need to recalculate this each time, it can be done only once
 (defn tokens-for
   "makes sure all addresses are lower-case
    TODO: token list should be speced and not accept non-lower-cased addresses"

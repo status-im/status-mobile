@@ -299,8 +299,7 @@
     (let [props             (merge props
                                    {:background-color
                                     (case current-view
-                                      (:wallet
-                                       :wallet-send-transaction
+                                      (:wallet-send-transaction
                                        :wallet-request-transaction
                                        :wallet-send-assets
                                        :wallet-request-assets
@@ -308,8 +307,6 @@
                                        :recent-recipients
                                        :wallet-send-transaction-request
                                        :contact-code
-                                       :wallet-modal
-                                       :wallet-onboarding-setup-modal
                                        :wallet-settings-hook)
                                       colors/blue
 
@@ -318,11 +315,9 @@
                                       "#2f3031"
 
                                       colors/white)})
-          bottom-background (when (#{:wallet
-                                     :recent-recipients
+          bottom-background (when (#{:recent-recipients
                                      :wallet-send-assets
-                                     :wallet-request-assets
-                                     :wallet-modal} current-view)
+                                     :wallet-request-assets} current-view)
                               [view {:background-color colors/white
                                      :position         :absolute
                                      :bottom           0

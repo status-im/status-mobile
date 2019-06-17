@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.decode :as decode]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]

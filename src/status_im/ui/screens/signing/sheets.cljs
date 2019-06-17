@@ -10,7 +10,7 @@
 (views/defview fee-bottom-sheet [fee-display-symbol]
   (views/letsubs [{gas-edit :gas gas-price-edit :gasPrice max-fee :max-fee} [:signing/edit-fee]]
     [react/view
-     [react/view {:style {:margin-horizontal 16 :margin-vertical 8}}
+     [react/view {:style {:margin-horizontal 16 :margin-top 8}}
       [react/text {:style {:typography :title-bold}} (i18n/label :t/network-fee)]
       [react/view {:style {:flex-direction :row :margin-top 8}}
        [react/view {:flex 1}
@@ -35,7 +35,7 @@
           :auto-focus      false}]]
        [react/view {:margin-top 58 :margin-left 10}
         [react/text (i18n/label :t/gwei)]]]
-      [react/view {:margin-vertical 28 :align-items :center}
+      [react/view {:margin-vertical 16 :align-items :center}
        [react/text {:style {:color colors/gray}} (i18n/label :t/wallet-transaction-total-fee)]
        [react/view {:height 8}]
        [react/nested-text {:style {:font-size 17}}

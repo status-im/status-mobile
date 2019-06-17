@@ -53,26 +53,19 @@
     :stickers-pack-modal             {:type :main}
     :tribute-learn-more              {:type :main}
     :show-extension-modal            {:type :main}
-    :wallet                          {:type :wallet-tab}
-    :wallet-stack                    {:type :wallet-tab}
+    :wallet                          {:type :main}
+    :wallet-stack                    {:type :main}
     :profile-qr-viewer               {:type :modal-white}
     :recipient-qr-code               {:type :transparent}
     :wallet-send-assets              {:type :wallet}
     :wallet-request-assets           {:type :wallet}
     :recent-recipients               {:type :wallet}
     :contact-code                    {:type :wallet}
-    :wallet-onboarding-setup         {:type :wallet}
     :wallet-send-transaction-request {:type :wallet}
     :wallet-request-transaction      {:type :wallet-tab}
-    :wallet-send-transaction-chat    {:type :wallet}
-    :wallet-send-transaction         {:type :wallet-tab}
-    :sign-message-modal              {:type :modal-wallet}
-    :wallet-transaction-fee          {:type :modal-wallet}
-    :wallet-onboarding-setup-modal   {:type :modal-wallet}
-    :wallet-send-transaction-modal   {:type :modal-wallet}
-    :wallet-settings-assets          {:type :wallet}
-    :wallet-add-custom-token         {:type :wallet}
-    :wallet-sign-message-modal       {:type :modal-wallet}
+    :wallet-settings-assets          {:type :main}
+    :wallet-account                  {:type :main}
+    :wallet-add-custom-token         {:type :main}
     :wallet-settings-hook            {:type :wallet}
     :wallet-transactions-filter      {:type :modal-main}}
    view-id))

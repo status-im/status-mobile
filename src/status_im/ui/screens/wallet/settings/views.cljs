@@ -42,9 +42,9 @@
                                      :cyrcle-color (colors/alpha colors/red 0.1)
                                      :on-press     #(hide-sheet-and-dispatch [:wallet.custom-token.ui/remove-pressed token])}])]))
 
-(defn- render-token [{:keys [symbol name icon color custom?] :as token} visible-tokens]
+(defn- render-token [{:keys [symbol name icon color custom? checked?] :as token}]
   [list/list-item-with-checkbox
-   {:checked?        (contains? visible-tokens (keyword symbol))
+   {:checked?        checked?
     :on-long-press   #(re-frame/dispatch [:bottom-sheet/show-sheet {:content        (custom-token-actions-view token)
                                                                     :content-height (if custom? 128 68)}])
     :on-value-change #(re-frame/dispatch [:wallet.settings/toggle-visible-token (keyword symbol) %])}
@@ -57,31 +57,28 @@
      [list/item-secondary symbol]]]])
 
 (defview manage-assets []
-  (letsubs [chain          [:ethereum/chain-keyword]
-            visible-tokens [:wallet/visible-tokens-symbols]
-            all-tokens     [:wallet/all-tokens]]
-    (let [{custom-tokens true default-tokens nil} (group-by :custom? (tokens/sorted-tokens-for all-tokens chain))]
-      [react/view (merge components.styles/flex {:background-color :white})
-       [status-bar/status-bar]
-       [toolbar]
-       [react/view {:style components.styles/flex}
-        [list/section-list
-         {:header                      [react/view {:margin-top 16}
-                                        [action-button/action-button {:label     (i18n/label :t/add-custom-token)
-                                                                      :icon      :main-icons/add
-                                                                      :icon-opts {:color :blue}
-                                                                      :on-press  #(re-frame/dispatch [:navigate-to :wallet-add-custom-token])}]]
-          :sections                    (concat
-                                        (when (seq custom-tokens)
-                                          [{:title (i18n/label :t/custom)
-                                            :data  custom-tokens}])
-                                        [{:title (i18n/label :t/default)
-                                          :data  default-tokens}])
-          :key-fn                      :address
-          :stickySectionHeadersEnabled false
-          :render-section-header-fn    (fn [{:keys [title data]}]
-                                         [list-header/list-header title])
-          :render-fn                   #(render-token % visible-tokens)}]]])))
+  (letsubs [{custom-tokens true default-tokens nil} [:wallet/grouped-chain-tokens]]
+    [react/view (merge components.styles/flex {:background-color :white})
+     [status-bar/status-bar]
+     [toolbar]
+     [react/view {:style components.styles/flex}
+      [list/section-list
+       {:header                      [react/view {:margin-top 16}
+                                      [action-button/action-button {:label     (i18n/label :t/add-custom-token)
+                                                                    :icon      :main-icons/add
+                                                                    :icon-opts {:color :blue}
+                                                                    :on-press  #(re-frame/dispatch [:navigate-to :wallet-add-custom-token])}]]
+        :sections                    (concat
+                                      (when (seq custom-tokens)
+                                        [{:title (i18n/label :t/custom)
+                                          :data  custom-tokens}])
+                                      [{:title (i18n/label :t/default)
+                                        :data  default-tokens}])
+        :key-fn                      :address
+        :stickySectionHeadersEnabled false
+        :render-section-header-fn    (fn [{:keys [title data]}]
+                                       [list-header/list-header title])
+        :render-fn                   render-token}]]]))
 
 (defn- create-payload [address]
   {:address (ethereum/normalized-address address)})

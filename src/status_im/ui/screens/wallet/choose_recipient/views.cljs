@@ -9,7 +9,6 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.wallet.choose-recipient.styles :as styles]
             [status-im.utils.platform :as platform]))
 

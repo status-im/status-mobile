@@ -8,7 +8,7 @@
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.common.common :as components.common]
             [clojure.string :as string]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.wallet.utils :as wallet.utils]
             [status-im.i18n :as i18n]
             [status-im.ui.components.action-button.action-button :as action-button]))
 

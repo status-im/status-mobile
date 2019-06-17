@@ -14,7 +14,12 @@
             [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
             [status-im.ui.screens.home.sheet.views :as home.sheet]
             [status-im.ui.screens.routing.core :as routing]
-            [status-im.ui.screens.signing.views :as signing]))
+            [status-im.ui.screens.signing.views :as signing]
+            status-im.ui.screens.wallet.collectibles.etheremon.views
+            status-im.ui.screens.wallet.collectibles.cryptostrikers.views
+            status-im.ui.screens.wallet.collectibles.cryptokitties.views
+            status-im.ui.screens.wallet.collectibles.superrare.views
+            status-im.ui.screens.wallet.collectibles.kudos.views))
 
 (defonce rand-label (when js/goog.DEBUG (rand/id)))
 

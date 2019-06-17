@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.wallet.request.views
   (:require [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.tokens :as tokens]
@@ -16,16 +15,13 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
             [status-im.ui.screens.wallet.request.styles :as styles]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.wallet.utils :as wallet.utils]
             [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :as views]))
-
-;; Request screen
 
 (views/defview send-transaction-request []
   ;; TODO(jeluard) both send and request flows should be merged
   (views/letsubs [chain                           [:ethereum/chain-keyword]
-                  {:keys [to to-name public-key]} [:wallet.send/transaction]
                   {:keys [amount amount-error amount-text symbol to
                           to-name public-key]}    [:wallet.request/transaction]
                   network-status                  [:network-status]
@@ -64,8 +60,6 @@
                          :accessibility-label :sent-request-button}
           (i18n/label :t/send-request)
           [vector-icons/icon :main-icons/next {:color :white}]]]]])))
-
-;; Main screen
 
 (defn send-transaction-request-button [value]
   [button/primary-button {:on-press            #(re-frame/dispatch [:navigate-to :wallet-send-transaction-request])

@@ -3,8 +3,6 @@
   (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.components.styles :as styles]))
 
-;; Components
-
 (def cartouche-container
   {:flex              1
    :margin-top        16
@@ -30,18 +28,6 @@
    :flex-direction  :row
    :justify-content :space-between
    :align-items     :center})
-
-(def cartouche-text-wrapper
-  {:flex-direction     :row
-   :justify-content    :space-between
-   :padding-horizontal 15
-   :padding-vertical   15})
-
-(def cartouche-primary-text
-  {:color colors/white})
-
-(def cartouche-secondary-text
-  {:color colors/white-transparent})
 
 (def text-content
   {:color colors/white})

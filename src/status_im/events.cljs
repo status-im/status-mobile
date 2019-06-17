@@ -44,6 +44,9 @@
             [status-im.stickers.core :as stickers]
             [status-im.transport.core :as transport]
             [status-im.transport.message.core :as transport.message]
+            status-im.wallet.choose-recipient.core
+            status-im.wallet.collectibles.core
+            status-im.wallet.accounts.core
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
@@ -61,7 +64,9 @@
             [status-im.wallet.custom-tokens.core :as custom-tokens]
             [status-im.wallet.db :as wallet.db]
             [status-im.web3.core :as web3]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.chat.commands.sending :as commands.sending]
+            [status-im.utils.money :as money]))
 
 ;; init module
 
@@ -1996,3 +2001,15 @@
  :dismiss-keyboard
  (fn []
    (react/dismiss-keyboard!)))
+
+(handlers/register-handler-fx
+ :wallet-send-request
+ (fn [{:keys [db] :as cofx} [_ public-key amount symbol decimals]]
+   (assert public-key)
+   (let [request-command (get-in db [:id->command ["request" #{:personal-chats}]])]
+     (fx/merge cofx
+               (chat/start-chat public-key nil)
+               (commands.sending/send public-key
+                                      request-command
+                                      {:asset  (name symbol)
+                                       :amount (str (money/internal->formatted amount symbol decimals))})))))

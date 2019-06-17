@@ -3,20 +3,43 @@
             [re-frame.core :as re-frame]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.constants :as constants]
-            [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.tokens :as tokens]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.wallet.utils :as wallet.utils]
             [status-im.utils.config :as config]
             [status-im.utils.core :as utils.core]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
             [status-im.utils.prices :as prices]
             [status-im.utils.utils :as utils.utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.wallet.db :as wallet.db]
+            [status-im.ethereum.abi-spec :as abi-spec]
+            [status-im.signing.core :as signing]))
+
+(re-frame/reg-fx
+ :wallet/get-balance
+ (fn [{:keys [account-id on-success on-error]}]
+   (json-rpc/call
+    {:method     "eth_getBalance"
+     :params     [account-id "latest"]
+     :on-success on-success
+     :on-error   on-error})))
+
+;; TODO(oskarth): At some point we want to get list of relevant
+;; assets to get prices for
+(re-frame/reg-fx
+ :wallet/get-prices
+ (fn [{:keys [from to mainnet? success-event error-event chaos-mode?]}]
+   (prices/get-prices from
+                      to
+                      mainnet?
+                      #(re-frame/dispatch [success-event %])
+                      #(re-frame/dispatch [error-event %])
+                      chaos-mode?)))
 
 (defn assoc-error-message [db error-type err]
   (assoc-in db [:wallet :errors error-type] (or err :unknown-error)))
@@ -47,29 +70,6 @@
   (fx/merge cofx
             {:db (assoc-in db [:wallet :current-transaction] hash)}
             (navigation/navigate-to-cofx :wallet-transaction-details nil)))
-
-;; FX
-
-(re-frame/reg-fx
- :wallet/get-balance
- (fn [{:keys [account-id on-success on-error]}]
-   (json-rpc/call
-    {:method     "eth_getBalance"
-     :params     [account-id "latest"]
-     :on-success on-success
-     :on-error   on-error})))
-
-;; TODO(oskarth): At some point we want to get list of relevant
-;; assets to get prices for
-(re-frame/reg-fx
- :wallet/get-prices
- (fn [{:keys [from to mainnet? success-event error-event chaos-mode?]}]
-   (prices/get-prices from
-                      to
-                      mainnet?
-                      #(re-frame/dispatch [success-event %])
-                      #(re-frame/dispatch [error-event %])
-                      chaos-mode?)))
 
 (defn- validate-token-name!
   [{:keys [address symbol name]}]
@@ -161,6 +161,7 @@
   [{:keys [db] :as cofx}]
   (let [custom-tokens (get-in db [:account/account :settings :wallet :custom-tokens])
         chain         (ethereum/chain-keyword db)
+        ;;TODO why do we need all tokens ? chain can be changed only through relogin
         all-tokens    (merge-with
                        merge
                        (utils.core/map-values #(utils.core/index-by :address %)
@@ -301,3 +302,53 @@
             (toggle-visible-token symbol true)
             ;;TODO(goranjovic): move `update-token-balance-success` function to wallet models
             (update-token-balance symbol balance)))
+
+(defn set-and-validate-amount-db [db amount symbol decimals]
+  (let [{:keys [value error]} (wallet.db/parse-amount amount decimals)]
+    (-> db
+        (assoc-in [:wallet :send-transaction :amount] (money/formatted->internal value symbol decimals))
+        (assoc-in [:wallet :send-transaction :amount-text] amount)
+        (assoc-in [:wallet :send-transaction :amount-error] error))))
+
+(fx/defn set-and-validate-amount
+  {:events [:wallet.send/set-and-validate-amount]}
+  [{:keys [db]} amount symbol decimals]
+  {:db (set-and-validate-amount-db db amount symbol decimals)})
+
+(fx/defn set-symbol
+  {:events [:wallet.send/set-symbol]}
+  [{:keys [db]} symbol]
+  {:db (-> db
+           (assoc-in [:wallet :send-transaction :symbol] symbol)
+           (assoc-in [:wallet :send-transaction :amount] nil)
+           (assoc-in [:wallet :send-transaction :amount-text] nil)
+           (assoc-in [:wallet :send-transaction :asset-error] nil))})
+
+(fx/defn sign-transaction-button-clicked
+  {:events  [:wallet.ui/sign-transaction-button-clicked]}
+  [{:keys [db] :as cofx}]
+  (let [{:keys [to symbol amount]} (get-in cofx [:db :wallet :send-transaction])
+        {:keys [symbol address]} (tokens/asset-for (:wallet/all-tokens db) (keyword (:chain db)) symbol)
+        amount-hex (str "0x" (abi-spec/number-to-hex amount))
+        to-norm (ethereum/normalized-address to)]
+    (signing/sign cofx {:tx-obj    (if (= symbol :ETH)
+                                     {:to   to-norm
+                                      :value amount-hex}
+                                     {:to   (ethereum/normalized-address address)
+                                      :data (abi-spec/encode "transfer(address,uint256)" [to-norm amount-hex])})
+                        :on-result [:navigate-back]})))
+
+(fx/defn set-and-validate-amount-request
+  {:events [:wallet.request/set-and-validate-amount]}
+  [{:keys [db]} amount symbol decimals]
+  (let [{:keys [value error]} (wallet.db/parse-amount amount decimals)]
+    {:db (-> db
+             (assoc-in [:wallet :request-transaction :amount] (money/formatted->internal value symbol decimals))
+             (assoc-in [:wallet :request-transaction :amount-text] amount)
+             (assoc-in [:wallet :request-transaction :amount-error] error))}))
+
+(fx/defn set-symbol-request
+  {:events [:wallet.request/set-symbol]}
+  [{:keys [db]} symbol]
+  {:db (-> db
+           (assoc-in [:wallet :request-transaction :symbol] symbol))})

@@ -55,13 +55,13 @@
             [status-im.ui.screens.stickers.views :as stickers]
             [status-im.ui.screens.wallet.collectibles.views :as collectibles]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
-            [status-im.ui.screens.wallet.main.views :as wallet.main]
-            [status-im.ui.screens.wallet.onboarding.views :as wallet.onboarding]
             [status-im.ui.screens.wallet.request.views :as request]
             [status-im.ui.screens.wallet.send.views :as send]
             [status-im.ui.screens.wallet.settings.views :as wallet-settings]
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
-            [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]))
+            [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
+            [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
+            [status-im.ui.screens.wallet.account.views :as wallet.account]))
 
 (def all-screens
   {:login                            login/login
@@ -103,10 +103,9 @@
    :tribute-learn-more               [:modal tr-to-talk/learn-more]
    :chat-modal                       [:modal chat/chat-modal]
    :show-extension-modal             [:modal extensions.module/show-extension-modal-view]
-   :wallet-onboarding-setup-modal    [:modal wallet.onboarding/modal]
-   :wallet                           wallet.main/wallet
+   :wallet                           wallet.accounts/accounts-overview
+   :wallet-account                   wallet.account/account
    :collectibles-list                collectibles/collectibles-list
-   :wallet-onboarding-setup          wallet.onboarding/screen
    :contact-code                     wallet.components/contact-code
    :wallet-send-transaction          send/send-transaction
    :recent-recipients                wallet.components/recent-recipients

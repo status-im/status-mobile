@@ -25,7 +25,7 @@
              :as
              choose-recipient]
             [status-im.ui.screens.wallet.components.styles :as styles]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.wallet.utils :as wallet.utils]
             [status-im.utils.core :as utils.core]
             [status-im.utils.money :as money]
             [status-im.utils.utils :as utils.utils])
@@ -89,19 +89,6 @@
             content]
            [vector-icons/icon icon (merge {:color :white} icon-opts)]]
           content)]]])])
-
-(defn- cartouche-primary-text [s]
-  [react/text {:style styles/cartouche-primary-text}
-   s])
-
-(defn cartouche-secondary-text [s]
-  [react/text {:style styles/cartouche-secondary-text}
-   s])
-
-(defn cartouche-text-content [primary secondary]
-  [react/view styles/cartouche-text-wrapper
-   [cartouche-primary-text primary]
-   [cartouche-secondary-text secondary]])
 
 (defn view-asset [symbol]
   [react/view

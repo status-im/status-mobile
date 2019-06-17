@@ -104,19 +104,13 @@
                                                         :value   value}]))
 
 (defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]}
-                            {:keys [settings] :as account}
-                            currency
+                            {:keys [settings]}
                             logged-in?
                             extensions]
   (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))
         extensions-settings (vals (get extensions :settings))]
     [react/view
      [profile.components/settings-title (i18n/label :t/settings)]
-     [profile.components/settings-item {:label-kw            :t/main-currency
-                                        :value               (:code currency)
-                                        :action-fn           #(re-frame/dispatch [:navigate-to :currency-settings])
-                                        :accessibility-label :currency-button}]
-     [profile.components/settings-item-separator]
      (when (and config/hardwallet-enabled?
                 platform/android?)
        [profile.components/settings-item {:label-kw            :t/status-keycard

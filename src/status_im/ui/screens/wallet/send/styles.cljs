@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.send.styles
   (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as styles]
             [status-im.ui.screens.wallet.components.styles :as wallet.components.styles]))
 
 (def send-transaction-form
@@ -20,14 +19,6 @@
    :background-color   colors/white
    :padding-top        12
    :padding-horizontal 12})
-
-(def spinner-container
-  {:position        :absolute
-   :left            0
-   :top             0
-   :right           0
-   :bottom          0
-   :justify-content :center})
 
 (def signing-phrase-container
   {:border-radius    8
@@ -69,47 +60,13 @@
    :padding          8
    :align-items      :center})
 
-(def advanced-button-wrapper
-  {:align-items :center})
-
-(def advanced-wrapper
-  {:margin-top    24
-   :margin-bottom 16})
-
-(def gas-container-wrapper
-  {:flex           1
-   :flex-direction :row})
-
-(def gas-input-wrapper
-  {:align-items     :center
-   :justify-content :space-between
-   :flex-direction  :row})
-
-(def advanced-options-text-wrapper
-  {:flex            1
-   :flex-direction  :row
-   :justify-content :space-between
-   :margin-vertical 15})
-
 (def advanced-label
   {:text-align-vertical :center
    :margin-left         4})
 
-(def advanced-fees-text
-  {:color            colors/white})
-
-(def advanced-fees-details-text
-  {:color colors/white-transparent})
-
-(def transaction-fee-block-wrapper
-  {:flex-direction :row})
-
 (def transaction-fee-info
   {:flex-direction   :row
    :margin           15})
-
-(def transaction-fee-info-text-wrapper
-  {:flex-shrink      1})
 
 (def transaction-fee-info-icon
   {:border-radius    25
@@ -135,9 +92,6 @@
 (def sign-buttons
   {:background-color colors/blue
    :padding-vertical 8})
-
-(def fee-buttons
-  {:background-color colors/blue})
 
 (def password-error-tooltip
   {:bottom-value 15

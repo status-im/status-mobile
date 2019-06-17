@@ -1137,5 +1137,15 @@
     "ens-your-usernames": "Your usernames",
     "ens-no-usernames": "You don't have any username connected",
     "ens-understand": "I understand that my wallet address will be publicly connected to my username.",
-    "ens-transaction-pending": "Transaction pending..."
+    "ens-transaction-pending": "Transaction pending...",
+    "add-account" : "Add account",
+    "add-an-account" : "Add an account",
+    "back-up-your-seed-phrase" : "Back up your seed phrase",
+    "add-a-watch-account" : "Add a watch-only account",
+    "account-settings" : "Account settings",
+    "export-account" : "Export account",
+    "set-currency" : "Set currency",
+    "view-signing" : "View signing phrase",
+    "history" : "History",
+    "no-collectibles" : "No collectibles available"
 }

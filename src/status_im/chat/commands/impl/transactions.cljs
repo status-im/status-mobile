@@ -17,7 +17,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.svgimage :as svgimage]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.wallet.utils :as wallet.utils]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]

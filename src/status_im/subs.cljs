@@ -31,7 +31,7 @@
             [status-im.ui.screens.mobile-network-settings.utils
              :as
              mobile-network-utils]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.wallet.utils :as wallet.utils]
             [status-im.utils.build :as build]
             [status-im.utils.config :as config]
             [status-im.utils.datetime :as datetime]
@@ -1023,6 +1023,21 @@
      "...")))
 
 (re-frame/reg-sub
+ :wallet/sorted-chain-tokens
+ :<- [:wallet/all-tokens]
+ :<- [:ethereum/chain-keyword]
+ (fn [[all-tokens chain]]
+   (tokens/sorted-tokens-for all-tokens chain)))
+
+(re-frame/reg-sub
+ :wallet/grouped-chain-tokens
+ :<- [:wallet/sorted-chain-tokens]
+ :<- [:wallet/visible-tokens-symbols]
+ (fn [[all-tokens visible-tokens]]
+   (let [vt-set (set visible-tokens)]
+     (group-by :custom? (map #(assoc % :checked? (boolean (get vt-set (keyword (:symbol %))))) all-tokens)))))
+
+(re-frame/reg-sub
  :wallet/balance-loading?
  :<- [:wallet]
  (fn [wallet]
@@ -1058,6 +1073,30 @@
  :<- [:wallet/visible-assets]
  (fn [[balance visible-assets]]
    (map #(assoc % :amount (get balance (:symbol %))) visible-assets)))
+
+(defn update-value [balance prices currency]
+  (fn [{:keys [symbol decimals] :as token}]
+    (let [price (get-in prices [symbol (-> currency :code keyword) :price])]
+      (assoc token
+             :price price
+             :value (when (and balance price)
+                      (-> (money/internal->formatted (get balance symbol) symbol decimals)
+                          (money/crypto->fiat price)
+                          (money/with-precision 2)
+                          str
+                          (i18n/format-currency (:code currency))))))))
+
+(re-frame/reg-sub
+ :wallet/visible-assets-with-values
+ :<- [:wallet/visible-assets-with-amount]
+ :<- [:prices]
+ :<- [:wallet/currency]
+ :<- [:balance]
+ (fn [[assets prices currency balance]]
+   (let [{:keys [tokens nfts]} (group-by #(if (:nft? %) :nfts :tokens) assets)
+         tokens-with-values (map (update-value balance prices currency) tokens)]
+     {:tokens tokens-with-values
+      :nfts   nfts})))
 
 (re-frame/reg-sub
  :wallet/transferrable-assets-with-amount

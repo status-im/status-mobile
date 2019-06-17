@@ -13,7 +13,6 @@
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
-            [status-im.ui.screens.wallet.main.views :as wallet.main.views]
             [status-im.ui.screens.wallet.send.styles :as styles]
             [status-im.ui.components.toolbar.actions :as actions]))
 
@@ -51,8 +50,6 @@
                           :ref                          #(reset! scroll %)
                           :on-content-size-change       #(when (and scroll @scroll)
                                                            (.scrollToEnd @scroll))}
-       (when-not online?
-         [wallet.main.views/snackbar :t/error-cant-send-transaction-offline])
        [react/view styles/send-transaction-form
         [wallet.components/recipient-selector
          {:address   to

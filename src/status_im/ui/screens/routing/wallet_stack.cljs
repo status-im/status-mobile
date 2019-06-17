@@ -3,6 +3,7 @@
 (def wallet-stack
   {:name    :wallet-stack
    :screens [:wallet
+             :wallet-account
              :collectibles-list
              :wallet-onboarding-setup
              :contact-code
@@ -25,5 +26,6 @@
              :extension-screen-holder
              :wallet-settings-assets
              :wallet-add-custom-token
-             :wallet-custom-token-details]
+             :wallet-custom-token-details
+             :currency-settings]
    :config  {:initialRouteName :wallet}})
