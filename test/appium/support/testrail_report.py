@@ -31,7 +31,10 @@ class TestrailReport(BaseTestReport):
         self.api_url = self.url + 'api/v2/'
 
     def get(self, method):
-        return requests.get(self.api_url + method, headers=self.headers).json()
+        rval = requests.get(self.api_url + method, headers=self.headers).json()
+        if 'error' in rval:
+            raise Exception('Failed request: %s' % rval['error'])
+        return rval
 
     def post(self, method, data):
         data = bytes(json.dumps(data), 'utf-8')

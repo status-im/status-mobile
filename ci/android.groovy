@@ -86,7 +86,6 @@ def uploadToSauceLabs() {
 }
 
 def uploadToDiawi() {
-  env.SAUCE_LABS_NAME = "im.status.ethereum-e2e-${GIT_COMMIT.take(6)}.apk"
   withCredentials([
     string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
   ]) {

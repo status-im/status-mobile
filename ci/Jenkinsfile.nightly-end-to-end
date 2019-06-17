@@ -1,0 +1,64 @@
+pipeline {
+
+  agent { label 'linux1' }
+
+  parameters {
+    string(
+      name: 'NETWORK',
+      description: 'Name of test network to use.',
+      defaultValue: 'ropsten',
+    )
+    string(
+      name: 'APK_NAME',
+      description: 'Filename of APK uploaded to SauceLabs.',
+    )
+  }
+
+  options {
+    disableConcurrentBuilds()
+  }
+
+
+  stages {
+    stage('Test') {
+      steps {
+        withCredentials([
+          usernamePassword(
+            credentialsId:  'test-rail-api',
+            usernameVariable: 'TESTRAIL_USER',
+            passwordVariable: 'TESTRAIL_PASS'
+          ),
+          usernamePassword(
+            credentialsId:  'sauce-labs-api',
+            usernameVariable: 'SAUCE_USERNAME',
+            passwordVariable: 'SAUCE_ACCESS_KEY'
+          ),
+        ]) {
+          dir('test/appium/tests') {
+            sh """
+              python3 -m pytest -m testrail_id \
+                -n24 --rerun_count=2 \
+                --testrail_report=True \
+                --network=${params.NETWORK} \
+                --apk=${params.APK_NAME}
+            """
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      script {
+        sauce('12e007ad-48cf-4c20-92f3-b923bb5641bd') {
+          saucePublisher()
+        }
+        junit(
+          testDataPublishers: [[$class: 'SauceOnDemandReportPublisher', jobVisibility: 'public']],
+          testResults: 'test/appium/tests/*.xml'
+        )
+      }
+    }
+  }
+}
