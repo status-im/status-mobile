@@ -27,7 +27,7 @@ HELP_FUN = \
 HOST_OS := $(shell uname | tr '[:upper:]' '[:lower:]')
 
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
-export NIX_KEEP ?= BUILD_ENV
+export NIX_KEEP ?= BUILD_ENV,SSL_CERT_FILE,NIX_SSL_CERT_FILE
 export NIX_CONF_DIR = $(PWD)/nix
 
 export REACT_SERVER_PORT ?= 5001 # any value different from default 5000 will work; this has to be specified for both the Node.JS server process and the Qt process

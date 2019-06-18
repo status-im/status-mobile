@@ -8,7 +8,7 @@ def shell(Map opts = [:], String cmd) {
   def defaults = [
     pure: true,
     args: ['target-os': env.TARGET_OS],
-    keep: ['LOCALE_ARCHIVE_2_27'],
+    keep: ['LOCALE_ARCHIVE_2_27', 'SSL_CERT_FILE', 'NIX_SSL_CERT_FILE'],
   ]
   /* merge defaults with received opts */
   opts = defaults + opts
