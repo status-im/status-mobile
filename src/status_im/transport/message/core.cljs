@@ -55,9 +55,12 @@
                                        %)))
         (catch :default e nil))))) ; ignore unknown message types
 
-(defn- js-array->seq [array]
-  (for [i (range (.-length array))]
-    (aget array i)))
+(defn- js-obj->seq [obj]
+  ;; Sometimes the filter will return a single object instead of a collection
+  (if (array? obj)
+    (for [i (range (.-length obj))]
+      (aget obj i))
+    [obj]))
 
 (fx/defn receive-whisper-messages
   [{:keys [now] :as cofx} js-error js-messages chat-id]
@@ -66,7 +69,7 @@
     (let [now-in-s (quot now 1000)
           receive-message-fxs (map (fn [message]
                                      (receive-message now-in-s chat-id message))
-                                   (js-array->seq js-messages))]
+                                   (js-obj->seq js-messages))]
       (apply fx/merge cofx receive-message-fxs))
     (log/error "Something went wrong" js-error js-messages)))
 
