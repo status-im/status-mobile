@@ -1,9 +1,10 @@
-{ pkgs ? import <nixpkgs> {},
+{ nixpkgs-bootstrap ? import ./nix/nixpkgs-bootstrap.nix { },
+  pkgs ? nixpkgs-bootstrap.pkgs,
   target-os ? "all" }:
 with pkgs;
 
 let
-  projectDeps = import ./default.nix { inherit target-os; };
+  projectDeps = import ./default.nix { inherit target-os pkgs nixpkgs-bootstrap; inherit (nixpkgs-bootstrap) config; };
   platform = callPackage ./nix/platform.nix { inherit target-os; };
   useFastlanePkg = (platform.targetAndroid && !stdenv'.isDarwin);
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
