@@ -227,14 +227,15 @@
   [react/view (style/group-message-wrapper message)
    [react/view (style/message-body message)
     (when display-photo?
-      [react/view style/message-author
+      [react/view (style/message-author outgoing)
        (when last-in-group?
          [react/touchable-highlight {:on-press #(when-not modal? (re-frame/dispatch [:chat.ui/show-profile from]))}
           [react/view
            [photos/member-photo from]]])])
-    [react/view (style/group-message-view outgoing message-type)
+    [react/view (style/group-message-view outgoing message-type display-photo?)
      (when display-username?
-       [message-author-name from username])
+       [react/touchable-opacity {:on-press #(re-frame/dispatch [:chat.ui/show-profile from])}
+        [message-author-name from username]])
      [react/view {:style (style/timestamp-content-wrapper outgoing message-type)}
       content]]]
    [react/view (style/delivery-status outgoing)

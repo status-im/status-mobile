@@ -22,15 +22,13 @@
     {:padding-bottom 16}))
 
 (defn message-body
-  [{:keys [outgoing display-photo?] :as message}]
+  [{:keys [outgoing] :as message}]
   (let [align (if outgoing :flex-end :flex-start)
         direction (if outgoing :row-reverse :row)]
-    (merge {:flex-direction direction
-            :padding-top    (message-padding-top message)
-            :align-self     align
-            :align-items    align}
-           (when display-photo?
-             {:padding-left  8}))))
+    {:flex-direction direction
+     :padding-top    (message-padding-top message)
+     :align-self     align
+     :align-items    align}))
 
 (def message-timestamp
   {:font-size  10
@@ -76,14 +74,15 @@
   {:flex-direction (if outgoing :row-reverse :row)})
 
 (defn group-message-view
-  [outgoing message-type]
+  [outgoing message-type display-photo?]
   (let [align (if outgoing :flex-end :flex-start)]
     (merge {:flex-direction :column
             :max-width      (if platform/desktop? 500 320)
             :align-items    align}
            (if outgoing
              {:margin-right 8}
-             {:margin-left 8}))))
+             (when-not display-photo?
+               {:margin-left 8})))))
 
 (defn delivery-status [outgoing]
   (if outgoing
@@ -92,9 +91,14 @@
     {:align-self    :flex-start
      :padding-left  (if platform/desktop? 24 8)}))
 
-(def message-author
-  {:width      photos/default-size
-   :align-self :flex-end})
+(defn message-author [outgoing]
+  (merge
+   {:width      (+ 16 photos/default-size) ;; 16 is for the padding
+    :align-self :flex-end}
+   (if outgoing
+     {:padding-left 8}
+     {:padding-horizontal 8
+      :padding-right 8})))
 
 (def delivery-view
   {:flex-direction :row
