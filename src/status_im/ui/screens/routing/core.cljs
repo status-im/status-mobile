@@ -143,7 +143,7 @@
 (defn tab-navigator [routes config]
   (nav-reagent/tab-navigator
    routes
-   (prepare-config config)))
+   (assoc (prepare-config config) :lazy false)))
 
 (declare stack-screens)
 
