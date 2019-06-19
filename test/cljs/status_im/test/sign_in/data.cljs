@@ -92,7 +92,8 @@
    :last-request                         nil
    :desktop-notifications?               false
    :settings                             {:web3-opt-in? true
-                                          :preview-privacy? true
+                                          :preview-privacy? false
+                                          :suppress-wallet-receive-warning false
                                           :fleet        :eth.beta
                                           :wallet       {:visible-tokens {:testnet #{:STT
                                                                                      :HND}

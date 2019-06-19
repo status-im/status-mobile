@@ -1,6 +1,9 @@
 (ns status-im.ui.screens.wallet.accounts.sheets
+  (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.action-button.action-button :as action-button]
+            [status-im.ui.components.checkbox.view :as checkbox]
+            [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]))
@@ -63,3 +66,29 @@
    [action-button/action-button-disabled {:label               (i18n/label :t/export-account)
                                           :icon                 :main-icons/copy
                                           :icon-opts           {:color :blue}}]])
+
+(defn- wallet-receive-warning-display-state [suppress?]
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet.ui/warning-chekbox-pressed])}
+   [react/view {:style {:padding-right 16 :flex-direction :row :padding-vertical 5}}
+    [checkbox/checkbox
+     {:checked? suppress?
+      :on-value-change #(re-frame/dispatch [:wallet.ui/warning-chekbox-pressed])}]
+    [react/view  {:style {:margin-top 16}}
+     [react/text {:style {:color colors/gray}} (i18n/label :t/dont-show-again)]]]])
+
+(defview wallet-receive-warning-view []
+  (letsubs [current-account [:account/account]]
+    [react/view {:flex 1 :align-items :center :justify-content :center :margin-horizontal 34}
+     [react/text {:style {:margin-top 37 :margin-bottom 8 :typography :header}}
+      (i18n/label :t/your-wallet-code)]
+     [react/i18n-text {:style {:margin-top 17 :font-size 16 :text-align :center :color colors/gray} :key :wallet-receive-warning}]
+     [react/view {:align-items :center :margin-top 26}
+      [components.common/button {:button-style {:background-color colors/blue :width 150}
+                                 :label-style  {:color colors/white}
+                                 :on-press #(re-frame/dispatch [:bottom-sheet/hide-sheet])
+                                 :label    (i18n/label :t/ok)}]]
+     [wallet-receive-warning-display-state (get-in current-account [:settings :wallet :suppress-wallet-receive-warning] false)]]))
+
+(def wallet-receive-warning
+  {:content        wallet-receive-warning-view
+   :content-height 287})

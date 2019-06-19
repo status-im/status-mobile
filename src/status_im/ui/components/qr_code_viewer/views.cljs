@@ -18,18 +18,18 @@
     [react/scroll-view {:content-container-style {:align-items       :center
                                                   :margin-top        16
                                                   :justify-content   :center}
-                        :style (merge {:flex 1} style)}
+                        :style (merge {:flex 1 :align-self :stretch} style)}
      (when show-tribute-to-talk-warning?
        [react/view {:style {:margin-horizontal 16}}
         [tribute-to-talk/enabled-note]])
+     [react/text {:style (merge styles/qr-code-hint hint-style)}
+      hint]
      (when width
        (let [size (int (min width styles/qr-code-max-width))]
          [react/view {:style               (styles/qr-code-container size)
                       :accessibility-label :qr-code-image}
           [qr-code {:value value
                     :size  size}]]))
-     [react/text {:style (merge styles/qr-code-hint hint-style)}
-      hint]
      [react/view styles/footer
       [react/view styles/wallet-info
        [react/text {:style               (merge styles/hash-value-text footer-style)
@@ -38,7 +38,8 @@
         legend]]]
      (when footer-button
        [react/view {:style {:align-self    :stretch
-                            :margin-bottom 16}}
+                            :margin-bottom 16
+                            :margin-top 31}}
         [footer-button value]])]))
 
 (defn qr-code-viewer

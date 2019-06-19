@@ -2,11 +2,18 @@
   (:require [status-im.ui.components.colors :as colors]))
 
 (def hint
-  {:color colors/white-transparent})
+  {:color colors/white-transparent
+   :margin-top 11
+   :margin-bottom 24
+   :font-size 16
+   :max-width 140
+   :text-align :center})
 
 (def footer
   {:color colors/white
-   :border-color colors/white-light-transparent})
+   :border-color colors/white-light-transparent
+   :margin-top 29
+   :max-width 235})
 
 (def bottom-buttons
   {:background-color colors/blue})

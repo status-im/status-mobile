@@ -352,3 +352,10 @@
   [{:keys [db]} symbol]
   {:db (-> db
            (assoc-in [:wallet :request-transaction :symbol] symbol))})
+
+(fx/defn wallet-receive-toggle-warning
+  {:events [:wallet.ui/warning-chekbox-pressed]}
+  [{:keys [db] :as cofx}]
+  (let [settings (get-in db [:account/account :settings])]
+    (fx/merge cofx
+              (accounts.update/update-settings (update-in settings [:wallet :suppress-wallet-receive-warning] not) {}))))

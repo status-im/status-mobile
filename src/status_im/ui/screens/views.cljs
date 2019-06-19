@@ -13,6 +13,7 @@
             [status-im.utils.platform :as platform]
             [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
             [status-im.ui.screens.home.sheet.views :as home.sheet]
+            [status-im.ui.screens.wallet.accounts.sheets :as wallet.sheet]
             [status-im.ui.screens.routing.core :as routing]
             [status-im.ui.screens.signing.views :as signing]
             status-im.ui.screens.wallet.collectibles.etheremon.views
@@ -49,7 +50,10 @@
                  (merge home.sheet/private-chat-actions)
 
                  (= view :group-chat-actions)
-                 (merge home.sheet/group-chat-actions))]
+                 (merge home.sheet/group-chat-actions)
+
+                 (= view :wallet-receive-warning)
+                 (merge wallet.sheet/wallet-receive-warning))]
 
       [bottom-sheet/bottom-sheet opts])))
 

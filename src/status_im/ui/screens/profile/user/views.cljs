@@ -141,6 +141,10 @@
       {:label-kw  :t/preview-privacy
        :value     (boolean (:preview-privacy? settings))
        :action-fn #(re-frame/dispatch [:accounts.ui/preview-privacy-mode-switched %])}]
+     [profile.components/settings-switch-item
+      {:label-kw  :t/suppress-wallet-receive-warning
+       :value     (get-in settings [:wallet :suppress-wallet-receive-warning] false)
+       :action-fn #(re-frame/dispatch [:wallet.ui/warning-chekbox-pressed])}]
      [profile.components/settings-item-separator]
      [profile.components/settings-item
       {:label-kw            :t/dapps-permissions

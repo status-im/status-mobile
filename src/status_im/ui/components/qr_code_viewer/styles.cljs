@@ -40,7 +40,7 @@
   {:background-color colors/white})
 
 (def footer
-  {:flex-direction   :row
+  {:flex 1
    :justify-content  :center})
 
 (def wallet-info

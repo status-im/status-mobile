@@ -15,6 +15,7 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
             [status-im.ui.screens.wallet.request.styles :as styles]
+            [status-im.ui.components.colors :as colors]
             [status-im.wallet.utils :as wallet.utils]
             [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :as views]))
@@ -69,7 +70,12 @@
 
 (views/defview request-transaction []
   (views/letsubs [address-hex [:account/hex-address]
-                  chain-id    [:get-network-id]]
+                  chain-id    [:get-network-id]
+                  current-account [:account/account]]
+    {:component-did-mount
+     (fn [_]
+       (when-not (get-in current-account [:settings :wallet :suppress-wallet-receive-warning] false)
+         (re-frame/dispatch [:bottom-sheet/show-sheet :wallet-receive-warning {}])))}
     [wallet.components/simple-screen
      [wallet.components/toolbar {:transparent? true}
       wallet.components/default-action
@@ -79,7 +85,6 @@
                                      :accessibility-label :share-button}
                          :handler   #(list-selection/open-share {:message (eip55/address->checksum address-hex)})}]]]
      [react/view {:flex 1}
-      [common/network-info {:text-color :white}]
       [qr-code-viewer/qr-code-viewer
        {:hint-style    styles/hint
         :footer-style  styles/footer
