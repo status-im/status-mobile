@@ -117,9 +117,8 @@
    (cond->
     (merge {:headerMode        "none"
             :cardStyle         {:backgroundColor (when (or platform/ios? platform/desktop?) :white)}
-            #_:transitionConfig
-            #_(fn []
-                #js {:transitionSpec #js{:duration 10}})
+            :transitionConfig  (fn []
+                                 #js {:transitionSpec #js{:duration 100}})
             :onTransitionStart (fn [n]
                                  (let [idx    (.. n
                                                   -navigation
