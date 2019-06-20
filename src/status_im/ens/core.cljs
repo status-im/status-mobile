@@ -116,14 +116,34 @@
   {:db (-> (update-in db [:ens/registration :custom-domain?] not)
            (empty-username-candidate))})
 
+(fx/defn save-preferred-name
+  {:events [:ens/save-preferred-name]}
+  [{:keys [db] :as cofx} name]
+  (fx/merge (assoc-in cofx [:db :account/account :preferred-name] name)
+            (accounts.update/account-update cofx
+                                            {:preferred-name name})))
+
 (fx/defn save-username
   {:events [:ens/save-username]}
   [{:keys [db] :as cofx} custom-domain? username]
-  (let [name (fullname custom-domain? username)
-        db   (update-in db [:account/account :usernames] #((fnil conj []) %1 %2) name)]
-    (accounts.update/account-update cofx
-                                    {:usernames (get-in db [:account/account :usernames])}
-                                    {:success-event [:ens/set-state username :saved]})))
+  (let [name   (fullname custom-domain? username)
+        new-db (update-in db [:account/account :usernames] #((fnil conj []) %1 %2) name)
+        names  (get-in new-db [:account/account :usernames])]
+    (fx/merge {:db new-db}
+              (accounts.update/account-update cofx
+                                              {:usernames names}
+                                              {:success-event [:ens/set-state username :saved]})
+              (when (= 1 (count names))
+                ;; First name, save it as default
+                (save-preferred-name cofx name)))))
+
+(fx/defn switch-show-username
+  {:events [:ens/switch-show-username]}
+  [{:keys [db] :as cofx} _]
+  (let [new-db (update-in db [:account/account :show-name?] not)]
+    (fx/merge {:db new-db}
+              (accounts.update/account-update cofx
+                                              {:show-name? (get-in new-db [:account/account :show-name?])}))))
 
 (fx/defn on-registration-failure
   {:events [:ens/on-registration-failure]}

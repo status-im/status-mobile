@@ -56,10 +56,13 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.radio :as radio]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.actions :as actions]
-            [status-im.ui.components.toolbar.view :as toolbar])
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.screens.chat.message.message :as message]
+            [status-im.ui.screens.profile.components.views :as profile.components])
 
   (:require-macros [status-im.utils.views :as views]))
 
@@ -124,7 +127,7 @@
                                :icon          :main-icons/close
                                :icon-color    colors/gray
                                :hide-chevron? true}]
-          [react/view {:style {:margin-top 10}}
+          [react/view {:style {:margin-top 18}}
            [list/big-list-item {:text          (i18n/label :t/ens-release-username)
                                 :text-color    colors/gray
                                 :text-style    {:font-weight "500"}
@@ -205,7 +208,7 @@
    icon])
 
 (defn- input-action [{:keys [state custom-domain? username]}]
-  (if (= :connected state)
+  (if (= state :connected)
     ;; Already registered, just need to save the contact
     [:ens/save-username custom-domain? username]
     [:ens/set-state username :registering]))
@@ -487,35 +490,78 @@
     [button {:on-press #(re-frame/dispatch [:navigate-to :ens-register])
              :label    (i18n/label :t/get-started)}]]])
 
-(defn- registered [names]
-  [react/scroll-view {:style {:flex 1}}
+(defn- name-item [{:keys [name action hide-chevron?]}]
+  (let [stateofus-username (stateofus/username name)
+        s                  (or stateofus-username name)]
+    [list/big-list-item {:text          s
+                         :subtext       (when stateofus-username stateofus/domain)
+                         :action-fn     action
+                         :icon          :main-icons/username
+                         :hide-chevron? hide-chevron?}]))
+
+(defn- name-list [names preferred-name]
+  [react/view {:style {:flex 1 :margin-top 16}}
+   [react/view {:style {:margin-horizontal 16 :align-items :center :justify-content :center}}
+    [react/nested-text
+     {:style {:color colors/gray}}
+     (i18n/label :t/ens-displayed-with)
+     [{:style {:color colors/black :text-align :center}}
+      (str "\n@" preferred-name)]]]
    [react/view {:style {:flex 1 :margin-top 8}}
-    [list/big-list-item {:text      (i18n/label :t/ens-add-username)
-                         :action-fn #(re-frame/dispatch [:navigate-to :ens-register])
-                         :icon      :main-icons/add}]]
-   [react/view {:style {:margin-top 22}}
-    [react/text {:style {:color colors/gray :margin-horizontal 16}}
-     (i18n/label :t/ens-your-usernames)]
-    (if (seq names)
-      [react/view {:style {:margin-top 8}}
-       (for [name names]
-         ^{:key name}
-         [react/view
-          (let [stateofus-username (stateofus/username name)
-                s                  (or stateofus-username name)]
-            [list/big-list-item {:text      s
-                                 :subtext   (when stateofus-username stateofus/domain)
-                                 :action-fn #(re-frame/dispatch [:ens/navigate-to-name name])
-                                 :icon      :main-icons/username}])])]
-      [react/text {:style {:color colors/gray :font-size 15}}
-       (i18n/label :t/ens-no-usernames)])]])
+    [react/scroll-view {:style {:flex 1}}
+     [react/view {:style {:flex 1}}
+      (for [name names]
+        (let [action #(do (re-frame/dispatch [:ens/save-preferred-name name])
+                          (re-frame/dispatch [:bottom-sheet/hide-sheet]))]
+          ^{:key name}
+          [react/touchable-highlight {:on-press action}
+           [react/view {:style {:flex 1 :flex-direction :row :align-items :center :justify-content :center :margin-right 16}}
+            [react/view {:style {:flex 1}}
+             [name-item {:name name :hide-chevron? true :action action}]]
+            [radio/radio (= name preferred-name)]]]))]]]])
+
+(defn- registered [names {:keys [preferred-name address public-key name]} show?]
+  [react/view {:style {:flex 1}}
+   [react/scroll-view
+    [react/view {:style {:margin-top 8}}
+     [list/big-list-item {:text      (i18n/label :t/ens-add-username)
+                          :action-fn #(re-frame/dispatch [:navigate-to :ens-register])
+                          :icon      :main-icons/add}]]
+    [react/view {:style {:margin-top 22 :margin-bottom 8}}
+     [react/text {:style {:color colors/gray :margin-horizontal 16}}
+      (i18n/label :t/ens-your-usernames)]
+     (if (seq names)
+       [react/view {:style {:margin-top 8}}
+        (for [name names]
+          ^{:key name}
+          [name-item {:name name :action #(re-frame/dispatch [:ens/navigate-to-name name])}])]
+       [react/text {:style {:color colors/gray :font-size 15}}
+        (i18n/label :t/ens-no-usernames)])]
+    [react/view {:style {:padding-top 22 :border-color colors/gray-lighter :border-top-width 1}}
+     [react/text {:style {:color colors/gray :margin-horizontal 16}}
+      (i18n/label :t/ens-chat-settings)]
+     (when (> (count names) 1)
+       [profile.components/settings-item {:label-kw  :ens-primary-username
+                                          :value     preferred-name
+                                          :action-fn #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                                                          {:content         (fn [] (name-list names preferred-name))
+                                                                           :content-height  (+ 72 (* (min 4 (count names)) 64))}])}])
+     [profile.components/settings-switch-item {:label-kw  :ens-show-username
+                                               :action-fn #(re-frame/dispatch [:ens/switch-show-username])
+                                               :value     show?}]]
+    (let [message (merge {:from public-key :last-in-group? true :display-username? true :display-photo? true :username name
+                          :content {:text (i18n/label :t/ens-test-message)} :content-type "text/plain" :timestamp-str "9:41 AM"}
+                         (when show?
+                           {:name preferred-name}))]
+      [message/message-body message
+       [message/text-message message]])]])
 
 (views/defview main []
-  (views/letsubs [names [:account/usernames]]
+  (views/letsubs [{:keys [names account preferred-name show?]} [:ens.main/screen]]
     [react/view {:style {:flex 1}}
      [status-bar/status-bar {:type :main}]
      [toolbar/simple-toolbar
       (i18n/label :t/ens-usernames)]
      (if (seq names)
-       [registered names]
+       [registered names account show?]
        [welcome])]))

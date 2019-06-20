@@ -142,7 +142,7 @@
     :outputs ["bytes32" "bytes32"]
     :on-success
     (fn [[x y]]
-      (when-let [public-key (uncompressed-public-key x y)]
+      (let [public-key (uncompressed-public-key x y)]
         (when-not (= public-key default-key)
           (cb public-key))))}))
 

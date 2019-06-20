@@ -46,11 +46,12 @@
   {:margin-left 16})
 
 (def settings-item
-  {:padding-horizontal 16
-   :flex               1
-   :flex-direction     :row
-   :align-items        :center
-   :height             52})
+  {:padding-left   16
+   :padding-right  8
+   :flex           1
+   :flex-direction :row
+   :align-items    :center
+   :height         52})
 
 (def settings-item-icon
   {:background-color colors/blue-light

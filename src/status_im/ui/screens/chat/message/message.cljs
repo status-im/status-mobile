@@ -215,19 +215,19 @@
           (if outgoing-status
             [text-status outgoing-status]))))))
 
-(defview message-author-name [from message-username]
+(defview message-author-name [from message-username name]
   (letsubs [username [:contacts/contact-name-by-identity from]]
-    (chat.utils/format-author from (or username message-username) style/message-author-name)))
+    (chat.utils/format-author from (or username message-username) style/message-author-name name)))
 
 (defn message-body
   [{:keys [last-in-group?
            display-photo?
            display-username?
-           message-type
            from
            outgoing
            modal?
-           username] :as message} content]
+           username
+           name] :as message} content]
   [react/view (style/group-message-wrapper message)
    [react/view (style/message-body message)
     (when display-photo?
@@ -236,11 +236,11 @@
          [react/touchable-highlight {:on-press #(when-not modal? (re-frame/dispatch [:chat.ui/show-profile from]))}
           [react/view
            [photos/member-photo from]]])])
-    [react/view (style/group-message-view outgoing message-type display-photo?)
+    [react/view (style/group-message-view outgoing display-photo?)
      (when display-username?
        [react/touchable-opacity {:on-press #(re-frame/dispatch [:chat.ui/show-profile from])}
-        [message-author-name from username]])
-     [react/view {:style (style/timestamp-content-wrapper outgoing message-type)}
+        [message-author-name from username name]])
+     [react/view {:style (style/timestamp-content-wrapper outgoing)}
       content]]]
    [react/view (style/delivery-status outgoing)
     [message-delivery-status message]]])

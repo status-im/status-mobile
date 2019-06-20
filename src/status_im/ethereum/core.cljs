@@ -70,7 +70,7 @@
 (defn coordinates [public-key]
   (when-let [hex (naked-address public-key)]
     (when (= public-key-length (count (subs hex 2)))
-      {:x (normalized-address (subs hex 1 65))
+      {:x (normalized-address (subs hex 2 66))
        :y (normalized-address (subs hex 66))})))
 
 (defn address? [s]

@@ -70,11 +70,11 @@
            {:margin-right 64})
          (last-message-padding message)))
 
-(defn timestamp-content-wrapper [outgoing message-type]
+(defn timestamp-content-wrapper [outgoing]
   {:flex-direction (if outgoing :row-reverse :row)})
 
 (defn group-message-view
-  [outgoing message-type display-photo?]
+  [outgoing display-photo?]
   (let [align (if outgoing :flex-end :flex-start)]
     (merge {:flex-direction :column
             :max-width      (if platform/desktop? 500 320)

@@ -7,7 +7,7 @@
   (str username "." domain))
 
 (defn username [name]
-  (when (string/ends-with? name domain)
+  (when (and name (string/ends-with? name domain))
     (first (string/split name "."))))
 
 (def registrars

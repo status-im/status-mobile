@@ -344,7 +344,7 @@
     (and group-chat (not public?))
     (assoc :message-type :group-user-message)))
 
-(def ^:private transport-keys [:content :content-type :message-type :clock-value :timestamp])
+(def ^:private transport-keys [:content :content-type :message-type :clock-value :timestamp :name])
 
 (defn remove-icon
   "Coin's icon's resource is represented as a function,

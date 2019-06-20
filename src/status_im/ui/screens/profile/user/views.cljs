@@ -276,21 +276,22 @@
     :accessory-value     active-contacts-count
     :action-fn           #(re-frame/dispatch [:navigate-to :contacts-list])}])
 
-(defn- ens-item [ens {:keys [registrar] :as props}]
-  [list.views/big-list-item
-   (let [enabled? (not (nil? registrar))]
-     (merge
-      {:text                (or ens (i18n/label :t/ens-usernames))
-       :subtext             (if enabled?
-                              (if ens (i18n/label :t/ens-your-your-name) (i18n/label :t/ens-usernames-details))
-                              (i18n/label :t/ens-network-restriction))
-       :icon                :main-icons/username
-       :accessibility-label :ens-button}
-      (if enabled?
-        {:action-fn #(re-frame/dispatch [:navigate-to :ens-main props])}
-        {:icon-color    colors/gray
-         :active?       false
-         :hide-chevron? (not enabled?)})))])
+(defn- ens-item [name {:keys [registrar] :as props}]
+  [react/view {:style {:margin-top 8}}
+   [list.views/big-list-item
+    (let [enabled? (not (nil? registrar))]
+      (merge
+       {:text                (or name (i18n/label :t/ens-usernames))
+        :subtext             (if enabled?
+                               (if name (i18n/label :t/ens-your-your-name) (i18n/label :t/ens-usernames-details))
+                               (i18n/label :t/ens-network-restriction))
+        :icon                :main-icons/username
+        :accessibility-label :ens-button}
+       (if enabled?
+         {:action-fn #(re-frame/dispatch [:navigate-to :ens-main props])}
+         {:icon-color    colors/gray
+          :active?       false
+          :hide-chevron? (not enabled?)})))]])
 
 (defn tribute-to-talk-item
   [opts]
@@ -310,7 +311,7 @@
       [view]]]))
 
 (defview my-profile []
-  (letsubs [{:keys [public-key photo-path] :as current-account} [:account/account]
+  (letsubs [{:keys [public-key photo-path preferred-name] :as current-account} [:account/account]
             editing?        [:my-profile/editing?]
             extensions      [:extensions/profile]
             changed-account [:my-profile/profile]
@@ -351,7 +352,7 @@
                                     profile-icon-options)
             :on-change-text-event :my-profile/update-name}]]
          [share-profile-item (dissoc current-account :mnemonic)]
-         [ens-item nil {:registrar stateofus-registrar}]
+         [ens-item preferred-name {:registrar stateofus-registrar}]
          [contacts-list-item active-contacts-count]
          (when tribute-to-talk
            [tribute-to-talk-item tribute-to-talk])

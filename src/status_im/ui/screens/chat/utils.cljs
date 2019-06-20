@@ -1,31 +1,28 @@
 (ns status-im.ui.screens.chat.utils
   (:require [re-frame.core :as re-frame]
+            [status-im.ethereum.stateofus :as stateofus]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
             [status-im.i18n :as i18n]
-            [status-im.constants :as constants]
             [status-im.utils.core :as core-utils]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
             [status-im.utils.http :as http]))
 
-(defn format-author [from username style]
-  ;; TODO: We defensively generate the name for now, to be revisited when new protocol is defined
-  [react/nested-text {:style (style false)
-                      :number-of-lines 1
-                      :ellipsize-mode  :tail}
-   (when username
-     [{:style (style true)
-       :number-of-lines 1
-       :ellipsize-mode  :tail}
-      (str username " • ")])
-   (gfycat/generate-gfy from)])
+(defn format-author [from username style ens-name]
+  (cond
+    ens-name
+    [react/text {:style {:color colors/blue :font-size 13 :font-weight "500"}}
+     (str "@" (or (stateofus/username ens-name) ens-name))]
+    :else
+    [react/text {:style {:color colors/gray :font-size 12 :font-weight "400"}}
+     (gfycat/generate-gfy from)]))
 
 (defn format-reply-author [from username current-public-key style]
   (or (and (= from current-public-key)
            [react/text {:style (style true)}
             (i18n/label :t/You)])
-      (format-author from username style)))
+      (format-author from username style nil)))
 
 (def ^:private styling->prop
   {:bold      {:style {:font-weight "700"}}

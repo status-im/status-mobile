@@ -248,3 +248,6 @@
                    {:type :string :optional true}))
 
 (def v24 (update v23 :properties merge {:usernames {:type "string[]" :optional true}}))
+
+(def v25 (update v24 :properties merge {:preferred-name {:type :string :optional true}
+                                        :show-name? {:type :bool :optional true}}))

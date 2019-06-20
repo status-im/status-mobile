@@ -4,6 +4,7 @@
             [status-im.react-native.js-dependencies :as rn]
             [taoensso.timbre :as log]
             [status-im.i18n :as i18n]
+            [status-im.accounts.core :as accounts]
             [status-im.accounts.model :as accounts.model]
             [status-im.contact.db :as contact.db]
             [status-im.chat.models :as chat-model]
@@ -150,7 +151,7 @@
 
   (defn- get-contact-name [{:keys [db] :as cofx} from]
     (if (accounts.model/logged-in? cofx)
-      (:name (hash->contact from (-> db :contacts/contacts vals)))
+      (accounts/displayed-name (hash->contact from (-> db :contacts/contacts vals)))
       (anonymize-pubkey from)))
 
   (defn- build-notification [{:keys [title body decoded-payload]}]

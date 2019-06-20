@@ -122,8 +122,7 @@
            value ""
            active? true
            style {}}}]
-  {:pre [(or icon image-source activity-indicator)
-         text
+  {:pre [text
          (or (nil? accessibility-label) (keyword? accessibility-label))]}
   [react/touchable-highlight
    {:on-press action-fn

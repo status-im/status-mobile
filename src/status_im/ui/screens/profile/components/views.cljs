@@ -1,6 +1,8 @@
 (ns status-im.ui.screens.profile.components.views
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.accounts.core :as accounts]
+            [status-im.ethereum.stateofus :as stateofus]
             [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.colors :as colors]
@@ -38,7 +40,7 @@
      [react/view styles/profile-header-name-container
       [react/text {:style           styles/profile-name-text
                    :number-of-lines 1}
-       name]
+       (accounts/displayed-name contact)]
       (when (and public-key (not= generated-name name))
         [react/text {:style           styles/profile-three-words
                      :number-of-lines 1}
@@ -101,7 +103,7 @@
     (if icon-content
       icon-content
       (when (and active? (not hide-arrow?))
-        [vector-icons/icon :main-icons/next {:color colors/gray}]))]])
+        [vector-icons/icon :main-icons/next {:color colors/gray-transparent-40}]))]])
 
 (defn settings-switch-item
   [{:keys [label-kw value action-fn active?]
