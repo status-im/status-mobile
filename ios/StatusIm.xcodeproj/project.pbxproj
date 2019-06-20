@@ -72,6 +72,7 @@
 		D99C50E5E18942A39C8DDF61 /* Inter-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B321D25F4493470980039457 /* Inter-BoldItalic.otf */; };
 		DC3316E4BB514C6F80B60D84 /* Inter-ExtraLightItalic-BETA.otf in Resources */ = {isa = PBXBuildFile; fileRef = EBCA9155761E4EBCB2EAFE9A /* Inter-ExtraLightItalic-BETA.otf */; };
 		E0AD9E8F495A4907B65104BF /* libRCTImageResizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BEE3436791D42248F853999 /* libRCTImageResizer.a */; };
+		E3CDB8AF22BBE460009BFE27 /* libRNScreens.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E3CDB8A822BBD9D3009BFE27 /* libRNScreens.a */; };
 		E5A39B2530D54142B8C03B94 /* Inter-ExtraBoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1BF670316EE6470584BB715B /* Inter-ExtraBoldItalic.otf */; };
 		F0C362ACB0B24A2DB9AD29AC /* Inter-ExtraLight-BETA.otf in Resources */ = {isa = PBXBuildFile; fileRef = 17787D310A644038B9357960 /* Inter-ExtraLight-BETA.otf */; };
 		FD4F213C3873473CB703B1D2 /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 674B3D9595A047AB8D518F4E /* libRNFS.a */; };
@@ -512,6 +513,13 @@
 			remoteGlobalIDString = 5D72D2E81C16249000E22EC1;
 			remoteInfo = RCTImageResizer;
 		};
+		E3CDB8A722BBD9D3009BFE27 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E3CDB86E22BBD9D2009BFE27 /* RNScreens.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNScreens;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -635,6 +643,7 @@
 		CE4E31B21D8695250033ED64 /* Statusgo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Statusgo.framework; path = "../modules/react-native-status/ios/RCTStatus/Statusgo.framework"; sourceTree = "<group>"; };
 		D489EE8D5F52DA10AC715727 /* Pods-StatusImTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StatusImTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-StatusImTests/Pods-StatusImTests.release.xcconfig"; sourceTree = "<group>"; };
 		DF1CD4C3D1254774ACCAE4E8 /* libBVLinearGradient.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libBVLinearGradient.a; sourceTree = "<group>"; };
+		E3CDB86E22BBD9D2009BFE27 /* RNScreens.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNScreens.xcodeproj; path = "../node_modules/react-native-screens/ios/RNScreens.xcodeproj"; sourceTree = "<group>"; };
 		EBCA9155761E4EBCB2EAFE9A /* Inter-ExtraLightItalic-BETA.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraLightItalic-BETA.otf"; path = "../resources/fonts/Inter-ExtraLightItalic-BETA.otf"; sourceTree = "<group>"; };
 		F090E261B9854867A728CE4F /* RealmReact.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RealmReact.xcodeproj; path = "../node_modules/realm/react-native/ios/RealmReact.xcodeproj"; sourceTree = "<group>"; };
 		F9238D6B1E5F055900C047B9 /* SF-UI-Text-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Text-Semibold.otf"; sourceTree = "<group>"; };
@@ -659,6 +668,7 @@
 				ABC194E5221009A800EB06E6 /* libRNLanguages.a in Frameworks */,
 				475D202F20B7450D00879A77 /* libRNFirebase.a in Frameworks */,
 				4C9FBC56227C85640024181F /* libRNMail.a in Frameworks */,
+				E3CDB8AF22BBE460009BFE27 /* libRNScreens.a in Frameworks */,
 				C93242561FE1C68C00FE7099 /* libRCTAnimation.a in Frameworks */,
 				4C16DE0C1F89508700AA10DB /* JavaScriptCore.framework in Frameworks */,
 				B2DEA0D01E49E33300FA28D6 /* libRCTHttpServer.a in Frameworks */,
@@ -966,6 +976,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				E3CDB86E22BBD9D2009BFE27 /* RNScreens.xcodeproj */,
 				4C24EFF322B12D0D009A5636 /* RNGestureHandler.xcodeproj */,
 				4C5F698522815E4E00D26222 /* RNShakeEvent.xcodeproj */,
 				4C9FBC19227C85250024181F /* RNMail.xcodeproj */,
@@ -1175,6 +1186,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		E3CDB86F22BBD9D2009BFE27 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E3CDB8A822BBD9D3009BFE27 /* libRNScreens.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1369,6 +1388,10 @@
 				{
 					ProductGroup = 4C9FBC1A227C85250024181F /* Products */;
 					ProjectRef = 4C9FBC19227C85250024181F /* RNMail.xcodeproj */;
+				},
+				{
+					ProductGroup = E3CDB86F22BBD9D2009BFE27 /* Products */;
+					ProjectRef = E3CDB86E22BBD9D2009BFE27 /* RNScreens.xcodeproj */;
 				},
 				{
 					ProductGroup = 475D1EEE20B73EE000879A77 /* Products */;
@@ -1825,6 +1848,13 @@
 			fileType = archive.ar;
 			path = libRCTImageResizer.a;
 			remoteRef = CE4E319D1D8693090033ED64 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E3CDB8A822BBD9D3009BFE27 /* libRNScreens.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNScreens.a;
+			remoteRef = E3CDB8A722BBD9D3009BFE27 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

@@ -35,6 +35,7 @@
 (defn background-timer []   (.-default (background-timer-class)))
 (def react-navigation       (js/require "react-navigation"))
 (def react-native-shake     (js-require/js-require "react-native-shake"))
+(def react-native-screens   (js-require/js-require "react-native-screens"))
 (def mail-class             (js-require/js-require  "react-native-mail"))
 (defn react-native-mail []  (.-default (mail-class)))
 (def desktop-linking        #js {:addEventListener (fn [])})

@@ -25,6 +25,7 @@ import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
+import com.facebook.react.ReactFragmentActivity;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import org.devio.rn.splashscreen.SplashScreen;
@@ -32,7 +33,7 @@ import org.devio.rn.splashscreen.SplashScreen;
 import java.util.Properties;
 import im.status.ethereum.module.StatusThreadPoolExecutor;
 
-public class MainActivity extends ReactActivity
+public class MainActivity extends ReactFragmentActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback{
 
 

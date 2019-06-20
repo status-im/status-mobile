@@ -39,6 +39,7 @@ import me.alwx.HttpServer.HttpServerReactPackage;
 import com.chirag.RNMail.*;
 import com.clipsub.RNShake.RNShakeEventPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import com.swmansion.rnscreens.RNScreensPackage;
 
 public class MainApplication extends MultiDexApplication implements ReactApplication {
 
@@ -78,7 +79,8 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new KeychainPackage(),
                     new RNShakeEventPackage(),
                     new FingerprintAuthPackage(),
-                    new RNGestureHandlerPackage());
+                    new RNGestureHandlerPackage(),
+                    new RNScreensPackage());
         }
 
         @Override

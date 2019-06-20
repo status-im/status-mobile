@@ -33,6 +33,7 @@
               "eth-phishing-detect"
               "react-native-config"
               "react-native-svg"
+              "react-native-screens"
               "react-native-keychain"
               "rn-snoopy"
               "rn-snoopy/stream/bars"

@@ -561,5 +561,6 @@ var TopLevel = {
     "_android": function () {},
     "isSupported" : function () {},
     "authenticate" : function () {},
-    "createAppContainer" : function () {}
+    "createAppContainer" : function () {},
+    "useScreens" : function () {}
 }
