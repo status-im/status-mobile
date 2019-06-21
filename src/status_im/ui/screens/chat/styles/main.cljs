@@ -1,9 +1,6 @@
 (ns status-im.ui.screens.chat.styles.main
   (:require [status-im.ui.components.colors :as colors]))
 
-(def scroll-root
-  {:flex 1})
-
 (def chat-view
   {:flex             1
    :background-color colors/white})

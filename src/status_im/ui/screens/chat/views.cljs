@@ -438,32 +438,26 @@
     ;; components (e.g. chat-toolbar) there can be a brief visual inconsistancy like showing 'add contact'
     ;; in public chat
     (when (= chat-id current-chat-id)
-      ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
-      ;; more details here: https://github.com/facebook/react-native/issues/11071
-      [react/scroll-view {:scroll-enabled               false
-                          :style                        style/scroll-root
-                          :content-container-style      style/scroll-root
-                          :keyboard-should-persist-taps :handled}
+      [react/view {:style     style/chat-view
+                   :on-layout (fn [e]
+                                (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
        ^{:key current-chat-id}
-       [react/view {:style     style/chat-view
-                    :on-layout (fn [e]
-                                 (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
-        [chat-toolbar current-chat public? modal?]
-        [connectivity/connectivity-view anim-translate-y]
-        [connectivity/connectivity-animation-wrapper
-         {}
-         anim-translate-y
-         [messages-view-animation
-          ;;TODO(kozieiev) : When FlatList in react-native-desktop become viable it should be used instead of optimized ScrollView for chat
-          (if platform/desktop?
-            [messages-view-desktop current-chat modal?]
-            [messages-view current-chat modal?])]]
-        (when show-input?
-          [input/container])
-        (when show-stickers?
-          [stickers/stickers-view])
-        (when show-message-options?
-          [message-options/view])]])))
+       [chat-toolbar current-chat public? modal?]
+       [connectivity/connectivity-view anim-translate-y]
+       [connectivity/connectivity-animation-wrapper
+        {}
+        anim-translate-y
+        [messages-view-animation
+         ;;TODO(kozieiev) : When FlatList in react-native-desktop become viable it should be used instead of optimized ScrollView for chat
+         (if platform/desktop?
+           [messages-view-desktop current-chat modal?]
+           [messages-view current-chat modal?])]]
+       (when show-input?
+         [input/container])
+       (when show-stickers?
+         [stickers/stickers-view])
+       (when show-message-options?
+         [message-options/view])])))
 
 (defview chat []
   [chat-root false])
