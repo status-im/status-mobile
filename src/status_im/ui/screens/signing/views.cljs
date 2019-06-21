@@ -23,17 +23,21 @@
   [bottom-anim-value alpha-value window-height]
   (anim/start
    (anim/parallel
-    [(anim/spring bottom-anim-value {:toValue window-height})
-     (anim/timing alpha-value {:toValue  0
-                               :duration 500})])))
+    [(anim/spring bottom-anim-value {:toValue         (- window-height)
+                                     :useNativeDriver true})
+     (anim/timing alpha-value {:toValue         0
+                               :duration        500
+                               :useNativeDriver true})])))
 
 (defn show-panel-anim
   [bottom-anim-value alpha-value]
   (anim/start
    (anim/parallel
-    [(anim/spring bottom-anim-value {:toValue -40})
-     (anim/timing alpha-value {:toValue  0.4
-                               :duration 500})])))
+    [(anim/spring bottom-anim-value {:toValue         40
+                                     :useNativeDriver true})
+     (anim/timing alpha-value {:toValue         0.4
+                               :duration        500
+                               :useNativeDriver true})])))
 
 (defn separator []
   [react/view {:height 1 :background-color colors/gray-lighter}])
@@ -162,7 +166,7 @@
             (i18n/label :t/sign-with-password)]]])])))
 
 (defn signing-view [tx window-height]
-  (let [bottom-anim-value (anim/create-value (- window-height))
+  (let [bottom-anim-value (anim/create-value window-height)
         alpha-value       (anim/create-value 0)
         clear-timeout     (atom nil)
         current-tx        (reagent/atom nil)
@@ -191,8 +195,13 @@
                                (when @current-tx
                                  [react/view {:position :absolute :top 0 :bottom 0 :left 0 :right 0}
                                   [react/animated-view {:flex 1 :background-color :black :opacity alpha-value}]
-                                  [react/animated-view {:position :absolute :height window-height :left 0 :right 0
-                                                        :bottom bottom-anim-value}
+                                  [react/animated-view {:style
+                                                        {:position  :absolute
+                                                         :height    window-height
+                                                         :left      0
+                                                         :right     0
+                                                         ;;:bottom bottom-anim-value
+                                                         :transform [{:translateY bottom-anim-value}]}}
                                    [react/keyboard-avoiding-view {:style {:flex 1}}
                                     [react/view {:flex 1}]
                                     (if (:message @current-tx)
