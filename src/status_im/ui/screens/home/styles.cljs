@@ -155,10 +155,13 @@
    :tint-color   :white})
 
 (def no-chats
-  {:flex              1
-   :align-items       :center
-   :justify-content   :center
-   :margin-horizontal 34})
+  {:flex               1
+   :align-items        :center
+   :justify-content    :center
+   :padding-horizontal 34
+   :align-self         :stretch
+   :background-color   :white
+   :transform          [{:translateY (- search-input-height)}]})
 
 (def no-chats-text
   {:text-align     :center

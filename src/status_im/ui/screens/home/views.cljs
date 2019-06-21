@@ -56,16 +56,18 @@
     [components.common/button {:on-press #(list-selection/open-share {:message (i18n/label :t/get-status-at)})
                                :label    (i18n/label :t/invite-friends)}]]])
 
-(defn home-items-view [_ _ _]
+(defn home-items-view [_ _ _ search-input-state]
   (let [previous-touch      (reagent/atom nil)
         scrolling-from-top? (reagent/atom true)]
+    (filter.views/reset-height)
     (fn [search-filter chats all-home-items]
       (if (not-empty search-filter)
         [filter.views/home-filtered-items-list chats]
-        [react/view
-         (merge {:style {:flex 1}}
-                (when (and @scrolling-from-top?
-                           (not (:show? @filter.views/search-input-state)))
+        [react/animated-view
+         (merge {:style {:flex 1
+                         :background-color :white
+                         :transform [{:translateY (:height @search-input-state)}]}}
+                (when @scrolling-from-top?
                   {:on-start-should-set-responder-capture
                    (fn [event]
                      (let [current-position  (.-pageY (.-nativeEvent event))
@@ -138,11 +140,11 @@
              :else
              [react/view {:style {:flex 1}}
               [connectivity/connectivity-view]
-              [filter.views/animated-search-input search-filter]
+              [filter.views/search-input-wrapper search-filter]
               (if (and (not search-filter)
                        (empty? all-home-items))
                 [home-empty-view]
-                [home-items-view search-filter chats all-home-items])])]
+                [home-items-view search-filter chats all-home-items filter.views/search-input-state])])]
       [home-action-button]]]))
 
 (views/defview home-wrapper []

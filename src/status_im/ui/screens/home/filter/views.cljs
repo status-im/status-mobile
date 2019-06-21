@@ -50,29 +50,32 @@
 
 (defonce search-input-state
   (reagent/atom {:show?  false
-                 :height (animation/create-value 0)}))
+                 :height (animation/create-value
+                          (- styles/search-input-height))}))
 
 (defn show-search!
   []
-  (swap! search-input-state assoc :show? true)
   (animation/start
-   (animation/timing (:height   @search-input-state)
-                     {:toValue  styles/search-input-height
-                      :duration 350
-                      :easing   (.out (animation/easing)
-                                      (.-quad (animation/easing)))})))
+   (animation/timing (:height @search-input-state)
+                     {:toValue         0
+                      :duration        350
+                      :easing          (.out (animation/easing)
+                                             (.-quad (animation/easing)))
+                      :useNativeDriver true})))
+
+(defn reset-height []
+  (animation/set-value (:height @search-input-state)
+                       (- styles/search-input-height)))
 
 (defn hide-search!
   []
-  (utils/set-timeout
-   #(swap! search-input-state assoc :show? false)
-   350)
   (animation/start
-   (animation/timing (:height   @search-input-state)
-                     {:toValue  0
-                      :duration 350
-                      :easing   (.in (animation/easing)
-                                     (.-quad (animation/easing)))})))
+   (animation/timing (:height @search-input-state)
+                     {:toValue         (- styles/search-input-height)
+                      :duration        350
+                      :easing          (.in (animation/easing)
+                                            (.-quad (animation/easing)))
+                      :useNativeDriver true})))
 
 (defn set-search-state-visible!
   [visible?]
@@ -82,7 +85,7 @@
                          styles/search-input-height
                          0)))
 
-(defn animated-search-input
+(defn search-input-wrapper
   [search-filter]
   (reagent/create-class
    {:component-will-unmount
@@ -92,20 +95,15 @@
        (set-search-state-visible! true))
     :reagent-render
     (fn [search-filter]
-      (let [{:keys [show? height]} @search-input-state]
-        (when (or show?
-                  search-filter)
-          [react/animated-view
-           {:style {:height height}}
-           [search-input search-filter
-            {:on-cancel #(do
-                           (re-frame/dispatch [:search/filter-changed nil])
-                           (hide-search!))
-             :on-focus  (fn [search-filter]
-                          (when-not search-filter
-                            (re-frame/dispatch [:search/filter-changed ""])))
-             :on-change (fn [text]
-                          (re-frame/dispatch [:search/filter-changed text]))}]])))}))
+      [search-input search-filter
+       {:on-cancel #(do
+                      (re-frame/dispatch [:search/filter-changed nil])
+                      (hide-search!))
+        :on-focus  (fn [search-filter]
+                     (when-not search-filter
+                       (re-frame/dispatch [:search/filter-changed ""])))
+        :on-change (fn [text]
+                     (re-frame/dispatch [:search/filter-changed text]))}])}))
 
 (defn home-filtered-items-list
   [chats]
