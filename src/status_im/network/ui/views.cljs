@@ -9,7 +9,8 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.network.ui.styles :as styles]))
+            [status-im.network.ui.styles :as styles]
+            status-im.network.events))
 
 (defn- network-icon [connected? size]
   [react/view (styles/network-icon connected? size)
