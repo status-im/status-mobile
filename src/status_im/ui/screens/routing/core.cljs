@@ -116,7 +116,7 @@
    routes
    (cond->
     (merge {:headerMode        "none"
-            :cardStyle         {:backgroundColor (when (or platform/ios? platform/desktop?) :white)}
+            :cardStyle         {:backgroundColor :white}
             #_:transitionConfig
             #_(fn []
                 #js {:transitionSpec #js{:duration 10}})
