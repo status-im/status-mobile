@@ -67,7 +67,7 @@
                     :important-for-accessibility :no-hide-descendants}
         [text-input/text-input-with-label
          {:label             (i18n/label :t/password)
-          :placeholder       (i18n/label :t/password)
+          :placeholder       (i18n/label :t/enter-password)
           :ref               #(reset! password-text-input %)
           :auto-focus        (= view-id :login)
           :on-submit-editing (when sign-in-enabled?
