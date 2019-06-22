@@ -16,23 +16,27 @@
   [bottom-anim-value alpha-value]
   (anim/start
    (anim/parallel
-    [(anim/spring bottom-anim-value {:toValue -354})
-     (anim/timing alpha-value {:toValue  0
-                               :duration 500})])))
+    [(anim/spring bottom-anim-value {:toValue         styles/panel-height
+                                     :useNativeDriver true})
+     (anim/timing alpha-value {:toValue         0
+                               :duration        500
+                               :useNativeDriver true})])))
 
 (defn show-panel-anim
   [bottom-anim-value alpha-value]
   (anim/start
    (anim/parallel
-    [(anim/spring bottom-anim-value {:toValue -20})
-     (anim/timing alpha-value {:toValue  0.6
-                               :duration 500})])))
+    [(anim/spring bottom-anim-value {:toValue 20
+                                     :useNativeDriver true})
+     (anim/timing alpha-value {:toValue         0.6
+                               :duration        500
+                               :useNativeDriver true})])))
 
 (defn permission-details [requested-permission]
   (get browser.permissions/supported-permissions requested-permission))
 
 (views/defview permissions-panel [[dapp? dapp] {:keys [dapp-name]}]
-  (views/letsubs [bottom-anim-value  (anim/create-value -354)
+  (views/letsubs [bottom-anim-value  (anim/create-value styles/panel-height)
                   alpha-value        (anim/create-value 0)
                   current-permission (reagent/atom nil)
                   update?            (reagent/atom nil)]

@@ -93,12 +93,15 @@
    :background-color colors/black
    :opacity          alpha-value})
 
+(def panel-height 354)
+
 (defn permissions-panel [bottom-anim-value]
-  {:height                  354
+  {:height                  panel-height
    :position                :absolute
-   :bottom                  bottom-anim-value
+   :transform               [{:translateY bottom-anim-value}]
    :right                   0
    :left                    0
+   :bottom                  0
    :align-items             :center
    :background-color        :white
    :border-top-left-radius  8
