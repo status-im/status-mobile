@@ -110,9 +110,11 @@
   [bottom-anim-value alpha-value]
   (anim/start
    (anim/parallel
-    [(anim/spring bottom-anim-value {:toValue (styles/stickers-panel-height)})
+    [(anim/spring bottom-anim-value {:toValue 0
+                                     :useNativeDriver true})
      (anim/timing alpha-value {:toValue  1
-                               :duration 500})])))
+                               :duration 500
+                               :useNativeDriver true})])))
 
 (defview scroll-indicator []
   (letsubs [window-width [:dimensions/window-width]]
@@ -123,15 +125,12 @@
 (defview stickers-view []
   (letsubs [selected-pack   [:stickers/selected-pack]
             installed-packs [:stickers/installed-packs-vals]
-            input-focused?   [:chats/current-chat-ui-prop :input-focused?]
-            bottom-anim-value  (anim/create-value 0)
+            bottom-anim-value  (anim/create-value (styles/stickers-panel-height))
             alpha-value        (anim/create-value 0)]
-    {:component-will-mount #(if (not input-focused?)
-                              (show-panel-anim bottom-anim-value alpha-value)
-                              (do
-                                (anim/set-value bottom-anim-value (styles/stickers-panel-height))
-                                (anim/set-value alpha-value 1)))}
-    [react/animated-view {:style {:background-color :white :height (if input-focused? 0 bottom-anim-value)
+    {:component-will-mount #(show-panel-anim bottom-anim-value alpha-value)}
+    [react/animated-view {:style {:background-color :white
+                                  :height           (styles/stickers-panel-height)
+                                  :transform        [{:translateY bottom-anim-value}]
                                   :opacity          alpha-value}}
      (cond
        (= selected-pack :recent) [stickers-paging-panel installed-packs selected-pack]
