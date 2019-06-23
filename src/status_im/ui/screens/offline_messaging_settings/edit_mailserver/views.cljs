@@ -80,7 +80,7 @@
                                           {:format (i18n/label :t/mailserver-format)})
               {:color        colors/red-light
                :font-size    12
-               :bottom-value -25}])]
+               :bottom-value 25}])]
           (when (and id
                      (not connected?))
             [react/view

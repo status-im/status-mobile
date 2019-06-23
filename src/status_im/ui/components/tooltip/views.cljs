@@ -9,10 +9,10 @@
             [reagent.core :as reagent]))
 
 (views/defview tooltip [label & [{:keys [bottom-value color font-size container-style]
-                                  :or {bottom-value -30 color :white font-size 15}}]]
+                                  :or {bottom-value 30 color :white font-size 15}}]]
   (views/letsubs [bottom-anim-value (animation/create-value bottom-value)
                   opacity-value     (animation/create-value 0)]
-    {:component-did-mount (animations/animate-tooltip bottom-value bottom-anim-value opacity-value 10)}
+    {:component-did-mount (animations/animate-tooltip bottom-value bottom-anim-value opacity-value -10)}
     [react/view (merge styles/tooltip-container container-style)
      [react/animated-view {:style (styles/tooltip-animated bottom-anim-value opacity-value)}
       [react/view (styles/tooltip-text-container color)
@@ -22,9 +22,9 @@
                                                   :color color)]]]))
 
 (views/defview bottom-tooltip-info [label on-close]
-  (views/letsubs [bottom-anim-value (animation/create-value -150)
+  (views/letsubs [bottom-anim-value (animation/create-value 150)
                   opacity-value     (animation/create-value 0)]
-    {:component-did-mount (animations/animate-tooltip -150 bottom-anim-value opacity-value -10)}
+    {:component-did-mount (animations/animate-tooltip 150 bottom-anim-value opacity-value 10)}
     [react/view styles/bottom-tooltip-container
      [react/animated-view {:style (styles/tooltip-animated bottom-anim-value opacity-value)}
       [vector-icons/icon :icons/tooltip-triangle (assoc

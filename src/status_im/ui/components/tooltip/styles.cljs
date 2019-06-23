@@ -23,7 +23,8 @@
    :align-items :center
    :left        0
    :right       0
-   :bottom      bottom-value
+   :bottom      0
+   :transform   [{:translateY bottom-value}]
    :opacity     opacity-value})
 
 (defn tooltip-text-container [color]

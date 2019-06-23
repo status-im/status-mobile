@@ -25,6 +25,6 @@
    :desktop             {:height 52}})
 
 (defn error [label?]
-  {:bottom-value (if label? -20 0)
+  {:bottom-value (if label? 20 0)
    :color        colors/red-light
    :font-size    12})

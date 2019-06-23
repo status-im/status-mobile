@@ -45,6 +45,6 @@
    :background-color nil})
 
 (def tooltip
-  {:bottom-value -15
+  {:bottom-value 15
    :color        colors/red-light
    :font-size    12})

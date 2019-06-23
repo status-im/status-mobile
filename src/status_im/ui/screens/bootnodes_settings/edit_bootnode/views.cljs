@@ -71,7 +71,7 @@
                                           {:format (i18n/label :t/bootnode-format)})
               {:color        colors/red-light
                :font-size    12
-               :bottom-value -25}])]
+               :bottom-value 25}])]
           (when id
             [delete-button id])]]
         [react/view styles/bottom-container
