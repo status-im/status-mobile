@@ -13,7 +13,6 @@
 (defview parameter-box-view []
   (letsubs [show-box? [:chats/show-parameter-box?]]
     (when show-box?
-      [react/view]
       [expandable/expandable-view {:key :parameter-box}
        ;; TODO need to add the whole payload (and details about previous parameters?)
        [parameter-box-container]])))

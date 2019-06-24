@@ -17,11 +17,11 @@
 
 (defview suggestions-view []
   (letsubs [available-commands [:chats/available-commands]]
-    [expandable/expandable-view {:key :suggestions}
-     [react/view
-      [react/scroll-view {:keyboard-should-persist-taps :always
-                          :bounces                      false}
-       (when (seq available-commands)
+    (when (seq available-commands)
+      [expandable/expandable-view {:key :suggestions}
+       [react/view
+        [react/scroll-view {:keyboard-should-persist-taps :always
+                            :bounces                      false}
          (map-indexed
           (fn [i {:keys [type] :as command}]
             ^{:key i}
@@ -30,4 +30,4 @@
                               :description         (commands/command-description type)
                               :last?               (= i (dec (count available-commands)))
                               :accessibility-label (commands/accessibility-label type)}])
-          available-commands))]]]))
+          available-commands)]]])))
