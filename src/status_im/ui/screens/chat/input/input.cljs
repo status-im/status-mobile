@@ -104,8 +104,9 @@
   (fn [_]
     (let [to-value (if @placeholder 1 0)]
       (animation/start
-       (animation/timing opacity-value {:toValue  to-value
-                                        :duration 300})))))
+       (animation/timing opacity-value {:toValue         to-value
+                                        :duration        300
+                                        :useNativeDriver true})))))
 
 (defview input-helper [{:keys [width]}]
   (letsubs [placeholder   [:chats/input-placeholder]
