@@ -100,10 +100,10 @@ class ErrorDialog(BaseView):
         return element.wait_for_element(wait_time)
 
 
-class AdvancedButton(BaseButton):
+class NetworkFeeButton(BaseButton):
     def __init__(self, driver):
-        super(AdvancedButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('advanced-button')
+        super(NetworkFeeButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="Network fee"]')
 
 
 class TransactionFeeButton(BaseButton):
@@ -112,29 +112,35 @@ class TransactionFeeButton(BaseButton):
         self.locator = self.Locator.accessibility_id('transaction-fee-button')
 
 
-class TransactionFeeTotalValue(BaseButton):
+class TransactionFeeTotalValue(BaseText):
     def __init__(self, driver):
         super(TransactionFeeTotalValue, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@content-desc='transaction-fee-button']"
-                                                   "/android.widget.TextView[1]")
+        self.locator = self.Locator.xpath_selector("//*[@text='Network fee']"
+                                                   "/following-sibling::android.widget.TextView")
 
 
 class GasLimitInput(BaseEditBox):
     def __init__(self, driver):
         super(GasLimitInput, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('gas-limit-input')
+        self.locator = self.Locator.xpath_selector("(//*[@text='Gas limit']/..//android.widget.EditText)[1]")
 
 
 class GasPriceInput(BaseEditBox):
     def __init__(self, driver):
         super(GasPriceInput, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('gas-price-input')
+        self.locator = self.Locator.xpath_selector("(//*[@text='Gas limit']/..//android.widget.EditText)[2]")
 
 
-class TotalFeeInput(BaseEditBox):
+class TotalFeeInput(BaseText):
     def __init__(self, driver):
         super(TotalFeeInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@content-desc='total-fee-input']/android.widget.TextView")
+        self.locator = self.Locator.xpath_selector("//*[@text='Total Fee']/following-sibling::android.widget.TextView")
+
+
+class UpdateFeeButton(BaseButton):
+    def __init__(self, driver):
+        super(UpdateFeeButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Update']")
 
 
 class ShareButton(BaseButton):
@@ -187,12 +193,13 @@ class SendTransactionView(BaseView):
         self.recent_recipients_button = RecentRecipientsButton(self.driver)
         self.amount_edit_box = AmountEditBox(self.driver)
 
-        self.advanced_button = AdvancedButton(self.driver)
+        self.network_fee_button = NetworkFeeButton(self.driver)
         self.transaction_fee_button = TransactionFeeButton(self.driver)
         self.transaction_fee_total_value = TransactionFeeTotalValue(self.driver)
         self.gas_limit_input = GasLimitInput(self.driver)
         self.gas_price_input = GasPriceInput(self.driver)
         self.total_fee_input = TotalFeeInput(self.driver)
+        self.update_fee_button = UpdateFeeButton(self.driver)
 
         self.cancel_button = CancelButton(self.driver)
         self.sign_transaction_button = SignTransactionButton(self.driver)

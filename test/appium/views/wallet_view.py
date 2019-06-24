@@ -3,28 +3,6 @@ from views.base_view import BaseView
 from views.base_element import BaseButton, BaseText
 
 
-class SendTransactionButton(BaseButton):
-
-    def __init__(self, driver):
-        super(SendTransactionButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('send-transaction-button')
-
-    def navigate(self):
-        from views.send_transaction_view import SendTransactionView
-        return SendTransactionView(self.driver)
-
-
-class ReceiveTransactionButton(BaseButton):
-
-    def __init__(self, driver):
-        super(ReceiveTransactionButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('receive-transaction-button')
-
-    def navigate(self):
-        from views.send_transaction_view import SendTransactionView
-        return SendTransactionView(self.driver)
-
-
 class SendRequestButton(BaseButton):
 
     def __init__(self, driver):
@@ -43,7 +21,7 @@ class TransactionHistoryButton(BaseButton):
 
     def __init__(self, driver):
         super(TransactionHistoryButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('transaction-history-button')
+        self.locator = self.Locator.xpath_selector("//*[@text='History']")
 
     def navigate(self):
         from views.transactions_view import TransactionsView
@@ -59,13 +37,13 @@ class ChooseFromContactsButton(BaseButton):
 class EthAssetText(BaseText):
     def __init__(self, driver):
         super(EthAssetText, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('eth-asset-value-text')
+        self.locator = self.Locator.xpath_selector("//*[@text='ETHro']/preceding-sibling::*[1]")
 
 
 class STTAssetText(BaseText):
     def __init__(self, driver):
         super(STTAssetText, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('stt-asset-value-text')
+        self.locator = self.Locator.accessibility_id("//*[@text='STT']/preceding-sibling::*[1]")
 
 
 class UsdTotalValueText(BaseText):
@@ -93,13 +71,14 @@ class OptionsButton(BaseButton):
 class ManageAssetsButton(BaseButton):
     def __init__(self, driver):
         super(ManageAssetsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Manage Assets']")
+        self.locator = self.Locator.accessibility_id('wallet-manage-assets')
 
 
 class STTCheckBox(BaseButton):
     def __init__(self, driver):
         super(STTCheckBox, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='STT']/../android.widget.CheckBox")
+        self.locator = self.Locator.xpath_selector("//*[@text='STT']"
+                                                   "/../android.view.ViewGroup[@content-desc='checkbox']")
 
 
 class QRCodeImage(BaseButton):
@@ -137,7 +116,7 @@ class SignInPhraseText(BaseText):
 class AssetTextElement(BaseText):
     def __init__(self, driver, asset_name):
         super(AssetTextElement, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('%s-asset-value-text' % asset_name.lower())
+        self.locator = self.Locator.xpath_selector("//*[@text='%s']" % asset_name)
 
 
 class CollectibleTextElement(BaseText):
@@ -181,6 +160,46 @@ class BackupRecoveryPhrase(BaseButton):
         return ProfileView(self.driver)
 
 
+class BackupRecoveryPhraseWarningText(BaseButton):
+    def __init__(self, driver):
+        super(BackupRecoveryPhraseWarningText, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('back-up-your-seed-phrase-warning')
+
+
+class AccountsMoreOptions(BaseButton):
+    def __init__(self,driver):
+        super(AccountsMoreOptions, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('accounts-more-options')
+
+
+class AccountsStatusAccount(BaseButton):
+    def __init__(self,driver):
+        super(AccountsStatusAccount, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//android.widget.HorizontalScrollView//*[@text='Status account']")
+
+
+class SendTransactionButton(BaseButton):
+
+    def __init__(self, driver):
+        super(SendTransactionButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Send']")
+
+    def navigate(self):
+        from views.send_transaction_view import SendTransactionView
+        return SendTransactionView(self.driver)
+
+
+class ReceiveTransactionButton(BaseButton):
+
+    def __init__(self, driver):
+        super(ReceiveTransactionButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Receive']")
+
+    def navigate(self):
+        from views.send_transaction_view import SendTransactionView
+        return SendTransactionView(self.driver)
+
+
 class WalletView(BaseView):
     def __init__(self, driver):
         super(WalletView, self).__init__(driver)
@@ -209,6 +228,11 @@ class WalletView(BaseView):
         self.total_amount_text = TotalAmountText(self.driver)
         self.currency_text = CurrencyText(self.driver)
         self.backup_recovery_phrase = BackupRecoveryPhrase(self.driver)
+        self.backup_recovery_phrase_warning_text = BackupRecoveryPhraseWarningText(self.driver)
+
+        # elements for multiaccount
+        self.accounts_more_options = AccountsMoreOptions(self.driver)
+        self.accounts_status_account = AccountsStatusAccount(self.driver)
 
     def get_usd_total_value(self):
         import re
@@ -258,6 +282,7 @@ class WalletView(BaseView):
         return phrase
 
     def get_wallet_address(self):
+        self.accounts_status_account.click()
         self.receive_transaction_button.click()
         address = self.address_text.text
         self.back_button.click()
@@ -270,7 +295,7 @@ class WalletView(BaseView):
         return AssetCheckBox(self.driver, asset_name)
 
     def select_asset(self, *args):
-        self.options_button.click()
+        self.accounts_more_options.click()
         self.manage_assets_button.click()
         for asset in args:
             self.asset_checkbox_by_name(asset).click()

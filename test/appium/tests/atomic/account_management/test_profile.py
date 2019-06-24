@@ -56,7 +56,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             profile_view.click_system_back_button()
         profile_view.cross_icon.click()
         wallet = profile_view.wallet_button.click()
-        wallet.set_up_wallet()
+        # wallet.set_up_wallet()
+        wallet.accounts_status_account.click()
         request = wallet.receive_transaction_button.click()
         address = wallet.address_text.text
         request.share_button.click()

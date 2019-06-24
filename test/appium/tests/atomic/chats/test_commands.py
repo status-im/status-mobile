@@ -13,8 +13,8 @@ from views.sign_in_view import SignInView
 @marks.transaction
 class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
-    @marks.critical
     @marks.testrail_id(5334)
+    @marks.critical
     def test_network_mismatch_for_send_request_commands(self):
         sender = transaction_senders['D']
         self.create_drivers(2)
@@ -24,7 +24,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         device_1_home, device_2_home = device_1_sign_in.get_home_view(), device_2_sign_in.get_home_view()
 
         device_1_wallet_view = device_1_home.wallet_button.click()
-        device_1_wallet_view.set_up_wallet()
+        # device_1_wallet_view.set_up_wallet()
         device_1_wallet_view.home_button.click()
 
         public_key = device_2_home.get_public_key()
@@ -75,7 +75,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(5306)
     @marks.critical
-    @marks.skip
     def test_send_eth_in_1_1_chat(self):
         recipient = transaction_recipients['A']
         sender = transaction_senders['A']
@@ -84,9 +83,9 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         home_1 = device_1.recover_access(passphrase=sender['passphrase'])
         home_2 = device_2.recover_access(passphrase=recipient['passphrase'])
         wallet_1, wallet_2 = home_1.wallet_button.click(), home_2.wallet_button.click()
-        wallet_1.set_up_wallet()
+        # wallet_1.set_up_wallet()
         wallet_1.home_button.click()
-        wallet_2.set_up_wallet()
+        # wallet_2.set_up_wallet()
         init_balance = wallet_2.get_eth_value()
         wallet_2.home_button.click()
 
@@ -97,35 +96,18 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_1.asset_by_name('ETHro').click()
         chat_1.send_as_keyevent(amount)
         send_transaction_view = chat_1.get_send_transaction_view()
-        chat_1.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
+        chat_1.send_message_button.click_until_presence_of_element(send_transaction_view.sign_with_password)
 
-        send_transaction_view.chose_recipient_button.find_element().click()
-        if send_transaction_view.recent_recipients_button.is_element_displayed():
-            self.errors.append('Recipient field is editable')
-            send_transaction_view.click_system_back_button()
-
-        send_transaction_view.select_asset_button.click()
-        if not send_transaction_view.chose_recipient_button.is_element_displayed():
-            self.errors.append('Asset field is editable')
-            send_transaction_view.back_button.click()
-
-        if send_transaction_view.amount_edit_box.is_element_displayed():
-            self.errors.append('Amount field is editable')
-
-        chat_1.driver.swipe(500, 1000, 500, 500)
-
-        send_transaction_view.advanced_button.click()
-        send_transaction_view.transaction_fee_button.click()
+        send_transaction_view.network_fee_button.click()
         gas_limit = '25000'
         send_transaction_view.gas_limit_input.clear()
         send_transaction_view.gas_limit_input.set_value(gas_limit)
         gas_price = '1'
         send_transaction_view.gas_price_input.clear()
         send_transaction_view.gas_price_input.set_value(gas_price)
-        send_transaction_view.total_fee_input.click()
         if send_transaction_view.total_fee_input.text != '%s ETHro' % (d(gas_limit) * d(gas_price) / d(1000000000)):
             self.errors.append('Gas limit and/or gas price fields were not edited')
-        send_transaction_view.done_button.click()
+        send_transaction_view.update_fee_button.click()
         send_transaction_view.sign_transaction()
 
         if not chat_1.chat_element_by_text(amount).is_element_displayed():
@@ -153,9 +135,9 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         home_1 = device_1.recover_access(passphrase=sender['passphrase'])
         home_2 = device_2.recover_access(passphrase=recipient['passphrase'])
         wallet_1, wallet_2 = home_1.wallet_button.click(), home_2.wallet_button.click()
-        wallet_1.set_up_wallet()
+        # wallet_1.set_up_wallet()
         wallet_1.home_button.click()
-        wallet_2.set_up_wallet()
+        # wallet_2.set_up_wallet()
         init_balance = wallet_2.get_eth_value()
         wallet_2.home_button.click()
 
@@ -194,8 +176,9 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         home_1.add_contact(sender['public_key'])
         home_1.get_back_to_home_view()
         wallet_1 = home_1.wallet_button.click()
-        wallet_1.set_up_wallet()
+        # wallet_1.set_up_wallet()
 
+        wallet_1.accounts_status_account.click()
         send_transaction_device_1 = wallet_1.receive_transaction_button.click_until_presence_of_element(
             wallet_1.send_transaction_request)
         wallet_1.send_transaction_request.click()
@@ -260,7 +243,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         home_1 = device_1.recover_access(passphrase=sender['passphrase'])
         home_2 = device_2.recover_access(passphrase=recipient['passphrase'])
         wallet_1 = home_1.wallet_button.click()
-        wallet_1.set_up_wallet()
+        # wallet_1.set_up_wallet()
         wallet_1.home_button.click()
 
         chat_1 = home_1.add_contact(recipient['public_key'])
@@ -291,9 +274,9 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         home_1 = device_1.recover_access(passphrase=sender['passphrase'])
         home_2 = device_2.recover_access(passphrase=recipient['passphrase'])
         wallet_1, wallet_2 = home_1.wallet_button.click(), home_2.wallet_button.click()
-        wallet_1.set_up_wallet()
+        # wallet_1.set_up_wallet()
         wallet_1.home_button.click()
-        wallet_2.set_up_wallet()
+        # wallet_2.set_up_wallet()
         wallet_2.home_button.click()
 
         chat_2 = home_2.add_contact(sender['public_key'])
@@ -368,7 +351,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         home = sign_in.recover_access(passphrase=sender['passphrase'], password=unique_password)
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
+        # wallet.set_up_wallet()
         wallet.home_button.click()
         chat = home.add_contact(basic_user['public_key'])
         amount = chat.get_unique_amount()

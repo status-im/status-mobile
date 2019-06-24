@@ -131,12 +131,9 @@ class WalletButton(TabButton):
 
     def click(self):
         self.driver.info('Tap on %s' % self.name)
-        from views.wallet_view import SetUpButton, SendTransactionButton
-        for _ in range(3):
-            self.find_element().click()
-            if SetUpButton(self.driver).is_element_displayed() or SendTransactionButton(
-                    self.driver).is_element_displayed():
-                return self.navigate()
+        from views.wallet_view import AccountsMoreOptions
+        self.click_until_presence_of_element(AccountsMoreOptions(self.driver))
+        return self.navigate()
 
 
 class ProfileButton(TabButton):
@@ -444,9 +441,13 @@ class BaseView(object):
         element.locator = element.Locator.xpath_selector(xpath)
         return element
 
-    def swipe_down(self):
+    def swipe_up(self):
         size = self.driver.get_window_size()
         self.driver.swipe(size["width"]*0.5, size["height"]*0.8, size["width"]*0.5, size["height"]*0.2)
+
+    def swipe_down(self):
+        size = self.driver.get_window_size()
+        self.driver.swipe(size["width"]*0.5, size["height"]*0.2, size["width"]*0.5, size["height"]*0.8)
 
     def swipe_left(self):
         size = self.driver.get_window_size()

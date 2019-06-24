@@ -218,7 +218,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         singin_view = SignInView(self.driver)
         home_view = singin_view.create_user()
         wallet = home_view.wallet_button.click()
-        wallet.set_up_wallet()
+        # wallet.set_up_wallet()
         wallet_address = wallet.get_wallet_address()
         home_view = wallet.get_back_to_home_view()
         status_test_dapp = home_view.open_status_test_dapp()
@@ -234,27 +234,26 @@ class TestTransactionDApp(SingleDeviceTestCase):
             self.errors.append(warning.format('deploying a contract with an empty ETH balance'))
 
         # Check whether sign transaction button is disabled
-        send_transaction_view.sign_transaction_button.click()
+        send_transaction_view.sign_with_password.click()
         if send_transaction_view.enter_password_input.is_element_displayed():
             self.errors.append(sign_button_warning.format('deploying a contract with an empty ETH balance'))
 
         # Requesting test ETH and waiting till the balance updates
-        send_transaction_view.cross_icon.click()
+        send_transaction_view.cancel_button.click()
         self.network_api.get_donate(wallet_address[2:])
         self.network_api.verify_balance_is_updated(initial_balance=0, recipient_address=wallet_address[2:])
 
         status_test_dapp.transactions_button.click()
         send_transaction_view = status_test_dapp.send_one_tx_in_batch_button.click()
-        send_transaction_view.advanced_button.click()
-        send_transaction_view.transaction_fee_button.click()
+        send_transaction_view.network_fee_button.click()
         gas_limit = '100000'
         send_transaction_view.gas_limit_input.clear()
         send_transaction_view.gas_limit_input.set_value(gas_limit)
         gas_price = '999.900000001'
         send_transaction_view.gas_price_input.clear()
         send_transaction_view.gas_price_input.set_value(gas_price)
-        send_transaction_view.total_fee_input.click()
-        send_transaction_view.done_button.click()
+        # send_transaction_view.total_fee_input.click()
+        send_transaction_view.update_fee_button.click()
 
         # Check whether sending a tx in batch with big gas limit and price triggers the warning and sign button is still
         # disabled (no funds to pay gas)
@@ -263,7 +262,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
                                               'limit and price (no funds to pay gas)'))
 
         # Check whether sign transaction button is disabled
-        send_transaction_view.sign_transaction_button.click()
+        send_transaction_view.sign_with_password.click()
         if send_transaction_view.enter_password_input.is_element_displayed():
             self.errors.append(sign_button_warning.
                                format('sending one transaction in batch with big gas '
@@ -294,7 +293,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         singin_view = SignInView(self.driver)
         home_view = singin_view.create_user()
         wallet = home_view.wallet_button.click()
-        wallet.set_up_wallet()
+        # wallet.set_up_wallet()
         wallet.select_asset("STT")
         wallet_address = wallet.get_wallet_address()
         recipient = '0x' + basic_user['address']
@@ -306,11 +305,11 @@ class TestTransactionDApp(SingleDeviceTestCase):
         sign_button_warning = 'Signin transaction button is enabled {}'
 
         # Check whether sending 0 ETH with an empty ETH balance triggers the warning
+        send_transaction_view.sign_transaction_button.click()
         if not send_transaction_view.validation_warnings.not_enough_eth_for_gas.is_element_displayed():
             self.errors.append(warning.format('sending 0 ETH with an empty ETH balance'))
 
         # Check whether sign transaction button is disabled
-        send_transaction_view.sign_transaction_button.click()
         if send_transaction_view.enter_password_input.is_element_displayed():
             self.errors.append(sign_button_warning.format('sending 0 ETH with an empty ETH balance'))
 
@@ -327,6 +326,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
         # Check whether sign transaction button is disabled
         send_transaction_view.sign_transaction_button.click()
+        send_transaction_view.sign_with_password.click()
         if send_transaction_view.enter_password_input.is_element_displayed():
             self.errors.append(sign_button_warning.format('sending 0 STT with an empty ETH balance'))
 
@@ -345,12 +345,14 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
         # Check whether sign transaction button is disabled
         send_transaction_view.sign_transaction_button.click()
+        send_transaction_view.sign_with_password.click()
         if send_transaction_view.enter_password_input.is_element_displayed():
             self.errors.append('sending all available ETH (no funds to pay gas)')
+        send_transaction_view.cancel_button.click()
         send_transaction_view.amount_edit_box.clear()
 
         # Because tx gas price may change we calculate eth value according to current gas fee value
-        send_transaction_view.advanced_button.click()
+        send_transaction_view.sign_transaction_button.click()
         transaction_fee_total = send_transaction_view.get_transaction_fee_total()
         eth_available_for_tx = str(Decimal('0.1') - Decimal(transaction_fee_total))
         wei = '0.000000000000000001'

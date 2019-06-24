@@ -607,7 +607,6 @@ class ProfileView(BaseView):
         self.username_input.set_value(user_name)
         self.confirm_edit_button.click()
 
-
     def remove_profile_picture(self):
         if not AbstractTestCase().environment == 'sauce':
             raise NotImplementedError('Test case is implemented to run on SauceLabs only')

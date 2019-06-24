@@ -145,13 +145,14 @@
          [react/view {:width           14 :height 14 :background-color colors/gray :border-radius 7 :align-items :center
                       :justify-content :center :margin-right 9}
           [react/text {:style {:color colors/white :font-size 13 :font-weight "700"}} "!"]]
-         [react/text {:style {:color colors/gray}} (i18n/label :t/back-up-your-seed-phrase)]])]
+         [react/text {:style {:color colors/gray}
+                      :accessibility-label :back-up-your-seed-phrase-warning} (i18n/label :t/back-up-your-seed-phrase)]])]
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                                                 {:content        (sheets/accounts-options seed-backed-up?)
                                                                  :content-height (if seed-backed-up? 190 250)}])}
       [react/view {:height          toolbar.styles/toolbar-height :width toolbar.styles/toolbar-height :align-items :center
                    :justify-content :center}
-       [icons/icon :main-icons/more]]]]))
+       [icons/icon :main-icons/more {:accessibility-label :accounts-more-options}]]]]))
 
 (defn accounts-overview []
   [react/view {:flex 1}

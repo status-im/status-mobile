@@ -47,7 +47,8 @@ class TestWalletManagement(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(user['passphrase'])
         wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
+        # wallet_view.set_up_wallet()
+        wallet_view.accounts_status_account.click()
         transactions_view = wallet_view.transaction_history_button.click()
         transaction_details = transactions_view.transactions_table.transaction_by_index(0).click()
         transaction_hash = transaction_details.get_transaction_hash()
@@ -83,7 +84,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
         wallet = sign_in.wallet_button.click()
-        wallet.set_up_wallet()
+        # wallet.set_up_wallet()
         asset = "MDS"
         wallet.select_asset(asset)
         wallet.asset_by_name(asset).scroll_to_element()
@@ -100,17 +101,18 @@ class TestWalletManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
         wallet = sign_in.wallet_button.click()
-        wallet.set_up_wallet()
-        if wallet.backup_recovery_phrase.is_element_present():
-            pytest.fail("'Backup your Recovery phrase' option is shown on Wallet for an account with no funds")
-        wallet.receive_transaction_button.click()
-        address = wallet.address_text.text[2:]
-        wallet.get_back_to_home_view()
-        home = wallet.home_button.click()
-        self.network_api.get_donate(address)
-        home.wallet_button.click()
-        if not wallet.backup_recovery_phrase.is_element_present():
-            pytest.fail("'Backup your Recovery phrase' option is not shown on Wallet for an account with funds")
+        # wallet.set_up_wallet()
+        # if wallet.backup_recovery_phrase.is_element_present():
+        #     pytest.fail("'Backup your Recovery phrase' option is shown on Wallet for an account with no funds")
+        # wallet.receive_transaction_button.click()
+        # address = wallet.address_text.text[2:]
+        # wallet.get_back_to_home_view()
+        # home = wallet.home_button.click()
+        # self.network_api.get_donate(address)
+        # home.wallet_button.click()
+        if not wallet.backup_recovery_phrase_warning_text.is_element_present():
+            pytest.fail("'Back up your seed phrase' warning is not shown on Wallet")
+        wallet.accounts_more_options.click_until_presence_of_element(wallet.backup_recovery_phrase)
         profile = wallet.get_profile_view()
         profile.backup_recovery_phrase()
 

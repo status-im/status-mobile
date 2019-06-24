@@ -15,10 +15,12 @@
      [action-button/action-button {:label     (i18n/label :t/wallet-manage-assets)
                                    :icon      :main-icons/token
                                    :icon-opts {:color :blue}
+                                   :accessibility-label :wallet-manage-assets
                                    :on-press  #(hide-sheet-and-dispatch [:navigate-to :wallet-settings-assets])}]
      [action-button/action-button {:label     (i18n/label :t/set-currency)
                                    :icon      :main-icons/language
                                    :icon-opts {:color :blue}
+                                   :accessibility-label :wallet-set-currency
                                    :on-press  #(hide-sheet-and-dispatch [:navigate-to :currency-settings])}]
      [action-button/action-button-disabled {:label     (i18n/label :t/view-signing)
                                             :icon      :main-icons/info
@@ -29,6 +31,7 @@
                                      :icon-opts    {:color colors/red}
                                      :label-style  {:color colors/red}
                                      :cyrcle-color (colors/alpha colors/red 0.1)
+                                     :accessibility-label :wallet-backup-recovery-title
                                      :on-press     #(hide-sheet-and-dispatch [:navigate-to :backup-seed])}])]))
 
 (defn send-receive []
