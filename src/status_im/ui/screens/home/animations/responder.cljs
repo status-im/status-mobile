@@ -13,7 +13,9 @@
 (defn on-move [animated-offset-x end-offset-x swiped?]
   (fn [_ gesture]
     (let [to-value (get-updated-value gesture end-offset-x swiped?)]
-      (animation/start (animation/spring animated-offset-x {:toValue to-value})))))
+      (animation/start (animation/spring animated-offset-x
+                                         {:toValue         (- to-value)
+                                          :useNativeDriver true})))))
 
 (defn on-release [animated-offset-x end-offset-x chat-id swiped?]
   (fn [_ gesture]
@@ -21,7 +23,9 @@
           should-open?  (> updated-value (/ end-offset-x 2))
           to-value      (if should-open? end-offset-x 0)]
       (re-frame/dispatch [:set-swipe-position :chats chat-id should-open?])
-      (animation/start (animation/spring animated-offset-x {:toValue to-value})))))
+      (animation/start (animation/spring animated-offset-x
+                                         {:toValue         (- to-value)
+                                          :useNativeDriver true})))))
 
 (defn swipe-pan-responder [animated-offset-x end-offset-x chat-id swiped?]
   (.create (react/pan-responder)
