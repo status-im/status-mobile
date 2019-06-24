@@ -188,7 +188,10 @@
 (def action-button-container
   {:position    :absolute
    :align-items :center
-   :bottom      (+ tabs.styles/tabs-diff 6)
+   :bottom      (+ tabs.styles/tabs-diff (cond
+                                           platform/ios? 16
+                                           platform/android? 0
+                                           platform/desktop? 6))
    :width       40
    :height      40})
 
