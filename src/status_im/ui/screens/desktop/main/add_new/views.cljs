@@ -8,7 +8,6 @@
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im.ui.screens.desktop.main.add-new.styles :as styles]
-            [status-im.ui.screens.add-new.new-public-chat.view :refer [default-public-chats]]
             [status-im.ui.screens.add-new.new-public-chat.db :as public-chat.db]
             [taoensso.timbre :as log]
             [status-im.ui.components.react :as react]
@@ -123,7 +122,7 @@
      [react/scroll-view
       [react/view {:style styles/suggested-contacts}
        (doall
-        (for [topic public-chat/default-public-chats]
+        (for [topic (public-chat/default-public-chats)]
           ^{:key topic}
           [react/touchable-highlight {:on-press #(do
                                                    (re-frame/dispatch [:set :public-group-topic nil])
