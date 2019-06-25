@@ -296,7 +296,7 @@ class ChatElementByText(BaseText):
         class Username(BaseText):
             def __init__(self, driver, parent_locator):
                 super(Username, self).__init__(driver)
-                self.locator = self.Locator.xpath_selector(parent_locator + "/*[1][name()='android.widget.TextView']")
+                self.locator = self.Locator.xpath_selector(parent_locator + "/*[1]/android.widget.TextView")
 
         return Username(self.driver, self.locator.value)
 
