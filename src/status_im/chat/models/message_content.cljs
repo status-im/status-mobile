@@ -1,6 +1,5 @@
 (ns status-im.chat.models.message-content
   (:require [clojure.string :as string]
-            [status-im.utils.platform :as platform]
             [status-im.constants :as constants]))
 
 (def stylings [[:bold   constants/regx-bold]
@@ -93,9 +92,7 @@
                                  [(clear-ranges matches text) (assoc metadata type matches)]
                                  [text metadata]))
                              [text {}]
-                             (if platform/desktop?
-                               (into stylings actions)
-                               actions))]
+                             (into stylings actions))]
     (cond-> content
       (seq metadata) (as-> content
                            (assoc content :metadata metadata)
