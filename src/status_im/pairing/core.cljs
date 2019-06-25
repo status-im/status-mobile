@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [status-im.i18n :as i18n]
             [status-im.utils.fx :as fx]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.contact.device-info :as device-info]
             [status-im.contact.db :as contact.db]
             [status-im.ui.screens.navigation :as navigation]
@@ -12,7 +13,6 @@
             [status-im.accounts.model :as accounts.model]
             [status-im.transport.message.protocol :as protocol]
             [status-im.data-store.installations :as data-store.installations]
-            [status-im.native-module.core :as native-module]
             [status-im.utils.identicon :as identicon]
             [status-im.contact.core :as contact]
             [status-im.transport.filters.core :as transport.filters]
@@ -20,17 +20,57 @@
             [status-im.data-store.accounts :as data-store.accounts]
             [status-im.transport.message.pairing :as transport.pairing]))
 
+(defn enable-installation-rpc [installation-id on-success on-failure]
+  (json-rpc/call {:method "shhext_enableInstallation"
+                  :params [installation-id]
+                  :on-success on-success
+                  :on-failure on-failure}))
+
+(defn disable-installation-rpc [installation-id on-success on-failure]
+  (json-rpc/call {:method "shhext_disableInstallation"
+                  :params [installation-id]
+                  :on-success on-success
+                  :on-failure on-failure}))
+
+(defn set-installation-metadata-rpc [installation-id metadata on-success on-failure]
+  (json-rpc/call {:method "shhext_setInstallationMetadata"
+                  :params                 [installation-id metadata]
+                  :on-success                 on-success
+                  :on-failure                 on-failure}))
+
+(defn get-our-installations-rpc [on-success on-failure]
+  (json-rpc/call {:method "shhext_getOurInstallations"
+                  :params  []
+                  :on-success       on-success
+                  :on-failure       on-failure}))
+
 (def contact-batch-n 4)
 
-(defn- parse-response [response-js]
-  (-> response-js
-      js/JSON.parse
-      (js->clj :keywordize-keys true)))
+(defn compare-installation
+  "Sort installations, first by our installation-id, then on whether is
+  enabled, and last on timestamp value"
+  [our-installation-id a b]
+  (cond
+    (= our-installation-id (:installation-id a))
+    -1
+    (= our-installation-id (:installation-id b))
+    1
+    :else
+    (let [enabled-compare (compare (:enabled? b)
+                                   (:enabled? a))]
+      (if (not= 0 enabled-compare)
+        enabled-compare
+        (compare (:timestamp b)
+                 (:timestamp a))))))
+
+(defn sort-installations
+  [our-installation-id installations]
+  (sort (partial compare-installation our-installation-id) installations))
 
 (defn pair-installation [cofx]
   (let [fcm-token         (get-in cofx [:db :notifications :fcm-token])
-        installation-name (get-in cofx [:db :account/account :installation-name])
         installation-id (get-in cofx [:db :account/account :installation-id])
+        installation-name (get-in cofx [:db :pairing/installations installation-id :name])
         device-type     utils.platform/os]
     (protocol/send (transport.pairing/PairInstallation. installation-id device-type installation-name fcm-token) nil cofx)))
 
@@ -91,28 +131,48 @@
                             :on-cancel  #(re-frame/dispatch [:pairing.ui/prompt-dismissed])
                             :on-accept #(re-frame/dispatch [:pairing.ui/prompt-accepted])}}))
 
-(fx/defn upsert-installation [{:keys [db] :as cofx} {:keys [installation-id] :as new-installation}]
-  (let [success-event [:message/messages-persisted [(or (:dedup-id cofx) (:js-obj cofx))]]
-        old-installation (get-in db [:pairing/installations installation-id])
-        updated-installation (merge old-installation new-installation)]
-    {:db (assoc-in db
-                   [:pairing/installations installation-id]
-                   updated-installation)
-     :data-store/tx [{:transaction (data-store.installations/save updated-installation)
-                      :success-event success-event}]}))
+(fx/defn set-name
+  "Set the name of the device"
+  [{:keys [db] :as cofx} installation-name]
+  (let [fcm-token           (get-in cofx [:db :notifications :fcm-token])
+        our-installation-id (get-in db [:account/account :installation-id])]
+    {:pairing/set-installation-metadata [[our-installation-id {:name installation-name
+                                                               :deviceType utils.platform/os
+                                                               :fcmToken fcm-token}]]}))
+
+(fx/defn migrate-installations
+  "Take the realm installations and move them to status-go, also move installation-name
+  to status-go, clean up after so it is run only once"
+  [{:keys [db] :as cofx} installations]
+  (let [installation-name (get-in db [:account/account :installation-name])]
+    (fx/merge cofx
+              {:pairing/set-installation-metadata
+               (map (fn [{:keys [installation-id name device-type fcm-token]}]
+                      [installation-id {:name name
+                                        :deviceType device-type
+                                        :fcmToken fcm-token}])
+                    installations)}
+              #(when-not (string/blank? installation-name)
+                 (set-name % installation-name))
+              #(when-not (string/blank? installation-name)
+                 (let [new-account (dissoc (:account/account (:db %)) :installation-name)]
+                   {:db (assoc (:db %) :account/account new-account)
+                    :data-store/base-tx [(data-store.accounts/save-account-tx new-account)]})))))
+
+(fx/defn init [cofx old-installations]
+  (fx/merge cofx
+            {:pairing/get-our-installations []}
+            (migrate-installations old-installations)))
 
 (defn handle-bundles-added [{:keys [db] :as cofx} bundle]
-  (let [installation-id  (:installationID bundle)
-        new-installation {:installation-id installation-id
-                          :has-bundle?     true}]
+  (let [installation-id  (:installationID bundle)]
     (when
      (and (= (:identity bundle)
              (accounts.model/current-public-key cofx))
-          (not= (get-in db [:account/account :installation-id]) installation-id)
-          (not (get-in db [:pairing/installations installation-id])))
+          (not= (get-in db [:account/account :installation-id]) installation-id))
       (fx/merge cofx
-                (upsert-installation new-installation)
-                #(when-not (or (get-in % [:db :pairing/prompt-user-pop-up])
+                (init [])
+                #(when-not (or (:pairing/prompt-user-pop-up db)
                                (= :installations (:view-id db)))
                    (prompt-user-on-new-installation %))))))
 
@@ -159,41 +219,54 @@
 (fx/defn enable [{:keys [db]} installation-id]
   {:db (assoc-in db
                  [:pairing/installations installation-id :enabled?]
-                 true)
-   :data-store/tx [(data-store.installations/enable installation-id)]})
+                 true)})
 
 (fx/defn disable [{:keys [db]} installation-id]
   {:db (assoc-in db
                  [:pairing/installations installation-id :enabled?]
-                 false)
-   :data-store/tx [(data-store.installations/disable installation-id)]})
+                 false)})
 
-(defn handle-enable-installation-response
+(defn handle-enable-installation-response-success
   "Callback to dispatch on enable signature response"
-  [installation-id response-js]
-  (let [{:keys [error]} (parse-response response-js)]
-    (if error
-      (re-frame/dispatch [:pairing.callback/enable-installation-failed  error])
-      (re-frame/dispatch [:pairing.callback/enable-installation-success installation-id]))))
+  [installation-id]
+  (re-frame/dispatch [:pairing.callback/enable-installation-success installation-id]))
 
-(defn handle-disable-installation-response
+(defn handle-disable-installation-response-success
   "Callback to dispatch on disable signature response"
-  [installation-id response-js]
-  (let [{:keys [error]} (parse-response response-js)]
-    (if error
-      (re-frame/dispatch [:pairing.callback/disable-installation-failed  error])
-      (re-frame/dispatch [:pairing.callback/disable-installation-success installation-id]))))
+  [installation-id]
+  (re-frame/dispatch [:pairing.callback/disable-installation-success installation-id]))
+
+(defn handle-set-installation-metadata-response-success
+  "Callback to dispatch on set-installation-metadata response"
+  [installation-id metadata]
+  (re-frame/dispatch [:pairing.callback/set-installation-metadata-success installation-id metadata]))
+
+(defn handle-get-our-installations-response-success
+  "Callback to dispatch on get-our-installation response"
+  [result]
+  (re-frame/dispatch [:pairing.callback/get-our-installations-success result]))
 
 (defn enable-installation! [installation-id]
-  (native-module/enable-installation installation-id
-                                     (partial handle-enable-installation-response installation-id)))
+  (enable-installation-rpc installation-id
+                           (partial handle-enable-installation-response-success installation-id)
+                           nil))
 
 (defn disable-installation! [installation-id]
-  (native-module/disable-installation installation-id
-                                      (partial handle-disable-installation-response installation-id)))
+  (disable-installation-rpc installation-id
+                            (partial handle-disable-installation-response-success installation-id)
+                            nil))
+
+(defn set-installation-metadata! [installation-id metadata]
+  (set-installation-metadata-rpc installation-id
+                                 metadata
+                                 (partial handle-set-installation-metadata-response-success installation-id metadata)
+                                 nil))
+
+(defn get-our-installations []
+  (get-our-installations-rpc handle-get-our-installations-response-success nil))
 
 (defn enable-fx [cofx installation-id]
-  (if (< (count (filter :enabled? (get-in cofx [:db :pairing/installations]))) config/max-installations)
+  (if (< (count (filter :enabled? (vals (get-in cofx [:db :pairing/installations])))) (inc config/max-installations))
     {:pairing/enable-installation installation-id}
     {:utils/show-popup {:title (i18n/label :t/pairing-maximum-number-reached-title)
 
@@ -209,6 +282,16 @@
 (re-frame/reg-fx
  :pairing/disable-installation
  disable-installation!)
+
+(re-frame/reg-fx
+ :pairing/set-installation-metadata
+ (fn [pairs]
+   (doseq [[installation-id metadata] pairs]
+     (set-installation-metadata! installation-id metadata))))
+
+(re-frame/reg-fx
+ :pairing/get-our-installations
+ get-our-installations)
 
 (fx/defn send-sync-installation [cofx payload]
   (let [{:keys [web3]} (:db cofx)
@@ -301,23 +384,31 @@
                                                               device-type]} timestamp sender]
   (if (and (= sender (accounts.model/current-public-key cofx))
            (not= (get-in db [:account/account :installation-id]) installation-id))
-    (let [installation {:installation-id   installation-id
-                        :name              name
-                        :fcm-token         fcm-token
-                        :device-type       device-type
-                        :last-paired       timestamp}]
-      (upsert-installation cofx installation))
+    {:pairing/set-installation-metadata [[installation-id {:name name
+                                                           :deviceType device-type
+                                                           :fcmToken fcm-token}]]}
     (confirm-message-processed cofx (or (:dedup-id cofx)
                                         (:js-obj cofx)))))
 
-(fx/defn set-name [{:keys [db] :as cofx} installation-name]
-  (let [new-account (assoc (get-in cofx [:db :account/account]) :installation-name installation-name)]
-    {:db (assoc db :account/account new-account)
-     :data-store/base-tx [(data-store.accounts/save-account-tx new-account)]}))
+(fx/defn update-installation [{:keys [db]} installation-id metadata]
+  {:db (update-in db [:pairing/installations installation-id]
+                  assoc
+                  :name (:name metadata)
+                  :device-type (:deviceType metadata)
+                  :fcmToken (:fcmToken metadata))
+   ;; we count it as migrated, and delete it from realm
+   :data-store/tx [(data-store.installations/delete installation-id)]})
 
-(fx/defn load-installations [{:keys [db all-installations]}]
+(fx/defn load-installations [{:keys [db]} installations]
   {:db (assoc db :pairing/installations (reduce
-                                         (fn [acc {:keys [installation-id] :as i}]
-                                           (assoc acc installation-id i))
+                                         (fn [acc {:keys [metadata id enabled] :as i}]
+                                           (assoc acc id
+                                                  {:installation-id id
+                                                   :name (:name metadata)
+                                                   :timestamp (:timestamp metadata)
+                                                   :device-type (:deviceType metadata)
+                                                   :fcm-token (:fcmToken metadata)
+                                                   :enabled? enabled}))
                                          {}
-                                         all-installations))})
+                                         installations))})
+

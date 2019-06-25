@@ -27,3 +27,11 @@
   [installation-id]
   (save {:installation-id installation-id
          :enabled? false}))
+
+(defn delete
+  "Returns tx function for deleting an installation"
+  [id]
+  (fn [realm]
+    (core/delete realm
+                 (core/get-by-field realm :installation :installation-id (name id)))))
+

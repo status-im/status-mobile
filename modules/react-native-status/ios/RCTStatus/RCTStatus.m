@@ -426,30 +426,6 @@ RCT_EXPORT_METHOD(extractGroupMembershipSignatures:(NSString *)content
 }
 
 ////////////////////////////////////////////////////////////////////
-#pragma mark - EnableInstallation
-//////////////////////////////////////////////////////////////////// enableInstallation
-RCT_EXPORT_METHOD(enableInstallation:(NSString *)content
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"EnableInstallation() method called");
-#endif
-    NSString *result = StatusgoEnableInstallation(content);
-    callback(@[result]);
-}
-
-////////////////////////////////////////////////////////////////////
-#pragma mark - DisableInstallation
-//////////////////////////////////////////////////////////////////// disableInstallation
-RCT_EXPORT_METHOD(disableInstallation:(NSString *)content
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"DisableInstallation() method called");
-#endif
-    NSString *result = StatusgoDisableInstallation(content);
-    callback(@[result]);
-}
-
-////////////////////////////////////////////////////////////////////
 #pragma mark - only android methods
 ////////////////////////////////////////////////////////////////////
 RCT_EXPORT_METHOD(setAdjustResize) {

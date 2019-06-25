@@ -12,6 +12,7 @@
 (def ^:private mergable-keys
   #{:data-store/tx :data-store/base-tx :chat-received-message/add-fx
     :shh/post :filters/load-filters
+    :pairing/set-installation-metadata
     :shh/send-direct-message :shh/remove-filter
     :shh/generate-sym-key-from-password  :transport/confirm-messages-processed
     :group-chats/extract-membership-signature :utils/dispatch-later :json-rpc/call})

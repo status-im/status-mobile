@@ -140,6 +140,7 @@
   {:events [:accounts.login.callback/login-success]
    :interceptors [(re-frame/inject-cofx :web3/get-web3)
                   (re-frame/inject-cofx :data-store/get-all-mailservers)
+                  (re-frame/inject-cofx :data-store/get-all-installations)
                   (re-frame/inject-cofx :data-store/transport)
                   (re-frame/inject-cofx :data-store/mailserver-topics)]}
   [{:keys [db web3] :as cofx} login-result]

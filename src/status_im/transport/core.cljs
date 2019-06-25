@@ -6,6 +6,7 @@
    [status-im.mailserver.core :as mailserver]
    [status-im.transport.message.core :as message]
    [status-im.transport.filters.core :as transport.filters]
+   [status-im.pairing.core :as pairing]
    [status-im.utils.publisher :as publisher]
    [status-im.utils.fx :as fx]
    [status-im.utils.handlers :as handlers]
@@ -38,10 +39,11 @@
   - adding fixed shh discovery filter
   - restoring existing symetric keys along with their unique filters
   - (optionally) initializing mailserver"
-  [{:keys [db web3] :as cofx}]
+  [{:keys [db web3 all-installations] :as cofx}]
   (fx/merge cofx
             (fetch-node-info-fx)
             (transport.filters/load-filters)
+            (pairing/init all-installations)
             (publisher/start-fx)
             (mailserver/connect-to-mailserver)
             (message/resend-contact-messages [])))

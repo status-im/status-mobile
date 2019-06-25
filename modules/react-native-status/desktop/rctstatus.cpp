@@ -330,22 +330,6 @@ void RCTStatus::extractGroupMembershipSignatures(QString signatures, double call
         }, signatures, callbackId);
 }
 
-void RCTStatus::enableInstallation(QString installationId, double callbackId) {
-    Q_D(RCTStatus);
-    QtConcurrent::run([&](QString installationId, double callbackId) {
-            const char* result = EnableInstallation(installationId.toUtf8().data());
-            d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
-        }, installationId, callbackId);
-}
-
-void RCTStatus::disableInstallation(QString installationId, double callbackId) {
-    Q_D(RCTStatus);
-    QtConcurrent::run([&](QString installationId, double callbackId) {
-            const char* result = DisableInstallation(installationId.toUtf8().data());
-            d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
-        }, installationId, callbackId);
-}
-
 void RCTStatus::setAdjustResize() {
 }
 

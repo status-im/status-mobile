@@ -7,11 +7,23 @@
    [status-im.utils.fx :as fx]
    [status-im.transport.utils :as utils]
    [status-im.data-store.accounts :as data-store.accounts]
+   [status-im.ethereum.json-rpc :as json-rpc]
    [status-im.accounts.model :as accounts.model]
    [status-im.utils.handlers :as handlers]
-   [status-im.native-module.core :as status]
    [status-im.mailserver.topics :as mailserver.topics]
    [status-im.mailserver.core :as mailserver]))
+
+(defn load-filters-rpc [chats on-success on-failure]
+  (json-rpc/call {:method "shhext_loadFilters"
+                  :params [chats]
+                  :on-success                 on-success
+                  :on-failure                 on-failure}))
+
+(defn remove-filters-rpc [chats on-success on-failure]
+  (json-rpc/call {:method "shhext_removeFilters"
+                  :params [chats]
+                  :on-success                 on-success
+                  :on-failure                 on-failure}))
 
 ;; fx functions
 
@@ -360,10 +372,10 @@
  (fn [filters]
    (log/debug "removing filters" filters)
    (stop-watching! (map :filter filters))
-   (status/remove-filters
+   (remove-filters-rpc
     (map ->remove-filter-request filters)
-    (handlers/response-handler #(filters-removed! filters)
-                               #(log/error "remove-filters: failed error" %)))))
+    #(filters-removed! filters)
+    #(log/error "remove-filters: failed error" %))))
 
 (re-frame/reg-fx
  :filters/stop-filters
@@ -377,8 +389,8 @@
    (when (seq ops)
      (let [web3 (first (peek ops))
            filters (mapcat peek ops)]
-       (status/load-filters
+       (load-filters-rpc
         filters
-        (handlers/response-handler #(add-filters! web3
-                                                  (map responses->filters %))
-                                   #(log/error "load-filters: failed error" %)))))))
+        #(add-filters! web3
+                       (map responses->filters %))
+        #(log/error "load-filters: failed error" %))))))

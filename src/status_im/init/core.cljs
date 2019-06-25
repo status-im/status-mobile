@@ -237,7 +237,6 @@
               {:notifications/get-fcm-token nil}
               (initialize-account-db address)
               (contact/load-contacts)
-              (pairing/load-installations)
               #(when (dev-mode? %)
                  (models.dev-server/start))
               (browser/initialize-browsers)

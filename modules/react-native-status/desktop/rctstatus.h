@@ -48,8 +48,6 @@ public:
     Q_INVOKABLE void signMessage(QString rpcParams, double callbackId);
     Q_INVOKABLE void signGroupMembership(QString content, double callbackId);
     Q_INVOKABLE void extractGroupMembershipSignatures(QString signatures, double callbackId);
-    Q_INVOKABLE void enableInstallation(QString installationId, double callbackId);
-    Q_INVOKABLE void disableInstallation(QString installationId, double callbackId);
     Q_INVOKABLE void updateMailservers(QString enodes, double callbackId);
     Q_INVOKABLE void getNodesFromContract(QString url, QString address, double callbackId);
     Q_INVOKABLE void chaosModeUpdate(bool on, double callbackId);

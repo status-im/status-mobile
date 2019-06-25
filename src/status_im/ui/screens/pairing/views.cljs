@@ -96,17 +96,19 @@
          (i18n/label :t/syncing-devices)
          (i18n/label :t/sync-all-devices))]]]]])
 
-(defn your-device [installation-id installation-name]
+(defn your-device [{:keys [installation-id name device-type]}]
   [react/view {:style styles/installation-item}
    [react/view {:style (styles/pairing-button true)}
-    [icons/icon (if utils.platform/desktop?
-                  :main-icons/desktop
-                  :main-icons/mobile)
+    [icons/icon  (if (= "desktop"
+                        device-type)
+                   :main-icons/desktop
+                   :main-icons/mobile)
+
      (icon-style (styles/pairing-button-icon true))]]
    [react/view {:style styles/pairing-actions-text}
     [react/view
      [react/text (str
-                  installation-name
+                  name
                   " ("
                   (i18n/label :t/you)
                   ", "
@@ -128,13 +130,13 @@
       (icon-style (styles/pairing-button-icon enabled?))]]
     [react/view {:style styles/pairing-actions-text}
      [react/view
-      [react/text (if (string/blank? name)
-                    (str
+      [react/text (str
+                   (if (string/blank? name)
                      (i18n/label :t/pairing-no-info)
-                     " ("
-                     (subs installation-id 0 5)
-                     ")")
-                    name)]]]
+                     name)
+                   " ("
+                   (subs installation-id 0 5)
+                   ")")]]]
     [react/view
      (if utils.platform/ios?
        ;; On IOS switches seems to be broken, they take up value of dev-mode? (so if dev mode is on they all show to be on).
@@ -145,11 +147,11 @@
                       :value           enabled?
                       :on-value-change (partial toggle-enabled! installation-id enabled?)}])]]])
 
-(defn render-rows [installation-id installation-name installations]
+(defn render-rows [installations]
   [react/scroll-view {:style styles/wrapper}
-   [your-device installation-id installation-name]
-   (when (seq installations)
-     [list/flat-list {:data               installations
+   [your-device (first installations)]
+   (when (seq (rest installations))
+     [list/flat-list {:data               (rest installations)
                       :default-separator? false
                       :key-fn             :installation-id
                       :render-fn          render-row}])])
@@ -182,26 +184,24 @@
    [react/touchable-highlight {:on-press #(.openURL (react/linking) "https://status.im/tutorials/pairing.html")}
     [react/text {:style styles/info-section-text} (i18n/label :t/learn-more)]]])
 
-(defn installations-list [installation-id installation-name installations]
+(defn installations-list [installations]
   [react/view {:style styles/installation-list}
    [react/view {:style styles/paired-devices-title}
     [react/text (i18n/label :t/paired-devices)]]
-   (render-rows installation-id installation-name installations)])
+   (render-rows installations)])
 
 (views/defview installations []
-  (views/letsubs [installation-id [:pairing/installation-id]
-                  installation-name [:pairing/installation-name]
-                  installations [:pairing/installations]]
+  (views/letsubs [installations [:pairing/installations]]
     [react/view {:flex 1}
      [status-bar/status-bar]
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/devices)]]
      [react/scroll-view {:style {:background-color :white}}
-      (if (string/blank? installation-name)
+      (if (and false (string/blank? (-> installations first :name)))
         [edit-installation-name]
         [react/view
          [pair-this-device]
          [info-section]
-         [installations-list installation-id installation-name installations]])]
+         [installations-list installations]])]
      (when (seq installations) [footer syncing])]))

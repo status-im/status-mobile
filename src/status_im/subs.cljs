@@ -4,6 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.accounts.model :as accounts.model]
             [status-im.accounts.db :as accounts.db]
+            [status-im.pairing.core :as pairing]
             [status-im.browser.core :as browser]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.input :as commands.input]
@@ -921,13 +922,15 @@
 
 ;;PAIRING ==============================================================================================================
 
+
 (re-frame/reg-sub
  :pairing/installations
  :<- [:get-pairing-installations]
- (fn [installations]
+ :<- [:pairing/installation-id]
+ (fn [[installations installation-id]]
    (->> installations
         vals
-        (sort-by (comp unchecked-negate :last-paired)))))
+        (pairing/sort-installations installation-id))))
 
 (re-frame/reg-sub
  :pairing/installation-id

@@ -229,17 +229,12 @@
     (testing "not coming from us"
       (is (not (:db (pairing/handle-pair-installation cofx pair-message 1 "not-us")))))
     (testing "coming from us"
-      (is (= {"1" {:has-bundle? true
-                   :installation-id "1"
-                   :fcm-token "fcm-token"
-                   :name "name"
-                   :last-paired 1
-                   :device-type "ios"}
-              "2"  {:has-bundle? false
-                    :installation-id "2"}}
-             (get-in
-              (pairing/handle-pair-installation cofx pair-message 1 "us")
-              [:db :pairing/installations]))))))
+      (is (=  [["1"
+                {:name "name"
+                 :fcmToken "fcm-token"
+                 :deviceType "ios"}]]
+              (:pairing/set-installation-metadata
+               (pairing/handle-pair-installation cofx pair-message 1 "us")))))))
 
 (deftest sync-installation-messages-test
   (testing "it creates a sync installation message"
@@ -306,10 +301,7 @@
             expected {"installation-1" installation-1
                       "installation-2" {:has-bundle? true
                                         :installation-id "installation-2"}}]
-        (is (= expected (get-in (pairing/handle-bundles-added cofx new-installation) [:db :pairing/installations])))))
-    (testing "already existing installation"
-      (let [old-installation {:identity "us" :installationID "installation-1"}]
-        (is (not (pairing/handle-bundles-added cofx old-installation)))))
+        (is (:pairing/get-our-installations (pairing/handle-bundles-added cofx new-installation)))))
     (testing "not from us"
       (let [new-installation {:identity "not-us" :installationID "does-not-matter"}]
         (is (not (pairing/handle-bundles-added cofx new-installation)))))))
@@ -321,3 +313,23 @@
   (testing "has paired devices"
     (is (pairing/has-paired-installations? {:db {:pairing/installations {"1" {}
                                                                          "2" {:enabled? true}}}}))))
+
+(deftest sort-installations
+  (let [id "0"
+        expected [{:installation-id id
+                   :timestamp (rand-int 200)
+                   :enabled? false}
+                  {:installation-id "1"
+                   :timestamp 3
+                   :enabled? true}
+                  {:installation-id "2"
+                   :timestamp 2
+                   :enabled? true}
+                  {:installation-id "3"
+                   :timestamp 10
+                   :enabled? false}
+                  {:installation-id "4"
+                   :timestamp 9
+                   :enabled? false}]]
+    (is (= expected (pairing/sort-installations id (shuffle expected))))))
+

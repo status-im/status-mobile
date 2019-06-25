@@ -1015,45 +1015,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     StatusThreadPoolExecutor.getInstance().execute(r);
   }
 
-  @ReactMethod
-  public void enableInstallation(final String installationId, final Callback callback) {
-    Log.d(TAG, "enableInstallation");
-    if (!checkAvailability()) {
-      callback.invoke(false);
-      return;
-    }
-
-    Runnable r = new Runnable() {
-      @Override
-      public void run() {
-        String result = Statusgo.enableInstallation(installationId);
-
-        callback.invoke(result);
-      }
-    };
-
-    StatusThreadPoolExecutor.getInstance().execute(r);
-  }
-
-  @ReactMethod
-  public void disableInstallation(final String installationId, final Callback callback) {
-    Log.d(TAG, "disableInstallation");
-    if (!checkAvailability()) {
-      callback.invoke(false);
-      return;
-    }
-
-    Runnable r = new Runnable() {
-      @Override
-      public void run() {
-        String result = Statusgo.disableInstallation(installationId);
-
-        callback.invoke(result);
-      }
-    };
-
-    StatusThreadPoolExecutor.getInstance().execute(r);
-  }
 
   @ReactMethod
   public void updateMailservers(final String enodes, final Callback callback) {

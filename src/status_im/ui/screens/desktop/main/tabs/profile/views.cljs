@@ -76,19 +76,17 @@
         [react/text {:style styles/qr-code-copy-text}
          (i18n/label :copy-qr)]]]]]))
 
-(defn installations-section [your-installation-id
-                             your-installation-name
-                             installations]
+(defn installations-section [installations]
   [react/view
-   (if (string/blank? your-installation-name)
+   (if (string/blank? (-> installations first :name))
      [pairing.views/edit-installation-name]
      [react/view
       [pairing.views/pair-this-device]
       [pairing.views/info-section]
       [pairing.views/sync-devices]
       [react/view {:style pairing.styles/installation-list}
-       [pairing.views/your-device your-installation-id your-installation-name]
-       (for [installation installations]
+       [pairing.views/your-device (first installations)]
+       (for [installation (rest installations)]
          ^{:key (:installation-id installation)}
          [react/view {:style {:margin-bottom 10}}
           (pairing.views/render-row installation)])]])])
@@ -222,14 +220,9 @@
                        :on-value-change #(re-frame/dispatch [:accounts.ui/toggle-device-to-device (not pfs?)])}]]])))
 
 (views/defview installations []
-  (views/letsubs [installations     [:pairing/installations]
-                  installation-id   [:pairing/installation-id]
-                  installation-name [:pairing/installation-name]]
+  (views/letsubs [installations     [:pairing/installations]]
     [react/scroll-view
-     (installations-section
-      installation-id
-      installation-name
-      installations)]))
+     (installations-section installations)]))
 
 (views/defview backup-recovery-phrase []
   [profile.recovery/backup-seed])

@@ -25,6 +25,13 @@
    "eth_newFilter" {:subscription? true}
    "eth_syncing" {}
    "net_version" {}
+   "shhext_enableInstallation" {}
+   "shhext_disableInstallation" {}
+   "shhext_getOurInstallations" {}
+   "shhext_setInstallationMetadata" {}
+   "shhext_loadFilters" {}
+   "shhext_loadFilter" {}
+   "shhext_removeFilters" {}
    "status_joinPublicChat" {}
    "status_chats" {}
    "status_startOneOnOneChat" {}

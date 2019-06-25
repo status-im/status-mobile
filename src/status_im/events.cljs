@@ -1646,6 +1646,16 @@
    (pairing/send-installation-messages cofx)))
 
 (handlers/register-handler-fx
+ :pairing.callback/get-our-installations-success
+ (fn [cofx [_ installations]]
+   (pairing/load-installations cofx installations)))
+
+(handlers/register-handler-fx
+ :pairing.callback/set-installation-metadata-success
+ (fn [cofx [_ installation-id metadata]]
+   (pairing/update-installation cofx installation-id metadata)))
+
+(handlers/register-handler-fx
  :set-initial-props
  (fn [cofx [_ initial-props]]
    {:db (assoc (:db cofx) :initial-props initial-props)}))
