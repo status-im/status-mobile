@@ -143,8 +143,7 @@
     :on-success
     (fn [[x y]]
       (let [public-key (uncompressed-public-key x y)]
-        (when-not (= public-key default-key)
-          (cb public-key))))}))
+        (cb public-key)))}))
 
 (defn get-addr
   [registry ens-name cb]

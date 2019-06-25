@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.react :as react]
             [re-frame.core :as re-frame]
+            [status-im.accounts.core :as accounts]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.animation :as anim]
             [reagent.core :as reagent]
@@ -51,7 +52,7 @@
   [list-item/list-item {:type        :small
                         :title       (i18n/label :t/to)
                         :accessories [[react/text {:ellipsize-mode :middle :number-of-lines 1 :style {:flex-wrap :wrap}}
-                                       (or (:name contact) (:address contact))]]}])
+                                       (accounts/displayed-name contact)]]}])
 
 (defn token-item [{:keys [icon color] :as token} display-symbol]
   (when token
@@ -82,7 +83,7 @@
       [react/nested-text {:style           {:color colors/gray}
                           :ellipsize-mode  :middle
                           :number-of-lines 1} (i18n/label :t/to) " "
-       [{:style {:color colors/black}} (or (:name contact) (:address contact))]]
+       [{:style {:color colors/black}} (accounts/displayed-name contact)]]
       [react/text {:style {:margin-top 6 :color colors/gray}}
        (str fee " " fee-display-symbol " " (string/lower-case (i18n/label :t/network-fee)))])]
    [react/touchable-highlight (when-not in-progress? {:on-press #(re-frame/dispatch [:signing.ui/cancel-is-pressed])})

@@ -1,6 +1,7 @@
 (ns status-im.accounts.core
   (:require [re-frame.core :as re-frame]
             [status-im.accounts.update.core :as accounts.update]
+            [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as native-module]
@@ -12,12 +13,12 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]))
 
-(defn displayed-name [{:keys [ens-name nickname public-key]}]
-  (or nickname
-      (when ens-name
-        (let [username (stateofus/username ens-name)]
-          (str "@" (or username ens-name))))
-      (gfycat/generate-gfy public-key)))
+(defn displayed-name [account]
+  (let [name (or (:preferred-name account) (:name account))]
+    (if (ens/is-valid-eth-name? name)
+      (let [username (stateofus/username name)]
+        (str "@" (or username name)))
+      (or name (gfycat/generate-gfy (:public-key account))))))
 
 (re-frame/reg-fx
  ::chaos-mode-changed

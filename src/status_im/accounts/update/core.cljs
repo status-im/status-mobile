@@ -11,8 +11,8 @@
 (fx/defn account-update-message [{:keys [db] :as cofx}]
   (let [account (:account/account db)
         fcm-token (get-in db [:notifications :fcm-token])
-        {:keys [name photo-path address]} account]
-    (message.contact/ContactUpdate. name photo-path address fcm-token (device-info/all cofx))))
+        {:keys [name preferred-name photo-path address]} account]
+    (message.contact/ContactUpdate. (or preferred-name name) photo-path address fcm-token (device-info/all cofx))))
 
 (fx/defn send-account-update [cofx]
   (protocol/send

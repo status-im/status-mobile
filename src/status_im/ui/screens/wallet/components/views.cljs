@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
+            [status-im.accounts.core :as accounts]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.tokens :as tokens]
@@ -196,7 +197,7 @@
     [photos/photo (:photo-path contact) {:size list.styles/image-size}]
     [list/item-content
      [list/item-primary {:accessibility-label :contact-name-text}
-      (:name contact)]
+      (accounts/displayed-name contact)]
      [react/text {:style list.styles/secondary-text
                   :accessibility-label :contact-address-text}
       (eip55/address->checksum (ethereum/normalized-address (:address contact)))]]]])

@@ -32,19 +32,23 @@
     (list-selection/show {:title   (i18n/label :t/image-source-title)
                           :options options})))
 
+(defn- names [{:keys [name public-key] :as contact}]
+  (let [generated-name (when public-key (gfy/generate-gfy public-key))]
+    [react/view styles/profile-header-name-container
+     [react/text {:style           styles/profile-name-text
+                  :number-of-lines 1}
+      (accounts/displayed-name contact)]
+     (when generated-name
+       [react/text {:style           styles/profile-three-words
+                    :number-of-lines 1}
+        generated-name])]))
+
 (defn- profile-header-display [{:keys [name public-key] :as contact}]
   (let [generated-name (when public-key (gfy/generate-gfy public-key))]
     [react/view styles/profile-header-display
      [chat-icon.screen/my-profile-icon {:account contact
                                         :edit?   false}]
-     [react/view styles/profile-header-name-container
-      [react/text {:style           styles/profile-name-text
-                   :number-of-lines 1}
-       (accounts/displayed-name contact)]
-      (when (and public-key (not= generated-name name))
-        [react/text {:style           styles/profile-three-words
-                     :number-of-lines 1}
-         generated-name])]]))
+     [names contact]]))
 
 (defn- profile-header-edit [{:keys [name group-chat] :as contact}
                             icon-options on-change-text-event allow-icon-change?]
@@ -54,14 +58,12 @@
     [react/view styles/modal-menu
      [chat-icon.screen/my-profile-icon {:account contact
                                         :edit?   allow-icon-change?}]]]
-   [react/view styles/profile-header-name-container
-    [profile-name-input name on-change-text-event
-     (when group-chat {:accessibility-label :chat-name-input})]]])
+   [names contact]])
 
 (defn profile-header
   [{:keys [contact edited-contact editing? allow-icon-change? options on-change-text-event]}]
   (if editing?
-    [profile-header-edit (or edited-contact contact) options on-change-text-event allow-icon-change?]
+    [profile-header-edit (merge edited-contact contact) options on-change-text-event allow-icon-change?]
     [profile-header-display contact]))
 
 ;; settings items elements

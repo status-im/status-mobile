@@ -121,7 +121,14 @@
   [{:keys [db] :as cofx} name]
   (fx/merge (assoc-in cofx [:db :account/account :preferred-name] name)
             (accounts.update/account-update cofx
-                                            {:preferred-name name})))
+                                            {:preferred-name name})
+            (accounts.update/send-account-update)))
+
+(fx/defn save-preferred-name-when-first
+  [cofx names name]
+  (when (= 1 (count names))
+    ;; First name, save it as default
+    (save-preferred-name cofx name)))
 
 (fx/defn save-username
   {:events [:ens/save-username]}
@@ -133,9 +140,7 @@
               (accounts.update/account-update cofx
                                               {:usernames names}
                                               {:success-event [:ens/set-state username :saved]})
-              (when (= 1 (count names))
-                ;; First name, save it as default
-                (save-preferred-name cofx name)))))
+              (save-preferred-name-when-first names name))))
 
 (fx/defn switch-show-username
   {:events [:ens/switch-show-username]}

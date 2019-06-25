@@ -151,7 +151,7 @@
 
   (defn- get-contact-name [{:keys [db] :as cofx} from]
     (if (accounts.model/logged-in? cofx)
-      (accounts/displayed-name (hash->contact from (-> db :contacts/contacts vals)))
+      (:name (hash->contact from (-> db :contacts/contacts vals)))
       (anonymize-pubkey from)))
 
   (defn- build-notification [{:keys [title body decoded-payload]}]

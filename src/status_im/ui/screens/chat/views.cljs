@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.chat.views
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
+            [status-im.accounts.core :as accounts]
             [status-im.contact.db :as contact.db]
             [status-im.i18n :as i18n]
             [status-im.tribute-to-talk.core :as tribute-to-talk]
@@ -123,10 +124,10 @@
     (str " " (i18n/label :learn-more))]])
 
 (defn intro-header
-  [name]
+  [contact]
   [react/text {:style (assoc style/intro-header-description
                              :margin-bottom 32)}
-   (str (i18n/label :t/empty-chat-description-one-to-one) name)])
+   (str (i18n/label :t/empty-chat-description-one-to-one) (accounts/displayed-name contact))])
 
 (defn join-chat-button [chat-id]
   [buttons/secondary-button
@@ -278,7 +279,7 @@
 
     (:paid :none)
     [react/view
-     [intro-header name]
+     [intro-header contact]
      (when (= tribute-status :paid)
        [pay-to-chat-messages snt-amount chat-id tribute-status tribute-label
         fiat-amount fiat-currency token])
@@ -297,7 +298,7 @@
           (i18n/label (if received? :tribute-to-talk-tribute-received2
                           :tribute-to-talk-contact-received-your-tribute))]]])]
 
-    [intro-header name]))
+    [intro-header contact]))
 
 (defn chat-intro-header-container
   [{:keys [group-chat name pending-invite-inviter-name
@@ -305,7 +306,7 @@
            contact universal-link intro-status height input-height] :as chat}
    no-messages]
   (let [icon-text  (if public? chat-id name)
-        intro-name (if public? chat-name name)]
+        intro-name (if public? chat-name (accounts/displayed-name contact))]
     ;; TODO This when check ought to be unnecessary but for now it prevents
     ;; jerky motion when fresh chat is created, when input-height can be null
     ;; affecting the calculation of content-layout-height to be briefly adjusted

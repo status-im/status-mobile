@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
+            [status-im.accounts.core :as accounts]
             [status-im.i18n :as i18n]
             [status-im.ui.components.button.view :as button]
             [status-im.ui.components.colors :as colors]
@@ -87,7 +88,7 @@
             ttt-enabled? [:tribute-to-talk/enabled?]]
     [react/view styles/qr-code-viewer
      [status-bar/status-bar {:type :modal-white}]
-     [qr-viewer-toolbar (:name contact) value]
+     [qr-viewer-toolbar (accounts/displayed-name contact) value]
      [qr-code-viewer/qr-code-viewer
       (merge
        {:style         styles/qr-code
