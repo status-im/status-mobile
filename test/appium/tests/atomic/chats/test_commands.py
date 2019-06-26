@@ -171,6 +171,9 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         sender = transaction_senders['O']
 
         home_1 = device_1.create_user(username=username_1)
+        profile_1 = home_1.profile_button.click()
+        default_username_1 = profile_1.default_username_text.text
+        home_1 = profile_1.get_back_to_home_view()
         home_2 = device_2.recover_access(passphrase=sender['passphrase'])
 
         home_1.add_contact(sender['public_key'])
@@ -192,7 +195,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         sender_button.click()
         wallet_1.send_request_button.click()
 
-        chat_2 = home_2.get_chat_with_user(username_1).click()
+        chat_2 = home_2.get_chat_with_user(default_username_1).click()
         chat_element = chat_2.chat_element_by_text(amount)
         try:
             chat_element.wait_for_visibility_of_element(120)

@@ -22,6 +22,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_1 = 'user_%s' % get_current_time()
         device_1_home, device_2_home = device_1.create_user(username=username_1), device_2.create_user()
+        profile_1 = device_1_home.profile_button.click()
+        default_username_1 = profile_1.default_username_text.text
+        device_1_home = profile_1.get_back_to_home_view()
         device_2_public_key = device_2_home.get_public_key()
         device_2_home.home_button.click()
 
@@ -31,7 +34,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_chat.chat_message_input.send_keys(message)
         device_1_chat.send_message_button.click()
 
-        device_2_chat = device_2_home.get_chat_with_user(username_1).click()
+        device_2_chat = device_2_home.get_chat_with_user(default_username_1).click()
         device_2_chat.chat_element_by_text(message).wait_for_visibility_of_element()
 
     @marks.testrail_id(5310)
@@ -81,6 +84,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_1 = 'user_%s' % get_current_time()
         home_1, home_2 = sign_in_1.create_user(username_1), sign_in_2.create_user()
+        profile_1 = home_1.profile_button.click()
+        default_username_1 = profile_1.default_username_text.text
+        home_1 = profile_1.get_back_to_home_view()
         public_key_2 = home_2.get_public_key()
         profile_2 = home_2.get_profile_view()
         profile_2.switch_network('Mainnet with upstream RPC')
@@ -90,7 +96,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1.chat_message_input.send_keys(message)
         chat_1.send_message_button.click()
 
-        chat_2 = home_2.get_chat_with_user(username_1).click()
+        chat_2 = home_2.get_chat_with_user(default_username_1).click()
         chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
 
         public_chat_name = home_1.get_public_chat_name()
@@ -149,11 +155,15 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_1_home, device_2_home = device_1.create_user(username=username_1), device_2.create_user(
             username=username_2)
+        profile_1 = device_1_home.profile_button.click()
+        default_username_1 = profile_1.default_username_text.text
+        device_1_home = profile_1.get_back_to_home_view()
 
         device_2_public_key = device_2_home.get_public_key()
         profile_2 = device_2_home.get_profile_view()
         file_name = 'sauce_logo.png'
         profile_2.edit_profile_picture(file_name)
+        default_username_2 = profile_2.default_username_text.text
         profile_2.home_button.click()
 
         device_1_chat = device_1_home.add_contact(device_2_public_key)
@@ -161,7 +171,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_chat.chat_message_input.send_keys(message)
         device_1_chat.send_message_button.click()
 
-        chat_element = device_2_home.get_chat_with_user(username_1)
+        chat_element = device_2_home.get_chat_with_user(default_username_1)
         chat_element.wait_for_visibility_of_element()
         device_2_chat = chat_element.click()
         if not device_2_chat.chat_element_by_text(message).is_element_displayed():
@@ -175,8 +185,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         if not device_2_contacts.element_by_text(username_1).is_element_displayed():
             self.errors.append('%s is not added to contacts' % username_1)
 
-        if device_1_chat.user_name_text.text != username_2:
-            self.errors.append("Real username '%s' is not shown in one-to-one chat" % username_2)
+        if device_1_chat.user_name_text.text != default_username_2:
+            self.errors.append("Default username '%s' is not shown in one-to-one chat" % default_username_2)
         device_1_chat.chat_options.click()
         device_1_chat.view_profile_button.click()
         if not device_1_chat.contact_profile_picture.is_element_image_equals_template(file_name):
@@ -272,6 +282,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_2 = 'user_%s' % get_current_time()
         device_1_home, device_2_home = device_1.create_user(), device_2.create_user(username=username_2)
+        profile_2 = device_2_home.profile_button.click()
+        default_username_2 = profile_2.default_username_text.text
+        device_2_home = profile_2.get_back_to_home_view()
         device_1_public_key = device_1_home.get_public_key()
         device_1_home.home_button.click()
 
@@ -284,7 +297,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         if device_1_home.home_button.counter.text != '1':
             self.errors.append('New messages counter is not shown on Home button')
 
-        chat_element = device_1_home.get_chat_with_user(username_2)
+        chat_element = device_1_home.get_chat_with_user(default_username_2)
         if chat_element.new_messages_counter.text != '1':
             self.errors.append('New messages counter is not shown on chat element')
 
