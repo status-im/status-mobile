@@ -15,7 +15,8 @@
             [status-im.ui.components.bottom-bar.styles :as tabs.styles]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.list-selection :as list-selection])
+            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.animation :as animation])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview les-debug-info []
@@ -64,9 +65,10 @@
       (if (not-empty search-filter)
         [filter.views/home-filtered-items-list chats]
         [react/animated-view
-         (merge {:style {:flex 1
+         (merge {:style {:flex             1
+                         :margin-bottom    -35
                          :background-color :white
-                         :transform [{:translateY (:height @search-input-state)}]}}
+                         :transform        [{:translateY (:height @search-input-state)}]}}
                 (when @scrolling-from-top?
                   {:on-start-should-set-responder-capture
                    (fn [event]
@@ -87,7 +89,8 @@
                                            previous-position)))
                          (filter.views/show-search!)))
                      false)}))
-         [list/flat-list {:data           all-home-items
+         [list/flat-list {:style          {:margin-bottom (- styles/search-input-height)}
+                          :data           all-home-items
                           :key-fn         first
                           :footer         [react/view
                                            {:style {:height     tabs.styles/tabs-diff
@@ -99,7 +102,10 @@
                                     (zero? (.-y (.-contentOffset (.-nativeEvent e))))))
                           :render-fn
                           (fn [home-item]
-                            [inner-item/home-list-item home-item])}]]))))
+                            [inner-item/home-list-item home-item])}]
+         (when (:show? @search-input-state)
+           [react/view {:width  1
+                        :height styles/search-input-height}])]))))
 
 (views/defview home-action-button []
   (views/letsubs [logging-in? [:accounts/login]]
@@ -113,13 +119,15 @@
          [icons/icon :main-icons/add {:color :white}])]]]))
 
 (views/defview home [loading?]
-  (views/letsubs [{:keys [search-filter chats all-home-items]} [:home-items]]
+  (views/letsubs
+    [anim-translate-y (animation/create-value -35)
+     {:keys [search-filter chats all-home-items]} [:home-items]]
     {:component-did-mount (fn [this]
                             (let [[_ loading?] (.. this -props -argv)]
                               (when loading? (utils/set-timeout #(re-frame/dispatch [:init-rest-of-chats]) 100))))}
     [react/view {:flex 1}
      [status-bar/status-bar {:type :main}]
-     [react/keyboard-avoiding-view {:style     {:flex 1
+     [react/keyboard-avoiding-view {:style     {:flex        1
                                                 :align-items :center}
                                     :on-layout (fn [e]
                                                  (re-frame/dispatch
@@ -133,18 +141,28 @@
              [react/view {:style {:flex            1
                                   :justify-content :center
                                   :align-items     :center}}
-              [connectivity/connectivity-view]
-              [react/activity-indicator {:flex      1
-                                         :animating true}]]
+              [connectivity/connectivity-view anim-translate-y]
+              [connectivity/connectivity-animation-wrapper
+               {}
+               anim-translate-y
+               [react/activity-indicator {:flex      1
+                                          :animating true}]]]
 
              :else
              [react/view {:style {:flex 1}}
-              [connectivity/connectivity-view]
-              [filter.views/search-input-wrapper search-filter]
-              (if (and (not search-filter)
-                       (empty? all-home-items))
-                [home-empty-view]
-                [home-items-view search-filter chats all-home-items filter.views/search-input-state])])]
+              [connectivity/connectivity-view anim-translate-y]
+              [connectivity/connectivity-animation-wrapper
+               {}
+               anim-translate-y
+               [filter.views/search-input-wrapper search-filter]
+               (if (and (not search-filter)
+                        (empty? all-home-items))
+                 [home-empty-view]
+                 [home-items-view
+                  search-filter
+                  chats
+                  all-home-items
+                  filter.views/search-input-state])]])]
       [home-action-button]]]))
 
 (views/defview home-wrapper []

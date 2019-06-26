@@ -26,7 +26,8 @@
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.desktop.main.chat.emoji :as emoji]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.screens.chat.message.gap :as gap])
+            [status-im.ui.screens.chat.message.gap :as gap]
+            [status-im.ui.components.animation :as animation])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn toolbar-chat-view

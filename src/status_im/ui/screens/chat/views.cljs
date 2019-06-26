@@ -50,7 +50,7 @@
 
 (defn chat-toolbar
   [{:keys [chat-name group-chat chat-id contact]} public? modal?]
-  [react/view
+  [react/view {:style {:z-index 100}}
    [status-bar/status-bar (when modal? {:type :modal-white})]
    [toolbar/toolbar
     {:chat? true}
@@ -65,7 +65,6 @@
          :icon-opts {:color               :black
                      :accessibility-label :chat-menu-button}
          :handler   #(on-options chat-id chat-name group-chat public?)}]])]
-   [connectivity/connectivity-view]
    (when (and (not group-chat)
               (not (contact.db/added? contact)))
      [add-contact-bar chat-id])])
@@ -354,7 +353,8 @@
                             :input-focused?    false}]))}
     (let [no-messages (empty? messages)
           flat-list-conf
-          {:data                      messages
+          {:style                     {:margin-bottom -35}
+           :data                      messages
            :ref                       #(reset! messages-list-ref %)
            :footer                    [chat-intro-header-container chat no-messages]
            :key-fn                    #(or (:message-id %) (:value %))
@@ -428,9 +428,10 @@
 (defview chat-root [modal?]
   (letsubs [{:keys [public? chat-id show-input?] :as current-chat}
             [:chats/current-chat]
-            current-chat-id                            [:chats/current-chat-id]
-            show-message-options?                      [:chats/current-chat-ui-prop :show-message-options?]
-            show-stickers?                             [:chats/current-chat-ui-prop :show-stickers?]]
+            current-chat-id       [:chats/current-chat-id]
+            show-message-options? [:chats/current-chat-ui-prop :show-message-options?]
+            show-stickers?        [:chats/current-chat-ui-prop :show-stickers?]
+            anim-translate-y      (animation/create-value -35)]
     ;; this check of current-chat-id is necessary only because in a fresh public chat creation sometimes
     ;; this component renders before current-chat-id is set to current chat-id. Hence further down in sub
     ;; components (e.g. chat-toolbar) there can be a brief visual inconsistancy like showing 'add contact'
@@ -447,11 +448,15 @@
                     :on-layout (fn [e]
                                  (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
         [chat-toolbar current-chat public? modal?]
-        [messages-view-animation
-         ;;TODO(kozieiev) : When FlatList in react-native-desktop become viable it should be used instead of optimized ScrollView for chat
-         (if platform/desktop?
-           [messages-view-desktop current-chat modal?]
-           [messages-view current-chat modal?])]
+        [connectivity/connectivity-view anim-translate-y]
+        [connectivity/connectivity-animation-wrapper
+         {}
+         anim-translate-y
+         [messages-view-animation
+          ;;TODO(kozieiev) : When FlatList in react-native-desktop become viable it should be used instead of optimized ScrollView for chat
+          (if platform/desktop?
+            [messages-view-desktop current-chat modal?]
+            [messages-view current-chat modal?])]]
         (when show-input?
           [input/container])
         (when show-stickers?

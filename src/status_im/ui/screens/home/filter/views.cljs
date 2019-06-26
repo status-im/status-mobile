@@ -55,6 +55,7 @@
 
 (defn show-search!
   []
+  (swap! search-input-state assoc :show? true)
   (animation/start
    (animation/timing (:height @search-input-state)
                      {:toValue         0
@@ -69,6 +70,9 @@
 
 (defn hide-search!
   []
+  (utils/set-timeout
+   #(swap! search-input-state assoc :show? false)
+   350)
   (animation/start
    (animation/timing (:height @search-input-state)
                      {:toValue         (- styles/search-input-height)
@@ -108,7 +112,8 @@
 (defn home-filtered-items-list
   [chats]
   [list/section-list
-   {:sections                    [{:title :t/chats
+   {:style                       {:margin-bottom -35}
+    :sections                    [{:title :t/chats
                                    :data  chats}
                                   {:title :t/messages
                                    :data  []}]

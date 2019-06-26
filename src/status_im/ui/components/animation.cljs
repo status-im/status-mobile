@@ -11,14 +11,27 @@
 (defn interpolate [anim-value config]
   (.interpolate anim-value (clj->js config)))
 
+(defn add-native-driver [{:keys [useNativeDriver] :as config}]
+  (assoc config
+         :useNativeDriver
+         (if (nil? useNativeDriver)
+           true
+           useNativeDriver)))
+
 (defn timing [anim-value config]
-  (.timing (react/animated) anim-value (clj->js config)))
+  (.timing (react/animated)
+           anim-value
+           (clj->js (add-native-driver config))))
 
 (defn spring [anim-value config]
-  (.spring (react/animated) anim-value (clj->js config)))
+  (.spring (react/animated)
+           anim-value
+           (clj->js (add-native-driver config))))
 
 (defn decay [anim-value config]
-  (.decay (react/animated) anim-value (clj->js config)))
+  (.decay (react/animated)
+          anim-value
+          (clj->js (add-native-driver config))))
 
 (defn anim-sequence [animations]
   (.sequence (react/animated) (clj->js animations)))

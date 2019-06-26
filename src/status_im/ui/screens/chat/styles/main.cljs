@@ -181,13 +181,15 @@
   {:margin-right 12})
 
 (def message-view-preview
-  {:flex            1
-   :align-items     :center
-   :justify-content :center})
+  {:flex             1
+   :align-items      :center
+   :justify-content  :center
+   :background-color :white})
 
 (defn message-view-animated [opacity]
-  {:opacity opacity
-   :flex    1})
+  {:opacity          opacity
+   :flex             1
+   :background-color :white})
 
 (def empty-chat-container
   {:flex             1

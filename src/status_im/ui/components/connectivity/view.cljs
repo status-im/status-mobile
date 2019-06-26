@@ -6,7 +6,8 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.animation :as animation]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.platform :as platform]))
 
 (defn easing [direction n]
   {:toValue         n
@@ -71,12 +72,14 @@
                              {:toValue 0
                               :delay 800
                               :duration 150
-                              :easing (.-ease (animation/easing))})
+                              :easing (.-ease (animation/easing))
+                              :useNativeDriver true})
            (animation/timing anim-height
-                             {:toValue 0
-                              :delay 800
-                              :duration 150
-                              :easing (.-ease (animation/easing))})]))
+                             {:toValue         (if platform/desktop? 0 -35)
+                              :delay           800
+                              :duration        150
+                              :easing          (.-ease (animation/easing))
+                              :useNativeDriver true})]))
         (utils/set-timeout
          #(reset! show-connected? false)
          2000))
@@ -86,52 +89,65 @@
           [(animation/timing anim-opacity
                              {:toValue 1
                               :duration 150
-                              :easing (.-ease (animation/easing))})
+                              :easing (.-ease (animation/easing))
+                              :useNativeDriver true})
            (animation/timing anim-height
-                             {:toValue 35
+                             {:toValue (if platform/desktop? 35 0)
                               :duration 150
-                              :easing (.-ease (animation/easing))})])))))
+                              :easing (.-ease (animation/easing))
+                              :useNativeDriver true})])))))
 
 (defn connectivity-status
-  [{:keys [connected?]}]
-  (let [anim-opacity (animation/create-value 0)
-        anim-height (animation/create-value 0)]
+  [{:keys [connected?]} anim-translate-y]
+  (let [anim-translate-y (or anim-translate-y (animation/create-value 0))
+        anim-opacity     (animation/create-value 0)]
     (manage-visibility connected?
-                       anim-opacity anim-height)
+                       anim-opacity anim-translate-y)
     (reagent/create-class
      {:component-did-update
       (fn [comp]
         (manage-visibility (:connected? (reagent/props comp))
-                           anim-opacity anim-height))
+                           anim-opacity anim-translate-y))
       :reagent-render
       (fn [{:keys [view-id message on-press-fn
-                   connected? connecting? loading-indicator?] :as opts}]
-        (when (or (not connected?)
-                  @show-connected?)
-          [react/animated-view {:style               (styles/text-wrapper
-                                                      (assoc opts
-                                                             :height anim-height
-                                                             :background-color (if connected?
-                                                                                 colors/green
-                                                                                 colors/gray)
-                                                             :opacity anim-opacity
-                                                             :modal? (= view-id :chat-modal)))
-                                :accessibility-label :connection-status-text}
-           (when connecting?
-             [react/activity-indicator {:animated     true
-                                        :color        colors/white
-                                        :margin-right 6}])
-           (if (= message :mobile-network)
-             [react/nested-text {:style    styles/text
-                                 :on-press on-press-fn}
-              (i18n/label :t/waiting-for-wifi) " "
-              [{:style {:text-decoration-line :underline}}
-               (i18n/label :t/waiting-for-wifi-change)]]
-             [react/text {:style    styles/text
-                          :on-press on-press-fn}
-              (i18n/label message)])]))})))
+                   connected? connecting?] :as opts}]
+        [react/animated-view {:style               (styles/text-wrapper
+                                                    (assoc opts
+                                                           :height (if platform/desktop?
+                                                                     anim-translate-y
+                                                                     35)
+                                                           :background-color (if connected?
+                                                                               colors/green
+                                                                               colors/gray)
+                                                           :opacity anim-opacity
+                                                           :modal? (= view-id :chat-modal)))
+                              :accessibility-label :connection-status-text}
+         (when connecting?
+           [react/activity-indicator {:animated     true
+                                      :color        colors/white
+                                      :margin-right 6}])
+         (if (= message :mobile-network)
+           [react/nested-text {:style    styles/text
+                               :on-press on-press-fn}
+            (i18n/label :t/waiting-for-wifi) " "
+            [{:style {:text-decoration-line :underline}}
+             (i18n/label :t/waiting-for-wifi-change)]]
+           [react/text {:style    styles/text
+                        :on-press on-press-fn}
+            (i18n/label message)])])})))
 
-(defview connectivity-view []
+(defn connectivity-animation-wrapper [style anim-value & content]
+  (vec (concat
+        (if platform/desktop?
+          [react/view {:style {:flex 1}}]
+          [react/animated-view
+           {:style
+            (merge {:flex      1
+                    :transform [{:translateY anim-value}]}
+                   style)}])
+        content)))
+
+(defview connectivity-view [anim-translate-y]
   (letsubs [status-properties [:connectivity/status-properties]
             view-id           [:view-id]
             window-width      [:dimensions/window-width]]
@@ -142,4 +158,5 @@
        [connectivity-status
         (merge status-properties
                {:view-id      view-id
-                :window-width window-width})]])))
+                :window-width window-width})
+        anim-translate-y]])))

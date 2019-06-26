@@ -248,15 +248,17 @@
    To render something on empty sections, use renderSectionFooter and conditionaly
    render on empty data
    See https://facebook.github.io/react-native/docs/sectionlist.html"
-  [{:keys [sections render-section-header-fn render-section-footer-fn] :as props
-    :or {render-section-header-fn default-render-section-header}}]
+  [{:keys [sections render-section-header-fn render-section-footer-fn style] :as props
+    :or {render-section-header-fn default-render-section-header
+         style {}}}]
   [(section-list-class)
    (merge (base-list-props props)
           props
           (when render-section-footer-fn
             {:renderSectionFooter (wrap-render-section-header-fn render-section-footer-fn)})
           {:sections            (clj->js (map wrap-per-section-render-fn sections))
-           :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)})])
+           :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)
+           :style               style})])
 
 (defn render-action [{:keys [label subtext accessibility-label icon action disabled?]}
                      {:keys [action-style action-label-style action-subtext-style icon-opts]}]
