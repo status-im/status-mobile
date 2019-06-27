@@ -2,10 +2,10 @@
   (:require [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.utils.config :as config]))
 
-(defn snoopy [] (.-default js-dependencies/snoopy))
-(defn sn-filter [] (.-default js-dependencies/snoopy-filter))
-(defn bars [] (.-default js-dependencies/snoopy-bars))
-(defn buffer [] (.-default js-dependencies/snoopy-buffer))
+(defn snoopy [] (.-default (js-dependencies/snoopy)))
+(defn sn-filter [] (.-default (js-dependencies/snoopy-filter)))
+(defn bars [] (.-default (js-dependencies/snoopy-bars)))
+(defn buffer [] (.-default (js-dependencies/snoopy-buffer)))
 
 (defn create-filter [f]
   (fn [message]
@@ -67,11 +67,17 @@
                   print-events?)
                  events)))))
 
+;; In order to enable snoopy set SNOOPY=1 in .env file.
+;; By default events are not printed and you will see warnings only when
+;; the number of events is exceeding the threshold.
+;; For debugging UI perf, in particular the number of bridge calls caused
+;; by view components set `:print-events?=true` for `ui-manager-filter`,
+;; and then collect printed data in logs.
 (defn subscribe! []
-  (when config/rn-bridge-threshold-warnings-enabled?
-    ;;(js-dependencies/EventEmmiter.)
-    (let [emitter nil
-          events  (.stream (snoopy) emitter)]
+  (when config/snoopy-enabled?
+    (let [emitter-class (js-dependencies/EventEmmiter)
+          emitter       (emitter-class.)
+          events        (.stream (snoopy) emitter)]
       (threshold-warnings
        {:filter-fn         (constantly true)
         :label             "all messages"
@@ -96,7 +102,7 @@
         :threshold-message (str "too many calls to UIManager, most likely during navigation. "
                                 "Please consider preloading of screens or lazy loading of some components")
         :tick?             false
-        :print-events?     false
+        :print-events?     true
        ;; todo(rasom): revisit this number when/if
        ;; https://github.com/status-im/status-react/pull/2849 will be merged
         :threshold         200

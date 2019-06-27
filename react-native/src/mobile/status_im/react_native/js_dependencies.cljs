@@ -13,6 +13,7 @@
 (def touchid-class          (js-require/js-require "react-native-touch-id"))
 (defn touchid []            (.-default (touchid-class)))
 (def webview                (js-require/js-require "react-native-webview"))
+(def EventEmmiter           (js-require/js-require "react-native/Libraries/vendor/emitter/EventEmitter"))
 (def securerandom           (js-require/js-require "react-native-securerandom"))
 (defn secure-random []      (.-generateSecureRandom (securerandom)))
 (def fetch-polyfill         (js-require/js-require "react-native-fetch-polyfill"))
