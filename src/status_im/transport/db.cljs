@@ -104,7 +104,7 @@
                                            :req-opt [:message.content/response-to]))
 (spec/def :message.command/content (spec/keys :req-un [:message.content/command-path :message.content/params]))
 
-(spec/def :message.sticker/content (spec/keys :req-un [:message.content/uri]))
+(spec/def :message.sticker/content (spec/keys :req-un [:message.content/hash]))
 
 (defmulti content-type :content-type)
 

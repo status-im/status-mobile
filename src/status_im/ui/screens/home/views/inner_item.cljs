@@ -12,6 +12,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
+            [status-im.utils.contenthash :as contenthash]
             [status-im.utils.core :as utils]
             [status-im.utils.datetime :as time])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
@@ -36,7 +37,7 @@
 
      (= constants/content-type-sticker content-type)
      [react/image {:style {:margin 2 :width 30 :height 30}
-                   :source {:uri (:uri content)}}]
+                   :source {:uri (contenthash/url (:hash content))}}]
 
      (string/blank? (:text content))
      [react/text {:style styles/last-message-text}

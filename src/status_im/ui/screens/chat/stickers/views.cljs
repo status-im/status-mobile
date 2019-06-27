@@ -1,13 +1,15 @@
 (ns status-im.ui.screens.chat.stickers.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.stickers.core :as stickers]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.chat.stickers.styles :as styles]
             [status-im.ui.components.animation :as anim]
-            [reagent.core :as reagent]
+            [status-im.utils.contenthash :as contenthash]
             [status-im.utils.platform :as platform]))
 
 (def icon-size 28)
@@ -43,13 +45,14 @@
   [react/view {:width window-width :flex 1}
    [react/scroll-view
     [react/view {:style styles/stickers-panel}
-     (for [{:keys [uri] :as sticker} stickers]
-       ^{:key uri}
+     (for [{:keys [hash pack] :as sticker} stickers]
+       ^{:key (str hash)}
        [react/touchable-highlight {:style    {:height 75 :width 75 :margin 5}
                                    :on-press #(re-frame/dispatch [:chat/send-sticker sticker])}
-        [react/image {:style {:resize-mode :cover :width "100%" :height "100%"}
-                      :accessibility-label :sticker-icon
-                      :source {:uri uri}}]])]]])
+        [react/view
+         [react/image {:style {:resize-mode :cover :width "100%" :height "100%"}
+                       :accessibility-label :sticker-icon
+                       :source {:uri (contenthash/url (str "0x" hash))}}]]])]]])
 
 (defview recent-stickers-panel [window-width]
   (letsubs [stickers [:stickers/recent]]
@@ -83,18 +86,19 @@
     {:component-will-update (fn [_ [_ installed-packs selected-pack]]
                               (update-scroll-position @ref installed-packs selected-pack window-width))
      :component-did-mount   #(update-scroll-position @ref installed-packs selected-pack window-width)}
-    [react/scroll-view {:style                             {:flex 1} :horizontal true :paging-enabled true
-                        :ref                               #(reset! ref %)
-                        :shows-horizontal-scroll-indicator false
-                        :on-momentum-scroll-end            #(on-scroll % installed-packs window-width)
-                        :scrollEventThrottle               8
-                        :on-scroll                         #(reset! scroll-x (.-nativeEvent.contentOffset.x %))
-                        :on-layout #(reset! content-width (-> % .-nativeEvent .-layout .-width))}
-     ^{:key "recent"}
-     [recent-stickers-panel @content-width]
-     (for [{:keys [stickers id]} installed-packs]
-       ^{:key (str "sticker" id)}
-       [stickers-panel (map #(assoc % :pack id) stickers) @content-width])]))
+    (let [width @content-width]
+      [react/scroll-view {:style                             {:flex 1} :horizontal true :paging-enabled true
+                          :ref                               #(reset! ref %)
+                          :shows-horizontal-scroll-indicator false
+                          :on-momentum-scroll-end            #(on-scroll % installed-packs window-width)
+                          :scrollEventThrottle               8
+                          :on-scroll                         #(reset! scroll-x (.-nativeEvent.contentOffset.x %))
+                          :on-layout #(reset! content-width (-> % .-nativeEvent .-layout .-width))}
+       ^{:key "recent"}
+       [recent-stickers-panel width]
+       (for [{:keys [stickers id]} installed-packs]
+         ^{:key (str "sticker" id)}
+         [stickers-panel (map #(assoc % :pack id) (filter stickers/valid-sticker? stickers)) width])])))
 
 (defn pack-icon [{:keys [id on-press background-color]
                   :or   {on-press #(re-frame/dispatch [:stickers/select-pack id])}}
@@ -103,10 +107,6 @@
    [react/view {:style {:align-items :center}}
     [react/view {:style (styles/pack-icon background-color icon-size icon-horizontal-margin)}
      icon]]])
-
-(defn pack-stickers [packs pack-id]
-  (let [{:keys [stickers id]} (some #(when (= pack-id (:id %)) %) packs)]
-    (map #(assoc % :pack id) stickers)))
 
 (defn show-panel-anim
   [bottom-anim-value alpha-value]
@@ -157,5 +157,5 @@
            [pack-icon {:id id
                        :background-color colors/white}
             [react/image {:style {:width icon-size :height icon-size :border-radius (/ icon-size 2)}
-                          :source {:uri thumbnail}}]])]
+                          :source {:uri (contenthash/url thumbnail)}}]])]
         [scroll-indicator]]]]]))

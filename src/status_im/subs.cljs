@@ -893,9 +893,9 @@
  (fn [[{:keys [id]} packs]]
    (first (filter #(= (:id %) id) packs))))
 
-(defn find-pack-id-for-uri [sticker-uri packs]
+(defn find-pack-id-for-hash [sticker-uri packs]
   (some (fn [{:keys [stickers id]}]
-          (when (some #(= sticker-uri (:uri %)) stickers)
+          (when (some #(= sticker-uri (:hash %)) stickers)
             id))
         packs))
 
@@ -904,7 +904,7 @@
  :<- [:account/account]
  :<- [:stickers/installed-packs-vals]
  (fn [[{:keys [recent-stickers]} packs]]
-   (map (fn [uri] {:uri uri :pack (find-pack-id-for-uri uri packs)}) recent-stickers)))
+   (map (fn [hash] {:hash hash :pack (find-pack-id-for-hash hash packs)}) recent-stickers)))
 
 ;;EXTENSIONS ===========================================================================================================
 

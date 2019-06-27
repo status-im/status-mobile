@@ -824,10 +824,10 @@
 
 (handlers/register-handler-fx
  :chat/send-sticker
- (fn [{{:keys [current-chat-id] :account/keys [account]} :db :as cofx} [_ {:keys [uri] :as sticker}]]
+ (fn [{{:keys [current-chat-id] :account/keys [account]} :db :as cofx} [_ {:keys [hash] :as sticker}]]
    (fx/merge
     cofx
-    (accounts/update-recent-stickers (conj (remove #(= uri %) (:recent-stickers account)) uri))
+    (accounts/update-recent-stickers (conj (remove #(= hash %) (:recent-stickers account)) hash))
     (chat.input/send-sticker-fx sticker current-chat-id))))
 
 (handlers/register-handler-fx

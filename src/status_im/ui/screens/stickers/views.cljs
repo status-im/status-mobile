@@ -9,6 +9,7 @@
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.stickers.styles :as styles]
+            [status-im.utils.contenthash :as contenthash]
             [status-im.utils.money :as money])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -47,9 +48,9 @@
 (defn pack-badge [{:keys [name author price thumbnail preview id installed owned pending] :as pack}]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :stickers-pack pack])}
    [react/view {:margin-bottom 27}
-    [react/image {:style {:height 200 :border-radius 20} :source {:uri preview}}]
+    [react/image {:style {:height 200 :border-radius 20} :source {:uri (contenthash/url preview)}}]
     [react/view {:height 64 :align-items :center :flex-direction :row}
-     [thumbnail-icon thumbnail 40]
+     [thumbnail-icon (contenthash/url thumbnail) 40]
      [react/view {:padding-horizontal 16 :flex 1}
       [react/text {:accessibility-label :sticker-pack-name} name]
       [react/text {:style {:color colors/gray :margin-top 6}
@@ -79,7 +80,7 @@
      [react/keyboard-avoiding-view components.styles/flex
       [toolbar/simple-toolbar nil modal?]
       [react/view {:height 74 :align-items :center :flex-direction :row :padding-horizontal 16}
-       [thumbnail-icon thumbnail 64]
+       [thumbnail-icon (contenthash/url thumbnail) 64]
        [react/view {:padding-horizontal 16 :flex 1}
         [react/text {:style {:typography :header}} name]
         [react/text {:style {:color colors/gray :margin-top 6}} author]]
@@ -89,10 +90,10 @@
       [react/view {:style {:padding-top 8 :flex 1}}
        [react/scroll-view {:keyboard-should-persist-taps :handled :style {:flex 1}}
         [react/view {:flex-direction :row :flex-wrap :wrap}
-         (for [{:keys [uri]} stickers]
-           ^{:key uri}
+         (for [{:keys [hash]} stickers]
+           ^{:key hash}
            [react/image {:style (styles/sticker-image sticker-icon-size)
-                         :source {:uri uri}}])]]]]]))
+                         :source {:uri (contenthash/url hash)}}])]]]]]))
 
 (defview pack []
   [pack-main false])

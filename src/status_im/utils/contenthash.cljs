@@ -5,6 +5,7 @@
   (:require [alphabase.base58 :as b58]
             [alphabase.hex :as hex]
             [clojure.string :as string]
+            [status-im.ethereum.core :as ethereum]
             [status-im.ipfs.core :as ipfs]
             [status-im.utils.fx :as fx]))
 
@@ -53,6 +54,12 @@
                            (subs 6)
                            hex/decode
                            b58/encode))})))
+
+(defn url [hex]
+  (let [{:keys [namespace hash]} (decode (ethereum/normalized-address hex))]
+    (case namespace
+      :ipfs (str "https://ipfs.infura.io/ipfs/" hash)
+      "")))
 
 (fx/defn cat
   [cofx {:keys [contenthash on-success on-failure]}]

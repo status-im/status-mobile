@@ -99,12 +99,18 @@
               (assoc :stickers/selected-pack id))}
      (accounts/update-stickers (conj (:stickers account) (pr-str pack))))))
 
+(defn valid-sticker? [sticker]
+  (contains? sticker :hash))
+
 (fx/defn load-sticker-pack-success
   [{:keys [db] :as cofx} edn-string id price open?]
-  (let [pack (assoc (get (edn/read-string edn-string) 'meta)
-                    :id id :price price)]
+  (let [{:keys [stickers] :as pack} (assoc (get (edn/read-string edn-string) 'meta)
+                                           :id id :price price)]
     (fx/merge cofx
-              {:db (assoc-in db [:stickers/packs id] pack)}
+              {:db (cond-> db
+                     (and (seq stickers)
+                          (every? valid-sticker? stickers))
+                     (assoc-in [:stickers/packs id] pack))}
               #(when open?
                  (navigation/navigate-to-cofx % :stickers-pack-modal pack)))))
 
@@ -127,9 +133,7 @@
                         hash)
               :success-event-creator
               (fn [o]
-                [:stickers/load-sticker-pack-success o id price open?])
-              :failure-event-creator
-              (constantly nil)}})
+                [:stickers/load-sticker-pack-success o id price open?])}})
 
 (fx/defn load-packs
   [{:keys [db]}]

@@ -27,7 +27,8 @@
             [status-im.ui.screens.desktop.main.chat.emoji :as emoji]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.screens.chat.message.gap :as gap]
-            [status-im.ui.components.animation :as animation])
+            [status-im.ui.components.animation :as animation]
+            [status-im.utils.contenthash :as contenthash])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn toolbar-chat-view
@@ -175,7 +176,7 @@
   [_ _ {:keys [content] :as message}]
   [message-wrapper message
    [react/image {:style  {:margin 10 :width 140 :height 140}
-                 :source {:uri (:uri content)}}]])
+                 :source {:uri (contenthash/url (:hash content))}}]])
 
 (views/defview message-content-status [text message]
   [react/view

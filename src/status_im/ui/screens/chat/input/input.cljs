@@ -201,7 +201,7 @@
        [reply-message-view]
        [react/view {:style style/input-container}
         [input-view {:single-line-input? single-line-input? :set-text set-text :state-text state-text}]
-        (when (and config/stickers-enabled? input-text-empty?)
+        (when input-text-empty?
           [stickers/button show-stickers?])
         (if input-text-empty?
           [commands-button]

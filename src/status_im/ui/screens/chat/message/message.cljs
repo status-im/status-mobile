@@ -15,6 +15,7 @@
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.utils :as chat.utils]
+            [status-im.utils.contenthash :as contenthash]
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -144,7 +145,7 @@
   [wrapper {:keys [content] :as message}]
   [wrapper message
    [react/image {:style {:margin 10 :width 140 :height 140}
-                 :source {:uri (:uri content)}}]])
+                 :source {:uri (contenthash/url (:hash content))}}]])
 
 (defmethod message-content :default
   [wrapper {:keys [content-type] :as message}]

@@ -17,7 +17,8 @@
             [reagent.core :as reagent]
             [status-im.ui.components.action-button.styles :as action-button.styles]
             [status-im.ui.components.action-button.action-button :as action-button]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [status-im.utils.contenthash :as contenthash]))
 
 (views/defview chat-list-item-inner-view
   [{:keys [chat-id name group-chat
@@ -54,16 +55,17 @@
                       :number-of-lines 1
                       :style           (styles/chat-name current?)}
           name]]
-        (if (and (:uri (:content last-message) (= constants/content-type-sticker (:content-type last-message))))
-          [react/image {:style {:margin 2 :width 30 :height 30}
-                        :source {:uri (:uri (:content last-message))}}]
-          [react/text {:ellipsize-mode  :tail
-                       :number-of-lines 1
-                       :style           styles/chat-last-message}
-           (if (= constants/content-type-command (:content-type last-message))
-             [chat-item/command-short-preview last-message]
-             (or (:text last-message-content)
-                 (i18n/label :no-messages-yet)))])]
+        (let [uri (contenthash/url (:content last-message))]
+          (if (and uri (= constants/content-type-sticker (:content-type last-message)))
+            [react/image {:style {:margin 2 :width 30 :height 30}
+                          :source {:uri uri}}]
+            [react/text {:ellipsize-mode  :tail
+                         :number-of-lines 1
+                         :style           styles/chat-last-message}
+             (if (= constants/content-type-command (:content-type last-message))
+               [chat-item/command-short-preview last-message]
+               (or (:text last-message-content)
+                   (i18n/label :no-messages-yet)))]))]
        [react/view {:style styles/timestamp}
         [chat-item/message-timestamp (:timestamp last-message)]
         (when (pos? unviewed-messages-count)
