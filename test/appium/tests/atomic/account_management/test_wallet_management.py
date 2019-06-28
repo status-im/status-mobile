@@ -12,6 +12,7 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5335)
     @marks.high
+    @marks.skip
     def test_wallet_set_up(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
@@ -65,7 +66,8 @@ class TestWalletManagement(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(user['passphrase'])
         wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
+        # wallet_view.set_up_wallet()
+        wallet_view.accounts_status_account.click()
         transactions_view = wallet_view.transaction_history_button.click()
         transaction_details = transactions_view.transactions_table.transaction_by_index(0).click()
         transaction_hash = transaction_details.get_transaction_hash()
@@ -124,9 +126,10 @@ class TestWalletManagement(SingleDeviceTestCase):
         profile = sign_in.profile_button.click()
         profile.switch_network('Mainnet with upstream RPC')
         wallet = sign_in.wallet_button.click()
-        wallet.set_up_wallet()
+        # wallet.set_up_wallet()
         asset_name = 'CryptoKitties'
         wallet.select_asset(asset_name)
+        wallet.accounts_status_account.click()
         send_transaction = wallet.send_transaction_button.click()
         send_transaction.select_asset_button.click()
         if send_transaction.asset_by_name(asset_name).is_element_displayed():
@@ -138,7 +141,8 @@ class TestWalletManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
         wallet = sign_in.wallet_button.click()
-        wallet.set_up_wallet()
+        # wallet.set_up_wallet()
+        wallet.accounts_status_account.click()
         send_transaction = wallet.send_transaction_button.click()
         send_transaction.chose_recipient_button.click()
         send_transaction.scan_qr_code_button.click()
@@ -151,13 +155,14 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5435)
     @marks.medium
+    @marks.skip
     def test_filter_transactions_history(self):
         user = wallet_users['C']
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(passphrase=user['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-
+        # wallet_view.set_up_wallet()
+        wallet_view.accounts_status_account.click()
         transaction_history = wallet_view.transaction_history_button.click()
         transaction_history.filters_button.click()
         for filter_name in 'Outgoing', 'Pending', 'Failed':
@@ -202,6 +207,9 @@ class TestWalletManagement(SingleDeviceTestCase):
         profile.switch_network('Rinkeby with upstream RPC')
         profile = home_view.profile_button.click()
         wallet_view = profile.wallet_button.click()
-        wallet_view.set_up_wallet()
-        if wallet_view.collectible_amount_by_name('kdo') != '1':
-            self.driver.fail('User collectibles amount does not match!')
+        # wallet_view.set_up_wallet()
+        wallet_view.collectibles_button.click()
+        if not wallet_view.element_by_text('KDO').is_element_displayed():
+            self.driver.fail('User collectibles token name in not shown')
+        if not wallet_view.element_by_text('1').is_element_displayed():
+            self.driver.fail('User collectibles amount does not match')

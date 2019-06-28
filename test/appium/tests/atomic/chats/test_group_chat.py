@@ -241,8 +241,12 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         # device 2: check that removed user can see that he is removed
         user2_left_chat_system_message_for_user_2 = return_left_chat_system_message(device_2_custom_username)
 
-        if not device_2_chat.chat_element_by_text(user2_left_chat_system_message_for_user_2).is_element_displayed():
-            self.errors.append("Message with test '%s' was not received" % user2_left_chat_system_message_for_user_2)
+        # TODO: should be reworked after https://github.com/status-im/status-react/pull/8487: replaced with default username
+        # if not device_1_chat.chat_element_by_text(user2_left_chat_system_message_for_user_2).is_element_displayed():
+        #     self.errors.append("Message with text '%s' was not received" % user2_left_chat_system_message_for_user_2)
+
+        # if not device_2_chat.chat_element_by_text(user2_left_chat_system_message_for_user_2).is_element_displayed():
+        #     self.errors.append("Message with text '%s' was not received" % user2_left_chat_system_message_for_user_2)
 
         # device 2: check there is no message input so user can't send new message in group chat
         if device_2_chat.chat_message_input.is_element_displayed():
@@ -280,9 +284,10 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         options.make_admin_button.click()
 
         # device 2: check presence of system message
-        user2_made_admin_system_message_for_user_2 = return_made_admin_system_message(device_2_custom_username)
-        if not device_2_chat.chat_element_by_text(user2_made_admin_system_message_for_user_2).is_element_displayed():
-            self.errors.append("Message with test '%s' was not received" % user2_made_admin_system_message_for_user_2)
+        # TODO: should be reworked after https://github.com/status-im/status-react/pull/8487: replaced with default username
+        # user2_made_admin_system_message_for_user_2 = return_made_admin_system_message(device_2_custom_username)
+        # if not device_2_chat.chat_element_by_text(user2_made_admin_system_message_for_user_2).is_element_displayed():
+        #     self.errors.append("Message with test '%s' was not received" % user2_made_admin_system_message_for_user_2)
 
         # device 2: check that as admin can add new members to group chat
         device_2_chat.add_members_to_group_chat([chat_member['username']])

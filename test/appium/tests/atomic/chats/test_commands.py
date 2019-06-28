@@ -220,7 +220,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         home_view.home_button.click()
         self.network_api.get_donate(sender_address)
         wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
+        # wallet_view.set_up_wallet()
         home_view.home_button.click()
         home_view.add_contact(recipient['public_key'])
         chat_view = home_view.get_chat_view()
@@ -312,7 +312,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         home_1 = device_1.recover_access(passphrase=sender['passphrase'])
         home_2 = device_2.recover_access(passphrase=recipient['passphrase'])
         wallet_1 = home_1.wallet_button.click()
-        wallet_1.set_up_wallet()
+       # wallet_1.set_up_wallet()
         wallet_1.home_button.click()
 
         chat_1 = home_1.add_contact(recipient['public_key'])
@@ -369,7 +369,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         home = sign_in.recover_access(passphrase=sender['passphrase'])
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
+       # wallet.set_up_wallet()
         wallet.home_button.click()
 
         chat = home.add_contact(recipient['public_key'])
@@ -381,8 +381,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         send_transaction_view = chat.get_send_transaction_view()
         chat.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
 
-        if not send_transaction_view.element_by_text(recipient['username']).is_element_displayed():
-            self.errors.append('Recipient name is not shown')
+        # if not send_transaction_view.element_by_text(recipient['username']).is_element_displayed():
+        #     self.errors.append('Recipient name is not shown')
         if not send_transaction_view.element_by_text('ETHro').is_element_displayed():
             self.errors.append("Asset field doesn't contain 'ETHro' text")
         if not send_transaction_view.element_by_text(amount).is_element_displayed():
@@ -396,7 +396,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         home = sign_in.recover_access(passphrase=sender['passphrase'])
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
+        # wallet.set_up_wallet()
         wallet.home_button.click()
         chat = home.add_contact(basic_user['public_key'])
         amount = chat.get_unique_amount()
@@ -411,7 +411,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
+        # wallet_view.set_up_wallet()
         home_view = wallet_view.home_button.click()
         chat_view = home_view.add_contact(basic_user['public_key'])
         chat_view.commands_button.click()
@@ -423,7 +423,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         error_text = send_transaction.element_by_text('Insufficient funds')
         if not error_text.is_element_displayed():
             self.errors.append("'Insufficient funds' error is now shown when sending 1 ETH from chat with balance 0")
-        send_transaction.cross_icon.click()
+        send_transaction.cancel_button.click()
         chat_view.commands_button.click()
 
         # enable STT in wallet
@@ -446,7 +446,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(sender['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
+        # wallet_view.set_up_wallet()
+        wallet_view.accounts_status_account.click()
         eth_value = wallet_view.get_eth_value()
         stt_value = wallet_view.get_stt_value()
         if eth_value == 0 or stt_value == 0:
@@ -464,7 +465,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
             self.errors.append(
                 "'Insufficient funds' error is now shown when sending %s ETHro from chat with balance %s" % (
                     round(eth_value + 1), eth_value))
-        send_transaction.cross_icon.click()
+        send_transaction.cancel_button.click()
         chat_view.commands_button.click()
         chat_view.send_command.click()
         chat_view.asset_by_name('STT').scroll_to_element()

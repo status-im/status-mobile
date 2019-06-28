@@ -43,7 +43,7 @@ class EthAssetText(BaseText):
 class STTAssetText(BaseText):
     def __init__(self, driver):
         super(STTAssetText, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("//*[@text='STT']/preceding-sibling::*[1]")
+        self.locator = self.Locator.xpath_selector("//*[@text='STT']/preceding-sibling::*[1]")
 
 
 class UsdTotalValueText(BaseText):
@@ -98,6 +98,11 @@ class SetUpButton(BaseButton):
         super(SetUpButton, self).__init__(driver)
         self.locator = self.Locator.text_selector("Let’s get set up")
 
+class SetCurrencyButton(BaseButton):
+    def __init__(self, driver):
+        super(SetCurrencyButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector("Set currency")
+
 
 class SignInPhraseText(BaseText):
     def __init__(self, driver):
@@ -149,6 +154,11 @@ class CurrencyText(BaseText):
         super(CurrencyText, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('total-amount-currency-text')
 
+class CollectiblesButton(BaseButton):
+
+    def __init__(self, driver):
+        super(CollectiblesButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Collectibles')
 
 class BackupRecoveryPhrase(BaseButton):
     def __init__(self, driver):
@@ -233,6 +243,8 @@ class WalletView(BaseView):
         # elements for multiaccount
         self.accounts_more_options = AccountsMoreOptions(self.driver)
         self.accounts_status_account = AccountsStatusAccount(self.driver)
+        self.collectibles_button = CollectiblesButton(self.driver)
+        self.set_currency_button = SetCurrencyButton(self.driver)
 
     def get_usd_total_value(self):
         import re
@@ -359,3 +371,13 @@ class WalletView(BaseView):
         elm = CollectibleTextElement(self.driver, name)
         elm.scroll_to_element()
         return elm.text
+
+    def set_currency(self, desired_currency='EUR'):
+        """
+        :param desired_currency: defines a currency designator which is expressed by ISO 4217 code
+        """
+        self.accounts_more_options.click()
+        self.set_currency_button.click()
+        desired_currency = self.element_by_text_part(desired_currency)
+        desired_currency.scroll_to_element()
+        desired_currency.click()

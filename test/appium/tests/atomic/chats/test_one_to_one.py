@@ -117,6 +117,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         username_1 = 'user_%s' % get_current_time()
 
         device_1_home, device_2_home = device_1.create_user(username=username_1), device_2.create_user()
+        profile_1 = device_1_home.profile_button.click()
+        default_username_1 = profile_1.default_username_text.text
+        device_1_home = profile_1.get_back_to_home_view()
 
         profile_1 = device_1_home.profile_button.click()
         file_name = 'sauce_logo.png'
@@ -131,15 +134,15 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_chat.chat_message_input.send_keys(message)
         device_1_chat.send_message_button.click()
 
-        chat_element = device_2_home.get_chat_with_user(username_1)
+        chat_element = device_2_home.get_chat_with_user(default_username_1)
         chat_element.wait_for_visibility_of_element()
         device_2_chat = chat_element.click()
         if not device_2_chat.chat_element_by_text(message).is_element_displayed():
             self.errors.append("Message with test '%s' was not received" % message)
         if not device_2_chat.add_to_contacts.is_element_displayed():
             self.errors.append('Add to contacts button is not shown')
-        if device_2_chat.user_name_text.text != username_1:
-            self.errors.append("Real username '%s' is not shown in one-to-one chat" % username_1)
+        if device_2_chat.user_name_text.text != default_username_1:
+            self.errors.append("Default username '%s' is not shown in one-to-one chat" % default_username_1)
         device_2_chat.chat_options.click()
         device_2_chat.view_profile_button.click()
         if not device_2_chat.contact_profile_picture.is_element_image_equals_template(file_name):
@@ -201,6 +204,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         username_1, username_2 = 'user_1', 'user_2'
 
         home_1, home_2 = device_1.create_user(username=username_1), device_2.create_user(username=username_2)
+        profile_1 = home_1.profile_button.click()
+        default_username_1 = profile_1.default_username_text.text
+        home_1 = profile_1.get_back_to_home_view()
         public_key_2 = home_2.get_public_key()
         home_2.home_button.click()
 
@@ -209,7 +215,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1.chat_message_input.send_keys(url_message)
         chat_1.send_message_button.click()
         chat_1.get_back_to_home_view()
-        chat_2 = home_2.get_chat_with_user(username_1).click()
+        chat_2 = home_2.get_chat_with_user(default_username_1).click()
         chat_2.element_starts_with_text(url_message, 'button').click()
         web_view = chat_2.open_in_status_button.click()
         try:
@@ -318,6 +324,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_2 = 'user_%s' % get_current_time()
         device_1_home, device_2_home = sign_in_1.create_user(), sign_in_2.create_user(username=username_2)
+        profile_2 = device_2_home.profile_button.click()
+        default_username_2 = profile_2.default_username_text.text
+        device_2_home = profile_2.get_back_to_home_view()
         device_1_public_key = device_1_home.get_public_key()
         device_1_home.home_button.click()
 
@@ -327,20 +336,20 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2_chat.chat_message_input.send_keys('*%s*' % bold_text)
         device_2_chat.send_message_button.click()
         if not device_2_chat.chat_element_by_text(bold_text).is_element_displayed():
-            self.errors.append('Bold text is not displayed in 1-1 chat for the sender')
+            self.errors.append('Bold text is not displayed in 1-1 chat for the sender \n')
 
-        device_1_chat = device_1_home.get_chat_with_user(username_2).click()
+        device_1_chat = device_1_home.get_chat_with_user(default_username_2).click()
         if not device_1_chat.chat_element_by_text(bold_text).is_element_displayed():
-            self.errors.append('Bold text is not displayed in 1-1 chat for the recipient')
+            self.errors.append('Bold text is not displayed in 1-1 chat for the recipient \n')
 
         italic_text = 'italic text'
-        device_2_chat.chat_message_input.send_keys('~%s~' % italic_text)
+        device_2_chat.chat_message_input.send_keys('_%s_' % italic_text)
         device_2_chat.send_message_button.click()
         if not device_2_chat.chat_element_by_text(italic_text).is_element_displayed():
-            self.errors.append('Italic text is not displayed in 1-1 chat for the sender')
+            self.errors.append('Italic text is not displayed in 1-1 chat for the sender \n')
 
         if not device_1_chat.chat_element_by_text(italic_text).is_element_displayed():
-            self.errors.append('Italic text is not displayed in 1-1 chat for the recipient')
+            self.errors.append('Italic text is not displayed in 1-1 chat for the recipient \n')
 
         device_1_chat.get_back_to_home_view()
         device_2_chat.get_back_to_home_view()
@@ -356,7 +365,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         if not device_1_chat.chat_element_by_text(bold_text).is_element_displayed():
             self.errors.append('Bold text is not displayed in public chat for the recipient')
 
-        device_2_chat.chat_message_input.send_keys('~%s~' % italic_text)
+        device_2_chat.chat_message_input.send_keys('_%s_' % italic_text)
         device_2_chat.send_message_button.click()
         if not device_2_chat.chat_element_by_text(italic_text).is_element_displayed():
             self.errors.append('Italic text is not displayed in public chat for the sender')
@@ -433,17 +442,17 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         # changing currency for both devices
         for device in devices:
-            profile_view = device['home_view'].profile_button.click()
-            profile_view.set_currency(device['currency'])
-            profile_view.get_back_to_home_view()
+            wallet_view = device['home_view'].wallet_button.click()
+            wallet_view.set_currency(device['currency'])
+            wallet_view.get_back_to_home_view()
 
         device1 = devices[0]
         device2 = devices[1]
 
         # setting up device1 wallet
-        wallet1 = device1['home_view'].wallet_button.click()
-        wallet1.set_up_wallet()
-        wallet1.get_back_to_home_view()
+        # wallet1 = device1['home_view'].wallet_button.click()
+        # wallet1.set_up_wallet()
+        # wallet1.get_back_to_home_view()
 
         # sending ETH to device2 in 1*1 chat
         device1_chat = device1['home_view'].add_contact(recipient['public_key'])
@@ -459,24 +468,25 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         if not received_message.is_element_displayed() and not received_message.contains_text(device2['currency']):
             self.errors.append('Wrong currency fiat value while receiving ETH in 1*1 chat.')
 
-        device1_chat.get_back_to_home_view()
-        wallet1 = device1['home_view'].wallet_button.click()
-        send_amount = device1_chat.get_unique_amount()
+        # Currently disabled because sending / requesting funds from wallet is not shown in chat
+        # device1_chat.get_back_to_home_view()
+        # wallet1 = device1['home_view'].wallet_button.click()
+        # send_amount = device1_chat.get_unique_amount()
 
         # Send and request some ETH from wallet and check whether the fiat currency value of
         # the new messages is equal to user-selected
-        wallet1.send_transaction(asset_name='ETHro', recipient=recipient['username'], amount=send_amount)
-        wallet1.get_back_to_home_view()
-        device1_chat = device1['home_view'].get_chat_with_user(recipient['username']).click()
-
-        sent_message = device1_chat.chat_element_by_text(send_amount)
-        received_message = device2_chat.chat_element_by_text(send_amount)
-
-        if not sent_message.is_element_displayed() and not sent_message.contains_text(device1['currency']):
-            self.errors.append('Wrong currency fiat value while sending ETH from wallet.')
-
-        if not received_message.is_element_displayed() and not sent_message.contains_text(device2['currency']):
-            self.errors.append('Wrong currency fiat value while receiving ETH sent via wallet.')
+        # wallet1.send_transaction(asset_name='ETHro', recipient=recipient['username'], amount=send_amount)
+        # wallet1.get_back_to_home_view()
+        # device1_chat = device1['home_view'].get_chat_with_user(recipient['username']).click()
+        #
+        # sent_message = device1_chat.chat_element_by_text(send_amount)
+        # received_message = device2_chat.chat_element_by_text(send_amount)
+        #
+        # if not sent_message.is_element_displayed() and not sent_message.contains_text(device1['currency']):
+        #     self.errors.append('Wrong currency fiat value while sending ETH from wallet.')
+        #
+        # if not received_message.is_element_displayed() and not sent_message.contains_text(device2['currency']):
+        #     self.errors.append('Wrong currency fiat value while receiving ETH sent via wallet.')
 
         self.verify_no_errors()
 
@@ -578,7 +588,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         sigin_view = SignInView(self.driver)
         home_view = sigin_view.recover_access(sender_passphrase)
         wallet = home_view.wallet_button.click()
-        wallet.set_up_wallet()
+        # wallet.set_up_wallet()
 
         wallet.get_back_to_home_view()
 
@@ -600,9 +610,9 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat.get_back_to_home_view()
 
         # Switch default currency to user-selected
-        profile_view = sigin_view.profile_button.click()
-        profile_view.set_currency(user_currency)
-        profile_view.get_back_to_home_view()
+        wallet_view = sigin_view.wallet_button.click()
+        wallet_view.set_currency(user_currency)
+        wallet_view.get_back_to_home_view()
 
         chat = home_view.get_chat_with_user(recipient_user_name).click()
 
@@ -629,26 +639,30 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         if not request_message.is_element_displayed() and not request_message.contains_text(user_currency):
             self.errors.append('Wrong fiat value while requesting assets in 1-1 chat with user selected currency.')
 
-        chat.get_back_to_home_view()
+        # disabled since after merge https://github.com/status-im/status-react/pull/8425 no messages are shown
+        # in 1-1 chat after sending from wallet
 
-        wallet = home_view.wallet_button.click()
-        send_amount, request_amount = [chat.get_unique_amount() for _ in range(2)]
+        # chat.get_back_to_home_view()
+        #
+        # wallet = home_view.wallet_button.click()
+        # send_amount, request_amount = [chat.get_unique_amount() for _ in range(2)]
 
         # Send and request some tokens from wallet and check whether the fiat currency value of
         # the new messages is equal to user-selected
-        wallet.send_transaction(asset_name='STT', recipient=recipient_user_name, amount=send_amount)
-        wallet.receive_transaction(asset_name='STT', recipient=recipient_user_name, amount=request_amount)
-
-        wallet.get_back_to_home_view()
-        chat = home_view.get_chat_with_user(recipient_user_name).click()
-
-        send_message = chat.chat_element_by_text(send_amount)
-        if not send_message.is_element_displayed() and not send_message.contains_text(user_currency):
-            self.errors.append('Wrong fiat value while sending assets from wallet with user selected currency.')
-
-        request_message = chat.chat_element_by_text(request_amount)
-        if not request_message.is_element_displayed() and not request_message.contains_text(user_currency):
-            self.errors.append('Wrong fiat value while requesting assets from wallet with user selected currency.')
+        #
+        # wallet.send_transaction(asset_name='STT', recipient=recipient_user_name, amount=send_amount)
+        # wallet.receive_transaction(asset_name='STT', recipient=recipient_user_name, amount=request_amount)
+        #
+        # wallet.get_back_to_home_view()
+        # chat = home_view.get_chat_with_user(recipient_user_name).click()
+        #
+        # send_message = chat.chat_element_by_text(send_amount)
+        # if not send_message.is_element_displayed() and not send_message.contains_text(user_currency):
+        #     self.errors.append('Wrong fiat value while sending assets from wallet with user selected currency.')
+        #
+        # request_message = chat.chat_element_by_text(request_amount)
+        # if not request_message.is_element_displayed() and not request_message.contains_text(user_currency):
+        #     self.errors.append('Wrong fiat value while requesting assets from wallet with user selected currency.')
 
         self.verify_no_errors()
 

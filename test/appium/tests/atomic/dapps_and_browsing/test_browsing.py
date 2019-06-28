@@ -70,7 +70,7 @@ class TestBrowsing(SingleDeviceTestCase):
         daap_view = home_view.dapp_tab_button.click()
         browsing_view = daap_view.open_url('google.com')
         browsing_view.cross_icon.click()
-        browser_entry = daap_view.get_browser_entry('Google')
+        browser_entry = daap_view.get_browser_entry('Google').scroll_to_element()
         browser_entry.swipe_and_delete()
         home_view.relogin()
         if browser_entry.is_element_present(20):

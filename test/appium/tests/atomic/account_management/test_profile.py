@@ -88,8 +88,9 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         chat.get_back_to_home_view()
 
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
-        wallet.receive_transaction_button.click()
+        # wallet.set_up_wallet()
+        wallet.accounts_status_account.click()
+        wallet.receive_transaction_button.click_until_presence_of_element(wallet.send_transaction_request)
         address = wallet.address_text.text
         wallet.address_text.long_press_element()
         wallet.copy_text()
@@ -141,19 +142,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         home.invite_friends_button.click()
         home.share_via_messenger()
         home.find_text_part("Get Status at http://status.im")
-
-    @marks.testrail_id(5429)
-    @marks.medium
-    def test_set_currency(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        profile_view = sign_in_view.profile_button.click()
-        profile_view.set_currency('Euro (EUR)')
-        profile_view.get_back_to_home_view()
-        wallet_view = profile_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        if not wallet_view.find_text_part('EUR'):
-            pytest.fail('EUR currency is not displayed')
 
     @marks.testrail_id(5431)
     @marks.medium
@@ -473,7 +461,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         group_chat_name = 'group-%s' % device_1_home.get_public_chat_name()
         profile_picture_before_sync = 'sauce_logo.png'
         profile_picture_after_sync = 'sauce_logo_red.png'
-        username_after_sync = 'username_after_sync'
+        # username_after_sync = 'username_after_sync'
         message_after_sync = 'sent after sync'
 
         # device 1: join public chat, create group chat, edit user picture
@@ -504,8 +492,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             pytest.fail('Public chat "%s" doesn\'t appear after initial sync'% public_chat_before_sync_name)
         device_2_home.profile_button.click()
         device_2_profile.contacts_button.scroll_to_element(9, 'up')
-        if not device_2_profile.element_by_text(username_before_sync).is_element_displayed():
-            pytest.fail('Profile username was not updated after initial sync')
+        # if not device_2_profile.element_by_text(username_before_sync).is_element_displayed():
+        #     pytest.fail('Profile username was not updated after initial sync')
         device_2_profile.swipe_down()
         if not device_2_profile.profile_picture.is_element_image_equals_template(profile_picture_before_sync):
             pytest.fail('Profile picture was not updated after initial sync')
@@ -520,11 +508,12 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_group_chat.back_button.click()
         device_1_profile = device_1_home.profile_button.click()
         device_1_profile.edit_profile_picture(profile_picture_after_sync)
-        device_1_profile.edit_profile_username(username_after_sync)
+        # device_1_profile.edit_profile_username(username_after_sync)
 
         # device 2: check that message in group chat is shown, profile details and public chats are synced
-        if not device_2_profile.element_by_text(username_after_sync).is_element_displayed():
-            pytest.fail('Profile username was not updated after changing when devices are paired')
+        # TODO:disabled because editing custom name is not a feature anymore
+        # if not device_2_profile.element_by_text(username_after_sync).is_element_displayed():
+        #     pytest.fail('Profile username was not updated after changing when devices are paired')
         device_2_profile.swipe_down()
         if not device_2_profile.profile_picture.is_element_image_equals_template(profile_picture_after_sync):
             pytest.fail('Profile picture was not updated after changing when devices are paired')

@@ -268,11 +268,11 @@ class TestTransactionDApp(SingleDeviceTestCase):
                                format('sending one transaction in batch with big gas '
                                       'limit and price (no funds to pay gas)'))
 
-        send_transaction_view.transaction_fee_button.click()
+        send_transaction_view.network_fee_button.click()
         gas_price = '999.9'
         send_transaction_view.gas_price_input.clear()
         send_transaction_view.gas_price_input.set_value(gas_price)
-        send_transaction_view.total_fee_input.click()
+        send_transaction_view.update_fee_button.click()
         send_transaction_view.done_button.click()
 
         # Check whether sending a tx in batch with normal gas limit and price does not trigger the warning
@@ -379,7 +379,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
         send_transaction_view.sign_transaction()
         if not wallet.send_transaction_button.is_element_displayed():
-            self.errors.append('Could not sing the transaction!')
+            self.errors.append('Could not sign the transaction!')
 
         self.verify_no_errors()
 

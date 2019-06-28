@@ -100,7 +100,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view.recover_access(sender['passphrase'])
         home_view = sign_in_view.get_home_view()
         wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
+        # wallet_view.set_up_wallet()
+        wallet_view.accounts_status_account.click()
         send_transaction = wallet_view.send_transaction_button.click()
         send_transaction.amount_edit_box.click()
         transaction_amount = send_transaction.get_unique_amount()
@@ -312,6 +313,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         stt_value = wallet_view.get_stt_value()
         if eth_value == 0 or stt_value == 0:
             pytest.fail('No funds!')
+        wallet_view.accounts_status_account.click()
         send_transaction = wallet_view.send_transaction_button.click()
         send_transaction.amount_edit_box.set_value(round(eth_value + 1))
         error_text = send_transaction.element_by_text('Insufficient funds')
@@ -386,7 +388,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         signin_view = SignInView(self.driver)
         home_view = signin_view.recover_access(passphrase=passphrase)
         wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
+        # wallet_view.set_up_wallet()
+        wallet_view.accounts_status_account.click()
         transaction_view = wallet_view.transaction_history_button.click()
 
         status_tx_number = transaction_view.transactions_table.get_transactions_number()
@@ -403,22 +406,34 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
             actual_txs_list.append(status_tx)
             transactions_details.back_button.click()
 
-        if [tx['hash'] for tx in actual_txs_list] != [tx['hash'] for tx in expected_txs_list]:
-            self.errors.append('Transactions hashes do not match!')
+            if [tx['hash'] for tx in actual_txs_list] != [tx['hash'] for tx in expected_txs_list]:
+                self.errors.append('Transactions hashes do not match!')
 
-        if [tx['from'] for tx in actual_txs_list] != [tx['from'] for tx in expected_txs_list]:
-            self.errors.append('Transactions senders do not match!')
+            if [tx['from'] for tx in actual_txs_list] != [tx['from'] for tx in expected_txs_list]:
+                self.errors.append('Transactions senders do not match!')
 
-        if [tx['to'] for tx in actual_txs_list] != [tx['to'] for tx in expected_txs_list]:
-            self.errors.append('Transactions recipients do not match!')
+            if [tx['to'] for tx in actual_txs_list] != [tx['to'] for tx in expected_txs_list]:
+                self.errors.append('Transactions recipients do not match!')
 
         self.verify_no_errors()
+
+        @marks.testrail_id(5429)
+        @marks.medium
+        def test_set_currency(self):
+            sign_in_view = SignInView(self.driver)
+            user_currency = 'Euro (EUR)'
+            sign_in_view.create_user()
+            wallet_view = sign_in_view.wallet_button.click()
+            wallet_view.set_currency(user_currency)
+            if not wallet_view.find_text_part('EUR'):
+                pytest.fail('EUR currency is not displayed')
 
 
 @marks.transaction
 class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5378)
+    @marks.skip
     @marks.high
     def test_transaction_message_sending_from_wallet(self):
         recipient = transaction_recipients['E']
@@ -453,3 +468,4 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
         if not chat_2.chat_element_by_text(amount).is_element_displayed():
             self.errors.append('Transaction message is not shown in 1-1 chat for the recipient')
         self.verify_no_errors()
+
