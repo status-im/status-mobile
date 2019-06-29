@@ -12,7 +12,7 @@ def bundle() {
     case 'release':     target = 'release'; break;
     case 'testflight':  target = 'release'; break;
     case 'e2e':         target = 'e2e';     break;
-    default:            target = 'pr';
+    default:            target = 'nightly';
   }
   /* configure build metadata */
   nix.shell(
