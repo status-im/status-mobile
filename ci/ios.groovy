@@ -81,8 +81,11 @@ def uploadToSauceLabs() {
     env.SAUCE_LABS_NAME = "im.status.ethereum-e2e-${utils.gitCommit()}.app.zip"
   }
   withCredentials([
-    string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
-    string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
+    usernamePassword(
+      credentialsId:  'sauce-labs-api',
+      usernameVariable: 'SAUCE_USERNAME',
+      passwordVariable: 'SAUCE_ACCESS_KEY'
+    ),
   ]) {
     nix.shell(
       'bundle exec --gemfile=fastlane/Gemfile fastlane ios saucelabs',

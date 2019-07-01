@@ -51,9 +51,13 @@ pipeline {
   post {
     always {
       script {
-        sauce('12e007ad-48cf-4c20-92f3-b923bb5641bd') {
+        sauce('sauce-labs-cred') {
           saucePublisher()
         }
+      }
+    }
+    success {
+      script {
         junit(
           testDataPublishers: [[$class: 'SauceOnDemandReportPublisher', jobVisibility: 'public']],
           testResults: 'test/appium/tests/*.xml'

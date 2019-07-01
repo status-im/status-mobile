@@ -71,8 +71,11 @@ def uploadToSauceLabs() {
     env.SAUCE_LABS_NAME = "${pkg}"
   }
   withCredentials([
-    string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
-    string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
+    usernamePassword(
+      credentialsId:  'sauce-labs-api',
+      usernameVariable: 'SAUCE_USERNAME',
+      passwordVariable: 'SAUCE_ACCESS_KEY'
+    ),
   ]) {
     nix.shell(
       'fastlane android saucelabs',

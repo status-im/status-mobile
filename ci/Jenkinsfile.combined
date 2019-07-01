@@ -106,7 +106,7 @@ pipeline {
         e2eApk = cmn.utils.getEnv(apke2e, 'SAUCE_URL')
         build(
           job: 'end-to-end-tests/status-app-nightly', wait: false,
-          parameters: [string(name: 'apk', value: "--apk=${e2eApk}")]
+          parameters: [string(name: 'APK_NAME', value: e2eApk)]
         )
       } }
     }
