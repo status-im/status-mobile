@@ -38,10 +38,9 @@
                                            input-style/min-input-height
                                            input-style/padding-vertical
                                            input-style/border-height))
-          bottom       (+ input-height chat-input-margin)
           max-height   (- chat-layout-height (when platform/ios? keyboard-height) input-height top-offset)]
       [react/view style/overlap-container
-       [react/animated-view {:style (style/expandable-container anim-value keyboard-height max-height)}
+       [react/animated-view {:style (style/expandable-container anim-value chat-input-margin max-height)}
         (into [react/scroll-view {:keyboard-should-persist-taps :always
                                   :bounces                      false}]
               (when (or input-focused? (not messages-focused?))

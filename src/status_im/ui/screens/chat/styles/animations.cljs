@@ -12,13 +12,11 @@
    :right    0
    :bottom   0})
 
-(defn expandable-container [anim-value keyboard-height max-height]
+(defn expandable-container [anim-value bottom max-height]
   {:background-color colors/white
    :left             0
    :right            0
-   :bottom           (if platform/ios?
-                       (- keyboard-height 72)
-                       0)
+   :bottom           bottom
    :position         :absolute
    :elevation        2
    :shadow-offset    {:width 0 :height 1}
