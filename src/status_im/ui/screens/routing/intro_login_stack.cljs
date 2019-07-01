@@ -26,7 +26,8 @@
     :keycard-onboarding-nfc-on
     :keycard-onboarding-recovery-phrase
     :keycard-onboarding-recovery-phrase-confirm-word1
-    :keycard-onboarding-recovery-phrase-confirm-word2})
+    :keycard-onboarding-recovery-phrase-confirm-word2
+    :keycard-recovery-enter-mnemonic})
 
 (defn login-stack [view-id]
   {:name    :login-stack
@@ -66,6 +67,7 @@
               :keycard-onboarding-nfc-on
               :keycard-onboarding-recovery-phrase
               :keycard-onboarding-recovery-phrase-confirm-word1
-              :keycard-onboarding-recovery-phrase-confirm-word2)
+              :keycard-onboarding-recovery-phrase-confirm-word2
+              :keycard-recovery-enter-mnemonic)
       (assoc :name :intro-stack)
       (assoc :config {:initialRouteName :intro})))

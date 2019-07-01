@@ -66,73 +66,76 @@
        [react/text {:style {:color colors/blue}}
         (i18n/label :t/begin-set-up)]]]]]])
 
-(defn start []
-  [react/view styles/container
-   [toolbar/toolbar
-    {:transparent? true
-     :style        {:margin-top 32}}
-    toolbar/default-nav-back
-    nil]
-   [react/scroll-view
-    [react/view {:flex            1
-                 :flex-direction  :column
-                 :justify-content :space-between
-                 :align-items     :center}
-     [react/view {:flex-direction :column
-                  :align-items    :center}
-      [react/view {:margin-top 16}
-       [react/text {:style {:typography :header
-                            :text-align :center}}
-        (i18n/label :t/keycard-onboarding-start-header)]]
-      [react/view {:margin-top 16
-                   :width      311}
-       [react/text {:style {:font-size   15
-                            :line-height 22
-                            :color       colors/gray
-                            :text-align  :center}}
-        (i18n/label :t/keycard-onboarding-start-text)]]
-      [react/view {:margin-top 20
-                   :width      "80%"}
-       (for [[number header text] [["1"
-                                    (i18n/label :t/keycard-onboarding-start-step1)
-                                    (i18n/label :t/keycard-onboarding-start-step1-text)]
-                                   ["2"
-                                    (i18n/label :t/keycard-onboarding-start-step2)
-                                    (i18n/label :t/keycard-onboarding-start-step2-text)]
-                                   ["3"
-                                    (i18n/label :t/keycard-onboarding-start-step3)
-                                    (i18n/label :t/keycard-onboarding-start-step3-text)]]]
-         ^{:key number} [react/view {:flex-direction :row
-                                     :margin-top     15}
-                         [react/view {:border-width    1
-                                      :border-radius   20
-                                      :border-color    colors/gray-light
-                                      :align-items     :center
-                                      :justify-content :center
-                                      :width           40
-                                      :height          40}
-                          [react/text {:style {:typography :title}}
-                           number]]
-                         [react/view {:align-items     :flex-start
-                                      :justify-content :flex-start
-                                      :margin-left     11}
-                          [react/view
-                           [react/text {:style {:typography :main-medium}}
-                            header]]
-                          [react/view
-                           [react/text {:style {:color         colors/gray
-                                                :padding-right 35}}
-                            text]]]])]]
-     [react/view {:margin-bottom   12
-                  :align-items     :center
-                  :justify-content :center}
-      [react/image {:source      (resources/get-image :keycard-phone)
-                    :resize-mode :center
-                    :style       {:width  160
-                                  :height 170}}]]]]])
+(defview start []
+  (letsubs [flow [:hardwallet-flow]]
+    [react/view styles/container
+     [toolbar/toolbar
+      {:transparent? true
+       :style        {:margin-top 32}}
+      toolbar/default-nav-back
+      nil]
+     [react/scroll-view
+      [react/view {:flex            1
+                   :flex-direction  :column
+                   :justify-content :space-between
+                   :align-items     :center}
+       [react/view {:flex-direction :column
+                    :align-items    :center}
+        [react/view {:margin-top 16}
+         [react/text {:style {:typography :header
+                              :text-align :center}}
+          (i18n/label :t/keycard-onboarding-start-header)]]
+        [react/view {:margin-top 16
+                     :width      311}
+         [react/text {:style {:color      colors/gray
+                              :text-align :center}}
+          (i18n/label :t/keycard-onboarding-start-text)]]
+        [react/view {:margin-top 20
+                     :width      "80%"}
+         (for [[number header text] [["1"
+                                      (i18n/label :t/keycard-onboarding-start-step1)
+                                      (i18n/label :t/keycard-onboarding-start-step1-text)]
+                                     ["2"
+                                      (i18n/label :t/keycard-onboarding-start-step2)
+                                      (i18n/label :t/keycard-onboarding-start-step2-text)]
+                                     (when (not= flow :recovery)
+                                       ["3"
+                                        (i18n/label :t/keycard-onboarding-start-step3)
+                                        (i18n/label :t/keycard-onboarding-start-step3-text)])]]
+           (when number
+             ^{:key number} [react/view {:flex-direction :row
+                                         :margin-top     15}
+                             [react/view {:border-width    1
+                                          :border-radius   20
+                                          :border-color    colors/gray-light
+                                          :align-items     :center
+                                          :justify-content :center
+                                          :width           40
+                                          :height          40}
+                              [react/text {:style {:typography :title}}
+                               number]]
+                             [react/view {:align-items     :flex-start
+                                          :justify-content :flex-start
+                                          :margin-left     11}
+                              [react/view
+                               [react/text {:style {:typography :main-medium}}
+                                header]]
+                              [react/view
+                               [react/text {:style {:color         colors/gray
+                                                    :padding-right 35}}
+                                text]]]]))]]
+       [react/view {:margin-bottom   12
+                    :margin-top      (if (= flow :recovery) 20 0)
+                    :align-items     :center
+                    :justify-content :center}
+        [react/image {:source      (resources/get-image :keycard-phone)
+                      :resize-mode :center
+                      :style       {:width  160
+                                    :height 170}}]]]]]))
 
 (defview puk-code []
-  (letsubs [secrets [:hardwallet-secrets]]
+  (letsubs [secrets [:hardwallet-secrets]
+            steps [:hardwallet-flow-steps]]
     [react/view styles/container
      [toolbar/toolbar
       {:transparent? true
@@ -142,7 +145,8 @@
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
       [react/text {:style {:color colors/gray}}
-       "Step 2 of 3"]]
+       (i18n/label :t/step-i-of-n {:step   "2"
+                                   :number steps})]]
      [react/scroll-view {:content-container-style {:flex-grow       1
                                                    :justify-content :space-between}}
       [react/view {:flex            1
@@ -239,10 +243,8 @@
        (i18n/label title-label)]]
      [react/view {:margin-top 16
                   :width      311}
-      [react/text {:style {:font-size   15
-                           :line-height 22
-                           :color       colors/gray
-                           :text-align  :center}}
+      [react/text {:style {:color      colors/gray
+                           :text-align :center}}
        (i18n/label :t/this-will-take-few-seconds)]]]
     [react/view {:flex            1
                  :align-items     :center
@@ -252,10 +254,8 @@
                    :style       {:width  160
                                  :height 170}}]
      [react/view {:margin-top 10}
-      [react/text {:style {:text-align  :center
-                           :color       colors/gray
-                           :font-size   15
-                           :line-height 22}}
+      [react/text {:style {:text-align :center
+                           :color      colors/gray}}
        (i18n/label :t/hold-card)]]]]])
 
 (defn preparing []
@@ -331,7 +331,40 @@
                            :margin-bottom 30}}
        (i18n/label :t/open-nfc-settings)]]]]])
 
-(def pin pin.views/create-pin)
+(defview pin []
+  (letsubs [pin [:hardwallet/pin]
+            enter-step [:hardwallet/pin-enter-step]
+            status [:hardwallet/pin-status]
+            error-label [:hardwallet/pin-error-label]
+            steps [:hardwallet-flow-steps]]
+    [react/view styles/container
+     [toolbar/toolbar
+      {:transparent? true
+       :style        {:margin-top 32}}
+      [toolbar/nav-text
+       {:handler #(re-frame/dispatch [:keycard.onboarding.ui/cancel-pressed])
+        :style   {:padding-left 21}}
+       (i18n/label :t/cancel)]
+      [react/text {:style {:color colors/gray}}
+       (i18n/label :t/step-i-of-n {:number steps
+                                   :step   1})]]
+     [react/view {:flex            1
+                  :flex-direction  :column
+                  :justify-content :space-between
+                  :align-items     :center}
+      [react/view {:flex-direction :column
+                   :align-items    :center}
+       [react/view {:margin-top 16}
+        [react/text {:style {:typography :header
+                             :text-align :center}}
+         (i18n/label (if (= :original enter-step)
+                       :t/intro-wizard-title4
+                       :t/intro-wizard-title5))]]]
+      [status-im.ui.screens.hardwallet.pin.views/pin-view
+       {:pin         pin
+        :status      status
+        :error-label error-label
+        :step        enter-step}]]]))
 
 (defview recovery-phrase []
   (letsubs [mnemonic [:hardwallet-mnemonic]]
@@ -344,7 +377,8 @@
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
       [react/text {:style {:color colors/gray}}
-       "Step 3 of 3"]]
+       (i18n/label :t/step-i-of-n {:step   "3"
+                                   :number "3"})]]
      [react/scroll-view {:content-container-style {:flex-grow       1
                                                    :justify-content :space-between}}
       [react/view {:flex-direction :column
@@ -366,12 +400,13 @@
           [react/text {:style {:color colors/blue}}
            (i18n/label :t/learn-more)]]]]]
 
-      [react/view
+      [react/view {:padding-horizontal 24}
        [react/view
         (for [[i row] mnemonic]
           ^{:key (str "row" i)}
-          [react/view {:flex-direction :row
-                       :margin-top     12}
+          [react/view {:flex-direction  :row
+                       :justify-content :center
+                       :margin-top      12}
            (for [[i word] row]
              ^{:key (str "word" i)}
              [react/view {:flex-direction     :row
@@ -413,7 +448,8 @@
           :style   {:padding-left 21}}
          (i18n/label :t/cancel)]
         [react/text {:style {:color colors/gray}}
-         "Step 3 of 3"]]
+         (i18n/label :t/step-i-of-n {:step   "3"
+                                     :number "3"})]]
        [react/view {:flex            1
                     :flex-direction  :column
                     :justify-content :space-between
@@ -474,7 +510,8 @@
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
       [react/text {:style {:color colors/gray}}
-       "Step 3 of 3"]]
+       (i18n/label :t/step-i-of-n {:step   "3"
+                                   :number "3"})]]
      [react/view {:flex            1
                   :flex-direction  :column
                   :justify-content :space-between
@@ -513,4 +550,59 @@
          {:on-press  #(re-frame/dispatch [:keycard.onboarding.pair.ui/next-pressed])
           :label     (i18n/label :t/pair-card)
           :disabled? (empty? pair-code)
+          :forward?  true}]]]]]))
+
+;NOTE temporary screen, to be removed after Recovery will be implemented
+(defview enter-mnemonic []
+  (letsubs [mnemonic [:hardwallet-mnemonic]]
+    [react/view styles/container
+     [toolbar/toolbar
+      {:transparent? true
+       :style        {:margin-top 32}}
+      [toolbar/nav-text
+       {:handler #(re-frame/dispatch [:keycard.onboarding.ui/cancel-pressed])
+        :style   {:padding-left 21}}
+       (i18n/label :t/cancel)]
+      [react/text {:style {:color colors/gray}}
+       (i18n/label :t/step-i-of-n {:step   "1"
+                                   :number "2"})]]
+     [react/view {:flex            1
+                  :flex-direction  :column
+                  :justify-content :space-between
+                  :align-items     :center}
+      [react/view {:flex-direction :column
+                   :align-items    :center}
+       [react/view {:margin-top 16}
+        [react/text {:style {:typography :header
+                             :text-align :center}}
+         "Enter your seed phrase"]]
+       [react/view {:margin-top  16
+                    :width       "85%"
+                    :align-items :center}
+        [react/text {:style {:color      colors/gray
+                             :text-align :center}}
+         "Enter your seed phrase, separate the words by single spaces"]]]
+      [react/view
+       [text-input/text-input-with-label
+        {:on-change-text    #(re-frame/dispatch [:keycard.recovery.enter-mnemonic.ui/input-changed %])
+         :auto-focus        true
+         :on-submit-editing #(re-frame/dispatch [:keycard.recovery.enter-mnemonic.ui/input-submitted])
+         :placeholder       nil
+         :height            125
+         :multiline         true
+         :auto-correct      false
+         :container         {:background-color :white}
+         :style             {:background-color :white
+                             :typography       :header}}]]
+      [react/view {:flex-direction  :row
+                   :justify-content :space-between
+                   :align-items     :center
+                   :width           "100%"
+                   :height          86}
+       [react/view]
+       [react/view {:margin-right 20}
+        [components.common/bottom-button
+         {:on-press  #(re-frame/dispatch [:keycard.recovery.enter-mnemonic.ui/next-pressed])
+          :label     (i18n/label :t/next)
+          :disabled? (empty? mnemonic)
           :forward?  true}]]]]]))

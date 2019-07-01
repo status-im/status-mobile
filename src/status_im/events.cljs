@@ -283,11 +283,6 @@
 ;; accounts recover module
 
 (handlers/register-handler-fx
- :accounts.recover.ui/recover-account-button-pressed
- (fn [cofx _]
-   (hardwallet/navigate-to-recover-method cofx)))
-
-(handlers/register-handler-fx
  :accounts.recover.ui/passphrase-input-changed
  (fn [cofx [_ recovery-phrase]]
    (accounts.recover/set-phrase cofx recovery-phrase)))
@@ -1170,11 +1165,6 @@
    (fx/merge cofx
              {:db (assoc-in db [:hardwallet :setup-step] :begin)}
              (navigation/navigate-to-cofx :hardwallet-setup nil))))
-
-(handlers/register-handler-fx
- :hardwallet/load-pairing-screen
- (fn [cofx _]
-   (hardwallet/load-pairing-screen cofx)))
 
 (handlers/register-handler-fx
  :hardwallet/load-generating-mnemonic-screen

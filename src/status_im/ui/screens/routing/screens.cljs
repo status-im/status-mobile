@@ -96,6 +96,7 @@
    :keycard-onboarding-recovery-phrase               keycard.onboarding/recovery-phrase
    :keycard-onboarding-recovery-phrase-confirm-word1 keycard.onboarding/recovery-phrase-confirm-word
    :keycard-onboarding-recovery-phrase-confirm-word2 keycard.onboarding/recovery-phrase-confirm-word
+   :keycard-recovery-enter-mnemonic                  keycard.onboarding/enter-mnemonic
    :home                                             home/home-wrapper
    :chat                                             chat/chat
    :select-chat                                      chat/select-chat

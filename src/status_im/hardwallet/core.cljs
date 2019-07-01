@@ -302,6 +302,18 @@
     (navigation/navigate-to-cofx cofx :keycard-onboarding-recovery-phrase nil)
     (navigation/navigate-to-cofx cofx :keycard-onboarding-recovery-phrase-confirm-word1 nil)))
 
+(fx/defn proceed-with-generating-key
+  [{:keys [db] :as cofx}]
+  (let [pin (or (get-in db [:hardwallet :secrets :pin])
+                (vector->string (get-in db [:hardwallet :pin :current])))]
+    (if (empty? pin)
+      (fx/merge cofx
+                {:db (assoc-in db [:hardwallet :pin] {:enter-step  :current
+                                                      :on-verified :hardwallet/generate-and-load-key
+                                                      :current     []})}
+                (navigation/navigate-to-cofx :keycard-onboarding-pin nil))
+      (load-finishing-screen cofx))))
+
 (fx/defn recovery-phrase-confirm-word-next-pressed
   {:events [:keycard.onboarding.recovery-phrase-confirm-word.ui/next-pressed
             :keycard.onboarding.recovery-phrase-confirm-word.ui/input-submitted]}
@@ -314,16 +326,7 @@
         (fx/merge cofx
                   (recovery-phrase-next-word)
                   (navigation/navigate-to-cofx :keycard-onboarding-recovery-phrase-confirm-word2 nil))
-        (let [pin (or (get-in db [:hardwallet :secrets :pin])
-                      (vector->string (get-in db [:hardwallet :pin :current])))]
-          (if (empty? pin)
-            (fx/merge cofx
-                      {:db (-> db
-                               (assoc-in [:hardwallet :pin] {:enter-step  :current
-                                                             :on-verified :hardwallet/generate-and-load-key
-                                                             :current     []}))}
-                      (navigation/navigate-to-cofx :keycard-onboarding-pin nil))
-            (load-finishing-screen cofx))))
+        (proceed-with-generating-key cofx))
       {:db (assoc-in db [:hardwallet :recovery-phrase :confirm-error] (i18n/label :t/wrong-word))})))
 
 (fx/defn recovery-phrase-confirm-word-input-changed
@@ -357,7 +360,7 @@
                 (when (= card-state :blank)
                   (show-no-keycard-applet-alert))
                 (when (and (= card-state :account)
-                           (= flow :create))
+                           (#{:create :recovery} flow))
                   (show-keycard-has-account-alert)))
       {:db db'})))
 
@@ -390,13 +393,36 @@
               (navigation/navigate-to-cofx :hardwallet-authentication-method nil))
     (accounts.create/intro-wizard cofx false)))
 
-(fx/defn navigate-to-recover-method
+(fx/defn navigate-to-enter-mnemonic
+  {:events [:accounts.recover.ui/recover-account-button-pressed]}
   [{:keys [db] :as cofx}]
   (if (hardwallet-supported? cofx)
     (fx/merge cofx
-              {:db (assoc-in db [:hardwallet :flow] :import)}
-              (navigation/navigate-to-cofx :hardwallet-authentication-method nil))
+              {:db (assoc-in db [:hardwallet :flow] :recovery)}
+              (navigation/navigate-to-cofx :keycard-recovery-enter-mnemonic nil))
     (accounts.recover/navigate-to-recover-account-screen cofx)))
+
+(fx/defn recovery-keycard-selected
+  {:events [:recovery.ui/keycard-option-pressed]}
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db                              (assoc-in db [:hardwallet :flow] :recovery)
+             :hardwallet/check-nfc-enabled    nil
+             :hardwallet/register-card-events nil}
+            (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
+
+;NOTE to be removed when Recovery flow will be implemented
+(fx/defn enter-mnemonic-next-button-pressed
+  {:events [:keycard.recovery.enter-mnemonic.ui/input-submitted
+            :keycard.recovery.enter-mnemonic.ui/next-pressed]}
+  [cofx]
+  (recovery-keycard-selected cofx))
+
+;NOTE to be removed when Recovery flow will be implemented
+(fx/defn enter-mnemonic-input-changed
+  {:events [:keycard.recovery.enter-mnemonic.ui/input-changed]}
+  [{:keys [db]} input]
+  {:db (assoc-in db [:hardwallet :secrets :mnemonic] input)})
 
 (fx/defn password-option-pressed
   [{:keys [db] :as cofx}]
@@ -591,11 +617,13 @@
 
 (fx/defn keycard-option-pressed
   {:events [:onboarding.ui/keycard-option-pressed]}
-  [cofx]
-  (fx/merge cofx
-            {:hardwallet/check-nfc-enabled    nil
-             :hardwallet/register-card-events nil}
-            (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
+  [{:keys [db] :as cofx}]
+  (let [flow (get-in db [:hardwallet :flow] :create)]
+    (fx/merge cofx
+              {:db                              (assoc-in db [:hardwallet :flow] flow)
+               :hardwallet/check-nfc-enabled    nil
+               :hardwallet/register-card-events nil}
+              (navigation/navigate-to-cofx :keycard-onboarding-intro nil))))
 
 (fx/defn begin-setup-pressed
   {:events [:keycard.onboarding.intro.ui/begin-setup-pressed]}
@@ -823,8 +851,10 @@
         card-connected? (get-in db [:hardwallet :card-connected?])]
     (fx/merge cofx
               {:db (assoc-in db [:hardwallet :on-card-connected] :hardwallet/pair)}
+              (when card-connected?
+                (pair* password))
               (if card-connected?
-                (pair* password)
+                (navigation/navigate-to-cofx :keycard-onboarding-pairing nil)
                 (navigation/navigate-to-cofx :keycard-onboarding-connection-lost nil)))))
 
 (fx/defn pair-code-next-button-pressed
@@ -838,8 +868,7 @@
                 {:db (-> db
                          (assoc-in [:hardwallet :setup-step] :import-account)
                          (assoc-in [:hardwallet :secrets :paired-on] paired-on))}
-                (pair))
-              (navigation/navigate-to-cofx :keycard-onboarding-pairing nil))))
+                (pair)))))
 
 (fx/defn return-back-from-nfc-settings [{:keys [db]}]
   (when (= (:view-id db)
@@ -938,6 +967,7 @@
                                                     (update-in [:hardwallet :pin] merge {:status      nil
                                                                                          :error-label nil}))}
               (when-not (contains? #{:hardwallet/unpair
+                                     :hardwallet/generate-and-load-key
                                      :hardwallet/remove-key-with-unpair
                                      :hardwallet/unpair-and-delete} on-verified)
                 (get-application-info pairing nil))
@@ -1343,7 +1373,7 @@
                                                     (assoc-in [:hardwallet :card-state] :init)
                                                     (assoc-in [:hardwallet :on-card-connected] nil)
                                                     (assoc-in [:hardwallet :setup-step] :secret-keys)
-                                                    (assoc-in [:hardwallet :secrets] secrets'))}
+                                                    (update-in [:hardwallet :secrets] merge secrets'))}
               (navigation/navigate-to-cofx :keycard-onboarding-puk-code nil))))
 
 (def on-init-card-success on-install-applet-and-init-card-success)
@@ -1392,6 +1422,8 @@
                        (assoc-in [:hardwallet :secrets :paired-on] paired-on))}
               (when account
                 (set-account-pairing account pairing paired-on))
+              (when (= flow :recovery)
+                (proceed-with-generating-key))
               (when (= flow :create)
                 (generate-mnemonic)))))
 
