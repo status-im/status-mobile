@@ -691,7 +691,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         home_view = sign_in_view.create_user()
 
         wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
+        # wallet_view.set_up_wallet()
         wallet_address = wallet_view.get_wallet_address()
         home_view = wallet_view.get_back_to_home_view()
 

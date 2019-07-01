@@ -576,10 +576,7 @@ class BaseView(object):
         airplane_toggle.wait_for_visibility_of_element()
         airplane_toggle.click()
         # opening Status app
-        app_package, app_activity = 'im.status.ethereum', '.MainActivity'
-        if pytest.config.getoption('pr_number'):
-            app_package, app_activity = 'im.status.ethereum.pr', 'im.status.ethereum.MainActivity'
-        self.driver.start_activity(app_package=app_package, app_activity=app_activity)
+        self.driver.launch_app()
 
     def open_universal_web_link(self, deep_link):
         start_web_browser(self.driver)
