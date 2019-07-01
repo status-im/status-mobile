@@ -48,32 +48,18 @@ def prep(type = 'nightly') {
     utils.genBuildNumber()
   }
 
+  nix.shell('watchman watch-del-all', attr: 'targets.watchman.shell')
+
   if (env.TARGET_OS == 'ios') {
     /* install ruby dependencies */
-    nix.shell '''
-      watchman watch-del-all && \
-      bundle install --gemfile=fastlane/Gemfile --quiet
-    '''
+    nix.shell('bundle install --gemfile=fastlane/Gemfile --quiet', attr: 'targets.mobile.fastlane.shell')
   }
 
   if (env.TARGET_OS == 'macos' || env.TARGET_OS == 'linux' || env.TARGET_OS == 'windows') {
     /* node deps, pods, and status-go download */
-    utils.nix.shell('''
-      watchman watch-del-all && \
-      scripts/prepare-for-desktop-platform.sh
-    ''', pure: false)
+    utils.nix.shell('scripts/prepare-for-desktop-platform.sh', pure: false)
     sh('scripts/copy-translations.sh')
-  } else if (env.TARGET_OS == 'android') {
-    // 1. implicitly copy all required Nix packages from cache before running any parallel tasks
-    // 2. remove all watchman watches
-    utils.nix.shell('''
-      watchman watch-del-all
-    ''')
-  } else {
-    // 1. implicitly copy all required Nix packages from cache before running any parallel tasks
-    // 2. remove all watchman watches
-    // 3. copy translations to node_modules
-    // 4. touch node_modules/.copied to avoid copying node_modules again during build
+  } else if (env.TARGET_OS != 'android') {
     // run script in the nix shell so that node_modules gets instantiated before attempting the copies
     utils.nix.shell('scripts/copy-translations.sh chmod')
   }

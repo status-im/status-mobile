@@ -27,9 +27,19 @@ if command -v "nix" >/dev/null 2>&1; then
     # This is a dirty workaround to the fact that 'yarn install' is an impure operation, so we need to call it from an impure shell. Hopefull we'll be able to fix this later on with something like yarn2nix
     nix-shell --show-trace --argstr target-os ${TARGET_OS} --run "scripts/prepare-for-desktop-platform.sh" || exit
   fi
+
+  entry_point='shell.nix'
+  attrset_option=''
+  if [ -n "${_NIX_ATTR}" ]; then
+    entry_point='default.nix'
+    attrset_option="-A ${_NIX_ATTR}"
+  fi
+
+  attrStr="${_NIX_ATTR}"
+  [ -n "$attrStr" ] && attrStr="$attrStr "
   if [[ $@ == "ENTER_NIX_SHELL" ]]; then
-    echo -e "${GREEN}Configuring Nix shell for target '${TARGET_OS}'...${NC}"
-    exec nix-shell --show-trace --argstr target-os ${TARGET_OS}
+    echo -e "${GREEN}Configuring ${attrStr}Nix shell for target '${TARGET_OS}'...${NC}"
+    exec nix-shell --show-trace --argstr target-os ${TARGET_OS} ${attrset_option} ${entry_point}
   else
     is_pure=''
     if [[ "${TARGET_OS}" != 'all' ]] && [[ "${TARGET_OS}" != 'ios' ]] && [[ "${TARGET_OS}" != 'windows' ]]; then
@@ -42,7 +52,7 @@ if command -v "nix" >/dev/null 2>&1; then
     if [[ -n "${NIX_KEEP}" ]]; then
       keep_opts="--keep ${NIX_KEEP//;/ --keep }"
     fi
-    echo -e "${GREEN}Configuring ${pure_desc}Nix shell for target '${TARGET_OS}'...${NC}"
-    exec nix-shell ${is_pure} ${keep_opts} --show-trace --argstr target-os ${TARGET_OS} --run "$@"
+    echo -e "${GREEN}Configuring ${pure_desc}${attrStr}Nix shell for target '${TARGET_OS}'...${NC}"
+    exec nix-shell ${is_pure} ${keep_opts} --show-trace --argstr target-os ${TARGET_OS} ${attrset_option} --run "$@" ${entry_point}
   fi
 fi

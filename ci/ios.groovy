@@ -20,7 +20,8 @@ def bundle() {
   nix.shell(
     plutil('CFBundleShortVersionString', utils.getVersion()) +
     plutil('CFBundleVersion', utils.genBuildNumber()) +
-    plutil('CFBundleBuildUrl', currentBuild.absoluteUrl)
+    plutil('CFBundleBuildUrl', currentBuild.absoluteUrl),
+    attr: 'targets.mobile.ios.shell'
   )
   /* the dir might not exist */
   sh 'mkdir -p status-e2e'
@@ -66,6 +67,7 @@ def uploadToDiawi() {
   ]) {
     nix.shell(
       'bundle exec --gemfile=fastlane/Gemfile fastlane ios upload_diawi',
+      attr: 'targets.mobile.fastlane.shell',
       keep: ['FASTLANE_DISABLE_COLORS', 'DIAWI_TOKEN']
     )
   }
@@ -89,6 +91,7 @@ def uploadToSauceLabs() {
   ]) {
     nix.shell(
       'bundle exec --gemfile=fastlane/Gemfile fastlane ios saucelabs',
+      attr: 'targets.mobile.fastlane.shell',
       keep: ['FASTLANE_DISABLE_COLORS', 'SAUCE_ACCESS_KEY', 'SAUCE_USERNAME']
     )
   }

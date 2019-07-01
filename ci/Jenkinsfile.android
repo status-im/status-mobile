@@ -53,7 +53,7 @@ pipeline {
     stage('Implicit dependencies') {
       steps {
         /* Build implicit dependencies if needed (we run `lein deps :tree` but it's not really required, for this purpose) */
-        script { cmn.nix.shell('lein deps :tree') }
+        script { cmn.nix.shell('lein deps :tree', attr: 'targets.leiningen.shell') }
       }
     }
     stage('Parallel') {
@@ -61,12 +61,12 @@ pipeline {
         stage('Checks') { stages {
           stage('Lint') {
             steps {
-              script { cmn.nix.shell('lein cljfmt check') }
+              script { cmn.nix.shell('lein cljfmt check', attr: 'targets.leiningen.shell') }
             }
           }
           stage('Tests') {
             steps {
-              script { cmn.nix.shell('lein test-cljs') }
+              script { cmn.nix.shell('lein test-cljs', attr: 'targets.leiningen.shell') }
             }
           }
         } }

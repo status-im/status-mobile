@@ -5,6 +5,7 @@
 
 let
   platform = pkgs.callPackage ./nix/platform.nix { inherit target-os; };
+  shellBootstraper = pkgs.callPackage ./nix/shell-bootstrap.nix { };
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
   stdenv = pkgs.stdenvNoCC;
   maven = pkgs.maven;
@@ -29,8 +30,28 @@ let
     stdenv.lib.optional platform.targetDesktop desktop ++
     stdenv.lib.optional platform.targetMobile mobile;
 
+  # TARGETS
+  leiningen-shell = pkgs.mkShell (shellBootstraper {
+    buildInputs = with pkgs; [ clojure leiningen maven nodejs ];
+    shellHook =
+      if target-os == "android" then mobile.android.shellHook else
+      if target-os == "ios" then mobile.ios.shellHook else "";
+  });
+  watchman-shell = pkgs.mkShell {
+    buildInputs = with pkgs; [ watchman ];
+  };
+
 in {
+  # CHILD DERIVATIONS
   inherit mobile;
+
+  # TARGETS
+  leiningen = {
+    shell = leiningen-shell;
+  };
+  watchman = {
+    shell = watchman-shell;
+  };
 
   shell = with stdenv; mkDerivation rec {
     name = "status-react-build-env";

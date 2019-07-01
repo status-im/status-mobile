@@ -24,6 +24,11 @@ let
 
   selectedSources = [ npmDeps status-go ];
 
+  # TARGETS
+  shell = pkgs.mkShell {
+    buildInputs = [ xcodeWrapper ];
+  };
+
 in {
   inherit xcodeWrapper;
 
@@ -36,4 +41,7 @@ in {
     $STATUS_REACT_HOME/nix/mobile/ios/install-pods-and-status-go.sh || \
     exit
   '';
+
+  # TARGETS
+  inherit shell;
 }

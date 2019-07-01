@@ -35,6 +35,10 @@ let
   # TARGETS
   release = callPackage ./targets/release-android.nix { inherit target-os gradle androidEnvShellHook mavenAndNpmDeps mkFilter nodejs prod-build status-go zlib; };
   generate-maven-and-npm-deps-shell = callPackage ./maven-and-npm-deps/maven/shell.nix { inherit gradle maven androidEnvShellHook projectNodePackage status-go; };
+  adb-shell = pkgs.mkShell {
+    buildInputs = [ licensedAndroidEnv ];
+    shellHook = androidEnvShellHook ;
+  };
 
 in {
   inherit androidComposition;
@@ -51,4 +55,7 @@ in {
 
   # TARGETS
   inherit release generate-maven-and-npm-deps-shell;
+  adb = {
+    shell = adb-shell;
+  };
 }

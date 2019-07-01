@@ -50,16 +50,9 @@ clean: SHELL := /bin/sh
 clean: _fix-perms ##@prepare Remove all output folders
 	git clean -dxf -f
 
-clean-nix: SHELL := /bin/sh
-clean-nix: ##@prepare Remove complete nix setup
-	sudo rm -rf /nix ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
-
+watchman-clean: export _NIX_ATTR := targets.watchman.shell
 watchman-clean:
 	watchman watch-del $(PWD)
-
-add-gcroots: SHELL := /bin/sh
-add-gcroots: ##@prepare Add Nix GC roots to avoid status-react expressions being garbage collected
-	scripts/add-gcroots.sh
 
 shell: ##@prepare Enter into a pre-configured shell
 ifndef IN_NIX_SHELL
@@ -67,6 +60,26 @@ ifndef IN_NIX_SHELL
 else
 	@echo "Nix shell is already active"
 endif
+
+add-gcroots: SHELL := /bin/sh
+add-gcroots: ##@nix Add Nix GC roots to avoid status-react expressions being garbage collected
+	scripts/add-gcroots.sh
+
+clean-nix: SHELL := /bin/sh
+clean-nix: ##@nix Remove complete nix setup
+	sudo rm -rf /nix ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
+
+update-npm-nix: SHELL := /bin/sh
+update-npm-nix: ##@nix Update node2nix expressions based on current package.json
+	nix/desktop/realm-node/generate-nix.sh
+
+update-gradle-nix: SHELL := /bin/sh
+update-gradle-nix: ##@nix Update maven nix expressions based on current gradle setup
+	nix/mobile/android/maven-and-npm-deps/maven/generate-nix.sh
+
+update-lein-nix: SHELL := /bin/sh
+update-lein-nix: ##@nix Update maven nix expressions based on current lein setup
+	nix/tools/lein/generate-nix.sh
 
 disable-githooks: SHELL := /bin/sh
 disable-githooks:
@@ -196,9 +209,11 @@ endif
 # Tests
 #--------------
 
+test: export _NIX_ATTR := targets.leiningen.shell
 test: ##@test Run tests once in NodeJS
 	lein with-profile test doo node test once
 
+test-auto: export _NIX_ATTR := targets.leiningen.shell
 test-auto: ##@test Run tests in interactive (auto) mode in NodeJS
 	lein with-profile test doo node test
 
@@ -217,11 +232,13 @@ react-native-ios: export TARGET_OS ?= ios
 react-native-ios: ##@other Start react native packager for Android client
 	@scripts/start-react-native.sh
 
+geth-connect: export _NIX_ATTR := targets.mobile.android.adb.shell
 geth-connect: export TARGET_OS ?= android
 geth-connect: ##@other Connect to Geth on the device
 	adb forward tcp:8545 tcp:8545 && \
 	build/bin/geth attach http://localhost:8545
 
+android-ports: export _NIX_ATTR := targets.mobile.android.adb.shell
 android-ports: export TARGET_OS ?= android
 android-ports: ##@other Add proxies to Android Device/Simulator
 	adb reverse tcp:8081 tcp:8081 && \
@@ -229,6 +246,7 @@ android-ports: ##@other Add proxies to Android Device/Simulator
 	adb reverse tcp:4567 tcp:4567 && \
 	adb forward tcp:5561 tcp:5561
 
+android-logcat: export _NIX_ATTR := targets.mobile.android.adb.shell
 android-logcat: export TARGET_OS ?= android
 android-logcat:
 	adb logcat | grep -e StatusModule -e ReactNativeJS -e StatusNativeLogs

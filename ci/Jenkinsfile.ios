@@ -54,12 +54,12 @@ pipeline {
         stage('Checks') { stages {
           stage('Lint') {
             steps {
-              script { cmn.nix.shell('lein cljfmt check') }
+              script { cmn.nix.shell('lein cljfmt check', attr: 'targets.leiningen.shell') }
             }
           }
           stage('Tests') {
             steps {
-              script { cmn.nix.shell('lein test-cljs') }
+              script { cmn.nix.shell('lein test-cljs', attr: 'targets.leiningen.shell') }
             }
           }
         } }
