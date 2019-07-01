@@ -11,9 +11,9 @@
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:keychain/clear-user-password (get-in db [:account/account :address])
+             :dispatch [:accounts.logout/filters-removed]
              :dev-server/stop              nil}
-            (transport/stop-whisper
-             #(re-frame/dispatch [:accounts.logout/filters-removed]))
+            (transport/stop-whisper)
             (chaos-mode/stop-checking)))
 
 (fx/defn leave-account

@@ -93,19 +93,19 @@
 
 (deftest load-member
   (testing "it returns fx for a member"
-    (is (= {:filters/load-filters [[nil [{:ChatID "0xchat-id-2"
-                                          :OneToOne true
-                                          :Identity "chat-id-2"}]]]}
+    (is (= {:filters/load-filters [{:ChatID "0xchat-id-2"
+                                    :OneToOne true
+                                    :Identity "chat-id-2"}]}
            (transport.filters/load-member {:db {}} "0xchat-id-2"))))
   (testing "merging fx"
     (is (=
          {:db {}
-          :filters/load-filters [[nil [{:ChatID "0xchat-id-1"
-                                        :OneToOne true
-                                        :Identity "chat-id-1"}]]
-                                 [nil [{:ChatID "0xchat-id-2"
-                                        :OneToOne true
-                                        :Identity "chat-id-2"}]]]}
+          :filters/load-filters [{:ChatID "0xchat-id-1"
+                                  :OneToOne true
+                                  :Identity "chat-id-1"}
+                                 {:ChatID "0xchat-id-2"
+                                  :OneToOne true
+                                  :Identity "chat-id-2"}]}
          (apply fx/merge {:db {}}
                 (map transport.filters/load-member ["0xchat-id-1" "0xchat-id-2"]))))))
 

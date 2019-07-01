@@ -14,28 +14,21 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
-(defn unwrap-message
-  "Extract message from new payload {:id some-id :message some-message}
-  or old (just plain message)"
-  [js-message]
-  (let [clj-message (js->clj js-message :keywordize-keys true)
-        {:keys [message id]} clj-message]
-    {:message (or message clj-message)
-     :raw-payload (if message
-                    (o/get js-message "message")
-                    js-message)
-     :id id}))
+(defn add-raw-payload
+  "Add raw payload for id calculation"
+  [{:keys [message] :as m}]
+  (assoc m :raw-payload (clj->js message)))
 
 (fx/defn receive-message
   "Receive message handles a new status-message.
   dedup-id is passed by status-go and is used to deduplicate messages at that layer.
   Once a message has been successfuly processed, that id needs to be sent back
   in order to stop receiving that message"
-  [cofx now-in-s filter-chat-id js-message]
+  [cofx now-in-s filter-chat-id message]
   (let [blocked-contacts (get-in cofx [:db :contacts/blocked] #{})
         {{:keys [payload sig timestamp ttl]} :message
          dedup-id :id
-         raw-payload :raw-payload} (unwrap-message js-message)
+         raw-payload :raw-payload} (add-raw-payload message)
         status-message (-> payload
                            ethereum/hex-to-utf8
                            transit/deserialize)]
@@ -63,15 +56,31 @@
     [obj]))
 
 (fx/defn receive-whisper-messages
-  [{:keys [now] :as cofx} js-error js-messages chat-id]
-  (if (and (not js-error)
-           js-messages)
+  [{:keys [now] :as cofx} error messages chat-id]
+  (if (and (not error)
+           messages)
     (let [now-in-s (quot now 1000)
           receive-message-fxs (map (fn [message]
                                      (receive-message now-in-s chat-id message))
-                                   (js-obj->seq js-messages))]
+                                   messages)]
       (apply fx/merge cofx receive-message-fxs))
-    (log/error "Something went wrong" js-error js-messages)))
+    (log/error "Something went wrong" error messages)))
+
+(fx/defn receive-messages [cofx event]
+  (let [fxs (map
+             (fn [{:keys [chat messages error]}]
+               (receive-whisper-messages
+                error
+                messages
+                ;; For discovery and negotiated filters we don't
+                ;; set a chatID, and we use the signature of the message
+                ;; to indicate which chat it is for
+                (if (or (:discovery chat)
+                        (:negotiated chat))
+                  nil
+                  (:chatId chat))))
+             (:messages event))]
+    (apply fx/merge cofx fxs)))
 
 (fx/defn remove-hash
   [{:keys [db] :as cofx} envelope-hash]

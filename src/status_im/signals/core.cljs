@@ -79,4 +79,5 @@
       "subscriptions.error" (ethereum.subscriptions/handle-error cofx event)
       "status.chats.did-change" (chat.loading/load-chats-from-rpc cofx)
       "whisper.filter.added" (transport.filters/handle-negotiated-filter cofx event)
-      (log/debug "Event " type " not handled"))))
+      "messages.new" (transport.message/receive-messages cofx event)
+      (log/debug "Event " type " not handled" event))))

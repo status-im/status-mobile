@@ -27,15 +27,12 @@
 
 ;; fx functions
 
-(defn load-filter-fx [web3 filters]
-  {:filters/load-filters [[web3 filters]]})
+(defn load-filter-fx [filters]
+  {:filters/load-filters filters})
 
 (defn remove-filter-fx [filters]
   (when (seq filters)
     {:filters/remove-filters filters}))
-
-(defn stop-filter-fx [filters callback]
-  {:filters/stop-filters [filters callback]})
 
 ;; dispatches
 
@@ -44,9 +41,6 @@
 
 (defn filters-removed! [filters]
   (re-frame/dispatch [:filters.callback/filters-removed filters]))
-
-(defn- receive-message [chat-id js-error js-message]
-  (re-frame/dispatch [:transport/messages-received js-error js-message chat-id]))
 
 ;; Mailserver topics
 
@@ -192,28 +186,6 @@
 
 ;; shh filters
 
-(defn build-filter
-  "Create a raw filter from a filter response"
-  [web3 {:keys [filter-id
-                discovery?
-                negotiated?
-                chat-id] :as f}]
-  (let [shh-filter (.newRawMessageFilter
-                    (utils/shh web3)
-                    (clj->js {:allowP2P true
-                              :filterId filter-id})
-                    ;; We set chat-id to nil on discovery or negotiated
-                    ;; as we have multiple people sending on discovery and pairing
-                    ;; messages on negotiated
-                    (partial receive-message (if (or discovery? negotiated?) nil chat-id)))]
-    (assoc f :filter shh-filter)))
-
-(defn- add-filters!
-  [web3 filters]
-  (log/debug "PERF" :add-raw-filters filters)
-  (filters-added!
-   (map (partial build-filter web3) filters)))
-
 (defn- responses->filters [{:keys [negotiated
                                    discovery
                                    filterId
@@ -266,8 +238,7 @@
                          processed-filters)]
     (when (seq new-filters)
       {:filters/add-raw-filters
-       {:web3 (get-in cofx [:db :web3])
-        :filters new-filters}})))
+       {:filters new-filters}})))
 
 (fx/defn load-filters
   "Load all contacts and chats as filters"
@@ -278,18 +249,7 @@
         filters (concat
                  (chats->filter-requests chats)
                  (contacts->filter-requests contacts))]
-    (load-filter-fx (:web3 db) filters)))
-
-(defn stop-watching! [filters]
-  (doseq [f filters]
-    (.stopWatching f (constantly nil))))
-
-(fx/defn stop-filters
-  "Stop all filters"
-  [{:keys [db]} callback]
-  (let [filters (map :filter (vals
-                              (:filter/filters db)))]
-    (stop-filter-fx filters callback)))
+    (load-filter-fx filters)))
 
 ;; Load functions: utility function to load filters
 
@@ -299,20 +259,20 @@
   (when (and (filters-initialized? db)
              (not (chat-loaded? db chat-id)))
     (let [chat (get-in db [:chats chat-id])]
-      (load-filter-fx (:web3 db) (->filter-request chat)))))
+      (load-filter-fx (->filter-request chat)))))
 
 (fx/defn load-contact
   "Check if we already have a filter for that contact, otherwise load the filter
   if the contact has been added"
   [{:keys [db]} contact]
   (when-not (chat-loaded? db (:public-key contact))
-    (load-filter-fx (:web3 db) (contacts->filter-requests [contact]))))
+    (load-filter-fx (contacts->filter-requests [contact]))))
 
 (fx/defn load-member
   "Check if we already have a filter for that member, otherwise load the filter, regardless of whether is in our contacts"
   [{:keys [db]} public-key]
   (when-not (chat-loaded? db public-key)
-    (load-filter-fx (:web3 db) (->filter-request {:chat-id public-key}))))
+    (load-filter-fx (->filter-request {:chat-id public-key}))))
 
 (fx/defn load-members
   "Load multiple members"
@@ -360,9 +320,9 @@
 
 (re-frame/reg-fx
  :filters/add-raw-filters
- (fn [{:keys [web3 filters]}]
+ (fn [{:keys [filters]}]
    (log/debug "PERF" :filters/add-raw-filters)
-   (add-filters! web3 filters)))
+   (filters-added! filters)))
 
 ;; Here we stop first polling and then we hit status-go, otherwise it would throw
 ;; an error trying to poll from a delete filter. If we fail to remove the filter though
@@ -371,26 +331,16 @@
  :filters/remove-filters
  (fn [filters]
    (log/debug "removing filters" filters)
-   (stop-watching! (map :filter filters))
    (remove-filters-rpc
     (map ->remove-filter-request filters)
     #(filters-removed! filters)
     #(log/error "remove-filters: failed error" %))))
 
 (re-frame/reg-fx
- :filters/stop-filters
- (fn [[filters callback]]
-   (stop-watching! filters)
-   (callback)))
-
-(re-frame/reg-fx
  :filters/load-filters
- (fn [ops]
-   (when (seq ops)
-     (let [web3 (first (peek ops))
-           filters (mapcat peek ops)]
-       (load-filters-rpc
-        filters
-        #(add-filters! web3
-                       (map responses->filters %))
-        #(log/error "load-filters: failed error" %))))))
+ (fn [filters]
+   (load-filters-rpc
+    filters
+    #(filters-added! (map responses->filters %))
+    #(log/error "load-filters: failed error" %))))
+

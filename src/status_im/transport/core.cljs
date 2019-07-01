@@ -36,8 +36,6 @@
 
 (fx/defn init-whisper
   "Initialises whisper protocol by:
-  - adding fixed shh discovery filter
-  - restoring existing symetric keys along with their unique filters
   - (optionally) initializing mailserver"
   [{:keys [db web3 all-installations] :as cofx}]
   (fx/merge cofx
@@ -49,13 +47,6 @@
             (message/resend-contact-messages [])))
 
 (fx/defn stop-whisper
-  "Stops whisper protocol by removing all existing shh filters
-  It is necessary to remove the filters because status-go there isn't currently a logout feature in status-go
-  to clean-up after logout. When logging out of account A and logging in account B, account B would receive
-  account A messages without this."
-  [{:keys [db] :as cofx} callback]
-  (let [{:transport/keys [filters]} db]
-    (fx/merge
-     cofx
-     (transport.filters/stop-filters callback)
-     (publisher/stop-fx))))
+  "Stops whisper protocol"
+  [cofx]
+  (publisher/stop-fx cofx))
