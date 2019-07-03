@@ -35,6 +35,9 @@ pipeline {
     LEIN_HOME         = "/var/tmp/lein-${EXECUTOR_NUMBER}"
     YARN_CACHE_FOLDER = "/var/tmp/yarn-${EXECUTOR_NUMBER}"
     GRADLE_USER_HOME  = "/var/tmp/gradle-${EXECUTOR_NUMBER}"
+    /* coverage report identification */
+    COVERALLS_SERVICE_NAME = "jenkins"
+    COVERALLS_SERVICE_JOB_ID = "${JOB_NAME}#${BUILD_NUMBER}"
   }
 
   stages {
@@ -63,6 +66,11 @@ pipeline {
           stage('Tests') {
             steps {
               script { cmn.nix.shell('lein test-cljs') }
+            }
+          }
+          stage('Coverage') {
+            steps {
+              script { android.coverage() }
             }
           }
         } }

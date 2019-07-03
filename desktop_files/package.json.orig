@@ -109,7 +109,9 @@
     "@babel/plugin-transform-block-scoping": "7.0.0",
     "@babel/preset-env": "7.1.0",
     "@babel/register": "7.0.0",
-    "patch-package": "^5.1.1"
+    "patch-package": "^5.1.1",
+    "coveralls": "^3.0.4",
+    "nyc": "^14.1.1"
   },
   "optionalDependencies": {
     "appdmg": "^0.5.2"

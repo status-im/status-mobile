@@ -98,4 +98,12 @@ def uploadToDiawi() {
   return diawiUrl
 }
 
+def coverage() {
+  withCredentials([
+    string(credentialsId: 'coveralls-token', variable: 'COVERALLS_REPO_TOKEN'),
+  ]) {
+    nix.shell('make coverage')
+  }
+}
+
 return this

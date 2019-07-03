@@ -191,6 +191,9 @@ test: ##@test Run tests once in NodeJS
 test-auto: ##@test Run tests in interactive (auto) mode in NodeJS
 	lein with-profile test doo node test
 
+coverage: ##@test Run tests once in NodeJS generating coverage
+	@scripts/run-coverage.sh
+
 #--------------
 # Other
 #--------------
