@@ -1,7 +1,7 @@
 (ns ^{:doc "Protocol API and protocol utils"}
  status-im.transport.message.protocol
   (:require [cljs.spec.alpha :as spec]
-            [status-im.accounts.model :as accounts.model]
+            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.transport.db :as transport.db]
@@ -58,7 +58,7 @@
   (let [{:keys [web3]} db]
     {:shh/send-public-message [{:web3 web3
                                 :success-event success-event
-                                :src     (accounts.model/current-public-key cofx)
+                                :src     (multiaccounts.model/current-public-key cofx)
                                 :chat    chat-id
                                 :payload payload}]}))
 
@@ -68,15 +68,15 @@
   (let [{:keys [web3]} db]
     {:shh/send-direct-message [{:web3           web3
                                 :success-event  success-event
-                                :src            (accounts.model/current-public-key cofx)
+                                :src            (multiaccounts.model/current-public-key cofx)
                                 :dst            dst
                                 :payload        payload}]}))
 
 (fx/defn send-with-pubkey
-  "Sends the payload using asymetric key (account `:public-key` in db) and fixed discovery topic"
+  "Sends the payload using asymetric key (multiaccount `:public-key` in db) and fixed discovery topic"
   [{:keys [db] :as cofx} {:keys [payload chat-id success-event]}]
   (let [{:keys [web3]} db]
-    (let [pfs? (get-in db [:account/account :settings :pfs?])]
+    (let [pfs? (get-in db [:multiaccount :settings :pfs?])]
       (if pfs?
         (send-direct-message cofx
                              chat-id
@@ -85,7 +85,7 @@
         (let [topic-hash             (discovery-topic-hash)]
           {:shh/post [{:web3          web3
                        :success-event success-event
-                       :message       (merge {:sig     (accounts.model/current-public-key cofx)
+                       :message       (merge {:sig     (multiaccounts.model/current-public-key cofx)
                                               :pubKey  chat-id
                                               :payload payload
                                               :topic   topic-hash}
@@ -94,7 +94,7 @@
 (defrecord Message [content content-type message-type clock-value timestamp]
   StatusMessage
   (send [this chat-id {:keys [message-id] :as cofx}]
-    (let [current-public-key (accounts.model/current-public-key cofx)
+    (let [current-public-key (multiaccounts.model/current-public-key cofx)
           params             {:chat-id       chat-id
                               :payload       this
                               :success-event [:transport/message-sent

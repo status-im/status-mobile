@@ -58,7 +58,7 @@
       (str hex-prefix address))))
 
 (defn current-address [db]
-  (-> (get-in db [:account/account :address])
+  (-> (get-in db [:multiaccount :address])
       normalized-address))
 
 (defn naked-address [s]
@@ -90,8 +90,8 @@
 
 (defn chain-keyword
   [db]
-  (let [network-id (get-in db [:account/account :network])
-        network    (get-in db [:account/account :networks network-id])]
+  (let [network-id (get-in db [:multiaccount :network])
+        network    (get-in db [:multiaccount :networks network-id])]
     (network->chain-keyword network)))
 
 (defn snt-symbol [db]

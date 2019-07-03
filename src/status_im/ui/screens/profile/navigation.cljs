@@ -5,7 +5,7 @@
 ;; possibly use the generic event, see https://github.com/status-im/status-react/issues/2987
 (defmethod navigation/preload-data! :profile-qr-viewer
   [db [_ _ {:keys [contact source value]}]]
-  (update db :qr-modal #(merge % {:contact (or contact (get db :account/account))
+  (update db :qr-modal #(merge % {:contact (or contact (get db :multiaccount))
                                   :source  source
                                   :value   value})))
 

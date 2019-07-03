@@ -2,7 +2,7 @@
   (:require [cljs.spec.alpha :as spec]
             [re-frame.core :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
-            [status-im.accounts.model :as accounts.model]
+            [status-im.multiaccounts.model :as multiaccounts.model]
             [taoensso.timbre :as log]))
 
 (def pre-event-callback (atom nil))
@@ -38,7 +38,7 @@
    :id     :logged-in
    :before (fn logged-in-before
              [context]
-             (when (accounts.model/logged-in? (:coeffects context))
+             (when (multiaccounts.model/logged-in? (:coeffects context))
                context))))
 
 (defn- check-spec-msg-path-problem [problem]

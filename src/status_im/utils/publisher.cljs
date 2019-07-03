@@ -1,7 +1,7 @@
 (ns status-im.utils.publisher
   (:require [re-frame.core :as re-frame]
             [re-frame.db]
-            [status-im.accounts.update.publisher :as accounts]
+            [status-im.multiaccounts.update.publisher :as multiaccounts]
             [status-im.utils.async :as async-util]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]))
@@ -19,7 +19,7 @@
              (let [cofx {:web3 web3
                          :now  (datetime/timestamp)
                          :db   @re-frame.db/app-db}]
-               (accounts/publish-update! cofx)
+               (multiaccounts/publish-update! cofx)
                (done-fn)))
            sync-interval-ms
            sync-timeout-ms)))

@@ -9,7 +9,7 @@
 
 (views/defview signing-phrase []
   (views/letsubs [phrase [:signing/phrase]
-                  {:keys [wallet-set-up-passed?]} [:account/account]]
+                  {:keys [wallet-set-up-passed?]} [:multiaccount]]
     [react/view
      [react/view {:margin-top 24 :margin-horizontal 24 :align-items :center}
       [react/view {:background-color colors/blue-light :width 32 :height 32 :border-radius 16
@@ -28,7 +28,7 @@
                                    :label        (i18n/label :t/remind-me-later)}])
       [components.common/button {:on-press     #(do
                                                   (when-not wallet-set-up-passed?
-                                                    (re-frame/dispatch [:accounts.ui/wallet-set-up-confirmed]))
+                                                    (re-frame/dispatch [:multiaccounts.ui/wallet-set-up-confirmed]))
                                                   (re-frame/dispatch [:hide-popover]))
                                  :button-style {:margin-top 24}
                                  :background?  false

@@ -6,7 +6,7 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.ipfs.core :as ipfs]
             [status-im.utils.fx :as fx]
-            [status-im.accounts.update.core :as accounts.update]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             status-im.extensions.capacities.ethereum
             status-im.extensions.capacities.camera.events
             status-im.extensions.capacities.network))
@@ -47,10 +47,10 @@
     :times *
     :divide /))
 
-(defn update-account-data [{db :db :as cofx} id data-fn]
-  (let [{:account/keys [account]} db
-        extensions     (get account :extensions)]
-    (accounts.update/account-update
+(defn update-multiaccount-data [{db :db :as cofx} id data-fn]
+  (let [{:keys [multiaccount]} db
+        extensions     (get multiaccount :extensions)]
+    (multiaccounts.update/multiaccount-update
      cofx
      {:extensions (update-in extensions [id :data] data-fn)}
      {})))
@@ -62,44 +62,44 @@
 
 (fx/defn put-persistent
   [cofx id {:keys [key value]}]
-  (update-account-data cofx id
-                       (fn [current-data]
-                         (put-or-dissoc-persis current-data key value))))
+  (update-multiaccount-data cofx id
+                            (fn [current-data]
+                              (put-or-dissoc-persis current-data key value))))
 
 (fx/defn put-in-persistent
   [cofx id {:keys [keys value]}]
-  (update-account-data cofx id
-                       (fn [current-data]
-                         (assoc-in current-data keys value))))
+  (update-multiaccount-data cofx id
+                            (fn [current-data]
+                              (assoc-in current-data keys value))))
 
 (fx/defn puts-persistent
   [cofx id {:keys [value]}]
-  (update-account-data cofx id
-                       (fn [current-data]
-                         (reduce #(put-or-dissoc-persis %1 (:key %2) (:value %2)) current-data value))))
+  (update-multiaccount-data cofx id
+                            (fn [current-data]
+                              (reduce #(put-or-dissoc-persis %1 (:key %2) (:value %2)) current-data value))))
 
 (fx/defn append-persistent
   [cofx id {:keys [key value]}]
-  (update-account-data cofx id
-                       (fn [current-data]
-                         (append current-data key value))))
+  (update-multiaccount-data cofx id
+                            (fn [current-data]
+                              (append current-data key value))))
 
 (fx/defn clear-persistent
   [{db :db :as cofx} id {:keys [key]}]
-  (let [{:account/keys [account]} db
-        extensions     (get account :extensions)]
+  (let [{:keys [multiaccount]} db
+        extensions     (get multiaccount :extensions)]
     (when (get-in extensions [id :data key])
-      (accounts.update/account-update
+      (multiaccounts.update/multiaccount-update
        cofx
        {:extensions (update-in extensions [id :data] dissoc key)}
        {}))))
 
 (fx/defn clear-all-persistent
   [{db :db :as cofx} id]
-  (let [{:account/keys [account]} db
-        extensions     (get account :extensions)]
+  (let [{:keys [multiaccount]} db
+        extensions     (get multiaccount :extensions)]
     (when (get-in extensions [id :data])
-      (accounts.update/account-update
+      (multiaccounts.update/multiaccount-update
        cofx
        {:extensions (update extensions id dissoc :data)}
        {}))))

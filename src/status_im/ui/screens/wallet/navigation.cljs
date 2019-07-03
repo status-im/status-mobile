@@ -9,7 +9,7 @@
 
 (defmethod navigation/preload-data! :wallet-stack
   [db [event]]
-  (let [wallet-set-up-passed? (get-in db [:account/account :wallet-set-up-passed?])]
+  (let [wallet-set-up-passed? (get-in db [:multiaccount :wallet-set-up-passed?])]
     (if (or (= event :navigate-back) wallet-set-up-passed?)
       db
       (assoc db :popover/popover {:view [signing-phrase/signing-phrase]}))))

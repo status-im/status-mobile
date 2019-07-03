@@ -1,7 +1,7 @@
 (ns status-im.ens.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.accounts.update.core :as accounts.update]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.ethereum.contracts :as contracts]
             [status-im.ethereum.core :as ethereum]
@@ -98,8 +98,8 @@
               (assoc-username-candidate username)
               (assoc-state-for username state))}
      (when (and name (= :valid state))
-       (let [{:keys [account/account]}        db
-             {:keys [address public-key]}     account
+       (let [{:keys [multiaccount]}        db
+             {:keys [address public-key]}     multiaccount
              registry (get ens/ens-registries (ethereum/chain-keyword db))]
          {:ens/resolve-address [registry name #(on-resolve registry custom-domain? username address public-key %)]})))))
 
@@ -119,10 +119,10 @@
 (fx/defn save-preferred-name
   {:events [:ens/save-preferred-name]}
   [{:keys [db] :as cofx} name]
-  (fx/merge (assoc-in cofx [:db :account/account :preferred-name] name)
-            (accounts.update/account-update cofx
-                                            {:preferred-name name})
-            (accounts.update/send-account-update)))
+  (fx/merge (assoc-in cofx [:db :multiaccount :preferred-name] name)
+            (multiaccounts.update/multiaccount-update cofx
+                                                      {:preferred-name name})
+            (multiaccounts.update/send-multiaccount-update)))
 
 (fx/defn save-preferred-name-when-first
   [cofx names name]
@@ -134,21 +134,21 @@
   {:events [:ens/save-username]}
   [{:keys [db] :as cofx} custom-domain? username]
   (let [name   (fullname custom-domain? username)
-        new-db (update-in db [:account/account :usernames] #((fnil conj []) %1 %2) name)
-        names  (get-in new-db [:account/account :usernames])]
+        new-db (update-in db [:multiaccount :usernames] #((fnil conj []) %1 %2) name)
+        names  (get-in new-db [:multiaccount :usernames])]
     (fx/merge {:db new-db}
-              (accounts.update/account-update cofx
-                                              {:usernames names}
-                                              {:success-event [:ens/set-state username :saved]})
+              (multiaccounts.update/multiaccount-update cofx
+                                                        {:usernames names}
+                                                        {:success-event [:ens/set-state username :saved]})
               (save-preferred-name-when-first names name))))
 
 (fx/defn switch-show-username
   {:events [:ens/switch-show-username]}
   [{:keys [db] :as cofx} _]
-  (let [new-db (update-in db [:account/account :show-name?] not)]
+  (let [new-db (update-in db [:multiaccount :show-name?] not)]
     (fx/merge {:db new-db}
-              (accounts.update/account-update cofx
-                                              {:show-name? (get-in new-db [:account/account :show-name?])}))))
+              (multiaccounts.update/multiaccount-update cofx
+                                                        {:show-name? (get-in new-db [:multiaccount :show-name?])}))))
 
 (fx/defn on-registration-failure
   {:events [:ens/on-registration-failure]}

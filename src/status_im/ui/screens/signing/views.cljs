@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.react :as react]
             [re-frame.core :as re-frame]
-            [status-im.accounts.core :as accounts]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.animation :as anim]
             [reagent.core :as reagent]
@@ -52,7 +52,7 @@
 
 (defn displayed-name [contact]
   (if (or (:preferred-name contact) (:name contact))
-    (accounts/displayed-name contact)
+    (multiaccounts/displayed-name contact)
     (:address contact)))
 
 (defn contact-item [contact]
@@ -210,7 +210,7 @@
                   sign  [:signing/sign]
                   chain [:ethereum/chain-keyword]
                   {:keys [amount-error gas-error]} [:signing/amount-errors]
-                  keycard-account? [:keycard-account?]]
+                  keycard-multiaccount? [:keycard-multiaccount?]]
     (let [display-symbol     (wallet.utils/display-symbol token)
           fee-display-symbol (wallet.utils/display-symbol (tokens/native-currency chain))]
       [react/view styles/sheet
@@ -237,7 +237,7 @@
                                               {:content        (fn [] [sheets/fee-bottom-sheet fee-display-symbol])
                                                :content-height 270}])}]
           [react/view {:align-items :center :margin-top 16 :margin-bottom 40}
-           (if keycard-account?
+           (if keycard-multiaccount?
              [sign-with-keycard-button amount-error gas-error]
              [button/primary-button {:on-press  #(re-frame/dispatch [:set :signing/sign {:type :password}])
                                      :disabled? (or amount-error gas-error)}

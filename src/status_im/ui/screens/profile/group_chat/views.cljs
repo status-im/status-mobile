@@ -94,7 +94,7 @@
             editing?     [:group-chat-profile/editing?]
             members      [:contacts/current-chat-contacts]
             changed-chat [:group-chat-profile/profile]
-            current-pk   [:account/public-key]]
+            current-pk   [:multiaccount/public-key]]
     (when current-chat
       (let [shown-chat            (merge current-chat changed-chat)
             admin?                (get admins current-pk)

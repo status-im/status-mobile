@@ -83,7 +83,7 @@
   {:db (update db :extensions/manage assoc input-key {:value value})})
 
 (fx/defn fetch [cofx ext-key]
-  (get-in cofx [:db :account/account :extensions ext-key]))
+  (get-in cofx [:db :multiaccount :extensions ext-key]))
 
 (fx/defn edit
   [cofx extension-key]

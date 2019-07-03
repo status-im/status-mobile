@@ -132,11 +132,11 @@
 ;;TODO(goranjovic): currently we only allow tokens which are enabled in Manage assets here
 ;; because balances are only fetched for them. Revisit this decision with regard to battery/network consequences
 ;; if we were to update all balances.
-(defn- allowed-assets [{:account/keys [account] :keys [chain] :as db}]
+(defn- allowed-assets [{:keys [chain multiaccount] :as db}]
   (let [all-tokens                               (:wallet/all-tokens db)
         chain-keyword                            (keyword chain)
         {:keys [symbol symbol-display decimals]} (tokens/native-currency chain-keyword)
-        visible-tokens                           (get-in account [:settings :wallet :visible-tokens chain-keyword])]
+        visible-tokens                           (get-in multiaccount [:settings :wallet :visible-tokens chain-keyword])]
     (into {(name (or symbol-display symbol)) decimals}
           (comp (filter #(and (not (:nft? %))
                               (contains? visible-tokens (:symbol %))))
@@ -256,7 +256,7 @@
     (assoc parameters :coin coin)))
 
 (defn get-currency [db]
-  (or (get-in db [:account/account :settings :wallet :currency]) :usd))
+  (or (get-in db [:multiaccount :settings :wallet :currency]) :usd))
 
 (defn- inject-price-info [{:keys [amount asset] :as parameters} {:keys [db]}]
   (let [currency (-> db

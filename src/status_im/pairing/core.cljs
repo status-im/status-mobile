@@ -10,14 +10,14 @@
             [status-im.utils.config :as config]
             [status-im.utils.platform :as utils.platform]
             [status-im.chat.models :as models.chat]
-            [status-im.accounts.model :as accounts.model]
+            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.transport.message.protocol :as protocol]
             [status-im.data-store.installations :as data-store.installations]
             [status-im.utils.identicon :as identicon]
             [status-im.contact.core :as contact]
             [status-im.transport.filters.core :as transport.filters]
             [status-im.data-store.contacts :as data-store.contacts]
-            [status-im.data-store.accounts :as data-store.accounts]
+            [status-im.data-store.multiaccounts :as data-store.multiaccounts]
             [status-im.transport.message.pairing :as transport.pairing]))
 
 (defn enable-installation-rpc [installation-id on-success on-failure]
@@ -69,7 +69,7 @@
 
 (defn pair-installation [cofx]
   (let [fcm-token         (get-in cofx [:db :notifications :fcm-token])
-        installation-id (get-in cofx [:db :account/account :installation-id])
+        installation-id (get-in cofx [:db :multiaccount :installation-id])
         installation-name (get-in cofx [:db :pairing/installations installation-id :name])
         device-type     utils.platform/os]
     (protocol/send (transport.pairing/PairInstallation. installation-id device-type installation-name fcm-token) nil cofx)))
@@ -87,7 +87,7 @@
 
 (defn send-pair-installation [cofx payload]
   (let [{:keys [web3]} (:db cofx)
-        current-public-key (accounts.model/current-public-key cofx)]
+        current-public-key (multiaccounts.model/current-public-key cofx)]
     {:shh/send-pairing-message {:web3    web3
                                 :src     current-public-key
                                 :payload payload}}))
@@ -106,11 +106,11 @@
 
 (def merge-contacts (partial merge-with merge-contact))
 
-(def account-mergeable-keys [:name :photo-path :last-updated])
+(def multiaccount-mergeable-keys [:name :photo-path :last-updated])
 
-(defn merge-account [local remote]
+(defn merge-multiaccount [local remote]
   (if (> (:last-updated remote) (:last-updated local))
-    (merge local (select-keys remote account-mergeable-keys))
+    (merge local (select-keys remote multiaccount-mergeable-keys))
     local))
 
 (fx/defn prompt-dismissed [{:keys [db]}]
@@ -135,7 +135,7 @@
   "Set the name of the device"
   [{:keys [db] :as cofx} installation-name]
   (let [fcm-token           (get-in cofx [:db :notifications :fcm-token])
-        our-installation-id (get-in db [:account/account :installation-id])]
+        our-installation-id (get-in db [:multiaccount :installation-id])]
     {:pairing/set-installation-metadata [[our-installation-id {:name installation-name
                                                                :deviceType utils.platform/os
                                                                :fcmToken fcm-token}]]}))
@@ -144,7 +144,7 @@
   "Take the realm installations and move them to status-go, also move installation-name
   to status-go, clean up after so it is run only once"
   [{:keys [db] :as cofx} installations]
-  (let [installation-name (get-in db [:account/account :installation-name])]
+  (let [installation-name (get-in db [:multiaccount :installation-name])]
     (fx/merge cofx
               {:pairing/set-installation-metadata
                (map (fn [{:keys [installation-id name device-type fcm-token]}]
@@ -155,9 +155,9 @@
               #(when-not (string/blank? installation-name)
                  (set-name % installation-name))
               #(when-not (string/blank? installation-name)
-                 (let [new-account (dissoc (:account/account (:db %)) :installation-name)]
-                   {:db (assoc (:db %) :account/account new-account)
-                    :data-store/base-tx [(data-store.accounts/save-account-tx new-account)]})))))
+                 (let [new-multiaccount (dissoc (:multiaccount (:db %)) :installation-name)]
+                   {:db (assoc (:db %) :multiaccount new-multiaccount)
+                    :data-store/base-tx [(data-store.multiaccounts/save-multiaccount-tx new-multiaccount)]})))))
 
 (fx/defn init [cofx old-installations]
   (fx/merge cofx
@@ -168,19 +168,19 @@
   (let [installation-id  (:installationID bundle)]
     (when
      (and (= (:identity bundle)
-             (accounts.model/current-public-key cofx))
-          (not= (get-in db [:account/account :installation-id]) installation-id))
+             (multiaccounts.model/current-public-key cofx))
+          (not= (get-in db [:multiaccount :installation-id]) installation-id))
       (fx/merge cofx
                 (init [])
                 #(when-not (or (:pairing/prompt-user-pop-up db)
                                (= :installations (:view-id db)))
                    (prompt-user-on-new-installation %))))))
 
-(defn sync-installation-account-message [{:keys [db]}]
-  (let [account (-> db
-                    :account/account
-                    (select-keys account-mergeable-keys))]
-    (transport.pairing/SyncInstallation. {} account {})))
+(defn sync-installation-multiaccount-message [{:keys [db]}]
+  (let [multiaccount (-> db
+                         :multiaccount
+                         (select-keys multiaccount-mergeable-keys))]
+    (transport.pairing/SyncInstallation. {} multiaccount {})))
 
 (defn- contact->pairing [contact]
   (cond-> (-> contact
@@ -213,7 +213,7 @@
   (let [contacts (contact.db/get-active-contacts (:contacts/contacts db))
         contact-batches (partition-all contact-batch-n contacts)]
     (concat (mapv contact-batch->sync-installation-message contact-batches)
-            [(sync-installation-account-message cofx)]
+            [(sync-installation-multiaccount-message cofx)]
             (chats->sync-installation-messages cofx))))
 
 (fx/defn enable [{:keys [db]} installation-id]
@@ -295,7 +295,7 @@
 
 (fx/defn send-sync-installation [cofx payload]
   (let [{:keys [web3]} (:db cofx)
-        current-public-key (accounts.model/current-public-key cofx)]
+        current-public-key (multiaccounts.model/current-public-key cofx)]
     {:shh/send-direct-message
      [{:web3    web3
        :src     current-public-key
@@ -357,20 +357,20 @@
              {}
              contacts))
 
-(defn handle-sync-installation [{:keys [db] :as cofx} {:keys [contacts account chat]} sender]
-  (if (= sender (accounts.model/current-public-key cofx))
+(defn handle-sync-installation [{:keys [db] :as cofx} {:keys [contacts multiaccount chat]} sender]
+  (if (= sender (multiaccounts.model/current-public-key cofx))
     (let [success-event [:message/messages-persisted [(or (:dedup-id cofx) (:js-obj cofx))]]
           new-contacts  (when (seq contacts)
                           (vals (merge-contacts (:contacts/contacts db)
                                                 ((comp ensure-photo-path
                                                        ensure-system-tags) contacts))))
-          new-account   (merge-account (:account/account db) account)
+          new-multiaccount   (merge-multiaccount (:multiaccount db) multiaccount)
           contacts-fx   (when new-contacts (mapv contact/upsert-contact new-contacts))]
       (apply fx/merge
              cofx
              (concat
-              [{:db                 (assoc db :account/account new-account)
-                :data-store/base-tx [{:transaction   (data-store.accounts/save-account-tx new-account)
+              [{:db                 (assoc db :multiaccount new-multiaccount)
+                :data-store/base-tx [{:transaction   (data-store.multiaccounts/save-multiaccount-tx new-multiaccount)
                                       :success-event success-event}]}
                #(when (:public? chat)
                   (models.chat/start-public-chat % (:chat-id chat) {:dont-navigate? true}))]
@@ -382,8 +382,8 @@
                                                               fcm-token
                                                               installation-id
                                                               device-type]} timestamp sender]
-  (if (and (= sender (accounts.model/current-public-key cofx))
-           (not= (get-in db [:account/account :installation-id]) installation-id))
+  (if (and (= sender (multiaccounts.model/current-public-key cofx))
+           (not= (get-in db [:multiaccount :installation-id]) installation-id))
     {:pairing/set-installation-metadata [[installation-id {:name name
                                                            :deviceType device-type
                                                            :fcmToken fcm-token}]]}
@@ -411,4 +411,3 @@
                                                    :enabled? enabled}))
                                          {}
                                          installations))})
-

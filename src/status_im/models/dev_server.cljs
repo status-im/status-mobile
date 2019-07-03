@@ -56,7 +56,7 @@
 
 (defmethod process-request! [:GET "networks" nil]
   [{:keys [cofx request-id]}]
-  (let [{:keys [networks network]} (get-in cofx [:db :account/account])
+  (let [{:keys [networks network]} (get-in cofx [:db :multiaccount])
         networks (->> networks
                       (map (fn [[id m]]
                              [id (-> m

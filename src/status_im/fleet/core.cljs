@@ -1,6 +1,6 @@
 (ns status-im.fleet.core
   (:require [re-frame.core :as re-frame]
-            [status-im.accounts.update.core :as accounts.update]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.utils.config :as config]
@@ -13,8 +13,8 @@
    (current-fleet db nil))
   ([db address]
    (keyword (or (if address
-                  (get-in db [:accounts/accounts address :settings :fleet])
-                  (get-in db [:account/account :settings :fleet]))
+                  (get-in db [:multiaccounts/multiaccounts address :settings :fleet])
+                  (get-in db [:multiaccount :settings :fleet]))
                 config/fleet))))
 
 (defn current-fleet-sub [settings]
@@ -92,9 +92,9 @@
 
 (fx/defn save
   [{:keys [db now] :as cofx} fleet]
-  (let [settings (get-in db [:account/account :settings])]
-    (accounts.update/update-settings cofx
-                                     (if fleet
-                                       (assoc settings :fleet fleet)
-                                       (dissoc settings :fleet))
-                                     {:success-event [:accounts.update.callback/save-settings-success]})))
+  (let [settings (get-in db [:multiaccount :settings])]
+    (multiaccounts.update/update-settings cofx
+                                          (if fleet
+                                            (assoc settings :fleet fleet)
+                                            (dissoc settings :fleet))
+                                          {:success-event [:multiaccounts.update.callback/save-settings-success]})))

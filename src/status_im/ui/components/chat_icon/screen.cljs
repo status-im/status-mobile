@@ -166,7 +166,7 @@
        [photos/photo photo-path styles]
        [default-chat-icon name styles])]))
 
-(defn my-profile-icon [{{:keys [photo-path name]} :account
+(defn my-profile-icon [{{:keys [photo-path name]} :multiaccount
                         edit?                     :edit?}]
   (let [color colors/default-chat-color
         size  56]

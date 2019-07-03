@@ -11,7 +11,7 @@ RERUN_ERRORS = [
     'Internal Server Error',
     'Invalid message: ERROR Internal Server Error',
     'ERROR The test with session id'
-    "Message: 'CreateAccountButton' is not found on screen",
+    "Message: 'CreateMultiaccountButton' is not found on screen",
     "503 Service Unavailable",
     "object has no attribute",
     "[Errno 104] Connection reset by peer",

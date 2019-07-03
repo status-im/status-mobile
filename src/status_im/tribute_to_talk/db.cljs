@@ -51,7 +51,7 @@
 (defn get-settings
   [db]
   (let [chain-keyword (ethereum/chain-keyword db)]
-    (get-in db [:account/account :settings :tribute-to-talk chain-keyword])))
+    (get-in db [:multiaccount :settings :tribute-to-talk chain-keyword])))
 
 (defn enabled?
   [settings]

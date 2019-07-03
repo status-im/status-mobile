@@ -103,7 +103,7 @@
                            :db {:networks/manage {:url {:value "wrong"}
                                                   :chain {:value "1"}
                                                   :name {:value "empty"}}
-                                :account/account {}}}
+                                :multiaccount {}}}
                           {})))))
 
 (deftest save-valid-network
@@ -112,7 +112,7 @@
                             :db {:networks/manage {:url {:value "http://valid.com"}
                                                    :chain {:value "mainnet"}
                                                    :name {:value "valid"}}
-                                 :account/account {}}}
+                                 :multiaccount {}}}
                            {})))))
 
 (deftest not-save-non-unique-id
@@ -122,13 +122,13 @@
                        :db {:networks/manage {:url {:value "http://valid.com"}
                                               :chain {:value :mainnet}
                                               :name {:value "valid"}}
-                            :account/account {:networks {"randomid"
-                                                         {:id     "randomid"
-                                                          :name   "network-name"
-                                                          :config {:NetworkId      1
-                                                                   :DataDir        "/ethereum/mainnet_rpc"
-                                                                   :UpstreamConfig {:Enabled true
-                                                                                    :URL     "upstream-url"}}}}}}}
+                            :multiaccount {:networks {"randomid"
+                                                      {:id     "randomid"
+                                                       :name   "network-name"
+                                                       :config {:NetworkId      1
+                                                                :DataDir        "/ethereum/mainnet_rpc"
+                                                                :UpstreamConfig {:Enabled true
+                                                                                 :URL     "upstream-url"}}}}}}}
                       {:chain-id-unique? true
                        :on-failure #(reset! failure true)})
           (is @failure)))))
@@ -139,13 +139,13 @@
                             :db {:networks/manage {:url {:value "http://valid.com"}
                                                    :chain {:value :mainnet}
                                                    :name {:value "valid"}}
-                                 :account/account {:networks {"randomid"
-                                                              {:id     "randomid"
-                                                               :name   "network-name"
-                                                               :config {:NetworkId      3
-                                                                        :DataDir        "/ethereum/mainnet_rpc"
-                                                                        :UpstreamConfig {:Enabled true
-                                                                                         :URL     "upstream-url"}}}}}}}
+                                 :multiaccount {:networks {"randomid"
+                                                           {:id     "randomid"
+                                                            :name   "network-name"
+                                                            :config {:NetworkId      3
+                                                                     :DataDir        "/ethereum/mainnet_rpc"
+                                                                     :UpstreamConfig {:Enabled true
+                                                                                      :URL     "upstream-url"}}}}}}}
                            {:chain-id-unique? true})))))
 
 (deftest save-with-id-override
@@ -154,17 +154,17 @@
                               :db {:networks/manage {:url {:value "http://valid.com"}
                                                      :chain {:value :mainnet}
                                                      :name {:value "valid"}}
-                                   :account/account {}}}
+                                   :multiaccount {}}}
                              {:network-id "override"})]
-      (is (some? (get-in result [:db :account/account :networks "override"]))))))
+      (is (some? (get-in result [:db :multiaccount :networks "override"]))))))
 
 (deftest get-network-id-for-chain-id
   (testing "get the first network id for the given chain-id"
-    (is (= "randomid" (model/get-network-id-for-chain-id {:db {:account/account {:networks {"randomid"
-                                                                                            {:id     "randomid"
-                                                                                             :name   "network-name"
-                                                                                             :config {:NetworkId      1
-                                                                                                      :DataDir        "/ethereum/mainnet_rpc"
-                                                                                                      :UpstreamConfig {:Enabled true
-                                                                                                                       :URL     "upstream-url"}}}}}}}
+    (is (= "randomid" (model/get-network-id-for-chain-id {:db {:multiaccount {:networks {"randomid"
+                                                                                         {:id     "randomid"
+                                                                                          :name   "network-name"
+                                                                                          :config {:NetworkId      1
+                                                                                                   :DataDir        "/ethereum/mainnet_rpc"
+                                                                                                   :UpstreamConfig {:Enabled true
+                                                                                                                    :URL     "upstream-url"}}}}}}}
                                                          1)))))

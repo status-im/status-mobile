@@ -12,7 +12,7 @@
          (take config/max-installations)
          (map #(hash-map :id (:installation-id %)
                          :fcm-token (:fcm-token %))))
-    {:id (get-in db [:account/account :installation-id])
+    {:id (get-in db [:multiaccount :installation-id])
      :fcm-token (get-in db [:notifications :fcm-token])})))
 
 (defn merge-info [timestamp previous-devices new-devices]

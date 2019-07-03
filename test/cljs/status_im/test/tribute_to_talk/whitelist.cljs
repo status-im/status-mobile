@@ -71,10 +71,10 @@
 (def sender-pk "0x04263d74e55775280e75b4a4e9a45ba59fc372793a869c5d9c4fa2100556d9963e3f4fbfa1724ec94a46e6da057540ab248ed1f5eb956e36e3129ecd50fade2c97")
 (def sender-address "0xdff1a5e4e57d9723b3294e0f4413372e3ea9a8ff")
 
-(def ttt-enabled-account
-  {:db {:account/account {:network "testnet_rpc"
-                          :networks {"testnet_rpc" {:config {:NetworkId 3}}}
-                          :settings {:tribute-to-talk {:testnet {:snt-amount "1000000000000000000"}}}}
+(def ttt-enabled-multiaccount
+  {:db {:multiaccount {:network "testnet_rpc"
+                       :networks {"testnet_rpc" {:config {:NetworkId 3}}}
+                       :settings {:tribute-to-talk {:testnet {:snt-amount "1000000000000000000"}}}}
         :contacts/contacts user-contacts
         :wallet {:transactions
                  {"transaction-hash-1"
@@ -83,45 +83,45 @@
                    :from sender-address}}}
         :ethereum/current-block 8}})
 
-(def ttt-disabled-account
-  {:db {:account/account {:network "testnet_rpc"
-                          :networks {"testnet_rpc" {:config {:NetworkId 3}}}
-                          :settings {:tribute-to-talk {}}}
+(def ttt-disabled-multiaccount
+  {:db {:multiaccount {:network "testnet_rpc"
+                       :networks {"testnet_rpc" {:config {:NetworkId 3}}}
+                       :settings {:tribute-to-talk {}}}
         :contacts/contacts user-contacts}})
 
 (deftest enable-whitelist
-  (testing "ttt enabled account"
-    (is (= (get-in (whitelist/enable-whitelist ttt-enabled-account)
+  (testing "ttt enabled multiaccount"
+    (is (= (get-in (whitelist/enable-whitelist ttt-enabled-multiaccount)
                    [:db :contacts/whitelist]))))
-  (testing "ttt disabled account"
-    (is (not (get-in (whitelist/enable-whitelist ttt-disabled-account)
+  (testing "ttt disabled multiaccount"
+    (is (not (get-in (whitelist/enable-whitelist ttt-disabled-multiaccount)
                      [:db :contacts/whitelist])))))
 
 (deftest filter-message
   (testing "not a user message"
     (whitelist/filter-message
-     ttt-enabled-account
+     ttt-enabled-multiaccount
      :unfiltered-fx
      :not-user-message
      nil
      "public-key"))
   (testing "user is whitelisted"
     (whitelist/filter-message
-     (whitelist/enable-whitelist ttt-enabled-account)
+     (whitelist/enable-whitelist ttt-enabled-multiaccount)
      :unfiltered-fx
      :user-message
      nil
      "whitelisted because added"))
   (testing "tribute to talk is disabled"
     (whitelist/filter-message
-     ttt-disabled-account
+     ttt-disabled-multiaccount
      :unfiltered-fx
      :user-message
      nil
      "public-key"))
   (testing "user is not whitelisted but transaction is valid"
     (let [result (whitelist/filter-message
-                  ttt-enabled-account
+                  ttt-enabled-multiaccount
                   #(assoc % :message-received true)
                   :user-message
                   "transaction-hash-1"

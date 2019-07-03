@@ -23,4 +23,4 @@
 (handlers/register-handler-fx
  :keychain.callback/can-save-user-password?-success
  (fn [{:keys [db]} [_ can-save-user-password?]]
-   {:db (assoc-in db [:accounts/login :can-save-password?] can-save-user-password?)}))
+   {:db (assoc-in db [:multiaccounts/login :can-save-password?] can-save-user-password?)}))

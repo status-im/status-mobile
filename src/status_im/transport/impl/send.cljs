@@ -2,7 +2,7 @@
   (:require [status-im.group-chats.core :as group-chats]
             [status-im.utils.fx :as fx]
             [status-im.pairing.core :as pairing]
-            [status-im.accounts.update.core :as accounts.update]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.data-store.transport :as transport-store]
             [status-im.transport.db :as transport.db]
             [status-im.transport.message.pairing :as transport.pairing]
@@ -70,8 +70,8 @@
 (extend-type transport.contact/ContactUpdate
   protocol/StatusMessage
   (send [this _ {:keys [db] :as cofx}]
-    (let [send-contact-update-fxs (accounts.update/send-contact-update cofx this)
-          sync-message            (pairing/sync-installation-account-message cofx)
+    (let [send-contact-update-fxs (multiaccounts.update/send-contact-update cofx this)
+          sync-message            (pairing/sync-installation-multiaccount-message cofx)
           fxs                     (conj send-contact-update-fxs
                                         (pairing/send-installation-message-fx sync-message))]
       (apply fx/merge cofx fxs))))

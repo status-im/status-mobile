@@ -85,7 +85,7 @@
 
 (defview settings-hook []
   (letsubs [{:keys [label view on-close]} [:get-screen-params :wallet-settings-hook]
-            {address :address} [:account/account]]
+            {address :address} [:multiaccount]]
     [react/keyboard-avoiding-view {:style {:flex 1 :background-color colors/blue}}
      [status-bar/status-bar {:type :wallet}]
      [toolbar/toolbar
@@ -108,7 +108,7 @@
 
 (defview toolbar-view []
   (letsubs [settings [:wallet/settings]
-            {address :address} [:account/account]]
+            {address :address} [:multiaccount]]
     [toolbar/toolbar {:style {:background-color    colors/blue
                               :border-bottom-width 0}}
      nil

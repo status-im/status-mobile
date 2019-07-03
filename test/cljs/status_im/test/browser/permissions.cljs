@@ -9,7 +9,7 @@
   (let [dapp-name  "test.com"
         dapp-name2 "test2.org"
         cofx       {:db (assoc-in (:db (browser/open-url {:db {}} dapp-name))
-                                  [:account/account :public-key] "public-key")}
+                                  [:multiaccount :public-key] "public-key")}
         dapp-id (core.tests/get-dapp-id cofx dapp-name)]
     (testing "dapps permissions are initialized"
       (is (zero? (count (get-in cofx [:db :dapps/permissions]))))

@@ -1,12 +1,12 @@
 (ns status-im.events
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.accounts.core :as accounts]
-            [status-im.accounts.create.core :as accounts.create]
-            [status-im.accounts.login.core :as accounts.login]
-            [status-im.accounts.logout.core :as accounts.logout]
-            [status-im.accounts.recover.core :as accounts.recover]
-            [status-im.accounts.update.core :as accounts.update]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.multiaccounts.create.core :as multiaccounts.create]
+            [status-im.multiaccounts.login.core :as multiaccounts.login]
+            [status-im.multiaccounts.logout.core :as multiaccounts.logout]
+            [status-im.multiaccounts.recover.core :as multiaccounts.recover]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.biometric-auth.core :as biomentric-auth]
             [status-im.bootnodes.core :as bootnodes]
             [status-im.browser.core :as browser]
@@ -79,9 +79,9 @@
    {:init/reset-data nil}))
 
 (handlers/register-handler-fx
- :init.ui/account-data-reset-accepted
+ :init.ui/multiaccount-data-reset-accepted
  (fn [_ [_ address]]
-   {:init/reset-account-data address}))
+   {:init/reset-multiaccount-data address}))
 
 (handlers/register-handler-fx
  :init.ui/data-reset-cancelled
@@ -105,9 +105,9 @@
 
 (handlers/register-handler-fx
  :init.callback/init-store-success
- [(re-frame/inject-cofx :data-store/get-all-accounts)]
+ [(re-frame/inject-cofx :data-store/get-all-multiaccounts)]
  (fn [cofx _]
-   (init/load-accounts-and-initialize-views cofx)))
+   (init/load-multiaccounts-and-initialize-views cofx)))
 
 (handlers/register-handler-fx
  :init.callback/init-store-error
@@ -124,7 +124,7 @@
              {:db (assoc db :chats/loading? false)}
              (chat.loading/initialize-chats {:from 10}))))
 
-(defn account-change-success
+(defn multiaccount-change-success
   [{:keys [db] :as cofx} [_ address nodes]]
   (let [{:node/keys [status]} db]
     (fx/merge
@@ -132,14 +132,14 @@
      (when nodes
        (fleet/set-nodes :eth.contract nodes))
      (if (= status :started)
-       (accounts.login/login)
-       (node/initialize (get-in db [:accounts/login :address])))
-     (init/initialize-account address)
+       (multiaccounts.login/login)
+       (node/initialize (get-in db [:multiaccounts/login :address])))
+     (init/initialize-multiaccount address)
      (mailserver/initialize-ranges)
      (chat.loading/initialize-chats {:to 10}))))
 
 (handlers/register-handler-fx
- :init.callback/account-change-success
+ :init.callback/multiaccount-change-success
  [(re-frame/inject-cofx :web3/get-web3)
   (re-frame/inject-cofx :data-store/get-all-contacts)
   (re-frame/inject-cofx :data-store/get-all-installations)
@@ -147,7 +147,7 @@
   (re-frame/inject-cofx :data-store/all-dapp-permissions)
   (re-frame/inject-cofx :data-store/all-chats)
   (re-frame/inject-cofx :data-store/all-chat-requests-ranges)]
- account-change-success)
+ multiaccount-change-success)
 
 (handlers/register-handler-fx
  :init.callback/keychain-reset
@@ -155,9 +155,9 @@
    (init/initialize-keychain cofx)))
 
 (handlers/register-handler-fx
- :init.callback/account-db-removed
+ :init.callback/multiaccount-db-removed
  (fn [{:keys [db]} _]
-   {:db (assoc-in db [:accounts/login :processing] false)}))
+   {:db (assoc-in db [:multiaccounts/login :processing] false)}))
 
 ;; home screen
 
@@ -166,28 +166,28 @@
  (fn [cofx _]
    (node/display-les-debug-info cofx)))
 
-;; accounts module
+;; multiaccounts module
 
 (handlers/register-handler-fx
- :accounts.ui/mainnet-warning-shown
+ :multiaccounts.ui/mainnet-warning-shown
  (fn [cofx _]
-   (accounts.update/account-update cofx {:mainnet-warning-shown-version build/version} {})))
+   (multiaccounts.update/multiaccount-update cofx {:mainnet-warning-shown-version build/version} {})))
 
 (handlers/register-handler-fx
- :accounts.update.callback/published
+ :multiaccounts.update.callback/published
  (fn [{:keys [now] :as cofx} _]
-   (accounts.update/account-update cofx {:last-updated now} {})))
+   (multiaccounts.update/multiaccount-update cofx {:last-updated now} {})))
 
 (handlers/register-handler-fx
- :accounts.update.callback/failed-to-publish
+ :multiaccounts.update.callback/failed-to-publish
  (fn [{:keys [now] :as cofx} [_ message]]
-   (log/warn "failed to publish account update" message)
-   (accounts.update/account-update cofx {:last-updated now} {})))
+   (log/warn "failed to publish multiaccount update" message)
+   (multiaccounts.update/multiaccount-update cofx {:last-updated now} {})))
 
 (handlers/register-handler-fx
- :accounts.ui/dev-mode-switched
+ :multiaccounts.ui/dev-mode-switched
  (fn [cofx [_ dev-mode?]]
-   (accounts/switch-dev-mode cofx dev-mode?)))
+   (multiaccounts/switch-dev-mode cofx dev-mode?)))
 
 (def CUD-url "https://chaos-unicorn-day.org")
 
@@ -195,9 +195,9 @@
   (.openURL (react/linking) CUD-url))
 
 (handlers/register-handler-fx
- :accounts.ui/chaos-mode-switched
+ :multiaccounts.ui/chaos-mode-switched
  (fn [{:keys [db] :as cofx} [_ chaos-mode?]]
-   (let [old-chaos-mode? (get-in db [:account/account :settings :chaos-mode?])]
+   (let [old-chaos-mode? (get-in db [:multiaccount :settings :chaos-mode?])]
      (fx/merge
       cofx
       (when (and chaos-mode?
@@ -208,170 +208,168 @@
           :confirm-button-text (i18n/label :t/see-details)
           :cancel-button-text  (i18n/label :t/cancel)
           :on-accept           open-chaos-unicorn-day-link}})
-      (accounts/switch-chaos-mode chaos-mode?)))))
+      (multiaccounts/switch-chaos-mode chaos-mode?)))))
 
 (handlers/register-handler-fx
- :accounts.ui/biometric-auth-switched
+ :multiaccounts.ui/biometric-auth-switched
  (fn [cofx [_ biometric-auth?]]
    (if biometric-auth?
      (biomentric-auth/authenticate-fx
       cofx
       (fn [{:keys [bioauth-success bioauth-message]}]
         (when bioauth-success
-          (re-frame/dispatch [:accounts.ui/switch-biometric-auth true]))
+          (re-frame/dispatch [:multiaccounts.ui/switch-biometric-auth true]))
         (when bioauth-message
           (utils/show-popup (i18n/label :t/biometric-auth-reason-verify) bioauth-message)))
       {:reason (i18n/label :t/biometric-auth-reason-verify)})
-     (accounts/switch-biometric-auth cofx false))))
+     (multiaccounts/switch-biometric-auth cofx false))))
 
 (handlers/register-handler-fx
- :accounts.ui/notifications-enabled
+ :multiaccounts.ui/notifications-enabled
  (fn [cofx [_ desktop-notifications?]]
-   (accounts/enable-notifications cofx desktop-notifications?)))
+   (multiaccounts/enable-notifications cofx desktop-notifications?)))
 
 (handlers/register-handler-fx
- :accounts.ui/toggle-device-to-device
+ :multiaccounts.ui/toggle-device-to-device
  (fn [cofx [_ enabled?]]
-   (accounts/toggle-device-to-device cofx enabled?)))
+   (multiaccounts/toggle-device-to-device cofx enabled?)))
 
 (handlers/register-handler-fx
- :accounts.ui/web3-opt-in-mode-switched
+ :multiaccounts.ui/web3-opt-in-mode-switched
  (fn [cofx [_ opt-in]]
-   (accounts/switch-web3-opt-in-mode cofx opt-in)))
+   (multiaccounts/switch-web3-opt-in-mode cofx opt-in)))
 
 (handlers/register-handler-fx
- :accounts.ui/preview-privacy-mode-switched
+ :multiaccounts.ui/preview-privacy-mode-switched
  (fn [cofx [_ private?]]
-   (accounts/switch-preview-privacy-mode cofx private?)))
+   (multiaccounts/switch-preview-privacy-mode cofx private?)))
 
 (handlers/register-handler-fx
- :accounts.ui/wallet-set-up-confirmed
+ :multiaccounts.ui/wallet-set-up-confirmed
  (fn [cofx _]
-   (accounts/confirm-wallet-set-up cofx)))
+   (multiaccounts/confirm-wallet-set-up cofx)))
 
-;; accounts create module
+;; multiaccounts create module
 
 (handlers/register-handler-fx
- :accounts.create.ui/next-step-pressed
+ :multiaccounts.create.ui/next-step-pressed
  [(re-frame/inject-cofx :random-guid-generator)]
  (fn [cofx [_ step password password-confirm]]
-   (accounts.create/next-step cofx step password password-confirm)))
+   (multiaccounts.create/next-step cofx step password password-confirm)))
 
 (handlers/register-handler-fx
- :accounts.create.ui/step-back-pressed
+ :multiaccounts.create.ui/step-back-pressed
  (fn [cofx [_ step password password-confirm]]
-   (accounts.create/step-back cofx step)))
+   (multiaccounts.create/step-back cofx step)))
 
 (handlers/register-handler-fx
- :accounts.create.ui/input-text-changed
+ :multiaccounts.create.ui/input-text-changed
  (fn [cofx [_ input-key text]]
-   (accounts.create/account-set-input-text cofx input-key text)))
+   (multiaccounts.create/multiaccount-set-input-text cofx input-key text)))
 
 (handlers/register-handler-fx
- :accounts.create.callback/create-account-success
+ :multiaccounts.create.callback/create-multiaccount-success
  [(re-frame/inject-cofx :random-guid-generator)
-  (re-frame/inject-cofx :accounts.create/get-signing-phrase)
-  (re-frame/inject-cofx :accounts.create/get-status)]
+  (re-frame/inject-cofx :multiaccounts.create/get-signing-phrase)]
  (fn [cofx [_ result password]]
-   (accounts.create/on-account-created cofx result password {:seed-backed-up? false
-                                                             :new-account?    true})))
+   (multiaccounts.create/on-multiaccount-created cofx result password {:seed-backed-up? false
+                                                                       :new-multiaccount?    true})))
 
 (handlers/register-handler-fx
- :accounts.create.ui/create-new-account-button-pressed
+ :multiaccounts.create.ui/create-new-multiaccount-button-pressed
  (fn [cofx _]
    (hardwallet/navigate-to-authentication-method cofx)))
 
-;; accounts recover module
+;; multiaccounts recover module
 
 (handlers/register-handler-fx
- :accounts.recover.ui/passphrase-input-changed
+ :multiaccounts.recover.ui/passphrase-input-changed
  (fn [cofx [_ recovery-phrase]]
-   (accounts.recover/set-phrase cofx recovery-phrase)))
+   (multiaccounts.recover/set-phrase cofx recovery-phrase)))
 
 (handlers/register-handler-fx
- :accounts.recover.ui/passphrase-input-blured
+ :multiaccounts.recover.ui/passphrase-input-blured
  (fn [cofx _]
-   (accounts.recover/validate-phrase cofx)))
+   (multiaccounts.recover/validate-phrase cofx)))
 
 (handlers/register-handler-fx
- :accounts.recover.ui/password-input-changed
+ :multiaccounts.recover.ui/password-input-changed
  (fn [cofx [_ masked-password]]
-   (accounts.recover/set-password cofx masked-password)))
+   (multiaccounts.recover/set-password cofx masked-password)))
 
 (handlers/register-handler-fx
- :accounts.recover.ui/password-input-blured
+ :multiaccounts.recover.ui/password-input-blured
  (fn [cofx _]
-   (accounts.recover/validate-password cofx)))
+   (multiaccounts.recover/validate-password cofx)))
 
 (handlers/register-handler-fx
- :accounts.recover.ui/sign-in-button-pressed
+ :multiaccounts.recover.ui/sign-in-button-pressed
  [(re-frame/inject-cofx :random-guid-generator)]
  (fn [cofx _]
-   (accounts.recover/recover-account-with-checks cofx)))
+   (multiaccounts.recover/recover-multiaccount-with-checks cofx)))
 
 (handlers/register-handler-fx
- :accounts.recover.ui/recover-account-confirmed
+ :multiaccounts.recover.ui/recover-multiaccount-confirmed
  [(re-frame/inject-cofx :random-guid-generator)]
  (fn [cofx _]
-   (accounts.recover/recover-account cofx)))
+   (multiaccounts.recover/recover-multiaccount cofx)))
 
 (handlers/register-handler-fx
- :accounts.recover.callback/recover-account-success
+ :multiaccounts.recover.callback/recover-multiaccount-success
  [(re-frame/inject-cofx :random-guid-generator)
-  (re-frame/inject-cofx :accounts.create/get-signing-phrase)
-  (re-frame/inject-cofx :accounts.create/get-status)]
+  (re-frame/inject-cofx :multiaccounts.create/get-signing-phrase)]
  (fn [cofx [_ result password]]
-   (accounts.recover/on-account-recovered cofx result password)))
+   (multiaccounts.recover/on-multiaccount-recovered cofx result password)))
 
-;; accounts login module
+;; multiaccounts login module
 
 (handlers/register-handler-fx
- :accounts.login.callback/verify-success
+ :multiaccounts.login.callback/verify-success
  (fn [cofx [_ verify-result realm-error]]
-   (accounts.login/verify-callback cofx verify-result realm-error)))
+   (multiaccounts.login/verify-callback cofx verify-result realm-error)))
 
 (handlers/register-handler-fx
- :init.callback/account-change-error
+ :init.callback/multiaccount-change-error
  (fn [cofx [_ error]]
-   (accounts.login/handle-change-account-error cofx error)))
+   (multiaccounts.login/handle-change-multiaccount-error cofx error)))
 
 (handlers/register-handler-fx
- :accounts.login.ui/account-selected
+ :multiaccounts.login.ui/multiaccount-selected
  (fn [cofx [_ address photo-path name public-key]]
-   (accounts.login/open-login cofx address photo-path name public-key)))
+   (multiaccounts.login/open-login cofx address photo-path name public-key)))
 
 (handlers/register-handler-fx
- :accounts.login.callback/get-user-password-success
+ :multiaccounts.login.callback/get-user-password-success
  (fn [{:keys [db] :as cofx} [_ password address]]
-   (let [biometric-auth? (get-in db [:accounts/accounts address :settings :biometric-auth?])]
+   (let [biometric-auth? (get-in db [:multiaccounts/multiaccounts address :settings :biometric-auth?])]
      (if (and password biometric-auth?)
-       (accounts.login/do-biometric-auth cofx password)
-       (accounts.login/open-login-callback cofx password {:bioauth-notrequired true})))))
+       (multiaccounts.login/do-biometric-auth cofx password)
+       (multiaccounts.login/open-login-callback cofx password {:bioauth-notrequired true})))))
 
-;; accounts logout module
+;; multiaccounts logout module
 
 (handlers/register-handler-fx
- :accounts.logout.ui/logout-pressed
+ :multiaccounts.logout.ui/logout-pressed
  (fn [cofx _]
-   (accounts.logout/show-logout-confirmation cofx)))
+   (multiaccounts.logout/show-logout-confirmation cofx)))
 
 (handlers/register-handler-fx
- :accounts.logout.ui/logout-confirmed
+ :multiaccounts.logout.ui/logout-confirmed
  (fn [cofx _]
-   (accounts.logout/logout cofx)))
+   (multiaccounts.logout/logout cofx)))
 
 (handlers/register-handler-fx
- :accounts.logout/filters-removed
- [(re-frame/inject-cofx :data-store/get-all-accounts)]
+ :multiaccounts.logout/filters-removed
+ [(re-frame/inject-cofx :data-store/get-all-multiaccounts)]
  (fn [cofx]
-   (accounts.logout/leave-account cofx)))
+   (multiaccounts.logout/leave-multiaccount cofx)))
 
-;; accounts update module
+;; multiaccounts update module
 
 (handlers/register-handler-fx
- :accounts.update.callback/save-settings-success
+ :multiaccounts.update.callback/save-settings-success
  (fn [cofx _]
-   (accounts.logout/logout cofx)))
+   (multiaccounts.logout/logout cofx)))
 
 ;; mailserver module
 
@@ -820,10 +818,10 @@
 
 (handlers/register-handler-fx
  :chat/send-sticker
- (fn [{{:keys [current-chat-id] :account/keys [account]} :db :as cofx} [_ {:keys [hash] :as sticker}]]
+ (fn [{{:keys [current-chat-id multiaccount]} :db :as cofx} [_ {:keys [hash] :as sticker}]]
    (fx/merge
     cofx
-    (accounts/update-recent-stickers (conj (remove #(= hash %) (:recent-stickers account)) hash))
+    (multiaccounts/update-recent-stickers (conj (remove #(= hash %) (:recent-stickers multiaccount)) hash))
     (chat.input/send-sticker-fx sticker current-chat-id))))
 
 (handlers/register-handler-fx
@@ -886,12 +884,12 @@
 (handlers/register-handler-fx
  :notifications.callback/request-notifications-permissions-granted
  (fn [cofx _]
-   (accounts/show-mainnet-is-default-alert cofx)))
+   (multiaccounts/show-mainnet-is-default-alert cofx)))
 
 (handlers/register-handler-fx
  :notifications.callback/request-notifications-permissions-denied
  (fn [cofx _]
-   (accounts/show-mainnet-is-default-alert cofx)))
+   (multiaccounts/show-mainnet-is-default-alert cofx)))
 
 (handlers/register-handler-fx
  :notifications.callback/on-message
@@ -978,8 +976,7 @@
 (handlers/register-handler-fx
  :hardwallet.callback/on-generate-and-load-key-success
  [(re-frame/inject-cofx :random-guid-generator)
-  (re-frame/inject-cofx :accounts.create/get-signing-phrase)
-  (re-frame/inject-cofx :accounts.create/get-status)]
+  (re-frame/inject-cofx :multiaccounts.create/get-signing-phrase)]
  (fn [cofx [_ data]]
    (hardwallet/on-generate-and-load-key-success cofx data)))
 
@@ -1229,24 +1226,24 @@
    (hardwallet/proceed-to-generate-mnemonic cofx)))
 
 (handlers/register-handler-fx
- :hardwallet.ui/import-account-back-button-pressed
+ :hardwallet.ui/import-multiaccount-back-button-pressed
  (fn [cofx _]
-   (hardwallet/import-account-back-button-pressed cofx)))
+   (hardwallet/import-multiaccount-back-button-pressed cofx)))
 
 (handlers/register-handler-fx
- :hardwallet.ui/import-account-next-button-pressed
+ :hardwallet.ui/import-multiaccount-next-button-pressed
  (fn [cofx _]
-   (hardwallet/import-account-next-button-pressed cofx)))
+   (hardwallet/import-multiaccount-next-button-pressed cofx)))
 
 (handlers/register-handler-fx
- :hardwallet/load-importing-account-screen
+ :hardwallet/load-importing-multiaccount-screen
  (fn [cofx _]
-   (hardwallet/load-importing-account-screen cofx)))
+   (hardwallet/load-importing-multiaccount-screen cofx)))
 
 (handlers/register-handler-fx
- :hardwallet/import-account
+ :hardwallet/import-multiaccount
  (fn [cofx _]
-   (hardwallet/import-account cofx)))
+   (hardwallet/import-multiaccount cofx)))
 
 (handlers/register-handler-fx
  :hardwallet/generate-mnemonic
@@ -1582,7 +1579,7 @@
  :contact/qr-code-scanned
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [{:keys [db] :as cofx}  [_ _ contact-identity]]
-   (let [current-account (:account/account db)
+   (let [current-multiaccount (:multiaccount db)
          fx              {:db (assoc db :contacts/new-identity contact-identity)}
          validation-result (new-chat.db/validate-pub-key db contact-identity)]
      (if (some? validation-result)
@@ -1674,14 +1671,14 @@
  (fn [cofx [_ installation-id]]
    (fx/merge cofx
              (pairing/enable installation-id)
-             (accounts.update/send-account-update))))
+             (multiaccounts.update/send-multiaccount-update))))
 
 (handlers/register-handler-fx
  :pairing.callback/disable-installation-success
  (fn [cofx [_ installation-id]]
    (fx/merge cofx
              (pairing/disable installation-id)
-             (accounts.update/send-account-update))))
+             (multiaccounts.update/send-multiaccount-update))))
 
 ;; Contact recovery module
 

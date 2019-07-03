@@ -1,6 +1,6 @@
 (ns status-im.chat.models
   (:require [re-frame.core :as re-frame]
-            [status-im.accounts.model :as accounts.model]
+            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.transport.filters.core :as transport.filters]
             [status-im.contact.core :as contact.core]
             [status-im.data-store.chats :as chats-store]
@@ -219,7 +219,7 @@
 (fx/defn mark-messages-seen
   "Marks all unviewed loaded messages as seen in particular chat"
   [{:keys [db] :as cofx} chat-id]
-  (let [public-key          (accounts.model/current-public-key cofx)
+  (let [public-key          (multiaccounts.model/current-public-key cofx)
         loaded-unviewed-ids (get-in db [:chats chat-id :loaded-unviewed-messages-ids])]
     (when (seq loaded-unviewed-ids)
       (fx/merge cofx
@@ -266,7 +266,7 @@
   "Start a chat, making sure it exists"
   [{:keys [db] :as cofx} chat-id opts]
   ;; don't allow to open chat with yourself
-  (when (not= (accounts.model/current-public-key cofx) chat-id)
+  (when (not= (multiaccounts.model/current-public-key cofx) chat-id)
     (if config/use-status-go-protocol?
       (fx/merge cofx
                 {:json-rpc/call [{:method "status_startOneOnOneChat"

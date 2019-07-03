@@ -10,7 +10,7 @@
 (def url "https://cloudflare-dns.com/dns-query?name=chaos-unicorn-day.status.im&type=TXT")
 
 (defn chaos-mode-switched [chaos-mode?]
-  (re-frame/dispatch [:accounts.ui/chaos-mode-switched chaos-mode?]))
+  (re-frame/dispatch [:multiaccounts.ui/chaos-mode-switched chaos-mode?]))
 
 (defn handle-response [response]
   (let [status-id   (:Status (types/json->clj response))

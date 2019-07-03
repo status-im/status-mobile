@@ -3,7 +3,7 @@
             [clojure.string :as string]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.input :as commands.input]
-            [status-im.accounts.core :as accounts]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.contact.db :as contact.db]
             [status-im.group-chats.db :as group-chats.db]
             [status-im.mailserver.constants :as mailserver.constants]
@@ -37,7 +37,7 @@
           random-name (gfycat/generate-gfy chat-id)]
       (-> chat
           (assoc :contact contact
-                 :chat-name (accounts/displayed-name contact)
+                 :chat-name (multiaccounts/displayed-name contact)
                  :name contact-name
                  :random-name random-name)
           (update :tags clojure.set/union (:tags contact))))))

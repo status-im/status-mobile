@@ -110,7 +110,7 @@
                         :height styles/search-input-height}])]))))
 
 (views/defview home-action-button []
-  (views/letsubs [logging-in? [:accounts/login]]
+  (views/letsubs [logging-in? [:multiaccounts/login]]
     [react/view styles/action-button-container
      [react/touchable-highlight {:accessibility-label :new-chat-button
                                  :on-press            (when-not logging-in? #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))}

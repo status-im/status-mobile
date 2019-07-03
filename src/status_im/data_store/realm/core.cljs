@@ -95,7 +95,7 @@
   (log/warn "realm: deleting all realms")
   (fs/unlink (realm-dir)))
 
-(defn delete-account-realm
+(defn delete-multiaccount-realm
   [address]
   (log/warn "realm: deleting account db " (ethereum/sha3 address))
   (let [file (get-account-db-path address)]

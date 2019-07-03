@@ -1,5 +1,5 @@
 (ns status-im.contact.core
-  (:require [status-im.accounts.model :as accounts.model]
+  (:require [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.transport.filters.core :as transport.filters]
             [status-im.contact.db :as contact.db]
             [status-im.contact.device-info :as device-info]
@@ -26,15 +26,15 @@
            (assoc :contacts/whitelist (whitelist/get-contact-whitelist all-contacts)))}))
 
 (defn build-contact
-  [{{:keys [chats] :account/keys [account]
+  [{{:keys [chats multiaccount]
      :contacts/keys [contacts]} :db} public-key]
   (cond-> (contact.db/public-key->contact contacts public-key)
-    (= public-key (:public-key account))
-    (assoc :name (:name account))))
+    (= public-key (:public-key multiaccount))
+    (assoc :name (:name multiaccount))))
 
 (defn- own-info
   [db]
-  (let [{:keys [name preferred-name photo-path address]} (:account/account db)
+  (let [{:keys [name preferred-name photo-path address]} (:multiaccount db)
         fcm-token (get-in db [:notifications :fcm-token])]
     {:name          (or preferred-name name)
      :profile-image photo-path
@@ -60,7 +60,7 @@
 (fx/defn add-contact
   "Add a contact and set pending to false"
   [{:keys [db] :as cofx} public-key]
-  (when (not= (get-in db [:account/account :public-key]) public-key)
+  (when (not= (get-in db [:multiaccount :public-key]) public-key)
     (let [contact (-> (get-in db [:contacts/contacts public-key]
                               (build-contact cofx public-key))
                       (update :system-tags
@@ -75,7 +75,7 @@
 (fx/defn create-contact
   "Create entry in contacts"
   [{:keys [db] :as cofx} public-key]
-  (when (not= (get-in db [:account/account :public-key]) public-key)
+  (when (not= (get-in db [:multiaccount :public-key]) public-key)
     (let [contact (build-contact cofx public-key)]
       (fx/merge cofx
                 {:db (assoc-in db [:contacts/new-identity] "")}
@@ -95,7 +95,7 @@
   ;; for now
   (let [timestamp-ms       (* timestamp 1000)
         prev-last-updated  (get-in db [:contacts/contacts public-key :last-updated])
-        current-public-key (accounts.model/current-public-key cofx)]
+        current-public-key (multiaccounts.model/current-public-key cofx)]
     (when (and (not= current-public-key public-key)
                (< prev-last-updated timestamp-ms))
       (let [contact          (get contacts public-key)

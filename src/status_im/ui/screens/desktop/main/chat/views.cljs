@@ -72,7 +72,7 @@
       (str (when incoming-name " • ") (gfycat/generate-gfy from))]]))
 
 (views/defview member-photo [from]
-  (views/letsubs [current-public-key [:account/public-key]
+  (views/letsubs [current-public-key [:multiaccount/public-key]
                   photo-path         [:chats/photo-path from]]
     [react/view {:style {:width 40 :margin-horizontal 16}}
      [react/view {:style {:position :absolute}}
@@ -217,7 +217,7 @@
 
 (views/defview messages-view [{:keys [chat-id group-chat]}]
   (views/letsubs [messages           [:chats/current-chat-messages-stream]
-                  current-public-key [:account/public-key]
+                  current-public-key [:multiaccount/public-key]
                   messages-to-load   (reagent/atom load-step)
                   chat-id*           (reagent/atom nil)]
     {:component-did-update #(if (:messages-initialized? (second (.-argv (.-props %1))))
@@ -272,7 +272,7 @@
 
 (views/defview reply-message [from message-text]
   (views/letsubs [username           [:contacts/contact-name-by-identity from]
-                  current-public-key [:account/public-key]]
+                  current-public-key [:multiaccount/public-key]]
     [react/view {:style styles/reply-content-container}
      (chat-utils/format-reply-author from username current-public-key styles/reply-content-author)
      [react/text {:style styles/reply-content-message} message-text]]))
@@ -359,7 +359,7 @@
   (views/letsubs [{:keys [input-text chat-id pending-invite-inviter-name] :as current-chat}
                   [:chats/current-chat]
                   {:keys [show-emoji?]} [:desktop]
-                  current-public-key [:account/public-key]]
+                  current-public-key [:multiaccount/public-key]]
     [react/view {:style styles/chat-view}
      [toolbar-chat-view current-chat]
      [react/view {:style styles/separator}]

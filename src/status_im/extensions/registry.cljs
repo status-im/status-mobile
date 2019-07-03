@@ -4,7 +4,7 @@
             [clojure.string :as string]
             [re-frame.core :as re-frame]
             [pluto.core :as pluto]
-            [status-im.accounts.update.core :as accounts.update]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.protocol :as protocol]
             [status-im.i18n :as i18n]
@@ -81,8 +81,8 @@
 
 (fx/defn update-hooks
   [{:keys [db] :as cofx} hook-fn extension-id]
-  (let [account (get db :account/account)
-        hooks   (get-in account [:extensions extension-id :hooks])]
+  (let [multiaccount (get db :multiaccount)
+        hooks   (get-in multiaccount [:extensions extension-id :hooks])]
     (apply fx/merge cofx
            (map (fn [[type extension]]
                   (hook-fn (hook-for type) (hook-id type) {:id extension-id} extension cofx))
@@ -97,21 +97,21 @@
   (let [{:keys [hooks]} extension-data
         on-init (get-in extension-data [:lifecycle :on-init])]
     (fx/merge cofx
-              {:db (update-in db [:account/account :extensions extension-id] merge {:hooks hooks :active? active?})}
+              {:db (update-in db [:multiaccount :extensions extension-id] merge {:hooks hooks :active? active?})}
               (update-hooks hook-in extension-id)
               (when on-init (on-init)))))
 
 (fx/defn remove-from-registry
   [cofx extension-id]
-  (let [extensions (get-in cofx [:db :account/account :extensions])]
+  (let [extensions (get-in cofx [:db :multiaccount :extensions])]
     (fx/merge cofx
               (when (get-in extensions [extension-id :active?])
                 (update-hooks unhook extension-id))
-              {:db (update-in cofx [:db :account/account :extensions] dissoc extension-id)})))
+              {:db (update-in cofx [:db :multiaccount :extensions] dissoc extension-id)})))
 
 (fx/defn change-state
   [cofx extension-key active?]
-  (let [extensions      (get-in cofx [:db :account/account :extensions])
+  (let [extensions      (get-in cofx [:db :multiaccount :extensions])
         new-extensions  (assoc-in extensions [extension-key :active?] active?)
         hook-fn         (if active?
                           hook-in
@@ -122,14 +122,14 @@
     (fx/merge cofx
               ;; on-deactivate called before
               (when (and (not active?) lifecycle-event) (lifecycle-event))
-              (accounts.update/account-update {:extensions new-extensions} {:success-event nil})
+              (multiaccounts.update/multiaccount-update {:extensions new-extensions} {:success-event nil})
               (update-hooks hook-fn extension-key)
               ;; on-activation called after
               (when (and active? lifecycle-event) (lifecycle-event)))))
 
 (fx/defn install
   [{:keys [db] :as cofx} url {:keys [hooks] :as extension-data} modal?]
-  (let [{:account/keys [account]} db
+  (let [{:keys [multiaccount]} db
         on-installation (get-in extension-data [:lifecycle :on-installation])
         on-activation   (get-in extension-data [:lifecycle :on-activation])
         ephemeral?      (get-in extension-data [:lifecycle :ephemeral])
@@ -142,35 +142,35 @@
                                      :on-deactivation   (get-in extension-data [:lifecycle :on-deactivation])
                                      :ephemeral?        ephemeral?}
                          :active?   true}
-        new-extensions  (assoc (:extensions account) url extension)]
+        new-extensions  (assoc (:extensions multiaccount) url extension)]
     (fx/merge cofx
               #(if modal?
                  (navigation/navigate-back %)
                  (navigation/navigate-to-cofx % :my-profile nil))
               #(when-not ephemeral?
                  (fx/merge %
-                           (when hooks (accounts.update/account-update {:extensions new-extensions} {}))
+                           (when hooks (multiaccounts.update/multiaccount-update {:extensions new-extensions} {}))
                            (when hooks (add-to-registry url extension-data true))
                            (when on-installation (on-installation))))
               (when on-activation (on-activation)))))
 
 (fx/defn uninstall
   [{:keys [db] :as cofx} extension-key]
-  (let [{:account/keys [account]} db
-        extension         (get-in cofx [:db :account/account :extensions extension-key])
+  (let [{:keys [multiaccount]} db
+        extension         (get-in cofx [:db :multiaccount :extensions extension-key])
         active?           (get extension :active?)
         on-deinstallation (get-in extension [:lifecycle :on-deinstallation])
         on-deactivation   (get-in extension [:lifecycle :on-deactivation])
-        new-extensions    (dissoc (:extensions account) extension-key)]
+        new-extensions    (dissoc (:extensions multiaccount) extension-key)]
     (fx/merge cofx
               (when (and active? on-deactivation) (on-deactivation))
               (when on-deinstallation (on-deinstallation))
               (remove-from-registry extension-key)
-              (accounts.update/account-update {:extensions new-extensions} {}))))
+              (multiaccounts.update/multiaccount-update {:extensions new-extensions} {}))))
 
 (fx/defn load
   [cofx url modal?]
-  (if (get-in cofx [:db :account/account :extensions url])
+  (if (get-in cofx [:db :multiaccount :extensions url])
     {:utils/show-popup {:title   (i18n/label :t/error)
                         :content (i18n/label :t/extension-is-already-added)}}
     {:extensions/load {:extensions [{:url     (string/trim url)
@@ -179,13 +179,13 @@
 
 (fx/defn install-from-message
   [cofx url modal?]
-  (if (get-in cofx [:db :account/account :dev-mode?])
+  (if (get-in cofx [:db :multiaccount :dev-mode?])
     (load cofx url modal?)
     {:ui/show-confirmation
      {:title     (i18n/label :t/confirm-install)
       :content   (i18n/label :t/extension-install-alert)
       :on-accept #(do
-                    (re-frame/dispatch [:accounts.ui/dev-mode-switched true])
+                    (re-frame/dispatch [:multiaccounts.ui/dev-mode-switched true])
                     (re-frame/dispatch [:extensions.ui/install-extension-button-pressed url]))}}))
 
 (defn existing-hooks-for
@@ -195,7 +195,7 @@
                                    (keys)
                                    (into acc)))
                             #{}
-                            (get-in cofx [:db :account/account :extensions]))
+                            (get-in cofx [:db :multiaccount :extensions]))
         hooks       (->> (get-in extension-data [:hooks type])
                          (keys)
                          (into #{}))]

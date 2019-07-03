@@ -1,9 +1,9 @@
 (ns status-im.ui.screens.chat.views
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.accounts.core :as accounts]
             [status-im.contact.db :as contact.db]
             [status-im.i18n :as i18n]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.button.view :as buttons]
@@ -118,7 +118,7 @@
   [name]
   [react/nested-text {:style (assoc style/intro-header-description
                                     :margin-bottom 32)}
-   (i18n/label :t/tribute-required-by-account {:account-name name})
+   (i18n/label :t/tribute-required-by-multiaccount {:multiaccount-name name})
    [{:style {:color colors/blue}
      :on-press #(re-frame/dispatch [:navigate-to :tribute-learn-more])}
     (str " " (i18n/label :learn-more))]])
@@ -127,7 +127,7 @@
   [contact]
   [react/text {:style (assoc style/intro-header-description
                              :margin-bottom 32)}
-   (str (i18n/label :t/empty-chat-description-one-to-one) (accounts/displayed-name contact))])
+   (str (i18n/label :t/empty-chat-description-one-to-one) (multiaccounts/displayed-name contact))])
 
 (defn join-chat-button [chat-id]
   [buttons/secondary-button
@@ -306,7 +306,7 @@
            contact universal-link intro-status height input-height] :as chat}
    no-messages]
   (let [icon-text  (if public? chat-id name)
-        intro-name (if public? chat-name (accounts/displayed-name contact))]
+        intro-name (if public? chat-name (multiaccounts/displayed-name contact))]
     ;; TODO This when check ought to be unnecessary but for now it prevents
     ;; jerky motion when fresh chat is created, when input-height can be null
     ;; affecting the calculation of content-layout-height to be briefly adjusted
@@ -344,7 +344,7 @@
    modal?]
   (letsubs [messages           [:chats/current-chat-messages-stream]
             photo-path         [:chats/photo-path chat-id]
-            current-public-key [:account/public-key]]
+            current-public-key [:multiaccount/public-key]]
     {:component-did-mount
      (fn [args]
        (when-not (:messages-initialized? (second (.-argv (.-props args))))
@@ -384,7 +384,7 @@
 (defview messages-view-desktop [{:keys [chat-id group-chat]}
                                 modal?]
   (letsubs [messages           [:chats/current-chat-messages-stream]
-            current-public-key [:account/public-key]
+            current-public-key [:multiaccount/public-key]
             messages-to-load   (reagent/atom load-step)
             chat-id*           (reagent/atom nil)]
     {:component-did-update #(if (:messages-initialized? (second (.-argv (.-props %1))))

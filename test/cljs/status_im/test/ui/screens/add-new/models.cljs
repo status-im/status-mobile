@@ -2,7 +2,7 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.ui.screens.add-new.models :as models]))
 
-(def cofx {:db {:account/account {:public-key "0x04e1433c1a8ad71280e6d4b1814aa3958ba6eb451da47ea1d4a4bfc4a04969c445548f3bd9d40fa7e4356aa62075b4d7615179ef1332f1d6a7c59b96c4ab8e04c1"}}})
+(def cofx {:db {:multiaccount {:public-key "0x04e1433c1a8ad71280e6d4b1814aa3958ba6eb451da47ea1d4a4bfc4a04969c445548f3bd9d40fa7e4356aa62075b4d7615179ef1332f1d6a7c59b96c4ab8e04c1"}}})
 
 (deftest test-handle-qr-code
   (testing "handle contact code"

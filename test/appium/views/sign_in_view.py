@@ -5,9 +5,9 @@ from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
 
 
-class AccountButton(BaseButton):
+class MultiaccountButton(BaseButton):
     def __init__(self, driver):
-        super(AccountButton, self).__init__(driver)
+        super(MultiaccountButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[contains(@text,'0x')]")
 
 
@@ -60,10 +60,10 @@ class RecoverAccessButton(BaseButton):
         return RecoverAccessView(self.driver)
 
 
-class CreateAccountButton(BaseButton):
+class CreateMultiaccountButton(BaseButton):
     def __init__(self, driver):
-        super(CreateAccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Create account' or @text='Create new account']")
+        super(CreateMultiaccountButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Create multiaccount' or @text='Create new multiaccount']")
 
 
 class GenerateKeyButton(BaseButton):
@@ -78,10 +78,10 @@ class GenerateNewKeyButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='Generate a new key']")
 
 
-class IHaveAccountButton(RecoverAccessButton):
+class IHaveMultiaccountButton(RecoverAccessButton):
     def __init__(self, driver):
-        super(IHaveAccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='I already have an account']")
+        super(IHaveMultiaccountButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='I already have a multiaccount']")
 
 
 class AccessKeyButton(RecoverAccessButton):
@@ -96,10 +96,10 @@ class MaybeLaterButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='Maybe later']")
 
 
-class AddExistingAccountButton(RecoverAccessButton):
+class AddExistingMultiaccountButton(RecoverAccessButton):
     def __init__(self, driver):
-        super(AddExistingAccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Add existing account']")
+        super(AddExistingMultiaccountButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Add existing multiaccount']")
 
 
 class ConfirmPasswordInput(BaseEditBox):
@@ -115,11 +115,11 @@ class NameInput(BaseEditBox):
         self.locator = self.Locator.xpath_selector("//android.widget.EditText")
 
 
-class OtherAccountsButton(BaseButton):
+class OtherMultiAccountsButton(BaseButton):
 
     def __init__(self, driver):
-        super(OtherAccountsButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Other accounts')
+        super(OtherMultiAccountsButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Other multiaccounts')
 
 
 class PrivacyPolicyLink(BaseButton):
@@ -140,7 +140,7 @@ class SignInView(BaseView):
         if skip_popups:
             self.accept_agreements()
 
-        self.account_button = AccountButton(self.driver)
+        self.account_button = MultiaccountButton(self.driver)
         self.password_input = PasswordInput(self.driver)
         self.recover_account_password_input = RecoverAccountPasswordInput(self.driver)
 
@@ -148,18 +148,18 @@ class SignInView(BaseView):
         self.recover_access_button = RecoverAccessButton(self.driver)
 
         # new design
-        self.create_account_button = CreateAccountButton(self.driver)
-        self.i_have_account_button = IHaveAccountButton(self.driver)
+        self.create_multiaccount_button = CreateMultiaccountButton(self.driver)
+        self.i_have_multiaccount_button = IHaveMultiaccountButton(self.driver)
         self.access_key_button = AccessKeyButton(self.driver)
         self.generate_key_button = GenerateKeyButton(self.driver)
         self.generate_new_key_button = GenerateNewKeyButton(self.driver)
-        self.add_existing_account_button = AddExistingAccountButton(self.driver)
+        self.add_existing_multiaccount_button = AddExistingMultiaccountButton(self.driver)
         self.confirm_password_input = ConfirmPasswordInput(self.driver)
         self.create_password_input = CreatePasswordInput(self.driver)
         self.confirm_your_password_input = ConfirmYourPasswordInput(self.driver)
         self.maybe_later_button = MaybeLaterButton(self.driver)
         self.name_input = NameInput(self.driver)
-        self.other_accounts_button = OtherAccountsButton(self.driver)
+        self.other_multiaccounts_button = OtherMultiAccountsButton(self.driver)
         self.privacy_policy_link = PrivacyPolicyLink(self.driver)
 
     def create_user(self, password=common_password):
@@ -183,9 +183,9 @@ class SignInView(BaseView):
         return self.get_home_view()
 
     def recover_access(self, passphrase: str, password: str = common_password):
-        if self.other_accounts_button.is_element_displayed():
-            self.other_accounts_button.click()
-            recover_access_view = self.add_existing_account_button.click()
+        if self.other_multiaccounts_button.is_element_displayed():
+            self.other_multiaccounts_button.click()
+            recover_access_view = self.add_existing_multiaccount_button.click()
         else:
             recover_access_view = self.access_key_button.click()
         recover_access_view.passphrase_input.click()
@@ -207,7 +207,7 @@ class SignInView(BaseView):
             self.account_button.find_elements()[position].click()
         except IndexError:
             raise NoSuchElementException(
-                'Device %s: Unable to find account by position %s' % (self.driver.number, position)) from None
+                'Device %s: Unable to find multiaccount by position %s' % (self.driver.number, position)) from None
 
     def open_weblink_and_login(self, url_weblink):
         self.open_universal_web_link(url_weblink)

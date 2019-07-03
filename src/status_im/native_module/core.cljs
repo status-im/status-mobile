@@ -16,17 +16,17 @@
   (reset! node-started false)
   (native-module/stop-node))
 
-(defn create-account [password callback]
+(defn create-multiaccount [password callback]
   (native-module/create-account password callback))
 
-(defn recover-account [passphrase password callback]
+(defn recover-multiaccount [passphrase password callback]
   (native-module/recover-account passphrase password callback))
 
 (defn start-onboarding [n mnemonic-length callback]
   (native-module/start-onboarding n mnemonic-length callback))
 
-(defn import-onboarding-account [id password callback]
-  (native-module/import-onboarding-account id password callback))
+(defn import-onboarding-multiaccount [id password callback]
+  (native-module/import-onboarding-multiaccount id password callback))
 
 (defn login [address password callback]
   (native-module/login address password callback))

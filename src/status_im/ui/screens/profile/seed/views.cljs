@@ -140,7 +140,7 @@
                               :label        (i18n/label :t/ok-got-it)}]])
 
 (defview backup-seed []
-  (letsubs [current-account [:account/account]
+  (letsubs [current-multiaccount [:multiaccount]
             {:keys [step first-word second-word error word]} [:my-profile/recovery]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
      [status-bar/status-bar]
@@ -155,7 +155,7 @@
         (i18n/label :t/step-i-of-n {:step (steps-numbers step) :number 3})]]]
      (case step
        :intro [intro]
-       :12-words [twelve-words current-account]
+       :12-words [twelve-words current-multiaccount]
        :first-word [enter-word step first-word error word]
        :second-word [enter-word step second-word error word]
        :finish [finish])]))

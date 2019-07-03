@@ -19,7 +19,7 @@
   (views/letsubs
     [{:keys [syncing-on-mobile-network?
              remember-syncing-choice?]}
-     [:account/account]]
+     [:multiaccount]]
     [react/view {:style styles/container}
      [status-bar/status-bar]
      [toolbar/simple-toolbar (i18n/label :t/mobile-network-settings)]

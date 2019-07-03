@@ -48,7 +48,7 @@
             (i18n/label :t/connected)])]]])))
 
 (views/defview network-settings []
-  (views/letsubs [{:keys [network]} [:account/account]
+  (views/letsubs [{:keys [network]} [:multiaccount]
                   networks          [:get-networks]]
     [react/view components.styles/flex
      [status-bar/status-bar]

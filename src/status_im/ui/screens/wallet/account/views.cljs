@@ -42,7 +42,7 @@
   (views/letsubs [currency        [:wallet/currency]
                   portfolio-value [:portfolio-value]
                   window-width    [:dimensions/window-width]
-                  {:keys [address]} [:account/account]]
+                  {:keys [address]} [:multiaccount]]
     [react/view {:style (styles/card window-width)}
      [react/view {:padding 16 :padding-bottom 12 :flex 1 :justify-content :space-between}
       [react/nested-text {:style {:color       colors/white-transparent :line-height 38

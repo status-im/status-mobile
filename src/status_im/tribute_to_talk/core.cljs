@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [remove])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.accounts.update.core :as accounts.update]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.contact.core :as contact]
             [status-im.ethereum.contracts :as contracts]
             [status-im.ethereum.core :as ethereum]
@@ -29,7 +29,7 @@
 
 (fx/defn update-settings
   [{:keys [db] :as cofx} {:keys [snt-amount message update] :as new-settings}]
-  (let [account-settings (get-in db [:account/account :settings])
+  (let [multiaccount-settings (get-in db [:multiaccount :settings])
         chain-keyword    (ethereum/chain-keyword db)
         tribute-to-talk-settings (cond-> (merge (tribute-to-talk.db/get-settings db)
                                                 new-settings)
@@ -43,8 +43,8 @@
                                         (nil? update))
                                    (dissoc :update))]
     (fx/merge cofx
-              (accounts.update/update-settings
-               (-> account-settings
+              (multiaccounts.update/update-settings
+               (-> multiaccount-settings
                    (assoc-in [:tribute-to-talk chain-keyword]
                              tribute-to-talk-settings))
                {})
@@ -200,7 +200,7 @@
   (let [tribute-to-talk (when (tribute-to-talk.db/valid? tribute-to-talk)
                           tribute-to-talk)]
     (if-let [me? (= public-key
-                    (get-in cofx [:db :account/account :public-key]))]
+                    (get-in cofx [:db :multiaccount :public-key]))]
       (update-settings cofx tribute-to-talk)
       (contact/set-tribute cofx public-key tribute-to-talk))))
 
@@ -208,7 +208,7 @@
   {:events [:tribute-to-talk.callback/no-tribute-found]}
   [cofx public-key]
   (if-let [me? (= public-key
-                  (get-in cofx [:db :account/account :public-key]))]
+                  (get-in cofx [:db :multiaccount :public-key]))]
     (update-settings cofx nil)
     (contact/set-tribute cofx public-key nil)))
 
@@ -244,7 +244,7 @@
                [:tribute-to-talk.callback/no-tribute-found public-key])))}})
       ;; update settings if checking own manifest or do nothing otherwise
       (if-let [me? (= public-key
-                      (get-in cofx [:db :account/account :public-key]))]
+                      (get-in cofx [:db :multiaccount :public-key]))]
 
         (fx/merge cofx
                   {:db (assoc-in db
@@ -255,7 +255,7 @@
 
 (fx/defn check-own-tribute
   [cofx]
-  (check-tribute cofx (get-in cofx [:db :account/account :public-key])))
+  (check-tribute cofx (get-in cofx [:db :multiaccount :public-key])))
 
 (fx/defn pay-tribute
   {:events [:tribute-to-talk.ui/on-pay-to-chat-pressed]}

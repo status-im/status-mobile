@@ -38,9 +38,9 @@
     (testing "there's a preferred mailserver"
       (testing "it shows the popup"
         (is (:ui/show-confirmation (mailserver/change-mailserver
-                                    {:db {:account/account {:settings
-                                                            {:fleet :beta
-                                                             :mailserver {:beta "id"}}}
+                                    {:db {:multiaccount {:settings
+                                                         {:fleet :beta
+                                                          :mailserver {:beta "id"}}}
                                           :peers-count 1}})))))
     (testing "there's not a preferred mailserver"
       (testing "it changes the mailserver"
@@ -48,8 +48,8 @@
                (get-in
                 (mailserver/change-mailserver
                  {:db {:mailserver/mailservers {:beta {:a "b"}}
-                       :account/account {:settings
-                                         {:fleet :beta}}
+                       :multiaccount {:settings
+                                      {:fleet :beta}}
                        :peers-count 1}})
                 [:db :mailserver/current-id]))))
       (testing "it does not show the popup"
@@ -206,7 +206,7 @@
                                                          "d" {}}}}}]
       (testing "the user has already a preference"
         (let [cofx (assoc-in cofx
-                             [:db :account/account :settings]
+                             [:db :multiaccount :settings]
                              {:mailserver {:eth.beta "a"}})]
           (testing "the mailserver exists"
             (testing "it sets the preferred mailserver"
@@ -321,7 +321,7 @@
       (testing "it logs the user out if connected to the current mailserver"
         (let [actual (mailserver/upsert (assoc-in cofx
                                                   [:db :mailserver/current-id] :a))]
-          (is (= [:accounts.logout.ui/logout-confirmed]
+          (is (= [:multiaccounts.logout.ui/logout-confirmed]
                  (-> actual :data-store/tx first :success-event))))))))
 
 (defn cofx-fixtures [sym-key registered-peer?]
@@ -329,7 +329,7 @@
         :peers-summary (if registered-peer?
                          [{:id "mailserver-id" :enode "enode://mailserver-id@ip"}]
                          [])
-        :account/account {:settings {:fleet :eth.beta}}
+        :multiaccount {:settings {:fleet :eth.beta}}
         :mailserver/current-id "mailserver-a"
         :mailserver/mailservers {:eth.beta {"mailserver-a" {:sym-key-id sym-key
                                                             :address "enode://mailserver-id@ip"}}}}})
@@ -379,7 +379,7 @@
 
 (def cofx-no-pub-topic
   {:db
-   {:account/account {:public-key "me"}
+   {:multiaccount {:public-key "me"}
     :chats
     {"chat-id-1" {:is-active                      true
                   :messages                       {}
@@ -395,7 +395,7 @@
 
 (def cofx-single-pub-topic
   {:db
-   {:account/account {:public-key "me"}
+   {:multiaccount {:public-key "me"}
     :chats
     {"chat-id-1" {:is-active                      true
                   :messages                       {}
@@ -412,7 +412,7 @@
 
 (def cofx-multiple-pub-topic
   {:db
-   {:account/account {:public-key "me"}
+   {:multiaccount {:public-key "me"}
     :chats
     {"chat-id-1" {:is-active                      true
                   :messages                       {}
@@ -587,11 +587,11 @@
               :mailserver/mailservers
               {:eth.beta {"mailserverid" {:address  "mailserver-address"
                                           :password "mailserver-password"}}}
-              :account/account
+              :multiaccount
               {:settings {:fleet :eth.beta
                           :mailserver {:eth.beta "mailserverid"}}}}]
       (is (not (get-in (mailserver/unpin {:db db})
-                       [:db :account/account :settings :mailserver :eth.beta]))))))
+                       [:db :multiaccount :settings :mailserver :eth.beta]))))))
 
 (deftest pin-test
   (testing "it removes the preference"
@@ -599,18 +599,18 @@
               :mailserver/mailservers
               {:eth.beta {"mailserverid" {:address  "mailserver-address"
                                           :password "mailserver-password"}}}
-              :account/account
+              :multiaccount
               {:settings {:fleet :eth.beta
                           :mailserver {}}}}]
       (is (= "mailserverid" (get-in (mailserver/pin {:db db})
-                                    [:db :account/account :settings :mailserver :eth.beta]))))))
+                                    [:db :multiaccount :settings :mailserver :eth.beta]))))))
 
 (deftest connect-to-mailserver
   (let [db {:mailserver/current-id "mailserverid"
             :mailserver/mailservers
             {:eth.beta {"mailserverid" {:address  "mailserver-address"
                                         :password "mailserver-password"}}}
-            :account/account
+            :multiaccount
             {:settings {:fleet :eth.beta
                         :mailserver {:eth.beta "mailserverid"}}}}]
     (testing "it adds the peer"

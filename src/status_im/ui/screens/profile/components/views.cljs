@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.profile.components.views
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.accounts.core :as accounts]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
@@ -37,7 +37,7 @@
     [react/view styles/profile-header-name-container
      [react/text {:style           styles/profile-name-text
                   :number-of-lines 1}
-      (accounts/displayed-name contact)]
+      (multiaccounts/displayed-name contact)]
      (when generated-name
        [react/text {:style           styles/profile-three-words
                     :number-of-lines 1}
@@ -46,7 +46,7 @@
 (defn- profile-header-display [{:keys [name public-key] :as contact}]
   (let [generated-name (when public-key (gfy/generate-gfy public-key))]
     [react/view styles/profile-header-display
-     [chat-icon.screen/my-profile-icon {:account contact
+     [chat-icon.screen/my-profile-icon {:multiaccount contact
                                         :edit?   false}]
      [names contact]]))
 
@@ -56,7 +56,7 @@
    [react/touchable-highlight {:on-press            #(show-profile-icon-actions icon-options)
                                :accessibility-label :edit-profile-photo-button}
     [react/view styles/modal-menu
-     [chat-icon.screen/my-profile-icon {:account contact
+     [chat-icon.screen/my-profile-icon {:multiaccount contact
                                         :edit?   allow-icon-change?}]]]
    [names contact]])
 

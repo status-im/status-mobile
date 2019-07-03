@@ -4,7 +4,7 @@
             [status-im.utils.dimensions :as dimensions]
             [status-im.fleet.core :as fleet]
             status-im.transport.db
-            status-im.accounts.db
+            status-im.multiaccounts.db
             status-im.contact.db
             status-im.ui.screens.qr-scanner.db
             status-im.ui.screens.group.db
@@ -21,7 +21,7 @@
 ;; initial state of app-db
 (def app-db {:keyboard-height                    0
              :tab-bar-visible?                   true
-             :navigation-stack                   '(:accounts)
+             :navigation-stack                   '(:multiaccounts)
              :contacts/contacts                  {}
              :pairing/installations              {}
              :contact-recovery/pop-up            #{}
@@ -225,11 +225,10 @@
                                 :pairing/installations
                                 :commands/stored-command
                                 :group/selected-contacts
-                                :accounts/accounts
-                                :accounts/create
-                                :accounts/recover
-                                :accounts/login
-                                :account/account
+                                :multiaccounts/multiaccounts
+                                :multiaccounts/create
+                                :multiaccounts/recover
+                                :multiaccounts/login
                                 :my-profile/profile
                                 :my-profile/default-name
                                 :my-profile/editing?
@@ -318,6 +317,7 @@
                                    ::app-in-background-since
                                    ::semaphores
                                    ::hardwallet
+                                   :multiaccount/multiaccount
                                    :navigation/view-id
                                    :navigation/navigation-stack
                                    :navigation/prev-tab-view-id

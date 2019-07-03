@@ -17,14 +17,14 @@
             [re-frame.core :as re-frame]))
 
 (defview hardwallet-login []
-  (letsubs [{:keys [photo-path name processing]} [:accounts/login]
+  (letsubs [{:keys [photo-path name processing]} [:multiaccounts/login]
             nfc-enabled? [:hardwallet/nfc-enabled?]]
     [react/keyboard-avoiding-view styles/container
      [status-bar/status-bar]
      [toolbar/toolbar
       nil
       [toolbar/nav-button
-       (toolbar.actions/back #(re-frame/dispatch [:navigate-to-clean :accounts]))]
+       (toolbar.actions/back #(re-frame/dispatch [:navigate-to-clean :multiaccounts]))]
       [toolbar/content-title (i18n/label :t/sign-in-to-status)]]
      [components.common/separator]
      [react/view styles/login-view

@@ -114,7 +114,7 @@
   (into {} (filter network-enabled?
                    (merge testnet-networks mainnet-networks sidechain-networks))))
 
-(defn default-account-settings []
+(defn default-multiaccount-settings []
   {:web3-opt-in? true
    :preview-privacy? false
    :wallet       {:visible-tokens {}}})

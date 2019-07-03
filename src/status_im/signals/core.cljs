@@ -1,6 +1,6 @@
 (ns status-im.signals.core
-  (:require [status-im.accounts.model :as accounts.model]
-            [status-im.accounts.login.core :as accounts.login]
+  (:require [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.contact-recovery.core :as contact-recovery]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
@@ -18,7 +18,7 @@
 (fx/defn status-node-started
   [{db :db :as cofx}]
   (let [{:node/keys [restart? address on-ready]
-         :accounts/keys [create]} db]
+         :multiaccounts/keys [create]} db]
     (fx/merge cofx
               {:db         (-> db
                                (assoc :node/status :started)
@@ -29,22 +29,22 @@
                 (node/initialize address))
               (case on-ready
                 :login
-                (accounts.login/login)
-                :verify-account
-                (let [{:keys [address password]} (accounts.model/credentials cofx)]
+                (multiaccounts.login/login)
+                :verify-multiaccount
+                (let [{:keys [address password]} (multiaccounts.model/credentials cofx)]
                   (fn [_]
-                    {:accounts.login/verify
+                    {:multiaccounts.login/verify
                      [address password (:realm-error db)]}))
-                :create-account
+                :create-multiaccount
                 (fn [_]
-                  {:accounts.create/create-account (select-keys create [:id :password])})
-                :recover-account
+                  {:multiaccounts.create/create-multiaccount (select-keys create [:id :password])})
+                :recover-multiaccount
                 (fn [{:keys [db]}]
-                  (let [{:keys [password passphrase]} (:accounts/recover db)]
-                    {:accounts.recover/recover-account
+                  (let [{:keys [password passphrase]} (:multiaccounts/recover db)]
+                    {:multiaccounts.recover/recover-multiaccount
                      [(security/mask-data passphrase) password]}))
-                :create-keycard-account
-                (hardwallet/create-keycard-account)
+                :create-keycard-multiaccount
+                (hardwallet/create-keycard-multiaccount)
                 :start-onboarding
                 (fn []
                   {:intro-wizard/start-onboarding {:n 5 :mnemonic-length 12}})))))
@@ -74,7 +74,7 @@
       "envelope.expired"   (transport.message/update-envelope-status cofx (:hash event) :not-sent)
       "bundles.added"      (pairing/handle-bundles-added cofx event)
       "mailserver.request.completed" (mailserver/handle-request-completed cofx event)
-      "mailserver.request.expired"   (when (accounts.model/logged-in? cofx)
+      "mailserver.request.expired"   (when (multiaccounts.model/logged-in? cofx)
                                        (mailserver/resend-request cofx {:request-id (:hash event)}))
       "messages.decrypt.failed" (contact-recovery/handle-contact-recovery-fx cofx (:sender event))
       "discovery.summary"  (summary cofx event)

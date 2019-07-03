@@ -161,11 +161,11 @@
 
 (fx/defn fetch-history
   [{:keys [db] :as cofx}]
-  (let [{:keys [:account/account :wallet/all-tokens]} db
+  (let [{:keys [:multiaccount :wallet/all-tokens]} db
         chain (ethereum/chain-keyword db)
         chain-tokens (into {} (map (juxt :address identity)
                                    (tokens/tokens-for all-tokens chain)))
-        chaos-mode? (get-in account [:settings :chaos-mode?])
+        chaos-mode? (get-in multiaccount [:settings :chaos-mode?])
         normalized-address (ethereum/current-address db)]
     #:ethereum.transactions.etherscan
      {:fetch-history

@@ -4,9 +4,9 @@
 (def all-screens
   #{:login
     :progress
-    :create-account
+    :create-multiaccount
     :recover
-    :accounts
+    :multiaccounts
     :intro
     :intro-wizard
     :hardwallet-authentication-method
@@ -33,9 +33,9 @@
   {:name    :login-stack
    :screens (cond-> [:login
                      :progress
-                     :create-account
+                     :create-multiaccount
                      :recover
-                     :accounts]
+                     :multiaccounts]
 
               config/hardwallet-enabled?
               (concat [:hardwallet-authentication-method
@@ -44,9 +44,9 @@
                        :hardwallet-setup
                        :hardwallet-success]))
    :config  (if
-             ;; add view-id here if you'd like that view to be
-             ;; first view when app is started
-             (#{:login :progress :accounts :enter-pin-login} view-id)
+                ;; add view-id here if you'd like that view to be
+                ;; first view when app is started
+             (#{:login :progress :multiaccounts :enter-pin-login} view-id)
               {:initialRouteName view-id}
               {:initialRouteName :login})})
 

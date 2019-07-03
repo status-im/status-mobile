@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.navigation]
-            [status-im.accounts.update.core :as accounts.update]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.chat.models :as chat-models]
             [status-im.chat.commands.input :as commands-input]
             [status-im.utils.image-processing :as image-processing]
@@ -48,14 +48,14 @@
   (let [name (get-in db [edit-view :name])]
     (if (valid-name? name)
       name
-      (get-in db [:account/account :name]))))
+      (get-in db [:multiaccount :name]))))
 
 (fx/defn clear-profile
   [{:keys [db]}]
   {:db (dissoc db :my-profile/profile :my-profile/default-name :my-profile/editing?)})
 
 (defn start-editing [{:keys [db]}]
-  (let [profile (select-keys (:account/account db) [:name :photo-path])]
+  (let [profile (select-keys (:multiaccount db) [:name :photo-path])]
     {:db (assoc db
                 :my-profile/editing? true
                 :my-profile/profile profile)}))
@@ -69,7 +69,7 @@
                               {:photo-path photo-path}))]
     (fx/merge cofx
               (clear-profile)
-              (accounts.update/account-update cleaned-edit {}))))
+              (multiaccounts.update/multiaccount-update cleaned-edit {}))))
 
 (defn start-editing-group-chat-profile [{:keys [db]}]
   (let [current-chat-name (get-in db [:chats (:current-chat-id db) :name])]
@@ -78,7 +78,7 @@
              (assoc-in [:group-chat-profile/profile :name] current-chat-name))}))
 
 (defn enter-two-random-words [{:keys [db]}]
-  (let [{:keys [mnemonic]} (:account/account db)
+  (let [{:keys [mnemonic]} (:multiaccount db)
         shuffled-mnemonic (shuffle (map-indexed vector (clojure.string/split mnemonic #" ")))]
     {:db (assoc db :my-profile/seed {:step        :first-word
                                      :first-word  (first shuffled-mnemonic)
@@ -90,7 +90,7 @@
 (defn finish [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
-            (accounts.update/clean-seed-phrase)))
+            (multiaccounts.update/clean-seed-phrase)))
 
 (defn copy-to-clipboard! [value]
   (react/copy-to-clipboard value))

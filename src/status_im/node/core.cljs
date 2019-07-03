@@ -50,8 +50,8 @@
     (cond-> {"whisper" {:Min 2, :Max 2}}
       les-topic (assoc les-topic {:Min 2, :Max 2}))))
 
-(defn get-account-network [db address]
-  (get-in db [:accounts/accounts address :network]))
+(defn get-multiaccount-network [db address]
+  (get-in db [:multiaccount address :network]))
 
 (defn- get-base-node-config [config]
   (let [initial-props @(re-frame/subscribe [:initial-props])
@@ -72,8 +72,8 @@
   (take limit (shuffle nodes)))
 
 (defn get-log-level
-  [account-settings]
-  (or (:log-level account-settings)
+  [multiaccount-settings]
+  (or (:log-level multiaccount-settings)
       (if utils.platform/desktop? ""
           config/log-level-status-go)))
 
@@ -87,8 +87,8 @@
         (assoc-in [:LightEthConfig :MinTrustedFraction] 50))
     config))
 
-(defn- get-account-node-config [db address]
-  (let [accounts (get db :accounts/accounts)
+(defn- get-multiaccount-node-config [db address]
+  (let [multiaccounts (get db :multiaccounts/multiaccounts)
         current-fleet-key (fleet/current-fleet db address)
         current-fleet (get (fleet/fleets db) current-fleet-key)
         rendezvous-nodes (pick-nodes 3 (vals (:rendezvous current-fleet)))
@@ -96,9 +96,9 @@
         (merge
          {:network         config/default-network
           :networks        (:networks/networks db)
-          :settings        (constants/default-account-settings)
-          :installation-id (get db :accounts/new-installation-id)}
-         (get accounts address))
+          :settings        (constants/default-multiaccount-settings)
+          :installation-id (get db :multiaccounts/new-installation-id)}
+         (get multiaccounts address))
         use-custom-bootnodes (get-in settings [:bootnodes network])
         log-level (get-log-level settings)]
     (cond-> (get-in networks [network :config])
@@ -138,7 +138,7 @@
       :always
       (add-log-level log-level))))
 
-(defn get-verify-account-config
+(defn get-verify-multiaccount-config
   "Is used when the node has to be started before
   `VerifyAccountPassword` call."
   [db network]
@@ -160,11 +160,11 @@
 (fx/defn start
   [{:keys [db]} address]
   (let [network     (if address
-                      (get-account-network db address)
+                      (get-multiaccount-network db address)
                       (:network db))
-        node-config (if (= (:node/on-ready db) :verify-account)
-                      (get-verify-account-config db network)
-                      (get-account-node-config db address))
+        node-config (if (= (:node/on-ready db) :verify-multiaccount)
+                      (get-verify-multiaccount-config db network)
+                      (get-multiaccount-node-config db address))
         node-config-json (types/clj->json node-config)]
     (log/info "Node config: " node-config-json)
     {:db        (assoc db
@@ -203,10 +203,10 @@
 
 (re-frame/reg-fx
  :node/les-show-debug-info
- (fn [[web3 account chain-sync-state]]
+ (fn [[web3 multiaccount chain-sync-state]]
    (.getBalance
     (.-eth web3)
-    (:address account)
+    (:address multiaccount)
     (fn [error-balance balance]
       (.getBlockNumber
        (.-eth web3)
@@ -215,10 +215,11 @@
          (utils/show-popup
           "LES sync status"
           (str
-           "* account="        (:address account) "\n"
+           "* multiaccount="        (:address multiaccount) "\n"
            "* latest block="   (or error-block block) "\n"
            "* balance="        (or error-balance balance) "\n"
            "* eth_getSyncing=" (or chain-sync-state "false")))))))))
 
-(defn display-les-debug-info [{{:keys [web3] :account/keys [account] :node/keys [chain-sync-state]} :db}]
-  {:node/les-show-debug-info [web3 account]})
+(defn display-les-debug-info
+  [{{:keys [web3 multiaccount] :node/keys [chain-sync-state]} :db}]
+  {:node/les-show-debug-info [web3 multiaccount]})

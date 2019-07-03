@@ -4,8 +4,8 @@
             [status-im.react-native.js-dependencies :as rn]
             [taoensso.timbre :as log]
             [status-im.i18n :as i18n]
-            [status-im.accounts.core :as accounts]
-            [status-im.accounts.model :as accounts.model]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.contact.db :as contact.db]
             [status-im.chat.models :as chat-model]
             [status-im.contact.db :as contact.db]
@@ -82,14 +82,14 @@
   (def group-id "im.status.ethereum.MESSAGE")
   (def icon "ic_stat_status_notification")
 
-  (defn- hash->contact [hash-or-pubkey accounts]
+  (defn- hash->contact [hash-or-pubkey multiaccounts]
     (let [hash (anonymize-pubkey hash-or-pubkey)]
-      (->> accounts
+      (->> multiaccounts
            (filter #(= (anonymize-pubkey (:public-key %)) hash))
            first)))
 
-  (defn- hash->pubkey [hash accounts]
-    (:public-key (hash->contact hash accounts)))
+  (defn- hash->pubkey [hash multiaccounts]
+    (:public-key (hash->contact hash multiaccounts)))
 
   (defn lookup-contact-pubkey-from-hash
     [{:keys [db] :as cofx} contact-pubkey-or-hash]
@@ -98,10 +98,10 @@
     Returns original value if not a hash (e.g. already a public key)."
     (if (and contact-pubkey-or-hash
              (= (count contact-pubkey-or-hash) pn-pubkey-hash-length))
-      (if-let [account-pubkey (hash->pubkey contact-pubkey-or-hash
-                                            (-> db :accounts/accounts vals))]
-        account-pubkey
-        (if (accounts.model/logged-in? cofx)
+      (if-let [multiaccount-pubkey (hash->pubkey contact-pubkey-or-hash
+                                                 (-> db :multiaccounts/multiaccounts vals))]
+        multiaccount-pubkey
+        (if (multiaccounts.model/logged-in? cofx)
           ;; TODO: for simplicity we're doing a linear lookup of the contacts,
           ;; but we might want to build a map of hashed pubkeys to pubkeys
           ;; for this purpose
@@ -150,7 +150,7 @@
      :id   id})
 
   (defn- get-contact-name [{:keys [db] :as cofx} from]
-    (if (accounts.model/logged-in? cofx)
+    (if (multiaccounts.model/logged-in? cofx)
       (:name (hash->contact from (-> db :contacts/contacts vals)))
       (anonymize-pubkey from)))
 
@@ -215,7 +215,7 @@
     "Ignore push notifications from unknown contacts or removed chats"
     [{:keys [db] :as cofx} {:keys [from] :as rehydrated-payload}]
     (and (valid-notification-payload? rehydrated-payload)
-         (accounts.model/logged-in? cofx)
+         (multiaccounts.model/logged-in? cofx)
          (some #(= (:public-key %) from)
                (contact.db/get-active-contacts (:contacts/contacts db)))
          (some #(= (:chat-id %) from)
@@ -249,7 +249,7 @@
 
   (fx/defn handle-push-notification-open
     [{:keys [db] :as cofx} decoded-payload {:keys [stored?] :as ctx}]
-    (let [current-public-key (accounts.model/current-public-key cofx)
+    (let [current-public-key (multiaccounts.model/current-public-key cofx)
           nav-opts           (when stored? {:navigation-reset? true})
           rehydrated-payload (rehydrate-payload cofx decoded-payload)
           from               (:from rehydrated-payload)
@@ -339,16 +339,16 @@
 
 (fx/defn process-stored-event [{:keys [db] :as cofx} address stored-pns]
   (when-not platform/desktop?
-    (if (accounts.model/logged-in? cofx)
-      (let [current-account        (:account/account db)
-            current-address        (:address current-account)
-            current-account-pubkey (:public-key current-account)
-            stored-pn-val-json     (or (get stored-pns current-account-pubkey)
-                                       (get stored-pns (anonymize-pubkey current-account-pubkey)))
+    (if (multiaccounts.model/logged-in? cofx)
+      (let [current-multiaccount        (:multiaccount db)
+            current-address        (:address current-multiaccount)
+            current-multiaccount-pubkey (:public-key current-multiaccount)
+            stored-pn-val-json     (or (get stored-pns current-multiaccount-pubkey)
+                                       (get stored-pns (anonymize-pubkey current-multiaccount-pubkey)))
             stored-pn-payload      (if (= (first stored-pn-val-json) \{)
                                      (js->clj (js/JSON.parse stored-pn-val-json) :keywordize-keys true)
                                      {:from stored-pn-val-json
-                                      :to   current-account-pubkey})
+                                      :to   current-multiaccount-pubkey})
             from                   (lookup-contact-pubkey-from-hash cofx (:from stored-pn-payload))
             to                     (lookup-contact-pubkey-from-hash cofx (:to stored-pn-payload))]
         (when (and from

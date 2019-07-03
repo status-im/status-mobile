@@ -16,7 +16,7 @@
 (defview send-button-view [{:keys [input-text]} on-send-press]
   (letsubs [{:keys [command-completion]} [:chats/selected-chat-command]
             disconnected? [:disconnected?]
-            {:keys [processing]} [:accounts/login]]
+            {:keys [processing]} [:multiaccounts/login]]
     (when (and (sendable? input-text disconnected? processing)
                (or (not command-completion)
                    (#{:complete :less-than-needed} command-completion)))

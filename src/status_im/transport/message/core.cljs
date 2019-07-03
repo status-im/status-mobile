@@ -166,7 +166,7 @@
                         #(or % {:pending-confirmations messages-count})))}))
 
 (defn- own-info [db]
-  (let [{:keys [name photo-path address]} (:account/account db)
+  (let [{:keys [name photo-path address]} (:multiaccount db)
         fcm-token (get-in db [:notifications :fcm-token])]
     {:name          name
      :profile-image photo-path

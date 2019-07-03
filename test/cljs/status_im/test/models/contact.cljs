@@ -146,4 +146,4 @@
                  :address          address} contact)))))
   (testing "the message is coming from us"
     (testing "it does not update contacts"
-      (is (nil? (model/handle-contact-update "me" 1 {} {:db {:account/account {:public-key "me"}}}))))))
+      (is (nil? (model/handle-contact-update "me" 1 {} {:db {:multiaccount {:public-key "me"}}}))))))

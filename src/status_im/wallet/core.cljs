@@ -1,7 +1,7 @@
 (ns status-im.wallet.core
   (:require [clojure.set :as set]
             [re-frame.core :as re-frame]
-            [status-im.accounts.update.core :as accounts.update]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
@@ -22,10 +22,10 @@
 
 (re-frame/reg-fx
  :wallet/get-balance
- (fn [{:keys [account-id on-success on-error]}]
+ (fn [{:keys [multiaccount-id on-success on-error]}]
    (json-rpc/call
     {:method     "eth_getBalance"
-     :params     [account-id "latest"]
+     :params     [multiaccount-id "latest"]
      :on-success on-success
      :on-error   on-error})))
 
@@ -159,7 +159,7 @@
 
 (fx/defn initialize-tokens
   [{:keys [db] :as cofx}]
-  (let [custom-tokens (get-in db [:account/account :settings :wallet :custom-tokens])
+  (let [custom-tokens (get-in db [:multiaccount :settings :wallet :custom-tokens])
         chain         (ethereum/chain-keyword db)
         ;;TODO why do we need all tokens ? chain can be changed only through relogin
         all-tokens    (merge-with
@@ -176,7 +176,7 @@
 
 (fx/defn update-balances
   [{{:keys [network-status :wallet/all-tokens]
-     {:keys [settings]} :account/account :as db} :db :as cofx}]
+     {:keys [settings]} :multiaccount :as db} :db :as cofx}]
   (let [normalized-address (ethereum/current-address db)
         chain  (ethereum/chain-keyword db)
         assets (get-in settings [:wallet :visible-tokens chain])
@@ -186,7 +186,7 @@
       (fx/merge
        cofx
        {:wallet/get-balance
-        {:account-id normalized-address
+        {:multiaccount-id normalized-address
          :on-success #(re-frame/dispatch
                        [:wallet.callback/update-balance-success %])
          :on-error   #(re-frame/dispatch
@@ -216,7 +216,7 @@
             (clear-error-message :balance-update)
             (assoc-in [:wallet :balance-loading?] true))}
        (when-not assets
-         (accounts.update/update-settings
+         (multiaccounts.update/update-settings
           (assoc-in settings
                     [:wallet :visible-tokens chain]
                     #{})
@@ -224,7 +224,7 @@
 
 (fx/defn update-prices
   [{{:keys [network-status :wallet/all-tokens]
-     {:keys [address settings]} :account/account :as db} :db}]
+     {:keys [address settings]} :multiaccount :as db} :db}]
   (let [chain       (ethereum/chain-keyword db)
         mainnet?    (= :mainnet chain)
         assets      (get-in settings [:wallet :visible-tokens chain])
@@ -272,29 +272,29 @@
            (assoc-in [:wallet :balance-loading?] false))})
 
 (defn update-toggle-in-settings
-  [{{:account/keys [account] :as db} :db} symbol checked?]
+  [{{:keys [multiaccount] :as db} :db} symbol checked?]
   (let [chain        (ethereum/chain-keyword db)
-        settings     (get account :settings)]
+        settings     (get multiaccount :settings)]
     (update-in settings [:wallet :visible-tokens chain] #(set-checked % symbol checked?))))
 
 (fx/defn toggle-visible-token
   [cofx symbol checked?]
   (let [new-settings (update-toggle-in-settings cofx symbol checked?)]
-    (accounts.update/update-settings cofx new-settings {})))
+    (multiaccounts.update/update-settings cofx new-settings {})))
 
 (fx/defn add-custom-token
   [{:keys [db] :as cofx} {:keys [symbol address] :as token}]
   (let [chain        (ethereum/chain-keyword db)
         settings     (update-toggle-in-settings cofx symbol true)
         new-settings (assoc-in settings [:wallet :custom-tokens chain address] token)]
-    (accounts.update/update-settings cofx new-settings {})))
+    (multiaccounts.update/update-settings cofx new-settings {})))
 
 (fx/defn remove-custom-token
   [{:keys [db] :as cofx} {:keys [symbol address]}]
   (let [chain        (ethereum/chain-keyword db)
         settings     (update-toggle-in-settings cofx symbol false)
         new-settings (update-in settings [:wallet :custom-tokens chain] dissoc address)]
-    (accounts.update/update-settings cofx new-settings {})))
+    (multiaccounts.update/update-settings cofx new-settings {})))
 
 (fx/defn configure-token-balance-and-visibility
   [cofx symbol balance]

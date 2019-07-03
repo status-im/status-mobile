@@ -19,7 +19,7 @@
   (testing "no devices"
     (is (= [{:id "1"
              :fcm-token "token-1"}]
-           (device-info/all {:db {:account/account {:installation-id "1"}
+           (device-info/all {:db {:multiaccount {:installation-id "1"}
                                   :notifications   {:fcm-token "token-1"}}})))
 
     (testing "some devices"
@@ -29,6 +29,6 @@
                :fcm-token "token-2"}
               {:id "5"
                :fcm-token "token-5"}]
-             (device-info/all {:db {:account/account {:installation-id "1"}
+             (device-info/all {:db {:multiaccount {:installation-id "1"}
                                     :pairing/installations device-list
                                     :notifications   {:fcm-token "token-1"}}}))))))

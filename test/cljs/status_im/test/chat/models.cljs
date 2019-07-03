@@ -169,7 +169,7 @@
         (is (not (chat/group-chat? cofx chat-id)))))))
 
 (def test-db
-  {:account/account {:public-key "me"}
+  {:multiaccount {:public-key "me"}
    :chats {"status" {:public? true
                      :group-chat true
                      :messages {"4" {} "5" {} "6" {}}
@@ -180,7 +180,7 @@
 (deftest mark-messages-seen
   (testing "Marking messages seen correctly marks loaded messages as seen and updates absolute unviewed set"
     (let [fx (chat/mark-messages-seen {:db test-db} "status")
-          me (get-in test-db [:account/account :public-key])]
+          me (get-in test-db [:multiaccount :public-key])]
       (is (= '(true true true)
              (map (comp :seen second) (get-in fx [:db :chats "status" :messages]))))
       (is (= 2 (count (:data-store/tx fx))))

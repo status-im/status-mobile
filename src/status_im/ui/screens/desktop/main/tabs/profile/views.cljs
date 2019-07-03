@@ -54,7 +54,7 @@
      [react/view {:style styles/tooltip-triangle}]]))
 
 (views/defview qr-code []
-  (views/letsubs [{:keys [public-key]} [:account/account]
+  (views/letsubs [{:keys [public-key]} [:multiaccount]
                   {:keys [qr-copied]} [:tooltips]]
     [react/view
      [react/view {:style styles/qr-code-container}
@@ -153,7 +153,7 @@
 
 (views/defview advanced-settings []
   (views/letsubs [current-mailserver-id   [:mailserver/current-id]
-                  {:keys [settings]}      [:account/account]
+                  {:keys [settings]}      [:multiaccount]
                   mailservers             [:mailserver/fleet-mailservers]
                   mailserver-state        [:mailserver/state]
                   preferred-mailserver-id [:mailserver/preferred-id]
@@ -217,7 +217,7 @@
         [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :t/device-to-device)]
         [react/switch {:track-color     #js {:true colors/blue :false nil}
                        :value           pfs?
-                       :on-value-change #(re-frame/dispatch [:accounts.ui/toggle-device-to-device (not pfs?)])}]]])))
+                       :on-value-change #(re-frame/dispatch [:multiaccounts.ui/toggle-device-to-device (not pfs?)])}]]])))
 
 (views/defview installations []
   (views/letsubs [installations     [:pairing/installations]]
@@ -265,7 +265,7 @@
 
 (views/defview profile [{:keys [seed-backed-up? mnemonic] :as user}]
   (views/letsubs [current-view-id [:view-id]
-                  editing?        [:my-profile/editing?]] ;; TODO janherich: refactor my-profile, unnecessary complicated structure in db (could be just `:staged-name`/`:editing?` fields in account map) and horrible way to access it woth `:get`/`:set` subs/events
+                  editing?        [:my-profile/editing?]] ;; TODO janherich: refactor my-profile, unnecessary complicated structure in db (could be just `:staged-name`/`:editing?` fields in multiaccount map) and horrible way to access it woth `:get`/`:set` subs/events
     (let [adv-settings-open?           (= current-view-id :advanced-settings)
           about-app-open?              (= current-view-id :about-app)
           help-open?                   (= current-view-id :help-center)
@@ -287,7 +287,7 @@
          [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :notifications)]
          [react/switch {:track-color     #js {:true colors/blue :false nil}
                         :value           notifications?
-                        :on-value-change #(re-frame/dispatch [:accounts.ui/notifications-enabled (not notifications?)])}]]
+                        :on-value-change #(re-frame/dispatch [:multiaccounts.ui/notifications-enabled (not notifications?)])}]]
         [advanced-settings-item adv-settings-open?]
         [help-item help-open?]
         [about-app-item about-app-open?]
@@ -305,13 +305,13 @@
              (i18n/label :wallet-backup-recovery-title)]
             [components.common/counter {:size 22} 1]]])
         [react/view {:style (styles/profile-row false)}
-         [react/touchable-highlight {:on-press #(re-frame/dispatch [:accounts.logout.ui/logout-confirmed])}
+         [react/touchable-highlight {:on-press #(re-frame/dispatch [:multiaccounts.logout.ui/logout-confirmed])}
           [react/text {:style (styles/profile-row-text colors/red)} (i18n/label :t/logout)]]
          [react/view [react/text {:style (styles/profile-row-text colors/gray)} (str "V" build/version " (" build/commit-sha ")")]]]]])))
 
 (views/defview profile-data []
   (views/letsubs
-    [user [:account/account]]
+    [user [:multiaccount]]
     {:component-will-unmount
      #(re-frame/dispatch [:set :my-profile/editing? false])}
     [profile user]))

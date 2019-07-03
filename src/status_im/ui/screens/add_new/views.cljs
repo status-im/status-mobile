@@ -55,10 +55,10 @@
                                                  :handle-qr-code])}])])
 
 (views/defview add-new []
-  (views/letsubs [account     [:account/account]
+  (views/letsubs [multiaccount     [:multiaccount]
                   device-UUID [:get-device-UUID]]
     [react/view {:flex 1 :background-color :white}
      [status-bar/status-bar]
      [toolbar/simple-toolbar (i18n/label :t/new)]
      [common/separator]
-     [options-list account]]))
+     [options-list multiaccount]]))

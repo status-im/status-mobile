@@ -5,7 +5,7 @@
             [status-im.react-native.resources :as resources]
             [status-im.privacy-policy.core :as privacy-policy]
             [status-im.utils.utils :as utils]
-            [status-im.accounts.create.core :refer [step-kw-to-num]]
+            [status-im.multiaccounts.create.core :refer [step-kw-to-num]]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.utils.identicon :as identicon]
             [status-im.ui.components.radio :as radio]
@@ -77,10 +77,10 @@
                      :text :intro-text3}] window-width]
      [react/view styles/buttons-container
       [components.common/button {:button-style (assoc styles/bottom-button :margin-bottom 16)
-                                 :on-press     #(re-frame/dispatch [:accounts.create.ui/intro-wizard true])
+                                 :on-press     #(re-frame/dispatch [:multiaccounts.create.ui/intro-wizard true])
                                  :label        (i18n/label :t/get-started)}]
       [components.common/button {:button-style (assoc styles/bottom-button :margin-bottom 24)
-                                 :on-press    #(re-frame/dispatch [:accounts.recover.ui/recover-account-button-pressed])
+                                 :on-press    #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
                                  :label       (i18n/label :t/access-key)
                                  :background? false}]
       [react/nested-text
@@ -96,15 +96,15 @@
    {:image (resources/get-image :sample-key)
     :width 154 :height 140}])
 
-(defn choose-key [{:keys [accounts selected-id] :as wizard-state} view-height]
+(defn choose-key [{:keys [multiaccounts selected-id] :as wizard-state} view-height]
   [react/scroll-view {:content-container-style {:flex 1
                                                 :justify-content :flex-end
-                                                ;; We have to align top account entry
+                                                ;; We have to align top multiaccount entry
                                                 ;; with top key storage entry on the next screen
                                                 :margin-bottom (if (< view-height 600)
                                                                  -20
                                                                  (/ view-height 12))}}
-   (for [acc accounts]
+   (for [acc multiaccounts]
      (let [selected? (= (:id acc) selected-id)]
        ^{:key (:pubkey acc)}
        [react/touchable-highlight
@@ -112,7 +112,7 @@
         [react/view {:style (styles/list-item selected?)}
 
          [react/image {:source {:uri (identicon/identicon (:pubkey acc))}
-                       :style styles/account-image}]
+                       :style styles/multiaccount-image}]
          [react/view {:style {:margin-horizontal 16 :flex 1 :justify-content :space-between}}
           [react/text {:style (assoc styles/wizard-text :text-align :left
                                      :color colors/black
@@ -160,7 +160,7 @@
     [react/view {:style {:flex 1
                          :justify-content :flex-end
                          ;; We have to align top storage entry
-                         ;; with top account entry on the previous screen
+                         ;; with top multiaccount entry on the previous screen
                          :margin-bottom (+ (- 300 232) (if (< view-height 600)
                                                          -20
                                                          (/ view-height 12)))}}

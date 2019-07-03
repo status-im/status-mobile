@@ -74,7 +74,7 @@
         (is (not actual)))))
   (testing "an already existing chat"
     (let [cofx (assoc
-                (group-chats/handle-membership-update {:now 0 :db {:account/account {:public-key member-3}}} initial-message "payload" admin)
+                (group-chats/handle-membership-update {:now 0 :db {:multiaccount {:public-key member-3}}} initial-message "payload" admin)
                 :now 0)]
       (testing "the message has already been received"
         (let [actual (group-chats/handle-membership-update cofx initial-message "payload" admin)]
@@ -446,7 +446,7 @@
   (testing "create a new chat"
     (with-redefs [utils.clocks/send inc]
       (let [cofx {:random-guid-generator (constantly "random")
-                  :db {:account/account {:public-key "me"}
+                  :db {:multiaccount {:public-key "me"}
                        :group/selected-contacts #{"1" "2"}}}]
         (is (= {:chat-id "randomme"
                 :from    "me"
@@ -507,7 +507,7 @@
                 :events [{:type "member-removed" :member member-3 :clock-value 4}]}
                (:group-chats/sign-membership
                 (group-chats/remove
-                 (assoc-in cofx [:db :account/account :public-key] member-3)
+                 (assoc-in cofx [:db :multiaccount :public-key] member-3)
                  chat-id)))))
       (testing "removing an admin"
         (is (= {:from member-1
@@ -515,7 +515,7 @@
                 :events [{:type "member-removed" :member member-1 :clock-value 4}]}
                (:group-chats/sign-membership
                 (group-chats/remove
-                 (assoc-in cofx [:db :account/account :public-key] member-1)
+                 (assoc-in cofx [:db :multiaccount :public-key] member-1)
                  chat-id))))))))
 
 (deftest add-members-test
@@ -523,7 +523,7 @@
     (testing "add-members"
       (let [cofx {:db {:current-chat-id chat-id
                        :selected-participants ["new-member"]
-                       :account/account {:public-key "me"}
+                       :multiaccount {:public-key "me"}
                        :chats {chat-id {:last-clock-value   1
                                         :membership-updates [{:events [{:clock-value 1}]}]}}}}]
         (is (= {:chat-id chat-id
@@ -536,7 +536,7 @@
 (deftest remove-member-test
   (with-redefs [utils.clocks/send inc]
     (testing "remove-member"
-      (let [cofx {:db {:account/account {:public-key "me"}
+      (let [cofx {:db {:multiaccount {:public-key "me"}
                        :chats {chat-id {:admins #{"me"}
                                         :last-clock-value 1
                                         :contacts #{"member"}
@@ -551,7 +551,7 @@
 (deftest make-admin-test
   (with-redefs [utils.clocks/send inc]
     (testing "make-admin"
-      (let [cofx {:db {:account/account {:public-key "me"}
+      (let [cofx {:db {:multiaccount {:public-key "me"}
                        :chats {chat-id {:admins #{"me"}
                                         :last-clock-value 1
                                         :contacts #{"member"}

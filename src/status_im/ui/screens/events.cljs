@@ -129,18 +129,18 @@
 (defn- on-biometric-auth-result [{:keys [bioauth-success bioauth-code bioauth-message]}]
   (when-not bioauth-success
     (if (= bioauth-code "USER_FALLBACK")
-      (re-frame/dispatch [:accounts.logout.ui/logout-confirmed])
+      (re-frame/dispatch [:multiaccounts.logout.ui/logout-confirmed])
       (utils/show-confirmation {:title (i18n/label :t/biometric-auth-confirm-title)
                                 :content (or bioauth-message (i18n/label :t/biometric-auth-confirm-message))
                                 :confirm-button-text (i18n/label :t/biometric-auth-confirm-try-again)
                                 :cancel-button-text (i18n/label :t/biometric-auth-confirm-logout)
                                 :on-accept #(biometric-auth/authenticate on-biometric-auth-result authentication-options)
-                                :on-cancel #(re-frame/dispatch [:accounts.logout.ui/logout-confirmed])}))))
+                                :on-cancel #(re-frame/dispatch [:multiaccounts.logout.ui/logout-confirmed])}))))
 
 (fx/defn on-return-from-background [{:keys [db now] :as cofx}]
   (let [app-in-background-since (get db :app-in-background-since)
-        signed-up? (get-in db [:account/account :signed-up?])
-        biometric-auth? (get-in db [:account/account :settings :biometric-auth?])
+        signed-up? (get-in db [:multiaccount :signed-up?])
+        biometric-auth? (get-in db [:multiaccount :settings :biometric-auth?])
         requires-bio-auth (and
                            signed-up?
                            biometric-auth?
@@ -221,5 +221,5 @@
                 :hardwallet-connect-settings (hardwallet/hardwallet-connect-screen-did-load %)
                 :hardwallet-connect-modal (hardwallet/hardwallet-connect-screen-did-load %)
                 :hardwallet-authentication-method (hardwallet/authentication-method-screen-did-load %)
-                :accounts (hardwallet/accounts-screen-did-load %)
+                :multiaccounts (hardwallet/multiaccounts-screen-did-load %)
                 nil))))

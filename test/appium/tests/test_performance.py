@@ -26,8 +26,8 @@ class TestPerformance(SingleDeviceTestCase):
 
         app_started = ':init/app-started'
         login_shown = ':on-will-focus :login'
-        password_submitted = ':accounts.login.ui/password-input-submitted'
-        login_success = ':accounts.login.callback/login-success'
+        password_submitted = ':multiaccounts.login.ui/password-input-submitted'
+        login_success = ':multiaccounts.login.callback/login-success'
 
         sign_in = SignInView(self.driver)
         sign_in.create_user()

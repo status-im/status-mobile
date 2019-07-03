@@ -125,8 +125,8 @@
   (when-not (string/blank? input-text)
     (let [{:keys [message-id old-message-id]}
           (get-in db [:chats current-chat-id :metadata :responding-to-message])
-          show-name?     (get-in db [:account/account :show-name?])
-          preferred-name (when show-name? (get-in db [:account/account :preferred-name]))]
+          show-name?     (get-in db [:multiaccount :show-name?])
+          preferred-name (when show-name? (get-in db [:multiaccount :preferred-name]))]
       (fx/merge cofx
                 {:db (assoc-in db [:chats current-chat-id :metadata :responding-to-message] nil)}
                 (chat.message/send-message {:chat-id      current-chat-id

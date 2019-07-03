@@ -1,7 +1,7 @@
 (ns ^{:doc "Mailserver events and API"}
  status-im.mailserver.core
   (:require [re-frame.core :as re-frame]
-            [status-im.accounts.model :as accounts.model]
+            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.fleet.core :as fleet]
             [status-im.native-module.core :as status]
             [status-im.utils.platform :as platform]
@@ -17,7 +17,7 @@
             [status-im.data-store.mailservers :as data-store.mailservers]
             [status-im.i18n :as i18n]
             [status-im.utils.handlers :as handlers]
-            [status-im.accounts.update.core :as accounts.update]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.ui.screens.mobile-network-settings.utils :as mobile-network-utils]
             [status-im.utils.random :as rand]))
@@ -48,7 +48,7 @@
   (fetch cofx (:mailserver/current-id db)))
 
 (defn preferred-mailserver-id [{:keys [db] :as cofx}]
-  (get-in db [:account/account :settings :mailserver (fleet/current-fleet db)]))
+  (get-in db [:multiaccount :settings :mailserver (fleet/current-fleet db)]))
 
 (defn- round-robin
   "Find the choice and pick the next one, default to first if not found"
@@ -250,7 +250,7 @@
   - mailserver disconnected: we try to reconnect
   - mailserver connected: we mark the mailserver as trusted peer"
   [{:keys [db] :as cofx} previous-summary]
-  (when (:account/account db)
+  (when (:multiaccount db)
     (let [{:keys [peers-summary peers-count]} db
           {:keys [address sym-key-id] :as mailserver} (fetch-current cofx)
           mailserver-was-registered? (registered-peer? previous-summary
@@ -474,8 +474,8 @@
    else
       change mailserver if mailserver is connected"
   [{:keys [db] :as cofx}]
-  ;; check if logged into account
-  (when (contains? db :account/account)
+  ;; check if logged into multiaccount
+  (when (contains? db :multiaccount)
     (let [connection-checks (dec (:mailserver/connection-checks db))]
       (if (>= 0 connection-checks)
         (fx/merge cofx
@@ -492,7 +492,7 @@
   "when host reconnects, reset request-to and
   reconnect to mailserver"
   [{:keys [db] :as cofx} is-connected?]
-  (when (and (accounts.model/logged-in? cofx)
+  (when (and (multiaccounts.model/logged-in? cofx)
              is-connected?)
     (fx/merge cofx
               (reset-request-to)
@@ -779,7 +779,7 @@
 (fx/defn handle-request-completed
   [{{:keys [chats]} :db :as cofx}
    {:keys [requestID lastEnvelopeHash cursor errorMessage]}]
-  (when (accounts.model/logged-in? cofx)
+  (when (multiaccounts.model/logged-in? cofx)
     (if (empty? errorMessage)
       (let [never-synced-chats-in-request
             (->> (chats->never-synced-public-chats chats)
@@ -983,7 +983,7 @@
               (navigation/navigate-to-cofx :edit-mailserver nil))))
 
 (fx/defn upsert
-  [{{:mailserver.edit/keys [mailserver] :account/keys [account] :as db} :db
+  [{{:mailserver.edit/keys [mailserver] :keys [multiaccount] :as db} :db
     random-id-generator :random-id-generator :as cofx}]
   (let [{:keys [name url id]} mailserver
         current-fleet         (fleet/current-fleet db)
@@ -1002,7 +1002,7 @@
                                                        :fleet
                                                        current-fleet))
                       ;; we naively logout if the user is connected to the edited mailserver
-                      :success-event (when current [:accounts.logout.ui/logout-confirmed])}]
+                      :success-event (when current [:multiaccounts.logout.ui/logout-confirmed])}]
      :dispatch [:navigate-back]}))
 
 (fx/defn delete
@@ -1041,7 +1041,7 @@
 (fx/defn save-settings
   [{:keys [db] :as cofx} current-fleet mailserver-id]
   (let [{:keys [address]} (fetch-current cofx)
-        settings (get-in db [:account/account :settings])
+        settings (get-in db [:multiaccount :settings])
         ;; Check if previous mailserver was pinned
         pinned?  (get-in settings [:mailserver current-fleet])]
     (fx/merge cofx
@@ -1049,26 +1049,26 @@
                :mailserver/remove-peer address}
               (connect-to-mailserver)
               (when pinned?
-                (accounts.update/update-settings (assoc-in settings [:mailserver current-fleet] mailserver-id)
-                                                 {})))))
+                (multiaccounts.update/update-settings (assoc-in settings [:mailserver current-fleet] mailserver-id)
+                                                      {})))))
 
 (fx/defn unpin
   [{:keys [db] :as cofx}]
   (let [current-fleet (fleet/current-fleet db)
-        settings (get-in db [:account/account :settings])]
+        settings (get-in db [:multiaccount :settings])]
     (fx/merge cofx
-              (accounts.update/update-settings (update settings :mailserver dissoc current-fleet)
-                                               {})
+              (multiaccounts.update/update-settings (update settings :mailserver dissoc current-fleet)
+                                                    {})
               (change-mailserver))))
 
 (fx/defn pin
   [{:keys [db] :as cofx}]
   (let [current-fleet (fleet/current-fleet db)
         mailserver-id (:mailserver/current-id db)
-        settings (get-in db [:account/account :settings])]
+        settings (get-in db [:multiaccount :settings])]
     (fx/merge cofx
-              (accounts.update/update-settings (assoc-in settings [:mailserver current-fleet] mailserver-id)
-                                               {}))))
+              (multiaccounts.update/update-settings (assoc-in settings [:mailserver current-fleet] mailserver-id)
+                                                    {}))))
 
 (fx/defn initialize-ranges
   [{:keys [:data-store/all-chat-requests-ranges db]}]

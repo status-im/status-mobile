@@ -69,8 +69,8 @@
      (load-from url #(re-frame/dispatch [follow-up url (parse-extension % url) active?])))))
 
 (fx/defn initialize
-  [{{:account/keys [account] :as db} :db}]
-  (let [{:keys [extensions dev-mode?]} account
+  [{{:keys [multiaccount] :as db} :db}]
+  (let [{:keys [extensions dev-mode?]} multiaccount
         ext-vals (vals extensions)]
     (when dev-mode?
       {:db              (assoc db :extensions/store (into {} (map (fn [{:keys [id data]}] {id data}) ext-vals)))

@@ -1,7 +1,7 @@
 (ns status-im.stickers.core
   (:require [cljs.reader :as edn]
             [re-frame.core :as re-frame]
-            [status-im.accounts.core :as accounts]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.constants :as constants]
             [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.ethereum.contracts :as contracts]
@@ -84,20 +84,20 @@
   [{:keys [db]}]
   (let [sticker-packs (into {} (map #(let [pack (edn/read-string %)]
                                        (vector (:id pack) pack))
-                                    (get-in db [:account/account :stickers])))]
+                                    (get-in db [:multiaccount :stickers])))]
     {:db (assoc db
                 :stickers/packs-installed sticker-packs
                 :stickers/packs sticker-packs)}))
 
 (fx/defn install-stickers-pack
-  [{{:account/keys [account] :as db} :db :as cofx} id]
+  [{{:keys [multiaccount] :as db} :db :as cofx} id]
   (let [pack (get-in db [:stickers/packs id])]
     (fx/merge
      cofx
      {:db (-> db
               (assoc-in [:stickers/packs-installed id] pack)
               (assoc :stickers/selected-pack id))}
-     (accounts/update-stickers (conj (:stickers account) (pr-str pack))))))
+     (multiaccounts/update-stickers (conj (:stickers multiaccount) (pr-str pack))))))
 
 (defn valid-sticker? [sticker]
   (contains? sticker :hash))

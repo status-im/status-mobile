@@ -2,8 +2,8 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.accounts.core :as accounts]
             [status-im.i18n :as i18n]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.button.view :as button]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
@@ -88,7 +88,7 @@
             ttt-enabled? [:tribute-to-talk/enabled?]]
     [react/view styles/qr-code-viewer
      [status-bar/status-bar {:type :modal-white}]
-     [qr-viewer-toolbar (accounts/displayed-name contact) value]
+     [qr-viewer-toolbar (multiaccounts/displayed-name contact) value]
      [qr-code-viewer/qr-code-viewer
       (merge
        {:style         styles/qr-code
@@ -141,7 +141,7 @@
      [profile.components/settings-switch-item
       {:label-kw  :t/preview-privacy
        :value     (boolean (:preview-privacy? settings))
-       :action-fn #(re-frame/dispatch [:accounts.ui/preview-privacy-mode-switched %])}]
+       :action-fn #(re-frame/dispatch [:multiaccounts.ui/preview-privacy-mode-switched %])}]
      [profile.components/settings-item-separator]
      [profile.components/settings-item
       {:label-kw            :t/dapps-permissions
@@ -172,7 +172,7 @@
                                           :destructive?        true
                                           :hide-arrow?         true
                                           :active?             logged-in?
-                                          :action-fn           #(re-frame/dispatch [:accounts.logout.ui/logout-pressed])}]]]]))
+                                          :action-fn           #(re-frame/dispatch [:multiaccounts.logout.ui/logout-pressed])}]]]]))
 
 (defview advanced-settings [{:keys [network networks dev-mode? settings]} on-show supported-biometric-auth]
   {:component-did-mount on-show}
@@ -223,24 +223,24 @@
      [profile.components/settings-switch-item
       {:label-kw  :t/device-to-device
        :value     (:pfs? settings)
-       :action-fn #(re-frame/dispatch [:accounts.ui/toggle-device-to-device %])}])
+       :action-fn #(re-frame/dispatch [:multiaccounts.ui/toggle-device-to-device %])}])
    [profile.components/settings-item-separator]
    [profile.components/settings-switch-item
     {:label-kw  :t/dev-mode
      :value     dev-mode?
-     :action-fn #(re-frame/dispatch [:accounts.ui/dev-mode-switched %])}]
+     :action-fn #(re-frame/dispatch [:multiaccounts.ui/dev-mode-switched %])}]
    [profile.components/settings-item-separator]
    [profile.components/settings-switch-item
     {:label-kw  :t/chaos-mode
      :value     (:chaos-mode? settings)
-     :action-fn #(re-frame/dispatch [:accounts.ui/chaos-mode-switched %])}]
+     :action-fn #(re-frame/dispatch [:multiaccounts.ui/chaos-mode-switched %])}]
    (when dev-mode?
      [profile.components/settings-item-separator]
      [profile.components/settings-switch-item
       {:label-kw  :t/biometric-auth-setting-label
        :value     (:biometric-auth? settings)
        :active?   (some? supported-biometric-auth)
-       :action-fn #(re-frame/dispatch [:accounts.ui/biometric-auth-switched %])}])])
+       :action-fn #(re-frame/dispatch [:multiaccounts.ui/biometric-auth-switched %])}])])
 
 (defview advanced [params on-show]
   (letsubs [advanced? [:my-profile/advanced?]
@@ -259,13 +259,13 @@
        [advanced-settings params on-show supported-biometric-auth])]))
 
 (defn share-profile-item
-  [{:keys [public-key photo-path] :as current-account}]
+  [{:keys [public-key photo-path] :as current-multiaccount}]
   [list.views/big-list-item
    {:text                (i18n/label :t/share-my-profile)
     :icon                :main-icons/share
     :accessibility-label :share-my-profile-button
     :action-fn           #(re-frame/dispatch [:navigate-to :profile-qr-viewer
-                                              {:contact current-account
+                                              {:contact current-multiaccount
                                                :source  :public-key
                                                :value   public-key}])}])
 
@@ -312,17 +312,17 @@
       [view]]]))
 
 (defview my-profile []
-  (letsubs [{:keys [public-key photo-path preferred-name] :as current-account} [:account/account]
+  (letsubs [{:keys [public-key photo-path preferred-name] :as current-multiaccount} [:multiaccount]
             editing?        [:my-profile/editing?]
             extensions      [:extensions/profile]
-            changed-account [:my-profile/profile]
+            changed-multiaccount [:my-profile/profile]
             currency        [:wallet/currency]
-            login-data      [:accounts/login]
+            login-data      [:multiaccounts/login]
             scroll          (reagent/atom nil)
             active-contacts-count [:contacts/active-count]
             tribute-to-talk [:tribute-to-talk/profile]
             stateofus-registrar [:ens.stateofus/registrar]]
-    (let [shown-account    (merge current-account changed-account)
+    (let [shown-multiaccount    (merge current-multiaccount changed-multiaccount)
           ;; We scroll on the component once rendered. setTimeout is necessary,
           ;; likely to allow the animation to finish.
           on-show-edit     (fn []
@@ -343,8 +343,8 @@
                             :keyboard-should-persist-taps :handled}
          [react/view profile.components.styles/profile-form
           [profile.components/profile-header
-           {:contact              current-account
-            :edited-contact       changed-account
+           {:contact              current-multiaccount
+            :edited-contact       changed-multiaccount
             :editing?             editing?
             :allow-icon-change?   true
             :options              (if (not= (identicon/identicon public-key)
@@ -352,11 +352,11 @@
                                     (profile-icon-options-ext)
                                     profile-icon-options)
             :on-change-text-event :my-profile/update-name}]]
-         [share-profile-item (dissoc current-account :mnemonic)]
+         [share-profile-item (dissoc current-multiaccount :mnemonic)]
          [ens-item preferred-name {:registrar stateofus-registrar}]
          [contacts-list-item active-contacts-count]
          (when tribute-to-talk
            [tribute-to-talk-item tribute-to-talk])
-         [my-profile-settings current-account shown-account currency (nil? login-data) extensions]
+         [my-profile-settings current-multiaccount shown-multiaccount currency (nil? login-data) extensions]
          (when (nil? login-data)
-           [advanced shown-account on-show-advanced])]]])))
+           [advanced shown-multiaccount on-show-advanced])]]])))

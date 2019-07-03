@@ -1,10 +1,10 @@
 (ns status-im.ui.screens.routing.screens
   (:require [status-im.extensions.module :as extensions.module]
             [status-im.ui.screens.about-app.views :as about-app]
-            [status-im.ui.screens.accounts.create.views :as accounts.create]
-            [status-im.ui.screens.accounts.login.views :as login]
-            [status-im.ui.screens.accounts.recover.views :as recover]
-            [status-im.ui.screens.accounts.views :as accounts]
+            [status-im.ui.screens.multiaccounts.create.views :as multiaccounts.create]
+            [status-im.ui.screens.multiaccounts.login.views :as login]
+            [status-im.ui.screens.multiaccounts.recover.views :as recover]
+            [status-im.ui.screens.multiaccounts.views :as multiaccounts]
             [status-im.ui.screens.add-new.new-chat.views :as new-chat]
             [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
             [status-im.ui.screens.add-new.views :as add-new]
@@ -67,9 +67,9 @@
 (def all-screens
   {:login                                            login/login
    :progress                                         progress/progress
-   :create-account                                   accounts.create/create-account
+   :create-multiaccount                              multiaccounts.create/create-multiaccount
    :recover                                          recover/recover
-   :accounts                                         accounts/accounts
+   :multiaccounts                                    multiaccounts/multiaccounts
    :intro                                            intro/intro
    :intro-wizard                                     intro/wizard
    :hardwallet-authentication-method                 hardwallet.authentication/hardwallet-authentication-method

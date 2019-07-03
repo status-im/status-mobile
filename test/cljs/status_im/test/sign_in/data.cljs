@@ -80,7 +80,7 @@
     :timestamp                 1547186895328
     :deleted-at-clock-value    nil}])
 
-(def account
+(def multiaccount
   {:desktop-alpha-release-warning-shown? false
    :last-updated                         0
    :address                              "7540c34d6c4082391f12468580a9a4e0724c6755"
@@ -155,8 +155,8 @@
    :keycard-instance-uid                 nil
    :installation-id                      "618ec020-13c8-5505-8aa6-9c5444317e7f"})
 
-(def accounts
-  {"address" account})
+(def multiaccounts
+  {"address" multiaccount})
 
 (defn get-chats [_ _] chats)
 

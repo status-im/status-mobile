@@ -402,7 +402,7 @@
       (i18n/label :t/ens-got-it)])])
 
 (views/defview registration-pending [{:keys [state custom-domain?] :as props} usernames]
-  (views/letsubs [usernames [:account/usernames]]
+  (views/letsubs [usernames [:multiaccount/usernames]]
     [react/view {:style {:flex 1}}
      [react/scroll-view {:style {:flex 1}}
       [react/view {:style {:flex 1}}
@@ -557,11 +557,11 @@
        [message/text-message message]])]])
 
 (views/defview main []
-  (views/letsubs [{:keys [names account preferred-name show?]} [:ens.main/screen]]
+  (views/letsubs [{:keys [names multiaccount preferred-name show?]} [:ens.main/screen]]
     [react/view {:style {:flex 1}}
      [status-bar/status-bar {:type :main}]
      [toolbar/simple-toolbar
       (i18n/label :t/ens-usernames)]
      (if (seq names)
-       [registered names account show?]
+       [registered names multiaccount show?]
        [welcome])]))

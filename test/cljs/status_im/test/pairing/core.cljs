@@ -167,7 +167,7 @@
                               :photo-path "remote"
                               :system-tags #{}
                               :last-updated 1}
-            cofx {:db {:account/account {:public-key "us"}
+            cofx {:db {:multiaccount {:public-key "us"}
                        :contacts/contacts {"contact-1" old-contact-1
                                            "contact-2" new-contact-2
                                            "contact-3" contact-3
@@ -188,27 +188,27 @@
           (is (= expected (get-in
                            (pairing/handle-sync-installation cofx sync-message "us")
                            [:db :contacts/contacts]))))))
-    (testing "syncing account"
-      (let [old-account   {:name "old-name"
-                           :public-key "us"
-                           :photo-path "old-photo-path"
-                           :last-updated 0}
-            new-account   {:name "new-name"
-                           :public-key "us"
-                           :photo-path "new-photo-path"
-                           :last-updated 1}]
+    (testing "syncing multiaccount"
+      (let [old-multiaccount   {:name "old-name"
+                                :public-key "us"
+                                :photo-path "old-photo-path"
+                                :last-updated 0}
+            new-multiaccount   {:name "new-name"
+                                :public-key "us"
+                                :photo-path "new-photo-path"
+                                :last-updated 1}]
         (testing "newer update"
-          (let [cofx {:db {:account/account old-account}}
-                sync-message    {:account new-account}]
-            (is (= new-account (get-in (pairing/handle-sync-installation cofx sync-message "us")
-                                       [:db :account/account])))))
+          (let [cofx {:db {:multiaccount old-multiaccount}}
+                sync-message    {:multiaccount new-multiaccount}]
+            (is (= new-multiaccount (get-in (pairing/handle-sync-installation cofx sync-message "us")
+                                            [:db :multiaccount])))))
         (testing "older update"
-          (let [cofx {:db {:account/account new-account}}
-                sync-message    {:account old-account}]
-            (is (= new-account (get-in (pairing/handle-sync-installation cofx sync-message "us")
-                                       [:db :account/account])))))))
+          (let [cofx {:db {:multiaccount new-multiaccount}}
+                sync-message    {:multiaccount old-multiaccount}]
+            (is (= new-multiaccount (get-in (pairing/handle-sync-installation cofx sync-message "us")
+                                            [:db :multiaccount])))))))
     (testing "syncing public chats"
-      (let [cofx {:db {:account/account {:public-key "us"}}}]
+      (let [cofx {:db {:multiaccount {:public-key "us"}}}]
         (testing "a new chat"
           (let [sync-message {:chat {:public? true
                                      :chat-id "status"
@@ -217,7 +217,7 @@
                         [:db :chats "status"]))))))))
 
 (deftest handle-pair-installation-test
-  (let [cofx {:db {:account/account {:public-key "us"}
+  (let [cofx {:db {:multiaccount {:public-key "us"}
                    :pairing/installations {"1" {:has-bundle? true
                                                 :installation-id "1"}
                                            "2" {:has-bundle? false
@@ -238,10 +238,10 @@
 
 (deftest sync-installation-messages-test
   (testing "it creates a sync installation message"
-    (let [cofx {:db {:account/account {:public-key "us"
-                                       :name "name"
-                                       :photo-path "photo-path"
-                                       :last-updated 1}
+    (let [cofx {:db {:multiaccount {:public-key "us"
+                                    :name "name"
+                                    :photo-path "photo-path"
+                                    :last-updated 1}
                      :chats             {"status" {:public? true
                                                    :is-active true
                                                    :chat-id "status"}}
@@ -294,7 +294,7 @@
 (deftest handle-bundles-added-test
   (let [installation-1 {:has-bundle? false
                         :installation-id "installation-1"}
-        cofx {:db {:account/account {:public-key "us"}
+        cofx {:db {:multiaccount {:public-key "us"}
                    :pairing/installations {"installation-1" installation-1}}}]
     (testing "new installations"
       (let [new-installation {:identity "us" :installationID "installation-2"}

@@ -12,7 +12,7 @@
 
 (deftest start-test
   (let [address "a"
-        cofx {:db {:accounts/accounts {address {:installation-id "id"}}}}]
+        cofx {:db {:multiaccounts/multiaccounts {address {:installation-id "id"}}}}]
     (testing "installation-id"
       (let [actual (parse-node-config (node/start cofx address))]
         (is (= "id" (:InstallationID actual)))))))

@@ -37,7 +37,7 @@
 (def privacy-otions-visible? (reagent/atom true))
 
 (views/defview privacy-options []
-  (views/letsubs [{:keys [settings]} [:account/account]]
+  (views/letsubs [{:keys [settings]} [:multiaccount]]
     (let [privacy-enabled? (or (nil? (:web3-opt-in? settings)) (:web3-opt-in? settings))]
       (when @privacy-otions-visible?
         [react/view styles/privacy-container
@@ -50,7 +50,7 @@
              [icons/icon :main-icons/close {:color colors/white :width 19 :height 19}]]]]]
          [react/touchable-highlight
           {:on-press (when-not privacy-enabled?
-                       #(re-frame/dispatch [:accounts.ui/web3-opt-in-mode-switched (not privacy-enabled?)]))}
+                       #(re-frame/dispatch [:multiaccounts.ui/web3-opt-in-mode-switched (not privacy-enabled?)]))}
           [react/view {:style {:height 56 :justify-content :center :margin-top 8}}
            [react/view {:style {:flex-direction :row :align-items :center}}
             [radio/radio privacy-enabled?]
@@ -59,7 +59,7 @@
             (i18n/label :t/might-break)]]]
          [react/touchable-highlight
           {:on-press (when privacy-enabled?
-                       #(re-frame/dispatch [:accounts.ui/web3-opt-in-mode-switched (not privacy-enabled?)]))}
+                       #(re-frame/dispatch [:multiaccounts.ui/web3-opt-in-mode-switched (not privacy-enabled?)]))}
           [react/view {:style {:flex-direction :row  :height 40 :align-items :center}}
            [radio/radio (not privacy-enabled?)]
            [react/text {:style {:margin-left 14}} (i18n/label :t/always-allow)]]]]))))

@@ -58,7 +58,7 @@
                  "encryption-public-key" "04f2a432677a1b7c4f1bb22078135821d1d10fce23422297b5c808a545f2b61cdba38ee7394762172fc6ff5e9e28db7535e555efe2812905ffd4e0c25e82a98ae8"
                  "whisper-address"       "87df2285f90b71221fab6267b7cb37532fedbb1f"
                  "wallet-address"        "7e92236392a850980d00d0cd2a4b92886bd7fe7b"})
-           [:db :hardwallet :account])
+           [:db :hardwallet :multiaccount])
           [:whisper-private-key
            :whisper-public-key
            :encryption-public-key

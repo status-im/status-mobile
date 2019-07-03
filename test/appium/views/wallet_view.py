@@ -180,9 +180,9 @@ class BackupRecoveryPhraseWarningText(BaseButton):
         self.locator = self.Locator.accessibility_id('back-up-your-seed-phrase-warning')
 
 
-class AccountsMoreOptions(BaseButton):
+class MultiaccountMoreOptions(BaseButton):
     def __init__(self,driver):
-        super(AccountsMoreOptions, self).__init__(driver)
+        super(MultiaccountMoreOptions, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('accounts-more-options')
 
 
@@ -245,7 +245,7 @@ class WalletView(BaseView):
         self.backup_recovery_phrase_warning_text = BackupRecoveryPhraseWarningText(self.driver)
 
         # elements for multiaccount
-        self.accounts_more_options = AccountsMoreOptions(self.driver)
+        self.multiaccount_more_options = MultiaccountMoreOptions(self.driver)
         self.accounts_status_account = AccountsStatusAccount(self.driver)
         self.collectibles_button = CollectiblesButton(self.driver)
         self.set_currency_button = SetCurrencyButton(self.driver)
@@ -309,7 +309,7 @@ class WalletView(BaseView):
         return AssetCheckBox(self.driver, asset_name)
 
     def select_asset(self, *args):
-        self.accounts_more_options.click()
+        self.multiaccount_more_options.click()
         self.manage_assets_button.click()
         for asset in args:
             self.asset_checkbox_by_name(asset).click()
@@ -378,7 +378,7 @@ class WalletView(BaseView):
         """
         :param desired_currency: defines a currency designator which is expressed by ISO 4217 code
         """
-        self.accounts_more_options.click()
+        self.multiaccount_more_options.click()
         self.set_currency_button.click()
         desired_currency = self.element_by_text_part(desired_currency)
         desired_currency.scroll_to_element()

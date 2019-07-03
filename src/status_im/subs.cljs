@@ -2,9 +2,6 @@
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.accounts.model :as accounts.model]
-            [status-im.accounts.db :as accounts.db]
-            [status-im.pairing.core :as pairing]
             [status-im.browser.core :as browser]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.input :as commands.input]
@@ -21,6 +18,9 @@
             [status-im.fleet.core :as fleet]
             [status-im.group-chats.db :as group-chats.db]
             [status-im.i18n :as i18n]
+            [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.multiaccounts.db :as multiaccounts.db]
+            [status-im.pairing.core :as pairing]
             [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.tribute-to-talk.db :as tribute-to-talk.db]
             [status-im.tribute-to-talk.whitelist :as whitelist]
@@ -108,12 +108,12 @@
 (reg-root-key-sub :my-profile/editing? :my-profile/editing?)
 (reg-root-key-sub :extensions/profile :extensions/profile)
 (reg-root-key-sub :my-profile/profile :my-profile/profile)
-;;account
-(reg-root-key-sub :accounts/accounts :accounts/accounts)
-(reg-root-key-sub :accounts/login :accounts/login)
-(reg-root-key-sub :account/account :account/account)
-(reg-root-key-sub :accounts/create :accounts/create)
-(reg-root-key-sub :get-recover-account :accounts/recover)
+;;multiaccount
+(reg-root-key-sub :multiaccounts/multiaccounts :multiaccounts/multiaccounts)
+(reg-root-key-sub :multiaccounts/login :multiaccounts/login)
+(reg-root-key-sub :multiaccount :multiaccount)
+(reg-root-key-sub :multiaccounts/create :multiaccounts/create)
+(reg-root-key-sub :get-recover-multiaccount :multiaccounts/recover)
 ;;chat
 (reg-root-key-sub ::cooldown-enabled? :chat/cooldown-enabled?)
 (reg-root-key-sub ::chats :chats)
@@ -197,12 +197,12 @@
  (fn [desktop _]
    (get desktop :logging-enabled false)))
 
-;;TODO we have network in two different places see :account/network, what's the difference?
+;;TODO we have network in two different places see :multiaccount/network, what's the difference?
 (re-frame/reg-sub
  :network
- :<- [:account/account]
- (fn [current-account]
-   (get (:networks current-account) (:network current-account))))
+ :<- [:multiaccount]
+ (fn [current-multiaccount]
+   (get (:networks current-multiaccount) (:network current-multiaccount))))
 
 (re-frame/reg-sub
  :disconnected?
@@ -323,64 +323,64 @@
  (fn [chain-keyword]
    (tokens/native-currency chain-keyword)))
 
-;;ACCOUNT ==============================================================================================================
+;;MULTIACCOUNT ==============================================================================================================
 
 (re-frame/reg-sub
- :account/public-key
- :<- [:account/account]
+ :multiaccount/public-key
+ :<- [:multiaccount]
  (fn [{:keys [public-key]}]
    public-key))
 
 (re-frame/reg-sub
  :account/hex-address
- :<- [:account/account]
+ :<- [:multiaccount]
  (fn [{:keys [address]}]
    (ethereum/normalized-address address)))
 
 (re-frame/reg-sub
  :sign-in-enabled?
- :<- [:accounts/login]
+ :<- [:multiaccounts/login]
  :<- [:node-status]
  (fn [[{:keys [password]} status]]
    (and (or (nil? status) (= status :stopped))
-        (spec/valid? ::accounts.db/password
+        (spec/valid? ::multiaccounts.db/password
                      (security/safe-unmask-data password)))))
 
 (re-frame/reg-sub
  :settings/current-fleet
- :<- [:account-settings]
+ :<- [:multiaccount-settings]
  (fn [sett]
    (fleet/current-fleet-sub sett)))
 
 (re-frame/reg-sub
- :get-account-creation-next-enabled?
- :<- [:accounts/create]
+ :get-multiaccount-creation-next-enabled?
+ :<- [:multiaccounts/create]
  (fn [create]
-   (accounts.model/account-creation-next-enabled? create)))
+   (multiaccounts.model/multiaccount-creation-next-enabled? create)))
 
 (re-frame/reg-sub
- :account-settings
- :<- [:account/account]
+ :multiaccount-settings
+ :<- [:multiaccount]
  (fn [acc]
    (get acc :settings)))
 
 ;;TODO we have network in two different places see :network, what's the difference?
 (re-frame/reg-sub
- :account/network
- :<- [:account/account]
+ :multiaccount/network
+ :<- [:multiaccount]
  :<- [:get-network]
- (fn [[account network]]
-   (get-in account [:networks network])))
+ (fn [[multiaccount network]]
+   (get-in multiaccount [:networks network])))
 
 (re-frame/reg-sub
  :current-network-initialized?
- :<- [:account/network]
+ :<- [:multiaccount/network]
  (fn [network]
    (boolean network)))
 
 (re-frame/reg-sub
  :current-network-uses-rpc?
- :<- [:account/network]
+ :<- [:multiaccount/network]
  (fn [network]
    (get-in network [:config :UpstreamConfig :Enabled])))
 
@@ -391,7 +391,7 @@
 
 (re-frame/reg-sub
  :settings/current-log-level
- :<- [:account-settings]
+ :<- [:multiaccount-settings]
  (fn [sett]
    (or (get sett :log-level)
        config/log-level-status-go)))
@@ -499,9 +499,9 @@
  :chats/active-chats
  :<- [:contacts/contacts]
  :<- [::chats]
- :<- [:account/account]
- (fn [[contacts chats account]]
-   (chat.db/active-chats contacts chats account)))
+ :<- [:multiaccount]
+ (fn [[contacts chats multiaccount]]
+   (chat.db/active-chats contacts chats multiaccount)))
 
 (defn enrich-current-one-to-one-chat
   [{:keys [contact] :as current-chat} my-public-key ttt-settings
@@ -571,7 +571,7 @@
  :chats/current-chat
  :<- [:chats/active-chats]
  :<- [:chats/current-chat-id]
- :<- [:account/public-key]
+ :<- [:multiaccount/public-key]
  :<- [:mailserver/ranges]
  :<- [:chats/content-layout-height]
  :<- [:chats/current-chat-ui-prop :input-height]
@@ -738,11 +738,11 @@
 (re-frame/reg-sub
  :chats/photo-path
  :<- [:contacts/contacts]
- :<- [:account/account]
- (fn [[contacts account] [_ id]]
+ :<- [:multiaccount]
+ (fn [[contacts multiaccount] [_ id]]
    (or (:photo-path (contacts id))
-       (when (= id (:public-key account))
-         (:photo-path account)))))
+       (when (= id (:public-key multiaccount))
+         (:photo-path multiaccount)))))
 
 (re-frame/reg-sub
  :chats/unread-messages-number
@@ -815,16 +815,16 @@
 
 (re-frame/reg-sub
  :settings/bootnodes-enabled
- :<- [:account/account]
- (fn [account]
-   (let [{:keys [network settings]} account]
+ :<- [:multiaccount]
+ (fn [multiaccount]
+   (let [{:keys [network settings]} multiaccount]
      (get-in settings [:bootnodes network]))))
 
 (re-frame/reg-sub
  :settings/network-bootnodes
- :<- [:account/account]
- (fn [account]
-   (get-in account [:bootnodes (:network account)])))
+ :<- [:multiaccount]
+ (fn [multiaccount]
+   (get-in multiaccount [:bootnodes (:network multiaccount)])))
 
 (re-frame/reg-sub
  :get-manage-bootnode
@@ -903,7 +903,7 @@
 
 (re-frame/reg-sub
  :stickers/recent
- :<- [:account/account]
+ :<- [:multiaccount]
  :<- [:stickers/installed-packs-vals]
  (fn [[{:keys [recent-stickers]} packs]]
    (map (fn [hash] {:hash hash :pack (find-pack-id-for-hash hash packs)}) recent-stickers)))
@@ -912,9 +912,9 @@
 
 (re-frame/reg-sub
  :extensions/all-extensions
- :<- [:account/account]
- (fn [account]
-   (get account :extensions)))
+ :<- [:multiaccount]
+ (fn [multiaccount]
+   (get multiaccount :extensions)))
 
 ;;HOME =================================================================================================================
 
@@ -945,19 +945,19 @@
 
 (re-frame/reg-sub
  :pairing/installation-id
- :<- [:account/account]
+ :<- [:multiaccount]
  :installation-id)
 
 (re-frame/reg-sub
  :pairing/installation-name
- :<- [:account/account]
- (fn [account] (:installation-name account)))
+ :<- [:multiaccount]
+ (fn [multiaccount] (:installation-name multiaccount)))
 
 ;;PROFILE ==============================================================================================================
 
 (re-frame/reg-sub
  :get-profile-unread-messages-number
- :<- [:account/account]
+ :<- [:multiaccount]
  (fn [{:keys [seed-backed-up? mnemonic]}]
    (if (or seed-backed-up? (string/blank? mnemonic)) 0 1)))
 
@@ -983,7 +983,7 @@
 
 (re-frame/reg-sub
  :wallet.settings/currency
- :<- [:account-settings]
+ :<- [:multiaccount-settings]
  (fn [settings]
    (or (get-in settings [:wallet :currency]) :usd)))
 
@@ -1067,9 +1067,9 @@
 (re-frame/reg-sub
  :wallet/visible-tokens-symbols
  :<- [:ethereum/chain-keyword]
- :<- [:account/account]
- (fn [[chain current-account]]
-   (get-in current-account [:settings :wallet :visible-tokens chain])))
+ :<- [:multiaccount]
+ (fn [[chain current-multiaccount]]
+   (get-in current-multiaccount [:settings :wallet :visible-tokens chain])))
 
 (re-frame/reg-sub
  :wallet/visible-assets
@@ -1396,9 +1396,9 @@
  :<- [:mailserver/request-error?]
  :<- [:mailserver/fetching?]
  :<- [:network/type]
- :<- [:account/account]
+ :<- [:multiaccount]
  (fn [[offline? disconnected? mailserver-connecting? mailserver-connection-error?
-       mailserver-request-error? mailserver-fetching? network-type account]]
+       mailserver-request-error? mailserver-fetching? network-type multiaccount]]
    (let [wallet-offline? (and offline?
                               ;; There's no wallet of desktop
                               (not platform/desktop?))
@@ -1423,7 +1423,7 @@
                            :t/mailserver-request-error-status
 
                            (and (mobile-network-utils/cellular? network-type)
-                                (not (:syncing-on-mobile-network? account)))
+                                (not (:syncing-on-mobile-network? multiaccount)))
                            :mobile-network
 
                            :else nil)]
@@ -1495,11 +1495,11 @@
 (re-frame/reg-sub
  :contacts/contact-name-by-identity
  :<- [:contacts/contacts]
- :<- [:account/account]
- (fn [[contacts current-account] [_ identity]]
-   (let [me? (= (:public-key current-account) identity)]
+ :<- [:multiaccount]
+ (fn [[contacts current-multiaccount] [_ identity]]
+   (let [me? (= (:public-key current-multiaccount) identity)]
      (if me?
-       (:name current-account)
+       (:name current-multiaccount)
        (:name (contacts identity))))))
 
 (re-frame/reg-sub
@@ -1512,9 +1512,9 @@
  :contacts/current-chat-contacts
  :<- [:chats/current-chat]
  :<- [:contacts/contacts]
- :<- [:account/account]
- (fn [[{:keys [contacts admins]} all-contacts current-account]]
-   (contact.db/get-all-contacts-in-group-chat contacts admins all-contacts current-account)))
+ :<- [:multiaccount]
+ (fn [[{:keys [contacts admins]} all-contacts current-multiaccount]]
+   (contact.db/get-all-contacts-in-group-chat contacts admins all-contacts current-multiaccount)))
 
 (re-frame/reg-sub
  :contacts/contacts-by-chat
@@ -1712,7 +1712,7 @@
 
 (re-frame/reg-sub
  :mailserver/preferred-id
- :<- [:account-settings]
+ :<- [:multiaccount-settings]
  (fn [settings]
    (get-in settings [:mailserver (fleet/current-fleet-sub settings)])))
 
@@ -1753,7 +1753,7 @@
 ;; TRIBUTE TO TALK
 (re-frame/reg-sub
  :tribute-to-talk/settings
- :<- [:account-settings]
+ :<- [:multiaccount-settings]
  :<- [:ethereum/chain-keyword]
  (fn [[settings chain-keyword]]
    (get-in settings [:tribute-to-talk chain-keyword])))
@@ -1850,34 +1850,34 @@
 
 (re-frame/reg-sub
  :ens.stateofus/registrar
- :<- [:account/network]
+ :<- [:multiaccount/network]
  (fn [network]
    (let [chain (ethereum/network->chain-keyword network)]
      (get stateofus/registrars chain))))
 
 (re-frame/reg-sub
- :account/usernames
- :<- [:account/account]
- (fn [account]
-   (:usernames account)))
+ :multiaccount/usernames
+ :<- [:multiaccount]
+ (fn [multiaccount]
+   (:usernames multiaccount)))
 
 (re-frame/reg-sub
  :ens/preferred-name
- :<- [:account/account]
- (fn [account]
-   (:preferred-name account)))
+ :<- [:multiaccount]
+ (fn [multiaccount]
+   (:preferred-name multiaccount)))
 
 (re-frame/reg-sub
  :ens/show?
- :<- [:account/account]
- (fn [account]
-   (:show-name? account)))
+ :<- [:multiaccount]
+ (fn [multiaccount]
+   (:show-name? multiaccount)))
 
 (re-frame/reg-sub
  :ens.registration/screen
  :<- [:ens/registration]
  :<- [:ens.stateofus/registrar]
- :<- [:account/account]
+ :<- [:multiaccount]
  (fn [[{:keys [custom-domain? username-candidate] :as ens} registrar {:keys [address public-key]}] _]
    {:state          (or (get-in ens [:states username-candidate]) :initial)
     :username       username-candidate
@@ -1898,13 +1898,13 @@
 
 (re-frame/reg-sub
  :ens.main/screen
- :<- [:account/usernames]
- :<- [:account/account]
+ :<- [:multiaccount/usernames]
+ :<- [:multiaccount]
  :<- [:ens/preferred-name]
  :<- [:ens/show?]
- (fn [[names account preferred-name show?] _]
+ (fn [[names multiaccount preferred-name show?] _]
    {:names          names
-    :account        account
+    :multiaccount   multiaccount
     :preferred-name preferred-name
     :show?          (or show? false)}))
 
@@ -1918,7 +1918,7 @@
 
 (re-frame/reg-sub
  :signing/phrase
- :<- [:account/account]
+ :<- [:multiaccount]
  (fn [{:keys [signing-phrase]}]
    signing-phrase))
 

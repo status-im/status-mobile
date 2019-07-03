@@ -37,7 +37,7 @@
                                     :chat-id "a"})))))
 
 (deftest add-own-received-message
-  (let [db {:account/account {:public-key "me"}
+  (let [db {:multiaccount {:public-key "me"}
             :view-id :chat
             :current-chat-id "chat-id"
             :chats {"chat-id" {:messages {}}}}]
@@ -61,7 +61,7 @@
           (is (not (:shh/post actual))))))))
 
 (deftest receive-many-clock-value
-  (let [db {:account/account {:public-key "me"}
+  (let [db {:multiaccount {:public-key "me"}
             :view-id :chat
             :current-chat-id "chat-id"
             :chats {"chat-id" {:last-clock-value 10
@@ -94,7 +94,7 @@
 (deftest receive-group-chats
   (let [cofx                 {:db {:chats {"chat-id" {:contacts #{"present"}
                                                       :members-joined #{"a"}}}
-                                   :account/account {:public-key "a"}
+                                   :multiaccount {:public-key "a"}
                                    :current-chat-id "chat-id"
                                    :view-id :chat}}
         cofx-without-member  (update-in cofx [:db :chats "chat-id" :members-joined] disj "a")
@@ -127,7 +127,7 @@
 
 (deftest receive-public-chats
   (let [cofx                 {:db {:chats {"chat-id" {:public? true}}
-                                   :account/account {:public-key "a"}
+                                   :multiaccount {:public-key "a"}
                                    :current-chat-id "chat-id"
                                    :view-id :chat}}
         valid-message        {:chat-id     "chat-id"
@@ -149,7 +149,7 @@
 
 (deftest receive-one-to-one
   (let [cofx                 {:db {:chats {"matching" {}}
-                                   :account/account {:public-key "me"}
+                                   :multiaccount {:public-key "me"}
                                    :current-chat-id "chat-id"
                                    :view-id :chat}}
         valid-message        {:chat-id     "matching"
@@ -180,7 +180,7 @@
 
 (deftest receive-send-seen
   (let [cofx         {:db {:chats {"chat-id" {}}
-                           :account/account {:public-key "a"}
+                           :multiaccount {:public-key "a"}
                            :current-chat-id "chat-id"
                            :view-id :chat}}
         message      {:chat-id     "chat-id"

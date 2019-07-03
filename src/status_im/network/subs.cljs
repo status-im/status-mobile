@@ -19,7 +19,7 @@
 
 (re-frame/reg-sub
  :get-networks
- :<- [:account/account]
+ :<- [:multiaccount]
  :<- [:networks/networks]
  (fn [[{:keys [networks]} default-networks]]
    (let [networks (map (label-networks default-networks) (sort-by :name (vals networks)))

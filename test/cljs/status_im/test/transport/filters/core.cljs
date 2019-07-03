@@ -27,7 +27,7 @@
           (is (= fx {:filters/remove-filters [{:chat-id chat-id :filter-id "a"}]})))))
     (testing "the user is still in some group chats"
       (testing "we joined, and group chat is active it does not remove filters"
-        (let [fx (transport.filters/stop-listening {:db {:account/account {:public-key me}
+        (let [fx (transport.filters/stop-listening {:db {:multiaccount {:public-key me}
                                                          :chats
                                                          {chat-id {:is-active true
                                                                    :members-joined #{me}
@@ -37,7 +37,7 @@
                                                    member-1)]
           (is (not fx))))
       (testing "we didn't join, it removes transport"
-        (let [fx (transport.filters/stop-listening {:db {:account/account {:public-key me}
+        (let [fx (transport.filters/stop-listening {:db {:multiaccount {:public-key me}
                                                          :chats
                                                          {chat-id {:is-active true
                                                                    :members-joined #{member-1}

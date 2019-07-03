@@ -91,22 +91,22 @@
          {:on-press #(re-frame/dispatch [:hardwallet.ui/card-ready-next-button-pressed])
           :forward? true}]]]]]))
 
-(defn- import-account []
+(defn- import-multiaccount []
   [react/view styles/card-ready-container
    [react/view styles/card-ready-inner-container
     [react/view (assoc styles/center-container :margin-top 68)
      [react/text {:style styles/center-title-text}
       (i18n/label :t/card-is-paired)]
      [react/text {:style styles/estimated-time-text}
-      (i18n/label :t/ready-to-import-keycard-account)]]
+      (i18n/label :t/ready-to-import-keycard-multiaccount)]]
     [react/view]]
    [react/view styles/back-and-next-buttons-container
     [components.common/bottom-button
-     {:on-press #(re-frame/dispatch [:hardwallet.ui/import-account-back-button-pressed])
+     {:on-press #(re-frame/dispatch [:hardwallet.ui/import-multiaccount-back-button-pressed])
       :back?    true
       :label    (i18n/label :t/back)}]
     [components.common/bottom-button
-     {:on-press #(re-frame/dispatch [:hardwallet.ui/import-account-next-button-pressed])
+     {:on-press #(re-frame/dispatch [:hardwallet.ui/import-multiaccount-next-button-pressed])
       :forward? true}]]])
 
 (defview display-recovery-phrase []
@@ -180,11 +180,11 @@
 
 (defview enter-recovery-phrase []
   (letsubs [width [:dimensions/window-width]
-            recovered-account [:get-recover-account]]
-    (let [{:keys [passphrase passphrase-valid? passphrase-error passphrase-warning]} recovered-account
+            recovered-multiaccount [:get-recover-multiaccount]]
+    (let [{:keys [passphrase passphrase-valid? passphrase-error passphrase-warning]} recovered-multiaccount
           disabled? (not passphrase-valid?)
           validate-passphrase (debounce
-                               #(re-frame/dispatch [:accounts.recover.ui/passphrase-input-blured])
+                               #(re-frame/dispatch [:multiaccounts.recover.ui/passphrase-input-blured])
                                1000)]
       [react/view styles/enter-pair-code-container
        [react/view styles/enter-pair-code-title-container
@@ -203,7 +203,7 @@
             :default-value       passphrase
             :auto-correct        false
             :on-change-text      #(do
-                                    (re-frame/dispatch [:accounts.recover.ui/passphrase-input-changed (security/mask-data %)])
+                                    (re-frame/dispatch [:multiaccounts.recover.ui/passphrase-input-changed (security/mask-data %)])
                                     (validate-passphrase))
             :error               (cond passphrase-error (i18n/label passphrase-error)
                                        passphrase-warning (i18n/label passphrase-warning))}]]]]
@@ -444,11 +444,11 @@
                  :estimated-time-seconds 30
                  :step-number            3}])
 
-(defn- importing-account []
+(defn- importing-multiaccount []
   [react/view styles/loading-view-container
    [react/view styles/center-container
     [react/text {:style styles/center-title-text}
-     (i18n/label :t/importing-keycard-account)]
+     (i18n/label :t/importing-keycard-multiaccount)]
     [react/text {:style styles/estimated-time-text}
      (i18n/label :t/this-will-take-few-seconds)]]
    [react/view styles/waiting-indicator-container
@@ -474,8 +474,8 @@
     :recovery-phrase-confirm-word1 [recovery-phrase-confirm-word step]
     :recovery-phrase-confirm-word2 [recovery-phrase-confirm-word step]
     :error [error]
-    :import-account [import-account]
-    :importing-account [importing-account]
+    :import-multiaccount [import-multiaccount]
+    :importing-multiaccount [importing-multiaccount]
     [begin]))
 
 (defview hardwallet-setup []

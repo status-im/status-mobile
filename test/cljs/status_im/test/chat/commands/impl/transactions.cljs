@@ -6,8 +6,8 @@
 
 (def public-key "0x04f96bc2229a0ba4125815451e47491d9ab923b8b03f205f6ff11d731c0f5759079c1aa0f3b73233c114372695c30a8e20ce18f73fafa23f924736cc39e726c3de")
 (def address "f86b3cefae5851c19abfc48b7fb034b1dfa70b52")
-(def cofx {:db {:account/account   {:settings              {:wallet {:visible-tokens {:mainnet #{:SNT}}}}
-                                    :wallet-set-up-passed? true}
+(def cofx {:db {:multiaccount   {:settings              {:wallet {:visible-tokens {:mainnet #{:SNT}}}}
+                                 :wallet-set-up-passed? true}
                 :chain             "mainnet"
                 :current-chat-id   public-key
                 :contacts/contacts {public-key {:name       "Recipient"

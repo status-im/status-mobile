@@ -21,7 +21,7 @@
 
 (defn get-config [view-id]
   (get
-   {:create-account                  {:flat? true}
+   {:create-multiaccount             {:flat? true}
     :chat-modal                      {:type :modal-white}
     :intro                           {:flat? true}
     :home                            {:type :main}

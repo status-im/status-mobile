@@ -49,7 +49,7 @@
 (def recipient-address "0xdff1a5e4e57d9723b3294e0f4413372e3ea9a8ff")
 
 (def user-cofx
-  {:db {:account/account
+  {:db {:multiaccount
         {:address "954d4393515747ea75808a0301fb73317ae1e460"
          :network "testnet_rpc"
          :networks {"testnet_rpc" {:config {:NetworkId 3}}}
@@ -84,7 +84,7 @@
    :contacts/contacts
    {public-key {:tribute-to-talk {}
                 :system-tags #{}}}
-   :account/account
+   :multiaccount
    {:public-key my-public-key
     :network "mainnet_rpc"
     :networks {"mainnet_rpc" {:id "mainnet_rpc"
@@ -97,7 +97,7 @@
     (let [result (tribute-to-talk/check-tribute {:db test-db} my-public-key)]
       (is (= (-> test-db
                  (assoc :navigation/screen-params {:tribute-to-talk {:unavailable? true}})
-                 (assoc-in [:account/account :settings] {:tribute-to-talk {:mainnet nil}}))
+                 (assoc-in [:multiaccount :settings] {:tribute-to-talk {:mainnet nil}}))
              (:db result)))))
 
   (testing "No contract in network, another public key"
@@ -107,7 +107,7 @@
 
   (testing "Contract in network, another public key"
     (let [result (tribute-to-talk/check-tribute {:db
-                                                 (assoc-in test-db [:account/account :network] "testnet_rpc")} public-key)]
+                                                 (assoc-in test-db [:multiaccount :network] "testnet_rpc")} public-key)]
       (is (= "0xC61aa0287247a0398589a66fCD6146EC0F295432"
              (get-in result [:tribute-to-talk/get-tribute :contract])))))
 

@@ -8,7 +8,7 @@
     (testing "no contact-recovery in place"
       (let [cofx {:now "now"
                   :db {:contact-recovery/pop-up #{}
-                       :account/account {:settings {:pfs? true}}}}
+                       :multiaccount {:settings {:pfs? true}}}}
             actual (contact-recovery/handle-contact-recovery-fx cofx public-key)]
         (testing "it sets the pop up as displayed"
           (is (get-in actual [:db :contact-recovery/pop-up public-key])))

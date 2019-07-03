@@ -9,7 +9,7 @@
             status-im.data-store.installations
             status-im.data-store.transport
             status-im.data-store.browser
-            status-im.data-store.accounts
+            status-im.data-store.multiaccounts
             status-im.data-store.mailservers))
 
 (defn init [encryption-key]
@@ -24,9 +24,9 @@
               (log/error "Could not move realms" error)))
      (then #(data-source/open-base-realm encryption-key)))))
 
-(defn change-account
+(defn change-multiaccount
   [address password encryption-key create-database-if-not-exist?]
-  (log/debug "changing account to: " address)
+  (log/debug "changing multiaccount to: " address)
   (..
    (js/Promise.
     (fn [on-success on-error]

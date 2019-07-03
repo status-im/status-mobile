@@ -6,7 +6,7 @@
             [status-im.transport.message.core :as message]))
 
 (deftest init-whisper
-  (let [cofx {:db {:account/account {:public-key "1"}
+  (let [cofx {:db {:multiaccount {:public-key "1"}
                    :transport/chats {"1" {:topic   "topic-1"
                                           :sym-key "sk1"}
                                      "2" {}

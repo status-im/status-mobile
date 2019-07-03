@@ -65,7 +65,7 @@
   (when (and @node-started (status))
     (.startOnboarding (status) n mnemonic-length on-result)))
 
-(defn import-onboarding-account [id password on-result]
+(defn import-onboarding-multiaccount [id password on-result]
   (when (and @node-started (status))
     (.importOnboardingAccount (status) id password on-result)))
 

@@ -26,7 +26,7 @@
 (views/defview account-card [name]
   (views/letsubs [currency        [:wallet/currency]
                   portfolio-value [:portfolio-value]
-                  {:keys [address]} [:account/account]]
+                  {:keys [address]} [:multiaccount]]
     [react/touchable-highlight {:on-press      #(re-frame/dispatch [:navigate-to :wallet-account])
                                 :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                                                     {:content        sheets/send-receive
@@ -137,7 +137,7 @@
      [react/text {:style {:color colors/gray}} (i18n/label :t/wallet-total-value)]]))
 
 (views/defview accounts-options []
-  (views/letsubs [{:keys [seed-backed-up?]} [:account/account]]
+  (views/letsubs [{:keys [seed-backed-up?]} [:multiaccount]]
     [react/view {:flex-direction :row :align-items :center}
      [react/view {:flex 1 :padding-left 16}
       (when-not seed-backed-up?

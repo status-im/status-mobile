@@ -149,14 +149,14 @@
                   :title-label       (case step
                                        :current :t/current-pin
                                        :login :t/current-pin
-                                       :import-account :t/current-pin
+                                       :import-multiaccount :t/current-pin
                                        :original :t/create-a-pin
                                        :confirmation :t/repeat-pin
                                        :t/current-pin)
                   :description-label (case step
                                        :current :t/current-pin-description
                                        :sign :t/current-pin-description
-                                       :import-account :t/current-pin-description
+                                       :import-multiaccount :t/current-pin-description
                                        :login :t/login-pin-description
                                        :t/new-pin-description)
                   :step              step

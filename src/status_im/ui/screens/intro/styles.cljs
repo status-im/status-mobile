@@ -61,7 +61,7 @@
    :background-color (if selected? colors/blue-light colors/white)
    :padding-vertical 10})
 
-(def account-image
+(def multiaccount-image
   {:width         40
    :height        40
    :border-radius 20

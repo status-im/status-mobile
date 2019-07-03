@@ -1,7 +1,7 @@
 (ns status-im.network.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.accounts.update.core :as accounts.update]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.chaos-mode.core :as chaos-mode]
             [status-im.ethereum.core :as ethereum]
             [status-im.fleet.core :as fleet-core]
@@ -54,7 +54,7 @@
        (not-any? identity)))
 
 (defn get-network-id-for-chain-id [{:keys [db]} chain-id]
-  (let [networks (get-in db [:account/account :networks])
+  (let [networks (get-in db [:multiaccount :networks])
         filtered (filter #(= chain-id (get-in % [1 :config :NetworkId])) networks)]
     (first (keys filtered))))
 
@@ -74,7 +74,7 @@
      :config     config}))
 
 (defn get-network [{:keys [db]} network-id]
-  (get-in db [:account/account :networks network-id]))
+  (get-in db [:multiaccount :networks network-id]))
 
 (fx/defn set-input
   [{:keys [db]} input-key value]
@@ -90,7 +90,7 @@
      (handler data cofx))))
 
 (fx/defn save
-  [{{:networks/keys [manage] :account/keys [account] :as db} :db
+  [{{:networks/keys [manage] :keys [multiaccount] :as db} :db
     random-id-generator :random-id-generator :as cofx}
    {:keys [data success-event on-success on-failure network-id chain-id-unique?]}]
   (let [data (or data manage)]
@@ -103,14 +103,14 @@
                                       (:value url)
                                       (:value chain)
                                       (:value chain-id))
-            current-networks (:networks account)
+            current-networks (:networks multiaccount)
             new-networks (merge {(:id network) network} current-networks)]
         (if (or (not chain-id-unique?)
                 (chain-id-available? current-networks network))
           (fx/merge cofx
                     {:db (dissoc db :networks/manage)}
                     #(action-handler on-success (:id network) %)
-                    (accounts.update/account-update
+                    (multiaccounts.update/multiaccount-update
                      {:networks new-networks}
                      {:success-event success-event}))
           (action-handler on-failure "chain-id already defined" nil)))
@@ -124,7 +124,7 @@
 
 (fx/defn connect-success [{:keys [db] :as cofx}
                           {:keys [network-id on-success client-version]}]
-  (let [current-network (get-in db [:account/account :networks (:network db)])
+  (let [current-network (get-in db [:multiaccount :networks (:network db)])
         network-with-upstream-rpc? (ethereum/network-with-upstream-rpc?
                                     current-network)]
     (fx/merge
@@ -150,7 +150,7 @@
                   nil))
 
 (fx/defn connect [{:keys [db] :as cofx} {:keys [network-id on-success on-failure]}]
-  (if-let [config (get-in db [:account/account :networks network-id :config])]
+  (if-let [config (get-in db [:multiaccount :networks network-id :config])]
     (if-let [upstream-url (get-in config [:UpstreamConfig :URL])]
       {:http-post {:url                   upstream-url
                    :data                  (types/clj->json [{:jsonrpc "2.0"
@@ -201,10 +201,10 @@
    (connect-failure data)))
 
 (fx/defn delete
-  [{{:account/keys [account]} :db :as cofx} {:keys [network on-success on-failure]}]
-  (let [current-network? (= (:network account) network)]
+  [{{:keys [multiaccount]} :db :as cofx} {:keys [network on-success on-failure]}]
+  (let [current-network? (= (:network multiaccount) network)]
     (if (or current-network?
-            (not (get-in account [:networks network])))
+            (not (get-in multiaccount [:networks network])))
       (fx/merge cofx
                 {:ui/show-error (i18n/label :t/delete-network-error)}
                 #(action-handler on-failure network %))
@@ -218,26 +218,26 @@
 
 (fx/defn save-non-rpc-network
   [{:keys [db now] :as cofx} network]
-  (accounts.update/account-update cofx
-                                  {:network      network
-                                   :last-updated now}
-                                  {:success-event [:network.callback/non-rpc-network-saved]}))
+  (multiaccounts.update/multiaccount-update cofx
+                                            {:network      network
+                                             :last-updated now}
+                                            {:success-event [:network.callback/non-rpc-network-saved]}))
 
 (fx/defn save-rpc-network
   [{:keys [now] :as cofx} network]
-  (accounts.update/account-update
+  (multiaccounts.update/multiaccount-update
    cofx
    {:network      network
     :last-updated now}
-   {:success-event [:accounts.update.callback/save-settings-success]}))
+   {:success-event [:multiaccounts.update.callback/save-settings-success]}))
 
 (fx/defn remove-network
   [{:keys [db now] :as cofx} network success-event]
-  (let [networks (dissoc (get-in db [:account/account :networks]) network)]
-    (accounts.update/account-update cofx
-                                    {:networks     networks
-                                     :last-updated now}
-                                    {:success-event success-event})))
+  (let [networks (dissoc (get-in db [:multiaccount :networks]) network)]
+    (multiaccounts.update/multiaccount-update cofx
+                                              {:networks     networks
+                                               :last-updated now}
+                                              {:success-event success-event})))
 
 (fx/defn save-network
   [cofx]

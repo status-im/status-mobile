@@ -131,8 +131,8 @@ class WalletButton(TabButton):
 
     def click(self):
         self.driver.info('Tap on %s' % self.name)
-        from views.wallet_view import AccountsMoreOptions
-        self.click_until_presence_of_element(AccountsMoreOptions(self.driver))
+        from views.wallet_view import MultiaccountMoreOptions
+        self.click_until_presence_of_element(MultiaccountMoreOptions(self.driver))
         return self.navigate()
 
 

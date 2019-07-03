@@ -283,7 +283,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         signin_view = profile.logout()
         if signin_view.ok_button.is_element_displayed():
             signin_view.ok_button.click()
-        signin_view.other_accounts_button.click()
+        signin_view.other_multiaccounts_button.click()
 
         if not signin_view.privacy_policy_link.is_element_displayed():
             self.driver.fail('{} Sign in view!'.format(no_link_found_error_msg))

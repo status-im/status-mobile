@@ -40,7 +40,7 @@
 
 (fx/defn check-sync-state
   [{:keys [db] :as cofx}]
-  (if (:account/account db)
+  (if (:multiaccount db)
     {:json-rpc/call
      [{:method "eth_syncing"
        :on-success
@@ -54,10 +54,10 @@
     (semaphores/free cofx :check-sync-state?)))
 
 (fx/defn start-check-sync-state
-  [{{:keys [network account/account] :as db} :db :as cofx}]
+  [{{:keys [network multiaccount] :as db} :db :as cofx}]
   (when (and (not (semaphores/locked? cofx :check-sync-state?))
              (not (ethereum/network-with-upstream-rpc?
-                   (get-in account [:networks network]))))
+                   (get-in multiaccount [:networks network]))))
     (fx/merge cofx
               (check-sync-state)
               (semaphores/lock :check-sync-state?))))
@@ -65,8 +65,8 @@
 (fx/defn initialize-protocol
   [{:data-store/keys [transport mailserver-topics mailservers]
     :keys [db] :as cofx}]
-  (let [network (get-in db [:account/account :network])
-        network-id (str (get-in db [:account/account :networks network :config :NetworkId]))]
+  (let [network (get-in db [:multiaccount :network])
+        network-id (str (get-in db [:multiaccount :networks network :config :NetworkId]))]
     (fx/merge cofx
               {:db (assoc db
                           :rpc-url constants/ethereum-rpc-url

@@ -2,7 +2,7 @@
   (:require [cljs.spec.alpha :as spec]
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
-            [status-im.accounts.model :as accounts.model]
+            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.chat.models :as chat]
             [status-im.constants :as constants]
             [status-im.ethereum.eip681 :as eip681]
@@ -128,7 +128,7 @@
   "Store url in the database if the user is not logged in, to be processed
   on login, otherwise just handle it"
   [cofx url]
-  (if (accounts.model/logged-in? cofx)
+  (if (multiaccounts.model/logged-in? cofx)
     (route-url cofx url)
     (store-url-for-later cofx url)))
 

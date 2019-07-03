@@ -4,14 +4,14 @@
    [taoensso.timbre :as log]
    [re-frame.core :as re-frame]
    [status-im.contact.db :as contact.db]
-   [status-im.utils.fx :as fx]
-   [status-im.transport.utils :as utils]
-   [status-im.data-store.accounts :as data-store.accounts]
+   [status-im.data-store.multiaccounts :as data-store.multiaccounts]
    [status-im.ethereum.json-rpc :as json-rpc]
-   [status-im.accounts.model :as accounts.model]
+   [status-im.utils.fx :as fx]
    [status-im.utils.handlers :as handlers]
    [status-im.mailserver.topics :as mailserver.topics]
-   [status-im.mailserver.core :as mailserver]))
+   [status-im.mailserver.core :as mailserver]
+   [status-im.multiaccounts.model :as multiaccounts.model]
+   [status-im.transport.utils :as utils]))
 
 (defn load-filters-rpc [chats on-success on-failure]
   (json-rpc/call {:method "shhext_loadFilters"
@@ -283,7 +283,7 @@
   "We can stop listening to contact codes when we don't have any active chat
   with the user (one-to-one or group-chat), and it is not in our contacts"
   [{:keys [db] :as cofx} chat-id]
-  (let [my-public-key (accounts.model/current-public-key cofx)
+  (let [my-public-key (multiaccounts.model/current-public-key cofx)
         one-to-one?   (not (get-in db [:chats chat-id :group-chat]))
         public?       (get-in db [:chats chat-id :public?])
         active-group-chats (filter (fn [{:keys [is-active members members-joined]}]

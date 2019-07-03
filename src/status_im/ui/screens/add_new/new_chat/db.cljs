@@ -6,8 +6,8 @@
             [clojure.string :as string]))
 
 (defn own-public-key?
-  [{:account/keys [account]} public-key]
-  (= (:public-key account) public-key))
+  [{:keys [multiaccount]} public-key]
+  (= (:public-key multiaccount) public-key))
 
 (defn validate-pub-key [db public-key]
   (cond

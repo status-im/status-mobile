@@ -1,7 +1,7 @@
 (ns status-im.init.core
   (:require [re-frame.core :as re-frame]
-            [status-im.accounts.login.core :as accounts.login]
-            [status-im.accounts.update.core :as accounts.update]
+            [status-im.multiaccounts.login.core :as multiaccounts.login]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.browser.core :as browser]
             [status-im.chat.models :as chat-model]
             [status-im.contact.core :as contact]
@@ -52,9 +52,9 @@
       (then reset-keychain!)
       (catch reset-keychain!)))
 
-(defn reset-account-data! [address]
-  (let [callback #(re-frame/dispatch [:init.callback/account-db-removed])]
-    (.. (realm/delete-account-realm address)
+(defn reset-multiaccount-data! [address]
+  (let [callback #(re-frame/dispatch [:init.callback/multiaccount-db-removed])]
+    (.. (realm/delete-multiaccount-realm address)
         (then callback)
         (catch callback))))
 
@@ -127,70 +127,70 @@
     :on-cancel           #(re-frame/dispatch [:init.ui/data-reset-cancelled encryption-key])
     :on-accept           #(re-frame/dispatch [:init.ui/data-reset-accepted])}})
 
-(fx/defn load-accounts [{:keys [db all-accounts]}]
-  (let [accounts (->> all-accounts
-                      (map (fn [{:keys [address] :as account}]
-                             [address account]))
-                      (into {}))]
-    {:db (assoc db :accounts/accounts accounts)}))
+(fx/defn load-multiaccounts [{:keys [db all-multiaccounts]}]
+  (let [multiaccounts (->> all-multiaccounts
+                           (map (fn [{:keys [address] :as multiaccount}]
+                                  [address multiaccount]))
+                           (into {}))]
+    {:db (assoc db :multiaccounts/multiaccounts multiaccounts)}))
 
 (fx/defn initialize-views
   [cofx]
-  (let [{{:accounts/keys [accounts] :as db} :db} cofx]
-    (if (empty? accounts)
+  (let [{{:multiaccounts/keys [multiaccounts] :as db} :db} cofx]
+    (if (empty? multiaccounts)
       (navigation/navigate-to-cofx cofx :intro nil)
-      (let [account-with-notification
+      (let [multiaccount-with-notification
             (when-not platform/desktop?
               (notifications/lookup-contact-pubkey-from-hash
                cofx
                (first (keys (:push-notifications/stored db)))))
             selection-fn
-            (if (not-empty account-with-notification)
-              #(filter (fn [account]
-                         (= account-with-notification
-                            (:public-key account)))
+            (if (not-empty multiaccount-with-notification)
+              #(filter (fn [multiaccount]
+                         (= multiaccount-with-notification
+                            (:public-key multiaccount)))
                        %)
               #(sort-by :last-sign-in > %))
-            {:keys [address public-key photo-path name]} (first (selection-fn (vals accounts)))]
-        (accounts.login/open-login cofx address photo-path name public-key)))))
+            {:keys [address public-key photo-path name]} (first (selection-fn (vals multiaccounts)))]
+        (multiaccounts.login/open-login cofx address photo-path name public-key)))))
 
-(fx/defn load-accounts-and-initialize-views
-  "DB has been decrypted, load accounts and initialize-view"
+(fx/defn load-multiaccounts-and-initialize-views
+  "DB has been decrypted, load multiaccounts and initialize-view"
   [cofx]
   (fx/merge cofx
-            (load-accounts)
+            (load-multiaccounts)
             (initialize-views)))
 
-(fx/defn initialize-account-db [{:keys [db web3]} address]
+(fx/defn initialize-multiaccount-db [{:keys [db web3]} address]
   (let [{:universal-links/keys [url]
-         :keys                 [accounts/accounts accounts/create networks/networks network
+         :keys                 [multiaccounts/multiaccounts multiaccounts/create networks/networks network
                                 network-status peers-count peers-summary view-id navigation-stack
                                 mailserver/mailservers
                                 intro-wizard
                                 desktop/desktop hardwallet custom-fleets supported-biometric-auth
-                                device-UUID semaphores accounts/login]
+                                device-UUID semaphores multiaccounts/login]
          :node/keys            [status on-ready]
          :or                   {network (get app-db :network)}} db
-        current-account (get accounts address)
-        account-network-id (get current-account :network network)
-        account-network (get-in current-account [:networks account-network-id])]
+        current-multiaccount (get multiaccounts address)
+        multiaccount-network-id (get current-multiaccount :network network)
+        multiaccount-network (get-in current-multiaccount [:networks multiaccount-network-id])]
     {:db (cond-> (assoc app-db
                         :view-id view-id
                         :navigation-stack navigation-stack
                         :node/status status
                         :intro-wizard intro-wizard
                         :node/on-ready on-ready
-                        :accounts/create create
+                        :multiaccounts/create create
                         :desktop/desktop (merge desktop (:desktop/desktop app-db))
                         :networks/networks networks
-                        :account/account current-account
-                        :accounts/login login
-                        :accounts/accounts accounts
+                        :multiaccount current-multiaccount
+                        :multiaccounts/login login
+                        :multiaccounts/multiaccounts multiaccounts
                         :mailserver/mailservers mailservers
                         :network-status network-status
-                        :network account-network-id
+                        :network multiaccount-network-id
                         :network/type (:network/type db)
-                        :chain (ethereum/network->chain-name account-network)
+                        :chain (ethereum/network->chain-name multiaccount-network)
                         :universal-links/url url
                         :custom-fleets custom-fleets
                         :peers-summary peers-summary
@@ -200,8 +200,8 @@
                         :semaphores semaphores
                         :hardwallet hardwallet
                         :web3 web3)
-           (= view-id :create-account)
-           (assoc-in [:accounts/create :step] :enter-name))}))
+           (= view-id :create-multiaccount)
+           (assoc-in [:multiaccounts/create :step] :enter-name))}))
 
 (defn login-only-events [{:keys [db] :as cofx} address stored-pns]
   (fx/merge cofx
@@ -222,21 +222,21 @@
               (chat-model/update-dock-badge-label))))
 
 (defn dev-mode? [cofx]
-  (get-in cofx [:db :account/account :dev-mode?]))
+  (get-in cofx [:db :multiaccount :dev-mode?]))
 
-(defn creating-account? [cofx]
+(defn creating-multiaccount? [cofx]
   (= (get-in cofx [:db :view-id])
-     :create-account))
+     :create-multiaccount))
 
 (defn finishing-hardwallet-setup? [cofx]
   (= (get-in cofx [:db :view-id])
      :keycard-welcome))
 
-(fx/defn initialize-account [{:keys [db] :as cofx} address]
+(fx/defn initialize-multiaccount [{:keys [db] :as cofx} address]
   (let [stored-pns (:push-notifications/stored db)]
     (fx/merge cofx
               {:notifications/get-fcm-token nil}
-              (initialize-account-db address)
+              (initialize-multiaccount-db address)
               (contact/load-contacts)
               #(when (dev-mode? %)
                  (models.dev-server/start))
@@ -244,8 +244,8 @@
               (browser/initialize-dapp-permissions)
               (extensions.module/initialize)
               (stickers/init-stickers-packs)
-              (accounts.update/update-sign-in-time)
-              #(when-not (or (creating-account? %)
+              (multiaccounts.update/update-sign-in-time)
+              #(when-not (or (creating-multiaccount? %)
                              (finishing-hardwallet-setup? %))
                  (login-only-events % address stored-pns)))))
 
@@ -272,5 +272,5 @@
  reset-data!)
 
 (re-frame/reg-fx
- :init/reset-account-data
- reset-account-data!)
+ :init/reset-multiaccount-data
+ reset-multiaccount-data!)

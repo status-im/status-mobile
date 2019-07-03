@@ -1,6 +1,6 @@
 (ns status-im.chat.models.message
   (:require [re-frame.core :as re-frame]
-            [status-im.accounts.model :as accounts.model]
+            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.chat.commands.receiving :as commands-receiving]
             [status-im.chat.db :as chat.db]
             [status-im.chat.models :as chat-model]
@@ -107,13 +107,13 @@
   [{:keys [db] :as cofx}
    {{:keys [chat-id message-id clock-value timestamp from] :as message} :message
     :keys [current-chat? batch? dedup-id raw-message]}]
-  (let [current-public-key (accounts.model/current-public-key cofx)
+  (let [current-public-key (multiaccounts.model/current-public-key cofx)
         prepared-message (-> message
                              (prepare-message chat-id current-chat?)
                              (add-outgoing-status current-public-key))]
     (when (and platform/desktop?
                (not= from current-public-key)
-               (get-in db [:account/account :desktop-notifications?])
+               (get-in db [:multiaccount :desktop-notifications?])
                (< (time/seconds-ago (time/to-date timestamp)) constants/one-earth-day))
       (let [{:keys [title body prioritary?]} (build-desktop-notification cofx message)]
         (.displayNotification react/desktop-notification title body prioritary?)))
@@ -161,7 +161,7 @@
    old-id->message
    {:keys [from message-id chat-id js-obj content dedup-id] :as raw-message}]
   (let [{:keys [web3 current-chat-id view-id]} db
-        current-public-key             (accounts.model/current-public-key cofx)
+        current-public-key             (multiaccounts.model/current-public-key cofx)
         current-chat?                  (and (or (= :chat view-id)
                                                 (= :chat-modal view-id))
                                             (= current-chat-id chat-id))
@@ -221,11 +221,11 @@
               ;; Version 0 does not have a concept of joining, so any message is ok
               ;; otherwise check we joined
               (or (= 0 (get-in cofx [:db :chats chat-id :group-chat-local-version]))
-                  (get-in cofx [:db :chats chat-id :members-joined (accounts.model/current-public-key cofx)])))) chat-id
+                  (get-in cofx [:db :chats chat-id :members-joined (multiaccounts.model/current-public-key cofx)])))) chat-id
     (and (= :public-group-user-message message-type)
          (get-in cofx [:db :chats chat-id :public?])) chat-id
     (and (= :user-message message-type)
-         (= (accounts.model/current-public-key cofx) from)) chat-id
+         (= (multiaccounts.model/current-public-key cofx) from)) chat-id
     (= :user-message message-type) from))
 
 (defn calculate-unviewed-messages-count
@@ -233,7 +233,7 @@
   (let [{:keys [current-chat-id view-id]} db
         chat-view?         (or (= :chat view-id)
                                (= :chat-modal view-id))
-        current-public-key (accounts.model/current-public-key cofx)]
+        current-public-key (multiaccounts.model/current-public-key cofx)]
     (+ (get-in db [:chats chat-id :unviewed-messages-count])
        (if (and chat-view? (= current-chat-id chat-id))
          0
@@ -386,7 +386,7 @@
   [cofx chat-id message-id fcm-tokens status]
   (log/debug "#6772 - send-push-notification" message-id fcm-tokens)
   (when (and (seq fcm-tokens) (= status :sent))
-    (let [payload {:from (accounts.model/current-public-key cofx)
+    (let [payload {:from (multiaccounts.model/current-public-key cofx)
                    :to chat-id
                    :id message-id}]
       {:send-notification {:data-payload (notifications/encode-notification-payload payload)
@@ -449,7 +449,7 @@
   (let [{:keys [chats]}  db
         {:keys [last-clock-value] :as chat} (get chats chat-id)
         message-data                        (-> message
-                                                (assoc :from (accounts.model/current-public-key cofx)
+                                                (assoc :from (multiaccounts.model/current-public-key cofx)
                                                        :timestamp now
                                                        :whisper-timestamp (quot now 1000)
                                                        :clock-value (utils.clocks/send

@@ -89,7 +89,7 @@
 (defview keycard-settings []
   (letsubs [paired-on [:keycard-paired-on]
             puk-retry-counter [:hardwallet/puk-retry-counter]
-            pairing [:keycard-account-pairing]]
+            pairing [:keycard-multiaccount-pairing]]
     [react/view {:flex 1}
      [status-bar/status-bar]
      [toolbar/simple-toolbar
