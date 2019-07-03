@@ -101,4 +101,15 @@ def uploadToDiawi() {
   return diawiUrl
 }
 
+def coverage() {
+  withCredentials([
+    string(credentialsId: 'coveralls-status-react-token', variable: 'COVERALLS_REPO_TOKEN'),
+  ]) {
+    nix.shell(
+      'make coverage',
+      keep: ['COVERALLS_REPO_TOKEN', 'COVERALLS_SERVICE_NAME', 'COVERALLS_SERVICE_JOB_ID']
+    )
+  }
+}
+
 return this

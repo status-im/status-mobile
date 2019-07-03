@@ -75,5 +75,9 @@
     "url": "0.10.3",
     "web3": "git+https://github.com/status-im/web3.js.git#0.20.3-status.alpha.3",
     "web3-utils": "1.0.0-beta.36"
+  },
+  "devDependencies": {
+    "coveralls": "^3.0.4",
+    "nyc": "^14.1.1"
   }
 }

@@ -166,3 +166,7 @@ conan.cmake
 status-modules/translations
 status-modules/cljs
 status-modules/resources
+
+## coverage
+/.nyc_output
+/coverage-report
