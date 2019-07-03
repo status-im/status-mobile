@@ -13,6 +13,7 @@ from views.sign_in_view import SignInView
 @marks.transaction
 class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
+    @pytest.mark.skip
     @marks.testrail_id(5334)
     @marks.critical
     def test_network_mismatch_for_send_request_commands(self):
@@ -162,6 +163,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.errors.append(e.msg)
         self.verify_no_errors()
 
+    @pytest.mark.skip
     @marks.testrail_id(5324)
     @marks.critical
     def test_request_eth_in_wallet(self):
@@ -207,6 +209,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.errors.append('Request funds message was not received')
         self.verify_no_errors()
 
+    @pytest.mark.skip
     @marks.testrail_id(5383)
     @marks.high
     def test_contact_profile_send_transaction(self):
@@ -361,6 +364,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         chat.send_transaction_in_1_1_chat('ETHro', amount, unique_password)
         chat.check_no_values_in_logcat(password=unique_password)
 
+    @pytest.mark.skip
     @marks.testrail_id(5347)
     @marks.high
     def test_send_transaction_details_in_1_1_chat(self):
@@ -389,6 +393,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
             self.errors.append('Amount is not visible')
         self.verify_no_errors()
 
+    @pytest.mark.skip
     @marks.testrail_id(5377)
     @marks.high
     def test_transaction_confirmed_on_sender_side(self):

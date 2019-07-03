@@ -15,6 +15,7 @@ from views.sign_in_view import SignInView
 @marks.chat
 class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
+    @pytest.mark.skip
     @marks.testrail_id(5305)
     @marks.critical
     def test_text_message_1_1_chat(self):
@@ -77,6 +78,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_2).wait_for_visibility_of_element(180)
 
+    @pytest.mark.skip
     @marks.testrail_id(5338)
     @marks.critical
     def test_messaging_in_different_networks(self):
@@ -109,6 +111,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1.send_message_button.click()
         chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
 
+    @pytest.mark.skip
     @marks.testrail_id(5315)
     @marks.high
     def test_send_message_to_newly_added_contact(self):
@@ -149,6 +152,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append("Updated profile picture is not shown in one-to-one chat")
         self.verify_no_errors()
 
+    @pytest.mark.skip
     @marks.testrail_id(5316)
     @marks.critical
     def test_add_to_contacts(self):
@@ -196,6 +200,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append("Updated profile picture is not shown in one-to-one chat")
         self.verify_no_errors()
 
+    @pytest.mark.skip
     @marks.testrail_id(5373)
     @marks.high
     def test_send_and_open_links(self):
@@ -239,6 +244,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append('Device 1: URL was not opened from 1-1 chat')
         self.verify_no_errors()
 
+    @pytest.mark.skip
     @marks.testrail_id(5326)
     @marks.critical
     def test_offline_status(self):
@@ -281,6 +287,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append("'Sent' status is not shown under the sent text message")
         self.verify_no_errors()
 
+    @pytest.mark.skip
     @marks.testrail_id(5362)
     @marks.critical
     def test_unread_messages_counter_1_1_chat(self):
@@ -317,6 +324,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append('New messages counter is shown on chat element for already seen message')
         self.verify_no_errors()
 
+    @pytest.mark.skip
     @marks.testrail_id(5425)
     @marks.medium
     def test_bold_and_italic_text_in_messages(self):
@@ -684,6 +692,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat.sticker_icon.click()
         chat.chat_item.is_element_displayed()
 
+    @pytest.mark.skip
     @marks.testrail_id(5783)
     @marks.high
     def test_purchase_pack_and_send_sticker(self):

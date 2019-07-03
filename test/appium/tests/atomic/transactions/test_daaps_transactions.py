@@ -212,6 +212,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         if not status_test_dapp.assets_button.is_element_displayed():
             self.driver.fail('It seems users was not redirected to Status DAPP screen.')
 
+    @pytest.mark.skip
     @marks.testrail_id(5685)
     @marks.medium
     def test_not_enough_eth_for_gas_validation_from_dapp(self):
@@ -287,6 +288,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
         self.verify_no_errors()
 
+    @pytest.mark.skip
     @marks.testrail_id(5686)
     @marks.medium
     def test_not_enough_eth_for_gas_validation_from_wallet(self):

@@ -54,6 +54,7 @@ class TestSignIn(SingleDeviceTestCase):
 @marks.sign_in
 class TestSignInOffline(MultipleDeviceTestCase):
 
+    @pytest.mark.skip
     @marks.testrail_id(5327)
     @marks.medium
     def test_offline_login(self):

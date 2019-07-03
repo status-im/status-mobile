@@ -91,6 +91,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True)
 
+    @pytest.mark.skip
     @marks.testrail_id(5408)
     @marks.high
     def test_transaction_wrong_password_wallet(self):
@@ -118,6 +119,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_transaction_button.click()
         send_transaction.find_full_text('Wrong password', 20)
 
+    @pytest.mark.skip
     @marks.testrail_id(1452)
     def test_transaction_appears_in_history(self):
         recipient = basic_user
@@ -376,6 +378,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(sender['address'], amount)
 
+    @pytest.mark.skip
     @marks.testrail_id(5314)
     def test_can_see_all_transactions_in_history(self):
         address = wallet_users['D']['address']

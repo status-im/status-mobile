@@ -62,6 +62,7 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing_view.url_edit_box_lock_icon.click()
         browsing_view.find_full_text(connection_is_secure_text)
 
+    @pytest.mark.skip
     @marks.testrail_id(5390)
     @marks.high
     def test_swipe_to_delete_browser_entry(self):

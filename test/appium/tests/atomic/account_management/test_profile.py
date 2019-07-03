@@ -66,6 +66,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append("Can't share address")
         self.verify_no_errors()
 
+    @pytest.mark.skip
     @marks.testrail_id(5375)
     @marks.high
     def test_copy_contact_code_and_wallet_address(self):

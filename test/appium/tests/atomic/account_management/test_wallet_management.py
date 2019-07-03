@@ -59,6 +59,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         base_web_view.open_in_webview()
         base_web_view.find_text_part(transaction_hash)
 
+    @pytest.mark.skip
     @marks.testrail_id(5427)
     @marks.medium
     def test_copy_transaction_hash(self):

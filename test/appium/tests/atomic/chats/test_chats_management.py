@@ -66,6 +66,7 @@ class TestChatManagement(SingleDeviceTestCase):
             self.errors.append('Chat history is shown')
         self.verify_no_errors()
 
+    @pytest.mark.skip
     @marks.testrail_id(5304)
     @marks.high
     def test_open_chat_by_pasting_public_key(self):
@@ -270,6 +271,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
                 self.errors.append(
                     "'%s' from blocked user %s are shown in public chat" % (message, device_2.driver.number))
 
+    @pytest.mark.skip
     @marks.testrail_id(5763)
     @marks.high
     def test_block_user_from_one_to_one_header(self):

@@ -38,6 +38,7 @@ class TestDApps(SingleDeviceTestCase):
         if not status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
             pytest.fail('Public key is not returned')
 
+    @pytest.mark.skip
     @marks.testrail_id(5654)
     @marks.low
     def test_can_proceed_dapp_usage_after_transacting_it(self):
