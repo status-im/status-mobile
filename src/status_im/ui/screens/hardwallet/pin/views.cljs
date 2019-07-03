@@ -75,12 +75,14 @@
   (let [enabled? (not= status :verifying)]
     [react/scroll-view
      [react/view styles/pin-container
-      [react/view styles/center-container
-       [react/text {:style styles/center-title-text}
-        (i18n/label title-label)]
-       [react/text {:style           styles/create-pin-text
-                    :number-of-lines 2}
-        (i18n/label description-label)]
+      [react/view (styles/center-container title-label)
+       (when title-label
+         [react/text {:style styles/center-title-text}
+          (i18n/label title-label)])
+       (when description-label
+         [react/text {:style           styles/create-pin-text
+                      :number-of-lines 2}
+          (i18n/label description-label)])
        (when retry-counter
          [react/text {:style {:font-weight "700"
                               :padding-top 10

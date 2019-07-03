@@ -1123,6 +1123,7 @@
                                  nil)))
 
 (fx/defn sign
+  {:events [:hardwallet/sign]}
   [{:keys [db] :as cofx}]
   (let [card-connected? (get-in db [:hardwallet :card-connected?])
         pairing (get-pairing db)
@@ -1140,24 +1141,25 @@
                          :pairing pairing
                          :pin     pin}}
       (fx/merge cofx
-                {:db (assoc-in db [:hardwallet :on-card-connected] :hardwallet/sign)}
+                {:db (-> db
+                         (assoc-in [:signing/sign :keycard-step] :signing)
+                         (assoc-in [:hardwallet :on-card-connected] :hardwallet/sign))}
                 (when-not keycard-match?
-                  (show-wrong-keycard-alert card-connected?))
-                (navigate-to-connect-screen :hardwallet-connect-sign)))))
+                  (show-wrong-keycard-alert card-connected?))))))
 
 (fx/defn prepare-to-sign
+  {:events [:hardwallet/prepare-to-sign]}
   [{:keys [db] :as cofx}]
   (let [card-connected? (get-in db [:hardwallet :card-connected?])
         pairing (get-pairing db)]
     (if card-connected?
-      (get-application-info cofx pairing :hardwallet/sign)
       (fx/merge cofx
-                {:db (assoc-in db [:hardwallet :on-card-connected] :hardwallet/prepare-to-sign)}
-                (navigation/navigate-to-cofx
-                 (if (= (:view-id db) :enter-pin-modal)
-                   :hardwallet-connect-modal
-                   :hardwallet-connect-sign)
-                 nil)))))
+                {:db (assoc-in db [:signing/sign :keycard-step] :signing)}
+                (get-application-info pairing :hardwallet/sign))
+      (fx/merge cofx
+                {:db (-> db
+                         (assoc-in [:signing/sign :keycard-step] :connect)
+                         (assoc-in [:hardwallet :on-card-connected] :hardwallet/prepare-to-sign))}))))
 
 (fx/defn import-account
   [{:keys [db] :as cofx}]
@@ -1590,23 +1592,22 @@
   {:send-transaction-with-signature data})
 
 (fx/defn sign-message-completed
-  [{:keys [db]} signature]
-  (let [screen-params (get-in db [:navigation/screen-params :wallet-sign-message-modal])
-        signature' (-> signature
+  [_ signature]
+  (let [signature' (-> signature
                        ; add 27 to last byte
                        ; https://github.com/ethereum/go-ethereum/blob/master/internal/ethapi/api.go#L431
                        (clojure.string/replace-first #"00$", "1b")
                        (clojure.string/replace-first #"01$", "1c")
                        (ethereum/normalized-address))]
     {:dispatch
-     [:status-im.ui.screens.wallet.send.events/sign-message-completed
-      screen-params
-      {:result signature'}]}))
+     [:signing/sign-message-completed (types/clj->json {:result signature'})]}))
 
 (fx/defn on-sign-success
+  {:events [:hardwallet.callback/on-sign-success]}
   [{:keys [db] :as cofx} signature]
   (log/debug "[hardwallet] sign success: " signature)
-  (let [transaction (get-in db [:hardwallet :transaction])]
+  (let [transaction (get-in db [:hardwallet :transaction])
+        tx-obj (select-keys transaction [:from :to :value :gas :gasPrice])]
     (fx/merge cofx
               {:db (-> db
                        (assoc-in [:hardwallet :pin :sign] [])
@@ -1618,30 +1619,28 @@
               (if transaction
                 (send-transaction-with-signature {:transaction  (types/clj->json transaction)
                                                   :signature    signature
-                                                  :on-completed #(re-frame/dispatch [:wallet.callback/transaction-completed (types/json->clj %)])})
+                                                  :on-completed #(re-frame/dispatch [:signing/transaction-completed % tx-obj])})
                 (sign-message-completed signature)))))
 
 (fx/defn on-sign-error
   [{:keys [db] :as cofx} error]
   (log/debug "[hardwallet] sign error: " error)
-  (let [tag-was-lost? (= "Tag was lost." (:error error))
-        modal? (get-in db [:navigation/screen-params :wallet-send-modal-stack :modal?])]
+  (let [tag-was-lost? (= "Tag was lost." (:error error))]
     (fx/merge cofx
               (if tag-was-lost?
                 (fx/merge cofx
-                          {:db               (-> db
-                                                 (assoc-in [:hardwallet :on-card-connected] :hardwallet/prepare-to-sign)
-                                                 (assoc-in [:hardwallet :pin :status] nil))
+                          {:db             (-> db
+                                               (assoc-in [:hardwallet :on-card-connected] :hardwallet/prepare-to-sign)
+                                               (assoc-in [:hardwallet :pin :status] nil)
+                                               (assoc-in [:signing/sign :keycard-step] :connect))
                            :utils/show-popup {:title   (i18n/label :t/error)
-                                              :content (i18n/label :t/cannot-read-card)}}
-                          (navigate-to-connect-screen :hardwallet-connect-sign)))
+                                              :content (i18n/label :t/cannot-read-card)}}))
               (if (re-matches pin-mismatch-error (:error error))
                 (fx/merge cofx
-                          {:db (update-in db [:hardwallet :pin] merge {:status      :error
-                                                                       :sign        []
-                                                                       :error-label :t/pin-mismatch})}
-                          (navigation/navigate-to-cofx (if modal?
-                                                         :enter-pin-modal
-                                                         :enter-pin-sign) nil)
+                          {:db (-> db
+                                   (update-in [:hardwallet :pin] merge {:status      :error
+                                                                        :sign        []
+                                                                        :error-label :t/pin-mismatch})
+                                   (assoc-in [:signing/sign :keycard-step] :pin))}
                           (get-application-info (get-pairing db) nil))
                 (show-wrong-keycard-alert cofx true)))))

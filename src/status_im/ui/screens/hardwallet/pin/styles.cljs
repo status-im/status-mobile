@@ -21,10 +21,10 @@
   {:color      colors/red
    :text-align :center})
 
-(def center-container
+(defn center-container [title]
   {:flex-direction :column
    :align-items    :center
-   :margin-top     28})
+   :margin-top     (if title 28 5)})
 
 (def center-title-text
   {:typography :header})

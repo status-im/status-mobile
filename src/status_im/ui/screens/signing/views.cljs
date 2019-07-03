@@ -18,7 +18,9 @@
             [status-im.ui.screens.signing.sheets :as sheets]
             [status-im.ethereum.tokens :as tokens]
             [clojure.string :as string]
-            [status-im.ui.screens.signing.styles :as styles]))
+            [status-im.ui.screens.signing.styles :as styles]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.screens.hardwallet.pin.views :as pin.views]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -95,14 +97,79 @@
     [react/view {:padding 6}
      [react/text {:style {:color colors/blue}} (i18n/label :t/cancel)]]]])
 
-(views/defview password-view [{:keys [type error in-progress? enabled?]}]
+(views/defview keycard-pin-view []
+  (views/letsubs [pin [:hardwallet/pin]]
+    [react/view
+     [pin.views/pin-view
+      {:pin           pin
+       :retry-counter nil
+       :step          :sign
+       :status        nil
+       :error-label   nil}]]))
+
+(defn- keycard-connect-view []
+  [react/view {:padding-vertical 20
+               :flex             1
+               :align-items      :center
+               :justify-content  :center}
+   [react/image {:source      (resources/get-image :keycard-phone)
+                 :resize-mode :center
+                 :style       {:width  160
+                               :height 170}}]
+   [react/view {:margin-top 10}
+    [react/text {:style {:text-align  :center
+                         :color       colors/gray}}
+     (i18n/label :t/hold-card)]]])
+
+(defn- keycard-processing-view []
+  [react/view {:flex-direction  :column
+               :flex            1
+               :justify-content :center
+               :align-items     :center}
+   [react/activity-indicator {:size      :large
+                              :animating true}]
+   [react/text {:style {:margin-top 16
+                        :color      colors/gray}}
+    (i18n/label :t/processing)]])
+
+(defn- sign-with-keycard-button
+  [amount-error gas-error]
+  [button/button {:on-press   #(re-frame/dispatch [:signing.ui/sign-with-keycard-pressed])
+                  :text-style {:padding-right 2
+                               :padding-left  16}
+                  :style      {:background-color colors/black-light
+                               :padding-top      2
+                               :border-radius    8}
+                  :disabled?  (or amount-error gas-error)}
+   (i18n/label :t/sign-with)
+   [react/view {:padding-right 16}
+    [react/image {:source (resources/get-image :keycard-logo)
+                  :style  {:width         64
+                           :margin-bottom 7
+                           :height        26}}]]])
+
+(defn- signing-phrase-view [phrase]
+  [react/view {:align-items :center}
+   [react/text {:style {:color colors/gray :padding-bottom 8}} (i18n/label :t/signing-phrase)]
+   [react/text phrase]])
+
+(defn- keycard-view
+  [{:keys [keycard-step]} phrase]
+  [react/view {:height 450}
+   [signing-phrase-view phrase]
+   (case keycard-step
+     :pin [keycard-pin-view]
+     :connect [keycard-connect-view]
+     :signing [keycard-processing-view]
+     [react/view {:align-items :center :margin-top 16 :margin-bottom 40}
+      [sign-with-keycard-button nil nil]])])
+
+(views/defview password-view [{:keys [type error in-progress? enabled?] :as sign}]
   (views/letsubs [phrase [:signing/phrase]]
     (case type
       :password
       [react/view {:padding-top 16 :padding-bottom 16}
-       [react/view {:align-items :center}
-        [react/text {:style {:color colors/gray :padding-bottom 8}} (i18n/label :t/signing-phrase)]
-        [react/text phrase]]
+       [signing-phrase-view phrase]
        [text-input/text-input-with-label
         {:secure-text-entry   true
          :placeholder         (i18n/label :t/enter-password)
@@ -119,10 +186,12 @@
           [button/primary-button {:on-press  #(re-frame/dispatch [:signing.ui/sign-is-pressed])
                                   :disabled? (not enabled?)}
            (i18n/label :t/transactions-sign)])]]
+      :keycard
+      [keycard-view sign phrase]
       [react/view])))
 
 (views/defview message-sheet []
-  (views/letsubs [{:keys [formatted-data] :as sign} [:signing/sign]]
+  (views/letsubs [{:keys [formatted-data type] :as sign} [:signing/sign]]
     [react/view styles/message
      [react/view styles/message-header
       [react/text {:style {:typography :title-bold}} (i18n/label :t/signing-a-message)]
@@ -140,7 +209,8 @@
   (views/letsubs [fee   [:signing/fee]
                   sign  [:signing/sign]
                   chain [:ethereum/chain-keyword]
-                  {:keys [amount-error gas-error]} [:signing/amount-errors]]
+                  {:keys [amount-error gas-error]} [:signing/amount-errors]
+                  keycard-account? [:keycard-account?]]
     (let [display-symbol     (wallet.utils/display-symbol token)
           fee-display-symbol (wallet.utils/display-symbol (tokens/native-currency chain))]
       [react/view styles/sheet
@@ -167,9 +237,11 @@
                                               {:content        (fn [] [sheets/fee-bottom-sheet fee-display-symbol])
                                                :content-height 270}])}]
           [react/view {:align-items :center :margin-top 16 :margin-bottom 40}
-           [button/primary-button {:on-press  #(re-frame/dispatch [:set :signing/sign {:type :password}])
-                                   :disabled? (or amount-error gas-error)}
-            (i18n/label :t/sign-with-password)]]])])))
+           (if keycard-account?
+             [sign-with-keycard-button amount-error gas-error]
+             [button/primary-button {:on-press  #(re-frame/dispatch [:set :signing/sign {:type :password}])
+                                     :disabled? (or amount-error gas-error)}
+              (i18n/label :t/sign-with-password)])]])])))
 
 (defn signing-view [tx window-height]
   (let [bottom-anim-value (anim/create-value window-height)

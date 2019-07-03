@@ -24,6 +24,7 @@
 (def black-transparent (alpha black 0.1)) ;; Used as background color for rounded button on dark background and as background color for containers like "Backup seed phrase"
 (def black-transparent-40 (alpha black 0.4))
 (def gray-light black-transparent) ;; Used as divider color
+(def black-light "#2d2d2d")
 
 ;; DARK GREY
 (def gray "#939ba1") ;; Dark grey, used as a background for a light foreground and as section header and secondary text color

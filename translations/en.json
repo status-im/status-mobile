@@ -1076,6 +1076,7 @@
     "signing-phrase" : "Signing phrase",
     "network-fee" : "Network fee",
     "sign-with-password" : "Sign with password",
+    "sign-with" : "Sign with",
     "signing-a-message" : "Signing a message",
     "select-chat" : "Select chat to start messaging",
     "etherscan-lookup": "Look up on Etherscan",

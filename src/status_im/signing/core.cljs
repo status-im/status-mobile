@@ -166,13 +166,14 @@
 
 (fx/defn show-sign [{:keys [db] :as cofx}]
   (let [{:signing/keys [queue]} db
-        {{:keys [gas gasPrice] :as tx-obj} :tx-obj {:keys [data typed?] :as message} :message :as tx} (last queue)]
+        {{:keys [gas gasPrice] :as tx-obj} :tx-obj {:keys [data typed?] :as message} :message :as tx} (last queue)
+        keycard-account? (boolean (get-in db [:account/account :keycard-instance-uid]))]
     (if message
       {:db (assoc db
                   :signing/in-progress? true
                   :signing/queue (drop-last queue)
                   :signing/tx tx
-                  :signing/sign {:type           :password
+                  :signing/sign {:type           (if keycard-account? :keycard :password)
                                  :formatted-data (if typed? (types/json->clj data) (ethereum/hex-to-utf8 data))})}
       (fx/merge cofx
                 {:db

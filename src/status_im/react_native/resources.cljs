@@ -13,6 +13,7 @@
    :secret-keys         (js-require/js-require "./resources/images/ui/secret-keys.png")
    :keycard-lock        (js-require/js-require "./resources/images/ui/keycard-lock.png")
    :keycard             (js-require/js-require "./resources/images/ui/keycard.png")
+   :keycard-logo        (js-require/js-require "./resources/images/ui/keycard-logo.png")
    :keycard-phone       (js-require/js-require "./resources/images/ui/keycard-phone.png")
    :keycard-connection  (js-require/js-require "./resources/images/ui/keycard-connection.png")
    :keycard-nfc-on      (js-require/js-require "./resources/images/ui/keycard-nfc-on.png")

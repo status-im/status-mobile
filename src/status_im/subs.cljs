@@ -227,6 +227,11 @@
  :width)
 
 (re-frame/reg-sub
+ :dimensions/window-height
+ :<- [:dimensions/window]
+ :height)
+
+(re-frame/reg-sub
  :get-screen-params
  :<- [:screen-params]
  :<- [:view-id]

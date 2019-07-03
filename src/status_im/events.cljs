@@ -28,6 +28,7 @@
             [status-im.fleet.core :as fleet]
             [status-im.group-chats.core :as group-chats]
             [status-im.hardwallet.core :as hardwallet]
+            [status-im.signing.keycard :as signing.keycard]
             [status-im.i18n :as i18n]
             [status-im.init.core :as init]
             [status-im.log-level.core :as log-level]
@@ -1057,11 +1058,6 @@
    (hardwallet/on-get-keys-success cofx data)))
 
 (handlers/register-handler-fx
- :hardwallet.callback/on-sign-success
- (fn [cofx [_ data]]
-   (hardwallet/on-sign-success cofx data)))
-
-(handlers/register-handler-fx
  :hardwallet/auto-login
  (fn [cofx _]
    (hardwallet/login-with-keycard cofx true)))
@@ -1342,16 +1338,6 @@
  :hardwallet/navigate-to-reset-card-screen
  (fn [cofx _]
    (hardwallet/navigate-to-reset-card-screen cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/sign
- (fn [cofx _]
-   (hardwallet/sign cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/prepare-to-sign
- (fn [cofx _]
-   (hardwallet/prepare-to-sign cofx)))
 
 (handlers/register-handler-fx
  :hardwallet/unblock-pin
