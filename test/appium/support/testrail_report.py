@@ -1,5 +1,6 @@
 import json
 import requests
+import logging
 import emoji
 import base64
 from os import environ
@@ -33,7 +34,7 @@ class TestrailReport(BaseTestReport):
     def get(self, method):
         rval = requests.get(self.api_url + method, headers=self.headers).json()
         if 'error' in rval:
-            raise Exception('Failed request: %s' % rval['error'])
+            logging.error("Failed TestRail request: %s" % rval['error'])
         return rval
 
     def post(self, method, data):
