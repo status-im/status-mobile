@@ -48,11 +48,16 @@
    txt1 " "
    [{:style {:color colors/gray}} txt2]])
 
+(defn displayed-name [contact]
+  (if (or (:preferred-name contact) (:name contact))
+    (accounts/displayed-name contact)
+    (:address contact)))
+
 (defn contact-item [contact]
   [list-item/list-item {:type        :small
                         :title       (i18n/label :t/to)
                         :accessories [[react/text {:ellipsize-mode :middle :number-of-lines 1 :style {:flex-wrap :wrap}}
-                                       (accounts/displayed-name contact)]]}])
+                                       (displayed-name contact)]]}])
 
 (defn token-item [{:keys [icon color] :as token} display-symbol]
   (when token
@@ -83,7 +88,7 @@
       [react/nested-text {:style           {:color colors/gray}
                           :ellipsize-mode  :middle
                           :number-of-lines 1} (i18n/label :t/to) " "
-       [{:style {:color colors/black}} (accounts/displayed-name contact)]]
+       [{:style {:color colors/black}} (displayed-name contact)]]
       [react/text {:style {:margin-top 6 :color colors/gray}}
        (str fee " " fee-display-symbol " " (string/lower-case (i18n/label :t/network-fee)))])]
    [react/touchable-highlight (when-not in-progress? {:on-press #(re-frame/dispatch [:signing.ui/cancel-is-pressed])})
