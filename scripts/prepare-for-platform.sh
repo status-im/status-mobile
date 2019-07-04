@@ -79,10 +79,6 @@ case $1 in
         mv "$RCTSTATUS_DIR/$sourceBasename" "$RCTSTATUS_DIR/$targetBasename"
       fi
       if [ "$(uname)" == 'Darwin' ]; then
-        # TODO: remove this patch when we upgrade to a RN version that plays well with the modern build system
-        git apply --check $GIT_ROOT/ios/patches/ios-legacy-build-system.patch 2> /dev/null && \
-          git apply $GIT_ROOT/ios/patches/ios-legacy-build-system.patch || \
-          echo "Patch already applied"
         # CocoaPods are trash and can't handle other pod instances running at the same time
         $GIT_ROOT/scripts/wait-for.sh pod 240
         pushd $GIT_ROOT/ios && pod install; popd
