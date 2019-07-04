@@ -7,7 +7,7 @@ with stdenv;
 let
   platform = callPackage ../platform.nix { inherit target-os; };
   utils = callPackage ../utils.nix { inherit xcodeWrapper; };
-  gomobile = callPackage ./gomobile { inherit (androidPkgs) platform-tools; inherit composeXcodeWrapper xcodewrapperArgs utils buildGoPackage; };
+  gomobile = callPackage ./gomobile { inherit (androidPkgs) platform-tools; inherit target-os composeXcodeWrapper xcodewrapperArgs utils buildGoPackage; };
   buildStatusGoDesktopLib = callPackage ./build-desktop-status-go.nix { inherit buildGoPackage go xcodeWrapper utils; };
   buildStatusGoMobileLib = callPackage ./build-mobile-status-go.nix { inherit buildGoPackage go gomobile xcodeWrapper utils; };
   extractStatusGoConfig = f: lib.last (lib.splitString "\n" (lib.fileContents f));

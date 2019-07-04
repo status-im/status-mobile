@@ -1,4 +1,4 @@
-{ stdenv, utils, fetchgit,
+{ stdenv, target-os, callPackage, utils, fetchgit,
   buildGoPackage, glibc, ncurses5, zlib, makeWrapper, patchelf,
   platform-tools, composeXcodeWrapper, xcodewrapperArgs ? {}
 }:
@@ -7,6 +7,7 @@ with stdenv;
 
 let
   xcodeWrapper = composeXcodeWrapper xcodewrapperArgs;
+  platform = callPackage ../../platform.nix { inherit target-os; };
 
 in buildGoPackage rec {
   name = "gomobile-${version}";
@@ -26,9 +27,10 @@ in buildGoPackage rec {
   patches = [ ./ndk-search-path.patch ./resolve-nix-android-sdk.patch ]
     ++ lib.optional isDarwin ./ignore-nullability-error-on-ios.patch;
 
-  postPatch = ''
+  postPatch =
+    lib.optionalString platform.targetAndroid ''
     substituteInPlace cmd/gomobile/install.go --replace "\`adb\`" "\`${platform-tools}/bin/adb\`"
-
+    '' + ''
     echo "Creating $dev"
     mkdir -p $dev/src/$goPackagePath
     echo "Copying from $src"
