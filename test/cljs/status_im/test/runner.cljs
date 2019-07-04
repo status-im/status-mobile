@@ -18,8 +18,6 @@
             [status-im.test.contact-recovery.core]
             [status-im.test.contacts.device-info]
             [status-im.test.data-store.chats]
-            [status-im.test.data-store.core]
-            [status-im.test.data-store.realm.core]
             [status-im.test.ethereum.abi-spec]
             [status-im.test.ethereum.core]
             [status-im.test.ethereum.eip55]
@@ -81,7 +79,7 @@
 
 (set! goog.DEBUG false)
 
-(doo-tests
+#_(doo-tests
  'status-im.test.accounts.create.core
  'status-im.test.accounts.recover.core
  'status-im.test.browser.core

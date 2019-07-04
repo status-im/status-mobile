@@ -1,26 +1,16 @@
 (ns status-im.data-store.browser
-  (:require [re-frame.core :as re-frame]
-            [status-im.data-store.realm.core :as core]))
+  (:require [re-frame.core :as re-frame]))
 
 (re-frame/reg-cofx
  :data-store/all-browsers
- (fn [cofx _]
-   (assoc cofx :all-stored-browsers (-> @core/account-realm
-                                        (core/get-all :browser)
-                                        (core/sorted :timestamp :desc)
-                                        (core/all-clj :browser)))))
+ (fn [cofx _]))
 
 (defn save-browser-tx
   "Returns tx function for saving browser"
   [{:keys [browser-id] :as browser}]
-  (fn [realm]
-    (core/create realm :browser browser true)))
+  (fn [realm]))
 
 (defn remove-browser-tx
   "Returns tx function for removing browser"
   [browser-id]
-  (fn [realm]
-    (let [browser (.objectForPrimaryKey realm
-                                        "browser"
-                                        browser-id)]
-      (core/delete realm browser))))
+  (fn [realm]))

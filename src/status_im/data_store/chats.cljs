@@ -2,7 +2,6 @@
   (:require [goog.object :as object]
             [re-frame.core :as re-frame]
             [status-im.data-store.messages :as messages]
-            [status-im.data-store.realm.core :as core]
             [status-im.ethereum.core :as ethereum]
             [taoensso.timbre :as log]
             [status-im.utils.clocks :as utils.clocks]
@@ -59,38 +58,20 @@
 
 (re-frame/reg-cofx
  :data-store/all-chats
- (fn [cofx _]
-   (assoc cofx :get-all-stored-chats
-          (fn [from to]
-            (map normalize-chat
-                 (-> @core/account-realm
-                     (core/get-all :chat)
-                     (core/sorted :timestamp :desc)
-                     (core/page from to)
-                     (core/all-clj :chat)))))))
+ (fn [cofx _]))
 
 (defn save-chat-tx
   "Returns tx function for saving chat"
   [chat]
-  (fn [realm]
-    (log/debug "saving chat" chat)
-    (core/create
-     realm
-     :chat
-     (-> chat
-         (update :membership-updates marshal-membership-updates)
-         (utils/update-if-present :last-message-content messages/prepare-content))
-     true)))
+  (fn [realm]))
 
 ;; Only used in debug mode
 (defn delete-chat-tx
   "Returns tx function for hard deleting the chat"
   [chat-id]
-  (fn [realm]
-    (core/delete realm (core/get-by-field realm :chat :chat chat-id))))
+  (fn [realm]))
 
-(defn- get-chat-by-id [chat-id realm]
-  (.objectForPrimaryKey realm "chat" chat-id))
+(defn- get-chat-by-id [chat-id realm])
 
 (defn clear-history-tx
   "Returns tx function for clearing the history of chat"
@@ -113,39 +94,19 @@
 (defn add-chat-contacts-tx
   "Returns tx function for adding chat contacts"
   [chat-id contacts]
-  (fn [realm]
-    (let [chat              (get-chat-by-id chat-id realm)
-          existing-contacts (object/get chat "contacts")]
-      (aset chat "contacts"
-            (clj->js (into #{} (concat contacts
-                                       (core/list->clj existing-contacts))))))))
+  (fn [realm]))
 
 (defn remove-chat-contacts-tx
   "Returns tx function for removing chat contacts"
   [chat-id contacts]
-  (fn [realm]
-    (let [chat              (get-chat-by-id chat-id realm)
-          existing-contacts (object/get chat "contacts")]
-      (aset chat "contacts"
-            (clj->js (remove (into #{} contacts)
-                             (core/list->clj existing-contacts)))))))
+  (fn [realm]))
 
 (defn add-chat-tag-tx
   "Returns tx function for adding chat contacts"
   [chat-id tag]
-  (fn [realm]
-    (let [chat              (get-chat-by-id chat-id realm)
-          existing-tags (object/get chat "tags")]
-      (aset chat "tags"
-            (clj->js (into #{} (concat tag
-                                       (core/list->clj existing-tags))))))))
+  (fn [realm]))
 
 (defn remove-chat-tag-tx
   "Returns tx function for removing chat contacts"
   [chat-id tag]
-  (fn [realm]
-    (let [chat              (get-chat-by-id chat-id realm)
-          existing-tags (object/get chat "tags")]
-      (aset chat "tags"
-            (clj->js (remove (into #{} tag)
-                             (core/list->clj existing-tags)))))))
+  (fn [realm]))

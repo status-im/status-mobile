@@ -20,8 +20,6 @@ include ':react-native-dialogs'
 project(':react-native-dialogs').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-dialogs/android')
 include ':react-native-languages'
 project(':react-native-languages').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-languages/android')
-include ':realm'
-project(':realm').projectDir = new File(rootProject.projectDir, '../node_modules/realm/android')
 include ':react-native-status'
 project(':react-native-status').projectDir = new File(rootProject.projectDir, '../modules/react-native-status/android')
 include ':react-native-camera'
