@@ -29,6 +29,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import statusgo.SignalHandler;
 import statusgo.Statusgo;
+import statusgo.Keychain;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -198,6 +199,19 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     private void doStartNode(final String jsonConfigString) {
+        Keychain keychain = new AndroidKeychain();
+        try {
+            String res = Statusgo.useKeychain(keychain);
+            if (res.startsWith("{\"error\":\"\"")) {
+                Log.d(TAG, "UseKeychain result: " + res);
+            }
+            else {
+                Log.e(TAG, "UseKeychain failed: " + res);
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "UseKeychain failed: " + e.getMessage());
+            System.exit(1);
+        }
 
         Activity currentActivity = getCurrentActivity();
 
@@ -492,13 +506,13 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private Boolean zip(File[] _files, File zipFile, Stack<String> errorList) {
         final int BUFFER = 0x8000;
 
-		try {
-			BufferedInputStream origin = null;
-			FileOutputStream dest = new FileOutputStream(zipFile);
-			ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
-			byte data[] = new byte[BUFFER];
+                try {
+                        BufferedInputStream origin = null;
+                        FileOutputStream dest = new FileOutputStream(zipFile);
+                        ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
+                        byte data[] = new byte[BUFFER];
 
-			for (int i = 0; i < _files.length; i++) {
+                        for (int i = 0; i < _files.length; i++) {
                 final File file = _files[i];
                 if (file == null || !file.exists()) {
                     continue;
@@ -521,16 +535,16 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                     Log.e(TAG, e.getMessage());
                     errorList.push(e.getMessage());
                 }
-			}
+                        }
 
             out.close();
 
             return true;
-		} catch (Exception e) {
+                } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
             return false;
-		}
+                }
     }
 
     private void dumpAdbLogsTo(final FileOutputStream statusLogStream) throws IOException {
