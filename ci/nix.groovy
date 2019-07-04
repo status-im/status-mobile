@@ -8,7 +8,7 @@ def shell(Map opts = [:], String cmd) {
   def defaults = [
     pure: true,
     args: ['target-os': env.TARGET_OS],
-    keep: ['LOCALE_ARCHIVE_2_27'],
+    keep: ['LOCALE_ARCHIVE_2_27', 'IN_CI_ENVIRONMENT'],
   ]
   /* merge defaults with received opts */
   opts = defaults + opts
@@ -22,6 +22,7 @@ def shell(Map opts = [:], String cmd) {
     set +x
     . ~/.nix-profile/etc/profile.d/nix.sh
     set -x
+    IN_CI_ENVIRONMENT=1 \\
     nix-shell \\
         ${isPure ? "--pure" : ""} \\
         ${keepFlags.join(" ")} \\

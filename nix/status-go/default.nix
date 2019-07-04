@@ -50,6 +50,7 @@ let
   currentHostConfig = if isDarwin then hostConfigs.darwin else hostConfigs.linux;
 
   goBuildFlags = "-v";
+  # TODO: Manage to pass -s -w to -ldflags. Seems to only accept a single flag
   goBuildLdFlags = "-ldflags=-s";
 
   xcodeWrapper = composeXcodeWrapper xcodewrapperArgs;

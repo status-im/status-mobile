@@ -20,7 +20,6 @@ let
 
     buildMessage = "Building mobile library for ${targetConfig.name}";
     # Build mobile libraries
-    # TODO: Manage to pass -s -w to -ldflags. Seems to only accept a single flag
     buildPhase = ''
       GOPATH=${gomobile.dev}:$GOPATH \
       PATH=${lib.makeBinPath [ gomobile.bin ]}:$PATH \
