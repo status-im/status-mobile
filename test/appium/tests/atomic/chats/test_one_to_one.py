@@ -17,6 +17,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5305)
     @marks.critical
+    @marks.skip  # re-enable after 8234 for new onboarding merged
     def test_text_message_1_1_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -79,6 +80,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5338)
     @marks.critical
+    @marks.skip  # re-enable after 8234 for new onboarding merged
     def test_messaging_in_different_networks(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -151,6 +153,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5316)
     @marks.critical
+    @marks.skip  # re-enable after 8234 for new onboarding merged
     def test_add_to_contacts(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -283,6 +286,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5362)
     @marks.critical
+    @marks.skip  # re-enable after 8234 for new onboarding merged
     def test_unread_messages_counter_1_1_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])

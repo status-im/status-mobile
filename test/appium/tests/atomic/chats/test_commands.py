@@ -164,6 +164,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(5324)
     @marks.critical
+    @marks.skip  # re-enable after 8234 for new onboarding merged
     def test_request_eth_in_wallet(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
