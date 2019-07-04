@@ -5,8 +5,6 @@
             [status-im.browser.core :as browser]
             [status-im.chat.models :as chat-model]
             [status-im.contact.core :as contact]
-            [status-im.data-store.core :as data-store]
-            [status-im.data-store.realm.core :as realm]
             [status-im.ethereum.core :as ethereum]
             [status-im.extensions.module :as extensions.module]
             [status-im.i18n :as i18n]
@@ -27,12 +25,7 @@
 (defn init-store!
   "Try to decrypt the database, move on if successful otherwise go back to
   initial state"
-  [encryption-key]
-  (.. (data-store/init encryption-key)
-      (then #(re-frame/dispatch [:init.callback/init-store-success]))
-      (catch (fn [error]
-               (log/warn "Could not decrypt database" error)
-               (re-frame/dispatch [:init.callback/init-store-error encryption-key])))))
+  [encryption-key])
 
 (defn restore-native-settings! []
   (when platform/desktop?
@@ -47,16 +40,10 @@
       (then
        #(re-frame/dispatch [:init.callback/keychain-reset]))))
 
-(defn reset-data! []
-  (.. (realm/delete-realms)
-      (then reset-keychain!)
-      (catch reset-keychain!)))
+(defn reset-data! [])
 
 (defn reset-multiaccount-data! [address]
-  (let [callback #(re-frame/dispatch [:init.callback/multiaccount-db-removed])]
-    (.. (realm/delete-multiaccount-realm address)
-        (then callback)
-        (catch callback))))
+  (let [callback #(re-frame/dispatch [:init.callback/multiaccount-db-removed])]))
 
 (fx/defn initialize-keychain
   "Entrypoint, fetches the key from the keychain and initialize the app"

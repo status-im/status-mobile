@@ -2,7 +2,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.chaos-mode.core :as chaos-mode]
-            [status-im.data-store.core :as data-store]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
             [status-im.ethereum.transactions.core :as transactions]
@@ -64,7 +63,6 @@
                             current-fleet]
   ;; No matter what is the keychain we use, as checks are done on decrypting base
   (.. (keychain/safe-get-encryption-key)
-      (then #(data-store/change-multiaccount address password % create-database-if-not-exist?))
       (then #(js/Promise. (fn [resolve reject]
                             (if (contract-fleet? current-fleet)
                               (fetch-nodes current-fleet resolve reject)
