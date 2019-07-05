@@ -251,7 +251,7 @@
                                                 :processing true})}
                 (add-account account)
                 (when login?
-                  (accounts.login/user-login true))
+                  (accounts.login/user-login))
                 (when (:intro-wizard db)
                   (intro-step-forward {}))))))
 

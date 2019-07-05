@@ -162,9 +162,7 @@
   (let [network     (if address
                       (get-account-network db address)
                       (:network db))
-        node-config (if (= (:node/on-ready db) :verify-account)
-                      (get-verify-account-config db network)
-                      (get-account-node-config db address))
+        node-config (get-account-node-config db address)
         node-config-json (types/clj->json node-config)]
     (log/info "Node config: " node-config-json)
     {:db        (assoc db

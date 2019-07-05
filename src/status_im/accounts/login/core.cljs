@@ -15,7 +15,6 @@
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.keychain.core :as keychain]
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.biometric-auth.core :as biometric-auth]
@@ -47,26 +46,19 @@
 (defn login! [address password]
   (status/login address password #(re-frame/dispatch [:accounts.login.callback/login-success %])))
 
-(defn verify! [address password realm-error]
-  (status/verify address password
-                 #(re-frame/dispatch
-                   [:accounts.login.callback/verify-success % realm-error])))
-
 (defn clear-web-data! []
   (status/clear-web-data))
 
 (defn change-account! [address
                        password
-                       create-database-if-not-exist?
                        current-fleet]
   ;; No matter what is the keychain we use, as checks are done on decrypting base
-  (.. (keychain/safe-get-encryption-key)
-
-      (then #(js/Promise. (fn [resolve reject]
-                            (if (contract-fleet? current-fleet)
-                              (fetch-nodes current-fleet resolve reject)
-                              (resolve)))))
-      (then (fn [nodes] (re-frame/dispatch [:init.callback/account-change-success address nodes])))
+  (.. (js/Promise. (fn [resolve reject]
+                     (if (contract-fleet? current-fleet)
+                       (fetch-nodes current-fleet resolve reject)
+                       (resolve))))
+      (then (fn [nodes]
+              (re-frame/dispatch [:init.callback/account-change-success address nodes])))
       (catch (fn [error]
                (log/warn "Could not change account" error)
                ;; If all else fails we fallback to showing initial error
@@ -102,22 +94,20 @@
       :accounts.login/clear-web-data nil
       :data-store/change-account     [address
                                       password
-                                      false
                                       (get-in db [:accounts/accounts address :settings :fleet])]})))
 
 (fx/defn user-login
-  [{:keys [db] :as cofx} create-database?]
+  [{:keys [db] :as cofx}]
   (let [{:keys [address password]} (accounts.model/credentials cofx)]
-    (fx/merge
-     cofx
-     {:db                            (-> db
-                                         (assoc-in [:accounts/login :processing] true)
-                                         (assoc :node/on-ready :login))
-      :accounts.login/clear-web-data nil
-      :data-store/change-account     [address
-                                      password
-                                      create-database?
-                                      (get-in db [:accounts/accounts address :settings :fleet])]})))
+    (fx/merge cofx
+              {:db
+               (-> db
+                   (assoc-in [:accounts/login :processing] true)
+                   (assoc :node/on-ready :login))
+               :accounts.login/clear-web-data nil
+               :data-store/change-account
+               [address password
+                (get-in db [:accounts/accounts address :settings :fleet])]})))
 
 (fx/defn account-and-db-password-do-not-match
   [{:keys [db] :as cofx} error]
@@ -177,113 +167,11 @@
            (initialize-wallet)))
         (account-and-db-password-do-not-match cofx error)))))
 
-(fx/defn show-migration-error-dialog
-  [{:keys [db]} realm-error]
-  (let [{:keys [message]} realm-error
-        address           (get-in db [:accounts/login :address])
-        erase-button (i18n/label :migrations-erase-accounts-data-button)]
-    {:ui/show-confirmation
-     {:title               (i18n/label :invalid-key-title)
-      :content             (i18n/label
-                            :invalid-key-content
-                            {:message                         message
-                             :erase-accounts-data-button-text erase-button})
-      :confirm-button-text (i18n/label :invalid-key-confirm)
-      :on-cancel           #(re-frame/dispatch
-                             [:init.ui/data-reset-cancelled ""])
-      :on-accept           #(re-frame/dispatch
-                             [:init.ui/account-data-reset-accepted address])}}))
-(fx/defn verify-callback
-  [cofx verify-result realm-error]
-  (let [data    (types/json->clj verify-result)
-        error   (:error data)
-        success (empty? error)]
-    (fx/merge
-     cofx
-     {:node/stop nil}
-     (fn [{:keys [db] :as cofx}]
-       (if success
-         (case (:error realm-error)
-           :decryption-failed
-           (show-migration-error-dialog cofx realm-error)
-
-           :database-does-not-exist
-           (let [{:keys [address password]} (accounts.model/credentials cofx)]
-             {:data-store/change-account [address
-                                          password
-                                          true
-                                          (get-in cofx
-                                                  [:db
-                                                   :accounts/accounts
-                                                   address
-                                                   :settings
-                                                   :fleet])]}))
-         {:db (update db :accounts/login assoc
-                      :error error
-                      :processing false)})))))
-
-(fx/defn migrations-failed
-  [{:keys [db]} {:keys [realm-error erase-button]}]
-  (let [{:keys [message details]} realm-error
-        address (get-in db [:accounts/login :address])]
-    {:ui/show-confirmation
-     {:title               (i18n/label :migrations-failed-title)
-      :content             (i18n/label
-                            :migrations-failed-content
-                            (merge
-                             {:message                         message
-                              :erase-accounts-data-button-text erase-button}
-                             details))
-      :confirm-button-text erase-button
-      :on-cancel           #(re-frame/dispatch
-                             [:init.ui/data-reset-cancelled ""])
-      :on-accept           #(re-frame/dispatch
-                             [:init.ui/account-data-reset-accepted address])}}))
-
-(fx/defn verify-account
-  [{:keys [db] :as cofx} {:keys [realm-error]}]
-  (fx/merge cofx
-            {:db (-> db
-                     (assoc :node/on-ready :verify-account)
-                     (assoc :realm-error realm-error))}
-            (node/initialize nil)))
-
-(fx/defn unknown-realm-error
-  [cofx {:keys [realm-error erase-button]}]
-  (let [{:keys [message]} realm-error
-        {:keys [address]} (accounts.model/credentials cofx)]
-    {:ui/show-confirmation
-     {:title               (i18n/label :unknown-realm-error)
-      :content             (i18n/label
-                            :unknown-realm-error-content
-                            {:message                         message
-                             :erase-accounts-data-button-text erase-button})
-      :confirm-button-text (i18n/label :invalid-key-confirm)
-      :on-cancel           #(re-frame/dispatch
-                             [:init.ui/data-reset-cancelled ""])
-      :on-accept           #(re-frame/dispatch
-                             [:init.ui/account-data-reset-accepted address])}}))
-
 (fx/defn handle-change-account-error
   [{:keys [db] :as cofx} error]
-  (let [{:keys [error] :as realm-error}
-        (if (map? error)
-          error
-          {:message (str error)})
-        erase-button (i18n/label :migrations-erase-accounts-data-button)]
-    (fx/merge
-     cofx
-     {:db (assoc-in db [:accounts/login :save-password?] false)}
-     (case error
-       :migrations-failed
-       (migrations-failed {:realm-error  realm-error
-                           :erase-button erase-button})
-
-       (:database-does-not-exist :decryption-failed)
-       (verify-account {:realm-error realm-error})
-
-       (unknown-realm-error {:realm-error  realm-error
-                             :erase-button erase-button})))))
+  ;; does nothing for now
+  ;; will handle errors from go side
+)
 
 (fx/defn open-keycard-login
   [{:keys [db] :as cofx}]
@@ -323,7 +211,7 @@
     (fx/merge cofx
               {:db (assoc-in db [:accounts/login :password] password)}
               (navigation/navigate-to-cofx :progress nil)
-              (user-login false))
+              (user-login))
     (fx/merge cofx
               (when bioauth-message
                 {:utils/show-popup {:title (i18n/label :t/biometric-auth-login-error-title) :content bioauth-message}})
@@ -342,18 +230,12 @@
    (login! address (security/safe-unmask-data password))))
 
 (re-frame/reg-fx
- :accounts.login/verify
- (fn [[address password realm-error]]
-   (verify! address (security/safe-unmask-data password) realm-error)))
-
-(re-frame/reg-fx
  :accounts.login/clear-web-data
  clear-web-data!)
 
 (re-frame/reg-fx
  :data-store/change-account
- (fn [[address password create-database-if-not-exist? current-fleet]]
+ (fn [[address password current-fleet]]
    (change-account! address
                     (security/safe-unmask-data password)
-                    create-database-if-not-exist?
                     current-fleet)))

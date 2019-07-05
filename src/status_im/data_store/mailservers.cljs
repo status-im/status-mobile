@@ -3,10 +3,6 @@
             [re-frame.core :as re-frame]
             [taoensso.timbre :as log]))
 
-(re-frame/reg-cofx
- :data-store/get-all-mailservers
- (fn [cofx _]))
-
 (defn save-tx
   "Returns tx function for saving a mailserver"
   [{:keys [id] :as mailserver}]
@@ -20,10 +16,6 @@
 (defn deserialize-mailserver-topic [serialized-mailserver-topic]
   (-> serialized-mailserver-topic
       (update :chat-ids edn/read-string)))
-
-(re-frame/reg-cofx
- :data-store/mailserver-topics
- (fn [cofx _]))
 
 (defn save-mailserver-topic-tx
   "Returns tx function for saving mailserver topic"
@@ -39,14 +31,6 @@
 (defn save-chat-requests-range
   [chat-requests-range]
   (fn [realm]))
-
-(re-frame/reg-cofx
- :data-store/all-chat-requests-ranges
- (fn [cofx _]))
-
-(re-frame/reg-cofx
- :data-store/all-gaps
- (fn [cofx _]))
 
 (defn save-mailserver-requests-gap
   [gap]
@@ -67,3 +51,23 @@
   [chat-id]
   (fn [realm]
     (log/debug "deleting range" chat-id)))
+
+(re-frame/reg-cofx
+ :data-store/all-chat-requests-ranges
+ (fn [cofx _]
+   cofx))
+
+(re-frame/reg-cofx
+ :data-store/all-gaps
+ (fn [cofx _]
+   (assoc cofx :data-store/all-gaps {})))
+
+(re-frame/reg-cofx
+ :data-store/get-all-mailservers
+ (fn [cofx _]
+   (assoc cofx :data-store/mailservers [])))
+
+(re-frame/reg-cofx
+ :data-store/mailserver-topics
+ (fn [cofx _]
+   (assoc cofx :data-store/mailserver-topics {})))

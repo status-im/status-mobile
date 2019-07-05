@@ -30,11 +30,6 @@
               (case on-ready
                 :login
                 (accounts.login/login)
-                :verify-account
-                (let [{:keys [address password]} (accounts.model/credentials cofx)]
-                  (fn [_]
-                    {:accounts.login/verify
-                     [address password (:realm-error db)]}))
                 :create-account
                 (fn [_]
                   {:accounts.create/create-account (select-keys create [:id :password])})

@@ -15,7 +15,7 @@
                                  :accounts/login {:address  "address"
                                                   :password "password"}}}
           create-database? false
-          efx              (login.core/user-login cofx create-database?)]
+          efx              (login.core/user-login cofx)]
       (testing "Web data cleared."
         (is (contains? efx :accounts.login/clear-web-data)))
       (testing "Change account."
@@ -58,48 +58,6 @@
       (testing "Contacts initialized."
         (is (= 2 (count (:contacts/contacts new-db))))))))
 
-(deftest decryption-failure-on-account-change
-  (testing ":init.callback/account-change-error event received."
-    (let [cofx   {:db {}}
-          error  {:error :decryption-failed}
-          efx    (login.core/handle-change-account-error cofx error)
-          new-db (:db efx)]
-      (testing "Init account's password verification"
-        (is (= :verify-account (new-db :node/on-ready))))
-      (testing "Init account's password verification"
-        (is (= :decryption-failed (get-in new-db [:realm-error :error]))))
-      (testing "Start node."
-        (is (contains? efx :node/start))))))
-
-(deftest database-does-not-exist-on-account-change
-  (testing ":init.callback/account-change-error event received."
-    (let [cofx   {:db {}}
-          error  {:error :database-does-not-exist}
-          efx    (login.core/handle-change-account-error cofx error)
-          new-db (:db efx)]
-      (testing "Init account's password verification"
-        (is (= :verify-account (new-db :node/on-ready))))
-      (testing "Init account's password verification"
-        (is (= :database-does-not-exist (get-in new-db [:realm-error :error]))))
-      (testing "Start node."
-        (is (contains? efx :node/start))))))
-
-(deftest migrations-failed-on-account-change
-  (testing ":init.callback/account-change-error event received."
-    (let [cofx  {:db {}}
-          error {:error :migrations-failed}
-          efx   (login.core/handle-change-account-error cofx error)]
-      (testing "Show migrations dialog."
-        (is (contains? efx :ui/show-confirmation))))))
-
-(deftest unknown-realm-error-on-account-change
-  (testing ":init.callback/account-change-error event received."
-    (let [cofx  {:db {}}
-          error {:error :unknown-error}
-          efx   (login.core/handle-change-account-error cofx error)]
-      (testing "Show unknown error dialog."
-        (is (contains? efx :ui/show-confirmation))))))
-
 (deftest on-node-started
   (testing "node.ready signal received"
     (let [cofx {:db {:accounts/login    {:address  "address"
@@ -112,63 +70,6 @@
         (is (= ["address" "password"] (:accounts.login/login efx))))
       (testing "Change node's status to started."
         (is (= :started (get-in efx [:db :node/status])))))))
-
-(deftest on-node-started-for-verification
-  (testing "node.ready signal received"
-    (let [cofx {:db {:accounts/login    {:address  "address"
-                                         :password "password"}
-                     :node/on-ready     :verify-account
-                     :accounts/accounts data/accounts
-                     :account/account   data/accounts
-                     :realm-error       {:error :database-does-not-exist}}}
-          efx  (signals/status-node-started cofx)]
-      (testing "Init VerifyAccountPassword call."
-        (is (= ["address" "password" {:error :database-does-not-exist}]
-               (:accounts.login/verify efx))))
-      (testing "Change node's status to started."
-        (is (= :started (get-in efx [:db :node/status])))))))
-
-(deftest on-verify-account-success-after-decryption-failure
-  (testing ":accounts.login.callback/verify-success event received."
-    (let [cofx          {:db {}}
-          verify-result "{\"error\":\"\"}"
-          realm-error   {:error :decryption-failed}
-          efx           (login.core/verify-callback cofx verify-result realm-error)]
-      (testing "Show dialog."
-        (is (contains? efx :ui/show-confirmation)))
-      (testing "Stop node."
-        (is (contains? efx :node/stop))))))
-
-(deftest on-verify-account-success-after-database-does-not-exist
-  (testing ":accounts.login.callback/verify-success event received."
-    (let [cofx          {:db {:accounts/accounts {"address" {:settings {:fleet "fleet"}}}
-                              :accounts/login {:address  "address"
-                                               :password "password"}}}
-          verify-result "{\"error\":\"\"}"
-          realm-error   {:error :database-does-not-exist}
-          efx           (login.core/verify-callback
-                         cofx verify-result realm-error)]
-      (testing "Change account."
-        (is (= ["address" "password" true "fleet"]
-               (:data-store/change-account efx))))
-      (testing "Stop node."
-        (is (contains? efx :node/stop))))))
-
-(deftest on-verify-account-failed
-  (testing ":accounts.login.callback/verify-success event received."
-    (let [cofx          {:db {:accounts/login {:address  "address"
-                                               :password "password"}}}
-          verify-result "{\"error\":\"some error\"}"
-          realm-error   {:error :database-does-not-exist}
-          efx           (login.core/verify-callback
-                         cofx verify-result realm-error)
-          new-db        (:db efx)]
-      (testing "Show error in sign in form."
-        (is (= "some error" (get-in new-db [:accounts/login :error]))))
-      (testing "Hide activity indicator."
-        (is (= false (get-in new-db [:accounts/login :processing]))))
-      (testing "Stop node."
-        (is (contains? efx :node/stop))))))
 
 (deftest login-success
   (testing ":accounts.login.callback/login-success event received."

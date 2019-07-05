@@ -3,7 +3,8 @@
 
 (re-frame/reg-cofx
  :data-store/all-browsers
- (fn [cofx _]))
+ (fn [cofx _]
+   (assoc cofx :all-stored-browsers [])))
 
 (defn save-browser-tx
   "Returns tx function for saving browser"

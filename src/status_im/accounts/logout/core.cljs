@@ -21,7 +21,8 @@
   (fx/merge
    cofx
    (init/initialize-app-db)
-   (init/load-accounts-and-initialize-views)
+   (init/load-accounts)
+   (init/initialize-views)
    (node/stop)))
 
 (fx/defn show-logout-confirmation [_]

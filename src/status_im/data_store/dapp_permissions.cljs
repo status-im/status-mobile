@@ -3,7 +3,8 @@
 
 (re-frame/reg-cofx
  :data-store/all-dapp-permissions
- (fn [cofx _]))
+ (fn [cofx _]
+   cofx))
 
 (defn save-dapp-permissions
   "Returns tx function for saving dapp permissions"

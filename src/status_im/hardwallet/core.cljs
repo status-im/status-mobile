@@ -1565,7 +1565,7 @@
                                                             :name name))
                :hardwallet/get-application-info {:pairing    (get-pairing db instance-uid)
                                                  :on-success :hardwallet/save-key-uid-to-account}}
-              (accounts.login/user-login true))))
+              (accounts.login/user-login))))
 
 (fx/defn on-get-keys-error
   [{:keys [db] :as cofx} error]
