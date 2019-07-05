@@ -49,4 +49,5 @@
 
 (re-frame/reg-cofx
  :data-store/get-all-multiaccounts
- (fn [coeffects _]))
+ (fn [cofx _]
+   (assoc cofx :all-multiaccounts [])))

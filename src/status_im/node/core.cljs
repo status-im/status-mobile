@@ -172,9 +172,7 @@
   (let [network     (if address
                       (get-multiaccount-network db address)
                       (:network db))
-        node-config (if (= (:node/on-ready db) :verify-multiaccount)
-                      (get-verify-multiaccount-config db network)
-                      (get-multiaccount-node-config db address))
+        node-config (get-multiaccount-node-config db address)
         node-config-json (types/clj->json node-config)]
     (log/info "Node config: " node-config-json)
     {:db        (assoc db

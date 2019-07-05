@@ -595,7 +595,6 @@
     "wallet-send": "Send",
     "wallet-deposit": "Deposit",
     "invalid-key-title": "We detected a problem with the encryption key",
-    "unknown-realm-error": "Something went wrong",
     "notifications": "Notifications",
     "currency-display-name-czk": "Czech Koruna",
     "currency-display-name-bob": "Bolivia Bolíviano",

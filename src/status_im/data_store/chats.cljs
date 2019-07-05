@@ -56,10 +56,6 @@
       (update :last-clock-value utils.clocks/safe-timestamp)
       (update :last-message-content utils/safe-read-message-content)))
 
-(re-frame/reg-cofx
- :data-store/all-chats
- (fn [cofx _]))
-
 (defn save-chat-tx
   "Returns tx function for saving chat"
   [chat]
@@ -110,3 +106,8 @@
   "Returns tx function for removing chat contacts"
   [chat-id tag]
   (fn [realm]))
+
+(re-frame/reg-cofx
+ :data-store/all-chats
+ (fn [cofx _]
+   (assoc cofx :get-all-stored-chats (fn [] {}))))

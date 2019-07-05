@@ -72,47 +72,15 @@
             status-im.popover.core))
 
 ;; init module
-
-(handlers/register-handler-fx
- :init.ui/data-reset-accepted
- (fn [cofx _]
-   {:init/reset-data nil}))
-
-(handlers/register-handler-fx
- :init.ui/multiaccount-data-reset-accepted
- (fn [_ [_ address]]
-   {:init/reset-multiaccount-data address}))
-
-(handlers/register-handler-fx
- :init.ui/data-reset-cancelled
- (fn [cofx [_ encryption-key]]
-   (init/initialize-app cofx encryption-key)))
-
 (handlers/register-handler-fx
  :init/app-started
  (fn [cofx _]
    (init/start-app cofx)))
 
 (handlers/register-handler-fx
- :init.callback/get-encryption-key-success
- (fn [cofx [_ encryption-key]]
-   (init/initialize-app cofx encryption-key)))
-
-(handlers/register-handler-fx
  :init.callback/get-device-UUID-success
  (fn [cofx [_ device-uuid]]
    (init/set-device-uuid cofx device-uuid)))
-
-(handlers/register-handler-fx
- :init.callback/init-store-success
- [(re-frame/inject-cofx :data-store/get-all-multiaccounts)]
- (fn [cofx _]
-   (init/load-multiaccounts-and-initialize-views cofx)))
-
-(handlers/register-handler-fx
- :init.callback/init-store-error
- (fn [cofx [_ encryption-key error]]
-   (init/handle-init-store-error cofx encryption-key)))
 
 (handlers/register-handler-fx
  :init-rest-of-chats
@@ -125,7 +93,7 @@
              (chat.loading/initialize-chats {:from 10}))))
 
 (defn multiaccount-change-success
-  [{:keys [db] :as cofx} [_ address nodes]]
+  [{:keys [db] :as cofx} address nodes]
   (let [{:node/keys [status]} db]
     (fx/merge
      cofx
@@ -145,17 +113,9 @@
   (re-frame/inject-cofx :data-store/get-all-installations)
   (re-frame/inject-cofx :data-store/all-chats)
   (re-frame/inject-cofx :data-store/all-chat-requests-ranges)]
- multiaccount-change-success)
-
-(handlers/register-handler-fx
- :init.callback/keychain-reset
- (fn [cofx _]
-   (init/initialize-keychain cofx)))
-
-(handlers/register-handler-fx
- :init.callback/multiaccount-db-removed
- (fn [{:keys [db]} _]
-   {:db (assoc-in db [:multiaccounts/login :processing] false)}))
+ (fn [cofx [t address nodes]]
+   (println :testing cofx t address nodes)
+   (account-change-success cofx address nodes)))
 
 ;; home screen
 
@@ -338,11 +298,6 @@
    (multiaccounts.recover/on-multiaccount-recovered cofx result password)))
 
 ;; multiaccounts login module
-
-(handlers/register-handler-fx
- :multiaccounts.login.callback/verify-success
- (fn [cofx [_ verify-result realm-error]]
-   (multiaccounts.login/verify-callback cofx verify-result realm-error)))
 
 (handlers/register-handler-fx
  :init.callback/multiaccount-change-error

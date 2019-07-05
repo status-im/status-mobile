@@ -97,7 +97,6 @@
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status",
     "status-conan": "git+https://github.com/status-im/status-conan.git#v1.0.0",
     "string_decoder": "0.10.31",
-    "text-encoding": "^0.6.4",
     "url": "0.10.3",
     "web3": "git+https://github.com/status-im/web3.js.git#0.20.3-status.alpha.3",
     "web3-utils": "1.0.0-beta.36",

@@ -1659,7 +1659,7 @@
                                                             :name name))
                :hardwallet/get-application-info {:pairing    (get-pairing db instance-uid)
                                                  :on-success :hardwallet/save-key-uid-to-multiaccount}}
-              (multiaccounts.login/user-login true))))
+              (multiaccounts.login/user-login))))
 
 (fx/defn on-get-keys-error
   [{:keys [db] :as cofx} error]

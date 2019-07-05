@@ -7,7 +7,8 @@
 
 (re-frame/reg-cofx
  :data-store/transport
- (fn [cofx _]))
+ (fn [cofx _]
+   (assoc cofx :data-store/transport {})))
 
 (defn save-transport-tx
   "Returns tx function for saving transport"

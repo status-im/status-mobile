@@ -273,7 +273,7 @@
                                                      :processing   true})}
                 (add-multiaccount new-multiaccount)
                 (when login?
-                  (multiaccounts.login/user-login true))
+                  (multiaccounts.login/user-login))
                 (when (:intro-wizard db)
                   (intro-step-forward {}))))))
 

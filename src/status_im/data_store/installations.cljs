@@ -3,7 +3,8 @@
 
 (re-frame/reg-cofx
  :data-store/get-all-installations
- (fn [coeffects _]))
+ (fn [coeffects _]
+   coeffects))
 
 (defn save
   "Returns tx function for saving a installation"

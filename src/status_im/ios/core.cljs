@@ -1,6 +1,7 @@
 (ns status-im.ios.core
   (:require [reagent.core :as reagent]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            status-im.data-store.core
             status-im.utils.db
             status-im.ui.screens.db
             status-im.ui.screens.events

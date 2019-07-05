@@ -8,7 +8,8 @@
 
 (re-frame/reg-cofx
  :data-store/get-all-contacts
- (fn [coeffects _]))
+ (fn [coeffects _]
+   coeffects))
 
 (defn save-contact-tx
   "Returns tx function for saving contact"
