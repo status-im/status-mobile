@@ -4,20 +4,20 @@
 , target-os }:
 
 let
-  platform = pkgs.callPackage ./nix/platform.nix { inherit target-os; };
-  shellBootstraper = pkgs.callPackage ./nix/shell-bootstrap.nix { };
+  platform = pkgs.callPackage ./platform.nix { inherit target-os; };
+  shellBootstraper = pkgs.callPackage ./shell-bootstrap.nix { };
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
   stdenv = pkgs.stdenvNoCC;
   maven = pkgs.maven;
   baseGo = pkgs.go_1_11;
-  go = pkgs.callPackage ./nix/go { inherit baseGo; };
+  go = pkgs.callPackage ./go { inherit baseGo; };
   buildGoPackage = pkgs.buildGoPackage.override { inherit go; };
-  desktop = pkgs.callPackage ./nix/desktop { inherit target-os stdenv status-go pkgs nodejs; inherit (pkgs) darwin; go = baseGo; };
-  mobile = pkgs.callPackage ./nix/mobile { inherit target-os config stdenv pkgs nodejs yarn status-go maven localMavenRepoBuilder mkFilter prod-build-fn; inherit (pkgs.xcodeenv) composeXcodeWrapper; };
-  status-go = pkgs.callPackage ./nix/status-go { inherit target-os go buildGoPackage; inherit (mobile.ios) xcodeWrapper; androidPkgs = mobile.android.androidComposition; };
-  mkFilter = import ./nix/tools/mkFilter.nix { inherit (stdenv) lib; };
-  localMavenRepoBuilder = pkgs.callPackage ./nix/tools/maven/maven-repo-builder.nix { inherit (pkgs) stdenv; };
-  prod-build-fn = pkgs.callPackage ./nix/targets/prod-build.nix { inherit stdenv pkgs target-os nodejs localMavenRepoBuilder mkFilter; };
+  desktop = pkgs.callPackage ./desktop { inherit target-os stdenv status-go pkgs nodejs; inherit (pkgs) darwin; go = baseGo; };
+  mobile = pkgs.callPackage ./mobile { inherit target-os config stdenv pkgs nodejs yarn status-go maven localMavenRepoBuilder mkFilter prod-build-fn; inherit (pkgs.xcodeenv) composeXcodeWrapper; };
+  status-go = pkgs.callPackage ./status-go { inherit target-os go buildGoPackage; inherit (mobile.ios) xcodeWrapper; androidPkgs = mobile.android.androidComposition; };
+  mkFilter = import ./tools/mkFilter.nix { inherit (stdenv) lib; };
+  localMavenRepoBuilder = pkgs.callPackage ./tools/maven/maven-repo-builder.nix { inherit (pkgs) stdenv; };
+  prod-build-fn = pkgs.callPackage ./targets/prod-build.nix { inherit stdenv pkgs target-os nodejs localMavenRepoBuilder mkFilter; };
   nodejs = pkgs.nodejs-10_x;
   yarn = pkgs.yarn.override { inherit nodejs; };
   nodePkgBuildInputs = [
@@ -53,9 +53,7 @@ in {
     shell = watchman-shell;
   };
 
-  shell = with stdenv; mkDerivation rec {
-    name = "status-react-build-env";
-
+  shell = with stdenv; {
     buildInputs = with pkgs;
       nodePkgBuildInputs
       ++ lib.optional isDarwin cocoapods
