@@ -432,7 +432,8 @@
             current-chat-id       [:chats/current-chat-id]
             show-message-options? [:chats/current-chat-ui-prop :show-message-options?]
             show-stickers?        [:chats/current-chat-ui-prop :show-stickers?]
-            anim-translate-y      (animation/create-value -35)]
+            two-pane-ui-enabled?  [:two-pane-ui-enabled?]
+            anim-translate-y      (animation/create-value (if two-pane-ui-enabled? 0 -35))]
     ;; this check of current-chat-id is necessary only because in a fresh public chat creation sometimes
     ;; this component renders before current-chat-id is set to current chat-id. Hence further down in sub
     ;; components (e.g. chat-toolbar) there can be a brief visual inconsistancy like showing 'add contact'
@@ -443,7 +444,8 @@
                                 (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
        ^{:key current-chat-id}
        [chat-toolbar current-chat public? modal?]
-       [connectivity/connectivity-view anim-translate-y]
+       (when-not two-pane-ui-enabled?
+         [connectivity/connectivity-view anim-translate-y])
        [connectivity/connectivity-animation-wrapper
         {}
         anim-translate-y
@@ -464,3 +466,8 @@
 
 (defview chat-modal []
   [chat-root true])
+
+(defview select-chat []
+  [react/view {:style {:align-items :center :justify-content :center :flex 1}}
+   [react/text {:style style/decline-chat}
+    (i18n/label :t/select-chat)]])

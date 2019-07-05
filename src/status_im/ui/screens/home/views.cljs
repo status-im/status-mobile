@@ -16,7 +16,9 @@
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.list-selection :as list-selection]
-            [status-im.ui.components.animation :as animation])
+            [status-im.ui.components.animation :as animation]
+            [status-im.constants :as constants]
+            [status-im.ui.components.colors :as colors])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview les-debug-info []
@@ -121,49 +123,54 @@
 (views/defview home [loading?]
   (views/letsubs
     [anim-translate-y (animation/create-value -35)
-     {:keys [search-filter chats all-home-items]} [:home-items]]
+     {:keys [search-filter chats all-home-items]} [:home-items]
+     window-width [:dimensions/window-width]
+     two-pane-ui-enabled? [:two-pane-ui-enabled?]]
     {:component-did-mount (fn [this]
                             (let [[_ loading?] (.. this -props -argv)]
                               (when loading? (utils/set-timeout #(re-frame/dispatch [:init-rest-of-chats]) 100))))}
-    [react/view {:flex 1}
-     [status-bar/status-bar {:type :main}]
-     [react/keyboard-avoiding-view {:style     {:flex        1
-                                                :align-items :center}
-                                    :on-layout (fn [e]
-                                                 (re-frame/dispatch
-                                                  [:set-once :content-layout-height
-                                                   (-> e .-nativeEvent .-layout .-height)]))}
-      [react/view {:style {:flex       1
-                           :align-self :stretch}}
-       [toolbar/toolbar nil nil [toolbar/content-title (i18n/label :t/chat)]]
-       [les-debug-info]
-       (cond loading?
-             [react/view {:style {:flex            1
-                                  :justify-content :center
-                                  :align-items     :center}}
-              [connectivity/connectivity-view anim-translate-y]
-              [connectivity/connectivity-animation-wrapper
-               {}
-               anim-translate-y
-               [react/activity-indicator {:flex      1
-                                          :animating true}]]]
-
-             :else
-             [react/view {:style {:flex 1}}
-              [connectivity/connectivity-view anim-translate-y]
-              [connectivity/connectivity-animation-wrapper
-               {}
-               anim-translate-y
-               [filter.views/search-input-wrapper search-filter]
-               (if (and (not search-filter)
-                        (empty? all-home-items))
-                 [home-empty-view]
-                 [home-items-view
-                  search-filter
-                  chats
-                  all-home-items
-                  filter.views/search-input-state])]])]
-      [home-action-button]]]))
+    (let [home-width (if (> window-width constants/two-pane-min-width)
+                       (max constants/left-pane-min-width (/ window-width 3))
+                       window-width)]
+      [react/view (merge {:flex 1 :width home-width}
+                         (when two-pane-ui-enabled?
+                           {:border-right-width 1 :border-right-color colors/gray-light}))
+       [status-bar/status-bar {:type :main}]
+       [react/keyboard-avoiding-view {:style     {:flex        1
+                                                  :align-items :center}
+                                      :on-layout (fn [e]
+                                                   (re-frame/dispatch
+                                                    [:set-once :content-layout-height
+                                                     (-> e .-nativeEvent .-layout .-height)]))}
+        [react/view {:style {:flex       1
+                             :align-self :stretch}}
+         [toolbar/toolbar nil nil [toolbar/content-title (i18n/label :t/chat)]]
+         [les-debug-info]
+         (cond loading?
+               [react/view {:style {:flex            1
+                                    :justify-content :center
+                                    :align-items     :center}}
+                [connectivity/connectivity-view anim-translate-y]
+                [connectivity/connectivity-animation-wrapper
+                 {}
+                 anim-translate-y
+                 [react/activity-indicator {:flex      1
+                                            :animating true}]]] :else
+               [react/view {:style {:flex 1}}
+                [connectivity/connectivity-view anim-translate-y]
+                [connectivity/connectivity-animation-wrapper
+                 {}
+                 anim-translate-y
+                 [filter.views/search-input-wrapper search-filter]
+                 (if (and (not search-filter)
+                          (empty? all-home-items))
+                   [home-empty-view]
+                   [home-items-view
+                    search-filter
+                    chats
+                    all-home-items
+                    filter.views/search-input-state])]])]
+        [home-action-button]]])))
 
 (views/defview home-wrapper []
   (views/letsubs [loading? [:chats/loading?]]

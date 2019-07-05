@@ -98,7 +98,9 @@
                                               (and group-chat public?)       :public-chat-actions
                                               (and group-chat (not public?)) :group-chat-actions
                                               :else                          :private-chat-actions)]
-    [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
+    [react/touchable-highlight {:on-press #(do
+                                             (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
+                                             (re-frame/dispatch [:chat.ui/mark-messages-seen :chat]))
                                 :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet chat-actions {:chat-id chat-id}])}
      [react/view styles/chat-container
       [react/view styles/chat-icon-container

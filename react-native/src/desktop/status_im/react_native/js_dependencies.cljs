@@ -36,5 +36,6 @@
 (def snoopy-buffer          (fn [] #js {}))
 (def background-timer       (fn [] #js {:setTimeout (fn [cb ms] (js/setTimeout cb ms))}))
 (def react-navigation       (js/require "react-navigation"))
+(def react-native-navigation-twopane  (js/require "react-native-navigation-twopane"))
 (def react-native-shake     (fn [] #js {}))
 (def react-native-mail      (fn [] #js {:mail (fn [])}))

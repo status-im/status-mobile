@@ -804,6 +804,18 @@
                                            current-param-position
                                            value))))
 
+(defn- mark-messages-seen
+  [{:keys [db] :as cofx}]
+  (let [{:keys [current-chat-id]} db]
+    (chat/mark-messages-seen cofx current-chat-id)))
+
+(handlers/register-handler-fx
+ :chat.ui/mark-messages-seen
+ (fn [{:keys [db] :as cofx} [_ view-id]]
+   (fx/merge cofx
+             {:db (assoc db :view-id view-id)}
+             #(mark-messages-seen %))))
+
 (handlers/register-handler-fx
  :chat/send-plain-text-message
  (fn [{{:keys [current-chat-id]} :db :as cofx} [_ message-text]]

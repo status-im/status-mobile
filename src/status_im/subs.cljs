@@ -59,6 +59,7 @@
 (reg-root-key-sub :view-id :view-id)
 (reg-root-key-sub :navigation-stack :navigation-stack)
 (reg-root-key-sub :screen-params :navigation/screen-params)
+(reg-root-key-sub :two-pane-ui-enabled? :two-pane-ui-enabled?)
 
 ;;bottom sheet
 (reg-root-key-sub :bottom-sheet/show? :bottom-sheet/show?)

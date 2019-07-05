@@ -5619,6 +5619,10 @@ react-native-languages@^3.0.2:
   version "3.0.7"
   resolved "git+https://github.com/status-im/react-native-mail.git#5dd2d4e92fa696a9dd0efebdc530df22772326fe"
 
+"react-native-navigation-twopane@git+https://github.com/status-im/react-native-navigation-twopane.git#v0.0.2-status":
+  version "0.0.2"
+  resolved "git+https://github.com/status-im/react-native-navigation-twopane.git#04ed5fddfb46a6a3ee30776987acb4d3b11c27d4"
+
 "react-native-os@git+https://github.com/status-im/react-native-os.git#v1.1.0-1-status":
   version "1.1.0"
   resolved "git+https://github.com/status-im/react-native-os.git#1a6d0835f919cb075793ad7c602f2724eee4702d"

@@ -24,6 +24,8 @@
 (def default-number-of-messages 20)
 (def blocks-per-hour 120)
 (def one-earth-day 86400)
+(def two-pane-min-width 640)
+(def left-pane-min-width 320)
 
 (def mailserver-password "status-offline-inbox")
 

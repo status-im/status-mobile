@@ -68,7 +68,8 @@
                                                                    :current      []
                                                                    :puk          []
                                                                    :enter-step   :original}}
-             :chats/loading?                     true})
+             :chats/loading?                     true
+             :two-pane-ui-enabled?               (dimensions/fit-two-pane?)})
 
 ;;;;GLOBAL
 
@@ -151,6 +152,7 @@
 (spec/def :desktop/desktop (spec/nilable any?))
 (spec/def ::tooltips (spec/nilable any?))
 (spec/def ::initial-props (spec/nilable any?))
+(spec/def ::two-pane-ui-enabled? (spec/nilable boolean?))
 
 ;;;;NETWORK
 
@@ -352,4 +354,5 @@
                                    ::collectible
                                    ::collectibles
                                    ::extensions-store
-                                   :registry/registry]))
+                                   :registry/registry
+                                   ::two-pane-ui-enabled?]))

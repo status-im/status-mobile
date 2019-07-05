@@ -78,7 +78,8 @@
 
 (defview stickers-paging-panel [installed-packs selected-pack]
   (letsubs [ref          (atom nil)
-            window-width [:dimensions/window-width]]
+            window-width [:dimensions/window-width]
+            content-width (reagent/atom 0)]
     {:component-will-update (fn [_ [_ installed-packs selected-pack]]
                               (update-scroll-position @ref installed-packs selected-pack window-width))
      :component-did-mount   #(update-scroll-position @ref installed-packs selected-pack window-width)}
@@ -87,12 +88,13 @@
                         :shows-horizontal-scroll-indicator false
                         :on-momentum-scroll-end            #(on-scroll % installed-packs window-width)
                         :scrollEventThrottle               8
-                        :on-scroll                         #(reset! scroll-x (.-nativeEvent.contentOffset.x %))}
+                        :on-scroll                         #(reset! scroll-x (.-nativeEvent.contentOffset.x %))
+                        :on-layout #(reset! content-width (-> % .-nativeEvent .-layout .-width))}
      ^{:key "recent"}
-     [recent-stickers-panel window-width]
+     [recent-stickers-panel @content-width]
      (for [{:keys [stickers id]} installed-packs]
        ^{:key (str "sticker" id)}
-       [stickers-panel (map #(assoc % :pack id) stickers) window-width])]))
+       [stickers-panel (map #(assoc % :pack id) stickers) @content-width])]))
 
 (defn pack-icon [{:keys [id on-press background-color]
                   :or   {on-press #(re-frame/dispatch [:stickers/select-pack id])}}

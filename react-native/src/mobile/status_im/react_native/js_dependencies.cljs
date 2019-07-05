@@ -34,6 +34,7 @@
 (def background-timer-class (js-require/js-require "react-native-background-timer"))
 (defn background-timer []   (.-default (background-timer-class)))
 (def react-navigation       (js/require "react-navigation"))
+(def react-native-navigation-twopane  (js/require "react-native-navigation-twopane"))
 (def react-native-shake     (js-require/js-require "react-native-shake"))
 (def react-native-screens   (js-require/js-require "react-native-screens"))
 (def mail-class             (js-require/js-require  "react-native-mail"))

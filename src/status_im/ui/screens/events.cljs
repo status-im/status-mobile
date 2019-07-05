@@ -65,11 +65,6 @@
  :http-post
  http-post)
 
-(defn- mark-messages-seen
-  [{:keys [db] :as cofx}]
-  (let [{:keys [current-chat-id]} db]
-    (chat/mark-messages-seen cofx current-chat-id)))
-
 (defn- http-raw-post [{:keys [url body response-validator success-event-creator failure-event-creator timeout-ms opts]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
         on-error   (when failure-event-creator #(re-frame/dispatch (failure-event-creator %)))
@@ -205,6 +200,11 @@
    {:db (assoc db :dimensions/window (dimensions/window dimensions))}))
 
 (handlers/register-handler-fx
+ :set-two-pane-ui-enabled
+ (fn [{:keys [db]} [_ enabled?]]
+   {:db (assoc db :two-pane-ui-enabled? enabled?)}))
+
+(handlers/register-handler-fx
  :screens/on-will-focus
  (fn [{:keys [db] :as cofx} [_ view-id]]
    (fx/merge cofx
@@ -222,5 +222,4 @@
                 :hardwallet-connect-modal (hardwallet/hardwallet-connect-screen-did-load %)
                 :hardwallet-authentication-method (hardwallet/authentication-method-screen-did-load %)
                 :accounts (hardwallet/accounts-screen-did-load %)
-                :chat (mark-messages-seen %)
                 nil))))

@@ -1077,6 +1077,7 @@
     "network-fee" : "Network fee",
     "sign-with-password" : "Sign with password",
     "signing-a-message" : "Signing a message",
+    "select-chat" : "Select chat to start messaging",
     "etherscan-lookup": "Look up on Etherscan",
     "retry":  "Retry",
     "ens-deposit": "Deposit",

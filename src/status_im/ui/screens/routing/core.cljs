@@ -114,26 +114,45 @@
 (defn stack-navigator [routes config]
   (nav-reagent/stack-navigator
    routes
-   (cond->
-    (merge {:headerMode        "none"
-            :cardStyle         {:backgroundColor :white}
-            #_:transitionConfig
-            #_(fn []
-                #js {:transitionSpec #js{:duration 10}})
-            :onTransitionStart (fn [n]
-                                 (let [idx    (.. n
-                                                  -navigation
-                                                  -state
-                                                  -index)
-                                       routes (.. n
-                                                  -navigation
-                                                  -state
-                                                  -routes)]
-                                   (when (and (array? routes) (int? idx))
-                                     (let [route      (aget routes idx)
-                                           route-name (keyword (.-routeName route))]
-                                       (bottom-bar/minimize-bar route-name)))))}
-           (prepare-config config)))))
+   (merge {:headerMode        "none"
+           :cardStyle         {:backgroundColor :white}
+           #_:transitionConfig
+           #_(fn []
+               #js {:transitionSpec #js{:duration 10}})
+           :onTransitionStart (fn [n]
+                                (let [idx    (.. n
+                                                 -navigation
+                                                 -state
+                                                 -index)
+                                      routes (.. n
+                                                 -navigation
+                                                 -state
+                                                 -routes)]
+                                  (when (and (array? routes) (int? idx))
+                                    (let [route      (aget routes idx)
+                                          route-name (keyword (.-routeName route))]
+                                      (bottom-bar/minimize-bar route-name)))))}
+          (prepare-config config))))
+
+(defn twopane-navigator [routes config]
+  (navigation/twopane-navigator
+   routes
+   (merge {:headerMode        "none"
+           :cardStyle         {:backgroundColor :white}
+           :onTransitionStart (fn [n]
+                                (let [idx    (.. n
+                                                 -navigation
+                                                 -state
+                                                 -index)
+                                      routes (.. n
+                                                 -navigation
+                                                 -state
+                                                 -routes)]
+                                  (when (and (array? routes) (int? idx))
+                                    (let [route      (aget routes idx)
+                                          route-name (keyword (.-routeName route))]
+                                      (bottom-bar/minimize-bar route-name)))))}
+          (prepare-config config))))
 
 (defn switch-navigator [routes config]
   (nav-reagent/switch-navigator
@@ -147,7 +166,7 @@
 
 (declare stack-screens)
 
-(defn build-screen [screen]
+(defn build-screen [navigator screen]
   "Builds screen from specified configuration. Currently screen can be
   - keyword, which points to some specific route
   - vector of [:modal :screen-key] type when screen should be wrapped as modal
@@ -162,8 +181,8 @@
     (let [res (cond
                 (map? screen-config)
                 (let [{:keys [screens config]} screen-config]
-                  (stack-navigator
-                   (stack-screens screens)
+                  (navigator
+                   (stack-screens navigator screens)
                    config))
 
                 (vector? screen-config)
@@ -178,9 +197,9 @@
                      (assoc :navigationOptions
                             (:navigation screen-config)))])))
 
-(defn stack-screens [screens-map]
+(defn stack-screens [navigator screens-map]
   (->> screens-map
-       (map build-screen)
+       (map (partial build-screen navigator))
        (into {})))
 
 (defn wrap-bottom-bar
@@ -190,28 +209,28 @@
 (defn app-container [navigator]
   (.createAppContainer js-dependencies/react-navigation navigator))
 
-(defn get-main-component [view-id]
+(defn get-main-component [view-id two-pane?]
   (log/debug :component view-id)
   (app-container
    (switch-navigator
     (into {}
-          [(build-screen (intro-login-stack/login-stack view-id))
-           (build-screen (intro-login-stack/intro-stack))
+          [(build-screen stack-navigator (intro-login-stack/login-stack view-id))
+           (build-screen stack-navigator (intro-login-stack/intro-stack))
            [:tabs-and-modals
             {:screen
              (stack-navigator
               (merge
                {:tabs
                 {:screen (tab-navigator
-                          (->> [(build-screen chat-stack/chat-stack)
-                                (build-screen browser-stack/browser-stack)
-                                (build-screen wallet-stack/wallet-stack)
-                                (build-screen profile-stack/profile-stack)]
+                          (->> [(build-screen (if two-pane? twopane-navigator stack-navigator) chat-stack/chat-stack)
+                                (build-screen stack-navigator browser-stack/browser-stack)
+                                (build-screen stack-navigator wallet-stack/wallet-stack)
+                                (build-screen stack-navigator profile-stack/profile-stack)]
                                (into {}))
                           {:initialRouteName :chat-stack
                            :tabBarComponent  (reagent.core/reactify-component
                                               wrap-bottom-bar)})}}
-               (stack-screens modals/modal-screens))
+               (stack-screens stack-navigator modals/modal-screens))
               {:mode              :modal
                :initialRouteName  :tabs
                :onTransitionStart (fn [])})}]])

@@ -97,6 +97,7 @@
    :keycard-onboarding-recovery-phrase-confirm-word2 keycard.onboarding/recovery-phrase-confirm-word
    :home                                             home/home-wrapper
    :chat                                             chat/chat
+   :select-chat                                      chat/select-chat
    :profile                                          profile.contact/profile
    :new                                              add-new/add-new
    :new-chat                                         new-chat/new-chat

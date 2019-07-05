@@ -45,6 +45,7 @@
               "text-encoding"
               "js-sha3"
               "react-navigation"
+              "react-native-navigation-twopane"
               "hi-base32"
               "react-native-mail"
               "react-native-shake"]
@@ -87,6 +88,7 @@
                    "js-sha3"
                    "web3-utils"
                    "react-navigation"
+                   "react-native-navigation-twopane"
                    "hi-base32"]
 
  ;; Resoures

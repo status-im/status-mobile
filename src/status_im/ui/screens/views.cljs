@@ -15,6 +15,7 @@
             [status-im.ui.screens.home.sheet.views :as home.sheet]
             [status-im.ui.screens.routing.core :as routing]
             [status-im.ui.screens.signing.views :as signing]
+            [status-im.utils.dimensions :as dimensions]
             status-im.ui.screens.wallet.collectibles.etheremon.views
             status-im.ui.screens.wallet.collectibles.cryptostrikers.views
             status-im.ui.screens.wallet.collectibles.cryptokitties.views
@@ -53,6 +54,25 @@
 
       [bottom-sheet/bottom-sheet opts])))
 
+(defn reset-component-on-mount [view-id component two-pane?]
+  (when (and @initial-view-id
+             (or
+              js/goog.DEBUG
+              (not @component)))
+    (reset! component (routing/get-main-component
+                       (if js/goog.DEBUG
+                         @initial-view-id
+                         @view-id)
+                       two-pane?))))
+
+(defn reset-component-on-update [view-id component two-pane?]
+  (when (and @initial-view-id (not @component))
+    (reset! component (routing/get-main-component
+                       (if js/goog.DEBUG
+                         @initial-view-id
+                         @view-id)
+                       two-pane?))))
+
 (defonce state (atom nil))
 
 (defn persist-state [state-obj]
@@ -67,36 +87,40 @@
      (resolve @state))))
 
 (defn main []
-  (let [view-id        (re-frame/subscribe [:view-id])
-        main-component (atom nil)]
+  (let [view-id                 (re-frame/subscribe [:view-id])
+        main-component          (atom nil)
+        main-component-two-pane (atom nil)
+        two-pane?               (reagent/atom (dimensions/fit-two-pane?))]
     (reagent/create-class
      {:component-did-mount
       (fn []
+        (re-frame/dispatch [:set-two-pane-ui-enabled @two-pane?])
         (log/debug :main-component-did-mount @view-id)
         (utils.universal-links/initialize))
       :component-will-mount
       (fn []
+        (.addEventListener (react/dimensions)
+                           "change"
+                           (fn [dimensions]
+                             (let [two-pane-enabled? (dimensions/fit-two-pane?)]
+                               (do
+                                 (re-frame/dispatch [:set-two-pane-ui-enabled two-pane-enabled?])
+                                 (log/debug ":set-two-pane " two-pane-enabled?)
+                                 (reset! two-pane? two-pane-enabled?)))))
+
         (when-not @initial-view-id
           (reset! initial-view-id @view-id))
-        (when (and @initial-view-id
-                   (or
-                    js/goog.DEBUG
-                    (not @main-component)))
-          (reset! main-component (routing/get-main-component
-                                  (if js/goog.DEBUG
-                                    @initial-view-id
-                                    @view-id)))))
+        (reset-component-on-mount view-id main-component false)
+        (reset-component-on-mount view-id main-component-two-pane true))
       :component-will-unmount
       utils.universal-links/finalize
       :component-will-update
       (fn []
         (when-not @initial-view-id
           (reset! initial-view-id @view-id))
-        (when (and @initial-view-id (not @main-component))
-          (reset! main-component (routing/get-main-component
-                                  (if js/goog.DEBUG
-                                    @initial-view-id
-                                    @view-id))))
+
+        (reset-component-on-update view-id main-component false)
+        (reset-component-on-update view-id main-component-two-pane true)
         (when-not platform/desktop?
           (react/dismiss-keyboard!)))
       :component-did-update
@@ -106,7 +130,7 @@
       (fn []
         (when (and @view-id main-component)
           [react/view {:flex 1}
-           [:> @main-component
+           [:> (if @two-pane? @main-component-two-pane @main-component)
             {:ref                    (fn [r]
                                        (navigation/set-navigator-ref r)
                                        (when (and
@@ -114,7 +138,7 @@
                                               (not js/goog.DEBUG)
                                               (not (contains? #{:intro :login :progress} @view-id)))
                                          (navigation/navigate-to @view-id nil)))
-             ;; see https://reactnavigation.org/docs/en/state-persistence.html#development-mode
+              ;; see https://reactnavigation.org/docs/en/state-persistence.html#development-mode
              :persistNavigationState (when js/goog.DEBUG persist-state)
              :loadNavigationState    (when js/goog.DEBUG load-state)}]
            [signing/signing]

@@ -150,13 +150,14 @@
 (defview connectivity-view [anim-translate-y]
   (letsubs [status-properties [:connectivity/status-properties]
             view-id           [:view-id]
-            window-width      [:dimensions/window-width]]
+            window-width (reagent/atom 0)]
     (let [{:keys [loading-indicator?]} status-properties]
-      [react/view {:style {:align-self :flex-start}}
+      [react/view {:style {:align-items :stretch}
+                   :on-layout #(reset! window-width (-> % .-nativeEvent .-layout .-width))}
        (when loading-indicator?
-         [loading-indicator window-width])
+         [loading-indicator @window-width])
        [connectivity-status
         (merge status-properties
                {:view-id      view-id
-                :window-width window-width})
+                :window-width @window-width})
         anim-translate-y]])))

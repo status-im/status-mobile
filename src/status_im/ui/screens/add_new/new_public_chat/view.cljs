@@ -18,6 +18,10 @@
    [status-im.utils.slurp :refer [slurp]]
    [status-im.utils.views :as views]))
 
+(defn- start-chat [topic]
+  (re-frame/dispatch [:chat.ui/start-public-chat topic {:navigation-reset? true}])
+  (re-frame/dispatch [:set :public-group-topic nil]))
+
 (defn- chat-name-input [topic error]
   [react/view
    [react/view (merge add-new.styles/input-container {:margin-top 8})
@@ -26,8 +30,7 @@
      [text-input.view/text-input-with-label
       {:container           styles/input-container
        :on-change-text      #(re-frame/dispatch [:set :public-group-topic %])
-       :on-submit-editing   #(when (db/valid-topic? topic)
-                               (re-frame/dispatch [:chat.ui/start-public-chat topic {:navigation-reset? true}]))
+       :on-submit-editing   #(when (db/valid-topic? topic) (start-chat topic))
        :auto-capitalize     :none
        :auto-focus          false
        :accessibility-label :chat-name-input
@@ -43,9 +46,7 @@
     (first topic)]])
 
 (defn- render-topic [topic]
-  [react/touchable-highlight {:on-press            #(re-frame/dispatch [:chat.ui/start-public-chat
-                                                                        topic
-                                                                        {:navigation-reset? true}])
+  [react/touchable-highlight {:on-press            #(start-chat topic)
                               :accessibility-label :chat-item}
    [react/view
     [list/item

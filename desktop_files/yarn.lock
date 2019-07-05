@@ -7146,6 +7146,10 @@ react-native-invertible-scroll-view@1.1.0:
   version "3.0.2"
   resolved "git+https://github.com/status-im/react-native-languages.git#60338ff3040b8af68d33233aebeb36db4d31aed0"
 
+"react-native-navigation-twopane@git+https://github.com/status-im/react-native-navigation-twopane.git#v0.0.2-status":
+  version "0.0.2"
+  resolved "git+https://github.com/status-im/react-native-navigation-twopane.git#04ed5fddfb46a6a3ee30776987acb4d3b11c27d4"
+
 react-native-os@1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/react-native-os/-/react-native-os-1.1.0.tgz#bfbe1c44d8a5b14a6f3a3a405d8ada6f547a516e"
