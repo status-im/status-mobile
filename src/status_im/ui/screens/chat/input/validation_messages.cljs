@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
+            [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.screens.chat.styles.input.validation-message :as style]
             [status-im.i18n :as i18n]))
 
@@ -25,5 +26,7 @@
                       {:title       (i18n/label :t/error)
                        :description validation-result}
                       validation-result)]
-        [react/view (style/root (+ input-height chat-input-margin))
-         [messages-list [validation-message message]]]))))
+        [tooltip/tooltip (:description message)
+         {:box-shadow       "0px 4px 12px rgba(0, 34, 51, 0.08), 0px 2px 4px rgba(0, 34, 51, 0.16)"
+          :font-size        12
+          :bottom-value     -13}]))))

@@ -107,8 +107,9 @@
   "command is complete, proceed with command processing"
   [cofx input-text command custom-params]
   (fx/merge cofx
-            (commands.sending/validate-and-send input-text command custom-params)
-            (set-chat-input-text nil)
+            (if-let [results (commands.sending/validate-and-send input-text command custom-params)]
+              results
+              (set-chat-input-text nil))
             (process-cooldown)))
 
 (defn command-not-complete-fx

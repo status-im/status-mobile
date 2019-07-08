@@ -10,3 +10,6 @@
    :margin           10
    :margin-left      8
    :margin-bottom    11})
+
+(def send-message-container-error
+  (merge send-message-container {:background-color colors/red-transparent-10}))
