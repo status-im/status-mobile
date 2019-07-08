@@ -168,7 +168,7 @@
   (views/letsubs [phrase [:signing/phrase]]
     (case type
       :password
-      [react/view {:padding-top 16 :padding-bottom 16}
+      [react/view {:padding-top 8 :padding-bottom 16}
        [signing-phrase-view phrase]
        [text-input/text-input-with-label
         {:secure-text-entry   true
@@ -178,7 +178,7 @@
          :auto-capitalize     :none
          :editable            (not in-progress?)
          :error               error
-         :container           {:margin-top 24 :margin-bottom 32 :margin-horizontal 16}}]
+         :container           {:margin-top 12 :margin-bottom 12 :margin-horizontal 16}}]
        [react/view {:align-items :center :height 44}
         (if in-progress?
           [react/activity-indicator {:animating true
@@ -199,7 +199,7 @@
        [react/view {:padding 6}
         [react/text {:style {:color colors/blue}} (i18n/label :t/cancel)]]]]
      [separator]
-     [react/view {:padding-top 16}
+     [react/view {:padding-top 16 :flex 1}
       [react/view styles/message-border
        [react/scroll-view
         [react/text (or formatted-data "")]]]
@@ -271,20 +271,16 @@
                                      (hide-panel-anim bottom-anim-value alpha-value (- window-height)))))
       :reagent-render        (fn []
                                (when @current-tx
-                                 [react/view {:position :absolute :top 0 :bottom 0 :left 0 :right 0}
-                                  [react/animated-view {:flex 1 :background-color :black :opacity alpha-value}]
-                                  [react/animated-view {:style
-                                                        {:position  :absolute
-                                                         :height    window-height
-                                                         :left      0
-                                                         :right     0
-                                                         ;;:bottom bottom-anim-value
-                                                         :transform [{:translateY bottom-anim-value}]}}
-                                   [react/keyboard-avoiding-view {:style {:flex 1}}
-                                    [react/view {:flex 1}]
-                                    (if (:message @current-tx)
-                                      [message-sheet]
-                                      [sheet @current-tx])]]]))})))
+                                 [react/keyboard-avoiding-view {:style {:position :absolute :top 0 :bottom 0 :left 0 :right 0}}
+                                  [react/view {:flex 1}
+                                   [react/animated-view {:flex 1 :background-color :black :opacity alpha-value}]
+                                   [react/animated-view {:style {:position  :absolute :bottom 0 :top -40 :left 0 :right 0
+                                                                 :transform [{:translateY bottom-anim-value}]}}
+                                    [react/view {:flex 1}
+                                     [react/view {:flex-shrink 2.5 :flex-grow 2.5 :flex-basis 600}]
+                                     (if (:message @current-tx)
+                                       [message-sheet]
+                                       [sheet @current-tx])]]]]))})))
 
 (views/defview signing []
   (views/letsubs [tx [:signing/tx]
