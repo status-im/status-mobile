@@ -11,7 +11,8 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.text-input.view :as text-input]
-            [status-im.ui.components.tooltip.views :as tooltip]))
+            [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.ui.screens.hardwallet.pin.views :as pin.views]))
 
 (defn intro []
   [react/view styles/container
@@ -330,7 +331,7 @@
                            :margin-bottom 30}}
        (i18n/label :t/open-nfc-settings)]]]]])
 
-(def pin status-im.ui.screens.hardwallet.pin.views/create-pin)
+(def pin pin.views/create-pin)
 
 (defview recovery-phrase []
   (letsubs [mnemonic [:hardwallet-mnemonic]]
