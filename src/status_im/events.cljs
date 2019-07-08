@@ -1835,11 +1835,6 @@
  (fn [cofx [_ id handler]]
    (ethereum.subscriptions/register-subscription cofx id handler)))
 
-(handlers/register-handler-fx
- :ethereum.signal/new-block
- (fn [cofx [_ block]]
-   (ethereum.subscriptions/new-block cofx block)))
-
 ;; ethereum transactions events
 (handlers/register-handler-fx
  :ethereum.transactions.callback/fetch-history-success
@@ -1855,11 +1850,6 @@
  :ethereum.transactions.callback/fetch-token-history-success
  (fn [cofx [_ transactions]]
    (ethereum.transactions/handle-token-history cofx transactions)))
-
-(handlers/register-handler-fx
- :ethereum.transactions/new
- (fn [cofx [_ transaction]]
-   (ethereum.transactions/new cofx transaction)))
 
 ;; wallet events
 

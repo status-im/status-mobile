@@ -3,7 +3,8 @@
             [status-im.i18n :as i18n]
             status-im.ui.screens.wallet.request.db
             status-im.ui.screens.wallet.send.db
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [status-im.utils.priority-map :refer [empty-transaction-map]]))
 
 (spec/def :wallet.send/recipient string?)
 
@@ -65,10 +66,18 @@
   #{:inbound :outbound :pending :failed})
 
 (def default-wallet
-  {:filters default-wallet-filters})
+  {:filters default-wallet-filters
+   :transactions empty-transaction-map})
 
 (defn get-confirmations
   [{:keys [block]} current-block]
   (if (and current-block block)
     (inc (- current-block block))
     0))
+
+(defn remove-transactions-since-block
+  [transactions block]
+  (into empty-transaction-map
+        (drop-while (fn [[k v]]
+                      (>= (int (:block v)) block))
+                    transactions)))

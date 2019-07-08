@@ -120,6 +120,7 @@
                                        :LightClient true
                                        :MinimumPoW 0.001
                                        :EnableNTPSync true}
+             :WalletConfig        {:Enabled true}
              :ShhextConfig        {:BackupDisabledDataDir      (utils.platform/no-backup-directory)
                                    :InstallationID             installation-id
                                    :MaxMessageDeliveryAttempts config/max-message-delivery-attempts
