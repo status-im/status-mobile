@@ -88,8 +88,7 @@
             (wallet/initialize-tokens)
             (wallet/update-balances)
             (wallet/update-prices)
-            (transactions/initialize)
-            (ethereum.subscriptions/initialize)))
+            (transactions/initialize)))
 
 (fx/defn user-login-without-creating-db
   {:events [:accounts.login.ui/password-input-submitted]}

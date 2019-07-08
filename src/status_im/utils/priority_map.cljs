@@ -230,3 +230,6 @@
 
 (def empty-message-map
   (priority-map-keyfn-by :clock-value >))
+
+(def empty-transaction-map
+  (priority-map-keyfn-by :block #(< (int %1) (int %2))))

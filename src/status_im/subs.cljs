@@ -17,7 +17,6 @@
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.ethereum.tokens :as tokens]
             [status-im.ethereum.transactions.core :as transactions]
-            [status-im.ethereum.transactions.etherscan :as transactions.etherscan]
             [status-im.fleet.core :as fleet]
             [status-im.group-chats.db :as group-chats.db]
             [status-im.i18n :as i18n]
@@ -1164,12 +1163,12 @@
  :<- [:contacts/contacts-by-address]
  :<- [:ethereum/native-currency]
  (fn [[transactions contacts native-currency]]
-   (reduce-kv (fn [acc hash transaction]
-                (assoc acc
-                       hash
-                       (enrich-transaction transaction contacts native-currency)))
-              {}
-              transactions)))
+   (reduce (fn [acc [hash transaction]]
+             (assoc acc
+                    hash
+                    (enrich-transaction transaction contacts native-currency)))
+           {}
+           transactions)))
 
 (re-frame/reg-sub
  :wallet.transactions/all-filters?
@@ -1294,7 +1293,7 @@
                          (money/wei->str :eth
                                          (money/fee-value gas-used gas-price)
                                          native-currency-text))
-                 :url  (transactions.etherscan/get-transaction-details-url
+                 :url  (transactions/get-transaction-details-url
                         chain-keyword
                         hash)}))))))
 
