@@ -22,9 +22,10 @@
                                    :icon-opts {:color :blue}
                                    :accessibility-label :wallet-set-currency
                                    :on-press  #(hide-sheet-and-dispatch [:navigate-to :currency-settings])}]
-     [action-button/action-button-disabled {:label     (i18n/label :t/view-signing)
-                                            :icon      :main-icons/info
-                                            :icon-opts {:color :blue}}]
+     [action-button/action-button {:label     (i18n/label :t/view-signing)
+                                   :icon      :main-icons/info
+                                   :on-press  #(hide-sheet-and-dispatch [:show-popover {:view :signing-phrase}])
+                                   :icon-opts {:color :blue}}]
      (when-not seed-backed-up?
        [action-button/action-button {:label        (i18n/label :t/wallet-backup-recovery-title)
                                      :icon         :main-icons/security
@@ -45,7 +46,7 @@
                                  :icon                :main-icons/receive
                                  :accessibility-label :receive-transaction-button
                                  :icon-opts           {:color :blue}
-                                 :on-press            #(hide-sheet-and-dispatch [:navigate-to :wallet-request-transaction])}]])
+                                 :on-press            #(hide-sheet-and-dispatch [:show-popover {:view :share-account}])}]])
 
 (defn add-account []
   [react/view

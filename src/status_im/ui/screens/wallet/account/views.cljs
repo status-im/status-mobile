@@ -58,14 +58,14 @@
                                      :color (colors/alpha colors/white 0.7)}}
        (ethereum/normalized-address address)]]
      [react/view {:position :absolute :top 12 :right 12}
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet.accounts/share])}
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-popover {:view :share-account}])}
        [icons/icon :main-icons/share {:color colors/white
                                       :accessibility-label :share-wallet-address-icon}]]]
      [react/view {:height                     52 :background-color (colors/alpha colors/black 0.2)
                   :border-bottom-right-radius 8 :border-bottom-left-radius 8 :flex-direction :row}
       [button (i18n/label :t/wallet-send) :main-icons/send #(re-frame/dispatch [:navigate-to :wallet-send-transaction])]
       [react/view {:style styles/divider}]
-      [button (i18n/label :t/receive) :main-icons/receive #(re-frame/dispatch [:navigate-to :wallet-request-transaction])]]]))
+      [button (i18n/label :t/receive) :main-icons/receive  #(re-frame/dispatch [:show-popover {:view :share-account}])]]]))
 
 (views/defview transactions []
   (views/letsubs [{:keys [transaction-history-sections]}

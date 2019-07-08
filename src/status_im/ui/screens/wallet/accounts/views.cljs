@@ -38,7 +38,7 @@
         [{:style {:color colors/white}} portfolio-value]
         " "
         (:code currency)]
-       [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet.accounts/share])}
+       [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-popover {:view :share-account}])}
         [icons/icon :main-icons/share {:color colors/white}]]]
       [react/view
        [react/text {:style {:color colors/white :font-weight "500" :line-height 22}} name]

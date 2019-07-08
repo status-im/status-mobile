@@ -11,23 +11,26 @@
    (rn-dependencies/qr-code)
    (clj->js (merge {:inverted true} props))))
 
+(defn qr-code-view [size value]
+  (when size
+    [react/view {:style               (styles/qr-code-container size)
+                 :accessibility-label :qr-code-image}
+     [qr-code {:value value
+               :size  size}]]))
+
 (defview qr-code-viewer-component
   [{:keys [style hint-style footer-style footer-button value hint legend
            show-tribute-to-talk-warning?]}]
   (letsubs [{:keys [width]} [:dimensions/window]]
-    [react/scroll-view {:content-container-style {:align-items       :center
-                                                  :margin-top        16
-                                                  :justify-content   :center}
-                        :style (merge {:flex 1} style)}
+    [react/scroll-view {:content-container-style {:align-items     :center
+                                                  :margin-top      16
+                                                  :justify-content :center}
+                        :style                   (merge {:flex 1} style)}
      (when show-tribute-to-talk-warning?
        [react/view {:style {:margin-horizontal 16}}
         [tribute-to-talk/enabled-note]])
      (when width
-       (let [size (int (min width styles/qr-code-max-width))]
-         [react/view {:style               (styles/qr-code-container size)
-                      :accessibility-label :qr-code-image}
-          [qr-code {:value value
-                    :size  size}]]))
+       [qr-code-view (int (min width styles/qr-code-max-width)) value])
      [react/text {:style (merge styles/qr-code-hint hint-style)}
       hint]
      [react/view styles/footer
@@ -43,7 +46,7 @@
 
 (defn qr-code-viewer
   [{:keys [style hint-style footer-style footer-button value hint legend]
-    :as params}]
+    :as   params}]
   (if value
     [qr-code-viewer-component params]
     [react/view [react/text "no value"]]))

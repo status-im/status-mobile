@@ -16,6 +16,7 @@
             [status-im.ui.screens.home.sheet.views :as home.sheet]
             [status-im.ui.screens.routing.core :as routing]
             [status-im.ui.screens.signing.views :as signing]
+            [status-im.ui.screens.popover.views :as popover]
             [status-im.utils.dimensions :as dimensions]
             status-im.ui.screens.wallet.collectibles.etheremon.views
             status-im.ui.screens.wallet.collectibles.cryptostrikers.views
@@ -146,4 +147,5 @@
              :persistNavigationState (when js/goog.DEBUG persist-state)
              :loadNavigationState    (when js/goog.DEBUG load-state)}]
            [signing/signing]
-           [bottom-sheet]]))})))
+           [bottom-sheet]
+           [popover/popover]]))})))

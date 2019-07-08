@@ -84,11 +84,8 @@
   (extensions.module/load cofx url false))
 
 (fx/defn handle-eip681 [cofx url]
-  (let [wallet-set-up-passed? (get-in cofx [:db :account/account :wallet-set-up-passed?])]
-    (if (not wallet-set-up-passed?)
-      {:dispatch [:navigate-to :wallet-onboarding-setup]}
-      {:dispatch-n [[:navigate-to :wallet-send-transaction]
-                    [:wallet/fill-request-from-url url :deep-link]]})))
+  {:dispatch-n [[:navigate-to :wallet-send-transaction]
+                [:wallet/fill-request-from-url url :deep-link]]})
 
 (defn handle-not-found [full-url]
   (log/info "universal-links: no handler for " full-url))

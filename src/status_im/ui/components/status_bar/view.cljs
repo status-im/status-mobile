@@ -62,7 +62,6 @@
     :recent-recipients               {:type :wallet}
     :contact-code                    {:type :wallet}
     :wallet-send-transaction-request {:type :wallet}
-    :wallet-request-transaction      {:type :wallet-tab}
     :wallet-settings-assets          {:type :main}
     :wallet-account                  {:type :main}
     :wallet-add-custom-token         {:type :main}

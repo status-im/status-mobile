@@ -5,13 +5,13 @@
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as native-module]
-            [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.build :as build]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.handlers :as handlers]))
 
 (defn displayed-name [account]
   (let [name (or (:preferred-name account) (:name account))]
@@ -46,19 +46,9 @@
        (not (:in-progress? transaction))
        (:from-chat? transaction)))
 
-(fx/defn continue-after-wallet-onboarding [{:keys [db] :as cofx} modal?]
-  (let [transaction (get-in db [:wallet :send-transaction])]
-    (if modal?
-      {:dispatch [:navigate-to-clean :wallet-send-transaction-modal]}
-      (if-not (chat-send? transaction)
-        (navigation/navigate-to-cofx cofx :wallet nil)
-        (navigation/navigate-to-cofx cofx :wallet-send-transaction-modal nil)))))
-
 (fx/defn confirm-wallet-set-up
-  [{:keys [db] :as cofx} modal?]
-  (fx/merge cofx
-            (continue-after-wallet-onboarding modal?)
-            (accounts.update/account-update {:wallet-set-up-passed? true} {})))
+  [cofx]
+  (accounts.update/account-update cofx {:wallet-set-up-passed? true} {}))
 
 (fx/defn update-dev-server-state
   [_ dev-mode?]

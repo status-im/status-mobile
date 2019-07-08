@@ -211,6 +211,8 @@
 (spec/def :signing/sign (spec/nilable map?))
 (spec/def :signing/edit-fee (spec/nilable map?))
 
+(spec/def :popover/popover (spec/nilable map?))
+
 (spec/def ::db (spec/keys :opt [:contacts/contacts
                                 :contacts/new-identity
                                 :contacts/new-identity-error
@@ -291,7 +293,8 @@
                                 :signing/queue
                                 :signing/sign
                                 :signing/tx
-                                :signing/edit-fee]
+                                :signing/edit-fee
+                                :popover/popover]
                           :opt-un [::modal
                                    ::was-modal?
                                    ::rpc-url

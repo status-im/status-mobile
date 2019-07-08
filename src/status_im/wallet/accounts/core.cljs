@@ -3,7 +3,8 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.fx :as fx]
             [status-im.ethereum.eip55 :as eip55]
-            [status-im.ui.components.list-selection :as list-selection]))
+            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.utils.handlers :as handlers]))
 
 (re-frame/reg-fx
  :list.selection/open-share

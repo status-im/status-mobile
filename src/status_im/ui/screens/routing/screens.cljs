@@ -128,7 +128,6 @@
    :recent-recipients                                wallet.components/recent-recipients
    :recipient-qr-code                                wallet.components/recipient-qr-code
    :wallet-send-assets                               wallet.components/send-assets
-   :wallet-request-transaction                       request/request-transaction
    :wallet-send-transaction-request                  request/send-transaction-request
    :wallet-request-assets                            wallet.components/request-assets
    :unsigned-transactions                            wallet-transactions/transactions

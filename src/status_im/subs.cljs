@@ -181,6 +181,8 @@
 ;;intro-wizard
 (reg-root-key-sub :intro-wizard :intro-wizard)
 
+(reg-root-key-sub :popover/popover :popover/popover)
+
 ;;GENERAL ==============================================================================================================
 
 (re-frame/reg-sub

@@ -15,8 +15,7 @@
                         :recipient-qr-code
                         :wallet-send-assets]}
              {:name    :request-transaction-stack
-              :screens [:wallet-request-transaction
-                        :wallet-send-transaction-request
+              :screens [:wallet-send-transaction-request
                         :wallet-request-assets
                         :recent-recipients]}
              :unsigned-transactions

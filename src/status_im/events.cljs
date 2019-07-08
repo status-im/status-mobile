@@ -68,7 +68,8 @@
             [status-im.web3.core :as web3]
             [taoensso.timbre :as log]
             [status-im.chat.commands.sending :as commands.sending]
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            status-im.popover.core))
 
 ;; init module
 
@@ -245,8 +246,8 @@
 
 (handlers/register-handler-fx
  :accounts.ui/wallet-set-up-confirmed
- (fn [cofx [_ modal?]]
-   (accounts/confirm-wallet-set-up cofx modal?)))
+ (fn [cofx _]
+   (accounts/confirm-wallet-set-up cofx)))
 
 ;; accounts create module
 
@@ -1963,6 +1964,7 @@
    (assert public-key)
    (let [request-command (get-in db [:id->command ["request" #{:personal-chats}]])]
      (fx/merge cofx
+               (navigation/navigate-back)
                (chat/start-chat public-key nil)
                (commands.sending/send public-key
                                       request-command
