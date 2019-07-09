@@ -164,8 +164,7 @@
                 (navigation/navigate-to-clean :intro nil)))))
 
 (fx/defn exit-wizard [{:keys [db] :as cofx}]
-  (fx/merge {:db (dissoc db :intro-wizard)
-             :notifications/request-notifications-permissions nil}
+  (fx/merge {:db (dissoc db :intro-wizard)}
             (navigation/navigate-to-cofx :home nil)))
 
 (fx/defn init-key-generation [{:keys [db] :as cofx}]
@@ -199,7 +198,9 @@
   [{:keys [db] :as cofx} {:keys [skip?] :as opts}]
   (let  [step (get-in db [:intro-wizard :step])]
     (cond (= step :enable-notifications)
-          (exit-wizard cofx)
+          (fx/merge cofx
+                    (when-not skip? {:notifications/request-notifications-permissions nil})
+                    exit-wizard)
 
           (= step :generate-key)
           (init-key-generation cofx)
