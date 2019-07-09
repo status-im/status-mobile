@@ -341,8 +341,8 @@
 
 (handlers/register-handler-fx
  :accounts.login.ui/account-selected
- (fn [cofx [_ address photo-path name]]
-   (accounts.login/open-login cofx address photo-path name)))
+ (fn [cofx [_ address photo-path name public-key]]
+   (accounts.login/open-login cofx address photo-path name public-key)))
 
 (handlers/register-handler-fx
  :accounts.login.callback/get-user-password-success

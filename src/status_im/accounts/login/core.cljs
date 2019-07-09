@@ -301,11 +301,12 @@
    :keychain/get-user-password       [address
                                       #(re-frame/dispatch [:accounts.login.callback/get-user-password-success % address])]})
 
-(fx/defn open-login [{:keys [db] :as cofx} address photo-path name]
+(fx/defn open-login [{:keys [db] :as cofx} address photo-path name public-key]
   (let [keycard-account? (get-in db [:accounts/accounts address :keycard-instance-uid])]
     (fx/merge cofx
               {:db (-> db
                        (update :accounts/login assoc
+                               :public-key public-key
                                :address address
                                :photo-path photo-path
                                :name name)

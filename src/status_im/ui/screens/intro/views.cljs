@@ -4,6 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.react-native.resources :as resources]
             [status-im.privacy-policy.core :as privacy-policy]
+            [status-im.utils.utils :as utils]
             [status-im.accounts.create.core :refer [step-kw-to-num]]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.utils.identicon :as identicon]
@@ -76,7 +77,7 @@
                      :text :intro-text3}] window-width]
      [react/view styles/buttons-container
       [components.common/button {:button-style (assoc styles/bottom-button :margin-bottom 16)
-                                 :on-press     #(re-frame/dispatch [:accounts.create.ui/intro-wizard])
+                                 :on-press     #(re-frame/dispatch [:accounts.create.ui/intro-wizard true])
                                  :label        (i18n/label :t/get-started)}]
       [components.common/button {:button-style (assoc styles/bottom-button :margin-bottom 24)
                                  :on-press    #(re-frame/dispatch [:accounts.recover.ui/recover-account-button-pressed])
@@ -121,10 +122,8 @@
            (gfy/generate-gfy (:pubkey acc))]
           [react/text {:style (assoc styles/wizard-text
                                      :text-align :left
-                                     :font-family "monospace")
-                       :number-of-lines 1
-                       :ellipsize-mode :middle}
-           (:pubkey acc)]]
+                                     :font-family "monospace")}
+           (utils/get-shortened-address (:pubkey acc))]]
          [radio/radio selected?]]]))])
 
 (defn storage-entry [{:keys [type icon title desc]} selected-storage-type]

@@ -15,15 +15,25 @@
    :align-items     :center
    :justify-content :center})
 
-(def sign-you-in
+(def processing
   {:margin-top 16
-   :font-size  13})
+   :color      colors/gray})
+
+(def bottom-button
+  {:padding-horizontal 24
+   :justify-content    :center
+   :align-items        :center
+   :align-self         :center
+   :flex-direction     :row})
 
 (def bottom-button-container
-  {:flex-direction    :row
-   :margin-horizontal 12
-   :margin-vertical   15
-   :align-items       :center})
+  {:flex-direction     :row
+   :padding-horizontal 12
+   :padding-vertical   8
+   :border-top-width   1
+   :border-top-color   colors/gray-lighter
+   :justify-content    :space-between
+   :align-items        :center})
 
 (def login-badge
   {:align-items :center})
@@ -31,17 +41,20 @@
 (def login-badge-image-size 56)
 
 (def login-badge-name
-  {:margin-top 8})
+  {:margin-top  10
+   :text-align  :center
+   :font-weight "500"})
+
+(def login-badge-pubkey
+  {:margin-top  4
+   :text-align  :center
+   :color       colors/gray
+   :font-family "monospace"})
 
 (def password-container
   {:margin-top 24
    :android    {:margin-top  11
                 :padding-top 13}})
-
-(def save-password-checkbox-container
-  {:margin-top 0
-   :flex-direction :row
-   :align-items :center})
 
 (def save-password-unavailable
   {:margin-top 8

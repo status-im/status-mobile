@@ -141,17 +141,19 @@
 
 (fx/defn intro-wizard
   {:events [:accounts.create.ui/intro-wizard]}
-  [{:keys [db] :as cofx}]
+  [{:keys [db] :as cofx} first-time-setup?]
   (fx/merge {:db (assoc db :intro-wizard {:step :generate-key
                                           :weak-password? true
-                                          :encrypt-with-password? true}
+                                          :encrypt-with-password? true
+                                          :first-time-setup? first-time-setup?}
                         :accounts/new-installation-id (random/guid))}
             (navigation/navigate-to-cofx :intro-wizard nil)))
 
 (fx/defn intro-step-back
   {:events [:intro-wizard/step-back-pressed]}
   [{:keys [db] :as cofx}]
-  (let  [step (get-in db [:intro-wizard :step])]
+  (let  [step (get-in db [:intro-wizard :step])
+         first-time-setup? (get-in db [:intro-wizard :first-time-setup?])]
     (if (not= :generate-key step)
       (fx/merge {:db (cond-> (assoc-in db [:intro-wizard :step] (dec-step step))
                        (#{:create-code :confirm-code} step)
@@ -161,7 +163,7 @@
                 (navigation/navigate-to-cofx :intro-wizard nil))
 
       (fx/merge {:db (dissoc db :intro-wizard)}
-                (navigation/navigate-to-clean :intro nil)))))
+                (navigation/navigate-to-clean (if first-time-setup? :intro :accounts) nil)))))
 
 (fx/defn exit-wizard [{:keys [db] :as cofx}]
   (fx/merge {:db (dissoc db :intro-wizard)}
@@ -196,26 +198,31 @@
 (fx/defn intro-step-forward
   {:events [:intro-wizard/step-forward-pressed]}
   [{:keys [db] :as cofx} {:keys [skip?] :as opts}]
-  (let  [step (get-in db [:intro-wizard :step])]
-    (cond (= step :enable-notifications)
+  (let  [step (get-in db [:intro-wizard :step])
+         first-time-setup? (get-in db [:intro-wizard :first-time-setup?])]
+    (cond (confirm-failure? db)
+          (on-confirm-failure cofx)
+
+          (or (= step :enable-notifications)
+              (and (not first-time-setup?) (= step :confirm-code)
+                   (:accounts/login db)))
           (fx/merge cofx
-                    (when-not skip? {:notifications/request-notifications-permissions nil})
+                    (when (and (= step :enable-notifications) (not skip?))
+                      {:notifications/request-notifications-permissions nil})
                     exit-wizard)
 
           (= step :generate-key)
           (init-key-generation cofx)
 
-          (confirm-failure? db)
-          (on-confirm-failure cofx)
-
           (= step :create-code)
           (store-key-code cofx)
 
-          :else (fx/merge {:db (assoc-in db [:intro-wizard :step]
-                                         (inc-step step))}
-                          (when (and (= step :confirm-code)
-                                     (not (:accounts/login db)))
-                            (create-account cofx))))))
+          (and (= step :confirm-code)
+               (not (:accounts/login db)))
+          (create-account cofx)
+
+          :else {:db (assoc-in db [:intro-wizard :step]
+                               (inc-step step))})))
 
 (fx/defn on-account-created
   [{:keys [signing-phrase

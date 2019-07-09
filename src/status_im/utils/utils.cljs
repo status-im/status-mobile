@@ -72,6 +72,13 @@
                      :onPress             on-accept
                      :accessibility-label :yes-button})))))
 
+(defn get-shortened-address
+  "Takes first and last 4 digits from address including leading 0x
+  and adds unicode ellipsis in between"
+  [address]
+  (when address
+    (str (subs address 0 6) "\u2026" (subs address (- (count address) 4) (count address)))))
+
 ;; background-timer
 
 (defn set-timeout [cb ms]

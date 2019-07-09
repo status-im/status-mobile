@@ -26,5 +26,9 @@
 
 (defn error [label?]
   {:bottom-value (if label? 20 0)
-   :color        colors/red-light
+   :container-style {:shadow-offset    {:width 0 :height 1}
+                     :shadow-radius    6
+                     :shadow-opacity   1
+                     :shadow-color     colors/gray
+                     :elevation        2}
    :font-size    12})

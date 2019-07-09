@@ -230,7 +230,7 @@ class SendTransactionView(BaseView):
     def sign_transaction(self, sender_password: str = common_password):
         self.sign_with_password.click()
         self.enter_password_input.send_keys(sender_password)
-        self.sign_button.click()
+        self.sign_button.click_until_presence_of_element(self.ok_button)
         self.ok_button.click()
 
     def get_transaction_fee_total(self):

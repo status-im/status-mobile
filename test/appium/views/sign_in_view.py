@@ -14,6 +14,12 @@ class AccountButton(BaseButton):
 class PasswordInput(BaseEditBox):
     def __init__(self, driver):
         super(PasswordInput, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("password-input")
+
+
+class RecoverAccountPasswordInput(BaseEditBox):
+    def __init__(self, driver):
+        super(RecoverAccountPasswordInput, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Password']"
                                                    "/following-sibling::android.view.ViewGroup/android.widget.EditText")
 
@@ -36,7 +42,7 @@ class SignInButton(BaseButton):
 
     def __init__(self, driver):
         super(SignInButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Sign in' or @text='SIGN IN']")
+        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Sign in' or @text='Submit']")
 
     def navigate(self):
         from views.home_view import HomeView
@@ -64,6 +70,12 @@ class GenerateKeyButton(BaseButton):
     def __init__(self, driver):
         super(GenerateKeyButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Generate a key']")
+
+
+class GenerateNewKeyButton(BaseButton):
+    def __init__(self, driver):
+        super(GenerateNewKeyButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Generate a new key']")
 
 
 class IHaveAccountButton(RecoverAccessButton):
@@ -130,6 +142,8 @@ class SignInView(BaseView):
 
         self.account_button = AccountButton(self.driver)
         self.password_input = PasswordInput(self.driver)
+        self.recover_account_password_input = RecoverAccountPasswordInput(self.driver)
+
         self.sign_in_button = SignInButton(self.driver)
         self.recover_access_button = RecoverAccessButton(self.driver)
 
@@ -138,6 +152,7 @@ class SignInView(BaseView):
         self.i_have_account_button = IHaveAccountButton(self.driver)
         self.access_key_button = AccessKeyButton(self.driver)
         self.generate_key_button = GenerateKeyButton(self.driver)
+        self.generate_new_key_button = GenerateNewKeyButton(self.driver)
         self.add_existing_account_button = AddExistingAccountButton(self.driver)
         self.confirm_password_input = ConfirmPasswordInput(self.driver)
         self.create_password_input = CreatePasswordInput(self.driver)
@@ -175,8 +190,8 @@ class SignInView(BaseView):
             recover_access_view = self.access_key_button.click()
         recover_access_view.passphrase_input.click()
         recover_access_view.passphrase_input.set_value(passphrase)
-        recover_access_view.password_input.click()
-        recover_access_view.password_input.set_value(password)
+        recover_access_view.recover_account_password_input.click()
+        recover_access_view.recover_account_password_input.set_value(password)
         recover_access_view.sign_in_button.click_until_presence_of_element(recover_access_view.home_button)
         return self.get_home_view()
 

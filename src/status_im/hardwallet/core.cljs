@@ -388,7 +388,7 @@
     (fx/merge cofx
               {:db (assoc-in db [:hardwallet :flow] :create)}
               (navigation/navigate-to-cofx :hardwallet-authentication-method nil))
-    (accounts.create/navigate-to-create-account-screen cofx)))
+    (accounts.create/intro-wizard cofx false)))
 
 (fx/defn navigate-to-recover-method
   [{:keys [db] :as cofx}]

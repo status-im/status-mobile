@@ -8,8 +8,9 @@
 
 (def accounts-container
   {:flex               1
-   :padding-horizontal 16
-   :background-color   colors/gray-lighter})
+   :margin-top         24
+   :margin-bottom      16
+   :justify-content    :space-between})
 
 (def bottom-actions-container
   {:margin-bottom 16})
@@ -21,17 +22,15 @@
    :font-size 17})
 
 (defstyle accounts-list-container
-  {:flex          1
-   :margin-top    16
-   :margin-bottom 16})
+  {:flex             1
+   :padding-bottom 8})
 
 (defstyle account-view
   {:background-color   :white
    :flex-direction     :row
    :align-items        :center
    :padding-horizontal 16
-   :height             64
-   :border-radius      8})
+   :height             64})
 
 (def account-badge-text-view
   {:margin-left  16
@@ -39,12 +38,18 @@
    :flex-shrink  1})
 
 (def account-badge-text
-  {:font-size 17})
+  {:font-weight "500"})
 
 (def account-badge-pub-key-text
-  {:font-size  14
-   :color      colors/gray
-   :margin-top 4})
+  {:font-family "monospace"
+   :color       colors/gray})
+
+(def bottom-button
+  {:padding-horizontal 24
+   :justify-content    :center
+   :align-items        :center
+   :align-self         :center
+   :flex-direction     :row})
 
 (def bottom-button-container
   {:margin-top    14

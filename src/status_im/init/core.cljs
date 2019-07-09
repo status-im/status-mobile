@@ -151,8 +151,8 @@
                             (:public-key account)))
                        %)
               #(sort-by :last-sign-in > %))
-            {:keys [address photo-path name]} (first (selection-fn (vals accounts)))]
-        (accounts.login/open-login cofx address photo-path name)))))
+            {:keys [address public-key photo-path name]} (first (selection-fn (vals accounts)))]
+        (accounts.login/open-login cofx address photo-path name public-key)))))
 
 (fx/defn load-accounts-and-initialize-views
   "DB has been decrypted, load accounts and initialize-view"

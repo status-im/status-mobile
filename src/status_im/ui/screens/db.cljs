@@ -21,7 +21,7 @@
 ;; initial state of app-db
 (def app-db {:keyboard-height                    0
              :tab-bar-visible?                   true
-             :navigation-stack                   '()
+             :navigation-stack                   '(:accounts)
              :contacts/contacts                  {}
              :pairing/installations              {}
              :contact-recovery/pop-up            #{}
