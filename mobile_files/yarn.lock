@@ -5764,6 +5764,11 @@ react-native-touch-id@^4.4.1:
     ip-regex "^1.0.3"
     util "^0.10.3"
 
+react-native-fast-image@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-6.0.3.tgz#e644076c5e21dd8695db07905779352b2b9c1cb8"
+  integrity sha512-49OdbWV0XD2mb5VTdLRJCQ9qpMgGdliRwHSue/aJxgLLLmDK6dmFIJ/LvEn0F9e5Je16K++5lS6yJAACvvxAfw==
+
 "react-native-webview-bridge@git+https://github.com/status-im/react-native-webview-bridge.git#fix/classnames-colision":
   version "0.33.16"
   resolved "git+https://github.com/status-im/react-native-webview-bridge.git#26c75b82b78ab9e91812d14d39d9dcfd68bd83d8"

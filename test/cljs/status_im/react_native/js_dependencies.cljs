@@ -10,6 +10,7 @@
 (def http-bridge            (fn [] #js {}))
 (def i18n                   #js {:locale "en"})
 (def react-native-languages #js {:language "en", :addEventListener (fn []), :removeEventListener (fn [])})
+(def fast-image             (fn [] #js {:FastImage #js {}}))
 (def image-crop-picker      (fn [] #js {}))
 (def image-resizer          (fn [] #js {}))
 (def qr-code                (fn [] #js {}))

@@ -61,7 +61,6 @@
 
 (def text-class ((get-class "Text")))
 (def text-input-class (get-class "TextInput"))
-(def image-class (get-class "Image"))
 (def picker-obj (lazy-get-react-property "Picker"))
 (defn picker-class [] (adapt-class (picker-obj)))
 (defn picker-item-class [] (adapt-class (.-Item (picker-obj))))
@@ -72,10 +71,14 @@
       (and (contains? source :uri)
            (:uri source))))
 
+(def fast-image-class js-dependencies/fast-image)
+
 (defn image [{:keys [source] :as props}]
   (when (valid-source? source)
-    (let [source (if (fn? source) (source) source)]
-      [(image-class) (assoc props :source source)])))
+    (let [source (if (fn? source) (source) source)
+          fast-image (.-default (fast-image-class))]
+
+      [(fast-image) (assoc props :source source)])))
 
 (def switch-class (get-class "Switch"))
 

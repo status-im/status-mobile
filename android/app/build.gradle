@@ -252,6 +252,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-fast-image')
     implementation project(':react-native-background-timer')
     implementation project(':react-native-svg')
     implementation 'com.android.support:multidex:1.0.2'

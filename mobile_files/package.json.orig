@@ -65,6 +65,7 @@
     "react-native-tcp": "git+https://github.com/status-im/react-native-tcp.git#v3.3.0-1-status",
     "react-native-touch-id": "^4.4.1",
     "react-native-udp": "git+https://github.com/status-im/react-native-udp.git#v2.3.1-1-status",
+    "react-native-fast-image": "^6.0.3",
     "react-native-webview": "^5.2.1",
     "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#fix/classnames-colision",
     "react-navigation": "^3.11.0",

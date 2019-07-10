@@ -9,6 +9,7 @@
               "i18n-js"
               "realm/react-native"
               "dismissKeyboard"
+              "react-native-fast-image"
               "react-native-splash-screen"
               "react-native-status"
               "react-native-status-keycard"

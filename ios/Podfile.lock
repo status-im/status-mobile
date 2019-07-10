@@ -1,52 +1,61 @@
 PODS:
-  - Firebase/Core (5.7.0):
+  - Firebase/Core (6.3.0):
     - Firebase/CoreOnly
-    - FirebaseAnalytics (= 5.1.1)
-  - Firebase/CoreOnly (5.7.0):
-    - FirebaseCore (= 5.1.2)
-  - Firebase/Messaging (5.7.0):
+    - FirebaseAnalytics (= 6.0.2)
+  - Firebase/CoreOnly (6.3.0):
+    - FirebaseCore (= 6.0.3)
+  - Firebase/Messaging (6.3.0):
     - Firebase/CoreOnly
-    - FirebaseMessaging (= 3.1.1)
-  - FirebaseAnalytics (5.1.1):
-    - FirebaseCore (~> 5.1)
-    - FirebaseInstanceID (~> 3.2)
-    - GoogleAppMeasurement (~> 5.1)
-    - GoogleUtilities/AppDelegateSwizzler (~> 5.2.0)
-    - GoogleUtilities/MethodSwizzler (~> 5.2.0)
-    - GoogleUtilities/Network (~> 5.2)
-    - "GoogleUtilities/NSData+zlib (~> 5.2)"
+    - FirebaseMessaging (~> 4.1.0)
+  - FirebaseAnalytics (6.0.2):
+    - FirebaseCore (~> 6.0)
+    - FirebaseInstanceID (~> 4.2)
+    - GoogleAppMeasurement (= 6.0.2)
+    - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
+    - GoogleUtilities/MethodSwizzler (~> 6.0)
+    - GoogleUtilities/Network (~> 6.0)
+    - "GoogleUtilities/NSData+zlib (~> 6.0)"
     - nanopb (~> 0.3)
-  - FirebaseCore (5.1.2):
-    - GoogleUtilities/Logger (~> 5.2)
-  - FirebaseInstanceID (3.2.1):
-    - FirebaseCore (~> 5.1)
-    - GoogleUtilities/Environment (~> 5.2)
-  - FirebaseMessaging (3.1.1):
-    - FirebaseCore (~> 5.0)
-    - FirebaseInstanceID (~> 3.0)
-    - GoogleUtilities/Reachability (~> 5.2)
+  - FirebaseAnalyticsInterop (1.2.0)
+  - FirebaseCore (6.0.3):
+    - GoogleUtilities/Environment (~> 6.0)
+    - GoogleUtilities/Logger (~> 6.0)
+  - FirebaseInstanceID (4.2.0):
+    - FirebaseCore (~> 6.0)
+    - GoogleUtilities/Environment (~> 6.0)
+    - GoogleUtilities/UserDefaults (~> 6.0)
+  - FirebaseMessaging (4.1.0):
+    - FirebaseAnalyticsInterop (~> 1.1)
+    - FirebaseCore (~> 6.0)
+    - FirebaseInstanceID (~> 4.1)
+    - GoogleUtilities/AppDelegateSwizzler (~> 6.2)
+    - GoogleUtilities/Environment (~> 6.2)
+    - GoogleUtilities/Reachability (~> 6.2)
+    - GoogleUtilities/UserDefaults (~> 6.2)
     - Protobuf (~> 3.1)
-  - GoogleAppMeasurement (5.1.1):
-    - GoogleUtilities/AppDelegateSwizzler (~> 5.2.0)
-    - GoogleUtilities/MethodSwizzler (~> 5.2.0)
-    - GoogleUtilities/Network (~> 5.2)
-    - "GoogleUtilities/NSData+zlib (~> 5.2)"
+  - GoogleAppMeasurement (6.0.2):
+    - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
+    - GoogleUtilities/MethodSwizzler (~> 6.0)
+    - GoogleUtilities/Network (~> 6.0)
+    - "GoogleUtilities/NSData+zlib (~> 6.0)"
     - nanopb (~> 0.3)
-  - GoogleUtilities/AppDelegateSwizzler (5.2.2):
+  - GoogleUtilities/AppDelegateSwizzler (6.2.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
-  - GoogleUtilities/Environment (5.2.2)
-  - GoogleUtilities/Logger (5.2.2):
+  - GoogleUtilities/Environment (6.2.0)
+  - GoogleUtilities/Logger (6.2.0):
     - GoogleUtilities/Environment
-  - GoogleUtilities/MethodSwizzler (5.2.2):
+  - GoogleUtilities/MethodSwizzler (6.2.0):
     - GoogleUtilities/Logger
-  - GoogleUtilities/Network (5.2.2):
+  - GoogleUtilities/Network (6.2.0):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (5.2.2)"
-  - GoogleUtilities/Reachability (5.2.2):
+  - "GoogleUtilities/NSData+zlib (6.2.0)"
+  - GoogleUtilities/Reachability (6.2.0):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/UserDefaults (6.2.0):
     - GoogleUtilities/Logger
   - nanopb (0.3.8):
     - nanopb/decode (= 0.3.8)
@@ -58,26 +67,32 @@ PODS:
     - React/Core (= 0.59.10)
   - react-native-background-timer (2.1.0-alpha.6):
     - React
-  - react-native-camera (1.1.5):
+  - react-native-camera (2.10.2):
     - React
-    - react-native-camera/RCT (= 1.1.5)
-    - react-native-camera/RN (= 1.1.5)
-  - react-native-camera/RCT (1.1.5):
+    - react-native-camera/RCT (= 2.10.2)
+    - react-native-camera/RN (= 2.10.2)
+  - react-native-camera/RCT (2.10.2):
     - React
-  - react-native-camera/RN (1.1.5):
+  - react-native-camera/RN (2.10.2):
     - React
-  - react-native-webview (5.2.1):
+  - react-native-fast-image (6.0.3):
+    - React
+    - SDWebImage (~> 5.0)
+  - react-native-webview (5.12.0):
     - React
   - React/Core (0.59.10):
     - yoga (= 0.59.10.React)
   - RNKeychain (3.0.0-rc.3):
     - React
+  - SDWebImage (5.0.6):
+    - SDWebImage/Core (= 5.0.6)
+  - SDWebImage/Core (5.0.6)
   - SQLCipher (3.4.2):
     - SQLCipher/standard (= 3.4.2)
   - SQLCipher/common (3.4.2)
   - SQLCipher/standard (3.4.2):
     - SQLCipher/common
-  - SSZipArchive (2.1.4)
+  - SSZipArchive (2.2.2)
   - TouchID (4.4.1):
     - React
   - yoga (0.59.10.React)
@@ -88,6 +103,7 @@ DEPENDENCIES:
   - React (from `../node_modules/react-native`)
   - react-native-background-timer (from `../node_modules/react-native-background-timer`)
   - react-native-camera (from `../node_modules/react-native-camera`)
+  - react-native-fast-image (from `../node_modules/react-native-fast-image`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - SQLCipher (~> 3.0)
@@ -99,6 +115,7 @@ SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Firebase
     - FirebaseAnalytics
+    - FirebaseAnalyticsInterop
     - FirebaseCore
     - FirebaseInstanceID
     - FirebaseMessaging
@@ -106,6 +123,7 @@ SPEC REPOS:
     - GoogleUtilities
     - nanopb
     - Protobuf
+    - SDWebImage
     - SQLCipher
     - SSZipArchive
 
@@ -116,6 +134,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-background-timer"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
+  react-native-fast-image:
+    :path: "../node_modules/react-native-fast-image"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   RNKeychain:
@@ -126,25 +146,28 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Firebase: 734a4f92957aa6c40e7ae3fda3d9359e1890aa87
-  FirebaseAnalytics: 993577e91157feb40945abedd6ab346d8a4b6ac8
-  FirebaseCore: 3a97432acb324b439fbed338e642f9cbb516a63d
-  FirebaseInstanceID: ea5af6920d0a4a29b40459d055bebe4a6c1333c4
-  FirebaseMessaging: 698c94dd1e3436346c29bb9c85dcdca4c4a0c30b
-  GoogleAppMeasurement: f7507b39b70ad0bd80b3d81518b2f43868974307
-  GoogleUtilities: 06b66f9567769a7958db20a92f0128b2843e49d5
-  nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
-  Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
-  React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
-  react-native-background-timer: bb7a98c8e97fc7c290de2d423dd09ddb73dcbcbb
-  react-native-camera: 68ad5143d2d0636236d46c7de8d2a6455ca52a36
-  react-native-webview: a42108b827082f8f0333529b0772102031d5960d
-  RNKeychain: 627c6095cef215dd3d9804a9a9cf45ab96aa3997
+  Firebase: 8432d732974498afd5987e9001a05f90f1a3d625
+  FirebaseAnalytics: 470ddab7253b21ad5a40bebd4a9903d7ae19386a
+  FirebaseAnalyticsInterop: efbe45c8385ec626e29f9525e5ebd38520dfb6c1
+  FirebaseCore: 68f8a7f50cdae542715d4e86afa37c4067217dcb
+  FirebaseInstanceID: f20243a1d828e0e9a3798b995174dedc16f1b32a
+  FirebaseMessaging: 0ac5310133e6ada4cdd44d42e92038855214a5e9
+  GoogleAppMeasurement: a35a645835bae31b6bdc0576396bc23908f12a22
+  GoogleUtilities: 996e0db07153674fd1b54b220fda3a3dc3547cba
+  nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
+  Protobuf: 3f617b9a6e73605565086864c9bc26b2bf2dd5a3
+  React: a86b92f00edbe1873a63e4a212c29b7a7ad5224f
+  react-native-background-timer: 0d34748e53a972507c66963490c775321a88f6f2
+  react-native-camera: ea85f74cf2e501d2a91a3da7092ecdac082f18df
+  react-native-fast-image: 3390cc968d598f0c6b5c710df138f4b653a87231
+  react-native-webview: 26d8993b090ca5d59eb9a9466dcb8291baa3223e
+  RNKeychain: c658833a9cb2cbcba6423bdd6e16cce59e27da0e
+  SDWebImage: 920f1a2ff1ca8296ad34f6e0510a1ef1d70ac965
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
-  SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
-  TouchID: b0640fedb86fa2db2fe1df15b61594ad49e76288
-  yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
+  SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
+  TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
+  yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
 
-PODFILE CHECKSUM: 13006106aa0716d54fffebf8dcb42006f0fb8798
+PODFILE CHECKSUM: 856a96a1adadd7f3831627fa279e4d525b38e72f
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.7.2

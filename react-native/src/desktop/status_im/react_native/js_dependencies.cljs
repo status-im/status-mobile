@@ -27,6 +27,7 @@
 (def status-keycard         (fn [] #js {:default #js {}}))
 (def dialogs                (fn [] #js {}))
 (def dismiss-keyboard       (fn [] #js {}))
+(def fast-image             (fn [] #js {}))
 (def image-crop-picker      (fn [] #js {}))
 (def image-resizer          (fn [] #js {}))
 (def svg                    #js {})

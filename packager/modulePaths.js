@@ -230,6 +230,7 @@ module.exports = [
     "node_modules/react-native-svg/elements/ClipPath.js",
     "node_modules/react-native-svg/elements/Pattern.js",
     "node_modules/react-native-svg/elements/Mask.js",
+    "node_modules/react-native-fast-image/src/index.js",
     "node_modules/react-native-firebase/dist/index.js",
     "node_modules/react-native-firebase/dist/modules/core/firebase.js",
     "node_modules/react-native-firebase/dist/utils/apps.js",

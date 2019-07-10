@@ -23,6 +23,7 @@
 (def camera                 (js-require/js-require "react-native-camera"))
 (def dialogs                (js-require/js-require "react-native-dialogs"))
 (def dismiss-keyboard       (js-require/js-require "dismissKeyboard"))
+(def fast-image             (js-require/js-require "react-native-fast-image"))
 (def image-crop-picker      (js-require/js-require "react-native-image-crop-picker"))
 (def image-resizer          (js-require/js-require "react-native-image-resizer"))
 (def svg                    (js/require "react-native-svg"))
