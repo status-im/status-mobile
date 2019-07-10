@@ -79,7 +79,6 @@
    :hardwallet-connect-settings                      hardwallet.connect/hardwallet-connect
    :hardwallet-connect-sign                          hardwallet.connect/hardwallet-connect
    :hardwallet-connect-modal                         [:modal hardwallet.connect/hardwallet-connect]
-   :enter-pin-login                                  hardwallet.pin/enter-pin
    :enter-pin-settings                               hardwallet.pin/enter-pin
    :enter-pin-sign                                   hardwallet.pin/enter-pin
    :enter-pin-modal                                  [:modal hardwallet.pin/enter-pin]
@@ -98,6 +97,7 @@
    :keycard-pairing                                  keycard/pairing
    :keycard-nfc-on                                   keycard/nfc-on
    :keycard-connection-lost                          keycard/connection-lost
+   :keycard-connection-lost-setup                    keycard/connection-lost-setup
    :keycard-recovery-intro                           keycard.recovery/intro
    :keycard-recovery-start                           keycard.recovery/start
    :keycard-recovery-pair                            keycard.recovery/pair
@@ -105,6 +105,12 @@
    :keycard-recovery-success                         keycard.recovery/success
    :keycard-recovery-no-key                          keycard.recovery/no-key
    :keycard-recovery-pin                             keycard.recovery/pin
+   :keycard-blank                                    keycard/blank
+   :keycard-wrong                                    keycard/wrong
+   :keycard-unpaired                                 keycard/unpaired
+   :keycard-login-pin                                keycard/login-pin
+   :keycard-login-connect-card                       keycard/login-connect-card
+   :not-keycard                                      keycard/not-keycard
    :home                                             home/home-wrapper
    :chat                                             chat/chat
    :select-chat                                      chat/select-chat

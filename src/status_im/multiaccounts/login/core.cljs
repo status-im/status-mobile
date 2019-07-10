@@ -326,10 +326,13 @@
   [{:keys [db] :as cofx}]
   (let [navigation-stack (:navigation-stack db)]
     (fx/merge cofx
-              {:db (assoc-in db [:hardwallet :pin :enter-step] :login)}
+              {:db (-> db
+                       (assoc-in [:hardwallet :pin :enter-step] :login)
+                       (assoc-in [:hardwallet :pin :status] nil)
+                       (assoc-in [:hardwallet :pin :login] []))}
               (if (empty? navigation-stack)
                 (navigation/navigate-to-cofx :multiaccounts nil)
-                (navigation/navigate-to-cofx :enter-pin-login nil)))))
+                (navigation/navigate-to-cofx :keycard-login-pin nil)))))
 
 (fx/defn get-user-password
   [_ address]

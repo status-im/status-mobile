@@ -216,6 +216,7 @@
                 :enter-pin-sign (hardwallet/enter-pin-screen-did-load %)
                 :enter-pin-settings (hardwallet/enter-pin-screen-did-load %)
                 :enter-pin-modal (hardwallet/enter-pin-screen-did-load %)
+                :keycard-login-pin (hardwallet/enter-pin-screen-did-load %)
                 :hardwallet-connect (hardwallet/hardwallet-connect-screen-did-load %)
                 :hardwallet-connect-sign (hardwallet/hardwallet-connect-screen-did-load %)
                 :hardwallet-connect-settings (hardwallet/hardwallet-connect-screen-did-load %)

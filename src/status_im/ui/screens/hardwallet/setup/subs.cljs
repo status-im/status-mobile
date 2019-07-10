@@ -56,6 +56,14 @@
    (get-in db [:hardwallet :secrets])))
 
 (re-frame/reg-sub
+ :hardwallet-puk-code
+ (fn [db]
+   (->> (get-in db [:hardwallet :secrets :puk])
+        (partition 4)
+        (map clojure.string/join)
+        (clojure.string/join " "))))
+
+(re-frame/reg-sub
  :hardwallet-setup-error
  (fn [db]
    (get-in db [:hardwallet :setup-error])))

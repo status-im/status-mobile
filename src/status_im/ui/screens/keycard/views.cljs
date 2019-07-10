@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.keycard.views
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.keycard.styles :as styles]
@@ -6,8 +7,14 @@
             [status-im.ui.components.colors :as colors]
             [status-im.react-native.resources :as resources]
             [re-frame.core :as re-frame]
-            [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.status-bar.view :as status-bar]))
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.screens.hardwallet.pin.views :as pin.views]
+            [status-im.utils.core :as utils.core]
+            [status-im.utils.gfycat.core :as gfy]
+            [status-im.ui.components.lists.cell.view :as cell]
+            [status-im.utils.identicon :as identicon]
+            [status-im.ui.components.action-button.action-button :as action-button]
+            [status-im.ui.components.action-button.styles :as action-button.styles]))
 
 (defn connection-lost []
   [react/view {:flex             1
@@ -36,7 +43,39 @@
                                  :height 200}}]]
     [react/view {:margin-bottom 43}
      [react/touchable-highlight
-      {:on-press #(re-frame/dispatch [:keycard.onboarding.connection-lost.ui/cancel-setup-pressed])}
+      {:on-press #(re-frame/dispatch [:keycard.connection-lost.ui/cancel-pressed])}
+      [react/text {:style {:color      colors/red
+                           :text-align :center}}
+       (i18n/label :t/cancel)]]]]])
+
+(defn connection-lost-setup []
+  [react/view {:flex             1
+               :justify-content  :center
+               :align-items      :center
+               :background-color colors/gray-transparent-40}
+   [react/view {:background-color colors/white
+                :height           478
+                :width            "85%"
+                :border-radius    16
+                :flex-direction   :column
+                :justify-content  :space-between
+                :align-items      :center}
+    [react/view {:margin-top 32}
+     [react/text {:style {:typography :title-bold
+                          :text-align :center}}
+      (i18n/label :t/connection-with-the-card-lost)]
+     [react/view {:margin-top 16}
+      [react/text {:style {:color      colors/gray
+                           :text-align :center}}
+       (i18n/label :t/connection-with-the-card-lost-setup-text)]]]
+    [react/view {:margin-top 16}
+     [react/image {:source      (resources/get-image :keycard-connection)
+                   :resize-mode :center
+                   :style       {:width  200
+                                 :height 200}}]]
+    [react/view {:margin-bottom 43}
+     [react/touchable-highlight
+      {:on-press #(re-frame/dispatch [:keycard.onboarding.connection-lost-setup.ui/cancel-setup-pressed])}
       [react/text {:style {:color      colors/red
                            :text-align :center}}
        (i18n/label :t/cancel-keycard-setup)]]]]])
@@ -138,3 +177,373 @@
    [react/view {:align-items :center :margin-bottom 52}
     [react/activity-indicator {:size      :large
                                :animating true}]]])
+
+(defn blank []
+  [react/view {:flex             1
+               :justify-content  :center
+               :align-items      :center
+               :background-color colors/gray-transparent-40}
+   [react/view {:background-color colors/white
+                :height           433
+                :width            "85%"
+                :border-radius    16
+                :flex-direction   :column
+                :justify-content  :space-between
+                :align-items      :center}
+    [react/view {:margin-top         32
+                 :padding-horizontal 34}
+     [react/text {:style {:typography :title-bold
+                          :text-align :center}}
+      (i18n/label :t/blank-keycard-title)]
+     [react/view {:margin-top 16}
+      [react/text {:style {:color       colors/gray
+                           :line-height 22
+                           :text-align  :center}}
+       (i18n/label :t/blank-keycard-text)]]]
+    [react/view
+     [react/image {:source      (resources/get-image :keycard)
+                   :resize-mode :center
+                   :style       {:width  144
+                                 :height 114}}]]
+    [react/view {:margin-bottom 32}
+     [react/touchable-highlight
+      {:on-press #(re-frame/dispatch [:keycard.login.ui/got-it-pressed])}
+      [react/view {:background-color colors/gray-background
+                   :align-items      :center
+                   :justify-content  :center
+                   :flex-direction   :row
+                   :width            133
+                   :height           44
+                   :border-radius    10}
+       [react/text {:style {:color colors/blue}}
+        (i18n/label :t/ok-got-it)]]]]]])
+
+(defn wrong []
+  [react/view {:flex             1
+               :justify-content  :center
+               :align-items      :center
+               :background-color colors/gray-transparent-40}
+   [react/view {:background-color colors/white
+                :height           413
+                :width            "85%"
+                :border-radius    16
+                :flex-direction   :column
+                :justify-content  :space-between
+                :align-items      :center}
+    [react/view {:margin-top         32
+                 :padding-horizontal 34}
+     [react/text {:style {:typography :title-bold
+                          :text-align :center}}
+      (i18n/label :t/wrong-keycard-title)]
+     [react/view {:margin-top 16}
+      [react/text {:style {:color       colors/gray
+                           :line-height 22
+                           :text-align  :center}}
+       (i18n/label :t/wrong-keycard-text)]]]
+    [react/view
+     [react/image {:source (resources/get-image :keycard-wrong)
+                   :style  {:width  255
+                            :height 124}}]]
+    [react/view {:margin-bottom 32}
+     [react/touchable-highlight
+      {:on-press #(re-frame/dispatch [:keycard.login.ui/got-it-pressed])}
+      [react/view {:background-color colors/gray-background
+                   :align-items      :center
+                   :justify-content  :center
+                   :flex-direction   :row
+                   :width            133
+                   :height           44
+                   :border-radius    10}
+       [react/text {:style {:color colors/blue}}
+        (i18n/label :t/ok-got-it)]]]]]])
+
+(defn unpaired []
+  [react/view {:flex             1
+               :justify-content  :center
+               :align-items      :center
+               :background-color colors/gray-transparent-40}
+   [react/view {:background-color colors/white
+                :height           433
+                :width            "85%"
+                :border-radius    16
+                :flex-direction   :column
+                :justify-content  :space-between
+                :align-items      :center}
+    [react/view {:margin-top         32
+                 :padding-horizontal 34}
+     [react/text {:style {:typography :title-bold
+                          :text-align :center}}
+      (i18n/label :t/unpaired-keycard-title)]
+     [react/view {:margin-top 16}
+      [react/text {:style {:color       colors/gray
+                           :line-height 22
+                           :text-align  :center}}
+       (i18n/label :t/unpaired-keycard-text)]]]
+    [react/view
+     [react/image {:source (resources/get-image :keycard-wrong)
+                   :style  {:width  255
+                            :height 124}}]]
+    [react/view {:margin-bottom  32
+                 :flex-direction :column
+                 :align-items    :center}
+     [react/touchable-highlight
+      {:on-press #(re-frame/dispatch [:keycard.login.ui/pair-card-pressed])}
+      [react/view {:background-color colors/gray-background
+                   :align-items      :center
+                   :justify-content  :center
+                   :flex-direction   :row
+                   :width            133
+                   :height           44
+                   :border-radius    10}
+       [react/text {:style {:color colors/blue}}
+        (i18n/label :t/pair-this-card)]]]
+     [react/view {:margin-top 27}
+      [react/touchable-highlight
+       {:on-press #(re-frame/dispatch [:keycard.login.ui/dismiss-pressed])}
+       [react/text {:style {:color colors/blue}}
+        (i18n/label :t/dismiss)]]]]]])
+
+(defn not-keycard []
+  [react/view {:flex             1
+               :justify-content  :center
+               :align-items      :center
+               :background-color colors/gray-transparent-40}
+   [react/view {:background-color colors/white
+                :height           453
+                :width            "85%"
+                :border-radius    16
+                :flex-direction   :column
+                :justify-content  :space-between
+                :align-items      :center}
+    [react/view {:margin-top 32}
+     [react/text {:style {:typography :title-bold
+                          :text-align :center}}
+      (i18n/label :t/not-keycard-title)]
+     [react/view {:margin-top         16
+                  :padding-horizontal 38}
+      [react/text {:style {:color       colors/gray
+                           :line-height 22
+                           :text-align  :center}}
+       (i18n/label :t/not-keycard-text)]]]
+    [react/view {:margin-top  16
+                 :align-items :center}
+     [react/image {:source (resources/get-image :not-keycard)
+                   :style  {:width  144
+                            :height 120}}]
+     [react/view {:margin-top 40}
+      [react/touchable-highlight {:on-press #(.openURL (react/linking) "https://keycard.status.im")}
+       [react/view {:flex-direction  :row
+                    :align-items     :center
+                    :justify-content :center}
+        [react/text {:style {:text-align :center
+                             :color      colors/blue}}
+         (i18n/label :t/learn-more-about-keycard)]
+        [vector-icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
+                                                           :container-style {:margin-left 5}}]]]]]
+    [react/view {:margin-bottom 32}
+     [react/touchable-highlight
+      {:on-press #(re-frame/dispatch [:keycard.login.ui/got-it-pressed])}
+      [react/view {:background-color colors/gray-background
+                   :align-items      :center
+                   :justify-content  :center
+                   :flex-direction   :row
+                   :width            133
+                   :height           44
+                   :border-radius    10}
+       [react/text {:style {:color colors/blue}}
+        (i18n/label :t/ok-got-it)]]]]]])
+
+(defview login-pin []
+  (letsubs [pin [:hardwallet/pin]
+            enter-step [:hardwallet/pin-enter-step]
+            status [:hardwallet/pin-status]
+            error-label [:hardwallet/pin-error-label]
+            {:keys [address public-key]} [:multiaccounts/login]]
+    (let [address (str "0x" address)]
+      [react/view styles/container
+       [toolbar/toolbar
+        {:transparent? true
+         :style        {:margin-top 32}}
+        [toolbar/nav-text
+         {:handler #(re-frame/dispatch [:keycard.login.pin.ui/cancel-pressed])
+          :style   {:padding-left 21}}
+         (i18n/label :t/cancel)]
+        [react/text {:style {:color colors/gray}}
+         (i18n/label :t/step-i-of-n {:number 2
+                                     :step   1})]
+        [react/view {:margin-right 20}
+         [react/touchable-highlight
+          {:on-press #(re-frame/dispatch [:keycard.login.pin.ui/more-icon-pressed])}
+          [vector-icons/icon :main-icons/more {:color           colors/black
+                                               :container-style {:margin-left 5}}]]]]
+       [react/view {:flex            1
+                    :flex-direction  :column
+                    :justify-content :space-between
+                    :align-items     :center
+                    :margin-top      60}
+        [react/view {:flex-direction  :column
+                     :flex            1
+                     :justify-content :center
+                     :align-items     :center}
+         [react/view {:margin-horizontal 16
+                      :flex-direction    :column}
+          [react/view {:justify-content :center
+                       :align-items     :center
+                       :flex-direction  :row}
+           [react/view {:width           69
+                        :height          69
+                        :justify-content :center
+                        :align-items     :center}
+            [react/image {:source {:uri (identicon/identicon public-key)}
+                          :style  {:width         61
+                                   :height        61
+                                   :border-radius 30
+                                   :border-width  1
+                                   :border-color  (colors/alpha colors/black 0.1)}}]
+            [react/view {:justify-content  :center
+                         :align-items      :center
+                         :width            24
+                         :height           24
+                         :border-radius    24
+                         :position         :absolute
+                         :right            0
+                         :bottom           0
+                         :background-color :white
+                         :border-width     1
+                         :border-color     (colors/alpha colors/black 0.1)}
+             [react/image {:source (resources/get-image :keycard-key)
+                           :style  {:width  8
+                                    :height 14}}]]]]
+          [react/text {:style           {:text-align  :center
+                                         :margin-top  12
+                                         :color       colors/black
+                                         :font-weight "500"}
+                       :number-of-lines 1
+                       :ellipsize-mode  :middle}
+           (gfy/generate-gfy public-key)]
+          [react/text {:style           {:text-align  :center
+                                         :margin-top  4
+                                         :color       colors/gray
+                                         :font-family "monospace"}
+                       :number-of-lines 1
+                       :ellipsize-mode  :middle}
+           (utils.core/truncate-str address 14 true)]]]
+        [pin.views/pin-view
+         {:pin         pin
+          :status      status
+          :error-label error-label
+          :step        enter-step}]
+        [react/view {:margin-bottom 32}
+         [react/touchable-highlight
+          {:on-press #(re-frame/dispatch [:keycard.login.ui/recover-key-pressed])}
+          [react/text {:style {:color colors/blue}}
+           (i18n/label :t/recover-key)]]]]])))
+
+(defview login-connect-card []
+  (letsubs [status [:hardwallet/pin-status]
+            {:keys [address public-key]} [:multiaccounts/login]]
+    (let [address (str "0x" address)
+          in-progress? (= status :verifying)]
+      [react/view styles/container
+       [toolbar/toolbar
+        {:transparent? true
+         :style        {:margin-top 32}}
+        nil
+        [react/text {:style {:color colors/gray}}
+         (i18n/label :t/step-i-of-n {:number 2
+                                     :step   2})]
+        [react/view {:margin-right 20}
+         [react/touchable-highlight
+          {:on-press #(re-frame/dispatch [:keycard.login.pin.ui/more-icon-pressed])}
+          [vector-icons/icon :main-icons/more {:color           colors/black
+                                               :container-style {:margin-left 5}}]]]]
+       [react/view {:flex            1
+                    :flex-direction  :column
+                    :justify-content :space-between
+                    :align-items     :center
+                    :margin-top      15}
+        [react/view {:flex-direction  :column
+                     :justify-content :center
+                     :align-items     :center}
+         [react/view {:margin-horizontal 16
+                      :flex-direction    :column}
+          [react/view {:justify-content :center
+                       :align-items     :center
+                       :flex-direction  :row}
+           [react/view {:width           69
+                        :height          69
+                        :justify-content :center
+                        :align-items     :center}
+            [react/image {:source {:uri (identicon/identicon public-key)}
+                          :style  {:width         61
+                                   :height        61
+                                   :border-radius 30
+                                   :border-width  1
+                                   :border-color  (colors/alpha colors/black 0.1)}}]
+            [react/view {:justify-content  :center
+                         :align-items      :center
+                         :width            24
+                         :height           24
+                         :border-radius    24
+                         :position         :absolute
+                         :right            0
+                         :bottom           0
+                         :background-color :white
+                         :border-width     1
+                         :border-color     (colors/alpha colors/black 0.1)}
+             [react/image {:source (resources/get-image :keycard-key)
+                           :style  {:width  8
+                                    :height 14}}]]]]
+          [react/text {:style           {:text-align  :center
+                                         :margin-top  12
+                                         :color       colors/black
+                                         :font-weight "500"}
+                       :number-of-lines 1
+                       :ellipsize-mode  :middle}
+           (gfy/generate-gfy public-key)]
+          [react/text {:style           {:text-align  :center
+                                         :margin-top  4
+                                         :color       colors/gray
+                                         :font-family "monospace"}
+                       :number-of-lines 1
+                       :ellipsize-mode  :middle}
+           (utils.core/truncate-str address 14 true)]]]
+        [react/view {:margin-bottom   12
+                     :flex            1
+                     :align-items     :center
+                     :justify-content :center}
+         [react/image {:source      (resources/get-image :keycard-phone)
+                       :resize-mode :center
+                       :style       {:width  200
+                                     :height 211}}]
+         [react/view {:margin-top 10}
+          [react/text {:style {:text-align  :center
+                               :color       colors/gray
+                               :font-size   15
+                               :line-height 22}}
+           (i18n/label :t/hold-card)]]]
+        [react/view {:margin-bottom 50
+                     :height        30}
+         (when in-progress?
+           [react/activity-indicator {:size      :large
+                                      :animating true}])]]])))
+
+(defn- more-sheet-content []
+  [react/view {:flex           1
+               :flex-direction :row
+               :margin-top     18}
+   [react/view action-button.styles/actions-list
+    [action-button/action-button
+     {:label     (i18n/label :t/create-new-key)
+      :icon      :main-icons/profile
+      :icon-opts {:color colors/blue}
+      :on-press  #(re-frame/dispatch [:keycard.login.ui/create-new-key-pressed])}]
+    [action-button/action-button
+     {:label     (i18n/label :t/add-another-key)
+      :icon      :main-icons/add
+      :icon-opts {:color colors/blue}
+      :on-press  #(re-frame/dispatch [:keycard.login.ui/add-key-pressed])}]]])
+
+(def more-sheet
+  {:content        more-sheet-content
+   :content-height 149})

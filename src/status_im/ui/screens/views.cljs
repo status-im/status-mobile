@@ -13,6 +13,7 @@
             [taoensso.timbre :as log]
             [status-im.utils.platform :as platform]
             [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
+            [status-im.ui.screens.keycard.views :as keycard]
             [status-im.ui.screens.home.sheet.views :as home.sheet]
             [status-im.ui.screens.routing.core :as routing]
             [status-im.ui.screens.signing.views :as signing]
@@ -50,6 +51,9 @@
 
                  (= view :learn-more)
                  (merge about-app/learn-more)
+
+                 (= view :keycard.login/more)
+                 (merge keycard/more-sheet)
 
                  (= view :private-chat-actions)
                  (merge home.sheet/private-chat-actions)

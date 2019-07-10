@@ -11,12 +11,18 @@
     :intro-wizard
     :hardwallet-authentication-method
     :hardwallet-connect
-    :enter-pin-login
     :hardwallet-setup
     :hardwallet-success
     :keycard-connection-lost
+    :keycard-connection-lost-setup
     :keycard-nfc-on
     :keycard-pairing
+    :keycard-blank
+    :keycard-wrong
+    :keycard-unpaired
+    :keycard-login-pin
+    :keycard-login-connect-card
+    :not-keycard
     :keycard-onboarding-intro
     :keycard-onboarding-start
     :keycard-onboarding-puk-code
@@ -46,13 +52,18 @@
               config/hardwallet-enabled?
               (concat [:hardwallet-authentication-method
                        :hardwallet-connect
-                       :enter-pin-login
+                       :keycard-login-pin
+                       :keycard-login-connect-card
+                       :keycard-blank
+                       :keycard-wrong
+                       :keycard-unpaired
+                       :not-keycard
                        :hardwallet-setup
                        :hardwallet-success]))
    :config  (if
                 ;; add view-id here if you'd like that view to be
                 ;; first view when app is started
-             (#{:login :progress :multiaccounts :enter-pin-login} view-id)
+             (#{:login :progress :multiaccounts :enter-pin-login :keycard-login-pin} view-id)
               {:initialRouteName view-id}
               {:initialRouteName :login})})
 
@@ -62,6 +73,7 @@
               :intro
               :intro-wizard
               :keycard-connection-lost
+              :keycard-connection-lost-setup
               :keycard-nfc-on
               :keycard-pairing
               :keycard-onboarding-intro

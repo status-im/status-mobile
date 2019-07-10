@@ -50,8 +50,8 @@
         [react/text {:style {:text-align :center
                              :color      colors/blue}}
          (i18n/label :t/learn-more-about-keycard)]
-        [vector-icons/icon :tiny-icons/tiny-external {:color           colors/blue
-                                                      :container-style {:margin-left 5}}]]]]]
+        [vector-icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
+                                                           :container-style {:margin-left 5}}]]]]]
     [react/view
      [react/view {:align-items     :center
                   :justify-content :center}

@@ -38,7 +38,7 @@
      {:on-press #(when enabled?
                    (re-frame/dispatch [:hardwallet.ui/pin-numpad-delete-button-pressed step]))}
      [react/view styles/numpad-delete-button
-      [vector-icons/icon :main-icons/back {:color colors/blue}]]]]])
+      [vector-icons/icon :main-icons/backspace {:color colors/blue}]]]]])
 
 (defn pin-indicator [pressed?]
   [react/view (styles/pin-indicator pressed?)])
