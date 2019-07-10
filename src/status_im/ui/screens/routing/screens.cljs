@@ -30,6 +30,8 @@
             [status-im.ui.screens.hardwallet.setup.views :as hardwallet.setup]
             [status-im.ui.screens.hardwallet.success.views :as hardwallet.success]
             [status-im.ui.screens.keycard.onboarding.views :as keycard.onboarding]
+            [status-im.ui.screens.keycard.recovery.views :as keycard.recovery]
+            [status-im.ui.screens.keycard.views :as keycard]
             [status-im.ui.screens.help-center.views :as help-center]
             [status-im.ui.screens.home.views :as home]
             [status-im.ui.screens.intro.views :as intro]
@@ -87,16 +89,22 @@
    :keycard-onboarding-start                         keycard.onboarding/start
    :keycard-onboarding-puk-code                      keycard.onboarding/puk-code
    :keycard-onboarding-preparing                     keycard.onboarding/preparing
-   :keycard-onboarding-pairing                       keycard.onboarding/pairing
    :keycard-onboarding-finishing                     keycard.onboarding/finishing
-   :keycard-onboarding-connection-lost               keycard.onboarding/connection-lost
    :keycard-onboarding-pin                           keycard.onboarding/pin
-   :keycard-onboarding-pair                          keycard.onboarding/pair
-   :keycard-onboarding-nfc-on                        keycard.onboarding/nfc-on
    :keycard-onboarding-recovery-phrase               keycard.onboarding/recovery-phrase
    :keycard-onboarding-recovery-phrase-confirm-word1 keycard.onboarding/recovery-phrase-confirm-word
    :keycard-onboarding-recovery-phrase-confirm-word2 keycard.onboarding/recovery-phrase-confirm-word
    :keycard-recovery-enter-mnemonic                  keycard.onboarding/enter-mnemonic
+   :keycard-pairing                                  keycard/pairing
+   :keycard-nfc-on                                   keycard/nfc-on
+   :keycard-connection-lost                          keycard/connection-lost
+   :keycard-recovery-intro                           keycard.recovery/intro
+   :keycard-recovery-start                           keycard.recovery/start
+   :keycard-recovery-pair                            keycard.recovery/pair
+   :keycard-recovery-recovering                      keycard.recovery/recovering
+   :keycard-recovery-success                         keycard.recovery/success
+   :keycard-recovery-no-key                          keycard.recovery/no-key
+   :keycard-recovery-pin                             keycard.recovery/pin
    :home                                             home/home-wrapper
    :chat                                             chat/chat
    :select-chat                                      chat/select-chat
@@ -172,7 +180,7 @@
    :keycard-settings                                 hardwallet.settings/keycard-settings
    :mobile-network-settings                          mobile-network-settings/mobile-network-settings
    :welcome                                          [:modal home/welcome]
-   :keycard-welcome                                  [:modal home/welcome]})
+   :keycard-welcome                                  keycard/welcome})
 
 (defn get-screen [screen]
   (get all-screens screen #(throw (str "Screen " screen " is not defined."))))

@@ -78,3 +78,18 @@
  :hardwallet-application-info-error
  (fn [db]
    (get-in db [:hardwallet :application-info-error])))
+
+(re-frame/reg-sub
+ :hardwallet-multiaccount
+ (fn [db]
+   (get-in db [:hardwallet :multiaccount])))
+
+(re-frame/reg-sub
+ :hardwallet-multiaccount-wallet-address
+ (fn [db]
+   (str "0x" (get-in db [:hardwallet :multiaccount-wallet-address]))))
+
+(re-frame/reg-sub
+ :hardwallet-multiaccount-whisper-public-key
+ (fn [db]
+   (str "0x" (get-in db [:hardwallet :multiaccount-whisper-public-key]))))

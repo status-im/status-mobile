@@ -228,9 +228,8 @@
   (= (get-in cofx [:db :view-id])
      :create-multiaccount))
 
-(defn finishing-hardwallet-setup? [cofx]
-  (= (get-in cofx [:db :view-id])
-     :keycard-welcome))
+(defn- keycard-setup? [cofx]
+  (boolean (get-in cofx [:db :hardwallet :flow])))
 
 (fx/defn initialize-multiaccount [{:keys [db] :as cofx} address]
   (let [stored-pns (:push-notifications/stored db)]
@@ -246,7 +245,7 @@
               (stickers/init-stickers-packs)
               (multiaccounts.update/update-sign-in-time)
               #(when-not (or (creating-multiaccount? %)
-                             (finishing-hardwallet-setup? %))
+                             (keycard-setup? %))
                  (login-only-events % address stored-pns)))))
 
 (re-frame/reg-fx

@@ -1226,26 +1226,6 @@
    (hardwallet/proceed-to-generate-mnemonic cofx)))
 
 (handlers/register-handler-fx
- :hardwallet.ui/import-multiaccount-back-button-pressed
- (fn [cofx _]
-   (hardwallet/import-multiaccount-back-button-pressed cofx)))
-
-(handlers/register-handler-fx
- :hardwallet.ui/import-multiaccount-next-button-pressed
- (fn [cofx _]
-   (hardwallet/import-multiaccount-next-button-pressed cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/load-importing-multiaccount-screen
- (fn [cofx _]
-   (hardwallet/load-importing-multiaccount-screen cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/import-multiaccount
- (fn [cofx _]
-   (hardwallet/import-multiaccount cofx)))
-
-(handlers/register-handler-fx
  :hardwallet/generate-mnemonic
  (fn [cofx _]
    (hardwallet/generate-mnemonic cofx)))

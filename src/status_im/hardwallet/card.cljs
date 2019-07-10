@@ -35,7 +35,8 @@
     (.removeAllListeners (event-emitter) event)))
 
 (defn register-card-events []
-  (when (and config/hardwallet-enabled?)
+  (when (and config/hardwallet-enabled?
+             platform/android?)
 
     (remove-event-listeners)
 

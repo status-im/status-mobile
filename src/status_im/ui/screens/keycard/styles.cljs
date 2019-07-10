@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.keycard.onboarding.styles
+(ns status-im.ui.screens.keycard.styles
   (:require [status-im.ui.components.colors :as colors]))
 
 (def container

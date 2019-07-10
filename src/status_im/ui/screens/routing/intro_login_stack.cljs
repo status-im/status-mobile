@@ -14,20 +14,26 @@
     :enter-pin-login
     :hardwallet-setup
     :hardwallet-success
+    :keycard-connection-lost
+    :keycard-nfc-on
+    :keycard-pairing
     :keycard-onboarding-intro
     :keycard-onboarding-start
     :keycard-onboarding-puk-code
     :keycard-onboarding-preparing
-    :keycard-onboarding-pairing
     :keycard-onboarding-finishing
-    :keycard-onboarding-connection-lost
     :keycard-onboarding-pin
-    :keycard-onboarding-pair
-    :keycard-onboarding-nfc-on
     :keycard-onboarding-recovery-phrase
     :keycard-onboarding-recovery-phrase-confirm-word1
     :keycard-onboarding-recovery-phrase-confirm-word2
-    :keycard-recovery-enter-mnemonic})
+    :keycard-recovery-enter-mnemonic
+    :keycard-recovery-intro
+    :keycard-recovery-start
+    :keycard-recovery-pair
+    :keycard-recovery-recovering
+    :keycard-recovery-success
+    :keycard-recovery-no-key
+    :keycard-recovery-pin})
 
 (defn login-stack [view-id]
   {:name    :login-stack
@@ -55,19 +61,25 @@
       (update :screens conj
               :intro
               :intro-wizard
+              :keycard-connection-lost
+              :keycard-nfc-on
+              :keycard-pairing
               :keycard-onboarding-intro
               :keycard-onboarding-start
               :keycard-onboarding-puk-code
               :keycard-onboarding-preparing
-              :keycard-onboarding-pairing
               :keycard-onboarding-finishing
-              :keycard-onboarding-connection-lost
               :keycard-onboarding-pin
-              :keycard-onboarding-pair
-              :keycard-onboarding-nfc-on
               :keycard-onboarding-recovery-phrase
               :keycard-onboarding-recovery-phrase-confirm-word1
               :keycard-onboarding-recovery-phrase-confirm-word2
-              :keycard-recovery-enter-mnemonic)
+              :keycard-recovery-enter-mnemonic
+              :keycard-recovery-intro
+              :keycard-recovery-start
+              :keycard-recovery-pair
+              :keycard-recovery-recovering
+              :keycard-recovery-success
+              :keycard-recovery-no-key
+              :keycard-recovery-pin)
       (assoc :name :intro-stack)
       (assoc :config {:initialRouteName :intro})))

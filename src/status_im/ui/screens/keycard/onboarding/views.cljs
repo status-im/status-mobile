@@ -1,7 +1,8 @@
 (ns status-im.ui.screens.keycard.onboarding.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.screens.keycard.onboarding.styles :as styles]
+            [status-im.ui.screens.keycard.styles :as styles]
+            [status-im.ui.screens.keycard.views :as views]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
@@ -223,113 +224,11 @@
           {:on-press #(re-frame/dispatch [:keycard.onboarding.puk-code.ui/next-pressed])
            :forward? true}]]]]]]))
 
-(defn- loading [title-label]
-  [react/view styles/container
-   [toolbar/toolbar {:transparent? true
-                     :style        {:margin-top 32}}
-    nil nil]
-   [react/view {:flex            1
-                :flex-direction  :column
-                :justify-content :space-between
-                :align-items     :center}
-    [react/view {:flex-direction :column
-                 :align-items    :center}
-     [react/view {:margin-top 16}
-      [react/activity-indicator {:animating true
-                                 :size      :large}]]
-     [react/view {:margin-top 16}
-      [react/text {:style {:typography :header
-                           :text-align :center}}
-       (i18n/label title-label)]]
-     [react/view {:margin-top 16
-                  :width      311}
-      [react/text {:style {:color      colors/gray
-                           :text-align :center}}
-       (i18n/label :t/this-will-take-few-seconds)]]]
-    [react/view {:flex            1
-                 :align-items     :center
-                 :justify-content :center}
-     [react/image {:source      (resources/get-image :keycard-phone)
-                   :resize-mode :center
-                   :style       {:width  160
-                                 :height 170}}]
-     [react/view {:margin-top 10}
-      [react/text {:style {:text-align :center
-                           :color      colors/gray}}
-       (i18n/label :t/hold-card)]]]]])
-
 (defn preparing []
-  (loading :t/keycard-onboarding-preparing-header))
-
-(defn pairing []
-  (loading :t/keycard-onboarding-pairing-header))
+  (views/loading :t/keycard-onboarding-preparing-header))
 
 (defn finishing []
-  (loading :t/keycard-onboarding-finishing-header))
-
-(defn connection-lost []
-  [react/view {:flex             1
-               :justify-content  :center
-               :align-items      :center
-               :background-color "rgba(4, 4, 15, 0.4)"}
-   [react/view {:background-color colors/white
-                :height           478
-                :width            "85%"
-                :border-radius    16
-                :flex-direction   :column
-                :justify-content  :space-between
-                :align-items      :center}
-    [react/view {:margin-top 32}
-     [react/text {:style {:typography :title-bold
-                          :text-align :center}}
-      (i18n/label :t/connection-with-the-card-lost)]
-     [react/view {:margin-top 16}
-      [react/text {:style {:color      colors/gray
-                           :text-align :center}}
-       (i18n/label :t/connection-with-the-card-lost-text)]]]
-    [react/view {:margin-top 16}
-     [react/image {:source      (resources/get-image :keycard-connection)
-                   :resize-mode :center
-                   :style       {:width  200
-                                 :height 200}}]]
-    [react/view {:margin-bottom 43}
-     [react/touchable-highlight
-      {:on-press #(re-frame/dispatch [:keycard.onboarding.connection-lost.ui/cancel-setup-pressed])}
-      [react/text {:style {:color      colors/red
-                           :text-align :center}}
-       (i18n/label :t/cancel-keycard-setup)]]]]])
-
-(defn nfc-on []
-  [react/view styles/container
-   [toolbar/toolbar
-    {:transparent? true
-     :style        {:margin-top 32}}
-    toolbar/default-nav-back
-    nil]
-   [react/view {:flex            1
-                :flex-direction  :column
-                :justify-content :space-between
-                :align-items     :center}
-    [react/view {:flex-direction :column
-                 :align-items    :center}
-     [react/view {:margin-top 16}
-      [react/text {:style {:typography :header}}
-       (i18n/label :t/turn-nfc-on)]]]
-    [react/view
-     [react/view {:align-items     :center
-                  :justify-content :center}
-      [react/image {:source (resources/get-image :keycard-nfc-on)
-                    :style  {:width  170
-                             :height 170}}]]]
-    [react/view
-     [react/touchable-highlight
-      {:on-press #(re-frame/dispatch [:keycard.onboarding.nfc-on/open-nfc-settings-pressed])}
-      [react/text {:style {:font-size     15
-                           :line-height   22
-                           :color         colors/blue
-                           :text-align    :center
-                           :margin-bottom 30}}
-       (i18n/label :t/open-nfc-settings)]]]]])
+  (views/loading :t/keycard-onboarding-finishing-header))
 
 (defview pin []
   (letsubs [pin [:hardwallet/pin]
@@ -360,7 +259,7 @@
          (i18n/label (if (= :original enter-step)
                        :t/intro-wizard-title4
                        :t/intro-wizard-title5))]]]
-      [status-im.ui.screens.hardwallet.pin.views/pin-view
+      [pin.views/pin-view
        {:pin         pin
         :status      status
         :error-label error-label
@@ -495,62 +394,6 @@
             :label     (i18n/label :t/next)
             :disabled? (empty? input-word)
             :forward?  true}]]]]])))
-
-(defview pair []
-  (letsubs [pair-code [:hardwallet-pair-code]
-            error [:hardwallet-setup-error]
-            width [:dimensions/window-width]
-            ref (atom nil)]
-    [react/view styles/container
-     [toolbar/toolbar
-      {:transparent? true
-       :style        {:margin-top 32}}
-      [toolbar/nav-text
-       {:handler #(re-frame/dispatch [:keycard.onboarding.ui/cancel-pressed])
-        :style   {:padding-left 21}}
-       (i18n/label :t/cancel)]
-      [react/text {:style {:color colors/gray}}
-       (i18n/label :t/step-i-of-n {:step   "3"
-                                   :number "3"})]]
-     [react/view {:flex            1
-                  :flex-direction  :column
-                  :justify-content :space-between
-                  :align-items     :center}
-      [react/view {:flex-direction :column
-                   :align-items    :center}
-       [react/view {:margin-top 16}
-        [react/text {:style {:typography :header
-                             :text-align :center}}
-         (i18n/label :t/enter-pair-code)]]
-       [react/view {:margin-top  16
-                    :width       "85%"
-                    :align-items :center}
-        [react/text {:style {:color      colors/gray
-                             :text-align :center}}
-         (i18n/label :t/enter-pair-code-description)]]]
-      [react/view
-       [text-input/text-input-with-label
-        {:on-change-text    #(re-frame/dispatch [:keycard.onboarding.pair.ui/input-changed %])
-         :auto-focus        true
-         :on-submit-editing #(re-frame/dispatch [:keycard.onboarding.pair.ui/input-submitted])
-         :error             error
-         :placeholder       nil
-         :container         {:background-color :white}
-         :style             {:background-color :white
-                             :height           24
-                             :typography       :header}}]]
-      [react/view {:flex-direction  :row
-                   :justify-content :space-between
-                   :align-items     :center
-                   :width           "100%"
-                   :height          86}
-       [react/view]
-       [react/view {:margin-right 20}
-        [components.common/bottom-button
-         {:on-press  #(re-frame/dispatch [:keycard.onboarding.pair.ui/next-pressed])
-          :label     (i18n/label :t/pair-card)
-          :disabled? (empty? pair-code)
-          :forward?  true}]]]]]))
 
 ;NOTE temporary screen, to be removed after Recovery will be implemented
 (defview enter-mnemonic []

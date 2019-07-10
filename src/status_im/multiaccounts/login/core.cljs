@@ -135,6 +135,16 @@
 
     :dispatch [:multiaccounts.logout.ui/logout-confirmed]}))
 
+(fx/defn finish-keycard-setup
+  [{:keys [db] :as cofx}]
+  (let [flow (get-in db [:hardwallet :flow])]
+    (when flow
+      (fx/merge cofx
+                {:db (update db :hardwallet dissoc :flow)}
+                (if (= :import flow)
+                  (navigation/navigate-to-cofx :keycard-recovery-success nil)
+                  (navigation/navigate-to-cofx :home nil))))))
+
 (fx/defn user-login-callback
   {:events [:multiaccounts.login.callback/login-success]
    :interceptors [(re-frame/inject-cofx :web3/get-web3)
@@ -173,6 +183,7 @@
          (protocol/initialize-protocol)
          (universal-links/process-stored-event)
          (chaos-mode/check-chaos-mode)
+         (finish-keycard-setup)
          (when-not platform/desktop?
            (initialize-wallet)))
         (multiaccount-and-db-password-do-not-match cofx error)))))
