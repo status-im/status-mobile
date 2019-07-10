@@ -23,14 +23,6 @@
                                 (str subdomain "."))]
         (str "https://" network-subdomain "etherscan.io/tx/" hash)))))
 
-(defn add-padding [address]
-  {:pre [(string? address)]}
-  (str "0x000000000000000000000000" (subs address 2)))
-
-(defn- remove-padding [address]
-  {:pre [(string? address)]}
-  (str "0x" (subs address 26)))
-
 (def default-erc20-token
   {:symbol   :ERC20
    :decimals 18
@@ -43,48 +35,42 @@
     :outbound))
 
 (defn- parse-token-transfer
-  [chain-tokens transfer]
-  (let [{:keys [blockHash transactionHash topics data address]} transfer
-        [_ from to] topics
-        {:keys [nft? symbol] :as token}  (get chain-tokens address
+  [chain-tokens contract]
+  (let [{:keys [nft? symbol] :as token}  (get chain-tokens contract
                                               default-erc20-token)]
-    (when-not nft?
-      {:hash          transactionHash
-       :symbol        symbol
-       :from          (remove-padding from)
-       :to            (remove-padding to)
-       :value         (money/bignumber data)
-       :type          (direction address to)
-       :token         token
-       :error?        false
-       ;; NOTE(goranjovic) - just a flag we need when we merge this entry
-       ;; with the existing entry in the app, e.g. transaction info with
-       ;; gas details, or a previous transfer entry with old confirmations
-       ;; count.
-       :transfer      true})))
+    {:symbol        symbol
+     :token         token
+     ;; NOTE(goranjovic) - just a flag we need when we merge this entry
+     ;; with the existing entry in the app, e.g. transaction info with
+     ;; gas details, or a previous transfer entry with old confirmations
+     ;; count.
+     :transfer      true}))
 
 (defn enrich-transfer
-  [chain-tokens transfer]
-  (let [{:keys [address blockNumber timestamp type transaction receipt from]} transfer
-        {:keys [hash gasPrice value gas input nonce to]} transaction
-        {:keys [gasUsed logs]} receipt
-        erc20? (= type "erc20")]
-    (merge {:block     (str (decode/uint blockNumber))
+  [chain-tokens
+   {:keys [address blockNumber timestamp type transaction receipt from txStatus
+           txHash gasPrice gasUsed contract value gasLimit input nonce to type id] :as transfer}]
+  (let [erc20?  (= type "erc20")
+        failed? (= txStatus "0x0")]
+    (merge {:id        id
+            :block     (str (decode/uint blockNumber))
             :timestamp (* (decode/uint timestamp) 1000)
             :gas-used  (str (decode/uint gasUsed))
             :gas-price (str (decode/uint gasPrice))
-            :gas-limit (str (decode/uint gas))
+            :gas-limit (str (decode/uint gasLimit))
             :nonce     (str (decode/uint nonce))
-            :data      input}
+            :hash      txHash
+            :data      input
+            :from      from
+            :to        to
+            :type      (if failed?
+                         :failed
+                         (direction address to))
+            :value     (str (decode/uint value))}
            (if erc20?
-             (parse-token-transfer chain-tokens (first logs))
+             (parse-token-transfer chain-tokens contract)
              ;; this is not a ERC20 token transaction
-             {:hash   hash
-              :symbol :ETH
-              :from   from
-              :to     to
-              :type   (direction address to)
-              :value  (str (decode/uint value))}))))
+             {:symbol :ETH}))))
 
 (defn enrich-transfers
   [chain-tokens transfers]
@@ -133,10 +119,16 @@
                 watched-transactions))))
 
 (fx/defn add-transfer
-  [{:keys [db] :as cofx} {:keys [hash] :as transfer}]
-  (fx/merge cofx
-            {:db (assoc-in db [:wallet :transactions hash] transfer)}
-            (check-transaction transfer)))
+  [{:keys [db] :as cofx} {:keys [hash id] :as transfer}]
+  (let [transfer-by-hash (get-in db [:wallet :transactions hash])
+        transfer-by-id   (get-in db [:wallet :transaction id])
+        unique-id (when-not (or transfer-by-id
+                                (= transfer transfer-by-hash))
+                    (if transfer-by-hash id hash))]
+    (when unique-id
+      (fx/merge cofx
+                {:db (assoc-in db [:wallet :transactions unique-id] transfer)}
+                (check-transaction transfer)))))
 
 (fx/defn new-transfers
   {:events [::new-transfers]}

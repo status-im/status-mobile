@@ -32,7 +32,7 @@
     (fx/merge cofx
               (cond-> {}
                 (not historical?)
-                (assoc :db (assoc db [:ethereum/current-block] block-number))
+                (assoc :db (assoc db :ethereum/current-block block-number))
 
                 (not-empty accounts)
                 (assoc ::transactions/get-transfers {:chain-tokens chain-tokens
