@@ -324,9 +324,8 @@ class BaseView(object):
 
     def accept_agreements(self):
         iterations = int()
-        from views.sign_in_view import CreateAccountButton, PasswordInput
-        while iterations <= 3 and not (CreateAccountButton(self.driver).is_element_displayed(2) or PasswordInput(
-                self.driver).is_element_displayed(2)):
+        while iterations <= 2 and (self.ok_button.is_element_displayed(2) or
+                                   self.continue_button.is_element_displayed(2)):
             for button in self.ok_button, self.continue_button:
                 try:
                     button.wait_for_element(3)

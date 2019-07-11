@@ -195,7 +195,7 @@ class HomeView(BaseView):
         return ChatView(self.driver)
 
     def join_public_chat(self, chat_name: str):
-        self.plus_button.click()
+        self.plus_button.click_until_presence_of_element(self.join_public_chat_button)
         self.join_public_chat_button.wait_for_visibility_of_element(5)
         contacts_view = self.join_public_chat_button.click()
         contacts_view.chat_name_editbox.click()

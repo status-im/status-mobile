@@ -279,11 +279,10 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         username_1 = 'user_%s' % get_current_time()
         message_before_block_1, message_before_block_2 = "Before block from %s" % device_1.driver.number, "Before block from %s" % device_2.driver.number
         message_after_block_2 = "After block from %s" % device_2.driver.number
-        home_1, home_2 = device_1.create_user(username=username_1), device_2.recover_access(basic_user['passphrase'])
+        home_1, home_2 = device_1.create_user(), device_2.recover_access(basic_user['passphrase'])
         profile_1 = home_1.profile_button.click()
         default_username_1 = profile_1.default_username_text.text
         home_1 = profile_1.get_back_to_home_view()
-
 
         # device 1, device 2: join to public chat and send several messages
         chat_name = device_1.get_public_chat_name()

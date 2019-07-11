@@ -118,7 +118,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_1 = 'user_%s' % get_current_time()
 
-        device_1_home, device_2_home = device_1.create_user(username=username_1), device_2.create_user()
+        device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
         profile_1 = device_1_home.profile_button.click()
         default_username_1 = profile_1.default_username_text.text
         device_1_home = profile_1.get_back_to_home_view()

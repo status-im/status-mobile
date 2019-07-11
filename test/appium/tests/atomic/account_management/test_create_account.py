@@ -88,18 +88,21 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.medium
     def test_create_account_short_and_mismatch_password(self):
         sign_in = SignInView(self.driver)
-        sign_in.create_account_button.click()
-        sign_in.password_input.set_value('12345')
+        sign_in.get_started_button.click()
+        sign_in.generate_key_button.click()
+        sign_in.next_button.click()
+        sign_in.next_button.click()
+        sign_in.create_password_input.set_value('12345')
 
         mismatch_error = "Passwords don't match"
 
         sign_in.next_button.click()
-        if sign_in.confirm_password_input.is_element_displayed():
+        if sign_in.confirm_your_password_input.is_element_displayed():
             self.errors.append('Next button is clickable when password is less then 6 symbols')
 
-        sign_in.password_input.set_value('123456')
+        sign_in.create_password_input.set_value('123456')
         sign_in.next_button.click()
-        sign_in.confirm_password_input.set_value('1234567')
+        sign_in.confirm_your_password_input.set_value('1234567')
         sign_in.next_button.click()
 
         if not sign_in.find_text_part(mismatch_error):

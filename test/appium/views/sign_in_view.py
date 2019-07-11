@@ -125,7 +125,7 @@ class OtherAccountsButton(BaseButton):
 class PrivacyPolicyLink(BaseButton):
     def __init__(self, driver):
         super(PrivacyPolicyLink, self).__init__(driver)
-        self.locator = self.Locator.text_part_selector('Privacy Policy')
+        self.locator = self.Locator.text_part_selector('privacy policy')
 
     def navigate(self):
         from views.web_views.base_web_view import BaseWebView

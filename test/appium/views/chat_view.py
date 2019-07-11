@@ -78,21 +78,18 @@ class ChatMenuButton(BaseButton):
 
 
 class MembersButton(BaseButton):
-
     def __init__(self, driver):
         super(MembersButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="action"])[1]')
 
 
 class DeleteChatButton(BaseButton):
-
     def __init__(self, driver):
         super(DeleteChatButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="Delete chat"]')
 
 
 class ClearHistoryButton(BaseButton):
-
     def __init__(self, driver):
         super(ClearHistoryButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="Clear history"]')
@@ -109,27 +106,24 @@ class GroupInfoButton(BaseButton):
 
 
 class LeaveChatButton(BaseButton):
-
     def __init__(self, driver):
         super(LeaveChatButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="Leave public chat"]')
 
 
 class ClearButton(BaseButton):
-
     def __init__(self, driver):
         super(ClearButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="CLEAR"]')
 
-class BlockButton(BaseButton):
 
+class BlockButton(BaseButton):
     def __init__(self, driver):
         super(BlockButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="BLOCK"]')
 
 
 class LeaveButton(BaseButton):
-
     def __init__(self, driver):
         super(LeaveButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="LEAVE"]')
@@ -223,10 +217,12 @@ class ProfileSendTransactionButton(BaseButton):
         super(ProfileSendTransactionButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('send-transaction-button')
 
+
 class ProfileBlockContactButton(BaseButton):
     def __init__(self, driver):
         super(ProfileBlockContactButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('block-contact')
+
 
 class JoinChatButton(BaseButton):
     def __init__(self, driver):
@@ -276,7 +272,7 @@ class ChatElementByText(BaseText):
                        "@text='Not sent. Tap for options' or @text='Network mismatch']"
                 self.locator = self.Locator.xpath_selector(parent_locator + text)
 
-        return StatusText(self.driver, self.locator.value)
+        return StatusText(self.driver, self.locator.value).wait_for_element(10)
 
     @property
     def progress_bar(self):

@@ -380,7 +380,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         chat.asset_by_name('ETHro').click()
         chat.send_as_keyevent(amount)
         send_transaction_view = chat.get_send_transaction_view()
-        chat.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
+        chat.send_message_button.click_until_presence_of_element(send_transaction_view.sign_with_password)
 
         # if not send_transaction_view.element_by_text(recipient['username']).is_element_displayed():
         #     self.errors.append('Recipient name is not shown')

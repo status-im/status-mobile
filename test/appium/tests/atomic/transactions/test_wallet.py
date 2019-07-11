@@ -115,7 +115,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_with_password.click()
         send_transaction.enter_password_input.click()
         send_transaction.enter_password_input.send_keys('wrong_password')
-        send_transaction.sign_transaction_button.click()
+        send_transaction.sign_button.click()
         send_transaction.find_full_text('Wrong password', 20)
 
     @marks.testrail_id(1452)
@@ -384,7 +384,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         ropsten_txs = self.network_api.get_transactions(address)
         ropsten_tokens = self.network_api.get_token_transactions(address)
         expected_txs_list = get_merged_txs_list(ropsten_txs, ropsten_tokens)
-
         signin_view = SignInView(self.driver)
         home_view = signin_view.recover_access(passphrase=passphrase)
         wallet_view = home_view.wallet_button.click()
