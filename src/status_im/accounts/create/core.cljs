@@ -170,11 +170,14 @@
             (navigation/navigate-to-cofx :home nil)))
 
 (fx/defn init-key-generation [{:keys [db] :as cofx}]
-  (fx/merge
-   {:db (-> db
-            (assoc-in [:intro-wizard :generating-keys?] true)
-            (assoc :node/on-ready :start-onboarding))}
-   (node/initialize nil)))
+  (let [node-started? (= :started (:node/status db))]
+    (fx/merge
+     {:db (-> db
+              (assoc-in [:intro-wizard :generating-keys?] true)
+              (assoc :node/on-ready :start-onboarding))}
+     (if node-started?
+       {:intro-wizard/start-onboarding {:n 5 :mnemonic-length 12}}
+       (node/initialize nil)))))
 
 (fx/defn on-confirm-failure [{:keys [db] :as cofx}]
   (do
