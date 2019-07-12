@@ -35,7 +35,10 @@
    "status_joinPublicChat" {}
    "status_chats" {}
    "status_startOneOnOneChat" {}
-   "status_removeChat" {}})
+   "status_removeChat" {}
+   "browsers_getBrowsers" {}
+   "browsers_addBrowser" {}
+   "browsers_deleteBrowser" {}})
 
 (defn call
   [{:keys [method params on-success on-error]}]
