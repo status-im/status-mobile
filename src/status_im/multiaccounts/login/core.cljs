@@ -172,6 +172,7 @@
                                                 :card-read-in-progress?
                                                 :pin
                                                 :multiaccount))
+          :data-store/get-browsers nil
           :web3/set-default-account [web3 address]
           :web3/fetch-node-version  [web3
                                      #(re-frame/dispatch

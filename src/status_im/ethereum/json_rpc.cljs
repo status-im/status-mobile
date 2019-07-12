@@ -36,7 +36,10 @@
    "status_chats" {}
    "status_startOneOnOneChat" {}
    "status_removeChat" {}
-   "wallet_getTransfers" {}})
+   "wallet_getTransfers" {}
+   "browsers_getBrowsers" {}
+   "browsers_addBrowser" {}
+   "browsers_deleteBrowser" {}})
 
 (defn call
   [{:keys [method params on-success on-error]}]

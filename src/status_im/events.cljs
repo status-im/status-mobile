@@ -143,7 +143,6 @@
  [(re-frame/inject-cofx :web3/get-web3)
   (re-frame/inject-cofx :data-store/get-all-contacts)
   (re-frame/inject-cofx :data-store/get-all-installations)
-  (re-frame/inject-cofx :data-store/all-browsers)
   (re-frame/inject-cofx :data-store/all-dapp-permissions)
   (re-frame/inject-cofx :data-store/all-chats)
   (re-frame/inject-cofx :data-store/all-chat-requests-ranges)]

@@ -116,11 +116,12 @@
                              :RendezvousNodes    rendezvous-nodes})
 
       :always
-      (assoc :WhisperConfig           {:Enabled true
+      (assoc :WalletConfig {:Enabled true}
+             :BrowsersConfig {:Enabled true}
+             :WhisperConfig           {:Enabled true
                                        :LightClient true
                                        :MinimumPoW 0.001
                                        :EnableNTPSync true}
-             :WalletConfig        {:Enabled true}
              :ShhextConfig        {:BackupDisabledDataDir      (utils.platform/no-backup-directory)
                                    :InstallationID             installation-id
                                    :MaxMessageDeliveryAttempts config/max-message-delivery-attempts

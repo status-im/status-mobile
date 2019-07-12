@@ -23,11 +23,6 @@
             [taoensso.timbre :as log]
             [status-im.signing.core :as signing]))
 
-(fx/defn initialize-browsers
-  [{:keys [db all-stored-browsers]}]
-  (let [browsers (into {} (map #(vector (:browser-id %) %) all-stored-browsers))]
-    {:db (assoc db :browser/browsers browsers)}))
-
 (fx/defn  initialize-dapp-permissions
   [{:keys [db all-dapp-permissions]}]
   (let [dapp-permissions (into {} (map #(vector (:dapp %) %) all-dapp-permissions))]
@@ -44,8 +39,9 @@
 (defn get-current-browser [db]
   (get-in db [:browser/browsers (get-in db [:browser/options :browser-id])]))
 
-(defn get-current-url [{:keys [history history-index]}]
-  (when (and history-index history)
+(defn get-current-url [{:keys [history history-index]
+                        :or {history-index 0}}]
+  (when history
     (nth history history-index)))
 
 (defn secure? [{:keys [error? dapp?]} {:keys [url]}]
@@ -57,7 +53,7 @@
 (fx/defn remove-browser
   [{:keys [db]} browser-id]
   {:db            (update-in db [:browser/browsers] dissoc browser-id)
-   :data-store/tx [(browser-store/remove-browser-tx browser-id)]})
+   :data-store/delete-browser browser-id})
 
 (defn update-dapp-name [{:keys [name] :as browser}]
   (assoc browser :dapp? false :name (or name (i18n/label :t/browser))))
@@ -117,7 +113,7 @@
     {:db            (update-in db
                                [:browser/browsers browser-id]
                                merge updated-browser)
-     :data-store/tx [(browser-store/save-browser-tx updated-browser)]}))
+     :data-store/save-browser updated-browser}))
 
 (defn can-go-back? [{:keys [history-index]}]
   (pos? history-index))
