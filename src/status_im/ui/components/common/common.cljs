@@ -79,9 +79,10 @@
       (when forward?
         [vector-icons/icon :main-icons/next {:color color}])]]))
 
-(defn button [{:keys [on-press label background? button-style label-style disabled?] :or {background? true disabled? false}}]
+(defn button [{:keys [on-press label background? button-style label-style disabled? accessibility-label] :or {background? true disabled? false}}]
   [react/touchable-highlight {:style    (styles/button button-style background? disabled?)
                               :on-press on-press
+                              :accessibility-label accessibility-label
                               :disabled disabled?}
    [react/text {:style (merge styles/button-label label-style)}
     label]])

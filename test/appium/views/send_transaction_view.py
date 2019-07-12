@@ -147,13 +147,13 @@ class ShareButton(BaseButton):
 
     def __init__(self, driver):
         super(ShareButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('share-button')
+        self.locator = self.Locator.accessibility_id('share-address-button')
 
 
 class OnboardingMessage(BaseElement):
     def __init__(self, driver):
         super().__init__(driver)
-        self.locator = self.Locator.text_selector('Set up your wallet')
+        self.locator = self.Locator.text_selector('This is your signing phrase')
 
 
 class NotEnoughEthForGas(BaseText):

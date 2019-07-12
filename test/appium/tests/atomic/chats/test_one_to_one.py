@@ -447,6 +447,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         # changing currency for both devices
         for device in devices:
             wallet_view = device['home_view'].wallet_button.click()
+            wallet_view.set_up_wallet()
             wallet_view.set_currency(device['currency'])
             wallet_view.get_back_to_home_view()
 
@@ -455,7 +456,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         # setting up device1 wallet
         # wallet1 = device1['home_view'].wallet_button.click()
-        # wallet1.set_up_wallet()
         # wallet1.get_back_to_home_view()
 
         # sending ETH to device2 in 1*1 chat

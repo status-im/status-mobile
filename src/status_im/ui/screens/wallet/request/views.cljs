@@ -74,6 +74,7 @@
        (i18n/label :t/ens-wallet-address)]
       [react/view {:on-layout #(reset! width (-> % .-nativeEvent .-layout .-width))}
        [react/text {:number-of-lines 1 :ellipsize-mode :middle
+                    :accessibility-label :address-text
                     :style           {:line-height 22 :font-size 15
                                       :font-family "monospace"}}
         (eip55/address->checksum address-hex)]]]
@@ -81,6 +82,7 @@
      [react/view {:padding-bottom 16}
       [components.common/button {:on-press     #(re-frame/dispatch [:wallet.accounts/share])
                                  :button-style {:margin-vertical 20 :margin-horizontal 16}
+                                 :accessibility-label :share-address-button
                                  :label        (i18n/label :t/share-address)}]
       [components.common/button {:on-press            #(do
                                                          (re-frame/dispatch [:hide-popover])

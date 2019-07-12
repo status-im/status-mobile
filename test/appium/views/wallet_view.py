@@ -98,6 +98,7 @@ class SetUpButton(BaseButton):
         super(SetUpButton, self).__init__(driver)
         self.locator = self.Locator.text_selector("Let’s get set up")
 
+
 class SetCurrencyButton(BaseButton):
     def __init__(self, driver):
         super(SetCurrencyButton, self).__init__(driver)
@@ -107,7 +108,8 @@ class SetCurrencyButton(BaseButton):
 class SignInPhraseText(BaseText):
     def __init__(self, driver):
         super(SignInPhraseText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@content-desc="signing-phrase"]//android.widget.TextView')
+        self.locator = self.Locator.xpath_selector('//*[@text="This is your signing phrase"]'
+                                                   '//following-sibling::*[2]/android.widget.TextView')
 
     @property
     def list(self):
@@ -154,11 +156,12 @@ class CurrencyText(BaseText):
         super(CurrencyText, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('total-amount-currency-text')
 
-class CollectiblesButton(BaseButton):
 
+class CollectiblesButton(BaseButton):
     def __init__(self, driver):
         super(CollectiblesButton, self).__init__(driver)
         self.locator = self.Locator.text_selector('Collectibles')
+
 
 class BackupRecoveryPhrase(BaseButton):
     def __init__(self, driver):
@@ -186,6 +189,12 @@ class AccountsStatusAccount(BaseButton):
     def __init__(self,driver):
         super(AccountsStatusAccount, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//android.widget.HorizontalScrollView//*[@text='Status account']")
+
+
+class OkGotItButton(BaseButton):
+    def __init__(self,driver):
+        super(OkGotItButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='OK, got it']")
 
 
 class SendTransactionButton(BaseButton):
@@ -245,6 +254,7 @@ class WalletView(BaseView):
         self.accounts_status_account = AccountsStatusAccount(self.driver)
         self.collectibles_button = CollectiblesButton(self.driver)
         self.set_currency_button = SetCurrencyButton(self.driver)
+        self.ok_got_it_button = OkGotItButton(self.driver)
 
     def get_usd_total_value(self):
         import re
@@ -287,10 +297,8 @@ class WalletView(BaseView):
         return ' '.join([element.text for element in self.sign_in_phrase.find_elements()])
 
     def set_up_wallet(self):
-        self.set_up_button.click()
         phrase = self.sign_in_phrase.string
-        self.done_button.click()
-        self.yes_button.click()
+        self.ok_got_it_button.click()
         return phrase
 
     def get_wallet_address(self):

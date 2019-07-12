@@ -18,6 +18,8 @@ class TestTransactionDApp(SingleDeviceTestCase):
         home_view = sign_in_view.recover_access(sender['passphrase'])
         address = sender['address']
         initial_balance = self.network_api.get_balance(address)
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
         status_test_dapp = home_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.assets_button.click()
@@ -31,6 +33,8 @@ class TestTransactionDApp(SingleDeviceTestCase):
         password = 'password_for_daap'
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.create_user(password=password)
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
         status_test_dapp = home_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
@@ -45,8 +49,8 @@ class TestTransactionDApp(SingleDeviceTestCase):
         sender = transaction_senders['L']
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(sender['passphrase'])
-        # wallet_view = home_view.wallet_button.click()
-        # wallet_view.set_up_wallet()  ##  will be updated when 'View signing phrase' enabled
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
         status_test_dapp = home_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
@@ -63,8 +67,8 @@ class TestTransactionDApp(SingleDeviceTestCase):
         sender = transaction_senders['W']
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(sender['passphrase'])
-        # wallet_view = home_view.wallet_button.click()
-        # wallet_view.set_up_wallet()  ##  will be updated when 'View signing phrase' enabled
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
         status_test_dapp = home_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
@@ -80,8 +84,8 @@ class TestTransactionDApp(SingleDeviceTestCase):
         sender = transaction_senders['W']
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(sender['passphrase'])
-        # wallet_view = home_view.wallet_button.click()
-        # wallet_view.set_up_wallet()  ##  will be updated when 'View signing phrase' enabled
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
         status_test_dapp = home_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
@@ -100,8 +104,8 @@ class TestTransactionDApp(SingleDeviceTestCase):
         sender = transaction_senders['Z']
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(sender['passphrase'])
-        # wallet_view = home_view.wallet_button.click()
-        # wallet_view.set_up_wallet()  ##  will be updated when 'View signing phrase' enabled
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
         status_test_dapp = home_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
@@ -121,8 +125,8 @@ class TestTransactionDApp(SingleDeviceTestCase):
         sender = transaction_senders['M']
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(sender['passphrase'], unique_password)
-        # wallet_view = home_view.wallet_button.click()
-        # wallet_view.set_up_wallet()  ##  will be updated when 'View signing phrase' enabled
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
         status_test_dapp = home_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.assets_button.click()
@@ -159,12 +163,11 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.ok_button.click()
         status_test_dapp.cross_icon.click()
         wallet_view = sign_in_view.wallet_button.click()
-        # wallet_view.set_up_wallet()  ##  will be updated when 'View signing phrase' enabled
+        wallet_view.set_up_wallet()
         wallet_view.wait_balance_changed_on_wallet_screen()
 
     @marks.testrail_id(5355)
     @marks.medium
-    @marks.skip  # No onboarding for now. TO re-enable once wallet onboarding done
     def test_onboarding_screen_when_requesting_tokens_for_new_account(self):
         signin_view = SignInView(self.driver)
         home_view = signin_view.create_user()
@@ -177,7 +180,6 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(5677)
     @marks.high
-    @marks.skip  # No onboarding for now. TO re-enable once wallet onboarding done
     def test_onboarding_screen_when_requesting_tokens_for_recovered_account(self):
         signin_view = SignInView(self.driver)
         home_view = signin_view.recover_access(passphrase=transaction_senders['U']['passphrase'])
@@ -218,7 +220,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         singin_view = SignInView(self.driver)
         home_view = singin_view.create_user()
         wallet = home_view.wallet_button.click()
-        # wallet.set_up_wallet()
+        wallet.set_up_wallet()
         wallet_address = wallet.get_wallet_address()
         home_view = wallet.get_back_to_home_view()
         status_test_dapp = home_view.open_status_test_dapp()
@@ -293,7 +295,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         singin_view = SignInView(self.driver)
         home_view = singin_view.create_user()
         wallet = home_view.wallet_button.click()
-        # wallet.set_up_wallet()
+        wallet.set_up_wallet()
         wallet.select_asset("STT")
         wallet_address = wallet.get_wallet_address()
         recipient = '0x' + basic_user['address']
