@@ -55,8 +55,9 @@
                       :number-of-lines 1
                       :style           (styles/chat-name current?)}
           name]]
-        (let [uri (contenthash/url (:content last-message))]
-          (if (and uri (= constants/content-type-sticker (:content-type last-message)))
+        (let [is-sticker? (= constants/content-type-sticker (:content-type last-message))
+              uri (if is-sticker? (contenthash/url (get-in last-message [:content :hash])) nil)]
+          (if uri
             [react/image {:style {:margin 2 :width 30 :height 30}
                           :source {:uri uri}}]
             [react/text {:ellipsize-mode  :tail
