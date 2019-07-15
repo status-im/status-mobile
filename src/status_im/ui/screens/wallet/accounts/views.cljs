@@ -163,6 +163,5 @@
      [total-value]
      [react/scroll-view {:horizontal true}
       [react/view {:flex-direction :row :padding-top 11 :padding-bottom 12}
-       [account-card "Status account"]
-       [add-card]]]]
+       [account-card "Status account"]]]]
     [assets-and-collections]]])
