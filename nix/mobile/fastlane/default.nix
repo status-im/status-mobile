@@ -2,6 +2,8 @@
   bundlerEnv, bundler, ruby, curl }:
 
 let
+  inherit (stdenv.lib) optionals optionalString unique;
+
   platform = callPackage ../../platform.nix { inherit target-os; };
   useFastlanePkg = platform.targetAndroid && !stdenv.isDarwin;
   fastlane = callPackage ../../../fastlane {
@@ -10,16 +12,19 @@ let
       gemdir = ../../../fastlane;
     };
   };
-  buildInputs = if useFastlanePkg then [ fastlane curl ] else stdenv.lib.optionals platform.targetMobile [ bundler ruby ]; # bundler/ruby used for fastlane on macOS
-  shellHook = stdenv.lib.optionalString useFastlanePkg fastlane.shellHook;
+  bundlerDeps = optionals platform.targetMobile [ bundler ruby ];
+  shellHook = optionalString useFastlanePkg fastlane.shellHook;
 
   # TARGETS
   shell = mkShell {
-    inherit buildInputs shellHook;
+    buildInputs = if useFastlanePkg then [ fastlane curl ] else bundlerDeps; # bundler/ruby used for fastlane on macOS
+    inherit shellHook;
   };
 
 in {
-  inherit buildInputs shellHook;
+  # We only include bundler in regular shell if targetting iOS, because that's how the CI builds the whole project 
+  buildInputs = unique (optionals (!useFastlanePkg && platform.targetIOS) bundlerDeps);
+  inherit shellHook;
 
   # TARGETS
   inherit shell;
