@@ -54,6 +54,7 @@ def bundle() {
       )
     }
   }
+  /* because nix-build was run in `android` dir that's where `result` is */
   def outApk = "android/result/app.apk"
   def pkg = utils.pkgFilename(btype, 'apk')
   /* rename for upload */

@@ -1,5 +1,7 @@
 { stdenv, stdenvNoCC, lib, target-os, callPackage,
-  mkFilter, bash, file, gnumake, watchman, gradle, androidEnvShellHook, mavenAndNpmDeps, nodejs, openjdk, jsbundle, status-go, zlib }:
+  mkFilter, bash, file, gnumake, watchman, gradle,
+  androidEnvShellHook, mavenAndNpmDeps,
+  nodejs, openjdk, jsbundle, status-go, zlib }:
 
 { build-number ? "9999",
   build-type ? "nightly", # Build type (e.g. nightly, release, e2e). Default is to use .env.nightly file
@@ -10,7 +12,8 @@
 }:
 
 let
-  name = "release-${target-os}";
+  baseName = "release-${target-os}";
+  name = "status-react-build-${baseName}";
   gradleHome = "$NIX_BUILD_TOP/.gradle";
   localMavenRepo = "${mavenAndNpmDeps.deriv}/.m2/repository";
   sourceProjectDir = "${mavenAndNpmDeps.deriv}/project";
@@ -27,7 +30,7 @@ in stdenv.mkDerivation {
     let path = ./../../../..;
     in builtins.path { # We use builtins.path so that we can name the resulting derivation, otherwise the name would be taken from the checkout directory, which is outside of our control
       inherit path;
-      name = "status-react-${name}-source";
+      name = "status-react-source-${baseName}";
       filter =
         # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
         mkFilter {

@@ -7,7 +7,7 @@
 def shell(Map opts = [:], String cmd) {
   def defaults = [
     pure: true,
-    args: ['target-os': env.TARGET_OS],
+    args: ['target-os': env.TARGET_OS ? env.TARGET_OS : 'none'],
     keep: ['LOCALE_ARCHIVE_2_27', 'IN_CI_ENVIRONMENT'],
   ]
   /* merge defaults with received opts */
@@ -18,34 +18,40 @@ def shell(Map opts = [:], String cmd) {
   if (env.TARGET_OS in ['windows', 'ios']) {
     opts.pure = false
   }
-  sh """
-    set +x
-    . ~/.nix-profile/etc/profile.d/nix.sh
-    set -x
-    IN_CI_ENVIRONMENT=1 \\
-    nix-shell --run \'${cmd}\' ${_getNixCommandArgs(opts, true)}
-  """
+  def stdOut = sh(
+    script: """
+      set +x
+      . ~/.nix-profile/etc/profile.d/nix.sh
+      set -x
+      IN_CI_ENVIRONMENT=1 \\
+      nix-shell --run \'${cmd}\' ${_getNixCommandArgs(opts, true)}
+    """,
+    returnStdout: true
+  )
+  return stdOut.trim()
 }
 
 /**
  * Arguments:
  *  - pure - Use --pure mode with Nix for more deterministic behaviour
+ *  - link - Bu default build creates a `result` directory, you can turn that off
  *  - keep - List of env variables to pass through to Nix build
  *  - args - Map of arguments to provide to --argstr
  *  - attr - Name of attribute to use with --attr flag
- *  - safeEnv - Name of env variables to pass securely through to Nix build (they won't get captured in Nix derivation file)
  *  - sbox - List of host file paths to pass to the Nix expression
+ *  - safeEnv - Name of env variables to pass securely through to Nix build (they won't get captured in Nix derivation file)
  **/
 def build(Map opts = [:]) {
   env.IN_CI_ENVIRONMENT = '1'
 
   def defaults = [
     pure: true,
+    link: true,
     args: ['target-os': env.TARGET_OS],
     keep: ['IN_CI_ENVIRONMENT'],
-    safeEnv: [],
     attr: null,
-    sbox: []
+    sbox: [],
+    safeEnv: [],
   ]
   /* merge defaults with received opts */
   opts = defaults + opts
@@ -61,7 +67,7 @@ def build(Map opts = [:]) {
       set -x
       nix-build ${_getNixCommandArgs(opts, false)}
     """
-    ).trim()
+  ).trim()
 }
 
 private makeNixBuildEnvFile(Map opts = [:]) {
@@ -115,6 +121,7 @@ private def _getNixCommandArgs(Map opts = [:], boolean isShell) {
 
   return [
     opts.pure ? "--pure" : "",
+    opts.link ? "" : "--no-out-link",
     keepFlags.join(" "),
     argsFlags.join(" "),
     extraSandboxPathsFlag,

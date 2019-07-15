@@ -16,7 +16,7 @@ let
     let path = ./../../..;
     in builtins.path { # We use builtins.path so that we can name the resulting derivation, otherwise the name would be taken from the checkout directory, which is outside of our control
       inherit path;
-      name = "status-react-npm-deps-source";
+      name = "status-react-source-npm-deps";
       filter =
         # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
         mkFilter {

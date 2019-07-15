@@ -26,6 +26,7 @@ pipeline {
     LC_ALL   = "en_US.UTF-8"
     LANGUAGE = "en_US.UTF-8"
     TARGET_OS = 'android'
+    BUILD_ENV = 'prod'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     FASTLANE_DISABLE_COLORS = 1
     REALM_DISABLE_ANALYTICS = 1
@@ -83,7 +84,9 @@ pipeline {
         stage('Build') { stages {
           stage('JSBundle') {
             steps {
-              script { cmn.nix.build(attr: 'targets.mobile.jsbundle') }
+              script {
+                cmn.nix.shell('make jsbundle-android', pure: false)
+              }
             }
           }
           stage('Bundle') {

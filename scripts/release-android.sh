@@ -47,7 +47,7 @@ nixOpts="--option extra-sandbox-paths ${STORE_FILE} \
          --argstr build-type ${BUILD_TYPE} \
          --argstr keystore-file ${STORE_FILE} \
          --show-trace \
-         $exportedEnvFlag \
+         ${exportedEnvFlag} \
          -A targets.mobile.${TARGET_OS}.release"
 
 # Run the build

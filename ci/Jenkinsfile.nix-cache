@@ -23,73 +23,81 @@ pipeline {
   }
 
   stages {
+    stage('Prep') {
+      steps { script {
+        nix = load('ci/nix.groovy')
+      } }
+    }
     stage('Setup') {
-      steps {
+      steps { script {
         sh 'scripts/setup'
-        sh '''
-          . ~/.nix-profile/etc/profile.d/nix.sh && \
-          nix-env -i openssh
-        '''
-      }
+        nix.shell('nix-env -i openssh', pure: false)
+      } }
     }
     stage('Build status-go') {
       steps { script {
         ['android', 'desktop', 'ios'].each { os ->
-          sh """
-            . ~/.nix-profile/etc/profile.d/nix.sh && \
-            nix-build --argstr target-os all -A targets.status-go.${os}.buildInputs
-          """
+          nix.build(
+            attr: "targets.status-go.${os}.buildInputs",
+            args: ['target-os': 'all'],
+            link: false
+          )
         }
       } }
     }
-    stage('Build jsbundle-android') {
-      steps {
-        // Run a Nix build to build/fetch everything that is necessary to produce a jsbundle for TARGET_OS=android (e.g. maven and node repos)
-        sh '''
-          args="--argstr target-os android --show-trace -A targets.mobile.jsbundle"
-
-          . ~/.nix-profile/etc/profile.d/nix.sh && \
-          nix-build --pure --no-out-link $args
-
-          prodBuildDrv=$(nix-instantiate --quiet $args) && \
-          prodBuildSrcPath=$(nix-store -q --binding src $prodBuildDrv) && \
-          prodBuildOutPath=$(nix-store -q --outputs $prodBuildDrv) && \
-          nix-store --delete $prodBuildDrv $prodBuildSrcPath $prodBuildOutPath
-        '''
-      }
+    stage('Build jsbundle') {
+      steps { script {
+        /* build/fetch things required to produce a js-bundle for android
+         * (e.g. maven and node repos) */
+        nix.build(
+          attr: 'targets.mobile.jsbundle',
+          args: ['target-os': 'android'],
+          pure: false,
+          link: false
+        )
+      } }
+    }
+    stage('Build android deps') {
+      steps { script {
+        /* build/fetch things required to build jsbundle and android */
+        nix.build(
+          attr: 'targets.mobile.android.buildInputs',
+          args: ['target-os': 'android'],
+          pure: false,
+          link: false
+        )
+      } }
     }
     stage('Build nix shell deps') {
-      steps {
-        // Run a Nix build to build/fetch everything that is necessary to instantiate shell.nix for TARGET_OS=all
-        sh '''
-          . ~/.nix-profile/etc/profile.d/nix.sh && \
-          nix-shell --argstr target-os all --pure --show-trace shell.nix
-        '''
-      }
+      steps { script {
+        /* build/fetch things required to instantiate shell.nix for TARGET_OS=all */
+        nix.shell("nix-build ${args.join(' ')}", pure: false)
+        nix.build(
+          attr: 'shell',
+          args: ['target-os': 'all'],
+          link: false
+        )
+      } }
     }
     stage('Upload') {
-      steps {
+      steps { script {
         sshagent(credentials: ['nix-cache-ssh']) {
-          sh """
-            . ~/.nix-profile/etc/profile.d/nix.sh && \
-            find /nix/store/ -mindepth 1 -maxdepth 1 \
-              -not -name '.links' -and -not -name '*.lock' \
-              -and -not -name '*-status-react-jsbundle-source' \
-              -and -not -name '*-status-react-release-android-source' \
-              -and -not -name '*-jsbundle-*' \
-              -and -not -name '*-release-android' | \
-              xargs nix-copy-closure -v --to ${NIX_CACHE_USER}@${NIX_CACHE_HOST}
-          """
+          nix.shell("""
+              find /nix/store/ -mindepth 1 -maxdepth 1 \
+                -not -name '.links' -and -not -name '*.lock' \
+                -and -not -name '*-status-react-*' \
+                | xargs nix-copy-closure -v --to ${NIX_CACHE_USER}@${NIX_CACHE_HOST}
+            """,
+            pure: false
+          )
         }
-      }
+      } }
     }
   }
   post {
-    always {
-      sh '''
-        . ~/.nix-profile/etc/profile.d/nix.sh && \
-        nix-store --optimize
-      '''
-   }
+    always { script {
+      nix.shell('nix-store --optimize', pure: false)
+      nix.shell('nix/clean.sh', pure: false)
+    } }
   }
 }

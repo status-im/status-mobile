@@ -36,7 +36,7 @@ let
           let path = ./../../../..; # Import the root /android and /mobile_files folders clean of any build artifacts
           in builtins.path { # We use builtins.path so that we can name the resulting derivation, otherwise the name would be taken from the checkout directory, which is outside of our control
             inherit path;
-            name = "status-react-gradle-install-source";
+            name = "status-react-source-gradle-install";
             filter =
               # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
               mkFilter {

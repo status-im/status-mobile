@@ -30,8 +30,14 @@ HOST_OS := $(shell uname | tr '[:upper:]' '[:lower:]')
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
 export _NIX_KEEP ?= BUILD_ENV
 export NIX_CONF_DIR = $(PWD)/nix
+# We don't want to use /run/user/$UID because it runs out of space too easilly
+export TMPDIR = /tmp
 
 export REACT_SERVER_PORT ?= 5001 # any value different from default 5000 will work; this has to be specified for both the Node.JS server process and the Qt process
+
+#----------------
+# Nix targets
+#----------------
 
 # WARNING: This has to be located right before the targets
 ifdef IN_NIX_SHELL
@@ -46,6 +52,29 @@ ifndef IN_NIX_SHELL
 else
 	@echo "${YELLOW}Nix shell is already active$(RESET)"
 endif
+
+nix-clean: ##@nix Remove all status-react build artifacts from /nix/store
+	nix/clean.sh
+
+nix-purge: SHELL := /bin/sh
+nix-purge: ##@nix Completely remove the complete Nix setup
+	sudo rm -rf /nix ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
+
+nix-add-gcroots: SHELL := /bin/sh
+nix-add-gcroots: ##@nix Add Nix GC roots to avoid status-react expressions being garbage collected
+	scripts/add-nix-gcroots.sh
+
+nix-update-npm: SHELL := /bin/sh
+nix-update-npm: ##@nix Update node2nix expressions based on current package.json
+	nix/desktop/realm-node/generate-nix.sh
+
+nix-update-gradle: SHELL := /bin/sh
+nix-update-gradle: ##@nix Update maven nix expressions based on current gradle setup
+	nix/mobile/android/maven-and-npm-deps/maven/generate-nix.sh
+
+nix-update-lein: SHELL := /bin/sh
+nix-update-lein: ##@nix Update maven nix expressions based on current lein setup
+	nix/tools/lein/generate-nix.sh nix/lein
 
 #----------------
 # General targets
@@ -73,39 +102,21 @@ disable-githooks: ##@prepare Disables lein githooks
 	rm project.clj~
 
 #----------------
-# Nix targets
-#----------------
-
-nix-clean: SHELL := /bin/sh
-nix-clean: ##@nix Remove complete nix setup
-	sudo rm -rf /nix ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
-
-nix-add-gcroots: SHELL := /bin/sh
-nix-add-gcroots: ##@nix Add Nix GC roots to avoid status-react expressions being garbage collected
-	scripts/add-nix-gcroots.sh
-
-nix-update-npm: SHELL := /bin/sh
-nix-update-npm: ##@nix Update node2nix expressions based on current package.json
-	nix/desktop/realm-node/generate-nix.sh
-
-nix-update-gradle: SHELL := /bin/sh
-nix-update-gradle: ##@nix Update maven nix expressions based on current gradle setup
-	nix/mobile/android/maven-and-npm-deps/maven/generate-nix.sh
-
-nix-update-lein: SHELL := /bin/sh
-nix-update-lein: ##@nix Update maven nix expressions based on current lein setup
-	nix/tools/lein/generate-nix.sh nix/lein
-
-#----------------
 # Release builds
 #----------------
 release: release-android release-ios ##@build build release for Android and iOS
 
-release-android: SHELL := /bin/sh
 release-android: export TARGET_OS ?= android
 release-android: export BUILD_ENV ?= prod
+release-android: export BUILD_TYPE ?= nightly
+release-android: export NDK_ABI_FILTERS ?= armeabi-v7a;arm64-v8a;x86
+release-android: export STORE_FILE ?= ~/.gradle/status-im.keystore
 release-android: ##@build build release for Android
-	scripts/release-$(TARGET_OS).sh
+	nix/build.sh targets.mobile.$(TARGET_OS).release \
+		--arg env '{NDK_ABI_FILTERS="$(NDK_ABI_FILTERS)";}' \
+		--argstr build-type $(BUILD_TYPE) \
+		--argstr keystore-file $(STORE_FILE) \
+		--option extra-sandbox-paths $(STORE_FILE)
 
 release-ios: export TARGET_OS ?= ios
 release-ios: export BUILD_ENV ?= prod
@@ -139,9 +150,9 @@ jsbundle-android: export TARGET_OS ?= android
 jsbundle-android: export BUILD_ENV ?= prod
 jsbundle-android: ##@jsbundle Compile JavaScript and Clojure into index.android.js 
 	# Call nix-build to build the 'targets.mobile.jsbundle' attribute and copy the index.android.js file to the project root
-	@git clean -dxf -f ./index.$(TARGET_OS).js && \
-	_NIX_RESULT_PATH=$(shell . ~/.nix-profile/etc/profile.d/nix.sh && nix-build --argstr target-os $(TARGET_OS) --pure --no-out-link --show-trace -A targets.mobile.jsbundle) && \
-	[ -n "$${_NIX_RESULT_PATH}" ] && cp -av $${_NIX_RESULT_PATH}/* .
+	@git clean -dxf ./index.$(TARGET_OS).js
+	nix/build.sh targets.mobile.jsbundle && \
+	mv result/index.$(TARGET_OS).js ./
 
 prod-build-ios: jsbundle-ios ##@legacy temporary legacy alias for jsbundle-ios
 	@echo "${YELLOW}This a deprecated target name, use jsbundle-ios.$(RESET)"
@@ -238,14 +249,17 @@ coverage: ##@test Run tests once in NodeJS generating coverage
 # Other
 #--------------
 react-native-desktop: export TARGET_OS ?= $(HOST_OS)
+react-native-desktop: export _NIX_PURE ?= true
 react-native-desktop: ##@other Start react native packager
 	@scripts/start-react-native.sh
 
 react-native-android: export TARGET_OS ?= android
+react-native-android: export _NIX_PURE ?= true
 react-native-android: ##@other Start react native packager for Android client
 	@scripts/start-react-native.sh
 
 react-native-ios: export TARGET_OS ?= ios
+react-native-ios: export _NIX_PURE ?= true
 react-native-ios: ##@other Start react native packager for Android client
 	@scripts/start-react-native.sh
 

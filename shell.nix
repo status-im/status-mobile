@@ -10,6 +10,7 @@ let
   stdenv = pkgs.stdenvNoCC;
 
 in mkShell {
+  name = "status-react-shell";
   buildInputs = with pkgs; [
     # utilities
     bash
