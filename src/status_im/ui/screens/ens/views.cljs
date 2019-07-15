@@ -536,25 +536,7 @@
           ^{:key name}
           [name-item {:name name :action #(re-frame/dispatch [:ens/navigate-to-name name])}])]
        [react/text {:style {:color colors/gray :font-size 15}}
-        (i18n/label :t/ens-no-usernames)])]
-    [react/view {:style {:padding-top 22 :border-color colors/gray-lighter :border-top-width 1}}
-     [react/text {:style {:color colors/gray :margin-horizontal 16}}
-      (i18n/label :t/ens-chat-settings)]
-     (when (> (count names) 1)
-       [profile.components/settings-item {:label-kw  :ens-primary-username
-                                          :value     preferred-name
-                                          :action-fn #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                          {:content         (fn [] (name-list names preferred-name))
-                                                                           :content-height  (+ 72 (* (min 4 (count names)) 64))}])}])
-     [profile.components/settings-switch-item {:label-kw  :ens-show-username
-                                               :action-fn #(re-frame/dispatch [:ens/switch-show-username])
-                                               :value     show?}]]
-    (let [message (merge {:from public-key :last-in-group? true :display-username? true :display-photo? true :username name
-                          :content {:text (i18n/label :t/ens-test-message)} :content-type "text/plain" :timestamp-str "9:41 AM"}
-                         (when show?
-                           {:name preferred-name}))]
-      [message/message-body message
-       [message/text-message message]])]])
+        (i18n/label :t/ens-no-usernames)])]]])
 
 (views/defview main []
   (views/letsubs [{:keys [names account preferred-name show?]} [:ens.main/screen]]
