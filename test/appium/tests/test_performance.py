@@ -21,6 +21,7 @@ class TestPerformance(SingleDeviceTestCase):
     @marks.testrail_id(6216)
     @marks.high
     @marks.performance
+    @marks.skip
     def test_time_to_load_sign_in_screen(self):
 
         app_started = ':init/app-started'

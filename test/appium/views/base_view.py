@@ -280,6 +280,16 @@ class OpenInStatusButton(BaseButton):
         self.wait_for_element().click()
 
 
+class OkGotItButton(BaseButton):
+    def __init__(self,driver):
+        super(OkGotItButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='OK, got it']")
+
+    def click(self):
+        self.wait_for_element().click()
+        self.wait_for_invisibility_of_element()
+
+
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
@@ -308,6 +318,7 @@ class BaseView(object):
         self.cross_icon = CrossIcon(self.driver)
         self.show_roots_button = ShowRoots(self.driver)
         self.get_started_button = GetStartedButton(self.driver)
+        self.ok_got_it_button = OkGotItButton(self.driver)
 
         # external browser
         self.open_in_status_button = OpenInStatusButton(self.driver)

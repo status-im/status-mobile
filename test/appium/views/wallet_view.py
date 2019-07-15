@@ -1,6 +1,7 @@
 import time
 from views.base_view import BaseView
 from views.base_element import BaseButton, BaseText
+from selenium.common.exceptions import NoSuchElementException
 
 
 class SendRequestButton(BaseButton):
@@ -191,12 +192,6 @@ class AccountsStatusAccount(BaseButton):
         self.locator = self.Locator.xpath_selector("//android.widget.HorizontalScrollView//*[@text='Status account']")
 
 
-class OkGotItButton(BaseButton):
-    def __init__(self,driver):
-        super(OkGotItButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='OK, got it']")
-
-
 class SendTransactionButton(BaseButton):
 
     def __init__(self, driver):
@@ -254,7 +249,6 @@ class WalletView(BaseView):
         self.accounts_status_account = AccountsStatusAccount(self.driver)
         self.collectibles_button = CollectiblesButton(self.driver)
         self.set_currency_button = SetCurrencyButton(self.driver)
-        self.ok_got_it_button = OkGotItButton(self.driver)
 
     def get_usd_total_value(self):
         import re

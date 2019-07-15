@@ -224,8 +224,7 @@ class SendTransactionView(BaseView):
         if self.onboarding_message.is_element_displayed():
             from views.wallet_view import WalletView
             wallet_view = WalletView(self.driver)
-            wallet_view.done_button.click()
-            self.yes_button.click()
+            wallet_view.ok_got_it_button.click()
 
     def sign_transaction(self, sender_password: str = common_password):
         self.sign_with_password.click()

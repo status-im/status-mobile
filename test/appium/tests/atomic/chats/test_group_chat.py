@@ -20,10 +20,8 @@ def return_made_admin_system_message(username):
     return "*%s* has been made admin" % username
 
 
-def create_users(driver_1, driver_2, username_1=None, username_2=None):
+def create_users(driver_1, driver_2):
     device_1_sign_in, device_2_sign_in = SignInView(driver_1), SignInView(driver_2)
-    if username_1 is not None and username_2 is not None:
-        return device_1_sign_in.create_user(username_1), device_2_sign_in.create_user(username_1)
     return device_1_sign_in.create_user(), device_2_sign_in.create_user()
 
 
@@ -102,13 +100,12 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
     @marks.testrail_id(5674)
     @marks.high
     def test_group_chat_system_messages(self):
-        username_1 = 'user1_%s' % get_current_time()
-        username_2 = 'user2_%s' % get_current_time()
 
         self.create_drivers(2)
 
-        device_1_home, device_2_home = create_users(self.drivers[0], self.drivers[1], username_1, username_2)
+        device_1_home, device_2_home = create_users(self.drivers[0], self.drivers[1])
         chat_name = device_1_home.get_public_chat_name()
+        device_1_default_username = get_username(device_1_home)
         device_2_default_username = get_username(device_2_home)
         device_1_chat, device_2_chat = create_and_join_group_chat(device_1_home, device_2_home, chat_name)
 
@@ -119,7 +116,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         # device 1: check system messages in the group chat
 
         system_messages = [
-            return_created_chat_system_message(username_1, chat_name),
+            return_created_chat_system_message(device_1_default_username, chat_name),
             return_joined_chat_system_message(device_2_default_username),
             return_left_chat_system_message(device_2_default_username)
         ]
@@ -164,7 +161,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         self.create_drivers(2)
 
         # create accounts on each device
-        device_1_home, device_2_home = create_users(self.drivers[0], self.drivers[1], username_1, username_2)
+        device_1_home, device_2_home = create_users(self.drivers[0], self.drivers[1])
         chat_name = device_1_home.get_public_chat_name()
 
         # device 2: get public key and default username

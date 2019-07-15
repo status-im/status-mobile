@@ -37,7 +37,7 @@ class TestSignIn(SingleDeviceTestCase):
             sign_in.ok_button.click()
         sign_in.password_input.set_value(common_password + '1')
         sign_in.sign_in_button.click()
-        sign_in.find_full_text('Wrong password')
+        sign_in.find_full_text("Wrong password")
 
     @marks.logcat
     @marks.testrail_id(5415)

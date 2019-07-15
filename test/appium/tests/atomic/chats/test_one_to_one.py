@@ -592,7 +592,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         sigin_view = SignInView(self.driver)
         home_view = sigin_view.recover_access(sender_passphrase)
         wallet = home_view.wallet_button.click()
-        # wallet.set_up_wallet()
+        wallet.set_up_wallet()
 
         wallet.get_back_to_home_view()
 

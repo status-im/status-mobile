@@ -57,18 +57,7 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.high
     def test_home_view(self):
         sign_in = SignInView(self.driver)
-        sign_in.accept_agreements()
-        sign_in.create_account_button.click()
-        sign_in.password_input.set_value(common_password)
-        sign_in.next_button.click()
-        sign_in.confirm_password_input.set_value(common_password)
-        sign_in.next_button.click()
-
-        sign_in.element_by_text_part('Display name').wait_for_element(30)
-        sign_in.name_input.send_keys('user_%s' % get_current_time())
-        sign_in.next_button.click()
-
-        welcome_screen = sign_in.get_home_view()
+        welcome_screen = sign_in.create_user()
 
         if not welcome_screen.welcome_image.is_element_displayed():
             self.errors.append('Welcome image is not shown')

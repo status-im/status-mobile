@@ -71,7 +71,7 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
     @marks.high
     def test_pass_phrase_validation(self):
         signin_view = SignInView(self.driver)
-        recover_access_view = signin_view.i_have_account_button.click()
+        recover_access_view = signin_view.access_key_button.click()
         phrase_outside_the_mnemonic = 'one two three four five six seven eight nine ten eleven twelve'
         validations = [
             {
@@ -105,8 +105,8 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
         for validation in validations:
             phrase, elm, msg = validation.get('phrase'), validation.get('element to check'), validation.get(
                 'validation message')
-            if signin_view.i_have_account_button.is_element_displayed():
-                signin_view.i_have_account_button.click()
+            if signin_view.access_key_button.is_element_displayed():
+                signin_view.access_key_button.click()
             recover_access_view.send_as_keyevent(phrase)
             recover_access_view.password_input.click()
 
@@ -114,9 +114,9 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
                 self.errors.append('"{}" message is not shown'.format(msg))
             recover_access_view.click_system_back_button()
 
-        signin_view.i_have_account_button.click()
+        signin_view.access_key_button.click()
         recover_access_view.send_as_keyevent(phrase_outside_the_mnemonic)
-        recover_access_view.password_input.click()
+        recover_access_view.recover_account_password_input.click()
         recover_access_view.send_as_keyevent('123456')
         recover_access_view.sign_in_button.click()
         recover_access_view.cancel_button.click()
@@ -125,9 +125,9 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
             self.errors.append('Something went wrong. Probably, the confirmation pop up did not disappear')
 
         recover_access_view.click_system_back_button()
-        signin_view.i_have_account_button.click()
+        signin_view.access_key_button.click()
         recover_access_view.send_as_keyevent(phrase_outside_the_mnemonic)
-        recover_access_view.password_input.click()
+        recover_access_view.recover_account_password_input.click()
         recover_access_view.send_as_keyevent('123456')
         recover_access_view.sign_in_button.click()
         home_view = recover_access_view.confirm_phrase_button.click()
@@ -154,7 +154,7 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
         passphrase = transaction_senders['A']['passphrase']
         capitalized_passphrase = passphrase.upper()
         signin_view = SignInView(self.driver)
-        recover_access_view = signin_view.i_have_account_button.click()
+        recover_access_view = signin_view.access_key_button.click()
         recover_access_view.passphrase_input.click()
         recover_access_view.send_as_keyevent(capitalized_passphrase)
         if recover_access_view.passphrase_input.text != passphrase:

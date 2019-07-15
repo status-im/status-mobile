@@ -192,7 +192,6 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(5380)
     @marks.high
-    @marks.skip  # No onboarding for now. TO re-enable once wallet onboarding done
     def test_user_can_complete_tx_to_dapp_when_onboarding_via_dapp_completed(self):
         user = transaction_recipients['G']
         signin_view = SignInView(self.driver)

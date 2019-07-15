@@ -50,12 +50,7 @@ class TestDApps(SingleDeviceTestCase):
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.assets_button.click()
         send_transaction_view = status_test_dapp.request_stt_button.click()
-        wallet_view = send_transaction_view.get_wallet_view()
-        wallet_view.done_button.click()
-        wallet_view.yes_button.click()
-        send_transaction_view.advanced_button.click()
-        send_transaction_view.transaction_fee_button.click()
-        send_transaction_view.done_button.click()
+        send_transaction_view.ok_got_it_button.click()
         send_transaction_view.sign_transaction()
         if not status_test_dapp.assets_button.is_element_displayed():
             self.driver.fail('Oops! Cannot proceed to use Status Test Dapp.')
