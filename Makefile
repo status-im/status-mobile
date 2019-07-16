@@ -58,7 +58,7 @@ shell: ##@prepare Enter into a pre-configured shell
 ifndef IN_NIX_SHELL
 	@ENTER_NIX_SHELL
 else
-	@echo "Nix shell is already active"
+	@echo "${YELLOW}Nix shell is already active$(RESET)"
 endif
 
 add-gcroots: SHELL := /bin/sh

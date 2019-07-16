@@ -1,6 +1,8 @@
 { target-os, stdenv }:
 
-assert stdenv.lib.assertOneOf "target-os" target-os [ "linux" "android" "windows" "macos" "darwin" "ios" "all" ];
+# We allow for "none" value because `make shell` can be called with `TARGET_OS` not set.
+# We don't want to assume `all`, because that will rebuild status-go for all platforms.
+assert stdenv.lib.assertOneOf "target-os" target-os [ "linux" "android" "windows" "macos" "darwin" "ios" "all" "none" ];
 
 let
   inherit (stdenv) isDarwin isLinux;

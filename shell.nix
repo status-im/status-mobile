@@ -1,6 +1,6 @@
 { nixpkgs-bootstrap ? import ./nix/nixpkgs-bootstrap.nix { },
   pkgs ? nixpkgs-bootstrap.pkgs,
-  target-os ? "all" }:
+  target-os ? "none" }:
 
 let
   project = import ./default.nix { inherit target-os pkgs nixpkgs-bootstrap; inherit (nixpkgs-bootstrap) config; };
