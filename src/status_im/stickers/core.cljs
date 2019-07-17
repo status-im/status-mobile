@@ -64,21 +64,29 @@
    (json-rpc/eth-call
     {:contract contract
      ;; Returns vector of owned tokens ids in the contract by address
-     :method "tokensOwnedBy(address)"
+     :method "balanceOf(address)"
      :params [address]
-     :outputs ["uint256[]"]
+     :outputs ["uint256"]
      :on-success
-     (fn [[tokens]]
-       (doseq [id tokens]
+     (fn [[count]]
+       (dotimes [id count]
          (json-rpc/eth-call
           {:contract contract
            ;; Returns pack id in the contract by token id
-           :method "tokenPackId(uint256)"
-           :params [id]
+           :method "tokenOfOwnerByIndex(address,uint256)"
+           :params [address id]
            :outputs ["uint256"]
            :on-success
-           (fn [[pack-id]]
-             (re-frame/dispatch [:stickers/pack-owned pack-id]))})))})))
+           (fn [[token-id]]
+             (json-rpc/eth-call
+              {:contract contract
+               ;; Returns pack id in the contract by token id
+               :method "tokenPackId(uint256)"
+               :params [token-id]
+               :outputs ["uint256"]
+               :on-success
+               (fn [[pack-id]]
+                 (re-frame/dispatch [:stickers/pack-owned pack-id]))}))})))})))
 
 (fx/defn init-stickers-packs
   [{:keys [db]}]
@@ -137,29 +145,30 @@
 
 (fx/defn load-packs
   [{:keys [db]}]
-  (let [contract (contracts/get-address db :status/stickers)
-        address  (ethereum/current-address db)]
+  (let [contract      (contracts/get-address db :status/stickers)
+        pack-contract (contracts/get-address db :status/sticker-pack)
+        address       (ethereum/current-address db)]
     (when contract
-      {:stickers/owned-packs-fx [contract address]
+      {:stickers/owned-packs-fx [pack-contract address]
        :stickers/load-packs-fx [contract]})))
 
 (fx/defn approve-pack
   [{db :db :as cofx} pack-id price]
-  (let [address           (ethereum/current-address db)
-        stickers-contract (contracts/get-address db :status/stickers)
-        snt-contract      (contracts/get-address db :status/snt)]
+  (let [address                 (ethereum/current-address db)
+        sticker-market-contract (contracts/get-address db :status/sticker-market)
+        snt-contract            (contracts/get-address db :status/snt)]
     (signing/eth-transaction-call
      cofx
      {:contract snt-contract
       :method "approveAndCall(address,uint256,bytes)"
-      :params [stickers-contract
+      :params [sticker-market-contract
                price
-               (abi-spec/encode "buyToken(uint256,address)" [pack-id address])]
+               (abi-spec/encode "buyToken(uint256,address,uint256)" [pack-id address price])]
       :on-result [:stickers/pending-pack pack-id]})))
 
 (fx/defn pending-pack
   [{:keys [db] :as cofx} id]
-  (let [contract (contracts/get-address db :status/stickers)
+  (let [contract (contracts/get-address db :status/sticker-pack)
         address  (ethereum/current-address db)]
     (when contract
       (fx/merge cofx
@@ -171,7 +180,7 @@
 (fx/defn pending-timeout
   [{{:stickers/keys [packs-pending packs-owned] :as db} :db}]
   (let [packs-diff (clojure.set/difference packs-pending packs-owned)
-        contract   (contracts/get-address db :status/stickers)
+        contract   (contracts/get-address db :status/sticker-pack)
         address    (ethereum/current-address db)]
     (when contract
       (merge {:db (assoc db :stickers/packs-pending packs-diff)}
@@ -184,7 +193,7 @@
 
 (fx/defn get-owned-pack
   [{:keys [db]}]
-  (let [contract (contracts/get-address db :status/stickers)
+  (let [contract (contracts/get-address db :status/sticker-pack)
         address  (ethereum/current-address db)]
     (when contract
       {:stickers/owned-packs-fx [contract address]})))
