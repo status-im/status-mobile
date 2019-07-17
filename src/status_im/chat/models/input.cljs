@@ -124,9 +124,7 @@
   [input-text current-chat-id {:keys [db] :as cofx}]
   (when-not (string/blank? input-text)
     (let [{:keys [message-id old-message-id]}
-          (get-in db [:chats current-chat-id :metadata :responding-to-message])
-          show-name?     (get-in db [:account/account :show-name?])
-          preferred-name (when show-name? (get-in db [:account/account :preferred-name]))]
+          (get-in db [:chats current-chat-id :metadata :responding-to-message])]
       (fx/merge cofx
                 {:db (assoc-in db [:chats current-chat-id :metadata :responding-to-message] nil)}
                 (chat.message/send-message {:chat-id      current-chat-id
@@ -135,9 +133,7 @@
                                                                    :text    input-text}
                                                             message-id
                                                             (assoc :response-to old-message-id
-                                                                   :response-to-v2 message-id)
-                                                            preferred-name
-                                                            (assoc :name preferred-name))})
+                                                                   :response-to-v2 message-id))})
                 (commands.input/set-command-reference nil)
                 (set-chat-input-text nil)
                 (process-cooldown)))))

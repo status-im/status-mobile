@@ -58,7 +58,9 @@
     [react/view styles/modal-menu
      [chat-icon.screen/my-profile-icon {:account contact
                                         :edit?   allow-icon-change?}]]]
-   [names contact]])
+   [react/view styles/profile-header-name-container
+    [profile-name-input name on-change-text-event
+     (when group-chat {:accessibility-label :chat-name-input})]]])
 
 (defn profile-header
   [{:keys [contact edited-contact editing? allow-icon-change? options on-change-text-event]}]
