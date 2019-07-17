@@ -34,9 +34,9 @@
 
 (defn- own-info
   [db]
-  (let [{:keys [name preferred-name photo-path address]} (:account/account db)
+  (let [{:keys [name photo-path address]} (:account/account db)
         fcm-token (get-in db [:notifications :fcm-token])]
-    {:name          (or preferred-name name)
+    {:name          name
      :profile-image photo-path
      :address       address
      :device-info   (device-info/all {:db db})

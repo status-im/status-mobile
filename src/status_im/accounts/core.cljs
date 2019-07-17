@@ -13,12 +13,8 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.handlers :as handlers]))
 
-(defn displayed-name [account]
-  (let [name (or (:preferred-name account) (:name account))]
-    (if (ens/is-valid-eth-name? name)
-      (let [username (stateofus/username name)]
-        (str "@" (or username name)))
-      (or name (gfycat/generate-gfy (:public-key account))))))
+(defn displayed-name [{:keys [name public-key]}]
+  (or name (gfycat/generate-gfy public-key)))
 
 (re-frame/reg-fx
  ::chaos-mode-changed
