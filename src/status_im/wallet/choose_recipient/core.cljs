@@ -8,7 +8,8 @@
             [status-im.ethereum.ens :as ens]
             [status-im.i18n :as i18n]
             [status-im.utils.money :as money]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [status-im.utils.handlers :as handlers]))
 
 (fx/defn toggle-flashlight
   {:events [:wallet/toggle-flashlight]}
