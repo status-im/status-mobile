@@ -168,15 +168,12 @@ def changeId() {
 }
 
 def updateEnv(type) {
-  def envFile = "${env.WORKSPACE}/.env"
+  def envFile = "${env.WORKSPACE}/.env.jenkins"
   /* select .env based on type of build */
-  def selectedEnv = '.env.jenkins'
-  switch (type) {
-    case 'nightly': selectedEnv = '.env.nightly'; break
-    case 'release': selectedEnv = '.env.prod';    break
-    case 'e2e':     selectedEnv = '.env.e2e';     break
+  if (['nightly', 'release', 'e2e'].contains(type)) {
+    envFile = "${env.WORKSPACE}/.env.${type}"
   }
-  sh "cp ${selectedEnv} .env"
+  sh "ln -sf ${envFile} .env"
   /* find a list of .env settings to check for them in params */
   def envContents = readFile(envFile)
   def envLines = envContents.split()

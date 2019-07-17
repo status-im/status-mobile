@@ -256,7 +256,7 @@ platform :ios do
 
   desc "`fastlane ios saucelabs` - upload .app to sauce labs"
   desc "also notifies in a GitHub comments"
-  desc "expects to have an .apk prepared: `android/app/build/outputs/apk/release/app-release.apk`"
+  desc "expects to have an .apk prepared: `android/result/app.apk`"
   desc "expects to have a saucelabs access key as SAUCE_ACCESS_KEY env variable"
   desc "expects to have a saucelabs username token as SAUCE_USERNAME env variable"
   desc "expects to have a saucelabs destination name as SAUCE_LABS_NAME env variable"
@@ -276,7 +276,7 @@ end
 
 platform :android do
   # Optional env variables
-  APK_PATH = ENV["APK_PATH"] || "android/app/build/outputs/apk/release/app-release.apk"
+  APK_PATH = ENV["APK_PATH"] || "android/result/app.apk"
 
   desc "Deploy a new internal build to Google Play"
   desc "expects GOOGLE_PLAY_JSON_KEY environment variable"
@@ -311,7 +311,7 @@ platform :android do
   end
 
   desc "`fastlane android upload_diawi` - upload .apk to diawi"
-  desc "expects to have an .apk prepared: `android/app/build/outputs/apk/release/app-release.apk`"
+  desc "expects to have an .apk prepared: `android/result/app.apk`"
   desc "expects to have a diawi token as DIAWI_TOKEN env variable"
   desc "expects to have a github token as GITHUB_TOKEN env variable"
   desc "will fails if file isn't there"
@@ -322,7 +322,7 @@ platform :android do
   end
 
   desc "`fastlane android saucelabs` - upload .apk to sauce labs"
-  desc "expects to have an .apk prepared: `android/app/build/outputs/apk/release/app-release.apk`"
+  desc "expects to have an .apk prepared: `android/result/app.apk`"
   desc "expects to have a saucelabs access key as SAUCE_ACCESS_KEY env variable"
   desc "expects to have a saucelabs username token as SAUCE_USERNAME env variable"
   desc "expects to have a saucelabs destination name as SAUCE_LABS_NAME env variable"
