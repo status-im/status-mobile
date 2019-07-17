@@ -224,8 +224,10 @@
                (not (:accounts/login db)))
           (create-account cofx)
 
-          :else {:db (assoc-in db [:intro-wizard :step]
-                               (inc-step step))})))
+          :else (fx/merge {:db (assoc-in db [:intro-wizard :step]
+                                         (inc-step step))}
+                          (when (= step :enable-fingerprint)
+                            (accounts.core/switch-biometric-auth (not skip?)))))))
 
 (fx/defn on-account-created
   [{:keys [signing-phrase
