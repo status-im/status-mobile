@@ -51,22 +51,31 @@
 (defonce search-input-state
   (reagent/atom {:show?  false
                  :height (animation/create-value
-                          (- styles/search-input-height))}))
+                          (- styles/search-input-height))
+                 :to-hide? false}))
 
 (defn show-search!
   []
-  (swap! search-input-state assoc :show? true)
-  (animation/start
-   (animation/timing (:height @search-input-state)
-                     {:toValue         0
-                      :duration        350
-                      :easing          (.out (animation/easing)
-                                             (.-quad (animation/easing)))
-                      :useNativeDriver true})))
+  (when-not (:to-hide? @search-input-state)
+    (swap! search-input-state assoc :show? true)
+    (animation/start
+     (animation/timing (:height @search-input-state)
+                       {:toValue         0
+                        :duration        350
+                        :easing          (.out (animation/easing)
+                                               (.-quad (animation/easing)))
+                        :useNativeDriver true})
+     #(swap! search-input-state assoc :to-hide? true))))
+
+(defn set-search-state-visible!
+  [visible?]
+  (swap! search-input-state assoc :show? visible?)
+  (swap! search-input-state assoc :to-hide? visible?)
+  (animation/set-value (:height @search-input-state)
+                       (if visible? 0 (- styles/search-input-height))))
 
 (defn reset-height []
-  (animation/set-value (:height @search-input-state)
-                       (- styles/search-input-height)))
+  (set-search-state-visible! false))
 
 (defn hide-search!
   []
@@ -79,24 +88,16 @@
                       :duration        350
                       :easing          (.in (animation/easing)
                                             (.-quad (animation/easing)))
-                      :useNativeDriver true})))
-
-(defn set-search-state-visible!
-  [visible?]
-  (swap! search-input-state assoc :show? visible?)
-  (animation/set-value (:height @search-input-state)
-                       (if visible?
-                         styles/search-input-height
-                         0)))
+                      :useNativeDriver true})
+   #(swap! search-input-state assoc :to-hide? false)))
 
 (defn search-input-wrapper
   [search-filter]
   (reagent/create-class
    {:component-will-unmount
-    #(set-search-state-visible! false)
+    #(set-search-state-visible! (:to-hide? @search-input-state))
     :component-did-mount
-    #(when search-filter
-       (set-search-state-visible! true))
+    #(set-search-state-visible! (:to-hide? @search-input-state))
     :reagent-render
     (fn [search-filter]
       [search-input search-filter

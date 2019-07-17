@@ -2,8 +2,7 @@
   (:require [status-im.ui.components.colors :as colors]))
 
 (def chat-view
-  {:flex             1
-   :background-color colors/white})
+  {:flex             1})
 
 (def toolbar-container
   {:flex           1
@@ -177,12 +176,6 @@
 (def add-contact-close-icon
   {:margin-right 12})
 
-(def message-view-preview
-  {:flex             1
-   :align-items      :center
-   :justify-content  :center
-   :background-color :white})
-
 (defn message-view-animated [opacity]
   {:opacity          opacity
    :flex             1
@@ -194,22 +187,6 @@
    :align-items      :center
    :padding-vertical 50
    :margin-right     6})
-
-#_(defn intro-header-container
-    [height status no-messages]
-    (let [adjusted-height (if (< height 280) 324 height)]
-      (if (or no-messages (= status (or :loading :empty)))
-        {:flex               1
-         :flex-direction     :column
-         :justify-content    :center
-         :align-items        :center
-         :height             adjusted-height
-         :padding-horizontal 32}
-        {:flex               1
-         :flex-direction     :column
-         :justify-content    :center
-         :align-items        :center
-         :padding-horizontal 32})))
 
 (defn intro-header-container
   [height status no-messages]

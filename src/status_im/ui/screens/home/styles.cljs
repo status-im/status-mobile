@@ -185,13 +185,15 @@
    :margin-horizontal 32
    :color             colors/gray})
 
-(def action-button-container
+(defn action-button-container [home-width]
   {:position    :absolute
+   :z-index     2
    :align-items :center
    :bottom      (+ tabs.styles/tabs-diff (cond
                                            platform/ios? 16
                                            platform/android? 0
                                            platform/desktop? 6))
+   :left        (- (/ home-width 2) 20)
    :width       40
    :height      40})
 

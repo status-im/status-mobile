@@ -49,27 +49,6 @@
   (list-selection/show {:title   chat-name
                         :options (actions/actions group-chat? chat-id public?)}))
 
-(defn chat-toolbar
-  [{:keys [chat-name group-chat chat-id contact]} public? modal?]
-  [react/view {:style {:z-index 100}}
-   [status-bar/status-bar (when modal? {:type :modal-white})]
-   [toolbar/toolbar
-    {:chat? true}
-    (if modal?
-      [toolbar/nav-button
-       (toolbar.actions/close toolbar.actions/default-handler)]
-      toolbar/nav-back-home)
-    [toolbar-content/toolbar-content-view]
-    (when-not modal?
-      [toolbar/actions
-       [{:icon      :main-icons/more
-         :icon-opts {:color               :black
-                     :accessibility-label :chat-menu-button}
-         :handler   #(on-options chat-id chat-name group-chat public?)}]])]
-   (when (and (not group-chat)
-              (not (contact.db/added? contact)))
-     [add-contact-bar chat-id])])
-
 (defmulti message-row
   (fn [{{:keys [type]} :row}] type))
 
@@ -90,7 +69,7 @@
 
 (def animation-duration 200)
 
-(defview messages-view-animation [message-view]
+(defview messages-view-animation [add-contact-bar message-view]
   ;; smooths out appearance of message-view
   (letsubs [opacity (animation/create-value 0)]
     {:component-did-mount (fn [_]
@@ -100,19 +79,11 @@
                               {:toValue         1
                                :duration        animation-duration
                                :useNativeDriver true})))}
-    [react/with-activity-indicator
-     {:style   style/message-view-preview
-      :preview [react/view style/message-view-preview]}
-     [react/touchable-without-feedback
-      {:on-press (fn [_]
-                   (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
-                                                                   :show-stickers? false}])
-                   (when-not platform/desktop?
-                     (react/dismiss-keyboard!)))}
-      (if platform/desktop?
-        message-view
-        [react/animated-view {:style (style/message-view-animated opacity)}
-         message-view])]]))
+    (if platform/desktop?
+      message-view
+      [react/animated-view {:style (style/message-view-animated opacity)}
+       add-contact-bar
+       message-view])))
 
 (defn tribute-to-talk-header
   [name]
@@ -354,8 +325,7 @@
                             :input-focused?    false}]))}
     (let [no-messages (empty? messages)
           flat-list-conf
-          {:style                     {:margin-bottom -35}
-           :data                      messages
+          {:data                      messages
            :ref                       #(reset! messages-list-ref %)
            :footer                    [chat-intro-header-container chat no-messages]
            :key-fn                    #(or (:message-id %) (:value %))
@@ -427,39 +397,52 @@
               :list-ref           messages-list-ref}]))]]])))
 
 (defview chat-root [modal?]
-  (letsubs [{:keys [public? chat-id show-input?] :as current-chat}
+  (letsubs [{:keys [public? chat-id chat-name show-input? group-chat contact] :as current-chat}
             [:chats/current-chat]
             current-chat-id       [:chats/current-chat-id]
             show-message-options? [:chats/current-chat-ui-prop :show-message-options?]
             show-stickers?        [:chats/current-chat-ui-prop :show-stickers?]
             two-pane-ui-enabled?  [:two-pane-ui-enabled?]
-            anim-translate-y      (animation/create-value (if two-pane-ui-enabled? 0 -35))]
-    ;; this check of current-chat-id is necessary only because in a fresh public chat creation sometimes
-    ;; this component renders before current-chat-id is set to current chat-id. Hence further down in sub
-    ;; components (e.g. chat-toolbar) there can be a brief visual inconsistancy like showing 'add contact'
-    ;; in public chat
-    (when (= chat-id current-chat-id)
-      [react/view {:style     style/chat-view
-                   :on-layout (fn [e]
-                                (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
-       ^{:key current-chat-id}
-       [chat-toolbar current-chat public? modal?]
-       (when-not two-pane-ui-enabled?
-         [connectivity/connectivity-view anim-translate-y])
-       [connectivity/connectivity-animation-wrapper
-        {}
-        anim-translate-y
-        [messages-view-animation
-         ;;TODO(kozieiev) : When FlatList in react-native-desktop become viable it should be used instead of optimized ScrollView for chat
-         (if platform/desktop?
-           [messages-view-desktop current-chat modal?]
-           [messages-view current-chat modal?])]]
-       (when show-input?
-         [input/container])
-       (when show-stickers?
-         [stickers/stickers-view])
-       (when show-message-options?
-         [message-options/view])])))
+            anim-translate-y      (animation/create-value
+                                   (if two-pane-ui-enabled? 0 connectivity/neg-connectivity-bar-height))]
+    [react/view {:style     style/chat-view
+                 :on-layout (fn [e]
+                              (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
+     ^{:key current-chat-id}
+     [status-bar/status-bar (when modal? {:type :modal-white})]
+     [toolbar/toolbar
+      {:chat? true
+       :style {:z-index 2}}
+      (if modal?
+        [toolbar/nav-button
+         (toolbar.actions/close toolbar.actions/default-handler)]
+        toolbar/nav-back-home)
+      [toolbar-content/toolbar-content-view]
+      (when-not modal?
+        [toolbar/actions
+         [{:icon      :main-icons/more
+           :icon-opts {:color               :black
+                       :accessibility-label :chat-menu-button}
+           :handler   #(on-options chat-id chat-name group-chat public?)}]])]
+     (when-not two-pane-ui-enabled?
+       [connectivity/connectivity-view anim-translate-y])
+     [connectivity/connectivity-animation-wrapper
+      {}
+      anim-translate-y
+      false
+      [messages-view-animation
+       (if (and (= chat-id current-chat-id) (not group-chat) (not (contact.db/added? contact)))
+         [add-contact-bar chat-id])
+       ;;TODO(kozieiev) : When FlatList in react-native-desktop become viable it should be used instead of optimized ScrollView for chat
+       (if platform/desktop?
+         [messages-view-desktop current-chat modal?]
+         [messages-view current-chat modal?])]]
+     (when show-input?
+       [input/container])
+     (when show-stickers?
+       [stickers/stickers-view])
+     (when show-message-options?
+       [message-options/view])]))
 
 (defview chat []
   [chat-root false])

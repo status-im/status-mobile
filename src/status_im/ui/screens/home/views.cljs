@@ -53,6 +53,7 @@
                                :label    (i18n/label :t/get-started)}]]])
 
 (defn home-empty-view []
+  (filter.views/reset-height)
   [react/view styles/no-chats
    [react/i18n-text {:style styles/no-chats-text :key :no-recent-chats}]
    [react/view {:align-items :center :margin-top 20}
@@ -62,14 +63,13 @@
 (defn home-items-view [_ _ _ search-input-state]
   (let [previous-touch      (reagent/atom nil)
         scrolling-from-top? (reagent/atom true)]
-    (filter.views/reset-height)
     (fn [search-filter chats all-home-items]
       (if (not-empty search-filter)
         [filter.views/home-filtered-items-list chats]
         [react/animated-view
          (merge {:style {:flex             1
-                         :margin-bottom    -35
                          :background-color :white
+                         :margin-bottom    (- styles/search-input-height)
                          :transform        [{:translateY (:height @search-input-state)}]}}
                 (when @scrolling-from-top?
                   {:on-start-should-set-responder-capture
@@ -86,13 +86,13 @@
                            current-timestamp (.-timestamp (.-nativeEvent event))
                            [previous-position previous-timestamp] @previous-touch]
                        (when (and previous-position
+                                  (not (:show? @search-input-state))
                                   (> 100 (- current-timestamp previous-timestamp))
                                   (< 10 (- current-position
                                            previous-position)))
                          (filter.views/show-search!)))
                      false)}))
-         [list/flat-list {:style          {:margin-bottom (- styles/search-input-height)}
-                          :data           all-home-items
+         [list/flat-list {:data           all-home-items
                           :key-fn         first
                           :footer         [react/view
                                            {:style {:height     tabs.styles/tabs-diff
@@ -105,13 +105,13 @@
                           :render-fn
                           (fn [home-item]
                             [inner-item/home-list-item home-item])}]
-         (when (:show? @search-input-state)
+         (when (:to-hide? @search-input-state)
            [react/view {:width  1
                         :height styles/search-input-height}])]))))
 
-(views/defview home-action-button []
+(views/defview home-action-button [home-width]
   (views/letsubs [logging-in? [:multiaccounts/login]]
-    [react/view styles/action-button-container
+    [react/view (styles/action-button-container home-width)
      [react/touchable-highlight {:accessibility-label :new-chat-button
                                  :on-press            (when-not logging-in? #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))}
       [react/view styles/action-button
@@ -122,7 +122,7 @@
 
 (views/defview home [loading?]
   (views/letsubs
-    [anim-translate-y (animation/create-value -35)
+    [anim-translate-y (animation/create-value connectivity/neg-connectivity-bar-height)
      {:keys [search-filter chats all-home-items]} [:home-items]
      window-width [:dimensions/window-width]
      two-pane-ui-enabled? [:two-pane-ui-enabled?]]
@@ -136,41 +136,36 @@
                          (when two-pane-ui-enabled?
                            {:border-right-width 1 :border-right-color colors/gray-light}))
        [status-bar/status-bar {:type :main}]
-       [react/keyboard-avoiding-view {:style     {:flex        1
-                                                  :align-items :center}
+       [react/keyboard-avoiding-view {:style     {:flex 1}
                                       :on-layout (fn [e]
                                                    (re-frame/dispatch
                                                     [:set-once :content-layout-height
                                                      (-> e .-nativeEvent .-layout .-height)]))}
-        [react/view {:style {:flex       1
-                             :align-self :stretch}}
-         [toolbar/toolbar nil nil [toolbar/content-title (i18n/label :t/chat)]]
-         [les-debug-info]
-         (cond loading?
-               [react/view {:style {:flex            1
-                                    :justify-content :center
-                                    :align-items     :center}}
-                [connectivity/connectivity-view anim-translate-y]
-                [connectivity/connectivity-animation-wrapper
-                 {}
-                 anim-translate-y
-                 [react/activity-indicator {:flex      1
-                                            :animating true}]]] :else
-               [react/view {:style {:flex 1}}
-                [connectivity/connectivity-view anim-translate-y]
-                [connectivity/connectivity-animation-wrapper
-                 {}
-                 anim-translate-y
-                 [filter.views/search-input-wrapper search-filter]
-                 (if (and (not search-filter)
-                          (empty? all-home-items))
-                   [home-empty-view]
-                   [home-items-view
-                    search-filter
-                    chats
-                    all-home-items
-                    filter.views/search-input-state])]])]
-        [home-action-button]]])))
+        [toolbar/toolbar {:style {:z-index 2}} nil [toolbar/content-title (i18n/label :t/chat)]]
+        ;; toolbar, connectivity-view, cannectivity-animation-wrapper are expected
+        ;; to be next to each other as siblings for them to work effctively.
+        ;; les-debug-info being here could disrupt that. Assuming its purpose is
+        ;; debug only, commenting it out for now.
+        ;; [les-debug-info]
+        [connectivity/connectivity-view anim-translate-y]
+        [connectivity/connectivity-animation-wrapper
+         {}
+         anim-translate-y
+         true
+         (if loading?
+           [react/activity-indicator {:flex      1
+                                      :animating true}]
+           [react/view {:flex 1}
+            [filter.views/search-input-wrapper search-filter]
+            (if (and (not search-filter)
+                     (empty? all-home-items))
+              [home-empty-view]
+              [home-items-view
+               search-filter
+               chats
+               all-home-items
+               filter.views/search-input-state])])]
+        [home-action-button home-width]]])))
 
 (views/defview home-wrapper []
   (views/letsubs [loading? [:chats/loading?]]

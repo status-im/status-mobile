@@ -4,9 +4,10 @@
             [status-im.utils.platform :as platform]))
 
 (defnstyle text-wrapper
-  [{:keys [window-width height background-color opacity]}]
+  [{:keys [window-width height background-color opacity transform]}]
   (cond-> {:flex-direction   :row
            :justify-content  :center
+           :transform        [{:translateY transform}]
            :opacity          opacity
            :background-color (or background-color colors/gray)
            :height           height}

@@ -166,7 +166,8 @@
                                 :on-error
                                 (fn [error]
                                   (log/error "can't remove a chat:" error))}]}
-              (navigation/navigate-to-cofx :home {}))
+              (when (not (= (:view-id db) :home))
+                (navigation/navigate-to-cofx :home {})))
     (fx/merge cofx
               (mailserver/remove-gaps chat-id)
               (mailserver/remove-range chat-id)
@@ -176,7 +177,8 @@
               ;; TODO: this is not accurate, if there's a pending contact
               ;; request it will not be sent anymore
               (transport.protocol/remove-chat chat-id)
-              (navigation/navigate-to-cofx :home {}))))
+              (when (not (= (:view-id db) :home))
+                (navigation/navigate-to-cofx :home {})))))
 
 (defn- unread-messages-number [chats]
   (apply + (map :unviewed-messages-count chats)))
