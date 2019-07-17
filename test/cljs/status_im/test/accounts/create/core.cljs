@@ -24,7 +24,7 @@
   (testing "Back from create-code"
     (let [db {:intro-wizard {:step :create-code :key-code "qwerty"}}
           result (get-in (models/intro-step-back {:db db}) [:db :intro-wizard])]
-      (is (= result  {:step :select-key-storage :key-code nil :weak-password? true}))))
+      (is (= result  {:step :choose-key :key-code nil :weak-password? true}))))
 
   (testing "Back from confirm-code"
     (let [db {:intro-wizard {:step :confirm-code :confirm-failure? true}}
@@ -37,7 +37,7 @@
           ;; In this case intro-step-forward returns fx/merge result which is an fn
           ;; to be invoked on cofx
           result (get-in ((models/intro-step-forward {:db db}) {:db db}) [:db :intro-wizard])]
-      (is (= result {:step :select-key-storage}))))
+      (is (= result {:step :create-code}))))
 
   (testing "Forward from generate-key"
     (let [db {:intro-wizard {:step :generate-key}}
