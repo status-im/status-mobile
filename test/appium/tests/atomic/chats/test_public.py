@@ -1,7 +1,7 @@
 import time
 from selenium.common.exceptions import TimeoutException
 from support.utilities import generate_timestamp
-from tests import marks
+from tests import marks, get_current_time
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 from datetime import datetime, timedelta
