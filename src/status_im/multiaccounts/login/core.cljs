@@ -3,6 +3,7 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.chaos-mode.core :as chaos-mode]
             [status-im.data-store.core :as data-store]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.fleet.core :as fleet]
@@ -146,6 +147,24 @@
                   (navigation/navigate-to-cofx :keycard-recovery-success nil)
                   (navigation/navigate-to-cofx :home nil))))))
 
+(fx/defn  initialize-dapp-permissions
+  {:events [::initialize-dapp-permissions]}
+  [{:keys [db]} all-dapp-permissions]
+  (let [dapp-permissions (reduce (fn [acc {:keys [dapp] :as dapp-permissions}]
+                                   (assoc acc dapp dapp-permissions))
+                                 {}
+                                 all-dapp-permissions)]
+    {:db (assoc db :dapps/permissions dapp-permissions)}))
+
+(fx/defn initialize-browsers
+  {:events [::initialize-browsers]}
+  [{:keys [db]} all-stored-browsers]
+  (let [browsers (reduce (fn [acc {:keys [browser-id] :as browser}]
+                           (assoc acc browser-id browser))
+                         {}
+                         all-stored-browsers)]
+    {:db (assoc db :browser/browsers browsers)}))
+
 (fx/defn user-login-callback
   {:events [:multiaccounts.login.callback/login-success]
    :interceptors [(re-frame/inject-cofx :web3/get-web3)
@@ -172,7 +191,11 @@
                                                 :card-read-in-progress?
                                                 :pin
                                                 :multiaccount))
-          :data-store/get-browsers nil
+          ::json-rpc/call
+          [{:method "browsers_getBrowsers"
+            :on-success #(re-frame/dispatch [::initialize-browsers %])}
+           {:method "permissions_getDappPermissions"
+            :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}]
           :web3/set-default-account [web3 address]
           :web3/fetch-node-version  [web3
                                      #(re-frame/dispatch

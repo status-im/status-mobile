@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.models :as chat-model]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.mailserver.core :as mailserver]
             [status-im.utils.config :as config]
             [status-im.utils.datetime :as time]
@@ -70,14 +71,14 @@
 (defn load-chats-from-rpc
   [cofx]
   (fx/merge cofx
-            {:json-rpc/call [{:method "status_chats"
-                              :params []
-                              :on-error
-                              #(log/error "can't retrieve chats list from status-go:" %)
-                              :on-success
-                              #(re-frame/dispatch
-                                [:chats-list/load-success
-                                 (unkeywordize-chat-names (:chats %))])}]}))
+            {::json-rpc/call [{:method "status_chats"
+                               :params []
+                               :on-error
+                               #(log/error "can't retrieve chats list from status-go:" %)
+                               :on-success
+                               #(re-frame/dispatch
+                                 [:chats-list/load-success
+                                  (unkeywordize-chat-names (:chats %))])}]}))
 
 (defn initialize-chats-legacy
   "Use realm + clojure to manage chats"

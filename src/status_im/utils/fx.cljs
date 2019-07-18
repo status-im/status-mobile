@@ -1,6 +1,7 @@
 (ns status-im.utils.fx
   (:require-macros status-im.utils.fx)
   (:require [clojure.set :as set]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [taoensso.timbre :as log])
   (:refer-clojure :exclude [merge]))
 
@@ -15,7 +16,7 @@
     :pairing/set-installation-metadata
     :shh/send-direct-message :shh/remove-filter
     :shh/generate-sym-key-from-password  :transport/confirm-messages-processed
-    :group-chats/extract-membership-signature :utils/dispatch-later :json-rpc/call})
+    :group-chats/extract-membership-signature :utils/dispatch-later ::json-rpc/call})
 
 (defn- safe-merge [fx new-fx]
   (if (:merging-fx-with-common-keys fx)

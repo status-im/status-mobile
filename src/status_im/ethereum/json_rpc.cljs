@@ -39,7 +39,10 @@
    "wallet_getTransfers" {}
    "browsers_getBrowsers" {}
    "browsers_addBrowser" {}
-   "browsers_deleteBrowser" {}})
+   "browsers_deleteBrowser" {}
+   "permissions_addDappPermissions" {}
+   "permissions_getDappPermissions" {}
+   "permissions_deleteDappPermissions" {}})
 
 (defn call
   [{:keys [method params on-success on-error]}]
@@ -92,7 +95,7 @@
 
 ;; effects
 (re-frame/reg-fx
- :json-rpc/call
+ ::call
  (fn [params]
    (doseq [param params]
      (call param))))

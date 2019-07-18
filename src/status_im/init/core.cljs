@@ -239,7 +239,6 @@
               (contact/load-contacts)
               #(when (dev-mode? %)
                  (models.dev-server/start))
-              (browser/initialize-dapp-permissions)
               (extensions.module/initialize)
               (stickers/init-stickers-packs)
               (multiaccounts.update/update-sign-in-time)

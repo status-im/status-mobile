@@ -1,7 +1,7 @@
 (ns status-im.browser.permissions
   (:require [status-im.constants :as constants]
-            [status-im.data-store.dapp-permissions :as dapp-permissions]
             [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.extensions.module :as extensions.module]
             [status-im.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
@@ -75,14 +75,18 @@
                                   (disj dapp-permissions-set permission))
         allowed-permissions     {:dapp        dapp-name
                                  :permissions (vec allowed-permissions-set)}]
-    {:db            (assoc-in db [:dapps/permissions dapp-name] allowed-permissions)
-     :data-store/tx [(dapp-permissions/save-dapp-permissions allowed-permissions)]}))
+    {:db (assoc-in db [:dapps/permissions dapp-name] allowed-permissions)
+     ::json-rpc/call [{:method "permissions_addDappPermissions"
+                       :params [allowed-permissions]
+                       :on-success #()}]}))
 
 (fx/defn revoke-dapp-permissions
   [{:keys [db] :as cofx} dapp]
   (fx/merge cofx
             {:db            (update-in db [:dapps/permissions] dissoc dapp)
-             :data-store/tx [(dapp-permissions/remove-dapp-permissions dapp)]}
+             ::json-rpc/call [{:method "permissions_deleteDappPermissions"
+                               :params [dapp]
+                               :on-success #()}]}
             (navigation/navigate-back)))
 
 (fx/defn process-next-permission

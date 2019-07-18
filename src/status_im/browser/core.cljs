@@ -3,9 +3,9 @@
             [re-frame.core :as re-frame]
             [status-im.browser.permissions :as browser.permissions]
             [status-im.constants :as constants]
-            [status-im.data-store.browser :as browser-store]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.resolver :as resolver]
             [status-im.i18n :as i18n]
             [status-im.js-dependencies :as js-dependencies]
@@ -22,11 +22,6 @@
             [status-im.utils.universal-links.core :as universal-links]
             [taoensso.timbre :as log]
             [status-im.signing.core :as signing]))
-
-(fx/defn  initialize-dapp-permissions
-  [{:keys [db all-dapp-permissions]}]
-  (let [dapp-permissions (into {} (map #(vector (:dapp %) %) all-dapp-permissions))]
-    {:db (assoc db :dapps/permissions dapp-permissions)}))
 
 (fx/defn update-browser-option
   [{:keys [db]} option-key option-value]
@@ -53,7 +48,9 @@
 (fx/defn remove-browser
   [{:keys [db]} browser-id]
   {:db            (update-in db [:browser/browsers] dissoc browser-id)
-   :data-store/delete-browser browser-id})
+   ::json-rpc/call [{:method "browsers_deleteBrowser"
+                     :params [browser-id]
+                     :on-success #()}]})
 
 (defn update-dapp-name [{:keys [name] :as browser}]
   (assoc browser :dapp? false :name (or name (i18n/label :t/browser))))
@@ -113,7 +110,9 @@
     {:db            (update-in db
                                [:browser/browsers browser-id]
                                merge updated-browser)
-     :data-store/save-browser updated-browser}))
+     ::json-rpc/call [{:method "browsers_addBrowser"
+                       :params [(select-keys updated-browser [:browser-id :timestamp :name :dapp? :history :history-index])]
+                       :on-success #()}]}))
 
 (defn can-go-back? [{:keys [history-index]}]
   (pos? history-index))

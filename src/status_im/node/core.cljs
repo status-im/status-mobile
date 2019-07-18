@@ -118,6 +118,7 @@
       :always
       (assoc :WalletConfig {:Enabled true}
              :BrowsersConfig {:Enabled true}
+             :PermissionsConfig {:Enabled true}
              :WhisperConfig           {:Enabled true
                                        :LightClient true
                                        :MinimumPoW 0.001

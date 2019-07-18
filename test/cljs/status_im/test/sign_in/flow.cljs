@@ -3,8 +3,9 @@
   flow has been changed. Such changes should be reflected in both these tests
   and documents which describe the whole \"sign in\" flow."
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.multiaccounts.login.core :as login.core]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.events :as events]
+            [status-im.multiaccounts.login.core :as login.core]
             [status-im.signals.core :as signals]
             [status-im.test.sign-in.data :as data]))
 
@@ -38,8 +39,6 @@
                   :web3                 :web3
                   :all-contacts         data/all-contacts
                   :all-installations    []
-                  :all-stored-browsers  []
-                  :all-dapp-permissions []
                   :get-all-stored-chats data/get-chats}
           efx    (events/multiaccount-change-success cofx [nil "address"])
           new-db (:db efx)]
@@ -183,7 +182,7 @@
           login-result "{\"error\":\"\"}"
           efx          (login.core/user-login-callback cofx login-result)
           new-db       (:db efx)
-          json-rpc     (into #{} (map :method (:json-rpc/call efx)))]
+          json-rpc-fx? (into #{} (map :method (::json-rpc/call efx)))]
       (testing ":multiaccounts/login cleared."
         (is (not (contains? new-db :multiaccounts/login))))
       (testing "Check messaging related effects."
@@ -198,8 +197,8 @@
       (testing "Check the rest of effects."
         (is (contains? efx :web3/set-default-account))
         (is (contains? efx :web3/fetch-node-version))
-        (is (json-rpc "net_version"))
-        (is (json-rpc "eth_syncing"))
+        (is (json-rpc-fx? "net_version"))
+        (is (json-rpc-fx? "eth_syncing"))
         (is (contains? efx :wallet/get-balance))
         (is (contains? efx :wallet/get-tokens-balance))
         (is (contains? efx :wallet/get-prices))))))

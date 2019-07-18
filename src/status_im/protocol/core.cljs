@@ -41,7 +41,7 @@
 (fx/defn check-sync-state
   [{:keys [db] :as cofx}]
   (if (:multiaccount db)
-    {:json-rpc/call
+    {::json-rpc/call
      [{:method "eth_syncing"
        :on-success
        (fn [sync]
@@ -72,7 +72,7 @@
                           :rpc-url constants/ethereum-rpc-url
                           :transport/chats transport
                           :mailserver/topics mailserver-topics)
-               :json-rpc/call
+               ::json-rpc/call
                [{:method "net_version"
                  :on-success
                  (fn [fetched-network-id]

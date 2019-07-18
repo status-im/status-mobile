@@ -8,7 +8,6 @@
             status-im.data-store.contacts
             status-im.data-store.installations
             status-im.data-store.transport
-            status-im.data-store.browser
             status-im.data-store.multiaccounts
             status-im.data-store.mailservers))
 
