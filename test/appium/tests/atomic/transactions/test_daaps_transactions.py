@@ -205,7 +205,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
             self.driver.fail('It seems onborading screen is not shown.')
         send_transaction_view.complete_onboarding()
 
-        if not send_transaction_view.sign_transaction_button.is_element_displayed():
+        if not send_transaction_view.sign_with_password.is_element_displayed():
             self.driver.fail('It seems transaction sign screen is not shown.')
 
         send_transaction_view.sign_transaction()

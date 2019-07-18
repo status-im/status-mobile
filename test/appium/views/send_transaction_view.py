@@ -130,6 +130,10 @@ class GasPriceInput(BaseEditBox):
         super(GasPriceInput, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("(//*[@text='Gas limit']/..//android.widget.EditText)[2]")
 
+    @property
+    def text(self):
+        return self.find_element().text
+
 
 class TotalFeeInput(BaseText):
     def __init__(self, driver):

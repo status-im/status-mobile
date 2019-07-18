@@ -108,7 +108,7 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
             if signin_view.access_key_button.is_element_displayed():
                 signin_view.access_key_button.click()
             recover_access_view.send_as_keyevent(phrase)
-            recover_access_view.password_input.click()
+            recover_access_view.recover_account_password_input.click()
 
             if not elm.is_element_displayed():
                 self.errors.append('"{}" message is not shown'.format(msg))
