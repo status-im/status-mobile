@@ -234,13 +234,13 @@
     {:label-kw  :t/chaos-mode
      :value     (:chaos-mode? settings)
      :action-fn #(re-frame/dispatch [:accounts.ui/chaos-mode-switched %])}]
-   (when dev-mode?
-     [profile.components/settings-item-separator]
-     [profile.components/settings-switch-item
-      {:label-kw  :t/biometric-auth-setting-label
-       :value     (:biometric-auth? settings)
-       :active?   (some? supported-biometric-auth)
-       :action-fn #(re-frame/dispatch [:accounts.ui/biometric-auth-switched %])}])])
+   #_(when dev-mode?
+       [profile.components/settings-item-separator]
+       [profile.components/settings-switch-item
+        {:label-kw  :t/biometric-auth-setting-label
+         :value     (:biometric-auth? settings)
+         :active?   (some? supported-biometric-auth)
+         :action-fn #(re-frame/dispatch [:accounts.ui/biometric-auth-switched %])}])])
 
 (defview advanced [params on-show]
   (letsubs [advanced? [:my-profile/advanced?]
