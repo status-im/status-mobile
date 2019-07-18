@@ -17,14 +17,14 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5305)
     @marks.critical
-    @marks.skip  # re-enable after 8234 for new onboarding merged
     def test_text_message_1_1_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_1 = 'user_%s' % get_current_time()
-        device_1_home, device_2_home = device_1.create_user(username=username_1), device_2.create_user()
+        device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
         profile_1 = device_1_home.profile_button.click()
-        default_username_1 = profile_1.default_username_text.text
+        # default_username_1 = profile_1.default_username_text.text
+        profile_1.edit_profile_username(username_1)
         device_1_home = profile_1.get_back_to_home_view()
         device_2_public_key = device_2_home.get_public_key()
         device_2_home.home_button.click()
@@ -35,7 +35,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_chat.chat_message_input.send_keys(message)
         device_1_chat.send_message_button.click()
 
-        device_2_chat = device_2_home.get_chat_with_user(default_username_1).click()
+        device_2_chat = device_2_home.get_chat_with_user(username_1).click()
         device_2_chat.chat_element_by_text(message).wait_for_visibility_of_element()
 
     @marks.testrail_id(5310)
