@@ -52,7 +52,7 @@
 (fx/defn remove-browser
   [{:keys [db]} browser-id]
   {:db            (update-in db [:browser/browsers] dissoc browser-id)
-   :data-store/tx [(browser-store/remove-browser-tx browser-id)]})
+   :data-store/delete-browser browser-id})
 
 (defn update-dapp-name [{:keys [name] :as browser}]
   (assoc browser :dapp? false :name (or name (i18n/label :t/browser))))
@@ -112,7 +112,7 @@
     {:db            (update-in db
                                [:browser/browsers browser-id]
                                merge updated-browser)
-     :data-store/tx [(browser-store/save-browser-tx updated-browser)]}))
+     :data-store/save-browser updated-browser}))
 
 (defn can-go-back? [{:keys [history-index]}]
   (pos? history-index))
