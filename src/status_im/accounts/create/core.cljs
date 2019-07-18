@@ -46,9 +46,11 @@
 (defn inc-step [step]
   (let [inverted  (map-invert step-kw-to-num)]
     ; Skip select-key-storage step
-    (if (= step :choose-key)
-      :create-code
-      (inverted (inc (step-kw-to-num step))))))
+    (cond (= step :choose-key)
+          :create-code
+          (= step :confirm-code)
+          :enable-notifications
+          :else (inverted (inc (step-kw-to-num step))))))
 
 (defn get-status [cofx]
   (assoc cofx :status (rand-nth statuses/data)))
