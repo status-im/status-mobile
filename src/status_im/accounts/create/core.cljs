@@ -38,17 +38,11 @@
 
 (defn dec-step [step]
   (let [inverted  (map-invert step-kw-to-num)]
-    ; Skip select-key-storage step
-    (if (= step :create-code)
-      :choose-key
-      (inverted (dec (step-kw-to-num step))))))
+    (inverted (dec (step-kw-to-num step)))))
 
 (defn inc-step [step]
   (let [inverted  (map-invert step-kw-to-num)]
-    ; Skip select-key-storage step
-    (if (= step :choose-key)
-      :create-code
-      (inverted (inc (step-kw-to-num step))))))
+    (inverted (inc (step-kw-to-num step)))))
 
 (defn get-status [cofx]
   (assoc cofx :status (rand-nth statuses/data)))
