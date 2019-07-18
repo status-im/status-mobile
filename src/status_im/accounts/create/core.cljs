@@ -227,7 +227,7 @@
           :else (fx/merge {:db (assoc-in db [:intro-wizard :step]
                                          (inc-step step))}
                           (when (= step :enable-fingerprint)
-                            (accounts.core/switch-biometric-auth (not skip?)))))))
+                            {:dispatch [:accounts.ui/biometric-auth-switched (not skip?)]})))))
 
 (fx/defn on-account-created
   [{:keys [signing-phrase
