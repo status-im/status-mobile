@@ -27,17 +27,17 @@ in buildGoPackage rec {
   patches = [ ./ndk-search-path.patch ./resolve-nix-android-sdk.patch ]
     ++ optional isDarwin ./ignore-nullability-error-on-ios.patch;
 
-  postPatch =
-    optionalString platform.targetAndroid ''
-    substituteInPlace cmd/gomobile/install.go --replace "\`adb\`" "\`${platform-tools}/bin/adb\`"
-    '' + ''
-    WORK=$NIX_BUILD_TOP/gomobile-work
-
+  postPatch = ''
+    ${optionalString platform.targetAndroid ''substituteInPlace cmd/gomobile/install.go --replace "\`adb\`" "\`${platform-tools}/bin/adb\`"''}
+    
     # Prevent a non-deterministic temporary directory from polluting the resulting object files
     substituteInPlace cmd/gomobile/env.go --replace \
       'tmpdir, err = ioutil.TempDir("", "gomobile-work-")' \
-      "tmpdir = \"$WORK\"" \
+      "tmpdir = \"$NIX_BUILD_TOP/gomobile-work\"" \
       --replace '"io/ioutil"' ""
+    substituteInPlace cmd/gomobile/init.go --replace \
+      'tmpdir, err = ioutil.TempDir(gomobilepath, "work-")' \
+      "tmpdir = \"$NIX_BUILD_TOP/work\""
 
     echo "Creating $dev"
     mkdir -p $dev/src/$goPackagePath
@@ -46,10 +46,7 @@ in buildGoPackage rec {
   '';
 
   preBuild = ''
-    mkdir $WORK
-  '';
-  postBuild = ''
-    rm -rf $WORK
+    mkdir $NIX_BUILD_TOP/gomobile-work $NIX_BUILD_TOP/work
   '';
 
   postInstall =
@@ -59,14 +56,14 @@ in buildGoPackage rec {
     mkdir -p $out $bin/lib
 
     ln -s ${ncurses5}/lib/libncursesw.so.5 $bin/lib/libtinfo.so.5
-  '' + (if isDarwin then ''
+    ${if isDarwin then ''
     wrapProgram $bin/bin/gomobile \
       --prefix "PATH" : "${makeBinPath [ xcodeWrapper ]}" \
       --prefix "LD_LIBRARY_PATH" : "${makeLibraryPath [ ncurses5 zlib ]}:$bin/lib"
   '' else ''
     wrapProgram $bin/bin/gomobile \
       --prefix "LD_LIBRARY_PATH" : "${makeLibraryPath [ ncurses5 zlib ]}:$bin/lib"
-  '') + ''
+  ''}
     $bin/bin/gomobile init
   '';
 

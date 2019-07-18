@@ -20,19 +20,22 @@ let
 
     buildMessage = "Building mobile library for ${targetConfig.name}";
     # Build mobile libraries
-    buildPhase = ''
-      mkdir $NIX_BUILD_TOP/go-build
+    buildPhase =
+      let
+        NIX_GOWORKDIR = "$NIX_BUILD_TOP/go-build";
+      in ''
+      mkdir ${NIX_GOWORKDIR}
 
       GOPATH=${gomobile.dev}:$GOPATH \
       PATH=${makeBinPath [ gomobile.bin ]}:$PATH \
+      NIX_GOWORKDIR=${NIX_GOWORKDIR} \
       ${concatStringsSep " " targetConfig.envVars} \
-      NIX_GOWORKDIR=$NIX_BUILD_TOP/go-build \
       gomobile bind ${goBuildFlags} -target=${targetConfig.name} ${concatStringsSep " " targetConfig.gomobileExtraFlags} \
                     -o ${targetConfig.outputFileName} \
                     ${goBuildLdFlags} \
                     ${goPackagePath}/mobile
 
-      rm -rf $NIX_BUILD_TOP/go-build
+      rm -rf ${NIX_GOWORKDIR}
     '';
 
     installPhase = ''
