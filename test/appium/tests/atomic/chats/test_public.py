@@ -32,7 +32,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_1.chat_message_input.send_keys(message)
         chat_1.send_message_button.click()
 
-        chat_2.verify_message_is_under_today_text(message, self.errors)
+        # chat_2.verify_message_is_under_today_text(message, self.errors)
         # TODO: should be replaced with ens name after https://github.com/status-im/status-react/pull/8487
         # full_username = '%s • %s' % (username_1, default_username_1)
         if chat_2.chat_element_by_text(message).username.text != default_username_1:

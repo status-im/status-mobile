@@ -21,8 +21,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
     def test_text_message_1_1_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        username_1 = 'user_%s' % get_current_time()
-        device_1_home, device_2_home = device_1.create_user(username=username_1), device_2.create_user()
+        device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
         profile_1 = device_1_home.profile_button.click()
         default_username_1 = profile_1.default_username_text.text
         device_1_home = profile_1.get_back_to_home_view()
@@ -159,8 +158,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_1, username_2 = 'user_1', 'user_2'
 
-        device_1_home, device_2_home = device_1.create_user(username=username_1), device_2.create_user(
-            username=username_2)
+        device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
         profile_1 = device_1_home.profile_button.click()
         default_username_1 = profile_1.default_username_text.text
         device_1_home = profile_1.get_back_to_home_view()
@@ -206,7 +204,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_1, username_2 = 'user_1', 'user_2'
 
-        home_1, home_2 = device_1.create_user(username=username_1), device_2.create_user(username=username_2)
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
         profile_1 = home_1.profile_button.click()
         default_username_1 = profile_1.default_username_text.text
         home_1 = profile_1.get_back_to_home_view()
@@ -291,7 +289,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_2 = 'user_%s' % get_current_time()
-        device_1_home, device_2_home = device_1.create_user(), device_2.create_user(username=username_2)
+        device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
         profile_2 = device_2_home.profile_button.click()
         default_username_2 = profile_2.default_username_text.text
         device_2_home = profile_2.get_back_to_home_view()
@@ -326,8 +324,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
     def test_bold_and_italic_text_in_messages(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        username_2 = 'user_%s' % get_current_time()
-        device_1_home, device_2_home = sign_in_1.create_user(), sign_in_2.create_user(username=username_2)
+        device_1_home, device_2_home = sign_in_1.create_user(), sign_in_2.create_user()
         profile_2 = device_2_home.profile_button.click()
         default_username_2 = profile_2.default_username_text.text
         device_2_home = profile_2.get_back_to_home_view()
@@ -337,22 +334,24 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2_chat = device_2_home.add_contact(device_1_public_key)
 
         bold_text = 'bold text'
+        bold_text_expected = u'\u200b' + bold_text + u'\u200b'  # Zero width whitespaces
         device_2_chat.chat_message_input.send_keys('*%s*' % bold_text)
         device_2_chat.send_message_button.click()
-        if not device_2_chat.chat_element_by_text(bold_text).is_element_displayed():
+        if not device_2_chat.chat_element_by_text(bold_text_expected).is_element_displayed():
             self.errors.append('Bold text is not displayed in 1-1 chat for the sender \n')
 
         device_1_chat = device_1_home.get_chat_with_user(default_username_2).click()
-        if not device_1_chat.chat_element_by_text(bold_text).is_element_displayed():
+        if not device_1_chat.chat_element_by_text(bold_text_expected).is_element_displayed():
             self.errors.append('Bold text is not displayed in 1-1 chat for the recipient \n')
 
         italic_text = 'italic text'
+        italic_text_expected = u'\u200b' + italic_text + u'\u200b'
         device_2_chat.chat_message_input.send_keys('_%s_' % italic_text)
         device_2_chat.send_message_button.click()
-        if not device_2_chat.chat_element_by_text(italic_text).is_element_displayed():
+        if not device_2_chat.chat_element_by_text(italic_text_expected).is_element_displayed():
             self.errors.append('Italic text is not displayed in 1-1 chat for the sender \n')
 
-        if not device_1_chat.chat_element_by_text(italic_text).is_element_displayed():
+        if not device_1_chat.chat_element_by_text(italic_text_expected).is_element_displayed():
             self.errors.append('Italic text is not displayed in 1-1 chat for the recipient \n')
 
         device_1_chat.get_back_to_home_view()
@@ -363,18 +362,18 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_2_chat.chat_message_input.send_keys('*%s*' % bold_text)
         device_2_chat.send_message_button.click()
-        if not device_2_chat.chat_element_by_text(bold_text).is_element_displayed():
+        if not device_2_chat.chat_element_by_text(bold_text_expected).is_element_displayed():
             self.errors.append('Bold text is not displayed in public chat for the sender')
 
-        if not device_1_chat.chat_element_by_text(bold_text).is_element_displayed():
+        if not device_1_chat.chat_element_by_text(bold_text_expected).is_element_displayed():
             self.errors.append('Bold text is not displayed in public chat for the recipient')
 
         device_2_chat.chat_message_input.send_keys('_%s_' % italic_text)
         device_2_chat.send_message_button.click()
-        if not device_2_chat.chat_element_by_text(italic_text).is_element_displayed():
+        if not device_2_chat.chat_element_by_text(italic_text_expected).is_element_displayed():
             self.errors.append('Italic text is not displayed in public chat for the sender')
 
-        if not device_1_chat.chat_element_by_text(italic_text).is_element_displayed():
+        if not device_1_chat.chat_element_by_text(italic_text_expected).is_element_displayed():
             self.errors.append('Italic text is not displayed in 1-1 chat for the recipient')
 
         self.verify_no_errors()

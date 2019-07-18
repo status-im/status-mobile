@@ -369,7 +369,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         gas_limit = '1005000'
         send_transaction.gas_limit_input.set_value(gas_limit)
         send_transaction.gas_price_input.clear()
-        gas_price = '24'
+        gas_price = str(round(float(send_transaction.gas_price_input.text)) + 10)
         send_transaction.gas_price_input.set_value(gas_price)
         send_transaction.update_fee_button.click()
         send_transaction.sign_transaction()

@@ -102,7 +102,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         gas_limit = '25000'
         send_transaction_view.gas_limit_input.clear()
         send_transaction_view.gas_limit_input.set_value(gas_limit)
-        gas_price = '1'
+        gas_price = str(round(float(send_transaction_view.gas_price_input.text)) + 10)
         send_transaction_view.gas_price_input.clear()
         send_transaction_view.gas_price_input.set_value(gas_price)
         if send_transaction_view.total_fee_input.text != '%s ETHro' % (d(gas_limit) * d(gas_price) / d(1000000000)):
@@ -384,9 +384,9 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
 
         # if not send_transaction_view.element_by_text(recipient['username']).is_element_displayed():
         #     self.errors.append('Recipient name is not shown')
-        if not send_transaction_view.element_by_text('ETHro').is_element_displayed():
+        if not send_transaction_view.element_by_text_part('ETHro').is_element_displayed():
             self.errors.append("Asset field doesn't contain 'ETHro' text")
-        if not send_transaction_view.element_by_text(amount).is_element_displayed():
+        if not send_transaction_view.element_by_text_part(amount).is_element_displayed():
             self.errors.append('Amount is not visible')
         self.verify_no_errors()
 
