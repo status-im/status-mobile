@@ -15,7 +15,8 @@
    [status-im.ui.components.icons.vector-icons :as vector-icons]
    [status-im.ui.components.radio :as radio]
    [status-im.ui.components.icons.vector-icons :as icons]
-   [reagent.core :as reagent])
+   [reagent.core :as reagent]
+   [status-im.ui.screens.announcements.views :as announcements])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn list-item [{:keys [browser-id name url]}]
@@ -92,7 +93,7 @@
                         :style               styles/input
                         :accessibility-label :dapp-url-input
                         :return-key-type     :go}]
-     [components/separator]
+     [announcements/public-launch-banner {:margin-bottom 8}]
      (if (empty? browsers)
        [list-header true]
        [react/scroll-view

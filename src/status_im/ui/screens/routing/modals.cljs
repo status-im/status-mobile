@@ -27,4 +27,5 @@
    :wallet-transaction-fee
    :wallet-transactions-filter
    :profile-qr-viewer
+   :public-launch-announcement
    :welcome])
