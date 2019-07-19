@@ -16,7 +16,8 @@
             [status-im.ui.components.bottom-bar.styles :as tabs.styles]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.list-selection :as list-selection])
+            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.screens.announcements.views :as announcements])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview les-debug-info []
@@ -52,10 +53,16 @@
 
 (defn home-empty-view []
   [react/view styles/no-chats
-   [react/i18n-text {:style styles/no-chats-text :key :no-recent-chats}]
-   [react/view {:align-items :center :margin-top 20}
-    [components.common/button {:on-press #(list-selection/open-share {:message (i18n/label :t/get-status-at)})
-                               :label    (i18n/label :t/invite-friends)}]]])
+   [announcements/public-launch-banner {}]
+   [react/view {:flex               1
+                :align-items        :center
+                :justify-content    :center
+                :padding-horizontal 34
+                :align-self         :stretch}
+    [react/i18n-text {:style styles/no-chats-text :key :no-recent-chats}]
+    [react/view {:align-items :center :margin-top 20}
+     [components.common/button {:on-press #(list-selection/open-share {:message (i18n/label :t/get-status-at)})
+                                :label    (i18n/label :t/invite-friends)}]]]])
 
 (defn home-items-view [_ _ _]
   (let [previous-touch      (reagent/atom nil)
@@ -86,6 +93,7 @@
                                            previous-position)))
                          (filter.views/show-search!)))
                      false)}))
+         [announcements/public-launch-banner {}]
          [list/flat-list {:data           all-home-items
                           :key-fn         first
                           :footer         [react/view

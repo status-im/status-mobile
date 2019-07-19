@@ -56,6 +56,7 @@
     :wallet                          {:type :wallet-tab}
     :wallet-stack                    {:type :wallet-tab}
     :profile-qr-viewer               {:type :modal-white}
+    :public-launch-announcement      {:type :modal-white}
     :recipient-qr-code               {:type :transparent}
     :wallet-send-assets              {:type :wallet}
     :wallet-request-assets           {:type :wallet}

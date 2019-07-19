@@ -110,6 +110,7 @@
 (defn default-account-settings []
   {:web3-opt-in? true
    :preview-privacy? false
+   :show-public-launch-banner? true
    :wallet       {:visible-tokens {:testnet #{:STT :HND}
                                    :mainnet #{:SNT}
                                    :rinkeby #{:MOKSHA :KDO}

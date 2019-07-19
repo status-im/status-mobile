@@ -2126,3 +2126,14 @@
  :shake-event
  (fn [cofx _]
    (logging/show-logs-dialog cofx)))
+
+(handlers/register-handler-fx
+ :announcements.ui/banner-close-button-pressed
+ (fn [{:keys [db] :as cofx} _]
+   (let [settings (get-in db [:account/account :settings])]
+     (accounts.update/update-settings cofx (assoc settings :show-public-launch-banner? false) {}))))
+
+(handlers/register-handler-fx
+ :browser.ui/open-url
+ (fn [cofx [_ url]]
+   (browser/open-url cofx url)))

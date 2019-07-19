@@ -78,7 +78,8 @@
              :as
              transaction-sent]
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
-            [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]))
+            [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
+            [status-im.ui.screens.announcements.views :as announcements]))
 
 (def all-screens
   {:login                            login/login
@@ -175,7 +176,8 @@
    :reset-card                       hardwallet.settings/reset-card
    :keycard-settings                 hardwallet.settings/keycard-settings
    :mobile-network-settings          mobile-network-settings/mobile-network-settings
-   :welcome                          [:modal home/welcome]})
+   :welcome                          [:modal home/welcome]
+   :public-launch-announcement       [:modal announcements/public-launch-announcement]})
 
 (defn get-screen [screen]
   (get all-screens screen #(throw (str "Screen " screen " is not defined."))))
