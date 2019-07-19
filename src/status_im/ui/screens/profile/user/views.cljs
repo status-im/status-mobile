@@ -25,7 +25,8 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.biometric-auth.core :as biometric-auth]
-            [status-im.utils.utils :as utils])
+            [status-im.utils.utils :as utils]
+            [status-im.ui.screens.announcements.views :as announcements])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn my-profile-toolbar []
@@ -352,6 +353,7 @@
                                     (profile-icon-options-ext)
                                     profile-icon-options)
             :on-change-text-event :my-profile/update-name}]]
+         [announcements/public-launch-banner {:margin-bottom 8}]
          [share-profile-item (dissoc current-account :mnemonic)]
          [ens-item preferred-name {:registrar stateofus-registrar}]
          [contacts-list-item active-contacts-count]

@@ -93,6 +93,7 @@
    :desktop-notifications?               false
    :settings                             {:web3-opt-in? true
                                           :preview-privacy? true
+                                          :show-public-launch-banner? true
                                           :fleet        :eth.beta
                                           :wallet       {:visible-tokens {:testnet #{:STT
                                                                                      :HND}

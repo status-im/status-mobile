@@ -35,7 +35,7 @@
 
 (def privacy-container
   {:margin-horizontal 16
-   :margin-top        8
+   :margin-vertical   8
    :border-color      colors/gray-lighter
    :border-width      1
    :border-radius     12
