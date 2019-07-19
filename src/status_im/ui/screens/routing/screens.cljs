@@ -62,7 +62,8 @@
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
             [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
             [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
-            [status-im.ui.screens.wallet.account.views :as wallet.account]))
+            [status-im.ui.screens.wallet.account.views :as wallet.account]
+            [status-im.ui.screens.announcements.views :as announcements]))
 
 (def all-screens
   {:login                                            login/login
@@ -105,6 +106,7 @@
    :new-chat                                         new-chat/new-chat
    :qr-scanner                                       qr-scanner/qr-scanner
    :profile-qr-viewer                                [:modal profile.user/qr-viewer]
+   :public-launch-announcement                       [:modal announcements/public-launch-announcement]
    :take-picture                                     extensions.module/take-picture-view
    :extension-screen-holder                          extensions.module/screen-holder-view
    :new-group                                        group/new-group

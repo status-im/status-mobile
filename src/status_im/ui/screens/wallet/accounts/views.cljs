@@ -16,7 +16,8 @@
             [re-frame.core :as re-frame]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ui.screens.wallet.accounts.styles :as styles]))
+            [status-im.ui.screens.wallet.accounts.styles :as styles]
+            [status-im.ui.screens.announcements.views :as announcements]))
 
 (def state (reagent/atom {:tab :assets}))
 
@@ -161,6 +162,7 @@
     [accounts-options]
     [react/view {:margin-top 8 :padding-horizontal 16}
      [total-value]
+     [announcements/public-launch-banner {:margin-horizontal -16 :margin-top 16}]
      [react/scroll-view {:horizontal true}
       [react/view {:flex-direction :row :padding-top 11 :padding-bottom 12}
        [account-card "Status account"]]]]

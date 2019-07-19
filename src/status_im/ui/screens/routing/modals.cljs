@@ -10,5 +10,6 @@
    :selection-modal-screen
    :wallet-transactions-filter
    :profile-qr-viewer
+   :public-launch-announcement
    :welcome
    :keycard-welcome])

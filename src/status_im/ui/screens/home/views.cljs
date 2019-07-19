@@ -18,7 +18,8 @@
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.animation :as animation]
             [status-im.constants :as constants]
-            [status-im.ui.components.colors :as colors])
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.screens.announcements.views :as announcements])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview les-debug-info []
@@ -54,10 +55,16 @@
 
 (defn home-empty-view []
   [react/view styles/no-chats
-   [react/i18n-text {:style styles/no-chats-text :key :no-recent-chats}]
-   [react/view {:align-items :center :margin-top 20}
-    [components.common/button {:on-press #(list-selection/open-share {:message (i18n/label :t/get-status-at)})
-                               :label    (i18n/label :t/invite-friends)}]]])
+   [announcements/public-launch-banner {}]
+   [react/view {:flex               1
+                :align-items        :center
+                :justify-content    :center
+                :padding-horizontal 34
+                :align-self         :stretch}
+    [react/i18n-text {:style styles/no-chats-text :key :no-recent-chats}]
+    [react/view {:align-items :center :margin-top 20}
+     [components.common/button {:on-press #(list-selection/open-share {:message (i18n/label :t/get-status-at)})
+                                :label    (i18n/label :t/invite-friends)}]]]])
 
 (defn home-items-view [_ _ _ search-input-state]
   (let [previous-touch      (reagent/atom nil)
@@ -91,6 +98,7 @@
                                            previous-position)))
                          (filter.views/show-search!)))
                      false)}))
+         [announcements/public-launch-banner {}]
          [list/flat-list {:style          {:margin-bottom (- styles/search-input-height)}
                           :data           all-home-items
                           :key-fn         first
