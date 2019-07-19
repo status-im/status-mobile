@@ -11,12 +11,15 @@
 with stdenv;
 
 let
+  inherit (stdenv.lib) strings;
+
   removeReferences = [ go ];
   removeExpr = refs: ''remove-references-to ${lib.concatMapStrings (ref: " -t ${ref}") refs}'';
 
   args = removeAttrs args' [ "buildMessage" ]; # Remove our arguments from args before passing them on to buildGoPackage
   buildStatusGo = buildGoPackage (args // {
-    name = "${repo}-${version}-${host}";
+    pname = repo;
+    version = "${version}-${strings.substring 0 7 rev}-${host}";
 
     nativeBuildInputs = 
       nativeBuildInputs ++
@@ -74,6 +77,10 @@ let
       find $out -type f -exec ${removeExpr removeReferences} '{}' + || true
       return
     '';
+
+    passthru = {
+      inherit owner version rev;
+    };
 
     meta = {
       # Add default meta information

@@ -3,20 +3,21 @@
   androidPkgs, xcodeWrapper }:
 
 let
-  inherit (stdenv.lib) catAttrs concatStrings fileContents last makeBinPath optional optionalString splitString;
+  inherit (stdenv.lib) catAttrs concatStrings fileContents importJSON makeBinPath optional optionalString strings;
   platform = callPackage ../platform.nix { inherit target-os; };
   utils = callPackage ../utils.nix { inherit xcodeWrapper; };
   gomobile = callPackage ./gomobile { inherit (androidPkgs) platform-tools; inherit target-os xcodeWrapper utils buildGoPackage; };
   buildStatusGoDesktopLib = callPackage ./build-desktop-status-go.nix { inherit buildGoPackage go xcodeWrapper utils; };
   buildStatusGoMobileLib = callPackage ./build-mobile-status-go.nix { inherit buildGoPackage go gomobile xcodeWrapper utils; };
-  extractStatusGoConfig = f: last (splitString "\n" (fileContents f));
-  owner = fileContents ../../STATUS_GO_OWNER;
-  version = extractStatusGoConfig ../../STATUS_GO_VERSION; # TODO: Simplify this path search with lib.locateDominatingFile
-  sha256 = extractStatusGoConfig ../../STATUS_GO_SHA256;
+  extractStatusGoConfig = callPackage ./extract-status-go-config.nix { inherit (stdenv) lib; };
+  versionJSON = importJSON ../../status-go-version.json; # TODO: Simplify this path search with lib.locateDominatingFile
+  owner = versionJSON.owner;
+  version = versionJSON.version;
+  sha256 = versionJSON.src-sha256;
   repo = "status-go";
-  rev = version;
+  rev = versionJSON.commit-sha1;
   goPackagePath = "github.com/${owner}/${repo}";
-  src = fetchFromGitHub { inherit rev owner repo sha256; name = "${repo}-source"; };
+  src = fetchFromGitHub { inherit rev owner repo sha256; name = "${repo}-${strings.substring 0 7 rev}-source"; };
 
   mobileConfigs = {
     android = {

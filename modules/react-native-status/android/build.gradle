@@ -1,8 +1,13 @@
 apply plugin: 'com.android.library'
 
 def getStatusGoVersion = { ->
-    version = new File('../STATUS_GO_VERSION').text
-    return version.tokenize('\n').last().replaceAll("\\s","")
+    def jsonSlurper = new groovy.json.JsonSlurper()
+    def content = new File('../status-go-version.json').text
+    def object = jsonSlurper.parseText(content)
+
+    assert object instanceof Map
+
+    return object.version
 }
 
 android {

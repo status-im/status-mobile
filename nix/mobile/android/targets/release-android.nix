@@ -38,7 +38,7 @@ in stdenv.mkDerivation {
             "resources"
           ];
           dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ".gradle" "build" "intermediates" "libs" "obj" ];
-          filesToInclude = [ envFileName "STATUS_GO_VERSION" "VERSION" ];
+          filesToInclude = [ envFileName "status-go-version.json" "VERSION" ];
           root = path;
         };
     };

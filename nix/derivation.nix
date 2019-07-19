@@ -17,7 +17,7 @@ let
   baseGo = pkgs.go_1_11;
   go = pkgs.callPackage ./patched-go { inherit baseGo; };
   buildGoPackage = pkgs.buildGoPackage.override { inherit go; };
-  desktop = pkgs.callPackage ./desktop { inherit target-os stdenv status-go pkgs nodejs; inherit (pkgs) darwin; go = baseGo; };
+  desktop = pkgs.callPackage ./desktop { inherit target-os stdenv status-go pkgs go nodejs; inherit (pkgs) darwin; };
   mobile = pkgs.callPackage ./mobile { inherit target-os config stdenv pkgs mkShell nodejs yarn status-go maven localMavenRepoBuilder mkFilter prod-build-fn; inherit (pkgs.xcodeenv) composeXcodeWrapper; };
   status-go = pkgs.callPackage ./status-go { inherit target-os go buildGoPackage; inherit (mobile.ios) xcodeWrapper; androidPkgs = mobile.android.androidComposition; };
   # mkFilter is a function that allows filtering a directory structure (used for filtering source files being captured in a closure)
