@@ -23,22 +23,21 @@
 (defn total-tilde [value]
   (when (and (not= "0" value) (not= "..." value)) "~"))
 
-(views/defview account-card [name]
+(views/defview account-card [{:keys [name color address] :as account}]
   (views/letsubs [currency        [:wallet/currency]
-                  portfolio-value [:portfolio-value]
-                  {:keys [address]} [:multiaccount]]
-    [react/touchable-highlight {:on-press      #(re-frame/dispatch [:navigate-to :wallet-account])
+                  portfolio-value [:portfolio-value]]
+    [react/touchable-highlight {:on-press      #(re-frame/dispatch [:navigate-to :wallet-account account])
                                 :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                    {:content        sheets/send-receive
+                                                                    {:content        (fn [] [sheets/send-receive address])
                                                                      :content-height 130}])}
-     [react/view {:style styles/card}
+     [react/view {:style (styles/card color)}
       [react/view {:flex-direction :row :align-items :center :justify-content :space-between}
        [react/nested-text {:style {:color colors/white-transparent :font-weight "500"}}
         (total-tilde portfolio-value)
         [{:style {:color colors/white}} portfolio-value]
         " "
         (:code currency)]
-       [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-popover {:view :share-account}])}
+       [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-popover {:view :share-account :address address}])}
         [icons/icon :main-icons/share {:color colors/white}]]]
       [react/view
        [react/text {:style {:color colors/white :font-weight "500" :line-height 22}} name]
@@ -46,7 +45,7 @@
                     :style {:line-height 22 :font-size 13
                             :font-family "monospace"
                             :color (colors/alpha colors/white 0.7)}}
-        (ethereum/normalized-address address)]]]]))
+        address]]]]))
 
 (defn add-card []
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
@@ -154,6 +153,15 @@
                    :justify-content :center}
        [icons/icon :main-icons/more {:accessibility-label :accounts-more-options}]]]]))
 
+(views/defview accounts []
+  (views/letsubs [{:keys [accounts]} [:multiaccount]]
+    [react/scroll-view {:horizontal true}
+     [react/view {:flex-direction :row :padding-top 11 :padding-bottom 12}
+      (for [account accounts]
+        ^{:key account}
+        [account-card account])
+      [add-card]]]))
+
 (defn accounts-overview []
   [react/view {:flex 1}
    [status-bar/status-bar]
@@ -161,8 +169,5 @@
     [accounts-options]
     [react/view {:margin-top 8 :padding-horizontal 16}
      [total-value]
-     [react/scroll-view {:horizontal true}
-      [react/view {:flex-direction :row :padding-top 11 :padding-bottom 12}
-       [account-card "Status account"]
-       [add-card]]]]
+     [accounts]]
     [assets-and-collections]]])

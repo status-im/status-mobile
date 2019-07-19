@@ -3,7 +3,8 @@
             [re-frame.core :as re-frame]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [clojure.string :as string]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.types :as types]))
 
 (defn status []
   (when (exists? (.-NativeModules rn-dependencies/react-native))
@@ -61,17 +62,30 @@
   (when (and @node-started (status))
     (.recoverAccount (status) passphrase password on-result)))
 
-(defn start-onboarding [n mnemonic-length on-result]
+(defn multiaccount-generate-and-derive-addresses [n mnemonic-length paths on-result]
   (when (and @node-started (status))
-    (.startOnboarding (status) n mnemonic-length on-result)))
+    (.multiAccountGenerateAndDeriveAddresses (status)
+                                             (types/clj->json {:n n
+                                                               :mnemonicPhraseLength mnemonic-length
+                                                               :bip39Passphrase ""
+                                                               :paths paths})
+                                             on-result)))
 
-(defn import-onboarding-multiaccount [id password on-result]
+(defn multiaccount-store-derived [account-id paths password on-result]
   (when (and @node-started (status))
-    (.importOnboardingAccount (status) id password on-result)))
+    (.multiAccountStoreDerived (status)
+                               (types/clj->json {:accountID account-id
+                                                 :paths paths
+                                                 :password password})
 
-(defn login [address password on-result]
+                               on-result)))
+
+(defn login [address password main-account watch-addresses on-result]
   (when (and @node-started (status))
-    (.login (status) address password on-result)))
+    (.login (status)
+            (types/clj->json {:chatAddress address :password password
+                              :mainAccount main-account :watch-addresses watch-addresses})
+            on-result)))
 
 (defn verify [address password on-result]
   (when (and @node-started (status))
@@ -114,9 +128,9 @@
   (when (and @node-started (status))
     (.hashTypedData (status) data callback)))
 
-(defn sign-typed-data [data password callback]
+(defn sign-typed-data [data account password callback]
   (when (and @node-started (status))
-    (.signTypedData (status) data password callback)))
+    (.signTypedData (status) data account password callback)))
 
 (defn send-transaction [rpcParams password callback]
   (when (and @node-started (status))

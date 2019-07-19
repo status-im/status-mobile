@@ -137,9 +137,7 @@
         :injected-on-start-loading-java-script (str (when-not opt-in? (js-res/web3))
                                                     (if opt-in?
                                                       (js-res/web3-opt-in-init (str network-id))
-                                                      (js-res/web3-init
-                                                       (ethereum/normalized-address address)
-                                                       (str network-id)))
+                                                      (js-res/web3-init address (str network-id)))
                                                     (get-inject-js url))
         :injected-java-script                  (js-res/webview-js)}])]
    [navigation browser-id url-original webview can-go-back? can-go-forward?]
@@ -154,7 +152,7 @@
 (views/defview browser []
   (views/letsubs [webview (atom nil)
                   window-width [:dimensions/window-width]
-                  {:keys [address settings]} [:multiaccount]
+                  {:keys [accounts settings]} [:multiaccount]
                   {:keys [browser-id dapp? name unsafe?] :as browser} [:get-current-browser]
                   {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:browser/options]
                   network-id [:get-network-id]]
@@ -180,7 +178,7 @@
                            :can-go-forward? can-go-forward?
                            :resolving?      resolving?
                            :network-id      network-id
-                           :address         address
+                           :address         (:address (ethereum/get-default-account accounts))
                            :show-permission show-permission
                            :show-tooltip    show-tooltip
                            :opt-in?         opt-in?

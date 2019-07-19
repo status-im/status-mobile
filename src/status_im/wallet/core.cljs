@@ -22,10 +22,10 @@
 
 (re-frame/reg-fx
  :wallet/get-balance
- (fn [{:keys [multiaccount-id on-success on-error]}]
+ (fn [{:keys [account-address on-success on-error]}]
    (json-rpc/call
     {:method     "eth_getBalance"
-     :params     [multiaccount-id "latest"]
+     :params     [account-address "latest"]
      :on-success on-success
      :on-error   on-error})))
 
@@ -137,12 +137,12 @@
 
 (re-frame/reg-fx
  :wallet/get-tokens-balance
- (fn [{:keys [wallet-address tokens on-success on-error]}]
+ (fn [{:keys [account-address tokens on-success on-error]}]
    (doseq [{:keys [address symbol]} tokens]
      (json-rpc/eth-call
       {:contract   address
        :method     "balanceOf(address)"
-       :params     [wallet-address]
+       :params     [account-address]
        :outputs    ["uint256"]
        :on-success
        (fn [[balance]]
@@ -186,14 +186,14 @@
       (fx/merge
        cofx
        {:wallet/get-balance
-        {:multiaccount-id normalized-address
+        {:account-address normalized-address
          :on-success #(re-frame/dispatch
                        [:wallet.callback/update-balance-success %])
          :on-error   #(re-frame/dispatch
                        [:wallet.callback/update-balance-fail %])}
 
         :wallet/get-tokens-balance
-        {:wallet-address normalized-address
+        {:account-address normalized-address
          :tokens         tokens
          :on-success
          (fn [symbol balance]
@@ -327,14 +327,16 @@
 (fx/defn sign-transaction-button-clicked
   {:events  [:wallet.ui/sign-transaction-button-clicked]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [to symbol amount]} (get-in cofx [:db :wallet :send-transaction])
+  (let [{:keys [to symbol amount from]} (get-in cofx [:db :wallet :send-transaction])
         {:keys [symbol address]} (tokens/asset-for (:wallet/all-tokens db) (keyword (:chain db)) symbol)
         amount-hex (str "0x" (abi-spec/number-to-hex amount))
         to-norm (ethereum/normalized-address to)]
     (signing/sign cofx {:tx-obj    (if (= symbol :ETH)
                                      {:to   to-norm
+                                      :from from
                                       :value amount-hex}
                                      {:to   (ethereum/normalized-address address)
+                                      :from from
                                       :data (abi-spec/encode "transfer(address,uint256)" [to-norm amount-hex])})
                         :on-result [:navigate-back]})))
 

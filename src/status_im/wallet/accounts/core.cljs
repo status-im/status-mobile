@@ -14,4 +14,4 @@
 (fx/defn set-symbol-request
   {:events [:wallet.accounts/share]}
   [{:keys [db]}]
-  {:list.selection/open-share {:message (eip55/address->checksum (ethereum/current-address db))}})
+  {:list.selection/open-share {:message (eip55/address->checksum (ethereum/default-address db))}})

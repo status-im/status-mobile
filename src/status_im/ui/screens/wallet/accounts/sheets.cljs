@@ -35,29 +35,29 @@
                                      :accessibility-label :wallet-backup-recovery-title
                                      :on-press     #(hide-sheet-and-dispatch [:navigate-to :backup-seed])}])]))
 
-(defn send-receive []
+(defn send-receive [address]
   [react/view
    [action-button/action-button {:label               (i18n/label :t/wallet-send)
                                  :icon                :main-icons/send
                                  :accessibility-label :send-transaction-button
                                  :icon-opts           {:color :blue}
-                                 :on-press            #(hide-sheet-and-dispatch [:navigate-to :wallet-send-transaction])}]
+                                 :on-press            #(hide-sheet-and-dispatch [:navigate-to :wallet-send-transaction address])}]
    [action-button/action-button {:label               (i18n/label :t/receive)
                                  :icon                :main-icons/receive
                                  :accessibility-label :receive-transaction-button
                                  :icon-opts           {:color :blue}
-                                 :on-press            #(hide-sheet-and-dispatch [:show-popover {:view :share-account}])}]])
+                                 :on-press            #(hide-sheet-and-dispatch [:show-popover {:view :share-account :address address}])}]])
 
 (defn add-account []
   [react/view
    [action-button/action-button-disabled {:label               (i18n/label :t/add-an-account)
                                           :icon                :main-icons/add
                                           :icon-opts           {:color :blue}
-                                          :on-press            #(hide-sheet-and-dispatch [:navigate-to :wallet-send-transaction])}]
+                                          :on-press            #(hide-sheet-and-dispatch [:navigate-to])}]
    [action-button/action-button-disabled {:label               (i18n/label :t/add-a-watch-account)
                                           :icon                :main-icons/watch
                                           :icon-opts           {:color :blue}
-                                          :on-press            #(hide-sheet-and-dispatch [:navigate-to :wallet-request-transaction])}]])
+                                          :on-press            #(hide-sheet-and-dispatch [:navigate-to])}]])
 
 (defn account-settings []
   [react/view

@@ -21,7 +21,10 @@
             [status-im.utils.fx :as fx]
             [status-im.node.core :as node]
             [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ethereum.core :as ethereum]))
 
 (defn get-signing-phrase [cofx]
   (assoc cofx :signing-phrase (signing-phrase/generate)))
@@ -45,23 +48,23 @@
 
 (defn create-multiaccount! [{:keys [id password]}]
   (if id
-    (status/import-onboarding-multiaccount
+    (status/multiaccount-store-derived
      id
+     [constants/path-whisper constants/path-default-wallet]
      password
-     #(re-frame/dispatch [:multiaccounts.create.callback/create-multiaccount-success (types/json->clj %) password]))
+     #(re-frame/dispatch [:multiaccounts.create.callback/create-multiaccount-success password]))
     (status/create-multiaccount
      password
      #(re-frame/dispatch [:multiaccounts.create.callback/create-multiaccount-success (types/json->clj %) password]))))
 
-;;;; Handlers
 (defn create-multiaccount
   [{:keys [db] :as   cofx}]
   (if (:intro-wizard db)
-    (fx/merge
-     cofx
-     {:multiaccounts.create/create-multiaccount {:id  (get-in db [:intro-wizard :selected-id])
-                                                 :password (or (get-in db [:multiaccounts/create :password])
-                                                               (get-in db [:intro-wizard :key-code]))}})
+    (let [{:keys [selected-id key-code]} (:intro-wizard db)]
+      (fx/merge
+       cofx
+       {:multiaccounts.create/create-multiaccount {:id selected-id
+                                                   :password (get-in db [:multiaccounts/create :password] key-code)}}))
     (fx/merge
      cofx
      {:db (-> db
@@ -78,14 +81,9 @@
 (fx/defn add-multiaccount
   "Takes db and new multiaccount, creates map of effects describing adding multiaccount to database and realm"
   [cofx {:keys [address] :as multiaccount}]
-  (let [db (:db cofx)
-        {:networks/keys [networks]} db
-        enriched-multiaccount (assoc multiaccount
-                                     :network config/default-network
-                                     :networks networks
-                                     :address address)]
-    {:db                 (assoc-in db [:multiaccounts/multiaccounts address] enriched-multiaccount)
-     :data-store/base-tx [(multiaccounts-store/save-multiaccount-tx enriched-multiaccount)]}))
+  (let [db (:db cofx)]
+    {:db                 (assoc-in db [:multiaccounts/multiaccounts address] multiaccount)
+     :data-store/base-tx [(multiaccounts-store/save-multiaccount-tx multiaccount)]}))
 
 (defn reset-multiaccount-creation [{db :db}]
   {:db (update db :multiaccounts/create assoc
@@ -173,7 +171,7 @@
               (assoc-in [:intro-wizard :generating-keys?] true)
               (assoc :node/on-ready :start-onboarding))}
      (if node-started?
-       {:intro-wizard/start-onboarding {:n 5 :mnemonic-length 12}}
+       {:intro-wizard/start-onboarding nil}
        (node/initialize nil)))))
 
 (fx/defn on-confirm-failure [{:keys [db] :as cofx}]
@@ -224,40 +222,56 @@
           :else {:db (assoc-in db [:intro-wizard :step]
                                (inc-step step))})))
 
+(defn prepare-default-account [{:keys [publicKey address]}]
+  {:public-key publicKey
+   :address    address
+   :color      colors/blue
+   :default?   true
+   :name       "Status account"})
+
 (fx/defn on-multiaccount-created
-  [{:keys [signing-phrase
-           status
-           db] :as cofx}
-   {:keys [pubkey address mnemonic installation-id
-           keycard-instance-uid keycard-key-uid keycard-pairing keycard-paired-on] :as result}
+  [{:keys [signing-phrase db] :as cofx}
+   {:keys [keycard-instance-uid keycard-key-uid keycard-pairing keycard-paired-on mnemonic] :as multiaccount}
    password
-   {:keys [seed-backed-up? login? new-multiaccount?] :or {login? true}}]
-  (let [normalized-address (utils.hex/normalize-hex address)
-        multiaccount            {:public-key             pubkey
-                                 :installation-id        (or installation-id (get-in db [:multiaccounts/new-installation-id]))
-                                 :address                normalized-address
-                                 :name                   (gfycat/generate-gfy pubkey)
-                                 :status                 status
-                                 :signed-up?             true
-                                 :desktop-notifications? false
-                                 :photo-path             (identicon/identicon pubkey)
-                                 :signing-phrase         signing-phrase
-                                 :seed-backed-up?        seed-backed-up?
-                                 :mnemonic               mnemonic
-                                 :keycard-instance-uid   keycard-instance-uid
-                                 :keycard-key-uid        keycard-key-uid
-                                 :keycard-pairing        keycard-pairing
-                                 :keycard-paired-on      keycard-paired-on
-                                 :settings               (constants/default-multiaccount-settings)
-                                 :syncing-on-mobile-network? false
-                                 :remember-syncing-choice? false
-                                 :new-multiaccount?           new-multiaccount?}]
-    (when-not (string/blank? pubkey)
+   {:keys [seed-backed-up? login?] :or {login? true}}]
+  (let [{:keys [publicKey address]} (get-in multiaccount [:derived constants/path-whisper-keyword])
+        default-wallet-account (get-in multiaccount [:derived constants/path-default-wallet-keyword])
+        {:networks/keys [networks]} db
+        new-multiaccount       {;;multiaccount
+                                :root-address               (:address multiaccount)
+                                :public-key                 publicKey
+                                :installation-id            (get-in db [:multiaccounts/new-installation-id]) ;;TODO why can't we generate it here?
+                                :address                    address
+                                :name                       (gfycat/generate-gfy publicKey)
+                                :photo-path                 (identicon/identicon publicKey)
+                                :network                    config/default-network
+                                :networks                   networks
+
+                                :accounts                   [(prepare-default-account
+                                                              (get-in multiaccount [:derived constants/path-default-wallet-keyword]))]
+
+                                ;;multiaccount-settings
+                                :signed-up?                 true ;; how account can be not signed?
+                                :seed-backed-up?            seed-backed-up?
+                                :desktop-notifications?     false
+                                :signing-phrase             signing-phrase
+                                :mnemonic                   mnemonic
+                                :settings                   (constants/default-multiaccount-settings)
+                                :syncing-on-mobile-network? false
+                                :remember-syncing-choice?   false
+
+                                ;;keycard
+                                :keycard-instance-uid       keycard-instance-uid
+                                :keycard-key-uid            keycard-key-uid
+                                :keycard-pairing            keycard-pairing
+                                :keycard-paired-on          keycard-paired-on}]
+    (when-not (string/blank? publicKey)
       (fx/merge cofx
-                {:db (assoc db :multiaccounts/login {:address    normalized-address
-                                                     :password   password
-                                                     :processing true})}
-                (add-multiaccount multiaccount)
+                {:db (assoc db :multiaccounts/login {:address      address
+                                                     :main-account (:address default-wallet-account)
+                                                     :password     password
+                                                     :processing   true})}
+                (add-multiaccount new-multiaccount)
                 (when login?
                   (multiaccounts.login/user-login true))
                 (when (:intro-wizard db)
@@ -265,9 +279,12 @@
 
 (re-frame/reg-fx
  :intro-wizard/start-onboarding
- (fn [{:keys [n mnemonic-length]}]
-   (status/start-onboarding n mnemonic-length
-                            #(re-frame/dispatch [:intro-wizard/on-keys-generated (types/json->clj %)]))))
+ (fn []
+   (status/multiaccount-generate-and-derive-addresses
+    5
+    12
+    [constants/path-whisper constants/path-default-wallet]
+    #(re-frame/dispatch [:intro-wizard/on-keys-generated (types/json->clj %)]))))
 
 (fx/defn on-keys-generated
   {:events [:intro-wizard/on-keys-generated]}
@@ -277,9 +294,9 @@
                 (fn [data]
                   (-> data
                       (dissoc :generating-keys?)
-                      (assoc :multiaccounts (:accounts result)
+                      (assoc :multiaccounts result
                              :selected-storage-type :default
-                             :selected-id (-> result :accounts first :id)
+                             :selected-id (-> result first :id)
                              :step :choose-key))))}
    (navigation/navigate-to-cofx :intro-wizard nil)))
 
@@ -320,14 +337,10 @@
                  :confirm-failure? false
                  :weak-password? (< (count new-key-code) 6))}))
 
-;;;; COFX
-
 (re-frame/reg-cofx
  :multiaccounts.create/get-signing-phrase
  (fn [cofx _]
    (get-signing-phrase cofx)))
-
-;;;; FX
 
 (re-frame/reg-fx
  :multiaccounts.create/create-multiaccount

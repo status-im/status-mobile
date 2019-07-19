@@ -61,6 +61,14 @@
   (-> (get-in db [:multiaccount :address])
       normalized-address))
 
+(defn get-default-account [accounts]
+  (some #(when (:default? %) %) accounts))
+
+(defn default-address [db]
+  (-> (get-in db [:multiaccount :accounts])
+      get-default-account
+      :address))
+
 (defn naked-address [s]
   (when s
     (string/replace s hex-prefix "")))

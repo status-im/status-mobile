@@ -47,7 +47,7 @@
                 (hardwallet/create-keycard-multiaccount)
                 :start-onboarding
                 (fn []
-                  {:intro-wizard/start-onboarding {:n 5 :mnemonic-length 12}})))))
+                  {:intro-wizard/start-onboarding nil})))))
 
 (fx/defn status-node-stopped
   [{db :db}]

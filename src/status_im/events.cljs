@@ -280,13 +280,16 @@
  (fn [cofx [_ input-key text]]
    (multiaccounts.create/multiaccount-set-input-text cofx input-key text)))
 
+(defn get-selected-multiaccount [{:keys [db]}]
+  (let [{:keys [selected-id multiaccounts]} (:intro-wizard db)]
+    (some #(when (= selected-id (:id %)) %) multiaccounts)))
+
 (handlers/register-handler-fx
  :multiaccounts.create.callback/create-multiaccount-success
  [(re-frame/inject-cofx :random-guid-generator)
   (re-frame/inject-cofx :multiaccounts.create/get-signing-phrase)]
- (fn [cofx [_ result password]]
-   (multiaccounts.create/on-multiaccount-created cofx result password {:seed-backed-up? false
-                                                                       :new-multiaccount?    true})))
+ (fn [cofx [_ password]]
+   (multiaccounts.create/on-multiaccount-created cofx (get-selected-multiaccount cofx) password {:seed-backed-up? false})))
 
 (handlers/register-handler-fx
  :multiaccounts.create.ui/create-new-multiaccount-button-pressed
@@ -348,8 +351,8 @@
 
 (handlers/register-handler-fx
  :multiaccounts.login.ui/multiaccount-selected
- (fn [cofx [_ address photo-path name public-key]]
-   (multiaccounts.login/open-login cofx address photo-path name public-key)))
+ (fn [cofx [_ address photo-path name public-key accounts]]
+   (multiaccounts.login/open-login cofx address photo-path name public-key accounts)))
 
 (handlers/register-handler-fx
  :multiaccounts.login.callback/get-user-password-success

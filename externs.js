@@ -187,7 +187,6 @@ var TopLevel = {
     "hide" : function () {},
     "i18n" : function () {},
     "ignoreWarnings" : function () {},
-    "importOnboardingAccount": function () {},
     "in" : function () {},
     "index" : function () {},
     "indexOf" : function () {},
@@ -466,7 +465,6 @@ var TopLevel = {
     "StackActions" : function () {},
     "start" : function () {},
     "startNode" : function () {},
-    "startOnboarding": function () {},
     "state" : function () {},
     "Status" : function () {},
     "status" : function () {},
@@ -563,5 +561,7 @@ var TopLevel = {
     "isSupported" : function () {},
     "authenticate" : function () {},
     "createAppContainer" : function () {},
-    "useScreens" : function () {}
+    "useScreens" : function () {},
+    "multiAccountGenerateAndDeriveAddresses" : function () {},
+    "multiAccountStoreDerived" : function () {}
 }

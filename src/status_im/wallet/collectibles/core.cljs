@@ -44,7 +44,7 @@
          items-number        (money/to-number amount)
          loaded-items-number (count (get-in db [:collectibles symbol]))]
      (merge (when (not= items-number loaded-items-number)
-              (load-collectibles-fx all-tokens symbol items-number (ethereum/current-address db) chain-id))
+              (load-collectibles-fx all-tokens symbol items-number (ethereum/default-address db) chain-id))
             {:dispatch [:navigate-to :collectibles-list collectible]}))))
 
 ;; Crypto Kitties

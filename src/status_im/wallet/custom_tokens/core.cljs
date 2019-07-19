@@ -92,7 +92,7 @@
   [{:keys [db]} contract total-supply]
   (if (money/valid? total-supply)
     {:wallet.custom-token/get-balance
-     [contract (ethereum/current-address db)]}
+     [contract (ethereum/default-address db)]}
     {:db (update db
                  :wallet/custom-token-screen
                  merge {:in-progress? nil

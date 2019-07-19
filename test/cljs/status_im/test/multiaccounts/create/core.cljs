@@ -3,18 +3,6 @@
             [status-im.utils.utils :as utils]
             [status-im.multiaccounts.create.core :as models]))
 
-(deftest on-multiaccount-created
-  (let [result (models/on-multiaccount-created {:random-guid-generator (constantly "")
-                                                :signing-phrase        ""
-                                                :db                    {}}
-                                               {:pubkey   "04de2e21f1642ebee03b9aa4bf1936066124cc89967eaf269544c9b90c539fd5c980166a897d06dd4d3732b38116239f63c89395a8d73eac72881fab802010cb56"
-                                                :address  "7e92236392a850980d00d0cd2a4b92886bd7fe7b"
-                                                :mnemonic "hello world"}
-                                               "password"
-                                               true)]
-    (is (= (keys result)
-           [:db :multiaccounts.login/clear-web-data :data-store/change-multiaccount :data-store/base-tx]))))
-
 (deftest intro-step-back
   (testing "Back from choose-key"
     (let [db {:intro-wizard {:step :choose-key}}

@@ -63,13 +63,13 @@
           [vector-icons/icon :main-icons/next {:color :white}]]]]])))
 
 (views/defview share-address []
-  (views/letsubs [address-hex [:account/hex-address]
+  (views/letsubs [{:keys [address]} [:popover/popover]
                   chain-id    [:get-network-id]
                   width       (reagent/atom nil)]
     [react/view
      [react/view {:style {:padding-top 16 :padding-left 16 :padding-right 16}}
       (when @width
-        [qr-code-viewer/qr-code-view (- @width 32) (eip681/generate-uri address-hex {:chain-id chain-id})])
+        [qr-code-viewer/qr-code-view (- @width 32) (eip681/generate-uri address {:chain-id chain-id})])
       [react/text {:style {:font-size 13 :color colors/gray :margin-top 12 :margin-bottom 4}}
        (i18n/label :t/ens-wallet-address)]
       [react/view {:on-layout #(reset! width (-> % .-nativeEvent .-layout .-width))}
@@ -77,7 +77,7 @@
                     :accessibility-label :address-text
                     :style           {:line-height 22 :font-size 15
                                       :font-family "monospace"}}
-        (eip55/address->checksum address-hex)]]]
+        (eip55/address->checksum address)]]]
      [react/view {:height 1 :background-color colors/gray-lighter :margin-top 8}]
      [react/view {:padding-bottom 16}
       [components.common/button {:on-press     #(re-frame/dispatch [:wallet.accounts/share])
@@ -87,7 +87,7 @@
       ;;TODO temporary hide for v1
       #_[components.common/button {:on-press            #(do
                                                            (re-frame/dispatch [:hide-popover])
-                                                           (re-frame/dispatch [:navigate-to :wallet-send-transaction-request]))
+                                                           (re-frame/dispatch [:navigate-to :wallet-send-transaction-request address]))
                                    :accessibility-label :sent-transaction-request-button
                                    :label               (i18n/label :t/send-transaction-request)
                                    :background?         false}]]]))

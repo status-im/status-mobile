@@ -18,7 +18,8 @@
             [status-im.ui.screens.intro.styles :as styles]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.status-bar.view :as status-bar]))
+            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.constants :as constants]))
 
 (defn dots-selector [{:keys [on-press n selected color]}]
   [react/view {:style (styles/dot-selector n)}
@@ -105,13 +106,14 @@
                                                                  -20
                                                                  (/ view-height 12))}}
    (for [acc multiaccounts]
-     (let [selected? (= (:id acc) selected-id)]
-       ^{:key (:pubkey acc)}
+     (let [selected? (= (:id acc) selected-id)
+           public-key (get-in acc [:derived constants/path-whisper-keyword :publicKey])]
+       ^{:key public-key}
        [react/touchable-highlight
         {:on-press #(re-frame/dispatch [:intro-wizard/on-key-selected (:id acc)])}
         [react/view {:style (styles/list-item selected?)}
 
-         [react/image {:source {:uri (identicon/identicon (:pubkey acc))}
+         [react/image {:source {:uri (identicon/identicon public-key)}
                        :style styles/multiaccount-image}]
          [react/view {:style {:margin-horizontal 16 :flex 1 :justify-content :space-between}}
           [react/text {:style (assoc styles/wizard-text :text-align :left
@@ -119,11 +121,11 @@
                                      :font-weight "500")
                        :number-of-lines 1
                        :ellipsize-mode :middle}
-           (gfy/generate-gfy (:pubkey acc))]
+           (gfy/generate-gfy public-key)]
           [react/text {:style (assoc styles/wizard-text
                                      :text-align :left
                                      :font-family "monospace")}
-           (utils/get-shortened-address (:pubkey acc))]]
+           (utils/get-shortened-address public-key)]]
          [radio/radio selected?]]]))])
 
 (defn storage-entry [{:keys [type icon title desc]} selected-storage-type]

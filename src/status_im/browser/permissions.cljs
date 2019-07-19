@@ -6,7 +6,8 @@
             [status-im.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [status-im.ethereum.core :as ethereum]))
 
 (declare process-next-permission)
 (declare send-response-to-bridge)
@@ -52,7 +53,7 @@
 (defn get-permission-data [cofx allowed-permission]
   (let [multiaccount (get-in cofx [:db :multiaccount])]
     (get {constants/dapp-permission-contact-code (:public-key multiaccount)
-          constants/dapp-permission-web3         [(ethereum/normalized-address (:address multiaccount))]}
+          constants/dapp-permission-web3         [(:address (ethereum/get-default-account (:accounts multiaccount)))]}
          allowed-permission)))
 
 (fx/defn send-response-to-bridge

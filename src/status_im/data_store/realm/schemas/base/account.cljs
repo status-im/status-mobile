@@ -251,3 +251,7 @@
 
 (def v25 (update v24 :properties merge {:preferred-name {:type :string :optional true}
                                         :show-name? {:type :bool :optional true}}))
+
+(def v26 (update v25 :properties merge {:root-address {:type :string :optional true}
+                                        :accounts {:type :string :optional true}}))
+

@@ -40,8 +40,8 @@
 
 (re-frame/reg-fx
  :signing.fx/sign-typed-data
- (fn [{:keys [data on-completed password]}]
-   (status/sign-typed-data data (security/safe-unmask-data password) on-completed)))
+ (fn [{:keys [data account on-completed password]}]
+   (status/sign-typed-data data account (security/safe-unmask-data password) on-completed)))
 
 (defn get-contact [db to]
   (let [to (utils.hex/normalize-hex to)]
@@ -62,12 +62,13 @@
   [{{:signing/keys [sign tx] :as db} :db}]
   (let [{{:keys [data typed?]} :message} tx
         {:keys [in-progress? password]} sign
-        from (ethereum/current-address db)]
+        from (ethereum/default-address db)]
     (when-not in-progress?
       (merge
        {:db (update db :signing/sign assoc :error nil :in-progress? true)}
        (if typed?
          {:signing.fx/sign-typed-data {:data         data
+                                       :account      from
                                        :password     password
                                        :on-completed #(re-frame/dispatch [:signing/sign-message-completed %])}}
          {:signing.fx/sign-message {:params       {:data     data
@@ -83,7 +84,6 @@
     (if message
       (sign-message cofx)
       (let [tx-obj-to-send (merge tx-obj
-                                  {:from (ethereum/current-address db)}
                                   (when gas
                                     {:gas (str "0x" (abi-spec/number-to-hex gas))})
                                   (when gasPrice
@@ -255,7 +255,7 @@
 (defn normalize-tx-obj [db tx]
   (if (get-in tx [:tx-obj :from])
     tx
-    (assoc-in tx [:tx-obj :from] (ethereum/current-address db))))
+    (assoc-in tx [:tx-obj :from] (ethereum/default-address db))))
 
 (fx/defn sign [{:keys [db] :as cofx} tx]
   "Signing transaction or message, shows signing sheet

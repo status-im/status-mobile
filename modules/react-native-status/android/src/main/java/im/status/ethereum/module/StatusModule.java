@@ -386,7 +386,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void login(final String address, final String password, final Callback callback) {
+    public void login(final String json, final Callback callback) {
         Log.d(TAG, "login");
         if (!checkAvailability()) {
             callback.invoke(false);
@@ -396,7 +396,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                String result = Statusgo.login(address, password);
+                String result = Statusgo.login(json);
 
                 callback.invoke(result);
             }
@@ -661,8 +661,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void startOnboarding(final Integer n, final Integer mnemonicLength, final Callback callback) {
-        Log.d(TAG, "startOnboarding");
+    public void multiAccountGenerateAndDeriveAddresses(final String json, final Callback callback) {
+        Log.d(TAG, "multiAccountGenerateAndDeriveAddresses");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -670,7 +670,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                String res = Statusgo.startOnboarding(n, mnemonicLength);
+                String res = Statusgo.multiAccountGenerateAndDeriveAddresses(json);
 
                 callback.invoke(res);
             }
@@ -680,8 +680,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void importOnboardingAccount(final String id, final String password, final Callback callback) {
-        Log.d(TAG, "importOnboardingAccount");
+    public void multiAccountStoreDerived(final String json, final Callback callback) {
+        Log.d(TAG, "multiAccountStoreDerived");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -689,7 +689,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                String res = Statusgo.importOnboardingAccount(id, password);
+                String res = Statusgo.multiAccountStoreDerivedAccounts(json);
 
                 callback.invoke(res);
             }
@@ -818,7 +818,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void signTypedData(final String data, final String password, final Callback callback) {
+    public void signTypedData(final String data, final String account, final String password, final Callback callback) {
         Log.d(TAG, "signTypedData");
         if (!checkAvailability()) {
             callback.invoke(false);
@@ -828,7 +828,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                String res = Statusgo.signTypedData(data, password);
+                String res = Statusgo.signTypedData(data, account, password);
                 callback.invoke(res);
             }
         };

@@ -24,7 +24,8 @@
             [status-im.utils.types :as types]
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.wallet.core :as wallet]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.ethereum.core :as ethereum]))
 
 (def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
 (def contract-address "0xfbf4c8e2B41fAfF8c616a0E49Fb4365a5355Ffaf")
@@ -46,8 +47,8 @@
                                       (resolve default-nodes)))))
       (resolve default-nodes))))
 
-(defn login! [address password]
-  (status/login address password #(re-frame/dispatch [:multiaccounts.login.callback/login-success %])))
+(defn login! [address main-account password]
+  (status/login address password main-account [] #(re-frame/dispatch [:multiaccounts.login.callback/login-success %])))
 
 (defn verify! [address password realm-error]
   (status/verify address password
@@ -81,8 +82,8 @@
                                         (get-in [:db :hardwallet :multiaccount])
                                         (select-keys [:whisper-private-key :encryption-public-key])
                                         (assoc :on-result #(re-frame/dispatch [:multiaccounts.login.callback/login-success %])))}
-    (let [{:keys [address password]} (multiaccounts.model/credentials cofx)]
-      {:multiaccounts.login/login [address password]})))
+    (let [{:keys [address password main-account]} (get-in cofx [:db :multiaccounts/login])]
+      {:multiaccounts.login/login [address main-account password]})))
 
 (fx/defn initialize-wallet [cofx]
   (fx/merge cofx
@@ -336,13 +337,14 @@
    :keychain/get-user-password       [address
                                       #(re-frame/dispatch [:multiaccounts.login.callback/get-user-password-success % address])]})
 
-(fx/defn open-login [{:keys [db] :as cofx} address photo-path name public-key]
+(fx/defn open-login [{:keys [db] :as cofx} address photo-path name public-key accounts]
   (let [keycard-multiaccount? (get-in db [:multiaccounts/multiaccounts address :keycard-instance-uid])]
     (fx/merge cofx
               {:db (-> db
                        (update :multiaccounts/login assoc
                                :public-key public-key
                                :address address
+                               :main-account (:address (ethereum/get-default-account accounts))
                                :photo-path photo-path
                                :name name)
                        (update :multiaccounts/login dissoc
@@ -375,8 +377,8 @@
 
 (re-frame/reg-fx
  :multiaccounts.login/login
- (fn [[address password]]
-   (login! address (security/safe-unmask-data password))))
+ (fn [[address main-account password]]
+   (login! address main-account (security/safe-unmask-data password))))
 
 (re-frame/reg-fx
  :multiaccounts.login/verify

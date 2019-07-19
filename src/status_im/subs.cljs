@@ -331,10 +331,10 @@
    public-key))
 
 (re-frame/reg-sub
- :account/hex-address
+ :multiaccount/default-address
  :<- [:multiaccount]
- (fn [{:keys [address]}]
-   (ethereum/normalized-address address)))
+ (fn [{:keys [accounts]}]
+   (:address (ethereum/get-default-account accounts))))
 
 (re-frame/reg-sub
  :sign-in-enabled?
@@ -1877,12 +1877,12 @@
  :<- [:ens/registration]
  :<- [:ens.stateofus/registrar]
  :<- [:multiaccount]
- (fn [[{:keys [custom-domain? username-candidate] :as ens} registrar {:keys [address public-key]}] _]
+ (fn [[{:keys [custom-domain? username-candidate] :as ens} registrar {:keys [accounts public-key]}] _]
    {:state          (or (get-in ens [:states username-candidate]) :initial)
     :username       username-candidate
     :custom-domain? (or custom-domain? false)
     :contract       registrar
-    :address        address
+    :address        (:address (ethereum/get-default-account accounts))
     :public-key     public-key}))
 
 (re-frame/reg-sub

@@ -1,10 +1,10 @@
 (ns status-im.ui.screens.wallet.accounts.styles
   (:require [status-im.ui.components.colors :as colors]))
 
-(def card
+(defn card [color]
   {:width            156
    :height           145
-   :background-color colors/blue
+   :background-color color
    :shadow-offset    {:width 0 :height 2}
    :shadow-radius    8
    :shadow-opacity   1

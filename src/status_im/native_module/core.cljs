@@ -22,14 +22,14 @@
 (defn recover-multiaccount [passphrase password callback]
   (native-module/recover-account passphrase password callback))
 
-(defn start-onboarding [n mnemonic-length callback]
-  (native-module/start-onboarding n mnemonic-length callback))
+(defn multiaccount-store-derived [account-id paths password callback]
+  (native-module/multiaccount-store-derived account-id paths password callback))
 
-(defn import-onboarding-multiaccount [id password callback]
-  (native-module/import-onboarding-multiaccount id password callback))
+(defn multiaccount-generate-and-derive-addresses [n mnemonic-length paths callback]
+  (native-module/multiaccount-generate-and-derive-addresses n mnemonic-length paths callback))
 
-(defn login [address password callback]
-  (native-module/login address password callback))
+(defn login [address password main-account watch-addresses callback]
+  (native-module/login address password main-account watch-addresses callback))
 
 (defn verify [address password callback]
   (native-module/verify address password callback))
@@ -55,8 +55,8 @@
 (defn sign-message [rpcParams callback]
   (native-module/sign-message rpcParams callback))
 
-(defn sign-typed-data [data password callback]
-  (native-module/sign-typed-data data password callback))
+(defn sign-typed-data [data account password callback]
+  (native-module/sign-typed-data data account password callback))
 
 (defn send-transaction [rpcParams password callback]
   (native-module/send-transaction rpcParams password callback))

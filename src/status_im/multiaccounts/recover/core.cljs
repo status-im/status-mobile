@@ -11,7 +11,8 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.security :as security]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types]
+            [status-im.constants :as constants]))
 
 (defn check-password-errors [password]
   (cond (string/blank? password) :required-field
@@ -65,7 +66,7 @@
     {:db (assoc-in db [:multiaccounts/recover :password-error] (check-password-errors password))}))
 
 (fx/defn validate-recover-result
-  [{:keys [db] :as cofx} {:keys [error pubkey address]} password]
+  [{:keys [db] :as cofx} {:keys [error pubkey address walletAddress walletPubKey chatAddress chatPubKey]} password]
   (if (empty? error)
     (let [multiaccount-address (-> address
                                    (string/lower-case)
@@ -80,9 +81,11 @@
                         (update :multiaccounts/recover dissoc
                                 :passphrase-valid?))
          :node/stop nil}
-        (let [multiaccount {:pubkey     pubkey
+        (let [multiaccount {:derived    {constants/path-whisper-keyword        {:publicKey chatPubKey
+                                                                                :address chatAddress}
+                                         constants/path-default-wallet-keyword {:publicKey walletPubKey
+                                                                                :address walletAddress}}
                             :address    address
-                            :photo-path (identicon/identicon pubkey)
                             :mnemonic   ""}]
           (multiaccounts.create/on-multiaccount-created
            cofx multiaccount password {:seed-backed-up? true}))))

@@ -151,8 +151,8 @@
                             (:public-key multiaccount)))
                        %)
               #(sort-by :last-sign-in > %))
-            {:keys [address public-key photo-path name]} (first (selection-fn (vals multiaccounts)))]
-        (multiaccounts.login/open-login cofx address photo-path name public-key)))))
+            {:keys [address public-key photo-path name accounts]} (first (selection-fn (vals multiaccounts)))]
+        (multiaccounts.login/open-login cofx address photo-path name public-key accounts)))))
 
 (fx/defn load-multiaccounts-and-initialize-views
   "DB has been decrypted, load multiaccounts and initialize-view"

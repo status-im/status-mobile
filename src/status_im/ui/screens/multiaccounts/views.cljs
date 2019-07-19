@@ -15,8 +15,8 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.privacy-policy.views :as privacy-policy]))
 
-(defn multiaccount-view [{:keys [address photo-path name public-key keycard-instance-uid]}]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:multiaccounts.login.ui/multiaccount-selected address photo-path name public-key])}
+(defn multiaccount-view [{:keys [address photo-path name public-key keycard-instance-uid accounts]}]
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:multiaccounts.login.ui/multiaccount-selected address photo-path name public-key accounts])}
    [react/view styles/multiaccount-view
     [photos/photo photo-path {:size styles/multiaccount-image-size}]
     [react/view styles/multiaccount-badge-text-view

@@ -134,7 +134,8 @@
                                    :DisableGenericDiscoveryTopic (boolean disable-discovery-topic?)
                                    :SendV1Messages (boolean v1-messages?)
                                    :PFSEnabled              true}
-             :RequireTopics           (get-topics network))
+             :RequireTopics           (get-topics network)
+             :StatusAccountsConfig {:Enabled true})
 
       (and
        config/bootnodes-settings-enabled?

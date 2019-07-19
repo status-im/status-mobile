@@ -139,14 +139,14 @@
   [{:keys [db]}]
   (let [contract      (contracts/get-address db :status/stickers)
         pack-contract (contracts/get-address db :status/sticker-pack)
-        address       (ethereum/current-address db)]
+        address       (ethereum/default-address db)]
     (when contract
       {:stickers/owned-packs-fx [pack-contract address]
        :stickers/load-packs-fx [contract]})))
 
 (fx/defn approve-pack
   [{db :db :as cofx} pack-id price]
-  (let [address                 (ethereum/current-address db)
+  (let [address                 (ethereum/default-address db)
         sticker-market-contract (contracts/get-address db :status/sticker-market)
         snt-contract            (contracts/get-address db :status/snt)]
     (signing/eth-transaction-call
@@ -161,7 +161,7 @@
 (fx/defn pending-pack
   [{:keys [db] :as cofx} id]
   (let [contract (contracts/get-address db :status/sticker-pack)
-        address  (ethereum/current-address db)]
+        address  (ethereum/default-address db)]
     (when contract
       (fx/merge cofx
                 {:db (update db :stickers/packs-pending conj id)
@@ -173,7 +173,7 @@
   [{{:stickers/keys [packs-pending packs-owned] :as db} :db}]
   (let [packs-diff (clojure.set/difference packs-pending packs-owned)
         contract   (contracts/get-address db :status/sticker-pack)
-        address    (ethereum/current-address db)]
+        address    (ethereum/default-address db)]
     (when contract
       (merge {:db (assoc db :stickers/packs-pending packs-diff)}
              (when-not (zero? (count packs-diff))
@@ -186,6 +186,6 @@
 (fx/defn get-owned-pack
   [{:keys [db]}]
   (let [contract (contracts/get-address db :status/sticker-pack)
-        address  (ethereum/current-address db)]
+        address  (ethereum/default-address db)]
     (when contract
       {:stickers/owned-packs-fx [contract address]})))

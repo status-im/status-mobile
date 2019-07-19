@@ -19,7 +19,8 @@
             [status-im.wallet.core :as wallet]
             [taoensso.timbre :as log]
             status-im.hardwallet.fx
-            [status-im.ui.components.react :as react]))
+            [status-im.ui.components.react :as react]
+            [status-im.constants :as constants]))
 
 (def default-pin "000000")
 
@@ -1594,16 +1595,17 @@
     (fx/merge (-> cofx
                   (multiaccounts.create/get-signing-phrase))
               {:db (assoc-in db [:hardwallet :setup-step] nil)}
-              (multiaccounts.create/on-multiaccount-created {:pubkey               whisper-public-key
-                                                             :address              wallet-address
-                                                             :mnemonic             ""
-                                                             :keycard-instance-uid instance-uid
-                                                             :keycard-key-uid      key-uid
-                                                             :keycard-pairing      pairing
-                                                             :keycard-paired-on    paired-on}
-                                                            encryption-public-key
-                                                            {:seed-backed-up? true
-                                                             :login?          true})
+              (multiaccounts.create/on-multiaccount-created
+               {:derived              {constants/path-whisper-keyword {:publicKey whisper-public-key}
+                                       constants/path-default-wallet-keyword {:address wallet-address}}
+                :mnemonic             ""
+                :keycard-instance-uid instance-uid
+                :keycard-key-uid      key-uid
+                :keycard-pairing      pairing
+                :keycard-paired-on    paired-on}
+               encryption-public-key
+               {:seed-backed-up? true
+                :login?          true})
               (if (= flow :import)
                 (navigation/navigate-to-cofx :keycard-recovery-success nil)
                 (navigation/navigate-to-cofx :keycard-welcome nil)))))

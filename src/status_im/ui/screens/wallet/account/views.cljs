@@ -38,11 +38,10 @@
      [icons/icon icon {:color colors/white}]
      [react/text {:style {:margin-left 8 :color colors/white}} label]]]])
 
-(views/defview account-card []
+(views/defview account-card [{:keys [address]}]
   (views/letsubs [currency        [:wallet/currency]
                   portfolio-value [:portfolio-value]
-                  window-width    [:dimensions/window-width]
-                  {:keys [address]} [:multiaccount]]
+                  window-width    [:dimensions/window-width]]
     [react/view {:style (styles/card window-width)}
      [react/view {:padding 16 :padding-bottom 12 :flex 1 :justify-content :space-between}
       [react/nested-text {:style {:color       colors/white-transparent :line-height 38
@@ -58,14 +57,14 @@
                                      :color (colors/alpha colors/white 0.7)}}
        (ethereum/normalized-address address)]]
      [react/view {:position :absolute :top 12 :right 12}
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-popover {:view :share-account}])}
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-popover {:view :share-account :address address}])}
        [icons/icon :main-icons/share {:color colors/white
                                       :accessibility-label :share-wallet-address-icon}]]]
      [react/view {:height                     52 :background-color (colors/alpha colors/black 0.2)
                   :border-bottom-right-radius 8 :border-bottom-left-radius 8 :flex-direction :row}
-      [button (i18n/label :t/wallet-send) :main-icons/send #(re-frame/dispatch [:navigate-to :wallet-send-transaction])]
+      [button (i18n/label :t/wallet-send) :main-icons/send #(re-frame/dispatch [:navigate-to :wallet-send-transaction address])]
       [react/view {:style styles/divider}]
-      [button (i18n/label :t/receive) :main-icons/receive  #(re-frame/dispatch [:show-popover {:view :share-account}])]]]))
+      [button (i18n/label :t/receive) :main-icons/receive  #(re-frame/dispatch [:show-popover {:view :share-account :address address}])]]]))
 
 (views/defview transactions []
   (views/letsubs [{:keys [transaction-history-sections]}
@@ -102,12 +101,13 @@
          (= tab :history)
          [transactions])])))
 
-(defn account []
-  [react/view {:flex 1 :background-color colors/white}
-   [toolbar-view "Status account"]
-   [react/scroll-view
-    [react/view {:padding-left 16}
-     [react/scroll-view {:horizontal true}
-      [react/view {:flex-direction :row :padding-top 8 :padding-bottom 12}
-       [account-card]]]]
-    [assets-and-collections]]])
+(views/defview account []
+  (views/letsubs [{:keys [name] :as account} [:get-screen-params]]
+    [react/view {:flex 1 :background-color colors/white}
+     [toolbar-view name]
+     [react/scroll-view
+      [react/view {:padding-left 16}
+       [react/scroll-view {:horizontal true}
+        [react/view {:flex-direction :row :padding-top 8 :padding-bottom 12}
+         [account-card account]]]]
+      [assets-and-collections]]]))

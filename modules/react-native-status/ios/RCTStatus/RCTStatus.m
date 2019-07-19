@@ -335,37 +335,34 @@ RCT_EXPORT_METHOD(recoverAccount:(NSString *)passphrase
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// startOnboarding
-RCT_EXPORT_METHOD(startOnboarding:(NSInteger)n
-                  password:(NSInteger)mnemonicLength
+//////////////////////////////////////////////////////////////////// multiAccountGenerateAndDeriveAddresses
+RCT_EXPORT_METHOD(multiAccountGenerateAndDeriveAddresses:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"StartOnboarding() method called");
+    NSLog(@"MultiAccountGenerateAndDeriveAddresses() method called");
 #endif
-    NSString *result = StatusgoStartOnboarding(n, mnemonicLength);
+    NSString *result = StatusgoMultiAccountGenerateAndDeriveAddresses(json);
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// importOnboardingAccount
-RCT_EXPORT_METHOD(importOnboardingAccount:(NSString *)id
-                  password:(NSString *)password
+//////////////////////////////////////////////////////////////////// multiAccountStoreDerived
+RCT_EXPORT_METHOD(multiAccountStoreDerived:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"ImportOnboardingAccount() method called");
+    NSLog(@"MultiAccountStoreDerived() method called");
 #endif
-    NSString *result = StatusgoImportOnboardingAccount(id, password);
+    NSString *result = StatusgoMultiAccountStoreDerivedAccounts(json);
     callback(@[result]);
 }
 
 
 //////////////////////////////////////////////////////////////////// login
-RCT_EXPORT_METHOD(login:(NSString *)address
-                  password:(NSString *)password
+RCT_EXPORT_METHOD(login:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"Login() method called");
 #endif
-    NSString *result = StatusgoLogin(address, password);
+    NSString *result = StatusgoLogin(json);
     callback(@[result]);
 }
 
@@ -415,12 +412,13 @@ RCT_EXPORT_METHOD(signMessage:(NSString *)message
 #pragma mark - SignTypedData
 //////////////////////////////////////////////////////////////////// signTypedData
 RCT_EXPORT_METHOD(signTypedData:(NSString *)data
+                  account:(NSString *)account
                   password:(NSString *)password
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"SignTypedData() method called");
 #endif
-    NSString *result = StatusgoSignTypedData(data, password);
+    NSString *result = StatusgoSignTypedData(data, account, password);
     callback(@[result]);
 }
 

@@ -11,6 +11,9 @@
 
 (spec/def ::password  (spec/and :global/not-empty-string valid-length?))
 
+(spec/def :multiaccount/root-address (spec/nilable string?))
+(spec/def :multiaccount/accounts (spec/nilable vector?))
+
 (spec/def :multiaccount/address :global/address)
 (spec/def :multiaccount/name :global/not-empty-string)
 (spec/def :multiaccount/public-key :global/public-key)
@@ -56,7 +59,9 @@
                                                           :multiaccount/keycard-instance-uid
                                                           :multiaccount/keycard-key-uid
                                                           :multiaccount/keycard-pairing
-                                                          :multiaccount/keycard-paired-on]))
+                                                          :multiaccount/keycard-paired-on
+                                                          :multiaccount/root-address
+                                                          :multiaccount/accounts]))
 
 (spec/def :multiaccounts/multiaccounts (spec/nilable (spec/map-of :multiaccount/address :multiaccounts/multiaccount)))
 

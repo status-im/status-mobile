@@ -3,8 +3,9 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]))
 
-(def transaction-send-default
+(defn transaction-send-default [address]
   {:method constants/web3-send-transaction
+   :from   address
    :symbol :ETH})
 
 (defmethod navigation/preload-data! :wallet-stack
@@ -15,18 +16,18 @@
       (assoc db :popover/popover {:view [signing-phrase/signing-phrase]}))))
 
 (defmethod navigation/preload-data! :wallet-send-transaction-request
-  [db [event]]
+  [db [event _ address]]
   (if (= event :navigate-back)
     db
     (-> db
         (assoc-in [:wallet :request-transaction] {:symbol :ETH})
-        (assoc-in [:wallet :send-transaction] transaction-send-default))))
+        (assoc-in [:wallet :send-transaction] (transaction-send-default address)))))
 
 (defmethod navigation/preload-data! :wallet-send-transaction
-  [db [event]]
+  [db [event _ address]]
   (if (= event :navigate-back)
     db
-    (assoc-in db [:wallet :send-transaction] transaction-send-default)))
+    (assoc-in db [:wallet :send-transaction] (transaction-send-default address))))
 
 (defmethod navigation/preload-data! :wallet-add-custom-token
   [db [event]]

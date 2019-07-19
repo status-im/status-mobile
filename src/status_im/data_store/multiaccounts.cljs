@@ -34,6 +34,7 @@
 (defn- deserialize-multiaccount [multiaccount]
   (-> multiaccount
       (update :settings core/deserialize)
+      (update :accounts core/deserialize)
       (update :extensions deserialize-extensions)
       (update :bootnodes deserialize-bootnodes)
       (update :networks deserialize-networks)))
@@ -54,6 +55,7 @@
 (defn- serialize-multiaccount [multiaccount]
   (-> multiaccount
       (update :settings core/serialize)
+      (update :accounts core/serialize)
       (update :extensions serialize-extensions)
       (update :bootnodes serialize-bootnodes)
       (update :networks serialize-networks)

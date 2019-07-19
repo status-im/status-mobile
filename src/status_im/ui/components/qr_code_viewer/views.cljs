@@ -12,7 +12,7 @@
    (clj->js (merge {:inverted true} props))))
 
 (defn qr-code-view [size value]
-  (when size
+  (when (and size value)
     [react/view {:style               (styles/qr-code-container size)
                  :accessibility-label :qr-code-image}
      [qr-code {:value value
