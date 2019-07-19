@@ -6,10 +6,10 @@ with darwin.apple_sdk.frameworks;
 assert stdenv.isDarwin;
 
 let
+  inherit (stdenv.lib) concatStrings catAttrs;
   baseImage = callPackage ./base-image { };
 
-in
-{
+in {
   buildInputs = [
     baseImage status-go.buildInputs
     qt5.full
@@ -17,8 +17,7 @@ in
   ];
 
   shellHook =
-    baseImage.shellHook +
-    status-go.shellHook + ''
+    concatStrings (catAttrs "shellHook" [ baseImage status-go ] ) + ''
       export NIX_TARGET_LDFLAGS="-F${CoreFoundation}/Library/Frameworks -framework CoreFoundation $NIX_TARGET_LDFLAGS"
       export QT_PATH="${qt5.full}"
       export QT_BASEBIN_PATH="${qt5.qtbase.bin}"

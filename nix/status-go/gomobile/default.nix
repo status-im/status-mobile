@@ -10,7 +10,7 @@ let
   platform = callPackage ../../platform.nix { inherit target-os; };
 
 in buildGoPackage rec {
-  name = "gomobile-${version}";
+  pname = "gomobile";
   version = "20190319-${strings.substring 0 7 rev}";
   rev = "167ebed0ec6dd457a6b24a4f61db913f0af11f70";
   sha256 = "0lspdhikhnhbwv8v0q6fs3a0pd9sjnhkpg8z03m2dc5h6f84m38w";

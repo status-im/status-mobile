@@ -3,12 +3,13 @@
 #  as well as define STATUS_REACT_HOME
 #
 
-{ stdenv, mkShell, git }:
+{ stdenv, mkShell, target-os, git }:
 
 let
   shell' = shellAttr:
     shellAttr // {
       nativeBuildInputs = (shellAttr.nativeBuildInputs or []) ++ [ git ];
+      TARGET_OS = target-os;
       shellHook = ''
         set -e
 

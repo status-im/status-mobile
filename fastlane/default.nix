@@ -22,6 +22,12 @@ let
         --set FASTLANE_SKIP_UPDATE_CHECK 1
     '';
 
+    shellHook = ''
+      [ -z "$STATUS_REACT_HOME" ] && echo "STATUS_REACT_HOME is empty!" && exit 1
+
+      export FASTLANE_PLUGINFILE_PATH=$STATUS_REACT_HOME/fastlane/Pluginfile
+    '';
+
     meta = with stdenv.lib; {
       description     = "A tool to automate building and releasing iOS and Android apps";
       longDescription = "fastlane is a tool for iOS and Android developers to automate tedious tasks like generating screenshots, dealing with provisioning profiles, and releasing your application.";
@@ -33,13 +39,7 @@ let
     };
   };
 
-in fastlane // {
-  shellHook = ''
-    [ -z "$STATUS_REACT_HOME" ] && echo "STATUS_REACT_HOME is empty!" && exit 1
-
-    export FASTLANE_PLUGINFILE_PATH=$STATUS_REACT_HOME/fastlane/Pluginfile
-  '';
-}
+in fastlane
 
 ## This nix file cannot currently be used for iOS due to an error in BUILD TARGET ReactNativeConfig OF PROJECT ReactNativeConfig WITH CONFIGURATION Release
 ## The log shows:

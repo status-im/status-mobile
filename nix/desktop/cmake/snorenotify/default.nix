@@ -46,7 +46,7 @@ project( SnoreNotify VERSION ${version} )" \
   };
 
 in package // {
-  shellHook = ''
+  shellHook = (package.shellHook or "") + ''
     export SNORENOTIFY_SOURCES="${package}/src"
   '';
 }

@@ -4,7 +4,7 @@
 
 let
   project = import ./default.nix { inherit target-os pkgs nixpkgs-bootstrap; inherit (nixpkgs-bootstrap) config; };
-  mkShell = pkgs.callPackage ./nix/bootstrapped-shell.nix { inherit stdenv; inherit (pkgs) mkShell; };
+  mkShell = pkgs.callPackage ./nix/bootstrapped-shell.nix { inherit stdenv target-os; inherit (pkgs) mkShell; };
   platform = pkgs.callPackage ./nix/platform.nix { inherit target-os; };
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
   stdenv = pkgs.stdenvNoCC;
@@ -30,6 +30,5 @@ in mkShell {
     watchman
   ];
   inputsFrom = [ project.shell ];
-  TARGET_OS = target-os;
   shellHook = project.shell.shellHook;
 }

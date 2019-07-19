@@ -31,7 +31,7 @@ let
   };
 
 in package // {
-  shellHook = ''
+  shellHook = (package.shellHook or "") + ''
     export STATUSREACT_LINUX_BASEIMAGE_PATH="${package}/src"
   '';
 }

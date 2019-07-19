@@ -6,8 +6,7 @@ assert stdenv.isLinux;
 let
   baseImage = callPackage ./base-image { };
 
-in
-{
+in {
   buildInputs = stdenv.lib.optionals stdenv.isLinux [
     conan
     nsis

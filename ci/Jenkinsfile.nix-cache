@@ -53,7 +53,7 @@ pipeline {
         // Run a Nix build to build/fetch everything that is necessary to instantiate shell.nix for TARGET_OS=all
         sh '''
           . ~/.nix-profile/etc/profile.d/nix.sh && \
-          nix-build --pure --no-out-link --show-trace -A shell default.nix
+          nix-shell --pure --show-trace shell.nix
         '''
       }
     }

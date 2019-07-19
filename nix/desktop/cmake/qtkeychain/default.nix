@@ -37,7 +37,7 @@ let
   };
 
 in package // {
-  shellHook = ''
+  shellHook = (package.shellHook or "") + ''
     export QTKEYCHAIN_SOURCES="${package}/src"
   '';
 }

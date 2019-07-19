@@ -3,17 +3,18 @@
 with pkgs;
 
 stdenv.mkDerivation rec {
-  name = "linuxdeployqt";
+  pname = "linuxdeployqt";
   version = "20181215";
+  owner = "probonopd";
+  repo = "linuxdeployqt";
+  rev = "600fc20ea73ee937a402a2bb6b3663d93fcc1d4b";
+  sha256 = "05kvkfbhsyadlcggl63rhrw5s36d8qxs8gyihrjn2cjk42xx8r7j";
 
   src =
     if stdenv.hostPlatform.system == "x86_64-linux" then
       fetchFromGitHub {
-        name = "${name}-source";
-        owner = "probonopd";
-        repo = "linuxdeployqt";
-        rev = "600fc20ea73ee937a402a2bb6b3663d93fcc1d4b";
-        sha256 = "05kvkfbhsyadlcggl63rhrw5s36d8qxs8gyihrjn2cjk42xx8r7j";
+        name = "${repo}-${stdenv.lib.strings.substring 0 7 rev}-source";
+        inherit owner repo rev sha256;
       }
     else throw "${name} is not supported on ${stdenv.hostPlatform.system}";
 

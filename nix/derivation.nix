@@ -10,7 +10,7 @@ let
   platform = pkgs.callPackage ./platform.nix { inherit target-os; };
   # Declare a specialized mkShell function which adds some bootstrapping
   #  so that e.g. STATUS_REACT_HOME is automatically available in the shell
-  mkShell = (import ./bootstrapped-shell.nix { inherit stdenv; inherit (pkgs) mkShell git; });
+  mkShell = (import ./bootstrapped-shell.nix { inherit stdenv target-os; inherit (pkgs) mkShell git; });
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
   stdenv = pkgs.stdenvNoCC;
   maven = pkgs.maven;

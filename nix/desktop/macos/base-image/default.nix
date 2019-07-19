@@ -2,7 +2,7 @@
 
 let
   package = stdenv.mkDerivation rec {
-    name = "StatusImAppBundle";
+    pname = "StatusImAppBundle";
     version = "20190515";
 
     src =
@@ -11,7 +11,7 @@ let
           url = "https://desktop-app-files.ams3.digitaloceanspaces.com/Status_${version}.app.zip";
           sha256 = "1255jgdp0apqh7qfp752nww91iq39x5mm7rf0wazq2vjahfr4pc5";
         }
-      else throw "${name} is not supported on ${stdenv.hostPlatform.system}";
+      else throw "${pname} is not supported on ${stdenv.hostPlatform.system}";
 
     nativeBuildInputs = [ unzip ];
 
@@ -31,7 +31,7 @@ let
   };
 
 in package // {
-  shellHook = ''
+  shellHook = (package.shellHook or "") + ''
     export STATUSREACT_MACOS_BASEIMAGE_PATH="${package}/src"
   '';
 }
