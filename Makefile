@@ -76,6 +76,10 @@ nix-update-lein: export TARGET_OS := none
 nix-update-lein: ##@nix Update maven nix expressions based on current lein setup
 	nix/tools/lein/generate-nix.sh nix/lein
 
+update-gems-nix: export TARGET_OS := android
+update-gems-nix: ##@nix Update Ruby gems in fastlane/Gemfile.lock and fastlane/gemset.nix
+	fastlane/update.sh
+
 #----------------
 # General targets
 #----------------

@@ -147,10 +147,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0vcplvlykirg2vc56jjxavgpkllzq26xgp7ind7wc5ikaqaz64gn";
+      sha256 = "1mc6y6n7i0hhk7i8wwi4qjnpkm013p7z3xr994s696hk74f91a7j";
       type = "gem";
     };
-    version = "0.64.0";
+    version = "0.65.0";
   };
   faraday = {
     dependencies = ["multipart-post"];
@@ -201,10 +201,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "1dw06kbsnfg6mqzxvkmb4bswgzng0kc1nbfpvv0r7sq99wsscrz9";
+      sha256 = "1ahxbimlx6d2w0dhx2pj7mii2rpigqgmj4bcaymddbwfbp385gmx";
       type = "gem";
     };
-    version = "2.127.1";
+    version = "2.128.0";
   };
   fastlane-plugin-clean_testflight_testers = {
     groups = ["default"];
@@ -379,10 +379,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "1a59k5l29vj060yscaqk370rg5vyr132kbw6x3zar7khzjqjqd8p";
+      sha256 = "0qy09qrd5bwh8mkbj514n5vcw9ni73218h9s3zmvbpmdwrnzi8j4";
       type = "gem";
     };
-    version = "4.5.1";
+    version = "4.9.5";
   };
   multi_json = {
     groups = ["default"];
