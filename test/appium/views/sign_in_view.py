@@ -1,14 +1,20 @@
 from selenium.common.exceptions import NoSuchElementException
 
-from tests import get_current_time, common_password
-from views.base_element import BaseButton, BaseEditBox
+from tests import common_password
+from views.base_element import BaseButton, BaseEditBox, BaseText
 from views.base_view import BaseView
 
 
-class MultiaccountButton(BaseButton):
-    def __init__(self, driver):
-        super(MultiaccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[contains(@text,'0x')]")
+class MultiAccountButton(BaseButton):
+    class Username(BaseText):
+        def __init__(self, driver, locator_value):
+            super(MultiAccountButton.Username, self).__init__(driver)
+            self.locator = self.Locator.xpath_selector(locator_value + '/preceding-sibling::*[1]')
+
+    def __init__(self, driver, position):
+        super(MultiAccountButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("(//*[contains(@text,'0x')])[%s]" % position)
+        self.username = self.Username(driver, self.locator.value)
 
 
 class PasswordInput(BaseEditBox):
@@ -63,7 +69,8 @@ class RecoverAccessButton(BaseButton):
 class CreateMultiaccountButton(BaseButton):
     def __init__(self, driver):
         super(CreateMultiaccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Create multiaccount' or @text='Create new multiaccount']")
+        self.locator = self.Locator.xpath_selector(
+            "//*[@text='Create multiaccount' or @text='Create new multiaccount']")
 
 
 class GenerateKeyButton(BaseButton):
@@ -140,7 +147,6 @@ class SignInView(BaseView):
         if skip_popups:
             self.accept_agreements()
 
-        self.account_button = MultiaccountButton(self.driver)
         self.password_input = PasswordInput(self.driver)
         self.recover_account_password_input = RecoverAccountPasswordInput(self.driver)
 
@@ -173,13 +179,6 @@ class SignInView(BaseView):
         self.next_button.click()
         self.maybe_later_button.click()
         self.maybe_later_button.click()
-
-        # self.element_by_text_part('Display name').wait_for_element(60)
-        # username = username if username else 'user_%s' % get_current_time()
-        # self.name_input.set_value(username)
-
-        # self.next_button.click()
-        # self.get_started_button.click()
         return self.get_home_view()
 
     def recover_access(self, passphrase: str, password: str = common_password):
@@ -200,12 +199,13 @@ class SignInView(BaseView):
         self.password_input.set_value(password)
         return self.sign_in_button.click()
 
-    def click_account_by_position(self, position: int):
+    def get_account_by_position(self, position: int):
         if self.ok_button.is_element_displayed():
             self.ok_button.click()
-        try:
-            self.account_button.find_elements()[position].click()
-        except IndexError:
+        account_button = MultiAccountButton(self.driver, position)
+        if account_button.is_element_displayed():
+            return account_button
+        else:
             raise NoSuchElementException(
                 'Device %s: Unable to find multiaccount by position %s' % (self.driver.number, position)) from None
 

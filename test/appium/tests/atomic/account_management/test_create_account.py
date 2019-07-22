@@ -1,4 +1,6 @@
 import pytest
+import random
+
 from tests import marks, common_password, get_current_time, unique_password
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
@@ -57,22 +59,30 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.high
     def test_home_view(self):
         sign_in = SignInView(self.driver)
-
-        welcome_screen = sign_in.create_user()
-
-        # To Do: update new onboarding flow checks
-        # if not welcome_screen.welcome_image.is_element_displayed():
-        #     self.errors.append('Welcome image is not shown')
-        # for text in ['Welcome to Status',
-        #              'Here you can chat with people in a secure private chat, browse and interact with DApps.']:
-        #     if not welcome_screen.element_by_text(text).is_element_displayed():
-        #         self.errors.append("'%s' text is not shown" % text)
-
-        welcome_screen.get_started_button.click()
+        sign_in.get_started_button.click()
+        sign_in.generate_key_button.click()
+        account_button = sign_in.get_account_by_position(random.randint(1, 4))
+        username = account_button.username.text
+        account_button.click()
+        sign_in.next_button.click()
+        sign_in.next_button.click()
+        sign_in.create_password_input.set_value(common_password)
+        sign_in.next_button.click()
+        sign_in.confirm_your_password_input.set_value(common_password)
+        sign_in.next_button.click()
+        sign_in.maybe_later_button.click()
+        sign_in.maybe_later_button.click()
+        home_view = sign_in.get_home_view()
         text = 'There are no recent chats here yet. \nUse the (+) button to discover people \nto chat with'
-        if not welcome_screen.element_by_text(text).is_element_displayed():
+        if not home_view.element_by_text(text).is_element_displayed():
             self.errors.append("'%s' text is not shown" % text)
-
+        profile_view = home_view.profile_button.click()
+        shown_username_1 = profile_view.username_set_by_user_text.text
+        shown_username_2 = profile_view.default_username_text.text
+        if shown_username_1 != username:
+            self.errors.append("Profile username '%s' doesn't match '%s'" % (shown_username_1, username))
+        if shown_username_2 != username:
+            self.errors.append("Default username '%s' doesn't match '%s'" % (shown_username_2, username))
         self.verify_no_errors()
 
     @marks.testrail_id(5460)
