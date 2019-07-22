@@ -258,7 +258,7 @@
                       (if (and platform/desktop? (= "right" (.-button (.-nativeEvent arg))))
                         (open-chat-context-menu message)
                         (do
-                          (when (= content-type constants/content-type-sticker)
+                          (when (and (= content-type constants/content-type-sticker) (:pack content))
                             (re-frame/dispatch [:stickers/open-sticker-pack (:pack content)]))
                           (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
                                                                           :show-stickers?    false}])

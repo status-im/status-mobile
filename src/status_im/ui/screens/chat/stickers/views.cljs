@@ -80,25 +80,25 @@
       (re-frame/dispatch [:stickers/select-pack pack-id]))))
 
 (defview stickers-paging-panel [installed-packs selected-pack]
-  (letsubs [ref          (atom nil)
-            window-width [:dimensions/window-width]
-            content-width (reagent/atom 0)]
+  (letsubs [ref   (atom nil)
+            width [:dimensions/window-width]]
     {:component-will-update (fn [_ [_ installed-packs selected-pack]]
-                              (update-scroll-position @ref installed-packs selected-pack window-width))
-     :component-did-mount   #(update-scroll-position @ref installed-packs selected-pack window-width)}
-    (let [width @content-width]
-      [react/scroll-view {:style                             {:flex 1} :horizontal true :paging-enabled true
-                          :ref                               #(reset! ref %)
-                          :shows-horizontal-scroll-indicator false
-                          :on-momentum-scroll-end            #(on-scroll % installed-packs window-width)
-                          :scrollEventThrottle               8
-                          :on-scroll                         #(reset! scroll-x (.-nativeEvent.contentOffset.x %))
-                          :on-layout #(reset! content-width (-> % .-nativeEvent .-layout .-width))}
-       ^{:key "recent"}
-       [recent-stickers-panel width]
-       (for [{:keys [stickers id]} installed-packs]
-         ^{:key (str "sticker" id)}
-         [stickers-panel (map #(assoc % :pack id) (filter stickers/valid-sticker? stickers)) width])])))
+                              (update-scroll-position @ref installed-packs selected-pack width))
+     :component-did-mount   #(update-scroll-position @ref installed-packs selected-pack width)}
+    [react/scroll-view {:style                             {:flex 1}
+                        :horizontal                        true
+                        :paging-enabled                    true
+                        :ref                               #(reset! ref %)
+                        :shows-horizontal-scroll-indicator false
+                        :on-momentum-scroll-end            #(on-scroll % installed-packs width)
+                        :scroll-event-throttle             8
+                        :scroll-to-overflow-enabled        true
+                        :on-scroll                         #(reset! scroll-x (.-nativeEvent.contentOffset.x %))}
+     ^{:key "recent"}
+     [recent-stickers-panel width]
+     (for [{:keys [stickers id]} installed-packs]
+       ^{:key (str "sticker" id)}
+       [stickers-panel (map #(assoc % :pack id) (filter stickers/valid-sticker? stickers)) width])]))
 
 (defn pack-icon [{:keys [id on-press background-color]
                   :or   {on-press #(re-frame/dispatch [:stickers/select-pack id])}}
