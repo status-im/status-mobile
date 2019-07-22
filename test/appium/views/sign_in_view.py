@@ -166,13 +166,13 @@ class SignInView(BaseView):
         self.get_started_button.click()
         self.generate_key_button.click()
         self.next_button.click()
-        self.next_button.click()
+        # self.next_button.click() - skip this step for 0.14 release
         self.create_password_input.set_value(password)
         self.next_button.click()
         self.confirm_your_password_input.set_value(password)
         self.next_button.click()
         self.maybe_later_button.click()
-        self.maybe_later_button.click()
+        # self.maybe_later_button.click() - skip this step for 0.14 release
 
         # self.element_by_text_part('Display name').wait_for_element(60)
         # username = username if username else 'user_%s' % get_current_time()
