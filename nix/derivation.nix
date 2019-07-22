@@ -44,7 +44,7 @@ let
 
 in {
   # CHILD DERIVATIONS
-  inherit mobile;
+  inherit mobile status-go;
 
   # TARGETS
   leiningen = {

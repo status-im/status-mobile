@@ -12,9 +12,9 @@ let
   extractStatusGoConfig = callPackage ./extract-status-go-config.nix { inherit (stdenv) lib; };
   versionJSON = importJSON ../../status-go-version.json; # TODO: Simplify this path search with lib.locateDominatingFile
   owner = versionJSON.owner;
+  repo = versionJSON.repo;
   version = versionJSON.version;
   sha256 = versionJSON.src-sha256;
-  repo = "status-go";
   rev = versionJSON.commit-sha1;
   goPackagePath = "github.com/${owner}/${repo}";
   src = fetchFromGitHub { inherit rev owner repo sha256; name = "${repo}-${strings.substring 0 7 rev}-source"; };

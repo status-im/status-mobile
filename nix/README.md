@@ -6,7 +6,7 @@ This folder contains configuration for [Nix](https://nixos.org/), a purely funct
 
 The main config file is [`nix/nix.conf`](/nix/nix.conf) and its main purpose is defining the [binary caches](https://nixos.org/nix/manual/#ch-basic-package-mgmt) which allow download of packages to avoid having to compile them yourself locally.
 
-__NOTE:__ If you are in Asia you might want to move the `nix-cache-cn` to be first in order of `extra-substituters`. Removing `cache.nixos.org` could also help.
+__NOTE:__ If you are in Asia you might want to add the `https://nix-cache-cn.status.im/` to be first in order of `substituters`. Removing `cache.nixos.org` could also help.
 
 # Shell
 

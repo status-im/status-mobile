@@ -9,7 +9,7 @@ let deriv = pkgs.callPackage ./nix/derivation.nix { inherit pkgs target-os; inhe
 
 in {
   targets = {
-    inherit (deriv) mobile leiningen watchman;
+    inherit (deriv) mobile leiningen watchman status-go;
   };
 
   inherit (deriv) shell;

@@ -32,6 +32,16 @@ pipeline {
         '''
       }
     }
+    stage('Build status-go') {
+      steps { script {
+        ['android', 'desktop', 'ios'].each { os ->
+          sh """
+            . ~/.nix-profile/etc/profile.d/nix.sh && \
+            nix-build --argstr target-os all -A targets.status-go.${os}.buildInputs
+          """
+        }
+      } }
+    }
     stage('Build prod-build-android') {
       steps {
         // Run a Nix build to build/fetch everything that is necessary to produce a prod-build for TARGET_OS=android (e.g. maven and node repos)
@@ -53,7 +63,7 @@ pipeline {
         // Run a Nix build to build/fetch everything that is necessary to instantiate shell.nix for TARGET_OS=all
         sh '''
           . ~/.nix-profile/etc/profile.d/nix.sh && \
-          nix-shell --pure --show-trace shell.nix
+          nix-shell --argstr target-os all --pure --show-trace shell.nix
         '''
       }
     }
