@@ -103,8 +103,8 @@
     (fx/merge
      cofx
      {:db (-> db
-              (assoc-in [:stickers/packs-installed id] pack)
-              (assoc :stickers/selected-pack id))}
+              (assoc-in [:stickers/packs-installed id] pack))}
+              ;;(assoc :stickers/selected-pack id))} TODO it doesn't scroll to selected pack on Android
      (multiaccounts/update-stickers (conj (:stickers multiaccount) (pr-str pack))))))
 
 (defn valid-sticker? [sticker]
