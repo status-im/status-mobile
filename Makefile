@@ -1,5 +1,6 @@
-.PHONY: add-gcroots clean clean-nix disable-githooks react-native-android react-native-ios react-native-desktop test release _list _fix-perms
+.PHONY: nix-add-gcroots clean nix-clean disable-githooks react-native-android react-native-ios react-native-desktop test release _list _fix-node-perms
 
+help: SHELL := /bin/sh
 help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
@@ -39,21 +40,6 @@ else
 SHELL := ./nix/shell.sh
 endif
 
-# Main targets
-
-_fix-perms: SHELL := /bin/sh
-_fix-perms: ##@prepare Fix permissions so that directory can be cleaned
-	$(shell test -d node_modules && chmod -R 744 node_modules)
-	$(shell test -d node_modules.tmp && chmod -R 744 node_modules.tmp)
-
-clean: SHELL := /bin/sh
-clean: _fix-perms ##@prepare Remove all output folders
-	git clean -dxf -f
-
-watchman-clean: export _NIX_ATTR := targets.watchman.shell
-watchman-clean:
-	watchman watch-del $${STATUS_REACT_HOME}
-
 shell: ##@prepare Enter into a pre-configured shell
 ifndef IN_NIX_SHELL
 	@ENTER_NIX_SHELL
@@ -61,33 +47,54 @@ else
 	@echo "${YELLOW}Nix shell is already active$(RESET)"
 endif
 
-add-gcroots: SHELL := /bin/sh
-add-gcroots: ##@nix Add Nix GC roots to avoid status-react expressions being garbage collected
-	scripts/add-gcroots.sh
+#----------------
+# General targets
+#----------------
 
-clean-nix: SHELL := /bin/sh
-clean-nix: ##@nix Remove complete nix setup
-	sudo rm -rf /nix ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
+_fix-node-perms: SHELL := /bin/sh
+_fix-node-perms: ##@prepare Fix permissions so that directory can be cleaned
+	$(shell test -d node_modules && chmod -R 744 node_modules)
+	$(shell test -d node_modules.tmp && chmod -R 744 node_modules.tmp)
 
-update-npm-nix: SHELL := /bin/sh
-update-npm-nix: ##@nix Update node2nix expressions based on current package.json
-	nix/desktop/realm-node/generate-nix.sh
+clean: SHELL := /bin/sh
+clean: _fix-node-perms ##@prepare Remove all output folders
+	git clean -dxf -f
 
-update-gradle-nix: SHELL := /bin/sh
-update-gradle-nix: ##@nix Update maven nix expressions based on current gradle setup
-	nix/mobile/android/maven-and-npm-deps/maven/generate-nix.sh
-
-update-lein-nix: SHELL := /bin/sh
-update-lein-nix: ##@nix Update maven nix expressions based on current lein setup
-	nix/tools/lein/generate-nix.sh nix/lein
+watchman-clean: export _NIX_ATTR := targets.watchman.shell
+watchman-clean: ##@prepare Delete repo directory from watchman 
+	watchman watch-del $${STATUS_REACT_HOME}
 
 disable-githooks: SHELL := /bin/sh
-disable-githooks:
+disable-githooks: ##@prepare Disables lein githooks
 	@rm -f ${env.WORKSPACE}/.git/hooks/pre-commit && \
 	sed -i'~' -e 's|\[rasom/lein-githooks|;; [rasom/lein-githooks|' \
 		-e 's|:githooks|;; :githooks|' \
 		-e 's|:pre-commit|;; :pre-commit|' project.clj; \
 	rm project.clj~
+
+#----------------
+# Nix targets
+#----------------
+
+nix-clean: SHELL := /bin/sh
+nix-clean: ##@nix Remove complete nix setup
+	sudo rm -rf /nix ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
+
+nix-add-gcroots: SHELL := /bin/sh
+nix-add-gcroots: ##@nix Add Nix GC roots to avoid status-react expressions being garbage collected
+	scripts/add-nix-gcroots.sh
+
+nix-update-npm: SHELL := /bin/sh
+nix-update-npm: ##@nix Update node2nix expressions based on current package.json
+	nix/desktop/realm-node/generate-nix.sh
+
+nix-update-gradle: SHELL := /bin/sh
+nix-update-gradle: ##@nix Update maven nix expressions based on current gradle setup
+	nix/mobile/android/maven-and-npm-deps/maven/generate-nix.sh
+
+nix-update-lein: SHELL := /bin/sh
+nix-update-lein: ##@nix Update maven nix expressions based on current lein setup
+	nix/tools/lein/generate-nix.sh nix/lein
 
 #----------------
 # Release builds

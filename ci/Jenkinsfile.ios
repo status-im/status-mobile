@@ -105,6 +105,6 @@ pipeline {
   post {
     success { script { load('ci/github.groovy').notifyPR(true) } }
     failure { script { load('ci/github.groovy').notifyPR(false) } }
-    always { sh 'make _fix-perms' }
+    always { sh 'make _fix-node-perms' }
   }
 }
