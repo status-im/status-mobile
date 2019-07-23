@@ -22,7 +22,7 @@ function cleanup() {
       local releaseSrcPath=$(nix-store -q --binding src $releaseDrv)
       local releaseOutPath=$(nix-store -q --outputs $releaseDrv)
       local releaseRefs=( $(nix-store -q --references $releaseDrv) )
-      local prodBuildDrv=$(printf -- '%s\n' "${releaseRefs[@]}" | grep -e "prod-build-android.drv")
+      local prodBuildDrv=$(printf -- '%s\n' "${releaseRefs[@]}" | grep -e "jsbundle-android.drv")
       local prodBuildSrcPath=$(nix-store -q --binding src $prodBuildDrv)
       local prodBuildOutPath=$(nix-store -q --outputs $prodBuildDrv)
       nix-store --delete $prodBuildDrv $prodBuildSrcPath $prodBuildOutPath $releaseDrv $releaseSrcPath $releaseOutPath 2> /dev/null

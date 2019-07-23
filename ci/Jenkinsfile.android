@@ -81,9 +81,9 @@ pipeline {
           }
         } }
         stage('Build') { stages {
-          stage('Clojure') {
+          stage('JSBundle') {
             steps {
-              script { cmn.nix.build(attr: "targets.mobile.prod-build") }
+              script { cmn.nix.build(attr: 'targets.mobile.jsbundle') }
             }
           }
           stage('Bundle') {

@@ -71,9 +71,9 @@ pipeline {
           }
         } }
         stage('Build') { stages {
-          stage('Clojure') {
+          stage('JSBundle') {
             steps {
-              script { desktop.buildClojureScript() }
+              script { desktop.buildJSBundle() }
             }
           }
           stage('Compile') {

@@ -105,46 +105,55 @@ release-ios: export BUILD_ENV ?= prod
 release-ios: watchman-clean ##@build build release for iOS release
 	# Open XCode inside the Nix context
 	@git clean -dxf -f target/ios && \
-	$(MAKE) prod-build-ios && \
+	$(MAKE) jsbundle-ios && \
 	echo "Build in XCode, see https://status.im/build_status/ for instructions" && \
 	scripts/copy-translations.sh && \
 	open ios/StatusIm.xcworkspace
 
 release-desktop: export TARGET_OS ?= $(HOST_OS)
-release-desktop: ##@build build release for desktop release
-	@$(MAKE) prod-build-desktop && \
+release-desktop: ##@build build release for desktop release based on TARGET_OS
+	@$(MAKE) jsbundle-desktop && \
 	scripts/copy-translations.sh && \
 	scripts/build-desktop.sh; \
 	$(MAKE) watchman-clean
 
 release-windows-desktop: export TARGET_OS ?= windows
-release-windows-desktop: ##@build build release for desktop release
-	@$(MAKE) prod-build-desktop && \
+release-windows-desktop: ##@build build release for windows desktop release
+	@$(MAKE) jsbundle-desktop && \
 	scripts/copy-translations.sh && \
 	scripts/build-desktop.sh; \
 	$(MAKE) watchman-clean
 
-prod-build-android: SHELL := /bin/sh
-prod-build-android: export TARGET_OS ?= android
-prod-build-android: export BUILD_ENV ?= prod
-prod-build-android:
-	# Call nix-build to build the 'targets.mobile.prod-build' attribute and copy the index.android.js file to the project root
+prod-build-android: jsbundle-android ##@legacy temporary legacy alias for jsbundle-android
+	@echo "${YELLOW}This a deprecated target name, use jsbundle-android.$(RESET)"
+
+jsbundle-android: SHELL := /bin/sh
+jsbundle-android: export TARGET_OS ?= android
+jsbundle-android: export BUILD_ENV ?= prod
+jsbundle-android: ##@jsbundle Compile JavaScript and Clojure into index.android.js 
+	# Call nix-build to build the 'targets.mobile.jsbundle' attribute and copy the index.android.js file to the project root
 	@git clean -dxf -f ./index.$(TARGET_OS).js && \
-	_NIX_RESULT_PATH=$(shell . ~/.nix-profile/etc/profile.d/nix.sh && nix-build --argstr target-os $(TARGET_OS) --pure --no-out-link --show-trace -A targets.mobile.prod-build) && \
+	_NIX_RESULT_PATH=$(shell . ~/.nix-profile/etc/profile.d/nix.sh && nix-build --argstr target-os $(TARGET_OS) --pure --no-out-link --show-trace -A targets.mobile.jsbundle) && \
 	[ -n "$${_NIX_RESULT_PATH}" ] && cp -av $${_NIX_RESULT_PATH}/* .
 
-prod-build-ios: export TARGET_OS ?= ios
-prod-build-ios: export BUILD_ENV ?= prod
-prod-build-ios:
+prod-build-ios: jsbundle-ios ##@legacy temporary legacy alias for jsbundle-ios
+	@echo "${YELLOW}This a deprecated target name, use jsbundle-ios.$(RESET)"
+
+jsbundle-ios: export TARGET_OS ?= ios
+jsbundle-ios: export BUILD_ENV ?= prod
+jsbundle-ios: ##@jsbundle Compile JavaScript and Clojure into index.ios.js 
 	@git clean -dxf -f ./index.$(TARGET_OS).js && \
-	lein prod-build-ios && \
+	lein jsbundle-ios && \
 	node prepare-modules.js
 
-prod-build-desktop: export TARGET_OS ?= $(HOST_OS)
-prod-build-desktop: export BUILD_ENV ?= prod
-prod-build-desktop:
+prod-build-desktop: jsbundle-desktop ##@legacy temporary legacy alias for jsbundle-desktop
+	@echo "${YELLOW}This a deprecated target name, use jsbundle-desktop.$(RESET)"
+
+jsbundle-desktop: export TARGET_OS ?= $(HOST_OS)
+jsbundle-desktop: export BUILD_ENV ?= prod
+jsbundle-desktop: ##@jsbundle Compile JavaScript and Clojure into index.desktop.js 
 	git clean -qdxf -f ./index.desktop.js desktop/ && \
-	lein prod-build-desktop && \
+	lein jsbundle-desktop && \
 	node prepare-modules.js
 
 #--------------
@@ -249,7 +258,7 @@ android-ports: ##@other Add proxies to Android Device/Simulator
 
 android-logcat: export _NIX_ATTR := targets.mobile.android.adb.shell
 android-logcat: export TARGET_OS ?= android
-android-logcat:
+android-logcat: ##@other Read status-react logs from Android phone using adb
 	adb logcat | grep -e StatusModule -e ReactNativeJS -e StatusNativeLogs
 
 android-install: export _NIX_ATTR := targets.mobile.android.adb.shell

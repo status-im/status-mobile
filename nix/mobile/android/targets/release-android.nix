@@ -1,5 +1,5 @@
 { stdenv, stdenvNoCC, lib, target-os, callPackage,
-  mkFilter, bash, file, gnumake, watchman, gradle, androidEnvShellHook, mavenAndNpmDeps, nodejs, openjdk, prod-build, status-go, zlib }:
+  mkFilter, bash, file, gnumake, watchman, gradle, androidEnvShellHook, mavenAndNpmDeps, nodejs, openjdk, jsbundle, status-go, zlib }:
 
 { build-number ? "9999",
   build-type ? "nightly", # Build type (e.g. nightly, release, e2e). Default is to use .env.nightly file
@@ -54,7 +54,7 @@ in stdenv.mkDerivation {
     cp -f $sourceRoot/${envFileName} $sourceRoot/.env
 
     # Copy index.*.js input file
-    cp -a --no-preserve=ownership ${prod-build}/index*.js $sourceRoot/
+    cp -a --no-preserve=ownership ${jsbundle}/index*.js $sourceRoot/
 
     # Copy android/ directory
     cp -a --no-preserve=ownership ${sourceProjectDir}/android/ $sourceRoot/

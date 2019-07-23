@@ -1,6 +1,6 @@
 { config, stdenv, stdenvNoCC, target-os, callPackage, mkShell,
   mkFilter, androidenv, fetchurl, openjdk, nodejs, bash, maven, zlib,
-  status-go, localMavenRepoBuilder, projectNodePackage, prod-build-fn }:
+  status-go, localMavenRepoBuilder, projectNodePackage, jsbundle }:
 
 let
   platform = callPackage ../../platform.nix { inherit target-os; };
@@ -12,8 +12,7 @@ let
   mavenAndNpmDeps = callPackage ./maven-and-npm-deps { inherit stdenv stdenvNoCC gradle bash nodejs zlib localMavenRepoBuilder mkFilter projectNodePackage status-go; androidEnvShellHook = androidEnv.shellHook; };
 
   # TARGETS
-  prod-build = (prod-build-fn { inherit projectNodePackage; });
-  release = callPackage ./targets/release-android.nix { inherit target-os gradle mavenAndNpmDeps mkFilter nodejs prod-build status-go zlib; androidEnvShellHook = androidEnv.shellHook; };
+  release = callPackage ./targets/release-android.nix { inherit target-os gradle mavenAndNpmDeps mkFilter nodejs jsbundle status-go zlib; androidEnvShellHook = androidEnv.shellHook; };
   generate-maven-and-npm-deps-shell = callPackage ./maven-and-npm-deps/maven/shell.nix { inherit gradle maven projectNodePackage status-go; androidEnvShellHook = androidEnv.shellHook; };
   adb-shell = mkShell {
     buildInputs = [ androidEnv.licensedAndroidEnv ];

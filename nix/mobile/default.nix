@@ -1,5 +1,5 @@
 { config, stdenv, pkgs, callPackage, mkShell, fetchurl, fetchFromGitHub, target-os,
-  mkFilter, localMavenRepoBuilder, maven, status-go, composeXcodeWrapper, nodejs, yarn, prod-build-fn }:
+  mkFilter, localMavenRepoBuilder, maven, status-go, composeXcodeWrapper, nodejs, yarn }:
 
 let
   inherit (stdenv.lib) catAttrs concatStrings optional unique;
@@ -9,7 +9,7 @@ let
     version = "10.2.1";
   };
   xcodeWrapper = composeXcodeWrapper xcodewrapperArgs;
-  androidPlatform = callPackage ./android { inherit config target-os mkShell mkFilter nodejs maven localMavenRepoBuilder projectNodePackage prod-build-fn; status-go = status-go.android; };
+  androidPlatform = callPackage ./android { inherit config target-os mkShell mkFilter nodejs maven localMavenRepoBuilder projectNodePackage jsbundle; status-go = status-go.android; };
   iosPlatform = callPackage ./ios { inherit config mkFilter mkShell xcodeWrapper projectNodePackage; status-go = status-go.ios; };
   fastlane = callPackage ./fastlane { inherit stdenv target-os mkShell; };
   selectedSources = [
@@ -23,7 +23,7 @@ let
   projectNodePackage = callPackage ./node-package.nix { inherit pkgs nodejs yarn; };
 
   # TARGETS
-  prod-build = prod-build-fn { inherit projectNodePackage; };
+  jsbundle = pkgs.callPackage ../targets/jsbundle.nix { inherit stdenv pkgs target-os nodejs localMavenRepoBuilder mkFilter projectNodePackage; };
 
 in {
   buildInputs = unique (catAttrs "buildInputs" selectedSources);
@@ -34,5 +34,5 @@ in {
   ios = iosPlatform;
 
   # TARGETS
-  inherit prod-build fastlane;
+  inherit jsbundle fastlane;
 }

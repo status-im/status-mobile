@@ -30,18 +30,18 @@
              :pre-commit   ["lein cljfmt check src/status_im/core.cljs $(git diff --diff-filter=d --cached --name-only src test/cljs)"]}
   :cljfmt {:indents {letsubs [[:inner 0]]}}
   :clean-targets ["target/" "index.ios.js" "index.android.js" "status-modules/cljs"]
-  :aliases {"prod-build"         ^{:doc "Recompile code with prod profile."}
+  :aliases {"jsbundle"         ^{:doc "Recompile code with prod profile."}
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "ios"]
              ["with-profile" "prod" "cljsbuild" "once" "android"]
              ["with-profile" "prod" "cljsbuild" "once" "desktop"]]
-            "prod-build-android" ^{:doc "Recompile code for Android with prod profile."}
+            "jsbundle-android" ^{:doc "Recompile code for Android with prod profile."}
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "android"]]
-            "prod-build-ios"     ^{:doc "Recompile code for iOS with prod profile."}
+            "jsbundle-ios"     ^{:doc "Recompile code for iOS with prod profile."}
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "ios"]]
-            "prod-build-desktop" ^{:doc "Recompile code for desktop with prod profile."}
+            "jsbundle-desktop" ^{:doc "Recompile code for desktop with prod profile."}
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "desktop"]]
             "figwheel-repl"      ["with-profile" "+figwheel" "run" "-m" "clojure.main" "env/dev/run.clj"]

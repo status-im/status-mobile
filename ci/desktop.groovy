@@ -3,11 +3,11 @@ utils = load 'ci/utils.groovy'
 
 packageFolder = './StatusImPackage'
 
-def buildClojureScript() {
+def buildJSBundle() {
   nix.shell(
     '''
-      make prod-build-desktop && \
-      ./scripts/build-desktop.sh buildClojureScript
+      make jsbundle-desktop && \
+      ./scripts/build-desktop.sh buildJSBundle
     ''',
     keep: ['VERBOSE_LEVEL']
   )

@@ -42,11 +42,11 @@ pipeline {
         }
       } }
     }
-    stage('Build prod-build-android') {
+    stage('Build jsbundle-android') {
       steps {
-        // Run a Nix build to build/fetch everything that is necessary to produce a prod-build for TARGET_OS=android (e.g. maven and node repos)
+        // Run a Nix build to build/fetch everything that is necessary to produce a jsbundle for TARGET_OS=android (e.g. maven and node repos)
         sh '''
-          args="--argstr target-os android --show-trace -A targets.mobile.prod-build"
+          args="--argstr target-os android --show-trace -A targets.mobile.jsbundle"
 
           . ~/.nix-profile/etc/profile.d/nix.sh && \
           nix-build --pure --no-out-link $args
@@ -74,9 +74,9 @@ pipeline {
             . ~/.nix-profile/etc/profile.d/nix.sh && \
             find /nix/store/ -mindepth 1 -maxdepth 1 \
               -not -name '.links' -and -not -name '*.lock' \
-              -and -not -name '*-status-react-prod-build-source' \
+              -and -not -name '*-status-react-jsbundle-source' \
               -and -not -name '*-status-react-release-android-source' \
-              -and -not -name '*-prod-build-*' \
+              -and -not -name '*-jsbundle-*' \
               -and -not -name '*-release-android' | \
               xargs nix-copy-closure -v --to ${NIX_CACHE_USER}@${NIX_CACHE_HOST}
           """

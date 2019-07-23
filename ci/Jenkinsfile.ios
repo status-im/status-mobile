@@ -64,9 +64,9 @@ pipeline {
           }
         } }
         stage('Build') { stages {
-          stage('Clojure') {
+          stage('JSBundle') {
             steps {
-              script { cmn.nix.shell('make prod-build-ios') }
+              script { cmn.nix.shell('make jsbundle-ios') }
             }
           }
           stage('Bundle') {

@@ -128,7 +128,7 @@ function joinStrings() {
   echo ${var[@]}
 }
 
-function buildClojureScript() {
+function buildJSBundle() {
   # create directory for all work related to bundling
   rm -rf $WORKFOLDER
   mkdir -p $WORKFOLDER
@@ -490,7 +490,7 @@ function bundle() {
 init
 
 if [ -z "$@" ]; then
-  buildClojureScript
+  buildJSBundle
   compile
   bundle
 else

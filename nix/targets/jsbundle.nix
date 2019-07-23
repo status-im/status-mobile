@@ -3,23 +3,20 @@
 #
 
 { stdenv, stdenvNoCC, lib, target-os, callPackage, pkgs,
-  mkFilter, clojure, leiningen, maven, nodejs, localMavenRepoBuilder }:
-
-# The Nix expression takes a second argument to specify the node dependencies
-{ projectNodePackage }:
+  mkFilter, clojure, leiningen, maven, nodejs, localMavenRepoBuilder, projectNodePackage }:
 
 let
-  lein-command = if target-os == "all" then "lein prod-build" else "lein prod-build-${target-os}";
+  lein-command = if target-os == "all" then "lein jsbundle" else "lein jsbundle-${target-os}";
   lein-project-deps = import ../lein/lein-project-deps.nix { };
   leinProjectDepsLocalRepo = localMavenRepoBuilder "lein-project-deps" lein-project-deps;
 
 in stdenv.mkDerivation {
-  name = "prod-build-${target-os}";
+  name = "jsbundle-${target-os}";
   src =
     let path = ./../..;
     in builtins.path { # We use builtins.path so that we can name the resulting derivation, otherwise the name would be taken from the checkout directory, which is outside of our control
       inherit path;
-      name = "status-react-prod-build-source";
+      name = "status-react-jsbundle-source";
       filter =
         # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
         mkFilter {
