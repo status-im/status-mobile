@@ -393,6 +393,7 @@
 (fx/defn update-installation [{:keys [db]} installation-id metadata]
   {:db (update-in db [:pairing/installations installation-id]
                   assoc
+                  :installation-id installation-id
                   :name (:name metadata)
                   :device-type (:deviceType metadata)
                   :fcmToken (:fcmToken metadata))

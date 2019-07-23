@@ -198,7 +198,7 @@
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/devices)]]
      [react/scroll-view {:style {:background-color :white}}
-      (if (and false (string/blank? (-> installations first :name)))
+      (if (string/blank? (-> installations first :name))
         [edit-installation-name]
         [react/view
          [pair-this-device]

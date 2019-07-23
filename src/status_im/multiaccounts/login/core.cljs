@@ -121,6 +121,7 @@
 
 (fx/defn multiaccount-and-db-password-do-not-match
   [{:keys [db] :as cofx} error]
+  (log/error "failed to login" error)
   (fx/merge
    cofx
    {:db
