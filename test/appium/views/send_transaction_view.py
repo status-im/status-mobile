@@ -231,7 +231,7 @@ class SendTransactionView(BaseView):
             wallet_view.ok_got_it_button.click()
 
     def sign_transaction(self, sender_password: str = common_password):
-        self.sign_with_password.click()
+        self.sign_with_password.click_until_presence_of_element(self.enter_password_input)
         self.enter_password_input.send_keys(sender_password)
         self.sign_button.click_until_presence_of_element(self.ok_button)
         self.ok_button.click()

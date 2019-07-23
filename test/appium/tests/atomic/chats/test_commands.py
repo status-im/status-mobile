@@ -466,7 +466,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
             self.errors.append(
                 "'Insufficient funds' error is now shown when sending %s ETHro from chat with balance %s" % (
                     round(eth_value + 1), eth_value))
-        send_transaction.cancel_button.click()
+        send_transaction.cancel_button.click_until_presence_of_element(chat_view.commands_button)
         chat_view.commands_button.click()
         chat_view.send_command.click()
         chat_view.asset_by_name('STT').scroll_to_element()

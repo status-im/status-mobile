@@ -1,3 +1,4 @@
+from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
 
 from tests import common_password
@@ -133,6 +134,16 @@ class PrivacyPolicyLink(BaseButton):
     def __init__(self, driver):
         super(PrivacyPolicyLink, self).__init__(driver)
         self.locator = self.Locator.text_part_selector('privacy policy')
+
+    def click(self):
+        element = self.find_element()
+        location = element.location
+        size = element.size
+        x = int(location['x'] + size['width'] * 0.8)
+        y = int(location['y'] + size['height'] / 2)
+        TouchAction(self.driver).tap(None, x, y).perform()
+        self.driver.info('Tap on %s' % self.name)
+        return self.navigate()
 
     def navigate(self):
         from views.web_views.base_web_view import BaseWebView

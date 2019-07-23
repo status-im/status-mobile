@@ -120,6 +120,9 @@ class BaseElement(object):
                     self.driver.swipe(500, 1000, 500, 500)
                 else:
                     self.driver.swipe(500, 500, 500, 1000)
+        else:
+            raise NoSuchElementException(
+                "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
 
     def is_element_present(self, sec=5):
         try:
