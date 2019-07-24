@@ -495,7 +495,7 @@ class ProfileView(BaseView):
         self.debug_mode_toggle = DebugModeToggle(self.driver)
         self.contacts_button = ContactsButton(self.driver)
 
-        # Backup seed phrase
+        # Backup recovery phrase
         self.backup_recovery_phrase_button = BackupRecoveryPhraseButton(self.driver)
         self.ok_continue_button = OkContinueButton(self.driver)
         self.recovery_phrase_table = RecoveryPhraseTable(self.driver)

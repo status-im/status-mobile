@@ -21,7 +21,7 @@
 
 ;; BLACK
 (def black "#000000") ;; Used as the default text color
-(def black-transparent (alpha black 0.1)) ;; Used as background color for rounded button on dark background and as background color for containers like "Backup seed phrase"
+(def black-transparent (alpha black 0.1)) ;; Used as background color for rounded button on dark background and as background color for containers like "Backup recovery phrase"
 (def black-transparent-40 (alpha black 0.4))
 (def gray-light black-transparent) ;; Used as divider color
 (def black-light "#2d2d2d")

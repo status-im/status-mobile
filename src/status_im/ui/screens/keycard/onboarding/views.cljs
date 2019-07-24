@@ -418,13 +418,13 @@
        [react/view {:margin-top 16}
         [react/text {:style {:typography :header
                              :text-align :center}}
-         "Enter your seed phrase"]]
+         "Enter your recovery phrase"]]
        [react/view {:margin-top  16
                     :width       "85%"
                     :align-items :center}
         [react/text {:style {:color      colors/gray
                              :text-align :center}}
-         "Enter your seed phrase, separate the words by single spaces"]]]
+         "Enter your recovery phrase, separate the words by single spaces"]]]
       [react/view
        [text-input/text-input-with-label
         {:on-change-text    #(re-frame/dispatch [:keycard.recovery.enter-mnemonic.ui/input-changed %])

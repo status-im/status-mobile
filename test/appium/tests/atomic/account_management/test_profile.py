@@ -131,7 +131,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view.profile_button.click()
         profile_view.backup_recovery_phrase()
         if sign_in_view.profile_button.counter.is_element_displayed(60):
-            self.errors.append('Profile button counter is shown after seed phrase backup')
+            self.errors.append('Profile button counter is shown after recovery phrase backup')
         self.verify_no_errors()
 
     @marks.testrail_id(5433)
