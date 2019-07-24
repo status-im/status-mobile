@@ -204,22 +204,14 @@
            (assoc-in [:multiaccounts/create :step] :enter-name))}))
 
 (defn login-only-events [{:keys [db] :as cofx} address stored-pns]
-  (fx/merge cofx
-            (when-not (:intro-wizard db)
-              (cond-> {:notifications/request-notifications-permissions nil}
-                platform/ios?
-                ;; on ios navigation state might be not initialized yet when
-                ;; navigate-to call happens.
-                ;; That's why it should be delayed a bit.
-                ;; TODO(rasom): revisit this later and find better solution
-                (assoc :dispatch-later
-                       [{:ms       1
-                         :dispatch [:navigate-to :home]}])))
-            (when-not (or (:intro-wizard db) platform/ios?)
-              (navigation/navigate-to-cofx :home nil))
-            (notifications/process-stored-event address stored-pns)
-            (when platform/desktop?
-              (chat-model/update-dock-badge-label))))
+  (let [cofx (fx/merge cofx (notifications/process-stored-event cofx address stored-pns))]
+    (fx/merge cofx
+              (when-not (:intro-wizard db)
+                {:notifications/request-notifications-permissions nil})
+              (when-not (or (:intro-wizard db) (::navigation/navigate-to cofx))
+                (navigation/navigate-to-cofx :home nil))
+              (when platform/desktop?
+                (chat-model/update-dock-badge-label)))))
 
 (defn dev-mode? [cofx]
   (get-in cofx [:db :multiaccount :dev-mode?]))
