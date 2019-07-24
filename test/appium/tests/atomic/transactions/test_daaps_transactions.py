@@ -274,7 +274,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction_view.gas_price_input.clear()
         send_transaction_view.gas_price_input.set_value(gas_price)
         send_transaction_view.update_fee_button.click()
-        send_transaction_view.done_button.click()
+        # send_transaction_view.done_button.click()
 
         # Check whether sending a tx in batch with normal gas limit and price does not trigger the warning
         # so the transaction can be signed
@@ -338,6 +338,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         self.network_api.verify_balance_is_updated(initial_balance=0, recipient_address=wallet_address[2:])
 
         wallet = home_view.wallet_button.click()
+        wallet.accounts_status_account.click()
         wallet.send_transaction(asset_name='ETHro', amount=0.1, recipient=recipient, sign_transaction=False)
 
         # Check whether sending all available ETH triggers the warning

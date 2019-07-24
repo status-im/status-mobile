@@ -1,6 +1,6 @@
-from operator import itemgetter
-from typing import List
 from datetime import datetime
+from operator import itemgetter
+from typing import Dict
 
 
 def fill_string_with_char(string: str, fillchar: str, amount: int, start: bool = False, end: bool = False) -> str:
@@ -30,7 +30,7 @@ def fill_string_with_char(string: str, fillchar: str, amount: int, start: bool =
     return string_revised
 
 
-def get_merged_txs_list(normal_txs_list, token_events_list) -> List[dict]:
+def get_merged_txs_list(normal_txs_list, token_events_list) -> Dict[str, Dict[str, str]]:
     res = []
     for i in normal_txs_list:
         for j in token_events_list:
@@ -38,7 +38,8 @@ def get_merged_txs_list(normal_txs_list, token_events_list) -> List[dict]:
                 normal_txs_list.remove(i)
     res.extend(normal_txs_list)
     res.extend(token_events_list)
-    return sorted(res, key=itemgetter('timeStamp'), reverse=True)
+    txs_list = sorted(res, key=itemgetter('timeStamp'), reverse=True)
+    return dict((item['hash'], item) for item in txs_list)
 
 
 def generate_timestamp():

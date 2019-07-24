@@ -391,27 +391,19 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         transaction_view = wallet_view.transaction_history_button.click()
 
         status_tx_number = transaction_view.transactions_table.get_transactions_number()
-        actual_txs_list = []
+        if status_tx_number < 1:
+            self.driver.fail('No transactions found')
 
         for n in range(status_tx_number):
             transactions_details = transaction_view.transactions_table.transaction_by_index(n).click()
-
-            status_tx = {
-                'hash': transactions_details.get_transaction_hash(),
-                'from': transactions_details.get_sender_address(),
-                'to': transactions_details.get_recipient_address(),
-            }
-            actual_txs_list.append(status_tx)
-            transactions_details.back_button.click()
-
-            if [tx['hash'] for tx in actual_txs_list] != [tx['hash'] for tx in expected_txs_list]:
-                self.errors.append('Transactions hashes do not match!')
-
-            if [tx['from'] for tx in actual_txs_list] != [tx['from'] for tx in expected_txs_list]:
+            tx_hash = transactions_details.get_transaction_hash()
+            tx_from = transactions_details.get_sender_address()
+            tx_to = transactions_details.get_recipient_address()
+            if tx_from != expected_txs_list[tx_hash]['from']:
                 self.errors.append('Transactions senders do not match!')
-
-            if [tx['to'] for tx in actual_txs_list] != [tx['to'] for tx in expected_txs_list]:
+            if tx_to != expected_txs_list[tx_hash]['to']:
                 self.errors.append('Transactions recipients do not match!')
+            transactions_details.back_button.click()
 
         self.verify_no_errors()
 

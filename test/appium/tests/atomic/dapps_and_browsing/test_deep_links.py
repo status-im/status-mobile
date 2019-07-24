@@ -74,9 +74,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         self.driver.close_app()
         deep_link = 'https://get.status.im/user/%s' % basic_user['public_key'][:-10]
         sign_in_view.open_weblink_and_login(deep_link)
-        chat_view = sign_in_view.get_home_view()
-        chat_view.plus_button.click()
-        try:
-            assert chat_view.start_new_chat_button.is_element_present()
-        except (AssertionError, NoSuchElementException):
+        home_view = sign_in_view.get_home_view()
+        home_view.plus_button.click_until_presence_of_element(home_view.start_new_chat_button)
+        if not home_view.start_new_chat_button.is_element_present():
             pytest.fail("Can't navigate to start new chat after app opened from deep link with invalid public key")

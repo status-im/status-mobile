@@ -106,6 +106,8 @@ class ChatElement(BaseButton):
                 break
             time.sleep(3)
             counter += 1
+        else:
+            raise NoSuchElementException('Unable to swipe and delete - Delete button is not found') from None
         self.swipe_delete_button.click()
 
     @property
