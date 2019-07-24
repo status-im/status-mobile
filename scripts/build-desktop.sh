@@ -137,8 +137,13 @@ function buildClojureScript() {
 
   # from index.desktop.js create javascript bundle and resources folder
   echo "Generating $JS_BUNDLE_PATH and assets folder..."
-  react-native bundle --entry-file index.desktop.js --bundle-output "$JS_BUNDLE_PATH" \
-                      --dev false --platform desktop --assets-dest "$WORKFOLDER/assets"
+  react-native bundle \
+    --reset-cache \
+    --dev false \
+    --entry-file index.desktop.js \
+    --bundle-output "$JS_BUNDLE_PATH" \
+    --assets-dest "$WORKFOLDER/assets" \
+    --platform desktop
   echo -e "${GREEN}Generating done.${NC}"
   echo ""
 }
