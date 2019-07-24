@@ -11,7 +11,8 @@
             [status-im.utils.utils :as utils]
             [status-im.signing.core :as signing]
             [status-im.utils.contenthash :as contenthash]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]))
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [clojure.string :as string]))
 
 (defn pack-data-callback
   [id open?]
@@ -119,8 +120,8 @@
                  (navigation/navigate-to-cofx % :stickers-pack-modal pack)))))
 
 (fx/defn open-sticker-pack
-  [{{:stickers/keys [packs packs-installed] :as db} :db :as cofx} id]
-  (when id
+  [{{:stickers/keys [packs packs-installed] :keys [network] :as db} :db :as cofx} id]
+  (when (and id (string/starts-with? network "mainnet"))
     (let [pack    (or (get packs-installed id)
                       (get packs id))
           contract-address (contracts/get-address db :status/stickers)]
