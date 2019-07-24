@@ -65,19 +65,21 @@
   [react/view {:flex 1}
    [status-bar/status-bar {:type :modal-white}]
    [react/scroll-view
-    #_[react/view {:justify-content :space-between
-                   :flex-direction  :row}
-       #_[react/touchable-highlight {:on-press            #(re-frame/dispatch [:navigate-back])
-                                     :style               {:width           56
-                                                           :height          56
-                                                           :justify-content :center
-                                                           :align-items     :center}
-                                     :accessibility-label :done-button}
-          [icons/icon :main-icons/close {}]]]
-    [react/view {:justify-content :center
-                 :align-items     :center}
-     [react/image {:source (:large-badge resources/ui)
-                   :style  {:margin-top 4}}]]
+    [react/view {:justify-content :space-between
+                 :flex-direction  :row}
+     [react/touchable-highlight {:on-press            #(re-frame/dispatch [:navigate-back])
+                                 :style               {:width           56
+                                                       :height          56
+                                                       :justify-content :center
+                                                       :align-items     :center}
+                                 :accessibility-label :done-button}
+      [icons/icon :main-icons/close {}]]
+     [react/view {:flex 1
+                  :margin-right    56
+                  :justify-content :center
+                  :align-items     :center}
+      [react/image {:source (:large-badge resources/ui)
+                    :style  {:margin-top 4}}]]]
     [react/text {:style {:margin-top    0
                          :margin-bottom 8
                          :typography    :header
