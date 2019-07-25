@@ -124,10 +124,15 @@
         transfer-by-id   (get-in db [:wallet :transaction id])
         unique-id (when-not (or transfer-by-id
                                 (= transfer transfer-by-hash))
-                    (if transfer-by-hash id hash))]
+                    (if (and transfer-by-hash
+                             (not (= :pending
+                                     (:type transfer-by-hash))))
+                      id
+                      hash))]
     (when unique-id
       (fx/merge cofx
-                {:db (assoc-in db [:wallet :transactions unique-id] transfer)}
+                {:db (assoc-in db [:wallet :transactions unique-id]
+                               (assoc transfer :hash unique-id))}
                 (check-transaction transfer)))))
 
 (fx/defn new-transfers
