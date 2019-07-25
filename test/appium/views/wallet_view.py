@@ -309,6 +309,8 @@ class WalletView(BaseView):
         return AssetCheckBox(self.driver, asset_name)
 
     def select_asset(self, *args):
+        if not self.accounts_more_options.is_element_displayed():
+            self.swipe_down()
         self.accounts_more_options.click()
         self.manage_assets_button.click()
         for asset in args:
