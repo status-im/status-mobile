@@ -34,7 +34,7 @@
                                                    :else (re-frame/dispatch [:stickers/buy-pack id price]))}
        [react/view (styles/price-badge (and (not (or owned (zero? price))) (or no-snt? not-enough-snt?)))
         (when (and (not (zero? price))) ;(not no-snt?))
-          [icons/icon :icons/logo {:color colors/white :width 12 :height 12 :container-style {:margin-right 8}}])
+          [icons/icon :icons/price {:color colors/white :container-style {:margin-right 8}}])
         (if pending
           [react/activity-indicator {:animating true
                                      :color     colors/white}]
