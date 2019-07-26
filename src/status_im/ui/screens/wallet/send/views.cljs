@@ -21,21 +21,19 @@
    [toolbar/nav-button (actions/back-white #(actions/default-handler))]
    [toolbar/content-title {:color :white} title]])
 
-(defn- sign-transaction-button [amount-error amount sufficient-funds? online?]
-  (let [sign-enabled? (and (nil? amount-error)
-                           (not (nil? amount))
-                           sufficient-funds?
-                           online?)]
-    [bottom-buttons/bottom-buttons
-     styles/sign-buttons
-     [react/view]
-     [button/button {:style               components.styles/flex
-                     :disabled?           (not sign-enabled?)
-                     :on-press            #(re-frame/dispatch [:wallet.ui/sign-transaction-button-clicked])
-                     :text-style          {:color :white}
-                     :accessibility-label :sign-transaction-button}
-      (i18n/label :t/transactions-sign-transaction)
-      [vector-icons/icon :main-icons/next {:color (if sign-enabled? colors/white colors/white-light-transparent)}]]]))
+(defn- sign-transaction-button [sign-enabled?]
+  [bottom-buttons/bottom-buttons
+   styles/sign-buttons
+   [react/view]
+   [button/button {:style               components.styles/flex
+                   :disabled?           (not sign-enabled?)
+                   :on-press            #(re-frame/dispatch [:wallet.ui/sign-transaction-button-clicked])
+                   :text-style          {:color :white}
+                   :accessibility-label :sign-transaction-button}
+    (i18n/label :t/transactions-sign-transaction)
+    [vector-icons/icon :main-icons/next {:color (if sign-enabled?
+                                                  colors/white
+                                                  colors/white-light-transparent)}]]])
 
 (defn- render-send-transaction-view [{:keys [chain transaction scroll all-tokens amount-input network-status]}]
   (let [{:keys [amount amount-text amount-error asset-error to to-name sufficient-funds? symbol]} transaction
@@ -64,7 +62,11 @@
           :amount-text   amount-text
           :input-options {:on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount % symbol decimals])
                           :ref            (partial reset! amount-input)}} token]]]
-      [sign-transaction-button amount-error amount sufficient-funds? online?]]]))
+      [sign-transaction-button (and to
+                                    (nil? amount-error)
+                                    (not (nil? amount))
+                                    sufficient-funds?
+                                    online?)]]]))
 
 (defn- send-transaction-view [{:keys [scroll]}]
   (let [amount-input (atom nil)
