@@ -1694,8 +1694,8 @@
 
 (handlers/register-handler-fx
  :stickers/load-pack
- (fn [cofx [_ proto-code hash id price open?]]
-   (stickers/load-pack cofx proto-code hash id price open?)))
+ (fn [cofx [_ url id price open?]]
+   (stickers/load-pack cofx url id price open?)))
 
 (handlers/register-handler-fx
  :stickers/select-pack
