@@ -84,7 +84,7 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location access is required for some DApps to function properly.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Photos access it required to give you ability to choose custom profile pictures.</string>
+	<string>Photos access is required to give you the ability to choose custom profile pictures.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter-Bold.otf</string>
