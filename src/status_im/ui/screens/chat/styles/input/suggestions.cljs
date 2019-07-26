@@ -17,8 +17,3 @@
    :padding-horizontal  14
    :border-top-color colors/gray-light
    :border-top-width border-height})
-
-(def item-suggestion-description
-  {:flex        1
-   :margin-left 10
-   :color       colors/gray})

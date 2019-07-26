@@ -5,13 +5,6 @@
 
 (def header-draggable-icon "rgba(73, 84, 93, 0.23)")
 
-(def overlap-container
-  {:position :absolute
-   :left     0
-   :top      0
-   :right    0
-   :bottom   0})
-
 (defn expandable-container [anim-value bottom max-height]
   {:background-color colors/white
    :left             0
@@ -24,7 +17,8 @@
    :shadow-opacity   0.12
    :shadow-color     colors/white
    :max-height       max-height
-   :transform        [{:translateY anim-value}]})
+   :transform        [{:translateY anim-value}]
+   :z-index          1})
 
 (def header-container
   {:min-height       19

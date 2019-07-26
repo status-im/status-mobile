@@ -7,8 +7,7 @@
 (defview parameter-box-container []
   (letsubs [parameter-box [:chats/parameter-box]]
     (when parameter-box
-      [react/view
-       [parameter-box]])))
+      [parameter-box])))
 
 (defview parameter-box-view []
   (letsubs [show-box? [:chats/show-parameter-box?]]
