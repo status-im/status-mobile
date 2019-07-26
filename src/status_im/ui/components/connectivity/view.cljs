@@ -147,9 +147,10 @@
             window-width (reagent/atom 0)]
     {:component-will-mount
      (fn []
-       (if (:connected? status-properties)
-         (animation/set-value anim-translate-y neg-connectivity-bar-height)
-         (animation/set-value anim-translate-y 0)))}
+       (when anim-translate-y
+         (if (:connected? status-properties)
+           (animation/set-value anim-translate-y neg-connectivity-bar-height)
+           (animation/set-value anim-translate-y 0))))}
     (let [{:keys [loading-indicator?]} status-properties]
       [react/view {:style     {:align-items :stretch
                                :z-index     1}
