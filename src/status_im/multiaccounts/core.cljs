@@ -108,6 +108,39 @@
               (multiaccounts.update/update-settings (assoc settings :pfs? enabled?)
                                                     {}))))
 
+(fx/defn toggle-datasync
+  [{:keys [db] :as cofx} enabled?]
+  (let [settings (get-in db [:multiaccount :settings])
+        warning  {:utils/show-popup {:title (i18n/label :t/datasync-warning-title)
+                                     :content (i18n/label :t/datasync-warning-content)}}]
+
+    (fx/merge cofx
+              (when enabled? warning)
+              (multiaccounts.update/update-settings (assoc settings :datasync? enabled?)
+                                                    {}))))
+
+(fx/defn toggle-v1-messages
+  [{:keys [db] :as cofx} enabled?]
+  (let [settings (get-in db [:multiaccount :settings])
+        warning  {:utils/show-popup {:title (i18n/label :t/v1-messages-warning-title)
+                                     :content (i18n/label :t/v1-messages-warning-content)}}]
+
+    (fx/merge cofx
+              (when enabled? warning)
+              (multiaccounts.update/update-settings (assoc settings :v1-messages? enabled?)
+                                                    {}))))
+
+(fx/defn toggle-disable-discovery-topic
+  [{:keys [db] :as cofx} enabled?]
+  (let [settings (get-in db [:multiaccount :settings])
+        warning  {:utils/show-popup {:title (i18n/label :t/disable-discovery-topic-warning-title)
+                                     :content (i18n/label :t/disable-discovery-topic-warning-content)}}]
+
+    (fx/merge cofx
+              (when enabled? warning)
+              (multiaccounts.update/update-settings (assoc settings :disable-discovery-topic? enabled?)
+                                                    {}))))
+
 (fx/defn switch-web3-opt-in-mode
   [{:keys [db] :as cofx} opt-in]
   (let [settings (get-in db [:multiaccount :settings])]

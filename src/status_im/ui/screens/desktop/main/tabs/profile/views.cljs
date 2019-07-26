@@ -165,6 +165,9 @@
                      current-mailserver-id
                      preferred-mailserver-id)
           pfs? (:pfs? settings)
+          datasync? (:datasync? settings)
+          v1-messages? (:datasync? settings)
+          disable-discovery-topic? (:disable-discovery-topic? settings)
           connection-message (connection-status peers-count node-status mailserver-state disconnected)]
       [react/scroll-view
        [react/text {:style styles/advanced-settings-title}
@@ -217,7 +220,31 @@
         [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :t/device-to-device)]
         [react/switch {:track-color     #js {:true colors/blue :false nil}
                        :value           pfs?
-                       :on-value-change #(re-frame/dispatch [:multiaccounts.ui/toggle-device-to-device (not pfs?)])}]]])))
+                       :on-value-change #(re-frame/dispatch [:multiaccounts.ui/toggle-device-to-device (not pfs?)])}]]
+
+       [react/view {:style styles/title-separator}]
+       [react/text {:style styles/adv-settings-subtitle} (i18n/label :t/v1-messages)]
+       [react/view {:style (styles/profile-row false)}
+        [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :t/v1-messages)]
+        [react/switch {:track-color     #js {:true colors/blue :false nil}
+                       :value           pfs?
+                       :on-value-change #(re-frame/dispatch [:multiaccounts.ui/toggle-v1-messages (not v1-messages?)])}]]
+
+       [react/view {:style styles/title-separator}]
+       [react/text {:style styles/adv-settings-subtitle} (i18n/label :t/datasync)]
+       [react/view {:style (styles/profile-row false)}
+        [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :t/datasync)]
+        [react/switch {:track-color     #js {:true colors/blue :false nil}
+                       :value           pfs?
+                       :on-value-change #(re-frame/dispatch [:multiaccounts.ui/toggle-datasync (not datasync?)])}]]
+
+       [react/view {:style styles/title-separator}]
+       [react/text {:style styles/adv-settings-subtitle} (i18n/label :t/disable-discovery-topic)]
+       [react/view {:style (styles/profile-row false)}
+        [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :t/disable-discovery-topic)]
+        [react/switch {:track-color     #js {:true colors/blue :false nil}
+                       :value           pfs?
+                       :on-value-change #(re-frame/dispatch [:multiaccounts.ui/toggle-disable-discovery-topic (not disable-discovery-topic?)])}]]])))
 
 (views/defview installations []
   (views/letsubs [installations     [:pairing/installations]]

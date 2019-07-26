@@ -224,6 +224,27 @@
       {:label-kw  :t/device-to-device
        :value     (:pfs? settings)
        :action-fn #(re-frame/dispatch [:multiaccounts.ui/toggle-device-to-device %])}])
+   (when dev-mode?
+     [profile.components/settings-item-separator])
+   (when dev-mode?
+     [profile.components/settings-switch-item
+      {:label-kw  :t/datasync
+       :value     (:datasync? settings)
+       :action-fn #(re-frame/dispatch [:multiaccounts.ui/toggle-datasync %])}])
+   (when dev-mode?
+     [profile.components/settings-item-separator])
+   (when dev-mode?
+     [profile.components/settings-switch-item
+      {:label-kw  :t/v1-messages
+       :value     (:v1-messages? settings)
+       :action-fn #(re-frame/dispatch [:multiaccounts.ui/toggle-v1-messages %])}])
+   (when dev-mode?
+     [profile.components/settings-item-separator])
+   (when dev-mode?
+     [profile.components/settings-switch-item
+      {:label-kw  :t/disable-discovery-topic
+       :value     (:disable-discovery-topic? settings)
+       :action-fn #(re-frame/dispatch [:multiaccounts.ui/toggle-disable-discovery-topic %])}])
    [profile.components/settings-item-separator]
    [profile.components/settings-switch-item
     {:label-kw  :t/dev-mode

@@ -233,6 +233,21 @@
    (multiaccounts/toggle-device-to-device cofx enabled?)))
 
 (handlers/register-handler-fx
+ :multiaccounts.ui/toggle-datasync
+ (fn [cofx [_ enabled?]]
+   (multiaccounts/toggle-datasync cofx enabled?)))
+
+(handlers/register-handler-fx
+ :multiaccounts.ui/toggle-v1-messages
+ (fn [cofx [_ enabled?]]
+   (multiaccounts/toggle-v1-messages cofx enabled?)))
+
+(handlers/register-handler-fx
+ :multiaccounts.ui/toggle-disable-discovery-topic
+ (fn [cofx [_ enabled?]]
+   (multiaccounts/toggle-disable-discovery-topic cofx enabled?)))
+
+(handlers/register-handler-fx
  :multiaccounts.ui/web3-opt-in-mode-switched
  (fn [cofx [_ opt-in]]
    (multiaccounts/switch-web3-opt-in-mode cofx opt-in)))
