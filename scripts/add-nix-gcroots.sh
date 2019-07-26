@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
-set -Eeu
+if [[ -z "${IN_NIX_SHELL}" ]]; then
+    echo "Remember to call 'make shell'!"
+    exit 1
+fi
 
-. ~/.nix-profile/etc/profile.d/nix.sh
+set -Eeu
 
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 

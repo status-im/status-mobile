@@ -60,19 +60,19 @@ nix-purge: SHELL := /bin/sh
 nix-purge: ##@nix Completely remove the complete Nix setup
 	sudo rm -rf /nix ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
 
-nix-add-gcroots: SHELL := /bin/sh
+nix-add-gcroots: export TARGET_OS := none
 nix-add-gcroots: ##@nix Add Nix GC roots to avoid status-react expressions being garbage collected
 	scripts/add-nix-gcroots.sh
 
-nix-update-npm: SHELL := /bin/sh
+nix-update-npm: export TARGET_OS := none
 nix-update-npm: ##@nix Update node2nix expressions based on current package.json
 	nix/desktop/realm-node/generate-nix.sh
 
-nix-update-gradle: SHELL := /bin/sh
+nix-update-gradle: export TARGET_OS := android
 nix-update-gradle: ##@nix Update maven nix expressions based on current gradle setup
 	nix/mobile/android/maven-and-npm-deps/maven/generate-nix.sh
 
-nix-update-lein: SHELL := /bin/sh
+nix-update-lein: export TARGET_OS := none
 nix-update-lein: ##@nix Update maven nix expressions based on current lein setup
 	nix/tools/lein/generate-nix.sh nix/lein
 

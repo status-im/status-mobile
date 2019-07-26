@@ -45,7 +45,7 @@ pipeline {
         }
       } }
     }
-    stage('Build jsbundle') {
+    stage('Build android jsbundle') {
       steps { script {
         /* build/fetch things required to produce a js-bundle for android
          * (e.g. maven and node repos) */
@@ -71,7 +71,6 @@ pipeline {
     stage('Build nix shell deps') {
       steps { script {
         /* build/fetch things required to instantiate shell.nix for TARGET_OS=all */
-        nix.shell("nix-build ${args.join(' ')}", pure: false)
         nix.build(
           attr: 'shell',
           args: ['target-os': 'all'],
@@ -83,9 +82,8 @@ pipeline {
       steps { script {
         sshagent(credentials: ['nix-cache-ssh']) {
           nix.shell("""
-              find /nix/store/ -mindepth 1 -maxdepth 1 \
-                -not -name '.links' -and -not -name '*.lock' \
-                -and -not -name '*-status-react-*' \
+              find /nix/store/ -mindepth 1 -maxdepth 1 -type d \
+                -not -name '*.links' -and -not -name '*-status-react-*' \
                 | xargs nix-copy-closure -v --to ${NIX_CACHE_USER}@${NIX_CACHE_HOST}
             """,
             pure: false

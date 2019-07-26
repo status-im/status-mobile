@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [[ -z "${IN_NIX_SHELL}" ]]; then
+    echo "Remember to call 'make shell'!"
+    exit 1
+fi
+
 # This script takes care of generating/updating the nix files in the directory passed as a single argument.
 # For this, we start with a clean cache (in ./.m2~/repository/) and call cljsbuild
 #  to cause it to download all the artifacts. At the same time, we note them
@@ -7,8 +12,6 @@
 #  to ../maven/maven-inputs2nix.sh
 
 set -Eeuo pipefail
-
-. ~/.nix-profile/etc/profile.d/nix.sh
 
 output_dir=$1
 mkdir -p $output_dir

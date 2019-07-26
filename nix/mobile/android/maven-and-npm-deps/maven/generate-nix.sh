@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [[ -z "${IN_NIX_SHELL}" ]]; then
+    echo "Remember to call 'make shell'!"
+    exit 1
+fi
+
 #
 # This script takes care of generating/updating the maven-sources.nix file
 # representing the offline Maven repo containing the dependencies
@@ -7,8 +12,6 @@
 #
 
 set -Eeu
-
-. ~/.nix-profile/etc/profile.d/nix.sh
 
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 current_dir=$(cd "${BASH_SOURCE%/*}" && pwd)

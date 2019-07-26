@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [[ -z "${IN_NIX_SHELL}" ]]; then
+    echo "Remember to call 'make shell'!"
+    exit 1
+fi
+
 #
 # Run this file to regenerate the Nix files in ./output.
 # Prerequisites: Node, npm, and node2nix (installed with npm i -g https://github.com/svanderburg/node2nix)
@@ -37,6 +42,11 @@ EOF
 
 node_required_version=$($toolversion node)
 node_major_version=$(echo $node_required_version | cut -d. -f1,1)
+
+if ! which node2nix > /dev/null; then
+    echo "Installing node2nix..."
+    nix-env -f '<nixpkgs>' -iA nodePackages.node2nix
+fi
 
 node2nix --nodejs-${node_major_version} --bypass-cache \
          --input             $input \

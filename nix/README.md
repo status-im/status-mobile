@@ -17,7 +17,7 @@ The Nix shell is started in this repo via the [`nix/shell.sh`](/nix/shell.sh) sc
 By default the shell starts without any specific target platform, if you want to change that you should export the `TARGET_OS` env variable with the right value:
 
 ```bash
-TARGET_OS=android make shell
+make shell TARGET_OS=android
 ```
 This way your shell and all other nix commands should run in a setup that is tailored towards Android development.
 

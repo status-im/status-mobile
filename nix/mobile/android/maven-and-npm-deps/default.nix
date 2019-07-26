@@ -31,7 +31,7 @@ let
       reactNativeDepsDir = "$NIX_BUILD_TOP/deps"; # Use local writable deps, otherwise (probably due to some interaction between Nix sandboxing and Java) gradle will fail copying directly from the nix store
     in 
       stdenv.mkDerivation {
-        name = "gradle-install-android-archives-and-patched-npm-modules";
+        name = "android-gradle-and-npm-modules";
         src =
           let path = ./../../../..; # Import the root /android and /mobile_files folders clean of any build artifacts
           in builtins.path { # We use builtins.path so that we can name the resulting derivation, otherwise the name would be taken from the checkout directory, which is outside of our control
