@@ -52,8 +52,8 @@
   (status/clear-web-data))
 
 (defn change-multiaccount! [address
-                       password
-                       current-fleet]
+                            password
+                            current-fleet]
   ;; No matter what is the keychain we use, as checks are done on decrypting base
   (.. (js/Promise. (fn [resolve reject]
                      (if (contract-fleet? current-fleet)
@@ -94,8 +94,8 @@
                                          (assoc :node/on-ready :login))
       :multiaccounts.login/clear-web-data nil
       :data-store/change-multiaccount     [address
-                                      password
-                                      (get-in db [:multiaccounts/multiaccounts address :settings :fleet])]})))
+                                           password
+                                           (get-in db [:multiaccounts/multiaccounts address :settings :fleet])]})))
 
 (fx/defn user-login
   [{:keys [db] :as cofx}]
@@ -275,5 +275,5 @@
  :data-store/change-multiaccount
  (fn [[address password current-fleet]]
    (change-multiaccount! address
-                    (security/safe-unmask-data password)
-                    current-fleet)))
+                         (security/safe-unmask-data password)
+                         current-fleet)))

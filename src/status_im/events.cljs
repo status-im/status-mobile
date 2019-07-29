@@ -115,7 +115,7 @@
   (re-frame/inject-cofx :data-store/all-chat-requests-ranges)]
  (fn [cofx [t address nodes]]
    (println :testing cofx t address nodes)
-   (account-change-success cofx address nodes)))
+   (multiaccount-change-success cofx address nodes)))
 
 ;; home screen
 
