@@ -7,8 +7,8 @@ def bundle() {
   def gradleOpt = "-PbuildUrl='${currentBuild.absoluteUrl}' --console plain "
   def target = "release"
   /* we don't need x86 for any builds except e2e */
-  env.NDK_ABI_FILTERS="armeabi-v7a;arm64-v8a"
-
+  env.NDK_ABI_FILTERS="armeabi-v7a;arm64-v8a;x86-64"
+  
   switch (btype) {
     case 'pr': /* PR builds shouldn't replace normal releases */
       target = 'pr'; break;
