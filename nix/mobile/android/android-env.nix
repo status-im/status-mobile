@@ -46,15 +46,16 @@ let
       echo -e "\n33b6a2b64607f11b759f320ef9dff4ae5c47d97a" > "$out/licenses/google-gdk-license"
     '';
   };
-  shellHook = assert platform.targetAndroid; ''
-    export JAVA_HOME="${openjdk}"
-    export ANDROID_HOME="${licensedAndroidEnv}"
-    export ANDROID_SDK_ROOT="$ANDROID_HOME"
-    export ANDROID_NDK_ROOT="${androidComposition.androidsdk}/libexec/android-sdk/ndk-bundle"
-    export ANDROID_NDK_HOME="$ANDROID_NDK_ROOT"
-    export ANDROID_NDK="$ANDROID_NDK_ROOT"
-    export PATH="$ANDROID_HOME/bin:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools:$PATH"
-  '';
+  shellHook = assert platform.targetAndroid;
+    ''
+      export JAVA_HOME="${openjdk}"
+      export ANDROID_HOME="${licensedAndroidEnv}"
+      export ANDROID_SDK_ROOT="$ANDROID_HOME"
+      export ANDROID_NDK_ROOT="${androidComposition.androidsdk}/libexec/android-sdk/ndk-bundle"
+      export ANDROID_NDK_HOME="$ANDROID_NDK_ROOT"
+      export ANDROID_NDK="$ANDROID_NDK_ROOT"
+      export PATH="$ANDROID_HOME/bin:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools:$PATH"
+    '';
 
 in {
   inherit androidComposition licensedAndroidEnv shellHook;

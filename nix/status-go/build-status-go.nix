@@ -78,9 +78,7 @@ let
       return
     '';
 
-    passthru = {
-      inherit owner version rev;
-    };
+    passthru = { inherit owner version rev; };
 
     meta = {
       # Add default meta information
@@ -89,8 +87,7 @@ let
       license = lib.licenses.mpl20;
     } // meta // {
       # add an extra maintainer to every package
-      maintainers = (meta.maintainers or []) ++
-                    [ lib.maintainers.pombeirp ];
+      maintainers = (meta.maintainers or [ ]) ++ [ lib.maintainers.pombeirp ];
     };
   });
 

@@ -8,7 +8,7 @@
 let
   shell' = shellAttr:
     shellAttr // {
-      nativeBuildInputs = (shellAttr.nativeBuildInputs or []) ++ [ git ];
+      nativeBuildInputs = (shellAttr.nativeBuildInputs or [ ]) ++ [ git ];
       TARGET_OS = target-os;
       shellHook = ''
         set -e
@@ -27,6 +27,7 @@ let
     };
   # Declare a specialized mkShell function which adds some bootstrapping
   #  so that e.g. STATUS_REACT_HOME is automatically available in the shell
-  mkShell' = shellAttr: (mkShell.override { inherit stdenv; }) (shell' shellAttr);
+  mkShell' = shellAttr:
+    (mkShell.override { inherit stdenv; }) (shell' shellAttr);
 
 in mkShell'

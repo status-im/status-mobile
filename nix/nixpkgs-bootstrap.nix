@@ -8,6 +8,6 @@
     name = "nixpkgs-source";
   })) { inherit config; } }:
 
-{
-  inherit pkgs config;
-}
+  {
+    inherit pkgs config;
+  }

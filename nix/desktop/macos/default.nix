@@ -11,10 +11,14 @@ let
 
 in {
   buildInputs = [
-    baseImage status-go.buildInputs
+    baseImage
     qt5.full
-    AppKit Cocoa darwin.cf-private Foundation OpenGL
-  ];
+    AppKit
+    Cocoa
+    darwin.cf-private
+    Foundation
+    OpenGL
+  ] ++ status-go.buildInputs;
 
   shellHook =
     concatStrings (catAttrs "shellHook" [ baseImage status-go ] ) + ''

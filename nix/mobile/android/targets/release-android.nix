@@ -34,7 +34,7 @@ in stdenv.mkDerivation {
       filter =
         # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
         mkFilter {
-          dirRootsToInclude = [ 
+          dirRootsToInclude = [
             "mobile_files"
             "modules/react-native-status"
             "packager"

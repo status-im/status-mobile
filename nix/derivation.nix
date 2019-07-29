@@ -10,7 +10,10 @@ let
   platform = pkgs.callPackage ./platform.nix { inherit target-os; };
   # Declare a specialized mkShell function which adds some bootstrapping
   #  so that e.g. STATUS_REACT_HOME is automatically available in the shell
-  mkShell = (import ./bootstrapped-shell.nix { inherit stdenv target-os; inherit (pkgs) mkShell git; });
+  mkShell = (import ./bootstrapped-shell.nix {
+    inherit stdenv target-os;
+    inherit (pkgs) mkShell git;
+  });
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
   stdenv = pkgs.stdenvNoCC;
   maven = pkgs.maven;
@@ -22,7 +25,10 @@ let
   status-go = pkgs.callPackage ./status-go { inherit target-os go buildGoPackage; inherit (mobile.ios) xcodeWrapper; androidPkgs = mobile.android.androidComposition; };
   # mkFilter is a function that allows filtering a directory structure (used for filtering source files being captured in a closure)
   mkFilter = import ./tools/mkFilter.nix { inherit (stdenv) lib; };
-  localMavenRepoBuilder = pkgs.callPackage ./tools/maven/maven-repo-builder.nix { inherit (pkgs) stdenv; };
+  localMavenRepoBuilder =
+    pkgs.callPackage ./tools/maven/maven-repo-builder.nix {
+      inherit (pkgs) stdenv;
+    };
   nodejs = pkgs.nodejs-10_x;
   yarn = pkgs.yarn.override { inherit nodejs; };
   selectedSources =
@@ -54,11 +60,10 @@ in {
 
   shell = {
     buildInputs = unique ([
-        nodejs
-        pkgs.python27 # for e.g. gyp
-        yarn
-      ]
-      ++ optional isDarwin pkgs.cocoapods
+      nodejs
+      pkgs.python27 # for e.g. gyp
+      yarn
+    ] ++ optional isDarwin pkgs.cocoapods
       ++ optional (isDarwin && !platform.targetIOS) pkgs.clang
       ++ optional (!isDarwin) pkgs.gcc8
       ++ catAttrs "buildInputs" selectedSources);

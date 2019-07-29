@@ -30,11 +30,17 @@ let
   };
   tests = [
     {
-      a = { path = "${absPath}/android/1"; type = "directory"; };
+      a = {
+        path = "${absPath}/android/1";
+        type = "directory";
+      };
       e = true;
     }
     {
-      a = { path = "${absPath}/ios"; type = "directory"; };
+      a = {
+        path = "${absPath}/ios";
+        type = "directory";
+      };
       e = false;
     }
   ];

@@ -10,9 +10,16 @@
   hostSystem } @ args':
 
 let
-  buildStatusGo = callPackage ./build-status-go.nix { inherit buildGoPackage go xcodeWrapper utils; };
+  buildStatusGo = callPackage ./build-status-go.nix {
+    inherit buildGoPackage go xcodeWrapper utils;
+  };
 
-  args = removeAttrs args' [ "goBuildFlags" "goBuildLdFlags" "outputFileName" "hostSystem" ]; # Remove desktop-only arguments from args
+  args = removeAttrs args' [
+    "goBuildFlags"
+    "goBuildLdFlags"
+    "outputFileName"
+    "hostSystem"
+  ]; # Remove desktop-only arguments from args
   buildStatusGoDesktopLib = buildStatusGo (args // {
     buildMessage = "Building desktop library";
     #GOOS=windows GOARCH=amd64 CGO_ENABLED=1 go build ${goBuildFlags} -buildmode=c-archive -o $out/${outputFileName} ./lib
@@ -32,9 +39,7 @@ let
 
     outputs = [ "out" ];
 
-    meta = {
-      platforms = with stdenv.lib.platforms; linux ++ darwin;
-    };
+    meta = { platforms = with stdenv.lib.platforms; linux ++ darwin; };
   });
 
 in buildStatusGoDesktopLib

@@ -16,7 +16,7 @@ let
       "${aapt2NativePkg}" = srcs."${aapt2NativePkg}" // {
         postCopy = ''
           [ -n "$NIX_CC" ] || exit 1 # We need an stdenv with a compiler
-          
+
           prevSet=$-
           set -e
 

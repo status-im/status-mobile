@@ -7,17 +7,21 @@ let
   platform = callPackage ../../platform.nix { inherit target-os; };
   useFastlanePkg = platform.targetAndroid && !stdenv.isDarwin;
   fastlane = callPackage ../../../fastlane {
-    bundlerEnv = _: bundlerEnv { 
-      name = "fastlane-gems";
-      gemdir = ../../../fastlane;
-    };
+    bundlerEnv = _:
+      bundlerEnv {
+        name = "fastlane-gems";
+        gemdir = ../../../fastlane;
+      };
   };
-  bundlerDeps = optionals platform.targetMobile [ bundler ruby ];
+  bundlerDeps = optionals platform.targetMobile [
+    bundler
+    ruby
+  ]; # bundler/ruby used for fastlane on macOS
   shellHook = optionalString useFastlanePkg fastlane.shellHook;
 
   # TARGETS
   shell = mkShell {
-    buildInputs = if useFastlanePkg then [ fastlane curl ] else bundlerDeps; # bundler/ruby used for fastlane on macOS
+    buildInputs = if useFastlanePkg then [ fastlane curl ] else bundlerDeps;
     inherit shellHook;
   };
 

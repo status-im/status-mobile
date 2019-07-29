@@ -72,11 +72,16 @@ let
     });
   };
 
-  buildInputs = if target-os == "android" then android.buildInputs else
-                if target-os == "ios" then ios.buildInputs else
-                if target-os == "all" then currentHostConfig.allTargets else
-                if platform.targetDesktop then desktop.buildInputs else
-                throw "Unexpected target platform ${target-os}";
+  buildInputs = if target-os == "android" then
+    android.buildInputs
+  else if target-os == "ios" then
+    ios.buildInputs
+  else if target-os == "all" then
+    currentHostConfig.allTargets
+  else if platform.targetDesktop then
+    desktop.buildInputs
+  else
+    throw "Unexpected target platform ${target-os}";
   android = {
     buildInputs = optional platform.targetAndroid [ status-go-packages.android ];
     shellHook =
