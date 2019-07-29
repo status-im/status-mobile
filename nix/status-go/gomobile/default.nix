@@ -31,13 +31,15 @@ in buildGoPackage rec {
     ${optionalString platform.targetAndroid ''substituteInPlace cmd/gomobile/install.go --replace "\`adb\`" "\`${platform-tools}/bin/adb\`"''}
     
     # Prevent a non-deterministic temporary directory from polluting the resulting object files
-    substituteInPlace cmd/gomobile/env.go --replace \
-      'tmpdir, err = ioutil.TempDir("", "gomobile-work-")' \
-      "tmpdir = \"$NIX_BUILD_TOP/gomobile-work\"" \
+    substituteInPlace cmd/gomobile/env.go \
+      --replace \
+        'tmpdir, err = ioutil.TempDir("", "gomobile-work-")' \
+        "tmpdir = filepath.Join(os.Getenv(\"NIX_BUILD_TOP\"), \"gomobile-work\")" \
       --replace '"io/ioutil"' ""
-    substituteInPlace cmd/gomobile/init.go --replace \
-      'tmpdir, err = ioutil.TempDir(gomobilepath, "work-")' \
-      "tmpdir = \"$NIX_BUILD_TOP/work\""
+    substituteInPlace cmd/gomobile/init.go \
+      --replace \
+        'tmpdir, err = ioutil.TempDir(gomobilepath, "work-")' \
+        "tmpdir = filepath.Join(os.Getenv(\"NIX_BUILD_TOP\"), \"work\")"
 
     echo "Creating $dev"
     mkdir -p $dev/src/$goPackagePath
