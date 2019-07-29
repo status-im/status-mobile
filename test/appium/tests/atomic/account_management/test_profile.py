@@ -249,9 +249,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile = home_view.profile_button.click()
         profile.switch_network(network_name)
         profile = home_view.profile_button.click()
-        profile.network_settings_button.scroll_to_element()
         if not profile.current_active_network == network_name:
-             self.driver.fail('Oops! Wrong network selected!')
+            self.driver.fail('Oops! Wrong network selected!')
 
     @marks.testrail_id(5453)
     @marks.medium
@@ -283,7 +282,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.logout()
         if signin_view.ok_button.is_element_displayed():
             signin_view.ok_button.click()
-        signin_view.other_multiaccounts_button.click()
+        signin_view.back_button.click()
+        signin_view.generate_new_key_button.click()
 
         if not signin_view.privacy_policy_link.is_element_displayed():
             self.driver.fail('{} Sign in view!'.format(no_link_found_error_msg))

@@ -350,15 +350,13 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction_view.sign_with_password.click()
         if send_transaction_view.enter_password_input.is_element_displayed():
             self.errors.append('sending all available ETH (no funds to pay gas)')
-        send_transaction_view.cancel_button.click()
-        send_transaction_view.amount_edit_box.clear()
 
         # Because tx gas price may change we calculate eth value according to current gas fee value
-        send_transaction_view.sign_transaction_button.click()
         transaction_fee_total = send_transaction_view.get_transaction_fee_total()
         eth_available_for_tx = str(Decimal('0.1') - Decimal(transaction_fee_total))
         wei = '0.000000000000000001'
         eth_value_plus_one_wei = ''.join([eth_available_for_tx, wei[len(eth_available_for_tx):]])
+        send_transaction_view.amount_edit_box.clear()
         send_transaction_view.amount_edit_box.set_value(eth_value_plus_one_wei)
         send_transaction_view.confirm()
 
@@ -371,6 +369,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         if send_transaction_view.enter_password_input.is_element_displayed():
             self.errors.append('sending big amount of ETH (no funds to pay gas)')
 
+        send_transaction_view.cancel_button.click()
         send_transaction_view.amount_edit_box.clear()
         send_transaction_view.amount_edit_box.set_value(eth_available_for_tx)
         send_transaction_view.confirm()
@@ -379,6 +378,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         if send_transaction_view.validation_warnings.not_enough_eth_for_gas.is_element_displayed():
             self.errors.append('"Not enough ETH for gas" warning appeared while sending normal amount of ETH')
 
+        send_transaction_view.sign_transaction_button.click()
         send_transaction_view.sign_transaction()
         if not wallet.send_transaction_button.is_element_displayed():
             self.errors.append('Could not sign the transaction!')

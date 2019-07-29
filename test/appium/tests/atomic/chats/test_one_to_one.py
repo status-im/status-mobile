@@ -59,7 +59,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         home_1.airplane_mode_button.click()  # turning on WiFi connection on primary device
 
-        home_1.connection_status.wait_for_invisibility_of_element(20)
+        home_1.connection_status.wait_for_invisibility_of_element(30)
         chat_element = home_1.get_chat_with_user(username_2)
         chat_element.wait_for_visibility_of_element(20)
         chat_1 = chat_element.click()
@@ -69,6 +69,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         home_1.airplane_mode_button.click()  # airplane mode on primary device
 
         chat_2.element_by_text('Connecting to peers...').wait_for_invisibility_of_element(60)
+        chat_2.connection_status.wait_for_invisibility_of_element(30)
         message_2 = 'one more message'
         chat_2.chat_message_input.send_keys(message_2)
         chat_2.send_message_button.click()
@@ -242,13 +243,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         sign_in = SignInView(self.drivers[0])
         home_view = sign_in.create_user()
 
-        # Dismiss "Welcome to Status" placeholder.
-        # When the placeholder is visible, the offline status bar does not appear
-        wallet_view = home_view.wallet_button.click()
-        wallet_view.home_button.click()
-        home_view.toggle_airplane_mode()
-        home_view.accept_agreements()
-        home_view = sign_in.sign_in()
+        home_view.airplane_mode_button.click()
 
         chat = home_view.add_contact(transaction_senders['C']['public_key'])
         if chat.connection_status.text != 'Offline':

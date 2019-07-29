@@ -167,7 +167,7 @@ class HomeView(BaseView):
         return ChatElement(self.driver, username[:25])
 
     def add_contact(self, public_key):
-        self.plus_button.click()
+        self.plus_button.click_until_presence_of_element(self.start_new_chat_button)
         contacts_view = self.start_new_chat_button.click()
         contacts_view.public_key_edit_box.click()
         contacts_view.public_key_edit_box.send_keys(public_key)
