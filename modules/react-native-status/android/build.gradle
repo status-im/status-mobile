@@ -1,13 +1,13 @@
 apply plugin: 'com.android.library'
 
-def getStatusGoVersion = { ->
+def getStatusGoSHA1 = { ->
     def jsonSlurper = new groovy.json.JsonSlurper()
     def content = new File('../status-go-version.json').text
     def object = jsonSlurper.parseText(content)
 
     assert object instanceof Map
 
-    return object.version
+    return object.get('commit-sha1').substring(0, 7)
 }
 
 android {
@@ -25,5 +25,5 @@ dependencies {
     implementation 'com.facebook.react:react-native:+' // from node_modules
     compile 'com.github.status-im:function:0.0.1'
 
-    implementation(group: 'status-im', name: 'status-go', version: getStatusGoVersion(), ext: 'aar')
+    implementation(group: 'status-im', name: 'status-go', version: getStatusGoSHA1(), ext: 'aar')
 }

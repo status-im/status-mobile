@@ -16,13 +16,14 @@ let
   version = versionJSON.version;
   sha256 = versionJSON.src-sha256;
   rev = versionJSON.commit-sha1;
+  shortRev = strings.substring 0 7 rev;
   goPackagePath = "github.com/${owner}/${repo}";
-  src = fetchFromGitHub { inherit rev owner repo sha256; name = "${repo}-${strings.substring 0 7 rev}-source"; };
+  src = fetchFromGitHub { inherit rev owner repo sha256; name = "${repo}-${shortRev}-source"; };
 
   mobileConfigs = {
     android = {
       name = "android";
-      outputFileName = "status-go-${version}.aar";
+      outputFileName = "status-go-${shortRev}.aar";
       envVars = [
         "ANDROID_HOME=${androidPkgs.androidsdk}/libexec/android-sdk"
         "ANDROID_NDK_HOME=${androidPkgs.ndk-bundle}/libexec/android-sdk/ndk-bundle"
