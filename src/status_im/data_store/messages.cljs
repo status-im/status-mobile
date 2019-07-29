@@ -6,8 +6,7 @@
             [status-im.utils.core :as utils]))
 
 (defn get-message-by-id
-  [message-id realm]
-  (.objectForPrimaryKey realm "message" message-id))
+  [message-id realm])
 
 (defn- transform-message
   [{:keys [content outgoing-status] :as message}]
@@ -90,21 +89,14 @@
 (defn mark-messages-seen-tx
   "Returns tx function for marking messages as seen"
   [message-ids]
-  (fn [realm]
-    (doseq [message-id message-ids]
-      (let [message (get-message-by-id message-id realm)]
-        (aset message "seen" true)))))
+  (fn [realm]))
 
 (defn mark-message-seen-tx
   "Returns tx function for marking messages as seen"
   [message-id]
-  (fn [realm]
-    (let [message (get-message-by-id message-id realm)]
-      (aset message "seen" true))))
+  (fn [realm]))
 
 (defn update-outgoing-status-tx
   "Returns tx function for marking messages as seen"
   [message-id outgoing-status]
-  (fn [realm]
-    (let [message (get-message-by-id message-id realm)]
-      (aset message "outgoing-status" (name outgoing-status)))))
+  (fn [realm]))
