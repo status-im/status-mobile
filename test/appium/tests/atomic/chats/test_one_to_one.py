@@ -1,14 +1,15 @@
+import time
+
+import emoji
 import pytest
 import random
-import time
 import string
-import emoji
-from support.api.network_api import NetworkApi
 from datetime import datetime
 from selenium.common.exceptions import TimeoutException
+
 from tests import marks, get_current_time
-from tests.users import transaction_senders, transaction_recipients, basic_user
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
+from tests.users import transaction_senders, transaction_recipients, basic_user
 from views.sign_in_view import SignInView
 
 
@@ -17,7 +18,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5305)
     @marks.critical
-    @marks.skip  # re-enable after 8234 for new onboarding merged
     def test_text_message_1_1_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -38,25 +38,26 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2_chat.chat_element_by_text(message).wait_for_visibility_of_element()
 
     @marks.testrail_id(5310)
-    @marks.skip
     @marks.critical
     def test_offline_messaging_1_1_chat(self):
-        self.create_drivers(2, offline_mode=True)
+        self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        username_2 = 'user_2'
-        home_1, home_2 = sign_in_1.create_user(), sign_in_2.create_user(username=username_2)
+        home_1, home_2 = sign_in_1.create_user(), sign_in_2.create_user()
         public_key_1 = home_1.get_public_key()
         home_1.home_button.click()
 
-        home_1.driver.set_network_connection(1)  # airplane mode on primary device
+        home_1.airplane_mode_button.click()  # airplane mode on primary device
 
+        profile_2 = home_2.profile_button.click()
+        username_2 = profile_2.default_username_text.text
+        profile_2.get_back_to_home_view()
         chat_2 = home_2.add_contact(public_key_1)
         message_1 = 'test message'
         chat_2.chat_message_input.send_keys(message_1)
         chat_2.send_message_button.click()
-        chat_2.driver.set_network_connection(1)  # airplane mode on secondary device
+        chat_2.airplane_mode_button.click()  # airplane mode on secondary device
 
-        home_1.driver.set_network_connection(2)  # turning on WiFi connection on primary device
+        home_1.airplane_mode_button.click()  # turning on WiFi connection on primary device
 
         home_1.connection_status.wait_for_invisibility_of_element(20)
         chat_element = home_1.get_chat_with_user(username_2)
@@ -64,27 +65,25 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element(2)
 
-        chat_2.driver.set_network_connection(2)  # turning on WiFi connection on secondary device
-        home_1.driver.set_network_connection(1)  # airplane mode on primary device
+        chat_2.airplane_mode_button.click()  # turning on WiFi connection on secondary device
+        home_1.airplane_mode_button.click()  # airplane mode on primary device
 
         chat_2.element_by_text('Connecting to peers...').wait_for_invisibility_of_element(60)
         message_2 = 'one more message'
         chat_2.chat_message_input.send_keys(message_2)
         chat_2.send_message_button.click()
 
-        home_1.driver.set_network_connection(2)  # turning on WiFi connection on primary device
+        home_1.airplane_mode_button.click()  # turning on WiFi connection on primary device
 
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_2).wait_for_visibility_of_element(180)
 
     @marks.testrail_id(5338)
     @marks.critical
-    @marks.skip  # re-enable after 8234 for new onboarding merged
     def test_messaging_in_different_networks(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        username_1 = 'user_%s' % get_current_time()
-        home_1, home_2 = sign_in_1.create_user(username_1), sign_in_2.create_user()
+        home_1, home_2 = sign_in_1.create_user(), sign_in_2.create_user()
         profile_1 = home_1.profile_button.click()
         default_username_1 = profile_1.default_username_text.text
         home_1 = profile_1.get_back_to_home_view()
@@ -115,7 +114,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
     def test_send_message_to_newly_added_contact(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        username_1 = 'user_%s' % get_current_time()
 
         device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
         profile_1 = device_1_home.profile_button.click()
@@ -152,11 +150,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5316)
     @marks.critical
-    @marks.skip  # re-enable after 8234 for new onboarding merged
     def test_add_to_contacts(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        username_1, username_2 = 'user_1', 'user_2'
 
         device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
         profile_1 = device_1_home.profile_button.click()
@@ -186,8 +182,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2_chat.get_back_to_home_view()
         device_2_home.plus_button.click()
         device_2_contacts = device_2_home.start_new_chat_button.click()
-        if not device_2_contacts.element_by_text(username_1).is_element_displayed():
-            self.errors.append('%s is not added to contacts' % username_1)
+        if not device_2_contacts.element_by_text(default_username_1).is_element_displayed():
+            self.errors.append('%s is not added to contacts' % default_username_1)
 
         if device_1_chat.user_name_text.text != default_username_2:
             self.errors.append("Default username '%s' is not shown in one-to-one chat" % default_username_2)
@@ -202,7 +198,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
     def test_send_and_open_links(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        username_1, username_2 = 'user_1', 'user_2'
 
         home_1, home_2 = device_1.create_user(), device_2.create_user()
         profile_1 = home_1.profile_button.click()
@@ -284,11 +279,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5362)
     @marks.critical
-    @marks.skip  # re-enable after 8234 for new onboarding merged
     def test_unread_messages_counter_1_1_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        username_2 = 'user_%s' % get_current_time()
         device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
         profile_2 = device_2_home.profile_button.click()
         default_username_2 = profile_2.default_username_text.text

@@ -2,7 +2,7 @@ import pytest
 
 from tests import marks, camera_access_error_text
 from tests.base_test_case import SingleDeviceTestCase
-from tests.users import wallet_users
+from tests.users import wallet_users, transaction_senders, basic_user
 from views.sign_in_view import SignInView
 
 
@@ -12,33 +12,42 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5335)
     @marks.high
-    @marks.skip
     def test_wallet_set_up(self):
         sign_in = SignInView(self.driver)
-        sign_in.create_user()
+        sign_in.recover_access(transaction_senders['A']['passphrase'])
         wallet = sign_in.wallet_button.click()
-        text = 'Simple and secure cryptocurrency wallet'
-        if not wallet.element_by_text(text).is_element_displayed():
-            self.errors.append("'%s' is not displayed" % text)
-        wallet.set_up_button.click()
-        texts = ['Super-safe transactions', 'You should see these three words before signing each transaction',
+        texts = ['This is your signing phrase', 'You should see these 3 words before signing each transaction',
                  'If you see a different combo, cancel the transaction and logout.']
         for text in texts:
             if not wallet.element_by_text_part(text).is_element_displayed():
                 self.errors.append("'%s' text is not displayed" % text)
-        phrase_length = len(wallet.sign_in_phrase.list)
-        if phrase_length != 3:
-            self.errors.append('Transaction phrase length is %s' % phrase_length)
-        wallet.done_button.click()
-        for text in ['Remember this!', "You'll need to recognize this to ensure your "
-                                       "transactions are safe. This combo is not stored in your account."]:
-            if not wallet.element_by_text(text).is_element_displayed():
+        phrase = wallet.sign_in_phrase.list
+        if len(phrase) != 3:
+            self.errors.append('Transaction phrase length is %s' % len(phrase))
+        wallet.remind_me_later_button.click()
+        wallet.accounts_status_account.click()
+        send_transaction = wallet.send_transaction_button.click()
+        send_transaction.amount_edit_box.set_value('0')
+        send_transaction.confirm()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.enter_recipient_address_button.click()
+        send_transaction.enter_recipient_address_input.set_value(basic_user['address'])
+        send_transaction.done_button.click()
+        send_transaction.sign_transaction_button.click()
+        for text in texts:
+            if not wallet.element_by_text_part(text).is_element_displayed():
                 self.errors.append("'%s' text is not displayed" % text)
-        wallet.yes_button.click()
-        for element in [wallet.send_transaction_button, wallet.receive_transaction_button,
-                        wallet.transaction_history_button]:
-            if not element.is_element_displayed():
-                self.errors.append('%s button is not shown after wallet setup' % element.name)
+        phrase_1 = wallet.sign_in_phrase.list
+        if phrase_1 != phrase:
+            self.errors.append("Transaction phrase '%s' doesn't match expected '%s'" % (phrase_1, phrase))
+        wallet.ok_got_it_button.click()
+        wallet.back_button.click(times_to_click=2)
+        wallet.home_button.click()
+        wallet.wallet_button.click()
+        for text in texts:
+            if wallet.element_by_text_part(text).is_element_displayed():
+                self.errors.append('Signing phrase pop up appears after wallet set up')
+                break
         self.verify_no_errors()
 
     @marks.testrail_id(5384)

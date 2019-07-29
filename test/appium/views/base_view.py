@@ -1,18 +1,21 @@
-import random
-import string
 import time
+
 import base64
 import pytest
+import random
 import re
+import string
 import zbarlight
-from tests import common_password
-from eth_keys import datatypes
-from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 from PIL import Image
+from appium.webdriver.common.touch_action import TouchAction
 from datetime import datetime
+from eth_keys import datatypes
 from io import BytesIO
-from views.base_element import BaseButton, BaseElement, BaseEditBox, BaseText
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
+
 from support.device_apps import start_web_browser
+from tests import common_password
+from views.base_element import BaseButton, BaseElement, BaseEditBox, BaseText
 
 
 class BackButton(BaseButton):
@@ -290,6 +293,18 @@ class OkGotItButton(BaseButton):
         self.wait_for_invisibility_of_element()
 
 
+class AirplaneModeButton(BaseButton):
+    def __init__(self, driver):
+        super(AirplaneModeButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@content-desc='Airplane mode']")
+
+    def click(self):
+        action = TouchAction(self.driver)
+        action.press(None, 50, 0).move_to(None, 50, 300).perform()
+        super(AirplaneModeButton, self).click()
+        action.tap(None, 50, 600).perform()
+
+
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
@@ -325,6 +340,8 @@ class BaseView(object):
 
         self.apps_button = AppsButton(self.driver)
         self.status_app_icon = StatusAppIcon(self.driver)
+
+        self.airplane_mode_button = AirplaneModeButton(self.driver)
 
         self.element_types = {
             'base': BaseElement,

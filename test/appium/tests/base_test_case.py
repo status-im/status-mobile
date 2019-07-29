@@ -219,10 +219,8 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
     def setup_method(self, method):
         self.drivers = dict()
 
-    def create_drivers(self, quantity=2, max_duration=1800, custom_implicitly_wait=None, offline_mode=False):
+    def create_drivers(self, quantity=2, max_duration=1800, custom_implicitly_wait=None):
         capabilities = {'maxDuration': max_duration}
-        if offline_mode:
-            capabilities['platformVersion'] = '6.0'
         self.drivers = self.loop.run_until_complete(start_threads(quantity,
                                                                   Driver,
                                                                   self.drivers,

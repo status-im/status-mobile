@@ -113,12 +113,18 @@ class SignInPhraseText(BaseText):
                                                    '//following-sibling::*[2]/android.widget.TextView')
 
     @property
-    def list(self):
-        return [element.text for element in self.find_elements()]
+    def string(self):
+        return self.text
 
     @property
-    def string(self):
-        return ' '.join(self.list)
+    def list(self):
+        return self.string.split()
+
+
+class RemindMeLaterButton(BaseButton):
+    def __init__(self, driver):
+        super(RemindMeLaterButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Remind me later']")
 
 
 class AssetTextElement(BaseText):
@@ -238,6 +244,7 @@ class WalletView(BaseView):
 
         self.set_up_button = SetUpButton(self.driver)
         self.sign_in_phrase = SignInPhraseText(self.driver)
+        self.remind_me_later_button = RemindMeLaterButton(self.driver)
 
         self.total_amount_text = TotalAmountText(self.driver)
         self.currency_text = CurrencyText(self.driver)
