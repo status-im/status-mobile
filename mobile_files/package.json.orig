@@ -3,14 +3,12 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start"
+    "start": "react-native start"
   },
   "dependencies": {
-    "@babel/generator": "7.0.0",
-    "@babel/helper-builder-react-jsx": "7.0.0",
-    "@babel/plugin-transform-block-scoping": "7.0.0",
-    "@babel/preset-env": "7.1.0",
-    "@babel/register": "7.0.0",
+    "@babel/core": "7.5.5",
+      "@babel/runtime": "7.5.5",
+       "metro-react-native-babel-preset": "^0.55.0",
     "@tradle/react-native-http": "2.0.1",
     "assert": "1.4.1",
     "asyncstorage-down": "4.0.1",
@@ -31,9 +29,8 @@
     "prop-types": "15.6.0",
     "punycode": "1.4.1",
     "querystring-es3": "0.2.1",
-    "react": "16.8.3",
-    "react-dom": "16.4.2",
-    "react-native": "git+https://github.com/status-im/react-native.git#v0.59.10",
+    "react": "16.8.6",
+    "react-native": "0.60.4",
     "react-native-background-timer": "2.1.0-alpha.6",
     "react-native-camera": "git+https://github.com/status-im/react-native-camera.git#v1.1.5-1-status",
     "react-native-config": "git+https://github.com/status-im/react-native-config.git#0.11.2-1",
