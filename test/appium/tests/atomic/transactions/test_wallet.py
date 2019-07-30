@@ -14,6 +14,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5307)
     @marks.critical
+    @marks.skip
+    # temporary skipped due to 8601
     def test_send_eth_from_wallet_to_contact(self):
         recipient = basic_user
         sender = transaction_senders['N']
