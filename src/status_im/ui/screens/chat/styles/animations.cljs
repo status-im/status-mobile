@@ -18,7 +18,7 @@
    :shadow-color     colors/white
    :max-height       max-height
    :transform        [{:translateY anim-value}]
-   :z-index          1})
+   :z-index          100})
 
 (def header-container
   {:min-height       19
