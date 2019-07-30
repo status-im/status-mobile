@@ -31,7 +31,6 @@ fi
 
 # Some defaults flags, --pure could be optional in the future
 nixOpts=(
-  "--pure"
   "--fallback"
   "--no-out-link"
   "--show-trace"

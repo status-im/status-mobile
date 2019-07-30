@@ -1,6 +1,6 @@
 (ns env.config)
 
-(def figwheel-urls {:android "ws://localhost:3449/figwheel-ws",
- :ios "ws://192.168.0.9:3449/figwheel-ws",
+(def figwheel-urls {:android "ws://10.0.2.2:3449/figwheel-ws",
+ :ios "ws://10.114.0.78:3449/figwheel-ws",
  :desktop "ws://localhost:3449/figwheel-ws"}
 )

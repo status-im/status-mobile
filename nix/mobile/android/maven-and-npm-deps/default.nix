@@ -144,6 +144,9 @@ let
           org.gradle.daemon=false
           org.gradle.caching=false'
 
+
+          android.useAndroidX=true
+          android.enableJetifier=true
           # Patch the path to nodejs in project.ext.react
           substituteInPlace ${projectDir}/android/app/build.gradle \
             --replace 'nodeExecutableAndArgs: ["node"' 'nodeExecutableAndArgs: ["${nodejs}/bin/node"'

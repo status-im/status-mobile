@@ -5,11 +5,11 @@
 { gradleGen, fetchurl }:
 
 gradleGen.gradleGen rec {
-  name = "gradle-5.1.1";
-  nativeVersion = "0.14";
+  name = "gradle-5.4.1";
+  nativeVersion = "0.17";
 
   src = fetchurl {
     url = "http://services.gradle.org/distributions/${name}-bin.zip";
-    sha256 = "16671jp5wdr3q6p91h6szkgcxg3mw9wpgp6hjygbimy50lv34ls9";
+    sha256 = "1p15q25bf6zv2gch9dzd9afp1n2dshk0rh5bg253rwal9wgavnvv";
   };
 }

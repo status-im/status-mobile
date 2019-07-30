@@ -1,6 +1,10 @@
 package im.status.ethereum;
 
 import android.support.multidex.MultiDexApplication;
+import android.util.Log;
+import com.facebook.react.PackageList;
+import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
 
 import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
 import com.facebook.react.ReactApplication;
@@ -49,38 +53,13 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
             return BuildConfig.DEBUG;
         }
 
-        @Override
-        protected List<ReactPackage> getPackages() {
+        @SuppressWarnings("UnnecessaryLocalVariable")
+        List<ReactPackage> packages = new PackageList(this).getPackages();
             StatusPackage statusPackage = new StatusPackage(RootUtil.isDeviceRooted());
             Function<String, String> callRPC = statusPackage.getCallRPC();
-            return Arrays.asList(
-                    new MainReactPackage(),
-                    new RNMail(),
-                    new RNFirebasePackage(),
-                    new RNFirebaseMessagingPackage(),
-                    new RNFirebaseNotificationsPackage(),
-                    new RNSecureRandomPackage(),
-                    new BackgroundTimerPackage(),
-                    new SvgPackage(),
-                    new HttpServerReactPackage(),
-                    new SplashScreenReactPackage(),
-                    statusPackage,
-                    new RNStatusKeycardPackage(),
-                    new RealmReactPackage(),
-                    new RNLanguagesPackage(),
-                    new RNCameraPackage(),
-                    new RNFSPackage(),
-                    new ReactNativeDialogsPackage(),
-                    new ImageResizerPackage(),
-                    new PickerPackage(),
-                    new WebViewBridgePackage(BuildConfig.DEBUG_WEBVIEW == "1", callRPC),
-                    new RNCWebViewPackage(),
-                    new ReactNativeConfigPackage(),
-                    new KeychainPackage(),
-                    new RNShakeEventPackage(),
-                    new FingerprintAuthPackage(),
-                    new RNGestureHandlerPackage(),
-                    new RNScreensPackage());
+            // Packages that cannot be autolinked yet can be added manually here, for example:
+            // packages.add(new MyReactNativePackage());
+            return Arrays.asList(statusPackage);
         }
 
         @Override
