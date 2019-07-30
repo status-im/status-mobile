@@ -150,11 +150,6 @@
   (views/letsubs [search-filter       [:search/filter]
                   logging-in?          [:multiaccounts/login]
                   {:keys [all-home-items chats]} [:home-items]]
-    {:component-did-mount
-     (fn [this]
-       (let [[_ loading?] (.. this -props -argv)]
-         (when loading?
-           (re-frame/dispatch [:init-rest-of-chats]))))}
     [react/view {:style styles/chat-list-view}
      [react/view {:style styles/chat-list-header}
       [search-input search-filter]

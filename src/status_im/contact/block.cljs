@@ -19,6 +19,8 @@
   [{:keys [db] :as cofx} chat-id removed-chat-messages]
   (let [removed-messages-ids (map :message-id removed-chat-messages)
         removed-unseen-count (count (remove :seen removed-chat-messages))
+        unviewed-messages-count (- (get-in db [:chats chat-id :unviewed-messages-count])
+                                   removed-unseen-count)
         db (-> db
                ;; remove messages
                (update-in [:chats chat-id :messages]
@@ -32,8 +34,9 @@
               (chat.models/upsert-chat
                {:chat-id                      chat-id
                 :unviewed-messages-count
-                (- (get-in db [:chats chat-id :unviewed-messages-count])
-                   removed-unseen-count)})
+                (if (pos? unviewed-messages-count)
+                  unviewed-messages-count
+                  0)})
               ;; recompute message group
               (chat.models.loading/group-chat-messages
                chat-id

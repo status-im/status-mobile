@@ -126,9 +126,6 @@
      {:keys [search-filter chats all-home-items]} [:home-items]
      window-width [:dimensions/window-width]
      two-pane-ui-enabled? [:two-pane-ui-enabled?]]
-    {:component-did-mount (fn [this]
-                            (let [[_ loading?] (.. this -props -argv)]
-                              (when loading? (utils/set-timeout #(re-frame/dispatch [:init-rest-of-chats]) 100))))}
     (let [home-width (if (> window-width constants/two-pane-min-width)
                        (max constants/left-pane-min-width (/ window-width 3))
                        window-width)]

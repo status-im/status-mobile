@@ -13,8 +13,7 @@
                           :db {:contacts/contacts {chat-id
                                                    {:name contact-name}}}}
           response      (chat/upsert-chat cofx chat-props)
-          actual-chat   (get-in response [:db :chats chat-id])
-          store-chat-fx (:data-store/tx response)]
+          actual-chat   (get-in response [:db :chats chat-id])]
       (testing "it adds the chat to the chats collection"
         (is actual-chat))
       (testing "it adds the extra props"
@@ -26,9 +25,7 @@
       (testing "it sets the timestamp"
         (is (= "now" (:timestamp actual-chat))))
       (testing "it adds the contact-id to the contact field"
-        (is (= chat-id (-> actual-chat :contacts first))))
-      (testing "it adds the fx to store a chat"
-        (is store-chat-fx))))
+        (is (= chat-id (-> actual-chat :contacts first))))))
   (testing "upserting an existing chat"
     (let [chat-id        "some-chat-id"
           chat-props     {:chat-id chat-id
@@ -37,24 +34,19 @@
           cofx           {:db {:chats {chat-id {:is-active true
                                                 :name "old-name"}}}}
           response      (chat/upsert-chat cofx chat-props)
-          actual-chat   (get-in response [:db :chats chat-id])
-          store-chat-fx (:data-store/tx response)]
+          actual-chat   (get-in response [:db :chats chat-id])]
       (testing "it adds the chat to the chats collection"
         (is actual-chat))
       (testing "it adds the extra props"
         (is (= "some" (:extra-prop actual-chat))))
       (testing "it updates existins props"
-        (is (= "new-name" (:name actual-chat))))
-      (testing "it adds the fx to store a chat"
-        (is store-chat-fx)))))
+        (is (= "new-name" (:name actual-chat)))))))
 
 (deftest add-public-chat
   (let [topic "topic"
         fx (chat/add-public-chat {:db {}} topic)
         store-fx   (:data-store/tx fx)
         chat (get-in fx [:db :chats topic])]
-    (testing "it saves the chat in the database"
-      (is store-fx))
     (testing "it sets the name"
       (is (= topic (:name chat))))
     (testing "it sets the participants"
@@ -104,7 +96,7 @@
     (testing "it adds the relevant transactions for realm"
       (let [actual (chat/clear-history cofx chat-id)]
         (is (:data-store/tx actual))
-        (is (= 2 (count (:data-store/tx actual))))))))
+        (is (= 1 (count (:data-store/tx actual))))))))
 
 (deftest remove-chat-test
   (let [chat-id "1"
@@ -142,7 +134,7 @@
     (testing "it adds the relevant transactions for realm"
       (let [actual (chat/remove-chat cofx chat-id)]
         (is (:data-store/tx actual))
-        (is (= 6 (count (:data-store/tx actual))))))))
+        (is (= 4 (count (:data-store/tx actual))))))))
 
 (deftest multi-user-chat?
   (let [chat-id "1"]
@@ -183,7 +175,7 @@
           me (get-in test-db [:multiaccount :public-key])]
       (is (= '(true true true)
              (map (comp :seen second) (get-in fx [:db :chats "status" :messages]))))
-      (is (= 2 (count (:data-store/tx fx))))
+      (is (= 1 (count (:data-store/tx fx))))
       ;; for public chats, no confirmation is sent out
       (is (= nil (:shh/post fx)))))
 

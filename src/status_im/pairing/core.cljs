@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [status-im.i18n :as i18n]
             [status-im.utils.fx :as fx]
+            [status-im.utils.pairing :as pairing.utils]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.contact.device-info :as device-info]
             [status-im.contact.db :as contact.db]
@@ -78,12 +79,6 @@
   [{:keys [db]} raw-message]
   {:transport/confirm-messages-processed [{:web3 (:web3 db)
                                            :js-obj raw-message}]})
-
-(defn has-paired-installations? [cofx]
-  (->>
-   (get-in cofx [:db :pairing/installations])
-   vals
-   (some :enabled?)))
 
 (defn send-pair-installation [cofx payload]
   (let [{:keys [web3]} (:db cofx)
@@ -303,7 +298,7 @@
        :payload payload}]}))
 
 (fx/defn send-installation-message-fx [cofx payload]
-  (when (has-paired-installations? cofx)
+  (when (pairing.utils/has-paired-installations? cofx)
     (protocol/send payload nil cofx)))
 
 (fx/defn sync-public-chat [cofx chat-id]

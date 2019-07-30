@@ -5,7 +5,7 @@
             [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.pairing.core :as pairing]
+            [status-im.utils.pairing :as pairing.utils]
             [status-im.chat.models :as models.chat]
             [status-im.chat.models.message :as models.message]
             [status-im.contact.core :as models.contact]
@@ -125,7 +125,7 @@
          members-allowed (filter
                           (fn [pk]
                             (if (= pk current-public-key)
-                              (pairing/has-paired-installations? cofx)
+                              (pairing.utils/has-paired-installations? cofx)
                               true))
                           members)
          destinations (map (fn [member]

@@ -14,8 +14,6 @@
                                           :sym-key "sk3"}
                                      "4" {:topic "topic-4"}}
                    :semaphores      #{}}}]
-    (testing "it loads the filters"
-      (is (:filters/load-filters (transport/init-whisper cofx))))
     (testing "custom mailservers"
       (let [ms-1            {:id "1"
                              :fleet :eth.beta

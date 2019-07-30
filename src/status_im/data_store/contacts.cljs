@@ -1,5 +1,8 @@
 (ns status-im.data-store.contacts
   (:require [re-frame.core :as re-frame]
+            [status-im.utils.fx :as fx]
+            [status-im.data-store.chats :as data-store.chats]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [taoensso.timbre :as log]
             [status-im.data-store.realm.core :as core]))
 
@@ -69,9 +72,7 @@
     (when-let [user-messages
                (get-messages-by-messages-ids messages-ids)]
       (core/delete realm user-messages))
-    (when-let [chat
-               (get-chat public-key)]
-      (core/delete realm chat))))
+    (data-store.chats/delete-chat-rpc public-key data-store.chats/one-to-one-chat-type)))
 
 (defn delete-contact-tx
   "Returns tx function for deleting contact"

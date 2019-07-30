@@ -5,18 +5,13 @@
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.transport.db :as transport.db]
+            [status-im.utils.pairing :as pairing.utils]
             [status-im.data-store.transport :as transport-store]
             [status-im.transport.utils :as transport.utils]
             [status-im.tribute-to-talk.whitelist :as whitelist]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
-
-(defn has-paired-installations? [cofx]
-  (->>
-   (get-in cofx [:db :pairing/installations])
-   vals
-   (some :enabled?)))
 
 (defn discovery-topic-hash [] (transport.utils/get-topic constants/contact-discovery))
 
@@ -107,7 +102,7 @@
 
         :user-message
         (fx/merge cofx
-                  (when (has-paired-installations? cofx)
+                  (when (pairing.utils/has-paired-installations? cofx)
                     (send-direct-message current-public-key nil this))
                   (send-with-pubkey params)))))
   (receive [this chat-id signature timestamp cofx]

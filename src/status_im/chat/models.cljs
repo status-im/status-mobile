@@ -101,8 +101,9 @@
               (or (get (:chats db) chat-id)
                   (create-new-chat chat-id cofx))
               chat-props)]
-    {:db            (update-in db [:chats chat-id] merge chat)
-     :data-store/tx [(chats-store/save-chat-tx chat)]}))
+    (fx/merge cofx
+              {:db (update-in db [:chats chat-id] merge chat)}
+              (chats-store/save-chat-rpc chat))))
 
 (fx/defn add-public-chat
   "Adds new public group chat to db & realm"
@@ -138,22 +139,25 @@
                                           :clock-value)
                                      deleted-at-clock-value
                                      (utils.clocks/send 0))]
-    {:db            (update-in db [:chats chat-id] merge
-                               {:messages                  empty-message-map
-                                :message-groups            {}
-                                :last-message-content      nil
-                                :last-message-content-type nil
-                                :unviewed-messages-count   0
-                                :deleted-at-clock-value    last-message-clock-value})
-     :data-store/tx [(chats-store/clear-history-tx chat-id last-message-clock-value)
-                     (messages-store/delete-chat-messages-tx chat-id)]}))
+    (fx/merge
+     cofx
+     {:db            (update-in db [:chats chat-id] merge
+                                {:messages                  empty-message-map
+                                 :message-groups            {}
+                                 :last-message-content      nil
+                                 :last-message-content-type nil
+                                 :unviewed-messages-count   0
+                                 :deleted-at-clock-value    last-message-clock-value})
+      :data-store/tx [(messages-store/delete-chat-messages-tx chat-id)]}
+     #(chats-store/save-chat-rpc % (get-in % [:db :chats chat-id])))))
 
 (fx/defn deactivate-chat
   [{:keys [db now] :as cofx} chat-id]
-  {:db (-> db
-           (assoc-in [:chats chat-id :is-active] false)
-           (assoc-in [:current-chat-id] nil))
-   :data-store/tx [(chats-store/deactivate-chat-tx chat-id now)]})
+  (fx/merge cofx
+            {:db (-> db
+                     (assoc-in [:chats chat-id :is-active] false)
+                     (assoc-in [:current-chat-id] nil))}
+            #(chats-store/save-chat-rpc % (get-in % [:db :chats chat-id]))))
 
 (fx/defn remove-chat
   "Removes chat completely from app, producing all necessary effects for that"

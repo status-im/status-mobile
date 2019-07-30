@@ -40,7 +40,6 @@
   [{:keys [db web3 all-installations] :as cofx}]
   (fx/merge cofx
             (fetch-node-info-fx)
-            (transport.filters/load-filters)
             (pairing/init all-installations)
             (publisher/start-fx)
             (mailserver/connect-to-mailserver)

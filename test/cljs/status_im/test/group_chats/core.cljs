@@ -1,5 +1,6 @@
 (ns status-im.test.group-chats.core
   (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.config :as config]
             [status-im.group-chats.core :as group-chats]))
@@ -492,7 +493,8 @@
                                                      :a "a-value"}]))))
 
 (deftest remove-group-chat-test
-  (with-redefs [utils.clocks/send inc]
+  (with-redefs [json-rpc/call (constantly nil)
+                utils.clocks/send inc]
     (let [cofx {:db {:chats {chat-id {:admins #{member-1 member-2}
                                       :name "chat-name"
                                       :chat-id chat-id

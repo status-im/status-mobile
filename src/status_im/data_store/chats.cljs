@@ -2,7 +2,9 @@
   (:require [goog.object :as object]
             [re-frame.core :as re-frame]
             [status-im.data-store.messages :as messages]
+            [status-im.utils.fx :as fx]
             [status-im.data-store.realm.core :as core]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.core :as ethereum]
             [taoensso.timbre :as log]
             [status-im.utils.clocks :as utils.clocks]
@@ -15,6 +17,10 @@
                      (or (nil? v)
                          (and (coll? v)
                               (empty? v)))) e)))
+
+(def one-to-one-chat-type 1)
+(def public-chat-type 2)
+(def private-group-chat-type 3)
 
 (defn- event->string
   "Transform an event in an a vector with keys in alphabetical order, to compute
@@ -31,121 +37,124 @@
 
 (defn marshal-membership-updates [updates]
   (mapcat (fn [{:keys [signature events from]}]
-            (map #(assoc %
-                         :id (event-id %)
-                         :signature signature
-                         :from from) events)) updates))
+            (map #(-> %
+                      (assoc
+                       :clockValue (:clock-value %)
+                       :id (event-id %)
+                       :signature signature
+                       :from from)
+                      (dissoc :clock-value)) events)) updates))
 
 (defn unmarshal-membership-updates [chat-id updates]
   (->> updates
-       vals
        (group-by :signature)
        (map (fn [[signature events]]
-              {:events (map #(-> (dissoc % :signature :from :id)
+              {:events (map #(-> %
+                                 (assoc :clock-value (:clockValue %))
+                                 (dissoc :signature :from :id :clockValue)
                                  remove-empty-vals) events)
                :from  (-> events first :from)
                :signature signature
                :chat-id chat-id}))))
 
-(defn- normalize-chat [{:keys [chat-id] :as chat}]
+(defn type->rpc [{:keys [public? group-chat] :as chat}]
+  (assoc chat :chatType (cond
+                          public? public-chat-type
+                          group-chat private-group-chat-type
+                          :else one-to-one-chat-type)))
+
+(defn rpc->type [{:keys [chatType] :as chat}]
+  (cond
+    (= public-chat-type chatType) (assoc chat :public? true :group-chat true)
+    (= private-group-chat-type chatType) (assoc chat :public? false :group-chat true)
+    :else (assoc chat :public? false :group-chat false)))
+
+(defn- marshal-members [{:keys [admins contacts members-joined chatType] :as chat}]
+  (cond-> chat
+    (= chatType private-group-chat-type)
+    (assoc :members (map #(hash-map :id %
+                                    :admin (boolean (admins %))
+                                    :joined (boolean (members-joined %))) contacts))
+    :always
+    (dissoc :admins :contacts :members-joined)))
+
+(defn- unmarshal-members [{:keys [members chatType] :as chat}]
+  (cond
+    (= public-chat-type chatType) (assoc chat
+                                         :contacts #{}
+                                         :admins #{}
+                                         :members-joined #{})
+    (= private-group-chat-type chatType) (merge chat
+                                                (reduce (fn [acc member]
+                                                          (cond-> acc
+                                                            (:admin member)
+                                                            (update :admins conj (:id member))
+                                                            (:joined member)
+                                                            (update :members-joined conj (:id member))
+                                                            :always
+                                                            (update :contacts conj (:id member))))
+                                                        {:admins #{}
+                                                         :members-joined #{}
+                                                         :contacts #{}}
+                                                        members))
+    :else
+    (assoc chat
+           :contacts #{(:id chat)}
+           :admins #{}
+           :members-joined #{})))
+
+(defn- ->rpc [chat]
   (-> chat
-      (update :admins   #(into #{} %))
-      (update :contacts #(into #{} %))
-      (update :members-joined #(into #{} %))
-      (update :tags #(into #{} %))
-      (update :membership-updates  (partial unmarshal-membership-updates chat-id))
+      type->rpc
+      marshal-members
+      (update :membership-updates marshal-membership-updates)
+      (utils/update-if-present :last-message-content messages/prepare-content)
+      (clojure.set/rename-keys {:chat-id :id
+                                :membership-updates :membershipUpdates
+                                :unviewed-messages-count :unviewedMessagesCount
+                                :last-message-content :lastMessageContent
+                                :last-message-content-type :lastMessageContentType
+                                :deleted-at-clock-value :deletedAtClockValue
+                                :is-active :active
+                                :last-clock-value :lastClockValue})
+      (dissoc :referenced-messages :message-groups :gaps-loaded? :pagination-info
+              :public? :group-chat :messages
+              :might-have-join-time-messages?
+              :group-chat-local-version :loaded-unviewed-messages-ids
+              :messages-initialized? :contacts :admins :members-joined)))
+
+(defn- <-rpc [chat]
+  (-> chat
+      rpc->type
+      unmarshal-members
+      (clojure.set/rename-keys {:id :chat-id
+                                :membershipUpdates :membership-updates
+                                :unviewedMessagesCount :unviewed-messages-count
+                                :lastMessageContent :last-message-content
+                                :lastMessageContentType :last-message-content-type
+                                :deletedAtClockValue :deleted-at-clock-value
+                                :active :is-active
+                                :lastClockValue :last-clock-value})
+      (update :membership-updates (partial unmarshal-membership-updates (:id chat)))
+      (update :last-message-content utils/safe-read-message-content)
       (update :last-clock-value utils.clocks/safe-timestamp)
-      (update :last-message-content utils/safe-read-message-content)))
+      (assoc :group-chat-local-version 1) ;; TODO(cammellos): this can be removed
+      (dissoc :chatType :members)))
 
-(re-frame/reg-cofx
- :data-store/all-chats
- (fn [cofx _]
-   (assoc cofx :get-all-stored-chats
-          (fn [from to]
-            (map normalize-chat
-                 (-> @core/account-realm
-                     (core/get-all :chat)
-                     (core/sorted :timestamp :desc)
-                     (core/page from to)
-                     (core/all-clj :chat)))))))
+(fx/defn save-chat-rpc [cofx {:keys [chat-id] :as chat}]
+  (json-rpc/call {:method "shhext_saveChat"
+                  :params [(->rpc chat)]
+                  :on-success #(log/debug "saved chat" chat-id "successfuly")
+                  :on-failure #(log/error "failed to save chat" chat-id %)}))
 
-(defn save-chat-tx
-  "Returns tx function for saving chat"
-  [chat]
-  (fn [realm]
-    (log/debug "saving chat" chat)
-    (core/create
-     realm
-     :chat
-     (-> chat
-         (update :membership-updates marshal-membership-updates)
-         (utils/update-if-present :last-message-content messages/prepare-content))
-     true)))
+(fx/defn fetch-chats-rpc [cofx {:keys [from to on-success]}]
+  (json-rpc/call {:method "shhext_chats"
+                  :params [from to]
+                  :on-success #(on-success (map <-rpc %))
+                  :on-failure #(log/error "failed to fetch chats" from to %)}))
 
-;; Only used in debug mode
-(defn delete-chat-tx
-  "Returns tx function for hard deleting the chat"
-  [chat-id]
-  (fn [realm]
-    (core/delete realm (core/get-by-field realm :chat :chat chat-id))))
-
-(defn- get-chat-by-id [chat-id realm]
-  (.objectForPrimaryKey realm "chat" chat-id))
-
-(defn clear-history-tx
-  "Returns tx function for clearing the history of chat"
-  [chat-id deleted-at-clock-value]
-  (fn [realm]
-    (let [chat (get-chat-by-id chat-id realm)]
-      (doto chat
-        (aset "last-message-content" nil)
-        (aset "last-message-content-type" nil)
-        (aset "deleted-at-clock-value" deleted-at-clock-value)))))
-
-(defn deactivate-chat-tx
-  "Returns tx function for deactivating chat"
-  [chat-id now]
-  (fn [realm]
-    (let [chat (get-chat-by-id chat-id realm)]
-      (doto chat
-        (aset "is-active" false)))))
-
-(defn add-chat-contacts-tx
-  "Returns tx function for adding chat contacts"
-  [chat-id contacts]
-  (fn [realm]
-    (let [chat              (get-chat-by-id chat-id realm)
-          existing-contacts (object/get chat "contacts")]
-      (aset chat "contacts"
-            (clj->js (into #{} (concat contacts
-                                       (core/list->clj existing-contacts))))))))
-
-(defn remove-chat-contacts-tx
-  "Returns tx function for removing chat contacts"
-  [chat-id contacts]
-  (fn [realm]
-    (let [chat              (get-chat-by-id chat-id realm)
-          existing-contacts (object/get chat "contacts")]
-      (aset chat "contacts"
-            (clj->js (remove (into #{} contacts)
-                             (core/list->clj existing-contacts)))))))
-
-(defn add-chat-tag-tx
-  "Returns tx function for adding chat contacts"
-  [chat-id tag]
-  (fn [realm]
-    (let [chat              (get-chat-by-id chat-id realm)
-          existing-tags (object/get chat "tags")]
-      (aset chat "tags"
-            (clj->js (into #{} (concat tag
-                                       (core/list->clj existing-tags))))))))
-
-(defn remove-chat-tag-tx
-  "Returns tx function for removing chat contacts"
-  [chat-id tag]
-  (fn [realm]
-    (let [chat              (get-chat-by-id chat-id realm)
-          existing-tags (object/get chat "tags")]
-      (aset chat "tags"
-            (clj->js (remove (into #{} tag)
-                             (core/list->clj existing-tags)))))))
+(defn delete-chat-rpc [chat-id chat-type]
+  (json-rpc/call {:method "shhext_deleteChat"
+                  :params [chat-id chat-type]
+                  :on-success #(log/debug "deleteed chat" chat-id chat-type)
+                  :on-failure #(log/error "failed to delete chat" chat-id chat-type %)}))

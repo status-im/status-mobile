@@ -2,6 +2,7 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.transport.message.pairing :as transport.pairing]
             [status-im.utils.identicon :as identicon]
+            [status-im.utils.pairing :as pairing.utils]
             [status-im.utils.config :as config]
             [status-im.pairing.core :as pairing]))
 
@@ -308,11 +309,18 @@
 
 (deftest has-paired-installations-test
   (testing "no paired devices"
-    (is (not (pairing/has-paired-installations? {:db {:pairing/installations {"1" {}
-                                                                              "2" {}}}}))))
+    (is (not (pairing.utils/has-paired-installations? {:db {:multiaccount {:installation-id "1"}
+                                                            :pairing/installations {"1" {:installation-id "1"
+                                                                                         :enabled? true}
+                                                                                    "2" {:installation-id "2"}
+                                                                                    "3" {:installation-id "3"}}}}))))
   (testing "has paired devices"
-    (is (pairing/has-paired-installations? {:db {:pairing/installations {"1" {}
-                                                                         "2" {:enabled? true}}}}))))
+    (is (pairing.utils/has-paired-installations? {:db {:pairing/installations {:multiaccount {:instllation-id "1"}
+                                                                               "1" {:installation-id "1"
+                                                                                    :enabled? true}
+                                                                               "2" {:installation-id "2"}
+                                                                               "3" {:installation-id "3"
+                                                                                    :enabled? true}}}}))))
 
 (deftest sort-installations
   (let [id "0"

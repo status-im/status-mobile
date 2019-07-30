@@ -114,16 +114,6 @@
  (fn [cofx [_ encryption-key error]]
    (init/handle-init-store-error cofx encryption-key)))
 
-(handlers/register-handler-fx
- :init-rest-of-chats
- [(re-frame/inject-cofx :web3/get-web3)
-  (re-frame/inject-cofx :data-store/all-chats)]
- (fn [{:keys [db] :as cofx} [_]]
-   (log/debug "PERF" :init-rest-of-chats (.now js/Date))
-   (fx/merge cofx
-             {:db (assoc db :chats/loading? false)}
-             (chat.loading/initialize-chats {:from 10}))))
-
 (defn multiaccount-change-success
   [{:keys [db] :as cofx} [_ address nodes]]
   (let [{:node/keys [status]} db]
@@ -135,15 +125,13 @@
        (multiaccounts.login/login)
        (node/initialize (get-in db [:multiaccounts/login :address])))
      (init/initialize-multiaccount address)
-     (mailserver/initialize-ranges)
-     (chat.loading/initialize-chats {:to 10}))))
+     (mailserver/initialize-ranges))))
 
 (handlers/register-handler-fx
  :init.callback/multiaccount-change-success
  [(re-frame/inject-cofx :web3/get-web3)
   (re-frame/inject-cofx :data-store/get-all-contacts)
   (re-frame/inject-cofx :data-store/get-all-installations)
-  (re-frame/inject-cofx :data-store/all-chats)
   (re-frame/inject-cofx :data-store/all-chat-requests-ranges)]
  multiaccount-change-success)
 

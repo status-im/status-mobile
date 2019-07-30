@@ -1,6 +1,8 @@
 (ns status-im.chat.models.loading
   (:require [re-frame.core :as re-frame]
+            [status-im.data-store.chats :as data-store.chats]
             [status-im.chat.commands.core :as commands]
+            [status-im.transport.filters.core :as filters]
             [status-im.chat.models :as chat-model]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.mailserver.core :as mailserver]
@@ -55,35 +57,7 @@
 
 (fx/defn update-chats-in-app-db
   {:events [:chats-list/load-success]}
-  [{:keys [db] :as cofx} chats]
-  (fx/merge cofx
-            {:db (assoc db :chats chats)}
-            (commands/load-commands commands/register)))
-
-(defn- unkeywordize-chat-names
-  [chats]
-  (reduce-kv
-   (fn [acc chat-keyword chat]
-     (assoc acc (name chat-keyword) chat))
-   {}
-   chats))
-
-(defn load-chats-from-rpc
-  [cofx]
-  (fx/merge cofx
-            {::json-rpc/call [{:method "status_chats"
-                               :params []
-                               :on-error
-                               #(log/error "can't retrieve chats list from status-go:" %)
-                               :on-success
-                               #(re-frame/dispatch
-                                 [:chats-list/load-success
-                                  (unkeywordize-chat-names (:chats %))])}]}))
-
-(defn initialize-chats-legacy
-  "Use realm + clojure to manage chats"
-  [{:keys [db get-all-stored-chats] :as cofx}
-   from to]
+  [{:keys [db] :as cofx} new-chats]
   (let [old-chats (:chats db)
         chats (reduce (fn [acc {:keys [chat-id] :as chat}]
                         (assoc acc chat-id
@@ -92,17 +66,26 @@
                                       :referenced-messages {}
                                       :messages empty-message-map)))
                       {}
-                      (get-all-stored-chats from to))
+                      new-chats)
         chats (merge old-chats chats)]
-    (update-chats-in-app-db cofx chats)))
+    (fx/merge cofx
+              {:db (assoc db :chats chats
+                          :chats/loading? false)}
+              (filters/load-filters)
+              (commands/load-commands commands/register))))
 
+(defn load-chats-from-rpc
+  [cofx from to]
+  (data-store.chats/fetch-chats-rpc cofx {:from 0
+                                          :to 10
+                                          :on-success
+                                          #(re-frame/dispatch
+                                            [:chats-list/load-success %])}))
 (fx/defn initialize-chats
   "Initialize persisted chats on startup"
   [cofx
    {:keys [from to] :or {from 0 to nil}}]
-  (if config/use-status-go-protocol?
-    (load-chats-from-rpc cofx)
-    (initialize-chats-legacy cofx from to)))
+  (load-chats-from-rpc cofx from -1))
 
 (defn load-more-messages
   "Loads more messages for current chat"

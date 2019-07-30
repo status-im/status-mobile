@@ -38,8 +38,7 @@
           cofx   {:db                   db
                   :web3                 :web3
                   :all-contacts         data/all-contacts
-                  :all-installations    []
-                  :get-all-stored-chats data/get-chats}
+                  :all-installations    []}
           efx    (events/multiaccount-change-success cofx [nil "address"])
           new-db (:db efx)]
       (testing "Starting node."
@@ -52,8 +51,6 @@
         (is (= [:home nil] (efx :status-im.ui.screens.navigation/navigate-to))))
       (testing "Multiaccount selected."
         (is (contains? new-db :multiaccount)))
-      (testing "Chats initialized."
-        (is (= 3 (count (:chats new-db)))))
       (testing "Contacts initialized."
         (is (= 2 (count (:contacts/contacts new-db))))))))
 
