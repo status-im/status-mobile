@@ -52,7 +52,7 @@
                 id        1
                 params    []}} method-options
           on-error (or on-error
-                       #(log/warn :json-rpc/error method :params params :error %))]
+                       #(log/warn :json-rpc/error method :error % :params params))]
       (if (nil? method)
         (log/error :json-rpc/method-not-found method)
         (status/call-private-rpc

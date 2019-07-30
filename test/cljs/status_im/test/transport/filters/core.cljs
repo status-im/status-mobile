@@ -62,6 +62,11 @@
            (transport.filters/chats->filter-requests [{:is-active true
                                                        :group-chat false
                                                        :chat-id "0xchat-id"}]))))
+  (testing "a malformed one to one chat"
+    (is (= []
+           (transport.filters/chats->filter-requests [{:is-active true
+                                                       :group-chat false
+                                                       :chat-id "malformed"}]))))
   (testing "a single public chat"
     (is (= [{:ChatID "chat-id"
              :OneToOne false}]

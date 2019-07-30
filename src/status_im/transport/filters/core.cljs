@@ -3,6 +3,7 @@
   (:require
    [taoensso.timbre :as log]
    [re-frame.core :as re-frame]
+   [clojure.string :as string]
    [status-im.contact.db :as contact.db]
    [status-im.data-store.multiaccounts :as data-store.multiaccounts]
    [status-im.ethereum.json-rpc :as json-rpc]
@@ -12,6 +13,9 @@
    [status-im.mailserver.core :as mailserver]
    [status-im.multiaccounts.model :as multiaccounts.model]
    [status-im.transport.utils :as utils]))
+
+(defn is-public-key? [k]
+  (string/starts-with? k "0x"))
 
 (defn load-filters-rpc [chats on-success on-failure]
   (json-rpc/call {:method "shhext_loadFilters"
@@ -160,9 +164,11 @@
            public?]}]
   (cond
     (not group-chat)
-    [{:ChatID chat-id
-      :OneToOne true
-      :Identity (subs chat-id 2)}]
+    ;; Some legacy one-to-one chats (bots), have not a public key for id, we exclude those
+    (when (is-public-key? chat-id)
+      [{:ChatID chat-id
+        :OneToOne true
+        :Identity (subs chat-id 2)}])
     public?
     [{:ChatID chat-id
       :OneToOne false}]
