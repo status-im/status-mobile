@@ -12,7 +12,7 @@ let
   mavenLocalRepo = callPackage ./maven { inherit localMavenRepoBuilder; stdenv = if stdenv.isLinux then stdenv else stdenvNoCC; };
 
   # Import the native dependencies for React Native Android builds
-  jsc-filename = "jsc-android-236355.1.1";
+  jsc-filename = "jsc-android-245459.0.0";
   react-native-deps = callPackage ./maven/reactnative-android-native-deps.nix { inherit stdenvNoCC jsc-filename; };
 
   createMobileFilesSymlinks = root: ''

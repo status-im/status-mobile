@@ -33,7 +33,7 @@ in stdenvNoCC.mkDerivation {
   srcs = builtins.map (d: (fetchurl { inherit (d) url sha256; })) react-native-deps-sources;
   jsc = fetchurl {
     url = "https://registry.npmjs.org/jsc-android/-/${jsc-filename}.tgz";
-    sha256 = "1s1fzmvpvdblzca7p2ifcysvd9na4jrsikaccqmfpgvkqjalfccp";
+    sha256 = "1pz1ybgwacpvb6m8zy8h77vd2yvf3gidx4av3clr8bg860vivivi"; 
   };
   phases = [ "unpackPhase" ];
   unpackPhase = ''
