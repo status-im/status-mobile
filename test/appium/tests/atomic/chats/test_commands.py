@@ -15,6 +15,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(5334)
     @marks.critical
+    @marks.skip
+    # temporary skipped due to 8601
     def test_network_mismatch_for_send_request_commands(self):
         sender = transaction_senders['D']
         self.create_drivers(2)
@@ -75,6 +77,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(5306)
     @marks.critical
+    @marks.skip
+    # temporary skipped due to 8601
     def test_send_eth_in_1_1_chat(self):
         recipient = transaction_recipients['A']
         sender = transaction_senders['A']
@@ -127,6 +131,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(5318)
     @marks.critical
+    @marks.skip
+    # temporary skipped due to 8601
     def test_request_and_receive_eth_in_1_1_chat(self):
         recipient = transaction_recipients['B']
         sender = transaction_senders['J']
@@ -237,6 +243,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(5348)
     @marks.critical
+    @marks.skip
+    # temporary skipped due to 8601
     def test_send_tokens_in_1_1_chat(self):
         recipient = transaction_recipients['C']
         sender = transaction_senders['C']
@@ -268,6 +276,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(5352)
     @marks.critical
+    @marks.skip
+    # temporary skipped due to 8601
     def test_request_and_receive_tokens_in_1_1_chat(self):
         recipient = transaction_recipients['D']
         sender = transaction_senders['B']
@@ -348,6 +358,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
     @marks.logcat
     @marks.testrail_id(5417)
     @marks.critical
+    @marks.skip
+    # temporary skipped due to 8601
     def test_logcat_send_transaction_in_1_1_chat(self):
         sender = transaction_senders['F']
         sign_in = SignInView(self.driver)
