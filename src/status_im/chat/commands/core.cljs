@@ -144,9 +144,11 @@
                               (and group-chat (not public?)) (conj :group-chats)
                               public? (conj :public-chats))
         chat-access-scope   #{chat-id}]
-    (reduce (fn [acc command-id]
-              (let [{:keys [type] :as command-props} (get id->command command-id)]
-                (assoc acc (protocol/id type) command-props)))
-            {}
-            (concat (get access-scope->command-id global-access-scope)
-                    (get access-scope->command-id chat-access-scope)))))
+    ;;TODO disable commands temporary for v1
+    {}
+    #_(reduce (fn [acc command-id]
+                (let [{:keys [type] :as command-props} (get id->command command-id)]
+                  (assoc acc (protocol/id type) command-props)))
+              {}
+              (concat (get access-scope->command-id global-access-scope)
+                      (get access-scope->command-id chat-access-scope)))))

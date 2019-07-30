@@ -16,7 +16,8 @@
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.utils.contenthash :as contenthash]
-            [status-im.utils.platform :as platform])
+            [status-im.utils.platform :as platform]
+            [status-im.utils.config :as config])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn install-extension-message [extension-id outgoing]
@@ -35,16 +36,18 @@
             {:keys [contacts]} [:chats/current-chat]]
     (let [{:keys [type] :as command} (commands-receiving/lookup-command-by-ref command-message id->command)
           extension-id (get-in command-message [:content :params :extension-id])]
-      (if (and platform/mobile? extension-id
-               (extensions.module/valid-uri? extension-id)
-               (or (not type) (and type (satisfies? protocol/Extension type)
-                                   (not= extension-id (protocol/extension-id type)))))
-        ;; Show install message only for mobile and if message contains extension id and there is no extension installed
-        ;; or installed extension has differen extension id
-        [install-extension-message extension-id (:outgoing command-message)]
-        (if command
-          (commands/generate-preview command (commands/add-chat-contacts contacts command-message))
-          [react/text (str "Unhandled command: " (-> command-message :content :command-path first))])))))
+      ;;TODO temporary disable commands for v1
+      [react/text (str "Unhandled command: " (-> command-message :content :command-path first))]
+      #_(if (and config/extensions-enabled? platform/mobile? extension-id
+                 (extensions.module/valid-uri? extension-id)
+                 (or (not type) (and type (satisfies? protocol/Extension type)
+                                     (not= extension-id (protocol/extension-id type)))))
+          ;; Show install message only for mobile and if message contains extension id and there is no extension installed
+          ;; or installed extension has differen extension id
+          [install-extension-message extension-id (:outgoing command-message)]
+          (if command
+            (commands/generate-preview command (commands/add-chat-contacts contacts command-message))
+            [react/text (str "Unhandled command: " (-> command-message :content :command-path first))])))))
 
 (defview message-timestamp
   [t justify-timestamp? outgoing command? content content-type]

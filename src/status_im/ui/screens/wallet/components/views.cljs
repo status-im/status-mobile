@@ -247,14 +247,15 @@
 
 (defn- on-choose-recipient [contact-only? request?]
   (list-selection/show {:title   (i18n/label :t/wallet-choose-recipient)
-                        :options (concat
-                                  [{:label  (i18n/label :t/recent-recipients)
-                                    :action #(re-frame/dispatch [:navigate-to :recent-recipients {:request? request?}])}]
-                                  (when-not contact-only?
-                                    [{:label  (i18n/label :t/scan-qr)
-                                      :action request-camera-permissions}
-                                     {:label  (i18n/label :t/recipient-code)
-                                      :action #(re-frame/dispatch [:navigate-to :contact-code])}]))}))
+                        ;;TODO temporary hide for v1
+                        #_(concat
+                           [{:label  (i18n/label :t/recent-recipients)
+                             :action #(re-frame/dispatch [:navigate-to :recent-recipients {:request? request?}])}]
+                           (when-not contact-only?))
+                        :options [{:label  (i18n/label :t/scan-qr)
+                                   :action request-camera-permissions}
+                                  {:label  (i18n/label :t/recipient-code)
+                                   :action #(re-frame/dispatch [:navigate-to :contact-code])}]}))
 
 (defn recipient-selector [{:keys [name address disabled? contact-only? request? modal?]}]
   [cartouche {:on-press  #(on-choose-recipient contact-only? request?)

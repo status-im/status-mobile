@@ -82,30 +82,30 @@
       (is (contains? (get-in fx [:db :access-scope->command-id #{:public-chats}])
                      (core/command-id AnotherTestCommandInstance))))))
 
-(deftest chat-commands-test
-  (let [fx (core/load-commands {:db {}} #{TestCommandInstance AnotherTestCommandInstance})]
-    (testing "That relevant commands are looked up for chat"
-      (is (= #{TestCommandInstance AnotherTestCommandInstance}
-             (into #{}
-                   (map (comp :type second))
-                   (core/chat-commands (get-in fx [:db :id->command])
-                                       (get-in fx [:db :access-scope->command-id])
-                                       {:chat-id    "topic"
-                                        :group-chat true
-                                        :public?    true}))))
-      (is (= #{TestCommandInstance}
-             (into #{}
-                   (map (comp :type second))
-                   (core/chat-commands (get-in fx [:db :id->command])
-                                       (get-in fx [:db :access-scope->command-id])
-                                       {:chat-id    "group"
-                                        :group-chat true}))))
-      (is (= #{TestCommandInstance}
-             (into #{}
-                   (map (comp :type second))
-                   (core/chat-commands (get-in fx [:db :id->command])
-                                       (get-in fx [:db :access-scope->command-id])
-                                       {:chat-id "contact"})))))))
+#_(deftest chat-commands-test
+    (let [fx (core/load-commands {:db {}} #{TestCommandInstance AnotherTestCommandInstance})]
+      (testing "That relevant commands are looked up for chat"
+        (is (= #{TestCommandInstance AnotherTestCommandInstance}
+               (into #{}
+                     (map (comp :type second))
+                     (core/chat-commands (get-in fx [:db :id->command])
+                                         (get-in fx [:db :access-scope->command-id])
+                                         {:chat-id    "topic"
+                                          :group-chat true
+                                          :public?    true}))))
+        (is (= #{TestCommandInstance}
+               (into #{}
+                     (map (comp :type second))
+                     (core/chat-commands (get-in fx [:db :id->command])
+                                         (get-in fx [:db :access-scope->command-id])
+                                         {:chat-id    "group"
+                                          :group-chat true}))))
+        (is (= #{TestCommandInstance}
+               (into #{}
+                     (map (comp :type second))
+                     (core/chat-commands (get-in fx [:db :id->command])
+                                         (get-in fx [:db :access-scope->command-id])
+                                         {:chat-id "contact"})))))))
 
 (def contacts #{"0x0471b2be1e8b971f75b571ba047baa58e2f40f67dad38f6381b2382df43f7176b1813bf372af4cd8451ed9063213029378b9fbc7db792d496e1a6161c42d999edf"
                 "0x04b790f2c3f4079f35a1fa396465ceb243cc446c9af211d0a1774f869eb9632a67a6e664e24075ec5c5a8a95a509a2a8173dbfeb88af372e784a37fecc1b5c0ba5"

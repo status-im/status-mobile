@@ -84,9 +84,10 @@
                                  :button-style {:margin-vertical 20 :margin-horizontal 16}
                                  :accessibility-label :share-address-button
                                  :label        (i18n/label :t/share-address)}]
-      [components.common/button {:on-press            #(do
-                                                         (re-frame/dispatch [:hide-popover])
-                                                         (re-frame/dispatch [:navigate-to :wallet-send-transaction-request]))
-                                 :accessibility-label :sent-transaction-request-button
-                                 :label               (i18n/label :t/send-transaction-request)
-                                 :background?         false}]]]))
+      ;;TODO temporary hide for v1
+      #_[components.common/button {:on-press            #(do
+                                                           (re-frame/dispatch [:hide-popover])
+                                                           (re-frame/dispatch [:navigate-to :wallet-send-transaction-request]))
+                                   :accessibility-label :sent-transaction-request-button
+                                   :label               (i18n/label :t/send-transaction-request)
+                                   :background?         false}]]]))

@@ -34,10 +34,11 @@
                       :accessibility-label :start-conversation-button}
                (not (#{:none :paid} tribute-status))
                (assoc :subtext tribute-label))
-             {:label               (i18n/label :t/send-transaction)
-              :icon                :main-icons/send
-              :action              #(re-frame/dispatch [:profile/send-transaction public-key])
-              :accessibility-label :send-transaction-button}
+             ;;TODO hide temporary for v1
+             #_{:label               (i18n/label :t/send-transaction)
+                :icon                :main-icons/send
+                :action              #(re-frame/dispatch [:profile/send-transaction public-key])
+                :accessibility-label :send-transaction-button}
              {:label               (i18n/label :t/share-profile-link)
               :icon                :main-icons/share
               :action              #(re-frame/dispatch [:profile/share-profile-link public-key])
