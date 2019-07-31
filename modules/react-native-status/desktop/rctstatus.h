@@ -35,6 +35,7 @@ public:
     QList<ModuleMethod*> methodsToExport() override;
     QVariantMap constantsToExport() override;
 
+    Q_INVOKABLE void initKeystore();
     Q_INVOKABLE void startNode(QString configString);
     Q_INVOKABLE void stopNode();
     Q_INVOKABLE void createAccount(QString password, double callbackId);

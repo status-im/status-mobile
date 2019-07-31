@@ -128,6 +128,12 @@ void RCTStatus::stopNode() {
     logStatusGoResult("::stopNode StopNode", result);
 }
 
+void RCTStatus::initKeystore() {
+  aCInfo(RCTSTATUS) << "::initKeystore call";
+  QString rootDirPath = getDataStoragePath();
+  const char* result = initKeystore(rootDirPath);
+  logStatusGoResult("::initKeystore InitKeystore", result);
+}
 
 void RCTStatus::createAccount(QString password, double callbackId) {
     Q_D(RCTStatus);

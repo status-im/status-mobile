@@ -67,6 +67,7 @@
   (fx/merge cofx
             {:init/get-device-UUID                  nil
              :init/get-supported-biometric-auth     nil
+             :init/init-keystore                    nil
              :init/restore-native-settings          nil
              :ui/listen-to-window-dimensions-change nil
              :notifications/init                    nil
@@ -256,6 +257,11 @@
 (re-frame/reg-fx
  :init/restore-native-settings
  restore-native-settings!)
+
+(re-frame/reg-fx
+ :init/init-keystore
+ (fn []
+   (status/init-keystore)))
 
 (re-frame/reg-fx
  :init/get-device-UUID

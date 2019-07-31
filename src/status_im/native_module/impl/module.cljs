@@ -10,6 +10,9 @@
   (when (exists? (.-NativeModules rn-dependencies/react-native))
     (.-Status (.-NativeModules rn-dependencies/react-native))))
 
+(defn init-keystore []
+  (.initKeystore (status)))
+
 (defonce listener-initialized (atom false))
 
 (when-not @listener-initialized
@@ -63,13 +66,12 @@
     (.recoverAccount (status) passphrase password on-result)))
 
 (defn multiaccount-generate-and-derive-addresses [n mnemonic-length paths on-result]
-  (when (and @node-started (status))
-    (.multiAccountGenerateAndDeriveAddresses (status)
-                                             (types/clj->json {:n n
-                                                               :mnemonicPhraseLength mnemonic-length
-                                                               :bip39Passphrase ""
-                                                               :paths paths})
-                                             on-result)))
+  (.multiAccountGenerateAndDeriveAddresses (status)
+                                           (types/clj->json {:n n
+                                                             :mnemonicPhraseLength mnemonic-length
+                                                             :bip39Passphrase ""
+                                                             :paths paths})
+                                           on-result))
 
 (defn multiaccount-derive-addresses [account-id paths on-result]
   (when (and @node-started (status))
@@ -98,13 +100,12 @@
                         on-result)))
 
 (defn multiaccount-store-derived [account-id paths password on-result]
-  (when (and @node-started (status))
-    (.multiAccountStoreDerived (status)
-                               (types/clj->json {:accountID account-id
-                                                 :paths paths
-                                                 :password password})
+  (.multiAccountStoreDerived (status)
+                             (types/clj->json {:accountID account-id
+                                               :paths paths
+                                               :password password})
 
-                               on-result)))
+                             on-result))
 
 (defn multiaccount-import-mnemonic [mnemonic password on-result]
   (when (and @node-started (status))

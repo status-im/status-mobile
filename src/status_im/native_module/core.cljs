@@ -3,6 +3,9 @@
 
 (def adjust-resize 16)
 
+(defn init-keystore []
+  (native-module/init-keystore))
+
 (defn start-node [config]
   (native-module/start-node config))
 

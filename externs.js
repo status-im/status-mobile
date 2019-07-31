@@ -191,6 +191,7 @@ var TopLevel = {
     "index" : function () {},
     "indexOf" : function () {},
     "init" : function () {},
+    "initKeystore" : function () {},
     "injectJavaScript" : function () {},
     "installApplet" : function () {},
     "installAppletAndInitCard" : function () {},

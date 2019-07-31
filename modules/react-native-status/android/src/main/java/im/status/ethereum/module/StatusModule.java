@@ -353,6 +353,28 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    private void initKeystore() {
+        Activity currentActivity = getCurrentActivity();
+
+        final String keydir = currentActivity.getApplicationInfo().dataDir;
+        Log.d(TAG, "initKeystore");
+        if (!checkAvailability()) {
+            Log.e(TAG, "[initKeystore] Activity doesn't exist, cannot init keystore");
+            System.exit(0);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    Statusgo.initKeystore(keydir);
+                }
+            };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
     public void startNode(final String config) {
         Log.d(TAG, "startNode");
         if (!checkAvailability()) {
