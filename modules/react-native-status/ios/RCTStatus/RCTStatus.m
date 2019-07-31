@@ -201,6 +201,26 @@ RCT_EXPORT_METHOD(stopNode) {
 }
 
 ////////////////////////////////////////////////////////////////////
+#pragma mark - InitKeystore method
+//////////////////////////////////////////////////////////////////// StopNode
+RCT_EXPORT_METHOD(initKeystore) {
+#if DEBUG
+    NSLog(@"initKeystore() method called");
+#endif
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error = nil;
+    NSURL *rootUrl =[[fileManager
+                      URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
+                     lastObject];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                   ^(void)
+                   {
+                        NSString *res = StatusgoInitKeystore(rootUrl.path);
+                        NSLog(@"StopNode result %@", res);
+                   });
+}
+
+////////////////////////////////////////////////////////////////////
 #pragma mark - Accounts method
 //////////////////////////////////////////////////////////////////// createAccount
 RCT_EXPORT_METHOD(createAccount:(NSString *)password

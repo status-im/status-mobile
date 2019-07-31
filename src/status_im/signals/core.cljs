@@ -44,10 +44,7 @@
                     {:multiaccounts.recover/recover-multiaccount
                      [(security/mask-data passphrase) password]}))
                 :create-keycard-multiaccount
-                (hardwallet/create-keycard-multiaccount)
-                :start-onboarding
-                (fn []
-                  {:intro-wizard/start-onboarding nil})))))
+                (hardwallet/create-keycard-multiaccount)))))
 
 (fx/defn status-node-stopped
   [{db :db}]
