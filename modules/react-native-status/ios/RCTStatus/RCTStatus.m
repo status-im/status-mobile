@@ -384,7 +384,17 @@ RCT_EXPORT_METHOD(multiAccountStoreDerived:(NSString *)json
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// MultiAccountDeriveAddresses
+//////////////////////////////////////////////////////////////////// multiAccountImportMnemonic
+RCT_EXPORT_METHOD(multiAccountImportMnemonic:(NSString *)json
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"MultiAccountImportMnemonic() method called");
+#endif
+    NSString *result = StatusgoMultiAccountImportMnemonic(json);
+    callback(@[result]);
+}
+
+//////////////////////////////////////////////////////////////////// multiAccountDeriveAddresses
 RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG

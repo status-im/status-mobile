@@ -774,6 +774,25 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
+    @ReactMethod
+    public void multiAccountImportMnemonic(final String json, final Callback callback) {
+        Log.d(TAG, "multiAccountImportMnemonic");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.multiAccountImportMnemonic(json);
+
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
     private String createIdentifier() {
         return UUID.randomUUID().toString();
     }

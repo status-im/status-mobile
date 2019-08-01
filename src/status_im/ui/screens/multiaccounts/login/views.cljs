@@ -105,10 +105,12 @@
         [react/i18n-text {:style styles/processing :key :processing}]])
      [react/view {:style styles/bottom-button-container}
       [components.common/button
-       {:label     (i18n/label :t/access-key)
+       {:label        (i18n/label :t/access-key)
         :button-style styles/bottom-button
-        :background? false
-        :on-press  #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])}]
+        :background?  false
+        :on-press     #(do
+                         (react/dismiss-keyboard!)
+                         (re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]))}]
       [components.common/button
        {:label     (i18n/label :t/submit)
         :button-style styles/bottom-button

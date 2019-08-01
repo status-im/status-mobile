@@ -31,6 +31,7 @@
   {:padding-horizontal 16
    :padding-vertical   9
    :background-color   color
+   :elevation          2
    :border-radius      8})
 
 (def bottom-tooltip-text-container

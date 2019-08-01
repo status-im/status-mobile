@@ -13,7 +13,8 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.multiaccounts.recover.core :as multiaccounts.recover]))
 
 (fx/defn status-node-started
   [{db :db :as cofx}]
@@ -38,11 +39,8 @@
                 :create-multiaccount
                 (fn [_]
                   {:multiaccounts.create/create-multiaccount (select-keys create [:id :password])})
-                :recover-multiaccount
-                (fn [{:keys [db]}]
-                  (let [{:keys [password passphrase]} (:multiaccounts/recover db)]
-                    {:multiaccounts.recover/recover-multiaccount
-                     [(security/mask-data passphrase) password]}))
+                :import-mnemonic
+                (multiaccounts.recover/import-mnemonic)
                 :create-keycard-multiaccount
                 (hardwallet/create-keycard-multiaccount)
                 :start-onboarding

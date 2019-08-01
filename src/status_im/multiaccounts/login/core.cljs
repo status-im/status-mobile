@@ -283,11 +283,23 @@
 
 (fx/defn verify-multiaccount
   [{:keys [db] :as cofx} {:keys [realm-error]}]
-  (fx/merge cofx
-            {:db (-> db
-                     (assoc :node/on-ready :verify-multiaccount)
-                     (assoc :realm-error realm-error))}
-            (node/initialize nil)))
+  (if (get-in db [:multiaccounts/recover])
+    (fx/merge cofx
+              {:db        (-> db
+                              (update :multiaccounts/recover assoc
+                                      :processing? false
+                                      :password ""
+                                      :password-confirmation ""
+                                      :password-error :recover-password-invalid)
+                              (update :multiaccounts/recover dissoc
+                                      :password-valid?))
+               :node/stop nil}
+              (navigation/navigate-to-cofx :recover-multiaccount-enter-password nil))
+    (fx/merge cofx
+              {:db (-> db
+                       (assoc :node/on-ready :verify-multiaccount)
+                       (assoc :realm-error realm-error))}
+              (node/initialize nil))))
 
 (fx/defn unknown-realm-error
   [cofx {:keys [realm-error erase-button]}]

@@ -3,7 +3,7 @@
             [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.screens.multiaccounts.create.views :as multiaccounts.create]
             [status-im.ui.screens.multiaccounts.login.views :as login]
-            [status-im.ui.screens.multiaccounts.recover.views :as recover]
+            [status-im.ui.screens.multiaccounts.recover.views :as multiaccounts.recover]
             [status-im.ui.screens.multiaccounts.views :as multiaccounts]
             [status-im.ui.screens.add-new.new-chat.views :as new-chat]
             [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
@@ -71,7 +71,12 @@
   {:login                                            login/login
    :progress                                         progress/progress
    :create-multiaccount                              multiaccounts.create/create-multiaccount
-   :recover                                          recover/recover
+   :recover-multiaccount                             multiaccounts.recover/recover
+   :recover-multiaccount-enter-phrase                multiaccounts.recover/enter-phrase
+   :recover-multiaccount-select-storage              multiaccounts.recover/select-storage
+   :recover-multiaccount-enter-password              multiaccounts.recover/enter-password
+   :recover-multiaccount-confirm-password            multiaccounts.recover/confirm-password
+   :recover-multiaccount-success                     multiaccounts.recover/success
    :multiaccounts                                    multiaccounts/multiaccounts
    :intro                                            intro/intro
    :intro-wizard                                     intro/wizard
@@ -94,7 +99,6 @@
    :keycard-onboarding-recovery-phrase               keycard.onboarding/recovery-phrase
    :keycard-onboarding-recovery-phrase-confirm-word1 keycard.onboarding/recovery-phrase-confirm-word
    :keycard-onboarding-recovery-phrase-confirm-word2 keycard.onboarding/recovery-phrase-confirm-word
-   :keycard-recovery-enter-mnemonic                  keycard.onboarding/enter-mnemonic
    :keycard-pairing                                  keycard/pairing
    :keycard-nfc-on                                   keycard/nfc-on
    :keycard-connection-lost                          keycard/connection-lost

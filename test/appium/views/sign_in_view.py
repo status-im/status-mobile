@@ -34,15 +34,15 @@ class RecoverAccountPasswordInput(BaseEditBox):
 class CreatePasswordInput(BaseEditBox):
     def __init__(self, driver):
         super(CreatePasswordInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Create a password']"
-                                                   "/following-sibling::android.widget.EditText")
+        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Create a password']/.."
+                                                   "//android.widget.EditText")
 
 
 class ConfirmYourPasswordInput(BaseEditBox):
     def __init__(self, driver):
         super(ConfirmYourPasswordInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Confirm your password']"
-                                                   "/following-sibling::android.widget.EditText")
+        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Confirm your password']/.."
+                                                   "//android.widget.EditText")
 
 
 class SignInButton(BaseButton):
@@ -198,11 +198,16 @@ class SignInView(BaseView):
             recover_access_view = self.add_existing_multiaccount_button.click()
         else:
             recover_access_view = self.access_key_button.click()
+        recover_access_view.enter_seed_phrase_button.click()
         recover_access_view.passphrase_input.click()
         recover_access_view.passphrase_input.set_value(passphrase)
-        recover_access_view.recover_account_password_input.click()
-        recover_access_view.recover_account_password_input.set_value(password)
-        recover_access_view.sign_in_button.click_until_presence_of_element(recover_access_view.home_button)
+        recover_access_view.next_button.click()
+        recover_access_view.reencrypt_your_key_button.click()
+        recover_access_view.next_button.click()
+        recover_access_view.create_password_input.set_value(password)
+        recover_access_view.next_button.click()
+        recover_access_view.confirm_your_password_input.set_value(password)
+        recover_access_view.next_button.click_until_presence_of_element(recover_access_view.home_button)
         return self.get_home_view()
 
     def sign_in(self, password=common_password):

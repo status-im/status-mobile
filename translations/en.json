@@ -302,7 +302,6 @@
     "save-password": "Save password",
     "submit": "Submit",
     "recover-key": "Recover key",
-    "processing": "Processing...",
     "currency-display-name-kes": "Kenyan Shilling",
     "view-etheremon": "View in Etheremon",
     "wallet-transaction-fee-details": "Gas limit caps the units of gas spent on the transaction. Gas price sets the price per unit of gas. Increasing gas price can make your transaction faster.",
@@ -736,6 +735,7 @@
     "browser-not-secure": "Connection is not secure! Do not sign transactions or send personal data on this site.",
     "welcome-to-status-description": "Here you can chat with people in a secure private chat, browse and interact with DApps.",
     "recovery-phrase-invalid": "Recovery phrase is invalid",
+    "recovery-phrase-wrong-length": "Please make sure the phrase you enter has 12, 15, 18, 21, or 24 words.",
     "currency-display-name-cny": "China Yuan Renminbi",
     "clear-history-confirmation-content": "Are you sure you want to clear this chat history?",
     "mailserver-reconnect": "Could not connect to mailserver. Tap to reconnect",
@@ -1269,5 +1269,16 @@
     "account-color": "Account color",
     "to-encrypt-enter-password": "To encrypt the account please enter your password",
     "accounts": "Accounts",
-    "add-account-incorrect-password": "Password seems to be incorrect. Enter the password you use to unlock the app."
+    "add-account-incorrect-password": "Password seems to be incorrect. Enter the password you use to unlock the app.",
+    "remember-me": "Remember me",
+    "enter-seed-phrase": "Enter Seed phrase",
+    "recover-with-keycard": "Recover with Keycard",
+    "multiaccounts-recover-enter-phrase-title": "Enter your seed phrase",
+    "multiaccounts-recover-enter-phrase-text": "Enter 12, 15, 18, 21 or 24 words.\nSeperate words by a single space.",
+    "words-n": {
+        "one": "1 word",
+        "other": "{{count}} words"
+    },
+    "re-encrypt-key": "Re-encrypt your key",
+    "recovery-success-text": "You will have to create a new code or password to re-encrypt your key"
 }

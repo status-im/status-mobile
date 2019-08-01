@@ -21,17 +21,25 @@
 (defn valid-word-counts? [v]
   (boolean (valid-word-counts (count v))))
 
+(defn words-count [s]
+  (if (empty? s)
+    nil
+    (-> s
+        passphrase->words
+        count)))
+
 (defn- valid-word? [s]
   (re-matches #"^[A-z]+$" s))
 
-(defn valid-words? [v]
-  (and (valid-word-counts? v)
-       (every? valid-word? v)))
-
-(defn valid-phrase? [s]
+(defn valid-length? [s]
   (-> s
       passphrase->words
-      valid-words?))
+      valid-word-counts?))
+
+(defn valid-words? [s]
+  (->> s
+       passphrase->words
+       (every? valid-word?)))
 
 (defn status-generated-phrase? [s]
   (every? dictionary (passphrase->words s)))

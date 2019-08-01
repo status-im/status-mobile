@@ -18,6 +18,8 @@
    :keycard-lock        (js-require/js-require "./resources/images/ui/keycard-lock.png")
    :keycard             (js-require/js-require "./resources/images/ui/keycard.png")
    :keycard-logo        (js-require/js-require "./resources/images/ui/keycard-logo.png")
+   :keycard-logo-blue   (js-require/js-require "./resources/images/ui/keycard-logo-blue.png")
+   :keycard-logo-gray   (js-require/js-require "./resources/images/ui/keycard-logo-gray.png")
    :keycard-key         (js-require/js-require "./resources/images/ui/keycard-key.png")
    :keycard-empty       (js-require/js-require "./resources/images/ui/keycard-empty.png")
    :keycard-phone       (js-require/js-require "./resources/images/ui/keycard-phone.png")

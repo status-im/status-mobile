@@ -16,7 +16,17 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.utils.security :as security]
             [status-im.utils.platform :as platform]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [status-im.ui.components.action-button.styles :as action-button.styles]
+            [status-im.ui.components.action-button.action-button :as action-button]
+            [status-im.ui.components.colors :as colors]
+            [status-im.utils.gfycat.core :as gfy]
+            [status-im.utils.identicon :as identicon]
+            [status-im.ui.components.radio :as radio]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.screens.intro.views :as intro.views]
+            [status-im.utils.utils :as utils]
+            [status-im.constants :as constants]))
 
 (defview passphrase-input [passphrase error warning]
   (letsubs [input-ref (reagent/atom nil)]
@@ -94,3 +104,343 @@
             :label     (i18n/label :t/sign-in)
             :disabled? disabled?
             :on-press  sign-in}]])])))
+
+(defn bottom-sheet-view []
+  [react/view {:flex 1 :flex-direction :row}
+   [react/view action-button.styles/actions-list
+    [action-button/action-button
+     {:label               (i18n/label :t/enter-seed-phrase)
+      :accessibility-label :enter-seed-phrase-button
+      :icon                :main-icons/text
+      :icon-opts           {:color colors/blue}
+      :on-press            #(re-frame/dispatch [:recover.ui/enter-phrase-pressed])}]
+    [action-button/action-button
+     {:label               (i18n/label :t/recover-with-keycard)
+      :label-style         (if config/hardwallet-enabled? {} {:color colors/gray})
+      :accessibility-label :recover-with-keycard-button
+      :image               :keycard-logo-blue
+      :image-opts          {:style {:width 24 :height 24}}
+      :on-press            #(when config/hardwallet-enabled?
+                              (re-frame/dispatch [:recover.ui/recover-with-keycard-pressed]))}]]])
+
+(def bottom-sheet
+  {:content        bottom-sheet-view
+   :content-height 130})
+
+(defview enter-phrase []
+  (letsubs [{:keys [passphrase
+                    processing?
+                    passphrase-error
+                    words-count
+                    next-button-disabled?]} [:get-recover-multiaccount]]
+    [react/keyboard-avoiding-view {:flex             1
+                                   :justify-content  :space-between
+                                   :background-color colors/white}
+     [toolbar/toolbar
+      {:transparent? true
+       :style        {:margin-top 32}}
+      [toolbar/nav-text
+       {:handler #(re-frame/dispatch [:recover.ui/cancel-pressed])
+        :style   {:padding-left 21}}
+       (i18n/label :t/cancel)]
+      [react/text {:style {:color colors/gray}}
+       (i18n/label :t/step-i-of-n {:step   "1"
+                                   :number "2"})]]
+     [react/view {:flex            1
+                  :flex-direction  :column
+                  :justify-content :space-between
+                  :align-items     :center}
+      [react/view {:flex-direction :column
+                   :align-items    :center}
+       [react/view {:margin-top 16}
+        [react/text {:style {:typography :header
+                             :text-align :center}}
+         (i18n/label :t/multiaccounts-recover-enter-phrase-title)]]
+       [react/view {:margin-top 16}
+        [text-input/text-input-with-label
+         {:on-change-text    #(re-frame/dispatch [:recover.enter-passphrase.ui/input-changed (security/mask-data %)])
+          :auto-focus        true
+          :on-submit-editing #(re-frame/dispatch [:recover.enter-passphrase.ui/input-submitted])
+          :error             (when passphrase-error (i18n/label passphrase-error))
+          :placeholder       nil
+          :height            120
+          :multiline         true
+          :auto-correct      false
+          :container         {:background-color :white
+                              :min-width        "50%"}
+          :style             {:background-color :white
+                              :text-align       :center
+                              :font-size        16
+                              :font-weight      "700"}}]]
+       [react/view {:align-items :center}
+        (when words-count
+          [react/view {:flex-direction :row
+                       :height         11
+                       :align-items    :center}
+           (when-not next-button-disabled?
+             [vector-icons/tiny-icon :tiny-icons/tiny-check])
+           [react/text {:style {:font-size    14
+                                :padding-left 4
+                                :text-align   :center
+                                :color        colors/black}}
+            (i18n/label-pluralize words-count :t/words-n)]])]
+       (when next-button-disabled?
+         [react/view {:margin-top  17
+                      :align-items :center}
+          [react/text {:style {:color      colors/black
+                               :font-size  14
+                               :text-align :center}}
+           (i18n/label :t/multiaccounts-recover-enter-phrase-text)]])]
+      (when processing?
+        [react/view
+         [react/activity-indicator {:size      :large
+                                    :animating true}]
+         [react/text {:style {:color      colors/gray
+                              :margin-top 8}}
+          (i18n/label :t/processing)]])
+      [react/view {:flex-direction  :row
+                   :justify-content :space-between
+                   :align-items     :center
+                   :width           "100%"
+                   :height          86}
+       (when-not processing?
+         [react/view])
+       (when-not processing?
+         [react/view {:margin-right 20}
+          [components.common/bottom-button
+           {:on-press  #(re-frame/dispatch [:recover.enter-passphrase.ui/next-pressed])
+            :label     (i18n/label :t/next)
+            :disabled? next-button-disabled?
+            :forward?  true}]])]]]))
+
+(defview success []
+  (letsubs [multiaccount [:get-recover-multiaccount]]
+    (let [pubkey (get-in multiaccount [:derived constants/path-whisper-keyword :publicKey])]
+      [react/view {:flex             1
+                   :justify-content  :space-between
+                   :background-color colors/white}
+       [toolbar/toolbar
+        {:transparent? true
+         :style        {:margin-top 32}}
+        nil
+        nil]
+       [react/view {:flex            1
+                    :flex-direction  :column
+                    :justify-content :space-between
+                    :align-items     :center}
+        [react/view {:flex-direction :column
+                     :align-items    :center}
+         [react/view {:margin-top 16}
+          [react/text {:style {:typography :header
+                               :text-align :center}}
+           (i18n/label :t/keycard-recovery-success-header)]]
+         [react/view {:margin-top  16
+                      :width       "85%"
+                      :align-items :center}
+          [react/text {:style {:color      colors/gray
+                               :text-align :center}}
+           (i18n/label :t/recovery-success-text)]]]
+        [react/view {:flex-direction  :column
+                     :flex            1
+                     :justify-content :center
+                     :align-items     :center}
+         [react/view {:margin-horizontal 16
+                      :flex-direction    :column}
+          [react/view {:justify-content :center
+                       :align-items     :center
+                       :margin-bottom   11}
+           [react/image {:source {:uri (identicon/identicon pubkey)}
+                         :style  {:width         61
+                                  :height        61
+                                  :border-radius 30
+                                  :border-width  1
+                                  :border-color  (colors/alpha colors/black 0.1)}}]]
+          [react/text {:style           {:text-align  :center
+                                         :color       colors/black
+                                         :font-weight "500"}
+                       :number-of-lines 1
+                       :ellipsize-mode  :middle}
+           (gfy/generate-gfy pubkey)]
+          [react/text {:style           {:text-align  :center
+                                         :margin-top  4
+                                         :color       colors/gray
+                                         :font-family "monospace"}
+                       :number-of-lines 1
+                       :ellipsize-mode  :middle}
+           (utils/get-shortened-address pubkey)]]]
+        [react/view {:margin-bottom 50}
+         [react/touchable-highlight
+          {:on-press #(re-frame/dispatch [:recover.success.ui/re-encrypt-pressed])}
+          [react/view {:background-color colors/gray-background
+                       :align-items      :center
+                       :justify-content  :center
+                       :flex-direction   :row
+                       :width            193
+                       :height           44
+                       :border-radius    10}
+           [react/text {:style {:color colors/blue}}
+            (i18n/label :t/re-encrypt-key)]]]]]])))
+
+(defview select-storage []
+  (letsubs [{:keys [selected-storage-type]} [:intro-wizard]
+            {view-height :height} [:dimensions/window]]
+    [react/view {:flex             1
+                 :justify-content  :space-between
+                 :background-color colors/white}
+     [toolbar/toolbar
+      {:transparent? true
+       :style        {:margin-top 32}}
+      [toolbar/nav-text
+       {:handler #(re-frame/dispatch [:recover.ui/cancel-pressed])
+        :style   {:padding-left 21}}
+       (i18n/label :t/cancel)]
+      nil]
+     [react/view {:flex            1
+                  :justify-content :space-between}
+      [react/view {:flex-direction :column
+                   :align-items    :center}
+       [react/view {:margin-top 16}
+        [react/text {:style {:typography :header
+                             :text-align :center}}
+         (i18n/label :t/intro-wizard-title3)]]
+       [react/view {:margin-top  16
+                    :width       "85%"
+                    :align-items :center}
+        [react/text {:style {:color      colors/gray
+                             :text-align :center}}
+         (i18n/label :t/intro-wizard-text3)]]]
+      [intro.views/select-key-storage {:selected-storage-type (if config/hardwallet-enabled? selected-storage-type :default)} view-height]
+      [react/view {:flex-direction  :row
+                   :justify-content :space-between
+                   :align-items     :center
+                   :width           "100%"
+                   :height          86}
+       [react/view components.styles/flex]
+       [react/view {:margin-right 20}
+        [components.common/bottom-button
+         {:on-press #(re-frame/dispatch [:recover.select-storage.ui/next-pressed])
+          :forward? true}]]]]]))
+
+(defview enter-password []
+  (letsubs [{:keys [password password-error]} [:get-recover-multiaccount]]
+    [react/keyboard-avoiding-view {:flex             1
+                                   :justify-content  :space-between
+                                   :background-color colors/white}
+     [toolbar/toolbar
+      {:transparent? true
+       :style        {:margin-top 32}}
+      [toolbar/nav-text
+       {:handler #(re-frame/dispatch [:recover.ui/cancel-pressed])
+        :style   {:padding-left 21}}
+       (i18n/label :t/cancel)]
+      [react/text {:style {:color colors/gray}}
+       (i18n/label :t/step-i-of-n {:step   "1"
+                                   :number "2"})]]
+     [react/view {:flex            1
+                  :flex-direction  :column
+                  :justify-content :space-between
+                  :align-items     :center}
+      [react/view {:flex-direction :column
+                   :align-items    :center}
+       [react/view {:margin-top 16}
+        [react/text {:style {:typography :header
+                             :text-align :center}}
+         (i18n/label :t/intro-wizard-title-alt4)]]
+       [react/view {:margin-top  16
+                    :width       "85%"
+                    :align-items :center}
+        [react/text {:style {:color      colors/gray
+                             :text-align :center}}
+         (i18n/label :t/password-description)]]
+       [react/view {:margin-top 16}
+        [text-input/text-input-with-label
+         {:on-change-text    #(re-frame/dispatch [:recover.enter-password.ui/input-changed (security/mask-data %)])
+          :auto-focus        true
+          :on-submit-editing #(re-frame/dispatch [:recover.enter-password.ui/input-submitted])
+          :secure-text-entry true
+          :error             (when password-error (i18n/label password-error))
+          :placeholder       nil
+          :height            125
+          :multiline         false
+          :auto-correct      false
+          :container         {:background-color :white
+                              :min-width        "50%"}
+          :style             {:background-color :white
+                              :width            200
+                              :text-align       :center
+                              :font-size        20
+                              :font-weight      "700"}}]]]
+      [react/view {:flex-direction  :row
+                   :justify-content :space-between
+                   :align-items     :center
+                   :width           "100%"
+                   :height          86}
+       [react/view]
+       [react/view {:margin-right 20}
+        [components.common/bottom-button
+         {:on-press  #(re-frame/dispatch [:recover.enter-password.ui/next-pressed])
+          :label     (i18n/label :t/next)
+          :disabled? (empty? password)
+          :forward?  true}]]]]]))
+
+(defview confirm-password []
+  (letsubs [{:keys [password-confirmation password-error]} [:get-recover-multiaccount]]
+    [react/keyboard-avoiding-view {:flex             1
+                                   :justify-content  :space-between
+                                   :background-color colors/white}
+     [toolbar/toolbar
+      {:transparent? true
+       :style        {:margin-top 32}}
+      [toolbar/nav-text
+       {:handler #(re-frame/dispatch [:recover.ui/cancel-pressed])
+        :style   {:padding-left 21}}
+       (i18n/label :t/cancel)]
+      [react/text {:style {:color colors/gray}}
+       (i18n/label :t/step-i-of-n {:step   "1"
+                                   :number "2"})]]
+     [react/view {:flex            1
+                  :flex-direction  :column
+                  :justify-content :space-between
+                  :align-items     :center}
+      [react/view {:flex-direction :column
+                   :align-items    :center}
+       [react/view {:margin-top 16}
+        [react/text {:style {:typography :header
+                             :text-align :center}}
+         (i18n/label :t/intro-wizard-title-alt5)]]
+       [react/view {:margin-top  16
+                    :width       "85%"
+                    :align-items :center}
+        [react/text {:style {:color      colors/gray
+                             :text-align :center}}
+         (i18n/label :t/password-description)]]
+       [react/view {:margin-top 16}
+        [text-input/text-input-with-label
+         {:on-change-text    #(re-frame/dispatch [:recover.confirm-password.ui/input-changed %])
+          :auto-focus        true
+          :on-submit-editing #(re-frame/dispatch [:recover.confirm-password.ui/input-submitted])
+          :error             (when password-error (i18n/label password-error))
+          :secure-text-entry true
+          :placeholder       nil
+          :height            125
+          :multiline         false
+          :auto-correct      false
+          :container         {:background-color :white
+                              :min-width        "50%"}
+          :style             {:background-color :white
+                              :width            200
+                              :text-align       :center
+                              :font-size        20
+                              :font-weight      "700"}}]]]
+      [react/view {:flex-direction  :row
+                   :justify-content :space-between
+                   :align-items     :center
+                   :width           "100%"
+                   :height          86}
+       [react/view]
+       [react/view {:margin-right 20}
+        [components.common/bottom-button
+         {:on-press  #(re-frame/dispatch [:recover.confirm-password.ui/next-pressed])
+          :label     (i18n/label :t/next)
+          :disabled? (empty? password-confirmation)
+          :forward?  true}]]]]]))

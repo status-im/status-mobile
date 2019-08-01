@@ -40,6 +40,9 @@
 (defn multiaccount-generate-and-derive-addresses [n mnemonic-length paths callback]
   (native-module/multiaccount-generate-and-derive-addresses n mnemonic-length paths callback))
 
+(defn multiaccount-import-mnemonic [mnemonic password callback]
+  (native-module/multiaccount-import-mnemonic mnemonic password callback))
+
 (defn login [address password main-account watch-addresses callback]
   (native-module/login address password main-account watch-addresses callback))
 

@@ -1,16 +1,22 @@
 (ns status-im.test.ethereum.mnemonic
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.ethereum.mnemonic :as mnemonic]))
+            [status-im.ethereum.mnemonic :as mnemonic]
+            [clojure.string :as string]))
+
+(deftest valid-length?
+  (is (not (mnemonic/valid-length? "rate rate")))
+  (is (not (mnemonic/valid-length? (string/join " " (repeat 13 "rate")))))
+  (is (not (mnemonic/valid-length? (string/join " " (repeat 16 "rate")))))
+  (is (mnemonic/valid-length? (string/join " " (repeat 12 "rate"))))
+  (is (mnemonic/valid-length? (string/join " " (repeat 15 "rate"))))
+  (is (mnemonic/valid-length? (string/join " " (repeat 18 "rate"))))
+  (is (mnemonic/valid-length? (string/join " " (repeat 21 "rate"))))
+  (is (mnemonic/valid-length? (string/join " " (repeat 24 "rate")))))
 
 (deftest valid-words?
-  (is (not (mnemonic/valid-words? ["rate" "rate"])))
-  (is (not (mnemonic/valid-words? ["rate" "rate" "rate" "rate" "rate" "rate" "rate" "rate" "rate" "rate" "rate" "rate?"])))
-  (is (mnemonic/valid-words? ["rate" "rate" "rate" "rate" "rate" "rate" "rate" "rate" "rate" "rate" "rate" "rate"])))
-
-(deftest valid-phrase
-  (is (not (mnemonic/valid-phrase? "rate rate")))
-  (is (not (mnemonic/valid-phrase? "rate rate rate rate rate rate rate rate rate rate rate rate?")))
-  (is (mnemonic/valid-phrase? "rate rate rate rate rate rate rate rate rate rate rate rate")))
+  (is (not (mnemonic/valid-words? "rate! rate")))
+  (is (not (mnemonic/valid-words? "rate rate rate rate rate rate rate rate rate rate rate rate?")))
+  (is (mnemonic/valid-words? "rate rate rate rate rate rate rate rate rate rate rate rate")))
 
 (deftest passphrase->words?
   (is (= ["one" "two" "three" "for" "five" "six" "seven" "height" "nine" "ten" "eleven" "twelve"]

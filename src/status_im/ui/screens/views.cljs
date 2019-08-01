@@ -18,6 +18,7 @@
             [status-im.ui.screens.routing.core :as routing]
             [status-im.ui.screens.signing.views :as signing]
             [status-im.ui.screens.popover.views :as popover]
+            [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [status-im.utils.dimensions :as dimensions]
             status-im.ui.screens.wallet.collectibles.etheremon.views
             status-im.ui.screens.wallet.collectibles.cryptostrikers.views
@@ -59,7 +60,10 @@
                  (merge home.sheet/private-chat-actions)
 
                  (= view :group-chat-actions)
-                 (merge home.sheet/group-chat-actions))]
+                 (merge home.sheet/group-chat-actions)
+
+                 (= view :recover-sheet)
+                 (merge recover.views/bottom-sheet))]
 
       [bottom-sheet/bottom-sheet opts])))
 

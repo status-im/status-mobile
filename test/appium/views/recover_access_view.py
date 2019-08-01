@@ -6,7 +6,21 @@ class PassphraseInput(BaseEditBox):
 
     def __init__(self, driver):
         super(PassphraseInput, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("enter-12-words")
+        self.locator = self.Locator.xpath_selector("//android.widget.EditText")
+
+
+class EnterSeedPhraseButton(BaseButton):
+
+    def __init__(self, driver):
+        super(EnterSeedPhraseButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("enter-seed-phrase-button")
+
+
+class ReencryptYourKeyButton(BaseButton):
+
+    def __init__(self, driver):
+        super(ReencryptYourKeyButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Re-encrypt your key']")
 
 
 class ConfirmRecoverAccess(BaseButton):
@@ -72,7 +86,9 @@ class RecoverAccessView(SignInView):
         self.driver = driver
 
         self.passphrase_input = PassphraseInput(self.driver)
+        self.enter_seed_phrase_button = EnterSeedPhraseButton(self.driver)
         self.confirm_recover_access = ConfirmRecoverAccess(self.driver)
+        self.reencrypt_your_key_button = ReencryptYourKeyButton(self.driver)
         self.warnings = Warnings(self.driver)
         self.confirm_phrase_button = ConfirmPhraseButton(self.driver)
         self.cancel_button = CancelPhraseButton(self.driver)

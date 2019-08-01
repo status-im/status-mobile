@@ -228,6 +228,9 @@
   (= (get-in cofx [:db :view-id])
      :create-multiaccount))
 
+(defn recovering-multiaccount? [cofx]
+  (boolean (get-in cofx [:db :multiaccounts/recover])))
+
 (defn- keycard-setup? [cofx]
   (boolean (get-in cofx [:db :hardwallet :flow])))
 
@@ -242,6 +245,7 @@
               (stickers/init-stickers-packs)
               (multiaccounts.update/update-sign-in-time)
               #(when-not (or (creating-multiaccount? %)
+                             (recovering-multiaccount? %)
                              (keycard-setup? %))
                  (login-only-events % address stored-pns)))))
 

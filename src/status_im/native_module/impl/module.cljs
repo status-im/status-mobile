@@ -106,6 +106,14 @@
 
                                on-result)))
 
+(defn multiaccount-import-mnemonic [mnemonic password on-result]
+  (when (and @node-started (status))
+    (.multiAccountImportMnemonic (status)
+                                 (types/clj->json {:mnemonicPhrase  mnemonic
+                                                   :Bip39Passphrase password})
+
+                                 on-result)))
+
 (defn login [address password main-account watch-addresses on-result]
   (when (and @node-started (status))
     (.login (status)

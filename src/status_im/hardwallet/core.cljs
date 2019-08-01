@@ -404,18 +404,19 @@
             (navigation/navigate-to-cofx :keycard-recovery-enter-mnemonic nil)))
 
 (fx/defn start-import-flow
-  {:events [:recovery.ui/recover-with-keycard-pressed
+  {:events [:recover.ui/recover-with-keycard-pressed
             :keycard.login.ui/recover-key-pressed]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db                           (assoc-in db [:hardwallet :flow] :import)
+             :dispatch                     [:bottom-sheet/hide-sheet]
              :hardwallet/check-nfc-enabled nil}
             (navigation/navigate-to-cofx :keycard-recovery-intro nil)))
 
 (fx/defn access-key-pressed
   {:events [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]}
   [cofx]
-  (multiaccounts.recover/navigate-to-recover-multiaccount-screen cofx))
+  {:dispatch [:bottom-sheet/show-sheet :recover-sheet]})
 
 (fx/defn recovery-keycard-selected
   {:events [:recovery.ui/keycard-option-pressed]}
@@ -424,19 +425,6 @@
             {:db                           (assoc-in db [:hardwallet :flow] :recovery)
              :hardwallet/check-nfc-enabled nil}
             (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
-
-;NOTE to be removed when Recovery flow will be implemented
-(fx/defn enter-mnemonic-next-button-pressed
-  {:events [:keycard.recovery.enter-mnemonic.ui/input-submitted
-            :keycard.recovery.enter-mnemonic.ui/next-pressed]}
-  [cofx]
-  (recovery-keycard-selected cofx))
-
-;NOTE to be removed when Recovery flow will be implemented
-(fx/defn enter-mnemonic-input-changed
-  {:events [:keycard.recovery.enter-mnemonic.ui/input-changed]}
-  [{:keys [db]} input]
-  {:db (assoc-in db [:hardwallet :secrets :mnemonic] input)})
 
 (fx/defn password-option-pressed
   [{:keys [db] :as cofx}]

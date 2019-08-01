@@ -307,13 +307,6 @@
  (fn [cofx _]
    (multiaccounts.recover/recover-multiaccount cofx)))
 
-(handlers/register-handler-fx
- :multiaccounts.recover.callback/recover-multiaccount-success
- [(re-frame/inject-cofx :random-guid-generator)
-  (re-frame/inject-cofx :multiaccounts.create/get-signing-phrase)]
- (fn [cofx [_ result password]]
-   (multiaccounts.recover/on-multiaccount-recovered cofx result password)))
-
 ;; multiaccounts login module
 
 (handlers/register-handler-fx

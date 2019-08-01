@@ -568,5 +568,6 @@ var TopLevel = {
     "multiAccountDeriveAddresses" : function () {},
     "multiAccountReset" : function () {},
     "multiAccountLoadAccount" : function () {},
-    "multiAccountStoreAccount" : function () {}
+    "multiAccountStoreAccount" : function () {},
+    "multiAccountImportMnemonic" : function () {},
 }

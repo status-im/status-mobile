@@ -19,7 +19,8 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.i18n :as i18n]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.utils.config :as config]))
 
 (defn dots-selector [{:keys [on-press n selected color]}]
   [react/view {:style (styles/dot-selector n)}
@@ -128,20 +129,26 @@
            (utils/get-shortened-address public-key)]]
          [radio/radio selected?]]]))])
 
-(defn storage-entry [{:keys [type icon icon-width icon-height title desc]} selected-storage-type]
+(defn storage-entry [{:keys [type icon icon-width icon-height
+                             image image-selected image-width image-height
+                             title desc]} selected-storage-type]
   (let [selected? (= type selected-storage-type)]
     [react/view
      [react/view {:style {:padding-top 14 :padding-bottom 4}}
       [react/text {:style (assoc styles/wizard-text :text-align :left :margin-left 16)}
        (i18n/label type)]]
      [react/touchable-highlight
-      {:on-press #(re-frame/dispatch [:intro-wizard/on-key-storage-selected type])}
+      {:on-press #(re-frame/dispatch [:intro-wizard/on-key-storage-selected (if config/hardwallet-enabled? type :default)])}
       [react/view (assoc (styles/list-item selected?)
                          :align-items :flex-start
                          :padding-top 20
                          :padding-bottom 12)
-       [vector-icons/icon icon {:color (if selected? colors/blue colors/gray)
-                                :width icon-width :height icon-height}]
+       (if image
+         [react/image
+          {:source (resources/get-image (if selected? image-selected image))
+           :style  {:width image-width :height image-height}}]
+         [vector-icons/icon icon {:color (if selected? colors/blue colors/gray)
+                                  :width icon-width :height icon-height}])
        [react/view {:style {:margin-horizontal 16 :flex 1}}
         [react/text {:style (assoc styles/wizard-text :font-weight "500" :color colors/black :text-align :left)}
          (i18n/label title)]
@@ -157,12 +164,13 @@
                         :icon-height 24
                         :title       :this-device
                         :desc        :this-device-desc}
-                       {:type        :advanced
-                        :icon        :main-icons/keycard-logo
-                        :icon-width  13
-                        :icon-height 22
-                        :title       :keycard
-                        :desc        :keycard-desc}]]
+                       {:type           :advanced
+                        :image          :keycard-logo-gray
+                        :image-selected :keycard-logo-blue
+                        :image-width    24
+                        :image-height   24
+                        :title          :keycard
+                        :desc           :keycard-desc}]]
     [react/view {:style {:flex 1
                          :justify-content :flex-end
                          ;; We have to align top storage entry
