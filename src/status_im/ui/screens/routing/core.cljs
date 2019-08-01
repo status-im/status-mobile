@@ -10,11 +10,6 @@
    [status-im.utils.core :as utils]
    [status-im.ui.screens.routing.screens :as screens]
    [status-im.ui.screens.routing.intro-login-stack :as intro-login-stack]
-   [status-im.ui.screens.routing.chat-stack :as chat-stack]
-   [status-im.ui.screens.routing.wallet-stack :as wallet-stack]
-   [status-im.ui.screens.routing.profile-stack :as profile-stack]
-   [status-im.ui.screens.routing.browser-stack :as browser-stack]
-   [status-im.ui.screens.routing.modals :as modals]
    [status-im.ui.components.bottom-bar.core :as bottom-bar]
    [status-im.ui.components.status-bar.view :as status-bar]
    [status-im.ui.components.bottom-bar.styles :as tabs.styles]
@@ -215,25 +210,7 @@
    (switch-navigator
     (into {}
           [(build-screen stack-navigator (intro-login-stack/login-stack view-id))
-           (build-screen stack-navigator (intro-login-stack/intro-stack))
-           [:tabs-and-modals
-            {:screen
-             (stack-navigator
-              (merge
-               {:tabs
-                {:screen (tab-navigator
-                          (->> [(build-screen (if two-pane? twopane-navigator stack-navigator) chat-stack/chat-stack)
-                                (build-screen stack-navigator browser-stack/browser-stack)
-                                (build-screen stack-navigator wallet-stack/wallet-stack)
-                                (build-screen stack-navigator profile-stack/profile-stack)]
-                               (into {}))
-                          {:initialRouteName :chat-stack
-                           :tabBarComponent  (reagent.core/reactify-component
-                                              wrap-bottom-bar)})}}
-               (stack-screens stack-navigator modals/modal-screens))
-              {:mode              :modal
-               :initialRouteName  :tabs
-               :onTransitionStart (fn [])})}]])
+           (build-screen stack-navigator (intro-login-stack/intro-stack))])
     {:initialRouteName (if (= view-id :intro)
                          :intro-stack
                          :login-stack)})))
