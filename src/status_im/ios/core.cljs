@@ -3,16 +3,13 @@
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.ui.screens.views :as views]
             [status-im.ui.components.react :as react]
-            [status-im.core :as core]
-            [re-frame.core :as re-frame]))
+            [status-im.core :as core]))
 
-(defn app-root [props]
+(defn app-root [_]
   (reagent/create-class
    {:component-will-mount (fn []
                             (.hide react/splash-screen)
                             (.useScreens (rn-dependencies/react-native-screens)))
-    :component-did-mount (fn [this]
-                           (re-frame/dispatch [:set-initial-props (reagent/props this)]))
     :display-name   "root"
     :reagent-render views/main}))
 

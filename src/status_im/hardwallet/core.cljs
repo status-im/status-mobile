@@ -427,7 +427,9 @@
 (fx/defn access-key-pressed
   {:events [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]}
   [cofx]
-  (multiaccounts.recover/navigate-to-recover-multiaccount-screen cofx))
+  (fx/merge cofx
+            {:db (dissoc db :multiaccounts/recover)}
+            (navigation/navigate-to-cofx :recover nil)))
 
 (fx/defn recovery-keycard-selected
   {:events [:recovery.ui/keycard-option-pressed]}

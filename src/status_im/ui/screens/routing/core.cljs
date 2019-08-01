@@ -23,11 +23,7 @@
     (fn []
       (reset! screen-focused? true)
       (when (not= @view-id current-view-id)
-        (reset! view-id current-view-id))
-      (log/debug :on-will-focus current-view-id)
-      (when modal?
-        (status-bar/set-status-bar current-view-id))
-      (re-frame/dispatch [:screens/on-will-focus current-view-id]))
+        (reset! view-id current-view-id)))
     :on-did-focus
     (fn []
       (when-not modal?

@@ -4,9 +4,8 @@
 (defn- register-events
   [events interceptors name argsyms]
   (mapv (fn [event]
-          `(status-im.utils.handlers/register-handler-fx
+          `(re-frame.core/reg-event-fx
             ~event
-            ~interceptors
             (fn [cofx# [_# ~@argsyms]] (~name cofx# ~@argsyms))))
         events))
 

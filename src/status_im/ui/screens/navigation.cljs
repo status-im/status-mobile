@@ -83,7 +83,6 @@
 (re-frame/reg-fx
  ::navigate-back
  (fn []
-   (log/debug :navigate-back)
    (navigation/navigate-back)))
 
 (re-frame/reg-fx
@@ -126,9 +125,8 @@
                (assoc :navigation-stack navigation-stack'))
            (assoc db :view-id first-in-stack)))))
 
-(handlers/register-handler-fx
+(re-frame.core/reg-event-fx
  :navigate-back
- (re-frame/enrich -preload-data!)
  (fn [cofx _]
    (navigate-back cofx)))
 

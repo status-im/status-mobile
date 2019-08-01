@@ -5,6 +5,12 @@
             [re-frame.core :as re-frame]
             [status-im.ui.screens.routing.core :as routing]))
 
+(defn reg-root-key-sub [sub-name db-key]
+  (re-frame/reg-sub sub-name (fn [db] (get db db-key))))
+
+(reg-root-key-sub :view-id :view-id)
+(reg-root-key-sub :dimensions/window :dimensions/window)
+
 (defonce initial-view-id (atom nil))
 
 (defn reset-component-on-mount [view-id component two-pane?]
