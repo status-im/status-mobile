@@ -78,7 +78,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @Override
     public void onHostResume() {  // Activity `onResume`
         module = this;
-        Statusgo.setMobileSignalHandler("wifi");
+        Statusgo.setMobileSignalHandler(this);
     }
 
     @Override
