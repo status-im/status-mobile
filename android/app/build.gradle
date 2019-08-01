@@ -271,7 +271,6 @@ dependencies {
     //compile ("com.facebook.react:react-native:0.55.4") { force = true }  // From node_modules
     implementation project(':react-native-android')
     implementation project(':react-native-languages')
-    implementation project(':react-native-status')
     implementation project(':react-native-fs')
     implementation project(':react-native-image-crop-picker')
     implementation project(':react-native-securerandom')
