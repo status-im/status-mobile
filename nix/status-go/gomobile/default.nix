@@ -11,9 +11,9 @@ let
 
 in buildGoPackage rec {
   pname = "gomobile";
-  version = "20190319-${strings.substring 0 7 rev}";
-  rev = "167ebed0ec6dd457a6b24a4f61db913f0af11f70";
-  sha256 = "0lspdhikhnhbwv8v0q6fs3a0pd9sjnhkpg8z03m2dc5h6f84m38w";
+  version = "20190719-${strings.substring 0 7 rev}";
+  rev = "d2bd2a29d028cb94031e5e81788b19b371d00eb8";
+  sha256 = "1nv6vvhnjr01nx9y06q46ww87dppdwpbqrlsfg1xf2587wxl8xiv";
 
   goPackagePath = "golang.org/x/mobile";
   subPackages = [ "bind" "cmd/gobind" "cmd/gomobile" ];
@@ -24,8 +24,7 @@ in buildGoPackage rec {
   # Ensure XCode and the iPhone SDK are present, instead of failing at the end of the build
   preConfigure = optionalString isDarwin utils.enforceiPhoneSDKAvailable;
 
-  patches = [ ./ndk-search-path.patch ./resolve-nix-android-sdk.patch ]
-    ++ optional isDarwin ./ignore-nullability-error-on-ios.patch;
+  patches = [ ./resolve-nix-android-sdk.patch ];
 
   postPatch = ''
     ${optionalString platform.targetAndroid ''substituteInPlace cmd/gomobile/install.go --replace "\`adb\`" "\`${platform-tools}/bin/adb\`"''}
