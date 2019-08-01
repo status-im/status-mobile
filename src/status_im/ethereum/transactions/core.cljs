@@ -119,10 +119,14 @@
                 watched-transactions))))
 
 (fx/defn add-transfer
+  "We determine a unique id for the transfer before adding it because some
+   transaction can contain multiple transfers and they would overwrite each other
+   in the transfer map if identified by hash"
   [{:keys [db] :as cofx} {:keys [hash id] :as transfer} address]
-  (let [transfer-by-hash (get-in db [:wallet :accounts address :transactions hash])]
-        ;;transfer-by-id   (get-in db [:wallet :transaction id]) ;; TODO didn't found any usage of this
-    (when-let [unique-id (when (not= transfer transfer-by-hash) ;(or transfer-by-id)
+  (let [transfer-by-hash (get-in db [:wallet :accounts address :transactions hash])
+        transfer-by-id   (get-in db [:wallet :accounts address :transactions id])]
+    (when-let [unique-id (when-not (or transfer-by-id
+                                       (= transfer transfer-by-hash))
                            (if (and transfer-by-hash
                                     (not (= :pending
                                             (:type transfer-by-hash))))

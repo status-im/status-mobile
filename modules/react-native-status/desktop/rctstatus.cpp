@@ -78,10 +78,9 @@ void RCTStatus::getDeviceUUID(double callbackId) {
   d->bridge->invokePromiseCallback(callbackId, QVariantList{"com.status.StatusIm"});
 }
 
-
-void RCTStatus::startNode(QString configString) {
+QString RCTStatus::prepareDirAndUpdateConfig(QString configString) {
     Q_D(RCTStatus);
-    qCDebug(RCTSTATUS) << "::startNode call - configString:" << configString;
+    qCDebug(RCTSTATUS) << "::prepareDirAndUpdateConfig call - configString:" << configString;
 
     QJsonParseError jsonError;
     const QJsonDocument& jsonDoc = QJsonDocument::fromJson(configString.toUtf8(), &jsonError);
@@ -117,22 +116,23 @@ void RCTStatus::startNode(QString configString) {
 
     const QJsonDocument& updatedJsonDoc = QJsonDocument::fromVariant(configJSON);
     qCInfo(RCTSTATUS) << "::startNode updated configString: " << updatedJsonDoc.toVariant().toMap();
-    const char* result = StartNode(QString(updatedJsonDoc.toJson(QJsonDocument::Compact)).toUtf8().data());
-    logStatusGoResult("::startNode StartNode", result);
+    return QString(updatedJsonDoc.toJson(QJsonDocument::Compact));
 }
 
-
-void RCTStatus::stopNode() {
-    qCInfo(RCTSTATUS) << "::stopNode call";
-    const char* result = StopNode();
-    logStatusGoResult("::stopNode StopNode", result);
+void RCTStatus::prepareDirAndUpdateConfig(QString configString, double callbackId) {
+    Q_D(RCTStatus);
+    qCInfo(RCTSTATUS) << "::prepareDirAndUpdateConfig call - callbackId:" << callbackId;
+    QtConcurrent::run([&](QString configString, double callbackId) {
+            QString updatedConfig = prepareDirAndUpdateConfig(configString);
+            d->bridge->invokePromiseCallback(callbackId, QVariantList{updatedConfig.toUtf8().data()});
+        }, configString, callbackId);
 }
 
 void RCTStatus::initKeystore() {
-  aCInfo(RCTSTATUS) << "::initKeystore call";
-  QString rootDirPath = getDataStoragePath();
-  const char* result = initKeystore(rootDirPath);
-  logStatusGoResult("::initKeystore InitKeystore", result);
+    qCInfo(RCTSTATUS) << "::initKeystore call";
+    QString rootDir = getDataStoragePath();
+    const char* result = InitKeystore(rootDir.toUtf8().data());
+    logStatusGoResult("::initKeystore InitKeystore", result);
 }
 
 void RCTStatus::createAccount(QString password, double callbackId) {
@@ -271,15 +271,82 @@ void RCTStatus::recoverAccount(QString passphrase, QString password, double call
 }
 
 
-void RCTStatus::login(QString address, QString password, double callbackId) {
+void RCTStatus::saveAccountAndLogin(QString accountData, QString password, QString config, QString subAccountsData) {
+
     Q_D(RCTStatus);
-    qCInfo(RCTSTATUS) << "::login call - callbackId:" << callbackId;
-    QtConcurrent::run([&](QString address, QString password, double callbackId) {
-            const char* result = Login(address.toUtf8().data(), password.toUtf8().data());
-            logStatusGoResult("::login Login", result);
-            d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
-        }, address, password, callbackId);
+    QString finalConfig = prepareDirAndUpdateConfig(config);
+    QtConcurrent::run([&](QString accountData, QString password, QString finalConfig, QString subAccountsData) {
+        const char* result = SaveAccountAndLogin(accountData.toUtf8().data(), password.toUtf8().data(), finalConfig.toUtf8().data(), subAccountsData.toUtf8().data());
+        logStatusGoResult("::saveAccountAndLogin", result);
+        }, accountData, password, finalConfig, subAccountsData);
 }
+
+void RCTStatus::login(QString accountData, QString password) {
+
+    Q_D(RCTStatus);
+    QtConcurrent::run([&](QString accountData, QString password) {
+        const char* result = Login(accountData.toUtf8().data(), password.toUtf8().data());
+        logStatusGoResult("::login", result);
+        }, accountData, password);
+
+}
+
+void RCTStatus::logout() {
+    Q_D(RCTStatus);
+    QtConcurrent::run([&]() {
+        const char* result = Logout();
+        logStatusGoResult("::logout", result);
+        });
+
+}
+
+void RCTStatus::openAccounts(double callbackId) {
+    Q_D(RCTStatus);
+    QtConcurrent::run([&](double callbackId) {
+        QString rootDir = getDataStoragePath();
+        const char* result = OpenAccounts(rootDir.toUtf8().data());
+        logStatusGoResult("::openAccounts", result);
+        d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
+        }, callbackId);
+
+}
+
+void RCTStatus::multiAccountStoreAccount(QString json, double callbackId) {
+    Q_D(RCTStatus);
+    QtConcurrent::run([&](QString json, double callbackId) {
+        const char* result = MultiAccountStoreAccount(json.toUtf8().data());
+        logStatusGoResult("::multiAccountStoreAccount", result);
+        d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
+        }, json, callbackId);
+}
+
+void RCTStatus::multiAccountLoadAccount(QString json, double callbackId) {
+    Q_D(RCTStatus);
+    QtConcurrent::run([&](QString json, double callbackId) {
+        const char* result = MultiAccountLoadAccount(json.toUtf8().data());
+        logStatusGoResult("::multiAccountLoadAccount", result);
+        d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
+        }, json, callbackId);
+}
+
+void RCTStatus::multiAccountReset(double callbackId) {
+    Q_D(RCTStatus);
+    QtConcurrent::run([&](double callbackId) {
+        const char* result = MultiAccountReset();
+        logStatusGoResult("::multiAccountReset", result);
+        d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
+        }, callbackId);
+}
+
+void RCTStatus::multiAccountDeriveAddresses(QString json, double callbackId) {
+    Q_D(RCTStatus);
+    QtConcurrent::run([&](QString json, double callbackId) {
+        const char* result = MultiAccountDeriveAddresses(json.toUtf8().data());
+        logStatusGoResult("::multiAccountDeriveAddresses", result);
+        d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
+        }, json, callbackId);
+}
+
 
 void RCTStatus::verify(QString address, QString password, double callbackId) {
     Q_D(RCTStatus);

@@ -20,9 +20,11 @@
 (spec/def :multiaccount/signed-up? (spec/nilable boolean?))
 (spec/def :multiaccount/last-updated (spec/nilable int?))
 (spec/def :multiaccount/last-sign-in (spec/nilable int?))
+(spec/def :multiaccount/timestamp (spec/nilable int?))
 (spec/def :multiaccount/last-request (spec/nilable int?))
 (spec/def :multiaccount/photo-path (spec/nilable string?))
 (spec/def :multiaccount/debug? (spec/nilable boolean?))
+(spec/def :multiaccount/chaos-mode? (spec/nilable boolean?))
 (spec/def :multiaccount/network (spec/nilable string?))
 (spec/def :multiaccount/networks (spec/nilable :networks/networks))
 (spec/def :multiaccount/bootnodes (spec/nilable :bootnodes/bootnodes))
@@ -44,32 +46,32 @@
 (spec/def :multiaccount/keycard-pairing (spec/nilable string?))
 (spec/def :multiaccount/keycard-paired-on (spec/nilable int?))
 
-(spec/def :multiaccounts/multiaccount (spec/keys :req-un [:multiaccount/name :multiaccount/address :multiaccount/public-key
-                                                          :multiaccount/photo-path :multiaccount/signing-phrase
-                                                          :multiaccount/installation-id]
-                                                 :opt-un [:multiaccount/debug? :multiaccount/last-updated
-                                                          :multiaccount/email :multiaccount/signed-up? :multiaccount/network
-                                                          :multiaccount/networks :multiaccount/settings :multiaccount/mailserver
-                                                          :multiaccount/last-sign-in :multiaccount/sharing-usage-data? :multiaccount/dev-mode?
-                                                          :multiaccount/seed-backed-up? :multiaccount/mnemonic :multiaccount/desktop-notifications?
-                                                          :multiaccount/wallet-set-up-passed? :multiaccount/last-request
-                                                          :multiaccount/bootnodes :multiaccount/extensions
-                                                          :multiaccount/mainnet-warning-shown-version
-                                                          :multiaccount/desktop-alpha-release-warning-shown?
-                                                          :multiaccount/keycard-instance-uid
-                                                          :multiaccount/keycard-key-uid
-                                                          :multiaccount/keycard-pairing
-                                                          :multiaccount/keycard-paired-on
-                                                          :multiaccount/root-address
-                                                          :multiaccount/accounts]))
+(spec/def :multiaccount/multiaccount (spec/keys :opt-un [:multiaccount/name :multiaccount/address
+                                                         :multiaccount/photo-path
+                                                         :multiaccount/signing-phrase
+                                                         :multiaccount/installation-id
+                                                         :multiaccount/debug? :multiaccount/last-updated :multiaccount/public-key
+                                                         :multiaccount/email :multiaccount/signed-up? :multiaccount/network
+                                                         :multiaccount/networks :multiaccount/settings :multiaccount/mailserver
+                                                         :multiaccount/last-sign-in :multiaccount/sharing-usage-data? :multiaccount/dev-mode?
+                                                         :multiaccount/seed-backed-up? :multiaccount/mnemonic :multiaccount/desktop-notifications?
+                                                         :multiaccount/chaos-mode?
+                                                         :multiaccount/wallet-set-up-passed? :multiaccount/last-request
+                                                         :multiaccount/bootnodes :multiaccount/extensions
+                                                         :multiaccount/mainnet-warning-shown-version
+                                                         :multiaccount/desktop-alpha-release-warning-shown?
+                                                         :multiaccount/keycard-instance-uid
+                                                         :multiaccount/keycard-key-uid
+                                                         :multiaccount/keycard-pairing
+                                                         :multiaccount/keycard-paired-on
+                                                         :multiaccount/root-address
+                                                         :multiaccount/accounts]))
 
-(spec/def :multiaccounts/multiaccounts (spec/nilable (spec/map-of :multiaccount/address :multiaccounts/multiaccount)))
-
-;;used during creating multiaccount
-(spec/def :multiaccounts/create (spec/nilable map?))
 ;;used during recovering multiaccount
 (spec/def :multiaccounts/recover (spec/nilable map?))
 ;;used during logging
 (spec/def :multiaccounts/login (spec/nilable map?))
-;;logged in multiaccount
-(spec/def :multiaccount/multiaccount (spec/nilable :multiaccounts/multiaccount))
+;;before login
+(spec/def :multiaccounts/multiaccount (spec/keys :req-un [:multiaccount/name :multiaccount/address]
+                                                 :opt-un [:multiaccount/timestamp]))
+(spec/def :multiaccounts/multiaccounts (spec/nilable (spec/map-of :multiaccount/address :multiaccounts/multiaccount)))

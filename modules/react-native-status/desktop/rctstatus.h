@@ -36,14 +36,20 @@ public:
     QVariantMap constantsToExport() override;
 
     Q_INVOKABLE void initKeystore();
-    Q_INVOKABLE void startNode(QString configString);
-    Q_INVOKABLE void stopNode();
     Q_INVOKABLE void createAccount(QString password, double callbackId);
     Q_INVOKABLE void sendDataNotification(QString dataPayloadJSON, QString tokensJSON, double callbackId);
     Q_INVOKABLE void sendLogs(QString dbJSON, QString jsLogs, double callbackId);
     Q_INVOKABLE void addPeer(QString enode, double callbackId);
     Q_INVOKABLE void recoverAccount(QString passphrase, QString password, double callbackId);
-    Q_INVOKABLE void login(QString address, QString password, double callbackId);
+    Q_INVOKABLE void prepareDirAndUpdateConfig(QString configString, double callbackId);
+    Q_INVOKABLE void login(QString accountData, QString password);
+    Q_INVOKABLE void saveAccountAndLogin(QString accountData, QString password, QString config, QString subAccountsData);
+    Q_INVOKABLE void logout();
+    Q_INVOKABLE void openAccounts(double callbackId);
+    Q_INVOKABLE void multiAccountStoreAccount(QString json, double callbackId);
+    Q_INVOKABLE void multiAccountLoadAccount(QString json, double callbackId);
+    Q_INVOKABLE void multiAccountReset(double callbackId);
+    Q_INVOKABLE void multiAccountDeriveAddresses(QString json, double callbackId);
     Q_INVOKABLE void verify(QString address, QString password, double callbackId);
     Q_INVOKABLE void sendTransaction(QString txArgsJSON, QString password, double callbackId);
     Q_INVOKABLE void signMessage(QString rpcParams, double callbackId);
@@ -78,6 +84,7 @@ private Q_SLOTS:
 private:
     void logStatusGoResult(const char* methodName, const char* result);
 
+    QString prepareDirAndUpdateConfig(QString configString);
     QScopedPointer<RCTStatusPrivate> d_ptr;
     QString d_gethLogFilePath;
 };

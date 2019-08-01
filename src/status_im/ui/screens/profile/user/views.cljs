@@ -137,7 +137,8 @@
                                           :active?             logged-in?
                                           :action-fn           #(re-frame/dispatch [:multiaccounts.logout.ui/logout-pressed])}]]]]))
 
-(defview advanced-settings [{:keys [network networks dev-mode? settings]} on-show supported-biometric-auth]
+(defview advanced-settings
+  [{:keys [network :networks/networks chaos-mode? dev-mode? settings]} on-show supported-biometric-auth]
   {:component-did-mount on-show}
   [react/view
    (when (and config/extensions-enabled? dev-mode?)
@@ -209,7 +210,7 @@
    [profile.components/settings-item-separator]
    [profile.components/settings-switch-item
     {:label-kw  :t/chaos-mode
-     :value     (:chaos-mode? settings)
+     :value     chaos-mode?
      :action-fn #(re-frame/dispatch [:multiaccounts.ui/chaos-mode-switched %])}]
    (when dev-mode?
      [profile.components/settings-item-separator]

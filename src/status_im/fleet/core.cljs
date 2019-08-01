@@ -9,13 +9,8 @@
   (:require-macros [status-im.utils.slurp :refer [slurp]]))
 
 (defn current-fleet
-  ([db]
-   (current-fleet db nil))
-  ([db address]
-   (keyword (or (if address
-                  (get-in db [:multiaccounts/multiaccounts address :settings :fleet])
-                  (get-in db [:multiaccount :settings :fleet]))
-                config/fleet))))
+  [db]
+  (keyword (get-in db [:multiaccount :settings :fleet] config/fleet)))
 
 (defn current-fleet-sub [settings]
   (keyword (or (get settings :fleet)

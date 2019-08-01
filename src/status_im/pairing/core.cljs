@@ -1,25 +1,22 @@
 (ns status-im.pairing.core
-  (:require [re-frame.core :as re-frame]
-            [clojure.string :as string]
-            [status-im.i18n :as i18n]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.pairing :as pairing.utils]
-            [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.contact.device-info :as device-info]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.chat.models :as models.chat]
+            [status-im.contact.core :as contact]
             [status-im.contact.db :as contact.db]
+            [status-im.contact.device-info :as device-info]
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.i18n :as i18n]
+            [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.transport.message.pairing :as transport.pairing]
+            [status-im.transport.message.protocol :as protocol]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
-            [status-im.utils.platform :as utils.platform]
-            [status-im.chat.models :as models.chat]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.transport.message.protocol :as protocol]
-            [status-im.data-store.installations :as data-store.installations]
+            [status-im.utils.fx :as fx]
             [status-im.utils.identicon :as identicon]
-            [status-im.contact.core :as contact]
-            [status-im.transport.filters.core :as transport.filters]
-            [status-im.data-store.contacts :as data-store.contacts]
-            [status-im.data-store.multiaccounts :as data-store.multiaccounts]
-            [status-im.transport.message.pairing :as transport.pairing]))
+            [status-im.utils.pairing :as pairing.utils]
+            [status-im.utils.platform :as utils.platform]
+            [status-im.utils.types :as types]))
 
 (defn enable-installation-rpc [installation-id on-success on-failure]
   (json-rpc/call {:method "shhext_enableInstallation"
@@ -134,29 +131,8 @@
                                                                :deviceType utils.platform/os
                                                                :fcmToken fcm-token}]]}))
 
-(fx/defn migrate-installations
-  "Take the realm installations and move them to status-go, also move installation-name
-  to status-go, clean up after so it is run only once"
-  [{:keys [db] :as cofx} installations]
-  (let [installation-name (get-in db [:multiaccount :installation-name])]
-    (fx/merge cofx
-              {:pairing/set-installation-metadata
-               (map (fn [{:keys [installation-id name device-type fcm-token]}]
-                      [installation-id {:name name
-                                        :deviceType device-type
-                                        :fcmToken fcm-token}])
-                    installations)}
-              #(when-not (string/blank? installation-name)
-                 (set-name % installation-name))
-              #(when-not (string/blank? installation-name)
-                 (let [new-multiaccount (dissoc (:multiaccount (:db %)) :installation-name)]
-                   {:db (assoc (:db %) :multiaccount new-multiaccount)
-                    :data-store/base-tx [(data-store.multiaccounts/save-multiaccount-tx new-multiaccount)]})))))
-
-(fx/defn init [cofx old-installations]
-  (fx/merge cofx
-            {:pairing/get-our-installations []}
-            (migrate-installations old-installations)))
+(fx/defn init [cofx]
+  {:pairing/get-our-installations nil})
 
 (defn handle-bundles-added [{:keys [db] :as cofx} bundle]
   (let [installation-id  (:installationID bundle)]
@@ -165,7 +141,7 @@
              (multiaccounts.model/current-public-key cofx))
           (not= (get-in db [:multiaccount :installation-id]) installation-id))
       (fx/merge cofx
-                (init [])
+                (init)
                 #(when-not (or (:pairing/prompt-user-pop-up db)
                                (= :installations (:view-id db)))
                    (prompt-user-on-new-installation %))))))
@@ -351,10 +327,11 @@
              {}
              contacts))
 
-(defn handle-sync-installation [{:keys [db] :as cofx} {:keys [contacts multiaccount chat]} sender]
+(defn handle-sync-installation
+  [{:keys [db] :as cofx} {:keys [contacts multiaccount chat]} sender]
   (let [confirmation  (:metadata cofx)]
     (if (= sender (multiaccounts.model/current-public-key cofx))
-      (let [success-event [:message/messages-persisted [confirmation]]
+      (let [on-success #(re-frame/dispatch [:message/messages-persisted [confirmation]])
             new-contacts  (when (seq contacts)
                             (vals (merge-contacts (:contacts/contacts db)
                                                   ((comp ensure-photo-path
@@ -365,17 +342,20 @@
                cofx
                (concat
                 [{:db                 (assoc db :multiaccount new-multiaccount)
-                  :data-store/base-tx [{:transaction   (data-store.multiaccounts/save-multiaccount-tx new-multiaccount)
-                                        :success-event success-event}]}
+                  ::json-rpc/call
+                  [{:method "settings_saveConfig"
+                    :params ["multiaccount" (types/serialize new-multiaccount)]
+                    :on-success on-success}]}
                  #(when (:public? chat)
                     (models.chat/start-public-chat % (:chat-id chat) {:dont-navigate? true}))]
                 contacts-fx)))
       (confirm-message-processed cofx confirmation))))
 
-(defn handle-pair-installation [{:keys [db] :as cofx} {:keys [name
-                                                              fcm-token
-                                                              installation-id
-                                                              device-type]} timestamp sender]
+(defn handle-pair-installation
+  [{:keys [db] :as cofx} {:keys [name
+                                 fcm-token
+                                 installation-id
+                                 device-type]} timestamp sender]
   (if (and (= sender (multiaccounts.model/current-public-key cofx))
            (not= (get-in db [:multiaccount :installation-id]) installation-id))
     {:pairing/set-installation-metadata [[installation-id {:name name
@@ -389,9 +369,7 @@
                   :installation-id installation-id
                   :name (:name metadata)
                   :device-type (:deviceType metadata)
-                  :fcmToken (:fcmToken metadata))
-   ;; we count it as migrated, and delete it from realm
-   :data-store/tx [(data-store.installations/delete installation-id)]})
+                  :fcmToken (:fcmToken metadata))})
 
 (fx/defn load-installations [{:keys [db]} installations]
   {:db (assoc db :pairing/installations (reduce

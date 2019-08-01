@@ -72,77 +72,15 @@
             status-im.popover.core))
 
 ;; init module
-
-(handlers/register-handler-fx
- :init.ui/data-reset-accepted
- (fn [cofx _]
-   {:init/reset-data nil}))
-
-(handlers/register-handler-fx
- :init.ui/multiaccount-data-reset-accepted
- (fn [_ [_ address]]
-   {:init/reset-multiaccount-data address}))
-
-(handlers/register-handler-fx
- :init.ui/data-reset-cancelled
- (fn [cofx [_ encryption-key]]
-   (init/initialize-app cofx encryption-key)))
-
 (handlers/register-handler-fx
  :init/app-started
  (fn [cofx _]
    (init/start-app cofx)))
 
 (handlers/register-handler-fx
- :init.callback/get-encryption-key-success
- (fn [cofx [_ encryption-key]]
-   (init/initialize-app cofx encryption-key)))
-
-(handlers/register-handler-fx
  :init.callback/get-device-UUID-success
  (fn [cofx [_ device-uuid]]
    (init/set-device-uuid cofx device-uuid)))
-
-(handlers/register-handler-fx
- :init.callback/init-store-success
- [(re-frame/inject-cofx :data-store/get-all-multiaccounts)]
- (fn [cofx _]
-   (init/load-multiaccounts-and-initialize-views cofx)))
-
-(handlers/register-handler-fx
- :init.callback/init-store-error
- (fn [cofx [_ encryption-key error]]
-   (init/handle-init-store-error cofx encryption-key)))
-
-(defn multiaccount-change-success
-  [{:keys [db] :as cofx} [_ address nodes]]
-  (let [{:node/keys [status]} db]
-    (fx/merge
-     cofx
-     (when nodes
-       (fleet/set-nodes :eth.contract nodes))
-     (if (= status :started)
-       (multiaccounts.login/login)
-       (node/initialize (get-in db [:multiaccounts/login :address])))
-     (init/initialize-multiaccount address)
-     (mailserver/initialize-ranges))))
-
-(handlers/register-handler-fx
- :init.callback/multiaccount-change-success
- [(re-frame/inject-cofx :web3/get-web3)
-  (re-frame/inject-cofx :data-store/get-all-installations)
-  (re-frame/inject-cofx :data-store/all-chat-requests-ranges)]
- multiaccount-change-success)
-
-(handlers/register-handler-fx
- :init.callback/keychain-reset
- (fn [cofx _]
-   (init/initialize-keychain cofx)))
-
-(handlers/register-handler-fx
- :init.callback/multiaccount-db-removed
- (fn [{:keys [db]} _]
-   {:db (assoc-in db [:multiaccounts/login :processing] false)}))
 
 ;; home screen
 
@@ -182,7 +120,7 @@
 (handlers/register-handler-fx
  :multiaccounts.ui/chaos-mode-switched
  (fn [{:keys [db] :as cofx} [_ chaos-mode?]]
-   (let [old-chaos-mode? (get-in db [:multiaccount :settings :chaos-mode?])]
+   (let [old-chaos-mode? (get-in db [:multiaccount :chaos-mode?])]
      (fx/merge
       cofx
       (when (and chaos-mode?
@@ -244,35 +182,6 @@
  (fn [cofx _]
    (multiaccounts/confirm-wallet-set-up cofx)))
 
-;; multiaccounts create module
-
-(handlers/register-handler-fx
- :multiaccounts.create.ui/next-step-pressed
- [(re-frame/inject-cofx :random-guid-generator)]
- (fn [cofx [_ step password password-confirm]]
-   (multiaccounts.create/next-step cofx step password password-confirm)))
-
-(handlers/register-handler-fx
- :multiaccounts.create.ui/step-back-pressed
- (fn [cofx [_ step password password-confirm]]
-   (multiaccounts.create/step-back cofx step)))
-
-(handlers/register-handler-fx
- :multiaccounts.create.ui/input-text-changed
- (fn [cofx [_ input-key text]]
-   (multiaccounts.create/multiaccount-set-input-text cofx input-key text)))
-
-(defn get-selected-multiaccount [{:keys [db]}]
-  (let [{:keys [selected-id multiaccounts]} (:intro-wizard db)]
-    (some #(when (= selected-id (:id %)) %) multiaccounts)))
-
-(handlers/register-handler-fx
- :multiaccounts.create.callback/create-multiaccount-success
- [(re-frame/inject-cofx :random-guid-generator)
-  (re-frame/inject-cofx :multiaccounts.create/get-signing-phrase)]
- (fn [cofx [_ password]]
-   (multiaccounts.create/on-multiaccount-created cofx (get-selected-multiaccount cofx) password {:seed-backed-up? false})))
-
 ;; multiaccounts recover module
 
 (handlers/register-handler-fx
@@ -308,21 +217,10 @@
    (multiaccounts.recover/recover-multiaccount cofx)))
 
 ;; multiaccounts login module
-
-(handlers/register-handler-fx
- :multiaccounts.login.callback/verify-success
- (fn [cofx [_ verify-result realm-error]]
-   (multiaccounts.login/verify-callback cofx verify-result realm-error)))
-
-(handlers/register-handler-fx
- :init.callback/multiaccount-change-error
- (fn [cofx [_ error]]
-   (multiaccounts.login/handle-change-multiaccount-error cofx error)))
-
 (handlers/register-handler-fx
  :multiaccounts.login.ui/multiaccount-selected
- (fn [cofx [_ address photo-path name public-key accounts]]
-   (multiaccounts.login/open-login cofx address photo-path name public-key accounts)))
+ (fn [cofx [_ address photo-path name public-key]]
+   (multiaccounts.login/open-login cofx address photo-path name public-key)))
 
 (handlers/register-handler-fx
  :multiaccounts.login.callback/get-user-password-success
@@ -343,12 +241,6 @@
  :multiaccounts.logout.ui/logout-confirmed
  (fn [cofx _]
    (multiaccounts.logout/logout cofx)))
-
-(handlers/register-handler-fx
- :multiaccounts.logout/filters-removed
- [(re-frame/inject-cofx :data-store/get-all-multiaccounts)]
- (fn [cofx]
-   (multiaccounts.logout/leave-multiaccount cofx)))
 
 ;; multiaccounts update module
 
@@ -803,7 +695,9 @@
  (fn [{{:keys [current-chat-id multiaccount]} :db :as cofx} [_ {:keys [hash] :as sticker}]]
    (fx/merge
     cofx
-    (multiaccounts/update-recent-stickers (conj (remove #(= hash %) (:recent-stickers multiaccount)) hash))
+    (multiaccounts.update/multiaccount-update
+     {:stickers/recent-stickers (conj (remove #(= hash %) (:recent-stickers multiaccount)) hash)}
+     {})
     (chat.input/send-sticker-fx sticker current-chat-id))))
 
 (handlers/register-handler-fx
@@ -958,7 +852,7 @@
 (handlers/register-handler-fx
  :hardwallet.callback/on-generate-and-load-key-success
  [(re-frame/inject-cofx :random-guid-generator)
-  (re-frame/inject-cofx :multiaccounts.create/get-signing-phrase)]
+  (re-frame/inject-cofx ::multiaccounts.create/get-signing-phrase)]
  (fn [cofx [_ data]]
    (hardwallet/on-generate-and-load-key-success cofx data)))
 

@@ -52,7 +52,7 @@
   {:db {:multiaccount
         {:address "954d4393515747ea75808a0301fb73317ae1e460"
          :network "testnet_rpc"
-         :networks {"testnet_rpc" {:config {:NetworkId 3}}}
+         :networks/networks {"testnet_rpc" {:config {:NetworkId 3}}}
          :settings {:tribute-to-talk {:testnet {:snt-amount "1000000000000000000"}}}}
         :contacts/contacts
         {recipient-pk {:name "bob"
@@ -87,10 +87,10 @@
    :multiaccount
    {:public-key my-public-key
     :network "mainnet_rpc"
-    :networks {"mainnet_rpc" {:id "mainnet_rpc"
-                              :config {:NetworkId 1}}
-               "testnet_rpc" {:id "testnet_rpc"
-                              :config {:NetworkId 3}}}}})
+    :networks/networks {"mainnet_rpc" {:id "mainnet_rpc"
+                                       :config {:NetworkId 1}}
+                        "testnet_rpc" {:id "testnet_rpc"
+                                       :config {:NetworkId 3}}}}})
 
 (deftest check-tribute
   (testing "No contract in network, own public key"

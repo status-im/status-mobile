@@ -101,8 +101,7 @@
                                                                                      :KDO}
                                                                           :xdai    #{}
                                                                           :poa     #{}}}}
-   :dev-mode?                            false
-   :networks                             {"testnet"     {:id      "testnet"
+   :networks/networks                    {"testnet"     {:id      "testnet"
                                                          :name    "Ropsten"
                                                          :config  {:NetworkId      3
                                                                    :DataDir        "/ethereum/testnet"

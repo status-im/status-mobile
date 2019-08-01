@@ -66,7 +66,6 @@
 (reg-root-key-sub :bottom-sheet/options :bottom-sheet/options)
 
 ;;general
-(reg-root-key-sub :network-name :chain)
 (reg-root-key-sub :sync-state :sync-state)
 (reg-root-key-sub :network-status :network-status)
 (reg-root-key-sub :peers-count :peers-count)
@@ -111,7 +110,6 @@
 (reg-root-key-sub :multiaccounts/multiaccounts :multiaccounts/multiaccounts)
 (reg-root-key-sub :multiaccounts/login :multiaccounts/login)
 (reg-root-key-sub :multiaccount :multiaccount)
-(reg-root-key-sub :multiaccounts/create :multiaccounts/create)
 (reg-root-key-sub :get-recover-multiaccount :multiaccounts/recover)
 ;;chat
 (reg-root-key-sub ::cooldown-enabled? :chat/cooldown-enabled?)
@@ -202,7 +200,13 @@
  :network
  :<- [:multiaccount]
  (fn [current-multiaccount]
-   (get (:networks current-multiaccount) (:network current-multiaccount))))
+   (get (:networks/networks current-multiaccount) (:network current-multiaccount))))
+
+(re-frame/reg-sub
+ :network-name
+ :<- [:network]
+ (fn [network]
+   (ethereum/network->chain-keyword network)))
 
 (re-frame/reg-sub
  :disconnected?
@@ -353,12 +357,6 @@
    (fleet/current-fleet-sub sett)))
 
 (re-frame/reg-sub
- :get-multiaccount-creation-next-enabled?
- :<- [:multiaccounts/create]
- (fn [create]
-   (multiaccounts.model/multiaccount-creation-next-enabled? create)))
-
-(re-frame/reg-sub
  :multiaccount-settings
  :<- [:multiaccount]
  (fn [acc]
@@ -370,7 +368,7 @@
  :<- [:multiaccount]
  :<- [:get-network]
  (fn [[multiaccount network]]
-   (get-in multiaccount [:networks network])))
+   (get-in multiaccount [:networks/networks network])))
 
 (re-frame/reg-sub
  :current-network-initialized?
@@ -897,7 +895,7 @@
  :stickers/recent
  :<- [:multiaccount]
  :<- [:stickers/installed-packs-vals]
- (fn [[{:keys [recent-stickers]} packs]]
+ (fn [[{:keys [:stickers/recent-stickers]} packs]]
    (map (fn [hash] {:hash hash :pack (find-pack-id-for-hash hash packs)}) recent-stickers)))
 
 ;;EXTENSIONS ===========================================================================================================

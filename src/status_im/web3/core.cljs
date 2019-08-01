@@ -2,7 +2,11 @@
   (:require [status-im.ethereum.core :as ethereum]
             [status-im.js-dependencies :as dependencies]
             [status-im.native-module.core :as status]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.data-store.core :as data-store]
+            [re-frame.core :as re-frame]
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.fx :as fx]))
 
 (defn make-internal-web3
   "This Web3 object will allow access to private RPC calls
@@ -19,28 +23,18 @@
                             (log/warn :web3-response-error)
                             (callback nil (.parse js/JSON response))))))})))
 
-(defn get-web3 [cofx]
-  (let [web3 (make-internal-web3)]
-    (assoc cofx :web3 web3)))
+(fx/defn initialization-success
+  {:events [::initialization-success]}
+  [{:keys [db]} web3 address password login?]
+  {:db (assoc db :web3 web3)
+   (if login?
+     ::data-store/change-multiaccount
+     ::data-store/create-multiaccount) [address password]})
 
-;;; FX
-(defn set-default-account
-  [web3 address]
-  (set! (.-defaultAccount (.-eth web3))
-        (ethereum/normalized-address address)))
-
-(defn fetch-node-version
-  [web3 cb]
-  (.. web3
-      -version
-      (getNode
-       (fn [err resp]
-         (if-not err
-           (cb resp)
-           (log/warn (str "unable to obtain web3 version:" err)))))))
-
-(defn fetch-node-version-callback
-  [resp {:keys [db]}]
-  (if-let [node-version (second (re-find #"StatusIM/v(.*)/.*/.*" resp))]
-    {:db (assoc db :web3-node-version node-version)}
-    (log/warn (str "unexpected web3 version format: " "'" resp "'"))))
+(re-frame/reg-fx
+ ::initialize
+ (fn [[address password login?]]
+   (let [web3 (make-internal-web3)]
+     (set! (.-defaultAccount (.-eth web3))
+           (ethereum/normalized-address address))
+     (re-frame/dispatch [::initialization-success web3 address password login?]))))

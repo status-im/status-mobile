@@ -88,86 +88,7 @@ static RCTBridge *bridge;
     return;
 }
 
-
 RCT_EXPORT_MODULE();
-
-////////////////////////////////////////////////////////////////////
-#pragma mark - startNode
-//////////////////////////////////////////////////////////////////// startNode
-RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
-#if DEBUG
-    NSLog(@"StartNode() method called");
-#endif
-
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error = nil;
-    NSURL *rootUrl =[[fileManager
-                      URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
-                     lastObject];
-    NSURL *absTestnetFolderName = [rootUrl URLByAppendingPathComponent:@"ethereum/testnet"];
-
-    if (![fileManager fileExistsAtPath:absTestnetFolderName.path])
-        [fileManager createDirectoryAtPath:absTestnetFolderName.path withIntermediateDirectories:YES attributes:nil error:&error];
-
-    NSURL *flagFolderUrl = [rootUrl URLByAppendingPathComponent:@"ropsten_flag"];
-
-    if(![fileManager fileExistsAtPath:flagFolderUrl.path]){
-        NSLog(@"remove lightchaindata");
-        NSURL *absLightChainDataUrl = [absTestnetFolderName URLByAppendingPathComponent:@"StatusIM/lightchaindata"];
-        if([fileManager fileExistsAtPath:absLightChainDataUrl.path]) {
-            [fileManager removeItemAtPath:absLightChainDataUrl.path
-                                    error:nil];
-        }
-        [fileManager createDirectoryAtPath:flagFolderUrl.path
-               withIntermediateDirectories:NO
-                                attributes:nil
-                                     error:&error];
-    }
-
-    NSLog(@"after remove lightchaindata");
-
-    NSURL *absTestnetKeystoreUrl = [absTestnetFolderName URLByAppendingPathComponent:@"keystore"];
-    NSURL *absKeystoreUrl = [rootUrl URLByAppendingPathComponent:@"keystore"];
-    if([fileManager fileExistsAtPath:absTestnetKeystoreUrl.path]){
-        NSLog(@"copy keystore");
-        [fileManager copyItemAtPath:absTestnetKeystoreUrl.path toPath:absKeystoreUrl.path error:nil];
-        [fileManager removeItemAtPath:absTestnetKeystoreUrl.path error:nil];
-    }
-
-    NSLog(@"after lightChainData");
-
-    NSLog(@"preconfig: %@", configString);
-    NSData *configData = [configString dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *configJSON = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
-    NSString *relativeDataDir = [configJSON objectForKey:@"DataDir"];
-    NSString *absDataDir = [rootUrl.path stringByAppendingString:relativeDataDir];
-    NSURL *absDataDirUrl = [NSURL fileURLWithPath:absDataDir];
-    NSURL *absLogUrl = [absDataDirUrl URLByAppendingPathComponent:@"geth.log"];
-    [configJSON setValue:absDataDirUrl.path forKey:@"DataDir"];
-    [configJSON setValue:absKeystoreUrl.path forKey:@"KeyStoreDir"];
-    [configJSON setValue:absLogUrl.path forKey:@"LogFile"];
-
-    NSString *resultingConfig = [configJSON bv_jsonStringWithPrettyPrint:NO];
-    NSLog(@"node config %@", resultingConfig);
-
-    if(![fileManager fileExistsAtPath:absDataDirUrl.path]) {
-        [fileManager createDirectoryAtPath:absDataDirUrl.path withIntermediateDirectories:YES attributes:nil error:nil];
-    }
-
-    NSLog(@"logUrlPath %@", absLogUrl.path);
-    if(![fileManager fileExistsAtPath:absLogUrl.path]) {
-        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-        [dict setObject:[NSNumber numberWithInt:511] forKey:NSFilePosixPermissions];
-        [fileManager createFileAtPath:absLogUrl.path contents:nil attributes:dict];
-    }
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                   ^(void)
-                   {
-                       NSString *res = StatusgoStartNode(resultingConfig);
-                       NSLog(@"StartNode result %@", res);
-                   });
-}
 
 ////////////////////////////////////////////////////////////////////
 #pragma mark - shouldMoveToInternalStorage
@@ -185,20 +106,6 @@ RCT_EXPORT_METHOD(moveToInternalStorage:(RCTResponseSenderBlock)onResultCallback
     onResultCallback(@[[NSNull null]]);
 }
 
-////////////////////////////////////////////////////////////////////
-#pragma mark - StopNode method
-//////////////////////////////////////////////////////////////////// StopNode
-RCT_EXPORT_METHOD(stopNode) {
-#if DEBUG
-    NSLog(@"StopNode() method called");
-#endif
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                   ^(void)
-                   {
-                       NSString *res = StatusgoStopNode();
-                       NSLog(@"StopNode result %@", res);
-                   });
-}
 
 ////////////////////////////////////////////////////////////////////
 #pragma mark - InitKeystore method
@@ -208,7 +115,6 @@ RCT_EXPORT_METHOD(initKeystore) {
     NSLog(@"initKeystore() method called");
 #endif
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error = nil;
     NSURL *rootUrl =[[fileManager
                       URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
                      lastObject];
@@ -426,17 +332,137 @@ RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
     callback(@[result]);
 }
 
+//////////////////////////////////////////////////////////////////// prepareDirAndUpdateConfig
+-(NSString *) prepareDirAndUpdateConfig:(NSString *)config {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error = nil;
+    NSURL *rootUrl =[[fileManager
+                      URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
+                     lastObject];
+    NSURL *absTestnetFolderName = [rootUrl URLByAppendingPathComponent:@"ethereum/testnet"];
+
+    if (![fileManager fileExistsAtPath:absTestnetFolderName.path])
+        [fileManager createDirectoryAtPath:absTestnetFolderName.path withIntermediateDirectories:YES attributes:nil error:&error];
+
+    NSURL *flagFolderUrl = [rootUrl URLByAppendingPathComponent:@"ropsten_flag"];
+
+    if(![fileManager fileExistsAtPath:flagFolderUrl.path]){
+        NSLog(@"remove lightchaindata");
+        NSURL *absLightChainDataUrl = [absTestnetFolderName URLByAppendingPathComponent:@"StatusIM/lightchaindata"];
+        if([fileManager fileExistsAtPath:absLightChainDataUrl.path]) {
+            [fileManager removeItemAtPath:absLightChainDataUrl.path
+                                    error:nil];
+        }
+        [fileManager createDirectoryAtPath:flagFolderUrl.path
+               withIntermediateDirectories:NO
+                                attributes:nil
+                                     error:&error];
+    }
+
+    NSLog(@"after remove lightchaindata");
+
+    NSURL *absTestnetKeystoreUrl = [absTestnetFolderName URLByAppendingPathComponent:@"keystore"];
+    NSURL *absKeystoreUrl = [rootUrl URLByAppendingPathComponent:@"keystore"];
+    if([fileManager fileExistsAtPath:absTestnetKeystoreUrl.path]){
+        NSLog(@"copy keystore");
+        [fileManager copyItemAtPath:absTestnetKeystoreUrl.path toPath:absKeystoreUrl.path error:nil];
+        [fileManager removeItemAtPath:absTestnetKeystoreUrl.path error:nil];
+    }
+
+    NSLog(@"after lightChainData");
+
+    NSLog(@"preconfig: %@", config);
+    NSData *configData = [config dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *configJSON = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
+    NSString *relativeDataDir = [configJSON objectForKey:@"DataDir"];
+    NSString *absDataDir = [rootUrl.path stringByAppendingString:relativeDataDir];
+    NSURL *absDataDirUrl = [NSURL fileURLWithPath:absDataDir];
+    NSURL *absLogUrl = [absDataDirUrl URLByAppendingPathComponent:@"geth.log"];
+    [configJSON setValue:absDataDirUrl.path forKey:@"DataDir"];
+    [configJSON setValue:absKeystoreUrl.path forKey:@"KeyStoreDir"];
+    [configJSON setValue:absLogUrl.path forKey:@"LogFile"];
+
+    NSString *resultingConfig = [configJSON bv_jsonStringWithPrettyPrint:NO];
+    NSLog(@"node config %@", resultingConfig);
+
+    if(![fileManager fileExistsAtPath:absDataDirUrl.path]) {
+        [fileManager createDirectoryAtPath:absDataDirUrl.path withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+
+    NSLog(@"logUrlPath %@", absLogUrl.path);
+    if(![fileManager fileExistsAtPath:absLogUrl.path]) {
+        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+        [dict setObject:[NSNumber numberWithInt:511] forKey:NSFilePosixPermissions];
+        [fileManager createFileAtPath:absLogUrl.path contents:nil attributes:dict];
+    }
+
+    return resultingConfig;
+
+}
+
+
+//////////////////////////////////////////////////////////////////// prepareDirAndUpdateConfig
+RCT_EXPORT_METHOD(prepareDirAndUpdateConfig:(NSString *)config
+                                   callback:(RCTResponseSenderBlock)callback) {
+
+#if DEBUG
+    NSLog(@"PrepareDirAndUpdateConfig() method called");
+#endif
+    NSString *updatedConfig = [self prepareDirAndUpdateConfig:config];
+    callback(@[updatedConfig]);
+
+}
+
+//////////////////////////////////////////////////////////////////// saveAccountAndLogin
+RCT_EXPORT_METHOD(saveAccountAndLogin:(NSString *)accountData
+                  password:(NSString *)password
+                  config:(NSString *)config
+                  subAccountsData:(NSString *)subAccountsData) {
+#if DEBUG
+    NSLog(@"SaveAccountAndLogin() method called");
+#endif
+    NSString *finalConfig = [self prepareDirAndUpdateConfig:config];
+    NSString *result = StatusgoSaveAccountAndLogin(accountData, password, finalConfig, subAccountsData);
+    NSLog(@"%@", result);
+}
+
+
 //////////////////////////////////////////////////////////////////// login
-RCT_EXPORT_METHOD(login:(NSString *)json
-                  callback:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(login:(NSString *)accountData
+                  password:(NSString *)password) {
 #if DEBUG
     NSLog(@"Login() method called");
 #endif
-    NSString *result = StatusgoLogin(json);
+    NSString *result = StatusgoLogin(accountData, password);
+    
+    NSLog(@"%@", result);
+}
+
+//////////////////////////////////////////////////////////////////// logout
+RCT_EXPORT_METHOD(logout) {
+#if DEBUG
+    NSLog(@"Logout() method called");
+#endif
+    NSString *result = StatusgoLogout();
+    
+    NSLog(@"%@", result);
+}
+
+//////////////////////////////////////////////////////////////////// openAccounts
+RCT_EXPORT_METHOD(openAccounts:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"OpenAccounts() method called");
+#endif
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl =[[fileManager
+                      URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
+                     lastObject];
+
+    NSString *result = StatusgoOpenAccounts(rootUrl.path);
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// login
+//////////////////////////////////////////////////////////////////// verityAccountPassword
 RCT_EXPORT_METHOD(verify:(NSString *)address
                   password:(NSString *)password
                   callback:(RCTResponseSenderBlock)callback) {

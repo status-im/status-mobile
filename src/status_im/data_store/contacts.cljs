@@ -48,13 +48,8 @@
                                 :system-tags :systemTags
                                 :last-updated :lastUpdated})))
 
-(defn save-contact-rpc [{:keys [public-key] :as contact}]
-  {::json-rpc/call [{:method "shhext_saveContact"
-                     :params [(->rpc contact)]
-                     :on-success #(log/debug "saved contact" public-key "successfuly")
-                     :on-failure #(log/error "failed to save contact" public-key %)}]})
-
-(defn fetch-contacts-rpc [on-success]
+(fx/defn fetch-contacts-rpc
+  [cofx on-success]
   {::json-rpc/call [{:method "shhext_contacts"
                      :params []
                      :on-success #(on-success (map <-rpc %))
@@ -67,12 +62,15 @@
         (.objects "message")
         (.filtered (str "(" (core/in-query "message-id" message-ids) ")")))))
 
+(fx/defn save-contact
+  [cofx {:keys [public-key] :as contact}]
+  {::json-rpc/call [{:method "shhext_saveContact"
+                     :params [(->rpc contact)]
+                     :on-success #(log/debug "saved contact" public-key "successfuly")
+                     :on-failure #(log/error "failed to save contact" public-key %)}]})
+
 (fx/defn block [cofx contact on-success]
   {::json-rpc/call [{:method "shhext_blockContact"
                      :params [(->rpc contact)]
                      :on-success on-success
                      :on-failure #(log/error "failed to block contact" % contact)}]})
-
-(fx/defn save-contact [cofx contact]
-  (save-contact-rpc contact))
-

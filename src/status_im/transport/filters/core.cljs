@@ -5,7 +5,6 @@
    [re-frame.core :as re-frame]
    [clojure.string :as string]
    [status-im.contact.db :as contact.db]
-   [status-im.data-store.multiaccounts :as data-store.multiaccounts]
    [status-im.ethereum.json-rpc :as json-rpc]
    [status-im.utils.fx :as fx]
    [status-im.utils.handlers :as handlers]
@@ -350,4 +349,3 @@
     filters
     #(filters-added! (map responses->filters %))
     #(log/error "load-filters: failed error" %))))
-

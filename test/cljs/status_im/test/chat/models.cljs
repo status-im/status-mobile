@@ -97,7 +97,7 @@
     (testing "it adds the relevant rpc calls"
       (let [actual (chat/clear-history cofx chat-id)]
         (is (::json-rpc/call actual))
-        (is (= 1 (count (::json-rpc/call actual))))))))
+        (is (= 2 (count (::json-rpc/call actual))))))))
 
 (deftest remove-chat-test
   (let [chat-id "1"

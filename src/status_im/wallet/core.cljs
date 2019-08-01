@@ -211,7 +211,7 @@
 
 (fx/defn update-prices
   [{{:keys [network-status :wallet/all-tokens]
-     {:keys [address settings]} :multiaccount :as db} :db}]
+     {:keys [address chaos-mode? settings]} :multiaccount :as db} :db}]
   (let [chain       (ethereum/chain-keyword db)
         mainnet?    (= :mainnet chain)
         assets      (get-in settings [:wallet :visible-tokens chain])
@@ -228,7 +228,7 @@
         :mainnet?      mainnet?
         :success-event :wallet.callback/update-prices-success
         :error-event   :wallet.callback/update-prices-fail
-        :chaos-mode?   (:chaos-mode? settings)}
+        :chaos-mode?   chaos-mode?}
 
        :db
        (-> db
@@ -313,7 +313,9 @@
   {:events  [:wallet.ui/sign-transaction-button-clicked]}
   [{:keys [db] :as cofx}]
   (let [{:keys [to symbol amount from]} (get-in cofx [:db :wallet :send-transaction])
-        {:keys [symbol address]} (tokens/asset-for (:wallet/all-tokens db) (keyword (:chain db)) symbol)
+        {:keys [symbol address]} (tokens/asset-for (:wallet/all-tokens db)
+                                                   (ethereum/chain-keyword db)
+                                                   symbol)
         amount-hex (str "0x" (abi-spec/number-to-hex amount))
         to-norm (ethereum/normalized-address to)]
     (signing/sign cofx {:tx-obj    (if (= symbol :ETH)

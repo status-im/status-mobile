@@ -25,6 +25,7 @@
    "eth_newFilter" {:subscription? true}
    "eth_syncing" {}
    "net_version" {}
+   "web3_clientVersion" {}
    "shhext_enableInstallation" {}
    "shhext_disableInstallation" {}
    "shhext_getOurInstallations" {}
@@ -57,7 +58,10 @@
    "browsers_deleteBrowser" {}
    "permissions_addDappPermissions" {}
    "permissions_getDappPermissions" {}
-   "permissions_deleteDappPermissions" {}})
+   "permissions_deleteDappPermissions" {}
+   "settings_saveConfig" {}
+   "settings_getConfig" {}
+   "settings_saveNodeConfig" {}})
 
 (defn call
   [{:keys [method params on-success on-error] :as p}]

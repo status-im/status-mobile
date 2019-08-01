@@ -1,30 +1,25 @@
 (ns status-im.multiaccounts.create.core
-  (:require [clojure.string :as string]
+  (:require [clojure.set :refer [map-invert]]
+            [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.multiaccounts.core :as multiaccounts.core]
-            [status-im.multiaccounts.login.core :as multiaccounts.login]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.constants :as constants]
-            [status-im.data-store.multiaccounts :as multiaccounts-store]
-            [status-im.i18n :as i18n]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as status]
+            [status-im.node.core :as node]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
-            [status-im.utils.random :as random]
+            [status-im.utils.fx :as fx]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.hex :as utils.hex]
             [status-im.utils.identicon :as identicon]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.random :as random]
+            [status-im.utils.security :as security]
             [status-im.utils.signing-phrase.core :as signing-phrase]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [clojure.set :refer [map-invert]]
-            [status-im.utils.fx :as fx]
-            [status-im.node.core :as node]
-            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
-            [status-im.utils.platform :as platform]
-            [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ethereum.core :as ethereum]))
+            [taoensso.timbre :as log]))
 
 (defn get-signing-phrase [cofx]
   (assoc cofx :signing-phrase (signing-phrase/generate)))
@@ -46,95 +41,16 @@
   (let [inverted  (map-invert step-kw-to-num)]
     (inverted (inc (step-kw-to-num step)))))
 
-(defn create-multiaccount! [{:keys [id password]}]
-  (if id
-    (do
-      ;(status/multiaccount-store-account id password #()) ;; TODO if i add this, i'm unable to login after
-      (status/multiaccount-store-derived
-       id
-       [constants/path-whisper constants/path-default-wallet]
-       password
-       #(re-frame/dispatch [:multiaccounts.create.callback/create-multiaccount-success password])))
-    (status/create-multiaccount
-     password
-     #(re-frame/dispatch [:multiaccounts.create.callback/create-multiaccount-success (types/json->clj %) password]))))
+;; multiaccounts create module
+(defn get-selected-multiaccount [{:keys [db]}]
+  (let [{:keys [selected-id multiaccounts]} (:intro-wizard db)]
+    (some #(when (= selected-id (:id %)) %) multiaccounts)))
 
-(defn create-multiaccount
-  [{:keys [db] :as   cofx}]
-  (if (:intro-wizard db)
-    (let [{:keys [selected-id key-code]} (:intro-wizard db)]
-      (fx/merge
-       cofx
-       {:multiaccounts.create/create-multiaccount {:id selected-id
-                                                   :password (get-in db [:multiaccounts/create :password] key-code)}}))
-    (fx/merge
-     cofx
-     {:db (-> db
-              (update :multiaccounts/create assoc
-                      :id  (get-in db [:intro-wizard :selected-id])
-                      :password (or (get-in db [:multiaccounts/create :password])
-                                    (get-in db [:intro-wizard :key-code]))
-                      :step :multiaccount-creating
-                      :error nil)
-              (assoc :node/on-ready :create-multiaccount
-                     :multiaccounts/new-installation-id (random/guid)))}
-     (node/initialize nil))))
-
-(fx/defn add-multiaccount
-  "Takes db and new multiaccount, creates map of effects describing adding multiaccount to database and realm"
-  [cofx {:keys [address] :as multiaccount}]
-  (let [db (:db cofx)]
-    {:db                 (assoc-in db [:multiaccounts/multiaccounts address] multiaccount)
-     :data-store/base-tx [(multiaccounts-store/save-multiaccount-tx multiaccount)]}))
-
-(defn reset-multiaccount-creation [{db :db}]
-  {:db (update db :multiaccounts/create assoc
-               :step :enter-password
-               :password nil
-               :password-confirm nil
-               :error nil)})
-
-(fx/defn multiaccount-set-input-text
-  [{db :db} input-key text]
-  {:db (update db :multiaccounts/create merge {input-key text :error nil})})
-
-(defn multiaccount-set-name
-  [{{:multiaccounts/keys [create] :as db} :db now :now :as cofx}]
-  (fx/merge cofx
-            {:db                                              db
-             :notifications/request-notifications-permissions nil
-             :dispatch-n                                      [[:navigate-to :home]
-                                                               (when-not platform/desktop?
-                                                                 [:navigate-to :welcome])]}
-            ;; We set last updated as we are actually changing a field,
-            ;; unlike on recovery where the name is not set
-            (multiaccounts.update/multiaccount-update {:last-updated now
-                                                       :name         (:name create)} {})
-            (mobile-network/on-network-status-change)))
-
-(fx/defn next-step
-  [{:keys [db] :as cofx} step password password-confirm]
-  (case step
-    :enter-password {:db (assoc-in db [:multiaccounts/create :step] :confirm-password)}
-    :confirm-password (if (= password password-confirm)
-                        (create-multiaccount cofx)
-                        {:db (assoc-in db [:multiaccounts/create :error] (i18n/label :t/password_error1))})
-    :enter-name (multiaccount-set-name cofx)))
-
-(fx/defn step-back
-  [cofx step]
-  (case step
-    :enter-password (navigation/navigate-back cofx)
-    :confirm-password (reset-multiaccount-creation cofx)))
-
-(fx/defn navigate-to-create-multiaccount-screen
+(fx/defn create-multiaccount
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (update db :multiaccounts/create
-                         #(-> %
-                              (assoc :step :enter-password)
-                              (dissoc :password :password-confirm :name :error)))}
-            (navigation/navigate-to-cofx :create-multiaccount nil)))
+  (let [{:keys [selected-id address key-code]} (:intro-wizard db)
+        {:keys [address]} (get-selected-multiaccount cofx)]
+    {::store-multiaccount [selected-id address key-code]}))
 
 (fx/defn intro-wizard
   {:events [:multiaccounts.create.ui/intro-wizard]}
@@ -142,8 +58,7 @@
   (fx/merge {:db (assoc db :intro-wizard {:step :generate-key
                                           :weak-password? true
                                           :encrypt-with-password? true
-                                          :first-time-setup? first-time-setup?}
-                        :multiaccounts/new-installation-id (random/guid))}
+                                          :first-time-setup? first-time-setup?})}
             (navigation/navigate-to-cofx :intro-wizard nil)))
 
 (fx/defn intro-step-back
@@ -222,62 +137,62 @@
           :else {:db (assoc-in db [:intro-wizard :step]
                                (inc-step step))})))
 
-(defn prepare-default-account [{:keys [publicKey address]}]
-  {:public-key publicKey
-   :address    address
-   :color      colors/blue
-   :default?   true
-   :name       "Status account"})
+(defn prepare-subaccounts-data
+  [multiaccount]
+  [(let [{:keys [publicKey address]}
+         (get-in multiaccount [:derived constants/path-default-wallet-keyword])]
+     {:public-key publicKey
+      :address    address
+      :color      colors/blue
+      :wallet     true
+      :path       constants/path-default-wallet
+      :name       "Status account"})
+   (let [{:keys [publicKey address]}
+         (get-in multiaccount [:derived constants/path-whisper-keyword])]
+     {:public-key publicKey
+      :address    address
+      :path       constants/path-whisper
+      :chat       true})])
 
 (fx/defn on-multiaccount-created
-  [{:keys [signing-phrase db] :as cofx}
-   {:keys [keycard-instance-uid keycard-key-uid keycard-pairing keycard-paired-on mnemonic] :as multiaccount}
+  [{:keys [signing-phrase random-guid-generator db] :as cofx}
+   {:keys [address publicKey keycard-instance-uid keycard-key-uid keycard-pairing keycard-paired-on mnemonic] :as multiaccount}
    password
    {:keys [seed-backed-up? login?] :or {login? true}}]
-  (let [{:keys [publicKey address]} (get-in multiaccount [:derived constants/path-whisper-keyword])
-        default-wallet-account (get-in multiaccount [:derived constants/path-default-wallet-keyword])
-        {:networks/keys [networks]} db
-        new-multiaccount       {;;multiaccount
-                                :root-address               (:address multiaccount)
-                                :public-key                 publicKey
-                                :latest-derived-path        0
-                                :installation-id            (get-in db [:multiaccounts/new-installation-id]) ;;TODO why can't we generate it here?
-                                :address                    address
-                                :name                       (gfycat/generate-gfy publicKey)
-                                :photo-path                 (identicon/identicon publicKey)
-                                :network                    config/default-network
-                                :networks                   networks
-
-                                :accounts                   [(prepare-default-account
-                                                              (get-in multiaccount [:derived constants/path-default-wallet-keyword]))]
-
-                                ;;multiaccount-settings
-                                :signed-up?                 true ;; how account can be not signed?
-                                :seed-backed-up?            seed-backed-up?
-                                :desktop-notifications?     false
-                                :signing-phrase             signing-phrase
-                                :mnemonic                   mnemonic
-                                :settings                   (constants/default-multiaccount-settings)
-                                :syncing-on-mobile-network? false
-                                :remember-syncing-choice?   false
-
-                                ;;keycard
-                                :keycard-instance-uid       keycard-instance-uid
-                                :keycard-key-uid            keycard-key-uid
-                                :keycard-pairing            keycard-pairing
-                                :keycard-paired-on          keycard-paired-on}]
-    (when-not (string/blank? publicKey)
-      (fx/merge cofx
-                {:db (assoc db :multiaccounts/login {:address      address
-                                                     :main-account (:address default-wallet-account)
-                                                     :password     password
-                                                     :processing   true})}
-                (add-multiaccount new-multiaccount)
-                (when login?
-                  (multiaccounts.login/user-login true))
-                (when (and (:intro-wizard db)
-                           (nil? keycard-key-uid))
-                  (intro-step-forward {}))))))
+  (let [[wallet-account {:keys [public-key]} :as subaccounts-data] (prepare-subaccounts-data multiaccount)
+        name (gfycat/generate-gfy public-key)
+        photo-path (identicon/identicon public-key)
+        account-data {:name name :address address :photo-path photo-path}
+        new-multiaccount       {:address         address
+                                :name            name
+                                :public-key      public-key
+                                :photo-path      photo-path
+                                :latest-derived-path 0
+                                :accounts [wallet-account]
+                                :installation-id (random-guid-generator)
+                                :signing-phrase  signing-phrase
+                                :mnemonic        mnemonic
+                                :settings        constants/default-multiaccount-settings
+                                :network           constants/default-network
+                                :networks/networks constants/default-networks}
+        db (-> db
+               (assoc :multiaccounts/login {:address      address
+                                            :name         name
+                                            :photo-path   photo-path
+                                            :password     password
+                                            :creating?    true
+                                            :processing   true}
+                      :multiaccount new-multiaccount))]
+    (fx/merge cofx
+              {:db (cond-> db
+                     seed-backed-up?
+                     (assoc-in [:multiaccount :seed-backed-up?] true))
+               ::save-account-and-login [(types/clj->json account-data)
+                                         password
+                                         (node/get-new-config db)
+                                         (types/clj->json subaccounts-data)]}
+              (when (:intro-wizard db)
+                (intro-step-forward {})))))
 
 (re-frame/reg-fx
  :intro-wizard/start-onboarding
@@ -340,10 +255,39 @@
                  :weak-password? (< (count new-key-code) 6))}))
 
 (re-frame/reg-cofx
- :multiaccounts.create/get-signing-phrase
+ ::get-signing-phrase
  (fn [cofx _]
    (get-signing-phrase cofx)))
 
+(fx/defn create-multiaccount-success
+  {:events [::store-multiaccount-success]
+   :interceptors [(re-frame/inject-cofx :random-guid-generator)
+                  (re-frame/inject-cofx ::get-signing-phrase)]}
+  [cofx password]
+  (on-multiaccount-created cofx (get-selected-multiaccount cofx) password {:seed-backed-up? false}))
+
 (re-frame/reg-fx
- :multiaccounts.create/create-multiaccount
- create-multiaccount!)
+ ::store-multiaccount
+ (fn [[id address password]]
+   (status/multiaccount-store-account
+    id
+    (security/safe-unmask-data password)
+    (fn []
+      (status/multiaccount-load-account
+       address
+       password
+       (fn [value]
+         (let [{:keys [id]} (types/json->clj value)]
+           (status/multiaccount-store-derived
+            id
+            [constants/path-whisper constants/path-default-wallet]
+            password
+            #(re-frame/dispatch [::store-multiaccount-success password])))))))))
+
+(re-frame/reg-fx
+ ::save-account-and-login
+ (fn [[account-data password config subaccounts-data]]
+   (status/save-account-and-login account-data
+                                  (security/safe-unmask-data password)
+                                  config
+                                  subaccounts-data)))

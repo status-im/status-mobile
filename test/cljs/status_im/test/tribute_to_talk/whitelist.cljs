@@ -69,7 +69,7 @@
 
 (def ttt-enabled-multiaccount
   {:db {:multiaccount {:network "testnet_rpc"
-                       :networks {"testnet_rpc" {:config {:NetworkId 3}}}
+                       :networks/networks {"testnet_rpc" {:config {:NetworkId 3}}}
                        :settings {:tribute-to-talk {:testnet {:snt-amount "1000000000000000000"}}}}
         :contacts/contacts user-contacts
         :wallet {:transactions
@@ -81,7 +81,7 @@
 
 (def ttt-disabled-multiaccount
   {:db {:multiaccount {:network "testnet_rpc"
-                       :networks {"testnet_rpc" {:config {:NetworkId 3}}}
+                       :networks/networks {"testnet_rpc" {:config {:NetworkId 3}}}
                        :settings {:tribute-to-talk {}}}
         :contacts/contacts user-contacts}})
 

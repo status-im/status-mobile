@@ -170,6 +170,4 @@
           actual (model/delete cofx "a")]
 
       (testing "it removes the bootnode"
-        (is (not (model/fetch actual "a"))))
-      (testing "it updates the db"
-        (is (= 1 (count (:data-store/base-tx actual))))))))
+        (is (not (model/fetch actual "a")))))))

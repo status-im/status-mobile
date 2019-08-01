@@ -1069,10 +1069,15 @@
     (fx/merge cofx
               (multiaccounts.update/update-settings (assoc-in settings [:mailserver current-fleet] mailserver-id)
                                                     {}))))
+(fx/defn ranges-loaded
+  {:events [::ranges-loaded]}
+  [{:keys [db]} ranges]
+  {:db (assoc db :mailserver/ranges ranges)})
 
 (fx/defn initialize-ranges
-  [{:keys [:data-store/all-chat-requests-ranges db]}]
-  {:db (assoc db :mailserver/ranges all-chat-requests-ranges)})
+  [{:keys [db]}]
+  {::data-store.mailservers/all-chat-requests-ranges
+   #(re-frame/dispatch [::ranges-loaded %])})
 
 (fx/defn load-gaps
   [{:keys [db now :data-store/all-gaps]} chat-id]

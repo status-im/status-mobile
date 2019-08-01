@@ -62,7 +62,7 @@
       normalized-address))
 
 (defn get-default-account [accounts]
-  (some #(when (:default? %) %) accounts))
+  (some #(when (:wallet %) %) accounts))
 
 (defn default-address [db]
   (-> (get-in db [:multiaccount :accounts])
@@ -99,7 +99,7 @@
 (defn chain-keyword
   [db]
   (let [network-id (get-in db [:multiaccount :network])
-        network    (get-in db [:multiaccount :networks network-id])]
+        network    (get-in db [:multiaccount :networks/networks network-id])]
     (network->chain-keyword network)))
 
 (defn snt-symbol [db]

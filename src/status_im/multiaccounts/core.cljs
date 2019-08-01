@@ -8,10 +8,10 @@
             [status-im.utils.build :as build]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
+            [status-im.utils.handlers]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]
-            [status-im.utils.handlers :as handlers]))
+            [status-im.utils.utils :as utils]))
 
 (defn displayed-name [account]
   (let [name (or (:preferred-name account) (:name account))]
@@ -48,7 +48,8 @@
 
 (fx/defn confirm-wallet-set-up
   [cofx]
-  (multiaccounts.update/multiaccount-update cofx {:wallet-set-up-passed? true} {}))
+  (multiaccounts.update/multiaccount-update cofx
+                                            {:wallet-set-up-passed? true} {}))
 
 (fx/defn update-dev-server-state
   [_ dev-mode?]
@@ -75,12 +76,10 @@
 (fx/defn switch-chaos-mode
   [{:keys [db] :as cofx} chaos-mode?]
   (when (:multiaccount db)
-    (let [settings (get-in db [:multiaccount :settings])]
-      (fx/merge cofx
-                {::chaos-mode-changed chaos-mode?}
-                (multiaccounts.update/update-settings
-                 (assoc settings :chaos-mode? chaos-mode?)
-                 {})))))
+    (fx/merge cofx
+              {::chaos-mode-changed chaos-mode?}
+              (multiaccounts.update/multiaccount-update {:chaos-mode? chaos-mode?}
+                                                        {}))))
 
 (fx/defn switch-biometric-auth
   {:events [:multiaccounts.ui/switch-biometric-auth]}
@@ -144,13 +143,3 @@
               (multiaccounts.update/update-settings
                (assoc settings :preview-privacy? private?)
                {}))))
-
-(fx/defn update-recent-stickers [cofx stickers]
-  (multiaccounts.update/multiaccount-update cofx
-                                            {:recent-stickers stickers}
-                                            {}))
-
-(fx/defn update-stickers [cofx stickers]
-  (multiaccounts.update/multiaccount-update cofx
-                                            {:stickers stickers}
-                                            {}))

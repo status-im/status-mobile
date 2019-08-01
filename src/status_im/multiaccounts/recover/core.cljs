@@ -1,18 +1,16 @@
 (ns status-im.multiaccounts.recover.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.multiaccounts.create.core :as multiaccounts.create]
-            [status-im.multiaccounts.db :as db]
+            [status-im.constants :as constants]
             [status-im.ethereum.mnemonic :as mnemonic]
             [status-im.i18n :as i18n]
+            [status-im.multiaccounts.create.core :as multiaccounts.create]
+            [status-im.multiaccounts.db :as db]
             [status-im.native-module.core :as status]
-            [status-im.node.core :as node]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
-            [status-im.utils.identicon :as identicon]
             [status-im.utils.security :as security]
-            [status-im.utils.types :as types]
-            [status-im.constants :as constants]))
+            [status-im.utils.types :as types]))
 
 (defn check-password-errors [password]
   (cond (string/blank? password) :required-field
@@ -91,16 +89,17 @@
                               :processing? false
                               :passphrase-error :recover-keycard-multiaccount-not-supported)
                       (update :multiaccounts/recover dissoc
-                              :passphrase-valid?))
-       :node/stop nil}
+                              :passphrase-valid?))}
       (let [multiaccount' (assoc multiaccount :derived (get-in db [:multiaccounts/recover :derived]))]
-        (multiaccounts.create/on-multiaccount-created
-         cofx multiaccount' password {:seed-backed-up? true})))))
+        (multiaccounts.create/on-multiaccount-created cofx
+                                                      multiaccount'
+                                                      password
+                                                      {:seed-backed-up? true})))))
 
 (fx/defn on-multiaccount-recovered
   {:events       [:multiaccounts.recover.callback/recover-multiaccount-success]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)
-                  (re-frame/inject-cofx :multiaccounts.create/get-signing-phrase)]}
+                  (re-frame/inject-cofx ::multiaccounts.create/get-signing-phrase)]}
   [cofx password]
   (validate-recover-result cofx password))
 
@@ -117,12 +116,10 @@
 (fx/defn recover-multiaccount
   [{:keys [db random-guid-generator] :as cofx}]
   (let [{:keys [password passphrase]} (:multiaccounts/recover db)]
-    (fx/merge cofx
-              {:db (-> db
-                       (assoc-in [:multiaccounts/recover :processing?] true)
-                       (assoc :multiaccounts/new-installation-id (random-guid-generator)))
-               :multiaccounts.recover/recover-multiaccount
-               [(security/mask-data passphrase) password]})))
+    {:db (-> db
+             (assoc-in [:multiaccounts/recover :processing?] true)
+             (assoc :multiaccounts/new-installation-id (random-guid-generator)))
+     :multiaccounts.recover/recover-multiaccount [(security/mask-data passphrase) password]}))
 
 (fx/defn recover-multiaccount-with-checks [{:keys [db] :as cofx}]
   (let [{:keys [passphrase processing?]} (:multiaccounts/recover db)]
@@ -195,37 +192,21 @@
              :dispatch [:bottom-sheet/hide-sheet]}
             (navigation/navigate-to-cofx :recover-multiaccount-enter-phrase nil)))
 
-(fx/defn prepare-to-recover
-  [{:keys [db random-guid-generator] :as cofx}]
-  (fx/merge cofx
-            {:db (-> db
-                     (assoc :node/on-ready :import-mnemonic)
-                     (assoc :multiaccounts/new-installation-id (random-guid-generator)))}
-            (node/initialize nil)))
-
-(fx/defn import-mnemonic
-  [{:keys [db]}]
-  (let [{:keys [password passphrase]} (:multiaccounts/recover db)]
-    {:multiaccounts.recover/import-mnemonic
-     {:passphrase passphrase
-      :password   password}}))
-
 (fx/defn proceed-to-import-mnemonic
-  [{:keys [db] :as cofx}]
-  (let [{:keys [passphrase]} (:multiaccounts/recover db)
-        node-started? (= :started (:node/status db))]
+  [{:keys [db random-guid-generator] :as cofx}]
+  (let [{:keys [password passphrase]} (:multiaccounts/recover db)]
     (when (mnemonic/valid-length? passphrase)
-      (if node-started?
-        (import-mnemonic cofx)
-        (prepare-to-recover cofx)))))
+      (fx/merge cofx
+                {:db (assoc db :multiaccounts/new-installation-id (random-guid-generator))
+                 :multiaccounts.recover/import-mnemonic {:passphrase passphrase
+                                                         :password   password}}))))
 
 (fx/defn enter-phrase-next-button-pressed
   {:events       [:recover.enter-passphrase.ui/input-submitted
                   :recover.enter-passphrase.ui/next-pressed]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            (proceed-to-import-mnemonic)))
+  (proceed-to-import-mnemonic cofx))
 
 (fx/defn cancel-pressed
   {:events [:recover.ui/cancel-pressed]}

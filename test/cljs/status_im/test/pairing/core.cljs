@@ -302,7 +302,8 @@
             expected {"installation-1" installation-1
                       "installation-2" {:has-bundle? true
                                         :installation-id "installation-2"}}]
-        (is (:pairing/get-our-installations (pairing/handle-bundles-added cofx new-installation)))))
+        (is ((into #{} (keys (pairing/handle-bundles-added cofx new-installation)))
+             :pairing/get-our-installations))))
     (testing "not from us"
       (let [new-installation {:identity "not-us" :installationID "does-not-matter"}]
         (is (not (pairing/handle-bundles-added cofx new-installation)))))))
@@ -340,4 +341,3 @@
                    :timestamp 9
                    :enabled? false}]]
     (is (= expected (pairing/sort-installations id (shuffle expected))))))
-

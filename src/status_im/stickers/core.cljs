@@ -10,7 +10,8 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
             [status-im.signing.core :as signing]
-            [status-im.utils.contenthash :as contenthash]))
+            [status-im.utils.contenthash :as contenthash]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]))
 
 (defn pack-data-callback
   [id open?]
@@ -85,9 +86,7 @@
 
 (fx/defn init-stickers-packs
   [{:keys [db]}]
-  (let [sticker-packs (into {} (map #(let [pack (edn/read-string %)]
-                                       (vector (:id pack) pack))
-                                    (get-in db [:multiaccount :stickers])))]
+  (let [sticker-packs (get-in db [:multiaccount :stickers/packs-installed])]
     {:db (assoc db
                 :stickers/packs-installed sticker-packs
                 :stickers/packs sticker-packs)}))
@@ -99,8 +98,10 @@
      cofx
      {:db (-> db
               (assoc-in [:stickers/packs-installed id] pack))}
-              ;;(assoc :stickers/selected-pack id))} TODO it doesn't scroll to selected pack on Android
-     (multiaccounts/update-stickers (conj (:stickers multiaccount) (pr-str pack))))))
+     ;;(assoc :stickers/selected-pack id))} TODO it doesn't scroll to selected pack on Android
+     (multiaccounts.update/multiaccount-update
+      {:stickers/packs-installed (assoc (:stickers/packs-installed multiaccount) id pack)}
+      {}))))
 
 (defn valid-sticker? [sticker]
   (contains? sticker :hash))

@@ -33,16 +33,15 @@
             [status-im.test.group-chats.core]
             [status-im.test.hardwallet.core]
             [status-im.test.i18n]
-            [status-im.test.init.core]
             [status-im.test.mailserver.core]
             [status-im.test.mailserver.topics]
             [status-im.test.models.bootnode]
             [status-im.test.models.contact]
             [status-im.test.models.network]
             [status-im.test.multiaccounts.model]
+            [status-im.test.multiaccounts.login.core]
             [status-im.test.multiaccounts.recover.core]
             [status-im.test.multiaccounts.update.core]
-            [status-im.test.node.core]
             [status-im.test.pairing.core]
             [status-im.test.search.core]
             [status-im.test.sign-in.flow]
@@ -120,7 +119,6 @@
  'status-im.test.group-chats.core
  'status-im.test.hardwallet.core
  'status-im.test.i18n
- 'status-im.test.init.core
  'status-im.test.mailserver.core
  'status-im.test.mailserver.topics
  'status-im.test.models.bootnode
@@ -128,7 +126,8 @@
  'status-im.test.models.network
  'status-im.test.multiaccounts.model
  'status-im.test.multiaccounts.recover.core
- 'status-im.test.node.core
+ 'status-im.test.multiaccounts.login.core
+ 'status-im.test.multiaccounts.update.core
  'status-im.test.pairing.core
  'status-im.test.search.core
  'status-im.test.sign-in.flow

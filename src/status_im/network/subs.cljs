@@ -21,7 +21,7 @@
  :get-networks
  :<- [:multiaccount]
  :<- [:networks/networks]
- (fn [[{:keys [networks]} default-networks]]
+ (fn [[{:keys [:networks/networks]} default-networks]]
    (let [networks (map (label-networks default-networks) (sort-by :name (vals networks)))
          types    [:mainnet :testnet :custom]]
      (zipmap

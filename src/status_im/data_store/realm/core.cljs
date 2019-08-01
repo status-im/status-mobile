@@ -4,7 +4,6 @@
             [goog.object :as object]
             [re-frame.core :as re-frame]
             [status-im.data-store.realm.schemas.account.core :as account]
-            [status-im.data-store.realm.schemas.base.core :as base]
             [status-im.ethereum.core :as ethereum]
             [status-im.js-dependencies :as js-dependencies]
             [status-im.react-native.js-dependencies :as rn-dependencies]
@@ -62,9 +61,6 @@
 (defn- realm-management-file? [n]
   (re-matches #".*(\.management|\.lock|\.note)$" n))
 
-(def old-base-realm-path
-  (.-defaultPath rn-dependencies/realm))
-
 (defn realm-dir []
   "This has to be a fn because otherwise re-frame app-db is not
   initialized yet"
@@ -78,14 +74,8 @@
         utils.platform/desktop?
         (str "/")))))
 
-(def old-realm-dir
-  (string/replace old-base-realm-path #"default\.realm$" ""))
-
 (defn accounts-realm-dir []
   (str (realm-dir) "accounts/"))
-
-(defn base-realm-path []
-  (str (realm-dir) "default.realm"))
 
 (defn get-account-db-path
   [address]
@@ -108,25 +98,6 @@
   (..
    (fs/mkdir (realm-dir))
    (then #(fs/mkdir (accounts-realm-dir)))))
-
-(defn- move-realm-to-library [path]
-  (let [filename (last (string/split path "/"))
-        new-path (if (is-account-file? path)
-                   (get-account-db-path filename)
-                   (str (realm-dir) filename))]
-    (log/debug "realm: moving " path " to " new-path)
-    (if (realm-management-file? path)
-      (fs/unlink path)
-      (fs/move-file path new-path))))
-
-(defn move-realms []
-  (log/info "realm: moving all realms")
-  (..
-   (fs/read-dir old-realm-dir)
-   (then #(->> (js->clj % :keywordize-keys true)
-               (map :path)
-               (filter is-realm-file?)))
-   (then #(js/Promise.all (clj->js (map move-realm-to-library %))))))
 
 (defn- close [realm]
   (when realm
@@ -182,11 +153,9 @@
 (defn- index-entity-schemas [all-schemas]
   (into {} (map (juxt :name identity)) (-> all-schemas last :schema)))
 
-(defonce base-realm (atom nil))
 (defonce account-realm (atom nil))
 
-(def entity->schemas (merge (index-entity-schemas base/schemas)
-                            (index-entity-schemas account/schemas)))
+(def entity->schemas (index-entity-schemas account/schemas))
 
 (def realm-queue (utils.async/task-queue 2000))
 
@@ -194,13 +163,6 @@
   (log/debug "closing account realm")
   (close @account-realm)
   (reset! account-realm nil))
-
-(defn open-base-realm [encryption-key]
-  (log/debug "Opening base realm... (first run)")
-  (when @base-realm
-    (close @base-realm))
-  (reset! base-realm (migrate-realm (base-realm-path) base/schemas encryption-key))
-  (log/debug "Created @base-realm"))
 
 (defn re-encrypt-realm
   [file-name old-key new-key on-success on-error]

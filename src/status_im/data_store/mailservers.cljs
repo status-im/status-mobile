@@ -74,17 +74,16 @@
     (log/debug "saving ranges" chat-requests-range)
     (core/create realm :chat-requests-range chat-requests-range true)))
 
-(re-frame/reg-cofx
- :data-store/all-chat-requests-ranges
- (fn [cofx _]
-   (assoc cofx
-          :data-store/all-chat-requests-ranges
-          (reduce (fn [acc {:keys [chat-id] :as range}]
-                    (assoc acc chat-id range))
-                  {}
-                  (-> @core/account-realm
-                      (core/get-all :chat-requests-range)
-                      (core/all-clj :chat-requests-range))))))
+(re-frame/reg-fx
+ ::all-chat-requests-ranges
+ (fn [on-success]
+   (on-success (reduce (fn [acc {:keys [chat-id] :as range}]
+                         (assoc acc chat-id range))
+                       {}
+                       (-> @core/account-realm
+                           (core/get-all :chat-requests-range)
+                           (core/all-clj :chat-requests-range))))))
+
 (re-frame/reg-cofx
  :data-store/all-gaps
  (fn [cofx _]

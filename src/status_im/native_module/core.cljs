@@ -6,24 +6,28 @@
 (defn init-keystore []
   (native-module/init-keystore))
 
-(defn start-node [config]
-  (native-module/start-node config))
+(defn open-accounts [callback]
+  (native-module/open-accounts callback))
 
-(def node-started (atom false))
+(defn prepare-dir-and-update-config [config callback]
+  (native-module/prepare-dir-and-update-config config callback))
 
-(defn node-ready []
-  (reset! node-started true)
-  (native-module/node-ready))
+(defn save-account-and-login
+  [account-data password config subaccounts-data]
+  (native-module/save-account-and-login account-data password config subaccounts-data))
 
-(defn stop-node []
-  (reset! node-started false)
-  (native-module/stop-node))
+(defn login
+  [account-data password]
+  (native-module/login account-data password))
+
+(defn logout
+  []
+  (native-module/logout))
+
+(defn node-ready [])
 
 (defn create-multiaccount [password callback]
   (native-module/create-account password callback))
-
-(defn multiaccount-store-account [account-id password callback]
-  (native-module/multiaccount-store-account account-id password callback))
 
 (defn multiaccount-load-account [address password callback]
   (native-module/multiaccount-load-account address password callback))
@@ -37,6 +41,9 @@
 (defn recover-multiaccount [passphrase password callback]
   (native-module/recover-account passphrase password callback))
 
+(defn multiaccount-store-account [account-id password callback]
+  (native-module/multiaccount-store-account account-id password callback))
+
 (defn multiaccount-store-derived [account-id paths password callback]
   (native-module/multiaccount-store-derived account-id paths password callback))
 
@@ -45,9 +52,6 @@
 
 (defn multiaccount-import-mnemonic [mnemonic password callback]
   (native-module/multiaccount-import-mnemonic mnemonic password callback))
-
-(defn login [address password main-account watch-addresses callback]
-  (native-module/login address password main-account watch-addresses callback))
 
 (defn verify [address password callback]
   (native-module/verify address password callback))
@@ -59,16 +63,11 @@
 (defn set-soft-input-mode [mode]
   (native-module/set-soft-input-mode mode))
 
-(defn clear-web-data []
-  (native-module/clear-web-data))
-
 (defn call-rpc [payload callback]
-  (when @node-started
-    (native-module/call-rpc payload callback)))
+  (native-module/call-rpc payload callback))
 
 (defn call-private-rpc [payload callback]
-  (when @node-started
-    (native-module/call-private-rpc payload callback)))
+  (native-module/call-private-rpc payload callback))
 
 (defn sign-message [rpcParams callback]
   (native-module/sign-message rpcParams callback))

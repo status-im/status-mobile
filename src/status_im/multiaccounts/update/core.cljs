@@ -1,12 +1,12 @@
 (ns status-im.multiaccounts.update.core
-  (:require
-   [status-im.contact.db :as contact.db]
-   [status-im.contact.device-info :as device-info]
-   [status-im.data-store.multiaccounts :as multiaccounts-store]
-   [status-im.data-store.transport :as transport-store]
-   [status-im.transport.message.protocol :as protocol]
-   [status-im.transport.message.contact :as message.contact]
-   [status-im.utils.fx :as fx]))
+  (:require [status-im.contact.db :as contact.db]
+            [status-im.contact.device-info :as device-info]
+            [status-im.data-store.transport :as transport-store]
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.transport.message.contact :as message.contact]
+            [status-im.transport.message.protocol :as protocol]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.types :as types]))
 
 (fx/defn multiaccount-update-message [{:keys [db] :as cofx}]
   (let [multiaccount (:multiaccount db)
@@ -52,17 +52,21 @@
 (fx/defn multiaccount-update
   "Takes effects (containing :db) + new multiaccount fields, adds all effects necessary for multiaccount update.
   Optionally, one can specify a success-event to be dispatched after fields are persisted."
-  [{:keys [db] :as cofx} new-multiaccount-fields {:keys [success-event]}]
+  [{:keys [db] :as cofx}
+   new-multiaccount-fields
+   {:keys [on-success] :or {on-success #()}}]
   (let [current-multiaccount (:multiaccount db)
         new-multiaccount     (merge current-multiaccount new-multiaccount-fields)
-        fx              {:db                 (assoc db :multiaccount new-multiaccount)
-                         :data-store/base-tx [{:transaction (multiaccounts-store/save-multiaccount-tx new-multiaccount)
-                                               :success-event success-event}]}
+        fx              {:db (assoc db :multiaccount new-multiaccount)
+                         ::json-rpc/call
+                         [{:method "settings_saveConfig"
+                           :params ["multiaccount" (types/serialize new-multiaccount)]
+                           :on-success on-success}]}
         {:keys [name photo-path]} new-multiaccount-fields]
     (if (or name photo-path)
       (fx/merge cofx
                 fx
-                #(send-multiaccount-update %))
+                (send-multiaccount-update))
       fx)))
 
 (fx/defn clean-seed-phrase
@@ -73,13 +77,13 @@
                         :mnemonic        nil}
                        {}))
 
-(fx/defn update-sign-in-time
-  [{db :db now :now :as cofx}]
-  (multiaccount-update cofx {:last-sign-in now} {}))
-
 (fx/defn update-settings
-  [{{:keys [multiaccount] :as db} :db :as cofx} settings {:keys [success-event]}]
+  [{{:keys [multiaccount] :as db} :db :as cofx}
+   settings
+   {:keys [on-success] :or {on-success #()}}]
   (let [new-multiaccount (assoc multiaccount :settings settings)]
-    {:db                 (assoc db :multiaccount new-multiaccount)
-     :data-store/base-tx [{:transaction   (multiaccounts-store/save-multiaccount-tx new-multiaccount)
-                           :success-event success-event}]}))
+    {:db (assoc db :multiaccount new-multiaccount)
+     ::json-rpc/call
+     [{:method "settings_saveConfig"
+       :params ["multiaccount" (types/serialize new-multiaccount)]
+       :on-success on-success}]}))

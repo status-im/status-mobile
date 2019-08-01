@@ -68,7 +68,6 @@
                                                                    :current      []
                                                                    :puk          []
                                                                    :enter-step   :original}}
-             :chats/loading?                     true
              :two-pane-ui-enabled?               (dimensions/fit-two-pane?)})
 
 ;;;;GLOBAL
@@ -226,7 +225,6 @@
                                 :commands/stored-command
                                 :group/selected-contacts
                                 :multiaccounts/multiaccounts
-                                :multiaccounts/create
                                 :multiaccounts/recover
                                 :multiaccounts/login
                                 :my-profile/profile
@@ -243,8 +241,6 @@
                                 :extensions/staged-extension
                                 :extensions/manage
                                 :node/status
-                                :node/restart?
-                                :node/address
                                 :node/chain-sync-state
                                 :universal-links/url
                                 :push-notifications/stored

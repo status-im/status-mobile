@@ -1,14 +1,15 @@
 (ns status-im.node.core
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.fleet.core :as fleet]
             [status-im.native-module.core :as status]
             [status-im.utils.config :as config]
-            [status-im.utils.types :as types]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.handlers :as utils.handlers]
             [status-im.utils.platform :as utils.platform]
-            [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.types :as types]
+            [status-im.utils.utils :as utils]))
 
 (defn- add-custom-bootnodes [config network all-bootnodes]
   (let [bootnodes (as-> all-bootnodes $
@@ -87,18 +88,15 @@
         (assoc-in [:LightEthConfig :MinTrustedFraction] 50))
     config))
 
-(defn- get-multiaccount-node-config [db address]
-  (let [multiaccounts (get db :multiaccounts/multiaccounts)
-        current-fleet-key (fleet/current-fleet db address)
+(defn- get-multiaccount-node-config [db]
+  (let [multiaccount (:multiaccount db)
+        current-fleet-key (fleet/current-fleet db)
         current-fleet (get (fleet/fleets db) current-fleet-key)
         rendezvous-nodes (pick-nodes 3 (vals (:rendezvous current-fleet)))
-        {:keys [network installation-id settings bootnodes networks]}
-        (merge
-         {:network         config/default-network
-          :networks        (:networks/networks db)
-          :settings        (constants/default-multiaccount-settings)
-          :installation-id (get db :multiaccounts/new-installation-id)}
-         (get multiaccounts address))
+        {:keys [network installation-id settings bootnodes :networks/networks]
+         :or {network config/default-network
+              networks (:networks/networks db)
+              settings constants/default-multiaccount-settings}} multiaccount
         use-custom-bootnodes (get-in settings [:bootnodes network])
         log-level (get-log-level settings)
         datasync? (:datasync? settings)
@@ -167,49 +165,31 @@
                 {:error error}
                 (when sync-state (js->clj sync-state :keywordize-keys true))))})
 
-(fx/defn start
-  [{:keys [db]} address]
-  (let [network     (if address
-                      (get-multiaccount-network db address)
-                      (:network db))
-        node-config (if (= (:node/on-ready db) :verify-multiaccount)
-                      (get-verify-multiaccount-config db network)
-                      (get-multiaccount-node-config db address))
-        node-config-json (types/clj->json node-config)]
-    (log/info "Node config: " node-config-json)
-    {:db        (assoc db
-                       :network network
-                       :node/status :starting)
-     :node/start node-config-json}))
+(defn get-new-config
+  [db]
+  (types/clj->json (get-multiaccount-node-config db)))
 
-(fx/defn stop
-  [{:keys [db]}]
-  {:db        (assoc db :node/status :stopping)
-   :node/stop nil})
+(fx/defn save-new-config
+  {:events [::save-new-config]}
+  [{:keys [db]} config {:keys [on-success]}]
+  {::json-rpc/call [{:method "settings_saveNodeConfig"
+                     :params [config]
+                     :on-success on-success}]})
 
-(fx/defn initialize
-  [{{:node/keys [status] :as db} :db :as cofx} address]
-  (let [restart {:db (assoc db :node/restart? true :node/address address)}]
-    (case status
-      :started nil
-      :starting restart
-      :stopping restart
-      (start cofx address))))
+(fx/defn prepare-new-config
+  [{:keys [db]} {:keys [on-success]}]
+  {::prepare-new-config [(get-new-config db)
+                         #(re-frame/dispatch [::save-new-config % {:on-success on-success}])]})
 
 (re-frame/reg-fx
- :node/start
- (fn [config]
-   (status/start-node config)))
+ ::prepare-new-config
+ (fn [[config callback]]
+   (status/prepare-dir-and-update-config config callback)))
 
 (re-frame/reg-fx
  :node/ready
  (fn [config]
    (status/node-ready)))
-
-(re-frame/reg-fx
- :node/stop
- (fn []
-   (status/stop-node)))
 
 (re-frame/reg-fx
  :node/les-show-debug-info

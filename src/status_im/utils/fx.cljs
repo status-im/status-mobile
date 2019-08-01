@@ -11,7 +11,7 @@
     cofx))
 
 (def ^:private mergable-keys
-  #{:data-store/tx :data-store/base-tx :chat-received-message/add-fx
+  #{:data-store/tx :chat-received-message/add-fx
     :shh/post :filters/load-filters
     :pairing/set-installation-metadata
     :status-im.data-store.messages/save-message
@@ -39,8 +39,8 @@
   The next forms are functions applying effects and returning a map of effects.
   The fn ensures that updates to db are passed from function to function within the cofx :db key and
   that only a :merging-fx-with-common-keys effect is returned if some functions are trying
-  to produce the same effects (excepted :db, :data-source/tx and :data-source/base-tx effects).
-  :data-source/tx and :data-source/base-tx effects are handled specially and their results
+  to produce the same effects (excepted :db, :data-source/tx effects).
+  :data-source/tx and effects are handled specially and their results
   (list of transactions) are compacted to one transactions list (for each effect). "
   [{:keys [db] :as cofx} & args]
   (let [[first-arg & rest-args] args

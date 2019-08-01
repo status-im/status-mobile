@@ -21,21 +21,6 @@
    (network/edit cofx)))
 
 (handlers/register-handler-fx
- :network.callback/non-rpc-network-saved
- (fn [_ _]
-   {:ui/close-application nil}))
-
-(handlers/register-handler-fx
- :network.ui/save-non-rpc-network-pressed
- (fn [cofx [_ network]]
-   (network/save-non-rpc-network cofx network)))
-
-(handlers/register-handler-fx
- :network.ui/save-rpc-network-pressed
- (fn [cofx [_ network]]
-   (network/save-rpc-network cofx network)))
-
-(handlers/register-handler-fx
  :network.ui/remove-network-confirmed
  (fn [cofx [_ network]]
    (network/remove-network cofx network [:navigate-back])))

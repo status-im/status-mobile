@@ -7,7 +7,6 @@
                                                       new-group
                                                       add-participants-toggle-list]]
             [status-im.ui.screens.profile.group-chat.views :refer [group-chat-profile]]
-            [status-im.ui.screens.multiaccounts.create.views :as create.views]
             [status-im.ui.screens.multiaccounts.login.views :as login.views]
             [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [status-im.ui.screens.multiaccounts.views :as multiaccounts.views]
@@ -33,7 +32,6 @@
                       :intro intro.views/intro
                       :multiaccounts multiaccounts.views/multiaccounts
                       :recover recover.views/recover
-                      :create-multiaccount create.views/create-multiaccount
                       :new-group  new-group
                       :contact-toggle-list contact-toggle-list
                       :group-chat-profile group-chat-profile

@@ -2,9 +2,7 @@
   (:require [status-im.constants :as constants]
             [status-im.multiaccounts.update.core :as multiaccounts]
             [status-im.pairing.core :as pairing]
-            [status-im.data-store.multiaccounts :as multiaccounts-store]
-            [status-im.transport.shh :as shh]
-            [status-im.utils.fx :as fx]))
+            [status-im.transport.shh :as shh]))
 
 ;; Publish updates every 48 hours
 (def publish-updates-interval (* 48 60 60 1000))

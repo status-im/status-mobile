@@ -133,7 +133,7 @@
 (def receive-contact-update handle-contact-update)
 
 (fx/defn initialize-contacts [cofx]
-  (contacts-store/fetch-contacts-rpc #(re-frame/dispatch [::contacts-loaded %])))
+  (contacts-store/fetch-contacts-rpc cofx #(re-frame/dispatch [::contacts-loaded %])))
 
 (fx/defn open-contact-toggle-list
   [{:keys [db :as cofx]}]

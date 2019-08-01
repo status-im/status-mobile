@@ -6,7 +6,6 @@
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
             status-im.utils.universal-links.events
-            status-im.web3.events
             status-im.ui.screens.add-new.new-chat.navigation
             status-im.ui.screens.profile.events
             status-im.ui.screens.wallet.navigation

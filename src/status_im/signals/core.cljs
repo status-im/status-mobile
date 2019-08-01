@@ -1,48 +1,21 @@
 (ns status-im.signals.core
-  (:require [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.multiaccounts.login.core :as multiaccounts.login]
-            [status-im.chat.models.loading :as chat.loading]
+  (:require [status-im.chat.models.loading :as chat.loading]
             [status-im.contact-recovery.core :as contact-recovery]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
-            [status-im.hardwallet.core :as hardwallet]
             [status-im.mailserver.core :as mailserver]
+            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.node.core :as node]
             [status-im.pairing.core :as pairing]
-            [status-im.transport.message.core :as transport.message]
             [status-im.transport.filters.core :as transport.filters]
+            [status-im.transport.message.core :as transport.message]
             [status-im.utils.fx :as fx]
-            [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
-            [status-im.multiaccounts.recover.core :as multiaccounts.recover]))
+            [status-im.multiaccounts.login.core :as login]))
 
 (fx/defn status-node-started
-  [{db :db :as cofx}]
-  (let [{:node/keys [restart? address on-ready]
-         :multiaccounts/keys [create]} db]
-    (fx/merge cofx
-              {:db         (-> db
-                               (assoc :node/status :started)
-                               (dissoc :node/restart? :node/address))
-               :node/ready nil}
-
-              (when restart?
-                (node/initialize address))
-              (case on-ready
-                :login
-                (multiaccounts.login/login)
-                :verify-multiaccount
-                (let [{:keys [address password]} (multiaccounts.model/credentials cofx)]
-                  (fn [_]
-                    {:multiaccounts.login/verify
-                     [address password (:realm-error db)]}))
-                :create-multiaccount
-                (fn [_]
-                  {:multiaccounts.create/create-multiaccount (select-keys create [:id :password])})
-                :import-mnemonic
-                (multiaccounts.recover/import-mnemonic)
-                :create-keycard-multiaccount
-                (hardwallet/create-keycard-multiaccount)))))
+  [{db :db :as cofx} event]
+  (login/multiaccount-login-success cofx))
 
 (fx/defn status-node-stopped
   [{db :db}]
@@ -63,7 +36,7 @@
   [cofx event-str]
   (let [{:keys [type event]} (types/json->clj event-str)]
     (case type
-      "node.ready"         (status-node-started cofx)
+      "node.login"         (status-node-started cofx event)
       "node.stopped"       (status-node-stopped cofx)
       "envelope.sent"      (transport.message/update-envelopes-status cofx (:ids event) :sent)
       "envelope.expired"   (transport.message/update-envelopes-status cofx (:ids event) :not-sent)

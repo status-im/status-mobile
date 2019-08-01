@@ -337,7 +337,8 @@
       (create-notification-channel))
     (handle-initial-push-notification)))
 
-(fx/defn process-stored-event [{:keys [db] :as cofx} address stored-pns]
+(fx/defn process-stored-event
+  [{:keys [db] :as cofx} address stored-pns]
   (when-not platform/desktop?
     (if (multiaccounts.model/logged-in? cofx)
       (let [current-multiaccount        (:multiaccount db)

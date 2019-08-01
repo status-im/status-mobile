@@ -3,26 +3,23 @@
             [status-im.chaos-mode.core :as chaos-mode]
             [status-im.i18n :as i18n]
             [status-im.init.core :as init]
-            [status-im.node.core :as node]
+            [status-im.native-module.core :as status]
             [status-im.transport.core :as transport]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [clojure.string :as string]))
 
 (fx/defn logout
+  {:events [:logout]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
-            {:keychain/clear-user-password (get-in db [:multiaccount :address])
-             :dispatch [:multiaccounts.logout/filters-removed]
-             :dev-server/stop              nil}
+            {::logout nil
+             :dev-server/stop nil
+             ;;TODO sort out this mess with lower case addresses
+             :keychain/clear-user-password (string/lower-case (get-in db [:multiaccount :address]))
+             ::init/open-multiaccounts #(re-frame/dispatch [::init/initialize-multiaccounts %])}
             (transport/stop-whisper)
-            (chaos-mode/stop-checking)))
-
-(fx/defn leave-multiaccount
-  [cofx]
-  (fx/merge
-   cofx
-   (init/initialize-app-db)
-   (init/load-multiaccounts-and-initialize-views)
-   (node/stop)))
+            (chaos-mode/stop-checking)
+            (init/initialize-app-db)))
 
 (fx/defn show-logout-confirmation [_]
   {:ui/show-confirmation
@@ -31,3 +28,8 @@
     :confirm-button-text (i18n/label :t/logout)
     :on-accept           #(re-frame/dispatch [:multiaccounts.logout.ui/logout-confirmed])
     :on-cancel           nil}})
+
+(re-frame/reg-fx
+ ::logout
+ (fn []
+   (status/logout)))
