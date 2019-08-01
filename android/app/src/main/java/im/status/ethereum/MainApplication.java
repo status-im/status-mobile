@@ -30,7 +30,6 @@ import java.util.List;
 import fr.bamlab.rnimageresizer.ImageResizerPackage;
 import im.status.ethereum.function.Function;
 import im.status.ethereum.keycard.RNStatusKeycardPackage;
-import im.status.ethereum.module.StatusPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
@@ -50,8 +49,6 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
 
         @Override
         protected List<ReactPackage> getPackages() {
-            StatusPackage statusPackage = new StatusPackage(RootUtil.isDeviceRooted());
-            Function<String, String> callRPC = statusPackage.getCallRPC();
             return Arrays.asList(
                     new MainReactPackage(),
                     new RNMail(),
@@ -63,7 +60,6 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new SvgPackage(),
                     new HttpServerReactPackage(),
                     new SplashScreenReactPackage(),
-                    statusPackage,
                     new RNStatusKeycardPackage(),
                     new RNLanguagesPackage(),
                     new RNCameraPackage(),
@@ -71,7 +67,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new ReactNativeDialogsPackage(),
                     new ImageResizerPackage(),
                     new PickerPackage(),
-                    new WebViewBridgePackage(BuildConfig.DEBUG_WEBVIEW == "1", callRPC),
+                    new WebViewBridgePackage(BuildConfig.DEBUG_WEBVIEW == "1", null),
                     new RNCWebViewPackage(),
                     new ReactNativeConfigPackage(),
                     new KeychainPackage(),

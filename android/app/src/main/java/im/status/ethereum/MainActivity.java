@@ -31,7 +31,6 @@ import com.facebook.react.modules.core.PermissionListener;
 import org.devio.rn.splashscreen.SplashScreen;
 
 import java.util.Properties;
-import im.status.ethereum.module.StatusThreadPoolExecutor;
 
 public class MainActivity extends ReactFragmentActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback{
@@ -157,8 +156,6 @@ public class MainActivity extends ReactFragmentActivity
                 System.loadLibrary("status-logs");
             }
         };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     @Override
