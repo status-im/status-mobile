@@ -50,9 +50,9 @@ allprojects {
 
     repositories {
         mavenLocal()
+        maven { url "$rootDir/../node_modules/react-native/android" }
         google()
         jcenter()
-        maven { url "$rootDir/../node_modules/react-native/android" }
         // for geth, function, and status-go
         flatDir { dirs "libs", System.env.STATUS_GO_ANDROID_LIBDIR }
         maven { url "https://jitpack.io" }

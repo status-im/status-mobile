@@ -51,7 +51,7 @@ let
               };
           };
         nativeBuildInputs = [ projectNodePackage ];
-        buildInputs = [ gradle bash file zlib mavenLocalRepo ];
+        buildInputs = [ gradle nodejs bash file zlib mavenLocalRepo ];
         propagatedBuildInputs = [ react-native-deps ] ++ status-go.buildInputs;
         unpackPhase = ''
           runHook preUnpack

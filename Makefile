@@ -286,7 +286,7 @@ android-install: export _NIX_ATTR := targets.mobile.android.adb.shell
 android-install: export TARGET_OS ?= android
 android-install: export BUILD_TYPE ?= release
 android-install:
-	adb install android/app/build/outputs/apk/$(BUILD_TYPE)/app-$(BUILD_TYPE).apk
+	adb install result/app.apk
 
 _list: SHELL := /bin/sh
 _list:

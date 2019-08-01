@@ -23,7 +23,8 @@ let
     }
     rec {
       name = "glog";
-      url = "https://github.com/google/${name}/archive/v0.3.5.tar.gz";
+      version = "0.3.5";
+      url = "https://github.com/google/${name}/archive/v${version}.tar.gz";
       sha256 = "1q6ihk2asbx95a56kmyqwysq1x3grrw9jwqllafaidf0l84f903m";
     }
   ];
