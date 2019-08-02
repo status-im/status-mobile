@@ -9,7 +9,7 @@ from selenium.common.exceptions import TimeoutException
 
 from tests import marks, get_current_time
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
-from tests.users import transaction_senders, transaction_recipients, basic_user
+from tests.users import transaction_senders, transaction_recipients, basic_user, ens_user
 from views.sign_in_view import SignInView
 
 
@@ -716,3 +716,15 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat.swipe_left()
         chat.sticker_icon.click()
         chat.chat_item.is_element_displayed()
+
+    @marks.testrail_id(5403)
+    @marks.critical
+    def test_start_chat_with_ens(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        profile = home.profile_button.click()
+        profile.switch_network('Mainnet with upstream RPC')
+        chat = home.add_contact(ens_user['ens'])
+        if not chat.element_by_text(ens_user['username']).is_element_displayed():
+            self.driver.fail('Wrong user is resolved from username when starting 1-1 chat.')
+

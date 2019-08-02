@@ -3,8 +3,9 @@ import pytest
 from tests import marks, bootnode_address, mailserver_address, camera_access_error_text, \
     photos_access_error_text
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
-from tests.users import transaction_senders, basic_user
+from tests.users import transaction_senders, basic_user, ens_user
 from views.sign_in_view import SignInView
+from views.dapps_view import DappsView
 
 
 @marks.all
@@ -102,6 +103,38 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         chat.paste_text()
         if chat.chat_message_input.text != address:
             self.errors.append('Wallet address was not copied')
+        self.verify_no_errors()
+
+    @marks.testrail_id(5502)
+    @marks.critical
+    def test_can_add_existing_ens(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.recover_access(ens_user['passphrase'])
+        profile = home.profile_button.click()
+        profile.switch_network('Mainnet with upstream RPC')
+        home.profile_button.click()
+        profile.element_by_text('ENS usernames').click()
+        dapp_view = DappsView(self.driver)
+
+        # check if your name can be added via "ENS usernames" dapp in Profile
+        dapp_view.element_by_text('Get started').click()
+        dapp_view.ens_name.set_value(ens_user['ens'])
+        if not dapp_view.element_by_text_part('is owned by you').is_element_displayed():
+            self.errors.append('Owned username is not shown in ENS Dapp.')
+        dapp_view.check_ens_name.click()
+        dapp_view.check_ens_name.click()
+        if not dapp_view.element_by_text_part('Username added').is_element_displayed():
+            self.errors.append('No message "Username added" after resolving own username')
+        dapp_view.element_by_text('Ok, got it').click()
+
+        # check that after adding username is shown in "ENS usernames" and profile
+        if not dapp_view.element_by_text(ens_user['ens']).is_element_displayed():
+            self.errors.append('No ENS name is shown in own "ENS usernames" after adding')
+        dapp_view.back_button.click()
+        if not dapp_view.element_by_text('@%s' % ens_user['ens']).is_element_displayed():
+            self.errors.append('No ENS name is shown in own profile after adding')
+        if not dapp_view.element_by_text('%s.stateofus.eth' % ens_user['ens']).is_element_displayed():
+            self.errors.append('No ENS name is shown in own profile after adding')
         self.verify_no_errors()
 
     @marks.testrail_id(5475)

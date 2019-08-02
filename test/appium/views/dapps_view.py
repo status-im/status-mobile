@@ -30,6 +30,15 @@ class BrowserEntry(ChatElement):
         super(BrowserEntry, self).__init__(driver, name)
         self.locator = self.Locator.xpath_selector('//*[@text="%s"]/..' % name)
 
+class EnsName(BaseEditBox):
+    def __init__(self, driver):
+        super(EnsName, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//android.widget.EditText')
+
+class EnsCheckName(BaseButton):
+        def __init__(self, driver):
+            super(EnsCheckName, self).__init__(driver)
+            self.locator = self.Locator.xpath_selector('//android.widget.EditText//following-sibling::android.view.ViewGroup[1]')
 
 class DappsView(BaseView):
 
@@ -39,6 +48,10 @@ class DappsView(BaseView):
         self.open_d_app_button = OpenDAppButton(self.driver)
         self.open_button = OpenButton(self.driver)
         self.enter_url_editbox = EnterUrlEditbox(self.driver)
+
+        #ens dapp
+        self.ens_name = EnsName(self.driver)
+        self.check_ens_name = EnsCheckName(self.driver)
 
     def open_url(self, url):
         self.enter_url_editbox.click()

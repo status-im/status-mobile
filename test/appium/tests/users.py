@@ -6,6 +6,13 @@ basic_user['public_key'] = "0x040d3400f0ba80b2f6017a9021a66e042abc33cf7051ddf98a
 basic_user['address'] = "f184747445c3B85CEb147DfB136067CB93d95F1D"
 basic_user['special_chars_password'] = " !\"#$Á%Ö&'()*+Í, -./:ä;<=>?@[\\]^_`{|}~ "
 
+ens_user = dict()
+ens_user['passphrase'] = "husband rough hotel obey annual you member reopen struggle air evoke taxi"
+ens_user['username'] = "Wan Sharp Bettong"
+ens_user['public_key'] = "0x042d693dc861dbd1da8542c9614dbea58a488dc3da822759a539279cdf9234de987342ca17009dcc97fbabf" \
+                         "00a606b770d92c3932e484a2b868eef2915982a24c6"
+ens_user['ens'] = 'autotester'
+
 wallet_users = dict()
 
 wallet_users['A'] = dict()
