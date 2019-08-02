@@ -35,9 +35,9 @@ class AllowButton(BaseButton):
         super(AllowButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Allow' or @text='ALLOW']")
 
-    def click(self):
+    def click(self, times_to_click=3):
         try:
-            for _ in range(3):
+            for _ in range(times_to_click):
                 self.find_element().click()
                 self.driver.info('Tap on %s' % self.name)
         except NoSuchElementException:
@@ -334,6 +334,7 @@ class BaseView(object):
         self.show_roots_button = ShowRoots(self.driver)
         self.get_started_button = GetStartedButton(self.driver)
         self.ok_got_it_button = OkGotItButton(self.driver)
+        self.progress_bar = ProgressBar(self.driver)
 
         # external browser
         self.open_in_status_button = OpenInStatusButton(self.driver)

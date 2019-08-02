@@ -1,4 +1,7 @@
 import time
+
+import emoji
+import random
 from selenium.common.exceptions import TimeoutException
 from support.utilities import generate_timestamp
 from tests import marks
@@ -108,6 +111,41 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
         if chat_element.new_messages_counter.is_element_displayed():
             self.errors.append('New messages counter is shown on chat element for already seen message')
+        self.verify_no_errors()
+
+    @marks.testrail_id(6202)
+    @marks.low
+    def test_emoji_messages_long_press(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
+
+        chat_name = home_1.get_public_chat_name()
+        chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
+        emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
+        emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
+        chat_1.chat_message_input.send_keys(emoji.emojize(emoji_name))
+        chat_1.send_message_button.click()
+
+        chat_1.chat_element_by_text(emoji_unicode).long_press_element()
+        chat_1.element_by_text('Copy').click()
+        chat_1.chat_message_input.paste_text_from_clipboard()
+        if chat_1.chat_message_input.text != emoji_unicode:
+            self.errors.append('Emoji message was not copied')
+
+        chat_element_2 = chat_2.chat_element_by_text(emoji_unicode)
+        if not chat_element_2.is_element_displayed(sec=10):
+            self.errors.append('Message with emoji was not received in public chat by the recipient')
+
+        chat_element_2.long_press_element()
+        chat_2.element_by_text('Reply').click()
+        message_text = 'test message'
+        chat_2.chat_message_input.send_keys(message_text)
+        chat_2.send_message_button.click()
+
+        chat_element_1 = chat_1.chat_element_by_text(message_text)
+        if not chat_element_1.is_element_displayed(sec=10) or chat_element_1.replied_message_text != emoji_unicode:
+            self.errors.append('Reply message was not received by the sender')
         self.verify_no_errors()
 
 

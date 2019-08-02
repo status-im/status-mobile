@@ -252,8 +252,9 @@ class ChatElementByText(BaseText):
     def __init__(self, driver, text):
         super(ChatElementByText, self).__init__(driver)
         self.message_text = text
+        self.message_locator = "//*[starts-with(@text,'%s')]" % text
         self.locator = self.Locator.xpath_selector(
-            "//*[starts-with(@text,'%s')]/ancestor::android.view.ViewGroup[@content-desc='chat-item']" % text)
+            self.message_locator + "/ancestor::android.view.ViewGroup[@content-desc='chat-item']")
 
     def find_element(self):
         self.driver.info("Looking for message with text '%s'" % self.message_text)
@@ -310,6 +311,19 @@ class ChatElementByText(BaseText):
         element.locator = element.Locator.xpath_selector(
             self.locator.value + "//android.view.ViewGroup//android.widget.TextView[contains(@text,'%s')]" % text)
         return element.is_element_displayed(wait_time)
+
+    @property
+    def replied_message_text(self):
+        class RepliedMessageText(BaseButton):
+            def __init__(self, driver, parent_locator):
+                super(RepliedMessageText, self).__init__(driver)
+                self.locator = self.Locator.xpath_selector(
+                    parent_locator + "/preceding-sibling::*[1]/android.widget.TextView[2]")
+
+        try:
+            return RepliedMessageText(self.driver, self.message_locator).text
+        except NoSuchElementException:
+            return ''
 
 
 class EmptyPublicChatMessage(BaseText):

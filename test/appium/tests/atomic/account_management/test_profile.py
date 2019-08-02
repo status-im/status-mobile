@@ -327,6 +327,32 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         self.verify_no_errors()
 
+    @marks.testrail_id(5738)
+    @marks.medium
+    def test_dapps_permissions(self):
+        sign_in_view = SignInView(self.driver)
+        home_view = sign_in_view.create_user()
+        home_view.open_status_test_dapp()
+        home_view.back_button.click()
+        profile_view = home_view.profile_button.click()
+        profile_view.dapp_permissions_button.click()
+        profile_view.element_by_text('status-im.github.io').click()
+        if not profile_view.element_by_text('Wallet').is_element_displayed():
+            self.errors.append('Wallet permission was not granted')
+        if not profile_view.element_by_text('Contact code').is_element_displayed():
+            self.errors.append('Contact code permission was not granted')
+        profile_view.revoke_access_button.click()
+        profile_view.back_button.click()
+        dapp_view = profile_view.dapp_tab_button.click()
+        dapp_view.open_url('status-im.github.io/dapp')
+        if not dapp_view.element_by_text_part('connect to your wallet').is_element_displayed():
+            self.errors.append('Wallet permission is not asked')
+        if dapp_view.allow_button.is_element_displayed():
+            dapp_view.allow_button.click(times_to_click=1)
+        if not dapp_view.element_by_text_part('to your profile').is_element_displayed():
+            self.errors.append('Profile permission is not asked')
+        self.verify_no_errors()
+
 
 @marks.all
 @marks.account
@@ -409,6 +435,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         chat_2.send_message_button.click()
         chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element()
 
+
 @marks.all
 @marks.account
 class TestProfileMultipleDevice(MultipleDeviceTestCase):
@@ -462,7 +489,9 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         # device 2: check that messages appeared in 1-1 chat and new contacts are synced
         if not device_2_profile.element_by_text(transaction_senders['A']['username']):
-            self.errors.append('"%s" is not found in Contacts after adding when devices are paired' % transaction_senders['A']['username'])
+            self.errors.append(
+                '"%s" is not found in Contacts after adding when devices are paired' % transaction_senders['A'][
+                    'username'])
         device_2_profile.get_back_to_home_view()
         chat = device_2_home.get_chat_with_user(basic_user['username']).click()
         if chat.chat_element_by_text(message_before_sync).is_element_displayed():
@@ -522,7 +551,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         # device 2: check that public chat and profile details are updated
         device_2_home = device_2_profile.get_back_to_home_view()
         if not device_2_home.element_by_text('#%s' % public_chat_before_sync_name).is_element_displayed():
-            pytest.fail('Public chat "%s" doesn\'t appear after initial sync'% public_chat_before_sync_name)
+            pytest.fail('Public chat "%s" doesn\'t appear after initial sync' % public_chat_before_sync_name)
         device_2_home.profile_button.click()
         device_2_profile.contacts_button.scroll_to_element(9, 'up')
         # if not device_2_profile.element_by_text(username_before_sync).is_element_displayed():
@@ -553,7 +582,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         device_2_profile.get_back_to_home_view()
         if not device_2_home.element_by_text('#%s' % public_chat_after_sync_name).is_element_displayed():
-            pytest.fail('Public chat "%s" doesn\'t appear on other device when devices are paired'% public_chat_before_sync_name)
+            pytest.fail(
+                'Public chat "%s" doesn\'t appear on other device when devices are paired' % public_chat_before_sync_name)
 
         device_2_home.element_by_text(group_chat_name).click()
         device_2_group_chat = device_2_home.get_chat_view()

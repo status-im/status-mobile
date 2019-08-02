@@ -187,13 +187,13 @@ class BackupRecoveryPhraseWarningText(BaseButton):
 
 
 class MultiaccountMoreOptions(BaseButton):
-    def __init__(self,driver):
+    def __init__(self, driver):
         super(MultiaccountMoreOptions, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('accounts-more-options')
 
 
 class AccountsStatusAccount(BaseButton):
-    def __init__(self,driver):
+    def __init__(self, driver):
         super(AccountsStatusAccount, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//android.widget.HorizontalScrollView//*[@text='Status account']")
 
@@ -218,6 +218,16 @@ class ReceiveTransactionButton(BaseButton):
     def navigate(self):
         from views.send_transaction_view import SendTransactionView
         return SendTransactionView(self.driver)
+
+
+class AddCustomTokenButton(BaseButton):
+    def __init__(self, driver):
+        super(AddCustomTokenButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Add custom token']")
+
+    def navigate(self):
+        from views.add_custom_token_view import AddCustomTokenView
+        return AddCustomTokenView(self.driver)
 
 
 class WalletView(BaseView):
@@ -250,6 +260,8 @@ class WalletView(BaseView):
         self.currency_text = CurrencyText(self.driver)
         self.backup_recovery_phrase = BackupRecoveryPhrase(self.driver)
         self.backup_recovery_phrase_warning_text = BackupRecoveryPhraseWarningText(self.driver)
+
+        self.add_custom_token_button = AddCustomTokenButton(self.driver)
 
         # elements for multiaccount
         self.multiaccount_more_options = MultiaccountMoreOptions(self.driver)

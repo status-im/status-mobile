@@ -222,3 +222,37 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.driver.fail('User collectibles token name in not shown')
         if not wallet_view.element_by_text('1').is_element_displayed():
             self.driver.fail('User collectibles amount does not match')
+
+    @marks.testrail_id(6208)
+    @marks.high
+    def test_add_custom_token(self):
+        contract_address = '0x25B1bD06fBfC2CbDbFc174e10f1B78b1c91cc77B'
+        name = 'SNTMiniMeToken'
+        symbol = 'SNT'
+        decimals = '18'
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        wallet_view.multiaccount_more_options.click()
+        wallet_view.manage_assets_button.click()
+        token_view = wallet_view.add_custom_token_button.click()
+        token_view.contract_address_input.send_keys(contract_address)
+        token_view.progress_bar.wait_for_invisibility_of_element(30)
+        if token_view.name_input.text != name:
+            self.errors.append('Name for custom token was not set')
+        if token_view.symbol_input.text != symbol:
+            self.errors.append('Symbol for custom token was not set')
+        if token_view.decimals_input.text != decimals:
+            self.errors.append('Decimals for custom token was not set')
+        token_view.add_button.click()
+        token_view.back_button.click()
+        if not wallet_view.asset_by_name(symbol).is_element_displayed():
+            self.errors.append('Custom token is not shown on Wallet view')
+        wallet_view.accounts_status_account.click()
+        send_transaction = wallet_view.send_transaction_button.click()
+        token_element = send_transaction.asset_by_name(symbol)
+        send_transaction.select_asset_button.click_until_presence_of_element(token_element)
+        if not token_element.is_element_displayed():
+            self.errors.append('Custom token is not shown on Send Transaction view')
+        self.verify_no_errors()

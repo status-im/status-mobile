@@ -412,46 +412,71 @@ class RemovePictureButton(BaseButton):
         super().__init__(driver)
         self.locator = self.Locator.text_selector('Remove current photo')
 
+
 class DevicesButton(BaseButton):
     def __init__(self, driver):
         super().__init__(driver)
         self.locator = self.Locator.accessibility_id('pairing-settings-button')
+
 
 class DeviceNameInput(BaseEditBox):
     def __init__(self, driver):
         super().__init__(driver)
         self.locator = self.Locator.accessibility_id('device-name')
 
+
 class ContinueButton(BaseButton):
     def __init__(self, driver):
         super(ContinueButton, self).__init__(driver)
         self.locator = self.Locator.text_selector('Continue')
+
 
 class GoToPairingSettingsButton(BaseButton):
     def __init__(self, driver):
         super(GoToPairingSettingsButton, self).__init__(driver)
         self.locator = self.Locator.text_selector('GO TO PAIRING SETTINGS')
 
+
 class AdvertiseDeviceButton(BaseButton):
     def __init__(self, driver):
         super(AdvertiseDeviceButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('advertise-device')
 
+
 class SyncedDeviceToggle(BaseButton):
     def __init__(self, driver, device_name):
         super(SyncedDeviceToggle, self).__init__(driver)
         self.device_name = device_name
-        self.locator = self.Locator.xpath_selector('//android.widget.TextView[@text="%s"]/../android.widget.Switch' % device_name)
+        self.locator = self.Locator.xpath_selector(
+            '//android.widget.TextView[@text="%s"]/../android.widget.Switch' % device_name)
+
 
 class SyncAllButton(BaseButton):
     def __init__(self, driver):
         super(SyncAllButton, self).__init__(driver)
         self.locator = self.Locator.text_selector('Sync all devices')
 
+
 class ContactsButton(BaseButton):
     def __init__(self, driver):
         super(ContactsButton, self).__init__(driver)
         self.locator = self.Locator.text_selector('Contacts')
+
+
+class DappPermissionsButton(BaseButton):
+    def __init__(self, driver):
+        super(DappPermissionsButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('dapps-permissions-button')
+
+    def click(self):
+        self.scroll_to_element().click()
+        self.driver.info('Tap on %s' % self.name)
+
+
+class RevokeAccessButton(BaseButton):
+    def __init__(self, driver):
+        super(RevokeAccessButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Revoke access')
 
 
 class ProfileView(BaseView):
@@ -494,6 +519,8 @@ class ProfileView(BaseView):
         self.advanced_button = AdvancedButton(self.driver)
         self.debug_mode_toggle = DebugModeToggle(self.driver)
         self.contacts_button = ContactsButton(self.driver)
+        self.dapp_permissions_button = DappPermissionsButton(self.driver)
+        self.revoke_access_button = RevokeAccessButton(self.driver)
 
         # Backup recovery phrase
         self.backup_recovery_phrase_button = BackupRecoveryPhraseButton(self.driver)
@@ -528,7 +555,6 @@ class ProfileView(BaseView):
         self.go_to_pairing_settings_button = GoToPairingSettingsButton(self.driver)
         self.advertise_device_button = AdvertiseDeviceButton(self.driver)
         self.sync_all_button = SyncAllButton(self.driver)
-
 
     def switch_network(self, network):
         self.advanced_button.click()
@@ -620,7 +646,6 @@ class ProfileView(BaseView):
         self.logout_button.click()
         return self.logout_dialog.logout_button.click()
 
-
     def mail_server_by_name(self, server_name):
         return MailServerElement(self.driver, server_name)
 
@@ -635,7 +660,6 @@ class ProfileView(BaseView):
         self.device_name_input.set_value(device_name)
         self.continue_button.click_until_presence_of_element(self.advertise_device_button, 2)
         self.advertise_device_button.click()
-
 
     @property
     def current_active_network(self):

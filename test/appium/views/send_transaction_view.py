@@ -1,7 +1,7 @@
 from tests import common_password
 from views.base_element import BaseText, BaseElement
 from views.base_element import BaseButton, BaseEditBox
-from views.base_view import BaseView, OkButton, ProgressBar
+from views.base_view import BaseView, OkButton
 
 
 class FirstRecipient(BaseButton):
@@ -219,7 +219,6 @@ class SendTransactionView(BaseView):
         self.error_dialog = ErrorDialog(self.driver)
 
         self.share_button = ShareButton(self.driver)
-        self.progress_bar = ProgressBar(self.driver)
 
         self.onboarding_message = OnboardingMessage(self.driver)
         self.validation_warnings = ValidationWarnings(self.driver)
