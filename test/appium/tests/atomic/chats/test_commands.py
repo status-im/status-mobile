@@ -170,6 +170,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(5324)
     @marks.critical
+    @marks.skip
+    # temporary skipped due to 8601
     def test_request_eth_in_wallet(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -214,6 +216,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(5383)
     @marks.high
+    @marks.skip
+    # temporary skipped due to 8601
     def test_contact_profile_send_transaction(self):
         self.create_drivers(1)
         recipient = basic_user
@@ -313,6 +317,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(5376)
     @marks.high
+    @marks.skip
+    # temporary skipped due to 8601
     def test_transaction_confirmed_on_recipient_side(self):
         recipient = transaction_recipients['E']
         sender = transaction_senders['E']
@@ -340,6 +346,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
 
     @marks.testrail_id(5349)
     @marks.high
+    @marks.skip
+    # temporary skipped due to 8601
     def test_send_request_not_enabled_tokens(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -402,6 +410,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
 
     @marks.testrail_id(5377)
     @marks.high
+    @marks.skip
+    # temporary skipped due to 8601
     def test_transaction_confirmed_on_sender_side(self):
         sender = transaction_senders['H']
         sign_in = SignInView(self.driver)
@@ -418,6 +428,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
 
     @marks.testrail_id(5410)
     @marks.high
+    @marks.skip
+    # temporary skipped due to 8601
     def test_insufficient_funds_1_1_chat_0_balance(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -452,6 +464,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
 
     @marks.testrail_id(5473)
     @marks.medium
+    @marks.skip
+    # temporary skipped due to 8601
     def test_insufficient_funds_1_1_chat_positive_balance(self):
         sender = transaction_senders['I']
         sign_in_view = SignInView(self.driver)
