@@ -51,9 +51,7 @@
     (testing "contact was tagged as tribute paid"
       (is (= (get-in result
                      [:db :contacts/contacts "bob" :system-tags])
-             #{:tribute-to-talk/paid})))
-    (testing "change is persisted"
-      (is (:data-store/tx result)))))
+             #{:tribute-to-talk/paid})))))
 
 (deftest mark-tribute-received
   (let [result (whitelist/mark-tribute-received {:db {}} "bob")]
@@ -64,9 +62,7 @@
     (testing "contact was tagged as tribute paid"
       (is (= (get-in result
                      [:db :contacts/contacts "bob" :system-tags])
-             #{:tribute-to-talk/received})))
-    (testing "change is persisted"
-      (is (:data-store/tx result)))))
+             #{:tribute-to-talk/received})))))
 
 (def sender-pk "0x04263d74e55775280e75b4a4e9a45ba59fc372793a869c5d9c4fa2100556d9963e3f4fbfa1724ec94a46e6da057540ab248ed1f5eb956e36e3129ecd50fade2c97")
 (def sender-address "0xdff1a5e4e57d9723b3294e0f4413372e3ea9a8ff")

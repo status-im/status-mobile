@@ -236,7 +236,6 @@
     (fx/merge cofx
               {:notifications/get-fcm-token nil}
               (initialize-multiaccount-db address)
-              (contact/load-contacts)
               #(when (dev-mode? %)
                  (models.dev-server/start))
               (extensions.module/initialize)

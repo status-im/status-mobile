@@ -1,29 +1,38 @@
 (ns status-im.contact.core
-  (:require [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.transport.filters.core :as transport.filters]
-            [status-im.contact.db :as contact.db]
-            [status-im.contact.device-info :as device-info]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.data-store.contacts :as contacts-store]
-            [status-im.mailserver.core :as mailserver]
-            [status-im.transport.message.contact :as message.contact]
-            [status-im.transport.message.protocol :as protocol]
-            [status-im.tribute-to-talk.db :as tribute-to-talk]
-            [status-im.tribute-to-talk.whitelist :as whitelist]
-            [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.config :as config]
-            [status-im.utils.fx :as fx]))
+  (:require
+   [re-frame.core :as re-frame]
+   [status-im.multiaccounts.model :as multiaccounts.model]
+   [status-im.transport.filters.core :as transport.filters]
+   [status-im.contact.db :as contact.db]
+   [status-im.contact.device-info :as device-info]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.data-store.contacts :as contacts-store]
+   [status-im.mailserver.core :as mailserver]
+   [status-im.transport.message.contact :as message.contact]
+   [status-im.transport.message.protocol :as protocol]
+   [status-im.tribute-to-talk.db :as tribute-to-talk]
+   [status-im.tribute-to-talk.whitelist :as whitelist]
+   [status-im.ui.screens.navigation :as navigation]
+   [status-im.utils.config :as config]
+   [status-im.utils.fx :as fx]))
 
 (fx/defn load-contacts
-  [{:keys [db all-contacts]}]
+  {:events [::contacts-loaded]}
+  [{:keys [db] :as cofx} all-contacts]
   (let [contacts-list (map #(vector (:public-key %) %) all-contacts)
         contacts (into {} contacts-list)
         tr-to-talk-enabled? (-> db tribute-to-talk/get-settings tribute-to-talk/enabled?)]
-    {:db (cond-> (-> db
-                     (update :contacts/contacts #(merge contacts %))
-                     (assoc :contacts/blocked (contact.db/get-blocked-contacts all-contacts)))
-           tr-to-talk-enabled?
-           (assoc :contacts/whitelist (whitelist/get-contact-whitelist all-contacts)))}))
+    (fx/merge cofx
+              {:db (cond-> (-> db
+                               (update :contacts/contacts #(merge contacts %))
+                               (assoc :contacts/blocked (contact.db/get-blocked-contacts all-contacts)))
+                     tr-to-talk-enabled?
+                     (assoc :contacts/whitelist (whitelist/get-contact-whitelist all-contacts)))}
+              ;; TODO: This is currently called twice, once we load chats & when we load filters.
+              ;; For now leaving as it is as the next step is not to have this being called from status-react
+              ;; as both contacts & chats are in status-go, but we still need to signals the filters to
+              ;; status-react for mailsevers/gaps, so will address separately
+              (transport.filters/load-filters))))
 
 (defn build-contact
   [{{:keys [chats multiaccount]
@@ -47,9 +56,9 @@
    {:keys [public-key] :as contact}]
   (fx/merge cofx
             {:db            (-> db
-                                (update-in [:contacts/contacts public-key] merge contact))
-             :data-store/tx [(contacts-store/save-contact-tx contact)]}
-            (transport.filters/load-contact contact)))
+                                (update-in [:contacts/contacts public-key] merge contact))}
+            (transport.filters/load-contact contact)
+            (contacts-store/save-contact-tx contact)))
 
 (fx/defn send-contact-request
   [{:keys [db] :as cofx} {:keys [public-key] :as contact}]
@@ -122,6 +131,9 @@
 (def receive-contact-request handle-contact-update)
 (def receive-contact-request-confirmation handle-contact-update)
 (def receive-contact-update handle-contact-update)
+
+(fx/defn initialize-contacts [cofx]
+  (contacts-store/fetch-contacts-rpc #(re-frame/dispatch [::contacts-loaded %])))
 
 (fx/defn open-contact-toggle-list
   [{:keys [db :as cofx]}]

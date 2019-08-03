@@ -82,14 +82,15 @@
                 (navigation/navigate-back)))))
 
 (fx/defn unblock-contact
-  [{:keys [db now]} public-key]
+  [{:keys [db now] :as cofx} public-key]
   (let [contact (-> (get-in db [:contacts/contacts public-key])
                     (assoc :last-updated now)
                     (update :system-tags disj :contact/blocked))]
-    {:db (-> db
-             (update :contacts/blocked disj public-key)
-             (assoc-in [:contacts/contacts public-key] contact))
-     :data-store/tx [(contacts-store/save-contact-tx contact)]}))
+    (fx/merge cofx
+              {:db (-> db
+                       (update :contacts/blocked disj public-key)
+                       (assoc-in [:contacts/contacts public-key] contact))}
+              (contacts-store/save-contact-tx contact))))
 
 (fx/defn block-contact-confirmation
   [cofx public-key]

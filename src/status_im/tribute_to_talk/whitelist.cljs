@@ -35,8 +35,8 @@
                     (update :system-tags conj tag))]
     (fx/merge cofx
               {:db (-> db
-                       (assoc-in [:contacts/contacts public-key] contact))
-               :data-store/tx [(contacts-store/save-contact-tx contact)]}
+                       (assoc-in [:contacts/contacts public-key] contact))}
+              (contacts-store/save-contact-tx contact)
               (add-to-whitelist public-key))))
 
 (fx/defn mark-tribute-paid

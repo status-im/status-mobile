@@ -6,48 +6,64 @@
             [taoensso.timbre :as log]
             [status-im.data-store.realm.core :as core]))
 
-(defn- deserialize-contact [contact]
+(defn deserialize-device-info [contact]
+  (update contact :deviceInfo (fn [device-info]
+                                (reduce (fn [acc info]
+                                          (assoc acc
+                                                 (:installationId info)
+                                                 (clojure.set/rename-keys info {:fcmToken :fcm-token :installationId :id})))
+                                        {}
+                                        device-info))))
+
+(defn serialize-device-info [contact]
+  (update contact :device-info (fn [device-info]
+                                 (map
+                                  #(clojure.set/rename-keys % {:fcm-token :fcmToken :id :installationId})
+                                  (vals device-info)))))
+
+(defn <-rpc [contact]
   (-> contact
-      (update :tags #(into #{} %))
-      (update :tribute-to-talk core/deserialize)
-      (update :system-tags
+      deserialize-device-info
+      (update :tributeToTalk core/deserialize)
+      (update :systemTags
               #(reduce (fn [acc s]
                          (conj acc (keyword (subs s 1))))
                        #{}
-                       %))))
+                       %)) (clojure.set/rename-keys {:id :public-key
+                                                     :photoPath :photo-path
+                                                     :deviceInfo :device-info
+                                                     :tributeToTalk :tribute-to-talk
+                                                     :systemTags :system-tags
+                                                     :lastUpdated :last-updated})))
 
-(defn- serialize-contact [contact]
+(defn ->rpc [contact]
   (-> contact
-      (update :device-info #(or (vals %) []))
+      serialize-device-info
+      (update :tribute-to-talk core/serialize)
       (update :system-tags #(mapv str %))
-      (update :tribute-to-talk core/serialize)))
+      (clojure.set/rename-keys {:public-key :id
+                                :photo-path :photoPath
+                                :device-info :deviceInfo
+                                :tribute-to-talk :tributeToTalk
+                                :system-tags :systemTags
+                                :last-updated :lastUpdated})))
 
-(re-frame/reg-cofx
- :data-store/get-all-contacts
- (fn [coeffects _]
-   (assoc coeffects :all-contacts (map deserialize-contact
-                                       (-> @core/account-realm
-                                           (core/get-all :contact)
-                                           (core/all-clj :contact))))))
+(defn save-contact-rpc [{:keys [public-key] :as contact}]
+  (json-rpc/call {:method "shhext_saveContact"
+                  :params [(->rpc contact)]
+                  :on-success #(log/debug "saved contact" public-key "successfuly")
+                  :on-failure #(log/error "failed to save contact" public-key %)}))
+
+(defn fetch-contacts-rpc [on-success]
+  (json-rpc/call {:method "shhext_contacts"
+                  :params []
+                  :on-success #(on-success (map <-rpc %))
+                  :on-failure #(log/error "failed to fetch contacts" %)}))
 
 (defn save-contact-tx
   "Returns tx function for saving contact"
   [{:keys [public-key] :as contact}]
-  (fn [realm]
-    (core/create realm
-                 :contact
-                 (serialize-contact contact)
-                 true)))
-
-(defn save-contacts-tx
-  "Returns tx function for saving contacts"
-  [contacts]
-  (fn [realm]
-    (doseq [contact contacts]
-      ((save-contact-tx contact) realm))))
-
-(defn- get-contact-by-id [public-key realm]
-  (.objectForPrimaryKey realm "contact" public-key))
+  (save-contact-rpc contact))
 
 (defn- get-messages-by-messages-ids
   [message-ids]
@@ -56,26 +72,13 @@
         (.objects "message")
         (.filtered (str "(" (core/in-query "message-id" message-ids) ")")))))
 
-(defn- get-chat
-  [public-key]
-  (core/single
-   (core/get-by-field @core/account-realm
-                      :chat
-                      :chat-id
-                      public-key)))
-
 (defn block-user-tx
   "Returns tx function for deleting user messages"
   [{:keys [public-key] :as contact} messages-ids]
   (fn [realm]
-    (core/create realm :contact (serialize-contact contact) true)
+    (data-store.chats/delete-chat-rpc public-key data-store.chats/one-to-one-chat-type)
+    (save-contact-rpc contact)
     (when-let [user-messages
                (get-messages-by-messages-ids messages-ids)]
-      (core/delete realm user-messages))
-    (data-store.chats/delete-chat-rpc public-key data-store.chats/one-to-one-chat-type)))
+      (core/delete realm user-messages))))
 
-(defn delete-contact-tx
-  "Returns tx function for deleting contact"
-  [public-key]
-  (fn [realm]
-    (core/delete realm (get-contact-by-id public-key realm))))

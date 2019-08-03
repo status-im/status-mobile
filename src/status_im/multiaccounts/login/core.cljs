@@ -6,6 +6,7 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
             [status-im.chat.models.loading :as chat.loading]
+            [status-im.contact.core :as contact]
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
@@ -209,6 +210,7 @@
          (mobile-network/on-network-status-change)
          (protocol/initialize-protocol)
          (chat.loading/initialize-chats {:to -1})
+         (contact/initialize-contacts)
          (universal-links/process-stored-event)
          (chaos-mode/check-chaos-mode)
          (finish-keycard-setup)
