@@ -105,7 +105,7 @@
 
 (defn emoji-only-content?
   "Determines if text is just an emoji"
-  [{:keys [text response-to]}]
-  (and (not response-to)
+  [{:keys [text response-to-v2]}]
+  (and (not response-to-v2)
        (string? text)
        (re-matches constants/regx-emoji text)))

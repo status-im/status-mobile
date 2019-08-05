@@ -4,6 +4,7 @@
             [status-im.chat.models.loading :as chat.models.loading]
             [status-im.chat.models.message :as chat.models.message]
             [status-im.contact.db :as contact.db]
+            [status-im.data-store.chats :as chats-store]
             [status-im.data-store.contacts :as contacts-store]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.navigation :as navigation]
@@ -16,51 +17,49 @@
             (navigation/navigate-to-cofx :home {})))
 
 (fx/defn clean-up-chat
-  [{:keys [db] :as cofx} chat-id removed-chat-messages]
-  (let [removed-messages-ids (map :message-id removed-chat-messages)
-        removed-unseen-count (count (remove :seen removed-chat-messages))
-        unviewed-messages-count (- (get-in db [:chats chat-id :unviewed-messages-count])
-                                   removed-unseen-count)
+  [{:keys [db] :as cofx}
+   public-key
+   {:keys [chat-id
+           unviewed-messages-count
+           last-message-content
+           last-message-content-type]}]
+  (let [removed-messages-ids (keep
+                              (fn [[message-id {:keys [from]}]]
+                                (when (= from public-key)
+                                  message-id))
+                              (get-in db [:chats chat-id :messages]))
         db (-> db
                ;; remove messages
                (update-in [:chats chat-id :messages]
                           #(apply dissoc % removed-messages-ids))
                ;; remove message groups
                (update-in [:chats chat-id]
-                          dissoc :message-groups))]
+                          dissoc :message-groups)
+               (update-in [:chats chat-id]
+                          assoc
+                          :unviewed-messages-count unviewed-messages-count
+                          :last-message-content last-message-content
+                          :last-message-content-type last-message-content-type))]
     (fx/merge cofx
               {:db db}
-              ;; update unviewed messages count
-              (chat.models/upsert-chat
-               {:chat-id                      chat-id
-                :unviewed-messages-count
-                (if (pos? unviewed-messages-count)
-                  unviewed-messages-count
-                  0)})
               ;; recompute message group
               (chat.models.loading/group-chat-messages
                chat-id
                (vals (get-in db [:chats chat-id :messages]))))))
 
-(fx/defn clean-up-chats
-  [cofx removed-messages-by-chat]
-  (apply fx/merge cofx
-         (map (fn [[chat-id messages]]
-                (clean-up-chat chat-id messages))
-              removed-messages-by-chat)))
+(fx/defn contact-blocked
+  {:events [::contact-blocked]}
+  [{:keys [db] :as cofx} {:keys [public-key]} chats]
+  (let [fxs (map #(clean-up-chat public-key %) chats)]
+    (apply fx/merge cofx fxs)))
 
 (fx/defn block-contact
-  [{:keys [db get-user-messages now] :as cofx} public-key]
+  [{:keys [db now] :as cofx} public-key]
   (let [contact (-> (contact.db/public-key->contact
                      (:contacts/contacts db)
                      public-key)
                     (assoc :last-updated now)
                     (update :system-tags conj :contact/blocked))
-        user-messages (get-user-messages public-key)
-        user-messages-ids (map :message-id user-messages)
-        ;; we make sure to remove the 1-1 chat which we delete entirely
-        removed-messages-by-chat (-> (group-by :chat-id user-messages)
-                                     (dissoc public-key))
         from-one-to-one-chat? (not (get-in db [:chats (:current-chat-id db) :group-chat]))]
     (fx/merge cofx
               {:db (-> db
@@ -69,13 +68,8 @@
                        ;; update the contact in contacts list
                        (assoc-in [:contacts/contacts public-key] contact)
                        ;; remove the 1-1 chat if it exists
-                       (update-in [:chats] dissoc public-key))
-               :data-store/tx [(contacts-store/block-user-tx contact
-                                                             user-messages-ids)]}
-              ;;remove the messages from chat
-              (clean-up-chats removed-messages-by-chat)
-              (chat.models.message/update-last-messages
-               (keys removed-messages-by-chat))
+                       (update-in [:chats] dissoc public-key))}
+              (contacts-store/block contact #(re-frame/dispatch [::contact-blocked contact (map chats-store/<-rpc %)]))
               ;; reset navigation to avoid going back to non existing one to one chat
               (if from-one-to-one-chat?
                 remove-current-chat-id
@@ -90,7 +84,7 @@
               {:db (-> db
                        (update :contacts/blocked disj public-key)
                        (assoc-in [:contacts/contacts public-key] contact))}
-              (contacts-store/save-contact-tx contact))))
+              (contacts-store/save-contact contact))))
 
 (fx/defn block-contact-confirmation
   [cofx public-key]

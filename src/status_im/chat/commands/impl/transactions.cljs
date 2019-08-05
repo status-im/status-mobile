@@ -5,6 +5,7 @@
             [status-im.chat.commands.impl.transactions.styles
              :as
              transactions-styles]
+            [status-im.utils.fx :as fx]
             [status-im.chat.commands.protocol :as protocol]
             [status-im.data-store.messages :as messages-store]
             [status-im.ethereum.core :as ethereum]
@@ -287,13 +288,14 @@
    ;; Only superficial/formatting validation, "real validation" will be performed
    ;; by the wallet, where we yield control in the next step
     (personal-send-request-validation parameters cofx))
-  (on-send [_ {:keys [chat-id] :as send-message} {:keys [db]}]
+  (on-send [_ {:keys [chat-id] :as send-message} {:keys [db] :as cofx}]
     (when-let [responding-to (get-in db [:chats chat-id :metadata :responding-to-command])]
       (when-let [request-message (get-in db [:chats chat-id :messages responding-to])]
         (when (params-unchanged? send-message request-message)
           (let [updated-request-message (assoc-in request-message [:content :params :answered?] true)]
-            {:db            (assoc-in db [:chats chat-id :messages responding-to] updated-request-message)
-             :data-store/tx [(messages-store/save-message-tx updated-request-message)]})))))
+            (fx/merge cofx
+                      {:db            (assoc-in db [:chats chat-id :messages responding-to] updated-request-message)}
+                      (messages-store/save-message updated-request-message)))))))
   (on-receive [_ command-message cofx])
   (short-preview [_ command-message]
     (personal-send-request-short-preview :command-sending command-message))

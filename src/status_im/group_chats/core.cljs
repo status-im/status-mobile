@@ -139,7 +139,7 @@
         :dsts             destinations
         :success-event    [:transport/message-sent
                            chat-id
-                           message-id
+                           (:message cofx)
                            :group-user-message]
         :payload          payload}}))))
 
@@ -471,7 +471,7 @@
   [cofx {:keys [chat-id
                 message
                 membership-updates] :as membership-update}
-   {:keys [raw-payload dedup-id]}
+   {:keys [raw-payload metadata]}
    sender-signature]
   (let [dev-mode? (get-in cofx [:db :multiaccount :dev-mode?])]
     (when (valid-chat-id? chat-id (extract-creator membership-update))
@@ -502,7 +502,7 @@
                               (= :group-user-message (:message-type message)))
                      (protocol/receive message chat-id sender-signature nil
                                        (assoc %
-                                              :dedup-id dedup-id
+                                              :metadata metadata
                                               :js-obj #js {:payload raw-payload}))))))))
 
 (defn handle-sign-success

@@ -36,7 +36,7 @@
     (fx/merge cofx
               {:db (-> db
                        (assoc-in [:contacts/contacts public-key] contact))}
-              (contacts-store/save-contact-tx contact)
+              (contacts-store/save-contact contact)
               (add-to-whitelist public-key))))
 
 (fx/defn mark-tribute-paid

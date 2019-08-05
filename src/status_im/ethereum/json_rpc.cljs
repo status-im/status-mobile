@@ -33,8 +33,17 @@
    "shhext_loadFilter" {}
    "shhext_removeFilters" {}
    "shhext_chats" {}
+   "shhext_saveMessages" {}
+   "shhext_deleteMessagesFrom" {}
+   "shhext_deleteMessagesByChatID" {}
+   "shhext_deleteMessage" {}
+   "shhext_markMessagesSeen" {}
+   "shhext_confirmMessagesProcessedByID" {}
+   "shhext_updateMessageOutgoingStatus" {}
+   "shhext_chatMessages" {}
    "shhext_saveChat" {}
    "shhext_contacts" {}
+   "shhext_blockContact" {}
    "shhext_deleteChat" {}
    "shhext_saveContact" {}
    "status_joinPublicChat" {}
@@ -51,8 +60,8 @@
    "permissions_deleteDappPermissions" {}})
 
 (defn call
-  [{:keys [method params on-success on-error]}]
-  (when-let [method-options (json-rpc-api method)]
+  [{:keys [method params on-success on-error] :as p}]
+  (if-let [method-options (json-rpc-api method)]
     (let [{:keys [id on-result subscription?]
            :or {on-result identity
                 id        1
@@ -80,7 +89,9 @@
                    (re-frame/dispatch
                     [:ethereum.callback/subscription-success
                      result on-success])
-                   (on-success (on-result result))))))))))))
+                   (on-success (on-result result))))))))))
+
+    (log/warn "method" method "not found" p)))
 
 (defn eth-call
   [{:keys [contract method params outputs on-success on-error block]

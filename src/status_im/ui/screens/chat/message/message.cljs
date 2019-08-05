@@ -114,10 +114,13 @@
    {:justify-timestamp? true}])
 
 (defn emoji-message
-  [{:keys [content] :as message}]
+  [{:keys [content current-public-key] :as message}]
   [message-view message
-   [react/text {:style (style/emoji-message message)}
-    (:text content)]])
+   [react/view {:style (style/style-message-text false)}
+    (when (:response-to content)
+      [quoted-message (:response-to content) false current-public-key])
+    [react/text {:style (style/emoji-message message)}
+     (:text content)]]])
 
 (defmulti message-content (fn [_ message _] (message :content-type)))
 
@@ -249,8 +252,8 @@
     [message-delivery-status message]]])
 
 (defn open-chat-context-menu
-  [{:keys [message-id old-message-id content] :as message}]
-  (list-selection/chat-message message-id old-message-id (:text content) (i18n/label :t/message)))
+  [{:keys [message-id content] :as message}]
+  (list-selection/chat-message message-id (:text content) (i18n/label :t/message)))
 
 (defn chat-message
   [{:keys [outgoing group-chat modal? current-public-key content-type content] :as message}]

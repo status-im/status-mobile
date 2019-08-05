@@ -55,8 +55,6 @@
           (is message))
         (testing "it marks the message as outgoing"
           (is (= true (:outgoing message))))
-        (testing "it stores the message"
-          (is (:data-store/tx actual)))
         (testing "it does not send a seen confirmation"
           (is (not (:shh/post actual))))))))
 

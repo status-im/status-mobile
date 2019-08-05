@@ -87,12 +87,11 @@
 
 (fx/defn reply-to-message
   "Sets reference to previous chat message and focuses on input"
-  [{:keys [db] :as cofx} message-id old-message-id]
+  [{:keys [db] :as cofx} message-id]
   (let [current-chat-id (:current-chat-id db)]
     (fx/merge cofx
               {:db (assoc-in db [:chats current-chat-id :metadata :responding-to-message]
-                             {:message-id     message-id
-                              :old-message-id old-message-id})}
+                             {:message-id     message-id})}
               (chat-input-focus :input-ref))))
 
 (fx/defn cancel-message-reply
@@ -123,7 +122,7 @@
   "no command detected, when not empty, proceed by sending text message without command processing"
   [input-text current-chat-id {:keys [db] :as cofx}]
   (when-not (string/blank? input-text)
-    (let [{:keys [message-id old-message-id]}
+    (let [{:keys [message-id]}
           (get-in db [:chats current-chat-id :metadata :responding-to-message])
           show-name?     (get-in db [:multiaccount :show-name?])
           preferred-name (when show-name? (get-in db [:multiaccount :preferred-name]))]
@@ -134,8 +133,7 @@
                                             :content      (cond-> {:chat-id current-chat-id
                                                                    :text    input-text}
                                                             message-id
-                                                            (assoc :response-to old-message-id
-                                                                   :response-to-v2 message-id)
+                                                            (assoc :response-to-v2 message-id)
                                                             preferred-name
                                                             (assoc :name preferred-name))})
                 (commands.input/set-command-reference nil)

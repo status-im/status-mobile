@@ -62,9 +62,8 @@
 
 (defn quoted-message-data
   "Selects certain data from quoted message which must be available in the view"
-  [message-id messages referenced-messages]
-  (when-let [{:keys [from content]} (get messages message-id
-                                         (get referenced-messages message-id))]
+  [message-id messages]
+  (when-let [{:keys [from content]} (get messages message-id)]
     {:from from
      :text (:text content)}))
 
@@ -85,15 +84,17 @@
   (= type :gap))
 
 (defn transform-message
-  [messages referenced-messages]
+  [messages]
   (fn [{:keys [message-id timestamp-str] :as reference}]
     (if (or (datemark? reference)
             (gap? reference))
       reference
-      (let [{:keys [content] :as message} (get messages message-id)
+      (let [{:keys [content quoted-message] :as message} (get messages message-id)
             {:keys [response-to response-to-v2]} content
-            quote (some-> (or response-to-v2 response-to)
-                          (quoted-message-data messages referenced-messages))]
+            quote (if quoted-message
+                    quoted-message
+                    (some-> (or response-to-v2 response-to)
+                            (quoted-message-data messages)))]
         (cond-> (-> message
                     (update :content dissoc :response-to :response-to-v2)
                     (assoc :timestamp-str timestamp-str))
@@ -139,12 +140,12 @@
 (defn messages-with-datemarks
   "Converts message groups into sequence of messages interspersed with datemarks,
   with correct user statuses associated into message"
-  [message-groups messages referenced-messages messages-gaps
+  [message-groups messages messages-gaps
    {:keys [highest-request-to lowest-request-from]} all-loaded? public?]
   (transduce
    (comp
     (mapcat add-datemark)
-    (map (transform-message messages referenced-messages)))
+    (map (transform-message messages)))
    (fn
      ([]
       (let [acc {:messages         (list)

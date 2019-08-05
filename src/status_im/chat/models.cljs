@@ -147,8 +147,8 @@
                                  :last-message-content      nil
                                  :last-message-content-type nil
                                  :unviewed-messages-count   0
-                                 :deleted-at-clock-value    last-message-clock-value})
-      :data-store/tx [(messages-store/delete-chat-messages-tx chat-id)]}
+                                 :deleted-at-clock-value    last-message-clock-value})}
+     (messages-store/delete-messages-by-chat-id chat-id)
      #(chats-store/save-chat-rpc % (get-in % [:db :chats chat-id])))))
 
 (fx/defn deactivate-chat
@@ -207,27 +207,21 @@
   (max 0 (- old-count (count new-seen-messages-ids))))
 
 (fx/defn update-chats-unviewed-messages-count
-  [{:keys [db] :as cofx} {:keys [chat-id new-loaded-unviewed-messages-ids]}]
+  [{:keys [db] :as cofx} {:keys [chat-id loaded-unviewed-messages-ids]}]
   (let [{:keys [loaded-unviewed-messages-ids unviewed-messages-count]}
-        (get-in db [:chats chat-id])
-
-        unviewed-messages-ids (if (seq new-loaded-unviewed-messages-ids)
-                                new-loaded-unviewed-messages-ids
-                                loaded-unviewed-messages-ids)]
+        (get-in db [:chats chat-id])]
     (upsert-chat
      cofx
      {:chat-id                      chat-id
       :unviewed-messages-count      (subtract-seen-messages
                                      unviewed-messages-count
-                                     unviewed-messages-ids)
+                                     loaded-unviewed-messages-ids)
       :loaded-unviewed-messages-ids #{}})))
 
-;; TODO (janherich) - ressurect `constants/system` messages for group chats in the future
 (fx/defn mark-messages-seen
   "Marks all unviewed loaded messages as seen in particular chat"
   [{:keys [db] :as cofx} chat-id]
-  (let [public-key          (multiaccounts.model/current-public-key cofx)
-        loaded-unviewed-ids (get-in db [:chats chat-id :loaded-unviewed-messages-ids])]
+  (let [loaded-unviewed-ids (get-in db [:chats chat-id :loaded-unviewed-messages-ids])]
     (when (seq loaded-unviewed-ids)
       (fx/merge cofx
                 {:db            (reduce (fn [acc message-id]
@@ -235,8 +229,8 @@
                                                          message-id :seen]
                                                     true))
                                         db
-                                        loaded-unviewed-ids)
-                 :data-store/tx [(messages-store/mark-messages-seen-tx loaded-unviewed-ids)]}
+                                        loaded-unviewed-ids)}
+                (messages-store/mark-messages-seen loaded-unviewed-ids)
                 (update-chats-unviewed-messages-count {:chat-id chat-id})
                 (when platform/desktop?
                   (update-dock-badge-label))))))

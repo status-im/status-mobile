@@ -76,9 +76,8 @@
     (protocol/send (transport.pairing/PairInstallation. installation-id device-type installation-name fcm-token) nil cofx)))
 
 (fx/defn confirm-message-processed
-  [{:keys [db]} raw-message]
-  {:transport/confirm-messages-processed [{:web3 (:web3 db)
-                                           :js-obj raw-message}]})
+  [{:keys [db]} confirmation]
+  {:transport/confirm-messages-processed [confirmation]})
 
 (defn send-pair-installation [cofx payload]
   (let [{:keys [web3]} (:db cofx)
@@ -353,25 +352,25 @@
              contacts))
 
 (defn handle-sync-installation [{:keys [db] :as cofx} {:keys [contacts multiaccount chat]} sender]
-  (if (= sender (multiaccounts.model/current-public-key cofx))
-    (let [success-event [:message/messages-persisted [(or (:dedup-id cofx) (:js-obj cofx))]]
-          new-contacts  (when (seq contacts)
-                          (vals (merge-contacts (:contacts/contacts db)
-                                                ((comp ensure-photo-path
-                                                       ensure-system-tags) contacts))))
-          new-multiaccount   (merge-multiaccount (:multiaccount db) multiaccount)
-          contacts-fx   (when new-contacts (mapv contact/upsert-contact new-contacts))]
-      (apply fx/merge
-             cofx
-             (concat
-              [{:db                 (assoc db :multiaccount new-multiaccount)
-                :data-store/base-tx [{:transaction   (data-store.multiaccounts/save-multiaccount-tx new-multiaccount)
-                                      :success-event success-event}]}
-               #(when (:public? chat)
-                  (models.chat/start-public-chat % (:chat-id chat) {:dont-navigate? true}))]
-              contacts-fx)))
-    (confirm-message-processed cofx (or (:dedup-id cofx)
-                                        (:js-obj cofx)))))
+  (let [confirmation  (:metadata cofx)]
+    (if (= sender (multiaccounts.model/current-public-key cofx))
+      (let [success-event [:message/messages-persisted [confirmation]]
+            new-contacts  (when (seq contacts)
+                            (vals (merge-contacts (:contacts/contacts db)
+                                                  ((comp ensure-photo-path
+                                                         ensure-system-tags) contacts))))
+            new-multiaccount   (merge-multiaccount (:multiaccount db) multiaccount)
+            contacts-fx   (when new-contacts (mapv contact/upsert-contact new-contacts))]
+        (apply fx/merge
+               cofx
+               (concat
+                [{:db                 (assoc db :multiaccount new-multiaccount)
+                  :data-store/base-tx [{:transaction   (data-store.multiaccounts/save-multiaccount-tx new-multiaccount)
+                                        :success-event success-event}]}
+                 #(when (:public? chat)
+                    (models.chat/start-public-chat % (:chat-id chat) {:dont-navigate? true}))]
+                contacts-fx)))
+      (confirm-message-processed cofx confirmation))))
 
 (defn handle-pair-installation [{:keys [db] :as cofx} {:keys [name
                                                               fcm-token
@@ -382,8 +381,7 @@
     {:pairing/set-installation-metadata [[installation-id {:name name
                                                            :deviceType device-type
                                                            :fcmToken fcm-token}]]}
-    (confirm-message-processed cofx (or (:dedup-id cofx)
-                                        (:js-obj cofx)))))
+    (confirm-message-processed cofx (:metadata cofx))))
 
 (fx/defn update-installation [{:keys [db]} installation-id metadata]
   {:db (update-in db [:pairing/installations installation-id]

@@ -58,7 +58,7 @@
             {:db            (-> db
                                 (update-in [:contacts/contacts public-key] merge contact))}
             (transport.filters/load-contact contact)
-            (contacts-store/save-contact-tx contact)))
+            (contacts-store/save-contact contact)))
 
 (fx/defn send-contact-request
   [{:keys [db] :as cofx} {:keys [public-key] :as contact}]

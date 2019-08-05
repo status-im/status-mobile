@@ -78,18 +78,17 @@
 
 (defrecord Message [content content-type message-type clock-value timestamp]
   StatusMessage
-  (send [this chat-id {:keys [message-id] :as cofx}]
+  (send [this chat-id {:keys [message] :as cofx}]
     (let [current-public-key (multiaccounts.model/current-public-key cofx)
           params             {:chat-id       chat-id
                               :payload       this
                               :success-event [:transport/message-sent
                                               chat-id
-                                              message-id
+                                              message
                                               message-type]}]
       (case message-type
         :public-group-user-message
         (send-public-message cofx chat-id (:success-event params) this)
-
         :user-message
         (fx/merge cofx
                   (when (pairing.utils/has-paired-installations? cofx)
@@ -98,16 +97,17 @@
   (receive [this chat-id signature timestamp cofx]
     (let [received-message-fx {:chat-received-message/add-fx
                                [(assoc (into {} this)
-                                       :old-message-id (transport.utils/old-message-id this)
-                                       :message-id (transport.utils/message-id
-                                                    signature
-                                                    (.-payload (:js-obj cofx)))
+                                       :message-id
+                                       (or (get-in cofx [:metadata :messageId])
+                                           (transport.utils/message-id
+                                            signature
+                                            (.-payload (:js-obj cofx))))
                                        :chat-id chat-id
                                        :whisper-timestamp timestamp
                                        :raw-payload-hash (ethereum/sha3
                                                           (.-payload (:js-obj cofx)))
                                        :from signature
-                                       :dedup-id (:dedup-id cofx)
+                                       :metadata (:metadata cofx)
                                        :js-obj (:js-obj cofx))]}]
       (whitelist/filter-message cofx
                                 received-message-fx

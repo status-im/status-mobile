@@ -1,6 +1,8 @@
 (ns status-im.chat.models.loading
   (:require [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
             [status-im.data-store.chats :as data-store.chats]
+            [status-im.data-store.messages :as data-store.messages]
             [status-im.chat.commands.core :as commands]
             [status-im.transport.filters.core :as filters]
             [status-im.chat.models :as chat-model]
@@ -43,13 +45,13 @@
 
 (defn- get-referenced-ids
   "Takes map of `message-id->messages` and returns set of maps of
-  `{:response-to old-message-id :response-to-v2 message-id}`,
+  `{:response-to-v2 message-id}`,
    excluding any `message-id` which is already in the original map"
   [message-id->messages]
   (into #{}
         (comp (keep (fn [{:keys [content]}]
                       (let [response-to-id
-                            (select-keys content [:response-to :response-to-v2])]
+                            (select-keys content [:response-to-v2])]
                         (when (some (complement nil?) (vals response-to-id))
                           response-to-id))))
               (remove #(some message-id->messages (vals %))))
@@ -63,7 +65,6 @@
                         (assoc acc chat-id
                                (assoc chat
                                       :messages-initialized? false
-                                      :referenced-messages {}
                                       :messages empty-message-map)))
                       {}
                       new-chats)
@@ -87,41 +88,47 @@
    {:keys [from to] :or {from 0 to nil}}]
   (load-chats-from-rpc cofx from -1))
 
-(defn load-more-messages
+(fx/defn messages-loaded
   "Loads more messages for current chat"
-  [{{:keys [current-chat-id] :as db} :db
-    get-stored-messages :get-stored-messages
-    get-referenced-messages :get-referenced-messages
-    get-unviewed-message-ids :get-unviewed-message-ids :as cofx}]
-  ;; TODO: re-implement functionality for status-go protocol
-  (when-not (or config/use-status-go-protocol?
-                (nil? current-chat-id)
-                (get-in db [:chats current-chat-id :all-loaded?]))
-    (let [previous-pagination-info   (get-in db [:chats current-chat-id :pagination-info])
-          {:keys [messages
-                  pagination-info
-                  all-loaded?]}      (get-stored-messages current-chat-id previous-pagination-info)
-          already-loaded-messages    (get-in db [:chats current-chat-id :messages])
+  {:events [::messages-loaded]
+   :interceptors [(re-frame/inject-cofx :data-store/all-gaps)]}
+  [{{:keys [current-chat-id] :as db} :db :as cofx}
+   chat-id
+   {:keys [cursor messages]}]
+  (when-not (or (nil? current-chat-id)
+                (not= chat-id current-chat-id))
+    (let [already-loaded-messages    (get-in db [:chats current-chat-id :messages])
           ;; We remove those messages that are already loaded, as we might get some duplicates
           new-messages               (remove (comp already-loaded-messages :message-id)
                                              messages)
+          unviewed-message-ids       (reduce
+                                      (fn [acc {:keys [seen message-id] :as message}]
+                                        (if (not seen)
+                                          (conj acc message-id)
+                                          acc))
+                                      #{}
+                                      new-messages)
+
           indexed-messages           (index-messages new-messages)
-          referenced-messages        (into empty-message-map
-                                           (get-referenced-messages (get-referenced-ids indexed-messages)))
-          new-message-ids            (keys indexed-messages)
-          loaded-unviewed-messages   (get-unviewed-message-ids)]
+          new-message-ids            (keys indexed-messages)]
       (fx/merge cofx
                 {:db (-> db
+                         (update-in [:chats current-chat-id :loaded-unviewed-messages-ids] clojure.set/union  unviewed-message-ids)
                          (assoc-in [:chats current-chat-id :messages-initialized?] true)
                          (update-in [:chats current-chat-id :messages] merge indexed-messages)
-                         (update-in [:chats current-chat-id :referenced-messages]
-                                    #(into (apply dissoc % new-message-ids) referenced-messages))
-                         (assoc-in [:chats current-chat-id :pagination-info] pagination-info)
+                         (assoc-in [:chats current-chat-id :cursor] cursor)
                          (assoc-in [:chats current-chat-id :all-loaded?]
-                                   all-loaded?))}
-                (chat-model/update-chats-unviewed-messages-count
-                 {:chat-id                          current-chat-id
-                  :new-loaded-unviewed-messages-ids loaded-unviewed-messages})
+                                   (empty? cursor)))}
                 (mailserver/load-gaps current-chat-id)
                 (group-chat-messages current-chat-id new-messages)
                 (chat-model/mark-messages-seen current-chat-id)))))
+
+(defn load-more-messages
+  [{:keys [db]}]
+  (when-let [current-chat-id (:current-chat-id db)]
+    (when-not (get-in db [:chats current-chat-id :all-loaded?])
+      (let [cursor (get-in db [:chats current-chat-id :cursor])]
+        (data-store.messages/messages-by-chat-id-rpc current-chat-id
+                                                     cursor
+                                                     constants/default-number-of-messages
+                                                     #(re-frame/dispatch [::messages-loaded current-chat-id %]))))))

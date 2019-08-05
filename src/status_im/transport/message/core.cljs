@@ -4,6 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.chat.models.message :as models.message]
             [status-im.contact.device-info :as device-info]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.data-store.transport :as transport-store]
             [status-im.ethereum.core :as ethereum]
             [status-im.transport.message.contact :as contact]
@@ -13,6 +14,12 @@
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
+
+(defn confirm-messages [confirmations]
+  (json-rpc/call {:method "shhext_confirmMessagesProcessedByID"
+                  :params [confirmations]
+                  :on-success #(log/debug "successfully confirmed messages")
+                  :on-failure #(log/error "failed to confirm messages" %)}))
 
 (defn add-raw-payload
   "Add raw payload for id calculation"
@@ -26,8 +33,8 @@
   in order to stop receiving that message"
   [cofx now-in-s filter-chat-id message]
   (let [blocked-contacts (get-in cofx [:db :contacts/blocked] #{})
-        {{:keys [payload sig timestamp ttl]} :message
-         dedup-id :id
+        {{:keys [payload sig timestamp ttl hash]} :message
+         metadata :metadata
          raw-payload :raw-payload} (add-raw-payload message)
         status-message (-> payload
                            ethereum/hex-to-utf8
@@ -37,8 +44,9 @@
                (not (blocked-contacts sig)))
       (try
         (when-let [valid-message (protocol/validate status-message)]
-          (fx/merge (assoc cofx :js-obj raw-payload :dedup-id dedup-id)
-                    #(protocol/receive valid-message
+          (fx/merge (assoc cofx :js-obj raw-payload :metadata metadata)
+                    #(protocol/receive (assoc valid-message
+                                              :metadata metadata)
                                        (or
                                         filter-chat-id
                                         (get-in valid-message [:content :chat-id])
@@ -67,18 +75,19 @@
     (log/error "Something went wrong" error messages)))
 
 (fx/defn receive-messages [cofx event]
-  (let [fxs (map
+  (let [fxs (keep
              (fn [{:keys [chat messages error]}]
-               (receive-whisper-messages
-                error
-                messages
-                ;; For discovery and negotiated filters we don't
-                ;; set a chatID, and we use the signature of the message
-                ;; to indicate which chat it is for
-                (if (or (:discovery chat)
-                        (:negotiated chat))
-                  nil
-                  (:chatId chat))))
+               (when (seq messages)
+                 (receive-whisper-messages
+                  error
+                  messages
+                  ;; For discovery and negotiated filters we don't
+                  ;; set a chatID, and we use the signature of the message
+                  ;; to indicate which chat it is for
+                  (if (or (:discovery chat)
+                          (:negotiated chat))
+                    nil
+                    (:chatId chat)))))
              (:messages event))]
     (apply fx/merge cofx fxs)))
 
@@ -107,7 +116,8 @@
                                                       message-id
                                                       (if not-sent
                                                         :not-sent
-                                                        status)))
+                                                        status))
+                (remove-hash message-id))
       (let [confirmations {:pending-confirmations (dec pending-confirmations)
                            :not-sent  (or not-sent
                                           (= :not-sent status))}]
@@ -140,7 +150,6 @@
                 (filter identity $)
                 (take (inc config/max-installations) $))]
           (fx/merge cofx
-                    (remove-hash envelope-hash)
                     (check-confirmations status chat-id message-id)
                     (models.message/send-push-notification chat-id message-id fcm-tokens status)))))))
 
@@ -156,18 +165,14 @@
 
 (fx/defn set-message-envelope-hash
   "message-type is used for tracking"
-  [{:keys [db] :as cofx} chat-id message-id message-type envelope-hash-js messages-count]
-  (let [envelope-hash (js->clj envelope-hash-js)
-        hash (if (vector? envelope-hash)
-               (last envelope-hash)
-               envelope-hash)]
-    {:db (-> db
-             (assoc-in [:transport/message-envelopes hash]
-                       {:chat-id      chat-id
-                        :message-id   message-id
-                        :message-type message-type})
-             (update-in [:transport/message-ids->confirmations message-id]
-                        #(or % {:pending-confirmations messages-count})))}))
+  [{:keys [db] :as cofx} chat-id message-id message-type messages-count]
+  {:db (-> db
+           (assoc-in [:transport/message-envelopes message-id]
+                     {:chat-id      chat-id
+                      :message-id   message-id
+                      :message-type message-type})
+           (update-in [:transport/message-ids->confirmations message-id]
+                      #(or % {:pending-confirmations messages-count})))})
 
 (defn- own-info [db]
   (let [{:keys [name photo-path address]} (:multiaccount db)
@@ -211,20 +216,6 @@
 
 (re-frame/reg-fx
  :transport/confirm-messages-processed
- (fn [messages]
-   (let [{:keys [web3]} (first messages)
-         js-messages (->> messages
-                          (keep :js-obj)
-                          (apply array))]
-     (when (pos? (.-length js-messages))
-       (if (string? (first js-messages))
-         (.confirmMessagesProcessedByID (transport.utils/shh web3)
-                                        js-messages
-                                        (fn [err resp]
-                                          (when err
-                                            (log/warn "Confirming messages processed failed" err))))
-         (.confirmMessagesProcessed (transport.utils/shh web3)
-                                    js-messages
-                                    (fn [err resp]
-                                      (when err
-                                        (log/warn "Confirming messages processed failed" err)))))))))
+ (fn [confirmations]
+   (when (seq confirmations)
+     (confirm-messages confirmations))))

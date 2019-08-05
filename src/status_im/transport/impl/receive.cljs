@@ -9,8 +9,8 @@
 
 (extend-type transport.group-chat/GroupMembershipUpdate
   protocol/StatusMessage
-  (receive [this _ signature _ {:keys [dedup-id js-obj] :as cofx}]
-    (group-chats/handle-membership-update-received cofx this signature {:dedup-id dedup-id
+  (receive [this _ signature _ {:keys [metadata js-obj] :as cofx}]
+    (group-chats/handle-membership-update-received cofx this signature {:metadata metadata
                                                                         :raw-payload (.-payload js-obj)})))
 
 (extend-type transport.contact/ContactRequest

@@ -696,10 +696,6 @@
 
 (handlers/register-handler-fx
  :chat.ui/load-more-messages
- [(re-frame/inject-cofx :data-store/get-messages)
-  (re-frame/inject-cofx :data-store/get-referenced-messages)
-  (re-frame/inject-cofx :data-store/get-unviewed-message-ids)
-  (re-frame/inject-cofx :data-store/all-gaps)]
  (fn [cofx _]
    (chat.loading/load-more-messages cofx)))
 
@@ -763,8 +759,8 @@
 
 (handlers/register-handler-fx
  :chat.ui/reply-to-message
- (fn [cofx [_ message-id old-message-id]]
-   (chat.input/reply-to-message cofx message-id old-message-id)))
+ (fn [cofx [_ message-id]]
+   (chat.input/reply-to-message cofx message-id)))
 
 (handlers/register-handler-fx
  :chat.ui/send-current-message
@@ -1484,8 +1480,11 @@
 
 (handlers/register-handler-fx
  :transport/message-sent
- (fn [cofx [_ chat-id message-id message-type envelope-hash-js messages-count]]
-   (transport.message/set-message-envelope-hash cofx chat-id message-id message-type envelope-hash-js messages-count)))
+ (fn [cofx [_ chat-id message message-type message-id messages-count]]
+   (fx/merge cofx
+             (when message (chat.message/add-message-with-id (assoc message :message-id message-id) chat-id))
+
+             (transport.message/set-message-envelope-hash chat-id message-id message-type messages-count))))
 
 (handlers/register-handler-fx
  :transport/contact-message-sent
@@ -1512,7 +1511,6 @@
 
 (handlers/register-handler-fx
  :contact.ui/block-contact-confirmed
- [(re-frame/inject-cofx :data-store/get-user-messages)]
  (fn [cofx [_ public-key]]
    (contact.block/block-contact cofx public-key)))
 

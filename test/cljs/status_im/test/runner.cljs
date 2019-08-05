@@ -16,6 +16,7 @@
             [status-im.test.contact-recovery.core]
             [status-im.test.contacts.device-info]
             [status-im.test.data-store.chats]
+            [status-im.test.data-store.messages]
             [status-im.test.data-store.contacts]
             [status-im.test.data-store.core]
             [status-im.test.data-store.realm.core]
@@ -47,6 +48,7 @@
             [status-im.test.sign-in.flow]
             [status-im.test.stickers.core]
             [status-im.test.transport.core]
+            [status-im.test.transport.utils]
             [status-im.test.tribute-to-talk.core]
             [status-im.test.tribute-to-talk.db]
             [status-im.test.tribute-to-talk.whitelist]
@@ -101,6 +103,7 @@
  'status-im.test.contacts.db
  'status-im.test.contacts.device-info
  'status-im.test.data-store.chats
+ 'status-im.test.data-store.messages
  'status-im.test.data-store.contacts
  'status-im.test.data-store.core
  'status-im.test.data-store.realm.core
@@ -133,6 +136,7 @@
  'status-im.test.signing.core
  'status-im.test.signing.gas
  'status-im.test.transport.core
+ 'status-im.test.transport.utils
  'status-im.test.tribute-to-talk.core
  'status-im.test.tribute-to-talk.db
  'status-im.test.tribute-to-talk.whitelist

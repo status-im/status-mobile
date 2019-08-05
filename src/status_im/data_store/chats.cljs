@@ -123,7 +123,7 @@
               :group-chat-local-version :loaded-unviewed-messages-ids
               :messages-initialized? :contacts :admins :members-joined)))
 
-(defn- <-rpc [chat]
+(defn <-rpc [chat]
   (-> chat
       rpc->type
       unmarshal-members
@@ -158,3 +158,11 @@
                   :params [chat-id chat-type]
                   :on-success #(log/debug "deleteed chat" chat-id chat-type)
                   :on-failure #(log/error "failed to delete chat" chat-id chat-type %)}))
+
+(re-frame/reg-fx
+ ::delete-chat
+ (fn [[chat-id chat-type]]
+   (delete-chat-rpc chat-id chat-type)))
+
+(fx/defn delete-chat [cofx chat-id chat-type]
+  {::delete-chat [chat-id chat-type]})
