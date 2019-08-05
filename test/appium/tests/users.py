@@ -317,3 +317,21 @@ transaction_recipients['J']['username'] = "Powderblue Pertinent Hylaeosaurus"
 transaction_recipients['J']['address'] = "0xa03a75b7888cac24b35b4d1f5924406f3b491795"
 transaction_recipients['J']['public_key'] = "0x043f622675f671b171ce136a29c1c5078b7185b38fccd0cc67d19429dbc481b358e" \
                                             "e7d3ef534acf263174d6821402bc998bc6baf1791dacf0eb1fc995f6ddb59c8"
+recovery_users = {
+    "radar blur cabbage chef fix engine embark joy scheme fiction master release" :
+    "0xaC39b311DCEb2A4b2f5d8461c1cdaF756F4F7Ae9",
+    "fruit wave dwarf banana earth journey tattoo true farm silk olive fence" :
+    "0x31a4aD7593D06D049b3Cc07aB5430264Bf7e069f",
+    "board flee heavy tunnel powder denial science ski answer betray cargo cat" :
+    "0x7B9BC6897BbbEbD5e3F1D71e1d0Af035F35a714a",
+    "vessel ladder alter error federal sibling chat ability sun glass valve picture" :
+    "0x93bb483bD2D0190d48778bA21F7D85F793bBcEd0",
+    "legal winner thank year wave sausage worth useful legal winner thank yellow":
+    "0x58A57ed9d8d624cBD12e2C467D34787555bB1b25",
+    "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon "
+    "abandon abandon abandon abandon abandon abandon abandon abandon abandon art" :
+    "0xF278cF59F82eDcf871d630F28EcC8056f25C1cdb",
+    "legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth useful legal winner "
+    "thank year wave sausage worth title" :
+    "0x2f826cb22E80a2c40f149Ecb92b2Fa5ecBf67170"
+}

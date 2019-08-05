@@ -3,7 +3,7 @@ import pytest
 from support.utilities import fill_string_with_char
 from tests import marks, unique_password
 from tests.base_test_case import SingleDeviceTestCase
-from tests.users import basic_user, transaction_senders
+from tests.users import basic_user, transaction_senders, recovery_users
 from views.sign_in_view import SignInView
 
 
@@ -171,3 +171,18 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.recover_access(passphrase=basic_user['passphrase'], password=basic_user['special_chars_password'])
         sign_in.relogin(password=basic_user['special_chars_password'])
+
+    @marks.testrail_id(5455)
+    @marks.medium
+    def test_recover_accounts_with_certain_seedphrase(self):
+        sign_in = SignInView(self.driver)
+        for phrase, account in recovery_users.items():
+            home_view = sign_in.recover_access(passphrase=phrase, password=unique_password)
+            wallet_view = home_view.wallet_button.click()
+            wallet_view.set_up_wallet()
+            address = wallet_view.get_wallet_address()
+            if address != account:
+                self.errors.append('Restored wallet address "%s" does not match expected "%s"' % (address, account))
+            profile_view = home_view.profile_button.click()
+            profile_view.logout()
+        self.verify_no_errors()
