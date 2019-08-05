@@ -180,7 +180,7 @@
     "this-device-desc": "Your key will be encrypted and securely stored",
     "keycard-desc": "Android only. You will need to get a Keycard first",
     "about-names-title": "About the names",
-    "about-names-content": "Your identity is secure and private by design. You get a locally generated cryptographic keypair. The name and image are a readable version of this. They are unique. Nobody can pretend to be you. Nobody sees your name unless you provide it.",
+    "about-names-content": "Your identity is secure and private by design. You get a locally generated cryptographic keypair. The name and image are a readable version of this. They are unique. Nobody can pretend to be you. Nobody sees your real name unless you provide it.",
     "about-key-storage-title": "About key storage",
     "about-key-storage-content": "Status will never access your private key. Be sure to backup your recovery phrase. If you lose your phone it is the only way to access your keys.",
     "encrypt-with-password": "Encrypt with password",
