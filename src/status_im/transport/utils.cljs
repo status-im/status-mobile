@@ -4,18 +4,16 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.js-dependencies :as dependencies]))
 
-(defn old-message-id
-  [message]
-  (ethereum/sha3 (pr-str message)))
-
 (defn system-message-id
   [{:keys [from chat-id clock-value]}]
   (ethereum/sha3 (str from chat-id clock-value)))
 
 (defn message-id
-  "Get a message-id"
+  "Get a message-id by appending the hex-encoded pk of the sender to the raw-payload.
+  We strip 0x from the payload so web3 understand that the whole thing is to be
+  decoded as raw bytes"
   [from raw-payload]
-  (ethereum/sha3 (str from (ethereum/sha3 raw-payload))))
+  (ethereum/sha3 (str from (subs raw-payload 2))))
 
 (defn get-topic
   "Get the topic of a group chat or public chat from the chat-id"

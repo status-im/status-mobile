@@ -770,8 +770,8 @@
 
 (handlers/register-handler-fx
  :chat.ui/reply-to-message
- (fn [cofx [_ message-id old-message-id]]
-   (chat.input/reply-to-message cofx message-id old-message-id)))
+ (fn [cofx [_ message-id]]
+   (chat.input/reply-to-message cofx message-id)))
 
 (handlers/register-handler-fx
  :chat.ui/send-current-message

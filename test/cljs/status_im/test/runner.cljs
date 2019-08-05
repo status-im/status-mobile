@@ -47,6 +47,7 @@
             [status-im.test.sign-in.flow]
             [status-im.test.stickers.core]
             [status-im.test.transport.core]
+            [status-im.test.transport.utils]
             [status-im.test.tribute-to-talk.core]
             [status-im.test.tribute-to-talk.db]
             [status-im.test.tribute-to-talk.whitelist]
@@ -133,6 +134,7 @@
  'status-im.test.signing.core
  'status-im.test.signing.gas
  'status-im.test.transport.core
+ 'status-im.test.transport.utils
  'status-im.test.tribute-to-talk.core
  'status-im.test.tribute-to-talk.db
  'status-im.test.tribute-to-talk.whitelist

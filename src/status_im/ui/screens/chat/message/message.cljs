@@ -249,8 +249,8 @@
     [message-delivery-status message]]])
 
 (defn open-chat-context-menu
-  [{:keys [message-id old-message-id content] :as message}]
-  (list-selection/chat-message message-id old-message-id (:text content) (i18n/label :t/message)))
+  [{:keys [message-id content] :as message}]
+  (list-selection/chat-message message-id (:text content) (i18n/label :t/message)))
 
 (defn chat-message
   [{:keys [outgoing group-chat modal? current-public-key content-type content] :as message}]

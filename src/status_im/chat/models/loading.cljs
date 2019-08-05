@@ -43,13 +43,13 @@
 
 (defn- get-referenced-ids
   "Takes map of `message-id->messages` and returns set of maps of
-  `{:response-to old-message-id :response-to-v2 message-id}`,
+  `{:response-to-v2 message-id}`,
    excluding any `message-id` which is already in the original map"
   [message-id->messages]
   (into #{}
         (comp (keep (fn [{:keys [content]}]
                       (let [response-to-id
-                            (select-keys content [:response-to :response-to-v2])]
+                            (select-keys content [:response-to-v2])]
                         (when (some (complement nil?) (vals response-to-id))
                           response-to-id))))
               (remove #(some message-id->messages (vals %))))

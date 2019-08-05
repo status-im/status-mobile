@@ -78,3 +78,6 @@
       (assoc-in [:properties :outgoing-status]
                 {:type :string
                  :optional true})))
+
+(def v12
+  (update v11 :properties dissoc :old-message-id))

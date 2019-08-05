@@ -13,9 +13,9 @@
             (:url content))
     (.share react/sharing (clj->js content))))
 
-(defn- message-options [message-id old-message-id text]
+(defn- message-options [message-id text]
   [{:label  (i18n/label :t/message-reply)
-    :action #(re-frame/dispatch [:chat.ui/reply-to-message message-id old-message-id])}
+    :action #(re-frame/dispatch [:chat.ui/reply-to-message message-id])}
    {:label  (i18n/label :t/sharing-copy-to-clipboard)
     :action #(react/copy-to-clipboard text)}
    (when-not platform/desktop?
@@ -28,9 +28,9 @@
     platform/android? (dialog/show options)
     platform/desktop? (show-desktop-menu (->> (:options options) (remove nil?)))))
 
-(defn chat-message [message-id old-message-id text dialog-title]
+(defn chat-message [message-id text dialog-title]
   (show {:title       dialog-title
-         :options     (message-options message-id old-message-id text)
+         :options     (message-options message-id text)
          :cancel-text (i18n/label :t/message-options-cancel)}))
 
 (defn- platform-web-browser []

@@ -146,19 +146,8 @@
     message
     (assoc message :clock-value (utils.clocks/send last-clock-value))))
 
-(defn check-response-to
-  [{{:keys [response-to response-to-v2]} :content :as message}
-   old-id->message]
-  (if (and response-to (not response-to-v2))
-    (let [response-to-v2
-          (or (get-in old-id->message [response-to :message-id])
-              (messages-store/get-message-id-by-old response-to))]
-      (assoc-in message [:content :response-to-v2] response-to-v2))
-    message))
-
 (fx/defn add-received-message
   [{:keys [db] :as cofx}
-   old-id->message
    {:keys [from message-id chat-id js-obj content dedup-id] :as raw-message}]
   (let [{:keys [web3 current-chat-id view-id]} db
         current-public-key             (multiaccounts.model/current-public-key cofx)
@@ -169,7 +158,6 @@
         {:keys [outgoing] :as message} (-> raw-message
                                            (commands-receiving/enhance-receive-parameters cofx)
                                            (ensure-clock-value chat)
-                                           (check-response-to old-id->message)
                                            ;; TODO (cammellos): Refactor so it's not computed twice
                                            (add-outgoing-status current-public-key))]
     (fx/merge cofx
@@ -196,21 +184,17 @@
 (defn- filter-messages [cofx messages]
   (:accumulated
    (reduce (fn [{:keys [seen-ids] :as acc}
-                {:keys [message-id old-message-id] :as message}]
+                {:keys [message-id] :as message}]
              (if (and (add-to-chat? cofx message)
                       (not (seen-ids message-id)))
                (-> acc
                    (update :seen-ids conj message-id)
                    (update :accumulated
                            (fn [acc]
-                             (-> acc
-                                 (update :messages conj message)
-                                 (assoc-in [:by-old-message-id old-message-id]
-                                           message)))))
+                             (update acc :messages conj message))))
                acc))
            {:seen-ids    #{}
-            :accumulated {:messages     []
-                          :by-old-message-id {}}}
+            :accumulated {:messages     []}}
            messages)))
 
 (defn extract-chat-id [cofx {:keys [chat-id from message-type]}]
@@ -280,7 +264,6 @@
                                               (assoc % :chat-id chat-id)) messages)
         filtered-messages            (filter-messages cofx valid-messages)
         deduped-messages             (:messages filtered-messages)
-        old-id->message              (:by-old-message-id filtered-messages)
         chat->message                (group-by :chat-id deduped-messages)
         chat-ids                     (keys chat->message)
         never-synced-public-chat-ids (chat-ids->never-synced-public-chat-ids
@@ -297,7 +280,7 @@
                                                 :timestamp               now
                                                 :unviewed-messages-count unviewed-messages-count})))
                                           chat-ids)
-        messages-fx-fns              (map #(add-received-message old-id->message %) deduped-messages)
+        messages-fx-fns              (map add-received-message deduped-messages)
         groups-fx-fns                (map #(update-group-messages chat->message %) chat-ids)]
     (apply fx/merge cofx (concat chats-fx-fns
                                  messages-fx-fns
@@ -320,7 +303,6 @@
                  :content-type constants/content-type-status}]
     (assoc message
            :message-id (transport.utils/system-message-id message)
-           :old-message-id "system"
            :raw-payload-hash "system")))
 
 (defn group-message? [{:keys [message-type]}]
@@ -358,7 +340,6 @@
   [{:keys [now] :as cofx} {:keys [chat-id from] :as message}]
   (let [message         (remove-icon message)
         send-record     (protocol/map->Message (select-keys message transport-keys))
-        old-message-id  (transport.utils/old-message-id send-record)
         wrapped-record  (if (= (:message-type send-record) :group-user-message)
                           (wrap-group-message cofx chat-id send-record)
                           send-record)
@@ -367,7 +348,6 @@
         message-with-id (assoc message
                                :outgoing-status :sending
                                :message-id message-id
-                               :old-message-id old-message-id
                                :raw-payload-hash (ethereum/sha3 raw-payload))]
 
     (fx/merge cofx

@@ -98,7 +98,6 @@
   (receive [this chat-id signature timestamp cofx]
     (let [received-message-fx {:chat-received-message/add-fx
                                [(assoc (into {} this)
-                                       :old-message-id (transport.utils/old-message-id this)
                                        :message-id (transport.utils/message-id
                                                     signature
                                                     (.-payload (:js-obj cofx)))

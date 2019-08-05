@@ -101,7 +101,7 @@
   (not (#{:not-sent :sending} outgoing-status)))
 
 (views/defview message-without-timestamp
-  [text {:keys [chat-id message-id old-message-id content group-chat expanded? current-public-key outgoing-status] :as message} style]
+  [text {:keys [chat-id message-id content group-chat expanded? current-public-key outgoing-status] :as message} style]
   [react/view {:flex 1 :margin-vertical 5}
    [react/touchable-highlight {:on-press (fn [arg]
                                            (when (= "right" (.-button (.-nativeEvent arg)))
@@ -110,7 +110,7 @@
                                                 :on-select #(do (utils/show-popup "" "Message copied to clipboard") (react/copy-to-clipboard text))}
                                                {:text      (i18n/label :t/message-reply)
                                                 :on-select #(when (message-sent? outgoing-status)
-                                                              (re-frame/dispatch [:chat.ui/reply-to-message message-id old-message-id]))}])))}
+                                                              (re-frame/dispatch [:chat.ui/reply-to-message message-id]))}])))}
     (let [collapsible? (and (:should-collapse? content) group-chat)
           char-limit   (if (and collapsible? (not expanded?))
                          constants/chars-collapse-threshold constants/desktop-msg-chars-hard-limit)
