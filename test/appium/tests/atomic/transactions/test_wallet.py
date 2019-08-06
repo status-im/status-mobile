@@ -245,13 +245,14 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
             self.errors.append('Warning about too precise amount is not shown when sending a transaction')
         send_transaction.back_button.click()
         wallet_view.receive_transaction_button.click()
-        wallet_view.send_transaction_request.click()
-        send_transaction.select_asset_button.click_until_presence_of_element(adi_button)
-        adi_button.click()
-        send_transaction.amount_edit_box.set_value(amount)
-        error_text = 'Amount is too precise. Max number of decimals is 7.'
-        if not send_transaction.element_by_text(error_text).is_element_displayed():
-            self.errors.append('Warning about too precise amount is not shown when requesting a transaction')
+        # temporary skipped due to 8601
+        # wallet_view.send_transaction_request.click()
+        # send_transaction.select_asset_button.click_until_presence_of_element(adi_button)
+        # adi_button.click()
+        # send_transaction.amount_edit_box.set_value(amount)
+        # error_text = 'Amount is too precise. Max number of decimals is 7.'
+        # if not send_transaction.element_by_text(error_text).is_element_displayed():
+        #     self.errors.append('Warning about too precise amount is not shown when requesting a transaction')
         self.verify_no_errors()
 
     @marks.testrail_id(5423)

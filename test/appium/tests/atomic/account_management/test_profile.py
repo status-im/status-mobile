@@ -91,7 +91,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         wallet = home.wallet_button.click()
         wallet.set_up_wallet()
         wallet.accounts_status_account.click()
-        wallet.receive_transaction_button.click_until_presence_of_element(wallet.send_transaction_request)
+        wallet.receive_transaction_button.click()
         address = wallet.address_text.text
         share_view = home.get_send_transaction_view()
         share_view.share_button.click()
@@ -235,7 +235,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         chat_view = home_view.get_chat_view()
         chat_view.chat_options.click_until_presence_of_element(chat_view.view_profile_button)
         chat_view.view_profile_button.click()
-        for text in basic_user['username'], 'In contacts', 'Send transaction', 'Send message', 'Contact code':
+        for text in basic_user['username'], 'In contacts', 'Send message', 'Contact code':
             if not chat_view.element_by_text(text).scroll_to_element():
                 self.errors.append('%s is not visible' % text)
         self.verify_no_errors()

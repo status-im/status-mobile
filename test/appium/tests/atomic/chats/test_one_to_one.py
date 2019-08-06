@@ -417,6 +417,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5405)
     @marks.high
+    @marks.skip
+    # temporary skipped due to 8601
     def test_fiat_value_is_correctly_calculated_on_recipient_side(self):
         sender = transaction_senders['Y']
         recipient = transaction_recipients['I']
@@ -570,6 +572,8 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
     @marks.testrail_id(5393)
     @marks.high
+    @marks.skip
+    # temporary skipped due to 8601
     def test_that_fiat_value_is_correct_for_token_transactions(self):
         sender_passphrase = transaction_senders['X']['passphrase']
         recipient_public_key = transaction_recipients['H']['public_key']

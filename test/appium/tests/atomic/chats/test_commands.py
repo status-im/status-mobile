@@ -382,6 +382,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
 
     @marks.testrail_id(5347)
     @marks.high
+    @marks.skip
+    # temporary skipped due to 8601
     def test_send_transaction_details_in_1_1_chat(self):
         recipient = basic_user
         sender = transaction_senders['G']
