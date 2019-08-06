@@ -154,7 +154,7 @@ jsbundle-android: export TARGET_OS ?= android
 jsbundle-android: export BUILD_ENV ?= prod
 jsbundle-android: ##@jsbundle Compile JavaScript and Clojure into index.android.js 
 	# Call nix-build to build the 'targets.mobile.jsbundle' attribute and copy the index.android.js file to the project root
-	@git clean -dxf ./index.$(TARGET_OS).js
+	@git clean -dxf ./index.$(TARGET_OS).js && \
 	nix/build.sh targets.mobile.jsbundle && \
 	mv result/index.$(TARGET_OS).js ./
 

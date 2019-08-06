@@ -42,7 +42,7 @@ public:
     Q_INVOKABLE void sendLogs(QString dbJSON, QString jsLogs, double callbackId);
     Q_INVOKABLE void addPeer(QString enode, double callbackId);
     Q_INVOKABLE void recoverAccount(QString passphrase, QString password, double callbackId);
-    Q_INVOKABLE void login(QString address, QString password, double callbackId);
+    Q_INVOKABLE void login(QString json, double callbackId);
     Q_INVOKABLE void verify(QString address, QString password, double callbackId);
     Q_INVOKABLE void sendTransaction(QString txArgsJSON, QString password, double callbackId);
     Q_INVOKABLE void signMessage(QString rpcParams, double callbackId);

@@ -265,14 +265,14 @@ void RCTStatus::recoverAccount(QString passphrase, QString password, double call
 }
 
 
-void RCTStatus::login(QString address, QString password, double callbackId) {
+void RCTStatus::login(QString json, double callbackId) {
     Q_D(RCTStatus);
     qCInfo(RCTSTATUS) << "::login call - callbackId:" << callbackId;
-    QtConcurrent::run([&](QString address, QString password, double callbackId) {
-            const char* result = Login(address.toUtf8().data(), password.toUtf8().data());
+    QtConcurrent::run([&](QString json, double callbackId) {
+            const char* result = Login(json.toUtf8().data());
             logStatusGoResult("::login Login", result);
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
-        }, address, password, callbackId);
+        }, json, callbackId);
 }
 
 void RCTStatus::verify(QString address, QString password, double callbackId) {

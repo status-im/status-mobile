@@ -57,4 +57,4 @@ done
 cleanToDelete=$(echo "${toDelete[@]}" | sort | uniq)
 
 echo "Deleting..."
-nix-store --ignore-liveness --delete ${cleanToDelete[@]}
+nix-store --delete ${cleanToDelete[@]}
