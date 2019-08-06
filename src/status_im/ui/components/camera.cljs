@@ -4,11 +4,11 @@
             [clojure.walk :as walk]
             [status-im.react-native.js-dependencies :as js-dependencies]))
 
-(def default-camera (.-default js-dependencies/camera))
+(def default-camera (.-RNCamera js-dependencies/camera))
 
 (defn constants [t]
   (-> default-camera
-      (object/get "constants")
+      (object/get "Constants")
       (object/get t)
       (js->clj)
       (walk/keywordize-keys)))
