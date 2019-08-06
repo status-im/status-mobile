@@ -54,12 +54,20 @@ allprojects {
 
     repositories {
         mavenLocal()
-        maven { url "$rootDir/../node_modules/react-native/android" }
+        maven {
+            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+            url("$rootDir/../node_modules/react-native/android")
+        }
+        maven {
+            // Android JSC is installed from npm
+            url("$rootDir/../node_modules/jsc-android/dist")
+        }
+
         google()
         jcenter()
+
         // for geth, function, and status-go
         flatDir { dirs "libs", System.env.STATUS_GO_ANDROID_LIBDIR }
         maven { url "https://jitpack.io" }
     }
 }
-

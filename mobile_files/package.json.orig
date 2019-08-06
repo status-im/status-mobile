@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start"
+    "start": "react-native start"
   },
   "dependencies": {
     "@tradle/react-native-http": "2.0.1",
@@ -26,9 +26,9 @@
     "prop-types": "15.6.0",
     "punycode": "1.4.1",
     "querystring-es3": "0.2.1",
-    "react": "16.8.3",
+    "react": "16.8.6",
     "react-dom": "16.4.2",
-    "react-native": "git+https://github.com/status-im/react-native.git#v0.59.10",
+    "react-native": "0.60.4",
     "react-native-background-timer": "2.1.0-alpha.6",
     "react-native-camera": "git+https://github.com/status-im/react-native-camera.git#v1.1.5-1-status",
     "react-native-config": "git+https://github.com/status-im/react-native-config.git#0.11.2-1",

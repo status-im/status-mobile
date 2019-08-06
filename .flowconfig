@@ -20,15 +20,20 @@
 
 # Ignore duplicate module providers
 # For RN Apps installed via npm, "Libraries" folder is inside node_modules/react-native but in the source repo it is in the root
-.*/Libraries/react-native/React.js
+node_modules/react-native/Libraries/react-native/React.js
 .*/Libraries/react-native/ReactNative.js
 .*/node_modules/jest-runtime/build/__tests__/.*
 
 ; Ignore polyfills
-.*/Libraries/polyfills/.*
+node_modules/react-native/Libraries/polyfills/.*
 
-; Ignore metro
-.*/node_modules/metro/.*
+; These should not be required directly
+; require from fbjs/lib instead: require('fbjs/lib/warning')
+node_modules/warning/.*
+; Flow doesn't support platforms
+.*/Libraries/Utilities/HMRLoadingView.js
+[untyped]
+.*/node_modules/@react-native-community/cli/.*/.*
 
 [include]
 
@@ -40,10 +45,30 @@ node_modules/react-native/flow/
 esproposal.optional_chaining=enable
 esproposal.nullish_coalescing=enable
 
-module.system=haste
-
 esproposal.class_static_fields=enable
 esproposal.class_instance_fields=enable
+
+module.file_ext=.js
+module.file_ext=.json
+module.file_ext=.ios.js
+
+module.system=haste
+module.system.haste.use_name_reducers=true
+# get basename
+# get basename
+module.system.haste.name_reducers='^\(.*\)\.native$' -> '\1'
+module.system.haste.name_reducers='^\(.*\)\.native$' -> '\1'
+module.system.haste.paths.blacklist=.*/__tests__/.*
+module.system.haste.paths.blacklist=.*/__tests__/.*
+module.system.haste.paths.blacklist=.*/__mocks__/.*
+module.system.haste.paths.blacklist=.*/__mocks__/.*
+module.system.haste.paths.blacklist=<PROJECT_ROOT>/node_modules/react-native/Libraries/Animated/src/polyfills/.*
+module.system.haste.paths.whitelist=<PROJECT_ROOT>/node_modules/react-native/Libraries/.*
+module.system.haste.paths.whitelist=<PROJECT_ROOT>/node_modules/react-native/Libraries/.*
+module.system.haste.paths.whitelist=<PROJECT_ROOT>/node_modules/react-native/RNTester/.*
+module.system.haste.paths.whitelist=<PROJECT_ROOT>/node_modules/react-native/IntegrationTests/.*
+module.system.haste.paths.blacklist=<PROJECT_ROOT>/node_modules/react-native/Libraries/react-native/react-native-implementation.js
+module.system.haste.paths.blacklist=<PROJECT_ROOT>/node_modules/react-native/Libraries/Animated/src/polyfills/.*
 
 experimental.strict_type_args=true
 
@@ -67,4 +92,4 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 
 [version]
-^0.92.0
+^0.98.0

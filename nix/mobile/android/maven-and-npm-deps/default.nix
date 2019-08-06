@@ -12,8 +12,7 @@ let
   mavenLocalRepo = callPackage ./maven { inherit localMavenRepoBuilder; stdenv = if stdenv.isLinux then stdenv else stdenvNoCC; };
 
   # Import the native dependencies for React Native Android builds
-  jsc-filename = "jsc-android-236355.1.1";
-  react-native-deps = callPackage ./maven/reactnative-android-native-deps.nix { inherit stdenvNoCC jsc-filename; };
+  react-native-deps = callPackage ./maven/reactnative-android-native-deps.nix { inherit stdenvNoCC; };
 
   createMobileFilesSymlinks = root: ''
     ln -sf ${root}/mobile_files/package.json.orig ${root}/package.json
@@ -128,11 +127,6 @@ let
           for f in `find ${projectBuildDir}/node_modules/ -name build.gradle`; do
             patchMavenSources $f '${mavenLocalRepo}'
           done
-
-          # Patch prepareJSC so that it doesn't try to download from registry
-          substituteInPlace ${projectBuildDir}/node_modules/react-native/ReactAndroid/build.gradle \
-            --replace 'prepareJSC(dependsOn: downloadJSC)' 'prepareJSC(dependsOn: createNativeDepsDirectories)' \
-            --replace 'def jscTar = tarTree(downloadJSC.dest)' "def jscTar = tarTree(new File(\"${react-native-deps}/deps/${jsc-filename}.tar.gz\"))"
 
           # Do not add a BuildId to the generated libraries, for reproducibility
           substituteInPlace ${projectBuildDir}/node_modules/react-native/ReactAndroid/src/main/jni/Application.mk \

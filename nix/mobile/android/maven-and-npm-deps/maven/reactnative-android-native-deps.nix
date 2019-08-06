@@ -1,4 +1,4 @@
-{ stdenvNoCC, fetchurl, jsc-filename }:
+{ stdenvNoCC, fetchurl }:
 
 let
   # These versions should match node_modules/react-native/ReactAndroid/gradle.properties
@@ -32,10 +32,6 @@ let
 in stdenvNoCC.mkDerivation {
   name = "reactnative-android-native-deps";
   srcs = builtins.map (d: (fetchurl { inherit (d) url sha256; })) react-native-deps-sources;
-  jsc = fetchurl {
-    url = "https://registry.npmjs.org/jsc-android/-/${jsc-filename}.tgz";
-    sha256 = "1s1fzmvpvdblzca7p2ifcysvd9na4jrsikaccqmfpgvkqjalfccp";
-  };
   phases = [ "unpackPhase" ];
   unpackPhase = ''
     # Unpack all source archives.
@@ -44,7 +40,6 @@ in stdenvNoCC.mkDerivation {
     for i in $srcs; do
       unpackFile "$i"
     done
-    cp $jsc $out/deps/${jsc-filename}.tar.gz # do the work of downloadJSC
     cd ..
 
     export sourceRoot=$out/deps
