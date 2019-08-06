@@ -94,7 +94,6 @@
     "react-native-navigation-twopane": "git+https://github.com/status-im/react-native-navigation-twopane.git#v0.0.2-status",
     "react-navigation": "^2.12.1",
     "realm": "git+https://github.com/status-im/realm-js.git#v2.20.1",
-    "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status",
     "status-conan": "git+https://github.com/status-im/status-conan.git#v1.0.0",
     "string_decoder": "0.10.31",
     "text-encoding": "^0.6.4",
@@ -112,7 +111,8 @@
     "@babel/register": "7.0.0",
     "patch-package": "^5.1.1",
     "coveralls": "^3.0.4",
-    "nyc": "^14.1.1"
+    "nyc": "^14.1.1",
+    "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status"
   },
   "optionalDependencies": {
     "appdmg": "^0.5.2"
