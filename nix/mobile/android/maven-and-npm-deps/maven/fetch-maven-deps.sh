@@ -78,11 +78,6 @@ function determineArtifactUrl() {
   local path=$(getPath "${tokens[@]}")
   for mavenSourceUrl in ${mavenSources[@]}; do
     if tryGetPOMFromURL "$mavenSourceUrl/$path"; then
-      if [ "$path" = "com/google/firebase/firebase-analytics/16.0.3/firebase-analytics-16.0.3" ]; then
-        # For some reason maven doesn't detect the correct version of firebase-analytics so we have to hardcode it
-        # TODO: See if we can get rid of this by upgrading to latest firebase
-        echo "$mavenSourceUrl/com/google/firebase/firebase-analytics/15.0.2/firebase-analytics-15.0.2"
-      fi
       echo "$mavenSourceUrl/$path"
       return
     fi
@@ -164,12 +159,14 @@ function retrieveAdditionalDependencies() {
 mvn_tmp_repo=$(mktemp -d)
 trap "rm -rf $mvn_tmp_repo $tmp_pom_filename $deps_file_path $tmp_mvn_dep_tree_filename" ERR EXIT HUP INT
 
+rnModules=$(node ./node_modules/react-native/cli.js config | jq -r '.dependencies | keys | .[]')
+
 pushd $GIT_ROOT/android > /dev/null
 
 gradleProjects=$(gradle projects $gradle_opts 2>&1 \
                 | grep "Project ':" \
                 | sed -E "s;^.--- Project '\:([@_a-zA-Z0-9\-]+)';\1;")
-projects=( ${gradleProjects[@]} )
+projects=( ${gradleProjects[@]} ${rnModules[@]} )
 IFS=$'\n' sortedProjects=($(sort -u <<<"${projects[*]}"))
 unset IFS
 
