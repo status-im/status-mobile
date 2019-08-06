@@ -79,9 +79,11 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.Copy
 project.ext.react = [
     nodeExecutableAndArgs: ["node", "--max-old-space-size=16384"],
     entryFile: "index.android.js",
+    enableHermes: false,  // clean and rebuild if changing
     bundleInPr: true,
     bundleCommand: "ram-bundle",
-    bundleConfig: "packager/config.js"
+    bundleConfig: "packager/config.js",
+    inputExcludes: ["android/**", "ios/**", "react-native/**", "src/**", "test/**"]
 ]
 
 configurations.all {
@@ -104,6 +106,28 @@ def enableSeparateBuildPerCPUArchitecture = false
  * Run Proguard to shrink the Java bytecode in release builds.
  */
 def enableProguardInReleaseBuilds = false
+
+/**
+ * The preferred build flavor of JavaScriptCore.
+ *
+ * For example, to use the international variant, you can use:
+ * `def jscFlavor = 'org.webkit:android-jsc-intl:+'`
+ *
+ * The international variant includes ICU i18n library and necessary data
+ * allowing to use e.g. `Date.toLocaleString` and `String.localeCompare` that
+ * give correct results when using with locales other than en-US.  Note that
+ * this variant is about 6MiB larger per architecture than default.
+ */
+def jscFlavor = 'org.webkit:android-jsc:+'
+
+/**
+ * Whether to enable the Hermes VM.
+ *
+ * This should be set on project.ext.react and mirrored here.  If it is not set
+ * on project.ext.react, JavaScript will not be compiled to Hermes Bytecode
+ * and the benefits of using Hermes will therefore be sharply reduced.
+ */
+def enableHermes = project.ext.react.get("enableHermes", false);
 
 def getVersionCode = { ->
     new ByteArrayOutputStream().withStream { stdOut ->
@@ -180,7 +204,14 @@ android {
     packagingOptions {
         exclude 'META-INF/rxjava.properties'
         exclude '/lib/mips64/**'
-        exclude '/lib/arm64-v8a/**'
+
+        pickFirst '**/armeabi-v7a/libc++_shared.so'
+        pickFirst '**/x86/libc++_shared.so'
+        pickFirst '**/arm64-v8a/libc++_shared.so'
+        pickFirst '**/x86_64/libc++_shared.so'
+        pickFirst '**/x86/libjsc.so'
+        pickFirst '**/armeabi-v7a/libjsc.so'
+        
         /** Fix for: Execution failed for task ':app:transformNativeLibsWithStripDebugSymbolForDebug'.
         *   with recent version of ndk (17.0.4754217)
         */
@@ -192,6 +223,12 @@ android {
         javaMaxHeapSize "8g"
     }
     signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
         release {
             /* environment variables take precedence over gradle.properties file */
             storeFile     file(getEnvOrConfig('STATUS_RELEASE_STORE_FILE').replaceAll("~", System.properties['user.home']))
@@ -213,9 +250,13 @@ android {
             applicationIdSuffix ".debug"
             debuggable          true
             versionNameSuffix   "-SNAPSHOT"
+            signingConfig signingConfigs.debug
             resValue "string", "build_config_package", "im.status.ethereum"
         }
         release {
+            // Caution! In production, you need to generate your own keystore file.
+            // see https://facebook.github.io/react-native/docs/signed-apk-android.
+            signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             signingConfig signingConfigs.release
@@ -242,6 +283,7 @@ android {
                 output.versionCodeOverride =
                         versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
             }
+
         }
     }
 
@@ -256,6 +298,15 @@ android {
 }
 
 dependencies {
+    if (enableHermes) {
+      def hermesPath = "../../node_modules/hermesvm/android/";
+      debugImplementation files(hermesPath + "hermes-debug.aar")
+      releaseImplementation files(hermesPath + "hermes-release.aar")
+      prImplementation files(hermesPath + "hermes-release.aar")
+    } else {
+      implementation jscFlavor
+    }
+
     implementation project(':react-native-background-timer')
     implementation project(':react-native-svg')
     implementation 'com.android.support:multidex:1.0.2'
@@ -265,7 +316,6 @@ dependencies {
     implementation project(':react-native-splash-screen')
     implementation project(':react-native-image-resizer')
     implementation project(':react-native-dialogs')
-    implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     // Force using exact RN version instead of relying on gradle dependency resolution
     // https://docs.gradle.org/current/userguide/introduction_dependency_management.html#sec:dependency_resolution
@@ -297,7 +347,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:17.1.0'
     implementation project(':react-native-keychain')
 
-    compile 'com.github.status-im:function:0.0.1'
+    implementation 'com.github.status-im:function:0.0.1'
     implementation 'com.facebook.fresco:animated-gif:1.10.0'
 }
 
@@ -324,3 +374,5 @@ preBuild.dependsOn hemroidBuild
 // Must be at bottom to avoid dependency collision
 apply plugin: "com.google.gms.google-services"
 com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true
+
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

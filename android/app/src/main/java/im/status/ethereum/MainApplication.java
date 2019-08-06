@@ -1,6 +1,10 @@
 package im.status.ethereum;
 
 import android.support.multidex.MultiDexApplication;
+import android.util.Log;
+import com.facebook.react.PackageList;
+import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
 
 import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
 import com.facebook.react.ReactApplication;
@@ -52,6 +56,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
         protected List<ReactPackage> getPackages() {
             StatusPackage statusPackage = new StatusPackage(RootUtil.isDeviceRooted());
             Function<String, String> callRPC = statusPackage.getCallRPC();
+            //List<ReactPackage> packages = new PackageList(this).getPackages();
             return Arrays.asList(
                     new MainReactPackage(),
                     new RNMail(),

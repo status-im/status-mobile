@@ -96,8 +96,8 @@ doo-index.html
 Statusgo.framework
 
 #ios
-ios/Pods
-ios/StatusIm.xcworkspace
+/ios/Pods/
+/ios/StatusIm.xcworkspace
 .ruby-version
 status-e2e/
 
