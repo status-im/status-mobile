@@ -234,6 +234,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../../../../node_modules/React/**",
+					"$(SRCROOT)/../../../../ios/Pods/Headers/Public/React-Core",
 					"$(SRCROOT)/../../../../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../../../node_modules/react-native-config/ios/ReactNativeConfig",
 				);
@@ -262,6 +263,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../../../../node_modules/React/**",
+					"$(SRCROOT)/../../../../ios/Pods/Headers/Public/React-Core",
 					"$(SRCROOT)/../../../../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../../../node_modules/react-native-config/ios/ReactNativeConfig",
 				);

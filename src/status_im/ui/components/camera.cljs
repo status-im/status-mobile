@@ -4,21 +4,23 @@
             [clojure.walk :as walk]
             [status-im.react-native.js-dependencies :as js-dependencies]))
 
-(def default-camera (.-default js-dependencies/camera))
+(def default-camera
+  (-> js-dependencies/camera
+      (object/get "RNCamera")))
 
-(defn constants [t]
+(defn- constants [t]
   (-> default-camera
-      (object/get "constants")
+      (object/get "Constants")
       (object/get t)
       (js->clj)
       (walk/keywordize-keys)))
 
-(def aspects (constants "Aspect"))
+(def aspects (constants "Orientation"))
 (def capture-targets (constants "CaptureTarget"))
-(def torch-modes (constants "TorchMode"))
+(def torch-modes (constants "FlashMode"))
 
 (defn set-torch [state]
-  (set! (.-torchMode default-camera) (get torch-modes state)))
+  (set! (.-flashMode default-camera) (get torch-modes state)))
 
 (defn request-access-ios [then else]
   (-> (.checkVideoAuthorizationStatus default-camera)

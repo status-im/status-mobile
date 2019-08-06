@@ -29,7 +29,7 @@ function extractResults() {
   echo "Saving build result: ${nixResultPath}"
   mkdir -p "${resultPath}"
   cp -vfr ${nixResultPath}/* "${resultPath}"
-  chmod u+w -R "${resultPath}"
+  chmod -R u+w "${resultPath}"
 }
 
 # Load Nix profile

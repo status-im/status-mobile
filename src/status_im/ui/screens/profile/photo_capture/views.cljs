@@ -12,7 +12,7 @@
             [status-im.ui.components.icons.vector-icons :as icons]))
 
 (defn image-captured [data]
-  (let [path       (.-path data)
+  (let [path       (.-uri data)
         _          (log/debug "Captured image: " path)
         on-success (fn [base64]
                      (log/debug "Captured success: " base64)
@@ -30,16 +30,16 @@
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/image-source-title)]]
      [camera/camera {:style         {:flex 1}
-                     :aspect        (:fill camera/aspects)
+                     ;:aspect        (:fill camera/aspects)
                      :captureQuality "480p"
-                     :captureTarget (:disk camera/capture-targets)
+                     ;:captureTarget (:disk camera/capture-targets)
                      :type          "front"
                      :ref           #(reset! camera-ref %)}]
      [react/view styles/button-container
       [react/view styles/button
        [react/touchable-highlight {:on-press (fn []
                                                (let [camera @camera-ref]
-                                                 (-> (.capture camera)
+                                                 (-> (.takePictureAsync camera)
                                                      (.then image-captured)
                                                      (.catch #(log/debug "Error capturing image: " %)))))}
         [react/view

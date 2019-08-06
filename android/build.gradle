@@ -9,7 +9,9 @@ ext {
     compileSdkVersion   = Integer.valueOf(project.compileSdkVersion)
     targetSdkVersion    = Integer.valueOf(project.targetSdkVersion)
     supportLibVersion   = project.supportLibVersion
-    gradleBuildTools    = project.gradleBuildTools
+    gradlePluginVersion = project.gradlePluginVersion
+    googlePlayServicesVersion = project.googlePlayServicesVersion
+    googlePlayServicesVisionVersion = project.googlePlayServicesVisionVersion
 }
 
 buildscript {
@@ -19,10 +21,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath project.ext.gradleBuildTools
-        // google-services downgraded from 4.1.0 because of
-        // https://github.com/invertase/react-native-firebase/issues/766#issuecomment-365116012
-        classpath 'com.google.gms:google-services:4.0.1'
+        classpath "com.android.tools.build:gradle:${project.ext.gradlePluginVersion}"
+        classpath 'com.google.gms:google-services:4.2.0'
         classpath 'de.undercouch:gradle-download-task:3.1.2'
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -54,12 +54,20 @@ allprojects {
 
     repositories {
         mavenLocal()
-        maven { url "$rootDir/../node_modules/react-native/android" }
+        maven {
+            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+            url("$rootDir/../node_modules/react-native/android")
+        }
+        maven {
+            // Android JSC is installed from npm
+            url("$rootDir/../node_modules/jsc-android/dist")
+        }
+
         google()
         jcenter()
+
         // for geth, function, and status-go
         flatDir { dirs "libs", System.env.STATUS_GO_ANDROID_LIBDIR }
         maven { url "https://jitpack.io" }
     }
 }
-
