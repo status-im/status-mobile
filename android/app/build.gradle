@@ -86,9 +86,10 @@ project.ext.react = [
     inputExcludes: ["android/**", "ios/**", "react-native/**", "src/**", "test/**"]
 ]
 
-configurations.all {
-    exclude group: 'com.facebook.react', module: 'react-native'
-}
+// NOTE: Uncomment if building RN from a fork
+// configurations.all {
+//     exclude group: 'com.facebook.react', module: 'react-native'
+// }
 
 apply from: "../../node_modules/react-native/react.gradle"
 
@@ -298,6 +299,9 @@ android {
 }
 
 dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "com.facebook.react:react-native:+"  // From node_modules
+
     if (enableHermes) {
       def hermesPath = "../../node_modules/hermesvm/android/";
       debugImplementation files(hermesPath + "hermes-debug.aar")
@@ -319,8 +323,8 @@ dependencies {
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     // Force using exact RN version instead of relying on gradle dependency resolution
     // https://docs.gradle.org/current/userguide/introduction_dependency_management.html#sec:dependency_resolution
+    // NOTE: Uncomment if building RN from a fork
     //compile ("com.facebook.react:react-native:0.55.4") { force = true }  // From node_modules
-    implementation project(':react-native-android')
     implementation project(':react-native-languages')
     implementation project(':react-native-status')
     implementation project(':react-native-fs')

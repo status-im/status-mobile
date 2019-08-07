@@ -41,8 +41,8 @@ include ':react-native-touch-id'
 project(':react-native-touch-id').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-touch-id/android')
 include ':react-native-config'
 project(':react-native-config').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-config/android')
-include ':react-native-android'
-project(':react-native-android').projectDir = new File(rootProject.projectDir, '../node_modules/react-native/ReactAndroid')
+// include ':react-native-android'
+// project(':react-native-android').projectDir = new File(rootProject.projectDir, '../node_modules/react-native/ReactAndroid')
 include ':RNMail', ':app'
 project(':RNMail').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-mail/android')
 include ':react-native-shake'
