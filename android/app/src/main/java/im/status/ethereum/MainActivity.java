@@ -2,7 +2,7 @@ package im.status.ethereum;
 
 import android.content.Context;
 import android.annotation.TargetApi;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.app.AlertDialog;
 import android.app.ActivityManager;
 import android.content.DialogInterface;
@@ -13,7 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
+import androidx.core.app.ActivityCompat;
 import android.util.Log;
 import android.view.WindowManager;
 import android.content.Intent;
