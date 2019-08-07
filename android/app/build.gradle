@@ -188,6 +188,7 @@ android {
         ndk {
             abiFilters getEnvOrConfig('NDK_ABI_FILTERS').split(';')
         }
+        missingDimensionStrategy 'react-native-camera', 'general'
     }
     /**
      * Arbitrary project metadata
@@ -341,10 +342,7 @@ dependencies {
     compile ('com.google.android.gms:play-services-base:16.0.1') {
         force = true
     }
-    compile (project(':react-native-camera')) {
-        exclude group: "com.google.android.gms"
-        compile 'com.android.support:exifinterface:28.+'
-    }
+    implementation project(':react-native-camera')
     implementation project(':react-native-status-keycard')
     implementation 'com.google.firebase:firebase-core:16.0.3' //this decides your firebase SDK version
     implementation 'com.google.firebase:firebase-messaging:17.1.0'
