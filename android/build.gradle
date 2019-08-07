@@ -1,21 +1,25 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
+/**
+* Project-wide gradle configuration properties for use by all modules
+*/
+ext {
+    buildToolsVersion   = project.buildToolsVersion
+    minSdkVersion       = Integer.valueOf(project.minSdkVersion)
+    compileSdkVersion   = Integer.valueOf(project.compileSdkVersion)
+    targetSdkVersion    = Integer.valueOf(project.targetSdkVersion)
+    supportLibVersion   = project.supportLibVersion
+    gradleBuildTools    = project.gradleBuildTools
+}
+
 buildscript {
-    ext {
-        buildToolsVersion = "28.0.3"
-        minSdkVersion = 16
-        compileSdkVersion = 28
-        targetSdkVersion = 28
-        supportLibVersion = "28.0.0"
-        gradleBuildTools = 'com.android.tools.build:gradle:3.4.1'
-    }
     repositories {
         flatDir { dirs "libs", "${rootDir}/app/libs" }
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.1'
+        classpath project.ext.gradleBuildTools
         // google-services downgraded from 4.1.0 because of
         // https://github.com/invertase/react-native-firebase/issues/766#issuecomment-365116012
         classpath 'com.google.gms:google-services:4.0.1'
@@ -30,11 +34,11 @@ subprojects {
     afterEvaluate {
         if (project.hasProperty("android")) {
             android {
-                compileSdkVersion 28
-                buildToolsVersion "28.0.3"
+                compileSdkVersion rootProject.ext.compileSdkVersion
+                buildToolsVersion rootProject.ext.buildToolsVersion
 
                 defaultConfig {
-                    targetSdkVersion 28
+                    targetSdkVersion rootProject.ext.targetSdkVersion
                 }
             }
         }

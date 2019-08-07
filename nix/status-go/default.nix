@@ -31,7 +31,7 @@ let
         "ANDROID_NDK_HOME=${androidPkgs.ndk-bundle}/libexec/android-sdk/ndk-bundle"
         "PATH=${makeBinPath [ openjdk ]}:$PATH"
       ];
-      gomobileExtraFlags = [ "-androidapi 21" ];
+      gomobileExtraFlags = [ "-androidapi 18" ];
     };
     ios = {
       name = "ios";

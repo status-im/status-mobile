@@ -146,7 +146,7 @@ def getEnvOrConfig = { varName ->
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -155,8 +155,8 @@ android {
 
     defaultConfig {
         applicationId "im.status.ethereum"
-        minSdkVersion 23
-        targetSdkVersion 28
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         multiDexEnabled true
         versionCode getVersionCode()
         versionName getVersionName()
@@ -268,7 +268,7 @@ dependencies {
     implementation project(':react-native-dialogs')
     implementation project(':realm')
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.android.support:appcompat-v7:28.0.0"
+    implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     // Force using exact RN version instead of relying on gradle dependency resolution
     // https://docs.gradle.org/current/userguide/introduction_dependency_management.html#sec:dependency_resolution
     //compile ("com.facebook.react:react-native:0.55.4") { force = true }  // From node_modules
