@@ -10,6 +10,8 @@ ext {
     targetSdkVersion    = Integer.valueOf(project.targetSdkVersion)
     supportLibVersion   = project.supportLibVersion
     gradleBuildTools    = project.gradleBuildTools
+    googlePlayServicesVersion = project.googlePlayServicesVersion
+    googlePlayServicesVisionVersion = project.googlePlayServicesVisionVersion
 }
 
 buildscript {
