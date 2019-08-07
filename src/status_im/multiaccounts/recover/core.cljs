@@ -9,6 +9,7 @@
             [status-im.node.core :as node]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
+            [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
@@ -34,10 +35,17 @@
      ;; here we deserialize result, dissoc mnemonic and serialize the result again
      ;; because we want to have information about the result printed in logs, but
      ;; don't want secure data to be printed
-     (let [data (-> (types/json->clj result)
+     (let [deser (types/json->clj result)
+           data (-> deser
                     (dissoc :mnemonic)
-                    (types/clj->json))]
-       (re-frame/dispatch [:multiaccounts.recover.callback/recover-multiaccount-success data password])))))
+                    (types/clj->json))
+           address (deser :address)
+           pubkey (deser :walletPubKey)
+           name (gfycat/generate-gfy pubkey)
+           photo-path (identicon/identicon pubkey)
+           multiaccounts [(dissoc deser :mnemonic)]
+           error (deser :error)]
+       (re-frame/dispatch [:multiaccounts.recover.callback/recover-multiaccount-success data masked-passphrase password address name photo-path multiaccounts error])))))
 
 (fx/defn set-phrase
   [{:keys [db]} masked-recovery-phrase]
@@ -68,12 +76,12 @@
 (fx/defn validate-recover-result
   [{:keys [db] :as cofx} {:keys [error pubkey address walletAddress walletPubKey chatAddress chatPubKey]} password]
   (if (empty? error)
-    (let [multiaccount-address (-> address
-                                   (string/lower-case)
-                                   (string/replace-first "0x" ""))
-          keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts multiaccount-address :keycard-instance-uid]))]
-      (if keycard-multiaccount?
-        ;; trying to recover multiaccount created with keycard
+    (let [account-address (-> address
+                              (string/lower-case)
+                              (string/replace-first "0x" ""))
+          keycard-account? (boolean (get-in db [:multiaccounts account-address :keycard-instance-uid]))]
+      (if keycard-account?
+        ;; trying to recover account created with keycard
         {:db        (-> db
                         (update :multiaccounts/recover assoc
                                 :processing? false
@@ -113,21 +121,27 @@
             (assoc :multiaccounts/new-installation-id (random-guid-generator)))}
    (node/initialize nil)))
 
-(fx/defn recover-multiaccount-with-checks [{:keys [db] :as cofx}]
-  (let [{:keys [passphrase processing?]} (:multiaccounts/recover db)]
-    (when-not processing?
-      (if (mnemonic/status-generated-phrase? passphrase)
-        (recover-multiaccount cofx)
-        {:ui/show-confirmation
-         {:title               (i18n/label :recovery-typo-dialog-title)
-          :content             (i18n/label :recovery-typo-dialog-description)
-          :confirm-button-text (i18n/label :recovery-confirm-phrase)
-          :on-accept           #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-confirmed])}}))))
-
 (fx/defn navigate-to-recover-multiaccount-screen [{:keys [db] :as cofx}]
   (fx/merge cofx
-            {:db (dissoc db :multiaccounts/recover)}
+            {:db (-> db
+                     (assoc-in [:multiaccounts/recover :recovery-enter-passphrase-screen] (:recovery-enter-passphrase-screen cofx))
+                     (assoc-in [:multiaccounts/recover :recovery-trial-success-screen] (:recovery-trial-success-screen cofx))
+                     (assoc-in [:multiaccounts/recover :name] (:name cofx))
+                     (assoc-in [:multiaccounts/recover :address] (:address cofx))
+                     (assoc-in [:multiaccounts/recover :masked-passphrase] (:masked-passphrase cofx))
+                     (assoc-in [:multiaccounts/recover :photo-path] (:photo-path cofx))
+                     (assoc-in [:multiaccounts/recover :error] (:error cofx)))}
             (navigation/navigate-to-cofx :recover nil)))
+
+(fx/defn navigate-to-recover-multiaccount-password-screen [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (assoc db :intro-wizard {:step :create-code
+                                          :weak-password? true
+                                          :encrypt-with-password? true
+                                          :accounts (:accounts cofx)
+                                          :recovery? true
+                                          :masked-passphrase (cofx :masked-passphrase)})}
+            (navigation/navigate-to-cofx :intro-wizard nil)))
 
 (re-frame/reg-fx
  :multiaccounts.recover/recover-multiaccount

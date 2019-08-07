@@ -238,7 +238,8 @@
          :else
          [react/view {:style styles/bottom-arrow}
           [components.common/bottom-button {:on-press     #(re-frame/dispatch
-                                                            [:intro-wizard/step-forward-pressed])
+                                                            [:intro-wizard/step-forward-pressed {:recovery? (wizard-state :recovery?)
+                                                                                                 :passphrase (wizard-state :passphrase)}])
                                             :disabled? (and (= step :create-code) weak-password?)
                                             :forward? true}]])
    (when (#{:enable-fingerprint :enable-notifications} step)
@@ -277,7 +278,7 @@
            :else nil)]))
 
 (defview wizard []
-  (letsubs [{:keys [step generating-keys?] :as wizard-state} [:intro-wizard]
+  (letsubs [{:keys [step generating-keys? recovery? passphrase] :as wizard-state} [:intro-wizard]
             {view-height :height view-width :width} [:dimensions/window]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
      [toolbar/toolbar

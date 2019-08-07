@@ -17,7 +17,7 @@ let
   sha256 = versionJSON.src-sha256;
   rev = versionJSON.commit-sha1;
   shortRev = strings.substring 0 7 rev;
-  goPackagePath = "github.com/${owner}/${repo}";
+  goPackagePath = "github.com/status-im/${repo}";
   src = fetchFromGitHub { inherit rev owner repo sha256; name = "${repo}-${shortRev}-source"; };
   # Replace src value with the path to a local status-go repository if you want to perform a build against it, e.g.
   #src = /home/<user>/go/src/github.com/status-im/status-go;

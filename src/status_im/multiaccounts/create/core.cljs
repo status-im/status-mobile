@@ -16,6 +16,7 @@
             [status-im.utils.identicon :as identicon]
             [status-im.utils.signing-phrase.core :as signing-phrase]
             [status-im.utils.types :as types]
+            [status-im.utils.security :as security]
             [status-im.utils.utils :as utils]
             [clojure.set :refer [map-invert]]
             [status-im.utils.fx :as fx]
@@ -55,7 +56,7 @@
      #(re-frame/dispatch [:multiaccounts.create.callback/create-multiaccount-success password]))
     (status/create-multiaccount
      password
-     #(re-frame/dispatch [:multiaccounts.create.callback/create-multiaccount-success (types/json->clj %) password]))))
+     #(do))))
 
 (defn create-multiaccount
   [{:keys [db] :as   cofx}]
@@ -195,7 +196,7 @@
 
 (fx/defn intro-step-forward
   {:events [:intro-wizard/step-forward-pressed]}
-  [{:keys [db] :as cofx} {:keys [skip?] :as opts}]
+  [{:keys [db] :as cofx} {:keys [skip? recovery?] :as opts}]
   (let  [{:keys [step first-time-setup? selected-storage-type]} (:intro-wizard db)]
     (cond (confirm-failure? db)
           (on-confirm-failure cofx)
@@ -216,7 +217,11 @@
 
           (and (= step :confirm-code)
                (not (:multiaccounts/login db)))
-          (create-multiaccount cofx)
+          (if recovery?
+            (let [passphrase (security/safe-unmask-data (get-in db [:intro-wizard :masked-passphrase]))
+                  password (get-in db [:intro-wizard :key-code])]
+              (re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-password-confirmed passphrase password]))
+            (create-multiaccount cofx))
 
           (and (= step :select-key-storage)
                (= :advanced selected-storage-type))

@@ -399,9 +399,11 @@
 (fx/defn keycard-storage-selected-for-recovery
   {:events [:recovery.ui/keycard-storage-selected]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (assoc-in db [:hardwallet :flow] :recovery)}
-            (navigation/navigate-to-cofx :keycard-recovery-enter-mnemonic nil)))
+  (if (hardwallet-supported? cofx)
+    (fx/merge cofx
+              {:db (assoc-in db [:hardwallet :flow] :recovery)}
+              (navigation/navigate-to-cofx :keycard-recovery-enter-mnemonic nil))
+    (multiaccounts.recover/navigate-to-recover-multiaccount-screen (assoc cofx :recovery-enter-passphrase-screen true))))
 
 (fx/defn start-import-flow
   {:events [:recovery.ui/recover-with-keycard-pressed
@@ -415,7 +417,7 @@
 (fx/defn access-key-pressed
   {:events [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]}
   [cofx]
-  (multiaccounts.recover/navigate-to-recover-multiaccount-screen cofx))
+  (multiaccounts.recover/navigate-to-recover-multiaccount-screen (assoc cofx :recovery-enter-passphrase-screen true)))
 
 (fx/defn recovery-keycard-selected
   {:events [:recovery.ui/keycard-option-pressed]}
@@ -442,7 +444,7 @@
   [{:keys [db] :as cofx}]
   (if (= (get-in db [:hardwallet :flow]) :create)
     (multiaccounts.create/navigate-to-create-multiaccount-screen cofx)
-    (multiaccounts.recover/navigate-to-recover-multiaccount-screen cofx)))
+    (multiaccounts.recover/navigate-to-recover-multiaccount-screen (assoc cofx :recovery-enter-passphrase-screen true))))
 
 (defn settings-screen-did-load
   [{:keys [db]}]

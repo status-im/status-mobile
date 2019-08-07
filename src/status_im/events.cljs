@@ -51,6 +51,7 @@
             status-im.wallet.accounts.core
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.ui.components.react :as react]
+            [status-im.ui.screens.multiaccounts.recover.views :as multiaccounts.recover.ui]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
             [status-im.ui.screens.currency-settings.models
              :as
@@ -61,6 +62,7 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.logging.core :as logging]
+            [status-im.utils.random :as random]
             [status-im.utils.utils :as utils]
             [status-im.wallet.core :as wallet]
             [status-im.wallet.custom-tokens.core :as custom-tokens]
@@ -301,23 +303,38 @@
    (multiaccounts.recover/validate-password cofx)))
 
 (handlers/register-handler-fx
- :multiaccounts.recover.ui/sign-in-button-pressed
- [(re-frame/inject-cofx :random-guid-generator)]
- (fn [cofx _]
-   (multiaccounts.recover/recover-multiaccount-with-checks cofx)))
-
-(handlers/register-handler-fx
  :multiaccounts.recover.ui/recover-multiaccount-confirmed
  [(re-frame/inject-cofx :random-guid-generator)]
  (fn [cofx _]
    (multiaccounts.recover/recover-multiaccount cofx)))
 
 (handlers/register-handler-fx
+ :multiaccounts.recover.ui/recover-multiaccount-enter-password
+ [(re-frame/inject-cofx :random-guid-generator)]
+ (fn [cofx [_ masked-passphrase multiaccounts]]
+   (multiaccounts.recover/navigate-to-recover-multiaccount-password-screen (assoc cofx :masked-passphrase masked-passphrase :multiaccounts multiaccounts))))
+
+(handlers/register-handler-fx
+ :multiaccounts.recover.ui/recover-multiaccount-password-confirmed
+ (fn [cofx [_ passphrase password]]
+   (multiaccounts.recover/recover-multiaccount! passphrase password)))
+
+(handlers/register-handler-fx
  :multiaccounts.recover.callback/recover-multiaccount-success
  [(re-frame/inject-cofx :random-guid-generator)
   (re-frame/inject-cofx :multiaccounts.create/get-signing-phrase)]
- (fn [cofx [_ result password]]
-   (multiaccounts.recover/on-multiaccount-recovered cofx result password)))
+ (fn [cofx [_ result masked-passphrase password address name photo-path multiaccounts error]]
+   (if (nil? password)
+     (if (string/blank? error)
+       (multiaccounts.recover/navigate-to-recover-multiaccount-screen (assoc cofx :masked-passphrase masked-passphrase :address address
+                                                                             :name name :photo-path photo-path :accounts multiaccounts
+                                                                             :recovery-enter-passphrase-screen false
+                                                                             :recovery-trial-success-screen true))
+       (multiaccounts.recover/navigate-to-recover-multiaccount-screen (assoc cofx :error error
+                                                                             :recovery-enter-passphrase-screen true)))
+     (-> cofx
+         (assoc :multiaccounts/new-installation-id (random/guid))
+         (multiaccounts.recover/on-multiaccount-recovered result password)))))
 
 ;; multiaccounts login module
 

@@ -224,3 +224,4 @@
                 :hardwallet-authentication-method (hardwallet/authentication-method-screen-did-load %)
                 :multiaccounts (hardwallet/multiaccounts-screen-did-load %)
                 nil))))
+
