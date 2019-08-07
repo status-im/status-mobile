@@ -215,11 +215,6 @@
    (multiaccounts/enable-notifications cofx desktop-notifications?)))
 
 (handlers/register-handler-fx
- :multiaccounts.ui/toggle-device-to-device
- (fn [cofx [_ enabled?]]
-   (multiaccounts/toggle-device-to-device cofx enabled?)))
-
-(handlers/register-handler-fx
  :multiaccounts.ui/toggle-datasync
  (fn [cofx [_ enabled?]]
    (multiaccounts/toggle-datasync cofx enabled?)))

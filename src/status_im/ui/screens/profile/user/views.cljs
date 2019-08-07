@@ -221,13 +221,6 @@
      [profile.components/settings-item-separator])
    (when dev-mode?
      [profile.components/settings-switch-item
-      {:label-kw  :t/device-to-device
-       :value     (:pfs? settings)
-       :action-fn #(re-frame/dispatch [:multiaccounts.ui/toggle-device-to-device %])}])
-   (when dev-mode?
-     [profile.components/settings-item-separator])
-   (when dev-mode?
-     [profile.components/settings-switch-item
       {:label-kw  :t/datasync
        :value     (:datasync? settings)
        :action-fn #(re-frame/dispatch [:multiaccounts.ui/toggle-datasync %])}])

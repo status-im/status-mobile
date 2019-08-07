@@ -71,20 +71,10 @@
   "Sends the payload using asymetric key (multiaccount `:public-key` in db) and fixed discovery topic"
   [{:keys [db] :as cofx} {:keys [payload chat-id success-event]}]
   (let [{:keys [web3]} db]
-    (let [pfs? (get-in db [:multiaccount :settings :pfs?])]
-      (if pfs?
-        (send-direct-message cofx
-                             chat-id
-                             success-event
-                             payload)
-        (let [topic-hash             (discovery-topic-hash)]
-          {:shh/post [{:web3          web3
-                       :success-event success-event
-                       :message       (merge {:sig     (multiaccounts.model/current-public-key cofx)
-                                              :pubKey  chat-id
-                                              :payload payload
-                                              :topic   topic-hash}
-                                             whisper-opts)}]})))))
+    (send-direct-message cofx
+                         chat-id
+                         success-event
+                         payload)))
 
 (defrecord Message [content content-type message-type clock-value timestamp]
   StatusMessage

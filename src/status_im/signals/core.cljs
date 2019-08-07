@@ -70,8 +70,8 @@
     (case type
       "node.ready"         (status-node-started cofx)
       "node.stopped"       (status-node-stopped cofx)
-      "envelope.sent"      (transport.message/update-envelope-status cofx (:hash event) :sent)
-      "envelope.expired"   (transport.message/update-envelope-status cofx (:hash event) :not-sent)
+      "envelope.sent"      (transport.message/update-envelopes-status cofx (:ids event) :sent)
+      "envelope.expired"   (transport.message/update-envelopes-status cofx (:ids event) :not-sent)
       "bundles.added"      (pairing/handle-bundles-added cofx event)
       "mailserver.request.completed" (mailserver/handle-request-completed cofx event)
       "mailserver.request.expired"   (when (multiaccounts.model/logged-in? cofx)

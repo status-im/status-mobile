@@ -96,18 +96,6 @@
                                             {:desktop-notifications? desktop-notifications?}
                                             {}))
 
-(fx/defn toggle-device-to-device
-  [{:keys [db] :as cofx} enabled?]
-  (let [settings (get-in db [:multiaccount :settings])
-        warning  {:utils/show-popup {:title (i18n/label :t/device-to-device-warning-title)
-                                     :content (i18n/label :t/device-to-device-warning-content)}}]
-
-    (fx/merge cofx
-              (when enabled? warning)
-              ;; Set to pfs? for backward compatibility
-              (multiaccounts.update/update-settings (assoc settings :pfs? enabled?)
-                                                    {}))))
-
 (fx/defn toggle-datasync
   [{:keys [db] :as cofx} enabled?]
   (let [settings (get-in db [:multiaccount :settings])

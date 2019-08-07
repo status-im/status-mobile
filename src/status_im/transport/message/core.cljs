@@ -144,6 +144,10 @@
                     (check-confirmations status chat-id message-id)
                     (models.message/send-push-notification chat-id message-id fcm-tokens status)))))))
 
+(fx/defn update-envelopes-status
+  [{:keys [db] :as cofx} envelope-hashes status]
+  (apply fx/merge cofx (map #(update-envelope-status % status) envelope-hashes)))
+
 (fx/defn set-contact-message-envelope-hash
   [{:keys [db] :as cofx} chat-id envelope-hash]
   {:db (assoc-in db [:transport/message-envelopes envelope-hash]
