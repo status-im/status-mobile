@@ -310,9 +310,8 @@ dependencies {
       implementation jscFlavor
     }
 
-    implementation 'com.android.support:multidex:1.0.2'
+    implementation 'androidx.multidex:multidex:2.0.1' // only needed if minSdkVersion is less than 21 (https://developer.android.com/studio/build/multidex)
     implementation project(':react-native-dialogs')
-    implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     // Force using exact RN version instead of relying on gradle dependency resolution
     // https://docs.gradle.org/current/userguide/introduction_dependency_management.html#sec:dependency_resolution
     // NOTE: Uncomment if building RN from a fork
