@@ -6098,9 +6098,9 @@ react-native-languages@^3.0.2:
   resolved "https://registry.yarnpkg.com/react-native-languages/-/react-native-languages-3.0.2.tgz#c2c4c5050974fe4b50f7372051ca1f9824c1c778"
   integrity sha512-LGsTfixFM6hXDhcFJI6mrtrNBsGPSvXT9RtZQ0tlqmGFKmMyZW6eQgJ7kLw8lISD2FIGl4jJwY06EAJpbMsNxg==
 
-"react-native-mail@git+https://github.com/status-im/react-native-mail.git#v3.0.8_status":
-  version "3.0.7"
-  resolved "git+https://github.com/status-im/react-native-mail.git#5dd2d4e92fa696a9dd0efebdc530df22772326fe"
+"react-native-mail@git+https://github.com/status-im/react-native-mail.git#v4.0.0-status":
+  version "4.0.0"
+  resolved "git+https://github.com/status-im/react-native-mail.git#a5ff17c3e394b5545549fed33883afe4496f127a"
 
 "react-native-navigation-twopane@git+https://github.com/status-im/react-native-navigation-twopane.git#v0.0.2-status":
   version "0.0.2"
@@ -6200,9 +6200,10 @@ react-native-touch-id@^4.4.1:
   resolved "https://registry.yarnpkg.com/react-native-touch-id/-/react-native-touch-id-4.4.1.tgz#8b1bb2d04c30bac36bb9696d2d723e719c4a8b08"
   integrity sha512-1jTl8fC+0fxvqegy/XXTyo6vMvPhjzkoDdaqoYZx0OH8AT250NuXnNPyKktvigIcys3+2acciqOeaCall7lrvg==
 
-"react-native-udp@git+https://github.com/status-im/react-native-udp.git#v2.3.1-1-status":
-  version "2.3.1"
-  resolved "git+https://github.com/status-im/react-native-udp.git#6e9a817326208f6ca36fa42b20f5e530c1b39d37"
+react-native-udp@2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/react-native-udp/-/react-native-udp-2.6.1.tgz#ce9f2479f8af6d1bb356cfee69c89cf92fdd50be"
+  integrity sha512-KctAXtfBjRe+rGLvms92C82MsrZUwUyODwGskY6mDPigMaDTmsKdNqLCXgWh0g6ZmB2UtOzFsbPphy36NyM3KA==
   dependencies:
     base64-js "0.0.8"
     events "^1.0.2"
@@ -6210,14 +6211,14 @@ react-native-touch-id@^4.4.1:
     ip-regex "^1.0.3"
     util "^0.10.3"
 
-"react-native-webview-bridge@git+https://github.com/status-im/react-native-webview-bridge.git#fix/classnames-colision":
+"react-native-webview-bridge@git+https://github.com/status-im/react-native-webview-bridge.git#community-webview":
   version "0.33.16"
-  resolved "git+https://github.com/status-im/react-native-webview-bridge.git#26c75b82b78ab9e91812d14d39d9dcfd68bd83d8"
+  resolved "git+https://github.com/status-im/react-native-webview-bridge.git#09bd25071feafa5b84a11e853f42e1e1b87e93b8"
   dependencies:
     invariant "2.2.0"
     keymirror "0.1.1"
 
-react-native-webview@^5.2.1:
+react-native-webview@5.2.1:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-5.2.1.tgz#8a3f2ee14488ad3d058f15c7054fb52fa47195ea"
   integrity sha512-2okhUUI51eX65OCLAko82PQX54flsrUndgpVoVuobD86e1OGQDDQnJizy2hAGxTpxv2c/dKUpeqHpWohY6ku9Q==
