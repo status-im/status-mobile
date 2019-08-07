@@ -148,6 +148,9 @@ let
               'nodeExecutableAndArgs: ["node"' \
               'nodeExecutableAndArgs: ["${nodejs}/bin/node"'
 
+          # Patch dependencies which are not yet ported to AndroidX
+          npx jetify
+
           set $prevSet
 
           runHook postPatch
