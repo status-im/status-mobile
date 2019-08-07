@@ -6020,10 +6020,6 @@ react-native-languages@^3.0.2:
   version "0.0.2"
   resolved "git+https://github.com/status-im/react-native-navigation-twopane.git#04ed5fddfb46a6a3ee30776987acb4d3b11c27d4"
 
-"react-native-os@git+https://github.com/status-im/react-native-os.git#v1.1.0-1-status":
-  version "1.1.0"
-  resolved "git+https://github.com/status-im/react-native-os.git#1a6d0835f919cb075793ad7c602f2724eee4702d"
-
 "react-native-qrcode@git+https://github.com/status-im/react-native-qrcode.git#v0.2.8":
   version "0.2.8"
   resolved "git+https://github.com/status-im/react-native-qrcode.git#58af1c00a7dc2e9b4bd59993d002c1045a9bd22f"
