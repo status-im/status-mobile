@@ -252,3 +252,12 @@ environment = LocalMultipleDeviceTestCase if pytest.config.getoption('env') == '
 
 class MultipleDeviceTestCase(environment):
     pass
+
+
+class NoDeviceTestCase(AbstractTestCase):
+
+    def setup_method(self, method, **kwargs):
+        pass
+
+    def teardown_method(self, method):
+        self.github_report.save_test(test_suite_data.current_test)

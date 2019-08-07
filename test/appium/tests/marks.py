@@ -23,5 +23,5 @@ skip = pytest.mark.skip
 logcat = pytest.mark.logcat
 performance = pytest.mark.performance
 
-
 battery_consumption = pytest.mark.battery_consumption
+translations = pytest.mark.translations
