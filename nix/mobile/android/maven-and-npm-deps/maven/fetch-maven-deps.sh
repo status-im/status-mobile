@@ -132,18 +132,23 @@ function retrieveAdditionalDependencies() {
 mvn_tmp_repo=$(mktemp -d)
 trap "rm -rf $mvn_tmp_repo $tmp_pom_filename $deps_file_path" ERR EXIT HUP INT
 
+rnModules=$(node ./node_modules/react-native/cli.js config | jq -r '.dependencies | keys | .[]')
+
 pushd $GIT_ROOT/android > /dev/null
 
-projects=$(gradle projects $gradle_opts 2>&1 \
-            | grep "Project ':" \
-            | sed -E "s;^.--- Project '(\:[a-zA-Z0-9\-]+)';\1;")
+gradleProjects=$(gradle projects $gradle_opts 2>&1 \
+                | grep "Project ':" \
+                | sed -E "s;^.--- Project '\:([@_a-zA-Z0-9\-]+)';\1;")
+projects=(${gradleProjects[@]} ${rnModules[@]})
+IFS=$'\n' sortedProjects=($(sort -u <<<"${projects[*]}"))
+unset IFS
 
 echo -n > $deps_file_path
 # TODO: try to limit unnecessary dependencies brought in by passing e.g. `--configuration releaseCompileClasspath` to the `gradle *:dependencies` command
 runGradleDepsCommand 'buildEnvironment' >> $deps_file_path
-for project in ${projects[@]}; do
-  runGradleDepsCommand "${project}:buildEnvironment" >> $deps_file_path
-  runGradleDepsCommand "${project}:dependencies" >> $deps_file_path
+for project in ${sortedProjects[@]}; do
+  runGradleDepsCommand ${project}:buildEnvironment >> $deps_file_path
+  runGradleDepsCommand ${project}:dependencies >> $deps_file_path
 done
 
 popd > /dev/null

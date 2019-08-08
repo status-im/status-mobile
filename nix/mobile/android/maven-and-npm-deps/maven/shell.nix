@@ -1,4 +1,4 @@
-{ mkShell, curl, git, gradle, maven,
+{ mkShell, curl, git, gradle, jq, maven, nodejs,
   projectNodePackage, androidEnvShellHook, status-go }:
 
 mkShell {
@@ -6,7 +6,9 @@ mkShell {
     curl
     git
     gradle
+    jq
     maven
+    nodejs
     projectNodePackage
   ];
   shellHook =

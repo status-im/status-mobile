@@ -13,7 +13,7 @@ let
 
   # TARGETS
   release = callPackage ./targets/release-android.nix { inherit target-os gradle mavenAndNpmDeps mkFilter nodejs jsbundle status-go zlib; androidEnvShellHook = androidEnv.shellHook; };
-  generate-maven-and-npm-deps-shell = callPackage ./maven-and-npm-deps/maven/shell.nix { inherit gradle maven projectNodePackage status-go; androidEnvShellHook = androidEnv.shellHook; };
+  generate-maven-and-npm-deps-shell = callPackage ./maven-and-npm-deps/maven/shell.nix { inherit gradle maven nodejs projectNodePackage status-go; androidEnvShellHook = androidEnv.shellHook; };
   adb-shell = mkShell {
     buildInputs = [ androidEnv.licensedAndroidEnv ];
     inherit (androidEnv) shellHook;
