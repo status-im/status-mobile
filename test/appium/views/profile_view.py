@@ -316,6 +316,15 @@ class FaqButton(BaseButton):
         from views.web_views.base_web_view import BaseWebView
         return BaseWebView(self.driver)
 
+class AboutButton(BaseButton):
+    def __init__(self, driver):
+        super(AboutButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("about-button")
+
+class VersionText(BaseText):
+    def __init__(self, driver):
+        super(VersionText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@content-desc='version'][1]")
 
 class BootnodesButton(BaseButton):
 
@@ -492,6 +501,7 @@ class ProfileView(BaseView):
         self.public_key_text = PublicKeyText(self.driver)
         self.profile_address_text = ProfileAddressText(self.driver)
         self.about_button = AboutButton(self.driver)
+        self.version_text = VersionText(self.driver)
 
         self.network_settings_button = NetworkSettingsButton(self.driver)
         self.active_network_name = ActiveNetworkName(self.driver)
@@ -536,6 +546,7 @@ class ProfileView(BaseView):
         self.help_button = HelpButton(self.driver)
         self.submit_bug_button = SubmitBugButton(self.driver)
         self.faq_button = FaqButton(self.driver)
+        self.about_button = AboutButton(self.driver)
 
         # Bootnodes
         self.bootnodes_button = BootnodesButton(self.driver)

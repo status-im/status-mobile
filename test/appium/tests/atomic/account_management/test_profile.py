@@ -1,4 +1,5 @@
 import pytest
+import re
 
 from tests import marks, bootnode_address, mailserver_address, camera_access_error_text, \
     photos_access_error_text
@@ -353,6 +354,16 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append('Profile permission is not asked')
         self.verify_no_errors()
 
+    @marks.testrail_id(5428)
+    @marks.low
+    def test_version_format(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        profile_view = sign_in_view.profile_button.click()
+        profile_view.about_button.click()
+        version = profile_view.version_text.text
+        if not re.search("\d{1}[.]\d{1,2}[.]\d{1,2}\s[(]\d*[)]", version):
+            self.driver.fail("Version %s didn't match expected format" % version)
 
 @marks.all
 @marks.account
