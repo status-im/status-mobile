@@ -27,21 +27,21 @@ pipeline {
     }
     stage('Build') {
       parallel {
-        stage('MacOS') { steps { script {
-          osx    = cmn.ci.Build('status-react/combined/desktop-macos')
-        } } }
-        stage('Linux') { steps { script {
-          nix    = cmn.ci.Build('status-react/combined/desktop-linux')
-        } } }
-        stage('Windows') { steps { script {
-          win    = cmn.ci.Build('status-react/combined/desktop-windows')
-        } } }
-        stage('iOS') { steps { script {
-          ios    = cmn.ci.Build('status-react/combined/mobile-ios')
-        } } }
+        //stage('MacOS') { steps { script {
+        //  osx    = cmn.ci.Build('status-react/combined/desktop-macos')
+        //} } }
+        //stage('Linux') { steps { script {
+        //  nix    = cmn.ci.Build('status-react/combined/desktop-linux')
+        //} } }
+        //stage('Windows') { steps { script {
+        //  win    = cmn.ci.Build('status-react/combined/desktop-windows')
+        //} } }
         //stage('iOS e2e') { steps { script {
         //  iose2e = cmn.ci.Build('status-react/combined/mobile-ios-e2e')
         //} } }
+        stage('iOS') { steps { script {
+          ios    = cmn.ci.Build('status-react/combined/mobile-ios')
+        } } }
         stage('Android') { steps { script {
           apk    = cmn.ci.Build('status-react/combined/mobile-android')
         } } }
