@@ -5993,16 +5993,6 @@ react-native-image-crop-picker@0.18.1:
   version "1.0.0"
   resolved "git+https://github.com/status-im/react-native-image-resizer.git#dcbe2e1c461b0dbc265435bfb873f0257c1a1c4a"
 
-react-native-invertible-scroll-view@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-invertible-scroll-view/-/react-native-invertible-scroll-view-1.1.0.tgz#bfd50a3f5d66ca12639b7c7a9844ceddd1d16890"
-  integrity sha1-v9UKP11myhJjm3x6mETO3dHRaJA=
-  dependencies:
-    create-react-class "^15.6.0"
-    prop-types "^15.5.10"
-    react-clone-referenced-element "^1.0.1"
-    react-native-scrollable-mixin "^1.0.1"
-
 "react-native-keychain@git+https://github.com/status-im/react-native-keychain.git#v.3.0.0-status":
   version "3.0.0-rc.3"
   resolved "git+https://github.com/status-im/react-native-keychain.git#43e5512cabb8ee064fd9e503be943dcf2c7d7669"
@@ -6054,11 +6044,6 @@ react-native-safe-area-view@^0.14.1:
   version "1.0.0-alpha.22"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.22.tgz#7a120377b52aa9bbb94d0b8541a014026be9289b"
   integrity sha512-kSyAt0AeVU6N7ZonfV6dP6iZF8B7Bce+tk3eujXhzBGsLg0VSLnU7uE9VqJF0xdQrHR91ZjGgVMieo/8df9KTA==
-
-react-native-scrollable-mixin@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/react-native-scrollable-mixin/-/react-native-scrollable-mixin-1.0.1.tgz#34a32167b64248594154fd0d6a8b03f22740548e"
-  integrity sha1-NKMhZ7ZCSFlBVP0NaosD8idAVI4=
 
 "react-native-securerandom@git+https://github.com/status-im/react-native-securerandom.git#0.1.1-2":
   version "0.1.1"
