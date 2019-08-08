@@ -6,7 +6,7 @@ with stdenv;
 let
   platform = callPackage ../platform.nix { inherit target-os; };
   xcodewrapperArgs = {
-    version = "10.1";
+    version = "10.2.1";
   };
   xcodeWrapper = composeXcodeWrapper xcodewrapperArgs;
   androidPlatform = callPackage ./android.nix { inherit config gradle; };
