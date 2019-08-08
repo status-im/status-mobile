@@ -9,7 +9,6 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.transactions.core :as transactions]
-            [status-im.extensions.module :as extensions.module]
             [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]

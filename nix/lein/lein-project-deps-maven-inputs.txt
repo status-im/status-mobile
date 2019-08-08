@@ -102,8 +102,6 @@ https://repo.clojars.org/ring/ring-core/1.5.1/ring-core-1.5.1
 https://repo.clojars.org/ring/ring-defaults/0.1.5/ring-defaults-0.1.5
 https://repo.clojars.org/ring/ring-headers/0.1.3/ring-headers-0.1.3
 https://repo.clojars.org/ring/ring-ssl/0.2.1/ring-ssl-0.2.1
-https://repo.clojars.org/slingshot/slingshot/0.12.2/slingshot-0.12.2
-https://repo.clojars.org/status-im/pluto/iteration-4-9/pluto-iteration-4-9
 https://repo.clojars.org/status-im/re-frame/0.10.5/re-frame-0.10.5
 https://repo.clojars.org/status-im/timbre/4.10.0-2-status/timbre-4.10.0-2-status
 https://repo.clojars.org/table/table/0.4.0/table-0.4.0

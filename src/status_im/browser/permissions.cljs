@@ -2,7 +2,6 @@
   (:require [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.extensions.module :as extensions.module]
             [status-im.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.screens.navigation :as navigation]
@@ -15,8 +14,6 @@
 (def supported-permissions
   {constants/dapp-permission-qr-code           {:yield-control? true
                                                 :allowed?       true}
-   constants/dapp-permission-install-extension {:yield-control? true
-                                                :allowed?       true}
    constants/dapp-permission-contact-code      {:title       (i18n/label :t/wants-to-access-profile)
                                                 :description (i18n/label :t/your-contact-code)
                                                 :icon        :main-icons/profile}
@@ -27,12 +24,6 @@
 (fx/defn permission-yield-control
   [{:keys [db] :as cofx} dapp-name permission message-id params]
   (cond
-    (= permission constants/dapp-permission-install-extension)
-    (fx/merge cofx
-              (extensions.module/load (:uri params) true)
-              (send-response-to-bridge permission message-id true nil)
-              (process-next-permission dapp-name))
-
     (= permission constants/dapp-permission-qr-code)
     (fx/merge (assoc-in cofx [:db :browser/options :yielding-control?] true)
               (qr-scanner/scan-qr-code {}

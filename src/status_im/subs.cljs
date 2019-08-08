@@ -75,8 +75,6 @@
 (reg-root-key-sub :tab-bar-visible? :tab-bar-visible?)
 (reg-root-key-sub :dimensions/window :dimensions/window)
 (reg-root-key-sub :initial-props :initial-props)
-(reg-root-key-sub :get-manage-extension :extensions/manage)
-(reg-root-key-sub :get-staged-extension :extensions/staged-extension)
 (reg-root-key-sub :get-device-UUID :device-UUID)
 (reg-root-key-sub :fleets/custom-fleets :custom-fleets)
 (reg-root-key-sub :chain-sync-state :node/chain-sync-state)
@@ -104,7 +102,6 @@
 (reg-root-key-sub :my-profile/seed :my-profile/seed)
 (reg-root-key-sub :my-profile/advanced? :my-profile/advanced?)
 (reg-root-key-sub :my-profile/editing? :my-profile/editing?)
-(reg-root-key-sub :extensions/profile :extensions/profile)
 (reg-root-key-sub :my-profile/profile :my-profile/profile)
 ;;multiaccount
 (reg-root-key-sub :multiaccounts/multiaccounts :multiaccounts/multiaccounts)
@@ -898,16 +895,6 @@
  (fn [[{:keys [:stickers/recent-stickers]} packs]]
    (map (fn [hash] {:hash hash :pack (find-pack-id-for-hash hash packs)}) recent-stickers)))
 
-;;EXTENSIONS ===========================================================================================================
-
-(re-frame/reg-sub
- :extensions/all-extensions
- :<- [:multiaccount]
- (fn [multiaccount]
-   (get multiaccount :extensions)))
-
-;;HOME =================================================================================================================
-
 (re-frame/reg-sub
  :home-items
  :<- [:chats/active-chats]
@@ -1584,91 +1571,6 @@
                acc))
            {}
            contacts)))
-
-;;EXTENSIONS ============================================================================================================
-;;TODO not optimized yet
-
-(re-frame/reg-sub
- :extensions/identity
- (fn [_ [_ _ {:keys [value]}]]
-   value))
-
-(defn get-token-for [chain all-tokens token]
-  (if (= token "ETH")
-    {:decimals 18
-     :address  "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
-    (tokens/token-for chain all-tokens token)))
-
-(re-frame/reg-sub
- :extensions.wallet/balance
- :<- [:wallet/all-tokens]
- :<- [:ethereum/chain-keyword]
- :<- [:balance]
- (fn [[all-tokens chain balance] [_ _ {token :token}]]
-   (let [{:keys [decimals]} (get-token-for chain all-tokens token)
-         value (or (get balance (keyword token)) (money/bignumber 0))]
-     {:value        (money/token->unit value decimals)
-      :value-in-wei value})))
-
-(re-frame/reg-sub
- :extensions.wallet/token
- :<- [:wallet/all-tokens]
- :<- [:network]
- (fn [[all-tokens network] [_ _ {token :token amount :amount amount-in-wei :amount-in-wei}]]
-   (let [{:keys [decimals] :as m} (get-token-for network all-tokens token)]
-     (merge m
-            (when amount {:amount-in-wei (money/unit->token amount decimals)})
-            (when amount-in-wei {:amount (money/token->unit amount-in-wei decimals)})))))
-
-(defn normalize-token [m]
-  (update m :symbol name))
-
-(re-frame/reg-sub
- :extensions.wallet/tokens
- :<- [:wallet/all-tokens]
- :<- [:wallet/visible-tokens-symbols]
- :<- [:ethereum/chain-keyword]
- (fn [[all-tokens visible-tokens-symbols chain] [_ _ {filter-vector :filter visible :visible}]]
-   (let [tokens (map normalize-token (filter #(and (not (:nft? %)) (if visible (contains? visible-tokens-symbols (:symbol %)) true))
-                                             (tokens/sorted-tokens-for all-tokens chain)))]
-     (if filter-vector
-       (filter #((set filter-vector) (:symbol %)) tokens)
-       tokens))))
-
-(re-frame/reg-sub
- :store/get
- (fn [db [_ {id :id} {:keys [key] :as params}]]
-   (let [result (get-in db [:extensions/store id key])]
-     (if (:reverse params)
-       (reverse result)
-       result))))
-
-(re-frame/reg-sub
- :store/get-in
- (fn [db [_ {id :id} {:keys [keys]}]]
-   (get-in db (into [] (concat [:extensions/store id] keys)))))
-
-(defn- ->contact [{:keys [photo-path address name public-key]}]
-  {:photo      photo-path
-   :name       name
-   :address    (str "0x" address)
-   :public-key public-key})
-
-(re-frame/reg-sub
- :extensions.contacts/all
- :<- [:contacts/active]
- (fn [[contacts] _]
-   (map #(update % :address ->contact))))
-
-(re-frame/reg-sub
- :store/get-vals
- (fn [db [_ {id :id} {:keys [key]}]]
-   (vals (get-in db [:extensions/store id key]))))
-
-(re-frame/reg-sub
- :extensions.time/now
- (fn [_ _]
-   (.toLocaleString (js/Date.))))
 
 ;;MAILSERVER ===========================================================================================================
 

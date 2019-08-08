@@ -133,7 +133,6 @@
 
 (spec/def :navigation.screen-params/collectibles-list map?)
 
-(spec/def :navigation.screen-params/show-extension map?)
 (spec/def :navigation.screen-params/selection-modal-screen map?)
 (spec/def :navigation.screen-params/manage-dapps-permissions map?)
 
@@ -144,7 +143,6 @@
                                                                       :navigation.screen-params/group-contacts
                                                                       :navigation.screen-params/edit-contact-group
                                                                       :navigation.screen-params/collectibles-list
-                                                                      :navigation.screen-params/show-extension
                                                                       :navigation.screen-params/selection-modal-screen
                                                                       :navigation.screen-params/manage-dapps-permissions])))
 
@@ -163,11 +161,6 @@
 
 (spec/def ::collectible (spec/nilable map?))
 (spec/def ::collectibles (spec/nilable map?))
-
-(spec/def ::extension-url (spec/nilable string?))
-(spec/def :extensions/staged-extension (spec/nilable any?))
-(spec/def :extensions/manage (spec/nilable any?))
-(spec/def ::extensions-store (spec/nilable any?))
 
 ;;;;NODE
 
@@ -201,7 +194,6 @@
 (spec/def :stickers/packs-installed (spec/nilable map?))
 (spec/def :stickers/selected-pack (spec/nilable any?))
 (spec/def :stickers/recent (spec/nilable vector?))
-(spec/def :extensions/profile (spec/nilable any?))
 (spec/def :wallet/custom-token-screen (spec/nilable map?))
 
 (spec/def :signing/in-progress? (spec/nilable boolean?))
@@ -238,8 +230,6 @@
                                 :networks/networks
                                 :networks/manage
                                 :bootnodes/manage
-                                :extensions/staged-extension
-                                :extensions/manage
                                 :node/status
                                 :node/chain-sync-state
                                 :universal-links/url
@@ -282,7 +272,6 @@
                                 :bottom-sheet/show?
                                 :bottom-sheet/view
                                 :bottom-sheet/options
-                                :extensions/profile
                                 :wallet/custom-token-screen
                                 :signing/in-progress?
                                 :signing/queue
@@ -352,7 +341,6 @@
                                    ::supported-biometric-auth
                                    ::collectible
                                    ::collectibles
-                                   ::extensions-store
                                    :registry/registry
                                    ::two-pane-ui-enabled?
                                    ::generate-account]))

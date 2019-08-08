@@ -52,7 +52,6 @@
     :log-level-settings              {:type :main}
     :stickers-pack-modal             {:type :main}
     :tribute-learn-more              {:type :main}
-    :show-extension-modal            {:type :main}
     :wallet                          {:type :main}
     :wallet-stack                    {:type :main}
     :recipient-qr-code               {:type :transparent}

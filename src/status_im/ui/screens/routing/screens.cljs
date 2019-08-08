@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.routing.screens
-  (:require [status-im.extensions.module :as extensions.module]
-            [status-im.ui.screens.about-app.views :as about-app]
+  (:require [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.screens.multiaccounts.login.views :as login]
             [status-im.ui.screens.multiaccounts.recover.views :as multiaccounts.recover]
             [status-im.ui.screens.multiaccounts.views :as multiaccounts]
@@ -121,8 +120,6 @@
    :new                                              add-new/add-new
    :new-chat                                         new-chat/new-chat
    :qr-scanner                                       qr-scanner/qr-scanner
-   :take-picture                                     extensions.module/take-picture-view
-   :extension-screen-holder                          extensions.module/screen-holder-view
    :new-group                                        group/new-group
    :add-participants-toggle-list                     group/add-participants-toggle-list
    :contact-toggle-list                              group/contact-toggle-list
@@ -135,7 +132,6 @@
    :stickers-pack-modal                              [:modal stickers/pack-modal]
    :tribute-learn-more                               [:modal tr-to-talk/learn-more]
    :chat-modal                                       [:modal chat/chat-modal]
-   :show-extension-modal                             [:modal extensions.module/show-extension-modal-view]
    :wallet                                           wallet.accounts/accounts-overview
    :wallet-account                                   wallet.account/account
    :collectibles-list                                collectibles/collectibles-list
@@ -149,13 +145,11 @@
    :wallet-request-assets                            wallet.components/request-assets
    :wallet-transaction-details                       wallet-transactions/transaction-details
    :wallet-settings-hook                             wallet-settings/settings-hook
-   :selection-modal-screen                           [:modal extensions.module/selection-modal-screen-view]
    :wallet-settings-assets                           wallet-settings/manage-assets
    :wallet-add-custom-token                          custom-tokens/add-custom-token
    :wallet-custom-token-details                      custom-tokens/custom-token-details
    :wallet-transactions-filter                       [:modal wallet-transactions/filter-history]
    :my-profile                                       profile.user/my-profile
-   :my-profile-ext-settings                          profile.user/extensions-settings
    :contacts-list                                    contacts-list/contacts-list
    :ens-main                                         ens/main
    :ens-register                                     ens/register
@@ -172,9 +166,6 @@
    :help-center                                      help-center/help-center
    :dapps-permissions                                dapps-permissions/dapps-permissions
    :manage-dapps-permissions                         dapps-permissions/manage
-   :extensions-settings                              extensions.module/extensions-settings-view
-   :edit-extension                                   extensions.module/edit-extension-view
-   :show-extension                                   extensions.module/show-extension-view
    :network-settings                                 network/network-settings-view
    :network-details                                  network/network-details-view
    :edit-network                                     network/edit-network-view

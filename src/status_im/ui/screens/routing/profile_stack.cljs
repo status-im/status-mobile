@@ -20,10 +20,6 @@
                      :help-center
                      :dapps-permissions
                      :manage-dapps-permissions
-                     :extensions-settings
-                     :extension-screen-holder
-                     :edit-extension
-                     :show-extension
                      :network-settings
                      :network-details
                      :edit-network

@@ -24,7 +24,6 @@
                         :recent-recipients]}
              :wallet-transaction-details
              :wallet-settings-hook
-             :extension-screen-holder
              :wallet-settings-assets
              :wallet-add-custom-token
              :wallet-custom-token-details

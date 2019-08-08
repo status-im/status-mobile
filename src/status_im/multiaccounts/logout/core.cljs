@@ -13,7 +13,6 @@
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             {::logout nil
-             :dev-server/stop nil
              ;;TODO sort out this mess with lower case addresses
              :keychain/clear-user-password (string/lower-case (get-in db [:multiaccount :address]))
              ::init/open-multiaccounts #(re-frame/dispatch [::init/initialize-multiaccounts %])}

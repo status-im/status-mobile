@@ -210,16 +210,3 @@
    :color (if outgoing
             colors/white-transparent-70
             colors/gray)})
-
-(def extension-container
-  {:align-items :center
-   :margin      10})
-
-(defn extension-text [outgoing]
-  {:font-size  12
-   :margin-top 10
-   :color      (if outgoing colors/white-transparent colors/gray)})
-
-(defn extension-install [outgoing]
-  {:font-size 12
-   :color     (if outgoing colors/white colors/blue)})

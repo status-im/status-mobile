@@ -111,10 +111,6 @@ StatusAPI.prototype.getContactCode = function () {
     return sendAPIrequest('contact-code');
 };
 
-StatusAPI.prototype.installExtension = function (uri) {
-    return sendAPIrequest('install-extension', {uri: uri});
-};
-
 var ReadOnlyProvider = function () {};
 
 ReadOnlyProvider.prototype.isStatus = true;

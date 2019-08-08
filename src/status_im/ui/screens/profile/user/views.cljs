@@ -69,10 +69,8 @@
 
 (defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]}
                             {:keys [settings]}
-                            logged-in?
-                            extensions]
-  (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))
-        extensions-settings (vals (get extensions :settings))]
+                            logged-in?]
+  (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
     [react/view
      [profile.components/settings-title (i18n/label :t/settings)]
      (when (and config/hardwallet-enabled?
@@ -110,13 +108,6 @@
       {:label-kw            :t/dapps-permissions
        :accessibility-label :dapps-permissions-button
        :action-fn           #(re-frame/dispatch [:navigate-to :dapps-permissions])}]
-     (when extensions-settings
-       (for [{:keys [label] :as st} extensions-settings]
-         [react/view
-          [profile.components/settings-item-separator]
-          [profile.components/settings-item
-           {:item-text           label
-            :action-fn           #(re-frame/dispatch [:navigate-to :my-profile-ext-settings st])}]]))
      [profile.components/settings-item-separator]
      [profile.components/settings-item
       {:label-kw            :t/need-help
@@ -141,11 +132,6 @@
   [{:keys [network :networks/networks chaos-mode? dev-mode? settings]} on-show supported-biometric-auth]
   {:component-did-mount on-show}
   [react/view
-   (when (and config/extensions-enabled? dev-mode?)
-     [profile.components/settings-item
-      {:label-kw            :t/extensions
-       :action-fn           #(re-frame/dispatch [:navigate-to :extensions-settings])
-       :accessibility-label :extensions-button}])
    (when dev-mode?
      [profile.components/settings-item
       {:label-kw            :t/network
@@ -270,14 +256,6 @@
                                   [:tribute-to-talk.ui/menu-item-pressed])}
           opts)])
 
-(defview extensions-settings []
-  (letsubs [{:keys [label view on-close]} [:get-screen-params :my-profile-ext-settings]]
-    [react/keyboard-avoiding-view {:style {:flex 1}}
-     [status-bar/status-bar {:type :main}]
-     [toolbar/simple-toolbar label]
-     [react/scroll-view
-      [view]]]))
-
 (defn- header [{:keys [public-key photo-path] :as account}]
   [profile.components/profile-header
    {:contact                account
@@ -309,7 +287,6 @@
   (letsubs [list-ref                     (reagent/atom nil)
             {:keys [public-key photo-path preferred-name]
              :as   current-multiaccount} [:multiaccount]
-            extensions                   [:extensions/profile]
             changed-multiaccount         [:my-profile/profile]
             currency                     [:wallet/currency]
             login-data                   [:multiaccounts/login]
@@ -333,7 +310,7 @@
            [contacts-list-item active-contacts-count]
            (when tribute-to-talk [tribute-to-talk-item tribute-to-talk])
            [my-profile-settings current-multiaccount shown-multiaccount
-            currency (nil? login-data) extensions]
+            currency (nil? login-data)]
            (when (nil? login-data) [advanced shown-multiaccount on-show-advanced])]]
       [(react/safe-area-view) {:style {:flex 1}}
        [status-bar/status-bar {:type :main}]

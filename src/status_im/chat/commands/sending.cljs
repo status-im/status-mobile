@@ -13,9 +13,7 @@
   (let [command-path      (commands/command-id type)
         new-parameter-map (and (satisfies? protocol/EnhancedParameters type)
                                (protocol/enhance-send-parameters type parameter-map cofx))
-        params            (merge (or new-parameter-map parameter-map)
-                                 (when (satisfies? protocol/Extension type)
-                                   {:extension-id (protocol/extension-id type)}))]
+        params            (or new-parameter-map parameter-map)]
     {:chat-id      chat-id
      :content-type constants/content-type-command
      :content      {:chat-id      chat-id

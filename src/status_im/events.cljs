@@ -1277,8 +1277,8 @@
 
 (handlers/register-handler-fx
  :browser.ui/open-url
- (fn [cofx [_ url extension-params]]
-   (browser/open-url cofx (or (:url extension-params) url))))
+ (fn [cofx [_ url]]
+   (browser/open-url cofx url)))
 
 (handlers/register-handler-fx
  :browser.ui/open-modal-chat-button-pressed

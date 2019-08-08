@@ -10,7 +10,6 @@
              :new-chat
              :qr-scanner
              :take-picture
-             :extension-screen-holder
              :new-group
              :add-participants-toggle-list
              :contact-toggle-list

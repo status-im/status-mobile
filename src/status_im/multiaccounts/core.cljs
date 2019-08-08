@@ -51,27 +51,11 @@
   (multiaccounts.update/multiaccount-update cofx
                                             {:wallet-set-up-passed? true} {}))
 
-(fx/defn update-dev-server-state
-  [_ dev-mode?]
-  (if dev-mode?
-    {:dev-server/start nil}
-    {:dev-server/stop nil}))
-
-(fx/defn update-extensions-state
-  [{{:keys [multiaccount]} :db} dev-mode?]
-  (let [extensions (-> multiaccount :extensions vals)]
-    (if dev-mode?
-      {:extensions/load {:extensions extensions
-                         :follow-up  :extensions/add-to-registry}}
-      {:dispatch [:extensions/disable-all-hooks extensions]})))
-
 (fx/defn switch-dev-mode
   [cofx dev-mode?]
-  (fx/merge cofx
-            (update-dev-server-state dev-mode?)
-            (update-extensions-state dev-mode?)
-            (multiaccounts.update/multiaccount-update {:dev-mode? dev-mode?}
-                                                      {})))
+  (multiaccounts.update/multiaccount-update cofx
+                                            {:dev-mode? dev-mode?}
+                                            {}))
 
 (fx/defn switch-chaos-mode
   [{:keys [db] :as cofx} chaos-mode?]

@@ -13,7 +13,6 @@
          hickory                     {:mvn/version "0.7.1"}
          cljs-bean                   {:mvn/version "1.3.0"}
          com.cognitect/transit-cljs  {:mvn/version "0.8.248"}
-         status-im/pluto             {:mvn/version "iteration-4-9"}
          mvxcvi/alphabase            {:mvn/version "1.0.0"}
          rasom/cljs-react-navigation {:mvn/version "0.1.4"}}
 

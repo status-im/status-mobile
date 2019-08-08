@@ -26,7 +26,6 @@
 (def pairing-popup-disabled? (enabled? (get-config :PAIRING_POPUP_DISABLED "0")))
 (def cached-webviews-enabled? (enabled? (get-config :CACHED_WEBVIEWS_ENABLED 0)))
 (def snoopy-enabled? (enabled? (get-config :SNOOPY 0)))
-(def extensions-enabled? (enabled? (get-config :EXTENSIONS 0)))
 (def hardwallet-enabled? (enabled? (get-config :HARDWALLET_ENABLED 0)))
 (def dev-build? (enabled? (get-config :DEV_BUILD 0)))
 (def erc20-contract-warnings-enabled? (enabled? (get-config :ERC20_CONTRACT_WARNINGS)))

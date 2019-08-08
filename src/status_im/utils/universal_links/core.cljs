@@ -6,7 +6,6 @@
             [status-im.chat.models :as chat]
             [status-im.constants :as constants]
             [status-im.ethereum.eip681 :as eip681]
-            [status-im.extensions.module :as extensions.module]
             [status-im.pairing.core :as pairing]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
@@ -24,7 +23,6 @@
 (def public-chat-regex #".*/chat/public/(.*)$")
 (def profile-regex #".*/user/(.*)$")
 (def browse-regex #".*/browse/(.*)$")
-(def extension-regex #".*/extension/(.*)$")
 
 ;; domains should be without the trailing slash
 (def domains {:external "https://get.status.im"
@@ -79,10 +77,6 @@
       (desktop.events/show-profile-desktop public-key cofx)
       (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] public-key) :profile nil))))
 
-(fx/defn handle-extension [cofx url]
-  (log/info "universal-links: handling url profile" url)
-  (extensions.module/load cofx url false))
-
 (fx/defn handle-eip681 [cofx url]
   {:dispatch-n [[:navigate-to :wallet-send-transaction]
                 [:wallet/fill-request-from-url url :deep-link]]})
@@ -109,9 +103,6 @@
 
     (match-url url browse-regex)
     (handle-browse cofx (match-url url browse-regex))
-
-    (and config/extensions-enabled? (match-url url extension-regex))
-    (handle-extension cofx url)
 
     (some? (eip681/parse-uri url))
     (handle-eip681 cofx url)

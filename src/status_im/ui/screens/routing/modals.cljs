@@ -2,7 +2,6 @@
 
 (def modal-screens
   [:chat-modal
-   :show-extension-modal
    :stickers-pack-modal
    :tribute-learn-more
    :enter-pin-modal
