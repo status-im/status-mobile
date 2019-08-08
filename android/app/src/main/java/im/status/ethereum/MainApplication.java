@@ -56,34 +56,14 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
         protected List<ReactPackage> getPackages() {
             StatusPackage statusPackage = new StatusPackage(RootUtil.isDeviceRooted());
             Function<String, String> callRPC = statusPackage.getCallRPC();
-            //List<ReactPackage> packages = new PackageList(this).getPackages();
-            return Arrays.asList(
-                    new MainReactPackage(),
-                    new RNMail(),
-                    new RNFirebasePackage(),
-                    new RNFirebaseMessagingPackage(),
-                    new RNFirebaseNotificationsPackage(),
-                    new RNSecureRandomPackage(),
-                    new BackgroundTimerPackage(),
-                    new SvgPackage(),
-                    new HttpServerReactPackage(),
-                    new SplashScreenReactPackage(),
-                    statusPackage,
-                    new RNStatusKeycardPackage(),
-                    new RNLanguagesPackage(),
-                    new RNCameraPackage(),
-                    new RNFSPackage(),
-                    new ReactNativeDialogsPackage(),
-                    new ImageResizerPackage(),
-                    new PickerPackage(),
-                    new WebViewBridgePackage(BuildConfig.DEBUG_WEBVIEW == "1", callRPC),
-                    new RNCWebViewPackage(),
-                    new ReactNativeConfigPackage(),
-                    new KeychainPackage(),
-                    new RNShakeEventPackage(),
-                    new FingerprintAuthPackage(),
-                    new RNGestureHandlerPackage(),
-                    new RNScreensPackage());
+            List<ReactPackage> packages = new PackageList(this).getPackages();
+            packages.add(statusPackage);
+            packages.add(new RNFirebaseMessagingPackage());
+            packages.add(new RNFirebaseNotificationsPackage());
+            packages.add(new ReactNativeDialogsPackage());
+            packages.add(new RNStatusKeycardPackage());
+            packages.add(new WebViewBridgePackage(BuildConfig.DEBUG_WEBVIEW == "1", callRPC));
+            return packages;
         }
 
         @Override
