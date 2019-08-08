@@ -1,5 +1,5 @@
 { config, stdenv, callPackage, target-os,
-  gradle, status-go, composeXcodeWrapper }:
+  gradle, status-go, composeXcodeWrapper, mkShell }:
 
 with stdenv;
 
@@ -10,14 +10,15 @@ let
   };
   xcodeWrapper = composeXcodeWrapper xcodewrapperArgs;
   androidPlatform = callPackage ./android.nix { inherit config gradle; };
+  fastlane = callPackage ./fastlane { inherit stdenv target-os mkShell; };
   selectedSources =
-    [ status-go ] ++
+    [ fastlane status-go ] ++
     lib.optional platform.targetAndroid androidPlatform;
 
 in
   {
     inherit (androidPlatform) androidComposition;
-    inherit xcodewrapperArgs;
+    inherit xcodewrapperArgs fastlane;
 
     buildInputs =
       status-go.buildInputs ++

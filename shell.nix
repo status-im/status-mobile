@@ -5,7 +5,7 @@ with pkgs;
 let
   projectDeps = import ./default.nix { inherit target-os; };
   platform = callPackage ./nix/platform.nix { inherit target-os; };
-  useFastlanePkg = (platform.targetAndroid && !stdenv'.isDarwin);
+  useFastlanePkg = (platform.targetIOS || (platform.targetAndroid && !stdenv'.isDarwin));
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
   stdenv' = stdenvNoCC;
   mkShell' = mkShell.override { stdenv = stdenv'; };
