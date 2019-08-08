@@ -20,8 +20,7 @@
    :flex-direction :column})
 
 (def share-link-button
-  {:margin-top    12
-   :margin-bottom 16})
+  {:margin-vertical   20})
 
 (defstyle my-profile-info-container {})
 

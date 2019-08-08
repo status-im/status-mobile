@@ -9,11 +9,17 @@
 
 (defn utils [] (dependencies/web3-utils))
 
+(def hex-prefix "0x")
+
 (defn address->checksum
   "Converts an arbitrary case address to one with correct checksum case."
   [address]
   (when address
-    (.toChecksumAddress (utils) address)))
+    (.toChecksumAddress
+     (utils)
+     (if (string/starts-with? address hex-prefix)
+       address
+       (str hex-prefix address)))))
 
 (defn valid-address-checksum?
   "Checks address checksum validity."

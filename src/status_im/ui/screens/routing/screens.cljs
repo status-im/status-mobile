@@ -123,7 +123,6 @@
    :new                                              add-new/add-new
    :new-chat                                         new-chat/new-chat
    :qr-scanner                                       qr-scanner/qr-scanner
-   :profile-qr-viewer                                [:modal profile.user/qr-viewer]
    :take-picture                                     extensions.module/take-picture-view
    :extension-screen-holder                          extensions.module/screen-holder-view
    :new-group                                        group/new-group

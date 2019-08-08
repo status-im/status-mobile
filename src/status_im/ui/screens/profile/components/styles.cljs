@@ -6,8 +6,8 @@
 ;; profile header elements
 
 (def profile-header-display
-  {:flex-direction  :column
-   :justify-content :center
+  {:flex-direction  :row
+   :justify-content :flex-start
    :align-items     :center})
 
 (def profile-header-edit
@@ -15,30 +15,43 @@
    :justify-content :center})
 
 (defstyle profile-name-text
-  {:padding-vertical 8
-   :text-align       :center
-   :font-weight      "700"})
+  {:typography  :header
+   :line-height 28
+   :text-align  :left})
+
+(defstyle profile-name-text-with-subtitle
+  {:margin-vertical 5
+   :typography      :header
+   :line-height     28
+   :text-align      :left})
 
 (defstyle profile-three-words
-  {:font-size   12
-   :text-align  :center
-   :color       colors/gray})
+  {:color       colors/gray})
 
 (defstyle profile-name-input-text
-  {:text-align  :center
-   :flex        1
-   :desktop     {:height 20
-                 :width 200}
-   :ios         {:margin-top          1
-                 :height              45
-                 :border-bottom-width 1
-                 :border-bottom-color colors/gray-light}
-   :android     {:border-bottom-width 2
-                 :border-bottom-color colors/blue}})
+  {:text-align :center
+   :flex       1
+   :desktop    {:height 20
+                :width 200}
+   :ios        {:margin-top          1
+                :height              45
+                :border-bottom-width 1
+                :border-bottom-color colors/gray-light}
+   :android    {:border-bottom-width 2
+                :border-bottom-color colors/blue}})
 
 (def profile-header-name-container
   {:flex            1
-   :justify-content :center})
+   :justify-content :center
+   :align-items     :flex-start
+   :margin-left     16})
+
+(def profile-header-name-container-with-subtitle
+  {:flex            1
+   :justify-content :flex-start
+   :align-items     :flex-start
+   :align-self      :stretch
+   :margin-left     16})
 
 ;; settings items elements
 
@@ -63,9 +76,9 @@
    :align-items      :center})
 
 (def settings-item-text-wrapper
-  {:flex             1
-   :flex-direction   :row
-   :justify-content  :space-between})
+  {:flex            1
+   :flex-direction  :row
+   :justify-content :space-between})
 
 (def settings-item-text
   {:flex-wrap :nowrap})

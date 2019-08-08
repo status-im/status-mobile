@@ -9,6 +9,5 @@
    :hardwallet-connect-modal
    :selection-modal-screen
    :wallet-transactions-filter
-   :profile-qr-viewer
    :welcome
    :keycard-welcome])

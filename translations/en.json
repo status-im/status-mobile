@@ -7,6 +7,7 @@
         "other": "{{count}} members"
     },
     "chat-name": "Chat name",
+    "chat-key": "Chat key",
     "public-group-topic": "Topic",
     "debug-enabled": "Debug server has been launched! You can now execute *status-dev-cli scan* to find the server from your computer on the same network.",
     "chat-settings": "Chat settings",
@@ -1146,6 +1147,7 @@
     "ens-terms-point-8": "These terms are guaranteed by the smart contract logic at addresses:",
     "ens-terms-point-9": "{{address}} (Status UsernameRegistrar) ",
     "ens-terms-point-10": "0x314159265dd8dbb310642f98f50c066173c1259b (ENS Registry).",
+    "ens-username": "ENS username",
     "ens-usernames": "ENS usernames",
     "ens-your-username": "Your username",
     "ens-your-your-name": "Your ENS name",

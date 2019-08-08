@@ -1,7 +1,7 @@
 (ns status-im.utils.identicon
   (:require [status-im.js-dependencies :as dependencies]))
 
-(def default-size 40)
+(def default-size 150)
 
 (defn identicon
   ([hash] (identicon hash (clj->js {:background [255 255 255 255]

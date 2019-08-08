@@ -169,5 +169,11 @@
 (defn my-profile-icon [{{:keys [photo-path name]} :multiaccount
                         edit?                     :edit?}]
   (let [color colors/default-chat-color
-        size  56]
+        size  64]
+    [profile-icon-view photo-path name color edit? size {}]))
+
+(defn my-profile-header-icon [{{:keys [photo-path name]} :multiaccount
+                               edit?                     :edit?}]
+  (let [color colors/default-chat-color
+        size  40]
     [profile-icon-view photo-path name color edit? size {}]))

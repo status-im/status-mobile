@@ -11,6 +11,7 @@
   [react/view {:style (style/photo-container size)}
    [react/image {:source              (utils.image/source photo-path)
                  :style               (style/photo size)
+                 :resize-mode         :cover
                  :accessibility-label (or accessibility-label :chat-icon)}]
    [react/view {:style (style/photo-border size)}]])
 

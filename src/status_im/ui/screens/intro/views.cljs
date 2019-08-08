@@ -114,8 +114,9 @@
         {:on-press #(re-frame/dispatch [:intro-wizard/on-key-selected (:id acc)])}
         [react/view {:style (styles/list-item selected?)}
 
-         [react/image {:source {:uri (identicon/identicon public-key)}
-                       :style styles/multiaccount-image}]
+         [react/image {:source      {:uri (identicon/identicon public-key)}
+                       :resize-mode :cover
+                       :style       styles/multiaccount-image}]
          [react/view {:style {:margin-horizontal 16 :flex 1 :justify-content :space-between}}
           [react/text {:style (assoc styles/wizard-text :text-align :left
                                      :color colors/black

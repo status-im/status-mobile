@@ -36,14 +36,6 @@
            (assoc-in [:my-profile/profile :valid-name?] (valid-name? name))
            (assoc-in [:my-profile/profile :name] name))})
 
-(defn update-picture [this-event base64-image {:keys [db]}]
-  (if base64-image
-    {:db       (-> db
-                   (assoc-in [:my-profile/profile :photo-path]
-                             (str "data:image/jpeg;base64," base64-image))
-                   (assoc :my-profile/editing? true))}
-    {:open-image-picker this-event}))
-
 (defn- clean-name [db edit-view]
   (let [name (get-in db [edit-view :name])]
     (if (valid-name? name)
@@ -60,7 +52,7 @@
                 :my-profile/editing? true
                 :my-profile/profile profile)}))
 
-(defn save [{:keys [db now] :as cofx}]
+(fx/defn save [{:keys [db now] :as cofx}]
   (let [{:keys [photo-path]} (:my-profile/profile db)
         cleaned-name (clean-name db :my-profile/profile)
         cleaned-edit (merge {:name         cleaned-name
@@ -70,6 +62,16 @@
     (fx/merge cofx
               (clear-profile)
               (multiaccounts.update/multiaccount-update cleaned-edit {}))))
+
+(defn update-picture [this-event base64-image {:keys [db] :as cofx}]
+  (if base64-image
+    (fx/merge cofx
+              {:db (-> db
+                       (assoc-in [:my-profile/profile :photo-path]
+                                 (str "data:image/jpeg;base64," base64-image))
+                       (assoc :my-profile/editing? true))}
+              save)
+    {:open-image-picker this-event}))
 
 (defn start-editing-group-chat-profile [{:keys [db]}]
   (let [current-chat-name (get-in db [:chats (:current-chat-id db) :name])]

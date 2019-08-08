@@ -18,6 +18,7 @@
                  [status-im/timbre "4.10.0-2-status"]
                  [com.taoensso/encore "2.94.0"]
                  [hickory "0.7.1"]
+                 [cljs-bean "1.3.0"]
                  [com.cognitect/transit-cljs "0.8.248"]
                  [status-im/pluto "iteration-4-9"]
                  [mvxcvi/alphabase "1.0.0"]

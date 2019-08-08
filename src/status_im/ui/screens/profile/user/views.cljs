@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.profile.user.views
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
@@ -7,102 +8,64 @@
             [status-im.ui.components.button.view :as button]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.large-toolbar :as large-toolbar]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.list.views :as list.views]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.screens.profile.components.styles
-             :as
-             profile.components.styles]
+            [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.profile.user.styles :as styles]
             [status-im.utils.config :as config]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.platform :as platform]
             [status-im.utils.universal-links.core :as universal-links]
-            [status-im.biometric-auth.core :as biometric-auth]
-            [status-im.utils.utils :as utils])
-  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+            [status-im.ethereum.stateofus :as stateofus]))
 
-(defn my-profile-toolbar []
-  [toolbar/toolbar
-   {}
-   nil
-   nil
-   [toolbar/text-action
-    {:handler            #(re-frame/dispatch [:my-profile/start-editing-profile])
-     :accessibility-label :edit-button}
-    (i18n/label :t/edit)]])
-
-(defn my-profile-edit-toolbar [on-show]
-  (reagent/create-class
-   {:component-did-mount on-show
-    :reagent-render (fn []
-                      [toolbar/toolbar
-                       {}
-                       nil
-                       nil
-                       [toolbar/text-action
-                        {:handler             #(re-frame/dispatch [:my-profile/save-profile])
-                         :accessibility-label :done-button}
-                        (i18n/label :t/done)]])}))
-
-(def profile-icon-options
-  [{:label  (i18n/label :t/image-source-gallery)
-    :action #(re-frame/dispatch [:my-profile/update-picture])}
-   {:label  (i18n/label :t/image-source-make-photo)
-    :action (fn []
-              (re-frame/dispatch [:request-permissions {:permissions [:camera :write-external-storage]
-                                                        :on-allowed  #(re-frame/dispatch [:navigate-to :profile-photo-capture])
-                                                        :on-denied   (fn []
-                                                                       (utils/set-timeout
-                                                                        #(utils/show-popup (i18n/label :t/error)
-                                                                                           (i18n/label :t/camera-access-error))
-                                                                        50))}]))}])
-
-(defn- profile-icon-options-ext []
-  (conj profile-icon-options {:label  (i18n/label :t/image-remove-current)
-                              :action #(re-frame/dispatch [:my-profile/remove-current-photo])}))
-
-(defn qr-viewer-toolbar [label value]
-  [toolbar/toolbar nil
-   (toolbar/nav-button
-    (toolbar.actions/close toolbar.actions/default-handler))
-   [toolbar/content-title label]])
-
-(defn qr-code-share-button [value]
-  (let [link (universal-links/generate-link :user :external value)]
-    [button/button-with-icon
-     {:on-press            #(list-selection/open-share {:message link})
-      :label               (i18n/label :t/share-link)
-      :icon                :main-icons/share
-      :accessibility-label :share-my-contact-code-button
-      :style               styles/share-link-button}]))
-
-(defview qr-viewer []
-  (letsubs [{:keys [value contact]} [:qr-modal]
-            ttt-enabled? [:tribute-to-talk/enabled?]]
-    [react/view styles/qr-code-viewer
-     [status-bar/status-bar {:type :modal-white}]
-     [qr-viewer-toolbar (multiaccounts/displayed-name contact) value]
-     [qr-code-viewer/qr-code-viewer
-      (merge
-       {:style         styles/qr-code
-        :value         value
-        :hint          (i18n/label :t/qr-code-public-key-hint)
-        :legend        (str value)
-        :show-tribute-to-talk-warning? ttt-enabled?}
-       (when-not platform/desktop?
-         {:footer-button qr-code-share-button}))]]))
-
-(defn- show-qr [contact source value]
-  #(re-frame/dispatch [:navigate-to :profile-qr-viewer {:contact contact
-                                                        :source  source
-                                                        :value   value}]))
+(defview share-chat-key []
+  (letsubs [{:keys [address]}              [:popover/popover]
+            window-width                   [:dimensions/window-width]
+            {:keys [names preferred-name]} [:ens.main/screen]]
+    (let [username (stateofus/username preferred-name)
+          qr-width (- window-width 128)
+          name     (or username preferred-name)
+          link     (universal-links/generate-link :user :external address)]
+      [react/view
+       [react/view {:style {:padding-top 16 :padding-left 16 :padding-right 16}}
+        [qr-code-viewer/qr-code-view qr-width address]
+        (when (seq names)
+          [react/view
+           [copyable-text/copyable-text-view
+            {:label       :t/ens-usernames
+             :copied-text preferred-name}
+            [react/nested-text
+             {:style               {:line-height 22 :font-size 15
+                                    :font-family "monospace"}
+              :accessibility-label :ens-username}
+             name
+             (when username [{:style {:color colors/gray}} (str "." stateofus/domain)])]]
+           [react/view {:height 1 :margin-top 12 :margin-horizontal -16
+                        :background-color colors/gray-lighter}]])
+        [copyable-text/copyable-text-view
+         {:label       :t/chat-key
+          :copied-text address}
+         [react/text {:number-of-lines     1
+                      :ellipsize-mode      :middle
+                      :accessibility-label :chat-key
+                      :style               {:line-height 22 :font-size 15
+                                            :font-family "monospace"}}
+          address]]
+        [react/view styles/share-link-button
+         [button/button-with-icon
+          {:on-press            #(list-selection/open-share {:message link})
+           :label               (i18n/label :t/share-link)
+           :icon                :main-icons/link
+           :style               {:height 44 :margin-horizontal 0}
+           :accessibility-label :share-my-contact-code-button}]]]])))
 
 (defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]}
                             {:keys [settings]}
@@ -272,17 +235,6 @@
      (when advanced?
        [advanced-settings params on-show supported-biometric-auth])]))
 
-(defn share-profile-item
-  [{:keys [public-key photo-path] :as current-multiaccount}]
-  [list.views/big-list-item
-   {:text                (i18n/label :t/share-my-profile)
-    :icon                :main-icons/share
-    :accessibility-label :share-my-profile-button
-    :action-fn           #(re-frame/dispatch [:navigate-to :profile-qr-viewer
-                                              {:contact current-multiaccount
-                                               :source  :public-key
-                                               :value   public-key}])}])
-
 (defn contacts-list-item [active-contacts-count]
   [list.views/big-list-item
    {:text            (i18n/label :t/contacts)
@@ -325,52 +277,64 @@
      [react/scroll-view
       [view]]]))
 
+(defn- header [{:keys [public-key photo-path] :as account}]
+  [profile.components/profile-header
+   {:contact                account
+    :allow-icon-change?     true
+    :include-remove-action? (not= (identicon/identicon public-key) photo-path)}])
+
+(defn- header-in-toolbar [{:keys [photo-path] :as account}]
+  (let [displayed-name (multiaccounts/displayed-name account)]
+    [react/view {:flex           1
+                 :flex-direction :row
+                 :align-items    :center
+                 :align-self     :stretch}
+     [photos/photo photo-path {:size 40}]
+     [react/text {:style {:typography   :title-bold
+                          :line-height  21
+                          :margin-right 40
+                          :margin-left  16
+                          :text-align   :left}}
+      displayed-name]]))
+
+(defn- toolbar-action-items [public-key]
+  [toolbar/actions
+   [{:icon      :main-icons/share
+     :icon-opts {:width  24
+                 :height 24}
+     :handler   #(re-frame/dispatch [:show-popover {:view :share-chat-key :address public-key}])}]])
+
 (defview my-profile []
-  (letsubs [{:keys [public-key photo-path preferred-name] :as current-multiaccount} [:multiaccount]
-            editing?        [:my-profile/editing?]
-            extensions      [:extensions/profile]
-            changed-multiaccount [:my-profile/profile]
-            currency        [:wallet/currency]
-            login-data      [:multiaccounts/login]
-            scroll          (reagent/atom nil)
-            active-contacts-count [:contacts/active-count]
-            tribute-to-talk [:tribute-to-talk/profile]
-            stateofus-registrar [:ens.stateofus/registrar]]
-    (let [shown-multiaccount    (merge current-multiaccount changed-multiaccount)
+  (letsubs [list-ref                     (reagent/atom nil)
+            {:keys [public-key photo-path preferred-name]
+             :as   current-multiaccount} [:multiaccount]
+            extensions                   [:extensions/profile]
+            changed-multiaccount         [:my-profile/profile]
+            currency                     [:wallet/currency]
+            login-data                   [:multiaccounts/login]
+            active-contacts-count        [:contacts/active-count]
+            tribute-to-talk              [:tribute-to-talk/profile]
+            stateofus-registrar          [:ens.stateofus/registrar]]
+    (let [shown-multiaccount   (merge current-multiaccount changed-multiaccount)
           ;; We scroll on the component once rendered. setTimeout is necessary,
           ;; likely to allow the animation to finish.
-          on-show-edit     (fn []
-                             (js/setTimeout
-                              #(.scrollTo @scroll {:x 0 :y 0 :animated false})
-                              300))
-          on-show-advanced (fn []
-                             (js/setTimeout
-                              #(.scrollToEnd @scroll {:animated false})
-                              300))]
-      [react/keyboard-avoiding-view {:style {:flex 1}}
+          on-show-advanced
+          (fn [] (js/setTimeout #(.scrollToEnd @list-ref {:animated false}) 300))
+
+          ;; toolbar-contents
+          header-in-toolbar    (header-in-toolbar shown-multiaccount)
+          toolbar-action-items (toolbar-action-items public-key)
+
+          ;; flatlist contents
+          header               (header shown-multiaccount)
+          content
+          [[ens-item preferred-name {:registrar stateofus-registrar}]
+           [contacts-list-item active-contacts-count]
+           (when tribute-to-talk [tribute-to-talk-item tribute-to-talk])
+           [my-profile-settings current-multiaccount shown-multiaccount
+            currency (nil? login-data) extensions]
+           (when (nil? login-data) [advanced shown-multiaccount on-show-advanced])]]
+      [(react/safe-area-view) {:style {:flex 1}}
        [status-bar/status-bar {:type :main}]
-       [react/view profile.components.styles/profile
-        (if editing?
-          [my-profile-edit-toolbar on-show-edit]
-          [my-profile-toolbar])
-        [react/scroll-view {:ref                          #(reset! scroll %)
-                            :keyboard-should-persist-taps :handled}
-         [react/view profile.components.styles/profile-form
-          [profile.components/profile-header
-           {:contact              current-multiaccount
-            :edited-contact       changed-multiaccount
-            :editing?             editing?
-            :allow-icon-change?   true
-            :options              (if (not= (identicon/identicon public-key)
-                                            photo-path)
-                                    (profile-icon-options-ext)
-                                    profile-icon-options)
-            :on-change-text-event :my-profile/update-name}]]
-         [share-profile-item (dissoc current-multiaccount :mnemonic)]
-         [ens-item preferred-name {:registrar stateofus-registrar}]
-         [contacts-list-item active-contacts-count]
-         (when tribute-to-talk
-           [tribute-to-talk-item tribute-to-talk])
-         [my-profile-settings current-multiaccount shown-multiaccount currency (nil? login-data) extensions]
-         (when (nil? login-data)
-           [advanced shown-multiaccount on-show-advanced])]]])))
+       [large-toolbar/minimized-toolbar header-in-toolbar nil toolbar-action-items]
+       [large-toolbar/flat-list-with-large-header header content list-ref]])))

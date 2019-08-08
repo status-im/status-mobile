@@ -13,7 +13,6 @@
   {:position      :absolute
    :width         size
    :height        size
-   :opacity       0.4
    :border-color  colors/black-transparent
    :border-width  1
    :border-radius (radius size)})

@@ -11,7 +11,8 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
-            [status-im.signing.core :as signing])
+            [status-im.signing.core :as signing]
+            [status-im.ethereum.eip55 :as eip55])
   (:refer-clojure :exclude [name]))
 
 (defn fullname [custom-domain? username]
@@ -47,7 +48,7 @@
 
 (defn- on-resolve [registry custom-domain? username address public-key s]
   (cond
-    (= (ethereum/normalized-address address) (ethereum/normalized-address s))
+    (= (eip55/address->checksum address) (eip55/address->checksum s))
     (resolver/pubkey registry (fullname custom-domain? username)
                      #(re-frame/dispatch [:ens/set-state username (if (= % public-key) :connected :owned)]))
 
