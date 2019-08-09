@@ -53,11 +53,11 @@ pipeline {
     stage('Archive') {
       steps { script {
         sh('rm -f pkg/*')
-        if (btype != 'release') {
-          cmn.ci.copyArts(osx)
-          cmn.ci.copyArts(nix)
-          cmn.ci.copyArts(win)
-        }
+        //if (btype != 'release') {
+        //  cmn.ci.copyArts(osx)
+        //  cmn.ci.copyArts(nix)
+        //  cmn.ci.copyArts(win)
+        //}
         cmn.ci.copyArts(ios)
         //cmn.ci.copyArts(iose2e)
         cmn.ci.copyArts(apk)
@@ -78,7 +78,7 @@ pipeline {
           iOS: cmn.pkgUrl(ios), /*iOSe2e: cmn.pkgUrl(iose2e),*/
           Diawi: cmn.utils.getEnv(ios, 'DIAWI_URL'),
           /* desktop */
-          App: cmn.pkgUrl(nix), Mac: cmn.pkgUrl(osx), Win: cmn.pkgUrl(win),
+          //App: cmn.pkgUrl(nix), Mac: cmn.pkgUrl(osx), Win: cmn.pkgUrl(win),
           /* upload the sha256 checksums file too */
           SHA: cmn.utils.uploadArtifact(cmn.utils.pkgFind('sha256')),
         ]
