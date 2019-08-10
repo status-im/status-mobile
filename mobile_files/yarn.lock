@@ -6050,13 +6050,13 @@ react-native-fetch-polyfill@1.1.2:
   resolved "https://registry.yarnpkg.com/react-native-fetch-polyfill/-/react-native-fetch-polyfill-1.1.2.tgz#256b5a0abd78cc4992f7a7cf82543da2f2124a73"
   integrity sha1-JWtaCr14zEmS96fPglQ9ovISSnM=
 
-react-native-firebase@5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/react-native-firebase/-/react-native-firebase-5.1.1.tgz#9dc8fd64238b7f48d63ef088b79a46376fbc9ad7"
-  integrity sha512-Iv+GKsk7pSX88BcDZUEyR02T4XjVqhQaGMmpzyDZ0cBc/Dpo7XxPfUc8M3z8hKFGPLJwvyFa6rMYTtz6RcJYEw==
+react-native-firebase@5.5.6:
+  version "5.5.6"
+  resolved "https://registry.yarnpkg.com/react-native-firebase/-/react-native-firebase-5.5.6.tgz#17b34ec0d5dc39afaaf0e159fd160f6339e0f707"
+  integrity sha512-AdbpGwKEEiMFgaRar9WOPc8Li4sfxR//WOyNQzxYsQ1fpARC908j7feqy2gu73SLqk4wzIrnlfJWakOe0/Bclg==
   dependencies:
     opencollective-postinstall "^2.0.0"
-    prop-types "^15.6.2"
+    prop-types "^15.7.2"
 
 react-native-fs@2.14.1:
   version "2.14.1"

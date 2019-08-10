@@ -339,13 +339,11 @@ dependencies {
     implementation project(':react-native-gesture-handler')
     implementation project(':react-native-screens')
     implementation project(':RNMail')
-    compile ('com.google.android.gms:play-services-base:16.0.1') {
-        force = true
-    }
     implementation project(':react-native-camera')
     implementation project(':react-native-status-keycard')
-    implementation 'com.google.firebase:firebase-core:16.0.3' //this decides your firebase SDK version
-    implementation 'com.google.firebase:firebase-messaging:17.1.0'
+    implementation "com.google.android.gms:play-services-base:${rootProject.ext.googlePlayServicesVersion}"
+    implementation 'com.google.firebase:firebase-core:16.0.9' //this decides your firebase SDK version
+    implementation 'com.google.firebase:firebase-messaging:18.0.0'
     implementation project(':react-native-keychain')
 
     implementation 'com.github.status-im:function:0.0.1'
@@ -373,7 +371,7 @@ task hemroidBuild(type: Exec) {
 preBuild.dependsOn hemroidBuild
 
 // Must be at bottom to avoid dependency collision
-apply plugin: "com.google.gms.google-services"
+apply plugin: 'com.google.gms.google-services'
 com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
