@@ -22,9 +22,7 @@ buildscript {
     }
     dependencies {
         classpath project.ext.gradleBuildTools
-        // google-services downgraded from 4.1.0 because of
-        // https://github.com/invertase/react-native-firebase/issues/766#issuecomment-365116012
-        classpath 'com.google.gms:google-services:4.0.1'
+        classpath 'com.google.gms:google-services:4.2.0'
         classpath 'de.undercouch:gradle-download-task:3.1.2'
 
         // NOTE: Do not place your application dependencies here; they belong
