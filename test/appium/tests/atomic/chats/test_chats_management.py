@@ -180,6 +180,17 @@ class TestChatManagement(SingleDeviceTestCase):
             home.search_chat_input.clear()
         self.verify_no_errors()
 
+    @marks.testrail_id(6221)
+    @marks.medium
+    def test_app_on_background_by_back_button(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        home.click_system_back_button()
+        home.driver.press_keycode(187)
+        home.element_by_text('Status PR').click()
+        if not home.plus_button.is_element_displayed():
+            self.driver.fail('Chats view was not opened')
+
 
 @marks.chat
 class TestChatManagementMultipleDevice(MultipleDeviceTestCase):

@@ -33,7 +33,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         deep_link = 'https://get.status.im/user/%s' % basic_user['public_key']
         sign_in_view.open_weblink_and_login(deep_link)
         chat_view = sign_in_view.get_chat_view()
-        for text in basic_user['username'], 'Add to contacts', 'Send transaction':
+        for text in basic_user['username'], 'Add to contacts':
             if not chat_view.element_by_text(text).scroll_to_element(10):
                 pytest.fail("User profile screen is not opened")
 

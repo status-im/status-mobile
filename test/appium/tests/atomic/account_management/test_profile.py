@@ -310,22 +310,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if not base_web_view.policy_summary.is_element_displayed():
             self.errors.append('{} Profile about view!'.format(no_link_open_error_msg))
 
-        base_web_view.click_system_back_button()
-        if about_view.privacy_policy_button.is_element_displayed():
-            base_web_view.click_system_back_button()
-        profile.logout()
-        if signin_view.ok_button.is_element_displayed():
-            signin_view.ok_button.click()
-        signin_view.back_button.click()
-        signin_view.generate_new_key_button.click()
-
-        if not signin_view.privacy_policy_link.is_element_displayed():
-            self.driver.fail('{} Sign in view!'.format(no_link_found_error_msg))
-
-        signin_view.privacy_policy_link.click()
-        if not base_web_view.policy_summary.is_element_displayed():
-            self.errors.append('{} Sign in view!'.format(no_link_open_error_msg))
-
         self.verify_no_errors()
 
     @marks.testrail_id(5738)
