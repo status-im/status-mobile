@@ -25,7 +25,7 @@
 
 (views/defview account-card [{:keys [name color address] :as account}]
   (views/letsubs [currency        [:wallet/currency]
-                  portfolio-value [:portfolio-value]]
+                  portfolio-value [:account-portfolio-value address]]
     [react/touchable-highlight {:on-press      #(re-frame/dispatch [:navigate-to :wallet-account account])
                                 :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                                                     {:content        (fn [] [sheets/send-receive address])
@@ -97,7 +97,7 @@
        :accessories [items-number :chevron]}]]))
 
 (views/defview assets-and-collections []
-  (views/letsubs [{:keys [tokens nfts]} [:wallet/visible-assets-with-values]
+  (views/letsubs [{:keys [tokens nfts]} [:wallet/all-visible-assets-with-values]
                   currency [:wallet/currency]]
     (let [{:keys [tab]} @state]
       [react/view {:flex 1}

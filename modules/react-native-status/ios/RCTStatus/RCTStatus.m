@@ -345,6 +345,35 @@ RCT_EXPORT_METHOD(multiAccountGenerateAndDeriveAddresses:(NSString *)json
     callback(@[result]);
 }
 
+//////////////////////////////////////////////////////////////////// MultiAccountStoreAccount
+RCT_EXPORT_METHOD(multiAccountStoreAccount:(NSString *)json
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"MultiAccountStoreAccount() method called");
+#endif
+    NSString *result = StatusgoMultiAccountStoreAccount(json);
+    callback(@[result]);
+}
+
+//////////////////////////////////////////////////////////////////// MultiAccountLoadAccount
+RCT_EXPORT_METHOD(multiAccountLoadAccount:(NSString *)json
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"MultiAccountLoadAccount() method called");
+#endif
+    NSString *result = StatusgoMultiAccountLoadAccount(json);
+    callback(@[result]);
+}
+
+//////////////////////////////////////////////////////////////////// MultiAccountReset
+RCT_EXPORT_METHOD(multiAccountReset:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"MultiAccountReset() method called");
+#endif
+    NSString *result = StatusgoMultiAccountReset();
+    callback(@[result]);
+}
+
 //////////////////////////////////////////////////////////////////// multiAccountStoreDerived
 RCT_EXPORT_METHOD(multiAccountStoreDerived:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {
@@ -355,6 +384,15 @@ RCT_EXPORT_METHOD(multiAccountStoreDerived:(NSString *)json
     callback(@[result]);
 }
 
+//////////////////////////////////////////////////////////////////// MultiAccountDeriveAddresses
+RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"MultiAccountDeriveAddresses() method called");
+#endif
+    NSString *result = StatusgoMultiAccountDeriveAddresses(json);
+    callback(@[result]);
+}
 
 //////////////////////////////////////////////////////////////////// login
 RCT_EXPORT_METHOD(login:(NSString *)json

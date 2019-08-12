@@ -4,12 +4,16 @@
   {:name    :wallet-stack
    :screens [:wallet
              :wallet-account
+             :add-new-account
+             :add-new-account-password
+             :account-added
              :collectibles-list
              :wallet-onboarding-setup
              :contact-code
              {:name    :send-transaction-stack
               :screens [:wallet-send-transaction
                         :recent-recipients
+                        :select-account
                         :enter-pin-sign
                         :hardwallet-connect-sign
                         :recipient-qr-code
@@ -18,8 +22,6 @@
               :screens [:wallet-send-transaction-request
                         :wallet-request-assets
                         :recent-recipients]}
-             :unsigned-transactions
-             :transactions-history
              :wallet-transaction-details
              :wallet-settings-hook
              :extension-screen-holder

@@ -137,24 +137,25 @@
              :token    token
              :symbol   symbol}))))))
 
-(defn parse-tx-obj [db {:keys [to value data]}]
-  (if (nil? to)
-    {:contact {:name (i18n/label :t/new-contract)}}
-    (let [eth-value  (when value (money/bignumber value))
-          eth-amount (when eth-value (money/to-number (money/wei->ether eth-value)))
-          token      (get-transfer-token db to data)]
-      (cond
-        (and eth-amount (or (not (zero? eth-amount)) (nil? data)))
-        {:to      to
-         :contact (get-contact db to)
-         :symbol  :ETH
-         :amount  (str eth-amount)
-         :token   (tokens/asset-for (:wallet/all-tokens db) (ethereum/chain-keyword db) :ETH)}
-        (not (nil? token))
-        token
-        :else
-        {:to      to
-         :contact {:address (ethereum/normalized-address to)}}))))
+(defn parse-tx-obj [db {:keys [from to value data]}]
+  (merge {:from {:address from}}
+         (if (nil? to)
+           {:contact {:name (i18n/label :t/new-contract)}}
+           (let [eth-value  (when value (money/bignumber value))
+                 eth-amount (when eth-value (money/to-number (money/wei->ether eth-value)))
+                 token      (get-transfer-token db to data)]
+             (cond
+               (and eth-amount (or (not (zero? eth-amount)) (nil? data)))
+               {:to      to
+                :contact (get-contact db to)
+                :symbol  :ETH
+                :amount  (str eth-amount)
+                :token   (tokens/asset-for (:wallet/all-tokens db) (ethereum/chain-keyword db) :ETH)}
+               (not (nil? token))
+               token
+               :else
+               {:to      to
+                :contact {:address (ethereum/normalized-address to)}})))))
 
 (defn prepare-tx [db {{:keys [data gas gasPrice] :as tx-obj} :tx-obj :as tx}]
   (merge

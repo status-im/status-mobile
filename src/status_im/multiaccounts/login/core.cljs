@@ -90,7 +90,7 @@
 (fx/defn initialize-wallet [cofx]
   (fx/merge cofx
             (wallet/initialize-tokens)
-            (wallet/update-balances)
+            (wallet/update-balances nil)
             (wallet/update-prices)
             (transactions/initialize)))
 

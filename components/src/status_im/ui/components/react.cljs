@@ -306,6 +306,7 @@
                                        :wallet-request-assets
                                        :choose-recipient
                                        :recent-recipients
+                                       :select-account
                                        :wallet-send-transaction-request
                                        :contact-code
                                        :wallet-settings-hook)
@@ -317,6 +318,7 @@
 
                                       colors/white)})
           bottom-background (when (#{:recent-recipients
+                                     :select-account
                                      :wallet-send-assets
                                      :wallet-request-assets} current-view)
                               [view {:background-color colors/white

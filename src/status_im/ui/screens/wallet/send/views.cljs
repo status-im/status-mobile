@@ -36,7 +36,7 @@
                                                   colors/white-light-transparent)}]]])
 
 (defn- render-send-transaction-view [{:keys [chain transaction scroll all-tokens amount-input network-status]}]
-  (let [{:keys [amount amount-text amount-error asset-error to to-name sufficient-funds? symbol]} transaction
+  (let [{:keys [from amount amount-text amount-error asset-error to to-name sufficient-funds? symbol]} transaction
         {:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)
         online? (= :online network-status)]
     [wallet.components/simple-screen {:avoid-keyboard? true
@@ -54,6 +54,7 @@
           :name      to-name}]
         [wallet.components/asset-selector
          {:error     asset-error
+          :address   from
           :type      :send
           :symbol    symbol}]
         [wallet.components/amount-selector

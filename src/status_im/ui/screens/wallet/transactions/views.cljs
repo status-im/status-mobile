@@ -11,17 +11,14 @@
             [status-im.ui.screens.wallet.transactions.styles :as styles])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; TRANSACTION HISTORY
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn history-action
   [all-filters?]
-  (cond->
-   {:icon      :main-icons/filter
-    :icon-opts {:accessibility-label :filters-button}
-    :handler   #(re-frame/dispatch [:navigate-to :wallet-transactions-filter])}
-    (not all-filters?) (assoc-in [:icon-opts :overlay-style] styles/corner-dot)))
+  (cond-> {:icon      :main-icons/filter
+           :icon-opts {:accessibility-label :filters-button}
+           :handler   #(re-frame/dispatch [:navigate-to :wallet-transactions-filter])}
+
+    (not all-filters?)
+    (assoc-in [:icon-opts :overlay-style] styles/corner-dot)))
 
 (defn- toolbar-view
   [all-filters?]
@@ -102,19 +99,6 @@
                                          :key   :transactions-history-empty}]
                        :refreshing      false}]])
 
-(defview transactions
-  []
-  (letsubs [{:keys [transaction-history-sections all-filters?]}
-            [:wallet.transactions.history/screen]]
-    [react/view styles/transactions-view
-     [status-bar/status-bar]
-     [toolbar-view all-filters?]
-     [history-list transaction-history-sections]]))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; TRANSACTION FILTERS
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn- render-item-filter [{:keys [id label checked? on-touch]}]
   [react/view {:accessibility-label :filter-item}
    [list/list-item-with-checkbox
@@ -150,10 +134,6 @@
                                       :render-fn render-item-filter
                                       :data filters}]
                           :key-fn   :id}]]]))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; TRANSACTION DETAILS
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn details-header
   [date type amount-text currency-text]
@@ -237,11 +217,11 @@
                   {:label  (i18n/label :t/open-on-etherscan)
                    :action #(.openURL (react/linking) url)}])])
 
-(defview transaction-details []
-  (letsubs [{:keys [hash url type confirmations confirmations-progress
+(defview transaction-details-view [hash address]
+  (letsubs [{:keys [url type confirmations confirmations-progress
                     date amount-text currency-text]
              :as transaction}
-            [:wallet.transactions.details/screen]]
+            [:wallet.transactions.details/screen hash address]]
     [react/view {:style components.styles/flex}
      [status-bar/status-bar]
      [toolbar/toolbar {}
@@ -253,3 +233,8 @@
       [details-confirmations confirmations confirmations-progress (= :failed type)]
       [react/view {:style styles/details-separator}]
       [details-list transaction]]]))
+
+(defview transaction-details []
+  (letsubs [{:keys [hash address]} [:get-screen-params]]
+    (when (and hash address)
+      [transaction-details-view hash address])))

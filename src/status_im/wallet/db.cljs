@@ -66,8 +66,7 @@
   #{:inbound :outbound :pending :failed})
 
 (def default-wallet
-  {:filters default-wallet-filters
-   :transactions empty-transaction-map})
+  {:filters default-wallet-filters})
 
 (defn get-confirmations
   [{:keys [block]} current-block]

@@ -60,8 +60,9 @@
 
 (def assets-separator [react/view transactions-styles/asset-separator])
 
-(defview choose-asset [nft?]
-  (letsubs [assets [:wallet/visible-assets-with-amount]]
+(defn choose-asset [nft?] [react/view])
+;;TODO we'll need to specify address here
+#_(letsubs [assets [:wallet/visible-assets-with-amount]]
     [react/view
      [list/flat-list {:data                      (filter #(if nft?
                                                             (:nft? %)
@@ -74,7 +75,7 @@
                       :enableEmptySections       true
                       :separator                 assets-separator
                       :keyboardShouldPersistTaps :always
-                      :bounces                   false}]]))
+                      :bounces                   false}]])
 
 (defn choose-asset-suggestion []
   [choose-asset false])

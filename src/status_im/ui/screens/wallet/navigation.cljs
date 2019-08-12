@@ -32,3 +32,7 @@
 (defmethod navigation/preload-data! :wallet-add-custom-token
   [db [event]]
   (dissoc db :wallet/custom-token-screen))
+
+(defmethod navigation/preload-data! :add-new-account
+  [db [event]]
+  (dissoc db :generate-account))

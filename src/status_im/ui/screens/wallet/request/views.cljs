@@ -80,7 +80,7 @@
         (eip55/address->checksum address)]]]
      [react/view {:height 1 :background-color colors/gray-lighter :margin-top 8}]
      [react/view {:padding-bottom 16}
-      [components.common/button {:on-press     #(re-frame/dispatch [:wallet.accounts/share])
+      [components.common/button {:on-press     #(re-frame/dispatch [:wallet.accounts/share address])
                                  :button-style {:margin-vertical 20 :margin-horizontal 16}
                                  :accessibility-label :share-address-button
                                  :label        (i18n/label :t/share-address)}]

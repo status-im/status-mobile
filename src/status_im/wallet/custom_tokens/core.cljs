@@ -91,8 +91,7 @@
 (fx/defn total-supply-result
   [{:keys [db]} contract total-supply]
   (if (money/valid? total-supply)
-    {:wallet.custom-token/get-balance
-     [contract (ethereum/default-address db)]}
+    {:wallet.custom-token/get-name contract}
     {:db (update db
                  :wallet/custom-token-screen
                  merge {:in-progress? nil

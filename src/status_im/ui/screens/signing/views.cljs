@@ -55,9 +55,9 @@
     (multiaccounts/displayed-name contact)
     (:address contact)))
 
-(defn contact-item [contact]
+(defn contact-item [title contact]
   [list-item/list-item {:type        :small
-                        :title       (i18n/label :t/to)
+                        :title       title
                         :accessories [[react/text {:ellipsize-mode :middle :number-of-lines 1 :style {:flex-wrap :wrap}}
                                        (displayed-name contact)]]}])
 
@@ -205,11 +205,11 @@
         [react/text (or formatted-data "")]]]
       [password-view sign]]]))
 
-(views/defview sheet [{:keys [contact amount token approve?] :as tx}]
+(views/defview sheet [{:keys [from contact amount token approve?] :as tx}]
   (views/letsubs [fee   [:signing/fee]
                   sign  [:signing/sign]
                   chain [:ethereum/chain-keyword]
-                  {:keys [amount-error gas-error]} [:signing/amount-errors]
+                  {:keys [amount-error gas-error]} [:signing/amount-errors (:address from)]
                   keycard-multiaccount? [:keycard-multiaccount?]]
     (let [display-symbol     (wallet.utils/display-symbol token)
           fee-display-symbol (wallet.utils/display-symbol (tokens/native-currency chain))]
@@ -220,7 +220,9 @@
          [react/view {:padding-top 20}
           [password-view sign]]
          [react/view
-          [contact-item contact]
+          [contact-item (i18n/label :t/from) from]
+          [separator]
+          [contact-item (i18n/label :t/to) contact]
           [separator]
           [token-item token display-symbol]
           (when-not approve?
@@ -286,4 +288,4 @@
   (views/letsubs [tx [:signing/tx]
                   {window-height :height} [:dimensions/window]]
     ;;we use select-keys here because we don't want to update view if other keys in map is changed
-    [signing-view (when tx (select-keys tx [:contact :amount :token :approve? :message])) window-height]))
+    [signing-view (when tx (select-keys tx [:from :contact :amount :token :approve? :message])) window-height]))

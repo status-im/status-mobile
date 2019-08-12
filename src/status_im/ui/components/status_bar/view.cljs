@@ -60,6 +60,7 @@
     :wallet-send-assets              {:type :wallet}
     :wallet-request-assets           {:type :wallet}
     :recent-recipients               {:type :wallet}
+    :select-account                  {:type :wallet}
     :contact-code                    {:type :wallet}
     :wallet-send-transaction-request {:type :wallet}
     :wallet-settings-assets          {:type :main}

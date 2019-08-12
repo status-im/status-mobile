@@ -26,6 +26,7 @@
 (fx/defn new-block
   [{:keys [db] :as cofx} historical? block-number accounts]
   (let [{:keys [:wallet/all-tokens]} db
+        accounts (get-in db [:multiaccount :accounts]) ;;TODO https://github.com/status-im/status-go/issues/1566
         chain (ethereum/chain-keyword db)
         chain-tokens (into {} (map (juxt :address identity)
                                    (tokens/tokens-for all-tokens chain)))]
@@ -34,20 +35,23 @@
                 (not historical?)
                 (assoc :db (assoc db :ethereum/current-block block-number))
 
-                (not-empty accounts)
-                (assoc ::transactions/get-transfers {:chain-tokens chain-tokens
+                true ;(not-empty accounts) ;;TODO https://github.com/status-im/status-go/issues/1566
+                (assoc ::transactions/get-transfers {:accounts accounts
+                                                     :chain-tokens chain-tokens
                                                      :from-block block-number}))
               (transactions/check-watched-transactions))))
 
 (fx/defn reorg
   [{:keys [db] :as cofx} block-number accounts]
   (let [{:keys [:wallet/all-tokens]} db
+        accounts (get-in db [:multiaccount :accounts]) ;;TODO https://github.com/status-im/status-go/issues/1566
         chain (ethereum/chain-keyword db)
         chain-tokens (into {} (map (juxt :address identity)
                                    (tokens/tokens-for all-tokens chain)))]
     {:db (update-in db [:wallet :transactions]
                     wallet/remove-transactions-since-block block-number)
-     ::transactions/get-transfers {:chain-tokens chain-tokens
+     ::transactions/get-transfers {:accounts accounts
+                                   :chain-tokens chain-tokens
                                    :from-block block-number}}))
 
 (fx/defn new-wallet-event

@@ -29,7 +29,8 @@
             [status-im.wallet.utils :as wallet.utils]
             [status-im.utils.core :as utils.core]
             [status-im.utils.money :as money]
-            [status-im.utils.utils :as utils.utils])
+            [status-im.utils.utils :as utils.utils]
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen])
   (:require-macros [status-im.utils.views :as views]))
 
 ;; Wallet tab has a different coloring scheme (dark) that forces color changes (background, text)
@@ -120,8 +121,8 @@
         (wallet.utils/display-symbol token)]]
       [list/item-secondary (wallet.utils/format-amount amount decimals)]]]]])
 
-(views/defview assets [type]
-  (views/letsubs [assets [:wallet/transferrable-assets-with-amount]]
+(views/defview assets [type address]
+  (views/letsubs [assets [:wallet/transferrable-assets-with-amount address]]
     [simple-screen
      [toolbar (i18n/label :t/wallet-assets)]
      [react/view {:style (assoc components.styles/flex :background-color :white)}
@@ -130,11 +131,13 @@
                        :key-fn             (comp str :symbol)
                        :render-fn          #(render-token % type)}]]]))
 
-(defn send-assets []
-  [assets :send])
+(views/defview send-assets []
+  (views/letsubs [address [:get-screen-params]]
+    [assets :send address]))
 
-(defn request-assets []
-  [assets :request])
+(views/defview request-assets []
+  (views/letsubs [address [:get-screen-params]]
+    [assets :request address]))
 
 (defn- type->view [k]
   (case k
@@ -142,14 +145,14 @@
     :request :wallet-request-assets
     (throw (str "Unknown type: " k))))
 
-(views/defview asset-selector [{:keys [disabled? type symbol error]}]
-  (views/letsubs [balance    [:balance]
+(views/defview asset-selector [{:keys [disabled? type symbol error address]}]
+  (views/letsubs [balance    [:balance address]
                   chain      [:ethereum/chain-keyword]
                   all-tokens [:wallet/all-tokens]]
     (let [{:keys [name icon decimals color] :as token} (tokens/asset-for all-tokens chain symbol)]
       (when name
         [react/view
-         [cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
+         [cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type) address])}
           (i18n/label :t/wallet-asset)
           [react/view {:style               styles/asset-content-container
                        :accessibility-label :choose-asset-button}
@@ -202,6 +205,17 @@
                   :accessibility-label :contact-address-text}
       (eip55/address->checksum (ethereum/normalized-address (:address contact)))]]]])
 
+(defn render-account [account]
+  [list/touchable-item #(re-frame/dispatch [:wallet/fill-request-from-contact account false])
+   [list/item
+    [chat-icon/custom-icon-view-list (:name account) (:color account)]
+    [list/item-content
+     [list/item-primary {:accessibility-label :contact-name-text}
+      (:name account)]
+     [react/text {:style list.styles/secondary-text
+                  :accessibility-label :contact-address-text}
+      (eip55/address->checksum (ethereum/normalized-address (:address account)))]]]])
+
 (views/defview recent-recipients []
   (views/letsubs [contacts           [:contacts/active]
                   {:keys [request?]} [:get-screen-params :recent-recipients]]
@@ -211,6 +225,15 @@
       [list/flat-list {:data      contacts
                        :key-fn    :address
                        :render-fn #(render-contact % request?)}]]]))
+
+(views/defview accounts []
+  (views/letsubs [{:keys [accounts]} [:multiaccount]]
+    [simple-screen
+     [toolbar (i18n/label :t/accounts)]
+     [react/view styles/recent-recipients
+      [list/flat-list {:data      accounts
+                       :key-fn    :address
+                       :render-fn render-account}]]]))
 
 (defn contact-code []
   (let [content (reagent/atom nil)]
@@ -252,7 +275,9 @@
                            [{:label  (i18n/label :t/recent-recipients)
                              :action #(re-frame/dispatch [:navigate-to :recent-recipients {:request? request?}])}]
                            (when-not contact-only?))
-                        :options [{:label  (i18n/label :t/scan-qr)
+                        :options [{:label  (i18n/label :t/accounts)
+                                   :action #(re-frame/dispatch [:navigate-to :select-account])}
+                                  {:label  (i18n/label :t/scan-qr)
                                    :action request-camera-permissions}
                                   {:label  (i18n/label :t/recipient-code)
                                    :action #(re-frame/dispatch [:navigate-to :contact-code])}]}))

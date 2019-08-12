@@ -173,7 +173,7 @@
     "intro-wizard-text7": "Status will notify you about new messages. You can edit your notification preferences later in settings",
     "generate-a-key": "Generate a key",
     "generate-a-new-key": "Generate a new key",
-    "enter-your-password": "Enter your password...",
+    "enter-your-password": "Enter your password",
     "generating-keys": "Generating keys...",
     "you-will-need-this-code": "You'll need this code to open Status and sign transactions",
     "this-device": "This device",
@@ -1259,5 +1259,15 @@
     "not-keycard-title": "Not a Keycard",
     "not-keycard-text": "The card you used is not a Keycard. You need to purchase a Keycard to use it",
     "create-new-key": "Create a new key",
-    "add-another-key": "Add another key"
+    "add-another-key": "Add another key",
+    "generate-a-new-account": "Generate a new account",
+    "generate-account": "Generate account",
+    "add-account-description": "You can import any type of Ethereum account to add it to your Status wallet",
+    "account-added": "Account added",
+    "you-can-change-account": "You can change the account name and color to what you wish",
+    "account-name": "Account name",
+    "account-color": "Account color",
+    "to-encrypt-enter-password": "To encrypt the account please enter your password",
+    "accounts": "Accounts",
+    "add-account-incorrect-password": "Password seems to be incorrect. Enter the password you use to unlock the app."
 }

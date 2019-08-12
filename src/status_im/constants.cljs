@@ -237,6 +237,7 @@
 
 (def ^:const status-create-address "status_createaddress")
 
+(def ^:const path-root "m/44'/60'/0'/0")
 (def ^:const path-default-wallet "m/44'/60'/0'/0/0")
 (def ^:const path-whisper "m/43'/60'/1581'/0'/0")
 

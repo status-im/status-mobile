@@ -55,7 +55,7 @@
                                      (hide-panel-anim bottom-anim-value alpha-value (- window-height)))))
       :reagent-render        (fn []
                                (when @current-popover
-                                 (let [view (:view @current-popover)]
+                                 (let [{:keys [view style]} @current-popover]
                                    [react/view {:position :absolute :top 0 :bottom 0 :left 0 :right 0}
                                     [react/animated-view {:style {:flex 1 :background-color :black :opacity alpha-value}}]
                                     [react/animated-view {:style
@@ -66,13 +66,14 @@
                                                            :transform [{:translateY bottom-anim-value}]}}
                                      [react/touchable-highlight {:style {:flex 1} :on-press #(re-frame/dispatch [:hide-popover])}
                                       [react/view {:flex 1 :align-items :center :justify-content :center}
-                                       [react/view {:background-color :white
-                                                    :border-radius    16
-                                                    :margin           32
-                                                    :shadow-offset    {:width 0 :height 2}
-                                                    :shadow-radius    8
-                                                    :shadow-opacity   1
-                                                    :shadow-color     "rgba(0, 9, 26, 0.12)"}
+                                       [react/view (merge {:background-color :white
+                                                           :border-radius    16
+                                                           :margin           32
+                                                           :shadow-offset    {:width 0 :height 2}
+                                                           :shadow-radius    8
+                                                           :shadow-opacity   1
+                                                           :shadow-color     "rgba(0, 9, 26, 0.12)"}
+                                                          style)
                                         (cond
                                           (vector? view)
                                           view

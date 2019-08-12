@@ -26,7 +26,8 @@
         (testing "first tx object is parsed"
           (is (= (dissoc (get-in sign-first [:db :signing/tx]) :token)
                  (merge first-tx
-                        {:gas nil
+                        {:from {:address nil}
+                         :gas nil
                          :gasPrice nil
                          :data nil
                          :to      to
@@ -49,7 +50,8 @@
             (testing "second tx object is parsed"
               (is (= (dissoc (get-in first-discarded [:db :signing/tx]) :token)
                      (merge second-tx
-                            {:gas nil
+                            {:from {:address nil}
+                             :gas nil
                              :gasPrice nil
                              :data    data
                              :to      contract

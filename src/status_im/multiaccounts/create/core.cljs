@@ -48,11 +48,13 @@
 
 (defn create-multiaccount! [{:keys [id password]}]
   (if id
-    (status/multiaccount-store-derived
-     id
-     [constants/path-whisper constants/path-default-wallet]
-     password
-     #(re-frame/dispatch [:multiaccounts.create.callback/create-multiaccount-success password]))
+    (do
+      ;(status/multiaccount-store-account id password #()) ;; TODO if i add this, i'm unable to login after
+      (status/multiaccount-store-derived
+       id
+       [constants/path-whisper constants/path-default-wallet]
+       password
+       #(re-frame/dispatch [:multiaccounts.create.callback/create-multiaccount-success password])))
     (status/create-multiaccount
      password
      #(re-frame/dispatch [:multiaccounts.create.callback/create-multiaccount-success (types/json->clj %) password]))))
@@ -243,6 +245,7 @@
         new-multiaccount       {;;multiaccount
                                 :root-address               (:address multiaccount)
                                 :public-key                 publicKey
+                                :latest-derived-path        0
                                 :installation-id            (get-in db [:multiaccounts/new-installation-id]) ;;TODO why can't we generate it here?
                                 :address                    address
                                 :name                       (gfycat/generate-gfy publicKey)

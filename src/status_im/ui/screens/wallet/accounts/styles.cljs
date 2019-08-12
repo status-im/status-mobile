@@ -4,6 +4,7 @@
 (defn card [color]
   {:width            156
    :height           145
+   :margin-right     16
    :background-color color
    :shadow-offset    {:width 0 :height 2}
    :shadow-radius    8
@@ -20,7 +21,6 @@
 (def add-card
   {:width            156
    :height           145
-   :margin-left      16
    :margin-top       5
    :margin-right     5
    :margin-bottom    5

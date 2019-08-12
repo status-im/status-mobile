@@ -34,6 +34,7 @@
 
 (def empty-text
   {:text-align        :center
+   :color             colors/gray
    :margin-top        22
    :margin-horizontal 92})
 

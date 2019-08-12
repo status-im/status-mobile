@@ -181,6 +181,7 @@
 (reg-root-key-sub :intro-wizard :intro-wizard)
 
 (reg-root-key-sub :popover/popover :popover/popover)
+(reg-root-key-sub :generate-account :generate-account)
 
 ;;GENERAL ==============================================================================================================
 
@@ -800,6 +801,7 @@
 
 (re-frame/reg-sub
  :chats/transaction-status
+ ;;TODO address here for transactions
  :<- [:wallet/transactions]
  :<- [:ethereum/current-block]
  (fn [[transactions current-block] [_ hash]]
@@ -965,8 +967,21 @@
 (re-frame/reg-sub
  :balance
  :<- [:wallet]
+ (fn [wallet [_ address]]
+   (get-in wallet [:accounts address :balance])))
+
+(re-frame/reg-sub
+ :balance-default
+ :<- [:wallet]
+ :<- [:multiaccount]
+ (fn [[wallet {:keys [accounts]}]]
+   (get-in wallet [:accounts (:address (ethereum/get-default-account accounts)) :balance])))
+
+(re-frame/reg-sub
+ :balances
+ :<- [:wallet]
  (fn [wallet]
-   (:balance wallet)))
+   (map :balance (vals (:accounts wallet)))))
 
 (re-frame/reg-sub
  :price
@@ -986,20 +1001,6 @@
  (fn [settings]
    (or (get-in settings [:wallet :currency]) :usd)))
 
-(re-frame/reg-sub
- :asset-value
- (fn [[_ fsym decimals tsym]]
-   [(re-frame/subscribe [:balance])
-    (re-frame/subscribe [:price fsym tsym])
-    (re-frame/subscribe [:wallet/currency])])
- (fn [[balance price currency] [_ fsym decimals tsym]]
-   (when (and balance price)
-     (-> (money/internal->formatted (get balance fsym) fsym decimals)
-         (money/crypto->fiat price)
-         (money/with-precision 2)
-         str
-         (i18n/format-currency (:code currency))))))
-
 (defn- get-balance-total-value
   [balance prices currency token->decimals]
   (reduce-kv (fn [acc symbol value]
@@ -1012,21 +1013,39 @@
 
 (re-frame/reg-sub
  :portfolio-value
- :<- [:balance]
+ :<- [:balances]
  :<- [:prices]
  :<- [:wallet/currency]
  :<- [:ethereum/chain-keyword]
  :<- [:wallet/all-tokens]
- (fn [[balance prices currency chain all-tokens] [_ currency-code]]
+ (fn [[balances prices currency chain all-tokens]]
+   (if (and balances prices)
+     (let [assets              (tokens/tokens-for all-tokens chain)
+           token->decimals     (into {} (map #(vector (:symbol %) (:decimals %)) assets))
+           currency-key        (-> currency :code keyword)
+           balance-total-value (apply + (map #(get-balance-total-value % prices currency-key token->decimals) balances))]
+       (if (pos? balance-total-value)
+         (-> balance-total-value
+             (money/with-precision 2)
+             str
+             (i18n/format-currency (:code currency) false))
+         "0"))
+     "...")))
+
+(re-frame/reg-sub
+ :account-portfolio-value
+ (fn [[_ address] _]
+   [(re-frame/subscribe [:balance address])
+    (re-frame/subscribe [:prices])
+    (re-frame/subscribe [:wallet/currency])
+    (re-frame/subscribe [:ethereum/chain-keyword])
+    (re-frame/subscribe [:wallet/all-tokens])])
+ (fn [[balance prices currency chain all-tokens]]
    (if (and balance prices)
-     (let [assets          (tokens/tokens-for all-tokens chain)
-           token->decimals (into {} (map #(vector (:symbol %) (:decimals %)) assets))
-           balance-total-value
-           (get-balance-total-value balance
-                                    prices
-                                    (or currency-code
-                                        (-> currency :code keyword))
-                                    token->decimals)]
+     (let [assets              (tokens/tokens-for all-tokens chain)
+           token->decimals     (into {} (map #(vector (:symbol %) (:decimals %)) assets))
+           currency-key        (-> currency :code keyword)
+           balance-total-value (get-balance-total-value balance prices currency-key token->decimals)]
        (if (pos? balance-total-value)
          (-> balance-total-value
              (money/with-precision 2)
@@ -1049,12 +1068,6 @@
  (fn [[all-tokens visible-tokens]]
    (let [vt-set (set visible-tokens)]
      (group-by :custom? (map #(assoc % :checked? (boolean (get vt-set (keyword (:symbol %))))) all-tokens)))))
-
-(re-frame/reg-sub
- :wallet/balance-loading?
- :<- [:wallet]
- (fn [wallet]
-   (:balance-loading? wallet)))
 
 (re-frame/reg-sub
  :wallet/error-message
@@ -1082,18 +1095,19 @@
 
 (re-frame/reg-sub
  :wallet/visible-assets-with-amount
- :<- [:balance]
- :<- [:wallet/visible-assets]
+ (fn [[_ address] _]
+   [(re-frame/subscribe [:balance address])
+    (re-frame/subscribe [:wallet/visible-assets])])
  (fn [[balance visible-assets]]
    (map #(assoc % :amount (get balance (:symbol %))) visible-assets)))
 
-(defn update-value [balance prices currency]
-  (fn [{:keys [symbol decimals] :as token}]
+(defn update-value [prices currency]
+  (fn [{:keys [symbol decimals amount] :as token}]
     (let [price (get-in prices [symbol (-> currency :code keyword) :price])]
       (assoc token
              :price price
-             :value (when (and balance price)
-                      (-> (money/internal->formatted (get balance symbol) symbol decimals)
+             :value (when (and amount price)
+                      (-> (money/internal->formatted amount symbol decimals)
                           (money/crypto->fiat price)
                           (money/with-precision 2)
                           str
@@ -1101,19 +1115,45 @@
 
 (re-frame/reg-sub
  :wallet/visible-assets-with-values
- :<- [:wallet/visible-assets-with-amount]
+ (fn [[_ address] _]
+   [(re-frame/subscribe [:wallet/visible-assets-with-amount address])
+    (re-frame/subscribe [:prices])
+    (re-frame/subscribe [:wallet/currency])])
+ (fn [[assets prices currency]]
+   (let [{:keys [tokens nfts]} (group-by #(if (:nft? %) :nfts :tokens) assets)
+         tokens-with-values (map (update-value prices currency) tokens)]
+     {:tokens tokens-with-values
+      :nfts   nfts})))
+
+(defn get-asset-amount [balances sym]
+  (reduce #(if-let [bl (get %2 sym)]
+             (.plus %1 bl)
+             %1)
+          (money/bignumber 0)
+          balances))
+
+(re-frame/reg-sub
+ :wallet/all-visible-assets-with-amount
+ :<- [:balances]
+ :<- [:wallet/visible-assets]
+ (fn [[balances visible-assets]]
+   (map #(assoc % :amount (get-asset-amount balances (:symbol %))) visible-assets)))
+
+(re-frame/reg-sub
+ :wallet/all-visible-assets-with-values
+ :<- [:wallet/all-visible-assets-with-amount]
  :<- [:prices]
  :<- [:wallet/currency]
- :<- [:balance]
- (fn [[assets prices currency balance]]
+ (fn [[assets prices currency]]
    (let [{:keys [tokens nfts]} (group-by #(if (:nft? %) :nfts :tokens) assets)
-         tokens-with-values (map (update-value balance prices currency) tokens)]
+         tokens-with-values (map (update-value prices currency) tokens)]
      {:tokens tokens-with-values
       :nfts   nfts})))
 
 (re-frame/reg-sub
  :wallet/transferrable-assets-with-amount
- :<- [:wallet/visible-assets-with-amount]
+ (fn [[_ address]]
+   (re-frame/subscribe [:wallet/visible-assets-with-amount address]))
  (fn [all-assets]
    (filter #(not (:nft? %)) all-assets)))
 
@@ -1128,8 +1168,8 @@
 (re-frame/reg-sub
  :wallet/transactions
  :<- [:wallet]
- (fn [wallet]
-   (get wallet :transactions)))
+ (fn [wallet [_ address]]
+   (get-in wallet [:accounts address :transactions])))
 
 (re-frame/reg-sub
  :wallet/filters
@@ -1161,14 +1201,15 @@
 
 (re-frame/reg-sub
  :wallet.transactions/transactions
- :<- [:wallet/transactions]
- :<- [:contacts/contacts-by-address]
- :<- [:ethereum/native-currency]
+ (fn [[_ address] _]
+   [(re-frame/subscribe [:wallet/transactions address])
+    (re-frame/subscribe [:contacts/contacts-by-address])
+    (re-frame/subscribe [:ethereum/native-currency])])
  (fn [[transactions contacts native-currency]]
    (reduce (fn [acc [hash transaction]]
              (assoc acc
                     hash
-                    (enrich-transaction transaction contacts native-currency)))
+                    (enrich-transaction transaction contacts native-currency))) ;;TODO this doesn't look good for performance, we need to calculate this only once for each transaction
            {}
            transactions)))
 
@@ -1212,7 +1253,8 @@
 
 (defn- enrich-transaction-for-list
   [filters
-   {:keys [type from-contact from to-contact to hash timestamp] :as transaction}]
+   {:keys [type from-contact from to-contact to hash timestamp] :as transaction}
+   address]
   (when (filters type)
     (assoc (case type
              :inbound
@@ -1229,7 +1271,7 @@
                     :contact to-contact
                     :address to))
            :time-formatted (datetime/timestamp->time timestamp)
-           :on-touch-fn #(re-frame/dispatch [:wallet.ui/show-transaction-details hash]))))
+           :on-touch-fn #(re-frame/dispatch [:wallet.ui/show-transaction-details hash address]))))
 
 (defn- group-transactions-by-date
   [transactions]
@@ -1243,33 +1285,28 @@
 
 (re-frame/reg-sub
  :wallet.transactions.history/screen
- :<- [:wallet.transactions/transactions]
- :<- [:wallet/filters]
- :<- [:wallet.transactions/all-filters?]
- (fn [[transactions filters all-filters?]]
+ (fn [[_ address] _]
+   [(re-frame/subscribe [:wallet.transactions/transactions address])
+    (re-frame/subscribe [:wallet/filters])
+    (re-frame/subscribe [:wallet.transactions/all-filters?])])
+ (fn [[transactions filters all-filters?] [_ address]]
    {:all-filters? all-filters?
     :transaction-history-sections
     (->> transactions
          vals
-         (keep #(enrich-transaction-for-list filters %))
+         (keep #(enrich-transaction-for-list filters % address))
          (group-transactions-by-date))}))
 
 (re-frame/reg-sub
- :wallet.transactions/current-transaction
- :<- [:wallet]
- (fn [wallet]
-   (:current-transaction wallet)))
-
-(re-frame/reg-sub
  :wallet.transactions.details/current-transaction
- :<- [:wallet.transactions/transactions]
- :<- [:wallet.transactions/current-transaction]
- :<- [:ethereum/native-currency]
- :<- [:ethereum/chain-keyword]
- (fn [[transactions current-transaction native-currency chain-keyword]]
+ (fn [[_ hash address] _]
+   [(re-frame/subscribe [:wallet.transactions/transactions address])
+    (re-frame/subscribe [:ethereum/native-currency])
+    (re-frame/subscribe [:ethereum/chain-keyword])])
+ (fn [[transactions native-currency chain-keyword] [_ hash _]]
    (let [{:keys [gas-used gas-price hash timestamp type token value]
           :as transaction}
-         (get transactions current-transaction)
+         (get transactions hash)
          native-currency-text (name (or (:symbol-display native-currency)
                                         (:symbol native-currency)))]
      (when transaction
@@ -1301,8 +1338,9 @@
 
 (re-frame/reg-sub
  :wallet.transactions.details/screen
- :<- [:wallet.transactions.details/current-transaction]
- :<- [:ethereum/current-block]
+ (fn [[_ hash address] _]
+   [(re-frame/subscribe [:wallet.transactions.details/current-transaction hash address])
+    (re-frame/subscribe [:ethereum/current-block])])
  (fn [[transaction current-block]]
    (let [confirmations (wallet.db/get-confirmations transaction
                                                     current-block)]
@@ -1358,11 +1396,12 @@
 (re-frame/reg-sub
  :wallet.send/transaction
  :<- [::send-transaction]
- :<- [:balance]
- (fn [[{:keys [amount symbol] :as transaction} balance]]
-   (-> transaction
-       (check-sufficient-funds balance symbol amount)
-       (check-sufficient-gas balance symbol amount))))
+ :<- [:wallet]
+ (fn [[{:keys [amount symbol from] :as transaction} wallet]]
+   (let [balance (get-in wallet [:accounts from :balance])]
+     (-> transaction
+         (check-sufficient-funds balance symbol amount)
+         (check-sufficient-gas balance symbol amount)))))
 
 (re-frame/reg-sub
  :wallet/settings
@@ -1960,8 +1999,9 @@
 
 (re-frame/reg-sub
  :signing/amount-errors
- :<- [:signing/tx]
- :<- [:balance]
+ (fn [[_ address] _]
+   [(re-frame/subscribe [:signing/tx])
+    (re-frame/subscribe [:balance address])])
  (fn [[{:keys [amount token gas gasPrice approve?]} balance]]
    (if (and amount token (not approve?))
      (let [amount-bn (money/formatted->internal (money/bignumber amount) (:symbol token) (:decimals token))

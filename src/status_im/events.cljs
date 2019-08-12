@@ -1788,12 +1788,6 @@
  (fn [cofx [_ id handler]]
    (ethereum.subscriptions/register-subscription cofx id handler)))
 
-;; ethereum transactions events
-(handlers/register-handler-fx
- :ethereum.transactions.callback/fetch-history-success
- (fn [cofx [_ transactions]]
-   (ethereum.transactions/handle-history cofx transactions)))
-
 (handlers/register-handler-fx
  :ethereum.transactions.callback/etherscan-error
  (fn [cofx [event error]]
@@ -1834,8 +1828,8 @@
 
 (handlers/register-handler-fx
  :wallet/token-found
- (fn [cofx [_ symbol balance]]
-   (wallet/configure-token-balance-and-visibility cofx symbol balance)))
+ (fn [cofx [_ address symbol balance]]
+   (wallet/configure-token-balance-and-visibility cofx address symbol balance)))
 
 (handlers/register-handler-fx
  :wallet.settings.ui/navigate-back-pressed
@@ -1844,12 +1838,12 @@
              (when on-close
                {:dispatch on-close})
              (navigation/navigate-back)
-             (wallet/update-balances))))
+             (wallet/update-balances nil))))
 
 (handlers/register-handler-fx
  :wallet.callback/update-balance-success
- (fn [cofx [_ balance]]
-   (wallet/update-balance cofx balance)))
+ (fn [cofx [_ address balance]]
+   (wallet/update-balance cofx address balance)))
 
 (handlers/register-handler-fx
  :wallet.callback/update-balance-fail
@@ -1858,8 +1852,8 @@
 
 (handlers/register-handler-fx
  :wallet.callback/update-token-balance-success
- (fn [cofx [_ symbol balance]]
-   (wallet/update-token-balance cofx symbol balance)))
+ (fn [cofx [_ address symbol balance]]
+   (wallet/update-token-balance cofx address symbol balance)))
 
 (handlers/register-handler-fx
  :wallet.callback/update-token-balance-fail
@@ -1878,8 +1872,8 @@
 
 (handlers/register-handler-fx
  :wallet.ui/show-transaction-details
- (fn [cofx [_ hash]]
-   (wallet/open-transaction-details cofx hash)))
+ (fn [cofx [_ hash address]]
+   (wallet/open-transaction-details cofx hash address)))
 
 (handlers/register-handler-fx
  :wallet.setup.ui/navigate-back-pressed

@@ -358,4 +358,5 @@
                                    ::collectibles
                                    ::extensions-store
                                    :registry/registry
-                                   ::two-pane-ui-enabled?]))
+                                   ::two-pane-ui-enabled?
+                                   ::generate-account]))

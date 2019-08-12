@@ -71,6 +71,32 @@
                                                                :paths paths})
                                              on-result)))
 
+(defn multiaccount-derive-addresses [account-id paths on-result]
+  (when (and @node-started (status))
+    (.multiAccountDeriveAddresses (status)
+                                  (types/clj->json {:accountID account-id
+                                                    :paths paths})
+                                  on-result)))
+
+(defn multiaccount-store-account [account-id password on-result]
+  (when (and @node-started (status))
+    (.multiAccountStoreAccount (status)
+                               (types/clj->json {:accountID account-id
+                                                 :password password})
+                               on-result)))
+
+(defn multiaccount-load-account [address password on-result]
+  (when (and @node-started (status))
+    (.multiAccountLoadAccount (status)
+                              (types/clj->json {:address address
+                                                :password password})
+                              on-result)))
+
+(defn multiaccount-reset [on-result]
+  (when (and @node-started (status))
+    (.multiAccountReset (status)
+                        on-result)))
+
 (defn multiaccount-store-derived [account-id paths password on-result]
   (when (and @node-started (status))
     (.multiAccountStoreDerived (status)

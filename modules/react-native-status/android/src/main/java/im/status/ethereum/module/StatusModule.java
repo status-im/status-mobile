@@ -661,6 +661,82 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void multiAccountStoreAccount(final String json, final Callback callback) {
+        Log.d(TAG, "multiAccountStoreAccount");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.multiAccountStoreAccount(json);
+
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void multiAccountLoadAccount(final String json, final Callback callback) {
+        Log.d(TAG, "multiAccountLoadAccount");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.multiAccountLoadAccount(json);
+
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void multiAccountReset(final Callback callback) {
+        Log.d(TAG, "multiAccountReset");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.multiAccountReset();
+
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void multiAccountDeriveAddresses(final String json, final Callback callback) {
+        Log.d(TAG, "multiAccountDeriveAddresses");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.multiAccountDeriveAddresses(json);
+
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
     public void multiAccountGenerateAndDeriveAddresses(final String json, final Callback callback) {
         Log.d(TAG, "multiAccountGenerateAndDeriveAddresses");
         if (!checkAvailability()) {

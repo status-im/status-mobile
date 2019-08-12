@@ -23,7 +23,7 @@
 
 (defview price-badge [price id owned pending]
   (letsubs [chain   [:ethereum/chain-keyword]
-            balance [:balance]]
+            balance [:balance-default]]
     (let [snt             (money/to-number (if (= :mainnet chain) (:SNT balance) (:STT balance)))
           not-enough-snt? (> price snt)
           no-snt?         (or (nil? snt) (zero? snt))]

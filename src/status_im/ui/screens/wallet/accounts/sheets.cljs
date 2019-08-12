@@ -50,10 +50,10 @@
 
 (defn add-account []
   [react/view
-   [action-button/action-button-disabled {:label               (i18n/label :t/add-an-account)
-                                          :icon                :main-icons/add
-                                          :icon-opts           {:color :blue}
-                                          :on-press            #(hide-sheet-and-dispatch [:navigate-to])}]
+   [action-button/action-button {:label               (i18n/label :t/add-an-account)
+                                 :icon                :main-icons/add
+                                 :icon-opts           {:color :blue}
+                                 :on-press            #(hide-sheet-and-dispatch [:navigate-to :add-new-account])}]
    [action-button/action-button-disabled {:label               (i18n/label :t/add-a-watch-account)
                                           :icon                :main-icons/watch
                                           :icon-opts           {:color :blue}

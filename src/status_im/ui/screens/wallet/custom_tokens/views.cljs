@@ -82,12 +82,12 @@
           :auto-focus     false
           :placeholder    "18"}]]]
       [react/view {:height 16}]
-      [text-input/text-input-with-label
-       {:label         (i18n/label :t/balance)
-        :default-value (when (and balance decimals)
-                         (wallet.utils/format-amount balance decimals))
-        :editable      false
-        :placeholder   (i18n/label :t/no-tokens-found)}]]
+      #_[text-input/text-input-with-label
+         {:label         (i18n/label :t/balance)
+          :default-value (when (and balance decimals)
+                           (wallet.utils/format-amount balance decimals))
+          :editable      false
+          :placeholder   (i18n/label :t/no-tokens-found)}]]
      [react/view {:style {:height 1 :background-color colors/gray-lighter}}]
      [react/view {:flex-direction    :row
                   :margin-horizontal 12

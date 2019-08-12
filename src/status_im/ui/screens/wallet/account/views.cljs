@@ -38,11 +38,11 @@
      [icons/icon icon {:color colors/white}]
      [react/text {:style {:margin-left 8 :color colors/white}} label]]]])
 
-(views/defview account-card [{:keys [address]}]
+(views/defview account-card [{:keys [address color]}]
   (views/letsubs [currency        [:wallet/currency]
-                  portfolio-value [:portfolio-value]
+                  portfolio-value [:account-portfolio-value address]
                   window-width    [:dimensions/window-width]]
-    [react/view {:style (styles/card window-width)}
+    [react/view {:style (styles/card window-width color)}
      [react/view {:padding 16 :padding-bottom 12 :flex 1 :justify-content :space-between}
       [react/nested-text {:style {:color       colors/white-transparent :line-height 38
                                   :font-weight "600" :font-size 32}}
@@ -66,20 +66,19 @@
       [react/view {:style styles/divider}]
       [button (i18n/label :t/receive) :main-icons/receive  #(re-frame/dispatch [:show-popover {:view :share-account :address address}])]]]))
 
-(views/defview transactions []
+(views/defview transactions [address]
   (views/letsubs [{:keys [transaction-history-sections]}
-                  [:wallet.transactions.history/screen]]
+                  [:wallet.transactions.history/screen address]]
     [history/history-list transaction-history-sections]))
 
-(views/defview assets-and-collections []
-  (views/letsubs [{:keys [tokens nfts]} [:wallet/visible-assets-with-values]
+(views/defview assets-and-collections [address]
+  (views/letsubs [{:keys [tokens nfts]} [:wallet/visible-assets-with-values address]
                   currency [:wallet/currency]]
     (let [{:keys [tab]} @state]
       [react/view {:flex 1}
        [react/view {:flex-direction :row :margin-bottom 8 :padding-horizontal 4}
         [accounts/tab-title state :assets (i18n/label :t/wallet-assets) (= tab :assets)]
-        (when (seq nfts)
-          [accounts/tab-title state :nft (i18n/label :t/wallet-collectibles) (= tab :nft)])
+        [accounts/tab-title state :nft (i18n/label :t/wallet-collectibles) (= tab :nft)]
         [accounts/tab-title state :history (i18n/label :t/history) (= tab :history)]]
        (cond
          (= tab :assets)
@@ -91,18 +90,22 @@
                                                         :align-self :stretch}}]
                           :render-fn          (accounts/render-asset (:code currency))}]
          (= tab :nft)
-         [list/flat-list {:data               nfts
-                          :default-separator? false
-                          :key-fn             :name
-                          :footer             [react/view
-                                               {:style {:height     tabs.styles/tabs-diff
-                                                        :align-self :stretch}}]
-                          :render-fn          accounts/render-collectible}]
+         (if (seq nfts)
+           [list/flat-list {:data               nfts
+                            :default-separator? false
+                            :key-fn             :name
+                            :footer             [react/view
+                                                 {:style {:height     tabs.styles/tabs-diff
+                                                          :align-self :stretch}}]
+                            :render-fn          accounts/render-collectible}]
+           [react/view {:align-items :center :margin-top 32}
+            [react/text {:style {:color colors/gray}}
+             (i18n/label :t/no-collectibles)]])
          (= tab :history)
-         [transactions])])))
+         [transactions address])])))
 
 (views/defview account []
-  (views/letsubs [{:keys [name] :as account} [:get-screen-params]]
+  (views/letsubs [{:keys [name address] :as account} [:get-screen-params]]
     [react/view {:flex 1 :background-color colors/white}
      [toolbar-view name]
      [react/scroll-view
@@ -110,4 +113,4 @@
        [react/scroll-view {:horizontal true}
         [react/view {:flex-direction :row :padding-top 8 :padding-bottom 12}
          [account-card account]]]]
-      [assets-and-collections]]]))
+      [assets-and-collections address]]]))

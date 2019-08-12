@@ -119,36 +119,26 @@
                 watched-transactions))))
 
 (fx/defn add-transfer
-  [{:keys [db] :as cofx} {:keys [hash id] :as transfer}]
-  (let [transfer-by-hash (get-in db [:wallet :transactions hash])
-        transfer-by-id   (get-in db [:wallet :transaction id])
-        unique-id (when-not (or transfer-by-id
-                                (= transfer transfer-by-hash))
-                    (if (and transfer-by-hash
-                             (not (= :pending
-                                     (:type transfer-by-hash))))
-                      id
-                      hash))]
-    (when unique-id
+  [{:keys [db] :as cofx} {:keys [hash id] :as transfer} address]
+  (let [transfer-by-hash (get-in db [:wallet :accounts address :transactions hash])]
+        ;;transfer-by-id   (get-in db [:wallet :transaction id]) ;; TODO didn't found any usage of this
+    (when-let [unique-id (when (not= transfer transfer-by-hash) ;(or transfer-by-id)
+                           (if (and transfer-by-hash
+                                    (not (= :pending
+                                            (:type transfer-by-hash))))
+                             id
+                             hash))]
       (fx/merge cofx
-                {:db (assoc-in db [:wallet :transactions unique-id]
+                {:db (assoc-in db [:wallet :accounts address :transactions unique-id]
                                (assoc transfer :hash unique-id))}
                 (check-transaction transfer)))))
 
 (fx/defn new-transfers
   {:events [::new-transfers]}
-  [{:keys [db] :as cofx} transfers]
-  (let [add-transfers-fx (map add-transfer transfers)]
+  [{:keys [db] :as cofx} address transfers]
+  (let [add-transfers-fx (map #(add-transfer % address) transfers)]
     (apply fx/merge cofx (conj add-transfers-fx
-                               wallet/update-balances))))
-
-(fx/defn handle-history
-  [{:keys [db] :as cofx} transactions]
-  (fx/merge cofx
-            {:db (update-in db
-                            [:wallet :transactions]
-                            #(merge transactions %))}
-            wallet/update-balances))
+                               (wallet/update-balances [address])))))
 
 (fx/defn handle-token-history
   [{:keys [db]} transactions]
@@ -158,21 +148,22 @@
 
 (re-frame/reg-fx
  ::get-transfers
- (fn [{:keys [chain-tokens from-block to-block]
+ (fn [{:keys [accounts chain-tokens from-block to-block]
        :or {from-block "0"
             to-block nil}}]
    ;; start inbound token transaction subscriptions
    ;; outbound token transactions are already caught in new blocks filter
-   (json-rpc/call
-    {:method "wallet_getTransfers"
-     :params [(encode/uint from-block) (encode/uint to-block)]
-     :on-success #(re-frame/dispatch
-                   [::new-transfers (enrich-transfers chain-tokens %)])})))
+   (doseq [{:keys [address]} accounts]
+     (json-rpc/call
+      {:method "wallet_getTransfersByAddress"
+       :params [address (encode/uint from-block) (encode/uint to-block)]
+       :on-success #(re-frame/dispatch [::new-transfers address (enrich-transfers chain-tokens %)])}))))
 
 (fx/defn initialize
   [{:keys [db] :as cofx}]
-  (let [{:keys [:wallet/all-tokens]} db
+  (let [accounts (get-in db [:multiaccount :accounts]) ;;TODO https://github.com/status-im/status-go/issues/1566
+        {:keys [:wallet/all-tokens]} db
         chain (ethereum/chain-keyword db)
         chain-tokens (into {} (map (juxt :address identity)
                                    (tokens/tokens-for all-tokens chain)))]
-    {::get-transfers {:chain-tokens chain-tokens}}))
+    {::get-transfers {:accounts accounts :chain-tokens chain-tokens}}))

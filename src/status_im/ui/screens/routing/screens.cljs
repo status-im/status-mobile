@@ -64,7 +64,8 @@
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
             [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
             [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
-            [status-im.ui.screens.wallet.account.views :as wallet.account]))
+            [status-im.ui.screens.wallet.account.views :as wallet.account]
+            [status-im.ui.screens.wallet.add-new.views :as add-account]))
 
 (def all-screens
   {:login                                            login/login
@@ -140,12 +141,11 @@
    :contact-code                                     wallet.components/contact-code
    :wallet-send-transaction                          send/send-transaction
    :recent-recipients                                wallet.components/recent-recipients
+   :select-account                                   wallet.components/accounts
    :recipient-qr-code                                wallet.components/recipient-qr-code
    :wallet-send-assets                               wallet.components/send-assets
    :wallet-send-transaction-request                  request/send-transaction-request
    :wallet-request-assets                            wallet.components/request-assets
-   :unsigned-transactions                            wallet-transactions/transactions
-   :transactions-history                             wallet-transactions/transactions
    :wallet-transaction-details                       wallet-transactions/transaction-details
    :wallet-settings-hook                             wallet-settings/settings-hook
    :selection-modal-screen                           [:modal extensions.module/selection-modal-screen-view]
@@ -186,7 +186,10 @@
    :keycard-settings                                 hardwallet.settings/keycard-settings
    :mobile-network-settings                          mobile-network-settings/mobile-network-settings
    :welcome                                          [:modal home/welcome]
-   :keycard-welcome                                  keycard/welcome})
+   :keycard-welcome                                  keycard/welcome
+   :add-new-account                                  add-account/add-account
+   :add-new-account-password                         add-account/password
+   :account-added                                    add-account/account-added})
 
 (defn get-screen [screen]
   (get all-screens screen #(throw (str "Screen " screen " is not defined."))))

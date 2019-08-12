@@ -255,3 +255,4 @@
 (def v26 (update v25 :properties merge {:root-address {:type :string :optional true}
                                         :accounts {:type :string :optional true}}))
 
+(def v27 (update v26 :properties merge {:latest-derived-path {:type :int :optional true}}))

@@ -19,6 +19,18 @@
 (defn create-multiaccount [password callback]
   (native-module/create-account password callback))
 
+(defn multiaccount-store-account [account-id password callback]
+  (native-module/multiaccount-store-account account-id password callback))
+
+(defn multiaccount-load-account [address password callback]
+  (native-module/multiaccount-load-account address password callback))
+
+(defn multiaccount-reset [callback]
+  (native-module/multiaccount-reset callback))
+
+(defn multiaccount-derive-addresses [account-id paths callback]
+  (native-module/multiaccount-derive-addresses account-id paths callback))
+
 (defn recover-multiaccount [passphrase password callback]
   (native-module/recover-account passphrase password callback))
 

@@ -57,3 +57,11 @@
 (def text-gray gray)
 
 (def default-chat-color "#a187d5") ;; legacy
+
+(def account-colors ["#9B832F"
+                     "#D37EF4"
+                     "#1D806F"
+                     "#FA6565"
+                     "#7CDA00"
+                     "#887AF9"
+                     "#8B3131"])

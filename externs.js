@@ -244,6 +244,7 @@ var TopLevel = {
     "messaging" : function () {},
     "method" : function () {},
     "minus" : function () {},
+    "plus" : function () {},
     "mkdir" : function () {},
     "module" : function () {},
     "moveFile" : function () {},
@@ -563,5 +564,9 @@ var TopLevel = {
     "createAppContainer" : function () {},
     "useScreens" : function () {},
     "multiAccountGenerateAndDeriveAddresses" : function () {},
-    "multiAccountStoreDerived" : function () {}
+    "multiAccountStoreDerived" : function () {},
+    "multiAccountDeriveAddresses" : function () {},
+    "multiAccountReset" : function () {},
+    "multiAccountLoadAccount" : function () {},
+    "multiAccountStoreAccount" : function () {}
 }
