@@ -75,11 +75,11 @@ pipeline {
               script { cmn.nix.shell('lein test-cljs', attr: 'targets.leiningen.shell') }
             }
           }
-          stage('Coverage') {
+          /* stage('Coverage') {
             steps {
               script { android.coverage() }
             }
-          }
+          } */
         } }
         stage('Build') { stages {
           stage('JSBundle') {
