@@ -63,6 +63,7 @@
                        :hardwallet-connect
                        :keycard-login-pin
                        :keycard-login-connect-card
+                       :keycard-nfc-on
                        :keycard-blank
                        :keycard-wrong
                        :keycard-unpaired

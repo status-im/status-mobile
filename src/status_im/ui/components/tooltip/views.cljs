@@ -15,8 +15,9 @@
     {:component-did-mount (animations/animate-tooltip bottom-value bottom-anim-value opacity-value -10)}
     [react/view (merge styles/tooltip-container container-style)
      [react/animated-view {:style (styles/tooltip-animated bottom-anim-value opacity-value)}
-      [react/view (styles/tooltip-text-container color)
-       [react/text {:style (styles/tooltip-text font-size)} label]]
+      (when label
+        [react/view (styles/tooltip-text-container color)
+         [react/text {:style (styles/tooltip-text font-size)} label]])
       [vector-icons/icon :icons/tooltip-triangle (assoc
                                                   styles/tooltip-triangle
                                                   :color color)]]]))

@@ -28,7 +28,8 @@
        name]]
      [react/text {:style styles/multiaccount-badge-pub-key-text}
       (utils/get-shortened-address public-key)]]
-    (if keycard-instance-uid
+    [react/view {:flex 1}]
+    (when keycard-instance-uid
       [react/view {:justify-content  :center
                    :align-items      :center
                    :margin-right     7
@@ -40,8 +41,7 @@
                    :border-color     (colors/alpha colors/black 0.1)}
        [react/image {:source (resources/get-image :keycard-key)
                      :style  {:width  11
-                              :height 19}}]]
-      [react/view {:flex 1}])
+                              :height 19}}]])
     [icons/icon :main-icons/next {:color (colors/alpha colors/gray 0.4)}]]])
 
 (defview multiaccounts []

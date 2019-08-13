@@ -618,6 +618,19 @@
                   (navigation/navigate-to-cofx :keycard-onboarding-start nil))
                 (navigation/navigate-to-cofx :keycard-nfc-on nil)))))
 
+(fx/defn proceed-to-login
+  [{:keys [db] :as cofx}]
+  (let [{:keys [card-connected? nfc-enabled?]} (:hardwallet db)]
+    (if nfc-enabled?
+      (if card-connected?
+        (login-with-keycard cofx)
+        (fx/merge cofx
+                  {:db (-> db
+                           (assoc-in [:hardwallet :on-card-connected] :hardwallet/get-application-info)
+                           (assoc-in [:hardwallet :on-card-read] :hardwallet/login-with-keycard))}
+                  (navigation/navigate-to-cofx :keycard-login-connect-card nil)))
+      (navigation/navigate-to-cofx cofx :keycard-nfc-on nil))))
+
 (fx/defn open-nfc-settings-pressed
   {:events [:keycard.onboarding.nfc-on/open-nfc-settings-pressed]}
   [_]
@@ -626,15 +639,19 @@
 (fx/defn on-check-nfc-enabled-success
   {:events [:hardwallet.callback/check-nfc-enabled-success]}
   [{:keys [db] :as cofx} nfc-enabled?]
-  (let [flow (get-in db [:hardwallet :flow])]
+  (let [flow (get-in db [:hardwallet :flow])
+        login? (= :login (get-in db [:hardwallet :pin :enter-step]))]
     (fx/merge cofx
               {:db (assoc-in db [:hardwallet :nfc-enabled?] nfc-enabled?)}
               (when (and nfc-enabled?
                          (= (:view-id db)
                             :keycard-nfc-on))
-                (if (= flow :import)
-                  (navigation/navigate-to-cofx :keycard-recovery-start nil)
-                  (navigation/navigate-to-cofx :keycard-onboarding-start nil))))))
+                (if flow
+                  (if (= flow :import)
+                    (navigation/navigate-to-cofx :keycard-recovery-start nil)
+                    (navigation/navigate-to-cofx :keycard-onboarding-start nil))
+                  (when login?
+                    (proceed-to-login)))))))
 
 (fx/defn success-button-pressed [cofx]
   (navigation/navigate-to-cofx cofx :home nil))
@@ -904,8 +921,10 @@
                 (pair)))))
 
 (fx/defn return-back-from-nfc-settings [{:keys [db]}]
-  (when (= (:view-id db)
-           :keycard-onboarding-nfc-on)
+  (when (or (get-in db [:hardwallet :flow])
+            (get-in db [:hardwallet :pin :enter-step])
+            (get-in db [:hardwallet :on-card-connected])
+            (get-in db [:hardwallet :on-card-read]))
     {:hardwallet/check-nfc-enabled nil}))
 
 (defn- proceed-to-pin-confirmation [fx]
@@ -1147,17 +1166,6 @@
                                               :enter-step   :original
                                               :original     []
                                               :confirmation []}))
-
-(fx/defn proceed-to-login
-  [{:keys [db] :as cofx}]
-  (let [card-connected? (get-in db [:hardwallet :card-connected?])]
-    (if card-connected?
-      (login-with-keycard cofx)
-      (fx/merge cofx
-                {:db (-> db
-                         (assoc-in [:hardwallet :on-card-connected] :hardwallet/get-application-info)
-                         (assoc-in [:hardwallet :on-card-read] :hardwallet/login-with-keycard))}
-                (navigation/navigate-to-cofx :keycard-login-connect-card nil)))))
 
 (fx/defn navigate-to-connect-screen
   [{:keys [db] :as cofx} screen-name]
