@@ -29,7 +29,6 @@
    "shhext_disableInstallation" {}
    "shhext_getOurInstallations" {}
    "shhext_setInstallationMetadata" {}
-   "shhext_loadFilters" {}
    "shhext_loadFilter" {}
    "shhext_removeFilters" {}
    "shhext_chats" {}
