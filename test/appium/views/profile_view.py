@@ -8,7 +8,7 @@ class PublicKeyText(BaseText):
 
     def __init__(self, driver):
         super(PublicKeyText, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('address-text')
+        self.locator = self.Locator.accessibility_id('chat-key')
 
 
 class ProfileAddressText(BaseText):
@@ -112,21 +112,15 @@ class DefaultUserNameText(BaseText):
     def __init__(self, driver):
         super(DefaultUserNameText, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            '//android.widget.ImageView[@content-desc="chat-icon"]/../android.widget.TextView[2]')
+            '//android.view.ViewGroup[@content-desc="edit-profile-photo-button"]/../android.widget.TextView')
 
 
 class ShareMyProfileButton(BaseButton):
 
     def __init__(self, driver):
         super(ShareMyProfileButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('share-my-profile-button')
+        self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[1]')
 
-
-class EditButton(BaseButton):
-
-    def __init__(self, driver):
-        super(EditButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('edit-button')
 
 
 class ProfilePictureElement(BaseElement):
@@ -139,7 +133,7 @@ class EditPictureButton(BaseButton):
 
     def __init__(self, driver):
         super(EditPictureButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('edit-profile-photo-button')
+        self.locator = self.Locator.xpath_selector('//android.view.ViewGroup[@content-desc="edit-profile-photo-button"]')
 
 
 class ConfirmEditButton(BaseButton):
@@ -519,7 +513,6 @@ class ProfileView(BaseView):
         self.username_set_by_user_text = UserNameSetByUserText(self.driver)
         self.default_username_text = DefaultUserNameText(self.driver)
         self.share_my_profile_button = ShareMyProfileButton(self.driver)
-        self.edit_button = EditButton(self.driver)
         self.profile_picture = ProfilePictureElement(self.driver)
         self.edit_picture_button = EditPictureButton(self.driver)
         self.remove_picture_button = RemovePictureButton(self.driver)
@@ -622,9 +615,7 @@ class ProfileView(BaseView):
     def edit_profile_picture(self, file_name: str):
         if not AbstractTestCase().environment == 'sauce':
             raise NotImplementedError('Test case is implemented to run on SauceLabs only')
-        self.edit_button.click()
-        self.swipe_down()
-        self.edit_picture_button.click()
+        self.profile_picture.click()
         self.profile_picture.template = file_name
         self.select_from_gallery_button.click()
         if self.allow_button.is_element_displayed(sec=5):
@@ -635,23 +626,14 @@ class ProfileView(BaseView):
             for element_text in 'Images', 'DCIM':
                 self.element_by_text(element_text).click()
         picture.click()
-        self.confirm_edit_button.click()
 
-    def edit_profile_username(self, user_name: str):
-        self.edit_button.click()
-        self.swipe_down()
-        self.username_input.clear()
-        self.username_input.set_value(user_name)
-        self.confirm_edit_button.click()
 
     def remove_profile_picture(self):
         if not AbstractTestCase().environment == 'sauce':
             raise NotImplementedError('Test case is implemented to run on SauceLabs only')
-        self.edit_button.click()
-        self.swipe_down()
-        self.edit_picture_button.click()
+        self.profile_picture.click()
         self.remove_picture_button.click()
-        self.confirm_edit_button.click()
+
 
     def logout(self):
         self.logout_button.click()
@@ -665,7 +647,6 @@ class ProfileView(BaseView):
 
     def discover_and_advertise_device(self, device_name):
         self.profile_button.click()
-        # device_2_profile = device_2_home.get_profile_view()
         self.devices_button.scroll_to_element()
         self.devices_button.click()
         self.device_name_input.set_value(device_name)

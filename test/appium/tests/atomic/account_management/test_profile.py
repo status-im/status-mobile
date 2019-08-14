@@ -34,12 +34,11 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view = home_view.profile_button.click()
         profile_view.edit_profile_picture('sauce_logo.png')
         profile_view.swipe_down()
-        if not profile_view.profile_picture.is_element_image_equals_template():
+        if not profile_view.profile_picture.is_element_image_equals_template('sauce_logo_profile.png'):
             self.driver.fail('Profile picture was not updated')
-
         profile_view.remove_profile_picture()
         profile_view.swipe_down()
-        if profile_view.profile_picture.is_element_image_equals_template():
+        if profile_view.profile_picture.is_element_image_equals_template('default_icon_profile.png'):
             self.driver.fail('Profile picture was not deleted')
 
     @marks.testrail_id(5323)
@@ -56,7 +55,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append("Can't share public key")
         for _ in range(2):
             profile_view.click_system_back_button()
-        profile_view.cross_icon.click()
+        profile_view.close_share_chat_key_popup()
         wallet = profile_view.wallet_button.click()
         wallet.set_up_wallet()
         wallet.accounts_status_account.click()

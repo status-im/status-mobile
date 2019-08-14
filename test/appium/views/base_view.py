@@ -149,8 +149,8 @@ class ProfileButton(TabButton):
         return ProfileView(self.driver)
 
     def click(self):
-        from views.profile_view import ShareMyProfileButton
-        self.click_until_presence_of_element(ShareMyProfileButton(self.driver))
+        from views.profile_view import DefaultUserNameText
+        self.click_until_presence_of_element(DefaultUserNameText(self.driver))
         return self.navigate()
 
 
@@ -555,12 +555,15 @@ class BaseView(object):
         sign_in_view = self.get_sign_in_view()
         sign_in_view.sign_in(password)
 
+    def close_share_chat_key_popup(self):
+        TouchAction(self.driver).tap(None, 255, 104, 1).perform()
+
     def get_public_key(self):
         profile_view = self.profile_button.click()
         profile_view.share_my_profile_button.click()
         profile_view.public_key_text.wait_for_visibility_of_element()
         public_key = profile_view.public_key_text.text
-        profile_view.cross_icon.click()
+        self.close_share_chat_key_popup()
         return public_key
 
     def share_via_messenger(self):
