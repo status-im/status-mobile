@@ -312,15 +312,15 @@ _startdev-%:
 		$(MAKE) watch-$(SYSTEM)-$(DEVICE) || $(MAKE) _unknown-startdev-target-$@; \
 	fi
 
-startdev-android-avd: export TARGET_OS ?= android
+startdev-android-avd: export TARGET_OS = android
 startdev-android-avd: _startdev-android-avd
-startdev-android-genymotion: export TARGET_OS ?= android
+startdev-android-genymotion: export TARGET_OS = android
 startdev-android-genymotion: _startdev-android-genymotion
-startdev-android-real: export TARGET_OS ?= android
+startdev-android-real: export TARGET_OS = android
 startdev-android-real: _startdev-android-real
 startdev-desktop: export TARGET_OS ?= $(HOST_OS)
 startdev-desktop: _startdev-desktop
-startdev-ios-real: export TARGET_OS ?= ios
+startdev-ios-real: export TARGET_OS = ios
 startdev-ios-real: _startdev-ios-real
-startdev-ios-simulator: export TARGET_OS ?= ios
+startdev-ios-simulator: export TARGET_OS = ios
 startdev-ios-simulator: _startdev-ios-simulator
