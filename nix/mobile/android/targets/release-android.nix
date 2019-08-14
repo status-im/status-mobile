@@ -21,7 +21,7 @@ let
     if (build-type == "release" || build-type == "nightly" || build-type == "e2e") then ".env.${build-type}" else
     if build-type != "" then ".env.jenkins" else ".env";
   buildType' = if (build-type == "release" || build-type == "nightly") then "release" else "pr";
-  generatedApkPath = "android/app/build/outputs/apk/${buildType'}/app-${buildType'}.apk";
+  generatedApkPath = "$sourceRoot/android/app/build/outputs/apk/${buildType'}/app-${buildType'}.apk";
   outApkName = "app.apk";
 
 in stdenv.mkDerivation {
@@ -41,13 +41,23 @@ in stdenv.mkDerivation {
             "resources"
           ];
           dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ".gradle" "build" "intermediates" "libs" "obj" ];
-          filesToInclude = [ envFileName "status-go-version.json" "VERSION" ];
+          filesToInclude = [ envFileName "status-go-version.json" "VERSION" "react-native.config.js" ];
           root = path;
         };
     };
   nativeBuildInputs = [ bash gradle ] ++ lib.optionals stdenv.isDarwin [ file gnumake watchman ];
   buildInputs = [ nodejs openjdk ];
   phases = [ "unpackPhase" "patchPhase" "buildPhase" "installPhase" ];
+  unpackPhase = ''
+    runHook preUnpack
+
+    cp -r $src ./project
+    chmod u+w -R ./project
+
+    export sourceRoot=$PWD/project
+
+    runHook postUnpack
+  '';
   postUnpack = ''
     mkdir -p ${gradleHome}
 
@@ -63,7 +73,6 @@ in stdenv.mkDerivation {
     cp -a --no-preserve=ownership ${sourceProjectDir}/android/ $sourceRoot/
     chmod u+w $sourceRoot/android
     chmod u+w $sourceRoot/android/app
-    chmod -R u+w $sourceRoot/android/.gradle
     mkdir $sourceRoot/android/build && chmod -R u+w $sourceRoot/android/build
 
     # Copy node_modules/ directory
@@ -82,14 +91,10 @@ in stdenv.mkDerivation {
     prevSet=$-
     set -e
 
-    substituteInPlace android/gradlew \
+    substituteInPlace $sourceRoot/android/gradlew \
       --replace \
         'exec gradle' \
         "exec gradle -Dmaven.repo.local='${localMavenRepo}' --offline ${gradle-opts}"
-
-    # OPTIONAL: There's no need to forward debug ports for a release build, just disable it
-    substituteInPlace node_modules/realm/android/build.gradle \
-      --replace 'compileTask.dependsOn forwardDebugPort' 'compileTask'
 
     set $prevSet
   '';
@@ -104,7 +109,7 @@ in stdenv.mkDerivation {
       capitalizedBuildType = toUpper (substring 0 1 buildType') + substring 1 (-1) buildType';
     in ''
     export STATUS_REACT_HOME=$PWD
-    export HOME=$NIX_BUILD_TOP
+    export HOME=$sourceRoot
 
     ${exportEnvVars}
     ${if secrets-file != "" then "source ${secrets-file}" else ""}
@@ -112,7 +117,7 @@ in stdenv.mkDerivation {
     ${androidEnvShellHook}
     ${concatStrings (catAttrs "shellHook" [ mavenAndNpmDeps status-go ])}
 
-    pushd android
+    pushd $sourceRoot/android
     ${adhocEnvVars} ./gradlew -PversionCode=${build-number} assemble${capitalizedBuildType} || exit
     popd > /dev/null
 

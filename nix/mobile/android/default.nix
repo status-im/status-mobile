@@ -9,7 +9,7 @@ let
   gradle = callPackage ./gradle.nix { };
 
   # Import a local patched version of node_modules, together with a local version of the Maven repo
-  mavenAndNpmDeps = callPackage ./maven-and-npm-deps { inherit stdenv stdenvNoCC gradle bash nodejs zlib localMavenRepoBuilder mkFilter projectNodePackage status-go; androidEnvShellHook = androidEnv.shellHook; };
+  mavenAndNpmDeps = callPackage ./maven-and-npm-deps { inherit stdenv stdenvNoCC gradle bash nodejs zlib localMavenRepoBuilder mkFilter projectNodePackage; };
 
   # TARGETS
   release = callPackage ./targets/release-android.nix { inherit target-os gradle mavenAndNpmDeps mkFilter nodejs jsbundle status-go zlib; androidEnvShellHook = androidEnv.shellHook; };
