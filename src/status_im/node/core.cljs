@@ -119,7 +119,7 @@
                              :RendezvousNodes    rendezvous-nodes})
 
       :always
-      (assoc :WalletConfig {:Enabled true}
+      (assoc :WalletConfig {:Enabled false}
              :BrowsersConfig {:Enabled true}
              :PermissionsConfig {:Enabled true}
              :WhisperConfig           {:Enabled true
