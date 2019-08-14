@@ -1,4 +1,4 @@
-{ config, stdenv, stdenvNoCC, target-os, callPackage, mkShell,
+{ config, stdenv, stdenvNoCC, target-os ? "android", callPackage, mkShell,
   mkFilter, androidenv, fetchurl, openjdk, nodejs, bash, maven, zlib,
   status-go, localMavenRepoBuilder, projectNodePackage, jsbundle }:
 

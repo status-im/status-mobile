@@ -47,7 +47,7 @@ fi
 if [[ "$TARGET_OS" =~ (linux|windows|darwin|macos) ]]; then
   # This is a dirty workaround because 'yarn install' is an impure operation,
   # so we need to call it from an impure shell.
-  # Hopefull we'll be able to fix this later on with something like yarn2nix
+  # Hopefully we'll be able to fix this later on with something like yarn2nix
   nix-shell ${shellArgs[@]} --run "scripts/prepare-for-desktop-platform.sh" || exit
 fi
 

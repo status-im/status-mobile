@@ -25,7 +25,7 @@ let
   deps = 
     let
       # Place build target directories in NIX_BUILD_TOP (normally represents /build)
-      projectDir = "$NIX_BUILD_TOP/project";
+      projectBuildDir = "$NIX_BUILD_TOP/project";
       mavenRepoDir = "$NIX_BUILD_TOP/.m2/repository";
       reactNativeMavenPackageDir = "${mavenRepoDir}/com/facebook/react/react-native"; # This is directory where the react-native Maven package will be generated in
       reactNativeDepsDir = "$NIX_BUILD_TOP/deps"; # Use local writable deps, otherwise (probably due to some interaction between Nix sandboxing and Java) gradle will fail copying directly from the nix store
@@ -57,10 +57,10 @@ let
           runHook preUnpack
 
           # Copy project directory
-          mkdir -p ${projectDir}
-          cp -a $src/. ${projectDir}
-          chmod u+w ${projectDir}
-          cd ${projectDir}
+          mkdir -p ${projectBuildDir}
+          cp -a $src/. ${projectBuildDir}
+          chmod u+w ${projectBuildDir}
+          cd ${projectBuildDir}
 
           # Copy RN maven dependencies and make them writable, otherwise Gradle copy fails (since the top-level directory is read-only, Java isn't smart enough to copy the child files/folders into that target directory)
           mkdir -p ${mavenRepoDir}
@@ -73,21 +73,21 @@ let
           done
 
           # Copy node_modules from Nix store
-          rm -rf ${projectDir}/node_modules
-          mkdir -p ${projectDir}/node_modules
-          cp -a ${projectNodePackage}/node_modules/. ${projectDir}/node_modules/
+          rm -rf ${projectBuildDir}/node_modules
+          mkdir -p ${projectBuildDir}/node_modules
+          cp -a ${projectNodePackage}/node_modules/. ${projectBuildDir}/node_modules/
 
           # Adjust permissions
-          chmod -R u+w ${projectDir}
+          chmod -R u+w ${projectBuildDir}
 
-          cp -R ${projectDir}/status-modules/ ${projectDir}/node_modules/status-modules/
-          cp -R ${projectDir}/translations/ ${projectDir}/node_modules/status-modules/translations/
+          cp -R ${projectBuildDir}/status-modules/ ${projectBuildDir}/node_modules/status-modules/
+          cp -R ${projectBuildDir}/translations/ ${projectBuildDir}/node_modules/status-modules/translations/
 
           # Set up symlinks to mobile enviroment in project root
-          ${createMobileFilesSymlinks projectDir}
+          ${createMobileFilesSymlinks projectBuildDir}
 
           # Create a dummy VERSION, since we don't want this expression to be invalidated just because the version changed
-          echo '0.0.1' > ${projectDir}/VERSION
+          echo '0.0.1' > ${projectBuildDir}/VERSION
 
           runHook postUnpack
         '';
@@ -97,7 +97,7 @@ let
           prevSet=$-
           set -e
 
-          patchShebangs ${projectDir}
+          patchShebangs ${projectBuildDir}
 
           function patchMavenSource() {
             set +e
@@ -125,28 +125,34 @@ let
 
           # Patch maven and google central repositories with our own local directories. This prevents the builder from downloading Maven artifacts
           patchMavenSources 'android/build.gradle' '${mavenLocalRepo}'
-          for f in `find ${projectDir}/node_modules/ -name build.gradle`; do
+          for f in `find ${projectBuildDir}/node_modules/ -name build.gradle`; do
             patchMavenSources $f '${mavenLocalRepo}'
           done
 
           # Patch prepareJSC so that it doesn't try to download from registry
-          substituteInPlace ${projectDir}/node_modules/react-native/ReactAndroid/build.gradle \
+          substituteInPlace ${projectBuildDir}/node_modules/react-native/ReactAndroid/build.gradle \
             --replace 'prepareJSC(dependsOn: downloadJSC)' 'prepareJSC(dependsOn: createNativeDepsDirectories)' \
             --replace 'def jscTar = tarTree(downloadJSC.dest)' "def jscTar = tarTree(new File(\"${react-native-deps}/deps/${jsc-filename}.tar.gz\"))"
 
           # Do not add a BuildId to the generated libraries, for reproducibility
-          substituteInPlace ${projectDir}/node_modules/react-native/ReactAndroid/src/main/jni/Application.mk \
-            --replace '-Wl,--build-id' '-Wl,--build-id=none'
+          substituteInPlace ${projectBuildDir}/node_modules/react-native/ReactAndroid/src/main/jni/Application.mk \
+            --replace \
+              '-Wl,--build-id' \
+              '-Wl,--build-id=none'
 
           # Disable Gradle daemon and caching, since that causes rebuilds (and subsequently errors) anyway due to cache being considered stale
-          substituteInPlace ${projectDir}/android/gradle.properties \
-            --replace 'org.gradle.jvmargs=-Xmx8704M' 'org.gradle.jvmargs=-Xmx8704M
+          substituteInPlace ${projectBuildDir}/android/gradle.properties \
+            --replace \
+              'org.gradle.jvmargs=-Xmx8704M' \
+              'org.gradle.jvmargs=-Xmx8704M
           org.gradle.daemon=false
           org.gradle.caching=false'
 
           # Patch the path to nodejs in project.ext.react
-          substituteInPlace ${projectDir}/android/app/build.gradle \
-            --replace 'nodeExecutableAndArgs: ["node"' 'nodeExecutableAndArgs: ["${nodejs}/bin/node"'
+          substituteInPlace ${projectBuildDir}/android/app/build.gradle \
+            --replace \
+              'nodeExecutableAndArgs: ["node"' \
+              'nodeExecutableAndArgs: ["${nodejs}/bin/node"'
 
           set $prevSet
 
@@ -157,9 +163,9 @@ let
           status-go.shellHook + ''
           export HOME=$NIX_BUILD_TOP
           export REACT_NATIVE_DEPENDENCIES="${reactNativeDepsDir}"
-          export STATUS_REACT_HOME="${projectDir}"
+          export STATUS_REACT_HOME="${projectBuildDir}"
 
-          pushd ${projectDir}/android
+          pushd ${projectBuildDir}/android
           # NOTE: This generates the react-native-android binaries under node_modules/react-native/android
           LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${lib.makeLibraryPath [ zlib ]} \
             gradle -Dmaven.repo.local=${mavenRepoDir} --offline -S react-native-android:installArchives || exit
@@ -168,24 +174,26 @@ let
         doCheck = true;
         checkPhase = ''
           runHook preCheck
-          test -d ${projectDir}/node_modules/react-native/ReactAndroid/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/facebook || \
+          test -d ${projectBuildDir}/node_modules/react-native/ReactAndroid/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/facebook || \
             exit 1
-          test -d ${projectDir}/node_modules/react-native/ReactAndroid/build/react-ndk/exported || \
+          test -d ${projectBuildDir}/node_modules/react-native/ReactAndroid/build/react-ndk/exported || \
             exit 2
           runHook postCheck
         '';
         installPhase = ''
           rm -rf $out
-          mkdir -p $out/project $out/.m2/repository
+          mkdir -p $out/{project,.m2/repository}
 
           # TODO: maybe node_modules/react-native/ReactAndroid/build/{tmp,generated} can be discarded?
           cp -R ${mavenRepoDir} $out/.m2/
-          cp -R ${projectDir}/android/ ${projectDir}/node_modules/ $out/project
+          cp -R ${projectBuildDir}/{android,node_modules}/ $out/project
         '';
         fixupPhase = ''
           # Patch prepareJSC so that it doesn't subsequently try to build NDK libs
           substituteInPlace $out/project/node_modules/react-native/ReactAndroid/build.gradle \
-            --replace 'packageReactNdkLibs(dependsOn: buildReactNdkLib, ' 'packageReactNdkLibs('
+            --replace \
+              'packageReactNdkLibs(dependsOn: buildReactNdkLib, ' \
+              'packageReactNdkLibs('
         '';
 
         # The ELF types are incompatible with the host platform, so let's not even try

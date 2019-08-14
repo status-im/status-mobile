@@ -3,8 +3,8 @@
   androidEnvShellHook, mavenAndNpmDeps,
   nodejs, openjdk, jsbundle, status-go, zlib }:
 
-{ build-number ? "9999",
-  build-type ? "nightly", # Build type (e.g. nightly, release, e2e). Default is to use .env.nightly file
+{ build-number,
+  build-type, # Build type (e.g. nightly, release, e2e). Default is to use .env.nightly file
   gradle-opts ? "",
   keystore-file ? "", # Path to the .keystore file used to sign the package
   secrets-file ? "", # Path to the file containing secret environment variables
@@ -83,9 +83,9 @@ in stdenv.mkDerivation {
     set -e
 
     substituteInPlace android/gradlew \
-      --replace 'exec gradle' "exec gradle -S -Dmaven.repo.local='${localMavenRepo}' --offline ${gradle-opts}"
-    substituteInPlace android/gradle.properties \
-      --replace 'versionCode=9999' 'versionCode=${build-number}'
+      --replace \
+        'exec gradle' \
+        "exec gradle -Dmaven.repo.local='${localMavenRepo}' --offline ${gradle-opts}"
 
     # OPTIONAL: There's no need to forward debug ports for a release build, just disable it
     substituteInPlace node_modules/realm/android/build.gradle \
@@ -113,7 +113,7 @@ in stdenv.mkDerivation {
     ${concatStrings (catAttrs "shellHook" [ mavenAndNpmDeps status-go ])}
 
     pushd android
-    ${adhocEnvVars} gradle assemble${capitalizedBuildType} -S -Dmaven.repo.local='${localMavenRepo}' --offline ${gradle-opts} || exit
+    ${adhocEnvVars} ./gradlew -PversionCode=${build-number} assemble${capitalizedBuildType} || exit
     popd > /dev/null
 
     ${unsetEnvVars}

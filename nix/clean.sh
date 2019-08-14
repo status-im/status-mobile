@@ -53,7 +53,7 @@ for path in ${drvPaths}; do
     toDelete+=("${drv}" "${src}")
 done
 
-# remove dupicates
+# remove duplicates
 cleanToDelete=$(echo "${toDelete[@]}" | sort | uniq)
 
 echo "Deleting..."

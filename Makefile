@@ -68,7 +68,6 @@ nix-update-npm: export TARGET_OS := none
 nix-update-npm: ##@nix Update node2nix expressions based on current package.json
 	nix/desktop/realm-node/generate-nix.sh
 
-nix-update-gradle: export TARGET_OS := android
 nix-update-gradle: ##@nix Update maven nix expressions based on current gradle setup
 	nix/mobile/android/maven-and-npm-deps/maven/generate-nix.sh
 
@@ -113,12 +112,14 @@ release: release-android release-ios ##@build build release for Android and iOS
 release-android: export TARGET_OS ?= android
 release-android: export BUILD_ENV ?= prod
 release-android: export BUILD_TYPE ?= nightly
+release-android: export BUILD_NUMBER ?= 9999
 release-android: export NDK_ABI_FILTERS ?= armeabi-v7a;arm64-v8a;x86
 release-android: export STORE_FILE ?= ~/.gradle/status-im.keystore
 release-android: ##@build build release for Android
 	nix/build.sh targets.mobile.$(TARGET_OS).release \
 		--arg env '{NDK_ABI_FILTERS="$(NDK_ABI_FILTERS)";}' \
 		--argstr build-type $(BUILD_TYPE) \
+		--argstr build-number $(BUILD_NUMBER) \
 		--argstr keystore-file $(STORE_FILE) \
 		--option extra-sandbox-paths $(STORE_FILE)
 

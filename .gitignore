@@ -32,12 +32,15 @@ project.xcworkspace
 .gradle
 *.iml
 **/android/.project
+**/android/.settings/org.eclipse.buildship.core.prefs
+local.properties
 
 # Atom
 .tags*
 
 # VS Code
 .vscode/ipch/
+.vscode/settings.json
 
 # node.js
 #
