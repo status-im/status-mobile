@@ -75,7 +75,7 @@
                 (navigation/navigate-to-cofx :intro-wizard nil))
 
       (fx/merge {:db (dissoc db :intro-wizard)}
-                (navigation/navigate-to-clean (if first-time-setup? :intro :multiaccounts) nil)))))
+                (navigation/navigate-back)))))
 
 (fx/defn exit-wizard [{:keys [db] :as cofx}]
   (fx/merge {:db (dissoc db :intro-wizard)}

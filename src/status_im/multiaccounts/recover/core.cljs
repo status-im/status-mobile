@@ -210,8 +210,11 @@
 
 (fx/defn cancel-pressed
   {:events [:recover.ui/cancel-pressed]}
-  [cofx]
-  (navigation/navigate-back cofx))
+  [{:keys [db] :as cofx}]
+  ;; Workaround for multiple Cancel button clicks
+  ;; that can break navigation tree
+  (when-not (#{:multiaccounts :login} (:view-id db))
+    (navigation/navigate-back cofx)))
 
 (fx/defn select-storage-next-pressed
   {:events       [:recover.select-storage.ui/next-pressed]

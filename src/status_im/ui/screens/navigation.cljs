@@ -14,16 +14,6 @@
 
 ;; public fns
 
-(fx/defn navigate-to-clean
-  [{:keys [db]} view-id screen-params]
-  (log/debug "current view-id " (:view-id db)
-             "changing to " view-id)
-  (let [db (cond-> db
-             (seq screen-params)
-             (assoc-in [:navigation/screen-params view-id] screen-params))]
-    {:db                 (push-view db view-id)
-     ::navigate-to-clean view-id}))
-
 (fx/defn navigate-forget
   [{:keys [db]} view-id]
   {:db (assoc db :view-id view-id)})
@@ -57,9 +47,10 @@
 
 (fx/defn navigate-reset
   [{:keys [db]} {:keys [index actions] :as config}]
-  {:db              (assoc db :view-id
-                           (:routeName (get actions index)))
-   ::navigate-reset config})
+  (let [view-id (:routeName (get actions index))]
+    {:db              (assoc db :view-id view-id
+                             :navigation-stack (list view-id))
+     ::navigate-reset config}))
 
 (def unload-data-interceptor
   (re-frame/->interceptor
@@ -92,14 +83,6 @@
    (log/debug :navigate-reset config)
    (navigation/navigate-reset config)))
 
-(re-frame/reg-fx
- ::navigate-to-clean
- (fn [view-id]
-   (log/debug :navigate-to-clean view-id)
-   (navigation/navigate-reset
-    {:index   0
-     :actions [{:routeName view-id}]})))
-
 ;; event handlers
 
 (handlers/register-handler-fx
@@ -131,6 +114,12 @@
  (re-frame/enrich -preload-data!)
  (fn [cofx _]
    (navigate-back cofx)))
+
+(handlers/register-handler-fx
+ :navigate-reset
+ (fn [cofx [_ view-id]]
+   (navigate-reset cofx {:index   0
+                         :actions [{:routeName view-id}]})))
 
 (handlers/register-handler-fx
  :navigate-to-clean

@@ -48,15 +48,17 @@
 (defn login-stack [view-id]
   {:name    :login-stack
    :screens (cond-> [:login
+                     :multiaccounts
+                     :intro-wizard
                      :progress
+                     :keycard-recovery-intro
                      :create-multiaccount
                      :recover-multiaccount
                      :recover-multiaccount-enter-phrase
                      :recover-multiaccount-select-storage
                      :recover-multiaccount-enter-password
                      :recover-multiaccount-confirm-password
-                     :recover-multiaccount-success
-                     :multiaccounts]
+                     :recover-multiaccount-success]
 
               config/hardwallet-enabled?
               (concat [:hardwallet-authentication-method
@@ -71,8 +73,8 @@
                        :hardwallet-setup
                        :hardwallet-success]))
    :config  (if
-                ;; add view-id here if you'd like that view to be
-                ;; first view when app is started
+              ;; add view-id here if you'd like that view to be
+              ;; first view when app is started
              (#{:login :progress :multiaccounts :enter-pin-login :keycard-login-pin} view-id)
               {:initialRouteName view-id}
               {:initialRouteName :login})})

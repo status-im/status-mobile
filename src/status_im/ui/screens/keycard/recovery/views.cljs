@@ -3,6 +3,7 @@
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.ui.screens.keycard.views :as views]
+            [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
@@ -22,7 +23,9 @@
    [toolbar/toolbar
     {:transparent? true
      :style        {:margin-top 32}}
-    toolbar/default-nav-back
+    (toolbar/nav-button
+     (actions/back #(re-frame/dispatch
+                     [:recover.ui/cancel-pressed])))
     nil]
    [react/view {:flex            1
                 :flex-direction  :column

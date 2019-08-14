@@ -24,7 +24,7 @@
    {:style {:border-bottom-width 0
             :margin-top          0}}
    (when can-navigate-back?
-     [toolbar/nav-button (act/back #(re-frame/dispatch [:navigate-to-clean :multiaccounts]))])
+     [toolbar/nav-button (act/back #(re-frame/dispatch [:navigate-reset :multiaccounts]))])
    nil])
 
 (defn login-multiaccount [password-text-input]

@@ -56,7 +56,7 @@
                         :key-fn    :address
                         :render-fn (fn [multiaccount] [multiaccount-view multiaccount])}]]
       [react/view
-       [components.common/button {:on-press #(re-frame/dispatch [:multiaccounts.create.ui/intro-wizard true])
+       [components.common/button {:on-press #(re-frame/dispatch [:multiaccounts.create.ui/intro-wizard false])
                                   :button-style styles/bottom-button
                                   :label    (i18n/label :t/generate-a-new-key)}]
        [react/view styles/bottom-button-container
