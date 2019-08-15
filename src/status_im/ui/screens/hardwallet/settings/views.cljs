@@ -113,7 +113,7 @@
        (if (zero? puk-retry-counter)
          [card-blocked]
          [react/view
-          [action-row {:icon     :main-icons/info
+          [action-row {:icon     :main-icons/help
                        :label    :t/help-capitalized
                        :on-press #(.openURL react/linking "https://hardwallet.status.im")}]
           (when pairing
@@ -124,10 +124,11 @@
              [action-row {:icon     :main-icons/close
                           :label    :t/unpair-card
                           :on-press #(re-frame/dispatch [:keycard-settings.ui/unpair-card-pressed])}]])])]
-      (when pairing
-        [react/view {:margin-bottom 35
-                     :margin-left   16}
-         [action-row {:icon        :main-icons/logout
-                      :color-theme :red
-                      :label       :t/reset-card
-                      :on-press    #(re-frame/dispatch [:keycard-settings.ui/reset-card-pressed])}]])]]))
+      ; NOTE: Reset card is hidden until multiaccount removal will be implemented
+      #_(when pairing
+          [react/view {:margin-bottom 35
+                       :margin-left   16}
+           [action-row {:icon        :main-icons/warning
+                        :color-theme :red
+                        :label       :t/reset-card
+                        :on-press    #(re-frame/dispatch [:keycard-settings.ui/reset-card-pressed])}]])]]))

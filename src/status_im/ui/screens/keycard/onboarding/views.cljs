@@ -261,12 +261,25 @@
                              :text-align :center}}
          (i18n/label (if (= :original enter-step)
                        :t/intro-wizard-title4
-                       :t/intro-wizard-title5))]]]
+                       :t/intro-wizard-title5))]]
+       [react/view {:margin-top 16
+                    :height     22}
+        (when (= :original enter-step)
+          [react/text {:style {:color colors/gray}}
+           (i18n/label :t/intro-wizard-text4)])]]
       [pin.views/pin-view
        {:pin         pin
         :status      status
         :error-label error-label
-        :step        enter-step}]]]))
+        :step        enter-step}]
+      [react/view {:align-items     :center
+                   :flex-direction  :column
+                   :justify-content :center
+                   :margin-bottom   15}
+       [react/text {:style {:color              colors/gray
+                            :padding-horizontal 40
+                            :text-align         :center}}
+        (i18n/label :t/you-will-need-this-code)]]]]))
 
 (defview recovery-phrase []
   (letsubs [mnemonic [:hardwallet-mnemonic]]

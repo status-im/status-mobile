@@ -154,7 +154,7 @@
   [amount-error gas-error]
   [button/button {:on-press  #(re-frame/dispatch [:signing.ui/sign-with-keycard-pressed])
                   :disabled? (or amount-error gas-error)
-                  :label     :t/sign-with}])
+                  :label     :t/sign-with-keycard}])
 
 (defn- signing-phrase-view [phrase]
   [react/view {:align-items :center}
@@ -163,7 +163,7 @@
 
 (defn- keycard-view
   [{:keys [keycard-step]} phrase]
-  [react/view {:height 450}
+  [react/view {:height 500}
    [signing-phrase-view phrase]
    (case keycard-step
      :pin [keycard-pin-view]

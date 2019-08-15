@@ -147,7 +147,7 @@
    :network                              "mainnet_rpc"
    :wallet-set-up-passed?                false
    :public-key                           "0x04173f7cdea0076a7998abb674cc79fe61337c42db77043c01d5b0f3e3ac1e5a45bca0c93bb9f3c3d38b7cc9a7337cd64f9f9b2114fe4bbdfe1ae2633ba14d8c9c"
-   :keycard-instance-uid                 nil
+   :keycard-key-uid                      nil
    :installation-id                      "618ec020-13c8-5505-8aa6-9c5444317e7f"})
 
 (def multiaccounts

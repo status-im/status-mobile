@@ -35,6 +35,11 @@
   (clear-web-data)
   (.saveAccountAndLogin (status) multiaccount-data hashed-password config accounts-data))
 
+(defn save-account-and-login-with-keycard
+  "NOTE: chat-key is a whisper private key sent from keycard"
+  [multiaccount-data password config chat-key]
+  (.saveAccountAndLoginWithKeycard (status) multiaccount-data password config chat-key))
+
 (defn login
   "NOTE: beware, the password has to be sha3 hashed"
   [account-data hashed-password]
@@ -133,9 +138,9 @@
   (.verify (status) address hashed-password callback))
 
 (defn login-with-keycard
-  [{:keys [whisper-private-key encryption-public-key on-result]}]
+  [{:keys [multiaccount-data password chat-key]}]
   (clear-web-data)
-  (.loginWithKeycard (status) whisper-private-key encryption-public-key on-result))
+  (.loginWithKeycard (status) multiaccount-data password chat-key))
 
 (defn set-soft-input-mode [mode]
   (.setSoftInputMode (status) mode))

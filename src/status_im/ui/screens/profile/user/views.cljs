@@ -22,6 +22,7 @@
             [status-im.ui.screens.profile.user.styles :as styles]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.platform :as platform]
+            [status-im.utils.config :as config]
             [status-im.utils.universal-links.core :as universal-links])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -159,6 +160,13 @@
     :accessibility-label :sync-settings-button
     :accessories         [:chevron]
     :on-press            #(re-frame/dispatch [:navigate-to :sync-settings])}
+   (when (and platform/android?
+              config/hardwallet-enabled?)
+     {:icon                :main-icons/keycard
+      :title               :t/keycard
+      :accessibility-label :keycard-button
+      :accessories         [:chevron]
+      :on-press            #(re-frame/dispatch [:navigate-to :keycard-settings])})
    {:icon                :main-icons/settings-advanced
     :title               :t/advanced
     :accessibility-label :advanced-button

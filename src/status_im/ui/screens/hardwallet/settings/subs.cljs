@@ -38,4 +38,4 @@
  :keycard-multiaccount?
  (fn [db]
    (boolean
-    (get-in db [:multiaccount :keycard-instance-uid]))))
+    (get-in db [:multiaccount :keycard-key-uid]))))

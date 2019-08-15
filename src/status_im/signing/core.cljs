@@ -171,7 +171,7 @@
 (fx/defn show-sign [{:keys [db] :as cofx}]
   (let [{:signing/keys [queue]} db
         {{:keys [gas gasPrice] :as tx-obj} :tx-obj {:keys [data typed?] :as message} :message :as tx} (last queue)
-        keycard-multiaccount? (boolean (get-in db [:multiaccount :keycard-instance-uid]))
+        keycard-multiaccount? (boolean (get-in db [:multiaccount :keycard-key-uid]))
         wallet-set-up-passed? (get-in db [:multiaccount :wallet-set-up-passed?])
         updated-db (if wallet-set-up-passed? db (assoc db :popover/popover {:view :signing-phrase}))]
     (if message

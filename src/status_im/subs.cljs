@@ -180,6 +180,8 @@
 (reg-root-key-sub :popover/popover :popover/popover)
 (reg-root-key-sub :generate-account :generate-account)
 
+(reg-root-key-sub :keycard :hardwallet)
+
 ;;GENERAL ==============================================================================================================
 
 (re-frame/reg-sub

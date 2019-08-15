@@ -4898,7 +4898,7 @@ react-native-splash-screen@^3.2.0:
   resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.2.0.tgz#d47ec8557b1ba988ee3ea98d01463081b60fff45"
   integrity sha512-Ls9qiNZzW/OLFoI25wfjjAcrf2DZ975hn2vr6U9gyuxi2nooVbzQeFoQS5vQcbCt9QX5NY8ASEEAtlLdIa6KVg==
 
-react-native-status-keycard@^2.5.7:
+react-native-status-keycard@^2.5.11:
   version "2.5.11"
   resolved "https://registry.yarnpkg.com/react-native-status-keycard/-/react-native-status-keycard-2.5.11.tgz#ba7d6b417ca3de345b7da27997d799ece6de6b68"
   integrity sha512-yc1Jkr+mKJpyd8QRJuYFchzkZ8ANDSC2CPYVKJJN2i93RReft3o2cHAi+Sn5LxI5Ex5ZpLaEzdL5ezG2EWbrjA==

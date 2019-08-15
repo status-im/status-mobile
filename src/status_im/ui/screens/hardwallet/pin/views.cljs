@@ -40,10 +40,10 @@
      [react/view styles/numpad-delete-button
       [vector-icons/icon :main-icons/backspace {:color colors/blue}]]]]])
 
-(defn pin-indicator [pressed?]
-  [react/view (styles/pin-indicator pressed?)])
+(defn pin-indicator [pressed? status]
+  [react/view (styles/pin-indicator pressed? status)])
 
-(defn pin-indicators [pin style]
+(defn pin-indicators [pin status style]
   [react/view (merge styles/pin-indicator-container style)
    (map-indexed
     (fn [i group]
@@ -54,17 +54,17 @@
                (map-indexed
                 (fn [i n]
                   ^{:key i}
-                  [pin-indicator (number? n)])
+                  [pin-indicator (number? n) status])
                 (concat pin
                         (repeat (- 6 (count pin))
                                 nil)))))])
 
-(defn puk-indicators [puk]
+(defn puk-indicators [puk status]
   [react/view
    (map-indexed
     (fn [i puk-group]
       ^{:key i}
-      [pin-indicators puk-group {:margin-top 15}])
+      [pin-indicators puk-group status {:margin-top 15}])
     (partition 6
                (concat puk
                        (repeat (- 12 (count puk))
@@ -83,21 +83,23 @@
          [react/text {:style           styles/create-pin-text
                       :number-of-lines 2}
           (i18n/label description-label)])
-       (when retry-counter
-         [react/text {:style {:font-weight "700"
-                              :padding-top 10
-                              :color       colors/red}}
-          (i18n/label :t/pin-retries-left {:number retry-counter})])
-       (case status
-         :verifying [react/view styles/waiting-indicator-container
-                     [react/activity-indicator {:animating true
-                                                :size      :small}]]
-         :error [react/view styles/error-container
-                 [react/text {:style styles/error-text}
-                  (i18n/label error-label)]]
-         (if (= step :puk)
-           [puk-indicators pin]
-           [pin-indicators pin]))
+       [react/view {:height 10}
+        (when retry-counter
+          [react/text {:style {:font-weight "700"
+                               :color       colors/red}}
+           (i18n/label :t/pin-retries-left {:number retry-counter})])]
+       [react/view {:height 22}
+        (case status
+          :verifying [react/view styles/waiting-indicator-container
+                      [react/activity-indicator {:animating true
+                                                 :size      :small}]]
+          :error [react/view styles/error-container
+                  [react/text {:style styles/error-text}
+                   (i18n/label error-label)]]
+          nil)]
+       (if (= step :puk)
+         [puk-indicators pin status]
+         [pin-indicators pin status nil])
        [numpad step enabled?]]]]))
 
 (def pin-retries 3)
