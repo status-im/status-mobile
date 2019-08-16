@@ -2,6 +2,7 @@ import time
 
 import emoji
 import random
+from dateutil import parser
 from selenium.common.exceptions import TimeoutException
 from support.utilities import generate_timestamp
 from tests import marks
@@ -223,8 +224,9 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
     @marks.high
     def test_fetch_more_history_in_empty_chat(self):
         signin = SignInView(self.driver)
-        yesterday = (datetime.today() - timedelta(days=1)).strftime("%b %-d, %Y")
-        before_yesterday = (datetime.today() - timedelta(days=2)).strftime("%b %-d, %Y")
+        device_time = parser.parse(signin.driver.device_time)
+        yesterday = (device_time - timedelta(days=1)).strftime("%b %-d, %Y")
+        before_yesterday = (device_time - timedelta(days=2)).strftime("%b %-d, %Y")
         quiet_time_yesterday, quiet_time_before_yesterday = '24 hours', '2 days'
         home_view = signin.create_user()
         chat = home_view.join_public_chat('montagne-angerufen-two')

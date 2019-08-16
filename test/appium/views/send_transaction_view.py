@@ -60,6 +60,12 @@ class ChooseRecipientButton(BaseButton):
         self.locator = self.Locator.accessibility_id('choose-recipient-button')
 
 
+class AccountsButton(BaseButton):
+    def __init__(self, driver):
+        super(AccountsButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Accounts')
+
+
 class EnterRecipientAddressButton(BaseButton):
     def __init__(self, driver):
         super(EnterRecipientAddressButton, self).__init__(driver)
@@ -190,6 +196,7 @@ class SendTransactionView(BaseView):
         super(SendTransactionView, self).__init__(driver)
 
         self.chose_recipient_button = ChooseRecipientButton(self.driver)
+        self.accounts_button = AccountsButton(self.driver)
         self.enter_recipient_address_button = EnterRecipientAddressButton(self.driver)
         self.scan_qr_code_button = ScanQRCodeButton(self.driver)
         self.enter_recipient_address_input = EnterRecipientAddressInput(self.driver)

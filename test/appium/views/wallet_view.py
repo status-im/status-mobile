@@ -1,7 +1,8 @@
 import time
+
+from tests import common_password
+from views.base_element import BaseButton, BaseText, BaseEditBox
 from views.base_view import BaseView
-from views.base_element import BaseButton, BaseText
-from selenium.common.exceptions import NoSuchElementException
 
 
 class SendRequestButton(BaseButton):
@@ -192,10 +193,16 @@ class MultiaccountMoreOptions(BaseButton):
         self.locator = self.Locator.accessibility_id('accounts-more-options')
 
 
-class AccountsStatusAccount(BaseButton):
-    def __init__(self, driver):
-        super(AccountsStatusAccount, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.HorizontalScrollView//*[@text='Status account']")
+class AccountElementButton(BaseButton):
+    def __init__(self, driver, account_name):
+        super(AccountElementButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            f"//android.widget.HorizontalScrollView//*[@text='{account_name}']/..")
+
+    def color_matches(self, expected_color_image_name: str):
+        amount_text = BaseText(self.driver)
+        amount_text.locator = amount_text.Locator.xpath_selector(self.locator.value + "//*[@text='0 USD']")
+        return amount_text.is_element_image_equals_template(expected_color_image_name)
 
 
 class SendTransactionButton(BaseButton):
@@ -228,6 +235,62 @@ class AddCustomTokenButton(BaseButton):
     def navigate(self):
         from views.add_custom_token_view import AddCustomTokenView
         return AddCustomTokenView(self.driver)
+
+
+class AddAccountButton(BaseButton):
+    def __init__(self, driver):
+        super(AddAccountButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Add account')
+
+
+class AddAnAccountButton(BaseButton):
+    def __init__(self, driver):
+        super(AddAnAccountButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Add an account')
+
+
+class GenerateNewAccountButton(BaseButton):
+    def __init__(self, driver):
+        super(GenerateNewAccountButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Generate a new account')
+
+
+class EnterYourPasswordInput(BaseEditBox):
+    def __init__(self, driver):
+        super(EnterYourPasswordInput, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//android.widget.TextView[@text='Enter your password']/following-sibling::android.widget.EditText")
+
+
+class GenerateAccountButton(BaseButton):
+    def __init__(self, driver):
+        super(GenerateAccountButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Generate account')
+
+
+class AccountNameInput(BaseEditBox):
+    def __init__(self, driver):
+        super(AccountNameInput, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Account name']"
+                                                   "/following-sibling::android.view.ViewGroup/android.widget.EditText")
+
+
+class AccountColorButton(BaseButton):
+    def __init__(self, driver):
+        super(AccountColorButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Account color']"
+                                                   "/following-sibling::android.view.ViewGroup")
+
+    def select_color_by_position(self, position: int):
+        self.click()
+        self.driver.find_element_by_xpath(
+            f"//*[@text='Cancel']/../preceding-sibling::android.widget.ScrollView/*/*[{position}]").click()
+
+
+class FinishButton(BaseButton):
+    def __init__(self, driver):
+        super(FinishButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Finish')
 
 
 class WalletView(BaseView):
@@ -265,9 +328,17 @@ class WalletView(BaseView):
 
         # elements for multiaccount
         self.multiaccount_more_options = MultiaccountMoreOptions(self.driver)
-        self.accounts_status_account = AccountsStatusAccount(self.driver)
+        self.accounts_status_account = AccountElementButton(self.driver, 'Status account')
         self.collectibles_button = CollectiblesButton(self.driver)
         self.set_currency_button = SetCurrencyButton(self.driver)
+        self.add_account_button = AddAccountButton(self.driver)
+        self.add_an_account_button = AddAnAccountButton(self.driver)
+        self.generate_new_account_button = GenerateNewAccountButton(self.driver)
+        self.enter_your_password_input = EnterYourPasswordInput(self.driver)
+        self.generate_account_button = GenerateAccountButton(self.driver)
+        self.account_name_input = AccountNameInput(self.driver)
+        self.account_color_button = AccountColorButton(self.driver)
+        self.finish_button = FinishButton(self.driver)
 
     def get_usd_total_value(self):
         import re
@@ -402,3 +473,16 @@ class WalletView(BaseView):
         desired_currency = self.element_by_text_part(desired_currency)
         desired_currency.scroll_to_element()
         desired_currency.click()
+
+    def get_account_by_name(self, account_name: str):
+        return AccountElementButton(self.driver, account_name)
+
+    def add_account(self, account_name: str, password: str = common_password):
+        self.add_account_button.click()
+        self.add_an_account_button.click()
+        self.generate_new_account_button.click()
+        self.generate_account_button.click()
+        self.enter_your_password_input.send_keys(password)
+        self.generate_account_button.click()
+        self.account_name_input.send_keys(account_name)
+        self.finish_button.click()

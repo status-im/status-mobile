@@ -410,16 +410,73 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         self.verify_no_errors()
 
-        @marks.testrail_id(5429)
-        @marks.medium
-        def test_set_currency(self):
-            sign_in_view = SignInView(self.driver)
-            user_currency = 'Euro (EUR)'
-            sign_in_view.create_user()
-            wallet_view = sign_in_view.wallet_button.click()
-            wallet_view.set_currency(user_currency)
-            if not wallet_view.find_text_part('EUR'):
-                pytest.fail('EUR currency is not displayed')
+    @marks.testrail_id(5429)
+    @marks.medium
+    def test_set_currency(self):
+        sign_in_view = SignInView(self.driver)
+        user_currency = 'Euro (EUR)'
+        sign_in_view.create_user()
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_currency(user_currency)
+        if not wallet_view.find_text_part('EUR'):
+            self.driver.fail('EUR currency is not displayed')
+
+    @marks.testrail_id(6225)
+    @marks.high
+    def test_send_funds_between_accounts_in_multiaccount_instance(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        address = wallet_view.get_wallet_address()[2:]
+        wallet_view.back_button.click()
+        self.network_api.get_donate(address)
+
+        account_name = 'test account'
+        wallet_view.add_account(account_name)
+        wallet_view.accounts_status_account.click()
+        send_transaction = wallet_view.send_transaction_button.click()
+        send_transaction.amount_edit_box.click()
+        transaction_amount = send_transaction.get_unique_amount()
+        send_transaction.amount_edit_box.set_value(transaction_amount)
+        send_transaction.confirm()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.accounts_button.click()
+        send_transaction.element_by_text(account_name).click()
+        send_transaction.sign_transaction_button.click()
+        send_transaction.sign_transaction()
+        self.network_api.wait_for_confirmation_of_transaction(address, transaction_amount)
+        self.network_api.verify_balance_is_updated('0.1', address)
+        wallet_view.back_button.click()
+        wallet_view.get_account_by_name(account_name).click()
+        wallet_view.send_transaction_button.click()
+        wallet_view.back_button.click()
+        balance_after_receiving_tx = wallet_view.eth_asset_value.text
+        if balance_after_receiving_tx != transaction_amount:
+            self.driver.fail('New account balance %s does not match expected %s after receiving a transaction' % (
+                balance_after_receiving_tx, transaction_amount))
+        updated_balance = self.network_api.get_balance(address)
+
+        wallet_view.send_transaction_button.click()
+        send_transaction.amount_edit_box.click()
+        transaction_amount_1 = float(transaction_amount) * 0.7
+        send_transaction.amount_edit_box.set_value(str(transaction_amount_1))
+        send_transaction.confirm()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.accounts_button.click()
+        send_transaction.element_by_text('Status account').click()
+        send_transaction.sign_transaction_button.click()
+        total_fee = send_transaction.get_transaction_fee_total()
+        send_transaction.sign_transaction()
+        if not wallet_view.element_by_text('Transaction sent').is_element_displayed():
+            self.driver.fail('Transaction was not sent from the new account')
+        self.network_api.wait_for_confirmation_of_transaction(address, transaction_amount)
+        self.network_api.verify_balance_is_updated(updated_balance, address)
+        balance_after_sending_tx = wallet_view.eth_asset_value.text
+        expected_balance = str(float(balance_after_receiving_tx) - transaction_amount_1 - float(total_fee))
+        if balance_after_sending_tx != expected_balance:
+            self.driver.fail('New account balance %s does not match expected %s after sending a transaction' % (
+                balance_after_sending_tx, transaction_amount))
 
 
 @marks.transaction
@@ -461,4 +518,3 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
         if not chat_2.chat_element_by_text(amount).is_element_displayed():
             self.errors.append('Transaction message is not shown in 1-1 chat for the recipient')
         self.verify_no_errors()
-
