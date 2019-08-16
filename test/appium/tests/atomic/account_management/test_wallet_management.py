@@ -1,6 +1,8 @@
 import pytest
+import random
+import string
 
-from tests import marks, camera_access_error_text
+from tests import marks, camera_access_error_text, common_password
 from tests.base_test_case import SingleDeviceTestCase
 from tests.users import wallet_users, transaction_senders, basic_user
 from views.sign_in_view import SignInView
@@ -256,3 +258,33 @@ class TestWalletManagement(SingleDeviceTestCase):
         if not token_element.is_element_displayed():
             self.errors.append('Custom token is not shown on Send Transaction view')
         self.verify_no_errors()
+
+    @marks.testrail_id(6224)
+    @marks.critical
+    def test_add_account_to_multiaccount_instance(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        wallet_view.add_account_button.click()
+        wallet_view.add_an_account_button.click()
+        wallet_view.generate_new_account_button.click()
+        wallet_view.generate_account_button.click()
+        if wallet_view.element_by_text('Account added').is_element_displayed():
+            self.driver.fail('Account is added without password')
+        wallet_view.enter_your_password_input.send_keys('000000')
+        wallet_view.generate_account_button.click()
+        if not wallet_view.element_by_text_part('Password seems to be incorrect').is_element_displayed():
+            self.driver.fail("Incorrect password validation is not performed")
+        wallet_view.enter_your_password_input.clear()
+        wallet_view.enter_your_password_input.send_keys(common_password)
+        wallet_view.generate_account_button.click()
+        account_name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+        wallet_view.account_name_input.send_keys(account_name)
+        wallet_view.account_color_button.select_color_by_position(1)
+        wallet_view.finish_button.click()
+        account_button = wallet_view.get_account_by_name(account_name)
+        if not account_button.is_element_displayed():
+            self.driver.fail('Account was not added')
+        if not account_button.color_matches('multi_account_color.png'):
+            self.driver.fail('Account color does not match expected')
