@@ -13,7 +13,8 @@
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.utils.utils :as utils]
-            status-im.utils.handlers))
+            status-im.utils.handlers
+            [status-im.ethereum.eip55 :as eip55]))
 
 (re-frame/reg-fx
  :signing/send-transaction-fx
@@ -254,9 +255,7 @@
                  {:dispatch (conj on-error "transaction was cancelled by user")}))))
 
 (defn normalize-tx-obj [db tx]
-  (if (get-in tx [:tx-obj :from])
-    tx
-    (assoc-in tx [:tx-obj :from] (ethereum/default-address db))))
+  (update-in tx [:tx-obj :from] #(eip55/address->checksum (or % (ethereum/default-address db)))))
 
 (fx/defn sign [{:keys [db] :as cofx} tx]
   "Signing transaction or message, shows signing sheet
