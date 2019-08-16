@@ -36,7 +36,7 @@
    :ios        {:margin-top          1
                 :height              45
                 :border-bottom-width 1
-                :border-bottom-color colors/gray-light}
+                :border-bottom-color colors/black-transparent}
    :android    {:border-bottom-width 2
                 :border-bottom-color colors/blue}})
 

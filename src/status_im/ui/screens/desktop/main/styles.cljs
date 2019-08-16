@@ -11,7 +11,7 @@
 
 (def pane-separator
   {:width            1
-   :background-color colors/gray-light})
+   :background-color colors/black-transparent})
 
 (def absolute
   {:position :absolute

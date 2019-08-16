@@ -16,7 +16,7 @@
 (def divider
   {:height           52
    :width            1
-   :background-color (colors/alpha colors/black 0.2)
+   :background-color colors/black-transparent-20
    :shadow-offset    {:width 0 :height 2}
    :shadow-radius    8
    :shadow-opacity   1

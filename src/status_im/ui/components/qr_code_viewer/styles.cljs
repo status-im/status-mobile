@@ -14,7 +14,7 @@
   {:align-self       :center
    :width            (+ width qr-code-padding qr-code-padding)
    :background-color colors/white
-   :border-color     colors/gray-light
+   :border-color     colors/black-transparent
    :border-width     1
    :border-radius    8
    :padding          qr-code-padding})
@@ -49,7 +49,7 @@
 
 (def hash-value-text
   {:align-self         :stretch
-   :border-color       colors/gray-light
+   :border-color       colors/black-transparent
    :border-width       1
    :margin-horizontal  16
    :padding-horizontal 8

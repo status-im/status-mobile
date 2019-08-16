@@ -6,7 +6,7 @@
 
 (def footer
   {:color colors/white
-   :border-color colors/white-light-transparent})
+   :border-color colors/white-transparent-10})
 
 (def bottom-buttons
   {:background-color colors/blue})

@@ -32,7 +32,7 @@
    :border-radius    20
    :background-color (if current?
                        colors/blue
-                       colors/gray-light)
+                       colors/black-transparent)
    :align-items      :center
    :justify-content  :center})
 

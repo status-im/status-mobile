@@ -45,7 +45,7 @@
   [justify-timestamp? outgoing rtl? emoji?]
   (merge message-timestamp
          {:color (if (and outgoing (not emoji?))
-                   (colors/alpha colors/white 0.7)
+                   colors/white-transparent-70
                    colors/gray)}
          (when justify-timestamp? {:position              :absolute
                                    :bottom                7
@@ -185,8 +185,8 @@
   {:margin-bottom              6
    :padding-bottom             6
    :border-bottom-color        (if outgoing
-                                 colors/white-light-transparent
-                                 (colors/alpha colors/black 0.1))
+                                 colors/white-transparent-10
+                                 colors/black-transparent)
    :border-bottom-width        2
    :border-bottom-left-radius  2
    :border-bottom-right-radius 2})
@@ -202,13 +202,13 @@
          :padding-top     4
          :padding-left    6
          :color           (if outgoing
-                            (colors/alpha colors/white 0.7)
+                            colors/white-transparent-70
                             colors/gray)))
 
 (defn quoted-message-text [outgoing]
   {:font-size 14
    :color (if outgoing
-            (colors/alpha colors/white 0.7)
+            colors/white-transparent-70
             colors/gray)})
 
 (def extension-container

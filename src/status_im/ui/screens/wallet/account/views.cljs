@@ -54,13 +54,13 @@
                    :style           {:width (/ window-width 3)
                                      :line-height 22 :font-size 13
                                      :font-family "monospace"
-                                     :color (colors/alpha colors/white 0.7)}}
+                                     :color colors/white-transparent-70}}
        (ethereum/normalized-address address)]]
      [react/view {:position :absolute :top 12 :right 12}
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-popover {:view :share-account :address address}])}
        [icons/icon :main-icons/share {:color colors/white
                                       :accessibility-label :share-wallet-address-icon}]]]
-     [react/view {:height                     52 :background-color (colors/alpha colors/black 0.2)
+     [react/view {:height                     52 :background-color colors/black-transparent-20
                   :border-bottom-right-radius 8 :border-bottom-left-radius 8 :flex-direction :row}
       [button (i18n/label :t/wallet-send) :main-icons/send #(re-frame/dispatch [:navigate-to :wallet-send-transaction address])]
       [react/view {:style styles/divider}]

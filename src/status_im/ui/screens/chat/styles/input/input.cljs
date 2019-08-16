@@ -13,7 +13,7 @@
    :margin-bottom    margin-bottom
    :flex-direction   :column
    :border-top-width border-height
-   :border-top-color colors/gray-light
+   :border-top-color colors/black-transparent
    :elevation        2})
 
 (def reply-message
@@ -21,7 +21,7 @@
    :align-items    :flex-start
    :border-width   1
    :border-radius  10
-   :border-color   colors/gray-light
+   :border-color   colors/black-transparent
    :padding-top    10
    :padding-bottom 10
    :padding-right  14

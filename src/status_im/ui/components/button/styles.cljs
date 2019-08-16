@@ -4,8 +4,8 @@
             [status-im.ui.components.styles :as styles]
             [status-im.utils.platform :as platform]))
 
-(def border-color colors/white-light-transparent)
-(def border-color-high colors/white-light-transparent)
+(def border-color colors/white-transparent-10)
+(def border-color-high colors/white-transparent-10)
 
 (def buttons-container {:flex-direction :row})
 
@@ -56,7 +56,7 @@
 (defn primary-button [disabled?]
   (merge
    button-borders
-   {:background-color (if disabled? (colors/alpha colors/gray 0.1) colors/blue)}))
+   {:background-color (if disabled? colors/gray-transparent-10 colors/blue)}))
 
 (def primary-button-text {:color colors/white})
 
@@ -74,7 +74,7 @@
    :height            42
    :margin-horizontal 16
    :border-radius     styles/border-radius
-   :background-color  (colors/alpha colors/blue 0.1)})
+   :background-color  colors/blue-transparent-10})
 
 (def button-with-icon-text-container
   {:padding-left    16

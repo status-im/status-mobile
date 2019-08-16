@@ -146,5 +146,5 @@
           :icon         :main-icons/delete
           :icon-opts    {:color colors/red}
           :label-style  {:color colors/red}
-          :cyrcle-color (colors/alpha colors/red 0.1)
+          :cyrcle-color colors/red-transparent-10
           :on-press     #(re-frame/dispatch [:wallet.custom-token.ui/remove-pressed token true])}])]]))

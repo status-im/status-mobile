@@ -10,7 +10,7 @@
 (def border
   {:margin-horizontal 16
    :border-top-width  1
-   :border-color      colors/white-light-transparent})
+   :border-color      colors/white-transparent-10})
 
 (def container
   {:flex-direction  :row

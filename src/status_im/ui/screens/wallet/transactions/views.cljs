@@ -38,16 +38,16 @@
   [k]
   (case k
     :inbound (transaction-icon :main-icons/arrow-left
-                               (colors/alpha colors/green 0.2)
+                               colors/green-transparent-10
                                colors/green)
     :outbound (transaction-icon :main-icons/arrow-right
-                                (colors/alpha colors/blue 0.1)
+                                colors/blue-transparent-10
                                 colors/blue)
     :failed (transaction-icon :main-icons/warning
-                              colors/gray-light
+                              colors/black-transparent
                               colors/red)
     :pending (transaction-icon :main-icons/arrow-right
-                               colors/gray-light colors/gray)
+                               colors/black-transparent colors/gray)
     (throw (str "Unknown transaction type: " k))))
 
 (defn render-transaction

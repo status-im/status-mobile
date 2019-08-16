@@ -66,7 +66,7 @@
    :height        40
    :border-radius 20
    :border-width  1
-   :border-color  (colors/alpha colors/black 0.1)})
+   :border-color  colors/black-transparent})
 
 (def welcome-text-description
   {:margin-top        8

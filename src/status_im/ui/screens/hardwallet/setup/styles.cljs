@@ -117,10 +117,10 @@
    :justify-content  :center
    :align-items      :center
    :border-top-width 1
-   :border-color     colors/gray-light})
+   :border-color     colors/black-transparent})
 
 (def bottom-button-container
-  {:background-color colors/gray-background
+  {:background-color colors/blue-light
    :align-items      :center
    :justify-content  :center
    :flex-direction   :row
@@ -129,7 +129,7 @@
    :border-radius    10})
 
 (def begin-button-container
-  {:background-color colors/gray-background
+  {:background-color colors/blue-light
    :align-items      :center
    :justify-content  :center
    :flex-direction   :row
@@ -149,7 +149,7 @@
    :width            "100%"
    :height           52
    :border-top-width 1
-   :border-color     colors/gray-light})
+   :border-color     colors/black-transparent})
 
 (def back-and-next-buttons-container
   {:flex-direction  :row
@@ -320,7 +320,7 @@
 (def remaining-step-row-text
   {:border-width    1
    :border-radius   16
-   :border-color    colors/gray-light
+   :border-color    colors/black-transparent
    :align-items     :center
    :justify-content :center
    :width           32

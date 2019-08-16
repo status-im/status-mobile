@@ -33,7 +33,7 @@
     (i18n/label :t/transactions-sign-transaction)
     [vector-icons/icon :main-icons/next {:color (if sign-enabled?
                                                   colors/white
-                                                  colors/white-light-transparent)}]]])
+                                                  colors/white-transparent-10)}]]])
 
 (defn- render-send-transaction-view [{:keys [chain transaction scroll all-tokens amount-input network-status]}]
   (let [{:keys [from amount amount-text amount-error asset-error to to-name sufficient-funds? symbol]} transaction

@@ -61,7 +61,7 @@
     [react/view {:margin-bottom 50}
      [react/touchable-highlight
       {:on-press #(re-frame/dispatch [:keycard.recovery.intro.ui/begin-recovery-pressed])}
-      [react/view {:background-color colors/gray-background
+      [react/view {:background-color colors/blue-light
                    :align-items      :center
                    :justify-content  :center
                    :flex-direction   :row
@@ -233,7 +233,7 @@
                                 :height        61
                                 :border-radius 30
                                 :border-width  1
-                                :border-color  (colors/alpha colors/black 0.1)}}]]
+                                :border-color  colors/black-transparent}}]]
         [react/text {:style           {:text-align  :center
                                        :color       colors/black
                                        :font-weight "500"}
@@ -250,7 +250,7 @@
       [react/view {:margin-bottom 50}
        [react/touchable-highlight
         {:on-press #(re-frame/dispatch [:keycard.recovery.success/finish-pressed])}
-        [react/view {:background-color colors/gray-background
+        [react/view {:background-color colors/blue-light
                      :align-items      :center
                      :justify-content  :center
                      :flex-direction   :row
@@ -302,7 +302,7 @@
       [react/view {:margin-bottom 50}
        [react/touchable-highlight
         {:on-press #(re-frame/dispatch [:keycard.recovery.no-key.ui/generate-key-pressed])}
-        [react/view {:background-color colors/gray-background
+        [react/view {:background-color colors/blue-light
                      :align-items      :center
                      :justify-content  :center
                      :flex-direction   :row

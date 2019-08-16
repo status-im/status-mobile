@@ -131,7 +131,7 @@
                        window-width)]
       [react/view (merge {:flex 1 :width home-width}
                          (when two-pane-ui-enabled?
-                           {:border-right-width 1 :border-right-color colors/gray-light}))
+                           {:border-right-width 1 :border-right-color colors/black-transparent}))
        [status-bar/status-bar {:type :main}]
        [react/keyboard-avoiding-view {:style     {:flex 1}
                                       :on-layout (fn [e]

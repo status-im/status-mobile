@@ -22,8 +22,10 @@
   {:padding-left 16})
 
 (def action-button-label
-  {:color     colors/blue
-   :font-size 16})
+  {:color      colors/blue})
+
+(def action-button-label-red
+  {:color      colors/red})
 
 (defstyle actions-list
   {:background-color colors/white

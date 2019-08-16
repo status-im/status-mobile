@@ -75,7 +75,7 @@
                    :width            "100%"
                    :height           68
                    :border-top-width 1
-                   :border-color     colors/gray-light}
+                   :border-color     colors/black-transparent}
        [react/view {:flex 1}]
        [reset-card-next-button disabled?]]]]))
 

@@ -20,8 +20,8 @@
     :padding-right  8}
    (if disabled?
      {:border-width 1
-      :border-color colors/white-light-transparent}
-     {:background-color colors/white-light-transparent})))
+      :border-color colors/white-transparent-10}
+     {:background-color colors/white-transparent-10})))
 
 (def cartouche-icon-wrapper
   {:flex            1
@@ -64,14 +64,14 @@
    :height             27
    :border-radius      100
    :border-width       1
-   :border-color       colors/white-light-transparent
+   :border-color       colors/white-transparent-10
    :align-items        :center
    :justify-content    :center})
 
 (def asset-container
   {:margin-top       8
    :height           52
-   :background-color colors/white-light-transparent
+   :background-color colors/white-transparent-10
    :justify-content  :center
    :padding-left     14
    :padding-vertical 14
@@ -81,7 +81,7 @@
 (def asset-container-read-only
   {:margin-top       8
    :height           52
-   :border-color     colors/white-light-transparent
+   :border-color     colors/white-transparent-10
    :border-width     1
    :justify-content  :center
    :padding-left     14
@@ -118,7 +118,7 @@
 
 (defstyle container-disabled
   {:border-width     1
-   :border-color     colors/white-light-transparent
+   :border-color     colors/white-transparent-10
    :background-color nil
    :border-radius    8})
 
@@ -127,7 +127,7 @@
    :margin-top     8
    :height         52
    :border-width   1
-   :border-color   colors/white-light-transparent
+   :border-color   colors/white-transparent-10
    :align-items    :center
    :padding        14
    :border-radius  8})
@@ -176,7 +176,7 @@
 (def separator
   {:height            1
    :margin-horizontal 15
-   :background-color  colors/white-light-transparent})
+   :background-color  colors/white-transparent-10})
 
 (def button-text
   {:color colors/white})

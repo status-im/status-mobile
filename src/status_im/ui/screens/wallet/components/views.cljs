@@ -51,7 +51,7 @@
   ([props title] (toolbar props default-action title))
   ([props action title] (toolbar props action title nil))
   ([props action title options]
-   [toolbar/toolbar (assoc-in props [:style :border-bottom-color] colors/white-light-transparent)
+   [toolbar/toolbar (assoc-in props [:style :border-bottom-color] colors/white-transparent-10)
     [toolbar/nav-button action]
     [toolbar/content-title {:color       colors/white
                             :font-weight "700"}
@@ -239,7 +239,7 @@
   (let [content (reagent/atom nil)]
     (fn []
       [simple-screen {:avoid-keyboard? true}
-       [toolbar {:style {:border-bottom-color colors/white-light-transparent}}
+       [toolbar {:style {:border-bottom-color colors/white-transparent-10}}
         default-action
         (i18n/label :t/recipient)]
        [react/view components.styles/flex

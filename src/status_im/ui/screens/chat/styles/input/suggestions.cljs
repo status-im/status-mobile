@@ -7,7 +7,7 @@
 
 (def root
   {:background-color colors/white
-   :border-top-color colors/gray-light
+   :border-top-color colors/black-transparent
    :border-top-width 1})
 
 (def item-suggestion-container
@@ -15,7 +15,7 @@
    :align-items         :center
    :height              item-height
    :padding-horizontal  14
-   :border-top-color colors/gray-light
+   :border-top-color colors/black-transparent
    :border-top-width border-height})
 
 (def item-suggestion-description

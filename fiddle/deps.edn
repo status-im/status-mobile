@@ -1,0 +1,18 @@
+{:deps    {org.clojure/clojurescript   {:mvn/version "1.10.520"}
+           com.bhauman/figwheel-main   {:mvn/version "0.2.0"}
+           org.clojure/core.async      {:mvn/version "0.4.474"}
+           reagent                     {:mvn/version "0.8.1" :exclusions [cljsjs/react cljsjs/react-dom]}
+           re-frame                    {:git/url       "https://github.com/status-im/re-frame"
+                                        :sha           "b0d3b0f016f217c6a397a54e5eba9486471fb172"
+                                        :deps/manifest :deps}
+           com.andrewmcveigh/cljs-time {:mvn/version "0.5.2"}
+           status-im/timbre            {:mvn/version "4.10.0-2-status"}
+           com.taoensso/encore         {:mvn/version "2.94.0"}
+           hickory                     {:mvn/version "0.7.1"}
+           com.cognitect/transit-cljs  {:mvn/version "0.8.248"}
+           status-im/pluto             {:mvn/version "iteration-4-9"}}
+
+ :paths   ["src" "../src" "resources" "target" "../resources"]
+
+ :aliases {:dev {:extra-deps {re-frisk {:mvn/version "0.5.4.1"}}
+                 :main-opts  ["-m" "figwheel.main" "-b" "dev" "-r"]}}}

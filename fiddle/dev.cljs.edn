@@ -1,0 +1,10 @@
+{:main          fiddle.core
+ :output-to     "resources/public/js/main.js"
+ :preloads      [re-frisk.preload]
+ :infer-externs true
+ :npm-deps      false
+ :foreign-libs  [{:file           "dist/index_bundle.js"
+                  :provides       ["react" "react-dom" "react-native-web"]
+                  :global-exports {react            React
+                                   react-dom        ReactDOM
+                                   react-native-web ReactNativeWeb}}]}

@@ -30,7 +30,7 @@
 (def message-command-container
   {:align-self         :flex-start
    :border-radius      8
-   :border-color       colors/gray-light
+   :border-color       colors/black-transparent
    :border-width       1
    :padding-horizontal 12
    :padding-vertical   10
@@ -78,7 +78,7 @@
    :height        38})
 
 (def member-photo-container
-  {:border-color      colors/gray-light
+  {:border-color      colors/black-transparent
    :border-width      1
    :align-items       :center
    :justify-content   :center
@@ -189,7 +189,7 @@
    :margin-bottom  10})
 
 (def chat-profile-icon-container
-  {:background-color (colors/alpha colors/blue 0.1)
+  {:background-color colors/blue-transparent-10
    :justify-content  :center
    :align-items      :center
    :border-radius    15
@@ -230,7 +230,7 @@
    :align-items      :flex-start
    :border-width     1
    :border-radius    10
-   :border-color     colors/gray-light
+   :border-color     colors/black-transparent
    :margin           10})
 
 (def reply-content-container
@@ -265,7 +265,7 @@
 
 (def separator
   {:height            1
-   :background-color  colors/gray-light})
+   :background-color  colors/black-transparent})
 
 (def quoted-message-container
   {:margin        6

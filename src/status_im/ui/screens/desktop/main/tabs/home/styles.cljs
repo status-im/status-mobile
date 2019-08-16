@@ -45,7 +45,7 @@
 
 (def chat-list-separator
   {:height            1
-   :background-color  colors/gray-light})
+   :background-color  colors/black-transparent})
 
 (def chat-name-box
   {:flex-direction :row

@@ -58,7 +58,7 @@
   {:width           24
    :height          24
    :color           colors/blue
-   :container-style {:background-color (colors/alpha colors/blue 0.12)
+   :container-style {:background-color colors/blue-transparent-10
                      :border-radius    28
                      :display          :flex
                      :justify-content  :center

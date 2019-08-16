@@ -162,7 +162,7 @@
                    :number-of-lines 1}
        (str accessory-value)])
     (when-not hide-chevron?
-      [vector-icons/icon :main-icons/next {:color (colors/alpha colors/gray 0.4)}])]])
+      [vector-icons/icon :main-icons/next {:color colors/gray-transparent-40}])]])
 
 (defn- wrap-render-fn [f]
   (fn [data]

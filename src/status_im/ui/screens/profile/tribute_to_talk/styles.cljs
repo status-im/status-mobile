@@ -233,7 +233,7 @@
    :justify-content :center
    :align-items :center
    :background-color (if pending?
-                       (colors/alpha colors/black 0.1)
+                       colors/black-transparent
                        colors/green)})
 
 (def payment-status-text

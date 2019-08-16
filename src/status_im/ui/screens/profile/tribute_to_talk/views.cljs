@@ -226,7 +226,7 @@
                                            [:tribute-to-talk.ui/remove-pressed])
                                :style styles/remove-view}
     [react/view {:style {:flex-direction :row}}
-     [react/view {:style (styles/icon-view (colors/alpha colors/red 0.1))}
+     [react/view {:style (styles/icon-view colors/red-transparent-10)}
       [icons/icon :main-icons/logout {:color colors/red}]]
      [react/view  {:style {:justify-content :center
                            :align-items :center}}

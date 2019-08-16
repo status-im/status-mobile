@@ -208,7 +208,7 @@
     [react/view {:margin-bottom 32}
      [react/touchable-highlight
       {:on-press #(re-frame/dispatch [:keycard.login.ui/got-it-pressed])}
-      [react/view {:background-color colors/gray-background
+      [react/view {:background-color colors/blue-light
                    :align-items      :center
                    :justify-content  :center
                    :flex-direction   :row
@@ -247,7 +247,7 @@
     [react/view {:margin-bottom 32}
      [react/touchable-highlight
       {:on-press #(re-frame/dispatch [:keycard.login.ui/got-it-pressed])}
-      [react/view {:background-color colors/gray-background
+      [react/view {:background-color colors/blue-light
                    :align-items      :center
                    :justify-content  :center
                    :flex-direction   :row
@@ -288,7 +288,7 @@
                  :align-items    :center}
      [react/touchable-highlight
       {:on-press #(re-frame/dispatch [:keycard.login.ui/pair-card-pressed])}
-      [react/view {:background-color colors/gray-background
+      [react/view {:background-color colors/blue-light
                    :align-items      :center
                    :justify-content  :center
                    :flex-direction   :row
@@ -343,7 +343,7 @@
     [react/view {:margin-bottom 32}
      [react/touchable-highlight
       {:on-press #(re-frame/dispatch [:keycard.login.ui/got-it-pressed])}
-      [react/view {:background-color colors/gray-background
+      [react/view {:background-color colors/blue-light
                    :align-items      :center
                    :justify-content  :center
                    :flex-direction   :row
@@ -399,7 +399,7 @@
                                    :height        61
                                    :border-radius 30
                                    :border-width  1
-                                   :border-color  (colors/alpha colors/black 0.1)}}]
+                                   :border-color  colors/black-transparent}}]
             [react/view {:justify-content  :center
                          :align-items      :center
                          :width            24
@@ -410,7 +410,7 @@
                          :bottom           0
                          :background-color :white
                          :border-width     1
-                         :border-color     (colors/alpha colors/black 0.1)}
+                         :border-color     colors/black-transparent}
              [react/image {:source (resources/get-image :keycard-key)
                            :style  {:width  8
                                     :height 14}}]]]]
@@ -479,7 +479,7 @@
                                    :height        61
                                    :border-radius 30
                                    :border-width  1
-                                   :border-color  (colors/alpha colors/black 0.1)}}]
+                                   :border-color  colors/black-transparent}}]
             [react/view {:justify-content  :center
                          :align-items      :center
                          :width            24
@@ -490,7 +490,7 @@
                          :bottom           0
                          :background-color :white
                          :border-width     1
-                         :border-color     (colors/alpha colors/black 0.1)}
+                         :border-color     colors/black-transparent}
              [react/image {:source (resources/get-image :keycard-key)
                            :style  {:width  8
                                     :height 14}}]]]]

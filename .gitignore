@@ -176,3 +176,8 @@ status-modules/resources
 ## coverage
 /.nyc_output
 /coverage-report
+
+## fiddle
+/fiddle/node_modules/
+/fiddle/target/
+/fiddle/resources/public/images/

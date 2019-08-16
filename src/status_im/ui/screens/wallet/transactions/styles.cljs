@@ -179,7 +179,7 @@
    :margin-vertical 2})
 
 (def details-separator
-  {:background-color colors/gray-light
+  {:background-color colors/black-transparent
    :height           1
    :margin-vertical  10})
 

@@ -53,7 +53,7 @@
    :padding-right    12
    :padding-vertical 6
    :border-radius    18
-   :background-color (colors/alpha colors/blue 0.1)})
+   :background-color colors/blue-transparent-10})
 
 (def advanced-button-row
   {:flex-direction :row

@@ -39,7 +39,7 @@
                                      :icon         :main-icons/delete
                                      :icon-opts    {:color colors/red}
                                      :label-style  {:color colors/red}
-                                     :cyrcle-color (colors/alpha colors/red 0.1)
+                                     :cyrcle-color colors/red-transparent-10
                                      :on-press     #(hide-sheet-and-dispatch [:wallet.custom-token.ui/remove-pressed token])}])]))
 
 (defn- render-token [{:keys [symbol name icon color custom? checked?] :as token}]
@@ -89,7 +89,7 @@
     [react/keyboard-avoiding-view {:style {:flex 1 :background-color colors/blue}}
      [status-bar/status-bar {:type :wallet}]
      [toolbar/toolbar
-      {:style {:border-bottom-color colors/white-light-transparent}}
+      {:style {:border-bottom-color colors/white-transparent-10}}
       [toolbar/nav-button
        (actions/back-white
         #(re-frame/dispatch [:wallet.settings.ui/navigate-back-pressed

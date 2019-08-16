@@ -70,7 +70,7 @@
   (letsubs [username [:contacts/contact-name-by-identity from]]
     [react/view {:style (style/quoted-message-container outgoing)}
      [react/view {:style style/quoted-message-author-container}
-      [vector-icons/tiny-icon :tiny-icons/tiny-reply {:color (if outgoing colors/wild-blue-yonder colors/gray)}]
+      [vector-icons/tiny-icon :tiny-icons/tiny-reply {:color (if outgoing colors/white-transparent colors/gray)}]
       (chat.utils/format-reply-author from username current-public-key (partial style/quoted-message-author outgoing))]
 
      [react/text {:style           (style/quoted-message-text outgoing)

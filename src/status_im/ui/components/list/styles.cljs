@@ -44,7 +44,7 @@
    :height        image-size
    :margin-right  16
    :border-radius (/ image-size 2)
-   :border-color  (colors/alpha colors/gray 0.1)
+   :border-color  colors/gray-transparent-10
    :border-width  1})
 
 (def icon-size 24)
@@ -139,7 +139,7 @@
 
 (def base-separator
   {:height           1
-   :background-color colors/gray-light})
+   :background-color colors/black-transparent})
 
 (def separator
   (merge
@@ -164,7 +164,7 @@
   {:background-color colors/blue})
 
 (def action
-  {:background-color colors/white-light-transparent
+  {:background-color colors/white-transparent-10
    :border-radius    50})
 
 (def action-disabled
@@ -178,7 +178,7 @@
 
 (def action-separator
   {:height           1
-   :background-color colors/white-light-transparent
+   :background-color colors/white-transparent-10
    :margin-left      64})
 
 (def list-with-label-wrapper

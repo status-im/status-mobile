@@ -49,7 +49,7 @@
    :padding-top        20})
 
 (def bottom-action-container
-  {:background-color colors/gray-background
+  {:background-color colors/blue-light
    :align-items      :center
    :justify-content  :center
    :flex-direction   :row

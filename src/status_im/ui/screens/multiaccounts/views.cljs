@@ -38,11 +38,11 @@
                    :border-radius    24
                    :background-color :white
                    :border-width     1
-                   :border-color     (colors/alpha colors/black 0.1)}
+                   :border-color     colors/black-transparent}
        [react/image {:source (resources/get-image :keycard-key)
                      :style  {:width  11
                               :height 19}}]])
-    [icons/icon :main-icons/next {:color (colors/alpha colors/gray 0.4)}]]])
+    [icons/icon :main-icons/next {:color colors/gray-transparent-40}]]])
 
 (defview multiaccounts []
   (letsubs [multiaccounts [:multiaccounts/multiaccounts]]

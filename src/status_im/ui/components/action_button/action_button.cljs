@@ -9,7 +9,7 @@
 
 (defn action-button [{:keys [label accessibility-label icon icon-opts image image-opts on-press label-style cyrcle-color]}]
   [rn/touchable-highlight (merge {:on-press       on-press
-                                  :underlay-color (colors/alpha colors/gray 0.15)}
+                                  :underlay-color colors/gray-transparent-10}
                                  (when accessibility-label
                                    {:accessibility-label accessibility-label}))
    [rn/view {:style st/action-button}

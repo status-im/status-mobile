@@ -28,7 +28,7 @@
   {:background-color colors/white})
 
 (def action
-  {:background-color (colors/alpha colors/blue 0.1)
+  {:background-color colors/blue-transparent-10
    :border-radius    50})
 
 (defn action-label [with-subtext?]
@@ -45,14 +45,14 @@
 
 (def action-separator
   {:height           0
-   :background-color colors/gray-light
+   :background-color colors/black-transparent
    :margin-left      50})
 
 (def action-icon-opts
   {:color colors/blue})
 
 (def block-action
-  {:background-color (colors/alpha colors/red 0.1)
+  {:background-color colors/red-transparent-10
    :border-radius    50})
 
 (defn block-action-label [with-subtext?]

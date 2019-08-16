@@ -31,7 +31,7 @@
                                      :icon         :main-icons/security
                                      :icon-opts    {:color colors/red}
                                      :label-style  {:color colors/red}
-                                     :cyrcle-color (colors/alpha colors/red 0.1)
+                                     :cyrcle-color colors/red-transparent-10
                                      :accessibility-label :wallet-backup-recovery-title
                                      :on-press     #(hide-sheet-and-dispatch [:navigate-to :backup-seed])}])]))
 

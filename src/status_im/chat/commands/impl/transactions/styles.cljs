@@ -29,7 +29,7 @@
 
 (def asset-separator
   {:height           1
-   :background-color colors/gray-light
+   :background-color colors/black-transparent
    :margin-left      56})
 
 (def command-send-status-container
@@ -91,11 +91,11 @@
 
 (defn command-request-currency-text [outgoing]
   {:font-size 22
-   :color     (if outgoing colors/wild-blue-yonder colors/gray)})
+   :color     (if outgoing colors/white-transparent colors/gray)})
 
 (defn command-request-timestamp-text [outgoing]
   {:font-size 12
-   :color     (if outgoing colors/wild-blue-yonder colors/gray)})
+   :color     (if outgoing colors/white-transparent colors/gray)})
 
 (def command-send-fiat-amount
   {:flex-direction  :column
@@ -145,7 +145,7 @@
 
 (defn command-request-header-text [outgoing]
   {:font-size 12
-   :color     (if outgoing colors/wild-blue-yonder colors/gray)})
+   :color     (if outgoing colors/white-transparent colors/gray)})
 
 (def command-request-row
   {:flex-direction :row
@@ -156,7 +156,7 @@
    :color     (if outgoing colors/white colors/black)})
 
 (def command-request-separator-line
-  {:background-color colors/gray-light
+  {:background-color colors/black-transparent
    :height           1
    :border-radius    8
    :margin-top       10})

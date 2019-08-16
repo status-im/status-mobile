@@ -44,7 +44,7 @@
        [react/text {:number-of-lines 1 :ellipsize-mode :middle
                     :style {:line-height 22 :font-size 13
                             :font-family "monospace"
-                            :color (colors/alpha colors/white 0.7)}}
+                            :color colors/white-transparent-70}}
         address]]]]))
 
 (defn add-card []
@@ -53,7 +53,7 @@
                                                               :content-height 130}])}
    [react/view {:style styles/add-card}
     [react/view {:width       40 :height 40 :justify-content :center :border-radius 20
-                 :align-items :center :background-color (colors/alpha colors/blue 0.1) :margin-bottom 8}
+                 :align-items :center :background-color colors/blue-transparent-10 :margin-bottom 8}
      [icons/icon :main-icons/add {:color colors/blue}]]
     [react/text {:style {:color colors/blue}} (i18n/label :t/add-account)]]])
 

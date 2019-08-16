@@ -63,7 +63,7 @@
    :margin-horizontal 50
    :margin-bottom     48
    :border-radius     8
-   :background-color  (colors/alpha colors/blue 0.1)})
+   :background-color  colors/blue-transparent-10})
 
 (def share-contact-code-text-container
   {:margin-left     32
@@ -181,7 +181,7 @@
   {:height            1
    :margin-top        16
    :margin-bottom     8
-   :background-color  colors/gray-light})
+   :background-color  colors/black-transparent})
 
 (defn adv-settings-row-text [color]
   {:color       color

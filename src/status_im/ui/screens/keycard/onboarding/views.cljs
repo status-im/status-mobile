@@ -71,7 +71,7 @@
                                        :margin-top     15}
                            [react/view {:border-width    1
                                         :border-radius   20
-                                        :border-color    colors/gray-light
+                                        :border-color    colors/black-transparent
                                         :align-items     :center
                                         :justify-content :center
                                         :width           40
@@ -91,7 +91,7 @@
       [react/view {:margin-bottom 40}
        [react/touchable-highlight
         {:on-press #(re-frame/dispatch [:keycard.onboarding.intro.ui/begin-setup-pressed])}
-        [react/view {:background-color colors/gray-background
+        [react/view {:background-color colors/blue-light
                      :align-items      :center
                      :justify-content  :center
                      :flex-direction   :row

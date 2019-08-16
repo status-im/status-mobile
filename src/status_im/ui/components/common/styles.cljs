@@ -27,7 +27,7 @@
 (defstyle separator
   {:android {:height 0}
    :ios     {:height           1
-             :background-color colors/gray-light
+             :background-color colors/black-transparent
              :opacity          0.5}})
 
 (def list-separator
@@ -115,7 +115,7 @@
     :background-color   (cond disabled?
                               colors/gray-lighter
                               background?
-                              (colors/alpha colors/blue 0.1))}
+                              colors/blue-transparent-10)}
    style))
 
 (def button-label

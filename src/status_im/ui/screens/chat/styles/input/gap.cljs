@@ -8,7 +8,7 @@
    :height              48
    :align-items         :center
    :justify-content     :center
-   :border-color        colors/gray-light
+   :border-color        colors/black-transparent
    :border-top-width    1
    :border-bottom-width 1
    :background-color    :white})

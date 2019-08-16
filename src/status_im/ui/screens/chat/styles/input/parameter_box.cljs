@@ -3,6 +3,6 @@
 
 (def root
   {:background-color    colors/white
-   :border-bottom-color colors/gray-light
+   :border-bottom-color colors/black-transparent
    :border-bottom-width 1})
 

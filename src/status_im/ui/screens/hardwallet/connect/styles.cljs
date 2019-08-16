@@ -24,7 +24,7 @@
 
 (defn bottom-action-container [nfc-enabled?]
   {:background-color (if nfc-enabled?
-                       colors/gray-background
+                       colors/blue-light
                        colors/gray-lighter)
    :width            369
    :height           80
@@ -64,7 +64,7 @@
   {:height           52
    :justify-content  :center
    :border-top-width 1
-   :border-color     colors/gray-light})
+   :border-color     colors/black-transparent})
 
 (def product-info-container
   {:flex-direction  :row

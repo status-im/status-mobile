@@ -50,7 +50,7 @@
    :height            8
    :background-color  (if pressed?
                         colors/blue
-                        colors/gray-light)
+                        colors/black-transparent)
    :border-radius     50
    :margin-horizontal 5})
 
@@ -74,7 +74,7 @@
    :justify-content   :center
    :flex-direction    :row
    :border-radius     50
-   :background-color  colors/gray-background})
+   :background-color  colors/blue-light})
 
 (def numpad-delete-button
   (assoc numpad-button :background-color colors/white))
