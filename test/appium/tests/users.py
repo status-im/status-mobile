@@ -1,8 +1,8 @@
 basic_user = dict()
 basic_user['passphrase'] = "tree weekend ceiling awkward universe pyramid glimpse raven pair lounge grant grief"
-basic_user['username'] = "Little Weighty Iberianmole"
-basic_user['public_key'] = "0x040d3400f0ba80b2f6017a9021a66e042abc33cf7051ddf98a24a815c93d6c052ce2b7873d799f096325" \
-                           "9f41c5a1bf08133dd4f3fe63ea1cceaa1e86ebc4bc42c9"
+basic_user['username'] = "Cadetblue Popular Monoclonius"
+basic_user['public_key'] = "0x042e0309b5f6bedee93a1b984af08f89a101aff62d01ddd0a1c8f4a1d4db3b91e648c914019d09de9f07dd" \
+                           "baacb77fdf07e89b5e0d60e9a8df05b75f213661fcad"
 basic_user['address'] = "f184747445c3B85CEb147DfB136067CB93d95F1D"
 basic_user['special_chars_password'] = " !\"#$Á%Ö&'()*+Í, -./:ä;<=>?@[\\]^_`{|}~ "
 

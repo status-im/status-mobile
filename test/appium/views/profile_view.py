@@ -451,7 +451,7 @@ class SyncedDeviceToggle(BaseButton):
         super(SyncedDeviceToggle, self).__init__(driver)
         self.device_name = device_name
         self.locator = self.Locator.xpath_selector(
-            '//android.widget.TextView[@text="%s"]/../android.widget.Switch' % device_name)
+            '//android.widget.TextView[contains(@text,"%s")]/../android.widget.Switch' % device_name)
 
 
 class SyncAllButton(BaseButton):

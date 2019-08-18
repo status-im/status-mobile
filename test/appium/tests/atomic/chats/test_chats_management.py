@@ -239,8 +239,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
     def test_block_user_from_public_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        username_1 = 'user_%s' % get_current_time()
-        message_before_block_1, message_before_block_2 = "Before block from %s" % device_1.driver.number, "Before block from %s" % device_2.driver.number
+        message_before_block_1 = "Before block from %s" % device_1.driver.number
+        message_before_block_2 = "Before block from %s" % device_2.driver.number
         message_after_block_2 = "After block from %s" % device_2.driver.number
         home_1, home_2 = device_1.create_user(), device_2.recover_access(basic_user['passphrase'])
 
@@ -263,7 +263,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         # device 1: check that messages from blocked user are hidden in public chat
         if chat_public_1.chat_element_by_text(message_before_block_2).is_element_displayed():
             self.errors.append(
-                "Messages from blocked user %s are not cleared in public chat '%s'" % (device_2.driver.number, chat_name))
+                "Messages from blocked user %s are not cleared in public chat '%s'" % (
+                    device_2.driver.number, chat_name))
 
         # device 1: close app
         self.drivers[0].close_app()
@@ -288,13 +289,13 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        username_1 = 'user_%s' % get_current_time()
-        message_before_block_1, message_before_block_2 = "Before block from %s" % device_1.driver.number, "Before block from %s" % device_2.driver.number
+        message_before_block_1 = "Before block from %s" % device_1.driver.number
+        message_before_block_2 = "Before block from %s" % device_2.driver.number
         message_after_block_2 = "After block from %s" % device_2.driver.number
         home_1, home_2 = device_1.create_user(), device_2.recover_access(basic_user['passphrase'])
         profile_1 = home_1.profile_button.click()
         default_username_1 = profile_1.default_username_text.text
-        home_1 = profile_1.get_back_to_home_view()
+        profile_1.get_back_to_home_view()
 
         # device 1, device 2: join to public chat and send several messages
         chat_name = device_1.get_public_chat_name()
@@ -305,7 +306,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             chat.chat_message_input.send_keys("Before block from %s" % chat.driver.number)
             chat.send_message_button.click()
 
-        home_1, home_2 = chat_public_1.get_back_to_home_view(), chat_public_2.get_back_to_home_view()
+        chat_public_1.get_back_to_home_view()
+        chat_public_2.get_back_to_home_view()
 
         #  device 1, device 2: create 1-1 chat and send there several messages
         chat_1 = home_1.add_contact(basic_user['public_key'])
@@ -324,21 +326,22 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_1.profile_block_contact.click()
         chat_1.block_button.click()
 
-        # device 1: check that chat with blocked user was deleted and messages from blocked user are hidden in public chat
+        # device 1: check that chat with blocked user was deleted
+        # and messages from blocked user are hidden in public chat
         if home_1.get_chat_with_user(basic_user['username']).is_element_displayed():
-            pytest.fail("Chat with blocked user '%s' is not deleted" % device_2.driver.number)
+            home_1.driver.fail("Chat with blocked user '%s' is not deleted" % device_2.driver.number)
 
         public_chat_after_block = home_1.join_public_chat(chat_name)
         if public_chat_after_block.chat_element_by_text(message_before_block_2).is_element_displayed():
             self.errors.append(
                 "Messages from blocked user '%s' are not cleared in public chat '%s'" % (device_2.driver.number,
-                chat_name))
+                                                                                         chat_name))
 
         # device 2: send messages to 1-1 and public chat
         for _ in range(2):
             chat_2.chat_message_input.send_keys(message_after_block_2)
             chat_2.send_message_button.click()
-        home_2 = chat_2.get_back_to_home_view()
+        chat_2.get_back_to_home_view()
         home_2.join_public_chat(chat_name)
         chat_public_2 = home_2.get_chat_view()
 
@@ -349,11 +352,10 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         # device 1: check that new messages sent from device 2 are not shown
         if public_chat_after_block.chat_element_by_text(message_after_block_2).is_element_displayed():
             self.errors.append("Message from blocked user '%s' is received" % device_2.driver.number)
-        home_1 = public_chat_after_block.get_back_to_home_view()
+        public_chat_after_block.get_back_to_home_view()
 
         if home_1.get_chat_with_user(basic_user['username']).is_element_displayed():
-            pytest.fail(
-                "Chat with blocked user '%s' is reappeared after receiving new messages" % device_2.driver.number)
+            device_2.driver.fail("Chat with blocked user is reappeared after receiving new messages")
 
         # device 1: close app
         self.drivers[0].close_app()
@@ -362,8 +364,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         for _ in range(2):
             chat_public_2.chat_message_input.send_keys(message_after_block_2)
             chat_public_2.send_message_button.click()
-        home_2 = chat_public_2.get_back_to_home_view()
-        chat_2 = home_2.get_chat_with_user(default_username_1).click()
+        chat_public_2.get_back_to_home_view()
+        home_2.get_chat_with_user(default_username_1).click()
         for _ in range(2):
             chat_2.chat_message_input.send_keys(message_after_block_2)
             chat_2.send_message_button.click()
@@ -373,12 +375,12 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1.accept_agreements()
         device_1.sign_in()
         if home_1.get_chat_with_user(basic_user['username']).is_element_displayed():
-            pytest.fail(
-                "Chat with blocked user '%s' is reappeared after fetching new messages from offline" % device_2.driver.number)
+            self.errors.append("Chat with blocked user is reappeared after fetching new messages from offline")
         home_1.join_public_chat(chat_name)
-        chat_public_1 = home_1.get_chat_view()
+        home_1.get_chat_view()
         if chat_public_1.chat_element_by_text(message_after_block_2).is_element_displayed():
             self.errors.append(
-                "Message from blocked user '%s' is received after fetching new messages from offline" % device_2.driver.number)
+                "Message from blocked user '%s' is received after fetching new messages from offline"
+                % device_2.driver.number)
 
         self.verify_no_errors()

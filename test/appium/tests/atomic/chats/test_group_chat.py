@@ -1,4 +1,4 @@
-from tests import marks, get_current_time
+from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase
 from tests.users import chat_users
 from views.sign_in_view import SignInView
@@ -153,8 +153,6 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
     @marks.testrail_id(3998)
     @marks.high
     def test_add_new_group_chat_member(self):
-        username_1 = 'user1_%s' % get_current_time()
-        username_2 = 'user2_%s' % get_current_time()
         message_for_device_2 = 'This message should be visible for device 2'
         chat_member = chat_users['A']
 
@@ -180,12 +178,13 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         # device 1: add device 2 as a new member of the group chat
         device_1_chat.add_members_to_group_chat([device_2_default_username])
 
+        # device 2: open the chat
+        device_2_chat = device_2_home.get_chat_with_user(chat_name).click()
+        device_2_chat.join_chat_button.click()
+
         # device 1: send a message that should be visible for device 2
         device_1_chat.send_message(message_for_device_2)
 
-        # device 2: open the chat and check messages
-        device_2_chat = device_2_home.get_chat_with_user(chat_name).click()
-        device_2_chat.join_chat_button.click()
         if not device_2_chat.chat_element_by_text(message_for_device_2).is_element_displayed(30):
             self.errors.append('Message that was sent after device 2 has joined is not visible')
         self.verify_no_errors()

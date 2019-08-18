@@ -20,11 +20,10 @@ class TestSignIn(SingleDeviceTestCase):
         self.driver.launch_app()
         sign_in.accept_agreements()
         if not sign_in.element_by_text(default_username).is_element_displayed():
-            self.errors.append('Username is not shown while login')
+            self.driver.fail('Username is not shown while login')
         sign_in.sign_in()
         if not sign_in.home_button.is_element_displayed():
-            self.errors.append('User is not logged in')
-        self.verify_no_errors()
+            self.driver.fail('User is not logged in')
 
     @marks.testrail_id(5463)
     @marks.medium
