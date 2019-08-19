@@ -295,11 +295,12 @@
   "NOTE (andrey) we need this function, because params may be mixed up"
   [params]
   (let [[first-param second-param] params]
-    (cond
-      (ethereum/address? first-param)
-      [first-param second-param]
-      (ethereum/address? second-param)
-      [second-param first-param])))
+    (when (and (string? first-param) (string? second-param))
+      (cond
+        (ethereum/address? first-param)
+        [first-param second-param]
+        (ethereum/address? second-param)
+        [second-param first-param]))))
 
 (fx/defn web3-send-async
   [cofx {:keys [method params id] :as payload} message-id]
