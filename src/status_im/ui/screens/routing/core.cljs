@@ -38,7 +38,10 @@
       (when-not modal?
         (status-bar/set-status-bar current-view-id)))
     :on-will-blur
-    (fn [] (reset! screen-focused? false))}])
+    (fn []
+      (reset! screen-focused? false)
+      (doseq [text-input @react/text-input-refs]
+        (.clear text-input)))}])
 
 (defn wrap
   "Wraps screen with main view and adds navigation-events component"
