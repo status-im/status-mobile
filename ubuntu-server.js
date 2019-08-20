@@ -18,14 +18,12 @@ var repl = require('repl');
 var vm = require('vm');
 var util = require('util');
 var Buffer = require('buffer').Buffer;
-var realmConstructor = require("./node_modules/realm/lib/index.js");
-console.log("Loaded realmConstructor: " + realmConstructor);
 
 var DEBUG = 1;
 
 function rnUbuntuServer(readable, writable) {
   console.reportErrorsAsExceptions = false;  // XXX:
-  var sandbox = { console: console, util: util, outerRealmConstructor: realmConstructor };
+  var sandbox = { console: console, util: util };
   vm.createContext(sandbox);
 
   var state = 'start';

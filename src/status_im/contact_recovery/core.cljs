@@ -61,9 +61,7 @@
  (fn [[now public-key]]
    (handle-recovery-fx now public-key)))
 
-(fx/defn save-contact-recovery [{:keys [now]} public-key]
-  {:data-store/tx [(data-store.contact-recovery/save-contact-recovery-tx {:timestamp now
-                                                                          :id public-key})]})
+(fx/defn save-contact-recovery [{:keys [now]} public-key])
 
 (fx/defn prompt-accepted [cofx public-key]
   (fx/merge

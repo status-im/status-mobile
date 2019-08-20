@@ -7,7 +7,6 @@
 (def keychain               (js-require/js-require "react-native-keychain"))
 (def qr-code                (js-require/js-require "react-native-qrcode"))
 (def react-native           (js/require "react-native"))
-(def realm                  (js/require "realm"))
 (def webview-bridge         (js/require "react-native-webview-bridge"))
 (def webview                #js {:WebView #js {}})
 (def EventEmmiter           (fn [] #js {}))

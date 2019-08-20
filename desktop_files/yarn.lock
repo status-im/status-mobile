@@ -7205,26 +7205,6 @@ readable-stream@^2.0.1, readable-stream@^2.0.2, readable-stream@^2.0.6, readable
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
 
-"realm@git+https://github.com/status-im/realm-js.git#v2.20.1":
-  version "2.20.1"
-  resolved "git+https://github.com/status-im/realm-js.git#433b2d66294fcd3a28e867438b48c9643acdb18a"
-  dependencies:
-    command-line-args "^4.0.6"
-    decompress "^4.2.0"
-    deepmerge "2.1.0"
-    fs-extra "^4.0.2"
-    ini "^1.3.4"
-    nan "^2.10.0"
-    node-fetch "^1.6.3"
-    node-machine-id "^1.1.10"
-    node-pre-gyp "^0.11.0"
-    progress "^2.0.0"
-    prop-types "^15.5.10"
-    request "^2.88.0"
-    stream-counter "^1.0.0"
-    sync-request "^3.0.1"
-    url-parse "^1.2.0"
-
 rechoir@^0.6.2:
   version "0.6.2"
   resolved "https://registry.yarnpkg.com/rechoir/-/rechoir-0.6.2.tgz#85204b54dba82d5742e28c96756ef43af50e3384"

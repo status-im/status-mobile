@@ -379,7 +379,6 @@ var TopLevel = {
     "ReactNative" : function () {},
     "readDir" : function () {},
     "readFile" : function () {},
-    "realm" : function () {},
     "recoverAccount" : function () {},
     "reduce" : function () {},
     "register" : function () {},

@@ -132,7 +132,7 @@
           (is (:shh/post  actual))
           (testing "it does not remove transport, only after send is successful"
             (is (get-in actual [:db :transport/chats chat-id])))))
-    (testing "it adds the relevant transactions for realm"
+    (testing "it adds the relevant transactions"
       (let [actual (chat/remove-chat cofx chat-id)]
         (is (:data-store/tx actual))
         (is (= 3 (count (:data-store/tx actual))))))))

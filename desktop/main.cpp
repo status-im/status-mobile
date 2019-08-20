@@ -218,20 +218,6 @@ QString getDataStoragePath() {
   return dataStoragePath;
 }
 
-void renameRealmDirs() {
-  QDir dataDir(getDataStoragePath());
-
-  if (dataDir.exists("default.realmaccounts")) {
-    dataDir.mkdir("default.realm");
-    dataDir.rename("default.realmaccounts", "default.realm/accounts");
-    dataDir.rename("default.realmdefault.realm", "default.realm/default.realm");
-    dataDir.rename("default.realmdefault.realm.lock", "default.realm/default.realm.lock");
-    dataDir.rename("default.realmdefault.realm.management", "default.realm/default.realm.management");
-    dataDir.rename("default.realmdefault.realm.note", "default.realm/default.realm.note");
-  }
-}
-
-
 int main(int argc, char **argv) {
   QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   QApplication app(argc, argv);
@@ -251,7 +237,6 @@ int main(int argc, char **argv) {
   dataStoragePath = "";
 #endif
 
-  renameRealmDirs();
   ExceptionGlobalHandler exceptionHandler(
       appPath + QDir::separator() + CRASH_REPORT_EXECUTABLE,
       exceptionPostHandledCallback, dataStoragePath);
@@ -438,7 +423,6 @@ bool runNodeJsServer() {
       QStringList arguments = (QStringList() << "--port" << port);
       g_nodeJsServerProcess->setArguments(arguments);
   }
-  qputenv("REALM_DISABLE_ANALYTICS", "1");
   QObject::connect(g_nodeJsServerProcess, &QProcess::errorOccurred,
                    [=](QProcess::ProcessError) {
                      qCWarning(JSSERVER) << "process name: "

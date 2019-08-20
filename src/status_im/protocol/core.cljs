@@ -71,8 +71,8 @@
     (fx/merge cofx
               {:db (assoc db
                           :rpc-url constants/ethereum-rpc-url
-                          :transport/chats transport
-                          :mailserver/topics mailserver-topics)
+                          :transport/chats {}
+                          :mailserver/topics {})
                ::json-rpc/call
                [{:method "net_version"
                  :on-success
