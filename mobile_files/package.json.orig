@@ -56,7 +56,6 @@
     "react-native-status-keycard": "2.5.7",
     "react-native-svg": "^9.2.4",
     "react-native-svg-transformer": "^0.12.1",
-    "react-native-tcp": "git+https://github.com/status-im/react-native-tcp.git#v3.3.0-1-status",
     "react-native-touch-id": "^4.4.1",
     "react-native-udp": "2.6.1",
     "react-native-webview": "5.2.1",

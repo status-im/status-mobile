@@ -87,7 +87,6 @@
     "react-native-qrcode": "0.2.6",
     "react-native-securerandom": "git+https://github.com/status-im/react-native-securerandom.git#0.1.1-2",
     "react-native-splash-screen": "3.0.6",
-    "react-native-tcp": "3.3.0",
     "react-native-udp": "2.2.1",
     "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#0.33.16-status-rn049-desktop",
     "react-native-navigation-twopane": "git+https://github.com/status-im/react-native-navigation-twopane.git#v0.0.2-status",
