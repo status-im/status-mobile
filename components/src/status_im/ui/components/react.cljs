@@ -46,7 +46,6 @@
 
 (def app-registry (get-react-property "AppRegistry"))
 (def app-state (lazy-get-react-property "AppState"))
-(def net-info (lazy-get-react-property "NetInfo"))
 (def view ((get-class "View")))
 (def safe-area-view (get-class "SafeAreaView"))
 (def progress-bar (get-class "ProgressBarAndroid"))
@@ -234,6 +233,8 @@
          (.openPicker (clj->js {:multiple false :mediaType (or media-type "any")}))
          (.then images-fn)
          (.catch show-access-error)))))
+
+(def net-info (.-NetInfo js-dependencies/net-info))
 
 ;; Clipboard
 

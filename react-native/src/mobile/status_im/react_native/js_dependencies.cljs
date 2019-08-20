@@ -36,6 +36,7 @@
 (def react-native-shake     (js-require/js-require "react-native-shake"))
 (def react-native-screens   (js-require/js-require "react-native-screens"))
 (def mail-class             (js-require/js-require  "react-native-mail"))
+(def net-info               (js-require/js-require  "@react-native-community/netinfo"))
 (defn react-native-mail []  (.-default (mail-class)))
 (def desktop-linking        #js {:addEventListener (fn [])})
 (def desktop-menu           #js {:addEventListener (fn [])})
