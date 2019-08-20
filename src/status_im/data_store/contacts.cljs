@@ -3,8 +3,8 @@
             [status-im.utils.fx :as fx]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [taoensso.timbre :as log]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types]
+            [taoensso.timbre :as log]))
 
 (defn deserialize-device-info [contact]
   (update contact :deviceInfo (fn [device-info]

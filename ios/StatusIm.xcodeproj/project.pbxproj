@@ -25,7 +25,6 @@
 		20B6B6851D92C42600CC5C6A /* RSKImageCropper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 20B6B6831D92C42600CC5C6A /* RSKImageCropper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		20B6B6871D92C42600CC5C6A /* QBImagePicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20B6B6861D92C42600CC5C6A /* QBImagePicker.framework */; };
 		20B6B6881D92C42600CC5C6A /* QBImagePicker.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 20B6B6861D92C42600CC5C6A /* QBImagePicker.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		22118DE1207A419FBFE7B62D /* libRealmReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD48A32459B64E96843BB238 /* libRealmReact.a */; };
 		25DC9C9DC25846BD8D084888 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B9A886A2CB448B1ABA0EB62 /* libc++.tbd */; };
 		3870E1E692E24133A80B07DE /* Inter-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 693A62DB37BC4CD5A30E5C96 /* Inter-SemiBold.otf */; };
 		393D26E3080B443A998F4A2F /* Inter-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B07176ACDAA1422E8F0A3D6B /* Inter-Italic.otf */; };
@@ -168,13 +167,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = F12AFB9B1ADAF8F800E0535D;
 			remoteInfo = RNFS;
-		};
-		20B7D1281D3F74CD00B70F14 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F090E261B9854867A728CE4F /* RealmReact.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = F60690131CA2766F0003FB26;
-			remoteInfo = RealmReact;
 		};
 		475D1EF120B73EE000879A77 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -636,14 +628,12 @@
 		B461988B2210C98F00603CF2 /* RNCWebView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCWebView.xcodeproj; path = "../node_modules/react-native-webview/ios/RNCWebView.xcodeproj"; sourceTree = "<group>"; };
 		C2A4E93F6B154AEFA3485B45 /* libTcpSockets.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libTcpSockets.a; sourceTree = "<group>"; };
 		C6B1215047604CD59A4C74D6 /* Inter-MediumItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-MediumItalic.otf"; path = "../resources/fonts/Inter-MediumItalic.otf"; sourceTree = "<group>"; };
-		CD48A32459B64E96843BB238 /* libRealmReact.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRealmReact.a; sourceTree = "<group>"; };
 		CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.otf"; path = "../resources/fonts/Inter-Bold.otf"; sourceTree = "<group>"; };
 		CE4E31B21D8695250033ED64 /* Statusgo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Statusgo.framework; path = "../modules/react-native-status/ios/RCTStatus/Statusgo.framework"; sourceTree = "<group>"; };
 		D489EE8D5F52DA10AC715727 /* Pods-StatusImTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StatusImTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-StatusImTests/Pods-StatusImTests.release.xcconfig"; sourceTree = "<group>"; };
 		DF1CD4C3D1254774ACCAE4E8 /* libBVLinearGradient.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libBVLinearGradient.a; sourceTree = "<group>"; };
 		E3CDB86E22BBD9D2009BFE27 /* RNScreens.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNScreens.xcodeproj; path = "../node_modules/react-native-screens/ios/RNScreens.xcodeproj"; sourceTree = "<group>"; };
 		EBCA9155761E4EBCB2EAFE9A /* Inter-ExtraLightItalic-BETA.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraLightItalic-BETA.otf"; path = "../resources/fonts/Inter-ExtraLightItalic-BETA.otf"; sourceTree = "<group>"; };
-		F090E261B9854867A728CE4F /* RealmReact.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RealmReact.xcodeproj; path = "../node_modules/realm/react-native/ios/RealmReact.xcodeproj"; sourceTree = "<group>"; };
 		F9238D6B1E5F055900C047B9 /* SF-UI-Text-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Text-Semibold.otf"; sourceTree = "<group>"; };
 		FC1CBCFE6C906043D6CCEEE1 /* libPods-StatusImTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-StatusImTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -692,7 +682,6 @@
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 				FD4F213C3873473CB703B1D2 /* libRNFS.a in Frameworks */,
-				22118DE1207A419FBFE7B62D /* libRealmReact.a in Frameworks */,
 				25DC9C9DC25846BD8D084888 /* libc++.tbd in Frameworks */,
 				BA68A2377A20496EA737000D /* libz.tbd in Frameworks */,
 				3E15DFEC1F6F4D7CAE088F49 /* libTcpSockets.a in Frameworks */,
@@ -901,14 +890,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		20B7D1251D3F74CD00B70F14 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				20B7D1291D3F74CD00B70F14 /* libRealmReact.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		475D1EEE20B73EE000879A77 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -999,7 +980,6 @@
 				00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */,
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
 				305F194186D848FDB07AF34C /* RNFS.xcodeproj */,
-				F090E261B9854867A728CE4F /* RealmReact.xcodeproj */,
 				38E1A2C8D0734EE99E2B16CE /* TcpSockets.xcodeproj */,
 				439B6B4B407A4E2AACAFE5BE /* RCTStatus.xcodeproj */,
 				5E5A7625B76441D984EA8C0D /* RCTImageResizer.xcodeproj */,
@@ -1164,7 +1144,6 @@
 				DF1CD4C3D1254774ACCAE4E8 /* libBVLinearGradient.a */,
 				5535217F57E44D77AA9CF083 /* libRCTOrientation.a */,
 				11632AA0A5F84F029DD91797 /* libRNVectorIcons.a */,
-				CD48A32459B64E96843BB238 /* libRealmReact.a */,
 				C2A4E93F6B154AEFA3485B45 /* libTcpSockets.a */,
 				2BEE3436791D42248F853999 /* libRCTImageResizer.a */,
 				AF2BF381BC7B4EB0887F0091 /* libRNSVG.a */,
@@ -1359,10 +1338,6 @@
 					ProjectRef = 9EF083381F3B538A00876A8F /* ReactNativeConfig.xcodeproj */;
 				},
 				{
-					ProductGroup = 20B7D1251D3F74CD00B70F14 /* Products */;
-					ProjectRef = F090E261B9854867A728CE4F /* RealmReact.xcodeproj */;
-				},
-				{
 					ProductGroup = B461988C2210C98F00603CF2 /* Products */;
 					ProjectRef = B461988B2210C98F00603CF2 /* RNCWebView.xcodeproj */;
 				},
@@ -1502,13 +1477,6 @@
 			fileType = archive.ar;
 			path = libRNFS.a;
 			remoteRef = 20B7D1191D3F74CD00B70F14 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		20B7D1291D3F74CD00B70F14 /* libRealmReact.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRealmReact.a;
-			remoteRef = 20B7D1281D3F74CD00B70F14 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		475D1EF220B73EE000879A77 /* libRNSecureRandom.a */ = {
@@ -2120,7 +2088,6 @@
 					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 					"$(SRCROOT)/../node_modules/react-native-orientation/iOS/RCTOrientation/**",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
-					"$(SRCROOT)/../node_modules/realm/src/**",
 					"$(SRCROOT)/../node_modules/react-native-tcp/ios/**",
 					"$(SRCROOT)/../modules/react-native-status/ios/RCTStatus/**",
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
@@ -2185,7 +2152,6 @@
 					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 					"$(SRCROOT)/../node_modules/react-native-orientation/iOS/RCTOrientation/**",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
-					"$(SRCROOT)/../node_modules/realm/src/**",
 					"$(SRCROOT)/../node_modules/react-native-tcp/ios/**",
 					"$(SRCROOT)/../modules/react-native-status/ios/RCTStatus/**",
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
@@ -2281,7 +2247,6 @@
 					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 					"$(SRCROOT)/../node_modules/react-native-orientation/iOS/RCTOrientation/**",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
-					"$(SRCROOT)/../node_modules/realm/src/**",
 					"$(SRCROOT)/../node_modules/react-native-tcp/ios/**",
 					"$(SRCROOT)/../modules/react-native-status/ios/RCTStatus/**",
 					"$(SRCROOT)/../modules/react-native-status/ios/RCTStatus/**",
@@ -2350,7 +2315,6 @@
 					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 					"$(SRCROOT)/../node_modules/react-native-orientation/iOS/RCTOrientation/**",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
-					"$(SRCROOT)/../node_modules/realm/src/**",
 					"$(SRCROOT)/../node_modules/react-native-tcp/ios/**",
 					"$(SRCROOT)/../modules/react-native-status/ios/RCTStatus/**",
 					"$(SRCROOT)/../modules/react-native-status/ios/RCTStatus/**",

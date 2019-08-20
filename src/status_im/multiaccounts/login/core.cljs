@@ -8,6 +8,7 @@
             [status-im.contact.core :as contact]
             [status-im.data-store.core :as data-store]
             [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.protocol.core :as protocol]
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
@@ -145,6 +146,7 @@
               (stickers/init-stickers-packs)
               (mobile-network/on-network-status-change)
               (chaos-mode/check-chaos-mode)
+              (protocol/initialize-protocol)
               (when-not platform/desktop?
                 (initialize-wallet))
               (when stored-pns
@@ -155,7 +157,6 @@
   (let [stored-pns (:push-notifications/stored db)]
     (fx/merge cofx
               {:db (assoc db :chats/loading? true)
-               ::data-store/change-multiaccount [address password]
                ::json-rpc/call
                [{:method "browsers_getBrowsers"
                  :on-success #(re-frame/dispatch [::initialize-browsers %])}
@@ -174,7 +175,7 @@
   (boolean (get-in cofx [:db :multiaccounts/recover])))
 
 (fx/defn create-only-events
-  [{:keys [db] :as cofx} address password]
+  [{:keys [db] :as cofx}]
   (let [{:keys [multiaccount :networks/networks :networks/current-network]} db]
     (fx/merge cofx
               {:db (assoc db
@@ -188,7 +189,6 @@
                           :filters/initialized 1
                           :network constants/default-network
                           :networks/networks constants/default-networks)
-               ::data-store/create-multiaccount [address password]
                :filters/load-filters []
                ::json-rpc/call
                [{:method "settings_saveConfig"
@@ -203,6 +203,7 @@
               (finish-keycard-setup)
               (mobile-network/on-network-status-change)
               (chaos-mode/check-chaos-mode)
+              (protocol/initialize-protocol)
               (when-not platform/desktop?
                 (initialize-wallet)))))
 
@@ -235,7 +236,7 @@
                 (fleet/set-nodes :eth.contract nodes))
               (if login-only?
                 (login-only-events address password save-password?)
-                (create-only-events address password))
+                (create-only-events))
               (when recovering?
                 (navigation/navigate-to-cofx :home nil)))))
 

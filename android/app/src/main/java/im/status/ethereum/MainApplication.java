@@ -34,7 +34,6 @@ import im.status.ethereum.module.StatusPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
-import io.realm.react.RealmReactPackage;
 import me.alwx.HttpServer.HttpServerReactPackage;
 import com.chirag.RNMail.*;
 import com.clipsub.RNShake.RNShakeEventPackage;
@@ -67,7 +66,6 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new SplashScreenReactPackage(),
                     statusPackage,
                     new RNStatusKeycardPackage(),
-                    new RealmReactPackage(),
                     new RNLanguagesPackage(),
                     new RNCameraPackage(),
                     new RNFSPackage(),

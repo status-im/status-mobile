@@ -86,7 +86,6 @@
     "react-native-udp": "2.2.1",
     "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#0.33.16-status-rn049-desktop",
     "react-navigation": "^2.12.1",
-    "realm": "git+https://github.com/status-im/realm-js.git#v2.20.1",
     "status-conan": "git+https://github.com/status-im/status-conan.git#v1.0.0",
     "text-encoding": "^0.6.4",
     "url": "0.10.3",

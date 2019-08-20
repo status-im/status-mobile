@@ -29,7 +29,6 @@ pipeline {
     BUILD_ENV = 'prod'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     FASTLANE_DISABLE_COLORS = 1
-    REALM_DISABLE_ANALYTICS = 1
     /* since we are mounting it we need to specify location */
     STATUS_RELEASE_STORE_FILE = '/home/jenkins/status-im.keystore'
     /* We use EXECUTOR_NUMBER to avoid multiple instances clashing */

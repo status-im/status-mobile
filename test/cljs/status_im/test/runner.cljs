@@ -17,8 +17,7 @@
             [status-im.test.data-store.chats]
             [status-im.test.data-store.messages]
             [status-im.test.data-store.contacts]
-            [status-im.test.data-store.core]
-            [status-im.test.data-store.realm.core]
+            ;;[status-im.test.data-store.core]
             [status-im.test.ethereum.abi-spec]
             [status-im.test.ethereum.core]
             [status-im.test.ethereum.eip55]
@@ -57,7 +56,7 @@
             [status-im.test.utils.fx]
             [status-im.test.utils.gfycat.core]
             [status-im.test.utils.http]
-            [status-im.test.utils.keychain.core]
+            ;;[status-im.test.utils.keychain.core]
             [status-im.test.utils.money]
             [status-im.test.utils.prices]
             [status-im.test.utils.random]
@@ -100,8 +99,7 @@
  'status-im.test.data-store.chats
  'status-im.test.data-store.messages
  'status-im.test.data-store.contacts
- 'status-im.test.data-store.core
- 'status-im.test.data-store.realm.core
+ ;;'status-im.test.data-store.core
  'status-im.test.ethereum.abi-spec
  'status-im.test.ethereum.core
  'status-im.test.ethereum.eip55
@@ -142,7 +140,7 @@
  'status-im.test.utils.fx
  'status-im.test.utils.gfycat.core
  'status-im.test.utils.http
- 'status-im.test.utils.keychain.core
+ ;;'status-im.test.utils.keychain.core
  'status-im.test.utils.money
  'status-im.test.utils.prices
  'status-im.test.utils.random

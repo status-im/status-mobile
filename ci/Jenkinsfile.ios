@@ -28,7 +28,6 @@ pipeline {
     TARGET_OS = 'ios'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     FASTLANE_DISABLE_COLORS = 1
-    REALM_DISABLE_ANALYTICS = 1
     BUNDLE_PATH = "${HOME}/.bundle"
     /* We use EXECUTOR_NUMBER to avoid multiple instances clashing */
     LEIN_HOME   = "/var/tmp/lein-${EXECUTOR_NUMBER}"

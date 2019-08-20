@@ -39,7 +39,7 @@
   (fx/merge cofx
             {:db (assoc db
                         :rpc-url constants/ethereum-rpc-url
-                        :mailserver/topics mailserver-topics)}
+                        :mailserver/topics {})}
             (tribute-to-talk/init)
             (mailserver/initialize-ranges)
             (mailserver/initialize-mailserver mailservers)

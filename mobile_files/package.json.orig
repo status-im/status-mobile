@@ -53,7 +53,6 @@
     "react-native-udp": "git+https://github.com/status-im/react-native-udp.git#v2.3.1-1-status",
     "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#fix/classnames-colision",
     "react-navigation": "^3.11.0",
-    "realm": "2.28.1",
     "text-encoding": "^0.6.4",
     "url": "0.10.3",
     "web3": "git+https://github.com/status-im/web3.js.git#0.20.3-status.alpha.3",
