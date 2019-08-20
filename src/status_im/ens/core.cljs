@@ -59,7 +59,8 @@
     (re-frame/dispatch [:ens/set-state username :unregistrable])))
 
 (fx/defn register-name
-  [{:keys [db] :as cofx} contract custom-domain? username address public-key]
+  {:events [:ens/register]}
+  [{:keys [db] :as cofx} {:keys [contract custom-domain? username address public-key]}]
   (let [{:keys [x y]} (ethereum/coordinates public-key)]
     (signing/eth-transaction-call
      cofx
@@ -100,7 +101,8 @@
               (assoc-state-for username state))}
      (when (and name (= :valid state))
        (let [{:keys [multiaccount]}        db
-             {:keys [address public-key]}     multiaccount
+             {:keys [public-key]}     multiaccount
+             address (ethereum/default-address db)
              registry (get ens/ens-registries (ethereum/chain-keyword db))]
          {:ens/resolve-address [registry name #(on-resolve registry custom-domain? username address public-key %)]})))))
 
@@ -155,11 +157,6 @@
   {:events [:ens/on-registration-failure]}
   [{:keys [db]} username]
   {:db (assoc-state-for db username :registration-failed)})
-
-(fx/defn register
-  {:events [:ens/register]}
-  [cofx {:keys [contract custom-domain? username address public-key]}]
-  (register-name cofx contract custom-domain? username address public-key))
 
 (fx/defn store-name-detail
   {:events [:ens/store-name-detail]}
