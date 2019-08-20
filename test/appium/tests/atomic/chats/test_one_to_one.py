@@ -122,8 +122,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_home = profile_1.get_back_to_home_view()
 
         profile_1 = device_1_home.profile_button.click()
-        file_name = 'sauce_logo.png'
-        profile_1.edit_profile_picture(file_name)
+        profile_1.edit_profile_picture('sauce_logo.png')
         profile_1.home_button.click()
 
         device_2_public_key = device_2_home.get_public_key()
@@ -145,7 +144,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append("Default username '%s' is not shown in one-to-one chat" % default_username_1)
         device_2_chat.chat_options.click()
         device_2_chat.view_profile_button.click()
-        if not device_2_chat.contact_profile_picture.is_element_image_equals_template(file_name):
+        if not device_2_chat.contact_profile_picture.is_element_image_equals_template():
             self.errors.append("Updated profile picture is not shown in one-to-one chat")
         self.verify_no_errors()
 
@@ -373,7 +372,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_1 = 'user_%s' % get_current_time()
-        device_1_home, device_2_home = sign_in_1.create_user(username=username_1), sign_in_2.create_user()
+        device_1_home, device_2_home = sign_in_1.create_user(), sign_in_2.create_user()
         device_2_public_key = device_2_home.get_public_key()
         device_2_home.home_button.click()
 
@@ -731,4 +730,3 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat = home.add_contact(ens_user['ens'])
         if not chat.element_by_text(ens_user['username']).is_element_displayed():
             self.driver.fail('Wrong user is resolved from username when starting 1-1 chat.')
-
