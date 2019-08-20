@@ -4,6 +4,7 @@ import android.support.multidex.MultiDexApplication;
 
 import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
 import com.facebook.react.ReactApplication;
+import com.reactnativecommunity.netinfo.NetInfoPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -55,6 +56,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
             Function<String, String> callRPC = statusPackage.getCallRPC();
             return Arrays.asList(
                     new MainReactPackage(),
+            new NetInfoPackage(),
                     new RNMail(),
                     new RNFirebasePackage(),
                     new RNFirebaseMessagingPackage(),
