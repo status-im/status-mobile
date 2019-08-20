@@ -49,32 +49,27 @@
 
 (defn send-public-message
   "Sends the payload to topic"
-  [{:keys [db] :as cofx} chat-id success-event payload]
-  (let [{:keys [web3]} db]
-    {:shh/send-public-message [{:web3 web3
-                                :success-event success-event
-                                :src     (multiaccounts.model/current-public-key cofx)
-                                :chat    chat-id
-                                :payload payload}]}))
+  [cofx chat-id success-event payload]
+  {:shh/send-public-message [{:success-event success-event
+                              :src     (multiaccounts.model/current-public-key cofx)
+                              :chat    chat-id
+                              :payload payload}]})
 
 (fx/defn send-direct-message
   "Sends the payload using to dst"
-  [{:keys [db] :as cofx} dst success-event payload]
-  (let [{:keys [web3]} db]
-    {:shh/send-direct-message [{:web3           web3
-                                :success-event  success-event
-                                :src            (multiaccounts.model/current-public-key cofx)
-                                :dst            dst
-                                :payload        payload}]}))
+  [cofx dst success-event payload]
+  {:shh/send-direct-message [{:success-event  success-event
+                              :src            (multiaccounts.model/current-public-key cofx)
+                              :dst            dst
+                              :payload        payload}]})
 
 (fx/defn send-with-pubkey
   "Sends the payload using asymetric key (multiaccount `:public-key` in db) and fixed discovery topic"
-  [{:keys [db] :as cofx} {:keys [payload chat-id success-event]}]
-  (let [{:keys [web3]} db]
-    (send-direct-message cofx
-                         chat-id
-                         success-event
-                         payload)))
+  [cofx {:keys [payload chat-id success-event]}]
+  (send-direct-message cofx
+                       chat-id
+                       success-event
+                       payload))
 
 (defrecord Message [content content-type message-type clock-value timestamp]
   StatusMessage

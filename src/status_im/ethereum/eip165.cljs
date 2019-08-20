@@ -17,7 +17,7 @@
 (defn supports?
   "Calls cb with true if `supportsInterface` is supported by this contract.
    See EIP for details."
-  [web3 contract cb]
+  [contract cb]
   (supports-interface?
    contract
    supports-interface-hash

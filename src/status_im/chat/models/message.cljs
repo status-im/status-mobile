@@ -145,7 +145,7 @@
 (fx/defn add-received-message
   [{:keys [db] :as cofx}
    {:keys [from message-id chat-id js-obj content metadata] :as raw-message}]
-  (let [{:keys [web3 current-chat-id view-id]} db
+  (let [{:keys [current-chat-id view-id]} db
         current-public-key             (multiaccounts.model/current-public-key cofx)
         current-chat?                  (and (or (= :chat view-id)
                                                 (= :chat-modal view-id))

@@ -29,9 +29,9 @@
 (deftest test-send-message!
   (testing "send contact request & message"
     (run-test-async
-     (let [web3          (make-web3)
-           shh  (transport.utils/shh web3)
-           from          (create-keys shh)]
+     (let [web3 (make-web3)
+           shh  (.-shh web3)
+           from (create-keys shh)]
        (reset! re-frame.db/app-db {:web3 web3
                                    :multiaccount {:public-key from}})
 
@@ -52,7 +52,7 @@
   (testing "Whisper version supported"
     (async done
            (let [web3 (make-web3)
-                 shh  (transport.utils/shh web3)]
+                 shh  (.-shh web3)]
              (.version shh
                        (fn [& args]
                          (is (= "6.0" (second args)))

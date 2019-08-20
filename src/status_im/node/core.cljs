@@ -193,23 +193,23 @@
 
 (re-frame/reg-fx
  :node/les-show-debug-info
- (fn [[web3 multiaccount chain-sync-state]]
-   (.getBalance
-    (.-eth web3)
-    (:address multiaccount)
-    (fn [error-balance balance]
-      (.getBlockNumber
-       (.-eth web3)
-       (fn
-         [error-block block]
-         (utils/show-popup
-          "LES sync status"
-          (str
-           "* multiaccount="        (:address multiaccount) "\n"
-           "* latest block="   (or error-block block) "\n"
-           "* balance="        (or error-balance balance) "\n"
-           "* eth_getSyncing=" (or chain-sync-state "false")))))))))
+ (fn [[multiaccount chain-sync-state]]
+   #_(.getBalance
+      (.-eth eb3)
+      (:address multiaccount)
+      (fn [error-balance balance]
+        (.getBlockNumber
+         (.-eth eb3)
+         (fn
+           [error-block block]
+           (utils/show-popup
+            "LES sync status"
+            (str
+             "* multiaccount="   (:address multiaccount) "\n"
+             "* latest block="   (or error-block block) "\n"
+             "* balance="        (or error-balance balance) "\n"
+             "* eth_getSyncing=" (or chain-sync-state "false")))))))))
 
 (defn display-les-debug-info
-  [{{:keys [web3 multiaccount] :node/keys [chain-sync-state]} :db}]
-  {:node/les-show-debug-info [web3 multiaccount]})
+  [{{:keys [multiaccount] :node/keys [chain-sync-state]} :db}]
+  {:node/les-show-debug-info [multiaccount]})

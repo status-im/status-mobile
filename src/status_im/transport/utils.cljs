@@ -20,9 +20,6 @@
   [chat-id]
   (subs (ethereum/sha3 chat-id) 0 10))
 
-(defn shh [web3]
-  (.-shh web3))
-
 (defn extract-enode-id [enode]
   (-> enode
       (string/split #"/")

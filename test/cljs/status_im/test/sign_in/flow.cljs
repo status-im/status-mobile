@@ -7,7 +7,6 @@
             [status-im.events :as events]
             [status-im.data-store.core :as data-store]
             [status-im.multiaccounts.login.core :as login.core]
-            [status-im.web3.core :as web3]
             [status-im.signals.core :as signals]
             [status-im.test.sign-in.data :as data]))
 
@@ -42,7 +41,7 @@
       (testing ":accounts/login cleared."
         (is (not (contains? new-db :multiaccounts/login))))
       (testing "Check the rest of effects."
-        (is (contains? efx ::web3/initialize))
+        (is (contains? efx ::data-store/change-multiaccount))
         (is (json-rpc "web3_clientVersion"))))))
 
 ;;TODO re-enable when keycard is fixed

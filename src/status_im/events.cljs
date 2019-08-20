@@ -65,7 +65,6 @@
             [status-im.wallet.core :as wallet]
             [status-im.wallet.custom-tokens.core :as custom-tokens]
             [status-im.wallet.db :as wallet.db]
-            [status-im.web3.core :as web3]
             [taoensso.timbre :as log]
             [status-im.chat.commands.sending :as commands.sending]
             [status-im.utils.money :as money]

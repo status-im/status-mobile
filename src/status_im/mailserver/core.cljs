@@ -12,6 +12,7 @@
             [status-im.transport.db :as transport.db]
             [status-im.transport.message.protocol :as protocol]
             [clojure.string :as string]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.mailserver.topics :as mailserver.topics]
             [status-im.mailserver.constants :as constants]
             [status-im.data-store.mailservers :as data-store.mailservers]
@@ -158,18 +159,15 @@
    (reset! limit (decrease-limit))
    (reset! success-counter 0)))
 
-(defn mark-trusted-peer! [web3 enode]
-  (.markTrustedPeer (transport.utils/shh web3)
-                    enode
-                    (fn [error response]
-                      (if error
-                        (re-frame/dispatch [:mailserver.callback/mark-trusted-peer-error error])
-                        (re-frame/dispatch [:mailserver.callback/mark-trusted-peer-success response])))))
+(defn mark-trusted-peer! [enode]
+  (json-rpc/call {:method "shh_markTrustedPeer"
+                  :params [enode]
+                  :on-success #(re-frame/dispatch [:mailserver.callback/mark-trusted-peer-success %])
+                  :on-error #(re-frame/dispatch [:mailserver.callback/mark-trusted-peer-error %])}))
 
 (re-frame/reg-fx
  :mailserver/mark-trusted-peer
- (fn [{:keys [address web3]}]
-   (mark-trusted-peer! web3 address)))
+ mark-trusted-peer!)
 
 (fx/defn generate-mailserver-symkey
   [{:keys [db] :as cofx} {:keys [password id] :as mailserver}]
@@ -177,7 +175,6 @@
     {:db (assoc-in db [:mailserver/mailservers current-fleet id :generating-sym-key?] true)
      :shh/generate-sym-key-from-password
      [{:password    password
-       :web3       (:web3 db)
        :on-success (fn [_ sym-key-id]
                      (re-frame/dispatch [:mailserver.callback/generate-mailserver-symkey-success mailserver sym-key-id]))
        :on-error   #(log/error "mailserver: get-sym-key error" %)}]}))
@@ -196,8 +193,7 @@
   (let [{:keys [address sym-key-id generating-sym-key?] :as mailserver} (fetch-current cofx)]
     (fx/merge cofx
               {:db (update-mailserver-state db :added)
-               :mailserver/mark-trusted-peer {:web3  (:web3 db)
-                                              :address address}}
+               :mailserver/mark-trusted-peer address}
               (when-not (or sym-key-id generating-sym-key?)
                 (generate-mailserver-symkey mailserver)))))
 
@@ -297,7 +293,8 @@
                  (assoc-in [:mailserver/current-request :request-id] request-id))}
         {:db (assoc-in db [:mailserver/current-request :request-id] request-id)}))))
 
-(defn request-messages! [web3 {:keys [sym-key-id address]} {:keys [topics cursor to from force-to?] :as request}]
+(defn request-messages!
+  [{:keys [sym-key-id address]} {:keys [topics cursor to from force-to?] :as request}]
   ;; Add some room to from, unless we break day boundaries so that messages that have
   ;; been received after the last request are also fetched
   (let [actual-from   (adjust-request-for-transit-time from)
@@ -311,30 +308,28 @@
               " range " (- to from)
               " cursor " cursor
               " limit " actual-limit)
-    (.requestMessages (transport.utils/shh web3)
-                      (clj->js (cond-> {:topics         topics
-                                        :mailServerPeer address
-                                        :symKeyID       sym-key-id
-                                        :timeout        constants/request-timeout
-                                        :limit          actual-limit
-                                        :cursor         cursor
-                                        :from           actual-from}
-                                 force-to?
-                                 (assoc :to to)))
-                      (fn [error request-id]
-                        (if-not error
-                          (do
-                            (log/info "mailserver: messages request success for topic " topics "from" from "to" to)
-                            (re-frame/dispatch [:mailserver.callback/request-success {:request-id request-id :topics topics}]))
-                          (do
-                            (log/error "mailserver: messages request error for topic " topics ": " error)
-                            (utils/set-timeout #(re-frame/dispatch [:mailserver.callback/resend-request {:request-id nil}])
-                                               constants/backoff-interval-ms)))))))
+    (json-rpc/call {:method "shhext_requestMessages"
+                    :params [(cond-> {:topics         topics
+                                      :mailServerPeer address
+                                      :symKeyID       sym-key-id
+                                      :timeout        constants/request-timeout
+                                      :limit          actual-limit
+                                      :cursor         cursor
+                                      :from           actual-from}
+                               force-to?
+                               (assoc :to to))]
+                    :on-success (fn [request-id]
+                                  (log/info "mailserver: messages request success for topic " topics "from" from "to" to)
+                                  (re-frame/dispatch [:mailserver.callback/request-success {:request-id request-id :topics topics}]))
+                    :on-error (fn [error]
+                                (log/error "mailserver: messages request error for topic " topics ": " error)
+                                (utils/set-timeout #(re-frame/dispatch [:mailserver.callback/resend-request {:request-id nil}])
+                                                   constants/backoff-interval-ms))})))
 
 (re-frame/reg-fx
  :mailserver/request-messages
- (fn [{:keys [web3 mailserver request]}]
-   (request-messages! web3 mailserver request)))
+ (fn [{:keys [mailserver request]}]
+   (request-messages! mailserver request)))
 
 (defn get-mailserver-when-ready
   "return the mailserver if the mailserver is ready"
@@ -399,16 +394,14 @@
     (when-let [mailserver (get-mailserver-when-ready cofx)]
       (let [request-to (or (:mailserver/request-to db)
                            (quot now 1000))
-            requests   (prepare-messages-requests cofx request-to)
-            web3       (:web3 db)]
+            requests   (prepare-messages-requests cofx request-to)]
         (log/debug "Mailserver: planned requests " requests)
         (if-let [request (first requests)]
           {:db                          (assoc db
                                                :mailserver/pending-requests (count requests)
                                                :mailserver/current-request request
                                                :mailserver/request-to request-to)
-           :mailserver/request-messages {:web3       web3
-                                         :mailserver mailserver
+           :mailserver/request-messages {:mailserver mailserver
                                          :request    request}}
           {:db (dissoc db
                        :mailserver/pending-requests
@@ -735,8 +728,7 @@
           (when-let [mailserver (get-mailserver-when-ready cofx)]
             (let [request-with-cursor (assoc request :cursor cursor)]
               {:db                          (assoc db :mailserver/current-request request-with-cursor)
-               :mailserver/request-messages {:web3       (:web3 db)
-                                             :mailserver mailserver
+               :mailserver/request-messages {:mailserver mailserver
                                              :request    request-with-cursor}}))
           (let [{:keys [gap chat-id]} request]
             (fx/merge cofx
@@ -870,8 +862,7 @@
       (not current-request)
       (-> (assoc-in [:db :mailserver/current-request] first-request)
           (assoc :mailserver/request-messages
-                 {:web3       (:web3 db)
-                  :mailserver mailserver
+                 {:mailserver mailserver
                   :request    first-request})))))
 
 (fx/defn resend-request
@@ -905,13 +896,11 @@
                      (dissoc :mailserver/planned-gap-requests))}
 
             mailserver
-            (let [{:keys [topics from to cursor limit] :as request} current-request
-                  web3 (:web3 db)]
+            (let [{:keys [topics from to cursor limit] :as request} current-request]
               (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to "cursor" cursor "limit" (decrease-limit))
               {:db                          (update-in db [:mailserver/current-request :attempts] inc)
                :mailserver/decrease-limit   []
-               :mailserver/request-messages {:web3       web3
-                                             :mailserver mailserver
+               :mailserver/request-messages {:mailserver mailserver
                                              :request    (assoc request :limit (decrease-limit))}})
 
             :else

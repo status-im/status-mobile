@@ -37,7 +37,7 @@
 (fx/defn init-whisper
   "Initialises whisper protocol by:
   - (optionally) initializing mailserver"
-  [{:keys [db web3] :as cofx}]
+  [cofx]
   (fx/merge cofx
             (fetch-node-info-fx)
             (pairing/init)

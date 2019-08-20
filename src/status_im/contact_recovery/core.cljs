@@ -50,11 +50,9 @@
 (fx/defn notify-user
   "Send an empty message to the user, which will carry device information"
   [cofx public-key]
-  (let [{:keys [web3]} (:db cofx)
-        current-public-key (multiaccounts.model/current-public-key cofx)]
+  (let [current-public-key (multiaccounts.model/current-public-key cofx)]
     {:shh/send-direct-message
-     [{:web3    web3
-       :src     current-public-key
+     [{:src     current-public-key
        :dst     public-key
        :payload ""}]}))
 

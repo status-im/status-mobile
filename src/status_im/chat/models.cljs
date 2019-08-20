@@ -103,7 +103,7 @@
               chat-props)]
     (fx/merge cofx
               {:db (update-in db [:chats chat-id] merge chat)}
-              (chats-store/save-chat-rpc chat))))
+              (chats-store/save-chat chat))))
 
 (fx/defn add-public-chat
   "Adds new public group chat to db & realm"
@@ -149,7 +149,7 @@
                                  :unviewed-messages-count   0
                                  :deleted-at-clock-value    last-message-clock-value})}
      (messages-store/delete-messages-by-chat-id chat-id)
-     #(chats-store/save-chat-rpc % (get-in % [:db :chats chat-id])))))
+     #(chats-store/save-chat % (get-in % [:db :chats chat-id])))))
 
 (fx/defn deactivate-chat
   [{:keys [db now] :as cofx} chat-id]
@@ -157,7 +157,7 @@
             {:db (-> db
                      (assoc-in [:chats chat-id :is-active] false)
                      (assoc-in [:current-chat-id] nil))}
-            #(chats-store/save-chat-rpc % (get-in % [:db :chats chat-id]))))
+            #(chats-store/save-chat % (get-in % [:db :chats chat-id]))))
 
 (fx/defn remove-chat
   "Removes chat completely from app, producing all necessary effects for that"

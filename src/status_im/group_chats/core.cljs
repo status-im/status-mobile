@@ -120,7 +120,6 @@
          creator (extract-creator chat)
          members (clojure.set/union (get-in cofx [:db :chats chat-id :contacts])
                                     removed-members)
-         {:keys [web3]} (:db cofx)
          current-public-key (multiaccounts.model/current-public-key cofx)
          members-allowed (filter
                           (fn [pk]
@@ -134,8 +133,7 @@
      (fx/merge
       cofx
       {:shh/send-group-message
-       {:web3             web3
-        :src              current-public-key
+       {:src              current-public-key
         :dsts             destinations
         :success-event    [:transport/message-sent
                            chat-id

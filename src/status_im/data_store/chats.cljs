@@ -141,7 +141,7 @@
       (assoc :group-chat-local-version 1) ;; TODO(cammellos): this can be removed
       (dissoc :chatType :members)))
 
-(fx/defn save-chat-rpc [cofx {:keys [chat-id] :as chat}]
+(fx/defn save-chat [cofx {:keys [chat-id] :as chat}]
   {::json-rpc/call [{:method "shhext_saveChat"
                      :params [(->rpc chat)]
                      :on-success #(log/debug "saved chat" chat-id "successfuly")

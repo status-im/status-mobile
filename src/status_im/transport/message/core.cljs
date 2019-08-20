@@ -13,13 +13,8 @@
             [status-im.transport.utils :as transport.utils]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]))
-
-(defn confirm-messages [confirmations]
-  (json-rpc/call {:method "shhext_confirmMessagesProcessedByID"
-                  :params [confirmations]
-                  :on-success #(log/debug "successfully confirmed messages")
-                  :on-failure #(log/error "failed to confirm messages" %)}))
+            [taoensso.timbre :as log]
+            [status-im.ethereum.json-rpc :as json-rpc]))
 
 (defn add-raw-payload
   "Add raw payload for id calculation"
@@ -218,4 +213,7 @@
  :transport/confirm-messages-processed
  (fn [confirmations]
    (when (seq confirmations)
-     (confirm-messages confirmations))))
+     (json-rpc/call {:method "shhext_confirmMessagesProcessedByID"
+                     :params [confirmations]
+                     :on-success #(log/debug "successfully confirmed messages")
+                     :on-failure #(log/error "failed to confirm messages" %)}))))

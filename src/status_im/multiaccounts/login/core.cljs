@@ -5,6 +5,7 @@
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.constants :as constants]
+            [status-im.data-store.core :as data-store]
             [status-im.contact.core :as contact]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
@@ -27,7 +28,6 @@
             [status-im.utils.types :as types]
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.wallet.core :as wallet]
-            [status-im.web3.core :as web3]
             [taoensso.timbre :as log]))
 
 (def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
@@ -155,6 +155,7 @@
   (let [stored-pns (:push-notifications/stored db)]
     (fx/merge cofx
               {:db (assoc db :chats/loading? true)
+               ::data-store/change-multiaccount [address password]
                ::json-rpc/call
                [{:method "browsers_getBrowsers"
                  :on-success #(re-frame/dispatch [::initialize-browsers %])}
@@ -177,7 +178,7 @@
   (boolean (get-in cofx [:db :multiaccounts/recover])))
 
 (fx/defn create-only-events
-  [{:keys [db] :as cofx}]
+  [{:keys [db] :as cofx} address password]
   (let [{:keys [multiaccount]} db]
     (fx/merge cofx
               {:db (assoc db
@@ -191,6 +192,7 @@
                           :filters/initialized 1
                           :network constants/default-network
                           :networks/networks constants/default-networks)
+               ::data-store/create-multiaccount [address password]
                :filters/load-filters []
                ::json-rpc/call
                [{:method "settings_saveConfig"
@@ -222,9 +224,6 @@
                                :card-read-in-progress?
                                :pin
                                :multiaccount))
-               ;;TODO remove once web3 has been replaced by json-rpc in protocol
-               ;; after this call realm and the protocol are initialized as a callback
-               ::web3/initialize [address password login-only?]
                ::json-rpc/call
                [{:method "web3_clientVersion"
                  :on-success #(re-frame/dispatch [::initialize-web3-client-version %])}]
@@ -235,7 +234,7 @@
               (initialize-multiaccount-db address)
               (if login-only?
                 (login-only-events address password save-password?)
-                (create-only-events))
+                (create-only-events address password))
               (when recovering?
                 (navigation/navigate-to-cofx :home nil)))))
 
