@@ -5918,12 +5918,13 @@ react-native-background-timer@2.1.0-alpha.6:
   resolved "https://registry.yarnpkg.com/react-native-background-timer/-/react-native-background-timer-2.1.0-alpha.6.tgz#f8495a9c44d80295c088b09c59d88fdf0a8d6ecd"
   integrity sha512-2J87AlGjDsfujxdEGXJxqYpSVyNrgcfwqh0PDwesQoOCqmiIkLA7N0tLE4joB9N0oYMraIteFYaiUu8jJdO7oA==
 
-"react-native-camera@git+https://github.com/status-im/react-native-camera.git#v1.1.5-1-status":
-  version "1.1.5"
-  resolved "git+https://github.com/status-im/react-native-camera.git#6de8c8d1ba28906ab014d717a33a7b6f73c433c5"
+react-native-camera@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-3.1.2.tgz#a9cbc1ee55d5e6ad374aa7e5e502b4bdfe32c371"
+  integrity sha512-2XpBwUXN7Mq17rNnos4ZvUrUR4QDnu5H+SpTn1S/LUuAf2bN4Rk+Zyje7/GnytRslYOuhTtr2DFKEmvubYzpYg==
   dependencies:
     lodash "^4.17.4"
-    prop-types "^15.5.10"
+    prop-types "^15.6.2"
 
 "react-native-config@git+https://github.com/status-im/react-native-config.git#0.11.2-1":
   version "0.11.2"
