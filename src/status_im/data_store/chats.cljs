@@ -49,13 +49,17 @@
   (->> updates
        (group-by :signature)
        (map (fn [[signature events]]
-              {:events (map #(-> %
-                                 (assoc :clock-value (:clockValue %))
-                                 (dissoc :signature :from :id :clockValue)
-                                 remove-empty-vals) events)
+              {:events
+               (into []
+                     (sort-by :clock-value (map #(-> %
+                                                     (assoc :clock-value (:clockValue %))
+                                                     (update :members (fn [members] (into #{} members)))
+                                                     (dissoc :signature :from :id :clockValue)
+                                                     remove-empty-vals) events)))
                :from  (-> events first :from)
                :signature signature
-               :chat-id chat-id}))))
+               :chat-id chat-id}))
+       (into #{})))
 
 (defn type->rpc [{:keys [public? group-chat] :as chat}]
   (assoc chat :chatType (cond

@@ -121,15 +121,15 @@
                        :admins #{"a" "b"}
                        :members-joined #{"a" "c"}
                        :name "name"
-                       :membership-updates [{:chat-id "chat-id"
-                                             :from "a"
-                                             :signature "b"
-                                             :events [{:type "chat-created"
-                                                       :name "test"
-                                                       :clock-value 1}
-                                                      {:type "members-added"
-                                                       :clock-value 2
-                                                       :members ["a" "b"]}]}]
+                       :membership-updates #{{:chat-id "chat-id"
+                                              :from "a"
+                                              :signature "b"
+                                              :events [{:type "chat-created"
+                                                        :name "test"
+                                                        :clock-value 1}
+                                                       {:type "members-added"
+                                                        :clock-value 2
+                                                        :members #{"a" "b"}}]}}
                        :unviewed-messages-count 2
                        :is-active true
                        :group-chat-local-version 1
