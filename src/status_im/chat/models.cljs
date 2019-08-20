@@ -106,7 +106,7 @@
               (chats-store/save-chat chat))))
 
 (fx/defn add-public-chat
-  "Adds new public group chat to db & realm"
+  "Adds new public group chat to db"
   [cofx topic]
   (if config/use-status-go-protocol?
     {::json-rpc/call [{:method "status_joinPublicChat"

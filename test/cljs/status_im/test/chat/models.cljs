@@ -113,7 +113,7 @@
     (testing "it sets the chat as inactive"
       (let [actual (chat/remove-chat cofx chat-id)]
         (is (= false (get-in actual [:db :chats chat-id :is-active])))))
-    (testing "it adds the relevant transactions for realm"
+    (testing "it adds the relevant transactions"
       (let [actual (chat/remove-chat cofx chat-id)]
         (is (:data-store/tx actual))
         (is (= 2 (count (:data-store/tx actual))))))))

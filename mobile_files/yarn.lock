@@ -6290,28 +6290,6 @@ readable-stream@^2.0.1, readable-stream@^2.0.6, readable-stream@^2.2.2, readable
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
 
-realm@2.28.1:
-  version "2.28.1"
-  resolved "https://registry.yarnpkg.com/realm/-/realm-2.28.1.tgz#4482eea65708e38a2935850d569ff7c34001369d"
-  integrity sha512-2p/KMpqGXkcLopXyiAGyLUd8SyrBRwjjcy1gjI6KbD+/FaW8AaONaeOiF9c/kYc5kQ7xM2tJEOw1iBtoUihHXA==
-  dependencies:
-    command-line-args "^4.0.6"
-    decompress "^4.2.0"
-    deepmerge "2.1.0"
-    fs-extra "^4.0.3"
-    https-proxy-agent "^2.2.1"
-    ini "^1.3.5"
-    nan "^2.12.1"
-    node-fetch "^1.7.3"
-    node-machine-id "^1.1.10"
-    node-pre-gyp "^0.11.0"
-    progress "^2.0.3"
-    prop-types "^15.6.2"
-    request "^2.88.0"
-    stream-counter "^1.0.0"
-    sync-request "^3.0.1"
-    url-parse "^1.4.4"
-
 regenerate-unicode-properties@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/regenerate-unicode-properties/-/regenerate-unicode-properties-7.0.0.tgz#107405afcc4a190ec5ed450ecaa00ed0cafa7a4c"

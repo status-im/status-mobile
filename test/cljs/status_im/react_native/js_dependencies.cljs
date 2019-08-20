@@ -19,9 +19,6 @@
                                 :Text #js {}}
        :DeviceEventEmitter #js {:addListener (fn [])}
        :Dimensions         #js {:get  (fn [])}})
-(def realm                  #js {:schemaVersion (fn [])
-                                 :defaultPath   "/tmp/realm"
-                                 :close         (fn [])})
 (def vector-icons           (fn [] #js {:default #js {}}))
 (def webview-bridge         (fn [] #js {:default #js {}}))
 (def webview                (fn [] #js {:WebView #js {}}))
@@ -53,4 +50,3 @@
 (def desktop-config #js {})
 (def react-native-mail (fn [] #js {:mail #js {}}))
 (def react-native-navigation-twopane  #js {})
-

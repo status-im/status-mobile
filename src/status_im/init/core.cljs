@@ -91,7 +91,6 @@
              ::init-keystore nil
              ::restore-native-settings nil
              ::open-multiaccounts #(re-frame/dispatch [::initialize-multiaccounts %])
-             ::data-store/init-store nil
              :ui/listen-to-window-dimensions-change nil
              :notifications/init                    nil
              :network/listen-to-network-status      nil

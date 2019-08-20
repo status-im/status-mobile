@@ -265,7 +265,6 @@ dependencies {
     implementation project(':react-native-splash-screen')
     implementation project(':react-native-image-resizer')
     implementation project(':react-native-dialogs')
-    implementation project(':realm')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     // Force using exact RN version instead of relying on gradle dependency resolution
@@ -299,7 +298,6 @@ dependencies {
     implementation project(':react-native-keychain')
 
     compile 'com.github.status-im:function:0.0.1'
-    implementation fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
     implementation 'com.facebook.fresco:animated-gif:1.10.0'
 }
 

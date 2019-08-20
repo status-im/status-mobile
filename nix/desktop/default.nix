@@ -1,6 +1,6 @@
 { stdenv, pkgs, callPackage, target-os,
   cmake, extra-cmake-modules, file, status-go, go,
-  darwin, nodejs }:
+  darwin }:
 
 let
   inherit (stdenv.lib) catAttrs concatStrings optional unique;
@@ -15,10 +15,6 @@ let
     optional platform.targetLinux linuxPlatform ++
     optional platform.targetDarwin darwinPlatform ++
     optional platform.targetWindows windowsPlatform;
-  nodeInputs = import ./realm-node {
-    # The remaining dependencies come from Nixpkgs
-    inherit pkgs nodejs;
-  };
 
 in {
   buildInputs = unique ([
@@ -27,8 +23,7 @@ in {
     file
     snoreNotifySources
     qtkeychainSources
-  ] ++ catAttrs "buildInputs" selectedSources
-    ++ (builtins.attrValues nodeInputs));
+  ] ++ catAttrs "buildInputs" selectedSources);
 
   shellHook = concatStrings (catAttrs "shellHook" (selectedSources ++ [ snoreNotifySources qtkeychainSources ]));
 }

@@ -1166,8 +1166,6 @@
     "unable-to-read-this-code": "无法读取此代码",
     "unblock-contact": "取消屏蔽联系人",
     "unknown-address": "未知地址",
-    "unknown-realm-error": "出错",
-    "unknown-realm-error-content": "{{message}} \n \n帐户的数据库无法打开。请在#status公共聊天中告诉我们此问题。如果按“取消”按钮，则不会发生任何事情。如果按“ {{erase-accounts-data-button-text}} ”按钮，帐户的数据库将被删除，您将能够解锁帐户。所有帐户的数据都将丢失。",
     "unknown-status-go-error": "未知的 status-go 错误",
     "unlock": "解锁",
     "unpair-card": "未配对卡片",

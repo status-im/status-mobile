@@ -1162,8 +1162,6 @@
     "unable-to-read-this-code": "このコードを読み込めません",
     "unblock-contact": "連絡先のブロックを解除",
     "unknown-address": "不明なアドレス",
-    "unknown-realm-error": "うまくいきませんでした",
-    "unknown-realm-error-content": "{{message}}\nマルチアカウントのデータベースが開けませんでした。#status パブリックチャットでこの問題を報告してください。キャンセルボタンを押せば何も起こりません。{{erase-multiaccounts-data-button-text}}を押せば、マルチアカウントデータベースは削除され、マルチアカウントをアンロックできますが、データは全て消失します。",
     "unknown-status-go-error": "不明なstatus-goのエラー",
     "unlock": "ロック解除",
     "unpair-card": "カードのペアリングを解除",

@@ -92,7 +92,6 @@
     "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#0.33.16-status-rn049-desktop",
     "react-native-navigation-twopane": "git+https://github.com/status-im/react-native-navigation-twopane.git#v0.0.2-status",
     "react-navigation": "^2.12.1",
-    "realm": "git+https://github.com/status-im/realm-js.git#v2.20.1",
     "status-conan": "git+https://github.com/status-im/status-conan.git#v1.0.0",
     "string_decoder": "0.10.31",
     "text-encoding": "^0.6.4",
