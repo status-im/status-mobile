@@ -48,7 +48,6 @@ node_modules/
 node_modules.tmp/
 npm-debug.log
 yarn-error.log
-default.realm/
 
 # BUCK
 buck-out/

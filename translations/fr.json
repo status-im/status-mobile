@@ -1163,8 +1163,6 @@
     "unable-to-read-this-code": "Impossible de lire ce code",
     "unblock-contact": "Débloquer le contact",
     "unknown-address": "Adresse inconnue",
-    "unknown-realm-error": "Quelque chose a mal tourné",
-    "unknown-realm-error-content": "{{message}} \n \n La base de données multi-compte ne peut pas être ouverte. Veuillez nous informer de ce problème sur le chat public #status. Si vous appuyez sur le bouton \"Annuler\", rien ne se passera. Si vous appuyez sur le bouton \" {{erase-multiaccounts-data-button-text}} \", la base de données multi-comptes sera supprimée et vous pourrez déverrouiller plusieurs comptes. Toutes les données multi-comptes seront perdues.",
     "unknown-status-go-error": "Erreur inconnue status-go",
     "unlock": "Déverrouiller",
     "unpair-card": "Dissocier la carte",

@@ -3,7 +3,6 @@
             [re-frame.core :as re-frame]
             [status-im.data-store.messages :as messages]
             [status-im.utils.fx :as fx]
-            [status-im.data-store.realm.core :as core]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.core :as ethereum]
             [taoensso.timbre :as log]

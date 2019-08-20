@@ -16,7 +16,7 @@
                                  :multiaccounts/login {:address  "address"
                                                        :password "password"}}}
           create-database? false
-          efx              (login.core/user-login cofx create-database?)]
+          efx              (login.core/user-login cofx)]
       (testing "Web data cleared."
         (is (contains? efx :multiaccounts.login/clear-web-data)))
       (testing "Change multiaccount."
@@ -51,48 +51,6 @@
       (testing "Multiaccount selected."
         (is (contains? new-db :multiaccount))))))
 
-(deftest decryption-failure-on-multiaccount-change
-  (testing ":init.callback/multiaccount-change-error event received."
-    (let [cofx   {:db {}}
-          error  {:error :decryption-failed}
-          efx    (login.core/handle-change-multiaccount-error cofx error)
-          new-db (:db efx)]
-      (testing "Init multiaccount's password verification"
-        (is (= :verify-multiaccount (new-db :node/on-ready))))
-      (testing "Init multiaccount's password verification"
-        (is (= :decryption-failed (get-in new-db [:realm-error :error]))))
-      (testing "Start node."
-        (is (contains? efx :node/start))))))
-
-(deftest database-does-not-exist-on-multiaccount-change
-  (testing ":init.callback/multiaccount-change-error event received."
-    (let [cofx   {:db {}}
-          error  {:error :database-does-not-exist}
-          efx    (login.core/handle-change-multiaccount-error cofx error)
-          new-db (:db efx)]
-      (testing "Init multiaccount's password verification"
-        (is (= :verify-multiaccount (new-db :node/on-ready))))
-      (testing "Init multiaccount's password verification"
-        (is (= :database-does-not-exist (get-in new-db [:realm-error :error]))))
-      (testing "Start node."
-        (is (contains? efx :node/start))))))
-
-(deftest migrations-failed-on-multiaccount-change
-  (testing ":init.callback/multiaccount-change-error event received."
-    (let [cofx  {:db {}}
-          error {:error :migrations-failed}
-          efx   (login.core/handle-change-multiaccount-error cofx error)]
-      (testing "Show migrations dialog."
-        (is (contains? efx :ui/show-confirmation))))))
-
-(deftest unknown-realm-error-on-multiaccount-change
-  (testing ":init.callback/multiaccount-change-error event received."
-    (let [cofx  {:db {}}
-          error {:error :unknown-error}
-          efx   (login.core/handle-change-multiaccount-error cofx error)]
-      (testing "Show unknown error dialog."
-        (is (contains? efx :ui/show-confirmation))))))
-
 (deftest on-node-started
   (testing "node.ready signal received"
     (let [cofx {:db {:multiaccounts/login    {:address  "address"
@@ -103,63 +61,6 @@
           efx  (signals/status-node-started cofx)]
       (testing "Change node's status to started."
         (is (= :started (get-in efx [:db :node/status])))))))
-
-(deftest on-node-started-for-verification
-  (testing "node.ready signal received"
-    (let [cofx {:db {:multiaccounts/login    {:address  "address"
-                                              :password "password"}
-                     :node/on-ready     :verify-multiaccount
-                     :multiaccounts/multiaccounts data/multiaccounts
-                     :multiaccount   data/multiaccounts
-                     :realm-error       {:error :database-does-not-exist}}}
-          efx  (signals/status-node-started cofx)]
-      (testing "Init VerifyAccountPassword call."
-        (is (= ["address" "password" {:error :database-does-not-exist}]
-               (:multiaccounts.login/verify efx))))
-      (testing "Change node's status to started."
-        (is (= :started (get-in efx [:db :node/status])))))))
-
-(deftest on-verify-multiaccount-success-after-decryption-failure
-  (testing ":multiaccounts.login.callback/verify-success event received."
-    (let [cofx          {:db {}}
-          verify-result "{\"error\":\"\"}"
-          realm-error   {:error :decryption-failed}
-          efx           (login.core/verify-callback cofx verify-result realm-error)]
-      (testing "Show dialog."
-        (is (contains? efx :ui/show-confirmation)))
-      (testing "Stop node."
-        (is (contains? efx :node/stop))))))
-
-(deftest on-verify-multiaccount-success-after-database-does-not-exist
-  (testing ":multiaccounts.login.callback/verify-success event received."
-    (let [cofx          {:db {:multiaccounts/multiaccounts {"address" {:settings {:fleet "fleet"}}}
-                              :multiaccounts/login {:address  "address"
-                                                    :password "password"}}}
-          verify-result "{\"error\":\"\"}"
-          realm-error   {:error :database-does-not-exist}
-          efx           (login.core/verify-callback
-                         cofx verify-result realm-error)]
-      (testing "Change multiaccount."
-        (is (= ["address" "password" true "fleet"]
-               (:data-store/change-multiaccount efx))))
-      (testing "Stop node."
-        (is (contains? efx :node/stop))))))
-
-(deftest on-verify-multiaccount-failed
-  (testing ":multiaccounts.login.callback/verify-success event received."
-    (let [cofx          {:db {:multiaccounts/login {:address  "address"
-                                                    :password "password"}}}
-          verify-result "{\"error\":\"some error\"}"
-          realm-error   {:error :database-does-not-exist}
-          efx           (login.core/verify-callback
-                         cofx verify-result realm-error)
-          new-db        (:db efx)]
-      (testing "Show error in sign in form."
-        (is (= "some error" (get-in new-db [:multiaccounts/login :error]))))
-      (testing "Hide activity indicator."
-        (is (= false (get-in new-db [:multiaccounts/login :processing]))))
-      (testing "Stop node."
-        (is (contains? efx :node/stop))))))
 
 #_(deftest login-success
     (testing ":accounts.login.callback/login-success event received."

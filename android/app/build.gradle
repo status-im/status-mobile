@@ -326,7 +326,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:18.0.0'
 
     implementation 'com.github.status-im:function:0.0.1'
-    implementation fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
     implementation 'com.facebook.fresco:animated-gif:1.10.0'
 }
 

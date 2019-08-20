@@ -85,7 +85,6 @@ in stdenv.mkDerivation {
     for d in `ls $sourceRoot/node_modules/react-native-*/android -d1`; do
       chmod u+w $d
     done
-    chmod u+w $sourceRoot/node_modules/realm/android
   '';
   patchPhase = ''
     prevSet=$-

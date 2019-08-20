@@ -31,11 +31,6 @@
               (case on-ready
                 :login
                 (multiaccounts.login/login)
-                :verify-multiaccount
-                (let [{:keys [address password]} (multiaccounts.model/credentials cofx)]
-                  (fn [_]
-                    {:multiaccounts.login/verify
-                     [address password (:realm-error db)]}))
                 :create-multiaccount
                 (fn [_]
                   {:multiaccounts.create/create-multiaccount (select-keys create [:id :password])})

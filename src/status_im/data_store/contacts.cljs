@@ -3,8 +3,7 @@
             [status-im.utils.fx :as fx]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [taoensso.timbre :as log]
-            [status-im.data-store.realm.core :as core]))
+            [taoensso.timbre :as log]))
 
 (defn deserialize-device-info [contact]
   (update contact :deviceInfo (fn [device-info]
@@ -24,7 +23,6 @@
 (defn <-rpc [contact]
   (-> contact
       deserialize-device-info
-      (update :tributeToTalk core/deserialize)
       (update :systemTags
               #(reduce (fn [acc s]
                          (conj acc (keyword (subs s 1))))
@@ -32,19 +30,16 @@
                        %)) (clojure.set/rename-keys {:id :public-key
                                                      :photoPath :photo-path
                                                      :deviceInfo :device-info
-                                                     :tributeToTalk :tribute-to-talk
                                                      :systemTags :system-tags
                                                      :lastUpdated :last-updated})))
 
 (defn ->rpc [contact]
   (-> contact
       serialize-device-info
-      (update :tribute-to-talk core/serialize)
       (update :system-tags #(mapv str %))
       (clojure.set/rename-keys {:public-key :id
                                 :photo-path :photoPath
                                 :device-info :deviceInfo
-                                :tribute-to-talk :tributeToTalk
                                 :system-tags :systemTags
                                 :last-updated :lastUpdated})))
 
@@ -61,11 +56,7 @@
                      :on-failure #(log/error "failed to fetch contacts" %)}]})
 
 (defn- get-messages-by-messages-ids
-  [message-ids]
-  (when (not-empty message-ids)
-    (-> @core/account-realm
-        (.objects "message")
-        (.filtered (str "(" (core/in-query "message-id" message-ids) ")")))))
+  [message-ids])
 
 (fx/defn block [cofx contact on-success]
   {::json-rpc/call [{:method "shhext_blockContact"

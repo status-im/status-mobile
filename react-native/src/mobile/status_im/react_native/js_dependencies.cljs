@@ -8,7 +8,6 @@
 (def qr-code                (js-require/js-require "react-native-qrcode"))
 (def react-native           (js/require "react-native"))
 (def status-keycard         (js-require/js-require "react-native-status-keycard"))
-(def realm                  (js/require "realm"))
 (def webview-bridge         (js-require/js-require "react-native-webview-bridge"))
 (def touchid-class          (js-require/js-require "react-native-touch-id"))
 (defn touchid []            (.-default (touchid-class)))

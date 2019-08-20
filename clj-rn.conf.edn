@@ -4,10 +4,8 @@
 
  :figwheel-bridge "./figwheel-bridge.js"
  ;; JS modules
- :js-modules ["realm"
-              "react-native-languages"
+ :js-modules ["react-native-languages"
               "i18n-js"
-              "realm/react-native"
               "dismissKeyboard"
               "react-native-splash-screen"
               "react-native-status"
@@ -42,7 +40,6 @@
               "react-native/Libraries/vendor/emitter/EventEmitter"
               "react-native-background-timer"
               "react-native-fetch-polyfill"
-              "text-encoding"
               "js-sha3"
               "react-navigation"
               "react-native-navigation-twopane"
@@ -50,10 +47,8 @@
               "react-native-mail"
               "react-native-shake"]
  ;; Desktop modules
- :desktop-modules ["realm"
-                   "react-native-languages"
+ :desktop-modules ["react-native-languages"
                    "i18n-js"
-                   "realm/react-native"
                    "dismissKeyboard"
                    "react-native-splash-screen"
                    "react-native-status"
@@ -84,7 +79,6 @@
                    "react-native-desktop-config"
                    "react-native-desktop-shortcuts"
                    "react-native-desktop-notification"
-                   "text-encoding"
                    "js-sha3"
                    "web3-utils"
                    "react-navigation"
