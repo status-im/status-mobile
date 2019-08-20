@@ -28,7 +28,7 @@
      :on-change-text      #(re-frame/dispatch [:set :new-chat-name %])
      :default-value       new-group-name
      :placeholder         (i18n/label :t/set-a-topic)
-     :style               add-new.styles/input
+     :style               (add-new.styles/input "100%")
      :accessibility-label :chat-name-input}]])
 
 (defn- render-contact [contact]

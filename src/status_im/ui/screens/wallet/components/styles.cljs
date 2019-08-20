@@ -45,11 +45,12 @@
           :padding-top    0
           :height         52}))
 
-(def contact-code-text-input
+(defn contact-code-text-input [w]
   {:text-align-vertical :top
    :padding-top         16
    :padding-left        2
    :padding-right       8
+   :width               w
    :height              72})
 
 (def label

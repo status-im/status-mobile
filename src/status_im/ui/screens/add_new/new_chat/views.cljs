@@ -11,12 +11,16 @@
             [status-im.ui.components.toolbar.view :as toolbar.view]
             [status-im.ui.screens.add-new.styles :as add-new.styles]
             [status-im.ui.screens.add-new.new-chat.styles :as styles]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [reagent.core :as reagent]))
 
 (defn- render-row [row _ _]
   [contact-view/contact-view {:contact       row
                               :on-press      #(re-frame/dispatch [:chat.ui/start-chat (:public-key %) {:navigation-reset? true}])
                               :show-forward? true}])
+
+;;TODO workaround for https://github.com/facebook/react-native/issues/23653 (https://github.com/status-im/status-react/issues/8548)
+(def tw (reagent/atom "95%"))
 
 (views/defview new-chat []
   (views/letsubs [contacts      [:contacts/active]
@@ -26,11 +30,12 @@
      [toolbar.view/simple-toolbar (i18n/label :t/new-chat)]
      [react/view add-new.styles/new-chat-container
       [react/view add-new.styles/new-chat-input-container
-       [react/text-input {:on-change-text      #(re-frame/dispatch [:new-chat/set-new-identity %])
+       [react/text-input {:ref                 (fn [v] (js/setTimeout #(reset! tw (if v "100%" "95%")) 100))
+                          :on-change-text      #(re-frame/dispatch [:new-chat/set-new-identity %])
                           :on-submit-editing   #(when-not error-message
                                                   (re-frame/dispatch [:contact.ui/contact-code-submitted]))
                           :placeholder         (i18n/label :t/enter-contact-code)
-                          :style               add-new.styles/input
+                          :style               (add-new.styles/input @tw)
                           :accessibility-label :enter-contact-code-input
                           :return-key-type     :go}]]
       (when-not platform/desktop?

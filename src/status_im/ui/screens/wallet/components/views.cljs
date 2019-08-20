@@ -235,26 +235,29 @@
                        :key-fn    :address
                        :render-fn render-account}]]]))
 
-(defn contact-code []
-  (let [content (reagent/atom nil)]
-    (fn []
-      [simple-screen {:avoid-keyboard? true}
-       [toolbar {:style {:border-bottom-color colors/white-transparent-10}}
-        default-action
-        (i18n/label :t/recipient)]
-       [react/view components.styles/flex
-        [cartouche {}
-         (i18n/label :t/recipient)
-         [text-input {:multiline           true
-                      :style               styles/contact-code-text-input
-                      :placeholder         (i18n/label :t/recipient-code)
-                      :on-change-text      #(reset! content %)
-                      :accessibility-label :recipient-address-input}]]
-        [bottom-buttons/bottom-button
-         [button/button {:disabled?    (string/blank? @content)
-                         :on-press     #(re-frame/dispatch [:wallet.send/set-recipient @content])
-                         :fit-to-text? false}
-          (i18n/label :t/done)]]]])))
+;;TODO workaround for https://github.com/facebook/react-native/issues/23653 (https://github.com/status-im/status-react/issues/8548)
+(def tw (reagent/atom "95%"))
+
+(views/defview contact-code []
+  (views/letsubs [content (reagent/atom nil)]
+    [simple-screen {:avoid-keyboard? true}
+     [toolbar {:style {:border-bottom-color colors/white-transparent-10}}
+      default-action
+      (i18n/label :t/recipient)]
+     [react/view components.styles/flex
+      [cartouche {}
+       (i18n/label :t/recipient)
+       [text-input {:ref                 (fn [v] (js/setTimeout #(reset! tw (if v "100%" "95%")) 100))
+                    :multiline           true
+                    :style               (styles/contact-code-text-input @tw)
+                    :placeholder         (i18n/label :t/recipient-code)
+                    :on-change-text      #(reset! content %)
+                    :accessibility-label :recipient-address-input}]]
+      [bottom-buttons/bottom-button
+       [button/button {:disabled?    (string/blank? @content)
+                       :on-press     #(re-frame/dispatch [:wallet.send/set-recipient @content])
+                       :fit-to-text? false}
+        (i18n/label :t/done)]]]]))
 
 (defn recipient-qr-code []
   [choose-recipient/choose-recipient])

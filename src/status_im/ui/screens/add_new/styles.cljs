@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.add-new.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
+  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.components.styles :as styles]))
 
@@ -33,9 +33,9 @@
    :margin-left        3
    :margin-top         24})
 
-(defstyle input
-  {:flex               1
-   :padding-horizontal 14
+(defnstyle input [w]
+  {:padding-horizontal 14
+   :width              w
    :desktop            {:height 30
                         :width "100%"}
    :android            {:padding 0}})
