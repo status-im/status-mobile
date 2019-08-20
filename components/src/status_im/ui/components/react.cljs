@@ -54,7 +54,6 @@
 (def status-bar-class (when-not platform/desktop? (get-react-property "StatusBar")))
 
 (def scroll-view-class (get-class "ScrollView"))
-(def web-view (get-class "WebView"))
 (def keyboard-avoiding-view-class (get-class "KeyboardAvoidingView"))
 
 (def refresh-control (get-class "RefreshControl"))
@@ -234,6 +233,9 @@
          (.openPicker (clj->js {:multiple false :mediaType (or media-type "any")}))
          (.then images-fn)
          (.catch show-access-error)))))
+
+(defn web-view []
+  (.-WebView js-dependencies/react-native-webview))
 
 ;; Clipboard
 
