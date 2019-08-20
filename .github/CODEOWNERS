@@ -33,4 +33,4 @@ modules/react-native-desktop*/  @vkjr
 
 /deployment @vkjr @PombeirP
 
-/test    @antdanchenko @churik
+/test/appium/    @antdanchenko @churik
