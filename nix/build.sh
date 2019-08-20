@@ -7,7 +7,7 @@ function cleanup() {
   # clear trapped signals
   trap - EXIT ERR INT QUIT
   # do the actual cleanup
-  ./nix/clean.sh ${nixOpts[@]}
+  ./nix/clean.sh "${nixResultPath}"
 }
 
 trap cleanup EXIT ERR INT QUIT
@@ -20,6 +20,9 @@ function extractResults() {
   cp -vfr ${nixResultPath}/* result/
   chmod u+w -R result/
 }
+
+# Load Nix profile
+. ~/.nix-profile/etc/profile.d/nix.sh
 
 targetAttr="${1}"
 shift

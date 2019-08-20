@@ -37,7 +37,7 @@ let
 
   # TARGETS
   leiningen-shell = mkShell {
-    buildInputs = with pkgs; [ clojure leiningen maven nodejs ];
+    buildInputs = with pkgs; [ clojure leiningen maven nodejs openjdk ];
     shellHook =
       if target-os == "android" then mobile.android.shellHook else
       if target-os == "ios" then mobile.ios.shellHook else "";

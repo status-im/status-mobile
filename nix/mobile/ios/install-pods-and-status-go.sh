@@ -24,7 +24,7 @@ else
   fi
   if [ "$(uname)" == 'Darwin' ]; then
     # CocoaPods are trash and can't handle other pod instances running at the same time
-    $STATUS_REACT_HOME/scripts/wait-for.sh pod 240
+    $STATUS_REACT_HOME/scripts/wait-for.sh 240 -f 'pod'
     pushd $STATUS_REACT_HOME/ios && pod install; popd
   fi
 fi

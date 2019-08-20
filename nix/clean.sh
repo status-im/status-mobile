@@ -2,43 +2,22 @@
 
 set -e
 
-function getSources() {
-    nix-store --query --binding src "${1}"
-}
+function log() { echo "$@" 1>&2; }
 
-function getOutputs() {
-    nix-store --query --outputs "${1}"
-}
+# helpers for getting related paths in Nix store
+function getSources()   { nix-store --query --binding src "${1}"; }
+function getOutputs()   { nix-store --query --outputs "${1}"; }
+function getDrvFiles()  { nix-store --query --deriver "${1}"; }
+function getReferrers() { nix-store --query --referrers "${1}"; }
 
-function getDrvFiles() {
-    nix-store --query --deriver "${1}"
-}
-
-function getReferrers() {
-    nix-store --query --referrers "${1}"
-}
-
-# list of store entries to delete
-declare -a toDelete
-
-echo "Cleanup of /nix/store after build..."
-
-# regular expression that should match all status-react build artifacts
-searchRegex='.*-status-react-(shell|source|build).*'
-
-# search for matching entries in the store
-drvPaths=$(
-  find /nix/store -maxdepth 1 -type d -regextype egrep -regex "${searchRegex}"
-)
-
-# for each entry find the source and derivation
-for path in ${drvPaths}; do
-    toDelete+=("${path}")
+function findRelated() {
+    path="${1}"
+    found+=("${path}")
     if [[ "${path}" =~ .*.chroot ]]; then
-        echo " ! Chroot:    ${path}"
+        log " ! Chroot:    ${path}"
         continue
     fi
-    echo " ? Checking:   ${path}"
+    log " ? Checking:   ${path}"
     drv=$(getDrvFiles "${path}")
     # if drv is unknown-deriver then path is a source
     if [[ "${drv}" == "unknown-deriver" ]]; then
@@ -47,14 +26,57 @@ for path in ${drvPaths}; do
     elif [[ -f "${drv}" ]]; then
         src=$(getSources "${drv}")
     fi
-    echo " - Derivation: ${drv}"
-    echo " - Source:     ${src}"
+    log " - Derivation: ${drv}"
+    log " - Source:     ${src}"
+    
+    found+=("${drv}" "${src}")
+    printf '%s\n' "${found[@]}"
+}
 
-    toDelete+=("${drv}" "${src}")
-done
+# used to find things to delete based on a regex
+function findByRegex() {
+    regex="${1}"
 
-# remove duplicates
-cleanToDelete=$(echo "${toDelete[@]}" | sort | uniq)
+    log "Searching by regex: '${regex}'"
+    # search for matching entries in the store
+    drvPaths=$(
+      find /nix/store -maxdepth 1 -type d -regextype egrep -regex "${regex}"
+    )
 
-echo "Deleting..."
-nix-store --ignore-liveness --delete ${cleanToDelete[@]}
+    # list of store entries to delete
+    declare -a found
+    
+    # for each entry find the source and derivation
+    for mainPath in ${drvPaths}; do
+        findRelated "${mainPath}"
+    done
+}
+
+# used to find things to delete based on a given path
+function findByResult() {
+    mainPath="${1}"
+    log "Searching by result: '${mainPath}'"
+
+    # list of store entries to delete
+    declare -a found
+
+    findRelated "${mainPath}"
+}
+
+log "Cleanup of /nix/store..."
+
+# This is an optional CLI argument
+nixResultPath="${1}"
+if [[ -n "${nixResultPath}" ]]; then
+    # if provided we can narrow down what to clean based on result path
+    toDelete=$(findByResult "${nixResultPath}")
+else 
+    # use regular expression that should match all status-react build artifacts
+    toDelete=$(findByRegex '.*-status-react-(shell|source|build).*')
+fi
+
+# remove duplicates and return
+toDelete=$(printf '%s\n' "${toDelete[@]}" | sort | uniq)
+
+log "Deleting..."
+nix-store --ignore-liveness --delete ${toDelete[@]}
