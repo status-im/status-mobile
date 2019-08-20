@@ -163,8 +163,6 @@
     "connection-with-the-card-lost-text": "Pour continuer, maintenir la carte au dos de votre téléphone",
     "contact-already-added": "Le contact a déjà été ajouté",
     "contact-code": "Code de contact",
-    "contact-recovery-content": "{{name}} a envoyé un message mais n'inclut pas ce périphérique. \n Cela peut se produire si vous avez plus de 3 appareils, si vous ne les avez pas correctement couplés ou si vous venez de récupérer votre multi-compte. \n Assurez-vous que vos périphériques sont correctement couplés et cliquez sur Notifier pour informer l'utilisateur de ce périphérique.",
-    "contact-recovery-title": "{{name}} a envoyé un message",
     "contact-s": {
         "one": "contact",
         "other": "contacts"

@@ -24,7 +24,6 @@
              :navigation-stack                   '(:multiaccounts)
              :contacts/contacts                  {}
              :pairing/installations              {}
-             :contact-recovery/pop-up            #{}
              :qr-codes                           {}
              :group/selected-contacts            #{}
              :chats                              {}

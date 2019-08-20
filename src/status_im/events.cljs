@@ -18,7 +18,6 @@
             [status-im.chat.models.input :as chat.input]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.chat.models.message :as chat.message]
-            [status-im.contact-recovery.core :as contact-recovery]
             [status-im.contact.block :as contact.block]
             [status-im.contact.core :as contact]
             [status-im.ethereum.core :as ethereum]
@@ -1516,25 +1515,6 @@
    (fx/merge cofx
              (pairing/disable installation-id)
              (multiaccounts.update/send-multiaccount-update))))
-
-;; Contact recovery module
-
-(handlers/register-handler-fx
- :contact-recovery.ui/prompt-accepted
- [(re-frame/inject-cofx :random-id-generator)]
- (fn [cofx [_ public-key]]
-   (contact-recovery/prompt-accepted cofx public-key)))
-
-(handlers/register-handler-fx
- :contact-recovery.ui/prompt-dismissed
- (fn [cofx [_ public-key]]
-   (contact-recovery/prompt-dismissed cofx public-key)))
-
-(handlers/register-handler-fx
- :contact-recovery.callback/handle-recovery
- [(re-frame/inject-cofx :random-id-generator)]
- (fn [cofx [_ public-key]]
-   (contact-recovery/handle-recovery cofx public-key)))
 
 (handlers/register-handler-fx
  :stickers/load-sticker-pack-success

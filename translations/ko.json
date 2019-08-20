@@ -159,8 +159,6 @@
     "connection-with-the-card-lost-text": "계속하려면, 카드를 스마트폰의 뒷면에 대주세요",
     "contact-already-added": "이미 추가되어 있는 연락처입니다.",
     "contact-code": "연락처 코드",
-    "contact-recovery-content": "{{name}} 님이 메시지를 보냈으나, 이 기기에는 메시지가 포함되지 않았습니다. 이러한 문제는 동기화 된 기기가 3대를 초과하거나, 기기를 올바르게 페어링하지 않았거나, 지금 막 계정을 복구 한 경우에 발생할 수 있습니다. \n기기가 올바르게 페어링되어 있는지 확인해주시고, '알림'을 클릭하여 기기를 확인합니다",
-    "contact-recovery-title": "{{name}} 님이 메시지를 보냈습니다",
     "contact-s": {
         "other": "연락처"
     },

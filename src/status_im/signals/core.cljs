@@ -1,6 +1,5 @@
 (ns status-im.signals.core
   (:require [status-im.chat.models.loading :as chat.loading]
-            [status-im.contact-recovery.core :as contact-recovery]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
             [status-im.mailserver.core :as mailserver]
             [status-im.multiaccounts.model :as multiaccounts.model]
@@ -44,7 +43,6 @@
       "mailserver.request.completed" (mailserver/handle-request-completed cofx event)
       "mailserver.request.expired"   (when (multiaccounts.model/logged-in? cofx)
                                        (mailserver/resend-request cofx {:request-id (:hash event)}))
-      "messages.decrypt.failed" (contact-recovery/handle-contact-recovery-fx cofx (:sender event))
       "discovery.summary"  (summary cofx event)
       "subscriptions.data" (ethereum.subscriptions/handle-signal cofx event)
       "subscriptions.error" (ethereum.subscriptions/handle-error cofx event)

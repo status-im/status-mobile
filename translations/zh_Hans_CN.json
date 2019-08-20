@@ -159,8 +159,6 @@
     "connection-with-the-card-lost-text": "要继续，请将卡片放在手机背面",
     "contact-already-added": "已添加该联系人",
     "contact-code": "联系码",
-    "contact-recovery-content": "{{name}}已向您发送了一条消息，但未包含此设备。 \n如果您有超过3台设备，未正确配对设备或刚恢复帐户，则可能会发生这种情况。 \n请确保您的设备配对正确，然后点击通知以告知用户此设备。",
-    "contact-recovery-title": "{{name}}已向您发送了一条消息",
     "contact-s": {
         "other": "联系人"
     },
