@@ -5,13 +5,19 @@
     "about-names-content": "您的身份在设计上是安全且私密的。您将获得本地生成的加密密钥对。名称和图像是此秘钥的可视形式。它们很独特。没有人能假装成你。除非你提供名称，否则没有人看到你的名称。",
     "about-names-title": "关于名称",
     "access-key": "访问密钥",
+    "account-added": "帐户已添加",
+    "account-color": "账户颜色",
+    "account-name": "帐户名称",
     "account-settings": "帐号设定",
+    "accounts": "帐户",
     "active-online": "在线",
     "active-unknown": "未知",
     "add": "添加",
     "add-a-status": "添加状态...",
     "add-a-watch-account": "添加一个观察帐户",
     "add-account": "添加帐号",
+    "add-account-description": "您可以导入任何类型的以太坊帐户，将其添加到你的Status钱包",
+    "add-account-incorrect-password": "密码不正确。输入用于解锁应用程序的密码。",
     "add-an-account": "添加一个帐号",
     "add-another-key": "添加另一个密钥",
     "add-bootnode": "添加引导节点",
@@ -46,6 +52,7 @@
     "authorize": "授权",
     "available": "可用",
     "available-participants": {
+        "one": "",
         "other": "你可以选择{{count}} 参与者。"
     },
     "back": "返回",
@@ -120,6 +127,7 @@
     "chaos-unicorn-day": "混乱独角兽日",
     "chaos-unicorn-day-details": "🦄🦄🦄🦄🦄🦄🦄🚀！",
     "chat": "聊天",
+    "chat-key": "聊天密钥",
     "chat-name": "聊天名称",
     "chat-send-eth": "{{amount}} ETH",
     "chat-settings": "对话设置",
@@ -160,6 +168,7 @@
     "contact-already-added": "已添加该联系人",
     "contact-code": "联系码",
     "contact-s": {
+        "one": "",
         "other": "联系人"
     },
     "contacts": "联系人",
@@ -297,15 +306,19 @@
     "datetime-ago": "前",
     "datetime-ago-format": "{{number}} {{time-intervals}} {{ago}}",
     "datetime-day": {
+        "one": "",
         "other": "天"
     },
     "datetime-hour": {
+        "one": "",
         "other": "小时"
     },
     "datetime-minute": {
+        "one": "",
         "other": "分钟"
     },
     "datetime-second": {
+        "one": "",
         "other": "秒"
     },
     "datetime-today": "今天",
@@ -422,6 +435,7 @@
     "ens-test-message": "嘿",
     "ens-transaction-pending": "交易待确定......",
     "ens-understand": "我明白我的钱包地址将公开连接到我的用户名。",
+    "ens-username": "ENS用户名",
     "ens-username-connected": "此用户名归您所有，并与您的聊天密钥相关联。",
     "ens-username-hints": "至少 4 个字符。仅限拉丁字母、数字和小写字母。",
     "ens-username-invalid": "只限字母和数字",
@@ -458,6 +472,7 @@
     "enter-pin-description": "输入您的PIN码并登录\n到您的帐户",
     "enter-puk-code": "输入PUK码",
     "enter-puk-code-description": "PIN码已锁定。 \n请输入PUK码以解锁PIN码。",
+    "enter-seed-phrase": "输入助记词",
     "enter-url": "输入网址",
     "enter-valid-public-key": "请输入一个有效的公钥或扫描二维码",
     "enter-word": "输入单词",
@@ -510,7 +525,9 @@
     "gas-price": "Gas 价格",
     "gas-used": "使用的 Gas",
     "generate-a-key": "生成一个新密钥",
+    "generate-a-new-account": "生成一个新帐户",
     "generate-a-new-key": "生成一个新密钥",
+    "generate-account": "生成帐户",
     "generate-new-key": "生成一个新密钥",
     "generating-codes-for-pairing": "正在生成与您的Status帐户配对的代码。",
     "generating-keys": "正在生成密钥......",
@@ -689,9 +706,11 @@
     "manage-permissions": "管理权限",
     "maybe-later": "请稍后",
     "members": {
+        "one": "",
         "other": "{{count}} 个成员"
     },
     "members-active": {
+        "one": "",
         "other": "{{count}} 个成员"
     },
     "members-active-none": "没有成员",
@@ -731,6 +750,8 @@
     "multiaccount-and-db-password-mismatch-title": "出现问题！",
     "multiaccount-not-listed": "帐户不在列表中",
     "multiaccount-not-listed-text": "此卡上的帐户未在手机列表中。您想使用这个新帐户登录吗？",
+    "multiaccounts-recover-enter-phrase-text": "输入12,15,18,21或24个单词。 \n用单个空格分隔单词。",
+    "multiaccounts-recover-enter-phrase-title": "输入您的助记词",
     "mute-notifications": "静音通知",
     "name": "名称",
     "name-description": "随时在您的个人资料中更改此内容。",
@@ -882,6 +903,7 @@
     "qr-code-public-key-hint": "共享此代码开始聊天",
     "quiet-days": "{{quiet-days}}天",
     "quiet-hours": "{{quiet-hours}}小时",
+    "re-encrypt-key": "重新加密密钥",
     "ready-to-import-keycard-multiaccount": "我们准备导入keycard帐户",
     "receive": "接收",
     "receive-transaction": "接收交易",
@@ -898,14 +920,18 @@
     "recover-multiaccount-warning": "导入此帐户将公开您的钱包信息。",
     "recover-password-invalid": "此多帐号已存在, 但密码不匹配",
     "recover-password-too-short": "密码太短",
+    "recover-with-keycard": "使用Keycard恢复",
     "recovering-key": "正在恢复密钥...",
     "recovery-confirm-phrase": "确认密码",
     "recovery-phrase": "恢复短语",
     "recovery-phrase-invalid": "助记词无效",
     "recovery-phrase-unknown-words": "某些单词可能拼写错误",
+    "recovery-phrase-wrong-length": "请确保您输入的短语有12,15,18,21或24个单词。",
+    "recovery-success-text": "您必须创建新的代码或密码才能重新加密密钥",
     "recovery-typo-dialog-description": "如果输入错误的单词，您将创建一个新帐号，而不是恢复旧帐号。",
     "recovery-typo-dialog-title": "此助记词正确吗？",
     "remaining-steps": "剩余步骤",
+    "remember-me": "记住我的选择",
     "remind-me-later": "请稍后提示我",
     "remove": "删除",
     "remove-from-chat": "从聊天中删除",
@@ -1069,6 +1095,7 @@
     "three-words-description-2": "如果您看到不同的组合, 请取消交易并注销。",
     "to": "到",
     "to-block": "屏蔽",
+    "to-encrypt-enter-password": "请输入密码以对您的账户加密",
     "to-see-this-message": "查看此消息，",
     "token-auto-validate-decimals-error": "地址{{address}}中的代币 {{symbol}}小数位错误 - 设置为{{expected}}但检测为{{actual}}",
     "token-auto-validate-name-error": "地址{{address}}中的代币 {{symbol}}名称错误 - 设置为{{expected}}但检测为{{actual}}",
@@ -1225,6 +1252,10 @@
     "welcome-to-status-description": "点按加号（+）按钮即可开始使用",
     "word-n": "字＃ {{number}}",
     "word-n-description": "为了确认您是否正确备份助记词，请在上方输入单词 #{{number}} 。",
+    "words-n": {
+        "one": "1个单词",
+        "other": "{{count}} 个单词"
+    },
     "write-down-and-store-securely": "写下来并安全的存储起来",
     "wrong-address": "错误的地址",
     "wrong-card": "错误的卡片",
@@ -1240,6 +1271,7 @@
     "you-already-have-an-asset": "您已拥有资产{{value}}",
     "you-are-all-set": "你已完成所有设置",
     "you-are-all-set-description": "现在，如果您丢失了手机，则可以使用助记词恢复您的帐号和钱包。",
+    "you-can-change-account": "您可以根据自己的喜好更改帐户的名称和颜色",
     "you-dont-have-stickers": "你还没有任何贴纸",
     "you-will-need-this-code": "您需要此密码才能启用应用程序并确认交易。",
     "your-contact-code": "授予此DApp访问权限以查看您的联系人代码",
