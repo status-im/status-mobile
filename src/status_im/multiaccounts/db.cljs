@@ -37,7 +37,6 @@
 (spec/def :multiaccount/seed-backed-up? (spec/nilable boolean?))
 (spec/def :multiaccount/installation-id :global/not-empty-string)
 (spec/def :multiaccount/wallet-set-up-passed? (spec/nilable boolean?))
-(spec/def :multiaccount/mainnet-warning-shown-version (spec/nilable string?))
 (spec/def :multiaccount/desktop-alpha-release-warning-shown? (spec/nilable boolean?))
 (spec/def :multiaccount/keycard-instance-uid (spec/nilable string?))
 (spec/def :multiaccount/keycard-key-uid (spec/nilable string?))
@@ -56,7 +55,6 @@
                                                          :multiaccount/chaos-mode?
                                                          :multiaccount/wallet-set-up-passed? :multiaccount/last-request
                                                          :multiaccount/bootnodes
-                                                         :multiaccount/mainnet-warning-shown-version
                                                          :multiaccount/desktop-alpha-release-warning-shown?
                                                          :multiaccount/keycard-instance-uid
                                                          :multiaccount/keycard-key-uid

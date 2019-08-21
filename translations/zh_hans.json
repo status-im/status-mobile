@@ -663,8 +663,6 @@
     "main-currency": "主要货币",
     "main-networks": "主网",
     "main-wallet": "主钱包",
-    "mainnet-is-default-alert-text": "感谢您选择Status！我们现在处于Beta阶段，这意味着新安装者会自动连接到主网。如果是升级而来，您可能仍需要切换网络，您可以通过配置文件 - >高级模式 - >打开开发者模式 - >选择您的网络来轻松切换网络。祝您玩得开心！浏览DApps，交易资产，开始聊天，并向朋友发送消息，这些都来自世界上第一个去中心化的以太坊移动客户端。 \n\n请注意，这是测试版，我们建议您使用此应用程序仅用于测试目的，并且您需承担所有与数据和资金相关风险的全部责任。",
-    "mainnet-is-default-alert-title": "你好",
     "mainnet-network": "主网",
     "mainnet-text": "你正在使用主干网络，可以发送真正的 ETH。",
     "maintain-card-to-phone-contact": "在处理过程中保持卡与手机的联系。",

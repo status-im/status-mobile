@@ -688,8 +688,6 @@
     "main-currency": "メイン通貨",
     "main-networks": "メインネット",
     "main-wallet": "メインウォレット",
-    "mainnet-is-default-alert-text": "Statusはメインネットで運用中のベータ版です。必要以上の暗号通貨を保管しないこと、信頼できない人とデータを共有しないことに気をつけてください。あなたはこのアプリの利用によるデータと資産に関するリスクに対して全責任を負います。",
-    "mainnet-is-default-alert-title": "こんにちは",
     "mainnet-network": "メインネット",
     "mainnet-text": "現在メインネットにいます。送信されるETHは本物です",
     "maintain-card-to-phone-contact": "処理中はカードとスマートフォンの接触を維持してください",

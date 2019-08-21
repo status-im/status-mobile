@@ -694,8 +694,6 @@
     "main-currency": "Devise principale",
     "main-networks": "Principaux réseaux",
     "main-wallet": "Portefeuille principal",
-    "mainnet-is-default-alert-text": "Status est en Bêta et sur l'Ethereum Mainnet. Utilisez-le à bon escient. Ne stockez pas plus de crypto que nécessaire pour les tests et ne partagez les données qu'avec des personnes en qui vous avez confiance. En utilisant l'application, vous assumez l'entière responsabilité de tous les risques concernant vos données et vos fonds.",
-    "mainnet-is-default-alert-title": "Bonjour",
     "mainnet-network": "Réseau principal",
     "mainnet-text": "Vous êtes sur le Mainnet. De vrais ETH seront envoyés",
     "maintain-card-to-phone-contact": "Maintenir le contact entre les cartes et les téléphones pendant le processus.",

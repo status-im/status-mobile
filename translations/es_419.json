@@ -361,8 +361,6 @@
     "main-currency": "Moneda principal",
     "main-networks": "Redes principales",
     "main-wallet": "Billetera Principal",
-    "mainnet-is-default-alert-text": "¡Gracias por elegir Status! Ahora estamos en Beta, lo que significa que las nuevas instalaciones se conectan automáticamente a Mainnet. Si actualizaste, es posible que aún necesites cambiar de red, lo cual puedes hacer fácilmente navegando a tu Perfil - > Modo avanzado - > Cambiar modo de desarrollador a \"On\" - > Elige tu red. ¡Ahora diviértete! Explora DApps, intercambia activos, inicia tus propios #chats y envía mensajes a tus amigos, todo desde el primer cliente móvil descentralizado del mundo para Ethereum. \n\nTen en cuenta que esta es una versión beta y te aconsejamos que el uso de esta aplicación debe realizarse solo con fines de prueba y tú asumes la total responsabilidad de todos los riesgos relacionados con tus datos y fondos.",
-    "mainnet-is-default-alert-title": "Hola",
     "mainnet-network": "Red principal",
     "mainnet-text": "Estás en la red Mainnet. ETH real será enviado",
     "maintain-card-to-phone-contact": "Durante el proceso manten en contacto la tarjeta con el teléfono.",

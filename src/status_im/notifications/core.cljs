@@ -31,16 +31,13 @@
 
 ;; NOTE: Only need to explicitly request permissions on iOS.
 (defn request-permissions []
-  (if platform/desktop?
-    (re-frame/dispatch [:notifications.callback/request-notifications-permissions-granted {}])
+  (when-not platform/desktop?
     (-> (.requestPermission (.messaging (firebase)))
         (.then
          (fn [_]
-           (log/debug "notifications-granted")
-           (re-frame/dispatch [:notifications.callback/request-notifications-permissions-granted {}]))
+           (log/debug "notifications-granted"))
          (fn [_]
-           (log/debug "notifications-denied")
-           (re-frame/dispatch [:notifications.callback/request-notifications-permissions-denied {}]))))))
+           (log/debug "notifications-denied"))))))
 
 (defn valid-notification-payload?
   [{:keys [from to]}]

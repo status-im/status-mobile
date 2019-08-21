@@ -21,7 +21,6 @@
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def rpc-networks-only? (enabled? (get-config :RPC_NETWORKS_ONLY "1")))
 (def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))
-(def mainnet-warning-enabled? (enabled? (get-config :MAINNET_WARNING_ENABLED 0)))
 (def pairing-popup-disabled? (enabled? (get-config :PAIRING_POPUP_DISABLED "0")))
 (def cached-webviews-enabled? (enabled? (get-config :CACHED_WEBVIEWS_ENABLED 0)))
 (def snoopy-enabled? (enabled? (get-config :SNOOPY 0)))

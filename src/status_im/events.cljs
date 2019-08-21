@@ -88,12 +88,6 @@
    (node/display-les-debug-info cofx)))
 
 ;; multiaccounts module
-
-(handlers/register-handler-fx
- :multiaccounts.ui/mainnet-warning-shown
- (fn [cofx _]
-   (multiaccounts.update/multiaccount-update cofx {:mainnet-warning-shown-version build/version} {})))
-
 (handlers/register-handler-fx
  :multiaccounts.update.callback/published
  (fn [{:keys [now] :as cofx} _]
@@ -754,16 +748,6 @@
  :notifications.callback/get-fcm-token-success
  (fn [{:keys [db]} [_ fcm-token]]
    {:db (assoc-in db [:notifications :fcm-token] fcm-token)}))
-
-(handlers/register-handler-fx
- :notifications.callback/request-notifications-permissions-granted
- (fn [cofx _]
-   (multiaccounts/show-mainnet-is-default-alert cofx)))
-
-(handlers/register-handler-fx
- :notifications.callback/request-notifications-permissions-denied
- (fn [cofx _]
-   (multiaccounts/show-mainnet-is-default-alert cofx)))
 
 (handlers/register-handler-fx
  :notifications.callback/on-message

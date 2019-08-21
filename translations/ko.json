@@ -690,8 +690,6 @@
     "main-currency": "통화",
     "main-networks": "메인 네트워크",
     "main-wallet": "내 지갑",
-    "mainnet-is-default-alert-text": "스테이터스는 현재 이더리움 메인넷에서 베타 버전으로 운영되고 있습니다. 테스팅 목적 이외에 지나치게 많은 암호화폐 자산을 보관하지 마시고, 신뢰하는 사람들과 메시지를 주고 받으시기 바랍니다. 스테이터스 앱을 사용하면 귀하의 데이터와 자산에 관한 책임이 귀하에게 있음을 동의하게 됩니다.",
-    "mainnet-is-default-alert-title": "안녕하세요",
     "mainnet-network": "메인 네트워크",
     "mainnet-text": "메인넷에 있습니다. 실제 ETH가 전송됩니다.",
     "maintain-card-to-phone-contact": "처리되는 동안 카드와 스마트폰은 접촉된 채로 유지해주세요",

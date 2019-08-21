@@ -383,8 +383,6 @@
     "main-currency": "Matawang utama",
     "main-networks": "Rangkaian utama",
     "main-wallet": "Dompet utama",
-    "mainnet-is-default-alert-text": "Terima kasih kerana memilih Status! Kami kini berada di Beta, yang bermaksud pemasangan baru secara automatik disambungkan ke Mainnet. Sekiranya anda menaik taraf, anda masih perlu menukar rangkaian, yang boleh anda lakukan dengan mudah dengan menavigasi ke Profil anda - > Mod Lanjutan - > Aktifkan Mod Pemaju - > Pilih rangkaian anda. Sekarang telah berjaya! Semak imbas DApps, tukar aset, mulakan #chats anda sendiri, dan berbual dengan rakan anda, semuanya dari aplikasi perangkat bergerak yang terdesentralisasi, yang pertama untuk Ethereum. \n\nSila ambil perhatian bahawa ini adalah aplikasi beta dan kami menasihati anda bahawa penggunaan aplikasi ini perlu dilakukan hanya untuk tujuan pengujian sahaja dan anda bertanggungjawab sepenuhnya terhadap semua risiko yang berkaitan dengan data dan dana anda.",
-    "mainnet-is-default-alert-title": "Hello",
     "mainnet-network": "Rangkaian utama",
     "mainnet-text": "Anda berada di Mainnet. ETH sebenar akan dihantar",
     "maintain-card-to-phone-contact": "Mengekalkan hubungan kad ke telefon semasa proses.",

@@ -30,17 +30,6 @@
  (fn [flag]
    (native-module/set-blank-preview-flag flag)))
 
-(fx/defn show-mainnet-is-default-alert [{:keys [db]}]
-  (let [shown-version (get-in db [:multiaccount :mainnet-warning-shown-version])
-        current-version build/version]
-    (when (and platform/mobile?
-               config/mainnet-warning-enabled?
-               (not= shown-version current-version))
-      (utils/show-popup
-       (i18n/label :mainnet-is-default-alert-title)
-       (i18n/label :mainnet-is-default-alert-text)
-       #(re-frame/dispatch [:multiaccounts.ui/mainnet-warning-shown])))))
-
 (defn- chat-send? [transaction]
   (and (seq transaction)
        (not (:in-progress? transaction))

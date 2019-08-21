@@ -355,8 +355,6 @@
     "main-currency": "Główna waluta",
     "main-networks": "Główne sieci",
     "main-wallet": "Portfel główny",
-    "mainnet-is-default-alert-text": "Dziękujemy za wybranie Status! Jesteśmy teraz w wersji Beta, co oznacza, że jesteś połączony z Mainnet'em. Nadal możesz zmienić sieć, przechodząc do Profilu - > Tryb zaawansowany - > Przełącz tryb programisty na - > Wybierz swoją sieć. Baw się dobrze! Przeglądaj DApps, wymieniaj zasoby, uruchamiaj własne #chaty i wysyłaj wiadomości do znajomych, wszystko z pierwszego zdecentralizowanego klienta mobilnego na Ethereum. \n\nPamiętaj, że jest to wersja beta i zalecamy, aby korzystanie z tej aplikacji odbywało się wyłącznie w celach testowych. Ponosisz pełną odpowiedzialność za wszelkie ryzyko związane z Twoimi danymi i funduszami.",
-    "mainnet-is-default-alert-title": "Cześć",
     "mainnet-network": "Sieć główna",
     "mainnet-text": "Jesteś na Mainnet. Prawdziwe ETH zostanie wysłane",
     "make-sure-you-trust-dapp": "Upewnij się, że ufasz tej DApp",
