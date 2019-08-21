@@ -326,7 +326,7 @@
              contacts))
 
 (defn handle-sync-installation
-  [{:keys [db] :as cofx} {:keys [contacts multiaccount chat]} sender]
+  [{:keys [db] :as cofx} {:keys [contacts account chat]} sender]
   (let [confirmation  (:metadata cofx)]
     (if (= sender (multiaccounts.model/current-public-key cofx))
       (let [on-success #(re-frame/dispatch [:message/messages-persisted [confirmation]])
@@ -334,7 +334,7 @@
                             (vals (merge-contacts (:contacts/contacts db)
                                                   ((comp ensure-photo-path
                                                          ensure-system-tags) contacts))))
-            new-multiaccount   (merge-multiaccount (:multiaccount db) multiaccount)
+            new-multiaccount   (merge-multiaccount (:multiaccount db) account)
             contacts-fx   (when new-contacts (mapv contact/upsert-contact new-contacts))]
         (apply fx/merge
                cofx

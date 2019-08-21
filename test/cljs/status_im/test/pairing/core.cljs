@@ -200,7 +200,7 @@
                                 :last-updated 1}]
         (testing "newer update"
           (let [cofx {:db {:multiaccount old-multiaccount}}
-                sync-message    {:multiaccount new-multiaccount}]
+                sync-message    {:account new-multiaccount}]
             (is (= new-multiaccount (get-in (pairing/handle-sync-installation cofx sync-message "us")
                                             [:db :multiaccount])))))
         (testing "older update"

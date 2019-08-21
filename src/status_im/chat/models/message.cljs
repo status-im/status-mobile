@@ -383,7 +383,7 @@
                          (wrap-group-message cofx chat-id send-record)
                          send-record)]
     (fx/merge cofx
-              (send chat-id message-id wrapped-record)
+              (send chat-id message wrapped-record)
               (update-message-status chat-id message-id :sending))))
 
 (fx/defn remove-message-from-group
