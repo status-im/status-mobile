@@ -12,7 +12,7 @@
 
 (def ^:private mergable-keys
   #{:data-store/tx :chat-received-message/add-fx
-    :shh/post :filters/load-filters
+    :filters/load-filters
     :pairing/set-installation-metadata
     :status-im.data-store.messages/save-message
     :shh/send-direct-message :shh/remove-filter

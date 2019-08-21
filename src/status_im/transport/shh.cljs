@@ -14,13 +14,6 @@
                   :on-success on-success
                   :on-error on-error}))
 
-(defn post-message
-  [{:keys [whisper-message on-success on-error]}]
-  (json-rpc/call {:method "shh_generateSymKeyFromPassword"
-                  :params [whisper-message]
-                  :on-success on-success
-                  :on-error on-error}))
-
 (defn send-direct-message!
   [direct-message success-event error-event messages-count]
   (json-rpc/call {:method "shhext_sendDirectMessage"
@@ -97,18 +90,6 @@
                                  transit/serialize
                                  ethereum/utf8-to-hex)}]
        (send-public-message! message success-event error-event)))))
-
-(re-frame/reg-fx
- :shh/post
- (fn [post-calls]
-   (doseq [{:keys [message success-event error-event]
-            :or   {error-event :transport/send-status-message-error}} post-calls]
-     (post-message {:whisper-message (update message :payload (comp ethereum/utf8-to-hex
-                                                                    transit/serialize))
-                    :on-success      (if success-event
-                                       #(re-frame/dispatch (conj success-event % 1))
-                                       #(log/debug :shh/post-success))
-                    :on-error        #(re-frame/dispatch [error-event %])}))))
 
 (defn get-sym-key
   [{:keys [sym-key-id on-success on-error]}]

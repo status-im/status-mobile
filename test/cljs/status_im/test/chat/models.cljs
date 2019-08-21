@@ -151,25 +151,6 @@
            "opened" {:loaded-unviewed-messages-ids #{}}
            "1-1"    {:loaded-unviewed-messages-ids #{"6" "5" "4"}}}})
 
-#_(deftest mark-messages-seen
-    (testing "Marking messages seen correctly marks loaded messages as seen and updates absolute unviewed set"
-      (let [fx (chat/mark-messages-seen {:db test-db} "status")
-            me (get-in test-db [:multiaccount :public-key])]
-        (is (= '(true true true)
-               (map (comp :seen second) (get-in fx [:db :chats "status" :messages]))))
-        (is (= 1 (count (:data-store/tx fx))))
-      ;; for public chats, no confirmation is sent out
-        (is (= nil (:shh/post fx)))))
-
-    (testing "With empty unviewed set, no effects are produced"
-      (is (= nil (chat/mark-messages-seen {:db test-db} "opened"))))
-
-    #_(testing "For 1-1 chat, we send seen messages confirmation to the
-  recipient as well"
-        (is (= #{"4" "5" "6"}
-               (set (get-in (chat/mark-messages-seen {:db test-db} "1-1")
-                            [:shh/post 0 :message :payload :message-ids]))))))
-
 (deftest update-dock-badge-label
   (testing "When user has unseen private messages"
     (is (= {:set-dock-badge-label 3}

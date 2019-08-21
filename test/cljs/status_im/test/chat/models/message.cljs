@@ -54,9 +54,7 @@
         (testing "it adds the message"
           (is message))
         (testing "it marks the message as outgoing"
-          (is (= true (:outgoing message))))
-        (testing "it does not send a seen confirmation"
-          (is (not (:shh/post actual))))))))
+          (is (= true (:outgoing message))))))))
 
 (deftest receive-many-clock-value
   (let [db {:multiaccount {:public-key "me"}
@@ -175,36 +173,6 @@
       (is (get-in (message/receive-many cofx [own-message]) [:db :chats "matching" :messages "1"])))
     (testing "a message with non matching chat-id"
       (is (get-in (message/receive-many cofx [bad-chat-id-message]) [:db :chats "not-matching" :messages "1"])))))
-
-(deftest receive-send-seen
-  (let [cofx         {:db {:chats {"chat-id" {}}
-                           :multiaccount {:public-key "a"}
-                           :current-chat-id "chat-id"
-                           :view-id :chat}}
-        message      {:chat-id     "chat-id"
-                      :message-type :user-message
-                      :from        "chat-id"
-                      :message-id  "1"
-                      :clock-value 1
-                      :timestamp   0}
-        extract-seen (comp :payload :message first :shh/post)]
-    #_(testing "it sends a seen message when the chat is 1-to-1 and is open"
-        (is (instance? protocol/MessagesSeen
-                       (extract-seen (message/receive-many cofx [message]))))
-        (is (= #{"1"} (:message-ids (extract-seen (message/receive-many cofx [message]))))))
-    (testing "it does not send any when the chat is a group-chat"
-      (is (nil? (extract-seen
-                 (message/receive-many
-                  (assoc-in cofx [:db :chats "chat-id" :group-chat] true)
-                  [message])))))
-    (testing "it does not send any when we are in a different chat"
-      (is (nil? (extract-seen
-                 (message/receive-many (assoc-in cofx [:db :current-chat-id] :different)
-                                       [message])))))
-    (testing "it does not send any when we are not in a chat view"
-      (is (nil? (extract-seen
-                 (message/receive-many (assoc-in cofx [:db :view-id] :home)
-                                       [message])))))))
 
 (deftest delete-message
   (let [timestamp (time/now)
