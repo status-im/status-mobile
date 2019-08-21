@@ -4,7 +4,7 @@
             [status-im.data-store.chats :as data-store.chats]
             [status-im.ethereum.json-rpc :as json-rpc]
             [taoensso.timbre :as log]
-            [status-im.data-store.realm.core :as core]))
+            [status-im.utils.types :as types]))
 
 (defn deserialize-device-info [contact]
   (update contact :deviceInfo (fn [device-info]
@@ -24,7 +24,7 @@
 (defn <-rpc [contact]
   (-> contact
       deserialize-device-info
-      (update :tributeToTalk core/deserialize)
+      (update :tributeToTalk types/deserialize)
       (update :systemTags
               #(reduce (fn [acc s]
                          (conj acc (keyword (subs s 1))))
@@ -39,7 +39,7 @@
 (defn ->rpc [contact]
   (-> contact
       serialize-device-info
-      (update :tribute-to-talk core/serialize)
+      (update :tribute-to-talk types/serialize)
       (update :system-tags #(mapv str %))
       (clojure.set/rename-keys {:public-key :id
                                 :photo-path :photoPath
@@ -54,13 +54,6 @@
                      :params []
                      :on-success #(on-success (map <-rpc %))
                      :on-failure #(log/error "failed to fetch contacts" %)}]})
-
-(defn- get-messages-by-messages-ids
-  [message-ids]
-  (when (not-empty message-ids)
-    (-> @core/account-realm
-        (.objects "message")
-        (.filtered (str "(" (core/in-query "message-id" message-ids) ")")))))
 
 (fx/defn save-contact
   [cofx {:keys [public-key] :as contact}]

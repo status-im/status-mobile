@@ -104,9 +104,6 @@
                           :networks/networks networks
                           :chain (ethereum/network->chain-name network)
                           :multiaccount multiaccount)
-               ;;NOTE there is a callback that shows a mainnet alert after
-               ;;this effect, and we need multiaccount data to know if it has
-               ;;been shown already
                :notifications/request-notifications-permissions nil}
               (stickers/init-stickers-packs)
               (mobile-network/on-network-status-change)
