@@ -1,3 +1,10 @@
+pluginManagement {
+  repositories {
+      mavenLocal() // Let's prioritize local Maven repos so that Nix can provide them offline
+      gradlePluginPortal()
+  }
+}
+
 rootProject.name = 'StatusIm'
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':react-native-nfc-manager'

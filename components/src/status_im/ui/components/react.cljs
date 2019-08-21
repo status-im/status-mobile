@@ -234,7 +234,7 @@
          (.then images-fn)
          (.catch show-access-error)))))
 
-(def net-info (.-NetInfo js-dependencies/net-info))
+(def net-info (.-NetInfo (js-dependencies/net-info)))
 
 ;; Clipboard
 

@@ -9011,6 +9011,21 @@ in {
       sha256 = "0vxy35rp1r7h235863h3zhhh8mb0jjnzx0hbjpbzyq2iwpsjm4bd";
     };
   };
+  "https://plugins.gradle.org/m2/com/diffplug/spotless/spotless-plugin-gradle/3.23.0/spotless-plugin-gradle-3.23.0" =
+  {
+    host = repositories.gradlePlugins;
+    path =
+      "com/diffplug/spotless/spotless-plugin-gradle/3.23.0/spotless-plugin-gradle-3.23.0";
+    type = "jar";
+    pom = {
+      sha1 = "e606a0bf72a2920c050745f400d698a05d7e7152";
+      sha256 = "0v44pvz6kbh384h4km0c8w9pbl7h84i2alx7m7n12szfjncphg76";
+    };
+    jar = {
+      sha1 = "27369f549a45a307f1a00163500f74441a8f3744";
+      sha256 = "021mwqnmnn02nnp4hqgqs9m64738jfzsmaclw0xnh9522n1xs9sx";
+    };
+  };
   "https://repo.maven.apache.org/maven2/antlr/antlr/2.7.2/antlr-2.7.2" =
   {
     host = repositories.apache;
@@ -11293,11 +11308,13 @@ in {
       "commons-beanutils/commons-beanutils-core/1.8.3/commons-beanutils-core-1.8.3";
     type = "jar";
     pom = {
-      sha1 = "5bd35afbfc81f56b8b8b94aa8d77b4b4704f2b00";
+      sha1 = "5bd35afbfc81f56b8b8b94aa8d77b4b4704f2b00
+";
       sha256 = "1j6v8h6his0m48w651vlxkrlnqrqfq32dxwxicb7salviknwnnc9";
     };
     jar = {
-      sha1 = "75812698e5e859f2cb587c622c4cdfcd61676426";
+      sha1 = "75812698e5e859f2cb587c622c4cdfcd61676426
+";
       sha256 = "0l7np518ibnjdca0b6mgx48ik1r9yyc8hmaa0fap7g5ivz9dfnyc";
     };
   };
@@ -22542,7 +22559,8 @@ in {
       "org/apache/velocity/velocity/1.7/velocity-1.7";
     type = "jar";
     pom = {
-      sha1 = "6047636d464804f4075f703660a010890e40723d";
+      sha1 = "6047636d464804f4075f703660a010890e40723d
+";
       sha256 = "02xllcyvgf4j0kz86b24ybn86b956m731rlgxy9yswzhnpm7ryd3";
     };
     jar = {
@@ -22557,11 +22575,13 @@ in {
       "org/apache/velocity/velocity-tools/2.0/velocity-tools-2.0";
     type = "jar";
     pom = {
-      sha1 = "dfbd6d8a50df5de5ba9949e9ca9d0cf9af6ca99e";
+      sha1 = "dfbd6d8a50df5de5ba9949e9ca9d0cf9af6ca99e
+";
       sha256 = "158vf8gykfbxb4kjpisywr4rsyh69q9bzjisay6d90928smi6bxi";
     };
     jar = {
-      sha1 = "69936384de86857018b023a8c56ae0635c56b6a0";
+      sha1 = "69936384de86857018b023a8c56ae0635c56b6a0
+";
       sha256 = "1nc8lvgfk3ynkqmsjc9f7qdlqknablyps72p2375vhj8phvfnx5i";
     };
   };

@@ -78,12 +78,8 @@ in stdenv.mkDerivation {
     # Copy node_modules/ directory
     cp -a --no-preserve=ownership ${sourceProjectDir}/node_modules/ $sourceRoot/
     # Make android/build directories writable under node_modules
-    chmod -R u+w $sourceRoot/node_modules/react-native/
-    for d in `ls $sourceRoot/node_modules/react-native-*/android/build -d1`; do
+    for d in `find $sourceRoot/node_modules -type f -name build.gradle | xargs dirname`; do
       chmod -R u+w $d
-    done
-    for d in `ls $sourceRoot/node_modules/react-native-*/android -d1`; do
-      chmod u+w $d
     done
   '';
   patchPhase = ''

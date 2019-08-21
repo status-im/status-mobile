@@ -597,6 +597,7 @@ https://maven.java.net/content/repositories/releases/org/glassfish/hk2/hk2-publi
 https://maven.java.net/content/repositories/releases/org/glassfish/hk2/osgiversion-maven-plugin/2.1.14/osgiversion-maven-plugin-2.1.14
 https://oss.sonatype.org/content/repositories/snapshots/junit/junit/4.13-SNAPSHOT/junit-4.13-20190621.062355-185
 https://plugins.gradle.org/m2/com/diffplug/gradle/spotless/com.diffplug.gradle.spotless.gradle.plugin/3.23.0/com.diffplug.gradle.spotless.gradle.plugin-3.23.0
+https://plugins.gradle.org/m2/com/diffplug/spotless/spotless-plugin-gradle/3.23.0/spotless-plugin-gradle-3.23.0
 https://repo.maven.apache.org/maven2/antlr/antlr/2.7.2/antlr-2.7.2
 https://repo.maven.apache.org/maven2/antlr/antlr/2.7.7/antlr-2.7.7
 https://repo.maven.apache.org/maven2/aopalliance/aopalliance/1.0/aopalliance-1.0
