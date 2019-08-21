@@ -60,7 +60,6 @@
 		B24FC7FF1DE7195F00D694FF /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B24FC7FE1DE7195F00D694FF /* MessageUI.framework */; };
 		B2DEA0D01E49E33300FA28D6 /* libRCTHttpServer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2DEA0B11E49E32000FA28D6 /* libRCTHttpServer.a */; };
 		B2F2D1BC1D9D531B00B7B453 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */; };
-		B49246102225D86900DE94D5 /* mapview in Resources */ = {isa = PBXBuildFile; fileRef = B492460F2225D86900DE94D5 /* mapview */; };
 		B957A49EB0DE44D9A31CAF2D /* libRNSVG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AF2BF381BC7B4EB0887F0091 /* libRNSVG.a */; };
 		BA68A2377A20496EA737000D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E586E1B0E544F64AA9F5BD1 /* libz.tbd */; };
 		C93242561FE1C68C00FE7099 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C93242531FE1C68C00FE7099 /* libRCTAnimation.a */; };
@@ -635,7 +634,6 @@
 		B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = StatusIm/Images.xcassets; sourceTree = "<group>"; };
 		B321D25F4493470980039457 /* Inter-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-BoldItalic.otf"; path = "../resources/fonts/Inter-BoldItalic.otf"; sourceTree = "<group>"; };
 		B461988B2210C98F00603CF2 /* RNCWebView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCWebView.xcodeproj; path = "../node_modules/react-native-webview/ios/RNCWebView.xcodeproj"; sourceTree = "<group>"; };
-		B492460F2225D86900DE94D5 /* mapview */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mapview; path = ../resources/mapview; sourceTree = "<group>"; };
 		C2A4E93F6B154AEFA3485B45 /* libTcpSockets.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libTcpSockets.a; sourceTree = "<group>"; };
 		C6B1215047604CD59A4C74D6 /* Inter-MediumItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-MediumItalic.otf"; path = "../resources/fonts/Inter-MediumItalic.otf"; sourceTree = "<group>"; };
 		CD48A32459B64E96843BB238 /* libRealmReact.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRealmReact.a; sourceTree = "<group>"; };
@@ -828,7 +826,6 @@
 		1E7837547A9A40E18AD63CF3 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				B492460F2225D86900DE94D5 /* mapview */,
 				983F07442119C9D2004133ED /* message.wav */,
 				2028E0111D4275BD00227DCD /* SF */,
 				B23B48FE1E76917B006D4535 /* RobotoMono-Medium.ttf */,
@@ -1871,7 +1868,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B49246102225D86900DE94D5 /* mapview in Resources */,
 				983F077E2119C9D2004133ED /* message.wav in Resources */,
 				74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */,
 				B2F2D1BC1D9D531B00B7B453 /* Images.xcassets in Resources */,
