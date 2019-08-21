@@ -13,7 +13,6 @@
             status-im.data-store.chats
             status-im.data-store.messages
             status-im.data-store.contacts
-            status-im.data-store.transport
             status-im.data-store.mailservers
             [status-im.utils.fx :as fx]
             [status-im.protocol.core :as protocol]))
@@ -203,7 +202,6 @@
 (fx/defn handle-change-multiaccount-success
   {:events [::multiaccount-change-success]
    :interceptors [(re-frame/inject-cofx :data-store/get-all-mailservers)
-                  (re-frame/inject-cofx :data-store/transport)
                   (re-frame/inject-cofx :data-store/mailserver-topics)]}
   [cofx]
   (protocol/initialize-protocol cofx))

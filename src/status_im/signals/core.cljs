@@ -28,7 +28,6 @@
               {:db (assoc db
                           :peers-summary peers-summary
                           :peers-count peers-count)}
-              (transport.message/resend-contact-messages previous-summary)
               (mailserver/peers-summary-change previous-summary))))
 
 (fx/defn process

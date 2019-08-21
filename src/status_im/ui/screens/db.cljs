@@ -42,7 +42,6 @@
              :network                            constants/default-network
              :networks/networks                  constants/default-networks
              :my-profile/editing?                false
-             :transport/chats                    {}
              :transport/filters                  {}
              :transport/message-envelopes        {}
              :mailserver/mailservers             (fleet/default-mailservers {})
@@ -242,7 +241,6 @@
                                 :chat/last-outgoing-message-sent-at
                                 :chat/spam-messages-frequency
                                 :transport/message-envelopes
-                                :transport/chats
                                 :transport/filters
                                 :mailserver.edit/mailserver
                                 :mailserver/mailservers

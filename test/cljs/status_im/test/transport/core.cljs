@@ -7,12 +7,6 @@
 
 (deftest init-whisper
   (let [cofx {:db {:multiaccount {:public-key "1"}
-                   :transport/chats {"1" {:topic   "topic-1"
-                                          :sym-key "sk1"}
-                                     "2" {}
-                                     "3" {:topic   "topic-3"
-                                          :sym-key "sk3"}
-                                     "4" {:topic "topic-4"}}
                    :semaphores      #{}}}]
     (testing "custom mailservers"
       (let [ms-1            {:id "1"

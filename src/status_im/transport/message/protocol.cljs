@@ -6,7 +6,6 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.transport.db :as transport.db]
             [status-im.utils.pairing :as pairing.utils]
-            [status-im.data-store.transport :as transport-store]
             [status-im.transport.utils :as transport.utils]
             [status-im.tribute-to-talk.whitelist :as whitelist]
             [status-im.utils.config :as config]
@@ -28,24 +27,6 @@
    :ttl                     10
    :powTarget               config/pow-target
    :powTime                 config/pow-time})
-
-(fx/defn init-chat
-  "Initialises chat on protocol layer."
-  [{:keys [db now]}
-   {:keys [chat-id resend?]}]
-  (let [transport-chat (transport.db/create-chat {:resend?    resend?})]
-    {:db (assoc-in db
-                   [:transport/chats chat-id]
-                   transport-chat)
-
-     :data-store/tx [(transport-store/save-transport-tx {:chat-id chat-id
-                                                         :chat    transport-chat})]}))
-
-(fx/defn remove-chat
-  [{:keys [db]} chat-id]
-  (when (get-in db [:transport/chats chat-id])
-    {:db                 (update db :transport/chats dissoc chat-id)
-     :data-store/tx      [(transport-store/delete-transport-tx chat-id)]}))
 
 (defn send-public-message
   "Sends the payload to topic"

@@ -5,7 +5,6 @@
             [status-im.chat.models.message :as models.message]
             [status-im.contact.device-info :as device-info]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.data-store.transport :as transport-store]
             [status-im.ethereum.core :as ethereum]
             [status-im.transport.message.contact :as contact]
             [status-im.transport.message.protocol :as protocol]
@@ -90,14 +89,6 @@
   [{:keys [db] :as cofx} envelope-hash]
   {:db (update db :transport/message-envelopes dissoc envelope-hash)})
 
-(fx/defn update-resend-contact-message
-  [{:keys [db] :as cofx} chat-id]
-  (let [chat         (get-in db [:transport/chats chat-id])
-        updated-chat (assoc chat :resend? nil)]
-    {:db            (assoc-in db [:transport/chats chat-id :resend?] nil)
-     :data-store/tx [(transport-store/save-transport-tx {:chat-id chat-id
-                                                         :chat    updated-chat})]}))
-
 (fx/defn check-confirmations
   [{:keys [db] :as cofx} status chat-id message-id]
   (when-let [{:keys [pending-confirmations not-sent]}
@@ -127,9 +118,7 @@
     (case message-type
       :contact-message
       (when (= :sent status)
-        (fx/merge cofx
-                  (remove-hash envelope-hash)
-                  (update-resend-contact-message chat-id)))
+        (remove-hash cofx envelope-hash))
 
       (when-let [{:keys [from]} (get-in db [:chats chat-id :messages message-id])]
         (let [{:keys [fcm-token]} (get-in db [:contacts/contacts chat-id])
@@ -181,33 +170,6 @@
 (fx/defn resend-contact-request [cofx own-info chat-id {:keys [sym-key topic]}]
   (protocol/send (contact/map->ContactRequest own-info)
                  chat-id cofx))
-
-(fx/defn resend-contact-message
-  [cofx own-info chat-id]
-  (let [{:keys [resend?] :as chat} (get-in cofx [:db :transport/chats chat-id])]
-    (case resend?
-      "contact-request"
-      (resend-contact-request cofx own-info chat-id chat)
-      "contact-request-confirmation"
-      (protocol/send (contact/map->ContactRequestConfirmed own-info)
-                     chat-id
-                     cofx)
-      "contact-update"
-      (protocol/send-with-pubkey cofx
-                                 {:chat-id chat-id
-                                  :payload (contact/map->ContactUpdate own-info)})
-      nil)))
-
-(fx/defn resend-contact-messages
-  [{:keys [db] :as cofx} previous-summary]
-  (when (and (zero? (count previous-summary))
-             (= :online (:network-status db))
-             (pos? (count (:peers-summary db))))
-    (let [own-info (own-info db)
-          resend-contact-message-fxs (map (fn [chat-id]
-                                            (resend-contact-message own-info chat-id))
-                                          (keys (:transport/chats db)))]
-      (apply fx/merge cofx resend-contact-message-fxs))))
 
 (re-frame/reg-fx
  :transport/confirm-messages-processed

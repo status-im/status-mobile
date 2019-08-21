@@ -32,7 +32,6 @@
                         :semaphores      #{}}
           cofx         {:db                           db
                         :data-store/mailservers       []
-                        :data-store/transport         data/transport
                         :data-store/mailserver-topics data/topics}
           login-result "{\"error\":\"\"}"
           efx          (login.core/multiaccount-login-success cofx)

@@ -157,20 +157,11 @@
 
 (def transport
   {"0x04d6e56a475cd35f512d6ce0bf76c2c2af435c85ff48c2b9bdefd129f620e051a436f50961eae5717b2a750e59c3f5b60647d927da46d0b8b11621640b5678fc24"
-   {:sym-key      nil
-    :resend?      nil
-    :topic        nil
-    :sym-key-id   nil}
+   {:resend?      nil}
    "0x043ae31038ff45a31b096a91d3f8290e079366fbbae76a00fbbd349cd0e5b8d7598965d206772ec4504f68908649a08383cdc51a52cdae5e9ccc744ace4d37020f"
-   {:sym-key      nil
-    :resend?      nil
-    :topic        nil
-    :sym-key-id   nil}
+   {:resend?      nil}
    "status"
-   {:sym-key      "0x36224048e42c49e5c59c57bba5024fbb8822d6b4ee6ac5fbefd8b77f5323ecc4"
-    :resend?      nil
-    :topic        "0xcd423760"
-    :sym-key-id   "2091c39cac37211987f63391b93d0bd021b9df247da50728bfd766946993849d"}})
+   {:resend?      nil}})
 
 (def topics {"0xf8946aac" {:chat-ids     #{:discovery-topic}
                            :last-request 1547319670}})

@@ -179,9 +179,6 @@
               (deactivate-chat chat-id)
               (clear-history chat-id)
               (transport.filters/stop-listening chat-id)
-              ;; TODO: this is not accurate, if there's a pending contact
-              ;; request it will not be sent anymore
-              (transport.protocol/remove-chat chat-id)
               (when (not (= (:view-id db) :home))
                 (navigation/navigate-to-cofx :home {})))))
 

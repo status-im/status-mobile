@@ -3,7 +3,6 @@
             [status-im.utils.fx :as fx]
             [status-im.pairing.core :as pairing]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.data-store.transport :as transport-store]
             [status-im.transport.db :as transport.db]
             [status-im.transport.message.pairing :as transport.pairing]
             [status-im.transport.message.contact :as transport.contact]
@@ -34,9 +33,6 @@
                         nil
                         nil)]
       (fx/merge cofx
-                (protocol/init-chat {:chat-id    chat-id
-                                     :one-to-one true
-                                     :resend?    "contact-request"})
                 (protocol/send-with-pubkey {:chat-id chat-id
                                             :payload this
                                             :success-event [:transport/contact-message-sent chat-id]})
@@ -51,17 +47,8 @@
                          [chat-id])
                         nil
                         nil)
-          success-event [:transport/contact-message-sent chat-id]
-          chat         (get-in db [:transport/chats chat-id])
-          updated-chat (if chat
-                         (assoc chat :resend? "contact-request-confirmation")
-                         (transport.db/create-chat {:resend?    "contact-request-confirmation"
-                                                    :one-to-one true}))]
+          success-event [:transport/contact-message-sent chat-id]]
       (fx/merge cofx
-                {:db            (assoc-in db
-                                          [:transport/chats chat-id] updated-chat)
-                 :data-store/tx [(transport-store/save-transport-tx {:chat-id chat-id
-                                                                     :chat    updated-chat})]}
                 (protocol/send-with-pubkey {:chat-id chat-id
                                             :payload this
                                             :success-event success-event})

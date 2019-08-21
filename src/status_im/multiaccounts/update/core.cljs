@@ -1,7 +1,6 @@
 (ns status-im.multiaccounts.update.core
   (:require [status-im.contact.db :as contact.db]
             [status-im.contact.device-info :as device-info]
-            [status-im.data-store.transport :as transport-store]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.transport.message.contact :as message.contact]
             [status-im.transport.message.protocol :as protocol]
@@ -22,19 +21,10 @@
 
 (fx/defn send-contact-update-fx
   [{:keys [db] :as cofx} chat-id payload]
-  (when-let [chat (get-in cofx [:db :transport/chats chat-id])]
-    (let [updated-chat  (assoc chat :resend? "contact-update")
-          tx            [(transport-store/save-transport-tx {:chat-id chat-id
-                                                             :chat    updated-chat})]
-          success-event [:transport/contact-message-sent chat-id]]
-      (fx/merge cofx
-                {:db (assoc-in db
-                               [:transport/chats chat-id :resend?]
-                               "contact-update")
-                 :data-store/tx tx}
-                (protocol/send-with-pubkey {:chat-id       chat-id
-                                            :payload       payload
-                                            :success-event success-event})))))
+  (protocol/send-with-pubkey cofx
+                             {:chat-id       chat-id
+                              :payload       payload
+                              :success-event [:transport/contact-message-sent chat-id]}))
 
 (fx/defn contact-public-keys [{:keys [db]}]
   (reduce (fn [acc [_ {:keys [public-key] :as contact}]]

@@ -8,15 +8,7 @@
             [status-im.utils.clocks :as utils.clocks]
             [status-im.constants :as constants]))
 
-;; required
-(spec/def ::resend? (spec/nilable #{"contact-request" "contact-request-confirmation" "contact-update"}))
-
 ;; optional
-(spec/def ::topic (spec/nilable string?))
-(spec/def ::topics (spec/coll-of ::topic :min-count 1))
-(spec/def ::sym-key-id (spec/nilable string?))
-;;TODO (yenda) remove once go implements persistence
-(spec/def ::sym-key (spec/nilable string?))
 (spec/def :transport/filter-id (spec/or :keyword keyword?
                                         :chat-id :global/not-empty-string))
 (spec/def :transport/filter any?)
@@ -35,8 +27,6 @@
 (spec/def :pairing/installation-id :global/not-empty-string)
 (spec/def :pairing/device-type :global/not-empty-string)
 
-(spec/def :transport/chat (spec/keys :opt-un [::resend?]))
-(spec/def :transport/chats (spec/map-of :global/not-empty-string :transport/chat))
 (spec/def :transport/filters (spec/map-of :transport/filter-id (spec/coll-of :transport/filter)))
 
 (defn create-chat

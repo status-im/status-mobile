@@ -64,14 +64,13 @@
               (semaphores/lock :check-sync-state?))))
 
 (fx/defn initialize-protocol
-  [{:data-store/keys [transport mailserver-topics mailservers]
+  [{:data-store/keys [mailserver-topics mailservers]
     :keys [db] :as cofx}]
   (let [network (get-in db [:multiaccount :network])
         network-id (str (get-in db [:multiaccount :networks/networks network :config :NetworkId]))]
     (fx/merge cofx
               {:db (assoc db
                           :rpc-url constants/ethereum-rpc-url
-                          :transport/chats transport
                           :mailserver/topics mailserver-topics)
                ::json-rpc/call
                [{:method "net_version"

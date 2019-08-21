@@ -38,7 +38,6 @@
        (rf/reg-fx :data-store/save-chat (constantly nil))
        (rf/reg-fx :data-store/save-message (constantly nil))
        (rf/reg-fx :data-store/save-contact (constantly nil))
-       (rf/reg-fx :data-store.transport/save (constantly nil))
        (rf/reg-fx :data-store/update-message (constantly nil))
 
        (rf/dispatch [:contact.ui/send-message-pressed {:public-key contact-public-key}])
