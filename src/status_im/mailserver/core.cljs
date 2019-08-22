@@ -745,12 +745,7 @@
                                                       (update gaps chat-id dissoc gap)
                                                       gaps)))
                                           (update :mailserver/planned-gap-requests
-                                                  dissoc gap))
-                       :data-store/tx (mapv (fn [[topic mailserver-topic]]
-                                              (data-store.mailservers/save-mailserver-topic-tx
-                                               {:topic            topic
-                                                :mailserver-topic mailserver-topic}))
-                                            mailserver-topics)}
+                                                  dissoc gap))}
                       (process-next-messages-request))))))))
 
 (fx/defn retry-next-messages-request
@@ -985,12 +980,7 @@
     {:db (-> db
              (dissoc :mailserver.edit/mailserver)
              (assoc-in [:mailserver/mailservers current-fleet (:id mailserver)] mailserver))
-     :data-store/tx [{:transaction
-                      (data-store.mailservers/save-tx (assoc
-                                                       mailserver
-                                                       :fleet
-                                                       current-fleet))
-                      ;; we naively logout if the user is connected to the edited mailserver
+     :data-store/tx [{;; we naively logout if the user is connected to the edited mailserver
                       :success-event (when current [:multiaccounts.logout.ui/logout-confirmed])}]
      :dispatch [:navigate-back]}))
 
@@ -999,8 +989,7 @@
   (merge (when-not (or
                     (default? cofx id)
                     (connected? cofx id))
-           {:db            (update-in db [:mailserver/mailservers (fleet/current-fleet db)] dissoc id)
-            :data-store/tx [(data-store.mailservers/delete-tx id)]})
+           {:db            (update-in db [:mailserver/mailservers (fleet/current-fleet db)] dissoc id)})
          {:dispatch [:navigate-back]}))
 
 (fx/defn show-connection-confirmation
