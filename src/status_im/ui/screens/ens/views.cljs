@@ -132,7 +132,6 @@
                                 :text-color    colors/gray
                                 :text-style    {:font-weight "500"}
                                 :subtext       (i18n/label :t/ens-locked)
-                                :action-fn     #(re-frame/dispatch [:navigate-to :ens-register])
                                 :icon          :main-icons/delete
                                 :icon-color    colors/gray
                                 :active?       false
@@ -192,9 +191,6 @@
 
 (defn- valid-domain? [state]
   (#{:registrable :owned :connected} state))
-
-(defn- final-state? [state]
-  (#{:saved :registered :registration-failed} state))
 
 (defn- main-icon [state]
   (cond
@@ -433,15 +429,20 @@
    [toolbar/content-title (i18n/label :t/ens-your-username)]])
 
 (views/defview register []
-  (views/letsubs [{:keys [address state] :as props} [:ens.registration/screen]]
+  (views/letsubs [{:keys [address state registering?] :as props} [:ens.registration/screen]]
     (let [checked (reagent/atom false)
           props   (merge props {:checked checked :address (ethereum/normalized-address address)})]
       [react/keyboard-avoiding-view {:flex 1}
        [status-bar/status-bar {:type :main}]
        [toolbar]
-       (if (final-state? state)
-         [registration-finalized props]
-         [registration-pending props])])))
+       ;; NOTE: this view is used both for finalized and pending registration
+       ;; and when the registration data is cleared for a brief moment state
+       ;; is nil and registration-pending show which triggers the keyboard
+       ;; and it's ugly
+       ;; TODO: something less crazy with proper separated views and routes
+       (if registering?
+         [registration-pending props]
+         [registration-finalized props])])))
 
 ;; Welcome
 
@@ -487,7 +488,7 @@
    [react/view {:align-items :center :background-color colors/white
                 :position :absolute :left 0 :right 0 :bottom 0
                 :border-top-width 1 :border-top-color colors/gray-lighter}
-    [button {:on-press #(re-frame/dispatch [:navigate-to :ens-register])
+    [button {:on-press #(re-frame/dispatch [::ens/get-started-pressed])
              :label    (i18n/label :t/get-started)}]]])
 
 (defn- name-item [{:keys [name action hide-chevron?]}]
@@ -525,7 +526,7 @@
    [react/scroll-view
     [react/view {:style {:margin-top 8}}
      [list/big-list-item {:text      (i18n/label :t/ens-add-username)
-                          :action-fn #(re-frame/dispatch [:navigate-to :ens-register])
+                          :action-fn #(re-frame/dispatch [::ens/add-username-pressed])
                           :icon      :main-icons/add}]]
     [react/view {:style {:margin-top 22 :margin-bottom 8}}
      [react/text {:style {:color colors/gray :margin-horizontal 16}}
@@ -558,7 +559,7 @@
 
 (views/defview main []
   (views/letsubs [{:keys [names multiaccount preferred-name show?]} [:ens.main/screen]]
-    [react/view {:style {:flex 1}}
+    [react/keyboard-avoiding-view {:style {:flex 1}}
      [status-bar/status-bar {:type :main}]
      [toolbar/simple-toolbar
       (i18n/label :t/ens-usernames)]

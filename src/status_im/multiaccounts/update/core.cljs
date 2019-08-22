@@ -52,8 +52,8 @@
                          [{:method "settings_saveConfig"
                            :params ["multiaccount" (types/serialize new-multiaccount)]
                            :on-success on-success}]}
-        {:keys [name photo-path]} new-multiaccount-fields]
-    (if (or name photo-path)
+        {:keys [name photo-path prefered-name]} new-multiaccount-fields]
+    (if (or name photo-path prefered-name)
       (fx/merge cofx
                 fx
                 (send-multiaccount-update))

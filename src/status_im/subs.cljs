@@ -1807,8 +1807,9 @@
  :<- [:ens/registration]
  :<- [:ens.stateofus/registrar]
  :<- [:multiaccount]
- (fn [[{:keys [custom-domain? username-candidate] :as ens} registrar {:keys [accounts public-key]}] _]
-   {:state          (or (get-in ens [:states username-candidate]) :initial)
+ (fn [[{:keys [custom-domain? username-candidate registering?] :as ens} registrar {:keys [accounts public-key]}]]
+   {:state          (get-in ens [:states username-candidate])
+    :registering?   registering?
     :username       username-candidate
     :custom-domain? (or custom-domain? false)
     :contract       registrar
@@ -1819,7 +1820,7 @@
  :ens.name/screen
  :<- [:get-screen-params :ens-name-details]
  :<- [:ens/names]
- (fn [[name ens] _]
+ (fn [[name ens]]
    (let [{:keys [address public-key]} (get-in ens [:details name])]
      {:name       name
       :address    address
@@ -1831,7 +1832,7 @@
  :<- [:multiaccount]
  :<- [:ens/preferred-name]
  :<- [:ens/show?]
- (fn [[names multiaccount preferred-name show?] _]
+ (fn [[names multiaccount preferred-name show?]]
    {:names          names
     :multiaccount   multiaccount
     :preferred-name preferred-name

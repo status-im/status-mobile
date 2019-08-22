@@ -30,8 +30,12 @@
  (fn [[registry name cb]]
    (resolver/pubkey registry name cb)))
 
+(defn- final-state? [state]
+  (#{:saved :registered :registration-failed} state))
+
 (defn assoc-state-for [db username state]
-  (assoc-in db [:ens/registration :states username] state))
+  (cond-> (assoc-in db [:ens/registration :states username] state)
+    (final-state? state) (update :ens/registration dissoc :registering?)))
 
 (defn assoc-details-for [db username k v]
   (assoc-in db [:ens/names :details username k] v))
@@ -122,36 +126,28 @@
 (fx/defn save-preferred-name
   {:events [:ens/save-preferred-name]}
   [{:keys [db] :as cofx} name]
-  (fx/merge (assoc-in cofx [:db :multiaccount :preferred-name] name)
-            (multiaccounts.update/multiaccount-update cofx
-                                                      {:preferred-name name})
-            (multiaccounts.update/send-multiaccount-update)))
-
-(fx/defn save-preferred-name-when-first
-  [cofx names name]
-  (when (= 1 (count names))
-    ;; First name, save it as default
-    (save-preferred-name cofx name)))
+  (multiaccounts.update/multiaccount-update cofx
+                                            {:preferred-name name}
+                                            {}))
 
 (fx/defn save-username
   {:events [:ens/save-username]}
   [{:keys [db] :as cofx} custom-domain? username]
   (let [name   (fullname custom-domain? username)
-        new-db (update-in db [:multiaccount :usernames] #((fnil conj []) %1 %2) name)
-        names  (get-in new-db [:multiaccount :usernames])]
-    (fx/merge {:db new-db}
-              (multiaccounts.update/multiaccount-update cofx
-                                                        {:usernames names}
-                                                        {:success-event [:ens/set-state username :saved]})
-              (save-preferred-name-when-first names name))))
+        names  (get-in db [:multiaccount :usernames] [])
+        new-names (conj names name)]
+    (multiaccounts.update/multiaccount-update cofx
+                                              (cond-> {:usernames new-names}
+                                                (empty? names) (assoc :preferred-name name))
+                                              {:on-success #(re-frame/dispatch [:ens/set-state username :saved])})))
 
 (fx/defn switch-show-username
   {:events [:ens/switch-show-username]}
   [{:keys [db] :as cofx} _]
-  (let [new-db (update-in db [:multiaccount :show-name?] not)]
-    (fx/merge {:db new-db}
-              (multiaccounts.update/multiaccount-update cofx
-                                                        {:show-name? (get-in new-db [:multiaccount :show-name?])}))))
+  (let [show-name? (not (get-in db [:multiaccount :show-name?]))]
+    (multiaccounts.update/multiaccount-update cofx
+                                              {:show-name? show-name?}
+                                              {})))
 
 (fx/defn on-registration-failure
   {:events [:ens/on-registration-failure]}
@@ -171,3 +167,10 @@
               {:ens/resolve-address [registry name #(re-frame/dispatch [:ens/store-name-detail name :address %])]
                :ens/resolve-pubkey  [registry name #(re-frame/dispatch [:ens/store-name-detail name :public-key %])]}
               (navigation/navigate-to-cofx :ens-name-details name))))
+
+(fx/defn start-registration
+  {:events [::add-username-pressed ::get-started-pressed]}
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (assoc-in db [:ens/registration :registering?] true)}
+            (navigation/navigate-to-cofx :ens-register {})))
