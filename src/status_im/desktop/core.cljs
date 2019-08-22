@@ -22,11 +22,9 @@
 (defn app-root [props]
   (if config/mobile-ui-for-desktop?
     (reagent/create-class
-     {:component-will-mount
-      (fn []
-        (.addEventListener (react/app-state) "change" app-state-change-handler))
-      :component-did-mount
+     {:component-did-mount
       (fn [this]
+        (.addEventListener (react/app-state) "change" app-state-change-handler)
         (re-frame/dispatch [:set-initial-props (reagent/props this)]))
       :component-will-unmount
       (fn []

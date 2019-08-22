@@ -151,7 +151,7 @@
   (let [keyboard-shown? (reagent/atom false)
         listeners       (atom [])]
     (reagent/create-class
-     {:component-will-mount
+     {:component-did-mount
       (fn []
         (when platform/android?
           (reset!

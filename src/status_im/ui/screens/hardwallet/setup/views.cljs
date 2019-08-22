@@ -375,16 +375,15 @@
   (letsubs [progress-bar (atom nil)
             listener (atom nil)
             card-state [:hardwallet-card-state]]
-    {:component-will-mount (fn []
-                             (when @listener
-                               (.removeListener @listener)))
-     :component-did-mount  (fn []
-                             (reset! listener
-                                     (.addListener (event-emitter)
-                                                   "keycardInstallationProgress"
-                                                   (fn [params]
-                                                     (when @progress-bar
-                                                       (.setNativeProps @progress-bar params))))))}
+    {:component-did-mount (fn []
+                            (when @listener
+                              (.removeListener @listener))
+                            (reset! listener
+                                    (.addListener (event-emitter)
+                                                  "keycardInstallationProgress"
+                                                  (fn [params]
+                                                    (when @progress-bar
+                                                      (.setNativeProps @progress-bar params))))))}
     [react/view styles/loading-view-container
      [react/view styles/center-container
       [react/text {:style styles/center-title-text}
