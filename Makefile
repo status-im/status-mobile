@@ -264,6 +264,11 @@ geth-connect: ##@other Connect to Geth on the device
 	adb forward tcp:8545 tcp:8545 && \
 	build/bin/geth attach http://localhost:8545
 
+android-clean: export TARGET_OS ?= android
+android-clean: ##@prepare Clean Gradle state
+	git clean -dxf -f ./android/app/build
+	[ -d android/.gradle ] && cd android && ./gradlew clean
+
 android-ports: export _NIX_ATTR := targets.mobile.android.adb.shell
 android-ports: export TARGET_OS ?= android
 android-ports: ##@other Add proxies to Android Device/Simulator
