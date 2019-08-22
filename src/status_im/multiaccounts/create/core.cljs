@@ -49,8 +49,9 @@
 (fx/defn create-multiaccount
   [{:keys [db] :as cofx}]
   (let [{:keys [selected-id address key-code]} (:intro-wizard db)
-        {:keys [address]} (get-selected-multiaccount cofx)]
-    {::store-multiaccount [selected-id address key-code]}))
+        {:keys [address]} (get-selected-multiaccount cofx)
+        callback #(re-frame/dispatch [::store-multiaccount-success key-code])]
+    {::store-multiaccount [selected-id address key-code callback]}))
 
 (fx/defn intro-wizard
   {:events [:multiaccounts.create.ui/intro-wizard]}
@@ -268,7 +269,7 @@
 
 (re-frame/reg-fx
  ::store-multiaccount
- (fn [[id address password]]
+ (fn [[id address password callback]]
    (status/multiaccount-store-account
     id
     (security/safe-unmask-data password)
@@ -282,7 +283,7 @@
             id
             [constants/path-whisper constants/path-default-wallet]
             password
-            #(re-frame/dispatch [::store-multiaccount-success password])))))))))
+            callback))))))))
 
 (re-frame/reg-fx
  ::save-account-and-login

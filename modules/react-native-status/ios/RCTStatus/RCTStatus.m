@@ -252,17 +252,6 @@ RCT_EXPORT_METHOD(chaosModeUpdate:(BOOL)on
 #endif
 }
 
-//////////////////////////////////////////////////////////////////// recoverAccount
-RCT_EXPORT_METHOD(recoverAccount:(NSString *)passphrase
-                  password:(NSString *)password
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"RecoverAccount() method called");
-#endif
-    NSString *result = StatusgoRecoverAccount(password, passphrase);
-    callback(@[result]);
-}
-
 //////////////////////////////////////////////////////////////////// multiAccountGenerateAndDeriveAddresses
 RCT_EXPORT_METHOD(multiAccountGenerateAndDeriveAddresses:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {

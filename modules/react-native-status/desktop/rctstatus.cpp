@@ -259,18 +259,6 @@ void RCTStatus::addPeer(QString enode, double callbackId) {
         }, enode, callbackId);
 }
 
-
-void RCTStatus::recoverAccount(QString passphrase, QString password, double callbackId) {
-    Q_D(RCTStatus);
-    qCInfo(RCTSTATUS) << "::recoverAccount call - callbackId:" << callbackId;
-    QtConcurrent::run([&](QString passphrase, QString password, double callbackId) {
-            const char* result = RecoverAccount(password.toUtf8().data(), passphrase.toUtf8().data());
-            logStatusGoResult("::recoverAccount RecoverAccount", result);
-            d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
-        }, passphrase, password, callbackId);
-}
-
-
 void RCTStatus::saveAccountAndLogin(QString accountData, QString password, QString config, QString subAccountsData) {
 
     Q_D(RCTStatus);

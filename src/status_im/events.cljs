@@ -174,40 +174,6 @@
  (fn [cofx _]
    (multiaccounts/confirm-wallet-set-up cofx)))
 
-;; multiaccounts recover module
-
-(handlers/register-handler-fx
- :multiaccounts.recover.ui/passphrase-input-changed
- (fn [cofx [_ recovery-phrase]]
-   (multiaccounts.recover/set-phrase cofx recovery-phrase)))
-
-(handlers/register-handler-fx
- :multiaccounts.recover.ui/passphrase-input-blured
- (fn [cofx _]
-   (multiaccounts.recover/validate-phrase cofx)))
-
-(handlers/register-handler-fx
- :multiaccounts.recover.ui/password-input-changed
- (fn [cofx [_ masked-password]]
-   (multiaccounts.recover/set-password cofx masked-password)))
-
-(handlers/register-handler-fx
- :multiaccounts.recover.ui/password-input-blured
- (fn [cofx _]
-   (multiaccounts.recover/validate-password cofx)))
-
-(handlers/register-handler-fx
- :multiaccounts.recover.ui/sign-in-button-pressed
- [(re-frame/inject-cofx :random-guid-generator)]
- (fn [cofx _]
-   (multiaccounts.recover/recover-multiaccount-with-checks cofx)))
-
-(handlers/register-handler-fx
- :multiaccounts.recover.ui/recover-multiaccount-confirmed
- [(re-frame/inject-cofx :random-guid-generator)]
- (fn [cofx _]
-   (multiaccounts.recover/recover-multiaccount cofx)))
-
 ;; multiaccounts login module
 (handlers/register-handler-fx
  :multiaccounts.login.ui/multiaccount-selected

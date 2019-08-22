@@ -1,6 +1,7 @@
 (ns status-im.test.multiaccounts.recover.core
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.multiaccounts.recover.core :as models]
+            [status-im.multiaccounts.create.core :as multiaccounts.create]
             [clojure.string :as string]
             [status-im.utils.security :as security]
             [status-im.i18n :as i18n]))
@@ -99,22 +100,18 @@
                                        :password-error nil}}}
          (models/validate-password {:db {:multiaccounts/recover {:password "thisisapaswoord"}}}))))
 
-(deftest recover-multiaccount
-  (let [new-cofx (models/recover-multiaccount {:random-guid-generator (constantly "random")
-                                               :db {:multiaccounts/recover
-                                                    {:passphrase "game buzz method pretty zeus fat quit display velvet unveil marine crater"
-                                                     :password   "thisisapaswoord"}}})]
-    (is (= "random" (get-in new-cofx [:db :multiaccounts/new-installation-id])))
-    (is (not (nil? (get new-cofx :multiaccounts.recover/recover-multiaccount))))))
+(deftest store-multiaccount
+  (let [new-cofx (models/store-multiaccount {:db {:multiaccounts/recover
+                                                  {:passphrase "game buzz method pretty zeus fat quit display velvet unveil marine crater"
+                                                   :password   "thisisapaswoord"}}})]
+    (is (::multiaccounts.create/store-multiaccount new-cofx))))
 
 (deftest recover-multiaccount-with-checks
-  (let [new-cofx (models/recover-multiaccount-with-checks {:random-guid-generator (constantly "random")
-                                                           :db {:multiaccounts/recover
+  (let [new-cofx (models/recover-multiaccount-with-checks {:db {:multiaccounts/recover
                                                                 {:passphrase "game buzz method pretty olympic fat quit display velvet unveil marine crater"
                                                                  :password   "thisisapaswoord"}}})]
-    (is (= "random" (get-in new-cofx [:db :multiaccounts/new-installation-id]))))
-  (let [new-cofx (models/recover-multiaccount-with-checks {:random-guid-generator (constantly "random")
-                                                           :db {:multiaccounts/recover
+    (is (::multiaccounts.create/store-multiaccount new-cofx)))
+  (let [new-cofx (models/recover-multiaccount-with-checks {:db {:multiaccounts/recover
                                                                 {:passphrase "game buzz method pretty zeus fat quit display velvet unveil marine crater"
                                                                  :password   "thisisapaswoord"}}})]
     (is (= (i18n/label :recovery-typo-dialog-title) (-> new-cofx :ui/show-confirmation :title)))

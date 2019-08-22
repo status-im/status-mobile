@@ -40,7 +40,6 @@ public:
     Q_INVOKABLE void sendDataNotification(QString dataPayloadJSON, QString tokensJSON, double callbackId);
     Q_INVOKABLE void sendLogs(QString dbJSON, QString jsLogs, double callbackId);
     Q_INVOKABLE void addPeer(QString enode, double callbackId);
-    Q_INVOKABLE void recoverAccount(QString passphrase, QString password, double callbackId);
     Q_INVOKABLE void prepareDirAndUpdateConfig(QString configString, double callbackId);
     Q_INVOKABLE void login(QString accountData, QString password);
     Q_INVOKABLE void saveAccountAndLogin(QString accountData, QString password, QString config, QString subAccountsData);

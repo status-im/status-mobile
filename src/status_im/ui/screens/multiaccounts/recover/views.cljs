@@ -7,6 +7,8 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.multiaccounts.recover.core :as multiaccounts.recover]
+            [status-im.hardwallet.core :as hardwallet]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.multiaccounts.recover.styles :as styles]
             [status-im.ui.components.styles :as components.styles]
@@ -40,8 +42,8 @@
       :multiline           true
       :default-value       passphrase
       :auto-correct        false
-      :on-change-text      #(re-frame/dispatch [:multiaccounts.recover.ui/passphrase-input-changed (security/mask-data %)])
-      :on-blur             #(re-frame/dispatch [:multiaccounts.recover.ui/passphrase-input-blured])
+      :on-change-text      #(re-frame/dispatch [::multiaccounts.recover/passphrase-input-changed (security/mask-data %)])
+      :on-blur             #(re-frame/dispatch [::multiaccounts.recover/passphrase-input-blured])
       :error               (cond error (i18n/label error)
                                  warning (i18n/label warning))}]))
 
@@ -61,8 +63,8 @@
        :placeholder         (i18n/label :t/enter-password)
        :default-value       password
        :auto-focus          false
-       :on-change-text      #(re-frame/dispatch [:multiaccounts.recover.ui/password-input-changed (security/mask-data %)])
-       :on-blur             #(re-frame/dispatch [:multiaccounts.recover.ui/password-input-blured])
+       :on-change-text      #(re-frame/dispatch [::multiaccounts.recover/password-input-changed (security/mask-data %)])
+       :on-blur             #(re-frame/dispatch [::multiaccounts.recover/password-input-blured])
        :secure-text-entry   true
        :error               (when error (i18n/label error))
        :on-submit-editing   on-submit-editing
@@ -80,7 +82,7 @@
                           processing?
                           (not valid-form?)
                           (not node-stopped?))
-          sign-in     #(re-frame/dispatch [:multiaccounts.recover.ui/sign-in-button-pressed])]
+          sign-in     #(re-frame/dispatch [::multiaccounts.recover/sign-in-button-pressed])]
       [react/keyboard-avoiding-view {:style styles/screen-container}
        [status-bar/status-bar]
        [toolbar/toolbar nil toolbar/default-nav-back
@@ -113,7 +115,7 @@
       :accessibility-label :enter-seed-phrase-button
       :icon                :main-icons/text
       :icon-opts           {:color colors/blue}
-      :on-press            #(re-frame/dispatch [:recover.ui/enter-phrase-pressed])}]
+      :on-press            #(re-frame/dispatch [::multiaccounts.recover/enter-phrase-pressed])}]
     [action-button/action-button
      {:label               (i18n/label :t/recover-with-keycard)
       :label-style         (if config/hardwallet-enabled? {} {:color colors/gray})
@@ -121,7 +123,7 @@
       :image               :keycard-logo-blue
       :image-opts          {:style {:width 24 :height 24}}
       :on-press            #(when config/hardwallet-enabled?
-                              (re-frame/dispatch [:recover.ui/recover-with-keycard-pressed]))}]]])
+                              (re-frame/dispatch [::hardwallet/recover-with-keycard-pressed]))}]]])
 
 (def bottom-sheet
   {:content        bottom-sheet-view
@@ -140,7 +142,7 @@
       {:transparent? true
        :style        {:margin-top 32}}
       [toolbar/nav-text
-       {:handler #(re-frame/dispatch [:recover.ui/cancel-pressed])
+       {:handler #(re-frame/dispatch [::multiaccounts.recover/cancel-pressed])
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
       [react/text {:style {:color colors/gray}}
@@ -158,9 +160,9 @@
          (i18n/label :t/multiaccounts-recover-enter-phrase-title)]]
        [react/view {:margin-top 16}
         [text-input/text-input-with-label
-         {:on-change-text    #(re-frame/dispatch [:recover.enter-passphrase.ui/input-changed (security/mask-data %)])
+         {:on-change-text    #(re-frame/dispatch [::multiaccounts.recover/enter-phrase-input-changed (security/mask-data %)])
           :auto-focus        true
-          :on-submit-editing #(re-frame/dispatch [:recover.enter-passphrase.ui/input-submitted])
+          :on-submit-editing #(re-frame/dispatch [::multiaccounts.recover/enter-phrase-input-submitted])
           :error             (when passphrase-error (i18n/label passphrase-error))
           :placeholder       nil
           :height            120
@@ -208,7 +210,7 @@
        (when-not processing?
          [react/view {:margin-right 20}
           [components.common/bottom-button
-           {:on-press  #(re-frame/dispatch [:recover.enter-passphrase.ui/next-pressed])
+           {:on-press  #(re-frame/dispatch [::multiaccounts.recover/enter-phrase-next-pressed])
             :label     (i18n/label :t/next)
             :disabled? next-button-disabled?
             :forward?  true}]])]]]))
@@ -270,7 +272,7 @@
            (utils/get-shortened-address pubkey)]]]
         [react/view {:margin-bottom 50}
          [react/touchable-highlight
-          {:on-press #(re-frame/dispatch [:recover.success.ui/re-encrypt-pressed])}
+          {:on-press #(re-frame/dispatch [::multiaccounts.recover/re-encrypt-pressed])}
           [react/view {:background-color colors/blue-light
                        :align-items      :center
                        :justify-content  :center
@@ -291,7 +293,7 @@
       {:transparent? true
        :style        {:margin-top 32}}
       [toolbar/nav-text
-       {:handler #(re-frame/dispatch [:recover.ui/cancel-pressed])
+       {:handler #(re-frame/dispatch [::multiaccounts.recover/cancel-pressed])
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
       nil]
@@ -318,7 +320,7 @@
        [react/view components.styles/flex]
        [react/view {:margin-right 20}
         [components.common/bottom-button
-         {:on-press #(re-frame/dispatch [:recover.select-storage.ui/next-pressed])
+         {:on-press #(re-frame/dispatch [::multiaccounts.recover/select-storage-next-pressed])
           :forward? true}]]]]]))
 
 (defview enter-password []
@@ -330,7 +332,7 @@
       {:transparent? true
        :style        {:margin-top 32}}
       [toolbar/nav-text
-       {:handler #(re-frame/dispatch [:recover.ui/cancel-pressed])
+       {:handler #(re-frame/dispatch [::multiaccounts.recover/cancel-pressed])
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
       [react/text {:style {:color colors/gray}}
@@ -354,9 +356,9 @@
          (i18n/label :t/password-description)]]
        [react/view {:margin-top 16}
         [text-input/text-input-with-label
-         {:on-change-text    #(re-frame/dispatch [:recover.enter-password.ui/input-changed (security/mask-data %)])
+         {:on-change-text    #(re-frame/dispatch [::multiaccounts.recover/enter-password-input-changed (security/mask-data %)])
           :auto-focus        true
-          :on-submit-editing #(re-frame/dispatch [:recover.enter-password.ui/input-submitted])
+          :on-submit-editing #(re-frame/dispatch [::multiaccounts.recover/enter-password-input-submitted])
           :secure-text-entry true
           :error             (when password-error (i18n/label password-error))
           :placeholder       nil
@@ -378,7 +380,7 @@
        [react/view]
        [react/view {:margin-right 20}
         [components.common/bottom-button
-         {:on-press  #(re-frame/dispatch [:recover.enter-password.ui/next-pressed])
+         {:on-press  #(re-frame/dispatch [::multiaccounts.recover/enter-password-next-pressed])
           :label     (i18n/label :t/next)
           :disabled? (empty? password)
           :forward?  true}]]]]]))
@@ -392,7 +394,7 @@
       {:transparent? true
        :style        {:margin-top 32}}
       [toolbar/nav-text
-       {:handler #(re-frame/dispatch [:recover.ui/cancel-pressed])
+       {:handler #(re-frame/dispatch [::multiaccounts.recover/cancel-pressed])
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
       [react/text {:style {:color colors/gray}}
@@ -416,9 +418,9 @@
          (i18n/label :t/password-description)]]
        [react/view {:margin-top 16}
         [text-input/text-input-with-label
-         {:on-change-text    #(re-frame/dispatch [:recover.confirm-password.ui/input-changed %])
+         {:on-change-text    #(re-frame/dispatch [::multiaccounts.recover/confirm-password-input-changed %])
           :auto-focus        true
-          :on-submit-editing #(re-frame/dispatch [:recover.confirm-password.ui/input-submitted])
+          :on-submit-editing #(re-frame/dispatch [::multiaccounts.recover/confirm-password-input-submitted])
           :error             (when password-error (i18n/label password-error))
           :secure-text-entry true
           :placeholder       nil
@@ -440,7 +442,7 @@
        [react/view]
        [react/view {:margin-right 20}
         [components.common/bottom-button
-         {:on-press  #(re-frame/dispatch [:recover.confirm-password.ui/next-pressed])
+         {:on-press  #(re-frame/dispatch [::multiaccounts.recover/confirm-password-next-pressed])
           :label     (i18n/label :t/next)
           :disabled? (empty? password-confirmation)
           :forward?  true}]]]]]))

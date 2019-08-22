@@ -673,26 +673,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
-
-    @ReactMethod
-    public void recoverAccount(final String passphrase, final String password, final Callback callback) {
-        Log.d(TAG, "recoverAccount");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.recoverAccount(password, passphrase);
-
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
-    }
-
     @ReactMethod
     public void multiAccountStoreAccount(final String json, final Callback callback) {
         Log.d(TAG, "multiAccountStoreAccount");

@@ -401,7 +401,7 @@
             (navigation/navigate-to-cofx :keycard-recovery-enter-mnemonic nil)))
 
 (fx/defn start-import-flow
-  {:events [:recover.ui/recover-with-keycard-pressed
+  {:events [::recover-with-keycard-pressed
             :keycard.login.ui/recover-key-pressed]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx

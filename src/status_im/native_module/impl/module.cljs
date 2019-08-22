@@ -76,10 +76,6 @@
   (when (status)
     (.addPeer (status) enode on-result)))
 
-(defn recover-account [passphrase password on-result]
-  (when (status)
-    (.recoverAccount (status) passphrase password on-result)))
-
 (defn multiaccount-generate-and-derive-addresses [n mnemonic-length paths on-result]
   (.multiAccountGenerateAndDeriveAddresses (status)
                                            (types/clj->json {:n n

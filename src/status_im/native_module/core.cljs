@@ -38,9 +38,6 @@
 (defn multiaccount-derive-addresses [account-id paths callback]
   (native-module/multiaccount-derive-addresses account-id paths callback))
 
-(defn recover-multiaccount [passphrase password callback]
-  (native-module/recover-account passphrase password callback))
-
 (defn multiaccount-store-account [account-id password callback]
   (native-module/multiaccount-store-account account-id password callback))
 
