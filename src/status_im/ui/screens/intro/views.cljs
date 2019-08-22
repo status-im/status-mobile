@@ -204,8 +204,16 @@
 (defn create-code [{:keys [confirm-failure?] :as wizard-state} view-width]
   [password-container confirm-failure? view-width])
 
-(defn confirm-code [{:keys [confirm-failure?] :as wizard-state} view-width]
-  [password-container confirm-failure? view-width])
+(defn confirm-code [{:keys [confirm-failure? processing?] :as wizard-state} view-width]
+  (if processing?
+    [react/view {:style {:justify-content :center
+                         :align-items :center}}
+     [react/activity-indicator {:size      :large
+                                :animating true}]
+     [react/text {:style {:color      colors/gray
+                          :margin-top 8}}
+      (i18n/label :t/processing)]]
+    [password-container confirm-failure? view-width]))
 
 (defn enable-fingerprint []
   [vector-icons/icon :main-icons/fingerprint
@@ -218,7 +226,8 @@
                                                          :justify-content :center}
                                        :width 66 :height 64}])
 
-(defn bottom-bar [{:keys [step generating-keys? weak-password? encrypt-with-password?] :as wizard-state}]
+(defn bottom-bar [{:keys [step generating-keys? weak-password? encrypt-with-password?
+                          processing?] :as wizard-state}]
   [react/view {:style {:margin-bottom (if (or (#{:choose-key :select-key-storage} step)
                                               (and (#{:create-code :confirm-code} step)
                                                    encrypt-with-password?))
@@ -248,7 +257,8 @@
          [react/view {:style styles/bottom-arrow}
           [components.common/bottom-button {:on-press     #(re-frame/dispatch
                                                             [:intro-wizard/step-forward-pressed])
-                                            :disabled? (and (= step :create-code) weak-password?)
+                                            :disabled? (or processing?
+                                                           (and (= step :create-code) weak-password?))
                                             :forward? true}]])
    (when (#{:enable-fingerprint :enable-notifications} step)
      [components.common/button {:button-style (assoc styles/bottom-button :margin-top 20)

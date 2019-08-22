@@ -109,7 +109,7 @@
 (fx/defn intro-step-forward
   {:events [:intro-wizard/step-forward-pressed]}
   [{:keys [db] :as cofx} {:keys [skip?] :as opts}]
-  (let  [{:keys [step first-time-setup? selected-storage-type]} (:intro-wizard db)]
+  (let  [{:keys [step first-time-setup? selected-storage-type processing?]} (:intro-wizard db)]
     (cond (confirm-failure? db)
           (on-confirm-failure cofx)
 
@@ -128,15 +128,19 @@
           (store-key-code cofx)
 
           (and (= step :confirm-code)
-               (not (:multiaccounts/login db)))
-          (create-multiaccount cofx)
+               (not (:multiaccounts/login db))
+               (not processing?))
+          (fx/merge cofx
+                    {:db (assoc-in db [:intro-wizard :processing?] true)}
+                    create-multiaccount)
 
           (and (= step :select-key-storage)
                (= :advanced selected-storage-type))
           {:dispatch [:keycard/start-onboarding-flow]}
 
-          :else {:db (assoc-in db [:intro-wizard :step]
-                               (inc-step step))})))
+          :else {:db (update db :intro-wizard
+                             assoc :processing? false
+                             :step (inc-step step))})))
 
 (defn prepare-subaccounts-data
   [multiaccount]
