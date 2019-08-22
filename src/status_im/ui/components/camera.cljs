@@ -2,9 +2,9 @@
   (:require [goog.object :as object]
             [reagent.core :as reagent]
             [clojure.walk :as walk]
-            [status-im.react-native.js-dependencies :as js-dependecies]))
+            [status-im.react-native.js-dependencies :as js-dependencies]))
 
-(defn default-camera [] (.-default (js-dependecies/camera)))
+(defn default-camera [] (.-default (js-dependencies/camera)))
 
 (defn constants [t]
   (-> (default-camera)

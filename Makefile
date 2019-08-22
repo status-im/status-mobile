@@ -285,7 +285,7 @@ android-ports: ##@other Add proxies to Android Device/Simulator
 android-logcat: export _NIX_ATTR := targets.mobile.android.adb.shell
 android-logcat: export TARGET_OS ?= android
 android-logcat: ##@other Read status-react logs from Android phone using adb
-	adb logcat | grep -e StatusModule -e ReactNativeJS -e StatusNativeLogs
+	adb logcat | grep -e RNBootstrap -e ReactNativeJS -e ReactNative -e StatusModule -e StatusNativeLogs
 
 android-install: export _NIX_ATTR := targets.mobile.android.adb.shell
 android-install: export TARGET_OS ?= android

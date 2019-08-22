@@ -394,10 +394,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     private void initKeystore() {
+        Log.d(TAG, "initKeystore");
+
         Activity currentActivity = getCurrentActivity();
 
         final String keydir = pathCombine(currentActivity.getApplicationInfo().dataDir, "/keystore");
-        Log.d(TAG, "initKeystore");
         if (!checkAvailability()) {
             Log.e(TAG, "[initKeystore] Activity doesn't exist, cannot init keystore");
             System.exit(0);
