@@ -79,7 +79,8 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.Copy
 project.ext.react = [
     nodeExecutableAndArgs: ["node", "--max-old-space-size=16384"],
     entryFile: "index.android.js",
-    enableHermes: false,  // clean and rebuild if changing
+    enableHermes: true,  // clean and rebuild if changing
+    hermesFlagsRelease: ["-O"], // Don't include the default -output-source-map flag, as it is not compatible with RAM bundle
     bundleInPr: true,
     bundleCommand: "ram-bundle",
     bundleConfig: "packager/config.js",

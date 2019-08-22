@@ -47,7 +47,7 @@ let
                 root = path;
               };
           };
-        phases = [ "unpackPhase" "patchPhase" "installPhase" "fixupPhase" ];
+        phases = [ "unpackPhase" "patchPhase" "installPhase" "fixupPhase" "checkPhase" ];
         nativeBuildInputs = [ projectNodePackage ];
         buildInputs = [ gradle nodejs bash file zlib mavenLocalRepo ];
         propagatedBuildInputs = [ react-native-deps ];
@@ -72,6 +72,8 @@ let
           rm -rf ${projectBuildDir}/node_modules
           mkdir -p ${projectBuildDir}/node_modules
           cp -a ${projectNodePackage}/node_modules/. ${projectBuildDir}/node_modules/
+
+          [ -d ${projectBuildDir}/node_modules/jsc-android/dist ] || exit 1
 
           # Adjust permissions
           chmod -R u+w ${projectBuildDir}
@@ -145,6 +147,23 @@ let
               'nodeExecutableAndArgs: ["node"' \
               'nodeExecutableAndArgs: ["${nodejs}/bin/node"'
 
+          # Fix bug in Hermes usage (https://github.com/facebook/react-native/issues/25601#issuecomment-510856047)
+          substituteInPlace ${projectBuildDir}/node_modules/react-native/react.gradle \
+            --replace \
+              'targetName.toLowerCase().contains("release")' \
+              '!targetName.toLowerCase().contains("debug")' \
+            --replace \
+              'commandLine(getHermesCommand(), "-emit-binary", "-out", jsBundleFile, jsBundleFile, *hermesFlags)' \
+              'def jsBundleFileIn = File.createTempFile("index.android",".tmp")
+              jsBundleFileIn.deleteOnExit()
+              ant.move(
+                  file: jsBundleFile,
+                  tofile: jsBundleFileIn
+              );
+              commandLine(getHermesCommand(), "-emit-binary", "-out", jsBundleFile, jsBundleFileIn, *hermesFlags)
+              ' \
+            || exit
+
           # Patch dependencies which are not yet ported to AndroidX
           npx jetify
 
@@ -167,6 +186,10 @@ let
               'packageReactNdkLibs(dependsOn: buildReactNdkLib, ' \
               'packageReactNdkLibs('
         '';
+        checkPhase = ''
+          [ -d $out/project/node_modules/jsc-android/dist ] || exit 1
+        '';
+        doCheck = true;
 
         # The ELF types are incompatible with the host platform, so let's not even try
         # TODO: Use Android NDK to strip binaries manually
