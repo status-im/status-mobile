@@ -6,8 +6,16 @@ set -e
 function cleanup() {
   # clear trapped signals
   trap - EXIT ERR INT QUIT
-  # do the actual cleanup
-  ./nix/clean.sh "${nixResultPath}"
+  # do the actual cleanup, ignore failure 
+  if ./nix/clean.sh "${nixResultPath}"; then
+    echo "Successful cleanup!"
+  elif [[ -n "${JENKINS_URL}" ]]; then
+    # in CI removing some paths can fail due to parallel builds
+    echo "Ignoring cleanup failure in CI."
+  else
+    echo "Failed cleanup!"
+    exit 1
+  fi
 }
 
 trap cleanup EXIT ERR INT QUIT
