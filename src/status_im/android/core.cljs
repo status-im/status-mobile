@@ -26,8 +26,8 @@
 (defn app-root [props]
   (let [keyboard-height (subscribe [:keyboard-height])]
     (reagent/create-class
-     {:component-will-mount
-      (fn []
+     {:component-did-mount
+      (fn [this]
         (.addListener (react/keyboard)
                       "keyboardDidShow"
                       (fn [e]
@@ -48,9 +48,7 @@
         (.addEventListener rn-dependencies/react-native-languages "change" on-languages-change)
         (.addEventListener (rn-dependencies/react-native-shake)
                            "ShakeEvent"
-                           on-shake))
-      :component-did-mount
-      (fn [this]
+                           on-shake)
         (dispatch [:set-initial-props (reagent/props this)]))
       :component-will-unmount
       (fn []

@@ -16,7 +16,7 @@
   (if (and config/cached-webviews-enabled? platform/android? dapp?)
     (reagent.core/create-class
      (let [dapp-name-sent? (reagent.core/atom false)]
-       {:component-will-mount
+       {:component-did-mount
         (fn []
           ;; unfortunately it's impossible to pass some initial params
           ;; to view, that's why we have to pass dapp-name to the module

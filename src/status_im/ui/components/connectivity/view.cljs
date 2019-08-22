@@ -145,7 +145,7 @@
   (letsubs [status-properties [:connectivity/status-properties]
             view-id           [:view-id]
             window-width (reagent/atom 0)]
-    {:component-will-mount
+    {:component-did-mount
      (fn []
        (when anim-translate-y
          (if (:connected? status-properties)

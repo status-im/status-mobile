@@ -107,11 +107,6 @@
     (reagent/create-class
      {:component-did-mount
       (fn []
-        (re-frame/dispatch [:set-two-pane-ui-enabled @two-pane?])
-        (log/debug :main-component-did-mount @view-id)
-        (utils.universal-links/initialize))
-      :component-will-mount
-      (fn []
         (.addEventListener (react/dimensions)
                            "change"
                            (fn [dimensions]
@@ -124,7 +119,10 @@
         (when-not @initial-view-id
           (reset! initial-view-id @view-id))
         (reset-component-on-mount view-id main-component false)
-        (reset-component-on-mount view-id main-component-two-pane true))
+        (reset-component-on-mount view-id main-component-two-pane true)
+        (re-frame/dispatch [:set-two-pane-ui-enabled @two-pane?])
+        (log/debug :main-component-did-mount @view-id)
+        (utils.universal-links/initialize))
       :component-will-unmount
       utils.universal-links/finalize
       :component-will-update

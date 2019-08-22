@@ -129,7 +129,7 @@
             installed-packs [:stickers/installed-packs-vals]
             bottom-anim-value  (anim/create-value (styles/stickers-panel-height))
             alpha-value        (anim/create-value 0)]
-    {:component-will-mount #(show-panel-anim bottom-anim-value alpha-value)}
+    {:component-did-mount #(show-panel-anim bottom-anim-value alpha-value)}
     [react/animated-view {:style {:background-color :white
                                   :height           (styles/stickers-panel-height)
                                   :transform        [{:translateY bottom-anim-value}]

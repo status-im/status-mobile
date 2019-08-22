@@ -73,10 +73,10 @@
   (let [amount-input (atom nil)
         handler #(when (and scroll @scroll @amount-input (.isFocused @amount-input)) (.scrollToEnd @scroll))]
     (reagent/create-class
-     {:component-will-mount (fn [_]
-                              ;;NOTE(goranjovic): keyboardDidShow is for android and keyboardWillShow for ios
-                              (.addListener (react/keyboard)  "keyboardDidShow" handler)
-                              (.addListener (react/keyboard)  "keyboardWillShow" handler))
+     {:component-did-mount (fn [_]
+                             ;;NOTE(goranjovic): keyboardDidShow is for android and keyboardWillShow for ios
+                             (.addListener (react/keyboard)  "keyboardDidShow" handler)
+                             (.addListener (react/keyboard)  "keyboardWillShow" handler))
       :reagent-render       (fn [opts] (render-send-transaction-view
                                         (assoc opts :amount-input amount-input)))})))
 
