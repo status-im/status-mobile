@@ -79,7 +79,7 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.Copy
 project.ext.react = [
     nodeExecutableAndArgs: ["node", "--max-old-space-size=16384"],
     entryFile: "index.android.js",
-    enableHermes: false,  // clean and rebuild if changing
+    enableHermes: true,  // clean and rebuild if changing
     bundleInPr: true,
     inputExcludes: ["android/**", "ios/**", "react-native/**", "src/**", "test/**"]
 ]

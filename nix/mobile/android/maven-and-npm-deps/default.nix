@@ -73,6 +73,9 @@ let
           mkdir -p ${projectBuildDir}/node_modules
           cp -a ${projectNodePackage}/node_modules/. ${projectBuildDir}/node_modules/
 
+          # Ensure that module was correctly installed
+          [ -d ${projectBuildDir}/node_modules/jsc-android/dist ] || exit 1
+
           # Adjust permissions
           chmod -R u+w ${projectBuildDir}
 
@@ -144,6 +147,23 @@ let
             --replace \
               'nodeExecutableAndArgs: ["node"' \
               'nodeExecutableAndArgs: ["${nodejs}/bin/node"'
+
+          # Fix bug in Hermes usage (https://github.com/facebook/react-native/issues/25601#issuecomment-510856047)
+          substituteInPlace ${projectBuildDir}/node_modules/react-native/react.gradle \
+            --replace \
+              'targetName.toLowerCase().contains("release")' \
+              '!targetName.toLowerCase().contains("debug")' \
+            --replace \
+              'commandLine(getHermesCommand(), "-emit-binary", "-out", jsBundleFile, jsBundleFile, *hermesFlags)' \
+              'def jsBundleFileIn = File.createTempFile("index.android",".tmp")
+              jsBundleFileIn.deleteOnExit()
+              ant.move(
+                  file: jsBundleFile,
+                  tofile: jsBundleFileIn
+              );
+              commandLine(getHermesCommand(), "-emit-binary", "-out", jsBundleFile, jsBundleFileIn, *hermesFlags)
+              ' \
+            || exit
 
           # Patch dependencies which are not yet ported to AndroidX
           npx jetify
