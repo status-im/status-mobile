@@ -29,7 +29,7 @@
     "querystring-es3": "0.2.1",
     "react": "16.8.6",
     "react-dom": "16.4.2",
-    "react-native": "0.60.4",
+    "react-native": "0.60.5",
     "react-native-background-timer": "2.1.0-alpha.6",
     "react-native-camera": "3.0.1",
     "react-native-config": "git+https://github.com/status-im/react-native-config.git#0.11.2-1",
@@ -74,6 +74,7 @@
     "@babel/preset-env": "7.1.0",
     "@babel/register": "7.0.0",
     "coveralls": "^3.0.4",
+    "metro-react-native-babel-preset": "^0.56.0",
     "nyc": "^14.1.1",
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status"
   }
