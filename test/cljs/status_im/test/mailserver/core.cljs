@@ -246,34 +246,34 @@
                            :db
                            :mailserver/current-id)))))))))
 
-(deftest delete-mailserver
-  (testing "the user is not connected to the mailserver"
-    (let [cofx {:random-id-generator (constantly "random-id")
-                :db {:mailserver/mailservers {:eth.beta {"a" {:id           "a"
-                                                              :name         "old-name"
-                                                              :user-defined true
-                                                              :address      "enode://old-id:old-password@url:port"}}}}}
-          actual (mailserver/delete cofx "a")]
-      (testing "it removes the mailserver from the list"
-        (is (not (mailserver/fetch actual "a"))))
-      (testing "it stores it in the db"
-        (is (= 1 (count (:data-store/tx actual)))))))
-  (testing "the mailserver is not user-defined"
-    (let [cofx {:random-id-generator (constantly "random-id")
-                :db {:mailserver/mailservers {:eth.beta {"a" {:id      "a"
-                                                              :name    "old-name"
-                                                              :address "enode://old-id:old-password@url:port"}}}}}
-          actual (mailserver/delete cofx "a")]
-      (testing "it does not delete the mailserver"
-        (is (= {:dispatch [:navigate-back]} actual)))))
-  (testing "the user is connected to the mailserver"
-    (let [cofx {:random-id-generator (constantly "random-id")
-                :db {:mailserver/mailservers {:eth.beta {"a" {:id      "a"
-                                                              :name    "old-name"
-                                                              :address "enode://old-id:old-password@url:port"}}}}}
-          actual (mailserver/delete cofx "a")]
-      (testing "it does not remove the mailserver from the list"
-        (is (= {:dispatch [:navigate-back]} actual))))))
+; (deftest delete-mailserver
+;   (testing "the user is not connected to the mailserver"
+;     (let [cofx {:random-id-generator (constantly "random-id")
+;                 :db {:mailserver/mailservers {:eth.beta {"a" {:id           "a"
+;                                                               :name         "old-name"
+;                                                               :user-defined true
+;                                                               :address      "enode://old-id:old-password@url:port"}}}}}
+;           actual (mailserver/delete cofx "a")]
+;       (testing "it removes the mailserver from the list"
+;         (is (not (mailserver/fetch actual "a"))))
+;       (testing "it stores it in the db"
+;         (is (= 1 (count (:data-store/tx actual)))))))
+;   (testing "the mailserver is not user-defined"
+;     (let [cofx {:random-id-generator (constantly "random-id")
+;                 :db {:mailserver/mailservers {:eth.beta {"a" {:id      "a"
+;                                                               :name    "old-name"
+;                                                               :address "enode://old-id:old-password@url:port"}}}}}
+;           actual (mailserver/delete cofx "a")]
+;       (testing "it does not delete the mailserver"
+;         (is (= {:dispatch [:navigate-back]} actual)))))
+;   (testing "the user is connected to the mailserver"
+;     (let [cofx {:random-id-generator (constantly "random-id")
+;                 :db {:mailserver/mailservers {:eth.beta {"a" {:id      "a"
+;                                                               :name    "old-name"
+;                                                               :address "enode://old-id:old-password@url:port"}}}}}
+;           actual (mailserver/delete cofx "a")]
+;       (testing "it does not remove the mailserver from the list"
+;         (is (= {:dispatch [:navigate-back]} actual))))))
 
 (deftest upsert-mailserver
   (testing "new mailserver"

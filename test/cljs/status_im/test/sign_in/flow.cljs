@@ -39,7 +39,6 @@
       (testing ":accounts/login cleared."
         (is (not (contains? new-db :multiaccounts/login))))
       (testing "Check the rest of effects."
-        (is (contains? efx ::data-store/change-multiaccount))
         (is (json-rpc "web3_clientVersion"))))))
 
 ;;TODO re-enable when keycard is fixed
