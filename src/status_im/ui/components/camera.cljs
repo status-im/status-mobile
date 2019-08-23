@@ -6,19 +6,19 @@
 
 (defn default-camera [] (.-RNCamera (js-dependencies/camera)))
 
-(defn constants [t]
-  (-> (default-camera)
-      (object/get "Constants")
-      (object/get t)
-      (js->clj)
-      (walk/keywordize-keys)))
+; (defn constants [t]
+;   (-> (default-camera)
+;       (object/get "Constants")
+;       (object/get t)
+;       (js->clj)
+;       (walk/keywordize-keys)))
 
-(def aspects (constants "Aspect"))
-(def capture-targets (constants "CaptureTarget"))
-(def torch-modes (constants "TorchMode"))
+; (def aspects (constants "Orientation"))
+; (def capture-targets (constants "CaptureTarget"))
+;(def torch-modes (constants "FlashMode"))
 
-(defn set-torch [state]
-  (set! (.-torchMode (default-camera)) (get torch-modes state)))
+; (defn set-torch [state]
+;   (set! (.-flashMode (default-camera)) (get torch-modes state)))
 
 (defn request-access-ios [then else]
   (-> (.checkVideoAuthorizationStatus (default-camera))

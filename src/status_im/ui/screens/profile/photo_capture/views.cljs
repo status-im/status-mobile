@@ -30,9 +30,9 @@
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/image-source-title)]]
      [camera/camera {:style         {:flex 1}
-                     :aspect        (:fill camera/aspects)
+                     ;:aspect        (:fill camera/aspects)
                      :captureQuality "480p"
-                     :captureTarget (:disk camera/capture-targets)
+                     ;:captureTarget (:disk camera/capture-targets)
                      :type          "front"
                      :ref           #(reset! camera-ref %)}]
      [react/view styles/button-container

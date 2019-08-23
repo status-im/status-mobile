@@ -61,7 +61,7 @@
        [camera/camera {:style         styles/preview
                        :aspect        :fill
                        :captureAudio  false
-                       :torchMode     (camera/set-torch camera-flashlight)
+                       ;:torchMode     (camera/set-torch camera-flashlight)
                        :onBarCodeRead #(when-not @read-once?
                                          (reset! read-once? true)
                                          (re-frame/dispatch [:wallet/fill-request-from-url (camera/get-qr-code-data %) :qr]))}]]
