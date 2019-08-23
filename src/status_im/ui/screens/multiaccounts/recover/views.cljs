@@ -71,17 +71,13 @@
        :ref                 #(reset! inp-ref %)}]]))
 
 (defview recover []
-  (letsubs [recovered-multiaccount [:get-recover-multiaccount]
-            node-status? [:node-status]]
+  (letsubs [recovered-multiaccount [:get-recover-multiaccount]]
     (let [{:keys [passphrase password passphrase-valid? password-valid?
                   password-error passphrase-error passphrase-warning processing?]} recovered-multiaccount
-          node-stopped? (or (nil? node-status?)
-                            (= :stopped node-status?))
           valid-form? (and password-valid? passphrase-valid?)
           disabled?   (or (not recovered-multiaccount)
                           processing?
-                          (not valid-form?)
-                          (not node-stopped?))
+                          (not valid-form?))
           sign-in     #(re-frame/dispatch [::multiaccounts.recover/sign-in-button-pressed])]
       [react/keyboard-avoiding-view {:style styles/screen-container}
        [status-bar/status-bar]

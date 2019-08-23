@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.keycard.recovery.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.ui.components.react :as react]
+  (:require [status-im.multiaccounts.recover.core :as multiaccounts.recover]
+            [status-im.ui.components.react :as react]
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.ui.screens.keycard.views :as views]
             [status-im.ui.components.toolbar.actions :as actions]
@@ -25,7 +26,7 @@
      :style        {:margin-top 32}}
     (toolbar/nav-button
      (actions/back #(re-frame/dispatch
-                     [:recover.ui/cancel-pressed])))
+                     [::multiaccounts.recover/cancel-pressed])))
     nil]
    [react/view {:flex            1
                 :flex-direction  :column
@@ -320,4 +321,3 @@
                              :padding-top 27
                              :color       colors/blue}}
          (i18n/label :t/cancel)]]]]]))
-

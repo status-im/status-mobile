@@ -16,10 +16,6 @@
   [{db :db :as cofx} event]
   (login/multiaccount-login-success cofx))
 
-(fx/defn status-node-stopped
-  [{db :db}]
-  {:db (assoc db :node/status :stopped)})
-
 (fx/defn summary
   [{:keys [db] :as cofx} peers-summary]
   (let [previous-summary (:peers-summary db)
@@ -35,7 +31,6 @@
   (let [{:keys [type event]} (types/json->clj event-str)]
     (case type
       "node.login"         (status-node-started cofx event)
-      "node.stopped"       (status-node-stopped cofx)
       "envelope.sent"      (transport.message/update-envelopes-status cofx (:ids event) :sent)
       "envelope.expired"   (transport.message/update-envelopes-status cofx (:ids event) :not-sent)
       "bundles.added"      (pairing/handle-bundles-added cofx event)

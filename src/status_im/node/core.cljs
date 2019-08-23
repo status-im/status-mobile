@@ -194,7 +194,7 @@
 
 (re-frame/reg-fx
  :node/les-show-debug-info
- (fn [[multiaccount chain-sync-state]]
+ (fn [[multiaccount]]
    #_(.getBalance
       (.-eth eb3)
       (:address multiaccount)
@@ -212,5 +212,5 @@
              "* eth_getSyncing=" (or chain-sync-state "false")))))))))
 
 (defn display-les-debug-info
-  [{{:keys [multiaccount] :node/keys [chain-sync-state]} :db}]
+  [{{:keys [multiaccount]} :db}]
   {:node/les-show-debug-info [multiaccount]})

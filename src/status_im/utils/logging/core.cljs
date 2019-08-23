@@ -64,8 +64,7 @@
                                                   :chats/loading?
                                                   :desktop/desktop
                                                   :dimensions/window
-                                                  :my-profile/editing?
-                                                  :node/status]))]
+                                                  :my-profile/editing?]))]
     {:logs/archive-logs [db-json ::send-email]}))
 
 (fx/defn show-logs-dialog

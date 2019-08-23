@@ -71,7 +71,6 @@
 (reg-root-key-sub :peers-count :peers-count)
 (reg-root-key-sub :about-app/node-info :node-info)
 (reg-root-key-sub :peers-summary :peers-summary)
-(reg-root-key-sub :node-status :node/status)
 (reg-root-key-sub :tab-bar-visible? :tab-bar-visible?)
 (reg-root-key-sub :dimensions/window :dimensions/window)
 (reg-root-key-sub :initial-props :initial-props)
@@ -341,11 +340,9 @@
 (re-frame/reg-sub
  :sign-in-enabled?
  :<- [:multiaccounts/login]
- :<- [:node-status]
- (fn [[{:keys [password]} status]]
-   (and (or (nil? status) (= status :stopped))
-        (spec/valid? ::multiaccounts.db/password
-                     (security/safe-unmask-data password)))))
+ (fn [{:keys [password]}]
+   (spec/valid? ::multiaccounts.db/password
+                (security/safe-unmask-data password))))
 
 (re-frame/reg-sub
  :settings/current-fleet

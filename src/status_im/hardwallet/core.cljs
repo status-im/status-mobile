@@ -1592,8 +1592,7 @@
 (fx/defn on-generate-and-load-key-success
   [{:keys [db random-guid-generator] :as cofx} data]
   (let [account-data (js->clj data :keywordize-keys true)
-        flow (get-in db [:hardwallet :flow])
-        node-started? (= :started (:node/status db))]
+        flow (get-in db [:hardwallet :flow])]
     (fx/merge cofx
               {:db (-> db
                        (assoc-in [:hardwallet :multiaccount] (-> account-data

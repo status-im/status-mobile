@@ -93,18 +93,18 @@
 
 (defn connection-status
   "generates a composite message of the current connection state given peer and mailserver statuses"
-  [peers-count node-status mailserver-state peers-disconnected?]
+  [peers-count mailserver-state peers-disconnected?]
   ;; TODO probably not ideal criteria for searching
   ;; ask about directly calling rpc method to find discovery.started
-  (let [searching?            (= :starting node-status)
-        peers-connected?      (not peers-disconnected?)
+  (let [peers-connected?      (not peers-disconnected?)
         mailserver-connected? (= :connected mailserver-state)]
     (cond
-      (and peers-connected? searching?)                  "Connected and searching"
-      (and peers-connected? (not mailserver-connected?)) (str "Connected with " peers-count " peers")
-      (and peers-connected? mailserver-connected?)       (str "Connected with " peers-count " peers including mailserver.")
-      (and peers-disconnected? searching?)               "Disconnected and searching"
-      :else                                              "Disconnected")))
+      (and peers-connected? (not mailserver-connected?))
+      (str "Connected with " peers-count " peers")
+      (and peers-connected? mailserver-connected?)
+      (str "Connected with " peers-count " peers including mailserver.")
+      :else
+      "Disconnected")))
 
 (defn connection-statistics-display
   [{:keys [mailserver-request-process-time
@@ -157,7 +157,6 @@
                   mailservers             [:mailserver/fleet-mailservers]
                   mailserver-state        [:mailserver/state]
                   preferred-mailserver-id [:mailserver/preferred-id]
-                  node-status             [:node-status]
                   peers-count             [:peers-count]
                   connection-stats        [:connection-stats]
                   disconnected            [:disconnected?]]
@@ -167,7 +166,7 @@
           datasync? (:datasync? settings)
           v1-messages? (:datasync? settings)
           disable-discovery-topic? (:disable-discovery-topic? settings)
-          connection-message (connection-status peers-count node-status mailserver-state disconnected)]
+          connection-message (connection-status peers-count mailserver-state disconnected)]
       [react/scroll-view
        [react/text {:style styles/advanced-settings-title}
         (i18n/label :advanced-settings)]

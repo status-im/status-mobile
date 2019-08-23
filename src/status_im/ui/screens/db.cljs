@@ -78,9 +78,6 @@
 (spec/def ::web3-node-version (spec/nilable string?))
 ;;object?
 (spec/def ::webview-bridge (spec/nilable any?))
-(spec/def :node/status (spec/nilable #{:stopped :starting :started :stopping}))
-(spec/def :node/node-restart? (spec/nilable boolean?))
-(spec/def :node/address (spec/nilable string?))
 
 ;;height of native keyboard if shown
 (spec/def ::keyboard-height (spec/nilable number?))
@@ -96,9 +93,6 @@
 
 (spec/def ::sync-state (spec/nilable #{:pending :in-progress :synced :done :offline}))
 (spec/def ::sync-data (spec/nilable map?))
-
-;; contents of eth_syncing or `nil` if the node isn't syncing now
-(spec/def :node/chain-sync-state (spec/nilable map?))
 
 ;;;;NAVIGATION
 
@@ -228,8 +222,6 @@
                                 :networks/networks
                                 :networks/manage
                                 :bootnodes/manage
-                                :node/status
-                                :node/chain-sync-state
                                 :universal-links/url
                                 :push-notifications/stored
                                 :browser/browsers
