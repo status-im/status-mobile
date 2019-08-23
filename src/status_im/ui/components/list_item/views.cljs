@@ -34,7 +34,7 @@
                        :style  (styles/photo 40)}]])
       ;;Title
       (when title
-        [react/view {:style {:margin-left 16 :margin-right 16}}
+        [react/view {:style {:margin-left 16 :margin-right 16 :flex 1 :min-width 50}}
          [react/text {:style           (merge (styles/title small? subtitle)
                                               (when (= theme :action) st/action-button-label)
                                               (when (= theme :action-red) st/action-button-label-red))
@@ -52,7 +52,6 @@
         (if (vector? content)
           content
           [content]))
-      [react/view {:flex 1}]
       ;;Accessories
       (for [accessory accessories]
         (when-not (nil? accessory)

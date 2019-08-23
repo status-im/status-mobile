@@ -125,4 +125,22 @@
                                                       :background-color colors/blue :align-items :center
                                                       :justify-content :center}
                                           [react/text {:style {:color colors/white :font-size 12}} "1"]]
-                                         :chevron]}]]]])
+                                         :chevron]}]]]
+   [react/view {:margin-right 10}
+    [item "Long title"
+     [list-item/list-item {:title "loooooooooong looooooong looooooong title"
+                           :subtitle "ENS name"
+                           :icon :main-icons/address
+                           :accessories [:chevron]
+                           :on-press #()}]]
+    [item "Long subtitle"
+     [list-item/list-item {:title "alex.stateofus.eth"
+                           :subtitle "loooooooooooong loooooong looooooong subtitle"
+                           :icon :main-icons/address
+                           :accessories [:chevron]
+                           :on-press #()}]]
+    [item "Long accessories"
+     [list-item/list-item {:title "From"
+                           :type :small
+                           :accessories ["loooooooooooongloooooonglooo00oooongaccessories"]
+                           :on-press #()}]]]])
