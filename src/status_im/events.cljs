@@ -691,13 +691,6 @@
    (log/debug :event-str event-str)
    (signals/process cofx event-str)))
 
-;; protocol module
-
-(handlers/register-handler-fx
- :protocol.ui/close-app-confirmed
- (fn [cofx _]
-   (protocol/handle-close-app-confirmed cofx)))
-
 ;; notifications module
 
 (handlers/register-handler-fx

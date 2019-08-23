@@ -5,18 +5,15 @@
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.constants :as constants]
-            [status-im.data-store.core :as data-store]
             [status-im.contact.core :as contact]
-            [status-im.ethereum.core :as ethereum]
+            [status-im.data-store.core :as data-store]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
-            [status-im.node.core :as node]
             [status-im.notifications.core :as notifications]
             [status-im.stickers.core :as stickers]
-            [status-im.ui.screens.db :refer [app-db]]
             [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
@@ -27,6 +24,7 @@
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.universal-links.core :as universal-links]
+            [status-im.utils.utils :as utils]
             [status-im.wallet.core :as wallet]
             [taoensso.timbre :as log]))
 
@@ -105,6 +103,26 @@
   [cofx address password]
   {:keychain/save-user-password [address password]})
 
+(fx/defn handle-close-app-confirmed
+  {:events [::close-app-confirmed]}
+  [_]
+  {:ui/close-application nil})
+
+(fx/defn check-network-version
+  [cofx network-id]
+  {::json-rpc/call
+   [{:method "net_version"
+     :on-success
+     (fn [fetched-network-id]
+       (when (not= network-id fetched-network-id)
+         ;;TODO: this shouldn't happen but in case it does
+         ;;we probably want a better error message
+         (utils/show-popup (i18n/label :t/ethereum-node-started-incorrectly-title)
+                           (i18n/label :t/ethereum-node-started-incorrectly-description
+                                       {:network-id         network-id
+                                        :fetched-network-id fetched-network-id})
+                           #(re-frame/dispatch [::close-app-confirmed]))))}]})
+
 (defn deserialize-config
   [{:keys [multiaccount current-network networks]}]
   [(types/deserialize multiaccount)
@@ -114,13 +132,15 @@
 (fx/defn get-config-callback
   {:events [::get-config-callback]}
   [{:keys [db] :as cofx} config stored-pns]
-  (let [[{:keys [address] :as multiaccount} current-network networks] (deserialize-config config)]
+  (let [[{:keys [address] :as multiaccount} current-network networks] (deserialize-config config)
+        network-id (str (get-in networks [current-network :config :NetworkId]))]
     (fx/merge cofx
               {:db (assoc db
                           :networks/current-network current-network
                           :networks/networks networks
                           :multiaccount multiaccount)
                :notifications/request-notifications-permissions nil}
+              (check-network-version network-id)
               (chat.loading/initialize-chats)
               (contact/initialize-contacts)
               (stickers/init-stickers-packs)
