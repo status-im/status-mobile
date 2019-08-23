@@ -57,7 +57,7 @@ def doGitRebase() {
 def genBuildNumber() {
   def number = sh(
     returnStdout: true,
-    script: "${env.WORKSPACE}/scripts/gen_build_no.sh"
+    script: "${env.WORKSPACE}/scripts/version/gen_build_no.sh"
   ).trim()
   println "Build Number: ${number}"
   return number
@@ -66,7 +66,7 @@ def genBuildNumber() {
 def readBuildNumber() {
   def number = sh(
     returnStdout: true,
-    script: "${env.WORKSPACE}/scripts/build_no.sh"
+    script: "${env.WORKSPACE}/scripts/version/build_no.sh"
   ).trim().toInteger()
   return number
 }

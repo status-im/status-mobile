@@ -112,7 +112,7 @@ def getVersionCode = { ->
         }
 
         exec {
-            commandLine "bash", "../../scripts/build_no.sh"
+            commandLine "bash", "../../scripts/version/build_no.sh"
             standardOutput = stdOut
             errorOutput = System.err
         }

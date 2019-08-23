@@ -22,7 +22,7 @@
       (System/exit 1))))
 
 (defmacro get-build-no []
-  (-> (shell/sh "bash" "./scripts/build_no.sh")
+  (-> (shell/sh "bash" "./scripts/version/build_no.sh")
       :out
       (string/replace "\n" "")))
 

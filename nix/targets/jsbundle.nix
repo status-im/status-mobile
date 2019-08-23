@@ -22,10 +22,10 @@ in stdenv.mkDerivation {
         mkFilter {
           dirRootsToInclude = [ 
             "components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod" "prod" # Taken from project.clj :profiles :prod :cljsbuild :builds :android :source-paths
-            "resources" "status-modules/cljs" "status-modules/resources"
+            "resources" "status-modules/cljs" "status-modules/resources" "scripts/version"
           ];
           dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ".gradle" "build" "intermediates" "libs" "obj" ];
-          filesToInclude = [ "build.clj" "externs.js" "project.clj" "prepare-modules.js" ];
+          filesToInclude = [ "build.clj" "externs.js" "project.clj" "prepare-modules.js" "VERSION" "BUILD_NUMBER"];
           root = path;
         };
     };

@@ -6,7 +6,7 @@
 # that get uploaded to places like:
 # Apple Store, Play Store, or TestFlight
 #
-# The result of this script is used by scripts/build_no.sh
+# The result of this script is used by scripts/version/build_no.sh
 # when being run in Jenkins build context.
 #
 #####################################################################
