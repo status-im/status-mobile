@@ -23,7 +23,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.home_button.click()
         sign_in_view.profile_button.click()
         profile_view.swipe_down()
-        if not profile_view.profile_picture.is_element_image_equals_template():
+        if not profile_view.profile_picture.is_element_image_equals_template('sauce_logo_profile.png'):
             self.driver.fail('Profile picture was not updated')
 
     @marks.testrail_id(5454)

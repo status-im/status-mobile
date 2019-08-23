@@ -159,16 +159,17 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
 
     @marks.testrail_id(5394)
     @marks.high
-    def test_uppercase_is_replaced_by_lowercase_automatically(self):
-        passphrase = transaction_senders['A']['passphrase']
+    def test_account_recovery_with_uppercase_recovery_phrase(self):
+        user = transaction_senders['A']
+        passphrase = user['passphrase']
         capitalized_passphrase = passphrase.upper()
         signin_view = SignInView(self.driver)
-        recover_access_view = signin_view.access_key_button.click()
-        recover_access_view.enter_seed_phrase_button.click()
-        recover_access_view.passphrase_input.click()
-        recover_access_view.send_as_keyevent(capitalized_passphrase)
-        if recover_access_view.passphrase_input.text != passphrase:
-            self.driver.fail('Upper case was not replaced by lower case!')
+        signin_view.recover_access(capitalized_passphrase)
+        profile_view = signin_view.profile_button.click()
+        username = profile_view.default_username_text.text
+        public_key = signin_view.get_public_key()
+        if username != user['username'] or public_key != user['public_key']:
+            self.driver.fail('Incorrect user was recovered')
 
     @marks.testrail_id(5719)
     @marks.medium

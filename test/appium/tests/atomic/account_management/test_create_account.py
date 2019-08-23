@@ -77,12 +77,9 @@ class TestCreateAccount(SingleDeviceTestCase):
         if not home_view.element_by_text(text).is_element_displayed():
             self.errors.append("'%s' text is not shown" % text)
         profile_view = home_view.profile_button.click()
-        shown_username_1 = profile_view.username_set_by_user_text.text
-        shown_username_2 = profile_view.default_username_text.text
-        if shown_username_1 != username:
-            self.errors.append("Profile username '%s' doesn't match '%s'" % (shown_username_1, username))
-        if shown_username_2 != username:
-            self.errors.append("Default username '%s' doesn't match '%s'" % (shown_username_2, username))
+        shown_username = profile_view.default_username_text.text
+        if shown_username != username:
+            self.errors.append("Default username '%s' doesn't match '%s'" % (shown_username, username))
         self.verify_no_errors()
 
     @marks.testrail_id(5460)

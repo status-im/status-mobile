@@ -114,11 +114,11 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
         send_transaction.sign_transaction_button.click()
-        send_transaction.sign_with_password.click()
+        send_transaction.sign_with_password.click_until_presence_of_element(send_transaction.enter_password_input)
         send_transaction.enter_password_input.click()
         send_transaction.enter_password_input.send_keys('wrong_password')
         send_transaction.sign_button.click()
-        send_transaction.find_full_text('Wrong password', 20)
+        send_transaction.find_text_part('Wrong password', 20)
 
     @marks.testrail_id(1452)
     def test_transaction_appears_in_history(self):

@@ -25,12 +25,9 @@ def create_users(driver_1, driver_2):
     return device_1_sign_in.create_user(), device_2_sign_in.create_user()
 
 
-def get_username(device_home, default=True):
+def get_username(device_home):
     device_profile_view = device_home.profile_button.click()
-    if default:
-        username = device_profile_view.default_username_text.text
-    else:
-        username = device_profile_view.username_set_by_user_text.text
+    username = device_profile_view.default_username_text.text
     device_home.home_button.click()
     return username
 
@@ -228,14 +225,12 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         chat_name = device_1_home.get_public_chat_name()
         device_1_chat, device_2_chat = create_and_join_group_chat(device_1_home, device_2_home, chat_name)
         device_2_default_username = get_username(device_2_home)
-        device_2_custom_username = get_username(device_2_home, False)
 
         # device 1: get options for device 2 in group chat and remove him
         options = device_1_chat.get_user_options(device_2_default_username)
         options.remove_user_button.click()
 
         # device 2: check that removed user can see that he is removed
-        user2_left_chat_system_message_for_user_2 = return_left_chat_system_message(device_2_custom_username)
 
         # TODO: should be reworked after https://github.com/status-im/status-react/pull/8487: replaced with default username
         # if not device_1_chat.chat_element_by_text(user2_left_chat_system_message_for_user_2).is_element_displayed():
@@ -266,7 +261,6 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_1_home, device_2_home = create_users(self.drivers[0], self.drivers[1])
         chat_name = device_1_home.get_public_chat_name()
         device_2_default_username = get_username(device_2_home)
-        device_2_custom_username = get_username(device_2_home, False)
 
         # device 2: add contacts
         device_2_home.add_contact(chat_member['public_key'])

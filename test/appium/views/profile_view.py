@@ -101,13 +101,6 @@ class ConfirmLogoutButton(BaseButton):
         self.locator = self.Locator.text_selector('LOG OUT')
 
 
-class UserNameSetByUserText(BaseText):
-    def __init__(self, driver):
-        super(UserNameSetByUserText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            '//android.widget.ImageView[@content-desc="chat-icon"]/../android.widget.TextView[1]')
-
-
 class DefaultUserNameText(BaseText):
     def __init__(self, driver):
         super(DefaultUserNameText, self).__init__(driver)
@@ -122,7 +115,6 @@ class ShareMyProfileButton(BaseButton):
         self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[1]')
 
 
-
 class ProfilePictureElement(BaseElement):
     def __init__(self, driver):
         super(ProfilePictureElement, self).__init__(driver)
@@ -133,7 +125,8 @@ class EditPictureButton(BaseButton):
 
     def __init__(self, driver):
         super(EditPictureButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//android.view.ViewGroup[@content-desc="edit-profile-photo-button"]')
+        self.locator = self.Locator.xpath_selector(
+            '//android.view.ViewGroup[@content-desc="edit-profile-photo-button"]')
 
 
 class ConfirmEditButton(BaseButton):
@@ -310,15 +303,18 @@ class FaqButton(BaseButton):
         from views.web_views.base_web_view import BaseWebView
         return BaseWebView(self.driver)
 
+
 class AboutButton(BaseButton):
     def __init__(self, driver):
         super(AboutButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id("about-button")
 
+
 class VersionText(BaseText):
     def __init__(self, driver):
         super(VersionText, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@content-desc='version'][1]")
+
 
 class BootnodesButton(BaseButton):
 
@@ -510,7 +506,6 @@ class ProfileView(BaseView):
 
         self.main_currency_button = MainCurrencyButton(self.driver)
 
-        self.username_set_by_user_text = UserNameSetByUserText(self.driver)
         self.default_username_text = DefaultUserNameText(self.driver)
         self.share_my_profile_button = ShareMyProfileButton(self.driver)
         self.profile_picture = ProfilePictureElement(self.driver)
@@ -627,13 +622,11 @@ class ProfileView(BaseView):
                 self.element_by_text(element_text).click()
         picture.click()
 
-
     def remove_profile_picture(self):
         if not AbstractTestCase().environment == 'sauce':
             raise NotImplementedError('Test case is implemented to run on SauceLabs only')
         self.profile_picture.click()
         self.remove_picture_button.click()
-
 
     def logout(self):
         self.logout_button.click()
