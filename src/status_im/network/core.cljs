@@ -1,22 +1,15 @@
 (ns status-im.network.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.chaos-mode.core :as chaos-mode]
             [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.fleet.core :as fleet-core]
             [status-im.i18n :as i18n]
-            [status-im.mailserver.core :as mailserver]
-            [status-im.native-module.core :as status]
-            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
+            [status-im.node.core :as node]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
-            [status-im.utils.handlers :as handlers]
             [status-im.utils.http :as http]
-            [status-im.utils.types :as types]
-            status-im.network.subs
-            [status-im.node.core :as node]
-            [taoensso.timbre :as log]))
+            [status-im.utils.types :as types]))
 
 (def url-regex
   #"https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z]{2,6})?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)")
@@ -55,96 +48,48 @@
        (map :error)
        (not-any? identity)))
 
-(defn get-network-id-for-chain-id [{:keys [db]} chain-id]
-  (let [networks (get-in db [:multiaccount :networks/networks])
-        filtered (filter #(= chain-id (get-in % [1 :config :NetworkId])) networks)]
-    (first (keys filtered))))
-
 (defn chain-id-available? [current-networks network]
   (let [chain-id (get-in network [:config :NetworkId])]
     (every? #(not= chain-id (get-in % [1 :config :NetworkId])) current-networks)))
 
-(defn new-network [random-id network-name upstream-url type chain-id]
-  (let [data-dir (str "/ethereum/" (name type) "_rpc")
-        config   {:NetworkId      (or (when chain-id (int chain-id))
-                                      (ethereum/chain-keyword->chain-id type))
-                  :DataDir        data-dir
-                  :UpstreamConfig {:Enabled true
-                                   :URL     upstream-url}}]
-    {:id         (string/replace random-id "-" "")
-     :name       network-name
-     :config     config}))
-
 (defn get-network [{:keys [db]} network-id]
-  (get-in db [:multiaccount :networks/networks network-id]))
+  (get-in db [:networks/networks network-id]))
 
 (fx/defn set-input
+  {:events [::input-changed]}
   [{:keys [db]} input-key value]
   {:db (-> db
            (update-in [:networks/manage input-key] assoc :value value)
            (update-in [:networks/manage] validate-manage))})
 
-(defn- action-handler
-  ([handler]
-   (action-handler handler nil nil))
-  ([handler data cofx]
-   (when handler
-     (handler data cofx))))
-
-(fx/defn save
-  [{{:networks/keys [manage] :keys [multiaccount] :as db} :db
-    random-id-generator :random-id-generator :as cofx}
-   {:keys [data success-event on-success on-failure network-id chain-id-unique?]}]
-  (let [data (or data manage)]
-    (if (valid-manage? data)
-      ;; rename network-id from UI to chain-id
-      (let [{:keys [name url chain] chain-id :network-id} data
-            ;; network-id overrides random id
-            network      (new-network (or network-id (random-id-generator))
-                                      (:value name)
-                                      (:value url)
-                                      (:value chain)
-                                      (:value chain-id))
-            current-networks (:networks/networks multiaccount)
-            new-networks (merge {(:id network) network} current-networks)]
-        (if (or (not chain-id-unique?)
-                (chain-id-available? current-networks network))
-          (fx/merge cofx
-                    {:db (dissoc db :networks/manage)}
-                    #(action-handler on-success (:id network) %)
-                    (multiaccounts.update/multiaccount-update
-                     {:networks/networks new-networks}
-                     {:success-event success-event}))
-          (action-handler on-failure "chain-id already defined" nil)))
-      (action-handler on-failure "invalid network parameters" nil))))
-
 ;; No edit functionality actually implemented
 (fx/defn edit
+  {:events [::add-network-pressed]}
   [{db :db}]
   {:db       (assoc db :networks/manage (validate-manage default-manage))
    :dispatch [:navigate-to :edit-network]})
 
-(fx/defn connect-success [{:keys [db] :as cofx}
-                          {:keys [network-id on-success client-version]}]
-  (let [current-network (get-in db [:multiaccount :networks/networks (:network db)])]
-    (fx/merge
-     cofx
-     {:ui/show-confirmation
-      {:title               (i18n/label :t/close-app-title)
-       :content             (i18n/label :t/logout-app-content)
-       :confirm-button-text (i18n/label :t/close-app-button)
-       :on-accept           #(re-frame/dispatch [::save-network-settings-pressed network-id])
-       :on-cancel           nil}}
-     #(action-handler on-success {:network-id network-id
-                                  :client-version client-version} %))))
+(fx/defn connect-success
+  {:events [::connect-success]}
+  [_ network-id]
+  {:ui/show-confirmation
+   {:title               (i18n/label :t/close-app-title)
+    :content             (i18n/label :t/logout-app-content)
+    :confirm-button-text (i18n/label :t/close-app-button)
+    :on-accept           #(re-frame/dispatch [::save-network-settings-pressed network-id])
+    :on-cancel           nil}})
 
-(defn connect-failure [{:keys [network-id on-failure reason]}]
-  (action-handler on-failure
-                  {:network-id network-id :reason reason}
-                  nil))
+(fx/defn connect-failure
+  {:events [::connect-failure]}
+  [_ reason]
+  {:utils/show-popup
+   {:title   (i18n/label :t/error)
+    :content (str reason)}})
 
-(fx/defn connect [{:keys [db] :as cofx} {:keys [network-id on-success on-failure]}]
-  (if-let [config (get-in db [:multiaccount :networks/networks network-id :config])]
+(fx/defn connect
+  {:events [::connect-network-pressed]}
+  [{:keys [db] :as cofx} network-id]
+  (if-let [config (get-in db [:networks/networks network-id :config])]
     (if-let [upstream-url (get-in config [:UpstreamConfig :URL])]
       {:http-post {:url                   upstream-url
                    :data                  (types/clj->json [{:jsonrpc "2.0"
@@ -162,74 +107,88 @@
                                                                         (js/parseInt res))]
                                               (if (and client-version network-id
                                                        (= expected-network-id rpc-network-id))
-                                                [::connect-success {:network-id     network-id
-                                                                    :on-success     on-success
-                                                                    :client-version client-version}]
-                                                [::connect-failure {:network-id network-id
-                                                                    :on-failure on-failure
-                                                                    :reason     (if (not= expected-network-id rpc-network-id)
-                                                                                  (i18n/label :t/network-invalid-network-id)
-                                                                                  (i18n/label :t/network-invalid-url))}])))
+                                                [::connect-success network-id]
+                                                [::connect-failure (if (not= expected-network-id rpc-network-id)
+                                                                     (i18n/label :t/network-invalid-network-id)
+                                                                     (i18n/label :t/network-invalid-url))])))
                    :failure-event-creator (fn [{:keys [response-body status-code]}]
                                             (let [reason (if status-code
                                                            (i18n/label :t/network-invalid-status-code {:code status-code})
                                                            (str response-body))]
-                                              [::connect-failure {:network-id network-id
-                                                                  :on-failure on-failure
-                                                                  :reason     reason}]))}}
-      (connect-success cofx {:network-id     network-id
-                             :on-success     on-success
-                             :client-version ""}))
-    (connect-failure {:network-id network-id
-                      :on-failure on-failure
-                      :reason     "A network with the specified id doesn't exist"})))
-
-(handlers/register-handler-fx
- ::connect-success
- (fn [cofx [_ data]]
-   (connect-success cofx data)))
-
-(handlers/register-handler-fx
- ::connect-failure
- (fn [_ [_ data]]
-   (connect-failure data)))
+                                              [::connect-failure reason]))}}
+      (connect-success cofx network-id))
+    (connect-failure cofx "A network with the specified id doesn't exist")))
 
 (fx/defn delete
-  [{{:keys [multiaccount]} :db :as cofx} {:keys [network on-success on-failure]}]
-  (let [current-network? (= (:network multiaccount) network)]
+  {:events [::delete-network-pressed]}
+  [{:keys [db]} network]
+  (let [current-network? (= (:networks/current-network db) network)]
     (if (or current-network?
-            (not (get-in multiaccount [:networks/networks network])))
-      (fx/merge cofx
-                {:ui/show-error (i18n/label :t/delete-network-error)}
-                #(action-handler on-failure network %))
-      (fx/merge cofx
-                {:ui/show-confirmation {:title               (i18n/label :t/delete-network-title)
-                                        :content             (i18n/label :t/delete-network-confirmation)
-                                        :confirm-button-text (i18n/label :t/delete)
-                                        :on-accept           #(re-frame/dispatch [:network.ui/remove-network-confirmed network])
-                                        :on-cancel           nil}}
-                #(action-handler on-success network %)))))
+            (not (get-in db [:networks/networks network])))
+      {:ui/show-error (i18n/label :t/delete-network-error)}
+      {:ui/show-confirmation {:title               (i18n/label :t/delete-network-title)
+                              :content             (i18n/label :t/delete-network-confirmation)
+                              :confirm-button-text (i18n/label :t/delete)
+                              :on-accept           #(re-frame/dispatch [::remove-network-confirmed network])
+                              :on-cancel           nil}})))
 
 (fx/defn save-network-settings
   {:events [::save-network-settings-pressed]}
-  [{:keys [now] :as cofx} network]
+  [{:keys [db] :as cofx} network]
   (fx/merge cofx
-            (multiaccounts.update/multiaccount-update {:network network :last-updated now} {})
+            {:db (assoc db :networks/current-network network)
+             ::json-rpc/call [{:method "settings_saveConfig"
+                               :params ["current-network" network]
+                               :on-success #()}]}
             (node/prepare-new-config {:on-success #(re-frame/dispatch [:logout])})))
 
 (fx/defn remove-network
-  [{:keys [db now] :as cofx} network success-event]
-  (let [networks (dissoc (get-in db [:multiaccount :networks/networks]) network)]
-    (multiaccounts.update/multiaccount-update cofx
-                                              {:networks/networks     networks
-                                               :last-updated now}
-                                              {:success-event success-event})))
+  {:events [::remove-network-confirmed]}
+  [{:keys [db] :as cofx} network]
+  (let [networks (dissoc (:networks/networks db) network)]
+    {:db (assoc db :networks/networks networks)
+     ::json-rpc/call [{:method "settings_saveConfig"
+                       :params ["networks" (types/serialize networks)]
+                       :on-success #(re-frame/dispatch [:navigate-back])}]}))
 
-(fx/defn save-network
-  [cofx]
-  (save cofx
-        {:data          (get-in cofx [:db :networks/manage])
-         :success-event [:navigate-back]}))
+(defn new-network
+  [random-id network-name upstream-url chain-type chain-id]
+  (let [data-dir (str "/ethereum/" (name chain-type) "_rpc")
+        config   {:NetworkId      (or (when chain-id (int chain-id))
+                                      (ethereum/chain-keyword->chain-id chain-type))
+                  :DataDir        data-dir
+                  :UpstreamConfig {:Enabled true
+                                   :URL     upstream-url}}]
+    {:id         random-id
+     :name       network-name
+     :config     config}))
+
+(fx/defn save
+  {:events [::save-network-pressed]
+   :interceptors [(re-frame/inject-cofx :random-id-generator)]}
+  [{{:networks/keys [manage networks] :as db} :db
+    random-id-generator :random-id-generator :as cofx}]
+  (if (valid-manage? manage)
+    ;; rename network-id from UI to chain-id
+    (let [{:keys [name url chain network-id]} manage
+          random-id (string/replace (random-id-generator) "-" "")
+          network (new-network random-id
+                               (:value name)
+                               (:value url)
+                               (:value chain)
+                               (:value network-id))
+          custom-chain-type? (= :custom (:value chain))
+          new-networks (assoc networks random-id network)]
+      (if (or (not custom-chain-type?)
+              (chain-id-available? networks network))
+        {:db (-> db
+                 (dissoc :networks/manage)
+                 (assoc :networks/networks new-networks))
+         ::json-rpc/call [{:method "settings_saveConfig"
+                           :params ["networks" (types/serialize new-networks)]
+                           :on-success #(re-frame/dispatch [:navigate-back])}]}
+        {:ui/show-error "chain-id already defined"}))
+    {:ui/show-error "invalid network parameters"}))
 
 (defn- navigate-to-network-details
   [cofx network show-warning?]
@@ -245,6 +204,7 @@
        (map name fleet-core/fleets-with-les)))
 
 (fx/defn open-network-details
+  {:events [::network-entry-pressed]}
   [cofx network]
   (let [db                  (:db cofx)
         rpc-network?        (get-in network [:config :UpstreamConfig :Enabled] false)

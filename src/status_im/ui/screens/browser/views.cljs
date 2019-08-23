@@ -155,7 +155,7 @@
                   {:keys [accounts settings]} [:multiaccount]
                   {:keys [browser-id dapp? name unsafe?] :as browser} [:get-current-browser]
                   {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:browser/options]
-                  network-id [:get-network-id]]
+                  network-id [:chain-id]]
     (let [can-go-back?    (browser/can-go-back? browser)
           can-go-forward? (browser/can-go-forward? browser)
           url-original    (browser/get-current-url browser)

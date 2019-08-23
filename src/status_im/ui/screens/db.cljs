@@ -39,8 +39,6 @@
              :peers-summary                      []
              :notifications                      {}
              :semaphores                         #{}
-             :network                            constants/default-network
-             :networks/networks                  constants/default-networks
              :my-profile/editing?                false
              :transport/filters                  {}
              :transport/message-envelopes        {}

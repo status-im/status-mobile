@@ -146,7 +146,7 @@
   [multiaccount]
   [(let [{:keys [publicKey address]}
          (get-in multiaccount [:derived constants/path-default-wallet-keyword])]
-     {:public-key publicKey
+     {:publicKey publicKey
       :address    address
       :color      colors/blue
       :wallet     true
@@ -154,7 +154,7 @@
       :name       "Status account"})
    (let [{:keys [publicKey address]}
          (get-in multiaccount [:derived constants/path-whisper-keyword])]
-     {:public-key publicKey
+     {:publicKey publicKey
       :address    address
       :path       constants/path-whisper
       :chat       true})])
@@ -164,30 +164,32 @@
    {:keys [address publicKey keycard-instance-uid keycard-key-uid keycard-pairing keycard-paired-on mnemonic] :as multiaccount}
    password
    {:keys [seed-backed-up? login?] :or {login? true}}]
-  (let [[wallet-account {:keys [public-key]} :as subaccounts-data] (prepare-subaccounts-data multiaccount)
-        name (gfycat/generate-gfy public-key)
-        photo-path (identicon/identicon public-key)
+  (let [[wallet-account {:keys [publicKey]} :as subaccounts-data] (prepare-subaccounts-data multiaccount)
+        name (gfycat/generate-gfy publicKey)
+        photo-path (identicon/identicon publicKey)
         account-data {:name name :address address :photo-path photo-path}
         new-multiaccount       {:address         address
                                 :name            name
-                                :public-key      public-key
                                 :photo-path      photo-path
+                                :public-key      publicKey
+
                                 :latest-derived-path 0
                                 :accounts [wallet-account]
-                                :installation-id (random-guid-generator)
                                 :signing-phrase  signing-phrase
+
+                                :installation-id (random-guid-generator)
                                 :mnemonic        mnemonic
-                                :settings        constants/default-multiaccount-settings
-                                :network           constants/default-network
-                                :networks/networks constants/default-networks}
-        db (-> db
-               (assoc :multiaccounts/login {:address      address
-                                            :name         name
-                                            :photo-path   photo-path
-                                            :password     password
-                                            :creating?    true
-                                            :processing   true}
-                      :multiaccount new-multiaccount))]
+                                :settings        constants/default-multiaccount-settings}
+        db (assoc db
+                  :multiaccounts/login {:address      address
+                                        :name         name
+                                        :photo-path   photo-path
+                                        :password     password
+                                        :creating?    true
+                                        :processing   true}
+                  :multiaccount new-multiaccount
+                  :networks/current-network constants/default-network
+                  :networks/networks constants/default-networks)]
     (fx/merge cofx
               {:db (cond-> db
                      seed-backed-up?

@@ -94,48 +94,6 @@
                          all-stored-browsers)]
     {:db (assoc db :browser/browsers browsers)}))
 
-(fx/defn get-config-callback
-  {:events [::get-config-callback]}
-  [{:keys [db] :as cofx} config stored-pns]
-  (let [{:keys [network networks/networks address] :as multiaccount} (types/deserialize config)]
-    (fx/merge cofx
-              {:db (assoc db
-                          :network network
-                          :networks/networks networks
-                          :chain (ethereum/network->chain-name network)
-                          :multiaccount multiaccount)
-               :notifications/request-notifications-permissions nil}
-              (stickers/init-stickers-packs)
-              (mobile-network/on-network-status-change)
-              (chaos-mode/check-chaos-mode)
-              (when-not platform/desktop?
-                (initialize-wallet))
-              (when stored-pns
-                (notifications/process-stored-event address stored-pns)))))
-
-(fx/defn initialize-multiaccount-db
-  [{:keys [db]} address]
-  (let [{:universal-links/keys [url]
-         :keys [network-status peers-count peers-summary view-id multiaccount
-                desktop/desktop hardwallet custom-fleets supported-biometric-auth
-                device-UUID semaphores intro-wizard]} db]
-    {:db (cond-> (assoc app-db
-                        :view-id view-id
-                        :node/status (:node/status db)
-                        :desktop/desktop (merge desktop (:desktop/desktop app-db))
-                        :network-status network-status
-                        :network/type (:network/type db)
-                        :universal-links/url url
-                        :custom-fleets custom-fleets
-                        :peers-summary peers-summary
-                        :peers-count peers-count
-                        :device-UUID device-UUID
-                        :intro-wizard {:step (:step intro-wizard)}
-                        :supported-biometric-auth supported-biometric-auth
-                        :semaphores semaphores
-                        :hardwallet hardwallet)
-           multiaccount (assoc :multiaccount multiaccount))}))
-
 (fx/defn initialize-web3-client-version
   {:events [::initialize-web3-client-version]}
   [{:keys [db]} resp]
@@ -146,6 +104,32 @@
 (fx/defn save-user-password
   [cofx address password]
   {:keychain/save-user-password [address password]})
+
+(defn deserialize-config
+  [{:keys [multiaccount current-network networks]}]
+  [(types/deserialize multiaccount)
+   current-network
+   (types/deserialize networks)])
+
+(fx/defn get-config-callback
+  {:events [::get-config-callback]}
+  [{:keys [db] :as cofx} config stored-pns]
+  (let [[{:keys [address] :as multiaccount} current-network networks] (deserialize-config config)]
+    (fx/merge cofx
+              {:db (assoc db
+                          :networks/current-network current-network
+                          :networks/networks networks
+                          :multiaccount multiaccount)
+               :notifications/request-notifications-permissions nil}
+              (chat.loading/initialize-chats)
+              (contact/initialize-contacts)
+              (stickers/init-stickers-packs)
+              (mobile-network/on-network-status-change)
+              (chaos-mode/check-chaos-mode)
+              (when-not platform/desktop?
+                (initialize-wallet))
+              (when stored-pns
+                (notifications/process-stored-event address stored-pns)))))
 
 (fx/defn login-only-events
   [{:keys [db] :as cofx} address password save-password?]
@@ -158,15 +142,12 @@
                  :on-success #(re-frame/dispatch [::initialize-browsers %])}
                 {:method "permissions_getDappPermissions"
                  :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}
-                {:method "settings_getConfig"
-                 :params ["multiaccount"]
+                {:method "settings_getConfigs"
+                 :params [["multiaccount" "current-network" "networks"]]
                  :on-success #(re-frame/dispatch [::get-config-callback % stored-pns])}]}
               (when save-password?
                 (save-user-password address password))
               (navigation/navigate-to-cofx :home nil)
-              (stickers/init-stickers-packs)
-              (chat.loading/initialize-chats)
-              (contact/initialize-contacts)
               (universal-links/process-stored-event)
               (when platform/desktop?
                 (chat-model/update-dock-badge-label)))))
@@ -176,7 +157,7 @@
 
 (fx/defn create-only-events
   [{:keys [db] :as cofx} address password]
-  (let [{:keys [multiaccount]} db]
+  (let [{:keys [multiaccount :networks/networks :networks/current-network]} db]
     (fx/merge cofx
               {:db (assoc db
                           ;;NOTE when login the filters are initialized twice
@@ -194,6 +175,12 @@
                ::json-rpc/call
                [{:method "settings_saveConfig"
                  :params ["multiaccount" (types/serialize multiaccount)]
+                 :on-success #()}
+                {:method "settings_saveConfig"
+                 :params ["networks" (types/serialize networks)]
+                 :on-success #()}
+                {:method "settings_saveConfig"
+                 :params ["current-network" current-network]
                  :on-success #()}]}
               (finish-keycard-setup)
               (mobile-network/on-network-status-change)
@@ -228,7 +215,6 @@
               ;;FIXME
               (when nodes
                 (fleet/set-nodes :eth.contract nodes))
-              (initialize-multiaccount-db address)
               (if login-only?
                 (login-only-events address password save-password?)
                 (create-only-events address password))

@@ -68,7 +68,9 @@
    "permissions_deleteDappPermissions" {}
    "settings_saveConfig" {}
    "settings_getConfig" {}
-   "settings_saveNodeConfig" {}})
+   "settings_getConfigs" {}
+   "settings_saveNodeConfig" {}
+   "accounts_getAccounts" {}})
 
 (defn call
   [{:keys [method params on-success on-error] :as p}]

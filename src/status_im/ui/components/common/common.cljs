@@ -42,7 +42,7 @@
    [top-shadow]])
 
 (defview network-info [{:keys [text-color]}]
-  (letsubs [network-id [:get-network-id]]
+  (letsubs [network-id [:chain-id]]
     [react/view
      [react/view styles/network-container
       [react/view styles/network-icon

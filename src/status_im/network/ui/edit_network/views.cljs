@@ -10,6 +10,7 @@
    [status-im.ui.components.toolbar.view :as toolbar]
    [status-im.ui.components.list.views :as list]
    [status-im.ui.components.text-input.view :as text-input]
+   [status-im.network.core :as network]
    [status-im.network.ui.edit-network.styles :as styles]
    [clojure.string :as string]))
 
@@ -21,12 +22,12 @@
                :custom (i18n/label :t/custom))]
     [list/list-item-with-radio-button
      {:checked?        (= (get-in manage-network [:chain :value]) type)
-      :on-value-change #(re-frame/dispatch [:network.ui/input-changed :chain type])}
+      :on-value-change #(re-frame/dispatch [::network/input-changed :chain type])}
      [list/item
       nil [list/item-primary-only name]]]))
 
 (views/defview edit-network []
-  (views/letsubs [manage-network [:get-manage-network]
+  (views/letsubs [manage-network [:networks/manage]
                   is-valid?      [:manage-network-valid?]]
     (let [custom? (= (get-in manage-network [:chain :value]) :custom)]
       [react/view styles/container
@@ -40,14 +41,14 @@
             :placeholder    (i18n/label :t/specify-name)
             :container      styles/input-container
             :default-value  (get-in manage-network [:name :value])
-            :on-change-text #(re-frame/dispatch [:network.ui/input-changed :name %])
+            :on-change-text #(re-frame/dispatch [::network/input-changed :name %])
             :auto-focus     true}]
           [text-input/text-input-with-label
            {:label          (i18n/label :t/rpc-url)
             :placeholder    (i18n/label :t/specify-rpc-url)
             :container      styles/input-container
             :default-value  (get-in manage-network [:url :value])
-            :on-change-text #(re-frame/dispatch [:network.ui/input-changed :url (string/lower-case %)])}]
+            :on-change-text #(re-frame/dispatch [::network/input-changed :url (string/lower-case %)])}]
           [react/i18n-text {:key :network-chain}]
           [react/view styles/network-type
            [list/flat-list {:data      [:mainnet :testnet :rinkeby :custom]
@@ -59,11 +60,11 @@
              {:label          (i18n/label :t/network-id)
               :container      styles/input-container
               :placeholder    (i18n/label :t/specify-network-id)
-              :on-change-text #(re-frame/dispatch [:network.ui/input-changed :network-id %])}])]]
+              :on-change-text #(re-frame/dispatch [::network/input-changed :network-id %])}])]]
         [react/view styles/bottom-container
          [react/view components.styles/flex]
          [components.common/bottom-button
           {:forward?  true
            :label     (i18n/label :t/save)
            :disabled? (not is-valid?)
-           :on-press  #(re-frame/dispatch [:network.ui/save-network-pressed])}]]]])))
+           :on-press  #(re-frame/dispatch [::network/save-network-pressed])}]]]])))

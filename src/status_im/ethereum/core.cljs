@@ -97,10 +97,8 @@
       name))
 
 (defn chain-keyword
-  [db]
-  (let [network-id (get-in db [:multiaccount :network])
-        network    (get-in db [:multiaccount :networks/networks network-id])]
-    (network->chain-keyword network)))
+  [{:networks/keys [current-network networks]}]
+  (network->chain-keyword (get networks current-network)))
 
 (defn snt-symbol [db]
   (case (chain-keyword db)

@@ -52,9 +52,6 @@
     (cond-> {"whisper" {:Min 2, :Max 2}}
       les-topic (assoc les-topic {:Min 2, :Max 2}))))
 
-(defn get-multiaccount-network [db address]
-  (get-in db [:multiaccount address :network]))
-
 (defn- get-base-node-config [config]
   (let [initial-props @(re-frame/subscribe [:initial-props])
         status-node-port (get initial-props :STATUS_NODE_PORT)]
@@ -89,21 +86,22 @@
         (assoc-in [:LightEthConfig :MinTrustedFraction] 50))
     config))
 
-(defn- get-multiaccount-node-config [db]
-  (let [multiaccount (:multiaccount db)
-        current-fleet-key (fleet/current-fleet db)
+(defn- get-multiaccount-node-config
+  [{:keys [multiaccount :networks/networks :networks/current-network]
+    :or {current-network config/default-network
+         networks constants/default-networks}
+    :as db}]
+  (let [current-fleet-key (fleet/current-fleet db)
         current-fleet (get (fleet/fleets db) current-fleet-key)
         rendezvous-nodes (pick-nodes 3 (vals (:rendezvous current-fleet)))
-        {:keys [network installation-id settings bootnodes :networks/networks]
-         :or {network config/default-network
-              networks (:networks/networks db)
-              settings constants/default-multiaccount-settings}} multiaccount
-        use-custom-bootnodes (get-in settings [:bootnodes network])
+        {:keys [installation-id settings bootnodes]
+         :or {settings constants/default-multiaccount-settings}} multiaccount
+        use-custom-bootnodes (get-in settings [:bootnodes current-network])
         log-level (get-log-level settings)
         datasync? (:datasync? settings)
         disable-discovery-topic? (:disable-discovery-topic? settings)
         v1-messages? (:v1-messages? settings)]
-    (cond-> (get-in networks [network :config])
+    (cond-> (get-in networks [current-network :config])
       :always
       (get-base-node-config)
 
@@ -133,13 +131,13 @@
                                    :DisableGenericDiscoveryTopic (boolean disable-discovery-topic?)
                                    :SendV1Messages (boolean v1-messages?)
                                    :PFSEnabled              true}
-             :RequireTopics           (get-topics network)
+             :RequireTopics           (get-topics current-network)
              :StatusAccountsConfig {:Enabled true})
 
       (and
        config/bootnodes-settings-enabled?
        use-custom-bootnodes)
-      (add-custom-bootnodes network bootnodes)
+      (add-custom-bootnodes current-network bootnodes)
 
       :always
       (add-ulc-trusted-nodes (vals (:static current-fleet)))

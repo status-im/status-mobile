@@ -80,7 +80,6 @@
 (reg-root-key-sub :desktop/desktop :desktop/desktop)
 (reg-root-key-sub :desktop :desktop)
 (reg-root-key-sub :animations :animations)
-(reg-root-key-sub :get-network :network)
 (reg-root-key-sub :ui/search :ui/search)
 (reg-root-key-sub :web3-node-version :web3-node-version)
 (reg-root-key-sub :keyboard-height :keyboard-height)
@@ -90,12 +89,16 @@
 (reg-root-key-sub :qr-modal :qr-modal)
 (reg-root-key-sub :content-layout-height :content-layout-height)
 (reg-root-key-sub :bootnodes/manage :bootnodes/manage)
+(reg-root-key-sub :networks/current-network :networks/current-network)
 (reg-root-key-sub :networks/networks :networks/networks)
 (reg-root-key-sub :networks/manage :networks/manage)
 (reg-root-key-sub :get-pairing-installations :pairing/installations)
-(reg-root-key-sub :network/type :network/type)
 (reg-root-key-sub :tooltips :tooltips)
 (reg-root-key-sub :supported-biometric-auth :supported-biometric-auth)
+
+;;NOTE this one is not related to ethereum network
+;; it is about cellular network/ wifi network
+(reg-root-key-sub :network/type :network/type)
 
 ;;profile
 (reg-root-key-sub :my-profile/seed :my-profile/seed)
@@ -191,18 +194,38 @@
  (fn [desktop _]
    (get desktop :logging-enabled false)))
 
-;;TODO we have network in two different places see :multiaccount/network, what's the difference?
 (re-frame/reg-sub
- :network
- :<- [:multiaccount]
- (fn [current-multiaccount]
-   (get (:networks/networks current-multiaccount) (:network current-multiaccount))))
+ :current-network
+ :<- [:networks/networks]
+ :<- [:networks/current-network]
+ (fn [[networks current-network]]
+   (when-let [network (get networks current-network)]
+     (assoc network
+            :rpc-network? (get-in network [:config :UpstreamConfig :Enabled])))))
+
+(re-frame/reg-sub
+ :chain-name
+ :<- [:current-network]
+ (fn [network]
+   (ethereum/network->chain-name network)))
+
+(re-frame/reg-sub
+ :chain-id
+ :<- [:current-network]
+ (fn [network]
+   (ethereum/network->chain-id network)))
+
+(re-frame/reg-sub
+ :mainnet?
+ :<- [:chain-id]
+ (fn [chain-id]
+   (= 1 chain-id)))
 
 (re-frame/reg-sub
  :network-name
- :<- [:network]
+ :<- [:current-network]
  (fn [network]
-   (ethereum/network->chain-keyword network)))
+   (:name network)))
 
 (re-frame/reg-sub
  :disconnected?
@@ -313,7 +336,7 @@
 
 (re-frame/reg-sub
  :ethereum/chain-keyword
- :<- [:network]
+ :<- [:current-network]
  (fn [network]
    (ethereum/network->chain-keyword network)))
 
@@ -355,26 +378,6 @@
  :<- [:multiaccount]
  (fn [acc]
    (get acc :settings)))
-
-;;TODO we have network in two different places see :network, what's the difference?
-(re-frame/reg-sub
- :multiaccount/network
- :<- [:multiaccount]
- :<- [:get-network]
- (fn [[multiaccount network]]
-   (get-in multiaccount [:networks/networks network])))
-
-(re-frame/reg-sub
- :current-network-initialized?
- :<- [:multiaccount/network]
- (fn [network]
-   (boolean network)))
-
-(re-frame/reg-sub
- :current-network-uses-rpc?
- :<- [:multiaccount/network]
- (fn [network]
-   (get-in network [:config :UpstreamConfig :Enabled])))
 
 (re-frame/reg-sub
  :latest-block-number
@@ -800,15 +803,16 @@
 (re-frame/reg-sub
  :settings/bootnodes-enabled
  :<- [:multiaccount]
- (fn [multiaccount]
-   (let [{:keys [network settings]} multiaccount]
-     (get-in settings [:bootnodes network]))))
+ :<- [:networks/current-network]
+ (fn [{:keys [settings]} current-network]
+   (get-in settings [:bootnodes current-network])))
 
 (re-frame/reg-sub
  :settings/network-bootnodes
  :<- [:multiaccount]
- (fn [multiaccount]
-   (get-in multiaccount [:bootnodes (:network multiaccount)])))
+ :<- [:networks/current-network]
+ (fn [multiaccount current-network]
+   (get-in multiaccount [:bootnodes current-network])))
 
 (re-frame/reg-sub
  :get-manage-bootnode
@@ -1776,7 +1780,7 @@
 
 (re-frame/reg-sub
  :ens.stateofus/registrar
- :<- [:multiaccount/network]
+ :<- [:current-network]
  (fn [network]
    (let [chain (ethereum/network->chain-keyword network)]
      (get stateofus/registrars chain))))
@@ -1898,3 +1902,36 @@
                             (get-sufficient-funds-error balance (:symbol token) amount-bn))]
        (or amount-error (get-sufficient-gas-error balance (:symbol token) amount-bn gas gasPrice)))
      (get-sufficient-gas-error balance nil nil gas gasPrice))))
+
+;; NETWORK SETTINGS
+
+(defn- filter-networks [network-type]
+  (fn [network]
+    (let [chain-id (ethereum/network->chain-id network)
+          testnet? (ethereum/testnet? chain-id)
+          custom?  (:custom? network)]
+      (case network-type
+        :custom custom?
+        :mainnet (and (not custom?) (not testnet?))
+        :testnet (and (not custom?) testnet?)))))
+
+(defn- label-networks [default-networks]
+  (fn [network]
+    (let [custom? (not (contains? default-networks (:id network)))]
+      (assoc network :custom? custom?))))
+
+(re-frame/reg-sub
+ :get-networks
+ :<- [:networks/networks]
+ (fn [networks]
+   (let [networks (map (label-networks constants/default-networks) (sort-by :name (vals networks)))
+         types    [:mainnet :testnet :custom]]
+     (zipmap
+      types
+      (map #(filter (filter-networks %) networks) types)))))
+
+(re-frame/reg-sub
+ :manage-network-valid?
+ :<- [:networks/manage]
+ (fn [manage]
+   (not-any? :error (vals manage))))

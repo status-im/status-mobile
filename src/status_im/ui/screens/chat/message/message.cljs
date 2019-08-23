@@ -178,7 +178,7 @@
      [vector-icons/icon :main-icons/warning {:color colors/red}]]]])
 
 (defview command-status [{{:keys [network]} :params}]
-  (letsubs [current-network [:network-name]]
+  (letsubs [current-network [:chain-name]]
     (when (and network (not= current-network network))
       [react/view style/not-sent-view
        [react/text {:style style/not-sent-text}

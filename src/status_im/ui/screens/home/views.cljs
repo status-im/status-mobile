@@ -24,9 +24,8 @@
 (views/defview les-debug-info []
   (views/letsubs [sync-state           [:chain-sync-state]
                   latest-block-number  [:latest-block-number]
-                  rpc-network?         [:current-network-uses-rpc?]
-                  network-initialized? [:current-network-initialized?]]
-    (when (and network-initialized? (not rpc-network?))
+                  {:keys [rpc-network?] :as network} [:current-network]]
+    (when (and network (not rpc-network?))
       [react/view {:style styles/sync-wrapper}
        [react/touchable-highlight {:on-press #(re-frame/dispatch [:home.ui/sync-info-pressed])}
         [react/text {:style styles/sync-info}

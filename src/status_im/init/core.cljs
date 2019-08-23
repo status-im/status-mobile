@@ -21,22 +21,11 @@
 
 (fx/defn initialize-app-db
   "Initialize db to initial state"
-  [{{:keys      [view-id hardwallet :multiaccounts/multiaccounts
-                 initial-props desktop/desktop
-                 network-status network peers-count peers-summary device-UUID
-                 supported-biometric-auth push-notifications/stored network/type]
-     :node/keys [status]
-     :or        {network (get app-db :network)}} :db}]
+  [{{:keys [view-id hardwallet initial-props desktop/desktop
+            device-UUID supported-biometric-auth push-notifications/stored network/type]} :db}]
   {:db (assoc app-db
-              :multiaccounts/multiaccounts multiaccounts
-              :contacts/contacts {}
               :initial-props initial-props
               :desktop/desktop (merge desktop (:desktop/desktop app-db))
-              :network-status network-status
-              :peers-count (or peers-count 0)
-              :peers-summary (or peers-summary [])
-              :node/status status
-              :network network
               :network/type type
               :hardwallet hardwallet
               :device-UUID device-UUID

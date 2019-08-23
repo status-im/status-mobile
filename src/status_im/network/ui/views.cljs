@@ -1,16 +1,16 @@
 (ns status-im.network.ui.views
-  (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.react :as react]
+            [status-im.network.core :as network]
+            [status-im.network.ui.styles :as styles]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.network.ui.styles :as styles]
-            status-im.network.events))
+            [status-im.ui.components.toolbar.actions :as toolbar.actions]
+            [status-im.ui.components.toolbar.view :as toolbar])
+  (:require-macros [status-im.utils.views :as views]))
 
 (defn- network-icon [connected? size]
   [react/view (styles/network-icon connected? size)
@@ -30,7 +30,7 @@
   #{"mainnet" "mainnet_rpc"})
 
 (defn navigate-to-network [network]
-  (re-frame/dispatch [:network.ui/network-entry-pressed network]))
+  (re-frame/dispatch [::network/network-entry-pressed network]))
 
 (defn render-network [current-network]
   (fn [{:keys [id name] :as network}]
@@ -48,15 +48,15 @@
             (i18n/label :t/connected)])]]])))
 
 (views/defview network-settings []
-  (views/letsubs [{:keys [network]} [:multiaccount]
-                  networks          [:get-networks]]
+  (views/letsubs [current-network [:networks/current-network]
+                  networks        [:get-networks]]
     [react/view components.styles/flex
      [status-bar/status-bar]
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/network-settings)]
       [toolbar/actions
-       [(toolbar.actions/add false #(re-frame/dispatch [:network.ui/add-network-pressed]))]]]
+       [(toolbar.actions/add false #(re-frame/dispatch [::network/add-network-pressed]))]]]
      [react/view styles/wrapper
       [list/section-list {:sections           [{:title (i18n/label :t/main-networks)
                                                 :key :mainnet
@@ -69,4 +69,4 @@
                                                 :data (:custom networks)}]
                           :key-fn             :id
                           :default-separator? true
-                          :render-fn          (render-network network)}]]]))
+                          :render-fn          (render-network current-network)}]]]))

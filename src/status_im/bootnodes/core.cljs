@@ -85,10 +85,10 @@
 
 (fx/defn toggle-custom-bootnodes
   [{:keys [db] :as cofx} value]
-  (let [network  (get-in db [:multiaccount :network])
+  (let [current-network (:networks/current-network db)
         settings (get-in db [:multiaccount :settings])]
     (multiaccounts.update/update-settings cofx
-                                          (assoc-in settings [:bootnodes network] value)
+                                          (assoc-in settings [:bootnodes current-network] value)
                                           {:success-event [:multiaccounts.update.callback/save-settings-success]})))
 
 (fx/defn set-bootnodes-from-qr

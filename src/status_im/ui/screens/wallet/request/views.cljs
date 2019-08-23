@@ -64,7 +64,7 @@
 
 (views/defview share-address []
   (views/letsubs [{:keys [address]} [:popover/popover]
-                  chain-id    [:get-network-id]
+                  chain-id    [:chain-id]
                   width       (reagent/atom nil)]
     [react/view
      [react/view {:style {:padding-top 16 :padding-left 16 :padding-right 16}}

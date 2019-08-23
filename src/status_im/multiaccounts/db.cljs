@@ -24,8 +24,6 @@
 (spec/def :multiaccount/photo-path (spec/nilable string?))
 (spec/def :multiaccount/debug? (spec/nilable boolean?))
 (spec/def :multiaccount/chaos-mode? (spec/nilable boolean?))
-(spec/def :multiaccount/network (spec/nilable string?))
-(spec/def :multiaccount/networks (spec/nilable :networks/networks))
 (spec/def :multiaccount/bootnodes (spec/nilable :bootnodes/bootnodes))
 (spec/def :multiaccount/mailserver (spec/nilable string?))
 (spec/def :multiaccount/settings (spec/nilable (spec/map-of keyword? any?)))
@@ -48,8 +46,8 @@
                                                          :multiaccount/signing-phrase
                                                          :multiaccount/installation-id
                                                          :multiaccount/debug? :multiaccount/last-updated :multiaccount/public-key
-                                                         :multiaccount/email :multiaccount/signed-up? :multiaccount/network
-                                                         :multiaccount/networks :multiaccount/settings :multiaccount/mailserver
+                                                         :multiaccount/email :multiaccount/signed-up?
+                                                         :multiaccount/settings :multiaccount/mailserver
                                                          :multiaccount/sharing-usage-data?
                                                          :multiaccount/seed-backed-up? :multiaccount/mnemonic :multiaccount/desktop-notifications?
                                                          :multiaccount/chaos-mode?

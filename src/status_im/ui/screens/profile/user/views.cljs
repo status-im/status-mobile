@@ -129,13 +129,13 @@
                                           :action-fn           #(re-frame/dispatch [:multiaccounts.logout.ui/logout-pressed])}]]]]))
 
 (defview advanced-settings
-  [{:keys [network :networks/networks chaos-mode? dev-mode? settings]} on-show supported-biometric-auth]
+  [{:keys [chaos-mode? dev-mode? settings]} network-name on-show supported-biometric-auth]
   {:component-did-mount on-show}
   [react/view
    (when dev-mode?
      [profile.components/settings-item
       {:label-kw            :t/network
-       :value               (get-in networks [network :name])
+       :value               network-name
        :action-fn           #(re-frame/dispatch [:navigate-to :network-settings])
        :accessibility-label :network-button}])
    [profile.components/settings-item-separator]
@@ -206,7 +206,7 @@
        :active?   (some? supported-biometric-auth)
        :action-fn #(re-frame/dispatch [:multiaccounts.ui/biometric-auth-switched %])}])])
 
-(defview advanced [params on-show]
+(defview advanced [multiaccount network-name on-show]
   (letsubs [advanced? [:my-profile/advanced?]
             supported-biometric-auth [:supported-biometric-auth]]
     {:component-will-unmount #(re-frame/dispatch [:set :my-profile/advanced? false])}
@@ -220,7 +220,7 @@
           (i18n/label :t/advanced)]
          [icons/icon (if advanced? :main-icons/dropdown-up :main-icons/dropdown) {:color colors/blue}]]]]]
      (when advanced?
-       [advanced-settings params on-show supported-biometric-auth])]))
+       [advanced-settings multiaccount network-name on-show supported-biometric-auth])]))
 
 (defn contacts-list-item [active-contacts-count]
   [list.views/big-list-item
@@ -287,6 +287,7 @@
   (letsubs [list-ref                     (reagent/atom nil)
             {:keys [public-key photo-path preferred-name]
              :as   current-multiaccount} [:multiaccount]
+            network-name                 [:network-name]
             changed-multiaccount         [:my-profile/profile]
             currency                     [:wallet/currency]
             login-data                   [:multiaccounts/login]
@@ -311,7 +312,7 @@
            (when tribute-to-talk [tribute-to-talk-item tribute-to-talk])
            [my-profile-settings current-multiaccount shown-multiaccount
             currency (nil? login-data)]
-           (when (nil? login-data) [advanced shown-multiaccount on-show-advanced])]]
+           (when (nil? login-data) [advanced shown-multiaccount network-name on-show-advanced])]]
       [(react/safe-area-view) {:style {:flex 1}}
        [status-bar/status-bar {:type :main}]
        [large-toolbar/minimized-toolbar header-in-toolbar nil toolbar-action-items]

@@ -55,10 +55,10 @@
     (semaphores/free cofx :check-sync-state?)))
 
 (fx/defn start-check-sync-state
-  [{{:keys [network multiaccount] :as db} :db :as cofx}]
+  [{{:keys [:networks/current-network :networks/networks] :as db} :db :as cofx}]
   (when (and (not (semaphores/locked? cofx :check-sync-state?))
              (not (ethereum/network-with-upstream-rpc?
-                   (get-in multiaccount [:networks/networks network]))))
+                   (get networks current-network))))
     (fx/merge cofx
               (check-sync-state)
               (semaphores/lock :check-sync-state?))))
@@ -66,8 +66,8 @@
 (fx/defn initialize-protocol
   [{:data-store/keys [mailserver-topics mailservers]
     :keys [db] :as cofx}]
-  (let [network (get-in db [:multiaccount :network])
-        network-id (str (get-in db [:multiaccount :networks/networks network :config :NetworkId]))]
+  (let [{:networks/keys [networks current-network]} db
+        network-id (str (get-in networks [current-network :config :NetworkId]))]
     (fx/merge cofx
               {:db (assoc db
                           :rpc-url constants/ethereum-rpc-url
@@ -76,14 +76,16 @@
                [{:method "net_version"
                  :on-success
                  (fn [fetched-network-id]
-                   ;;FIXME
-                   #_(when (not= network-id fetched-network-id) 3
-                           (utils/show-popup
-                            (i18n/label :t/ethereum-node-started-incorrectly-title)
-                            (i18n/label :t/ethereum-node-started-incorrectly-description
-                                        {:network-id         network-id
-                                         :fetched-network-id fetched-network-id})
-                            #(re-frame/dispatch [:protocol.ui/close-app-confirmed]))))}]}
+                   (when (and network-id
+                              ;; TODO fix once realm is removed
+                              ;; protocol should be initialized after network-id is known
+                              (not= network-id fetched-network-id))
+                     (utils/show-popup
+                      (i18n/label :t/ethereum-node-started-incorrectly-title)
+                      (i18n/label :t/ethereum-node-started-incorrectly-description
+                                  {:network-id         network-id
+                                   :fetched-network-id fetched-network-id})
+                      #(re-frame/dispatch [:protocol.ui/close-app-confirmed]))))}]}
               (tribute-to-talk/init)
               (start-check-sync-state)
               (mailserver/initialize-ranges)

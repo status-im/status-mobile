@@ -178,7 +178,7 @@
 
 (defview input-container []
   (letsubs [margin               [:chats/input-margin]
-            network              [:get-network]
+            mainnet?             [:mainnet?]
             {:keys [input-text]} [:chats/current-chat]
             result-box           [:chats/current-chat-ui-prop :result-box]
             show-stickers?       [:chats/current-chat-ui-prop :show-stickers?]
@@ -202,7 +202,7 @@
        [reply-message-view]
        [react/view {:style style/input-container}
         [input-view {:single-line-input? single-line-input? :set-text set-text :state-text state-text}]
-        (when (and input-text-empty? (string/starts-with? network "mainnet"))
+        (when (and input-text-empty? mainnet?)
           [stickers/button show-stickers?])
         (if input-text-empty?
           [commands-button]

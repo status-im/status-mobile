@@ -204,7 +204,7 @@
 
 (defview send-preview
   [{:keys [content timestamp-str outgoing group-chat]}]
-  (letsubs [network    [:network-name]
+  (letsubs [network    [:chain-name]
             all-tokens [:wallet/all-tokens]]
     (let [{{:keys [amount fiat-amount tx-hash asset currency] send-network :network} :params} content
           recipient-name (get-in content [:params :bot-db :public :recipient])
@@ -389,7 +389,7 @@
 (defview request-preview
   [{:keys [message-id content outgoing timestamp timestamp-str group-chat]}]
   (letsubs [id->command         [:chats/id->command]
-            network             [:network-name]
+            network             [:chain-name]
             prices              [:prices]]
     (let [{:keys [amount asset fiat-amount currency answered?] request-network :network} (:params content)
           network-mismatch? (and request-network (not= request-network network))

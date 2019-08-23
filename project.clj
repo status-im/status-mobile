@@ -129,8 +129,6 @@
                                                                                                         "status_im.network.ui.edit_network.styles"
                                                                                                         "status_im.network.ui.views"
                                                                                                         "status_im.network.ui.styles"
-                                                                                                        "status_im.network.events"
-                                                                                                        "status_im.network.subs"
                                                                                                         "status_im.network.core"}
                                                                                            :output-to "status-modules/cljs/network-raw.js"}}}
                                       :warning-handlers [status-im.utils.build/warning-handler]}
@@ -159,8 +157,6 @@
                                                                                                         "status_im.network.ui.edit_network.styles"
                                                                                                         "status_im.network.ui.views"
                                                                                                         "status_im.network.ui.styles"
-                                                                                                        "status_im.network.events"
-                                                                                                        "status_im.network.subs"
                                                                                                         "status_im.network.core"}
                                                                                            :output-to "status-modules/cljs/network-raw.js"}}}
                                       :warning-handlers [status-im.utils.build/warning-handler]}
@@ -187,8 +183,6 @@
                                                                                                         "status_im.network.ui.edit_network.styles"
                                                                                                         "status_im.network.ui.views"
                                                                                                         "status_im.network.ui.styles"
-                                                                                                        "status_im.network.events"
-                                                                                                        "status_im.network.subs"
                                                                                                         "status_im.network.core"}
                                                                                            :output-to "status-modules/cljs/network-raw.js"}}}
                                       :warning-handlers [status-im.utils.build/warning-handler]}}}}})

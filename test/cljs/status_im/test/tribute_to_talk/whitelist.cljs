@@ -68,9 +68,9 @@
 (def sender-address "0xdff1a5e4e57d9723b3294e0f4413372e3ea9a8ff")
 
 (def ttt-enabled-multiaccount
-  {:db {:multiaccount {:network "testnet_rpc"
-                       :networks/networks {"testnet_rpc" {:config {:NetworkId 3}}}
-                       :settings {:tribute-to-talk {:testnet {:snt-amount "1000000000000000000"}}}}
+  {:db {:multiaccount {:settings {:tribute-to-talk {:testnet {:snt-amount "1000000000000000000"}}}}
+        :networks/current-network "testnet_rpc"
+        :networks/networks {"testnet_rpc" {:config {:NetworkId 3}}}
         :contacts/contacts user-contacts
         :wallet {:transactions
                  {"transaction-hash-1"
@@ -80,9 +80,9 @@
         :ethereum/current-block 8}})
 
 (def ttt-disabled-multiaccount
-  {:db {:multiaccount {:network "testnet_rpc"
-                       :networks/networks {"testnet_rpc" {:config {:NetworkId 3}}}
-                       :settings {:tribute-to-talk {}}}
+  {:db {:multiaccount {:settings {:tribute-to-talk {}}}
+        :networks/current-network "testnet_rpc"
+        :networks/networks {"testnet_rpc" {:config {:NetworkId 3}}}
         :contacts/contacts user-contacts}})
 
 (deftest enable-whitelist

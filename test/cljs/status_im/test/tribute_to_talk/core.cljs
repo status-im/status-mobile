@@ -85,12 +85,12 @@
    {public-key {:tribute-to-talk {}
                 :system-tags #{}}}
    :multiaccount
-   {:public-key my-public-key
-    :network "mainnet_rpc"
-    :networks/networks {"mainnet_rpc" {:id "mainnet_rpc"
-                                       :config {:NetworkId 1}}
-                        "testnet_rpc" {:id "testnet_rpc"
-                                       :config {:NetworkId 3}}}}})
+   {:public-key my-public-key}
+   :networks/current-network "mainnet_rpc"
+   :networks/networks {"mainnet_rpc" {:id "mainnet_rpc"
+                                      :config {:NetworkId 1}}
+                       "testnet_rpc" {:id "testnet_rpc"
+                                      :config {:NetworkId 3}}}})
 
 (deftest check-tribute
   (testing "No contract in network, own public key"
@@ -106,8 +106,8 @@
              (get-in result [:db :contacts/contacts public-key :tribute-to-talk])))))
 
   (testing "Contract in network, another public key"
-    (let [result (tribute-to-talk/check-tribute {:db
-                                                 (assoc-in test-db [:multiaccount :network] "testnet_rpc")} public-key)]
+    (let [result (tribute-to-talk/check-tribute {:db (assoc test-db :networks/current-network "testnet_rpc")}
+                                                public-key)]
       (is (= "0xC61aa0287247a0398589a66fCD6146EC0F295432"
              (get-in result [:tribute-to-talk/get-tribute :contract])))))
 
