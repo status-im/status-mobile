@@ -38,7 +38,6 @@
              :node-info                          {}
              :peers-summary                      []
              :notifications                      {}
-             :semaphores                         #{}
              :my-profile/editing?                false
              :transport/filters                  {}
              :transport/message-envelopes        {}
@@ -174,8 +173,6 @@
 ;; PUSH NOTIFICATIONS
 (spec/def :push-notifications/stored (spec/nilable map?))
 
-(spec/def ::semaphores set?)
-
 (spec/def ::hardwallet (spec/nilable map?))
 
 (spec/def :stickers/packs (spec/nilable map?))
@@ -287,7 +284,6 @@
                                    ::chain
                                    ::app-state
                                    ::app-in-background-since
-                                   ::semaphores
                                    ::hardwallet
                                    :multiaccount/multiaccount
                                    :navigation/view-id

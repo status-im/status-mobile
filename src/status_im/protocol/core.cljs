@@ -9,9 +9,9 @@
             [status-im.transport.core :as transport]
             [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.utils.fx :as fx]
-            [status-im.utils.semaphores :as semaphores]
             [status-im.utils.utils :as utils]))
 
+;;TODO move this logic to status-go
 (fx/defn update-sync-state
   [{{:keys [sync-state sync-data] :as db} :db} error sync]
   (let [{:keys [highestBlock currentBlock] :as state}
@@ -39,30 +39,6 @@
             (update-sync-state error sync)
             (node/update-sync-state error sync)))
 
-(fx/defn check-sync-state
-  [{:keys [db] :as cofx}]
-  (if (:multiaccount db)
-    {::json-rpc/call
-     [{:method "eth_syncing"
-       :on-success
-       (fn [sync]
-         (re-frame/dispatch [:ethereum.callback/get-syncing-success nil sync]))
-       :on-error
-       (fn [error]
-         (re-frame/dispatch [:ethereum.callback/get-syncing-success error nil]))}]
-     :utils/dispatch-later  [{:ms       10000
-                              :dispatch [:protocol/state-sync-timed-out]}]}
-    (semaphores/free cofx :check-sync-state?)))
-
-(fx/defn start-check-sync-state
-  [{{:keys [:networks/current-network :networks/networks] :as db} :db :as cofx}]
-  (when (and (not (semaphores/locked? cofx :check-sync-state?))
-             (not (ethereum/network-with-upstream-rpc?
-                   (get networks current-network))))
-    (fx/merge cofx
-              (check-sync-state)
-              (semaphores/lock :check-sync-state?))))
-
 (fx/defn initialize-protocol
   [{:data-store/keys [mailserver-topics mailservers]
     :keys [db] :as cofx}]
@@ -87,7 +63,6 @@
                                    :fetched-network-id fetched-network-id})
                       #(re-frame/dispatch [:protocol.ui/close-app-confirmed]))))}]}
               (tribute-to-talk/init)
-              (start-check-sync-state)
               (mailserver/initialize-ranges)
               (mailserver/initialize-mailserver mailservers)
               (transport/init-whisper))))

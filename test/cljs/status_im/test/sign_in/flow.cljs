@@ -28,8 +28,7 @@
   (testing ":accounts.login.callback/login-success event received."
     (let [db           {:multiaccounts/login  {:address  "address"
                                                :password "password"}
-                        :multiaccount data/multiaccount
-                        :semaphores      #{}}
+                        :multiaccount data/multiaccount}
           cofx         {:db                           db
                         :data-store/mailservers       []
                         :data-store/mailserver-topics data/topics}

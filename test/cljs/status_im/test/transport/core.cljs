@@ -6,8 +6,7 @@
             [status-im.transport.message.core :as message]))
 
 (deftest init-whisper
-  (let [cofx {:db {:multiaccount {:public-key "1"}
-                   :semaphores      #{}}}]
+  (let [cofx {:db {:multiaccount {:public-key "1"}}}]
     (testing "custom mailservers"
       (let [ms-1            {:id "1"
                              :fleet :eth.beta

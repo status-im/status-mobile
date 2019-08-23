@@ -698,11 +698,6 @@
  (fn [cofx _]
    (protocol/handle-close-app-confirmed cofx)))
 
-(handlers/register-handler-fx
- :protocol/state-sync-timed-out
- (fn [cofx _]
-   (protocol/check-sync-state cofx)))
-
 ;; notifications module
 
 (handlers/register-handler-fx
