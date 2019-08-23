@@ -10,10 +10,7 @@ def bundle() {
   env.NDK_ABI_FILTERS="armeabi-v7a;arm64-v8a"
 
   switch (btype) {
-    case 'pr': /* PR builds shouldn't replace normal releases */
-      target = 'pr'; break;
     case 'e2e':
-      target = 'pr';
       env.NDK_ABI_FILTERS="x86"; break
     case 'release':
       gradleOpt += "-PreleaseVersion='${utils.getVersion()}'"

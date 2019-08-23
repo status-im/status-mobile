@@ -20,7 +20,7 @@ let
   envFileName =
     if (build-type == "release" || build-type == "nightly" || build-type == "e2e") then ".env.${build-type}" else
     if build-type != "" then ".env.jenkins" else ".env";
-  buildType' = if (build-type == "release" || build-type == "nightly") then "release" else "pr";
+  buildType' = if (build-type == "pr" || build-type == "e2e") then "pr" else "release"; /* PR builds shouldn't replace normal releases */
   generatedApkPath = "android/app/build/outputs/apk/${buildType'}/app-${buildType'}.apk";
   outApkName = "app.apk";
 
