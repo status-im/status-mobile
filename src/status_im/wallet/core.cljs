@@ -18,7 +18,8 @@
             [taoensso.timbre :as log]
             [status-im.wallet.db :as wallet.db]
             [status-im.ethereum.abi-spec :as abi-spec]
-            [status-im.signing.core :as signing]))
+            [status-im.signing.core :as signing]
+            [clojure.string :as string]))
 
 (re-frame/reg-fx
  :wallet/get-balance
@@ -186,9 +187,9 @@
         {:wallet/validate-tokens (get tokens/all-default-tokens chain)})))))
 
 (fx/defn update-balances
-  [{{:keys                       [network-status :wallet/all-tokens]
+  [{{:keys [network-status :wallet/all-tokens]
      {:keys [settings accounts]} :multiaccount :as db} :db :as cofx} addresses]
-  (let [addresses (or addresses (map :address accounts))
+  (let [addresses (or addresses (map (comp string/lower-case :address) accounts))
         chain     (ethereum/chain-keyword db)
         assets    (get-in settings [:wallet :visible-tokens chain])
         tokens    (->> (tokens/tokens-for all-tokens chain)

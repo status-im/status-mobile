@@ -5,6 +5,7 @@
             [status-im.ethereum.encode :as encode]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.tokens :as tokens]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
@@ -52,7 +53,8 @@
            txHash gasPrice gasUsed contract value gasLimit input nonce to type id] :as transfer}]
   (let [erc20?  (= type "erc20")
         failed? (= txStatus "0x0")]
-    (merge {:id        id
+    (merge {:address   (eip55/address->checksum address)
+            :id        id
             :block     (str (decode/uint blockNumber))
             :timestamp (* (decode/uint timestamp) 1000)
             :gas-used  (str (decode/uint gasUsed))
@@ -122,7 +124,7 @@
   "We determine a unique id for the transfer before adding it because some
    transaction can contain multiple transfers and they would overwrite each other
    in the transfer map if identified by hash"
-  [{:keys [db] :as cofx} {:keys [hash id] :as transfer} address]
+  [{:keys [db] :as cofx} {:keys [hash id address] :as transfer}]
   (let [transfer-by-hash (get-in db [:wallet :accounts address :transactions hash])
         transfer-by-id   (get-in db [:wallet :accounts address :transactions id])]
     (when-let [unique-id (when-not (or transfer-by-id
@@ -139,10 +141,14 @@
 
 (fx/defn new-transfers
   {:events [::new-transfers]}
-  [{:keys [db] :as cofx} address transfers]
-  (let [add-transfers-fx (map #(add-transfer % address) transfers)]
-    (apply fx/merge cofx (conj add-transfers-fx
-                               (wallet/update-balances [address])))))
+  [{:keys [db] :as cofx} transfers historical?]
+  (let [effects (cond-> (map add-transfer transfers)
+                  ;;NOTE: we only update the balance for new transfers and not historical ones
+                  (not historical?) (conj (wallet/update-balances (into [] (reduce (fn [acc {:keys [address]}]
+                                                                                     (conj acc address))
+                                                                                   #{}
+                                                                                   transfers)))))]
+    (apply fx/merge cofx effects)))
 
 (fx/defn handle-token-history
   [{:keys [db]} transactions]
@@ -152,22 +158,19 @@
 
 (re-frame/reg-fx
  ::get-transfers
- (fn [{:keys [accounts chain-tokens from-block to-block]
+ (fn [{:keys [chain-tokens from-block to-block historical?]
        :or {from-block "0"
             to-block nil}}]
-   ;; start inbound token transaction subscriptions
-   ;; outbound token transactions are already caught in new blocks filter
-   (doseq [{:keys [address]} accounts]
-     (json-rpc/call
-      {:method "wallet_getTransfersByAddress"
-       :params [address (encode/uint from-block) (encode/uint to-block)]
-       :on-success #(re-frame/dispatch [::new-transfers address (enrich-transfers chain-tokens %)])}))))
+   (json-rpc/call
+    {:method "wallet_getTransfers"
+     :params [(encode/uint from-block) (encode/uint to-block)]
+     :on-success #(re-frame/dispatch [::new-transfers (enrich-transfers chain-tokens %) historical?])})))
 
 (fx/defn initialize
   [{:keys [db] :as cofx}]
-  (let [accounts (get-in db [:multiaccount :accounts]) ;;TODO https://github.com/status-im/status-go/issues/1566
-        {:keys [:wallet/all-tokens]} db
+  (let [{:keys [:wallet/all-tokens]} db
         chain (ethereum/chain-keyword db)
         chain-tokens (into {} (map (juxt :address identity)
                                    (tokens/tokens-for all-tokens chain)))]
-    {::get-transfers {:accounts accounts :chain-tokens chain-tokens}}))
+    {::get-transfers {:chain-tokens chain-tokens
+                      :historical? true}}))

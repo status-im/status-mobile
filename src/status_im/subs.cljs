@@ -1012,7 +1012,7 @@
 (re-frame/reg-sub
  :account-portfolio-value
  (fn [[_ address] _]
-   [(re-frame/subscribe [:balance address])
+   [(re-frame/subscribe [:balance (string/lower-case address)])
     (re-frame/subscribe [:prices])
     (re-frame/subscribe [:wallet/currency])
     (re-frame/subscribe [:ethereum/chain-keyword])
@@ -1073,7 +1073,7 @@
 (re-frame/reg-sub
  :wallet/visible-assets-with-amount
  (fn [[_ address] _]
-   [(re-frame/subscribe [:balance address])
+   [(re-frame/subscribe [:balance (string/lower-case address)])
     (re-frame/subscribe [:wallet/visible-assets])])
  (fn [[balance visible-assets]]
    (map #(assoc % :amount (get balance (:symbol %))) visible-assets)))
@@ -1093,7 +1093,7 @@
 (re-frame/reg-sub
  :wallet/visible-assets-with-values
  (fn [[_ address] _]
-   [(re-frame/subscribe [:wallet/visible-assets-with-amount address])
+   [(re-frame/subscribe [:wallet/visible-assets-with-amount (string/lower-case address)])
     (re-frame/subscribe [:prices])
     (re-frame/subscribe [:wallet/currency])])
  (fn [[assets prices currency]]
@@ -1130,7 +1130,7 @@
 (re-frame/reg-sub
  :wallet/transferrable-assets-with-amount
  (fn [[_ address]]
-   (re-frame/subscribe [:wallet/visible-assets-with-amount address]))
+   (re-frame/subscribe [:wallet/visible-assets-with-amount (string/lower-case address)]))
  (fn [all-assets]
    (filter #(not (:nft? %)) all-assets)))
 
@@ -1146,7 +1146,7 @@
  :wallet/transactions
  :<- [:wallet]
  (fn [wallet [_ address]]
-   (get-in wallet [:accounts address :transactions])))
+   (get-in wallet [:accounts (string/lower-case address) :transactions])))
 
 (re-frame/reg-sub
  :wallet/filters

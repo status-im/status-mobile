@@ -1639,8 +1639,7 @@
    (fx/merge cofx
              (when on-close
                {:dispatch on-close})
-             (navigation/navigate-back)
-             (wallet/update-balances nil))))
+             (navigation/navigate-back))))
 
 (handlers/register-handler-fx
  :wallet.callback/update-balance-success
