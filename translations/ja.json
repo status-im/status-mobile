@@ -1183,7 +1183,7 @@
     "v1-messages-warning-title": "警告、これは実験的な機能です",
     "validation-amount-invalid-number": "金額が正しくありません",
     "validation-amount-is-too-precise": "金額が細かすぎます。小数点以下を{{decimals}}桁以下にしてください。",
-    "version": "バージョン{{version}}",
+    "version": "バージョン",
     "view-cryptokitties": "CryptoKittiesで表示",
     "view-cryptostrikers": "CryptoStrikersで表示",
     "view-etheremon": "Etheremonで表示",

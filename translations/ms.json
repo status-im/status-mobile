@@ -683,7 +683,7 @@
     "use-valid-qr-code": "Kod QR ini tidak mengandungi pautan sejagat, kod pengenalan atau nama pengguna yang sah: {{data}}",
     "validation-amount-invalid-number": "Jumlah bukan nombor yang sah",
     "validation-amount-is-too-precise": "Jumlah terlalu banyak. Jumlah maksimum perpuluhan adalah {{decimals}} .",
-    "version": "Versi {{version}}",
+    "version": "Versi",
     "view-cryptokitties": "Lihat di CryptoKitties",
     "view-cryptostrikers": "Lihat di CryptoStrikers",
     "view-etheremon": "Lihat di Etheremon",

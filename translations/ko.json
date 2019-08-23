@@ -1179,7 +1179,7 @@
     "v1-messages-warning-title": "경고, 테스트 중인 기능임",
     "validation-amount-invalid-number": "잘못된 수량입니다",
     "validation-amount-is-too-precise": "액수가 너무 정확합니다. 최대 소수점 자리수는 {{decimals}}입니다.",
-    "version": "버전 {{version}}",
+    "version": "버전",
     "view-cryptokitties": "CryptoKitties에서 보기",
     "view-cryptostrikers": "CryptoStrikers에서보기",
     "view-etheremon": "Etheremon에서보기",

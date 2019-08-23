@@ -15,9 +15,9 @@
    :justify-content :center})
 
 (defstyle profile-name-text
-  {:typography  :header
-   :line-height 28
-   :text-align  :left})
+  {:typography      :header
+   :line-height     28
+   :text-align      :left})
 
 (defstyle profile-name-text-with-subtitle
   {:margin-vertical 5

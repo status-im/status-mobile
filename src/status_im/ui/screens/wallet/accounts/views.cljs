@@ -71,30 +71,25 @@
 (defn render-asset [currency]
   (fn [{:keys [icon decimals amount color value] :as token}]
     [list-item/list-item
-     {:content [react/view {:style {:margin-horizontal 16 :justify-content :center :flex-shrink 1}}
-                [react/view {:flex-direction :row}
-                 [react/text {:style {:font-weight "500" :flex-shrink 0.5} :number-of-lines 1 :ellipsize-mode :tail}
-                  (wallet.utils/format-amount amount decimals)]
-                 [react/text {:style           {:font-weight "500" :color colors/gray :margin-left 6}
-                              :number-of-lines 1}
-                  (wallet.utils/display-symbol token)]]
-                (when value
-                  [react/text {:style {:color colors/gray}} (str value " " currency)])]
-      :image   (if icon
-                 [list/item-image icon]
-                 [chat-icon/custom-icon-view-list (:name token) color])}]))
+     {:title-prefix         (wallet.utils/format-amount amount decimals)
+      :title                (wallet.utils/display-symbol token)
+      :title-color-override colors/gray
+      :subtitle             (str (if value value 0) " " currency)
+      :icon                 (if icon
+                              [list/item-image icon]
+                              [chat-icon/custom-icon-view-list (:name token) color])}]))
 
 (defn render-collectible [{:keys [name icon amount] :as collectible}]
   (let [items-number (money/to-fixed amount)
         details?     (pos? items-number)]
-    [react/touchable-highlight
-     (when details?
-       {:on-press #(re-frame/dispatch [:show-collectibles-list collectible])})
-     [list-item/list-item
-      {:title       (wallet.utils/display-symbol collectible)
-       :subtitle    name
-       :image       [list/item-image icon]
-       :accessories [items-number :chevron]}]]))
+    [list-item/list-item
+     {:title       (wallet.utils/display-symbol collectible)
+      :subtitle    name
+      :icon        [list/item-image icon]
+      :on-press    (when details?
+                     #(re-frame/dispatch
+                       [:show-collectibles-list collectible]))
+      :accessories [items-number :chevron]}]))
 
 (views/defview assets-and-collections []
   (views/letsubs [{:keys [tokens nfts]} [:wallet/all-visible-assets-with-values]

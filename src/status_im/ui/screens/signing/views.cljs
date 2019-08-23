@@ -8,6 +8,7 @@
             [reagent.core :as reagent]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.button.view :as button]
+            [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.wallet.utils :as wallet.utils]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
@@ -56,23 +57,40 @@
     (:address contact)))
 
 (defn contact-item [title contact]
-  [list-item/list-item {:type        :small
-                        :title       title
-                        :accessories [[react/text {:ellipsize-mode :middle :number-of-lines 1 :style {:flex-wrap :wrap}}
-                                       (displayed-name contact)]]}])
+  [list-item/list-item
+   {:title-prefix       title
+    :title-prefix-width 45
+    :type               :small
+    :title
+    [copyable-text/copyable-text-view
+     {:copied-text (displayed-name contact)}
+     [react/text
+      {:ellipsize-mode  :middle
+       :number-of-lines 1
+       :style           {:color       colors/gray
+                         :font-family "monospace"
+                         ;; since this goes in list-item title
+                         ;; which has design constraints
+                         ;; specified in figma spec,
+                         ;; better to do this
+                         :line-height 22}}
+      (displayed-name contact)]]}])
 
 (defn token-item [{:keys [icon color] :as token} display-symbol]
   (when token
     [react/view
      [list-item/list-item
-      {:type        :small :title (i18n/label :t/wallet-asset)
-       :accessories [[acc-text (:name token) display-symbol]
-                     (if icon
-                       [list/item-image (assoc icon
-                                               :style {:background-color colors/gray-lighter
-                                                       :border-radius    16}
-                                               :image-style {:width 32 :height 32})]
-                       [chat-icon/custom-icon-view-list (:name token) color 32])]}]
+      {:type        :small
+       :title       :t/wallet-asset
+       :accessories
+       [display-symbol
+        (if icon
+          [list/item-image
+           (assoc icon
+                  :style {:background-color colors/gray-lighter
+                          :border-radius    16}
+                  :image-style {:width 24 :height 24})]
+          [chat-icon/custom-icon-view-list (:name token) color 32])]}]
      [separator]]))
 
 (defn header [{:keys [in-progress?] :as sign} {:keys [contact amount token approve?] :as tx} display-symbol fee fee-display-symbol]
@@ -227,17 +245,25 @@
           [token-item token display-symbol]
           (when-not approve?
             [react/view
-             [list-item/list-item {:type        :small :title (i18n/label :t/send-request-amount)
-                                   :error       amount-error
-                                   :accessories [[acc-text (if amount (str amount) "0")
-                                                  (or display-symbol fee-display-symbol)]]}]
+             [list-item/list-item
+              {:type        :small
+               :title       :t/send-request-amount
+               :error       amount-error
+               :accessories
+               [[acc-text (if amount (str amount) "0")
+                 (or display-symbol fee-display-symbol)]]}]
              [separator]])
           [list-item/list-item
-           {:type        :small :title (i18n/label :t/network-fee) :error gas-error
+           {:type        :small
+            :title       :t/network-fee
+            :error       gas-error
             :accessories [[acc-text fee fee-display-symbol] :chevron]
-            :on-press    #(re-frame/dispatch [:signing.ui/open-fee-sheet
-                                              {:content        (fn [] [sheets/fee-bottom-sheet fee-display-symbol])
-                                               :content-height 270}])}]
+            :on-press
+            #(re-frame/dispatch
+              [:signing.ui/open-fee-sheet
+               {:content
+                (fn [] [sheets/fee-bottom-sheet fee-display-symbol])
+                :content-height 270}])}]
           [react/view {:align-items :center :margin-top 16 :margin-bottom 40}
            (if keycard-multiaccount?
              [sign-with-keycard-button amount-error gas-error]
@@ -276,10 +302,10 @@
                                  [react/keyboard-avoiding-view {:style {:position :absolute :top 0 :bottom 0 :left 0 :right 0}}
                                   [react/view {:flex 1}
                                    [react/animated-view {:flex 1 :background-color :black :opacity alpha-value}]
-                                   [react/animated-view {:style {:position  :absolute :bottom 0 :top -40 :left 0 :right 0
-                                                                 :transform [{:translateY bottom-anim-value}]}}
+                                   [react/animated-view {:style {:position  :absolute
+                                                                 :transform [{:translateY bottom-anim-value}]
+                                                                 :bottom 0 :left 0 :right 0}}
                                     [react/view {:flex 1}
-                                     [react/view {:flex-shrink 2.5 :flex-grow 2.5 :flex-basis 600}]
                                      (if (:message @current-tx)
                                        [message-sheet]
                                        [sheet @current-tx])]]]]))})))

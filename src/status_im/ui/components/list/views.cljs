@@ -25,6 +25,7 @@
             [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.list.styles :as styles]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.animations.responder :as responder]
@@ -223,6 +224,13 @@
    (merge (base-list-props props)
           props
           {:data (wrap-data data)})])
+
+(defn flat-list-generic-render-fn [item _]
+  (cond
+    (map? item)    [list-item/list-item item]
+    (vector? item) item
+    (nil? item)    nil
+    :else          [item]))
 
 (defn- wrap-render-section-header-fn [f]
   (fn [data]

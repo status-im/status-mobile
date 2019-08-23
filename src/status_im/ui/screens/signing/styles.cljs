@@ -21,9 +21,6 @@
 
 (def message
   {:background-color        :white
-   :flex-grow               1
-   :flex-shrink             1
-   :flex-basis              600
    :border-top-right-radius 16
    :border-top-left-radius  16
    :padding-bottom          40})

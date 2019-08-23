@@ -11,7 +11,7 @@
    :android        {:height 64}})
 
 (defnstyle action-button-icon-container [circle-color]
-  {:border-radius    50
+  {:border-radius    20
    :width            40
    :height           40
    :align-items      :center

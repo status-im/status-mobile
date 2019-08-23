@@ -11,14 +11,19 @@
                      :ens-name-details
                      :blocked-users-list
                      :profile-photo-capture
-                     :about-app
                      :bootnodes-settings
                      :installations
                      :edit-bootnode
                      :offline-messaging-settings
                      :edit-mailserver
-                     :help-center
                      :dapps-permissions
+                     :privacy-and-security
+                     :language-settings
+                     :notifications-settings
+                     :sync-settings
+                     :advanced-settings
+                     :help-center
+                     :about-app
                      :manage-dapps-permissions
                      :network-settings
                      :network-details

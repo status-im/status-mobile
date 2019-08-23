@@ -34,7 +34,10 @@
     [react/view (if with-subtitle? styles/profile-header-name-container-with-subtitle
                     styles/profile-header-name-container)
      [react/text {:style (if with-subtitle? styles/profile-name-text-with-subtitle
-                             styles/profile-name-text)}
+                             styles/profile-name-text)
+                  :number-of-lines 2
+                  :ellipsize-mode  :tail}
+
       (multiaccounts/displayed-name contact)]
      (when with-subtitle?
        [react/text {:style           styles/profile-three-words

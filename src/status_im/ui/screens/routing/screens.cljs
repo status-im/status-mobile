@@ -17,6 +17,11 @@
             [status-im.ui.screens.contacts-list.views :as contacts-list]
             [status-im.ui.screens.currency-settings.views :as currency-settings]
             [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
+            [status-im.ui.screens.privacy-and-security-settings.views :as privacy-and-security]
+            [status-im.ui.screens.language-settings.views :as language-settings]
+            [status-im.ui.screens.notifications-settings.views :as notifications-settings]
+            [status-im.ui.screens.sync-settings.views :as sync-settings]
+            [status-im.ui.screens.advanced-settings.views :as advanced-settings]
             [status-im.ui.screens.fleet-settings.views :as fleet-settings]
             [status-im.ui.screens.group.views :as group]
             [status-im.ui.screens.hardwallet.authentication-method.views
@@ -157,14 +162,19 @@
    :ens-name-details                                 ens/name-details
    :blocked-users-list                               contacts-list/blocked-users-list
    :profile-photo-capture                            photo-capture/profile-photo-capture
-   :about-app                                        about-app/about-app
    :bootnodes-settings                               bootnodes-settings/bootnodes-settings
    :installations                                    pairing/installations
    :edit-bootnode                                    edit-bootnode/edit-bootnode
    :offline-messaging-settings                       offline-messaging-settings/offline-messaging-settings
    :edit-mailserver                                  edit-mailserver/edit-mailserver
-   :help-center                                      help-center/help-center
    :dapps-permissions                                dapps-permissions/dapps-permissions
+   :privacy-and-security                             privacy-and-security/privacy-and-security
+   :language-settings                                language-settings/language-settings
+   :notifications-settings                           notifications-settings/notifications-settings
+   :sync-settings                                    sync-settings/sync-settings
+   :advanced-settings                                advanced-settings/advanced-settings
+   :help-center                                      help-center/help-center
+   :about-app                                        about-app/about-app
    :manage-dapps-permissions                         dapps-permissions/manage
    :network-settings                                 network/network-settings-view
    :network-details                                  network/network-details-view

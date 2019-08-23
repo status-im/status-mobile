@@ -21,7 +21,8 @@
 
 (defn icon
   ([name] (icon name nil))
-  ([name {:keys [color container-style accessibility-label width height]
+  ([name {:keys [color resize-mode container-style
+                 accessibility-label width height]
           :or   {accessibility-label :icon}}]
    ^{:key name}
    [react/view
@@ -33,6 +34,10 @@
     [react/image {:source {:uri (keyword (clojure.core/name name))}
                   :style  (cond-> {:width  (or width 24)
                                    :height (or height 24)}
+
+                            resize-mode
+                            (assoc :resize-mode resize-mode)
+
                             color
                             (assoc :tint-color (match-color color)))}]]))
 

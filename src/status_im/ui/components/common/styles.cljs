@@ -131,7 +131,8 @@
    :justify-content  :center})
 
 (defn counter-label [size]
-  {:font-size  (/ size 2)
+  {:font-size  (inc (/ size 2))
+   :typography :main-medium
    :color      colors/white
    :text-align :center})
 

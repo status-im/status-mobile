@@ -659,7 +659,7 @@
     "use-valid-qr-code": "Kod QR ini tidak mengandungi pautan sejagat, kod pengenalan atau nama pengguna yang sah: {{data}}",
     "validation-amount-invalid-number": "राशि वैध संख्या होइन",
     "validation-amount-is-too-precise": "Jumlah terlalu banyak. Jumlah maksimum perpuluhan adalah {{decimals}} .",
-    "version": "Versi {{version}}",
+    "version": "Version",
     "view-cryptokitties": "CryptoKitties मा हेर्नुहोस्",
     "view-cryptostrikers": "Lihat di CryptoStrikers",
     "view-etheremon": "Etheremon मा हेर्नुहोस्",

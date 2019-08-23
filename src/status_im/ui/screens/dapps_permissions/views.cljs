@@ -21,12 +21,12 @@
   {:title       dapp
    :accessories [:chevron]
    :on-press    #(re-frame/dispatch [:navigate-to :manage-dapps-permissions {:dapp dapp :permissions permissions}])
-   :image       d-icon})
+   :icon        d-icon})
 
 (defn prepare-items-manage [permission]
   {:title       (case permission
-                  constants/dapp-permission-web3 (i18n/label :t/wallet)
-                  constants/dapp-permission-contact-code (i18n/label :t/contact-code))
+                  constants/dapp-permission-web3         :t/wallet
+                  constants/dapp-permission-contact-code :t/contact-code)
    :type        :small
    :accessories [:check]})
 

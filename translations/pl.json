@@ -615,7 +615,7 @@
     "use-valid-qr-code": "Ten kod QR nie zawiera prawidłowego linku, kodu kontaktowego lub nazwy użytkownika: {{data}}",
     "validation-amount-invalid-number": "Kwota nie jest prawidłową liczbą",
     "validation-amount-is-too-precise": "Kwota jest zbyt dokładna. Maksymalna liczba miejsc po przecinku wynosi {{decimals}}.",
-    "version": "Wersja {{version}}",
+    "version": "Wersja",
     "view-cryptokitties": "Zobacz w CryptoKitties",
     "view-cryptostrikers": "Zobacz w CryptoStrikers",
     "view-etheremon": "Zobacz w Etheremon",

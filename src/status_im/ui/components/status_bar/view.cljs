@@ -44,6 +44,11 @@
     :installations                   {:type :main}
     :transactions-history            {:type :main}
     :dapps-permissions               {:type :main}
+    :privacy-and-security            {:type :main}
+    :language-settings               {:type :main}
+    :notifications-settings          {:type :main}
+    :sync-settings                   {:type :main}
+    :advanced-settings               {:type :main}
     :help-center                     {:type :main}
     :about-app                       {:type :main}
     :offline-messaging-settings      {:type :main}

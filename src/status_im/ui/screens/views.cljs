@@ -50,9 +50,6 @@
                  (= view :public-chat-actions)
                  (merge home.sheet/public-chat-actions)
 
-                 (= view :learn-more)
-                 (merge about-app/learn-more)
-
                  (= view :keycard.login/more)
                  (merge keycard/more-sheet)
 

@@ -1211,7 +1211,7 @@
     "v1-messages-warning-title": "Предупреждение, экспериментальная функция",
     "validation-amount-invalid-number": "Сумма недействительна",
     "validation-amount-is-too-precise": "Слишком много чисел после запятой. {{decimals}} - это максимальное допустимое количество знаков после запятой.",
-    "version": "Версия {{version}}",
+    "version": "Версия",
     "view-cryptokitties": "Посмотреть в CryptoKitties",
     "view-cryptostrikers": "Посмотреть в CryptoStrikers",
     "view-etheremon": "Посмотреть в Etheremon",

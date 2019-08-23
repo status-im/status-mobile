@@ -1180,7 +1180,7 @@
     "v1-messages-warning-title": "Attention, fonctionnalité expérimentale",
     "validation-amount-invalid-number": "Le montant n'est pas un nombre valide",
     "validation-amount-is-too-precise": "Le montant est trop précis. Le nombre maximum de décimales est {{decimals}} .",
-    "version": "Version {{version}}",
+    "version": "Version",
     "view-cryptokitties": "Voir dans CryptoKitties",
     "view-cryptostrikers": "Afficher dans CryptoStrikers",
     "view-etheremon": "Voir dans Etheremon",

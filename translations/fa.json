@@ -635,7 +635,7 @@
     "use-valid-qr-code": "این کد QR حاوی لینک جهانی، کد تماس یا نام کاربری معتبری نیست: {{data}}",
     "validation-amount-invalid-number": "مقدار وارد شده صحیح نیست",
     "validation-amount-is-too-precise": "مقدار را بیش از حد دقیق وارد کرده اید. حداکثر تعداد اعشار {{decimals}} است.",
-    "version": "نسخه {{version}}",
+    "version": "نسخه",
     "view-cryptokitties": "مشاهده در CryptoKitties",
     "view-cryptostrikers": "مشاهده در CryptoStrikers",
     "view-etheremon": "مشاهده در Etheremon",

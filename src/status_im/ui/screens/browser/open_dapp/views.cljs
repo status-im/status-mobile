@@ -27,8 +27,8 @@
    [list-item/list-item
     {:on-press #(re-frame/dispatch [:browser.ui/browser-item-selected browser-id])
      :title    name
-     :subtitle (or url (i18n/label :t/dapp))
-     :image    [react/view styles/browser-icon-container
+     :subtitle (or url :t/dapp)
+     :icon     [react/view styles/browser-icon-container
                 [vector-icons/icon :main-icons/browser {:color colors/gray}]]}]])
 
 (def dapp-image-data {:image (resources/get-image :dapp-store) :width 768 :height 333})

@@ -6,7 +6,6 @@
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.list-header.views :as list-header]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as icons]
@@ -27,10 +26,17 @@
      [react/text {:style {:color colors/gray :text-align :center :margin-top 16 :line-height 22}}
       (i18n/label :t/add-account-description)]]
     [react/view {:height 52}]
-    [list-header/list-header (i18n/label :t/default)]
-    [list-item/list-item {:title    (i18n/label :t/generate-a-new-account) :theme :action
-                          :icon     :main-icons/add :accessories [:chevron]
-                          :on-press #(re-frame/dispatch [:navigate-to :add-new-account-password])}]]])
+    [list-item/list-item
+     {:type  :section-header
+      :title :t/default}]
+    [list-item/list-item
+     {:title       :t/generate-a-new-account
+      :theme       :action
+      :icon        :main-icons/add
+      :accessories [:chevron]
+      :on-press
+      #(re-frame/dispatch
+        [:navigate-to :add-new-account-password])}]]])
 
 (defview colors-popover [selected-color]
   (letsubs [width [:dimensions/window-width]]

@@ -1,52 +1,59 @@
 (ns status-im.ui.components.large-toolbar
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [reagent.core :as reagent]
-            [cljs-bean.core :refer [->clj ->js]]
+  (:require-macros [status-im.utils.views :as views])
+  (:require [cljs-bean.core :refer [->clj ->js]]
+            [reagent.core :as reagent]
+            [status-im.ui.components.animation :as animation]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list.views]
+            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.styles :as toolbar.styles]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.components.animation :as animation]))
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.utils.platform :as platform]))
 
 (def hidden (reagent/atom 0))
 (def shown (reagent/atom 100))
 (def minimized-header-visible? (reagent/atom false))
 (def initial-on-show-done? (volatile! false))
 
-(defview animated-content-wrapper [header-in-toolbar has-nav? show?]
-  (letsubs [anim-opacity (animation/create-value 0)
-            to-hide      (reagent/atom false)]
-    {:component-will-update
-     (fn [_ [_ _ _ show?]]
-       (cond
-         (and (not @to-hide) show?)
-         (animation/start
-          (animation/timing
-           anim-opacity
-           {:toValue 1
-            :duration 200
-            :easing (.-ease (animation/easing))
-            :useNativeDriver true})
-          #(reset! to-hide true))
+(defn animated-content-wrapper [header-in-toolbar has-nav? show?]
+  (let [anim-opacity (animation/create-value 0)
+        to-hide      (reagent/atom false)]
+    (reagent/create-class
+     {:component-did-update
+      (fn [comp]
+        (let [new-argv (rest (reagent/argv comp))
+              show?    (last new-argv)]
+          (cond
+            (and (not @to-hide) show?)
+            (animation/start
+             (animation/timing
+              anim-opacity
+              {:toValue         1
+               :duration        200
+               :easing          (.-ease (animation/easing))
+               :useNativeDriver true})
+             #(reset! to-hide true))
 
-         (and @to-hide (not show?))
-         (animation/start
-          (animation/timing
-           anim-opacity
-           {:toValue 0
-            :duration 200
-            :easing (.-ease (animation/easing))
-            :useNativeDriver true})
-          #(reset! to-hide false))))}
-    [react/animated-view
-     {:style (cond-> {:flex           1
-                      :align-self     :stretch
-                      :opacity        anim-opacity}
-               (false? has-nav?)
-               (assoc :margin-left -40 :margin-right 40))}
-     header-in-toolbar]))
+            (and @to-hide (not show?))
+            (animation/start
+             (animation/timing
+              anim-opacity
+              {:toValue         0
+               :duration        200
+               :easing          (.-ease (animation/easing))
+               :useNativeDriver true})
+             #(reset! to-hide false)))))
+
+      :reagent-render
+      (fn [header-in-toolbar has-nav? _]
+        [react/animated-view
+         {:style (cond-> {:flex           1
+                          :align-self     :stretch
+                          :opacity        anim-opacity}
+                   (false? has-nav?)
+                   (assoc :margin-left -40 :margin-right 40))}
+         header-in-toolbar])})))
 
 (defn on-viewable-items-changed [threshold interporlation-step]
   (fn [info]
@@ -95,8 +102,8 @@
 ;;            wrapped header and content form the data prop of flat-list
 ;; list-ref - atom - a reference to flat-list for the purpose of invoking its
 ;;            methods
-(defview flat-list-with-large-header [header content list-ref]
-  (letsubs [window-width [:dimensions/window-width]]
+(views/defview flat-list-with-large-header [header content list-ref]
+  (views/letsubs [window-width [:dimensions/window-width]]
     {:component-did-mount #(do (reset! hidden 0) (reset! shown 100)
                                (reset! minimized-header-visible? false)
                                (vreset! initial-on-show-done? false))}
@@ -136,7 +143,7 @@
          :data                           wrapped-data
          :initial-num-to-render          3
          :ref                            #(reset! list-ref %)
-         :render-fn                      (fn [item idx] item)
+         :render-fn                      list.views/flat-list-generic-render-fn
          :key-fn                         (fn [item idx] (str idx))
          :on-scroll-begin-drag           #(when (false? @initial-on-show-done?)
                                             (vreset! initial-on-show-done? true))

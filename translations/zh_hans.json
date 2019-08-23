@@ -1131,7 +1131,7 @@
     "use-valid-qr-code": "此二维码未包含有效的通用链接，联系人代码或用户名： {{data}}",
     "validation-amount-invalid-number": "金额不是一个有效的数字",
     "validation-amount-is-too-precise": "金额过于精确，所能发送的最小单位是1 Wei (1x10^-18 ETH)",
-    "version": "{{version}} 版本",
+    "version": "版本",
     "view-cryptokitties": "在CryptoKitties中查看",
     "view-cryptostrikers": "在 CryptoStrikers 中查看",
     "view-etheremon": "在Etheremon中查看",
