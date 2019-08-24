@@ -32,11 +32,20 @@
             (status/multiaccount-derive-addresses
              id
              [path]
-             #(re-frame/dispatch [:wallet.accounts/account-generated
-                                  (merge
-                                   (get (types/json->clj %) (keyword path))
-                                   {:name  (str "Account " path-num)
-                                    :color (rand-nth colors/account-colors)})])))))))))
+             (fn [result]
+               (status/multiaccount-store-derived
+                id
+                [path]
+                password
+                (fn [result]
+                  (let [{:keys [public-key address]}
+                        (get (types/json->clj result) (keyword path))]
+                    (re-frame/dispatch [:wallet.accounts/account-generated
+                                        {:name (str "Account " path-num)
+                                         :address address
+                                         :public-key public-key
+                                         :path path
+                                         :color (rand-nth colors/account-colors)}])))))))))))))
 
 (fx/defn set-symbol-request
   {:events [:wallet.accounts/share]}
@@ -61,13 +70,13 @@
   {:events [:wallet.accounts/save-generated-account]}
   [{:keys [db] :as cofx}]
   (let [{:keys [accounts latest-derived-path]} (:multiaccount db)
-        new-account (assoc (get-in db [:generate-account :account])
-                           :path (str constants/path-root "/" latest-derived-path))]
+        {:keys [account]} (:generate-account db)]
     (fx/merge cofx
               {::json-rpc/call [{:method "accounts_saveAccounts"
-                                 :params [[new-account]]
-                                 :on-success #()}]}
-              (multiaccounts.update/multiaccount-update {:accounts (conj accounts new-account)
+                                 :params [[account]]
+                                 :on-success #()}]
+               :db (dissoc db :generate-account)}
+              (multiaccounts.update/multiaccount-update {:accounts (conj accounts account)
                                                          :latest-derived-path (inc latest-derived-path)} nil)
               (wallet/update-balances nil)
               (navigation/navigate-to-cofx :wallet nil))))

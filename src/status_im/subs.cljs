@@ -1881,11 +1881,11 @@
  :wallet.send/transaction
  :<- [::send-transaction]
  :<- [:wallet]
- :<- [:network-status]
+ :<- [:offline?]
  :<- [:wallet/all-tokens]
  :<- [:ethereum/chain-keyword]
  (fn [[{:keys [amount symbol from to amount-error] :as transaction}
-       wallet network-status all-tokens chain]]
+       wallet offline? all-tokens chain]]
    (let [balance (get-in wallet [:accounts from :balance])
          token (tokens/asset-for all-tokens chain symbol)]
      (assoc (merge transaction
@@ -1896,7 +1896,7 @@
             :sign-enabled? (and to
                                 (nil? amount-error)
                                 (not (nil? amount))
-                                (= :online network-status))))))
+                                (not offline?))))))
 
 ;; NETWORK SETTINGS
 
