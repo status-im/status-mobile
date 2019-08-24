@@ -1629,47 +1629,12 @@
    (wallet/toggle-visible-token cofx symbol checked?)))
 
 (handlers/register-handler-fx
- :wallet/token-found
- (fn [cofx [_ address symbol balance]]
-   (wallet/configure-token-balance-and-visibility cofx address symbol balance)))
-
-(handlers/register-handler-fx
  :wallet.settings.ui/navigate-back-pressed
  (fn [cofx [_ on-close]]
    (fx/merge cofx
              (when on-close
                {:dispatch on-close})
              (navigation/navigate-back))))
-
-(handlers/register-handler-fx
- :wallet.callback/update-balance-success
- (fn [cofx [_ address balance]]
-   (wallet/update-balance cofx address balance)))
-
-(handlers/register-handler-fx
- :wallet.callback/update-balance-fail
- (fn [cofx [_ err]]
-   (wallet/on-update-balance-fail cofx err)))
-
-(handlers/register-handler-fx
- :wallet.callback/update-token-balance-success
- (fn [cofx [_ address symbol balance]]
-   (wallet/update-token-balance cofx address symbol balance)))
-
-(handlers/register-handler-fx
- :wallet.callback/update-token-balance-fail
- (fn [cofx [_ symbol err]]
-   (wallet/on-update-token-balance-fail cofx symbol err)))
-
-(handlers/register-handler-fx
- :wallet.callback/update-prices-success
- (fn [cofx [_ prices]]
-   (wallet/on-update-prices-success cofx prices)))
-
-(handlers/register-handler-fx
- :wallet.callback/update-prices-fail
- (fn [cofx [_ err]]
-   (wallet/on-update-prices-fail cofx err)))
 
 (handlers/register-handler-fx
  :wallet.ui/show-transaction-details

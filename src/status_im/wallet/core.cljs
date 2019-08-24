@@ -4,6 +4,7 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.tokens :as tokens]
             [status-im.i18n :as i18n]
@@ -37,8 +38,8 @@
      (json-rpc/call
       {:method     "eth_getBalance"
        :params     [address "latest"]
-       :on-success #(re-frame/dispatch [:wallet.callback/update-balance-success address %])
-       :on-error    #(re-frame/dispatch [:wallet.callback/update-balance-fail %])}))))
+       :on-success #(re-frame/dispatch [::update-balance-success address %])
+       :on-error    #(re-frame/dispatch [::update-balance-fail %])}))))
 
 ;; TODO(oskarth): At some point we want to get list of relevant
 ;; assets to get prices for
@@ -56,6 +57,7 @@
   (assoc-in db [:wallet :errors error-type] (or err :unknown-error)))
 
 (fx/defn on-update-prices-fail
+  {::events [::update-prices-fail]}
   [{:keys [db]} err]
   (log/debug "Unable to get prices: " err)
   {:db (-> db
@@ -63,14 +65,16 @@
            (assoc :prices-loading? false))})
 
 (fx/defn on-update-balance-fail
+  {:events [::update-balance-fail]}
   [{:keys [db]} err]
   (log/debug "Unable to get balance: " err)
   {:db (-> db
            (assoc-error-message :balance-update :error-unable-to-get-balance))})
 
 (fx/defn on-update-token-balance-fail
-  [{:keys [db]} symbol err]
-  (log/debug "Unable to get token " symbol "balance: " err)
+  {:events [::update-token-balance-fail]}
+  [{:keys [db]} err]
+  (log/debug "Unable to get tokens balances: " err)
   {:db (-> db
            (assoc-error-message :balance-update :error-unable-to-get-token-balance))})
 
@@ -142,24 +146,48 @@
      (validate-token-symbol! token)
      (validate-token-name! token))))
 
+(defn- clean-up-results
+  "remove empty balances
+   if there is no visible assets, returns all positive balances
+   otherwise return only the visible assets balances"
+  [results tokens assets]
+  (let [balances
+        (reduce (fn [acc [address balances]]
+                  (let [pos-balances
+                        (reduce (fn [acc [token-address token-balance]]
+                                  (if (pos? token-balance)
+                                    (let [token-symbol (get tokens (name token-address))]
+                                      (if (or (empty? assets)
+                                              (assets token-symbol))
+                                        (assoc acc token-symbol token-balance)
+                                        acc))
+                                    acc))
+                                {}
+                                balances)]
+                    (if (not-empty pos-balances)
+                      (assoc acc (eip55/address->checksum (name address)) pos-balances)
+                      acc)))
+                {}
+                results)]
+    (when (not-empty balances)
+      balances)))
+
 (re-frame/reg-fx
  :wallet/get-tokens-balances
  (fn [{:keys [addresses tokens assets]}]
-   ;;TODO not great to have so many calls , should be optimized, there is wallet_getTokensBalances why wouldn't use it?
-   (doseq [{:keys [address symbol]} tokens]
-     (doseq [account-address addresses]
-       (json-rpc/eth-call
-        {:contract   address
-         :method     "balanceOf(address)"
-         :params     [account-address]
-         :outputs    ["uint256"]
-         :on-success (fn [[balance]]
-                       (if (and assets (assets symbol))
-                         (re-frame/dispatch [:wallet.callback/update-token-balance-success account-address symbol balance])
-                         ;; NOTE: when there it is not a visible assets we make an initialization round
-                         (when (pos? balance)
-                           (re-frame/dispatch [:wallet/token-found account-address symbol balance]))))
-         :on-error   #(re-frame/dispatch [:wallet.callback/update-token-balance-fail symbol %])})))))
+   (let [tokens-addresses (keys tokens)]
+     (json-rpc/call
+      {:method "wallet_getTokensBalances"
+       :params [addresses tokens-addresses]
+       :on-success
+       (fn [results]
+         (when-let [balances (clean-up-results results tokens assets)]
+           (re-frame/dispatch (if (empty? assets)
+                                ;; NOTE: when there it is not a visible
+                                ;; assets we make an initialization round
+                                [::tokens-found balances]
+                                [::update-tokens-balances-success balances]))))
+       :on-error   #(re-frame/dispatch [::update-token-balance-fail %])}))))
 
 (defn clear-error-message [db error-type]
   (update-in db [:wallet :errors] dissoc error-type))
@@ -193,7 +221,10 @@
         chain     (ethereum/chain-keyword db)
         assets    (get-in settings [:wallet :visible-tokens chain])
         tokens    (->> (tokens/tokens-for all-tokens chain)
-                       (remove #(or (:hidden? %))))]
+                       (remove #(or (:hidden? %)))
+                       (reduce (fn [acc {:keys [address symbol]}]
+                                 (assoc acc address symbol))
+                               {}))]
     (when (not= network-status :offline)
       (fx/merge
        cofx
@@ -215,7 +246,7 @@
      {:keys [address chaos-mode? settings]} :multiaccount :as db} :db}]
   (let [chain       (ethereum/chain-keyword db)
         mainnet?    (= :mainnet chain)
-        assets      (get-in settings [:wallet :visible-tokens chain])
+        assets      (get-in settings [:wallet :visible-tokens chain] #{})
         tokens      (tokens-symbols assets all-tokens chain)
         currency-id (or (get-in settings [:wallet :currency]) :usd)
         currency    (get constants/currencies currency-id)]
@@ -227,8 +258,8 @@
                               (wallet.utils/exchange-symbol))])
         :to            [(:code currency)]
         :mainnet?      mainnet?
-        :success-event :wallet.callback/update-prices-success
-        :error-event   :wallet.callback/update-prices-fail
+        :success-event ::update-prices-success
+        :error-event   ::update-prices-fail
         :chaos-mode?   chaos-mode?}
 
        :db
@@ -242,20 +273,18 @@
     (disj ids id)))
 
 (fx/defn on-update-prices-success
+  {:events [::update-prices-success]}
   [{:keys [db]} prices]
   {:db (assoc db
               :prices prices
               :prices-loading? false)})
 
 (fx/defn update-balance
+  {:events [::update-balance-success]}
   [{:keys [db]} address balance]
-  {:db (-> db
-           (assoc-in [:wallet :accounts address :balance :ETH] (money/bignumber balance)))})
-
-(fx/defn update-token-balance
-  [{:keys [db]} address symbol balance]
-  {:db (-> db
-           (assoc-in [:wallet :accounts address :balance symbol] (money/bignumber balance)))})
+  {:db (assoc-in db
+                 [:wallet :accounts (eip55/address->checksum address) :balance :ETH]
+                 (money/bignumber balance))})
 
 (defn update-toggle-in-settings
   [{{:keys [multiaccount] :as db} :db} symbol checked?]
@@ -267,6 +296,38 @@
   [cofx symbol checked?]
   (let [new-settings (update-toggle-in-settings cofx symbol checked?)]
     (multiaccounts.update/update-settings cofx new-settings {})))
+
+(fx/defn update-tokens-balances
+  {:events [::update-tokens-balances-success]}
+  [{:keys [db]} balances]
+  (let [accounts (get-in db [:wallet :accounts])]
+    {:db (assoc-in db
+                   [:wallet :accounts]
+                   (reduce (fn [acc [address balances]]
+                             (assoc-in acc
+                                       [address :balance]
+                                       (reduce (fn [acc [token-symbol balance]]
+                                                 (assoc acc
+                                                        token-symbol
+                                                        (money/bignumber balance)))
+                                               (get-in accounts [address :balance])
+                                               balances)))
+                           accounts
+                           balances))}))
+
+(fx/defn configure-token-balance-and-visibility
+  {:events [::tokens-found]}
+  [{:keys [db] :as cofx} balances]
+  (let [chain          (ethereum/chain-keyword db)
+        settings       (get-in db [:multiaccount :settings])
+        visible-tokens (into #{} (flatten (map keys (vals balances))))
+        new-settings (assoc-in settings
+                               [:wallet :visible-tokens chain]
+                               visible-tokens)]
+    (fx/merge cofx
+              (multiaccounts.update/update-settings cofx new-settings {})
+              (update-tokens-balances balances)
+              (update-prices))))
 
 (fx/defn add-custom-token
   [{:keys [db] :as cofx} {:keys [symbol address] :as token}]
@@ -282,24 +343,18 @@
         new-settings (update-in settings [:wallet :custom-tokens chain] dissoc address)]
     (multiaccounts.update/update-settings cofx new-settings {})))
 
-(fx/defn configure-token-balance-and-visibility
-  [cofx address symbol balance]
-  (fx/merge cofx
-            (toggle-visible-token symbol true)
-            ;;TODO(goranjovic): move `update-token-balance-success` function to wallet models
-            (update-token-balance address symbol balance)))
-
-(defn set-and-validate-amount-db [db amount symbol decimals]
-  (let [{:keys [value error]} (wallet.db/parse-amount amount decimals)]
-    (-> db
-        (assoc-in [:wallet :send-transaction :amount] (money/formatted->internal value symbol decimals))
-        (assoc-in [:wallet :send-transaction :amount-text] amount)
-        (assoc-in [:wallet :send-transaction :amount-error] error))))
-
 (fx/defn set-and-validate-amount
   {:events [:wallet.send/set-and-validate-amount]}
-  [{:keys [db]} amount symbol decimals]
-  {:db (set-and-validate-amount-db db amount symbol decimals)})
+  [{:keys [db]} amount]
+  (let [chain (ethereum/chain-keyword db)
+        all-tokens (:wallet/all-tokens db)
+        symbol (get-in db [:wallet :send-transaction :symbol])
+        {:keys [decimals]} (tokens/asset-for all-tokens chain symbol)
+        {:keys [value error]} (wallet.db/parse-amount amount decimals)]
+    {:db (-> db
+             (assoc-in [:wallet :send-transaction :amount] (money/formatted->internal value symbol decimals))
+             (assoc-in [:wallet :send-transaction :amount-text] amount)
+             (assoc-in [:wallet :send-transaction :amount-error] error))}))
 
 (fx/defn set-symbol
   {:events [:wallet.send/set-symbol]}

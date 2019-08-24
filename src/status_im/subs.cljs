@@ -355,12 +355,6 @@
    public-key))
 
 (re-frame/reg-sub
- :multiaccount/default-address
- :<- [:multiaccount]
- (fn [{:keys [accounts]}]
-   (:address (ethereum/get-default-account accounts))))
-
-(re-frame/reg-sub
  :sign-in-enabled?
  :<- [:multiaccounts/login]
  (fn [{:keys [password]}]
@@ -1012,7 +1006,7 @@
 (re-frame/reg-sub
  :account-portfolio-value
  (fn [[_ address] _]
-   [(re-frame/subscribe [:balance (string/lower-case address)])
+   [(re-frame/subscribe [:balance address])
     (re-frame/subscribe [:prices])
     (re-frame/subscribe [:wallet/currency])
     (re-frame/subscribe [:ethereum/chain-keyword])
@@ -1073,7 +1067,7 @@
 (re-frame/reg-sub
  :wallet/visible-assets-with-amount
  (fn [[_ address] _]
-   [(re-frame/subscribe [:balance (string/lower-case address)])
+   [(re-frame/subscribe [:balance address])
     (re-frame/subscribe [:wallet/visible-assets])])
  (fn [[balance visible-assets]]
    (map #(assoc % :amount (get balance (:symbol %))) visible-assets)))
@@ -1093,7 +1087,7 @@
 (re-frame/reg-sub
  :wallet/visible-assets-with-values
  (fn [[_ address] _]
-   [(re-frame/subscribe [:wallet/visible-assets-with-amount (string/lower-case address)])
+   [(re-frame/subscribe [:wallet/visible-assets-with-amount address])
     (re-frame/subscribe [:prices])
     (re-frame/subscribe [:wallet/currency])])
  (fn [[assets prices currency]]
@@ -1130,7 +1124,7 @@
 (re-frame/reg-sub
  :wallet/transferrable-assets-with-amount
  (fn [[_ address]]
-   (re-frame/subscribe [:wallet/visible-assets-with-amount (string/lower-case address)]))
+   (re-frame/subscribe [:wallet/visible-assets-with-amount address]))
  (fn [all-assets]
    (filter #(not (:nft? %)) all-assets)))
 
@@ -1146,7 +1140,7 @@
  :wallet/transactions
  :<- [:wallet]
  (fn [wallet [_ address]]
-   (get-in wallet [:accounts (string/lower-case address) :transactions])))
+   (get-in wallet [:accounts address :transactions])))
 
 (re-frame/reg-sub
  :wallet/filters
@@ -1347,38 +1341,6 @@
  :<- [::send-transaction]
  (fn [send-transaction]
    (:camera-flashlight send-transaction)))
-
-(defn check-sufficient-funds
-  [{:keys [sufficient-funds?] :as transaction} balance symbol amount]
-  (cond-> transaction
-    (nil? sufficient-funds?)
-    (assoc :sufficient-funds?
-           (or (nil? amount)
-               (money/sufficient-funds? amount (get balance symbol))))))
-
-(defn check-sufficient-gas
-  [transaction balance symbol amount]
-  (assoc transaction :sufficient-gas?
-         (or (nil? amount)
-             (let [available-ether   (money/bignumber (get balance :ETH 0))
-                   available-for-gas (if (= :ETH symbol)
-                                       (.minus available-ether (money/bignumber amount))
-                                       available-ether)]
-               (money/sufficient-funds? (-> transaction
-                                            :max-fee
-                                            money/bignumber
-                                            (money/formatted->internal :ETH 18))
-                                        (money/bignumber available-for-gas))))))
-
-(re-frame/reg-sub
- :wallet.send/transaction
- :<- [::send-transaction]
- :<- [:wallet]
- (fn [[{:keys [amount symbol from] :as transaction} wallet]]
-   (let [balance (get-in wallet [:accounts from :balance])]
-     (-> transaction
-         (check-sufficient-funds balance symbol amount)
-         (check-sufficient-gas balance symbol amount)))))
 
 (re-frame/reg-sub
  :wallet/settings
@@ -1902,6 +1864,27 @@
                             (get-sufficient-funds-error balance (:symbol token) amount-bn))]
        (or amount-error (get-sufficient-gas-error balance (:symbol token) amount-bn gas gasPrice)))
      (get-sufficient-gas-error balance nil nil gas gasPrice))))
+
+(re-frame/reg-sub
+ :wallet.send/transaction
+ :<- [::send-transaction]
+ :<- [:wallet]
+ :<- [:network-status]
+ :<- [:wallet/all-tokens]
+ :<- [:ethereum/chain-keyword]
+ (fn [[{:keys [amount symbol from to amount-error] :as transaction}
+       wallet network-status all-tokens chain]]
+   (let [balance (get-in wallet [:accounts from :balance])
+         token (tokens/asset-for all-tokens chain symbol)]
+     (assoc (merge transaction
+                   (when amount
+                     (get-sufficient-funds-error balance symbol amount)))
+            :balance balance
+            :token token
+            :sign-enabled? (and to
+                                (nil? amount-error)
+                                (not (nil? amount))
+                                (= :online network-status))))))
 
 ;; NETWORK SETTINGS
 

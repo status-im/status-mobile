@@ -59,6 +59,7 @@
    "status_startOneOnOneChat" {}
    "status_removeChat" {}
    "wallet_getTransfers" {}
+   "wallet_getTokensBalances" {}
    "browsers_getBrowsers" {}
    "browsers_addBrowser" {}
    "browsers_deleteBrowser" {}

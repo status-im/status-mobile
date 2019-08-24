@@ -35,10 +35,10 @@
                                                   colors/white
                                                   colors/white-transparent-10)}]]])
 
-(defn- render-send-transaction-view [{:keys [chain transaction scroll all-tokens amount-input network-status]}]
-  (let [{:keys [from amount amount-text amount-error asset-error to to-name sufficient-funds? symbol]} transaction
-        {:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)
-        online? (= :online network-status)]
+(defn- render-send-transaction-view
+  [{:keys [transaction scroll amount-input]}]
+  (let [{:keys [from amount amount-text amount-error token sign-enabled?
+                asset-error to to-name symbol]} transaction]
     [wallet.components/simple-screen {:avoid-keyboard? true
                                       :status-bar-type :wallet}
      [toolbar (i18n/label :t/send-transaction)]
@@ -58,16 +58,12 @@
           :type      :send
           :symbol    symbol}]
         [wallet.components/amount-selector
-         {:error         (or amount-error (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds)))
+         {:error         amount-error
           :amount        amount
           :amount-text   amount-text
-          :input-options {:on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount % symbol decimals])
+          :input-options {:on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount %])
                           :ref            (partial reset! amount-input)}} token]]]
-      [sign-transaction-button (and to
-                                    (nil? amount-error)
-                                    (not (nil? amount))
-                                    sufficient-funds?
-                                    online?)]]]))
+      [sign-transaction-button sign-enabled?]]]))
 
 (defn- send-transaction-view [{:keys [scroll]}]
   (let [amount-input (atom nil)
@@ -82,12 +78,6 @@
 
 (defview send-transaction []
   (letsubs [transaction [:wallet.send/transaction]
-            chain [:ethereum/chain-keyword]
-            scroll (atom nil)
-            network-status [:network-status]
-            all-tokens [:wallet/all-tokens]]
+            scroll (atom nil)]
     [send-transaction-view {:transaction    transaction
-                            :scroll         scroll
-                            :chain          chain
-                            :all-tokens     all-tokens
-                            :network-status network-status}]))
+                            :scroll         scroll}]))

@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.ethereum.decode :as decode]
+            [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.encode :as encode]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.core :as ethereum]
