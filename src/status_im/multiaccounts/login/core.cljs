@@ -140,6 +140,7 @@
                           :networks/networks networks
                           :multiaccount multiaccount)
                :notifications/request-notifications-permissions nil}
+              (universal-links/process-stored-event)
               (check-network-version network-id)
               (chat.loading/initialize-chats)
               (contact/initialize-contacts)
@@ -168,7 +169,6 @@
               (when save-password?
                 (save-user-password address password))
               (navigation/navigate-to-cofx :home nil)
-              (universal-links/process-stored-event)
               (when platform/desktop?
                 (chat-model/update-dock-badge-label)))))
 
