@@ -59,12 +59,12 @@
                      (:contacts/contacts db)
                      public-key)
                     (assoc :last-updated now)
-                    (update :system-tags conj :contact/blocked))
+                    (update :system-tags (fnil conj #{}) :contact/blocked))
         from-one-to-one-chat? (not (get-in db [:chats (:current-chat-id db) :group-chat]))]
     (fx/merge cofx
               {:db (-> db
                        ;; add the contact to blocked contacts
-                       (update :contacts/blocked conj public-key)
+                       (update :contacts/blocked (fnil conj #{}) public-key)
                        ;; update the contact in contacts list
                        (assoc-in [:contacts/contacts public-key] contact)
                        ;; remove the 1-1 chat if it exists
