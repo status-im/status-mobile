@@ -1,18 +1,17 @@
 (ns status-im.wallet.accounts.core
   (:require [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.utils.fx :as fx]
-            [status-im.ethereum.eip55 :as eip55]
-            [status-im.ui.components.list-selection :as list-selection]
-            [status-im.utils.handlers :as handlers]
-            [status-im.native-module.core :as status]
-            [status-im.utils.types :as types]
             [status-im.constants :as constants]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.ethereum.eip55 :as eip55]
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.wallet.core :as wallet]
-            [status-im.i18n :as i18n]))
+            [status-im.native-module.core :as status]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.types :as types]
+            [status-im.wallet.core :as wallet]))
 
 (re-frame/reg-fx
  :list.selection/open-share
@@ -61,9 +60,13 @@
 (fx/defn save-account
   {:events [:wallet.accounts/save-generated-account]}
   [{:keys [db] :as cofx}]
-  (let [new-account (get-in db [:generate-account :account])
-        {:keys [accounts latest-derived-path]} (:multiaccount db)]
+  (let [{:keys [accounts latest-derived-path]} (:multiaccount db)
+        new-account (assoc (get-in db [:generate-account :account])
+                           :path (str constants/path-root "/" latest-derived-path))]
     (fx/merge cofx
+              {::json-rpc/call [{:method "accounts_saveAccounts"
+                                 :params [[new-account]]
+                                 :on-success #()}]}
               (multiaccounts.update/multiaccount-update {:accounts (conj accounts new-account)
                                                          :latest-derived-path (inc latest-derived-path)} nil)
               (wallet/update-balances nil)

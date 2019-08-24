@@ -70,7 +70,8 @@
    "settings_getConfig" {}
    "settings_getConfigs" {}
    "settings_saveNodeConfig" {}
-   "accounts_getAccounts" {}})
+   "accounts_getAccounts" {}
+   "accounts_saveAccounts" {}})
 
 (defn call
   [{:keys [method params on-success on-error] :as p}]
