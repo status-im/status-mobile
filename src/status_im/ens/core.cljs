@@ -64,14 +64,14 @@
 
 (fx/defn register-name
   {:events [:ens/register]}
-  [{:keys [db] :as cofx} {:keys [contract custom-domain? username address public-key]}]
+  [{:keys [db] :as cofx} {:keys [amount contract custom-domain? username address public-key]}]
   (let [{:keys [x y]} (ethereum/coordinates public-key)]
     (signing/eth-transaction-call
      cofx
      {:contract   (contracts/get-address db :status/snt)
       :method     "approveAndCall(address,uint256,bytes)"
       :params     [contract
-                   (money/unit->token 10 18)
+                   (money/unit->token amount 18)
                    (abi-spec/encode "register(bytes32,address,bytes32,bytes32)"
                                     [(ethereum/sha3 username) address x y])]
       :on-result  [:ens/save-username custom-domain? username]
@@ -150,9 +150,11 @@
                                               {})))
 
 (fx/defn on-registration-failure
+  "TODO not sure there is actually anything to do here
+   it should only be called if the user cancels the signing
+   Actual registration failure has not been implemented properly"
   {:events [:ens/on-registration-failure]}
-  [{:keys [db]} username]
-  {:db (assoc-state-for db username :registration-failed)})
+  [{:keys [db]} username])
 
 (fx/defn store-name-detail
   {:events [:ens/store-name-detail]}

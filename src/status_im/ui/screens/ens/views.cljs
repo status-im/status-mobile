@@ -290,7 +290,7 @@
     [react/text
      (i18n/label :t/ens-understand)]]])
 
-(defn- registration-bottom-bar [{:keys [checked] :as props}]
+(defn- registration-bottom-bar [{:keys [checked amount-label] :as props}]
   [react/view {:style {:height           60
                        :background-color colors/white
                        :border-top-width 1
@@ -305,7 +305,7 @@
         :icon-size 16}]]
      [react/view {:flex-direction :column :margin-vertical 8}
       [react/text {:style {:font-size 15}}
-       (i18n/label :t/ens-10-SNT)]
+       amount-label]
       [react/text {:style {:color colors/gray :font-size 15}}
        (i18n/label :t/ens-deposit)]]]
     [button {:disabled?    (not @checked)

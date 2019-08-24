@@ -1770,14 +1770,26 @@
  :<- [:ens/registration]
  :<- [:ens.stateofus/registrar]
  :<- [:multiaccount]
- (fn [[{:keys [custom-domain? username-candidate registering?] :as ens} registrar {:keys [accounts public-key]}]]
-   {:state          (get-in ens [:states username-candidate])
-    :registering?   registering?
-    :username       username-candidate
-    :custom-domain? (or custom-domain? false)
-    :contract       registrar
-    :address        (:address (ethereum/get-default-account accounts))
-    :public-key     public-key}))
+ :<- [:chain-id]
+ (fn [[{:keys [custom-domain? username-candidate registering?] :as ens}
+       registrar {:keys [accounts public-key]} chain-id]]
+   (let [amount (case chain-id
+                  3 50
+                  1 10
+                  0)
+         amount-label (str amount (case chain-id
+                                    3 " STT"
+                                    1 " SNT"
+                                    ""))]
+     {:state          (get-in ens [:states username-candidate])
+      :registering?   registering?
+      :username       username-candidate
+      :custom-domain? (or custom-domain? false)
+      :contract       registrar
+      :address        (:address (ethereum/get-default-account accounts))
+      :public-key     public-key
+      :amount amount
+      :amount-label amount-label})))
 
 (re-frame/reg-sub
  :ens.name/screen
