@@ -59,7 +59,7 @@ def build(Map opts = [:]) {
   opts.args = defaults.args + opts.args
   opts.keep = (opts.keep + defaults.keep).unique()
 
-  return sh(
+  def resultPath = sh(
     returnStdout: true,
     script: """
       set +x
@@ -68,6 +68,10 @@ def build(Map opts = [:]) {
       nix-build ${_getNixCommandArgs(opts, false)}
     """
   ).trim()
+  if (!opts.link) { /* if not linking, copy results */
+    sh "cp ${resultPath}/* ${env.WORKSPACE}/result/"
+  }
+  return resultPath
 }
 
 private makeNixBuildEnvFile(Map opts = [:]) {

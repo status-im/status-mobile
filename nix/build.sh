@@ -2,6 +2,9 @@
 
 set -e
 
+gitRoot=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
+resultPath="${gitRoot}/result/"
+
 # cleanup for artifacts created during builds
 function cleanup() {
   # clear trapped signals
@@ -24,9 +27,9 @@ trap cleanup EXIT ERR INT QUIT
 function extractResults() {
   local nixResultPath="$1"
   echo "Saving build result: ${nixResultPath}"
-  mkdir -p result
-  cp -vfr ${nixResultPath}/* result/
-  chmod u+w -R result/
+  mkdir -p "${resultPath}"
+  cp -vfr ${nixResultPath}/* "${resultPath}"
+  chmod u+w -R "${resultPath}"
 }
 
 # Load Nix profile

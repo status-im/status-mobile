@@ -20,42 +20,41 @@ def bundle() {
   }
 
   // The Nix script cannot access the user home directory, so best to copy the file to the Nix store and pass that to the Nix script
-  dir('android') {
-    withCredentials([
-      string(
-        credentialsId: 'android-keystore-pass',
-        variable: 'STATUS_RELEASE_STORE_PASSWORD'
-      ),
-      usernamePassword(
-        credentialsId: 'android-keystore-key-pass',
-        usernameVariable: 'STATUS_RELEASE_KEY_ALIAS',
-        passwordVariable: 'STATUS_RELEASE_KEY_PASSWORD'
-      )
-    ]) {
-      nix.build(
-        args: [
-          'gradle-opts': gradleOpt,
-          'build-number': utils.readBuildNumber(),
-          'build-type': btype
-        ],
-        safeEnv: [
-          'STATUS_RELEASE_KEY_ALIAS',
-          'STATUS_RELEASE_STORE_PASSWORD',
-          'STATUS_RELEASE_KEY_PASSWORD'
-        ],
-        keep: [
-          'REALM_DISABLE_ANALYTICS', 'NDK_ABI_FILTERS',
-          'STATUS_RELEASE_STORE_FILE'
-        ],
-        sbox: [
-          env.STATUS_RELEASE_STORE_FILE
-        ],
-        attr: "targets.mobile.android.release"
-      )
-    }
+  withCredentials([
+    string(
+      credentialsId: 'android-keystore-pass',
+      variable: 'STATUS_RELEASE_STORE_PASSWORD'
+    ),
+    usernamePassword(
+      credentialsId: 'android-keystore-key-pass',
+      usernameVariable: 'STATUS_RELEASE_KEY_ALIAS',
+      passwordVariable: 'STATUS_RELEASE_KEY_PASSWORD'
+    )
+  ]) {
+    nix.build(
+      args: [
+        'gradle-opts': gradleOpt,
+        'build-number': utils.readBuildNumber(),
+        'build-type': btype
+      ],
+      safeEnv: [
+        'STATUS_RELEASE_KEY_ALIAS',
+        'STATUS_RELEASE_STORE_PASSWORD',
+        'STATUS_RELEASE_KEY_PASSWORD'
+      ],
+      keep: [
+        'REALM_DISABLE_ANALYTICS', 'NDK_ABI_FILTERS',
+        'STATUS_RELEASE_STORE_FILE'
+      ],
+      sbox: [
+        env.STATUS_RELEASE_STORE_FILE
+      ],
+      attr: 'targets.mobile.android.release',
+      link: false
+    )
   }
   /* because nix-build was run in `android` dir that's where `result` is */
-  def outApk = "android/result/app.apk"
+  def outApk = "result/app.apk"
   def pkg = utils.pkgFilename(btype, 'apk')
   /* rename for upload */
   sh "cp ${outApk} ${pkg}"
