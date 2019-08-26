@@ -10,17 +10,17 @@
 
 (def max-snt-amount 1000000)
 
-(defn utils [] (dependencies/web3-utils))
+(def utils dependencies/web3-utils)
 
 (defn to-wei
   [s]
   (when s
-    (.toWei (utils) s)))
+    (.toWei utils s)))
 
 (defn from-wei
   [s]
   (when s
-    (.fromWei (utils) s)))
+    (.fromWei utils s)))
 
 (defn tribute-status
   [{:keys [system-tags tribute-to-talk] :as contact}]

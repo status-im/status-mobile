@@ -24,12 +24,12 @@
     (reagent/create-class
      {:component-did-mount
       (fn [this]
-        (.addEventListener (react/app-state) "change" app-state-change-handler)
+        (.addEventListener react/app-state "change" app-state-change-handler)
         (re-frame/dispatch [:set-initial-props (reagent/props this)]))
       :component-will-unmount
       (fn []
-        (.stop (react/http-bridge))
-        (.removeEventListener (react/app-state) "change" app-state-change-handler))
+        (.stop react/http-bridge)
+        (.removeEventListener react/app-state "change" app-state-change-handler))
       :display-name "root"
       :reagent-render views/main})
     (reagent/create-class

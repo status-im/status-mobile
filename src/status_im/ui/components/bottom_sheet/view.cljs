@@ -80,7 +80,7 @@
 
 (defn swipe-pan-responder [opts]
   (.create
-   (react/pan-responder)
+   react/pan-responder
    (clj->js
     {:onMoveShouldSetPanResponder (fn [_ state]
                                     (or (< 10 (js/Math.abs (.-dx state)))

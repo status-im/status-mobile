@@ -331,7 +331,7 @@
                    :style  {:width  144
                             :height 120}}]
      [react/view {:margin-top 40}
-      [react/touchable-highlight {:on-press #(.openURL (react/linking) "https://keycard.status.im")}
+      [react/touchable-highlight {:on-press #(.openURL react/linking "https://keycard.status.im")}
        [react/view {:flex-direction  :row
                     :align-items     :center
                     :justify-content :center}

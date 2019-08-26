@@ -1,19 +1,19 @@
 (ns status-im.react-native.js-dependencies)
 
-(def action-button          (fn [] #js {:default #js {:Item #js {}}}))
-(def config                 (fn [] #js {:default #js {}}))
-(def camera                 (fn [] #js {:default #js {:constants #js {}}}))
-(def dialogs                (fn [] #js {}))
-(def dismiss-keyboard       (fn [] #js {}))
-(def emoji-picker           (fn [] #js {:default #js {}}))
-(def fs                     (fn [] #js {}))
-(def http-bridge            (fn [] #js {}))
+(def action-button          #js {:default #js {:Item #js {}}})
+(def config                 #js {:default #js {}})
+(def camera                 #js {:default #js {:constants #js {}}})
+(def dialogs                #js {})
+(def dismiss-keyboard       #js {})
+(def emoji-picker           #js {:default #js {}})
+(def fs                     #js {})
+(def http-bridge            #js {})
 (def i18n                   #js {:locale "en"})
 (def react-native-languages #js {:language "en", :addEventListener (fn []), :removeEventListener (fn [])})
-(def image-crop-picker      (fn [] #js {}))
-(def image-resizer          (fn [] #js {}))
-(def qr-code                (fn [] #js {}))
-(def svg                    (fn [] #js {}))
+(def image-crop-picker      #js {})
+(def image-resizer          #js {})
+(def qr-code                #js {})
+(def svg                    #js {})
 
 (def react-native
   #js {:NativeModules      #js {}
@@ -24,35 +24,34 @@
 (def realm                  #js {:schemaVersion (fn [])
                                  :defaultPath   "/tmp/realm"
                                  :close         (fn [])})
-(def vector-icons           (fn [] #js {:default #js {}}))
-(def webview-bridge         (fn [] #js {:default #js {}}))
-(def webview                (fn [] #js {:WebView #js {}}))
-(def touchid                (fn [] #js {}))
-(def status-keycard         (fn [] #js {:default #js {}}))
+(def vector-icons           #js {:default #js {}})
+(def webview-bridge         #js {:default #js {}})
+(def webview                #js {:WebView #js {}})
+(def svg                    #js {:default #js {}})
+(def status-keycard         #js {:default #js {}})
 
 (defrecord Notification [])
-(def react-native-firebase  (fn [] #js {:default #js {:notifications #js {:Notification Notification}}}))
+(def react-native-firebase  #js {:default #js {:notifications #js {:Notification Notification}}})
 
 (def desktop-linking #js {:addEventListener (fn [])})
 (def desktop-shortcuts #js {:addEventListener (fn [])})
 
-(def snoopy                 (fn [] #js {:default #js {}}))
-(def snoopy-filter          (fn [] #js {:default #js {}}))
-(def snoopy-bars            (fn [] #js {:default #js {}}))
-(def snoopy-buffer          (fn [] #js {:default #js {}}))
+(def snoopy                 #js {:default #js {}})
+(def snoopy-filter          #js {:default #js {}})
+(def snoopy-bars            #js {:default #js {}})
+(def snoopy-buffer          #js {:default #js {}})
+(def fetch                  #js {})
 
-(def fetch (fn [] #js {}))
+(def background-timer       #js {:setTimeout js/setTimeout
+                                 :setInterval js/setInterval
+                                 :clearTimeout js/clearTimeout
+                                 :clearInterval js/clearInterval})
 
-(def background-timer (fn [] #js {:setTimeout    js/setTimeout
-                                  :setInterval   js/setInterval
-                                  :clearTimeout  js/clearTimeout
-                                  :clearInterval js/clearInterval}))
-
-(def keychain (fn [] #js {:setGenericPassword (constantly (.resolve js/Promise true))}))
-(def secure-random (fn [] #(.resolve js/Promise (clj->js (range 0 %)))))
+(def keychain #js {:setGenericPassword (constantly (.resolve js/Promise true))})
+(def secure-random #(.resolve js/Promise (clj->js (range 0 %))))
 (def react-navigation #js {:NavigationActions #js {}})
 (def desktop-menu #js {})
 (def desktop-config #js {})
-(def react-native-mail (fn [] #js {:mail #js {}}))
+(def react-native-mail #js {:mail #js {}})
 (def react-native-navigation-twopane  #js {})
 

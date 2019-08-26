@@ -59,7 +59,7 @@
          [nfc-disabled])]
       (if (= setup-step :begin)
         [react/view styles/bottom-container
-         [react/touchable-highlight {:on-press #(.openURL (react/linking) "https://hardwallet.status.im")}
+         [react/touchable-highlight {:on-press #(.openURL react/linking "https://hardwallet.status.im")}
           [react/view styles/product-info-container
            [react/text {:style styles/product-info-text}
             (i18n/label :t/product-information)]

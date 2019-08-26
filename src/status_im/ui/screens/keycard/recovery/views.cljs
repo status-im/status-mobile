@@ -47,7 +47,7 @@
                            :text-align  :center}}
        (i18n/label :t/keycard-recovery-intro-text)]]
      [react/view {:margin-top 33}
-      [react/touchable-highlight {:on-press #(.openURL (react/linking) "https://keycard.status.im")}
+      [react/touchable-highlight {:on-press #(.openURL react/linking "https://keycard.status.im")}
        [react/view {:flex-direction  :row
                     :align-items     :center
                     :justify-content :center}

@@ -4192,11 +4192,6 @@ home-or-tmp@^3.0.0:
   resolved "https://registry.yarnpkg.com/home-or-tmp/-/home-or-tmp-3.0.0.tgz#57a8fe24cf33cdd524860a15821ddc25c86671fb"
   integrity sha1-V6j+JM8zzdUkhgoVgh3cJchmcfs=
 
-homoglyph-finder@1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/homoglyph-finder/-/homoglyph-finder-1.1.1.tgz#53c3671a618e003a26fa3f87dc2b179e95568fa8"
-  integrity sha1-U8NnGmGOADom+j+H3CsXnpVWj6g=
-
 hosted-git-info@^2.1.4:
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.7.1.tgz#97f236977bd6e125408930ff6de3eec6281ec047"

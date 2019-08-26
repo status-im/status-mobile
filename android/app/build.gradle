@@ -80,8 +80,7 @@ project.ext.react = [
     nodeExecutableAndArgs: ["node", "--max-old-space-size=16384"],
     entryFile: "index.android.js",
     bundleInPr: true,
-    bundleCommand: "ram-bundle",
-    bundleConfig: "packager/config.js"
+    inputExcludes: ["android/**", "ios/**", "react-native/**", "src/**", "test/**"]
 ]
 
 configurations.all {

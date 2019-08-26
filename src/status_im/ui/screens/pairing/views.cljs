@@ -181,7 +181,7 @@
 
 (defn info-section []
   [react/view {:style styles/info-section}
-   [react/touchable-highlight {:on-press #(.openURL (react/linking) "https://status.im/tutorials/pairing.html")}
+   [react/touchable-highlight {:on-press #(.openURL react/linking "https://status.im/tutorials/pairing.html")}
     [react/text {:style styles/info-section-text} (i18n/label :t/learn-more)]]])
 
 (defn installations-list [installations]

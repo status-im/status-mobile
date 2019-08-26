@@ -152,7 +152,7 @@
     ;; TODO commented out for now, uncomment when notifications-settings view
     ;; is populated. Then remove :on-press below
     ;; :on-press            #(re-frame/dispatch [:navigate-to :notifications-settings])
-    :on-press            #(.openURL (react/linking) "app-settings://notification/status-im")
+    :on-press            #(.openURL react/linking "app-settings://notification/status-im")
     :accessories         [:chevron]}
    {:icon                :main-icons/mobile
     :title               :t/sync-settings
@@ -198,8 +198,8 @@
           content           (flat-list-content
                              preferred-name registrar tribute-to-talk
                              active-contacts-count show-backup-seed?)]
-      [(react/safe-area-view) {:style {:flex          1
-                                       :margin-bottom tabs.styles/tabs-diff}}
+      [react/safe-area-view {:style {:flex          1
+                                     :margin-bottom tabs.styles/tabs-diff}}
        [status-bar/status-bar {:type :main}]
        [large-toolbar/minimized-toolbar
         (header-in-toolbar multiaccount)

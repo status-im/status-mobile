@@ -20,7 +20,7 @@
             [status-im.ui.screens.hardwallet.setup.styles :as styles]
             [status-im.utils.security :as security]))
 
-(defn event-emitter [] (.-DeviceEventEmitter js-dependencies/react-native))
+(defonce event-emitter (.-DeviceEventEmitter js-dependencies/react-native))
 
 (defview secret-keys []
   (letsubs [secrets [:hardwallet-secrets]]
@@ -323,14 +323,14 @@
                           :button-label           :t/help-capitalized
                           :show-icon?             true
                           :button-container-style {:background-color colors/white}
-                          :on-press               #(.openURL (react/linking) "https://hardwallet.status.im")}])
+                          :on-press               #(.openURL react/linking "https://hardwallet.status.im")}])
 
 (defn card-already-linked []
   [card-with-button-view {:text-label             :t/card-already-linked
                           :button-label           :t/help-capitalized
                           :show-icon?             true
                           :button-container-style {:background-color colors/white}
-                          :on-press               #(.openURL (react/linking) "https://hardwallet.status.im")}])
+                          :on-press               #(.openURL react/linking "https://hardwallet.status.im")}])
 
 (defview error []
   (letsubs [error [:hardwallet-setup-error]]
@@ -379,7 +379,7 @@
                             (when @listener
                               (.removeListener @listener))
                             (reset! listener
-                                    (.addListener (event-emitter)
+                                    (.addListener event-emitter
                                                   "keycardInstallationProgress"
                                                   (fn [params]
                                                     (when @progress-bar
@@ -395,10 +395,10 @@
        (i18n/label :t/taking-long-hold-phone-connected)]]
      [react/view styles/progress-bar-container
       (if (contains? #{:blank :init} card-state)
-        [(react/progress-bar) {:styleAttr     "Horizontal"
-                               :indeterminate false
-                               :progress      0
-                               :ref           #(reset! progress-bar %)}]
+        [react/progress-bar {:styleAttr     "Horizontal"
+                             :indeterminate false
+                             :progress      0
+                             :ref           #(reset! progress-bar %)}]
         [react/activity-indicator {:animating true
                                    :size      :large}])]]))
 

@@ -246,7 +246,7 @@
 (fx/defn recovery-phrase-learn-more-pressed
   {:events [:keycard.onboarding.recovery-phrase.ui/learn-more-pressed]}
   [_]
-  (.openURL (react/linking) "https://keycard.status.im"))
+  (.openURL react/linking "https://keycard.status.im"))
 
 (fx/defn recovery-phrase-cancel-pressed
   {:events [:keycard.onboarding.recovery-phrase.ui/cancel-pressed]}

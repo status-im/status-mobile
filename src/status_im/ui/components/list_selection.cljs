@@ -41,13 +41,13 @@
          :options     [{:label  (i18n/label :t/browsing-open-in-status)
                         :action #(re-frame/dispatch [:browser.ui/open-url link])}
                        {:label  (i18n/label (platform-web-browser))
-                        :action #(.openURL (react/linking) (http/normalize-url link))}]
+                        :action #(.openURL react/linking (http/normalize-url link))}]
          :cancel-text (i18n/label :t/browsing-cancel)}))
 
 (defn browse-in-web-browser [link]
   (show {:title       (i18n/label :t/browsing-title)
          :options     [{:label  (i18n/label (platform-web-browser))
-                        :action #(.openURL (react/linking) (http/normalize-url link))}]
+                        :action #(.openURL react/linking (http/normalize-url link))}]
          :cancel-text (i18n/label :t/browsing-cancel)}))
 
 (defn browse-dapp [link]

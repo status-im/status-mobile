@@ -9,7 +9,7 @@
             [status-im.utils.platform :as platform]))
 
 (when-not platform/desktop?
-  (def firebase (object/get (rn/react-native-firebase) "default")))
+  (def firebase (object/get rn/react-native-firebase "default")))
 
 (defn message-handler-fn []
   ;; message-js is firebase.messaging.RemoteMessage: https://github.com/invertase/react-native-firebase-docs/blob/master/docs/messaging/reference/RemoteMessage.md

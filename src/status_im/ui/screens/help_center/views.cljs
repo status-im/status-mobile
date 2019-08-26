@@ -13,7 +13,7 @@
     :title               :t/faq
     :accessibility-label :faq-button
     :on-press
-    #(.openURL (react/linking)
+    #(.openURL react/linking
                (if platform/desktop?
                  "https://status.im/docs/FAQ-desktop.html"
                  "https://status.im/docs/FAQs.html"))

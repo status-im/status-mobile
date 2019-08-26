@@ -16,38 +16,26 @@
     (or (object/get js-dependencies/react-native name) {})
     #js {}))
 
-(defn lazy-get-react-property [name]
-  (let [react-property (atom nil)]
-    (fn []
-      (if @react-property
-        @react-property
-        (reset! react-property (get-react-property name))))))
-
 (defn adapt-class [class]
   (when class
     (reagent/adapt-react-class class)))
 
 (defn get-class [name]
-  (let [react-class (atom nil)]
-    (fn []
-      (if @react-class
-        @react-class
-        (reset! react-class
-                (adapt-class (get-react-property name)))))))
+  (adapt-class (get-react-property name)))
 
 (def native-modules (.-NativeModules js-dependencies/react-native))
 (def device-event-emitter (.-DeviceEventEmitter js-dependencies/react-native))
 
-(defn dismiss-keyboard! [] ((js-dependencies/dismiss-keyboard)))
+(def dismiss-keyboard! js-dependencies/dismiss-keyboard)
 
 (def splash-screen (.-SplashScreen native-modules))
 
 ;; React Components
 
 (def app-registry (get-react-property "AppRegistry"))
-(def app-state (lazy-get-react-property "AppState"))
-(def net-info (lazy-get-react-property "NetInfo"))
-(def view ((get-class "View")))
+(def app-state (get-react-property "AppState"))
+(def net-info (get-react-property "NetInfo"))
+(def view (get-class "View"))
 (def safe-area-view (get-class "SafeAreaView"))
 (def progress-bar (get-class "ProgressBarAndroid"))
 
@@ -56,14 +44,11 @@
 (def scroll-view-class (get-class "ScrollView"))
 (def keyboard-avoiding-view-class (get-class "KeyboardAvoidingView"))
 
-(def refresh-control (get-class "RefreshControl"))
-
-(def text-class ((get-class "Text")))
+(def text-class (get-class "Text"))
 (def text-input-class (get-class "TextInput"))
 (def image-class (get-class "Image"))
-(def picker-obj (lazy-get-react-property "Picker"))
-(defn picker-class [] (adapt-class (picker-obj)))
-(defn picker-item-class [] (adapt-class (.-Item (picker-obj))))
+(def picker-class (get-class "Picker"))
+(def picker-item-class (adapt-class (.-Item (get-react-property "Picker"))))
 
 (defn valid-source? [source]
   (or (not (map? source))
@@ -73,13 +58,12 @@
 
 (defn image [{:keys [source] :as props}]
   (when (valid-source? source)
-    (let [source (if (fn? source) (source) source)]
-      [(image-class) (assoc props :source source)])))
+    [image-class props]))
 
 (def switch-class (get-class "Switch"))
 
 (defn switch [props]
-  [(switch-class) props])
+  [switch-class props])
 
 (def touchable-highlight-class (get-class "TouchableHighlight"))
 (def touchable-without-feedback-class (get-class "TouchableWithoutFeedback"))
@@ -87,22 +71,22 @@
 (def activity-indicator-class (get-class "ActivityIndicator"))
 
 (defn activity-indicator [props]
-  [(activity-indicator-class) props])
+  [activity-indicator-class props])
 
 (def modal (get-class "Modal"))
 
-(def pan-responder (lazy-get-react-property "PanResponder"))
-(def animated (lazy-get-react-property "Animated"))
+(def pan-responder (.-PanResponder js-dependencies/react-native))
+(def animated (.-Animated js-dependencies/react-native))
 
-(defn animated-view-class []
-  (reagent/adapt-react-class (.-View (animated))))
+(def animated-view-class
+  (reagent/adapt-react-class (.-View animated)))
 
 (defn animated-view [props & content]
-  (vec (conj content props (animated-view-class))))
+  (vec (conj content props animated-view-class)))
 
-(def dimensions (lazy-get-react-property "Dimensions"))
-(def keyboard (lazy-get-react-property "Keyboard"))
-(def linking (lazy-get-react-property "Linking"))
+(def dimensions (.-Dimensions js-dependencies/react-native))
+(def keyboard (.-Keyboard js-dependencies/react-native))
+(def linking (.-Linking js-dependencies/react-native))
 (def desktop-notification (.-DesktopNotification (.-NativeModules js-dependencies/react-native)))
 
 (def max-font-size-multiplier 1.25)
@@ -153,7 +137,7 @@
                                   (swap! text-input-refs disj @input-ref))
        :reagent-render
        (fn [options text]
-         [(text-input-class)
+         [text-input-class
           (merge
             {:underline-color-android  :transparent
              :max-font-size-multiplier max-font-size-multiplier
@@ -186,33 +170,33 @@
            :style      style}]))
 
 (defn touchable-opacity [props content]
-  [(touchable-opacity-class) props content])
+  [touchable-opacity-class props content])
 
 (defn touchable-highlight [props content]
-  [(touchable-highlight-class)
+  [touchable-highlight-class
    (merge {:underlay-color :transparent} props)
    content])
 
 (defn touchable-without-feedback [props content]
-  [(touchable-without-feedback-class)
+  [touchable-without-feedback-class
    props
    content])
 
 (defn get-dimensions [name]
-  (js->clj (.get (dimensions) name) :keywordize-keys true))
+  (js->clj (.get dimensions name) :keywordize-keys true))
 
 (defn list-item [component]
   (reagent/as-element component))
 
 (defn value->picker-item [{:keys [value label]}]
-  [(picker-item-class) {:value (or value "") :label (or label value "")}])
+  [picker-item-class {:value (or value "") :label (or label value "")}])
 
 (defn picker [{:keys [style on-change selected enabled data]}]
   (into
-   [(picker-class) (merge (when style {:style style})
-                          (when enabled {:enabled enabled})
-                          (when on-change {:on-value-change on-change})
-                          (when selected {:selected-value selected}))]
+   [picker-class (merge (when style {:style style})
+                        (when enabled {:enabled enabled})
+                        (when on-change {:on-value-change on-change})
+                        (when selected {:selected-value selected}))]
     (map value->picker-item data)))
 
 ;; Image picker
@@ -228,7 +212,7 @@
   ([images-fn]
    (show-image-picker images-fn nil))
   ([images-fn media-type]
-   (let [image-picker (.-default (image-picker-class))]
+   (let [image-picker (.-default image-picker-class)]
      (-> image-picker
          (.openPicker (clj->js {:multiple false :mediaType (or media-type "any")}))
          (.then images-fn)
@@ -254,12 +238,12 @@
 
 (defn keyboard-avoiding-view [props & children]
   (let [view-element (if platform/ios?
-                       [(keyboard-avoiding-view-class) (merge {:behavior :padding} props)]
+                       [keyboard-avoiding-view-class (merge {:behavior :padding} props)]
                        [view props])]
     (vec (concat view-element children))))
 
 (defn scroll-view [props & children]
-  (vec (conj children props (scroll-view-class))))
+  (vec (conj children props scroll-view-class)))
 
 (views/defview with-activity-indicator
   [{:keys [timeout style enabled? preview]} comp]
@@ -346,7 +330,7 @@
                                      :height           100
                                      :z-index          -1000}])
           children (conj children bottom-background)]
-      (apply vector (safe-area-view) props children))))
+      (apply vector safe-area-view props children))))
 
 (defmethod create-main-screen-view :default [_]
   view)

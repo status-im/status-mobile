@@ -326,7 +326,7 @@
                     fiat-value disable-button? state]}
             [:tribute-to-talk/settings-ui]]
     [react/keyboard-avoiding-view {:style styles/container}
-     [(react/safe-area-view) {:style {:flex 1}}
+     [react/safe-area-view {:style {:flex 1}}
       [status-bar/status-bar]
       [toolbar/toolbar
        nil

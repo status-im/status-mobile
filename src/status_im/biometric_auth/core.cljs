@@ -64,7 +64,7 @@
      :bioauth-message (get-error-message code)}))
 
 (defn- do-get-supported [callback]
-  (-> (.isSupported (rn/touchid))
+  (-> (.isSupported rn/touchid)
       (.then #(callback (or (keyword %) android-default-support)))
       (.catch #(callback nil))))
 
@@ -79,7 +79,7 @@
   ([cb]
    (authenticate cb nil))
   ([cb {:keys [reason ios-fallback-label]}]
-   (-> (.authenticate (rn/touchid) reason (authenticate-options ios-fallback-label))
+   (-> (.authenticate rn/touchid reason (authenticate-options ios-fallback-label))
        (.then #(cb success-result))
        (.catch #(cb (generate-error-result %))))))
 

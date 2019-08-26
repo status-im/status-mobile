@@ -104,7 +104,7 @@
     (reagent/create-class
      {:component-did-mount
       (fn []
-        (.addEventListener (react/dimensions)
+        (.addEventListener react/dimensions
                            "change"
                            (fn [dimensions]
                              (let [two-pane-enabled? (dimensions/fit-two-pane?)]

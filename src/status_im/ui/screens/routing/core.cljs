@@ -89,7 +89,7 @@
           active? (reagent.core/atom true)]
       (if platform/android?
         [react/view common-styles/modal
-         [(react/modal)
+         [react/modal
           {:transparent      true
            :animation-type   :slide
            :on-request-close (fn []

@@ -12,9 +12,9 @@
 (defview application-info [visible?]
   (letsubs [info [:hardwallet-application-info]
             error [:hardwallet-application-info-error]]
-    [(react/modal) {:visible          @visible?
-                    :transparent      false
-                    :on-request-close #()}
+    [react/modal {:visible          @visible?
+                  :transparent      false
+                  :on-request-close #()}
      [react/view {:padding         20
                   :justify-content :center}
       [react/text {:style {:font-size   18

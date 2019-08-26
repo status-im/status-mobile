@@ -215,7 +215,7 @@
   [(actions/opts [{:label (i18n/label :t/copy-transaction-hash)
                    :action #(react/copy-to-clipboard hash)}
                   {:label  (i18n/label :t/open-on-etherscan)
-                   :action #(.openURL (react/linking) url)}])])
+                   :action #(.openURL react/linking url)}])])
 
 (defview transaction-details-view [hash address]
   (letsubs [{:keys [url type confirmations confirmations-progress

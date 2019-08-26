@@ -27,12 +27,12 @@
 
 (when-not platform/desktop?
 
-  (defn firebase [] (object/get (rn/react-native-firebase) "default")))
+  (def firebase (object/get rn/react-native-firebase "default")))
 
 ;; NOTE: Only need to explicitly request permissions on iOS.
 (defn request-permissions []
   (when-not platform/desktop?
-    (-> (.requestPermission (.messaging (firebase)))
+    (-> (.requestPermission (.messaging firebase))
         (.then
          (fn [_]
            (log/debug "notifications-granted"))
@@ -162,14 +162,12 @@
             (when-let [msg-id (:id decoded-payload)]
               ;; We must prefix the notification ID, otherwise it will
               ;; cause a crash in iOS
-              {:notificationId (str "hash:" msg-id)})))
-          firebase (firebase)]
+              {:notificationId (str "hash:" msg-id)})))]
       (firebase.notifications.Notification.
        native-notification (.notifications firebase))))
 
   (defn display-notification [{:keys [title body] :as params}]
-    (let [notification (build-notification params)
-          firebase (firebase)]
+    (let [notification (build-notification params)]
       (when platform/android?
         (.. notification
             (-android.setChannelId channel-id)
@@ -186,15 +184,14 @@
                    (log/debug "Display Notification error" title body error))))))
 
   (defn get-fcm-token []
-    (-> (.getToken (.messaging (firebase)))
+    (-> (.getToken (.messaging firebase))
         (.then (fn [x]
                  (log/debug "get-fcm-token:" x)
                  (re-frame/dispatch
                   [:notifications.callback/get-fcm-token-success x])))))
 
   (defn create-notification-channel []
-    (let [firebase (firebase)
-          channel (firebase.notifications.Android.Channel.
+    (let [channel (firebase.notifications.Android.Channel.
                    channel-id
                    channel-name
                    firebase.notifications.Android.Importance.High)]
@@ -274,7 +271,7 @@
     It is only needed to handle PNs from legacy clients
     (which use firebase.notifications API)"
     (log/debug "Handle initial push notifications")
-    (.. (firebase)
+    (.. firebase
         notifications
         getInitialNotification
         (then (fn [event]
@@ -284,7 +281,7 @@
 
   (defn setup-token-refresh-callback []
     (.onTokenRefresh
-     (.messaging (firebase))
+     (.messaging firebase)
      (fn [x]
        (log/debug "onTokenRefresh:" x)
        (re-frame/dispatch [:notifications.callback/get-fcm-token-success x]))))
@@ -296,7 +293,7 @@
     "we can remove this method"
     (log/debug "calling onNotification")
     (.onNotification
-     (.notifications (firebase))
+     (.notifications firebase)
      (fn [message-js]
        (log/debug "handle-on-notification-callback called")
        (let [decoded-payload (decode-notification-payload message-js)]
@@ -308,7 +305,7 @@
   (defn setup-on-message-callback []
     (log/debug "calling onMessage")
     (.onMessage
-     (.messaging (firebase))
+     (.messaging firebase)
      (fn [message-js]
        (log/debug "handle-on-message-callback called")
        (let [decoded-payload (decode-notification-payload message-js)]
@@ -320,7 +317,7 @@
 
   (defn setup-on-notification-opened-callback []
     (log/debug "setup-on-notification-opened-callback")
-    (.. (firebase)
+    (.. firebase
         notifications
         (onNotificationOpened handle-notification-open-event)))
 

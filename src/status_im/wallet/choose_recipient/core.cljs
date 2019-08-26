@@ -66,7 +66,7 @@
 
 (defn use-default-eth-gas [fx]
   (assoc-in fx [:db :wallet :send-transaction :gas]
-            (ethereum/default-transaction-gas)))
+            ethereum/default-transaction-gas))
 
 (re-frame/reg-fx
  :resolve-address

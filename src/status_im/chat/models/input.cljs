@@ -21,7 +21,7 @@
     (string/replace text
                     #":([a-z_\-+0-9]*):"
                     (fn [[original emoji-id]]
-                      (if-let [emoji-map (object/get (object/get (dependencies/emojis) "lib") emoji-id)]
+                      (if-let [emoji-map (object/get (object/get dependencies/emojis "lib") emoji-id)]
                         (object/get emoji-map "char")
                         original)))))
 

@@ -4,20 +4,20 @@
             [status-im.js-dependencies :as dependencies]
             [status-im.utils.money :as money]))
 
-(defn utils [] (dependencies/web3-utils))
+(def utils dependencies/web3-utils)
 
 (defn sha3 [s]
   (when s
-    (.sha3 (utils) (str s))))
+    (.sha3 utils (str s))))
 
 (defn utf8-to-hex [s]
   (try
-    (.utf8ToHex (utils) (str s))
+    (.utf8ToHex utils (str s))
     (catch :default err nil)))
 
 (defn hex-to-utf8 [s]
   (try
-    (.hexToUtf8 (utils) s)
+    (.hexToUtf8 utils s)
     (catch :default err nil)))
 
 ;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
@@ -83,7 +83,7 @@
 
 (defn address? [s]
   (when s
-    (.isAddress (utils) s)))
+    (.isAddress utils s)))
 
 (defn network->chain-id [network]
   (get-in network [:config :NetworkId]))

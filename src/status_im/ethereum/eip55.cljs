@@ -7,7 +7,7 @@
   (:require [clojure.string :as string]
             [status-im.js-dependencies :as dependencies]))
 
-(defn utils [] (dependencies/web3-utils))
+(def utils dependencies/web3-utils)
 
 (def hex-prefix "0x")
 
@@ -16,7 +16,7 @@
   [address]
   (when address
     (.toChecksumAddress
-     (utils)
+     utils
      (if (string/starts-with? address hex-prefix)
        address
        (str hex-prefix address)))))
@@ -24,4 +24,4 @@
 (defn valid-address-checksum?
   "Checks address checksum validity."
   [address]
-  (.checkAddressChecksum (utils) address))
+  (.checkAddressChecksum utils address))

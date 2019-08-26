@@ -6,7 +6,7 @@
 (def config
   (memoize
    (fn []
-     (js->clj (.-default (rn-dependencies/config)) :keywordize-keys true))))
+     (js->clj (.-default rn-dependencies/config) :keywordize-keys true))))
 
 (defn get-config
   ([k] (get (config) k))

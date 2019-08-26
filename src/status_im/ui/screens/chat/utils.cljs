@@ -42,7 +42,7 @@
               :on-press #(when (and (security/safe-link? text)
                                     (security/safe-link-text? (-> message :content :text)))
                            (if platform/desktop?
-                             (.openURL (react/linking) (http/normalize-url text))
+                             (.openURL react/linking (http/normalize-url text))
                              (re-frame/dispatch [:browser.ui/message-link-pressed text])))})
    :tag    (fn [text {:keys [outgoing]}]
              {:style    {:color                (if outgoing colors/white colors/blue)

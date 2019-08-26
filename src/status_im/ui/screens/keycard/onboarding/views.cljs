@@ -46,7 +46,7 @@
                              :text-align  :center}}
          (i18n/label :t/keycard-onboarding-intro-text)]]
        [react/view
-        [react/touchable-highlight {:on-press #(.openURL (react/linking) "https://keycard.status.im")}
+        [react/touchable-highlight {:on-press #(.openURL react/linking "https://keycard.status.im")}
          [react/view {:flex-direction  :row
                       :align-items     :center
                       :justify-content :center}

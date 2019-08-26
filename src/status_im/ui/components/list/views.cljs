@@ -220,7 +220,7 @@
   [{:keys [data] :as props}]
   {:pre [(or (nil? data)
              (sequential? data))]}
-  [(flat-list-class)
+  [flat-list-class
    (merge (base-list-props props)
           props
           {:data (wrap-data data)})])
@@ -259,7 +259,7 @@
   [{:keys [sections render-section-header-fn render-section-footer-fn style] :as props
     :or {render-section-header-fn default-render-section-header
          style {}}}]
-  [(section-list-class)
+  [section-list-class
    (merge (base-list-props props)
           props
           (when render-section-footer-fn

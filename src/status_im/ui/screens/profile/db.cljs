@@ -1,8 +1,7 @@
 (ns status-im.ui.screens.profile.db
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
-            [status-im.chat.constants :as chat.constants]
-            [status-im.utils.homoglyph :as homoglyph]))
+            [status-im.chat.constants :as chat.constants]))
 
 (defn correct-name? [username]
   (when-let [username (some-> username (string/trim))]

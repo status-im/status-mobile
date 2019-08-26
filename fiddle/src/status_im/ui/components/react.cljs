@@ -47,8 +47,6 @@
 (def scroll-view-class (get-web-class "ScrollView"))
 (def keyboard-avoiding-view-class (get-web-class "KeyboardAvoidingView"))
 
-(def refresh-control nil)
-
 (def text-class ((get-web-class "Text")))
 (def text-input-class (get-web-class "TextInput"))
 (def image-class (get-web-class "Image"))

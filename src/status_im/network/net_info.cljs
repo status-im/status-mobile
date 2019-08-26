@@ -11,8 +11,8 @@
             [status-im.ui.screens.mobile-network-settings.events :as mobile-network]))
 
 (defn is-connected? [callback]
-  (when (react-components/net-info)
-    (.then (.fetch (.-isConnected (react-components/net-info)))
+  (when react-components/net-info
+    (.then (.fetch (.-isConnected react-components/net-info))
            (fn [is-connected?]
              (log/debug "Is connected?" is-connected?)
              (callback is-connected?)))))
@@ -23,23 +23,23 @@
           on-success #(callback {:type (:type info) :expensive? %})]
       (if platform/ios?
         (on-success false)
-        (.. (react-components/net-info)
+        (.. react-components/net-info
             isConnectionExpensive
             (then on-success)
             (catch (fn [error] (log/warn "isConnectionExpensive: " error))))))))
 
 (defn net-info [callback]
-  (when (react-components/net-info)
-    (.then (.getConnectionInfo (react-components/net-info))
+  (when react-components/net-info
+    (.then (.getConnectionInfo react-components/net-info)
            (wrap-net-info callback))))
 
 (defn add-connection-listener [listener]
-  (when (react-components/net-info)
-    (.addEventListener (.-isConnected (react-components/net-info)) "connectionChange" listener)))
+  (when react-components/net-info
+    (.addEventListener (.-isConnected react-components/net-info) "connectionChange" listener)))
 
 (defn add-net-info-listener [listener]
-  (when (react-components/net-info)
-    (.addEventListener (react-components/net-info) "connectionChange"
+  (when react-components/net-info
+    (.addEventListener react-components/net-info "connectionChange"
                        (wrap-net-info listener))))
 
 (re-frame/reg-fx

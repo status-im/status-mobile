@@ -6,7 +6,7 @@
 (declare window)
 
 (defn add-event-listener []
-  (.addEventListener (react/dimensions)
+  (.addEventListener react/dimensions
                      "change"
                      #(do
                         (re-frame/dispatch [:update-window-dimensions %]))))

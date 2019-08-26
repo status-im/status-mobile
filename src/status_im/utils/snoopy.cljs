@@ -2,10 +2,10 @@
   (:require [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.utils.config :as config]))
 
-(defn snoopy [] (.-default (js-dependencies/snoopy)))
-(defn sn-filter [] (.-default (js-dependencies/snoopy-filter)))
-(defn bars [] (.-default (js-dependencies/snoopy-bars)))
-(defn buffer [] (.-default (js-dependencies/snoopy-buffer)))
+(def snoopy (.-default js-dependencies/snoopy))
+(def sn-filter (.-default js-dependencies/snoopy-filter))
+(def bars (.-default js-dependencies/snoopy-bars))
+(def buffer (.-default js-dependencies/snoopy-buffer))
 
 (defn create-filter [f]
   (fn [message]
@@ -54,18 +54,16 @@
 
 (defn threshold-warnings
   [{:keys [filter-fn label tick? print-events? threshold events threshold-message]}]
-  (.subscribe (((bars)
+  (.subscribe ((bars
                 (fn [a] (.-length a))
                 threshold
                 tick?
                 true
                 label
                 threshold-message)
-               (((buffer))
-                (((sn-filter)
-                  (create-filter filter-fn)
-                  print-events?)
-                 events)))))
+               ((buffer) ((sn-filter (create-filter filter-fn)
+                                     print-events?)
+                          events)))))
 
 ;; In order to enable snoopy set SNOOPY=1 in .env file.
 ;; By default events are not printed and you will see warnings only when
@@ -75,9 +73,9 @@
 ;; and then collect printed data in logs.
 (defn subscribe! []
   (when config/snoopy-enabled?
-    (let [emitter-class (js-dependencies/EventEmmiter)
+    (let [emitter-class js-dependencies/EventEmmiter
           emitter       (emitter-class.)
-          events        (.stream (snoopy) emitter)]
+          events        (.stream snoopy emitter)]
       (threshold-warnings
        {:filter-fn         (constantly true)
         :label             "all messages"

@@ -8,7 +8,7 @@
 (def webview-bridge-class
   (memoize
    (fn []
-     (reagent/adapt-react-class (.-default (js-dependencies/webview-bridge))))))
+     (reagent/adapt-react-class (.-default js-dependencies/webview-bridge)))))
 
 (defn module [] (.-WebViewBridgeModule (.-NativeModules js-dependencies/react-native)))
 

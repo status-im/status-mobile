@@ -9,7 +9,7 @@
 
 (defn qr-code [{:keys [size value]}]
   (let [uri (reagent/atom nil)]
-    (.toString (rn-dependencies/qr-code) value #(reset! uri %2))
+    (.toString rn-dependencies/qr-code value #(reset! uri %2))
     (fn []
       (when @uri
         [svg/svgxml {:xml @uri :width size :height size}]))))

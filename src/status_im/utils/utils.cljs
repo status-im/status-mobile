@@ -84,7 +84,7 @@
 (defn set-timeout [cb ms]
   (if platform/desktop?
     (js/setTimeout cb ms)
-    (.setTimeout (rn-dependencies/background-timer) cb ms)))
+    (.setTimeout rn-dependencies/background-timer cb ms)))
 
 (defn unread-messages-count
   "display actual # if less than 1K, round to the lowest thousand if between 1 and 10K, otherwise 10K+ for anything larger"
@@ -109,14 +109,14 @@
 (defn clear-timeout [id]
   (if platform/desktop?
     (js/clearTimeout id)
-    (.clearTimeout (rn-dependencies/background-timer) id)))
+    (.clearTimeout rn-dependencies/background-timer id)))
 
 (defn set-interval [cb ms]
   (if platform/desktop?
     (js/setInterval cb ms)
-    (.setInterval (rn-dependencies/background-timer) cb ms)))
+    (.setInterval rn-dependencies/background-timer cb ms)))
 
 (defn clear-interval [id]
   (if platform/desktop?
     (js/clearInterval id)
-    (.clearInterval (rn-dependencies/background-timer) id)))
+    (.clearInterval rn-dependencies/background-timer id)))

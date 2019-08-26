@@ -18,7 +18,7 @@
   ([url body on-success on-error]
    (raw-post url body on-success on-error nil))
   ([url body on-success on-error {:keys [timeout-ms]}]
-   (-> ((rn-dependencies/fetch)
+   (-> (rn-dependencies/fetch
         url
         (clj->js {:method  "POST"
                   :headers {"Cache-Control" "no-cache"}
@@ -42,7 +42,7 @@
   ([url data on-success on-error]
    (post url data on-success on-error nil))
   ([url data on-success on-error {:keys [valid-response? timeout-ms headers]}]
-   (-> ((rn-dependencies/fetch)
+   (-> (rn-dependencies/fetch
         url
         (clj->js (merge {:method  "POST"
                          :body    data
@@ -82,7 +82,7 @@
   ([url on-success on-error]
    (raw-get url on-success on-error nil))
   ([url on-success on-error {:keys [timeout-ms]}]
-   (-> ((rn-dependencies/fetch)
+   (-> (rn-dependencies/fetch
         url
         (clj->js {:method  "GET"
                   :headers {"Cache-Control" "no-cache"}
@@ -107,7 +107,7 @@
   ([url on-success on-error params]
    (get url on-success on-error params nil))
   ([url on-success on-error {:keys [valid-response? timeout-ms]} headers]
-   (-> ((rn-dependencies/fetch)
+   (-> (rn-dependencies/fetch
         url
         (clj->js {:method  "GET"
                   :headers (merge {"Cache-Control" "no-cache"} headers)

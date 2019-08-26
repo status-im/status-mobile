@@ -179,12 +179,12 @@
       [term-point
        (i18n/label :t/ens-terms-point-9 {:address contract})]
       [react/view {:style {:align-items :center :margin-top 16 :margin-bottom 8}}
-       [link {:on-press #(.openURL (react/linking) (etherscan-url contract))}
+       [link {:on-press #(.openURL react/linking (etherscan-url contract))}
         (i18n/label :t/etherscan-lookup)]]
       [term-point
        (i18n/label :t/ens-terms-point-10)]
       [react/view {:style {:align-items :center :margin-top 16 :margin-bottom 8}}
-       [link {:on-press #(.openURL (react/linking) (etherscan-url (:mainnet ethereum.ens/ens-registries)))}
+       [link {:on-press #(.openURL react/linking (etherscan-url (:mainnet ethereum.ens/ens-registries)))}
         (i18n/label :t/etherscan-lookup)]]]]))
 
 ;; Registration
