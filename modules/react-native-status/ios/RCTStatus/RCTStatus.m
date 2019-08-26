@@ -116,7 +116,7 @@ RCT_EXPORT_METHOD(initKeystore) {
 #endif
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *rootUrl =[[fileManager
-                      URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
+                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
                      lastObject];
 
     NSURL *keystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
@@ -166,7 +166,7 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error = nil;
     NSURL *rootUrl =[[fileManager
-                      URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
+                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
                      lastObject];
 
     NSURL *zipFile = [rootUrl URLByAppendingPathComponent:@"logs.zip"];
@@ -326,7 +326,7 @@ RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error = nil;
     NSURL *rootUrl =[[fileManager
-                      URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
+                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
                      lastObject];
     NSURL *absTestnetFolderName = [rootUrl URLByAppendingPathComponent:@"ethereum/testnet"];
 
@@ -444,7 +444,7 @@ RCT_EXPORT_METHOD(openAccounts:(RCTResponseSenderBlock)callback) {
 #endif
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *rootUrl =[[fileManager
-                      URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
+                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
                      lastObject];
 
     NSString *result = StatusgoOpenAccounts(rootUrl.path);
@@ -460,7 +460,7 @@ RCT_EXPORT_METHOD(verify:(NSString *)address
 #endif
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *rootUrl =[[fileManager
-                      URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
+                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
                      lastObject];
     NSURL *absKeystoreUrl = [rootUrl URLByAppendingPathComponent:@"keystore"];
 

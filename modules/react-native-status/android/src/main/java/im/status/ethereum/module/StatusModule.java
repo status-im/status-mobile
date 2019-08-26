@@ -114,6 +114,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     }
 
+    public String getNoBackupDirectory() {
+      return this.getReactApplicationContext().getNoBackupFilesDir().getAbsolutePath();
+    }
+
     public void handleSignal(String jsonEvent) {
         Log.d(TAG, "Signal event: " + jsonEvent);
         WritableMap params = Arguments.createMap();
@@ -201,7 +205,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         Activity currentActivity = getCurrentActivity();
 
-        final String absRootDirPath = currentActivity.getApplicationInfo().dataDir;
+        final String absRootDirPath = this.getNoBackupDirectory();
         final String dataFolder = this.getTestnetDataDir(absRootDirPath);
         Log.d(TAG, "Starting Geth node in folder: " + dataFolder);
 
@@ -312,16 +316,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         }
     }
 
-    private String getOldExternalDir() {
-        File extStore = Environment.getExternalStorageDirectory();
-        return extStore.exists() ? pathCombine(extStore.getAbsolutePath(), "ethereum/testnet") : getNewInternalDir();
-    }
-
-    private String getNewInternalDir() {
-        Activity currentActivity = getCurrentActivity();
-        return pathCombine(currentActivity.getApplicationInfo().dataDir, "ethereum/testnet");
-    }
-
     private void deleteDirectory(File folder) {
         File[] files = folder.listFiles();
         if (files != null) {
@@ -366,39 +360,13 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void shouldMoveToInternalStorage(Callback callback) {
-        String oldDir = getOldExternalDir();
-        String newDir = getNewInternalDir();
-
-        File oldDirFile = new File(oldDir);
-        File newDirFile = new File(newDir);
-
-        callback.invoke(oldDirFile.exists() && !newDirFile.exists());
-    }
-
-    @ReactMethod
-    public void moveToInternalStorage(Callback callback) {
-        String oldDir = getOldExternalDir();
-        String newDir = getNewInternalDir();
-
-        try {
-            File oldDirFile = new File(oldDir);
-            copyDirectory(oldDirFile, new File(newDir));
-            deleteDirectory(oldDirFile);
-        } catch (IOException e) {
-            Log.d(TAG, "Moving error: " + e);
-        }
-
-        callback.invoke();
-    }
-
-    @ReactMethod
     private void initKeystore() {
         Log.d(TAG, "initKeystore");
 
         Activity currentActivity = getCurrentActivity();
 
-        final String keydir = pathCombine(currentActivity.getApplicationInfo().dataDir, "/keystore");
+        final String keydir = pathCombine(this.getNoBackupDirectory(), "/keystore");
+
         if (!checkAvailability()) {
             Log.e(TAG, "[initKeystore] Activity doesn't exist, cannot init keystore");
             System.exit(0);
@@ -419,7 +387,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private void openAccounts(final Callback callback) {
         Activity currentActivity = getCurrentActivity();
 
-        final String rootDir = currentActivity.getApplicationInfo().dataDir;
+        final String rootDir = this.getNoBackupDirectory();
         Log.d(TAG, "openAccounts");
         if (!checkAvailability()) {
             Log.e(TAG, "[openAccounts] Activity doesn't exist, cannot call openAccounts");
@@ -448,7 +416,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         Activity currentActivity = getCurrentActivity();
 
-        final String absRootDirPath = currentActivity.getApplicationInfo().dataDir;
+        final String absRootDirPath = this.getNoBackupDirectory();
         final String newKeystoreDir = pathCombine(absRootDirPath, "keystore");
 
         Runnable r = new Runnable() {
