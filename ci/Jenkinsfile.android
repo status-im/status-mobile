@@ -63,23 +63,23 @@ pipeline {
     }
     stage('Parallel') {
       parallel {
-        stage('Checks') { stages {
-          stage('Lint') {
-            steps {
-              script { cmn.nix.shell('lein cljfmt check', attr: 'targets.leiningen.shell') }
-            }
-          }
-          stage('Tests') {
-            steps {
-              script { cmn.nix.shell('lein test-cljs', attr: 'targets.leiningen.shell') }
-            }
-          }
-          /* stage('Coverage') {
-            steps {
-              script { android.coverage() }
-            }
-          } */
-        } }
+        // stage('Checks') { stages {
+        //   stage('Lint') {
+        //     steps {
+        //       script { cmn.nix.shell('lein cljfmt check', attr: 'targets.leiningen.shell') }
+        //     }
+        //   }
+        //   stage('Tests') {
+        //     steps {
+        //       script { cmn.nix.shell('lein test-cljs', attr: 'targets.leiningen.shell') }
+        //     }
+        //   }
+        //   /* stage('Coverage') {
+        //     steps {
+        //       script { android.coverage() }
+        //     }
+        //   } */
+        // } }
         stage('Build') { stages {
           stage('JSBundle') {
             steps {
