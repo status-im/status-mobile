@@ -2,6 +2,8 @@
 
 set -e
 
+GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
+
 # cleanup for artifacts created during builds
 function cleanup() {
   # clear trapped signals
@@ -24,9 +26,9 @@ trap cleanup EXIT ERR INT QUIT
 function extractResults() {
   local nixResultPath="$1"
   echo "Saving build result: ${nixResultPath}"
-  mkdir -p result
-  cp -vfr ${nixResultPath}/* result/
-  chmod u+w -R result/
+  mkdir -p ${GIT_ROOT}/result
+  cp -vfr ${nixResultPath}/* ${GIT_ROOT}/result/
+  chmod u+w -R ${GIT_ROOT}/result/
 }
 
 # Load Nix profile
@@ -36,7 +38,7 @@ targetAttr="${1}"
 shift
 
 if [[ -z "${targetAttr}" ]]; then
-  echo "First argument is madatory and has to specify the Nix attribute!"
+  echo "First argument is mandatory and has to specify the Nix attribute!"
   exit 1
 fi
 
