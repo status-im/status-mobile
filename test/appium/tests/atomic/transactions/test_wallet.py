@@ -118,7 +118,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_password_input.click()
         send_transaction.enter_password_input.send_keys('wrong_password')
         send_transaction.sign_button.click()
-        send_transaction.find_text_part('Wrong password', 20)
+        if send_transaction.element_by_text_part('Transaction sent').is_element_displayed():
+            self.driver.fail('Transaction was sent with a wrong password')
 
     @marks.testrail_id(1452)
     def test_transaction_appears_in_history(self):

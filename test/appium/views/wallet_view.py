@@ -468,7 +468,7 @@ class WalletView(BaseView):
         """
         :param desired_currency: defines a currency designator which is expressed by ISO 4217 code
         """
-        self.multiaccount_more_options.click()
+        self.multiaccount_more_options.click_until_presence_of_element(self.set_currency_button)
         self.set_currency_button.click()
         desired_currency = self.element_by_text_part(desired_currency)
         desired_currency.scroll_to_element()
