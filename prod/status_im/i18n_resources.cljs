@@ -1,5 +1,4 @@
 (ns status-im.i18n-resources
-  (:require-macros [status-im.utils.js-require :as js-require])
   (:require [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (def default-device-language
@@ -12,14 +11,14 @@
    (conj #{:en} default-device-language)))
 
 (def prod-translations
-  {:en         (js-require/js-require "status-modules/translations/en.json")
-   :es_419     (js-require/js-require "status-modules/translations/es_419.json")
-   :fa         (js-require/js-require "status-modules/translations/fa.json")
-   :ko         (js-require/js-require "status-modules/translations/ko.json")
-   :ms         (js-require/js-require "status-modules/translations/ms.json")
-   :pl         (js-require/js-require "status-modules/translations/pl.json")
-   :ru         (js-require/js-require "status-modules/translations/ru.json")
-   :zh_Hans_CN (js-require/js-require "status-modules/translations/zh_Hans_CN.json")})
+  {:en         (js/require "status-modules/translations/en.json")
+   :es_419     (js/require "status-modules/translations/es_419.json")
+   :fa         (js/require "status-modules/translations/fa.json")
+   :ko         (js/require "status-modules/translations/ko.json")
+   :ms         (js/require "status-modules/translations/ms.json")
+   :pl         (js/require "status-modules/translations/pl.json")
+   :ru         (js/require "status-modules/translations/ru.json")
+   :zh_Hans_CN (js/require "status-modules/translations/zh_Hans_CN.json")})
 
 (defn valid-language [lang]
   (if (contains? prod-translations lang)
@@ -30,7 +29,7 @@
 
 (defn require-translation [lang-key]
   (when-let [lang (valid-language lang-key)]
-    ((get prod-translations lang))))
+    (get prod-translations lang)))
 
 ;; translations
 (def translations-by-locale

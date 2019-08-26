@@ -1,5 +1,4 @@
-(ns status-im.react-native.resources
-  (:require-macros [status-im.utils.js-require :as js-require]))
+(ns status-im.react-native.resources)
 
 (def ui
   {:empty-hashtags       "images/ui/empty-hashtags.png"

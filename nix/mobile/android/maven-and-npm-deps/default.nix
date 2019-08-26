@@ -38,7 +38,7 @@ let
               # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
               mkFilter {
                 dirRootsToInclude = [
-                  "android" "mobile_files" "packager" "resources"
+                  "android" "mobile_files" "resources"
                   "translations" "status-modules"
                 ];
                 dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ".gradle" "build" "intermediates" "libs" "obj" ];
