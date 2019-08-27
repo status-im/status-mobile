@@ -54,7 +54,6 @@
 (def status-bar-class (when-not platform/desktop? (get-react-property "StatusBar")))
 
 (def scroll-view-class (get-class "ScrollView"))
-(def web-view (get-class "WebView"))
 (def keyboard-avoiding-view-class (get-class "KeyboardAvoidingView"))
 
 (def refresh-control (get-class "RefreshControl"))

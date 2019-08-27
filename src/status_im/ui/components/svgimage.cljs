@@ -2,13 +2,16 @@
   (:require [status-im.ui.components.react :as react]
             [reagent.core :as reagent]
             [status-im.utils.platform :as platform]
-            [status-im.utils.http :as http]))
+            [status-im.utils.http :as http]
+            [status-im.ui.components.webview-bridge :as components.webview-bridge]))
 
 (defn html [uri width height]
   (str
    "<!DOCTYPE html>\n
    <html>
    <head>
+   <meta content=\"ie=edge\" http-equiv=\"x-ua-compatible\" />
+   <meta content=\"width=device-width, initial-scale=1\" name=\"viewport\" />
    <style type=\"text/css\">
    img {
         display: block;
@@ -43,7 +46,7 @@
       (fn []
         [react/view {:style     style
                      :on-layout #(reset! width (-> % .-nativeEvent .-layout .-width))}
-         [(react/web-view)
+         [components.webview-bridge/webview-bridge
           {:java-script-enabled         false
            :third-party-cookies-enabled false
            :scroll-enabled              false
