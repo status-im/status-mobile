@@ -45,7 +45,6 @@
 (def status-bar-class (get-web-class "StatusBar"))
 
 (def scroll-view-class (get-web-class "ScrollView"))
-(def web-view nil)
 (def keyboard-avoiding-view-class (get-web-class "KeyboardAvoidingView"))
 
 (def refresh-control nil)
