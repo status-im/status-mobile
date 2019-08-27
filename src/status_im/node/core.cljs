@@ -23,6 +23,7 @@
 (defn- add-log-level [config log-level]
   (if (empty? log-level)
     (assoc config
+           :LogLevel "ERROR"
            :LogEnabled false)
     (assoc config
            :LogLevel log-level
