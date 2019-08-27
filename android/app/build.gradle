@@ -318,6 +318,7 @@ dependencies {
     //compile ("com.facebook.react:react-native:0.55.4") { force = true }  // From node_modules
     implementation project(':react-native-status')
     implementation project(':react-native-webview-bridge')
+    implementation project(':react-native-camera')
     implementation project(':react-native-status-keycard')
     implementation "com.google.android.gms:play-services-base:${rootProject.ext.googlePlayServicesVersion}"
     implementation 'com.google.firebase:firebase-core:16.0.9' //this decides your firebase SDK version

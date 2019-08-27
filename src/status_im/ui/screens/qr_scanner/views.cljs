@@ -40,7 +40,6 @@
                                            (do (reset! barcode-read? true)
                                                (on-barcode-read identifier %))))
                        :ref           #(reset! camera-initialized? true)
-                       :captureAudio  false
                        :style         styles/barcode-scanner}])
      [react/view styles/rectangle-container
       [react/view styles/rectangle

@@ -487,6 +487,7 @@ var TopLevel = {
     "SyncInstallation" : function () {},
     "SyncInstallationHandler" : function () {},
     "t" : function () {},
+    "takePictureAsync" : function () {},
     "Text" : function () {},
     "text" : function () {},
     "TextEncoder" : function () {},

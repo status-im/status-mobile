@@ -12,7 +12,7 @@
             [status-im.ui.components.icons.vector-icons :as icons]))
 
 (defn image-captured [data]
-  (let [path       (.-path data)
+  (let [path       (.-uri data)
         _          (log/debug "Captured image: " path)
         on-success (fn [base64]
                      (log/debug "Captured success: " base64)
@@ -39,7 +39,7 @@
       [react/view styles/button
        [react/touchable-highlight {:on-press (fn []
                                                (let [camera @camera-ref]
-                                                 (-> (.capture camera)
+                                                 (-> (.takePictureAsync camera)
                                                      (.then image-captured)
                                                      (.catch #(log/debug "Error capturing image: " %)))))}
         [react/view

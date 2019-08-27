@@ -61,6 +61,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
             packages.add(new RNFirebaseMessagingPackage());
             packages.add(new RNFirebaseNotificationsPackage());
             packages.add(new ReactNativeDialogsPackage());
+            packages.add(new RNCameraPackage());
             packages.add(new RNStatusKeycardPackage());
             packages.add(new WebViewBridgePackage(BuildConfig.DEBUG_WEBVIEW == "1", callRPC));
             return packages;
