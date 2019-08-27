@@ -19,7 +19,7 @@
    (list-selection/open-share obj)))
 
 (re-frame/reg-fx
- :wallet.accounts/generate-account
+ ::generate-account
  (fn [{:keys [address password path-num]}]
    (status/multiaccount-load-account
     address
@@ -27,7 +27,7 @@
     (fn [value]
       (let [{:keys [id error]} (types/json->clj value)]
         (if error
-          (re-frame/dispatch [:set-in [:generate-account :error] (i18n/label :t/add-account-incorrect-password)])
+          (re-frame/dispatch [::generate-new-account-error])
           (let [path (str constants/path-root "/" path-num)]
             (status/multiaccount-derive-addresses
              id
@@ -40,7 +40,7 @@
                 (fn [result]
                   (let [{:keys [public-key address]}
                         (get (types/json->clj result) (keyword path))]
-                    (re-frame/dispatch [:wallet.accounts/account-generated
+                    (re-frame/dispatch [::account-generated
                                         {:name (str "Account " path-num)
                                          :address address
                                          :public-key public-key
@@ -55,15 +55,25 @@
 (fx/defn generate-new-account
   {:events [:wallet.accounts/generate-new-account]}
   [{:keys [db]} password]
-  {:wallet.accounts/generate-account {:address  (get-in db [:multiaccount :address])
-                                      :path-num (inc (get-in db [:multiaccount :latest-derived-path]))
-                                      :password password}})
+  (when-not (get-in db [:generate-account :step])
+    {:db (assoc-in db [:generate-account :step] :generating)
+     ::generate-account {:address  (get-in db [:multiaccount :address])
+                         :path-num (inc (get-in db [:multiaccount :latest-derived-path]))
+                         :password password}}))
+
+(fx/defn generate-new-account-error
+  {:events [::generate-new-account-error]}
+  [{:keys [db]} password]
+  {:db (assoc db
+              :generate-account
+              {:error (i18n/label :t/add-account-incorrect-password)})})
 
 (fx/defn account-generated
-  {:events [:wallet.accounts/account-generated]}
+  {:events [::account-generated]}
   [{:keys [db] :as cofx} account]
   (fx/merge cofx
-            {:db (assoc db :generate-account {:account account})}
+            {:db (assoc db :generate-account {:account account
+                                              :step :generated})}
             (navigation/navigate-to-cofx :account-added nil)))
 
 (fx/defn save-account
@@ -71,12 +81,13 @@
   [{:keys [db] :as cofx}]
   (let [{:keys [accounts latest-derived-path]} (:multiaccount db)
         {:keys [account]} (:generate-account db)]
-    (fx/merge cofx
-              {::json-rpc/call [{:method "accounts_saveAccounts"
-                                 :params [[account]]
-                                 :on-success #()}]
-               :db (dissoc db :generate-account)}
-              (multiaccounts.update/multiaccount-update {:accounts (conj accounts account)
-                                                         :latest-derived-path (inc latest-derived-path)} nil)
-              (wallet/update-balances nil)
-              (navigation/navigate-to-cofx :wallet nil))))
+    (when account
+      (fx/merge cofx
+                {::json-rpc/call [{:method "accounts_saveAccounts"
+                                   :params [[account]]
+                                   :on-success #()}]
+                 :db (dissoc db :generate-account)}
+                (multiaccounts.update/multiaccount-update {:accounts (conj accounts account)
+                                                           :latest-derived-path (inc latest-derived-path)} nil)
+                (wallet/update-balances nil)
+                (navigation/navigate-to-cofx :wallet nil)))))
