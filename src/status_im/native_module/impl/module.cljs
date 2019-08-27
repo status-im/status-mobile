@@ -27,9 +27,9 @@
                               #(callback (types/json->clj %))))
 
 (defn save-account-and-login
-  [account-data password config subaccounts-data]
+  [multiaccount-data password config accounts-data]
   (clear-web-data)
-  (.saveAccountAndLogin (status) account-data password config subaccounts-data))
+  (.saveAccountAndLogin (status) multiaccount-data password config accounts-data))
 
 (defn login
   [account-data password]

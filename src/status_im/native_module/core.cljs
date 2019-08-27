@@ -13,8 +13,8 @@
   (native-module/prepare-dir-and-update-config config callback))
 
 (defn save-account-and-login
-  [account-data password config subaccounts-data]
-  (native-module/save-account-and-login account-data password config subaccounts-data))
+  [multiaccount-data password config accounts-data]
+  (native-module/save-account-and-login multiaccount-data password config accounts-data))
 
 (defn login
   [account-data password]

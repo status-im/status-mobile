@@ -142,7 +142,7 @@
                              assoc :processing? false
                              :step (inc-step step))})))
 
-(defn prepare-subaccounts-data
+(defn prepare-accounts-data
   [multiaccount]
   [(let [{:keys [publicKey address]}
          (get-in multiaccount [:derived constants/path-default-wallet-keyword])]
@@ -164,10 +164,10 @@
    {:keys [address publicKey keycard-instance-uid keycard-key-uid keycard-pairing keycard-paired-on mnemonic] :as multiaccount}
    password
    {:keys [seed-backed-up? login?] :or {login? true}}]
-  (let [[wallet-account {:keys [publicKey]} :as subaccounts-data] (prepare-subaccounts-data multiaccount)
+  (let [[wallet-account {:keys [publicKey]} :as accounts-data] (prepare-accounts-data multiaccount)
         name (gfycat/generate-gfy publicKey)
         photo-path (identicon/identicon publicKey)
-        account-data {:name name :address address :photo-path photo-path}
+        multiaccount-data {:name name :address address :photo-path photo-path}
         new-multiaccount       {:address         address
                                 :name            name
                                 :photo-path      photo-path
@@ -194,10 +194,10 @@
               {:db (cond-> db
                      seed-backed-up?
                      (assoc-in [:multiaccount :seed-backed-up?] true))
-               ::save-account-and-login [(types/clj->json account-data)
+               ::save-account-and-login [(types/clj->json multiaccount-data)
                                          password
                                          (node/get-new-config db)
-                                         (types/clj->json subaccounts-data)]}
+                                         (types/clj->json accounts-data)]}
               (when (:intro-wizard db)
                 (intro-step-forward {})))))
 
@@ -293,8 +293,8 @@
 
 (re-frame/reg-fx
  ::save-account-and-login
- (fn [[account-data password config subaccounts-data]]
-   (status/save-account-and-login account-data
+ (fn [[multiaccount-data password config accounts-data]]
+   (status/save-account-and-login multiaccount-data
                                   (security/safe-unmask-data password)
                                   config
-                                  subaccounts-data)))
+                                  accounts-data)))
