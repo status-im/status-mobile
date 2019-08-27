@@ -46,7 +46,7 @@
     "react-native-languages": "^3.0.2",
     "react-native-mail": "git+https://github.com/status-im/react-native-mail.git#v4.0.0-status",
     "react-native-navigation-twopane": "git+https://github.com/status-im/react-native-navigation-twopane.git#v0.0.2-status",
-    "react-native-qrcode": "git+https://github.com/status-im/react-native-qrcode.git#v0.2.8",
+    "react-native-qrcode": "git+https://github.com/siphiuel/react-native-qrcode.git#v0.2.9",
     "react-native-randombytes": "3.5.0",
     "react-native-safe-area-view": "0.9.0",
     "react-native-screens": "^1.0.0-alpha.22",

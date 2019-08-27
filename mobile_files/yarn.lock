@@ -5771,13 +5771,14 @@ react-native-languages@^3.0.2:
   version "0.0.2"
   resolved "git+https://github.com/status-im/react-native-navigation-twopane.git#04ed5fddfb46a6a3ee30776987acb4d3b11c27d4"
 
-"react-native-qrcode@git+https://github.com/status-im/react-native-qrcode.git#v0.2.8":
-  version "0.2.8"
-  resolved "git+https://github.com/status-im/react-native-qrcode.git#58af1c00a7dc2e9b4bd59993d002c1045a9bd22f"
+"react-native-qrcode@git+https://github.com/siphiuel/react-native-qrcode.git#v0.2.9":
+  version "0.2.9"
+  resolved "git+https://github.com/siphiuel/react-native-qrcode.git#26fc0e4dc31e7e0ea277337e32604867162e53d4"
   dependencies:
     create-react-class "^15.6.0"
     prop-types "^15.5.10"
     qr.js "0.0.0"
+    react-native-webview "5.2.1"
 
 react-native-randombytes@3.5.0:
   version "3.5.0"

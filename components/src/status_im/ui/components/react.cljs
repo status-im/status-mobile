@@ -53,7 +53,6 @@
 (def status-bar-class (when-not platform/desktop? (get-react-property "StatusBar")))
 
 (def scroll-view-class (get-class "ScrollView"))
-(def web-view #_(get-class "WebView"))
 (def keyboard-avoiding-view-class (get-class "KeyboardAvoidingView"))
 
 (def refresh-control (get-class "RefreshControl"))
@@ -235,6 +234,9 @@
          (.catch show-access-error)))))
 
 (def net-info (.-NetInfo (js-dependencies/net-info)))
+
+(defn web-view []
+  (.-WebView js-dependencies/react-native-webview))
 
 ;; Clipboard
 
