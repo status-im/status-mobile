@@ -4,6 +4,7 @@
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
+            [status-im.utils.security :as security]
             [status-im.i18n :as i18n]
             [status-im.utils.core :as core-utils]
             [status-im.ui.components.react :as react]
@@ -35,12 +36,14 @@
                        :color            colors/green}}})
 
 (def ^:private action->prop-fn
-  {:link   (fn [text {:keys [outgoing]}]
+  {:link   (fn [text {:keys [outgoing] :as message}]
              {:style    {:color                (if outgoing colors/white colors/blue)
                          :text-decoration-line :underline}
-              :on-press (if platform/desktop?
-                          #(.openURL (react/linking) (http/normalize-url text))
-                          #(re-frame/dispatch [:browser.ui/message-link-pressed text]))})
+              :on-press #(when (and (security/safe-link? text)
+                                    (security/safe-link-text? (-> message :content :text)))
+                           (if platform/desktop?
+                             (.openURL (react/linking) (http/normalize-url text))
+                             (re-frame/dispatch [:browser.ui/message-link-pressed text])))})
    :tag    (fn [text {:keys [outgoing]}]
              {:style    {:color                (if outgoing colors/white colors/blue)
                          :text-decoration-line :underline}

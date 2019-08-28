@@ -7,6 +7,7 @@
             [status-im.constants :as constants]
             [status-im.ethereum.eip681 :as eip681]
             [status-im.pairing.core :as pairing]
+            [status-im.utils.security :as security]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
@@ -53,14 +54,16 @@
 (defn open! [url]
   (log/info "universal-links:  opening " url)
   (if-let [dapp-url (match-url url browse-regex)]
-    (list-selection/browse-dapp dapp-url)
+    (when (security/safe-link? url)
+      (list-selection/browse-dapp dapp-url))
     ;; We need to dispatch here, we can't openURL directly
     ;; as it is opened in safari on iOS
     (re-frame/dispatch [:handle-universal-link url])))
 
 (fx/defn handle-browse [cofx url]
   (log/info "universal-links: handling browse" url)
-  {:browser/show-browser-selection url})
+  (when (security/safe-link? url)
+    {:browser/show-browser-selection url}))
 
 (fx/defn handle-public-chat [cofx public-chat]
   (log/info "universal-links: handling public chat" public-chat)

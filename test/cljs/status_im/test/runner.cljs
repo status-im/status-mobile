@@ -61,6 +61,7 @@
             [status-im.test.utils.money]
             [status-im.test.utils.prices]
             [status-im.test.utils.random]
+            [status-im.test.utils.security]
             [status-im.test.utils.signing-phrase.core]
             [status-im.test.utils.transducers]
             [status-im.test.utils.universal-links.core]
@@ -145,6 +146,7 @@
  'status-im.test.utils.money
  'status-im.test.utils.prices
  'status-im.test.utils.random
+ 'status-im.test.utils.security
  'status-im.test.utils.signing-phrase.core
  'status-im.test.utils.transducers
  'status-im.test.utils.universal-links.core
