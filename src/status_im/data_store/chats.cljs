@@ -152,7 +152,7 @@
 
 (fx/defn fetch-chats-rpc [cofx {:keys [on-success]}]
   {::json-rpc/call [{:method "shhext_chats"
-                     :params [0 -1]
+                     :params []
                      :on-success #(on-success (map <-rpc %))
                      :on-failure #(log/error "failed to fetch chats" 0 -1 %)}]})
 
