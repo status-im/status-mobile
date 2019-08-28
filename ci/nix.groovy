@@ -59,7 +59,7 @@ def build(Map opts = [:]) {
   opts.args = defaults.args + opts.args
   opts.keep = (opts.keep + defaults.keep).unique()
 
-  def resultPath = sh(
+  def nixPath = sh(
     returnStdout: true,
     script: """
       set +x
@@ -68,10 +68,19 @@ def build(Map opts = [:]) {
       nix-build ${_getNixCommandArgs(opts, false)}
     """
   ).trim()
-  if (!opts.link) { /* if not linking, copy results */
-    sh "cp ${resultPath}/* ${env.WORKSPACE}/result/"
+  /* if not linking, copy results, but only if there's just one path */
+  if (!opts.link && nixPath && !nixPath.contains('\n')) {
+    copyResults(nixPath)
   }
-  return resultPath
+  return nixPath
+}
+
+private def copyResults(path) {
+  def resultsPath = "${env.WORKSPACE}/result"
+  sh "rm -fr ${resultsPath}"
+  sh "mkdir -p ${resultsPath}"
+  sh "cp -fr ${path}/* ${resultsPath}/"
+  sh "chmod -R 755 ${resultsPath}"
 }
 
 private makeNixBuildEnvFile(Map opts = [:]) {
