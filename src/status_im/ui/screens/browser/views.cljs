@@ -58,10 +58,10 @@
   [toolbar.view/toolbar
    {:browser? true}
    [toolbar.view/nav-button
-    (actions/back (fn []
-                    (re-frame/dispatch [:navigate-back])
-                    (when error?
-                      (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
+    (actions/close (fn []
+                     (re-frame/dispatch [:navigate-back])
+                     (when error?
+                       (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
    [toolbar-content url url-original browser url-editing?]])
 
 (defn- web-view-error [_ code desc]
