@@ -25,7 +25,7 @@
     "react-dom": "16.4.2",
     "react-native": "0.60.5",
     "react-native-background-timer": "2.1.1",
-    "react-native-camera": "3.0.1",
+    "react-native-camera": "3.3.0",
     "react-native-config": "git+https://github.com/status-im/react-native-config.git#0.11.2-1",
     "react-native-dialogs": "1.0.4",
     "react-native-fetch-polyfill": "1.1.2",
