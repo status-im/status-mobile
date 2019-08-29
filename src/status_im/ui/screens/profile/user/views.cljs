@@ -23,6 +23,7 @@
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.profile.user.styles :as styles]
             [status-im.utils.identicon :as identicon]
+            [status-im.utils.platform :as platform]
             [status-im.utils.universal-links.core :as universal-links]))
 
 (views/defview share-chat-key []
@@ -198,8 +199,11 @@
           content           (flat-list-content
                              preferred-name registrar tribute-to-talk
                              active-contacts-count show-backup-seed?)]
-      [react/safe-area-view {:style {:flex          1
-                                     :margin-bottom tabs.styles/tabs-diff}}
+      [react/safe-area-view
+       {:style
+        (merge {:flex 1}
+               (when platform/ios?
+                 {:margin-bottom tabs.styles/tabs-diff}))}
        [status-bar/status-bar {:type :main}]
        [large-toolbar/minimized-toolbar
         (header-in-toolbar multiaccount)

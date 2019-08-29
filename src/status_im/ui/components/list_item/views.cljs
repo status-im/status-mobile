@@ -67,8 +67,9 @@
 
      :else [icon])])
 
-(defn- title-row [{:keys [title title-color-override title-prefix title-prefix-width
-                          title-prefix-height title-row-accessory]}
+(defn- title-row [{:keys [title title-color-override title-prefix
+                          title-prefix-width title-prefix-height
+                          title-accessibility-label title-row-accessory]}
                   type icon? disabled? theme subtitle content accessories]
   [react/view styles/title-row-container
    (when title-prefix
@@ -77,9 +78,9 @@
             (= "main-icons" (namespace title-prefix)))
        [icons/icon title-prefix
         (merge
-         {:color           colors/gray
-          :width           16
-          :height          16
+         {:color  colors/gray
+          :width  16
+          :height 16
           :container-style
           (styles/title-prefix-icon-container
            title-prefix-height title-prefix-width)}
@@ -109,13 +110,17 @@
 
    (cond
      (or (string? title) (keyword? title) (number? title))
-     [react/text {:number-of-lines 1
-                  :ellipsize-mode  :tail
-                  :style
-                  (styles/title
-                   type theme icon? title-prefix subtitle
-                   content title-row-accessory disabled?
-                   title-color-override)}
+     [react/text
+      (merge
+       {:number-of-lines     1
+        :ellipsize-mode      :tail
+        :style
+        (styles/title
+         type theme icon? title-prefix subtitle
+         content title-row-accessory disabled?
+         title-color-override)}
+       (when title-accessibility-label
+         {:accessibility-label title-accessibility-label}))
       (stringify title)]
 
      (vector? title)
@@ -288,6 +293,11 @@
 ;; title-color-override
 ;; colors/color - only occasionally needed, self-explanatory
 
+;; title-accessibility-label
+;; :accessibility-label for title text component
+;; sometimes needed for title - e.g. chat-list-item
+;; makes sense since `title` is the key element of a list item
+
 ;; title-row-accessory
 ;; component - especially made for chat list item, but may serve other
 ;; purpose in the unlikely future. Wrapper already has 2px :margin-top
@@ -334,9 +344,9 @@
   [{:keys [type theme container-margin-top container-margin-bottom
            icon title-prefix title-prefix-width title-prefix-height
            title title-color-override title-row-accessory
-           subtitle subtitle-max-lines subtitle-row-accessory
-           content accessories on-press on-long-press
-           error accessibility-label disabled?]
+           title-accessibility-label subtitle subtitle-max-lines
+           subtitle-row-accessory content accessories on-press
+           on-long-press error accessibility-label disabled?]
     :or   {type                    :default
            theme                   :default
            disabled?               false
@@ -344,12 +354,13 @@
            container-margin-bottom 0
            subtitle-max-lines      1}}]
   (let [title-row-elements
-        {:title                title
-         :title-color-override title-color-override
-         :title-prefix         title-prefix
-         :title-prefix-width   title-prefix-width
-         :title-prefix-height  title-prefix-height
-         :title-row-accessory  title-row-accessory}
+        {:title                     title
+         :title-color-override      title-color-override
+         :title-accessibility-label title-accessibility-label
+         :title-prefix              title-prefix
+         :title-prefix-width        title-prefix-width
+         :title-prefix-height       title-prefix-height
+         :title-row-accessory       title-row-accessory}
         subtitle-row-elements
         {:subtitle               subtitle
          :subtitle-max-lines     subtitle-max-lines

@@ -11,6 +11,7 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.screens.home.filter.views :as filter.views]
+            [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.bottom-bar.styles :as tabs.styles]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
@@ -93,16 +94,15 @@
                      false)}))
          [list/flat-list {:data           all-home-items
                           :key-fn         first
-                          :footer         [react/view
-                                           {:style {:height     tabs.styles/tabs-diff
-                                                    :align-self :stretch}}]
+                          :header         [react/view {:height 4 :flex 1}]
+                          :footer         [react/view {:height 4 :flex 1}]
                           :on-scroll-begin-drag
                           (fn [e]
                             (reset! scrolling-from-top?
                                     ;; check if scrolling up from top of list
                                     (zero? (.-y (.-contentOffset (.-nativeEvent e))))))
                           :render-fn
-                          (fn [home-item]
+                          (fn [home-item _]
                             [inner-item/home-list-item home-item])}]
          (when (:to-hide? @search-input-state)
            [react/view {:width  1
@@ -128,7 +128,10 @@
     (let [home-width (if (> window-width constants/two-pane-min-width)
                        (max constants/left-pane-min-width (/ window-width 3))
                        window-width)]
-      [react/view (merge {:flex 1 :width home-width}
+      [react/view (merge {:flex 1
+                          :width home-width}
+                         (when platform/ios?
+                           {:margin-bottom tabs.styles/tabs-diff})
                          (when two-pane-ui-enabled?
                            {:border-right-width 1 :border-right-color colors/black-transparent}))
        [status-bar/status-bar {:type :main}]

@@ -716,6 +716,16 @@
    unviewed-messages-count))
 
 (re-frame/reg-sub
+ :chats/last-message-content
+ (fn [[_ chat-id]]
+   (re-frame/subscribe [:chats/chat chat-id]))
+ (fn [{:keys [last-message-content last-message-content-type timestamp last-message-timestamp]}]
+   {:content                last-message-content
+    :content-type           last-message-content-type
+    :last-message-timestamp last-message-timestamp
+    :timestamp              timestamp}))
+
+(re-frame/reg-sub
  :chats/photo-path
  :<- [:contacts/contacts]
  :<- [:multiaccount]

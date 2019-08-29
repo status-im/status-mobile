@@ -1,8 +1,7 @@
 (ns status-im.ui.screens.home.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.components.bottom-bar.styles :as tabs.styles]))
+            [status-im.utils.platform :as platform]))
 
 (defn toolbar []
   {:background-color colors/white})
@@ -12,83 +11,14 @@
 
 (defstyle sync-info {:margin-horizontal 15})
 
-(defstyle chat-container
-  {:flex-direction   :row
-   :android          {:height 76}
-   :ios              {:height 74}
-   :desktop          {:height 74}
-   :overflow         :hidden})
-
-(defstyle chat-icon-container
-  {:padding-top    18
-   :padding-bottom 18
-   :padding-left   12
-   :padding-right  20
-   :width          72
-   :android        {:height 76}
-   :ios            {:height 74}
-   :desktop        {:height 74}})
-
-(defstyle chat-info-container
-  {:margin-bottom   13
-   :justify-content :space-between
-   :flex            1
-   :flex-direction  :column
-   :android         {:margin-top 16}
-   :ios             {:margin-top 14}
-   :desktop         {:margin-top 14}})
-
-(defstyle chat-options-container
-  {:padding-top 10})
-
-(defstyle item-upper-container
-  {:flex           1
-   :flex-direction :row
-   :padding-right  16})
-
-(defstyle item-lower-container
-  {:flex            1
-   :flex-direction  :row
-   :justify-content :space-between
-   :padding-right   16
-   :android         {:margin-top 4}
-   :ios             {:margin-top 6}
-   :desktop         {:margin-top 6}})
-
-(def message-status-container
-  {:flex-direction :row
-   :align-items    :center})
-
-(def name-view
-  {:flex-direction :row
-   :flex           1
-   :margin-right   4})
-
-(defstyle name-text
-  {:color   colors/text
-   :android {:font-size 16
-             :height    26}
-   :ios     {:font-size 17
-             :height    26}
-   :desktop {:font-size 17
-             :height    26}})
-
-(defstyle private-group-icon-container
-  {:align-items     :center
-   :justify-content :center
-   :margin-right    6})
-
-(defstyle public-group-icon-container
-  {:align-items     :center
-   :justify-content :center
-   :margin-right    6})
-
 (def last-message-container
   {:flex-shrink 1})
 
 (def last-message-text
-  {:color  colors/text-gray
-   :max-height 24})
+  {:flex        1
+   :align-self  :stretch
+   :line-height 22
+   :color       colors/gray})
 
 (def search-input-height 56)
 
@@ -133,10 +63,12 @@
    :height       16})
 
 (defstyle datetime-text
-  {:color   colors/text-gray
-   :android {:font-size 12}
-   :desktop {:font-size 14}
-   :ios     {:font-size 12}})
+  {:color          colors/text-gray
+   :font-size      10
+   :text-align     :right
+   :letter-spacing 0.4
+   :align-items    :center
+   :line-height    12})
 
 (defstyle new-messages-text
   {:left       0
@@ -189,10 +121,7 @@
   {:position    :absolute
    :z-index     2
    :align-items :center
-   :bottom      (+ tabs.styles/tabs-diff (cond
-                                           platform/ios? 16
-                                           platform/android? 0
-                                           platform/desktop? 6))
+   :bottom      16
    :left        (- (/ home-width 2) 20)
    :width       40
    :height      40})

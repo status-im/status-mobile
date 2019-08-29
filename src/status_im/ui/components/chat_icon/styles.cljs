@@ -41,10 +41,9 @@
           :border-radius 32}))
 
 (def default-chat-icon-text
-  {:color       colors/white
-   :font-size   20
-   :font-weight "700"
-   :opacity     0.8})
+  {:color       (colors/alpha colors/white 0.7)
+   :typography  :title-bold
+   :line-height 21})
 
 (def message-status-icon-text
   {:margin-top -2
