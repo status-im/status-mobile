@@ -163,6 +163,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if sign_in_view.profile_button.counter.text != '1':
             self.errors.append('Profile button counter is not shown after re-login')
         sign_in_view.profile_button.click()
+        profile_view.privacy_and_security_button.click()
+        profile_view.backup_recovery_phrase_button.click()
         profile_view.backup_recovery_phrase()
         if sign_in_view.profile_button.counter.is_element_displayed(60):
             self.errors.append('Profile button counter is shown after recovery phrase backup')
@@ -197,6 +199,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
+        profile_view.privacy_and_security_button.click()
         profile_view.backup_recovery_phrase_button.click()
         profile_view.ok_continue_button.click()
         recovery_phrase = profile_view.get_recovery_phrase()
@@ -222,7 +225,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         base_web_view.open_in_webview()
         base_web_view.find_full_text('Frequently Asked Questions')
         base_web_view.click_system_back_button()
-        profile_view.submit_bug_button.click()
+        profile_view.request_a_feature_button.click()
         profile_view.find_full_text('#status')
 
     @marks.testrail_id(5382)
@@ -501,9 +504,9 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_home = device_1.create_user()
         device_1_home.profile_button.click()
         device_1_profile = device_1_home.get_profile_view()
+        device_1_profile.privacy_and_security_button.click()
         device_1_profile.backup_recovery_phrase_button.click()
-        device_1_profile.ok_continue_button.click()
-        recovery_phrase = device_1_profile.get_recovery_phrase()
+        recovery_phrase = device_1_profile.backup_recovery_phrase()
         device_1_profile.back_button.click()
         device_1_profile.get_back_to_home_view()
         device_1_name = 'device_%s' % device_1.driver.number

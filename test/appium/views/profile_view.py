@@ -293,6 +293,12 @@ class SubmitBugButton(BaseButton):
         self.locator = self.Locator.accessibility_id("submit-bug-button")
 
 
+class RequestFeatureButton(BaseButton):
+
+    def __init__(self, driver):
+        super(RequestFeatureButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("request-a-feature-button")
+
 class FaqButton(BaseButton):
 
     def __init__(self, driver):
@@ -302,12 +308,6 @@ class FaqButton(BaseButton):
     def navigate(self):
         from views.web_views.base_web_view import BaseWebView
         return BaseWebView(self.driver)
-
-
-class AboutButton(BaseButton):
-    def __init__(self, driver):
-        super(AboutButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("about-button")
 
 
 class VersionText(BaseText):
@@ -415,7 +415,7 @@ class RemovePictureButton(BaseButton):
 class DevicesButton(BaseButton):
     def __init__(self, driver):
         super().__init__(driver)
-        self.locator = self.Locator.accessibility_id('pairing-settings-button')
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="pairing-settings-button"]')
 
 
 class DeviceNameInput(BaseEditBox):
@@ -429,6 +429,10 @@ class ContinueButton(BaseButton):
         super(ContinueButton, self).__init__(driver)
         self.locator = self.Locator.text_selector('Continue')
 
+class SyncSettingsButton(BaseButton):
+    def __init__(self, driver):
+        super(SyncSettingsButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="sync-settings-button"]')
 
 class GoToPairingSettingsButton(BaseButton):
     def __init__(self, driver):
@@ -539,8 +543,10 @@ class ProfileView(BaseView):
 
         self.help_button = HelpButton(self.driver)
         self.submit_bug_button = SubmitBugButton(self.driver)
+        self.request_a_feature_button = RequestFeatureButton(self.driver)
         self.faq_button = FaqButton(self.driver)
         self.about_button = AboutButton(self.driver)
+        self.sync_settings_button = SyncSettingsButton(self.driver)
 
         # Bootnodes
         self.bootnodes_button = BootnodesButton(self.driver)
@@ -598,9 +604,8 @@ class ProfileView(BaseView):
         text = [i.text for i in self.recovery_phrase_table.find_elements()]
         return dict(zip(map(int, text[::2]), text[1::2]))
 
+
     def backup_recovery_phrase(self):
-        self.privacy_and_security_button.click()
-        self.backup_recovery_phrase_button.click()
         self.ok_continue_button.click()
         recovery_phrase = self.get_recovery_phrase()
         self.next_button.click()
@@ -647,6 +652,7 @@ class ProfileView(BaseView):
 
     def discover_and_advertise_device(self, device_name):
         self.profile_button.click()
+        self.sync_settings_button.click()
         self.devices_button.scroll_to_element()
         self.devices_button.click()
         self.device_name_input.set_value(device_name)
