@@ -56,7 +56,7 @@ PODS:
   - Protobuf (3.6.1)
   - React (0.59.10):
     - React/Core (= 0.59.10)
-  - react-native-background-timer (2.1.0-alpha.6):
+  - react-native-background-timer (2.1.1):
     - React
   - react-native-camera (1.1.5):
     - React
@@ -150,6 +150,6 @@ SPEC CHECKSUMS:
   TouchID: b0640fedb86fa2db2fe1df15b61594ad49e76288
   yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
-PODFILE CHECKSUM: 673e1d3c59c7531a14b78b8fd2a3efb247bb0022
+PODFILE CHECKSUM: c4092792db2b9d33023311d0876998d7be256942
 
 COCOAPODS: 1.5.3
