@@ -51,7 +51,5 @@
            :third-party-cookies-enabled false
            :scroll-enabled              false
            :bounces                     false
-           :scales-page-to-fit          platform/android?
            :style                       {:width @width :height (* @width k) :background-color :transparent}
-           :origin-whitelist             #js ["*"]
            :source                      {:html (html uri @width (* @width k))}}]]))))
