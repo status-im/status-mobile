@@ -20,7 +20,8 @@
      (merge {:db (assoc db
                         :contacts/new-identity       new-identity
                         :contacts/new-identity-error (db/validate-pub-key db new-identity))}
-            (when-not is-public-key?
+            (when (and (not is-public-key?)
+                       (ens/valid-eth-name-prefix? new-identity))
               (let [chain (ethereum/chain-keyword db)]
                 {:resolve-public-key {:registry (get ens/ens-registries chain)
                                       :ens-name (if (ens/is-valid-eth-name? new-identity)

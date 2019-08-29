@@ -127,6 +127,13 @@
   [x y]
   (str "0x04" x y))
 
+(defn valid-eth-name-prefix?
+  [prefix]
+  (not
+   (or (string/blank? prefix)
+       (string/ends-with? prefix ".")
+       (string/includes? prefix ".."))))
+
 (defn is-valid-eth-name?
   [ens-name]
   (and ens-name

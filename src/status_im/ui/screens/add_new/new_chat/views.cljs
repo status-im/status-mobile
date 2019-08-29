@@ -24,6 +24,7 @@
 
 (views/defview new-chat []
   (views/letsubs [contacts      [:contacts/active]
+                  new-identity  [:contacts/new-identity]
                   error-message [:new-identity-error]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
      [status-bar/status-bar]
@@ -32,7 +33,7 @@
       [react/view add-new.styles/new-chat-input-container
        [react/text-input {:ref                 (fn [v] (js/setTimeout #(reset! tw (if v "100%" "95%")) 100))
                           :on-change-text      #(re-frame/dispatch [:new-chat/set-new-identity %])
-                          :on-submit-editing   #(when-not error-message
+                          :on-submit-editing   #(when (and new-identity (not error-message))
                                                   (re-frame/dispatch [:contact.ui/contact-code-submitted]))
                           :placeholder         (i18n/label :t/enter-contact-code)
                           :style               (add-new.styles/input @tw)
