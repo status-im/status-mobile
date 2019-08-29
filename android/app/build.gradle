@@ -278,7 +278,6 @@ dependencies {
     implementation project(':react-native-image-crop-picker')
     implementation project(':react-native-securerandom')
     implementation project(':react-native-webview-bridge')
-    implementation project(':react-native-webview')
     implementation project(':react-native-touch-id')
     implementation project(':react-native-config')
     implementation project(':react-native-firebase')

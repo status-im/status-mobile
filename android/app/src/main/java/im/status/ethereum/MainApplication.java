@@ -9,7 +9,6 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.github.alinz.reactnativewebviewbridge.WebViewBridgePackage;
-import com.reactnativecommunity.webview.RNCWebViewPackage;
 import com.horcrux.svg.SvgPackage;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.oblador.keychain.KeychainPackage;
@@ -74,7 +73,6 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new ImageResizerPackage(),
                     new PickerPackage(),
                     new WebViewBridgePackage(BuildConfig.DEBUG_WEBVIEW == "1", callRPC),
-                    new RNCWebViewPackage(),
                     new ReactNativeConfigPackage(),
                     new KeychainPackage(),
                     new RNShakeEventPackage(),

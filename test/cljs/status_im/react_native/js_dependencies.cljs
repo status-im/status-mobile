@@ -13,6 +13,8 @@
 (def image-crop-picker      (fn [] #js {}))
 (def image-resizer          (fn [] #js {}))
 (def qr-code                (fn [] #js {}))
+(def svg                    (fn [] #js {}))
+
 (def react-native
   #js {:NativeModules      #js {}
        :Animated           #js {:View #js {}

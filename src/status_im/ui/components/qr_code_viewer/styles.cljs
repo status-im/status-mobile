@@ -15,9 +15,10 @@
    :width            (+ width qr-code-padding qr-code-padding)
    :background-color colors/white
    :border-color     colors/black-transparent
+   :align-items      :center
+   :justify-content  :center
    :border-width     1
-   :border-radius    8
-   :padding          qr-code-padding})
+   :border-radius    8})
 
 (defstyle name-container
   {:flex           0.6
