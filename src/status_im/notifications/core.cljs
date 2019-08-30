@@ -91,12 +91,13 @@
   (defn lookup-contact-pubkey-from-hash
     [{:keys [db] :as cofx} contact-pubkey-or-hash]
     "Tries to deanonymize a given contact pubkey hash by looking up the
-    full pubkey (if db is unlocked) in :contacts/contacts.
+    full pubkey (if db is unlocked) in :multiaccount and, if not found,
+    in :contacts/contacts. 
     Returns original value if not a hash (e.g. already a public key)."
     (if (and contact-pubkey-or-hash
              (= (count contact-pubkey-or-hash) pn-pubkey-hash-length))
       (if-let [multiaccount-pubkey (hash->pubkey contact-pubkey-or-hash
-                                                 (-> db :multiaccounts/multiaccounts vals))]
+                                                 [(:multiaccount db)])]
         multiaccount-pubkey
         (if (multiaccounts.model/logged-in? cofx)
           ;; TODO: for simplicity we're doing a linear lookup of the contacts,
