@@ -25,13 +25,14 @@
            color public? public-key
            timestamp chat-name
            last-message-content
+           last-message-timestamp
            last-message-content-type]
     :as chat-item}]
   (views/letsubs [photo-path              [:contacts/chat-photo chat-id]
                   unviewed-messages-count [:chats/unviewed-messages-count chat-id]
                   current-chat-id         [:chats/current-chat-id]]
     (let [last-message {:content      last-message-content
-                        :timestamp    timestamp
+                        :timestamp    (if (pos? last-message-timestamp) last-message-timestamp timestamp)
                         :content-type last-message-content-type}
           name (or chat-name
                    (gfycat/generate-gfy public-key))

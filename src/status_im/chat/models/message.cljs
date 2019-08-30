@@ -224,7 +224,7 @@
 (defn- update-last-message [all-chats chat-id]
   (let [{:keys [messages message-groups]}
         (get all-chats chat-id)
-        {:keys [content content-type clock-value]}
+        {:keys [content content-type clock-value timestamp]}
         (->> (chat.db/sort-message-groups message-groups messages)
              last
              second
@@ -234,6 +234,7 @@
     (chat-model/upsert-chat
      {:chat-id                   chat-id
       :last-message-content      content
+      :last-message-timestamp    timestamp
       :last-message-content-type content-type})))
 
 (fx/defn update-last-messages
@@ -348,6 +349,7 @@
               (chat-model/upsert-chat
                {:chat-id                   chat-id
                 :timestamp                 now
+                :last-message-timestamp    (:timestamp message)
                 :last-message-content      (:content message)
                 :last-message-content-type (:content-type message)
                 :last-clock-value          (:clock-value message)})

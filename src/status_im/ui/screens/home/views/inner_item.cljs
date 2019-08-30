@@ -91,6 +91,7 @@
                 name color online
                 group-chat public?
                 public-key contact
+                last-message-timestamp
                 timestamp
                 last-message-content
                 last-message-content-type]} home-item
@@ -110,7 +111,7 @@
        [react/view styles/item-upper-container
         [chat-list-item-name truncated-chat-name group-chat public? public-key]
         [react/view styles/message-status-container
-         [message-timestamp timestamp]]]
+         [message-timestamp (if (pos? last-message-timestamp) last-message-timestamp timestamp)]]]
        [react/view styles/item-lower-container
         (let [{:keys [tribute-status tribute-label]} (:tribute-to-talk contact)]
           (if (not (#{:require :pending} tribute-status))

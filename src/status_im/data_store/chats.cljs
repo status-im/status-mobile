@@ -117,6 +117,7 @@
                                 :unviewed-messages-count :unviewedMessagesCount
                                 :last-message-content :lastMessageContent
                                 :last-message-content-type :lastMessageContentType
+                                :last-message-timestamp :lastMessageTimestamp
                                 :deleted-at-clock-value :deletedAtClockValue
                                 :is-active :active
                                 :last-clock-value :lastClockValue})
@@ -135,6 +136,7 @@
                                 :unviewedMessagesCount :unviewed-messages-count
                                 :lastMessageContent :last-message-content
                                 :lastMessageContentType :last-message-content-type
+                                :lastMessageTimestamp :last-message-timestamp
                                 :deletedAtClockValue :deleted-at-clock-value
                                 :active :is-active
                                 :lastClockValue :last-clock-value})

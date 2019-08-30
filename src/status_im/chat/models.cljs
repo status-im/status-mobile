@@ -146,6 +146,7 @@
                                  :message-groups            {}
                                  :last-message-content      nil
                                  :last-message-content-type nil
+                                 :last-message-timestamp    nil
                                  :unviewed-messages-count   0
                                  :deleted-at-clock-value    last-message-clock-value})}
      (messages-store/delete-messages-by-chat-id chat-id)

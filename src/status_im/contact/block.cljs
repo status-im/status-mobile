@@ -22,6 +22,7 @@
    {:keys [chat-id
            unviewed-messages-count
            last-message-content
+           last-message-timestamp
            last-message-content-type]}]
   (let [removed-messages-ids (keep
                               (fn [[message-id {:keys [from]}]]
@@ -39,6 +40,7 @@
                           assoc
                           :unviewed-messages-count unviewed-messages-count
                           :last-message-content last-message-content
+                          :last-message-timestamp last-message-timestamp
                           :last-message-content-type last-message-content-type))]
     (fx/merge cofx
               {:db db}
