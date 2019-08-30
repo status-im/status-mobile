@@ -5,7 +5,6 @@
   #{:login
     :progress
     :create-multiaccount
-    :recover-multiaccount
     :recover-multiaccount-enter-phrase
     :recover-multiaccount-select-storage
     :recover-multiaccount-enter-password
@@ -53,7 +52,6 @@
                      :progress
                      :keycard-recovery-intro
                      :create-multiaccount
-                     :recover-multiaccount
                      :recover-multiaccount-enter-phrase
                      :recover-multiaccount-select-storage
                      :recover-multiaccount-enter-password

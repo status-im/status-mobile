@@ -73,7 +73,6 @@
 (def all-screens
   {:login                                            login/login
    :progress                                         progress/progress
-   :recover-multiaccount                             multiaccounts.recover/recover
    :recover-multiaccount-enter-phrase                multiaccounts.recover/enter-phrase
    :recover-multiaccount-select-storage              multiaccounts.recover/select-storage
    :recover-multiaccount-enter-password              multiaccounts.recover/enter-password

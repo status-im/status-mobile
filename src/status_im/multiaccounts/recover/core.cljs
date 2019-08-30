@@ -113,12 +113,6 @@
           :confirm-button-text (i18n/label :recovery-confirm-phrase)
           :on-accept           #(re-frame/dispatch [::recover-multiaccount-confirmed])}}))))
 
-(fx/defn navigate-to-recover-multiaccount-screen
-  [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (dissoc db :multiaccounts/recover)}
-            (navigation/navigate-to-cofx :recover-multiaccount nil)))
-
 (re-frame/reg-fx
  ::store-multiaccount
  (fn [[id address password]]

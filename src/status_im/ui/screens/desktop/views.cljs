@@ -31,7 +31,6 @@
     (let [component (case view-id
                       :intro intro.views/intro
                       :multiaccounts multiaccounts.views/multiaccounts
-                      :recover recover.views/recover
                       :new-group  new-group
                       :contact-toggle-list contact-toggle-list
                       :group-chat-profile group-chat-profile

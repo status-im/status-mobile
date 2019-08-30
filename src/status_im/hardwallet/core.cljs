@@ -426,8 +426,7 @@
 (fx/defn password-option-pressed
   [{:keys [db] :as cofx}]
   (if (= (get-in db [:hardwallet :flow]) :create)
-    #() ;;TODO with v1 flow
-    (multiaccounts.recover/navigate-to-recover-multiaccount-screen cofx)))
+    #())) ;;TODO with v1 flow
 
 (defn settings-screen-did-load
   [{:keys [db]}]
