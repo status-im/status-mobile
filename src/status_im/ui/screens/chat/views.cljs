@@ -302,7 +302,7 @@
            :default-chat-icon-text style/intro-header-icon-text
            :size                   120}]]
         ;; Chat title section
-        [react/text {:style style/intro-header-chat-name} intro-name]
+        [react/text {:style style/intro-header-chat-name} (if group-chat chat-name intro-name)]
         ;; Description section
         (if group-chat
           [group-chat-description-container chat]
