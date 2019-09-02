@@ -134,12 +134,12 @@
    (when title-row-accessory
      [react/view styles/title-row-accessory-container title-row-accessory])])
 
-(defn subtitle-row [{:keys [subtitle subtitle-max-lines subtitle-row-accessory]}
-                    icon? theme]
+(defn subtitle-row
+  [subtitle-row-elements icon? theme]
   (let [subtitle-row-accessory-width (reagent/atom 0)]
     (reagent/create-class
-     {:render
-      (fn []
+     {:reagent-render
+      (fn [{:keys [subtitle subtitle-max-lines subtitle-row-accessory]} icon? theme]
         [react/view styles/subtitle-row-container
          (cond
            (or (string? subtitle) (keyword? subtitle) (number? subtitle))
