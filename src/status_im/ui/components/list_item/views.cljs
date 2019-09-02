@@ -1,37 +1,15 @@
 (ns status-im.ui.components.list-item.views
-  (:require [clojure.string :as string]
-            [reagent.core :as reagent]
-            [status-im.i18n :as i18n]
+  (:require [reagent.core :as reagent]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.list-item.styles :as styles]
             [status-im.ui.components.tooltip.views :as tooltip]
-            [status-im.ui.screens.profile.db :as profile.db]))
+            [status-im.ui.screens.profile.db :as profile.db]
+            [status-im.utils.label :as utils.label]))
 
 (def divider
   [react/view {:height 1 :background-color colors/gray-lighter}])
-
-(defn stringify [keyword-or-number]
-  (cond
-    (string? keyword-or-number)
-    keyword-or-number
-
-    (and (qualified-keyword? keyword-or-number)
-         (= "t" (namespace keyword-or-number)))
-    (i18n/label keyword-or-number)
-
-    (and (qualified-keyword? keyword-or-number)
-         (not= "t" (namespace keyword-or-number)))
-    (str (namespace keyword-or-number) "/" (name keyword-or-number))
-
-    (simple-keyword? keyword-or-number)
-    (name keyword-or-number)
-
-    (number? keyword-or-number)
-    (str keyword-or-number)
-
-    :else nil))
 
 (defn- icon-column [icon theme disabled?]
   [react/view styles/icon-column-container
@@ -99,8 +77,8 @@
                      type theme icon? subtitle content
                      title-prefix-width disabled?)}
         (if title-prefix-width
-          (stringify title-prefix)
-          (str (stringify title-prefix) " "))]
+          (utils.label/stringify title-prefix)
+          (str (utils.label/stringify title-prefix) " "))]
 
        (vector? title-prefix)
        title-prefix
@@ -121,7 +99,7 @@
          title-color-override)}
        (when title-accessibility-label
          {:accessibility-label title-accessibility-label}))
-      (stringify title)]
+      (utils.label/stringify title)]
 
      (vector? title)
      [react/view {:flex 1}
@@ -149,7 +127,7 @@
                           icon? theme (pos? @subtitle-row-accessory-width)))
                         :number-of-lines subtitle-max-lines
                         :ellipsize-mode  :tail}
-            (stringify subtitle)]
+            (utils.label/stringify subtitle)]
 
            (vector? subtitle)
            [react/view
@@ -192,7 +170,7 @@
 
 (defn- accessories-column [accessories theme]
   (let [last-accessory              (peek accessories)
-        last-accessory-is-component (and (not (stringify last-accessory))
+        last-accessory-is-component (and (not (utils.label/stringify last-accessory))
                                          (not= :chevron last-accessory))
         second-last-accessory       (peek (pop accessories))]
     (into
@@ -237,7 +215,7 @@
                 (or (string? accessory) (keyword? accessory) (number? accessory))
                 [react/text {:style           (styles/accessory-text theme)
                              :number-of-lines 1}
-                 (stringify accessory)]
+                 (utils.label/stringify accessory)]
 
                 (vector? accessory)
                 accessory
@@ -256,7 +234,7 @@
 ;;   optionally set `container-margin-top/bottom`
 
 ;; theme
-;; :default(default), :blue, :action, :action-destructive
+;; :default(default), :action, :action-destructive
 
 ;; container-margin-top
 ;; container-margin-bottom
@@ -370,11 +348,11 @@
      [react/touchable-highlight
       (cond-> {:on-press       on-press
                :on-long-press  on-long-press
-               :underlay-color colors/black
+               :underlay-color colors/gray-transparent-10
                :disabled       (or (not on-press) disabled?)}
         accessibility-label
         (assoc :accessibility-label accessibility-label))
-      [react/view {:style (styles/container type theme)}
+      [react/view {:style (styles/container type)}
        (when icon
          [icon-column icon theme disabled?])
 

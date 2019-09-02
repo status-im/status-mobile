@@ -13,6 +13,6 @@
        (fn [fl]
          (let [n (first (str/split (.getName fl) #".png"))]
           (when (.isFile fl)
-            (io/copy (io/file (.getPath fl)) (io/file (str "./resources/public/" n)))
-            n)))
+            (io/copy (io/file (.getPath fl)) (io/file (str "./resources/public/" (str/replace n #"_" "-"))))
+            (str/replace n #"_" "-"))))
        fls)))))

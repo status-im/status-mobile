@@ -4,12 +4,12 @@
             [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.bottom-bar.styles :as main-tabs.styles]
+            [status-im.ui.components.tabbar.styles :as main-tabs.styles]
             [status-im.ui.components.styles :as components.styles]
             [status-im.constants :as constants]
             [status-im.utils.platform :as utils.platform]
             [status-im.ui.components.contact.contact :refer [toggle-contact-view]]
-            [status-im.ui.components.button.view :as buttons]
+            [status-im.ui.components.button :as button]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.react :as react]
@@ -107,7 +107,10 @@
     {:style styles/no-contact-text}
     (i18n/label :t/group-chat-no-contacts)]
    (when-not platform/desktop?
-     [buttons/secondary-button {:on-press handle-invite-friends-pressed} (i18n/label :t/invite-friends)])])
+     [button/button
+      {:type     :secondary
+       :on-press handle-invite-friends-pressed
+       :label    :t/invite-friends}])])
 
 (views/defview bottom-container [{:keys [on-press disabled label accessibility-label]}]
   [react/view {:style main-tabs.styles/tabs-container}

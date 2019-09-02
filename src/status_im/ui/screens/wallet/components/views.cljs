@@ -7,8 +7,7 @@
             [status-im.ethereum.tokens :as tokens]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.bottom-buttons.view :as bottom-buttons]
-            [status-im.ui.components.button.view :as button]
+            [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
@@ -19,7 +18,7 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
-            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.view :as topbar]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.wallet.choose-recipient.views
@@ -29,34 +28,24 @@
             [status-im.wallet.utils :as wallet.utils]
             [status-im.utils.core :as utils.core]
             [status-im.utils.money :as money]
-            [status-im.utils.utils :as utils.utils]
-            [status-im.ui.components.chat-icon.screen :as chat-icon.screen])
+            [status-im.utils.utils :as utils.utils])
   (:require-macros [status-im.utils.views :as views]))
 
 ;; Wallet tab has a different coloring scheme (dark) that forces color changes (background, text)
 ;; It might be replaced by some theme mechanism
 
 (defn text-input [props text]
-  [react/text-input (utils.core/deep-merge {:placeholder-text-color colors/white-transparent
-                                            :selection-color        colors/white
-                                            :style                  {:color     colors/white
+  [react/text-input (utils.core/deep-merge {:placeholder-text-color colors/gray
+                                            :selection-color        colors/black
+                                            :style                  {:color     colors/black
                                                                      :height    52}}
                                            props)
    text])
 
 (def default-action (actions/back-white actions/default-handler))
 
-(defn toolbar
-  ([title] (toolbar {} title))
-  ([props title] (toolbar props default-action title))
-  ([props action title] (toolbar props action title nil))
-  ([props action title options]
-   [toolbar/toolbar (assoc-in props [:style :border-bottom-color] colors/white-transparent-10)
-    [toolbar/nav-button action]
-    [toolbar/content-title {:color       colors/white
-                            :font-weight "700"}
-     title]
-    options]))
+(defn topbar [title]
+  [topbar/simple-toolbar title])
 
 (defn- top-view [avoid-keyboard?]
   (if avoid-keyboard?
@@ -65,9 +54,9 @@
 
 (defn simple-screen
   ([toolbar content] (simple-screen nil toolbar content))
-  ([{:keys [avoid-keyboard? status-bar-type]} toolbar content]
-   [(top-view avoid-keyboard?) {:flex 1 :background-color colors/blue}
-    [status-bar/status-bar {:type (or status-bar-type :wallet)}]
+  ([{:keys [avoid-keyboard?]} toolbar content]
+   [(top-view avoid-keyboard?) {:flex 1}
+    [status-bar/status-bar]
     toolbar
     content]))
 
@@ -78,7 +67,7 @@
 
 (defn cartouche [{:keys [disabled? on-press icon icon-opts] :or {icon :main-icons/next} :as m} header content]
   [react/view {:style styles/cartouche-container}
-   [react/text {:style styles/cartouche-header}
+   [react/text
     header]
    (if (or disabled? (nil? on-press))
      [cartouche-content m content]
@@ -89,7 +78,7 @@
           [react/view styles/cartouche-icon-wrapper
            [react/view {:flex 1} ;; Let content shrink if needed
             content]
-           [vector-icons/icon icon (merge {:color :white} icon-opts)]]
+           [vector-icons/icon icon icon-opts]]
           content)]]])])
 
 (defn view-asset [symbol]
@@ -124,7 +113,7 @@
 (views/defview assets [type address]
   (views/letsubs [assets [:wallet/transferrable-assets-with-amount address]]
     [simple-screen
-     [toolbar (i18n/label :t/wallet-assets)]
+     [topbar (i18n/label :t/wallet-assets)]
      [react/view {:style (assoc components.styles/flex :background-color :white)}
       [list/flat-list {:default-separator? true
                        :data               assets
@@ -220,7 +209,7 @@
   (views/letsubs [contacts           [:contacts/active]
                   {:keys [request?]} [:get-screen-params :recent-recipients]]
     [simple-screen
-     [toolbar (i18n/label :t/recipient)]
+     [topbar (i18n/label :t/recipient)]
      [react/view styles/recent-recipients
       [list/flat-list {:data      contacts
                        :key-fn    :address
@@ -229,7 +218,7 @@
 (views/defview accounts []
   (views/letsubs [{:keys [accounts]} [:multiaccount]]
     [simple-screen
-     [toolbar (i18n/label :t/accounts)]
+     [topbar (i18n/label :t/accounts)]
      [react/view styles/recent-recipients
       [list/flat-list {:data      accounts
                        :key-fn    :address
@@ -241,9 +230,7 @@
 (views/defview contact-code []
   (views/letsubs [content (reagent/atom nil)]
     [simple-screen {:avoid-keyboard? true}
-     [toolbar {:style {:border-bottom-color colors/white-transparent-10}}
-      default-action
-      (i18n/label :t/recipient)]
+     [topbar (i18n/label :t/recipient)]
      [react/view components.styles/flex
       [cartouche {}
        (i18n/label :t/recipient)
@@ -253,11 +240,10 @@
                     :placeholder         (i18n/label :t/recipient-code)
                     :on-change-text      #(reset! content %)
                     :accessibility-label :recipient-address-input}]]
-      [bottom-buttons/bottom-button
-       [button/button {:disabled?    (string/blank? @content)
-                       :on-press     #(re-frame/dispatch [:wallet.send/set-recipient @content])
-                       :fit-to-text? false}
-        (i18n/label :t/done)]]]]))
+      [toolbar/toolbar {:center {:type      :secondary
+                                 :disabled? (string/blank? @content)
+                                 :on-press  #(re-frame/dispatch [:wallet.send/set-recipient @content])
+                                 :label     :t/done}}]]]))
 
 (defn recipient-qr-code []
   [choose-recipient/choose-recipient])
@@ -332,3 +318,19 @@
 (defn button-text [label]
   [react/text {:style styles/button-text}
    label])
+
+(views/defview network-info []
+  (views/letsubs [network-id [:chain-id]]
+    [react/view
+     [react/view styles/network-container
+      [react/view styles/network-icon
+       [vector-icons/icon :main-icons/network {:color :white}]]
+      [react/text
+       (cond (ethereum/testnet? network-id)
+             (i18n/label :t/testnet-text {:testnet (get-in ethereum/chains [(ethereum/chain-id->chain-keyword network-id) :name] "Unknown")})
+
+             (ethereum/sidechain? network-id)
+             (i18n/label :t/sidechain-text {:sidechain (get-in ethereum/chains [(ethereum/chain-id->chain-keyword network-id) :name] "Unknown")})
+
+             :else
+             (i18n/label :t/mainnet-text))]]]))

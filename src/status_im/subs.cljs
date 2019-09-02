@@ -23,7 +23,7 @@
             [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.tribute-to-talk.db :as tribute-to-talk.db]
             [status-im.tribute-to-talk.whitelist :as whitelist]
-            [status-im.ui.components.bottom-bar.styles :as tabs.styles]
+            [status-im.ui.components.tabbar.styles :as tabs.styles]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.toolbar.styles :as toolbar.styles]
             [status-im.ui.screens.add-new.new-public-chat.db :as db]

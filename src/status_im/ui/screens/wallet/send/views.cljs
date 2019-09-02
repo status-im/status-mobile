@@ -2,48 +2,31 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.ethereum.tokens :as tokens]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.bottom-buttons.view :as bottom-buttons]
-            [status-im.ui.components.button.view :as button]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.common.common :as common]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.view :as topbar]
+            [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
-            [status-im.ui.screens.wallet.send.styles :as styles]
-            [status-im.ui.components.toolbar.actions :as actions]))
-
-(defn- toolbar [title]
-  [toolbar/toolbar {:transparent? true}
-   [toolbar/nav-button (actions/back-white #(actions/default-handler))]
-   [toolbar/content-title {:color :white} title]])
+            [status-im.ui.screens.wallet.send.styles :as styles]))
 
 (defn- sign-transaction-button [sign-enabled?]
-  [bottom-buttons/bottom-buttons
-   styles/sign-buttons
-   [react/view]
-   [button/button {:style               components.styles/flex
-                   :disabled?           (not sign-enabled?)
-                   :on-press            #(re-frame/dispatch [:wallet.ui/sign-transaction-button-clicked])
-                   :text-style          {:color :white}
-                   :accessibility-label :sign-transaction-button}
-    (i18n/label :t/transactions-sign-transaction)
-    [vector-icons/icon :main-icons/next {:color (if sign-enabled?
-                                                  colors/white
-                                                  colors/white-transparent-10)}]]])
+  [toolbar/toolbar
+   {:right {:type                :next
+            :disabled?           (not sign-enabled?)
+            :on-press            #(re-frame/dispatch [:wallet.ui/sign-transaction-button-clicked])
+            :accessibility-label :sign-transaction-button
+            :label               :t/transactions-sign-transaction}}])
 
+;;TODO DEPRECATED
 (defn- render-send-transaction-view
   [{:keys [transaction scroll amount-input]}]
   (let [{:keys [from amount amount-text amount-error token sign-enabled?
                 asset-error to to-name symbol]} transaction]
-    [wallet.components/simple-screen {:avoid-keyboard? true
-                                      :status-bar-type :wallet}
-     [toolbar (i18n/label :t/send-transaction)]
+    [wallet.components/simple-screen {:avoid-keyboard? true}
+     [topbar/simple-toolbar (i18n/label :t/send-transaction)]
      [react/view components.styles/flex
-      [common/network-info {:text-color :white}]
+      [wallet.components/network-info]
       [react/scroll-view {:keyboard-should-persist-taps :always
                           :ref                          #(reset! scroll %)
                           :on-content-size-change       #(when (and scroll @scroll)

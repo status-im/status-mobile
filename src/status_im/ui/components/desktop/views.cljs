@@ -2,8 +2,6 @@
   (:require
    [status-im.ui.components.icons.vector-icons :as icons]
    [status-im.ui.components.common.styles :as styles]
-   [status-im.ui.components.action-button.styles :as st]
-   [status-im.ui.components.styles :as common]
    [status-im.ui.components.checkbox.styles :as checkbox.styles]
    [status-im.ui.components.react :as react]
    [status-im.ui.components.colors :as colors]))
@@ -14,16 +12,10 @@
     (when checked?
       [icons/icon :main-icons/check {:style checkbox.styles/check-icon}])]])
 
-;; TODO copy-pate with minimum modifications of status-react components
+;; TODO should be removed when 2-pane UI will be used
 
 (defn action-button [{:keys [label icon icon-opts on-press label-style cyrcle-color]}]
-  [react/touchable-highlight {:on-press on-press}
-   [react/view {:style st/action-button}
-    [react/view {:style (st/action-button-icon-container cyrcle-color)}
-     [icons/icon icon icon-opts]]
-    [react/view {:style st/action-button-label-container}
-     [react/text {:style (merge st/action-button-label label-style)}
-      label]]]])
+  [react/touchable-highlight {:on-press on-press}])
 
 (defn separator [style & [wrapper-style]]
   [react/view {:style (merge styles/separator-wrapper wrapper-style)}

@@ -8,17 +8,13 @@
             [status-im.ui.components.popup-menu.views :as popup-menu]
             [clojure.string :as string]
             [status-im.ui.screens.home.views.inner-item :as chat-item]
-            [taoensso.timbre :as log]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.constants :as constants]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.react :as components]
-            [reagent.core :as reagent]
-            [status-im.ui.components.action-button.styles :as action-button.styles]
-            [status-im.ui.components.action-button.action-button :as action-button]
-            [status-im.utils.config :as config]
-            [status-im.utils.contenthash :as contenthash]))
+            [status-im.utils.contenthash :as contenthash]
+            [status-im.ui.components.list-item.views :as list-item]))
 
 (views/defview chat-list-item-inner-view
   [{:keys [chat-id name group-chat
@@ -122,27 +118,24 @@
   [react/view {:style {:flex-direction :row}}
    [react/view {:style styles/popup-shaddow}
     [react/view {:style styles/popup}
-     [action-button/action-button
-      {:label               (i18n/label :t/start-new-chat)
+     [list-item/list-item
+      {:title               (i18n/label :t/start-new-chat)
        :accessibility-label :start-1-1-chat-button
        :icon                :main-icons/add-contact
-       :icon-opts           {:color colors/blue}
        :on-press            #(do
                                (re-frame/dispatch [:set-in [:desktop :popup] nil])
                                (re-frame/dispatch [:navigate-to :desktop/new-one-to-one]))}]
-     [action-button/action-button
-      {:label               (i18n/label :t/start-group-chat)
+     [list-item/list-item
+      {:title               (i18n/label :t/start-group-chat)
        :accessibility-label :start-group-chat-button
        :icon                :main-icons/group-chat
-       :icon-opts           {:color colors/blue}
        :on-press            #(do
                                (re-frame/dispatch [:set-in [:desktop :popup] nil])
                                (re-frame/dispatch [:navigate-to :desktop/new-group-chat]))}]
-     [action-button/action-button
-      {:label               (i18n/label :t/new-public-group-chat)
+     [list-item/list-item
+      {:title               (i18n/label :t/new-public-group-chat)
        :accessibility-label :join-public-chat-button
        :icon                :main-icons/public-chat
-       :icon-opts           {:color colors/blue}
        :on-press            #(do
                                (re-frame/dispatch [:set-in [:desktop :popup] nil])
                                (re-frame/dispatch [:navigate-to :desktop/new-public-chat]))}]]]])

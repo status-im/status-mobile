@@ -40,7 +40,7 @@
 (def snoopy-bars            (fn [] #js {:default #js {}}))
 (def snoopy-buffer          (fn [] #js {:default #js {}}))
 
-(def fetch (fn [] #js {}))
+(def fetch (fn [_ _] #js {}))
 
 (def background-timer (fn [] #js {:setTimeout    js/setTimeout
                                   :setInterval   js/setInterval

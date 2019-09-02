@@ -1,4 +1,4 @@
-(ns status-im.ui.components.bottom-bar.styles
+(ns status-im.ui.components.tabbar.styles
   (:require [status-im.ui.components.colors :as colors]
             [status-im.utils.platform :as platform]
             [status-im.ui.components.animation :as animation])

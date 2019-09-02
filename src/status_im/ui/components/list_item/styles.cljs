@@ -1,25 +1,12 @@
 (ns status-im.ui.components.list-item.styles
   (:require [status-im.ui.components.colors :as colors]))
 
-(defn container [type theme]
-  {:min-height         (cond
-                         (= type :default)        64
-                         (= type :small)          52
-                         (= type :section-header) 40
-                         :else                    0)
-   :flex               1
-   :flex-direction     :row
+(defn container [type]
+  {:flex-direction     :row
    :justify-content    :flex-start
    :padding-horizontal 16
-   :background-color   (if (= theme :blue)
-                         colors/blue
-                         colors/white)
-   :padding-top        (cond
-                         (= type :section-header) 14
-                         :else                    10)
-   :padding-bottom     (cond
-                         (= type :section-header) 4
-                         :else                    10)
+   :padding-top        (if (= type :section-header) 14 10)
+   :padding-bottom     (if (= type :section-header) 4 10)
    :align-items        :center})
 
 (def icon-column-container
@@ -89,9 +76,9 @@
          (if disabled?
            {:color colors/gray}
            (case theme
-             :blue               {:color colors/white}
+             :blue {:color colors/white}
              :action-destructive {:color colors/red}
-             :action             {:color colors/blue}
+             :action {:color colors/blue}
              {}))))
 
 (defn title [type theme icon? title-prefix subtitle
@@ -124,9 +111,9 @@
              {:color title-color-override}
              ;; else
              (case theme
-               :blue               {:color colors/white}
+               :blue {:color colors/white}
                :action-destructive {:color colors/red}
-               :action             {:color colors/blue}
+               :action {:color colors/blue}
                {})))))
 
 (def title-row-accessory-container

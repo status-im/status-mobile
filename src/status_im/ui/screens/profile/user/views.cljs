@@ -6,13 +6,12 @@
             [status-im.i18n :as i18n]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.bottom-bar.styles :as tabs.styles]
-            [status-im.ui.components.button.view :as button]
+            [status-im.ui.components.tabbar.styles :as tabs.styles]
+            [status-im.ui.components.button :as button]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.large-toolbar :as large-toolbar]
-            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.list.views :as list.views]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
@@ -62,11 +61,11 @@
                                             :font-family "monospace"}}
           address]]
         [react/view styles/share-link-button
-         [button/button-with-icon
+         ;;TODO implement icon support
+         [button/button
           {:on-press            #(list-selection/open-share {:message link})
-           :label               (i18n/label :t/share-link)
-           :icon                :main-icons/link
-           :style               {:height 44 :margin-horizontal 0}
+           :label               :t/share-link
+           ;:icon                :main-icons/link
            :accessibility-label :share-my-contact-code-button}]]]])))
 
 (defn- header [{:keys [public-key photo-path] :as account}]

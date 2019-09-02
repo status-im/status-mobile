@@ -29,12 +29,15 @@
             [status-im.ui.components.list.styles :as styles]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.animations.responder :as responder]
-            [status-im.utils.platform :as platform])
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.radio :as radio])
   (:require-macros [status-im.utils.views :as views]))
 
 (def flat-list-class (react/get-class "FlatList"))
 (def section-list-class (react/get-class "SectionList"))
 
+;;TODO THIS NAMESPACE is DEPRECATED, use status-im.ui.components.list-item.views
+;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn item
   ([content] (item nil content))
   ([left content] (item left content nil))
@@ -48,38 +51,38 @@
     (when right
       [react/view {:style styles/right-item-wrapper}
        right])]))
-
+;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn touchable-item [handler item]
   [react/touchable-highlight {:on-press handler}
    [react/view
     item]])
-
+;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn item-icon
   [{:keys [icon style icon-opts]}]
   {:pre [(not (nil? icon))]}
   [react/view {:style (merge styles/item-icon-wrapper style)}
    [vector-icons/icon icon (merge icon-opts {:style styles/item-icon})]])
-
+;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn item-image
   [{:keys [source style image-style]}]
   [react/view {:style style}
    [react/image {:source (if (fn? source) (source) source)
                  :style  (merge styles/item-image image-style)}]])
-
+;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn item-primary
   ([s] (item-primary nil s))
   ([{:keys [style] :as props} s]
    [react/text (merge {:style (merge styles/primary-text style)}
                       (dissoc props :style))
     s]))
-
+;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn item-primary-only
   ([s] (item-primary-only nil s))
   ([{:keys [style] :as props} s]
    [react/text (merge {:style (merge styles/primary-text-only style)}
                       (dissoc props :style))
     s]))
-
+;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn item-secondary
   ([s] (item-secondary nil s))
   ([{:keys [style]} s]
@@ -88,11 +91,12 @@
      :ellipsize-mode  :middle
      :number-of-lines 1}
     s]))
-
+;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn item-content
   [& children]
   (into [react/view {:style styles/item-content-view}] (keep identity children)))
 
+;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn list-item-with-checkbox
   [{:keys [on-value-change style checked? on-long-press] :as props} item]
   [react/touchable-highlight (merge {:on-press #(on-value-change (not checked?))}
@@ -102,18 +106,20 @@
          [react/view {:style (merge style styles/item-checkbox)}
           [checkbox/checkbox props]])])
 
+;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn list-item-with-radio-button
   [{:keys [on-value-change style checked?] :as props} item]
   [react/touchable-highlight {:on-press #(on-value-change (not checked?))}
    (conj item
          [react/view {:style (merge style styles/item-checkbox)}
-          [checkbox/radio-button props]])])
+          [radio/radio (:checked? props)]])])
 
 (def item-icon-forward
   [item-icon {:icon      :main-icons/next
               :style     {:width 12}
               :icon-opts {:color colors/white}}])
 
+;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn big-list-item
   [{:keys [style text text-color text-style subtext value action-fn active? destructive? hide-chevron?
            accessory-value text-color new? activity-indicator
@@ -250,7 +256,7 @@
      (assoc (dissoc props :render-fn) :renderItem (wrap-render-fn f))
      props)
    :data wrap-data))
-
+;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn section-list
   "A wrapper for SectionList.
    To render something on empty sections, use renderSectionFooter and conditionaly
@@ -267,7 +273,7 @@
           {:sections            (clj->js (map wrap-per-section-render-fn sections))
            :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)
            :style               style})])
-
+;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn render-action [{:keys [label subtext accessibility-label icon action disabled?]}
                      {:keys [action-style action-label-style action-subtext-style icon-opts]}]
   [react/touchable-highlight {:on-press action}
@@ -296,7 +302,7 @@
          subtext]])
 
      item-icon-forward]]])
-
+;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn action-list [actions {:keys [container-style action-separator-style] :as styles}]
   [react/view (merge styles/action-list container-style)
    [flat-list
@@ -306,13 +312,14 @@
      :data      actions
      :key-fn    (fn [_ i] (str i))
      :render-fn #(render-action % styles)}]])
-
+;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn list-with-label [{:keys [style]} label list]
   [react/view (merge styles/list-with-label-wrapper style)
    [react/text {:style styles/label}
     label]
    list])
 
+;;TODO DEPRECATED, use long-press
 (views/defview deletable-list-item [{:keys [type id on-delete]} body]
   (views/letsubs [swiped? [:delete-swipe-position type id]]
     (let [offset-x            (animation/create-value (if swiped? styles/delete-button-width 0))

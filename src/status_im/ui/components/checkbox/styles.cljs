@@ -2,7 +2,7 @@
   (:require [status-im.ui.components.colors :as colors]))
 
 (def wrapper
-  {:padding 16})
+  {:width 24 :height 24 :align-items :center :justify-content :center})
 
 (defn icon-check-container [checked?]
   {:background-color (if checked? colors/blue colors/gray-lighter)
@@ -12,16 +12,6 @@
    :width           18
    :height          18})
 
-(defn icon-radio-container [checked?]
-  (merge (icon-check-container checked?)
-         {:border-radius 100
-          :width         26
-          :height        26}))
-
 (def check-icon
-  {:width  12
-   :height 12})
-
-(def plain-check-icon
-  (merge check-icon
-         {:tint-color colors/blue}))
+  {:width  16
+   :height 16})

@@ -4,9 +4,8 @@
             [status-im.contact.db :as contact.db]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.ui.components.animation :as animation]
-            [status-im.ui.components.button.view :as buttons]
+            [status-im.ui.components.button :as button]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.connectivity.view :as connectivity]
@@ -101,10 +100,10 @@
    (str (i18n/label :t/empty-chat-description-one-to-one) (multiaccounts/displayed-name contact))])
 
 (defn join-chat-button [chat-id]
-  [buttons/secondary-button
-   {:style style/join-button
-    :on-press #(re-frame/dispatch [:group-chats.ui/join-pressed chat-id])}
-   (i18n/label :t/join-group-chat)])
+  [button/button
+   {:type     :secondary
+    :on-press #(re-frame/dispatch [:group-chats.ui/join-pressed chat-id])
+    :label    :t/join-group-chat}])
 
 (defn decline-chat [chat-id]
   [react/touchable-highlight

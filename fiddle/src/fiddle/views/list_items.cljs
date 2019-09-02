@@ -2,13 +2,25 @@
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list-item.views :as list-item]
-            [fiddle.frame :as frame]))
+            [fiddle.frame :as frame]
+            [status-im.ui.components.badge :as badge]))
 
 (defn item [name content]
   [react/view
    [react/text {:style {:color colors/gray :margin-bottom 10 :margin-top 40}} name]
    [react/view {:background-color :white :width frame/width}
     content]])
+
+(defn list-header []
+  [react/view
+   {:background-color colors/gray-lighter
+    :flex             1
+    :padding          20
+    :flex-direction   :row
+    :flex-wrap        :wrap}
+   [react/view {:width 375}
+    [react/view {:background-color :white}
+     [list-item/list-item {:type :section-header :title "Header title"}]]]])
 
 (defn list-items []
   [react/view
@@ -62,7 +74,7 @@
     [item "Default wIth icon in circle, chevron and accessory"
      [list-item/list-item
       {:title       "Contacts"
-       :icon        :main-icons/in_contacts
+       :icon        :main-icons/in-contacts
        :on-press    #()
        :accessories [[react/text {:style {:color colors/gray}} "4"]
                      :chevron]}]]
@@ -71,27 +83,14 @@
       {:title    "Privacy and Security"
        :icon     :main-icons/profile
        :on-press #()
-       :accessories
-       [[react/view {:width            22
-                     :height           22
-                     :border-radius    11
-                     :background-color colors/blue
-                     :align-items      :center
-                     :justify-content  :center}
-         [react/text {:style {:color colors/white :font-size 12}} "1"]]
-        :chevron]}]]
-    [item "Default wIth icon in circle, switch (TODO!)"
+       :accessories [[badge/badge "333"] :chevron]}]]
+    [item "Default wIth icon in circle, switch"
      [list-item/list-item
       {:title    "Notifications"
        :icon     :main-icons/notification
        :on-press #()
        :accessories
-       [[react/view {:width            22
-                     :height           22
-                     :border-radius    11
-                     :background-color colors/blue
-                     :align-items      :center
-                     :justify-content  :center}]]}]]
+       [[react/switch {}]]}]]
     [item "Default wIth icon in circle, red"
      [list-item/list-item
       {:title    "Delete and Leave"
@@ -164,15 +163,7 @@
       {:title    "Recovery Phrase"
        :type     :small
        :on-press #()
-       :accessories
-       [[react/view
-         {:width            22
-          :height           22
-          :border-radius    11
-          :background-color colors/blue :align-items :center
-          :justify-content  :center}
-         [react/text {:style {:color colors/white :font-size 12}} "1"]]
-        :chevron]}]]]
+       :accessories [[badge/badge "2"] :chevron]}]]]
    [react/view {:margin-right 10}
     [item "Long title"
      [list-item/list-item

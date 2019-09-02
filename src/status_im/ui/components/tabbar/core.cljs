@@ -1,7 +1,7 @@
-(ns status-im.ui.components.bottom-bar.core
+(ns status-im.ui.components.tabbar.core
   (:require
    [status-im.ui.components.animation :as animation]
-   [status-im.ui.components.bottom-bar.styles :as tabs.styles]
+   [status-im.ui.components.tabbar.styles :as tabs.styles]
    [reagent.core :as reagent]
    [status-im.ui.components.react :as react]
    [status-im.utils.platform :as platform]
@@ -147,7 +147,7 @@
 (def disappearance-duration 150)
 (def appearance-duration 100)
 
-(defn bottom-bar [_ view-id]
+(defn tabbar [_ view-id]
   (let [keyboard-shown? (reagent/atom false)
         listeners       (atom [])]
     (reagent/create-class

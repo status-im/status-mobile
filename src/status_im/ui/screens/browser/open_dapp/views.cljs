@@ -9,7 +9,7 @@
    [status-im.ui.components.list.views :as list]
    [status-im.ui.components.common.common :as components.common]
    [status-im.ui.screens.wallet.components.views :as components]
-   [status-im.ui.components.bottom-bar.styles :as tabs.styles]
+   [status-im.ui.components.tabbar.styles :as tabs.styles]
    [status-im.react-native.resources :as resources]
    [status-im.ui.components.list-item.views :as list-item]
    [status-im.ui.components.icons.vector-icons :as vector-icons]

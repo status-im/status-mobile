@@ -98,6 +98,7 @@
 (defn prepare-text-props [props]
   (-> props
       (update :style typography/get-style)
+      (update :style assoc :font-family "Inter")
       (assoc :max-font-size-multiplier max-font-size-multiplier)))
 
 (defn prepare-nested-text-props [props]

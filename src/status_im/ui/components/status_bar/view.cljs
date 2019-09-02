@@ -20,58 +20,13 @@
       [react/view {:style (cond-> view-style flat? (assoc :elevation 0))}])))
 
 (defn get-config [view-id]
-  (get
-   {:create-multiaccount             {:flat? true}
-    :chat-modal                      {:type :modal-white}
-    :intro                           {:flat? true}
-    :home                            {:type :main}
-    :chat-stack                      {:type :main}
-    :new                             {:type :main}
-    :new-chat                        {:type :main}
-    :contact-toggle-list             {:type :main}
-    :new-public-chat                 {:type :main}
-    :qr-scanner                      {:type :main}
-    :browser-stack                   {:type :main}
-    :open-dapp                       {:type :main}
-    :my-profile                      {:type :main}
-    :profile-stack                   {:type :main}
-    :my-profile-ext-settings         {:type :main}
-    :contacts-list                   {:type :main}
-    :browser                         {:type :main}
-    :mobile-network-settings         {:type :main}
-    :backup-seed                     {:type :main}
-    :currency-settings               {:type :main}
-    :installations                   {:type :main}
-    :transactions-history            {:type :main}
-    :dapps-permissions               {:type :main}
-    :privacy-and-security            {:type :main}
-    :language-settings               {:type :main}
-    :notifications-settings          {:type :main}
-    :sync-settings                   {:type :main}
-    :advanced-settings               {:type :main}
-    :help-center                     {:type :main}
-    :about-app                       {:type :main}
-    :offline-messaging-settings      {:type :main}
-    :bootnodes-settings              {:type :main}
-    :fleet-settings                  {:type :main}
-    :log-level-settings              {:type :main}
-    :stickers-pack-modal             {:type :main}
-    :tribute-learn-more              {:type :main}
-    :wallet                          {:type :main}
-    :wallet-stack                    {:type :main}
-    :recipient-qr-code               {:type :transparent}
-    :wallet-send-assets              {:type :wallet}
-    :wallet-request-assets           {:type :wallet}
-    :recent-recipients               {:type :wallet}
-    :select-account                  {:type :wallet}
-    :contact-code                    {:type :wallet}
-    :wallet-send-transaction-request {:type :wallet}
-    :wallet-settings-assets          {:type :main}
-    :wallet-account                  {:type :main}
-    :wallet-add-custom-token         {:type :main}
-    :wallet-settings-hook            {:type :wallet}
-    :wallet-transactions-filter      {:type :modal-main}}
-   view-id))
+  (or (get {:create-multiaccount             {:flat? true}
+            :chat-modal                      {:type :modal-white}
+            :intro                           {:flat? true}
+            :recipient-qr-code               {:type :transparent}
+            :wallet-transactions-filter      {:type :modal-main}}
+           view-id)
+      {:type :main}))
 
 (defn set-status-bar
   "If more than one `StatusBar` is rendered, the one which was mounted last will

@@ -11,33 +11,31 @@
             [status-im.utils.config :as config]
             [status-im.ui.components.common.common :as components.common]
             [status-im.utils.security :as security]
-            [status-im.ui.components.action-button.styles :as action-button.styles]
-            [status-im.ui.components.action-button.action-button :as action-button]
             [status-im.ui.components.colors :as colors]
             [status-im.utils.gfycat.core :as gfy]
             [status-im.utils.identicon :as identicon]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.intro.views :as intro.views]
             [status-im.utils.utils :as utils]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.ui.components.list-item.views :as list-item]))
 
 (defn bottom-sheet-view []
   [react/view {:flex 1 :flex-direction :row}
-   [react/view action-button.styles/actions-list
-    [action-button/action-button
-     {:label               (i18n/label :t/enter-seed-phrase)
+   [react/view {:flex 1}
+    [list-item/list-item
+     {:theme               :action
+      :title               :t/enter-seed-phrase
       :accessibility-label :enter-seed-phrase-button
       :icon                :main-icons/text
-      :icon-opts           {:color colors/blue}
       :on-press            #(re-frame/dispatch [::multiaccounts.recover/enter-phrase-pressed])}]
-    [action-button/action-button
-     {:label               (i18n/label :t/recover-with-keycard)
-      :label-style         (if config/hardwallet-enabled? {} {:color colors/gray})
+    [list-item/list-item
+     {:theme               :action
+      :title               :t/recover-with-keycard
+      :disabled?           (not config/hardwallet-enabled?)
       :accessibility-label :recover-with-keycard-button
-      :image               :keycard-logo-blue
-      :image-opts          {:style {:width 24 :height 24}}
-      :on-press            #(when config/hardwallet-enabled?
-                              (re-frame/dispatch [::hardwallet/recover-with-keycard-pressed]))}]]])
+      :icon                :main-icons/keycard-logo
+      :on-press            #(re-frame/dispatch [::hardwallet/recover-with-keycard-pressed])}]]])
 
 (def bottom-sheet
   {:content        bottom-sheet-view

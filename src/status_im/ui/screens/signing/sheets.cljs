@@ -4,7 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.button.view :as button]
+            [status-im.ui.components.button :as button]
             [status-im.ui.components.colors :as colors]))
 
 (views/defview fee-bottom-sheet [fee-display-symbol]
@@ -43,9 +43,12 @@
         [{:style {:color colors/gray}} fee-display-symbol]]]]
      [react/view {:height 1 :background-color colors/gray-lighter}]
      [react/view {:margin-horizontal 16 :align-items :center :justify-content :space-between :flex-direction :row :margin-top 6}
-      [button/secondary-button {:on-press  #(re-frame/dispatch [:bottom-sheet/hide-sheet])
-                                :style {:background-color nil}}
-       (i18n/label :t/cancel)]
-      [button/secondary-button {:on-press  #(re-frame/dispatch [:signing.edit-fee.ui/submit])
-                                :disabled? (or (:error gas-edit) (:error gas-price-edit))}
-       (i18n/label :t/update)]]]))
+      [button/button
+       {:type     :secondary
+        :on-press #(re-frame/dispatch [:bottom-sheet/hide-sheet])
+        :label    :t/cancel}]
+      [button/button
+       {:type      :secondary
+        :on-press  #(re-frame/dispatch [:signing.edit-fee.ui/submit])
+        :disabled? (or (:error gas-edit) (:error gas-price-edit))
+        :label     :t/update}]]]))

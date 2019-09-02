@@ -152,10 +152,10 @@
                                          (when (:ref options) 
                                            ((:ref options) r)))
              :value                    text}
-          (-> options
-              (dissoc :ref)
-              (update :style typography/get-style)
-              (update :style dissoc :line-height)))])})))
+            (-> options
+                (dissoc :ref)
+                (update :style typography/get-style)
+                (update :style dissoc :line-height)))])})))
 
 (defn i18n-text
   [{:keys [style key]}]
@@ -196,7 +196,7 @@
                         (when enabled {:enabled enabled})
                         (when on-change {:on-value-change on-change})
                         (when selected {:selected-value selected}))]
-    (map value->picker-item data)))
+   (map value->picker-item data)))
 
 ;; Image picker
 
@@ -301,39 +301,7 @@
 
 (defmethod create-main-screen-view :iphone-x [current-view]
   (fn [props & children]
-    (let [props             (merge props
-                                   {:background-color
-                                    (case current-view
-                                      (:wallet-send-transaction
-                                       :wallet-request-transaction
-                                       :wallet-send-assets
-                                       :wallet-request-assets
-                                       :choose-recipient
-                                       :recent-recipients
-                                       :select-account
-                                       :wallet-send-transaction-request
-                                       :contact-code
-                                       :wallet-settings-hook)
-                                      colors/blue
-
-                                      (:qr-viewer
-                                       :recipient-qr-code)
-                                      "#2f3031"
-
-                                      colors/white)})
-          bottom-background (when (#{:recent-recipients
-                                     :select-account
-                                     :wallet-send-assets
-                                     :wallet-request-assets} current-view)
-                              [view {:background-color colors/white
-                                     :position         :absolute
-                                     :bottom           0
-                                     :right            0
-                                     :left             0
-                                     :height           100
-                                     :z-index          -1000}])
-          children (conj children bottom-background)]
-      (apply vector safe-area-view props children))))
+    (apply vector safe-area-view props children)))
 
 (defmethod create-main-screen-view :default [_]
   view)

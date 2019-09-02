@@ -10,7 +10,7 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.wallet.utils :as wallet.utils]
-            [status-im.ui.components.bottom-bar.styles :as tabs.styles]
+            [status-im.ui.components.tabbar.styles :as tabs.styles]
             [reagent.core :as reagent]
             [status-im.utils.money :as money]
             [re-frame.core :as re-frame]

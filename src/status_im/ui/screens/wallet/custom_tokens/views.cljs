@@ -8,9 +8,8 @@
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.common.common :as components.common]
             [clojure.string :as string]
-            [status-im.wallet.utils :as wallet.utils]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.action-button.action-button :as action-button]))
+            [status-im.ui.components.list-item.views :as list-item]))
 
 (def debounce-timers (atom {}))
 
@@ -141,10 +140,8 @@
            :editable       false}]]]]
       [react/view {:height 24}]
       (when custom?
-        [action-button/action-button
-         {:label        (i18n/label :t/remove-token)
+        [list-item/list-item
+         {:theme        :action-destructive
+          :title        :t/remove-token
           :icon         :main-icons/delete
-          :icon-opts    {:color colors/red}
-          :label-style  {:color colors/red}
-          :cyrcle-color colors/red-transparent-10
           :on-press     #(re-frame/dispatch [:wallet.custom-token.ui/remove-pressed token true])}])]]))

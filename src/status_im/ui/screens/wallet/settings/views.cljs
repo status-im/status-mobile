@@ -1,18 +1,16 @@
 (ns status-im.ui.screens.wallet.settings.views
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.tokens :as tokens]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.action-button.action-button :as action-button]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.list-header.views :as list-header]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
-            [status-im.ui.components.toolbar.view :as toolbar])
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.list-item.views :as list-item])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn toolbar []
@@ -30,17 +28,17 @@
 (defn custom-token-actions-view [{:keys [custom?] :as token}]
   (fn []
     [react/view
-     [action-button/action-button {:label     (i18n/label :t/token-details)
-                                   :icon      :main-icons/warning
-                                   :icon-opts {:color :blue}
-                                   :on-press  #(hide-sheet-and-dispatch [:navigate-to :wallet-custom-token-details token])}]
+     [list-item/list-item
+      {:theme    :action
+       :title    :t/token-details
+       :icon     :main-icons/warning
+       :on-press #(hide-sheet-and-dispatch [:navigate-to :wallet-custom-token-details token])}]
      (when custom?
-       [action-button/action-button {:label        (i18n/label :t/remove-token)
-                                     :icon         :main-icons/delete
-                                     :icon-opts    {:color colors/red}
-                                     :label-style  {:color colors/red}
-                                     :cyrcle-color colors/red-transparent-10
-                                     :on-press     #(hide-sheet-and-dispatch [:wallet.custom-token.ui/remove-pressed token])}])]))
+       [list-item/list-item
+        {:theme    :action-destructive
+         :title    :t/remove-token
+         :icon     :main-icons/delete
+         :on-press #(hide-sheet-and-dispatch [:wallet.custom-token.ui/remove-pressed token])}])]))
 
 (defn- render-token [{:keys [symbol name icon color custom? checked?] :as token}]
   [list/list-item-with-checkbox
@@ -64,10 +62,11 @@
      [react/view {:style components.styles/flex}
       [list/section-list
        {:header                      [react/view {:margin-top 16}
-                                      [action-button/action-button {:label     (i18n/label :t/add-custom-token)
-                                                                    :icon      :main-icons/add
-                                                                    :icon-opts {:color :blue}
-                                                                    :on-press  #(re-frame/dispatch [:navigate-to :wallet-add-custom-token])}]]
+                                      [list-item/list-item
+                                       {:theme     :action
+                                        :title     :t/add-custom-token
+                                        :icon      :main-icons/add
+                                        :on-press  #(re-frame/dispatch [:navigate-to :wallet-add-custom-token])}]]
         :sections                    (concat
                                       (when (seq custom-tokens)
                                         [{:title (i18n/label :t/custom)
@@ -77,7 +76,7 @@
         :key-fn                      :address
         :stickySectionHeadersEnabled false
         :render-section-header-fn    (fn [{:keys [title data]}]
-                                       [list-header/list-header title])
+                                       [list-item/list-item {:type :section-header :title title}])
         :render-fn                   render-token}]]]))
 
 (defn- create-payload [address]

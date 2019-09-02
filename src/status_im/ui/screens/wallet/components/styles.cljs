@@ -8,9 +8,6 @@
    :margin-top        16
    :margin-horizontal 16})
 
-(def cartouche-header
-  {:color colors/white})
-
 (defn cartouche-content-wrapper [disabled?]
   (merge
    {:flex-direction :row
@@ -20,8 +17,8 @@
     :padding-right  8}
    (if disabled?
      {:border-width 1
-      :border-color colors/white-transparent-10}
-     {:background-color colors/white-transparent-10})))
+      :border-color colors/gray-lighter}
+     {:background-color colors/gray-lighter})))
 
 (def cartouche-icon-wrapper
   {:flex            1
@@ -30,10 +27,10 @@
    :align-items     :center})
 
 (def text-content
-  {:color colors/white})
+  {:color colors/black})
 
 (def text-secondary-content
-  {:color colors/white-transparent})
+  {:color colors/gray})
 
 (def text
   {:margin-right 10})
@@ -61,23 +58,10 @@
    :font-size 13})
 
 (def network-container
-  {:padding-horizontal 10
-   :height             27
-   :border-radius      100
-   :border-width       1
-   :border-color       colors/white-transparent-10
-   :align-items        :center
-   :justify-content    :center})
-
-(def asset-container
-  {:margin-top       8
-   :height           52
-   :background-color colors/white-transparent-10
-   :justify-content  :center
-   :padding-left     14
-   :padding-vertical 14
-   :padding-right    8
-   :border-radius    8})
+  {:flex-direction     :row
+   :padding-horizontal 13
+   :padding-vertical   11
+   :align-items        :center})
 
 (def asset-container-read-only
   {:margin-top       8
@@ -137,7 +121,7 @@
   {:color colors/white})
 
 (defn participant [address?]
-  {:color       (if address? :white colors/white-transparent)
+  {:color       (if address? colors/black colors/gray)
    :flex-shrink 1})
 
 (def recipient-container
@@ -153,11 +137,10 @@
    :margin-vertical   16})
 
 (def recipient-address
-  {:margin-vertical 17
-   :color           colors/white})
+  {:margin-vertical 17})
 
 (def recipient-no-address
-  {:color colors/white-transparent})
+  {:color colors/gray})
 
 (def recent-recipients
   {:flex             1
@@ -181,3 +164,17 @@
 
 (def button-text
   {:color colors/white})
+
+(def network-text
+  {:flex        1
+   :color       colors/black
+   :font-size   14
+   :margin-left 16})
+
+(def network-icon
+  {:width            40
+   :height           40
+   :border-radius    (/ 40 2)
+   :background-color colors/green
+   :align-items      :center
+   :justify-content  :center})

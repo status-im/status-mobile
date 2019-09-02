@@ -11,10 +11,8 @@
             [status-im.ui.screens.hardwallet.pin.views :as pin.views]
             [status-im.utils.core :as utils.core]
             [status-im.utils.gfycat.core :as gfy]
-            [status-im.ui.components.lists.cell.view :as cell]
             [status-im.utils.identicon :as identicon]
-            [status-im.ui.components.action-button.action-button :as action-button]
-            [status-im.ui.components.action-button.styles :as action-button.styles]))
+            [status-im.ui.components.list-item.views :as list-item]))
 
 (defn connection-lost []
   [react/view {:flex             1
@@ -532,16 +530,16 @@
   [react/view {:flex           1
                :flex-direction :row
                :margin-top     18}
-   [react/view action-button.styles/actions-list
-    [action-button/action-button
-     {:label     (i18n/label :t/create-new-key)
+   [react/view {:flex 1}
+    [list-item/list-item
+     {:theme     :action
+      :title     :t/create-new-key
       :icon      :main-icons/profile
-      :icon-opts {:color colors/blue}
       :on-press  #(re-frame/dispatch [:keycard.login.ui/create-new-key-pressed])}]
-    [action-button/action-button
-     {:label     (i18n/label :t/add-another-key)
+    [list-item/list-item
+     {:theme     :action
+      :title     :t/add-another-key
       :icon      :main-icons/add
-      :icon-opts {:color colors/blue}
       :on-press  #(re-frame/dispatch [:keycard.login.ui/add-key-pressed])}]]])
 
 (def more-sheet

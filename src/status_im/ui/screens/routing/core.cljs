@@ -15,9 +15,9 @@
    [status-im.ui.screens.routing.profile-stack :as profile-stack]
    [status-im.ui.screens.routing.browser-stack :as browser-stack]
    [status-im.ui.screens.routing.modals :as modals]
-   [status-im.ui.components.bottom-bar.core :as bottom-bar]
+   [status-im.ui.components.tabbar.core :as tabbar]
    [status-im.ui.components.status-bar.view :as status-bar]
-   [status-im.ui.components.bottom-bar.styles :as tabs.styles]
+   [status-im.ui.components.tabbar.styles :as tabs.styles]
    [status-im.react-native.js-dependencies :as js-dependencies]))
 
 (defonce view-id (reagent.core/atom nil))
@@ -134,7 +134,7 @@
                                   (when (and (array? routes) (int? idx))
                                     (let [route      (aget routes idx)
                                           route-name (keyword (.-routeName route))]
-                                      (bottom-bar/minimize-bar route-name)))))}
+                                      (tabbar/minimize-bar route-name)))))}
           (prepare-config config))))
 
 (defn twopane-navigator [routes config]
@@ -154,7 +154,7 @@
                                   (when (and (array? routes) (int? idx))
                                     (let [route      (aget routes idx)
                                           route-name (keyword (.-routeName route))]
-                                      (bottom-bar/minimize-bar route-name)))))}
+                                      (tabbar/minimize-bar route-name)))))}
           (prepare-config config))))
 
 (defn switch-navigator [routes config]
@@ -205,9 +205,9 @@
        (map (partial build-screen navigator))
        (into {})))
 
-(defn wrap-bottom-bar
+(defn wrap-tabbar
   [nav]
-  [bottom-bar/bottom-bar nav view-id])
+  [tabbar/tabbar nav view-id])
 
 (defn app-container [navigator]
   (.createAppContainer js-dependencies/react-navigation navigator))
@@ -232,7 +232,7 @@
                                (into {}))
                           {:initialRouteName :chat-stack
                            :tabBarComponent  (reagent.core/reactify-component
-                                              wrap-bottom-bar)})}}
+                                              wrap-tabbar)})}}
                (stack-screens stack-navigator modals/modal-screens))
               {:mode              :modal
                :initialRouteName  :tabs

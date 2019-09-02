@@ -13,7 +13,7 @@
             [status-im.ui.screens.home.filter.views :as filter.views]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
-            [status-im.ui.components.bottom-bar.styles :as tabs.styles]
+            [status-im.ui.components.tabbar.styles :as tabs.styles]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.list-selection :as list-selection]

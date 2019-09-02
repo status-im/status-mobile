@@ -7,7 +7,7 @@
             [status-im.ui.components.animation :as anim]
             [reagent.core :as reagent]
             [status-im.ui.components.list-item.views :as list-item]
-            [status-im.ui.components.button.view :as button]
+            [status-im.ui.components.button :as button]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.wallet.utils :as wallet.utils]
             [status-im.ui.components.list.views :as list]
@@ -152,19 +152,9 @@
 
 (defn- sign-with-keycard-button
   [amount-error gas-error]
-  [button/button {:on-press   #(re-frame/dispatch [:signing.ui/sign-with-keycard-pressed])
-                  :text-style {:padding-right 2
-                               :padding-left  16}
-                  :style      {:background-color colors/black-light
-                               :padding-top      2
-                               :border-radius    8}
-                  :disabled?  (or amount-error gas-error)}
-   (i18n/label :t/sign-with)
-   [react/view {:padding-right 16}
-    [react/image {:source (resources/get-image :keycard-logo)
-                  :style  {:width         64
-                           :margin-bottom 7
-                           :height        26}}]]])
+  [button/button {:on-press  #(re-frame/dispatch [:signing.ui/sign-with-keycard-pressed])
+                  :disabled? (or amount-error gas-error)
+                  :label     :t/sign-with}])
 
 (defn- signing-phrase-view [phrase]
   [react/view {:align-items :center}
@@ -186,7 +176,7 @@
   (views/letsubs [phrase [:signing/phrase]]
     (case type
       :password
-      [react/view {:padding-top 8 :padding-bottom 16}
+      [react/view {:padding-top 8 :padding-bottom 8}
        [signing-phrase-view phrase]
        [text-input/text-input-with-label
         {:secure-text-entry   true
@@ -197,13 +187,13 @@
          :editable            (not in-progress?)
          :error               error
          :container           {:margin-top 12 :margin-bottom 12 :margin-horizontal 16}}]
-       [react/view {:align-items :center :height 44}
+       [react/view {:align-items :center :height 60}
         (if in-progress?
           [react/activity-indicator {:animating true
                                      :size      :large}]
-          [button/primary-button {:on-press  #(re-frame/dispatch [:signing.ui/sign-is-pressed])
-                                  :disabled? (not enabled?)}
-           (i18n/label :t/transactions-sign)])]]
+          [button/button {:on-press  #(re-frame/dispatch [:signing.ui/sign-is-pressed])
+                          :disabled? (not enabled?)
+                          :label     :t/transactions-sign}])]]
       :keycard
       [keycard-view sign phrase]
       [react/view])))
@@ -224,9 +214,9 @@
       [password-view sign]]]))
 
 (views/defview sheet [{:keys [from contact amount token approve?] :as tx}]
-  (views/letsubs [fee   [:signing/fee]
-                  sign  [:signing/sign]
-                  chain [:ethereum/chain-keyword]
+  (views/letsubs [fee                   [:signing/fee]
+                  sign                  [:signing/sign]
+                  chain                 [:ethereum/chain-keyword]
                   {:keys [amount-error gas-error]} [:signing/amount-errors (:address from)]
                   keycard-multiaccount? [:keycard-multiaccount?]]
     (let [display-symbol     (wallet.utils/display-symbol token)
@@ -246,30 +236,27 @@
           (when-not approve?
             [react/view
              [list-item/list-item
-              {:type        :small
-               :title       :t/send-request-amount
-               :error       amount-error
-               :accessories
-               [[acc-text (if amount (str amount) "0")
-                 (or display-symbol fee-display-symbol)]]}]
+              {:type  :small
+               :title :t/send-request-amount
+               :error amount-error
+               :accessories [[acc-text (if amount (str amount) "0")
+                              (or display-symbol fee-display-symbol)]]}]
              [separator]])
           [list-item/list-item
            {:type        :small
             :title       :t/network-fee
             :error       gas-error
             :accessories [[acc-text fee fee-display-symbol] :chevron]
-            :on-press
-            #(re-frame/dispatch
-              [:signing.ui/open-fee-sheet
-               {:content
-                (fn [] [sheets/fee-bottom-sheet fee-display-symbol])
-                :content-height 270}])}]
+            :on-press    #(re-frame/dispatch
+                           [:signing.ui/open-fee-sheet
+                            {:content        (fn [] [sheets/fee-bottom-sheet fee-display-symbol])
+                             :content-height 270}])}]
           [react/view {:align-items :center :margin-top 16 :margin-bottom 40}
            (if keycard-multiaccount?
              [sign-with-keycard-button amount-error gas-error]
-             [button/primary-button {:on-press  #(re-frame/dispatch [:set :signing/sign {:type :password}])
-                                     :disabled? (or amount-error gas-error)}
-              (i18n/label :t/sign-with-password)])]])])))
+             [button/button {:on-press  #(re-frame/dispatch [:set :signing/sign {:type :password}])
+                             :disabled? (or amount-error gas-error)
+                             :label     :t/sign-with-password}])]])])))
 
 (defn signing-view [tx window-height]
   (let [bottom-anim-value (anim/create-value window-height)

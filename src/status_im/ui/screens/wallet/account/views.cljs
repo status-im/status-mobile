@@ -8,7 +8,7 @@
             [status-im.ui.screens.wallet.accounts.views :as accounts]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
             [reagent.core :as reagent]
-            [status-im.ui.components.bottom-bar.styles :as tabs.styles]
+            [status-im.ui.components.tabbar.styles :as tabs.styles]
             [status-im.ui.components.list.views :as list]
             [status-im.i18n :as i18n]
             [status-im.ui.components.icons.vector-icons :as icons]

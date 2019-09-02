@@ -8,6 +8,8 @@
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
+;;TODO REWORK THIS NAMESPACE
+
 (defn default-chat-icon [name styles]
   (when-not (string/blank? name)
     [react/view (:default-chat-icon styles)

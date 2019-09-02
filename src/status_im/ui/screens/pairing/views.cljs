@@ -4,14 +4,10 @@
             [status-im.i18n :as i18n]
             [reagent.core :as reagent]
             [clojure.string :as string]
-            [status-im.utils.config :as config]
-            [status-im.ui.components.bottom-bar.styles :as main-tabs.styles]
+            [status-im.ui.components.tabbar.styles :as main-tabs.styles]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.screens.home.styles :as home.styles]
             [status-im.utils.platform :as utils.platform]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im.ui.components.button.view :as buttons]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.checkbox.view :as checkbox.views]
@@ -19,9 +15,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.text-input.view :as text-input]
-            [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.pairing.styles :as styles]))
 
 (def syncing (reagent/atom false))
