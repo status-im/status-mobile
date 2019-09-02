@@ -53,9 +53,14 @@
 
   [{:keys [label type theme disabled? on-press accessibility-label style] :or {type :main theme :blue}}]
   (let [label (utils.label/stringify label)]
-    [react/touchable-opacity (merge {:on-press on-press :disabled disabled? :active-pacity 0.5 :style style}
-                                    (when accessibility-label
-                                      {:accessibility-label accessibility-label}))
+    [react/touchable-opacity (cond-> {:on-press on-press
+                                      :active-opacity 0.5
+                                      :style style}
+                               ;;NOTE `:disabled` must be of type boolean
+                               disabled?
+                               (assoc :disabled (boolean disabled?))
+                               accessibility-label
+                               (assoc :accessibility-label accessibility-label))
      [react/view {:style (style-container type disabled? theme)}
       [react/view {:flex-direction :row :align-items :center}
        (when (= type :previous)

@@ -373,7 +373,7 @@
     :ens-chat-settings
     :ens-custom-domain
     :ens-custom-username-hints
-    :ens-custom-username-unregistrable
+    :ens-custom-username-taken
     :ens-deposit
     :ens-displayed-with
     :ens-get-name
@@ -384,8 +384,6 @@
     :ens-powered-by
     :ens-primary-username
     :ens-register
-    :ens-registered
-    :ens-registered-title
     :ens-registration-failed
     :ens-registration-failed-title
     :ens-release-username
@@ -414,8 +412,8 @@
     :ens-username-hints
     :ens-username-invalid
     :ens-username-owned
-    :ens-username-registrable
-    :ens-username-unregistrable
+    :ens-username-available
+    :ens-username-taken
     :ens-usernames
     :ens-usernames-details
     :ens-wallet-address

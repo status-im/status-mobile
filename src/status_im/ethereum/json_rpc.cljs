@@ -141,3 +141,9 @@
  (fn [params]
    (doseq [param params]
      (call param))))
+
+(re-frame/reg-fx
+ ::eth-call
+ (fn [params]
+   (doseq [param params]
+     (eth-call param))))

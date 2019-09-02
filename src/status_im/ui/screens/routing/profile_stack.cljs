@@ -6,7 +6,9 @@
    :screens (cond-> [:my-profile
                      :contacts-list
                      :ens-main
-                     :ens-register
+                     :ens-search
+                     :ens-checkout
+                     :ens-confirmation
                      :ens-terms
                      :ens-name-details
                      :blocked-users-list

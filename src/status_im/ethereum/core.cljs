@@ -100,6 +100,10 @@
   [{:networks/keys [current-network networks]}]
   (network->chain-keyword (get networks current-network)))
 
+(defn chain-id
+  [{:networks/keys [current-network networks]}]
+  (network->chain-id (get networks current-network)))
+
 (defn snt-symbol [db]
   (case (chain-keyword db)
     :mainnet :SNT

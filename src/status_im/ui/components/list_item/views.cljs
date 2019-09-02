@@ -39,10 +39,11 @@
 
      :else [icon])])
 
-(defn- title-row [{:keys [title title-color-override title-prefix
-                          title-prefix-width title-prefix-height
-                          title-accessibility-label title-row-accessory]}
-                  type icon? disabled? theme subtitle content]
+(defn- title-row
+  [{:keys [title title-color-override title-prefix
+           title-prefix-width title-prefix-height
+           title-accessibility-label title-row-accessory]}
+   type icon? disabled? theme subtitle content]
   [react/view styles/title-row-container
    (when title-prefix
      (cond

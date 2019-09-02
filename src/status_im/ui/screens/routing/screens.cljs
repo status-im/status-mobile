@@ -161,7 +161,9 @@
    :my-profile                                       profile.user/my-profile
    :contacts-list                                    contacts-list/contacts-list
    :ens-main                                         ens/main
-   :ens-register                                     ens/register
+   :ens-search                                       ens/search
+   :ens-checkout                                     ens/checkout
+   :ens-confirmation                                 ens/confirmation
    :ens-terms                                        ens/terms
    :ens-name-details                                 ens/name-details
    :blocked-users-list                               contacts-list/blocked-users-list

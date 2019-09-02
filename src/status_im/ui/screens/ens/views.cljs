@@ -1,48 +1,4 @@
 (ns status-im.ui.screens.ens.views
-  "
-
-                                                +-------------+
-                                                |   Initial   |
-                                                +-----+-------+
-                                                      |
-                                                      |  Typing
-                                                      |
-                                                      v
-                                    +--------------+     +----------------+
-                                    |    Valid     |     | Invalid/reason |
-                                    +------+-------+     +-------+--------+
-                                           |                     |
-                                           +----------+----------+
-                                                      |
-                                                      | Checking
-                                                      |
-                                                      |
-                                                      v
-+------------------------------------------+
-|   +--------------+  +----------------+   |
-|   | Unregistrable|  |  Registrable   |   |        +-----------------------------------+              +-------------+
-|   +--------------+  +----------------+   |        |  Connected/details                |              |  Not owned  |
-|                                          |        |  (none, address, public+key, all) |              +-------------+
-|                                          |        +----------+------------------------+
-|           Name available                 |                   |
-+-------------------+----------------------+                   |
-                    |                                          |
-                    |                                          |
-                    |                                          |
-                    | Registering                              | Connecting
-                    | (on-chain, 1 tx)                         | (on-chain, 1tx per info to connect)
-                    |                                          |
-                    +-----------------------+------------------+
-                                            |
-                                            |
-                                            |  Saving
-                                            |
-                                            |
-                                    +-------+-----+
-                                    |    Saved    |
-                                    +-------------+
-
-  "
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ens.core :as ens]
@@ -62,13 +18,12 @@
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.chat.message.message :as message]
-            [status-im.ui.screens.profile.components.views :as profile.components])
-
+            [status-im.ui.screens.profile.components.views :as profile.components]
+            [status-im.utils.navigation :as navigation])
   (:require-macros [status-im.utils.views :as views]))
 
-;; Components
-
-(defn- button [{:keys [on-press] :as m} label]
+(defn- button
+  [{:keys [on-press] :as m} label]
   [components.common/button (merge {:button-style {:margin-vertical    8
                                                    :padding-horizontal 32
                                                    :justify-content    :center
@@ -77,67 +32,398 @@
                                     :label        label}
                                    m)])
 
-(defn- link [{:keys [on-press]} label]
-  [react/touchable-opacity {:on-press on-press :style {:justify-content :center}}
+(defn- link
+  [{:keys [on-press]} label]
+  [react/touchable-opacity {:on-press on-press
+                            :style {:justify-content :center}}
    [react/text {:style {:color colors/blue}}
     label]])
 
-(defn- section [{:keys [title content]}]
-  [react/view {:style {:margin-horizontal 16 :align-items :flex-start}}
+(defn- section
+  [{:keys [title content]}]
+  [react/view {:style {:margin-horizontal 16
+                       :align-items :flex-start}}
    [react/text {:style {:color colors/gray :font-size 15}}
     title]
-   [react/view {:margin-top 8 :padding-horizontal 16 :padding-vertical 12 :border-width 1 :border-radius 12
+   [react/view {:margin-top 8
+                :padding-horizontal 16
+                :padding-vertical 12
+                :border-width 1
+                :border-radius 12
                 :border-color colors/gray-lighter}
     [react/text {:style {:font-size 15}}
      content]]])
 
-;; Name details
+(defn- domain-label
+  [custom-domain?]
+  (if custom-domain?
+    (i18n/label :t/ens-custom-domain)
+    (str "." stateofus/domain)))
 
-(views/defview name-details []
-  (views/letsubs [{:keys [name address public-key]} [:ens.name/screen]]
-    (let [pending? (nil? address)]
+(defn- domain-switch-label
+  [custom-domain?]
+  (if custom-domain?
+    (i18n/label :t/ens-want-domain)
+    (i18n/label :t/ens-want-custom-domain)))
+
+(defn- big-blue-icon
+  [state]
+  [react/view {:style {:margin-top 68
+                       :margin-bottom 24
+                       :width 60
+                       :height 60
+                       :border-radius 30
+                       :background-color colors/blue
+                       :align-items :center
+                       :justify-content :center}}
+   [vector-icons/icon
+    (case state
+      (:available :connected :connected-with-different-key :owned)
+      :main-icons/check
+      (:taken :error)
+      :main-icons/cancel
+      :main-icons/username)
+    {:color colors/white}]])
+
+(defn- toolbar []
+  [toolbar/toolbar nil
+   [toolbar/nav-button (actions/back #(re-frame/dispatch [:navigate-back]))]
+   [toolbar/content-title (i18n/label :t/ens-your-username)]])
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; SEARCH SCREEN
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn- icon-wrapper [color icon]
+  [react/view {:style {:margin-right 16
+                       :margin-top 11
+                       :width 32
+                       :height 32
+                       :border-radius 25
+                       :align-items :center
+                       :justify-content :center
+                       :background-color color}}
+   icon])
+
+(defn- input-icon
+  [state]
+  (case state
+    :searching
+    [icon-wrapper colors/gray
+     [react/activity-indicator {:color colors/white}]]
+
+    (:available :connected :connected-with-different-key :owned)
+    [react/touchable-highlight
+     {:on-press #(re-frame/dispatch [::ens/input-icon-pressed])}
+     [icon-wrapper colors/blue
+      [vector-icons/icon :main-icons/arrow-right {:color colors/white}]]]
+
+    [icon-wrapper colors/gray
+     [vector-icons/icon :main-icons/arrow-right {:color colors/white}]]))
+
+(defn help-message-text-element
+  ([label]
+   [react/text {:style {:flex 1
+                        :margin-top 16
+                        :margin-horizontal 16
+                        :font-size 14
+                        :text-align :center}}
+    (i18n/label label)])
+  ([label second-label]
+   [react/nested-text {:style {:flex 1
+                               :margin-top 16
+                               :margin-horizontal 16
+                               :font-size 14
+                               :text-align :center}}
+    (i18n/label label) " "
+    [{:style {:font-weight "700"}}
+     (i18n/label second-label)]]))
+
+(defn help-message
+  [state custom-domain?]
+  (case state
+    :already-added
+    [help-message-text-element :t/ens-username-already-added]
+    :available
+    [help-message-text-element :t/ens-username-available]
+    :owned
+    [help-message-text-element
+     :t/ens-username-owned
+     :t/ens-username-continue]
+    :connected
+    [help-message-text-element
+     :t/ens-username-connected
+     :t/ens-username-connected-continue]
+    :connected-with-different-key
+    [help-message-text-element
+     :t/ens-username-owned
+     :t/ens-username-connected-with-different-key]
+    (if custom-domain?
+      (case state
+        :too-short
+        [help-message-text-element :t/ens-custom-username-hints]
+        :invalid
+        [help-message-text-element :t/ens-custom-username-hints]
+        :taken
+        [help-message-text-element :t/ens-custom-username-taken]
+        [react/text ""])
+      (case state
+        :too-short
+        [help-message-text-element :t/ens-username-hints]
+        :invalid
+        [help-message-text-element :t/ens-username-invalid]
+        :taken
+        [help-message-text-element :t/ens-username-taken]
+        [react/text ""]))))
+
+(defn- username-input
+  [username state placeholder]
+  (let [input-ref (atom nil)]
+    (fn [username state placeholder]
+      [react/view {:flex-direction :row :justify-content :center}
+       ;;NOTE required so that the keyboards shows up when navigating
+       ;;back from checkout screen
+       [:> navigation/navigation-events
+        {:on-did-focus
+         (fn []
+           (.focus @input-ref))}]
+       ;;NOTE setting the key as placeholder forces the component to remount
+       ;;when the placeholder changes, this prevents the placeholder from
+       ;;disappearing when switching between stateofus and custom domain
+       ^{:key placeholder}
+       [react/text-input
+        {:ref               #(reset! input-ref %)
+         :on-change-text    #(re-frame/dispatch [::ens/set-username-candidate %])
+         :on-submit-editing #(re-frame/dispatch [::ens/input-submitted])
+         :auto-capitalize   :none
+         :auto-complete-type "off"
+         :auto-focus        true
+         :auto-correct      false
+         :keyboard-type     :visible-password
+         :default-value     ""
+         :text-align        :center
+         :placeholder       placeholder
+         :placeholder-text-color colors/text-gray
+         :style             {:flex 1
+                             :font-size 22
+                             :padding-left 48}}]
+       [input-icon state]])))
+
+(views/defview search []
+  (views/letsubs [{:keys [state custom-domain? username]}
+                  [:ens/search-screen]]
+    [react/keyboard-avoiding-view {:flex 1}
+     [status-bar/status-bar {:type :main}]
+     [toolbar]
+     [react/scroll-view {:style {:flex 1}
+                         ;;NOTE required so that switching custom-domain
+                         ;;works on first tap and persists keyboard
+                         ;;instead of dismissing keyboard and requiring two taps
+                         :keyboardShouldPersistTaps :always}
       [react/view {:style {:flex 1}}
-       [status-bar/status-bar {:type :main}]
-       [toolbar/simple-toolbar
-        name]
-       [react/scroll-view {:style {:flex 1}}
-        [react/view {:style {:flex 1 :margin-horizontal 16}}
-         [react/view {:flex-direction :row :align-items :center :margin-top 20}
-          [react/view {:style {:margin-right 16}}
-           [components.common/logo
-            {:size      40
-             :icon-size 16}]]
-          [react/text {:style {:typography :title}}
-           (if pending?
-             (i18n/label :t/ens-transaction-pending)
-             (str (i18n/label :t/ens-10-SNT) ", deposit unlocked"))]]]
-        [react/view {:style {:margin-top 22}}
-         (when-not pending?
-           [section {:title   (i18n/label :t/ens-wallet-address)
-                     :content (ethereum/normalized-address address)}])
-         (when-not pending?
-           [react/view {:style {:margin-top 14}}
-            [section {:title   (i18n/label :t/key)
-                      :content public-key}]])
-         [react/view {:style {:margin-top 16 :margin-bottom 32}}
-          [list/big-list-item {:text          (i18n/label :t/ens-remove-username)
-                               :subtext       (i18n/label :t/ens-remove-hints)
-                               :text-color    colors/gray
-                               :text-style    {:font-weight "500"}
-                               :icon          :main-icons/close
-                               :icon-color    colors/gray
-                               :hide-chevron? true}]
-          [react/view {:style {:margin-top 18}}
-           [list/big-list-item {:text          (i18n/label :t/ens-release-username)
-                                :text-color    colors/gray
-                                :text-style    {:font-weight "500"}
-                                :subtext       (i18n/label :t/ens-locked)
-                                :icon          :main-icons/delete
-                                :icon-color    colors/gray
-                                :active?       false
-                                :hide-chevron? true}]]]]]])))
+       [react/view {:style {:flex 1
+                            :align-items :center
+                            :justify-content :center}}
+        [big-blue-icon state]
+        [username-input username state (if custom-domain?
+                                         "vitalik94.domain.eth"
+                                         "vitalik94")]
+        [react/view {:style {:height 36
+                             :align-items :center
+                             :justify-content :space-between
+                             :padding-horizontal 12
+                             :margin-top 24
+                             :margin-horizontal 16
+                             :border-color colors/gray-lighter
+                             :border-radius 20
+                             :border-width 1
+                             :flex-direction :row}}
+         [react/text {:style {:font-size 13
+                              :typography :main-medium}}
+          (domain-label custom-domain?)]
+         [react/view {:flex 1 :min-width 24}]
+         [react/touchable-highlight {:on-press #(re-frame/dispatch [::ens/switch-domain-type])}
+          [react/text {:style {:color colors/blue
+                               :font-size 12
+                               :typography :main-medium}
+                       :number-of-lines 2}
+           (domain-switch-label custom-domain?)]]]]
+       [help-message state custom-domain?]]]]))
 
-;; Terms
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; CHECKOUT SCREEN
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn- agreement [checked contract]
+  [react/view {:flex-direction :row
+               :margin-left 26 ;; 10 for checkbox + 16
+               :margin-right 16
+               :margin-top 14
+               :align-items :flex-start
+               :justify-content :center}
+   [checkbox/checkbox {:checked?        @checked
+                       :style           {:padding 0}
+                       :on-value-change #(reset! checked %)}]
+   [react/view {:style {:padding-left 10}}
+    [react/view {:style {:flex-direction :row}}
+     [react/text
+      (i18n/label :t/ens-agree-to)]
+     [link {:on-press #(re-frame/dispatch [:navigate-to :ens-terms {:contract contract}])}
+      (i18n/label :t/ens-terms-registration)]]
+    [react/text
+     (i18n/label :t/ens-understand)]]])
+
+(defn- registration-bottom-bar
+  [checked? amount-label]
+  [react/view {:style {:height           60
+                       :background-color colors/white
+                       :border-top-width 1
+                       :border-top-color colors/gray-lighter}}
+   [react/view {:style {:margin-horizontal 16
+                        :flex-direction    :row
+                        :justify-content   :space-between}}
+    [react/view {:flex-direction :row}
+     [react/view {:style {:margin-top 12 :margin-right 8}}
+      [components.common/logo
+       {:size      36
+        :icon-size 16}]]
+     [react/view {:flex-direction :column :margin-vertical 8}
+      [react/text {:style {:font-size 15}}
+       amount-label]
+      [react/text {:style {:color colors/gray :font-size 15}}
+       (i18n/label :t/ens-deposit)]]]
+    [button {:disabled?    (not @checked?)
+             :label-style  (when (not @checked?) {:color colors/gray})
+             :on-press     #(re-frame/dispatch [::ens/register-name-pressed])}
+     (i18n/label :t/ens-register)]]])
+
+(defn- registration
+  [checked contract address public-key]
+  [react/view {:style {:flex 1 :margin-top 24}}
+   [section {:title   (i18n/label :t/ens-wallet-address)
+             :content address}]
+   [react/view {:style {:margin-top 14}}
+    [section {:title   (i18n/label :t/key)
+              :content public-key}]]
+   [agreement checked contract]])
+
+(views/defview checkout []
+  (views/letsubs [{:keys [username address custom-domain? public-key
+                          contract amount-label]}
+                  [:ens/checkout-screen]]
+    (let [checked? (reagent/atom false)]
+      [react/keyboard-avoiding-view {:flex 1}
+       [status-bar/status-bar {:type :main}]
+       [toolbar]
+       [react/scroll-view {:style {:flex 1}}
+        [react/view {:style {:flex 1
+                             :align-items :center
+                             :justify-content :center}}
+         [big-blue-icon nil]
+         [react/text {:text-align :center
+                      :style      {:flex 1
+                                   :font-size 22
+                                   :padding-horizontal 48}}
+          username]
+         [react/view {:style {:height 36
+                              :align-items :center
+                              :justify-content :space-between
+                              :padding-horizontal 12
+                              :margin-top 24
+                              :margin-horizontal 16
+                              :border-color colors/gray-lighter :border-radius 20
+                              :border-width 1
+                              :flex-direction :row}}
+          [react/text {:style {:font-size 13
+                               :typography :main-medium}}
+           (domain-label custom-domain?)]
+          [react/view {:flex 1 :min-width 24}]]]
+        [registration checked? contract address public-key]]
+       [registration-bottom-bar checked? amount-label]])))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; CONFIRMATION SCREEN
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn- finalized-icon
+  [state]
+  (case state
+    :registration-failed
+    [react/view {:style {:width 40 :height 40 :border-radius 30 :background-color colors/red-light
+                         :align-items :center :justify-content :center}}
+     [vector-icons/icon :main-icons/warning {:color colors/red}]]
+    [react/view {:style {:width 40 :height 40 :border-radius 30 :background-color colors/gray-lighter
+                         :align-items :center :justify-content :center}}
+     [vector-icons/icon :main-icons/check {:color colors/blue}]]))
+
+(defn- final-state-label
+  [state username]
+  (case state
+    :available
+    (i18n/label :t/ens-username-registration-confirmation
+                {:username (stateofus/subdomain username)})
+    :connected-with-different-key
+    (i18n/label :t/ens-username-connection-confirmation
+                {:username (stateofus/subdomain username)})
+    :connected
+    (i18n/label :t/ens-saved-title)
+    ;;NOTE: this state can't be reached atm
+    :registration-failed
+    (i18n/label :t/ens-registration-failed-title)))
+
+(defn- final-state-details
+  [state username]
+  (case state
+    :available
+    [react/text {:style {:color colors/gray :font-size 15 :text-align :center}}
+     (i18n/label :t/ens-username-you-can-follow-progress)]
+    :connected-with-different-key
+    [react/text {:style {:color colors/gray :font-size 15 :text-align :center}}
+     (i18n/label :t/ens-username-you-can-follow-progress)]
+    :connected
+    [react/nested-text
+     {:style {:font-size 15 :text-align :center}}
+     (stateofus/subdomain username)
+     [{:style {:color colors/gray}}
+      (i18n/label :t/ens-saved)]]
+    ;;NOTE: this state can't be reached atm
+    :registration-failed
+    [react/text {:style {:color colors/gray :font-size 14}}
+     (i18n/label :t/ens-registration-failed)]))
+
+(views/defview confirmation []
+  (views/letsubs [{:keys [state username]} [:ens/confirmation-screen]]
+    [react/keyboard-avoiding-view {:flex 1}
+     [status-bar/status-bar {:type :main}]
+     [toolbar]
+     [react/view {:style {:flex 1
+                          :align-items :center
+                          :justify-content :center}}
+      [finalized-icon state]
+      [react/text {:style {:typography :header
+                           :margin-top 32
+                           :margin-horizontal 32
+                           :text-align :center}}
+       (final-state-label state username)]
+      [react/view {:align-items :center
+                   :margin-horizontal 32
+                   :margin-top 12
+                   :margin-bottom 20
+                   :justify-content :center}
+       [final-state-details state username]]
+      (if (= state :registration-failed)
+        [react/view
+         [button {:on-press #(re-frame/dispatch [::ens/retry-pressed])}
+          (i18n/label :t/retry)]
+         [button {:background? false
+                  :on-press    #(re-frame/dispatch [::ens/cancel-pressed])}
+          (i18n/label :t/cancel)]]
+        [button {:on-press #(re-frame/dispatch [::ens/got-it-pressed])}
+         (i18n/label :t/ens-got-it)])]]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; TERMS SCREEN
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn- term-point [content]
   [react/view {:style {:flex 1 :margin-top 24 :margin-horizontal 16 :flex-direction :row}}
@@ -187,273 +473,78 @@
        [link {:on-press #(.openURL react/linking (etherscan-url (:mainnet ethereum.ens/ens-registries)))}
         (i18n/label :t/etherscan-lookup)]]]]))
 
-;; Registration
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; NAME DETAILS SCREEN
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn- valid-domain? [state]
-  (#{:registrable :owned :connected} state))
-
-(defn- main-icon [state]
-  (cond
-    (valid-domain? state)    :main-icons/check
-    (= state :unregistrable) :main-icons/cancel
-    :else                    :main-icons/username))
-
-(defn- icon-wrapper [color icon]
-  [react/view {:style {:margin-right 10 :width 32 :height 32 :border-radius 25
-                       :align-items :center :justify-content :center :background-color color}}
-   icon])
-
-(defn- input-action [{:keys [state custom-domain? username]}]
-  (if (= state :connected)
-    ;; Already registered, just need to save the contact
-    [:ens/save-username custom-domain? username]
-    [:ens/set-state username :registering]))
-
-(defn- disabled-input-action []
-  [icon-wrapper colors/gray
-   [vector-icons/icon :main-icons/arrow-right {:color colors/white}]])
-
-(defn- input-icon [{:keys [state custom-domain? username] :as props} usernames]
-  (cond
-    (= state :registering)
-    nil
-
-    (= state :valid)
-    [icon-wrapper colors/blue
-     [react/activity-indicator {:color colors/white}]]
-
-    (valid-domain? state)
-    (let [name (ens/fullname custom-domain? username)]
-      (if (contains? (set usernames) name)
-        [disabled-input-action]
-        [react/touchable-highlight {:on-press #(re-frame/dispatch (input-action props))}
-         [icon-wrapper colors/blue
-          [vector-icons/icon :main-icons/arrow-right {:color colors/white}]]]))
-
-    :else
-    [disabled-input-action]))
-
-(defn- default-name [custom-domain?]
-  (if custom-domain?
-    "vitalik94.domain.eth"
-    "vitalik94"))
-
-(defn- domain-label [custom-domain?]
-  (if custom-domain?
-    (i18n/label :t/ens-custom-domain)
-    (str "." stateofus/domain)))
-
-(defn- domain-switch-label [custom-domain?]
-  (if custom-domain?
-    (i18n/label :t/ens-want-domain)
-    (i18n/label :t/ens-want-custom-domain)))
-
-(defn- help-message [state custom-domain?]
-  (case state
-    (:initial :too-short)
-    (if custom-domain?
-      (i18n/label :t/ens-custom-username-hints)
-      (i18n/label :t/ens-username-hints))
-    :invalid
-    (if custom-domain?
-      (i18n/label :t/ens-custom-username-hints)
-      (i18n/label :t/ens-username-invalid))
-    :unregistrable
-    (if custom-domain?
-      (i18n/label :t/ens-custom-username-unregistrable)
-      (i18n/label :t/ens-username-unregistrable))
-    :registrable
-    (i18n/label :t/ens-username-registrable)
-    :owned
-    (i18n/label :t/ens-username-owned)
-    :connected
-    (i18n/label :t/ens-username-connected)
-    ""))
-
-(defn- on-username-change [custom-domain? username]
-  (re-frame/dispatch [:ens/set-username-candidate custom-domain? username]))
-
-(defn- on-registration [props]
-  (re-frame/dispatch [:ens/register props]))
-
-(defn- agreement [{:keys [checked contract]}]
-  [react/view {:flex-direction :row :margin-horizontal 20 :margin-top 14 :align-items :flex-start :justify-content :center}
-   [checkbox/checkbox {:checked?        @checked
-                       :style           {:padding 0}
-                       :on-value-change #(reset! checked %)}]
-   [react/view {:style {:padding-left 10}}
-    [react/view {:style {:flex-direction :row}}
-     [react/text
-      (i18n/label :t/ens-agree-to)]
-     [link {:on-press #(re-frame/dispatch [:navigate-to :ens-terms {:contract contract}])}
-      (i18n/label :t/ens-terms-registration)]]
-    [react/text
-     (i18n/label :t/ens-understand)]]])
-
-(defn- registration-bottom-bar [{:keys [checked amount-label] :as props}]
-  [react/view {:style {:height           60
-                       :background-color colors/white
-                       :border-top-width 1
-                       :border-top-color colors/gray-lighter}}
-   [react/view {:style {:margin-horizontal 16
-                        :flex-direction    :row
-                        :justify-content   :space-between}}
-    [react/view {:flex-direction :row}
-     [react/view {:style {:margin-top 12 :margin-right 8}}
-      [components.common/logo
-       {:size      36
-        :icon-size 16}]]
-     [react/view {:flex-direction :column :margin-vertical 8}
-      [react/text {:style {:font-size 15}}
-       amount-label]
-      [react/text {:style {:color colors/gray :font-size 15}}
-       (i18n/label :t/ens-deposit)]]]
-    [button {:disabled?    (not @checked)
-             :label-style  (when (not @checked) {:color colors/gray})
-             :on-press     #(on-registration props)}
-     (i18n/label :t/ens-register)]]])
-
-(defn- registration [{:keys [address public-key] :as props}]
-  [react/view {:style {:flex 1 :margin-top 24}}
-   [section {:title   (i18n/label :t/ens-wallet-address)
-             :content address}]
-   [react/view {:style {:margin-top 14}}
-    [section {:title   (i18n/label :t/key)
-              :content public-key}]]
-   [agreement props]])
-
-(defn- icon [{:keys [state]}]
-  [react/view {:style {:margin-top 68 :margin-bottom 24  :width 60 :height 60 :border-radius 30
-                       :background-color colors/blue :align-items :center :justify-content :center}}
-   [vector-icons/icon (main-icon state) {:color colors/white}]])
-
-(defn- username-input [{:keys [custom-domain? username state] :as props} usernames]
-  [react/view {:flex-direction :row :justify-content :center}
-   [react/text-input {:on-change-text    #(on-username-change custom-domain? %)
-                      :on-submit-editing #(on-registration props)
-                      :auto-capitalize   :none
-                      :auto-correct      false
-                      :default-value     username
-                      :auto-focus        true
-                      :text-align        :center
-                      :placeholder       (default-name custom-domain?)
-                      :style             {:flex 1 :font-size 22
-                                          (if (= state :registering) :padding-horizontal :padding-left) 48}}]
-   [input-icon props usernames]])
-
-(defn- final-state-label [state]
-  (case state
-    :registered
-    (i18n/label :t/ens-registered-title)
-    :saved
-    (i18n/label :t/ens-saved-title)
-    :registration-failed
-    (i18n/label :t/ens-registration-failed-title)
-    ""))
-
-(defn- final-state-details [{:keys [state username]}]
-  (case state
-    :registered
-    [react/text {:style {:color colors/gray :font-size 14}}
-     (i18n/label :t/ens-registered)]
-    :registration-failed
-    [react/text {:style {:color colors/gray :font-size 14}}
-     (i18n/label :t/ens-registration-failed)]
-    :saved
-    [react/view {:style {:flex-direction :row :align-items :center}}
-     [react/nested-text
-      {:style {}}
-      (stateofus/subdomain username)
-      [{:style {:color colors/gray}}
-       (i18n/label :t/ens-saved)]]]
-    [react/view {:flex-direction :row :margin-left 6 :margin-top 14 :align-items :center}
-     [react/text
-      (str (i18n/label :t/ens-terms-registration) " ->")]]))
-
-(defn- finalized-icon [{:keys [state]}]
-  (case state
-    :registration-failed
-    [react/view {:style {:width 40 :height 40 :border-radius 30 :background-color colors/red-light
-                         :align-items :center :justify-content :center}}
-     [vector-icons/icon :main-icons/warning {:color colors/red}]]
-    [react/view {:style {:width 40 :height 40 :border-radius 30 :background-color colors/gray-lighter
-                         :align-items :center :justify-content :center}}
-     [vector-icons/icon :main-icons/check {:color colors/blue}]]))
-
-(defn- registration-finalized [{:keys [state username] :as props}]
-  [react/view {:style {:flex 1 :align-items :center :justify-content :center}}
-   [finalized-icon props]
-   [react/text {:style {:typography :header :margin-top 32 :margin-horizontal 32 :text-align :center}}
-    (final-state-label state)]
-   [react/view {:align-items :center :margin-horizontal 32 :margin-top 12 :margin-bottom 20 :justify-content :center}
-    [final-state-details props]]
-   (if (= state :registration-failed)
-     [react/view
-      [button {:on-press #(re-frame/dispatch [:ens/set-state username :registering])}
-       (i18n/label :t/retry)]
-      [button {:background? false
-               :on-press    #(re-frame/dispatch [:ens/clear-cache-and-navigate-back])}
-       (i18n/label :t/cancel)]]
-     [button {:on-press #(re-frame/dispatch [:ens/clear-cache-and-navigate-back])}
-      (i18n/label :t/ens-got-it)])])
-
-(views/defview registration-pending [{:keys [state custom-domain?] :as props} usernames]
-  (views/letsubs [usernames [:multiaccount/usernames]]
+(views/defview name-details []
+  (views/letsubs [{:keys [name address custom-domain? public-key pending?]}
+                  [:ens.name/screen]]
     [react/view {:style {:flex 1}}
+     [status-bar/status-bar {:type :main}]
+     [toolbar/simple-toolbar
+      name]
      [react/scroll-view {:style {:flex 1}}
-      [react/view {:style {:flex 1}}
-       [react/view {:style {:flex 1 :align-items :center :justify-content :center}}
-        [icon props]
-        [username-input props usernames]
-        [react/view {:style {:height 36 :align-items :center :justify-content :space-between :padding-horizontal 12
-                             :margin-top 24 :margin-horizontal 16 :border-color colors/gray-lighter :border-radius 20
-                             :border-width 1 :flex-direction :row}}
-         [react/text {:style {:font-size 12 :typography :main-medium}}
-          (domain-label custom-domain?)]
-         [react/view {:flex 1 :min-width 24}]
-         (when-not (= state :registering)
-           ;; Domain type is not shown during registration
-           [react/touchable-highlight {:on-press #(re-frame/dispatch [:ens/switch-domain-type])}
-            [react/text {:style {:color colors/blue :font-size 12 :typography :main-medium} :number-of-lines 2}
-             (domain-switch-label custom-domain?)]])]]
-       (if (= state :registering)
-         [registration props]
-         [react/text {:style {:flex 1 :margin-top 16 :margin-horizontal 16 :font-size 14 :text-align :center}}
-          (help-message state custom-domain?)])]]
-     (when (= state :registering)
-       [registration-bottom-bar props])]))
+      (when-not custom-domain?
+        [react/view {:style {:flex 1 :margin-horizontal 16}}
+         [react/view {:flex-direction :row :align-items :center :margin-top 20}
+          [react/view {:style {:margin-right 16}}
+           [components.common/logo
+            {:size      40
+             :icon-size 16}]]
+          [react/text {:style {:typography :title}}
+           (if pending?
+             (i18n/label :t/ens-transaction-pending)
+             (str (i18n/label :t/ens-10-SNT) ", deposit unlocked"))]]])
+      [react/view {:style {:margin-top 22}}
+       (when-not pending?
+         [section {:title   (i18n/label :t/ens-wallet-address)
+                   :content (ethereum/normalized-address address)}])
+       (when-not pending?
+         [react/view {:style {:margin-top 14}}
+          [section {:title   (i18n/label :t/key)
+                    :content public-key}]])
+       [react/view {:style {:margin-top 16 :margin-bottom 32}}
+        [list/big-list-item {:text          (i18n/label :t/ens-remove-username)
+                             :subtext       (i18n/label :t/ens-remove-hints)
+                             :text-color    colors/gray
+                             :text-style    {:font-weight "500"}
+                             :icon          :main-icons/close
+                             :icon-color    colors/gray
+                             :hide-chevron? true}]
+        (when-not custom-domain?
+          [react/view {:style {:margin-top 18}}
+           [list/big-list-item {:text          (i18n/label :t/ens-release-username)
+                                :text-color    colors/gray
+                                :text-style    {:font-weight "500"}
+                                :subtext       (i18n/label :t/ens-locked)
+                                :icon          :main-icons/delete
+                                :icon-color    colors/gray
+                                :active?       false
+                                :hide-chevron? true}]])]]]]))
 
-(defn- toolbar []
-  [toolbar/toolbar nil
-   [toolbar/nav-button (actions/back #(re-frame/dispatch [:ens/clear-cache-and-navigate-back]))]
-   [toolbar/content-title (i18n/label :t/ens-your-username)]])
-
-(views/defview register []
-  (views/letsubs [{:keys [address state registering?] :as props} [:ens.registration/screen]]
-    (let [checked (reagent/atom false)
-          props   (merge props {:checked checked :address (ethereum/normalized-address address)})]
-      [react/keyboard-avoiding-view {:flex 1}
-       [status-bar/status-bar {:type :main}]
-       [toolbar]
-       ;; NOTE: this view is used both for finalized and pending registration
-       ;; and when the registration data is cleared for a brief moment state
-       ;; is nil and registration-pending show which triggers the keyboard
-       ;; and it's ugly
-       ;; TODO: something less crazy with proper separated views and routes
-       (if registering?
-         [registration-pending props]
-         [registration-finalized props])])))
-
-;; Welcome
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; WELCOME SCREEN
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn- welcome-item [{:keys [icon-label title]} content]
-  [react/view {:style {:flex 1 :margin-top 24 :margin-left 16 :flex-direction :row}}
-   [react/view {:style {:height 40 :width 40 :border-radius 25 :border-width 1 :border-color colors/gray-lighter
-                        :align-items :center :justify-content :center}}
+  [react/view {:style {:flex 1
+                       :margin-top 24
+                       :margin-left 16
+                       :flex-direction :row}}
+   [react/view {:style {:height 40
+                        :width 40
+                        :border-radius 25
+                        :border-width 1
+                        :border-color colors/gray-lighter
+                        :align-items :center
+                        :justify-content :center}}
     [react/text {:style {:typography :title}}
      icon-label]]
-   [react/view {:style {:flex 1 :margin-horizontal 16}}
-    [react/text {:style {:font-size 15 :typography :main-semibold}}
+   [react/view {:style {:flex 1
+                        :margin-horizontal 16}}
+    [react/text {:style {:font-size 15
+                         :typography :main-semibold}}
      title]
     content]])
 
@@ -512,7 +603,7 @@
     [react/scroll-view {:style {:flex 1}}
      [react/view {:style {:flex 1}}
       (for [name names]
-        (let [action #(do (re-frame/dispatch [:ens/save-preferred-name name])
+        (let [action #(do (re-frame/dispatch [::ens/save-preferred-name name])
                           (re-frame/dispatch [:bottom-sheet/hide-sheet]))]
           ^{:key name}
           [react/touchable-highlight {:on-press action}
@@ -535,23 +626,34 @@
        [react/view {:style {:margin-top 8}}
         (for [name names]
           ^{:key name}
-          [name-item {:name name :action #(re-frame/dispatch [:ens/navigate-to-name name])}])]
+          [name-item {:name name :action #(re-frame/dispatch [::ens/navigate-to-name name])}])]
        [react/text {:style {:color colors/gray :font-size 15}}
         (i18n/label :t/ens-no-usernames)])]
     [react/view {:style {:padding-top 22 :border-color colors/gray-lighter :border-top-width 1}}
      [react/text {:style {:color colors/gray :margin-horizontal 16}}
       (i18n/label :t/ens-chat-settings)]
      (when (> (count names) 1)
-       [profile.components/settings-item {:label-kw  :ens-primary-username
-                                          :value     preferred-name
-                                          :action-fn #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                          {:content         (fn [] (name-list names preferred-name))
-                                                                           :content-height  (+ 72 (* (min 4 (count names)) 64))}])}])
-     [profile.components/settings-switch-item {:label-kw  :ens-show-username
-                                               :action-fn #(re-frame/dispatch [:ens/switch-show-username])
-                                               :value     show?}]]
-    (let [message (merge {:from public-key :last-in-group? true :display-username? true :display-photo? true :username name
-                          :content {:text (i18n/label :t/ens-test-message)} :content-type "text/plain" :timestamp-str "9:41 AM"}
+       [profile.components/settings-item
+        {:label-kw  :ens-primary-username
+         :value     preferred-name
+         :action-fn #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                         {:content
+                                          (fn [] (name-list names preferred-name))
+                                          :content-height
+                                          (+ 72 (* (min 4 (count names)) 64))}])}])
+     [profile.components/settings-switch-item
+      {:label-kw  :ens-show-username
+       :action-fn #(re-frame/dispatch [::ens/switch-show-username])
+       :value     show?}]]
+    (let [message (merge {:from public-key
+                          :last-in-group? true
+                          :display-username? true
+                          :display-photo? true
+                          :alias name
+                          :content {:text (i18n/label :t/ens-test-message)
+                                    :name (when show? preferred-name)}
+                          :content-type "text/plain"
+                          :timestamp-str "9:41 AM"}
                          (when show?
                            {:name preferred-name}))]
       [message/message-body message

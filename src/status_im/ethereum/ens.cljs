@@ -125,7 +125,8 @@
 
 (defn uncompressed-public-key
   [x y]
-  (str "0x04" x y))
+  (when (and x y)
+    (str "0x04" x y)))
 
 (defn valid-eth-name-prefix?
   [prefix]

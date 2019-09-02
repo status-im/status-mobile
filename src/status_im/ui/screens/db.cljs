@@ -12,6 +12,7 @@
             status-im.ui.screens.profile.db
             status-im.network.module
             status-im.mailserver.db
+            status-im.ens.db
             status-im.browser.db
             status-im.ui.screens.add-new.db
             status-im.ui.screens.add-new.new-public-chat.db
@@ -313,6 +314,7 @@
                                    :chat/bot-db
                                    :chat/id->command
                                    :chat/access-scope->command-id
+                                   :ens/registration
                                    :wallet/wallet
                                    :prices/prices
                                    :prices/prices-loading?

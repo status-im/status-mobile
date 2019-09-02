@@ -193,24 +193,25 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     def test_can_add_existing_ens(self):
         sign_in = SignInView(self.driver)
         home = sign_in.recover_access(ens_user['passphrase'])
+
+        home.just_fyi('switching to Mainnet')
         profile = home.profile_button.click()
         profile.switch_network('Mainnet with upstream RPC')
         home.profile_button.click()
         profile.element_by_text('ENS usernames').click()
         dapp_view = DappsView(self.driver)
 
-        # check if your name can be added via "ENS usernames" dapp in Profile
+        dapp_view.just_fyi('check if your name can be added via "ENS usernames" in Profile')
         dapp_view.element_by_text('Get started').click()
         dapp_view.ens_name.set_value(ens_user['ens'])
         if not dapp_view.element_by_text_part('is owned by you').is_element_displayed():
             self.errors.append('Owned username is not shown in ENS Dapp.')
         dapp_view.check_ens_name.click()
-        dapp_view.check_ens_name.click()
         if not dapp_view.element_by_text_part('Username added').is_element_displayed():
             self.errors.append('No message "Username added" after resolving own username')
         dapp_view.element_by_text('Ok, got it').click()
 
-        # check that after adding username is shown in "ENS usernames" and profile
+        dapp_view.just_fyi('check that after adding username is shown in "ENS usernames" and profile')
         if not dapp_view.element_by_text(ens_user['ens']).is_element_displayed():
             self.errors.append('No ENS name is shown in own "ENS usernames" after adding')
         dapp_view.back_button.click()
@@ -707,6 +708,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         home_1 = sign_in_1.recover_access(user_1['passphrase'])
         home_2 = sign_in_2.create_user()
 
+        home_1.just_fyi('switching to mainnet and add ENS')
         profile_1 = sign_in_1.profile_button.click()
         profile_1.switch_network('Mainnet with upstream RPC')
         home_1.profile_button.click()
@@ -715,11 +717,11 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         dapp_view_1.element_by_text('Get started').click()
         dapp_view_1.ens_name.set_value(ens_user['ens'])
         dapp_view_1.check_ens_name.click()
-        dapp_view_1.check_ens_name.click()
         dapp_view_1.element_by_text('Ok, got it').click()
         dapp_view_1.back_button.click()
         profile_1.home_button.click()
 
+        home_2.just_fyi('joining same public chat, checking default username on message')
         chat_name = home_1.get_public_chat_name()
         chat_2 = home_2.join_public_chat(chat_name)
         chat_1 = home_1.join_public_chat(chat_name)
@@ -729,6 +731,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('Default username is not shown in public chat')
         chat_2.send_message('message from device 2')
 
+        home_1.just_fyi('set ENS name for public chat and check it from device2')
         chat_1.get_back_to_home_view()
         home_1.profile_button.click()
         profile_1.element_by_text('Your ENS name').click()
