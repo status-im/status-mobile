@@ -1,20 +1,34 @@
 (ns status-im.signals.core
-  (:require [status-im.chat.models.loading :as chat.loading]
-            [status-im.ethereum.subscriptions :as ethereum.subscriptions]
+  (:require [status-im.ethereum.subscriptions :as ethereum.subscriptions]
+            [status-im.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
+            [status-im.multiaccounts.login.core :as login]
             [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.node.core :as node]
             [status-im.pairing.core :as pairing]
             [status-im.transport.filters.core :as transport.filters]
             [status-im.transport.message.core :as transport.message]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]
-            [status-im.multiaccounts.login.core :as login]))
+            [taoensso.timbre :as log]))
 
 (fx/defn status-node-started
-  [{db :db :as cofx} event]
-  (login/multiaccount-login-success cofx))
+  [{db :db :as cofx} {:keys [error]}]
+  (if error
+    {:db (-> db
+             (update :multiaccounts/login dissoc :processing)
+             (assoc-in [:multiaccounts/login :error]
+                       ;; NOTE: the only currently known error is
+                       ;; "file is not a database" which occurs
+                       ;; when the user inputs the wrong password
+                       ;; if that is the error that is found
+                       ;; we show the i18n label for wrong password
+                       ;; to the user
+                       ;; in case of an unknown error we show the
+                       ;; error
+                       (if (= error "file is not a database")
+                         (i18n/label :t/wrong-password)
+                         error)))}
+    (login/multiaccount-login-success cofx)))
 
 (fx/defn summary
   [{:keys [db] :as cofx} peers-summary]

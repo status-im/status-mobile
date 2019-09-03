@@ -432,7 +432,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void loginWithKeycard(final String whisperPrivateKey, final String encryptionPublicKey, final Callback callback) {
+    public void loginWithKeycard(final String whisperPrivateKey, final String encryptionPublicKey, final String configJSON, final Callback callback) {
         Log.d(TAG, "loginWithKeycard");
         if (!checkAvailability()) {
             callback.invoke(false);
@@ -442,7 +442,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                  String result = Statusgo.loginWithKeycard(whisperPrivateKey, encryptionPublicKey);
+                  String result = Statusgo.loginWithKeycard(whisperPrivateKey, encryptionPublicKey, configJSON);
 
                   callback.invoke(result);
             }

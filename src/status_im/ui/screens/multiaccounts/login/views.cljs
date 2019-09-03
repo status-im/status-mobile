@@ -1,23 +1,21 @@
 (ns status-im.ui.screens.multiaccounts.login.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [clojure.string :as string]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.screens.multiaccounts.styles :as ast]
-            [status-im.ui.components.text-input.view :as text-input]
-            [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.checkbox.view :as checkbox]
-            [status-im.ui.components.toolbar.actions :as act]
-            [status-im.ui.screens.multiaccounts.login.styles :as styles]
-            [status-im.ui.components.react :as react]
+  (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.utils.utils :as utils]
-            [status-im.ui.components.react :as components]
+            [status-im.ui.components.checkbox.view :as checkbox]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.text-input.view :as text-input]
+            [status-im.ui.components.toolbar.actions :as act]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.chat.photos :as photos]
-            [re-frame.core :as re-frame]
+            [status-im.ui.screens.multiaccounts.login.styles :as styles]
+            [status-im.ui.screens.multiaccounts.styles :as ast]
             [status-im.utils.platform :as platform]
-            [status-im.utils.security :as security]))
+            [status-im.utils.security :as security]
+            [status-im.utils.utils :as utils])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn login-toolbar [can-navigate-back?]
   [toolbar/toolbar
@@ -30,21 +28,6 @@
 (defn login-multiaccount [password-text-input]
   (.blur password-text-input)
   (re-frame/dispatch [:multiaccounts.login.ui/password-input-submitted]))
-
-(defn- error-key [error]
-  ;; TODO Improve selection logic when status-go provide an error code
-  ;; see https://github.com/status-im/status-go/issues/278
-  (cond
-    (string/starts-with? error "there is no running node")
-    :t/node-unavailable
-
-    (or
-     (string/starts-with? error "cannot retrieve a valid key")
-     (string/starts-with? error "could not decrypt key"))
-    :t/wrong-password
-
-    :else
-    :t/unknown-status-go-error))
 
 (defn multiaccount-login-badge [photo-path name public-key]
   [react/view styles/login-badge
@@ -83,7 +66,7 @@
                                                       (security/mask-data %)])
                                   (re-frame/dispatch [:set-in [:multiaccounts/login :error] ""]))
           :secure-text-entry true
-          :error             (when (not-empty error) (i18n/label (error-key error)))}]]
+          :error             (when (not-empty error) error)}]]
 
        (when-not platform/desktop?
          ;; saving passwords is unavailable on Desktop
@@ -101,7 +84,7 @@
             [react/text (i18n/label :t/save-password)]]))]]
      (when processing
        [react/view styles/processing-view
-        [components/activity-indicator {:animating true}]
+        [react/activity-indicator {:animating true}]
         [react/i18n-text {:style styles/processing :key :processing}]])
      [react/view {:style styles/bottom-button-container}
       [components.common/button
