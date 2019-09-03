@@ -94,10 +94,8 @@
 
 (fx/defn initialize-web3-client-version
   {:events [::initialize-web3-client-version]}
-  [{:keys [db]} resp]
-  (if-let [node-version (second (re-find #"StatusIM/v(.*)/.*/.*" resp))]
-    {:db (assoc db :web3-node-version node-version)}
-    (log/warn (str "unexpected web3 version format: " "'" resp "'"))))
+  [{:keys [db]} node-version]
+  {:db (assoc db :web3-node-version node-version)})
 
 (fx/defn save-user-password
   [cofx address password]

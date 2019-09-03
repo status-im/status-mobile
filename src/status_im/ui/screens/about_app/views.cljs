@@ -24,7 +24,7 @@
      {:type                :small
       :title               (i18n/label :t/version)
       :accessibility-label :version
-      :accessories         [(str app-version "; " node-version)]}]]])
+      :accessories         [(str app-version ";\n" node-version)]}]]])
 
 (views/defview about-app []
   (views/letsubs [app-version  [:get-app-short-version]

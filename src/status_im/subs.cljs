@@ -285,7 +285,7 @@
    (get search :filter)))
 
 (defn- node-version [web3-node-version]
-  (str "status-go v" (or web3-node-version "N/A") ""))
+  (or web3-node-version "N/A"))
 
 (def app-short-version
   (let [version (if platform/desktop? build/version build/build-no)]
