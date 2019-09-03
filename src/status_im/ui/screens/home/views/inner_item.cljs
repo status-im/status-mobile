@@ -24,46 +24,43 @@
     (when-let [command (commands-receiving/lookup-command-by-ref message id->command)]
       (commands/generate-short-preview command (commands/add-chat-contacts contacts message)))))
 
-(defview message-content-text [chat-id]
-  (letsubs [{:keys [content content-type] :as message} [:chats/last-message-content chat-id]]
-    [react/view styles/last-message-container
-     (cond
+(defn message-content-text [{:keys [content content-type] :as message}]
+  [react/view styles/last-message-container
+   (cond
 
-       (not (and content content-type))
-       [react/text {:style               styles/last-message-text
-                    :accessibility-label :no-messages-text}
-        (i18n/label :t/no-messages)]
+     (not (and content content-type))
+     [react/text {:style               styles/last-message-text
+                  :accessibility-label :no-messages-text}
+      (i18n/label :t/no-messages)]
 
-       (= constants/content-type-command content-type)
-       [command-short-preview message]
+     (= constants/content-type-command content-type)
+     [command-short-preview message]
 
-       (= constants/content-type-sticker content-type)
-       [react/image {:style {:margin 1 :width 20 :height 20}
-                     :source {:uri (contenthash/url (:hash content))}}]
+     (= constants/content-type-sticker content-type)
+     [react/image {:style  {:margin 1 :width 20 :height 20}
+                   :source {:uri (contenthash/url (:hash content))}}]
 
-       (string/blank? (:text content))
-       [react/text {:style styles/last-message-text}
-        ""]
+     (string/blank? (:text content))
+     [react/text {:style styles/last-message-text}
+      ""]
 
-       (:text content)
-       [react/text {:style               styles/last-message-text
-                    :number-of-lines     1
-                    :accessibility-label :chat-message-text}
-        (:text content)]
+     (:text content)
+     [react/text {:style               styles/last-message-text
+                  :number-of-lines     1
+                  :accessibility-label :chat-message-text}
+      (:text content)]
 
-       :else
-       [react/text {:style               styles/last-message-text
-                    :number-of-lines     1
-                    :accessibility-label :chat-message-text}
-        content])]))
+     :else
+     [react/text {:style               styles/last-message-text
+                  :number-of-lines     1
+                  :accessibility-label :chat-message-text}
+      content])])
 
-(defview message-timestamp [chat-id]
-  (letsubs [{:keys [last-message-timestamp timestamp]} [:chats/last-message-content chat-id]]
-    (let [ts (if (pos? last-message-timestamp) last-message-timestamp timestamp)]
-      (when ts
-        [react/text {:style               styles/datetime-text
-                     :accessibility-label :last-message-time-text}
-         (string/upper-case (time/to-short-str ts))]))))
+(defn message-timestamp [timestamp]
+  (when timestamp
+    [react/text {:style               styles/datetime-text
+                 :accessibility-label :last-message-time-text}
+     (string/upper-case (time/to-short-str timestamp))]))
 
 (defview unviewed-indicator [chat-id]
   (letsubs [unviewed-messages-count [:chats/unviewed-messages-count chat-id]]
@@ -76,15 +73,18 @@
   (let [{:keys
          [chat-id chat-name name
           color online group-chat
-          public? public-key
-          contact]}         home-item
-        private-group?      (and group-chat (not public?))
-        public-group?       (and group-chat public?)
-        truncated-chat-name (utils/truncate-str chat-name 30)
-        chat-actions        (cond
-                              (and group-chat public?)       :public-chat-actions
-                              (and group-chat (not public?)) :group-chat-actions
-                              :else                          :private-chat-actions)]
+          public? public-key contact
+          last-message-timestamp
+          timestamp
+          last-message-content
+          last-message-content-type]} home-item
+        private-group?                (and group-chat (not public?))
+        public-group?                 (and group-chat public?)
+        truncated-chat-name           (utils/truncate-str chat-name 30)
+        chat-actions                  (cond
+                                        (and group-chat public?)       :public-chat-actions
+                                        (and group-chat (not public?)) :group-chat-actions
+                                        :else                          :private-chat-actions)]
     [list-item/list-item
      {:icon                      [chat-icon.screen/chat-icon-view-chat-list
                                   contact group-chat truncated-chat-name color online false]
@@ -94,11 +94,14 @@
                                    :else          nil)
       :title                     truncated-chat-name
       :title-accessibility-label :chat-name-text
-      :title-row-accessory       [message-timestamp chat-id]
+      :title-row-accessory       [message-timestamp (if (pos? last-message-timestamp)
+                                                      last-message-timestamp
+                                                      timestamp)]
       :subtitle
       (let [{:keys [tribute-status tribute-label]} (:tribute-to-talk contact)]
         (if (not (#{:require :pending} tribute-status))
-          [message-content-text chat-id]
+          [message-content-text {:content      last-message-content
+                                 :content-type last-message-content-type}]
           tribute-label))
       :subtitle-row-accessory    [unviewed-indicator chat-id]
       :on-press                  #(do
