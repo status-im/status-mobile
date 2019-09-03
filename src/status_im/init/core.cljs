@@ -4,6 +4,7 @@
             [status-im.data-store.core :as data-store]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.native-module.core :as status]
+            [status-im.network.net-info :as network]
             [status-im.notifications.core :as notifications]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.ui.screens.db :refer [app-db]]
@@ -83,8 +84,7 @@
              ::data-store/init-store nil
              :ui/listen-to-window-dimensions-change nil
              :notifications/init                    nil
-             :network/listen-to-network-status      nil
-             :network/listen-to-connection-status   nil
+             ::network/listen-to-network-info       nil
              :hardwallet/register-card-events       nil
              :hardwallet/check-nfc-support nil
              :hardwallet/check-nfc-enabled nil}

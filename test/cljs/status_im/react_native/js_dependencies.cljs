@@ -27,7 +27,6 @@
 (def vector-icons           #js {:default #js {}})
 (def webview-bridge         #js {:default #js {}})
 (def webview                #js {:WebView #js {}})
-(def svg                    #js {:default #js {}})
 (def status-keycard         #js {:default #js {}})
 
 (defrecord Notification [])
@@ -54,4 +53,7 @@
 (def desktop-config #js {})
 (def react-native-mail #js {:mail #js {}})
 (def react-native-navigation-twopane  #js {})
-
+(def react-native-screens  #js {})
+(def react-native-shake  #js {})
+(def net-info  #js {})
+(def touchid  #js {})

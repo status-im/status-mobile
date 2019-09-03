@@ -99,8 +99,8 @@
 (defn close-application []
   (native-module/close-application))
 
-(defn connection-change [data]
-  (native-module/connection-change data))
+(defn connection-change [type expensive?]
+  (native-module/connection-change type expensive?))
 
 (defn app-state-change [state]
   (native-module/app-state-change state))

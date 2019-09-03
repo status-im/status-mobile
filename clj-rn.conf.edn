@@ -46,7 +46,8 @@
               "react-native-navigation-twopane"
               "hi-base32"
               "react-native-mail"
-              "react-native-shake"]
+              "react-native-shake"
+              "@react-native-community/netinfo"]
  ;; Desktop modules
  :desktop-modules ["realm"
                    "react-native-languages"
