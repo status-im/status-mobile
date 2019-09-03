@@ -12,17 +12,18 @@ GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 current_dir=$(cd "${BASH_SOURCE%/*}" && pwd)
 gradle_opts="--console plain"
 tmp_pom_filename=$(mktemp --tmpdir fetch-maven-deps-XXXX.pom)
+tmp_mvn_dep_tree_filename=$(mktemp --tmpdir mvn-dep-tree-XXXX.txt)
 deps_file_path=$(mktemp --tmpdir fetch-maven-deps-XXXX-deps.txt)
 
 function join_by { local IFS="$1"; shift; echo "$*"; }
 
-mavenSources=(
+mavenSources=( \
   https://dl.google.com/dl/android/maven2 \
   https://jcenter.bintray.com \
+  https://plugins.gradle.org/m2 \
   https://repo.maven.apache.org/maven2 \
   https://maven.fabric.io/public \
   https://jitpack.io \
-  https://plugins.gradle.org/m2
 )
 mavenSourcesSedFilter=$(join_by '|' ${mavenSources[@]})
 
@@ -62,15 +63,17 @@ function tryGetPOMFromURL() {
   local url="$1"
 
   rm -f $tmp_pom_filename
-  curl --output $tmp_pom_filename --silent --fail "$url.pom" && test -s $tmp_pom_filename
+  curl --output $tmp_pom_filename --silent --fail --location "$url.pom" && test -s $tmp_pom_filename
 }
 
 # Given the components of a package ID, will loop through known repositories to figure out a source for the package
 function determineArtifactUrl() {
-  local tokens=("$@")
+  # Parse dependency ID into components (group ID, artifact ID, version)
+  IFS=':' read -ra tokens <<< "$1"
   local groupId=${tokens[0]}
+  [ -z "$groupId" ] && return
   local artifactId=${tokens[1]}
-  local version=${tokens[2]}
+  local version=$(echo "${tokens[2]}" | cut -d'@' -f1)
 
   local path=$(getPath "${tokens[@]}")
   for mavenSourceUrl in ${mavenSources[@]}; do
@@ -84,6 +87,7 @@ function determineArtifactUrl() {
       return
     fi
   done
+  echo "<NOTFOUND>"
 }
 
 # Executes a gradle dependencies command and returns the output package IDs
@@ -109,10 +113,14 @@ function retrieveAdditionalDependencies() {
   # the dependencies for each individual POM file. Instead of parsing the dependency tree itself though,
   # we look at what packages maven downloads from the internet into the local repo,
   # which avoids us having to do a deep search, and does not report duplicates
-  # tryGetPOMFromURL downloads the POM file into $tmp_pom_filename
-  local additional_deps=( $(mvn dependency:tree -B -Dmaven.repo.local=$mvn_tmp_repo -f "$1" 2>&1 \
+  echo -n > $tmp_mvn_dep_tree_filename
+  mvn dependency:tree -B -Dmaven.repo.local=$mvn_tmp_repo -f "$1" > $tmp_mvn_dep_tree_filename 2>&1 || echo -n
+  local additional_deps=( $(cat $tmp_mvn_dep_tree_filename \
     | grep -E 'Downloaded from [^:]+: [^ ]+\.(pom|jar|aar)' \
     | sed -E "s;^\[INFO\] Downloaded from [^:]+: ([^ ]+)\.(pom|jar|aar) .*$;\1;") )
+  local missing_additional_deps=( $(cat $tmp_mvn_dep_tree_filename \
+    | grep -E "The POM for .+:.+:(pom|jar):.+ is missing" \
+    | sed -E "s;^.*The POM for (.+:.+:(pom|jar):.+) is missing.*$;\1;") )
 
   for additional_dep_url in ${additional_deps[@]}; do
     local additional_dep_id=$(getPackageIdFromURL $additional_dep_url)
@@ -127,23 +135,50 @@ function retrieveAdditionalDependencies() {
     done
     [ $alreadyExists -eq 0 ] && echo "$additional_dep_url" || continue
   done
+
+  for additional_dep_id in ${missing_additional_deps[@]}; do
+    # See if we already have this dependency in $deps
+    local alreadyExists=0
+    for _dep in ${deps[@]}; do
+      if [ "$additional_dep_id" = "$_dep" ]; then
+        alreadyExists=1
+        break
+      fi
+    done
+
+    if [ $alreadyExists -eq 0 ]; then
+      artifactUrl=$(determineArtifactUrl $additional_dep_id)
+      if [ -z "$artifactUrl" ]; then
+        continue
+      elif [ "$artifactUrl" = "<NOTFOUND>" ]; then
+        # Some dependencies don't contain a normal format, so we ignore them (e.g. `com.squareup.okhttp:okhttp:{strictly`)
+        echo "Failed to determine source of $dep, ignoring..." > /dev/stderr
+        continue
+      fi
+
+      echo "$artifactUrl"
+    fi
+  done
 }
 
 mvn_tmp_repo=$(mktemp -d)
-trap "rm -rf $mvn_tmp_repo $tmp_pom_filename $deps_file_path" ERR EXIT HUP INT
+trap "rm -rf $mvn_tmp_repo $tmp_pom_filename $deps_file_path $tmp_mvn_dep_tree_filename" ERR EXIT HUP INT
 
 pushd $GIT_ROOT/android > /dev/null
 
-projects=$(gradle projects $gradle_opts 2>&1 \
-            | grep "Project ':" \
-            | sed -E "s;^.--- Project '(\:[a-zA-Z0-9\-]+)';\1;")
+gradleProjects=$(gradle projects $gradle_opts 2>&1 \
+                | grep "Project ':" \
+                | sed -E "s;^.--- Project '\:([@_a-zA-Z0-9\-]+)';\1;")
+projects=( ${gradleProjects[@]} )
+IFS=$'\n' sortedProjects=($(sort -u <<<"${projects[*]}"))
+unset IFS
 
 echo -n > $deps_file_path
 # TODO: try to limit unnecessary dependencies brought in by passing e.g. `--configuration releaseCompileClasspath` to the `gradle *:dependencies` command
 runGradleDepsCommand 'buildEnvironment' >> $deps_file_path
-for project in ${projects[@]}; do
-  runGradleDepsCommand "${project}:buildEnvironment" >> $deps_file_path
-  runGradleDepsCommand "${project}:dependencies" >> $deps_file_path
+for project in ${sortedProjects[@]}; do
+  runGradleDepsCommand ${project}:buildEnvironment >> $deps_file_path
+  runGradleDepsCommand ${project}:dependencies >> $deps_file_path
 done
 
 popd > /dev/null
@@ -174,15 +209,10 @@ for dep in ${deps[@]}; do
     continue
   fi
 
-  # Parse dependency ID into components (group ID, artifact ID, version)
-  IFS=':' read -ra tokens <<< "$dep"
-  groupId=${tokens[0]}
-  [ -z "$groupId" ] && continue
-  artifactId=${tokens[1]}
-  version=$(echo "${tokens[2]}" | cut -d'@' -f1)
-
-  artifactUrl=$(determineArtifactUrl $groupId $artifactId $version)
+  artifactUrl=$(determineArtifactUrl $dep)
   if [ -z "$artifactUrl" ]; then
+    continue
+  elif [ "$artifactUrl" = "<NOTFOUND>" ]; then
     # Some dependencies don't contain a normal format, so we ignore them (e.g. `com.squareup.okhttp:okhttp:{strictly`)
     echo "Failed to determine source of $dep, ignoring..." > /dev/stderr
     continue

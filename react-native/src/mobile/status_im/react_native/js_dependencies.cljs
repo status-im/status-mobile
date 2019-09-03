@@ -36,6 +36,7 @@
 (def react-native-navigation-twopane  (js/require "react-native-navigation-twopane"))
 (def react-native-shake     (js/require "react-native-shake"))
 (def react-native-screens   (js/require "react-native-screens"))
+(def net-info               (js/require "@react-native-community/netinfo"))
 (def mail-class             (js/require  "react-native-mail"))
 (def react-native-mail      (.-default mail-class))
 (def desktop-linking        #js {:addEventListener (fn [])})

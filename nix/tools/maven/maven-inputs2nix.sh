@@ -70,14 +70,14 @@ function writeEntry() {
   fi
   deppath="${depurl/$prefix\//}"
   pom_sha256=$(getSHA "$depurl.pom")
-  [ -n "$pom_sha256" ] && pom_sha1=$(curl -s "$depurl.pom.sha1") || unset pom_sha1
+  [ -n "$pom_sha256" ] && pom_sha1=$(curl -s --location "$depurl.pom.sha1") || unset pom_sha1
   jar_sha256=$(getSHA "$depurl.jar")
   type='jar'
   if [ -z "$jar_sha256" ]; then
     jar_sha256=$(getSHA "$depurl.aar")
     [ -n "$jar_sha256" ] && type='aar'
   fi
-  [ -n "$jar_sha256" ] && jar_sha1=$(curl -s "$depurl.${type}.sha1") || unset jar_sha1
+  [ -n "$jar_sha256" ] && jar_sha1=$(curl -s --location "$depurl.${type}.sha1") || unset jar_sha1
 
   if [ -z "$pom_sha256" ] && [ -z "$jar_sha256" ] && [ -z "$aar_sha256" ]; then
     echo "Warning: failed to download $depurl" > /dev/stderr

@@ -25,6 +25,8 @@ target 'StatusIm' do
   # when removing svg pod, RCTImage is needed to be removed from React subspecs
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
+  pod 'react-native-netinfo', :path => '../node_modules/@react-native-community/netinfo'
+
   target 'StatusImTests' do
     inherit! :search_paths
     # Pods for testing

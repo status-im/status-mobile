@@ -168,8 +168,8 @@
 (defn close-application []
   (.closeApplication (status)))
 
-(defn connection-change [{:keys [type expensive?]}]
-  (.connectionChange (status) type expensive?))
+(defn connection-change [type expensive?]
+  (.connectionChange (status) type (boolean expensive?)))
 
 (defn app-state-change [state]
   (.appStateChange (status) state))
