@@ -101,22 +101,22 @@
         main-component          (atom nil)
         main-component-two-pane (atom nil)
         two-pane?               (reagent/atom (dimensions/fit-two-pane?))]
+    (.addEventListener react/dimensions
+                       "change"
+                       (fn [dimensions]
+                         (let [two-pane-enabled? (dimensions/fit-two-pane?)]
+                           (do
+                             (re-frame/dispatch [:set-two-pane-ui-enabled two-pane-enabled?])
+                             (log/debug ":set-two-pane " two-pane-enabled?)
+                             (reset! two-pane? two-pane-enabled?)))))
+
+    (when-not @initial-view-id
+      (reset! initial-view-id @view-id))
+    (reset-component-on-mount view-id main-component false)
+    (reset-component-on-mount view-id main-component-two-pane true)
     (reagent/create-class
      {:component-did-mount
       (fn []
-        (.addEventListener react/dimensions
-                           "change"
-                           (fn [dimensions]
-                             (let [two-pane-enabled? (dimensions/fit-two-pane?)]
-                               (do
-                                 (re-frame/dispatch [:set-two-pane-ui-enabled two-pane-enabled?])
-                                 (log/debug ":set-two-pane " two-pane-enabled?)
-                                 (reset! two-pane? two-pane-enabled?)))))
-
-        (when-not @initial-view-id
-          (reset! initial-view-id @view-id))
-        (reset-component-on-mount view-id main-component false)
-        (reset-component-on-mount view-id main-component-two-pane true)
         (re-frame/dispatch [:set-two-pane-ui-enabled @two-pane?])
         (log/debug :main-component-did-mount @view-id)
         (utils.universal-links/initialize))
