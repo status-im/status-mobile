@@ -12,6 +12,7 @@
             [status-im.chat.models :as chat]
             [status-im.hardwallet.core :as hardwallet]
             [status-im.mailserver.core :as mailserver]
+            [status-im.multiaccounts.recover.core :as recovery]
             [status-im.native-module.core :as status]
             [status-im.ui.components.permissions :as permissions]
             [status-im.utils.dimensions :as dimensions]

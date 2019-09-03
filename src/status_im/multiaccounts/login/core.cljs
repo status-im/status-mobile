@@ -187,9 +187,6 @@
               (when platform/desktop?
                 (chat-model/update-dock-badge-label)))))
 
-(defn- recovering-multiaccount? [cofx]
-  (boolean (get-in cofx [:db :multiaccounts/recover])))
-
 (fx/defn create-only-events
   [{:keys [db] :as cofx} address password]
   (let [{:keys [multiaccount :networks/networks :networks/current-network]} db]
@@ -221,7 +218,6 @@
                                              :mailserver-ranges {}
                                              :mailserver-topics {}
                                              :default-mailserver true})
-              (mobile-network/on-network-status-change)
               (chaos-mode/check-chaos-mode)
               (when-not platform/desktop?
                 (initialize-wallet)))))
@@ -232,8 +228,7 @@
 (fx/defn multiaccount-login-success
   [{:keys [db] :as cofx}]
   (let [{:keys [address password save-password? name photo-path creating?]} (:multiaccounts/login db)
-        step (get-in db [:intro-wizard :step])
-        recovering? (recovering-multiaccount? cofx)
+        recovering? (get-in db [:intro-wizard :recovering?])
         login-only? (not (or creating?
                              recovering?
                              (keycard-setup? cofx)))

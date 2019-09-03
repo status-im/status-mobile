@@ -547,7 +547,6 @@
     :intro-wizard-text3
     :intro-wizard-text4
     :intro-wizard-text6
-    :intro-wizard-text7
     :intro-wizard-title-alt4
     :intro-wizard-title-alt5
     :intro-wizard-title1
@@ -556,7 +555,6 @@
     :intro-wizard-title4
     :intro-wizard-title5
     :intro-wizard-title6
-    :intro-wizard-title7
     :invalid-extension
     :invalid-format
     :invalid-key-confirm

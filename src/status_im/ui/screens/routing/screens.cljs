@@ -73,14 +73,19 @@
 (def all-screens
   {:login                                            login/login
    :progress                                         progress/progress
-   :recover-multiaccount-enter-phrase                multiaccounts.recover/enter-phrase
-   :recover-multiaccount-select-storage              multiaccounts.recover/select-storage
-   :recover-multiaccount-enter-password              multiaccounts.recover/enter-password
-   :recover-multiaccount-confirm-password            multiaccounts.recover/confirm-password
-   :recover-multiaccount-success                     multiaccounts.recover/success
+   :create-multiaccount-generate-key                 intro/wizard-generate-key
+   :create-multiaccount-choose-key                   intro/wizard-choose-key
+   :create-multiaccount-select-key-storage           intro/wizard-select-key-storage
+   :create-multiaccount-create-code                  intro/wizard-create-code
+   :create-multiaccount-confirm-code                 intro/wizard-confirm-code
+   :create-multiaccount-enable-notifications         intro/wizard-enable-notifications
+   :recover-multiaccount-enter-phrase                intro/wizard-enter-phrase
+   :recover-multiaccount-success                     intro/wizard-recovery-success
+   :recover-multiaccount-select-storage              intro/wizard-select-key-storage
+   :recover-multiaccount-enter-password              intro/wizard-create-code
+   :recover-multiaccount-confirm-password            intro/wizard-confirm-code
    :multiaccounts                                    multiaccounts/multiaccounts
    :intro                                            intro/intro
-   :intro-wizard                                     intro/wizard
    :hardwallet-authentication-method                 hardwallet.authentication/hardwallet-authentication-method
    :hardwallet-connect                               hardwallet.connect/hardwallet-connect
    :hardwallet-connect-settings                      hardwallet.connect/hardwallet-connect

@@ -5,6 +5,12 @@
   #{:login
     :progress
     :create-multiaccount
+    :create-multiaccount-generate-key
+    :create-multiaccount-choose-key
+    :create-multiaccount-select-key-storage
+    :create-multiaccount-create-code
+    :create-multiaccount-confirm-code
+    :create-multiaccount-enable-notifications
     :recover-multiaccount-enter-phrase
     :recover-multiaccount-select-storage
     :recover-multiaccount-enter-password
@@ -52,6 +58,12 @@
                      :progress
                      :keycard-recovery-intro
                      :create-multiaccount
+                     :create-multiaccount-generate-key
+                     :create-multiaccount-choose-key
+                     :create-multiaccount-select-key-storage
+                     :create-multiaccount-create-code
+                     :create-multiaccount-confirm-code
+                     :create-multiaccount-enable-notifications
                      :recover-multiaccount-enter-phrase
                      :recover-multiaccount-select-storage
                      :recover-multiaccount-enter-password

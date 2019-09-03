@@ -3,6 +3,9 @@
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
+            [taoensso.timbre :as log]
+            [status-im.i18n :as i18n]
+            [status-im.multiaccounts.db :as db]
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
             [status-im.ui.components.colors :as colors]
@@ -25,10 +28,9 @@
    :select-key-storage   3
    :create-code          4
    :confirm-code         5
-   :enable-fingerprint   6
-   :enable-notifications 7})
+   :enable-notifications 6})
 
-(defn dec-step [step]
+(defn decrement-step [step]
   (let [inverted  (map-invert step-kw-to-num)]
     (if (and (= step :create-code)
              (not platform/android?))
@@ -58,35 +60,62 @@
 (fx/defn intro-wizard
   {:events [:multiaccounts.create.ui/intro-wizard]}
   [{:keys [db] :as cofx} first-time-setup?]
-  (fx/merge {:db (assoc db :intro-wizard {:step :generate-key
+  (fx/merge cofx
+            {:db (assoc db :intro-wizard {:step :generate-key
                                           :weak-password? true
+                                          :back-action :intro-wizard/navigate-back
+                                          :forward-action :intro-wizard/step-forward-pressed
                                           :encrypt-with-password? true
-                                          :first-time-setup? first-time-setup?})}
-            (navigation/navigate-to-cofx :intro-wizard nil)))
+                                          :first-time-setup? first-time-setup?})
+             ::navigation/add-wizard-back-event [:intro-wizard/step-back-pressed]}
+            (navigation/navigate-to-cofx :create-multiaccount-generate-key nil)))
 
-(fx/defn intro-step-back
-  {:events [:intro-wizard/step-back-pressed]}
+(fx/defn dec-step
+  {:events [:intro-wizard/dec-step]}
   [{:keys [db] :as cofx}]
-  (let  [step (get-in db [:intro-wizard :step])
-         first-time-setup? (get-in db [:intro-wizard :first-time-setup?])]
-    (if (not= :generate-key step)
-      (fx/merge {:db (cond-> (assoc-in db [:intro-wizard :step] (dec-step step))
+  (let  [step (get-in db [:intro-wizard :step])]
+    (fx/merge cofx
+              (when-not (= :generate-key step)
+                {:db (cond-> (assoc-in db [:intro-wizard :step] (decrement-step step))
                        (#{:create-code :confirm-code} step)
                        (update :intro-wizard assoc :weak-password? true :key-code nil)
                        (= step :confirm-code)
-                       (assoc-in [:intro-wizard :confirm-failure?] false))}
-                (navigation/navigate-to-cofx :intro-wizard nil))
+                       (assoc-in [:intro-wizard :confirm-failure?] false))})
+              (when (= :generate-key-step)
+                {:db (dissoc db :intro-wizard)
+                 ::navigation/remove-wizard-back-event nil}))))
 
-      (fx/merge {:db (dissoc db :intro-wizard)}
-                (navigation/navigate-back)))))
+(fx/defn navigate-back
+  {:events [:intro-wizard/navigate-back]}
+  [cofx]
+  {::navigation/navigate-back nil})
+
+(fx/defn intro-step-back
+  {:events [:intro-wizard/step-back-pressed]}
+  [{:keys [db] :as cofx} skip-alert?]
+  (let  [step (get-in db [:intro-wizard :step])]
+    ;; Cannot go back after account has been created
+    ;; and we're on "Enable notifications" step
+    (when-not (= :enable-notifications step)
+      (if (and (= step :choose-key) (not skip-alert?))
+        (utils/show-question
+         (i18n/label :t/are-you-sure-to-cancel)
+         (i18n/label :t/you-will-start-from-scratch)
+         #(re-frame/dispatch [:intro-wizard/step-back-pressed true])
+         #(re-frame/dispatch [:navigation/reset-processing-flag]))
+        (fx/merge cofx
+                  dec-step
+                  navigation/navigate-back)))))
 
 (fx/defn exit-wizard [{:keys [db] :as cofx}]
-  (fx/merge {:db (dissoc db :intro-wizard)}
+  (fx/merge cofx
+            {:db (dissoc db :intro-wizard)
+             ::navigation/remove-wizard-back-event nil}
             (navigation/navigate-to-cofx :home nil)))
 
 (fx/defn init-key-generation
   [{:keys [db] :as cofx}]
-  {:db (assoc-in db [:intro-wizard :generating-keys?] true)
+  {:db (assoc-in db [:intro-wizard :processing?] true)
    :intro-wizard/start-onboarding nil})
 
 (fx/defn on-confirm-failure [{:keys [db] :as cofx}]
@@ -105,8 +134,7 @@
   (let [key-code  (get-in db [:intro-wizard :key-code])]
     {:db (update db :intro-wizard
                  assoc :stored-key-code key-code
-                 :key-code nil
-                 :step :confirm-code)}))
+                 :key-code nil)}))
 
 (fx/defn intro-step-forward
   {:events [:intro-wizard/step-forward-pressed]}
@@ -126,9 +154,6 @@
           (= step :generate-key)
           (init-key-generation cofx)
 
-          (= step :create-code)
-          (store-key-code cofx)
-
           (and (= step :confirm-code)
                (not (:multiaccounts/login db))
                (not processing?))
@@ -140,9 +165,18 @@
                (= :advanced selected-storage-type))
           {:dispatch [:keycard/start-onboarding-flow]}
 
-          :else {:db (update db :intro-wizard
-                             assoc :processing? false
-                             :step (inc-step step))})))
+          :else (let [next-step (inc-step step)]
+                  (fx/merge cofx
+                            {:db (update db :intro-wizard
+                                         assoc :processing? false
+                                         :step next-step)}
+                            (when (= step :create-code)
+                              store-key-code)
+                            (when (= next-step :enable-notifications)
+                              (navigation/navigate-reset {:index 0
+                                                          :actions [{:routeName :create-multiaccount-enable-notifications}]}))
+                            (when (not= next-step :enable-notifications)
+                              (navigation/navigate-to-cofx (->> next-step name (str "create-multiaccount-") keyword) nil)))))))
 
 (defn prepare-accounts-data
   [multiaccount]
@@ -248,12 +282,12 @@
    {:db (update db :intro-wizard
                 (fn [data]
                   (-> data
-                      (dissoc :generating-keys?)
+                      (dissoc :processing?)
                       (assoc :multiaccounts result
                              :selected-storage-type :default
                              :selected-id (-> result first :id)
                              :step :choose-key))))}
-   (navigation/navigate-to-cofx :intro-wizard nil)))
+   (navigation/navigate-to-cofx :create-multiaccount-choose-key nil)))
 
 (fx/defn on-key-selected
   {:events [:intro-wizard/on-key-selected]}
@@ -290,7 +324,7 @@
   (let [encrypt-with-password? (get-in db [:intro-wizard :encrypt-with-password?])]
     {:db (update db :intro-wizard assoc :key-code new-key-code
                  :confirm-failure? false
-                 :weak-password? (< (count new-key-code) 6))}))
+                 :weak-password? (not (db/valid-length? new-key-code)))}))
 
 (re-frame/reg-cofx
  ::get-signing-phrase

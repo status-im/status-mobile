@@ -1,7 +1,9 @@
 (ns status-im.ui.screens.navigation
   (:require [re-frame.core :as re-frame]
+            [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.navigation :as navigation]
+            [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]
             [status-im.utils.fx :as fx]))
 
@@ -135,3 +137,37 @@
                       (assoc :prev-tab-view-id (:view-id db))
                       (assoc :prev-view-id (:view-id db)))}
              (navigate-to-cofx view-id {}))))
+
+;; This atom stores event vector
+;; to be dispatched when a react-navigation's BACK
+;; actions is invoked
+(def wizard-back-event (atom nil))
+
+;; This atom exists in order to avoid
+;; endless loop when processing NavigationActions/BACK
+;; in react-navigation's getStateForAction fn
+(def processing-back-event? (atom false))
+
+(fx/defn reset-processing-flag
+  {:events [:navigation/reset-processing-flag]}
+  [{:keys [db] :as cofx}]
+  {::reset-processing-flag nil})
+
+(re-frame/reg-fx
+ ::reset-processing-flag
+ (fn []
+   (reset! processing-back-event? false)))
+
+;; Below two effects are added when we need 
+;; to override default react-navigation's BACK action
+;; processing
+(re-frame/reg-fx
+ ::add-wizard-back-event
+ (fn [event]
+   (reset! wizard-back-event event)))
+
+(re-frame/reg-fx
+ ::remove-wizard-back-event
+ (fn [event]
+   (reset! processing-back-event? false)
+   (reset! wizard-back-event nil)))

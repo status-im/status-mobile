@@ -21,11 +21,11 @@
 
 (styles/def input
   {:padding             0
-   :text-align-vertical :top
+   :text-align-vertical :center
    :desktop             {:height 52}})
 
-(defn error [label?]
-  {:bottom-value (if label? 20 0)
+(defn error [bottom-value]
+  {:bottom-value bottom-value
    :container-style {:shadow-offset    {:width 0 :height 1}
                      :shadow-radius    6
                      :shadow-opacity   1

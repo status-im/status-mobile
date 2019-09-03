@@ -25,8 +25,7 @@
     {:transparent? true
      :style        {:margin-top 32}}
     (toolbar/nav-button
-     (actions/back #(re-frame/dispatch
-                     [::multiaccounts.recover/cancel-pressed])))
+     (actions/back #(re-frame/dispatch [:navigate-back])))
     nil]
    [react/view {:flex            1
                 :flex-direction  :column

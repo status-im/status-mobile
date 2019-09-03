@@ -1,6 +1,7 @@
 (ns status-im.subs
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
+            [taoensso.timbre :as log]
             [re-frame.core :as re-frame]
             [status-im.browser.core :as browser]
             [status-im.chat.commands.core :as commands]
@@ -176,7 +177,7 @@
 (reg-root-key-sub :signing/edit-fee :signing/edit-fee)
 
 ;;intro-wizard
-(reg-root-key-sub :intro-wizard :intro-wizard)
+(reg-root-key-sub :intro-wizard-state :intro-wizard)
 
 (reg-root-key-sub :popover/popover :popover/popover)
 (reg-root-key-sub :generate-account :generate-account)
@@ -192,6 +193,72 @@
  :<- [:desktop/desktop]
  (fn [desktop _]
    (get desktop :debug-metrics)))
+
+;; Intro wizard
+(re-frame/reg-sub
+ :intro-wizard
+ :<- [:intro-wizard-state]
+ :<- [:dimensions/window]
+ (fn [[wizard-state
+       {:keys [width height] :as dimensions}
+       view-id]]
+   (assoc wizard-state
+          :view-height height :view-width width)))
+
+(re-frame/reg-sub
+ :intro-wizard/generate-key
+ :<- [:intro-wizard]
+ (fn [wizard-state]
+   (select-keys wizard-state [:processing? :view-height])))
+
+(re-frame/reg-sub
+ :intro-wizard/choose-key
+ :<- [:intro-wizard]
+ (fn [wizard-state]
+   (select-keys wizard-state [:multiaccounts :selected-id :view-height])))
+
+(re-frame/reg-sub
+ :intro-wizard/select-key-storage
+ :<- [:intro-wizard]
+ (fn [wizard-state]
+   (merge (select-keys wizard-state [:selected-storage-type :view-height :recovering?])
+          (if (:recovering? wizard-state)
+            {:forward-action :multiaccounts.recover/select-storage-next-pressed}
+            {:forward-action :intro-wizard/step-forward-pressed}))))
+
+(re-frame/reg-sub
+ :intro-wizard/create-code
+ :<- [:intro-wizard]
+ (fn [wizard-state]
+   (merge (select-keys wizard-state [:confirm-failure? :encrypt-with-password? :weak-password? :view-width])
+          (if (:recovering? wizard-state)
+            {:forward-action  :multiaccounts.recover/enter-password-next-pressed}
+            {:forward-action :intro-wizard/step-forward-pressed}))))
+
+(re-frame/reg-sub
+ :intro-wizard/confirm-code
+ :<- [:intro-wizard]
+ (fn [wizard-state]
+   (merge (select-keys wizard-state [:confirm-failure? :encrypt-with-password? :processing? :view-width])
+          (if (:recovering? wizard-state)
+            {:forward-action  :multiaccounts.recover/confirm-password-next-pressed}
+            {:forward-action :intro-wizard/step-forward-pressed}))))
+
+(re-frame/reg-sub
+ :intro-wizard/enter-phrase
+ :<- [:intro-wizard]
+ (fn [wizard-state]
+   (select-keys wizard-state [:processing?
+                              :passphrase-word-count
+                              :next-button-disabled?
+                              :passphrase-error])))
+
+(re-frame/reg-sub
+ :intro-wizard/recovery-success
+ :<- [:intro-wizard]
+ (fn [wizard-state]
+   {:pubkey (get-in wizard-state [:derived constants/path-whisper-keyword :publicKey])
+    :processing? (:processing? wizard-state)}))
 
 (re-frame/reg-sub
  :settings/logging-enabled

@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.routing.core
   (:require
    [status-im.ui.components.react :as react]
+   [status-im.ui.screens.navigation :as screens.navigation]
    [status-im.ui.components.styles :as common-styles]
    [status-im.utils.navigation :as navigation]
    [cljs-react-navigation.reagent :as nav-reagent]
@@ -25,7 +26,7 @@
 (defn navigation-events [current-view-id modal? screen-focused?]
   [:> navigation/navigation-events
    {:on-will-focus
-    (fn []
+    (fn [payload]
       (reset! screen-focused? true)
       (when (not= @view-id current-view-id)
         (reset! view-id current-view-id))
@@ -38,8 +39,9 @@
       (when-not modal?
         (status-bar/set-status-bar current-view-id)))
     :on-will-blur
-    (fn []
+    (fn [payload]
       (reset! screen-focused? false)
+      (log/debug :on-will-blur current-view-id)
       ;; Reset currently mounted text inputs to their default values
       ;; on navigating away; this is a privacy measure
       (doseq [[text-input default-value] @react/text-input-refs]
@@ -117,27 +119,45 @@
       (utils/update-if-present :mode name)))
 
 (defn stack-navigator [routes config]
-  (nav-reagent/stack-navigator
-   routes
-   (merge {:headerMode        "none"
-           :cardStyle         {:backgroundColor :white}
-           #_:transitionConfig
-           #_(fn []
-               #js {:transitionSpec #js{:duration 10}})
-           :onTransitionStart (fn [n]
-                                (let [idx    (.. n
-                                                 -navigation
-                                                 -state
-                                                 -index)
-                                      routes (.. n
-                                                 -navigation
-                                                 -state
-                                                 -routes)]
-                                  (when (and (array? routes) (int? idx))
-                                    (let [route      (aget routes idx)
-                                          route-name (keyword (.-routeName route))]
-                                      (tabbar/minimize-bar route-name)))))}
-          (prepare-config config))))
+  (let [res (nav-reagent/stack-navigator
+             routes
+             (merge {:headerMode        "none"
+                     :cardStyle         {:backgroundColor :white}
+                     #_:transitionConfig
+                     #_(fn []
+                         #js {:transitionSpec #js{:duration 10}})
+                     :onTransitionStart (fn [n]
+                                          (let [idx    (.. n
+                                                           -navigation
+                                                           -state
+                                                           -index)
+                                                routes (.. n
+                                                           -navigation
+                                                           -state
+                                                           -routes)]
+                                            (when (and (array? routes) (int? idx))
+                                              (let [route      (aget routes idx)
+                                                    route-name (keyword (.-routeName route))]
+                                                (tabbar/minimize-bar route-name)))))}
+                    (prepare-config config)))
+        default-get-state-for-action  (.-getStateForAction (.-router res))
+        new-get-state-for-action (fn [action state]
+                                   ;; Override default getStateForAction on this stack navigator
+                                   ;; if we have a custom event set in wizard-back-event atom
+                                   (if (and (= (.-type action) (.-BACK navigation/navigation-actions))
+                                            @screens.navigation/wizard-back-event)
+                                     (if @screens.navigation/processing-back-event?
+                                       (do
+                                         (reset! screens.navigation/processing-back-event? false)
+                                         (default-get-state-for-action action state))
+                                       (do
+                                         (reset! screens.navigation/processing-back-event? true)
+                                         (re-frame/dispatch @screens.navigation/wizard-back-event)
+                                         ;; Return nil so that BACK event processing ends here
+                                         nil))
+                                     (default-get-state-for-action action state)))]
+    (set! (-> res .-router .-getStateForAction) new-get-state-for-action)
+    res))
 
 (defn twopane-navigator [routes config]
   (navigation/twopane-navigator
@@ -176,7 +196,7 @@
   - keyword, which points to some specific route
   - vector of [:modal :screen-key] type when screen should be wrapped as modal
   - map with `name`, `screens`, `config` keys, where `screens` is a vector
-    of children and `config` is `stack-navigator` configuration"
+  of children and `config` is `stack-navigator` configuration"
   (let [[screen-name screen-config]
         (cond (keyword? screen)
               [screen (screens/get-screen screen)]
@@ -198,6 +218,12 @@
                 :else
                 (nav-reagent/stack-screen (wrap screen-name screen-config)))]
       [screen-name (cond-> {:screen res}
+                     ;; TODO issue #8947
+                     ;; replace this hack with configuration
+                     (#{:create-multiaccount-choose-key
+                        :recover-multiaccount-select-storage}
+                      screen-name)
+                     (assoc :navigationOptions {:gesturesEnabled false})
                      (:navigation screen-config)
                      (assoc :navigationOptions
                             (:navigation screen-config)))])))
