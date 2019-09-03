@@ -69,6 +69,8 @@ def uploadToDiawi() {
     )
   }
   diawiUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
+  /* Save the URL in the build description */
+  currentBuild.description = "<a href=\"${diawiUrl}\">Diawi Link</a>"
   return diawiUrl
 }
 

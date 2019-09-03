@@ -18,17 +18,13 @@ def shell(Map opts = [:], String cmd) {
   if (env.TARGET_OS in ['windows', 'ios']) {
     opts.pure = false
   }
-  def stdOut = sh(
-    script: """
+  sh("""
       set +x
       . ~/.nix-profile/etc/profile.d/nix.sh
       set -x
       IN_CI_ENVIRONMENT=1 \\
       nix-shell --run \'${cmd}\' ${_getNixCommandArgs(opts, true)}
-    """,
-    returnStdout: true
-  )
-  return stdOut.trim()
+  """)
 }
 
 /**
