@@ -1,5 +1,6 @@
 (ns status-im.test.mailserver.core
   (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.transport.utils :as utils]
             [status-im.mailserver.core :as mailserver]
             [status-im.mailserver.constants :as constants]
@@ -257,7 +258,7 @@
       (testing "it removes the mailserver from the list"
         (is (not (mailserver/fetch actual "a"))))
       (testing "it stores it in the db"
-        (is (= 1 (count (:data-store/tx actual)))))))
+        (is (= 1 (count (::json-rpc/call actual)))))))
   (testing "the mailserver is not user-defined"
     (let [cofx {:random-id-generator (constantly "random-id")
                 :db {:mailserver/mailservers {:eth.beta {"a" {:id      "a"
@@ -295,7 +296,7 @@
         (is (= [:navigate-back]
                (:dispatch actual))))
       (testing "it stores it in the db"
-        (is (= 1 (count (:data-store/tx actual)))))))
+        (is (= 1 (count (::json-rpc/call actual)))))))
   (testing "existing mailserver"
     (let [cofx {:random-id-generator (constantly "random-id")
                 :db {:mailserver.edit/mailserver {:id   {:value  :a}
@@ -317,12 +318,7 @@
                                :user-defined true}}}
                (get-in actual [:db :mailserver/mailservers]))))
       (testing "it stores it in the db"
-        (is (= 1 (count (:data-store/tx actual)))))
-      (testing "it logs the user out if connected to the current mailserver"
-        (let [actual (mailserver/upsert (assoc-in cofx
-                                                  [:db :mailserver/current-id] :a))]
-          (is (= [:multiaccounts.logout.ui/logout-confirmed]
-                 (-> actual :data-store/tx first :success-event))))))))
+        (is (= 1 (count (::json-rpc/call actual))))))))
 
 (defn cofx-fixtures [sym-key registered-peer?]
   {:db {:mailserver/state :connected

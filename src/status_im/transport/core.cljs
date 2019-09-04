@@ -42,6 +42,7 @@
             (fetch-node-info-fx)
             (pairing/init)
             (publisher/start-fx)
+            (mailserver/initialize-mailserver)
             (mailserver/connect-to-mailserver)))
 
 (fx/defn stop-whisper

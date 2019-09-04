@@ -1,27 +1,28 @@
 (ns ^{:doc "Mailserver events and API"}
  status-im.mailserver.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.fleet.core :as fleet]
-            [status-im.native-module.core :as status]
-            [status-im.utils.platform :as platform]
-            [status-im.transport.utils :as transport.utils]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]
-            [status-im.transport.db :as transport.db]
-            [status-im.transport.message.protocol :as protocol]
-            [clojure.string :as string]
-            [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.mailserver.topics :as mailserver.topics]
-            [status-im.mailserver.constants :as constants]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [status-im.data-store.mailservers :as data-store.mailservers]
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
-            [status-im.utils.handlers :as handlers]
+            [status-im.mailserver.constants :as constants]
+            [status-im.mailserver.topics :as mailserver.topics]
+            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.native-module.core :as status]
+            [status-im.transport.message.protocol :as protocol]
+            [status-im.transport.utils :as transport.utils]
+            [status-im.ui.screens.mobile-network-settings.utils
+             :as
+             mobile-network-utils]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.ui.screens.mobile-network-settings.utils :as mobile-network-utils]
-            [status-im.utils.random :as rand]))
+            [status-im.utils.fx :as fx]
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.random :as rand]
+            [status-im.utils.utils :as utils]
+            [taoensso.timbre :as log]))
 
 ;; How do mailserver work ?
 ;;
@@ -85,16 +86,6 @@
   [{:keys [db] :as cofx}]
   {:db (assoc db :mailserver/current-id
               (selected-or-random-id cofx))})
-
-(fx/defn add-custom-mailservers
-  [{:keys [db]} mailservers]
-  {:db (reduce (fn [db {:keys [id fleet] :as mailserver}]
-                 (assoc-in db [:mailserver/mailservers fleet id]
-                           (-> mailserver
-                               (dissoc :fleet)
-                               (assoc :user-defined true))))
-               db
-               mailservers)})
 
 (defn add-peer! [enode]
   (status/add-peer enode
@@ -904,10 +895,9 @@
             {:mailserver/decrease-limit []}))))))
 
 (fx/defn initialize-mailserver
-  [cofx custom-mailservers]
+  [cofx]
   (fx/merge cofx
             {:mailserver/set-limit constants/default-limit}
-            (add-custom-mailservers custom-mailservers)
             (set-current-mailserver)))
 
 (def enode-address-regex #"enode://[a-zA-Z0-9]+\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
@@ -957,16 +947,19 @@
 (def default? (comp not :user-defined fetch))
 
 (fx/defn edit [{:keys [db] :as cofx} id]
-  (let [{:keys [id
-                address
-                password
-                name]}   (fetch cofx id)
-        url              (when address (build-url address password))]
+  (let [{:keys [id address password name]} (fetch cofx id)
+        url (when address (build-url address password))]
     (fx/merge cofx
               (set-input :id id)
               (set-input :url (str url))
               (set-input :name (str name))
               (navigation/navigate-to-cofx :edit-mailserver nil))))
+
+(defn mailserver->rpc
+  [mailserver current-fleet]
+  (-> mailserver
+      (assoc :fleet (name current-fleet))
+      (update :id name)))
 
 (fx/defn upsert
   [{{:mailserver.edit/keys [mailserver] :keys [multiaccount] :as db} :db
@@ -982,23 +975,37 @@
     {:db (-> db
              (dissoc :mailserver.edit/mailserver)
              (assoc-in [:mailserver/mailservers current-fleet (:id mailserver)] mailserver))
-     :data-store/tx [{:transaction
-                      (data-store.mailservers/save-tx (assoc
-                                                       mailserver
-                                                       :fleet
-                                                       current-fleet))
-                      ;; we naively logout if the user is connected to the edited mailserver
-                      :success-event (when current [:multiaccounts.logout.ui/logout-confirmed])}]
+     ::json-rpc/call
+     [{:method "mailservers_addMailserver"
+       :params [(mailserver->rpc mailserver current-fleet)]
+       :on-success (fn []
+                     ;; we naively logout if the user is connected to
+                     ;; the edited mailserver
+                     (when current
+                       (re-frame/dispatch
+                        [:multiaccounts.logout.ui/logout-confirmed]))
+                     (log/debug "saved mailserver" id "successfuly"))
+       :on-failure #(log/error "failed to save mailserver" id %)}]
      :dispatch [:navigate-back]}))
+
+(defn can-delete?
+  [cofx id]
+  (not (or (default? cofx id)
+           (connected? cofx id))))
 
 (fx/defn delete
   [{:keys [db] :as cofx} id]
-  (merge (when-not (or
-                    (default? cofx id)
-                    (connected? cofx id))
-           {:db            (update-in db [:mailserver/mailservers (fleet/current-fleet db)] dissoc id)
-            :data-store/tx [(data-store.mailservers/delete-tx id)]})
-         {:dispatch [:navigate-back]}))
+  (if (can-delete? cofx id)
+    {:db (update-in db
+                    [:mailserver/mailservers (fleet/current-fleet db)]
+                    dissoc id)
+     ::json-rpc/call
+     [{:method "mailservers_deleteMailserver"
+       :params [(name id)]
+       :on-success #(log/debug "deleted mailserver" id)
+       :on-failure #(log/error "failed to delete mailserver" id %)}]
+     :dispatch [:navigate-back]}
+    {:dispatch [:navigate-back]}))
 
 (fx/defn show-connection-confirmation
   [{:keys [db]} mailserver-id]
@@ -1055,15 +1062,6 @@
     (fx/merge cofx
               (multiaccounts.update/update-settings (assoc-in settings [:mailserver current-fleet] mailserver-id)
                                                     {}))))
-(fx/defn ranges-loaded
-  {:events [::ranges-loaded]}
-  [{:keys [db]} ranges]
-  {:db (assoc db :mailserver/ranges ranges)})
-
-(fx/defn initialize-ranges
-  [{:keys [db]}]
-  {::data-store.mailservers/all-chat-requests-ranges
-   #(re-frame/dispatch [::ranges-loaded %])})
 
 (fx/defn load-gaps-fx [{:keys [db] :as cofx} chat-id]
   (when-not (get-in db [:chats chat-id :gaps-loaded?])

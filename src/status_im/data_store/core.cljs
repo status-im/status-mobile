@@ -201,10 +201,11 @@
 
 (fx/defn handle-change-multiaccount-success
   {:events [::multiaccount-change-success]
-   :interceptors [(re-frame/inject-cofx :data-store/get-all-mailservers)
-                  (re-frame/inject-cofx :data-store/mailserver-topics)]}
-  [cofx]
-  (protocol/initialize-protocol cofx))
+   :interceptors [(re-frame/inject-cofx :data-store/mailserver-topics)
+                  (re-frame/inject-cofx :data-store/all-chat-requests-ranges)]}
+  [{:data-store/keys [mailserver-topics mailserver-ranges] :as cofx}]
+  (protocol/initialize-protocol cofx {:mailserver-topics mailserver-topics
+                                      :mailserver-ranges mailserver-ranges}))
 
 (defn change-multiaccount!
   [address password create-database-if-not-exist?]

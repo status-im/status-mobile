@@ -34,13 +34,48 @@
             (update-sync-state error sync)
             (node/update-sync-state error sync)))
 
+(defn add-custom-mailservers
+  [db custom-mailservers]
+  (reduce (fn [db {:keys [fleet] :as mailserver}]
+            (let [{:keys [id] :as mailserver}
+                  (-> mailserver
+                      (update :id keyword)
+                      (dissoc :fleet)
+                      (assoc :user-defined true))]
+              (assoc-in db
+                        [:mailserver/mailservers (keyword fleet) id]
+                        mailserver)))
+          db
+          custom-mailservers))
+
 (fx/defn initialize-protocol
-  [{:data-store/keys [mailserver-topics mailservers] :keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (assoc db
-                        :rpc-url constants/ethereum-rpc-url
-                        :mailserver/topics mailserver-topics)}
-            (tribute-to-talk/init)
-            (mailserver/initialize-ranges)
-            (mailserver/initialize-mailserver mailservers)
-            (transport/init-whisper)))
+  {:events [::initialize-protocol]}
+  [{:keys [db] :as cofx}
+   {:keys [mailserver-ranges mailserver-topics mailservers] :as data}]
+  ;; NOTE: we need to wait for `:mailservers` `:mailserver-ranges` and
+  ;; `:mailserver-topics` before we can proceed to init whisper
+  ;; since those are populated by separate events, we check here
+  ;; that everything has been initialized before moving forward
+  (let [initialization-protocol (apply conj (get db :initialization-protocol #{})
+                                       (keys data))
+        initialization-complete? (= initialization-protocol
+                                    #{:mailservers
+                                      :mailserver-ranges
+                                      :mailserver-topics
+                                      :default-mailserver})]
+    (fx/merge cofx
+              {:db (cond-> db
+                     mailserver-ranges
+                     (assoc :mailserver/ranges mailserver-ranges)
+                     mailserver-topics
+                     (assoc :mailserver/topics mailserver-topics)
+                     mailservers
+                     (add-custom-mailservers mailservers)
+                     initialization-complete?
+                     (assoc :rpc-url constants/ethereum-rpc-url)
+                     initialization-complete?
+                     (dissoc :initialization-protocol)
+                     (not initialization-complete?)
+                     (assoc :initialization-protocol initialization-protocol))}
+              (when initialization-complete?
+                (transport/init-whisper)))))

@@ -75,7 +75,10 @@
    "settings_getConfigs" {}
    "settings_saveNodeConfig" {}
    "accounts_getAccounts" {}
-   "accounts_saveAccounts" {}})
+   "accounts_saveAccounts" {}
+   "mailservers_addMailserver" {}
+   "mailservers_getMailservers" {}
+   "mailservers_deleteMailserver" {}})
 
 (defn call
   [{:keys [method params on-success on-error] :as p}]
