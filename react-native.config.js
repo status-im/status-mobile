@@ -27,5 +27,11 @@ module.exports = {
                 ios: null,
             },
         },
+        'react-native-webview-bridge': {
+            platforms: {
+                android: null,
+                ios: null,
+            },
+        },
     },
 };
