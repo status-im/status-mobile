@@ -2,6 +2,8 @@
   (:require [cljs.tools.reader.edn :as edn]
             [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
+            [status-im.utils.fx :as fx]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.data-store.realm.core :as core]))
 
 (re-frame/reg-cofx
@@ -13,6 +15,39 @@
                                              (-> @core/account-realm
                                                  (core/get-all :mailserver)
                                                  (core/all-clj :mailserver))))))
+
+(defn mailserver-request-gaps->rpc [{:keys [chat-id] :as gap}]
+  (-> gap
+      (assoc :chatId chat-id)
+      (dissoc :chat-id)))
+
+(fx/defn load-gaps [cofx chat-id success-fn]
+  {::json-rpc/call [{:method "mailservers_getMailserverRequestGaps"
+                     :params [chat-id]
+                     :on-success #(let [indexed-gaps (reduce (fn [acc {:keys [id] :as g}]
+                                                               (assoc acc id g))
+                                                             {}
+                                                             %)]
+                                    (success-fn chat-id indexed-gaps))
+                     :on-failure #(log/error "failed to fetch gaps" %)}]})
+
+(fx/defn save-gaps [cofx gaps]
+  {::json-rpc/call [{:method "mailservers_addMailserverRequestGaps"
+                     :params [(map mailserver-request-gaps->rpc gaps)]
+                     :on-success #(log/info "saved gaps successfully")
+                     :on-failure #(log/error "failed to save gap" %)}]})
+
+(fx/defn delete-gaps [cofx ids]
+  {::json-rpc/call [{:method "mailservers_deleteMailserverRequestGaps"
+                     :params [ids]
+                     :on-success #(log/info "deleted gaps successfully")
+                     :on-failure #(log/error "failed to delete gap" %)}]})
+
+(fx/defn delete-gaps-by-chat-id [cofx chat-id]
+  {::json-rpc/call [{:method "mailservers_deleteMailserverRequestGapsByChatID"
+                     :params [chat-id]
+                     :on-success #(log/info "deleted gaps successfully")
+                     :on-failure #(log/error "failed to delete gap" %)}]})
 
 (defn save-tx
   "Returns tx function for saving a mailserver"
@@ -83,41 +118,6 @@
                        (-> @core/account-realm
                            (core/get-all :chat-requests-range)
                            (core/all-clj :chat-requests-range))))))
-
-(re-frame/reg-cofx
- :data-store/all-gaps
- (fn [cofx _]
-   (assoc cofx
-          :data-store/all-gaps
-          (fn [chat-id]
-            (reduce (fn [acc {:keys [id] :as gap}]
-                      (assoc acc id gap))
-                    {}
-                    (-> @core/account-realm
-                        (core/get-by-field :mailserver-requests-gap :chat-id chat-id)
-                        (core/all-clj :mailserver-requests-gap)))))))
-
-(defn save-mailserver-requests-gap
-  [gap]
-  (fn [realm]
-    (log/debug "saving gap" gap)
-    (core/create realm :mailserver-requests-gap gap true)))
-
-(defn delete-mailserver-requests-gaps
-  [ids]
-  (fn [realm]
-    (log/debug "deleting gaps" ids)
-    (doseq [id ids]
-      (core/delete
-       realm
-       (core/get-by-field realm :mailserver-requests-gap :id id)))))
-
-(defn delete-all-gaps-by-chat
-  [chat-id]
-  (fn [realm]
-    (log/debug "deleting all gaps for chat" chat-id)
-    (core/delete realm
-                 (core/get-by-field realm :mailserver-requests-gap :chat-id chat-id))))
 
 (defn delete-range
   [chat-id]

@@ -119,6 +119,7 @@
       (assoc :WalletConfig {:Enabled true}
              :BrowsersConfig {:Enabled true}
              :PermissionsConfig {:Enabled true}
+             :MailserversConfig {:Enabled true}
              :WhisperConfig           {:Enabled true
                                        :LightClient true
                                        :MinimumPoW 0.001

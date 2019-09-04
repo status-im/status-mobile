@@ -492,9 +492,10 @@
               (connect-to-mailserver))))
 
 (fx/defn remove-gaps
-  [{:keys [db]} chat-id]
-  {:db (update db :mailserver/gaps dissoc chat-id)
-   :data-store/tx [(data-store.mailservers/delete-all-gaps-by-chat chat-id)]})
+  [{:keys [db] :as cofx} chat-id]
+  (fx/merge cofx
+            {:db (update db :mailserver/gaps dissoc chat-id)}
+            (data-store.mailservers/delete-gaps-by-chat-id chat-id)))
 
 (fx/defn remove-range
   [{:keys [db]} chat-id]
@@ -654,7 +655,7 @@
    chat-ids))
 
 (fx/defn update-gaps
-  [{:keys [db]}]
+  [{:keys [db] :as cofx}]
   (let [{:keys [topics] :as request} (get db :mailserver/current-request)
         chat-ids          (into #{}
                                 (comp
@@ -668,26 +669,22 @@
 
         ranges            (:mailserver/ranges db)
         prepared-new-gaps (prepare-new-gaps new-gaps ranges request chat-ids)]
-    {:db
-     (reduce (fn [db chat-id]
-               (let [chats-deleted-gaps (get deleted-gaps chat-id)
-                     chats-updated-gaps (merge (get updated-gaps chat-id)
-                                               (get prepared-new-gaps chat-id))]
-                 (update-in db [:mailserver/gaps chat-id]
-                            (fn [chat-gaps]
-                              (-> (apply dissoc chat-gaps chats-deleted-gaps)
-                                  (merge chats-updated-gaps))))))
-             db
-             chat-ids)
-
-     :data-store/tx
-     (conj
-      (map
-       data-store.mailservers/save-mailserver-requests-gap
-       (concat (mapcat vals (vals updated-gaps))
-               (mapcat vals (vals prepared-new-gaps))))
-      (data-store.mailservers/delete-mailserver-requests-gaps
-       (mapcat val deleted-gaps)))}))
+    (fx/merge cofx
+              {:db
+               (reduce (fn [db chat-id]
+                         (let [chats-deleted-gaps (get deleted-gaps chat-id)
+                               chats-updated-gaps (merge (get updated-gaps chat-id)
+                                                         (get prepared-new-gaps chat-id))]
+                           (update-in db [:mailserver/gaps chat-id]
+                                      (fn [chat-gaps]
+                                        (-> (apply dissoc chat-gaps chats-deleted-gaps)
+                                            (merge chats-updated-gaps))))))
+                       db
+                       chat-ids)}
+              (data-store.mailservers/delete-gaps (mapcat val deleted-gaps))
+              (data-store.mailservers/save-gaps
+               (concat (mapcat vals (vals updated-gaps))
+                       (mapcat vals (vals prepared-new-gaps)))))))
 
 (fx/defn update-chats-and-gaps
   [cofx cursor]
@@ -1068,20 +1065,25 @@
   {::data-store.mailservers/all-chat-requests-ranges
    #(re-frame/dispatch [::ranges-loaded %])})
 
-(fx/defn load-gaps
-  [{:keys [db now :data-store/all-gaps]} chat-id]
+(fx/defn load-gaps-fx [{:keys [db] :as cofx} chat-id]
   (when-not (get-in db [:chats chat-id :gaps-loaded?])
-    (let [now-s         (quot now 1000)
-          gaps          (all-gaps chat-id)
-          outdated-gaps (into [] (comp (filter #(< (:to %)
-                                                   (- now-s constants/max-gaps-range)))
-                                       (map :id))
-                              (vals gaps))
-          gaps          (apply dissoc gaps outdated-gaps)]
-      {:db
-       (-> db
-           (assoc-in [:chats chat-id :gaps-loaded?] true)
-           (assoc-in [:mailserver/gaps chat-id] gaps))
-       :data-store/tx
-       [(data-store.mailservers/delete-mailserver-requests-gaps
-         outdated-gaps)]})))
+    (let [success-fn #(re-frame/dispatch [::gaps-loaded %1 %2])]
+      (data-store.mailservers/load-gaps cofx chat-id success-fn))))
+
+(fx/defn load-gaps
+  {:events [::gaps-loaded]}
+  [{:keys [db now] :as cofx} chat-id gaps]
+  (let [now-s         (quot now 1000)
+        outdated-gaps (into [] (comp (filter #(< (:to %)
+                                                 (- now-s constants/max-gaps-range)))
+                                     (map :id))
+                            (vals gaps))
+        gaps          (apply dissoc gaps outdated-gaps)]
+    (fx/merge
+     cofx
+     {:db
+      (-> db
+          (assoc-in [:chats chat-id :gaps-loaded?] true)
+          (assoc-in [:mailserver/gaps chat-id] gaps))}
+
+     (data-store.mailservers/delete-gaps outdated-gaps))))

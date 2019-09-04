@@ -84,8 +84,7 @@
 
 (fx/defn messages-loaded
   "Loads more messages for current chat"
-  {:events [::messages-loaded]
-   :interceptors [(re-frame/inject-cofx :data-store/all-gaps)]}
+  {:events [::messages-loaded]}
   [{{:keys [current-chat-id] :as db} :db :as cofx}
    chat-id
    {:keys [cursor messages]}]
@@ -113,11 +112,10 @@
                          (assoc-in [:chats current-chat-id :cursor] cursor)
                          (assoc-in [:chats current-chat-id :all-loaded?]
                                    (empty? cursor)))}
-                (mailserver/load-gaps current-chat-id)
                 (group-chat-messages current-chat-id new-messages)
                 (chat-model/mark-messages-seen current-chat-id)))))
 
-(defn load-more-messages
+(fx/defn load-more-messages
   [{:keys [db]}]
   (when-let [current-chat-id (:current-chat-id db)]
     (when-not (get-in db [:chats current-chat-id :all-loaded?])

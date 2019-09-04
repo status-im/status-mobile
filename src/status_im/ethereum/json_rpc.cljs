@@ -63,6 +63,10 @@
    "browsers_getBrowsers" {}
    "browsers_addBrowser" {}
    "browsers_deleteBrowser" {}
+   "mailservers_getMailserverRequestGaps" {}
+   "mailservers_addMailserverRequestGaps" {}
+   "mailservers_deleteMailserverRequestGaps" {}
+   "mailservers_deleteMailserverRequestGapsByChatID" {}
    "permissions_addDappPermissions" {}
    "permissions_getDappPermissions" {}
    "permissions_deleteDappPermissions" {}

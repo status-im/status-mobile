@@ -443,7 +443,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             @Override
             public void run() {
                   String result = Statusgo.loginWithKeycard(whisperPrivateKey, encryptionPublicKey, configJSON);
-
                   callback.invoke(result);
             }
         };

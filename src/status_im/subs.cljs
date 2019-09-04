@@ -1596,11 +1596,11 @@
 (re-frame/reg-sub
  :mailserver/connected?
  :<- [:mailserver/state]
- :<- [:network-status]
- (fn [[mail-state network-status]]
-   (let [connected? (= :connected mail-state)
-         online?    (= :online network-status)]
-     (and connected? online?))))
+ :<- [:disconnected?]
+ (fn [[mail-state disconnected?]]
+   (let [mailserver-connected? (= :connected mail-state)]
+     (and mailserver-connected?
+          (not disconnected?)))))
 
 (re-frame/reg-sub
  :mailserver/preferred-id
