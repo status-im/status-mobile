@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async]
             [re-frame.core :as re-frame]
             [status-im.data-store.realm.core :as realm]
+            [status-im.ethereum.core :as ethereum]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.native-module.core :as status]
@@ -192,7 +193,7 @@
  ::verify
  (fn [[address password realm-error]]
    (status/verify address
-                  (security/safe-unmask-data password)
+                  (ethereum/sha3 (security/safe-unmask-data password))
                   #(re-frame/dispatch [::verify-success % realm-error]))))
 
 (fx/defn handle-change-multiaccount-success

@@ -1,6 +1,7 @@
 (ns status-im.wallet.accounts.core
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
+            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n :as i18n]
@@ -20,10 +21,10 @@
 
 (re-frame/reg-fx
  ::generate-account
- (fn [{:keys [address password path-num]}]
+ (fn [{:keys [address hashed-password path-num]}]
    (status/multiaccount-load-account
     address
-    password
+    hashed-password
     (fn [value]
       (let [{:keys [id error]} (types/json->clj value)]
         (if error
@@ -36,7 +37,7 @@
                (status/multiaccount-store-derived
                 id
                 [path]
-                password
+                hashed-password
                 (fn [result]
                   (let [{:keys [public-key address]}
                         (get (types/json->clj result) (keyword path))]
@@ -59,7 +60,7 @@
     {:db (assoc-in db [:generate-account :step] :generating)
      ::generate-account {:address  (get-in db [:multiaccount :address])
                          :path-num (inc (get-in db [:multiaccount :latest-derived-path]))
-                         :password password}}))
+                         :hashed-password (ethereum/sha3 password)}}))
 
 (fx/defn generate-new-account-error
   {:events [::generate-new-account-error]}

@@ -1,8 +1,8 @@
 (ns status-im.native-module.core
-  (:require [status-im.ui.components.react :as r]
+  (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.react-native.js-dependencies :as rn-dependencies]
-            [clojure.string :as string]
+            [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]))
 
@@ -30,31 +30,35 @@
                               #(callback (types/json->clj %))))
 
 (defn save-account-and-login
-  [multiaccount-data password config accounts-data]
+  "NOTE: beware, the password has to be sha3 hashed"
+  [multiaccount-data hashed-password config accounts-data]
   (clear-web-data)
-  (.saveAccountAndLogin (status) multiaccount-data password config accounts-data))
+  (.saveAccountAndLogin (status) multiaccount-data hashed-password config accounts-data))
 
 (defn login
-  [account-data password]
+  "NOTE: beware, the password has to be sha3 hashed"
+  [account-data hashed-password]
   (clear-web-data)
-  (.login (status) account-data password))
+  (.login (status) account-data hashed-password))
 
 (defn logout []
   (clear-web-data)
   (.logout (status)))
 
 (defonce listener
-  (.addListener r/device-event-emitter "gethEvent"
+  (.addListener react/device-event-emitter "gethEvent"
                 #(re-frame/dispatch [:signals/signal-received (.-jsonEvent %)])))
 
 (defn multiaccount-load-account
-  "this function is used after storing an account when you still want to
+  "NOTE: beware, the password has to be sha3 hashed
+
+   this function is used after storing an account when you still want to
    derive accounts from it, because saving an account flushes the loaded keys
    from memory"
-  [address password callback]
+  [address hashed-password callback]
   (.multiAccountLoadAccount (status)
                             (types/clj->json {:address address
-                                              :password password})
+                                              :password hashed-password})
                             callback))
 
 (defn multiaccount-reset
@@ -77,24 +81,27 @@
                                   callback)))
 
 (defn multiaccount-store-account
-  "this stores the account and flush keys in memory so
+  "NOTE: beware, the password has to be sha3 hashed
+
+   this stores the account and flush keys in memory so
    in order to also store derived accounts like initial wallet
    and chat accounts, you need to load the account again with
    `multiaccount-load-account` before using `multiaccount-store-derived`
    and the id of the account stored will have changed"
-  [account-id password callback]
+  [account-id hashed-password callback]
   (when (status)
     (.multiAccountStoreAccount (status)
                                (types/clj->json {:accountID account-id
-                                                 :password password})
+                                                 :password hashed-password})
                                callback)))
 
 (defn multiaccount-store-derived
-  [account-id paths password callback]
+  "NOTE: beware, the password has to be sha3 hashed"
+  [account-id paths hashed-password callback]
   (.multiAccountStoreDerived (status)
                              (types/clj->json {:accountID account-id
                                                :paths paths
-                                               :password password})
+                                               :password hashed-password})
 
                              callback))
 
@@ -115,12 +122,15 @@
   [mnemonic password callback]
   (.multiAccountImportMnemonic (status)
                                (types/clj->json {:mnemonicPhrase  mnemonic
+                                                 ;;NOTE this is not the multiaccount password
                                                  :Bip39Passphrase password})
 
                                callback))
 
-(defn verify [address password callback]
-  (.verify (status) address password callback))
+(defn verify
+  "NOTE: beware, the password has to be sha3 hashed"
+  [address hashed-password callback]
+  (.verify (status) address hashed-password callback))
 
 (defn login-with-keycard
   [{:keys [whisper-private-key encryption-public-key on-result]}]
@@ -136,26 +146,40 @@
 (defn call-private-rpc [payload callback]
   (.callPrivateRPC (status) payload callback))
 
-(defn hash-transaction [rpcParams callback]
+(defn hash-transaction
+  "used for keycard"
+  [rpcParams callback]
   (.hashTransaction (status) rpcParams callback))
 
-(defn hash-message [message callback]
+(defn hash-message
+  "used for keycard"
+  [message callback]
   (.hashMessage (status) message callback))
 
-(defn hash-typed-data [data callback]
+(defn hash-typed-data
+  "used for keycard"
+  [data callback]
   (.hashTypedData (status) data callback))
 
-(defn sign-message [rpcParams callback]
+(defn send-transaction-with-signature
+  "used for keycard"
+  [rpcParams sig callback]
+  (.sendTransactionWithSignature (status) rpcParams sig callback))
+
+(defn sign-message
+  "NOTE: beware, the password in rpcParams has to be sha3 hashed"
+  [rpcParams callback]
   (.signMessage (status) rpcParams callback))
 
-(defn sign-typed-data [data account password callback]
-  (.signTypedData (status) data account password callback))
+(defn send-transaction
+  "NOTE: beware, the password has to be sha3 hashed"
+  [rpcParams hashed-password callback]
+  (.sendTransaction (status) rpcParams hashed-password callback))
 
-(defn send-transaction [rpcParams password callback]
-  (.sendTransaction (status) rpcParams password callback))
-
-(defn send-transaction-with-signature [rpcParams sig callback]
-  (.sendTransactionWithSignature (status) rpcParams sig callback))
+(defn sign-typed-data
+  "NOTE: beware, the password has to be sha3 hashed"
+  [data account hashed-password callback]
+  (.signTypedData (status) data account hashed-password callback))
 
 (defn send-data-notification
   [{:keys [data-payload tokens] :as m} on-result]

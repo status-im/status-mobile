@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
+            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.mnemonic :as mnemonic]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
@@ -96,9 +97,10 @@
   [{:keys [db] :as cofx}]
   (let [{:keys [password passphrase root-key]} (:multiaccounts/recover db)
         {:keys [id address]} root-key
-        callback #(re-frame/dispatch [::store-multiaccount-success password])]
+        callback #(re-frame/dispatch [::store-multiaccount-success password])
+        hashed-password (ethereum/sha3 (security/safe-unmask-data password))]
     {:db (assoc-in db [:multiaccounts/recover :processing?] true)
-     ::multiaccounts.create/store-multiaccount [id address password callback]}))
+     ::multiaccounts.create/store-multiaccount [id address hashed-password callback]}))
 
 (fx/defn recover-multiaccount-with-checks
   {:events [::sign-in-button-pressed]}
@@ -112,24 +114,6 @@
           :content             (i18n/label :recovery-typo-dialog-description)
           :confirm-button-text (i18n/label :recovery-confirm-phrase)
           :on-accept           #(re-frame/dispatch [::recover-multiaccount-confirmed])}}))))
-
-(re-frame/reg-fx
- ::store-multiaccount
- (fn [[id address password]]
-   (status/multiaccount-store-account
-    id
-    (security/safe-unmask-data password)
-    (fn []
-      (status/multiaccount-load-account
-       address
-       password
-       (fn [value]
-         (let [{:keys [id]} (types/json->clj value)]
-           (status/multiaccount-store-derived
-            id
-            [constants/path-whisper constants/path-default-wallet]
-            password
-            #(re-frame/dispatch [::store-multiaccount-success password])))))))))
 
 (re-frame/reg-fx
  ::import-multiaccount

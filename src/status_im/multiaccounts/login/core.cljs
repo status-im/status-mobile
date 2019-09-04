@@ -7,6 +7,7 @@
             [status-im.constants :as constants]
             [status-im.contact.core :as contact]
             [status-im.data-store.core :as data-store]
+            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.fleet.core :as fleet]
@@ -63,7 +64,7 @@
   (let [{:keys [address password name photo-path]} (:multiaccounts/login db)]
     {:db (assoc-in db [:multiaccounts/login :processing] true)
      ::login [(types/clj->json {:name name :address address :photo-path photo-path})
-              password]}))
+              (ethereum/sha3 (security/safe-unmask-data password))]}))
 
 (fx/defn finish-keycard-setup
   [{:keys [db] :as cofx}]
@@ -309,6 +310,6 @@
 
 (re-frame/reg-fx
  ::login
- (fn [[account-data password]]
+ (fn [[account-data hashed-password]]
    (status/login account-data
-                 (security/safe-unmask-data password))))
+                 hashed-password)))

@@ -4,6 +4,7 @@
   and documents which describe the whole \"sign in\" flow."
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.data-store.core :as data-store]
+            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.multiaccounts.login.core :as login.core]
             [status-im.test.sign-in.data :as data]))
@@ -18,7 +19,7 @@
           efx (login.core/login cofx)]
       (testing "Change multiaccount."
         (is (= (::login.core/login efx)
-               ["{\"name\":\"user\",\"address\":\"address\",\"photo-path\":\"photo\"}" "password"])))
+               ["{\"name\":\"user\",\"address\":\"address\",\"photo-path\":\"photo\"}" (ethereum/sha3 "password")])))
       (testing "start activity indicator"
         (is (= (get-in efx [:db :multiaccounts/login :processing]) true))))))
 

@@ -1,26 +1,25 @@
 (ns status-im.signing.core
-  (:require [status-im.utils.fx :as fx]
-            [status-im.i18n :as i18n]
-            [status-im.utils.money :as money]
-            [status-im.utils.hex :as utils.hex]
-            [status-im.ethereum.tokens :as tokens]
-            [status-im.ethereum.core :as ethereum]
-            [clojure.string :as string]
-            [status-im.ethereum.abi-spec :as abi-spec]
-            [status-im.utils.security :as security]
-            [status-im.utils.types :as types]
-            [status-im.native-module.core :as status]
+  (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.utils.utils :as utils]
-            status-im.utils.handlers
-            [status-im.ethereum.eip55 :as eip55]))
+            [status-im.ethereum.abi-spec :as abi-spec]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.eip55 :as eip55]
+            [status-im.ethereum.tokens :as tokens]
+            [status-im.i18n :as i18n]
+            [status-im.native-module.core :as status]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.hex :as utils.hex]
+            [status-im.utils.money :as money]
+            [status-im.utils.security :as security]
+            [status-im.utils.types :as types]
+            [status-im.utils.utils :as utils]))
 
 (re-frame/reg-fx
  :signing/send-transaction-fx
- (fn [{:keys [tx-obj password cb]}]
+ (fn [{:keys [tx-obj hashed-password cb]}]
    (status/send-transaction (types/clj->json tx-obj)
-                            (security/safe-unmask-data password)
+                            hashed-password
                             cb)))
 
 (re-frame/reg-fx
@@ -41,8 +40,8 @@
 
 (re-frame/reg-fx
  :signing.fx/sign-typed-data
- (fn [{:keys [data account on-completed password]}]
-   (status/sign-typed-data data account (security/safe-unmask-data password) on-completed)))
+ (fn [{:keys [data account on-completed hashed-password]}]
+   (status/sign-typed-data data account hashed-password on-completed)))
 
 (defn get-contact [db to]
   (let [to (utils.hex/normalize-hex to)]
@@ -63,17 +62,18 @@
   [{{:signing/keys [sign tx] :as db} :db}]
   (let [{{:keys [data typed?]} :message} tx
         {:keys [in-progress? password]} sign
-        from (ethereum/default-address db)]
+        from (ethereum/default-address db)
+        hashed-password (ethereum/sha3 (security/safe-unmask-data password))]
     (when-not in-progress?
       (merge
        {:db (update db :signing/sign assoc :error nil :in-progress? true)}
        (if typed?
          {:signing.fx/sign-typed-data {:data         data
                                        :account      from
-                                       :password     password
+                                       :hashed-password hashed-password
                                        :on-completed #(re-frame/dispatch [:signing/sign-message-completed %])}}
          {:signing.fx/sign-message {:params       {:data     data
-                                                   :password (security/safe-unmask-data password)
+                                                   :password hashed-password
                                                    :account  from}
                                     :on-completed #(re-frame/dispatch [:signing/sign-message-completed %])}})))))
 
@@ -92,7 +92,7 @@
         (when-not in-progress?
           {:db                          (update db :signing/sign assoc :error nil :in-progress? true)
            :signing/send-transaction-fx {:tx-obj   tx-obj-to-send
-                                         :password password
+                                         :hashed-password (ethereum/sha3 (security/safe-unmask-data password))
                                          :cb       #(re-frame/dispatch [:signing/transaction-completed % tx-obj-to-send])}})))))
 
 (fx/defn prepare-unconfirmed-transaction

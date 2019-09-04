@@ -1,9 +1,7 @@
 (ns status-im.hardwallet.fx
   (:require [re-frame.core :as re-frame]
             [status-im.hardwallet.card :as card]
-            [status-im.utils.datetime :as utils.datetime]
-            [status-im.native-module.core :as statusgo]
-            [status-im.react-native.js-dependencies :as js-dependencies]))
+            [status-im.native-module.core :as status]))
 
 (re-frame/reg-fx
  :hardwallet/get-application-info
@@ -91,9 +89,9 @@
 
 (re-frame/reg-fx
  :hardwallet/login-with-keycard
- statusgo/login-with-keycard)
+ status/login-with-keycard)
 
 (re-frame/reg-fx
  :send-transaction-with-signature
  (fn [{:keys [transaction signature on-completed]}]
-   (statusgo/send-transaction-with-signature transaction signature on-completed)))
+   (status/send-transaction-with-signature transaction signature on-completed)))

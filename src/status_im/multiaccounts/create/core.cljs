@@ -1,25 +1,19 @@
 (ns status-im.multiaccounts.create.core
   (:require [clojure.set :refer [map-invert]]
-            [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.ethereum.core :as ethereum]
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.random :as random]
             [status-im.utils.security :as security]
             [status-im.utils.signing-phrase.core :as signing-phrase]
             [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+            [status-im.utils.utils :as utils]))
 
 (defn get-signing-phrase [cofx]
   (assoc cofx :signing-phrase (signing-phrase/generate)))
@@ -50,8 +44,9 @@
   [{:keys [db] :as cofx}]
   (let [{:keys [selected-id address key-code]} (:intro-wizard db)
         {:keys [address]} (get-selected-multiaccount cofx)
+        hashed-password (ethereum/sha3 (security/safe-unmask-data key-code))
         callback #(re-frame/dispatch [::store-multiaccount-success key-code])]
-    {::store-multiaccount [selected-id address key-code callback]}))
+    {::store-multiaccount [selected-id address hashed-password callback]}))
 
 (fx/defn intro-wizard
   {:events [:multiaccounts.create.ui/intro-wizard]}
@@ -195,7 +190,7 @@
                      seed-backed-up?
                      (assoc-in [:multiaccount :seed-backed-up?] true))
                ::save-account-and-login [(types/clj->json multiaccount-data)
-                                         password
+                                         (ethereum/sha3 (security/safe-unmask-data password))
                                          (node/get-new-config db)
                                          (types/clj->json accounts-data)]}
               (when (:intro-wizard db)
@@ -275,26 +270,26 @@
 
 (re-frame/reg-fx
  ::store-multiaccount
- (fn [[id address password callback]]
+ (fn [[id address hashed-password callback]]
    (status/multiaccount-store-account
     id
-    (security/safe-unmask-data password)
+    hashed-password
     (fn []
       (status/multiaccount-load-account
        address
-       password
+       hashed-password
        (fn [value]
          (let [{:keys [id]} (types/json->clj value)]
            (status/multiaccount-store-derived
             id
             [constants/path-whisper constants/path-default-wallet]
-            password
+            hashed-password
             callback))))))))
 
 (re-frame/reg-fx
  ::save-account-and-login
- (fn [[multiaccount-data password config accounts-data]]
+ (fn [[multiaccount-data hashed-password config accounts-data]]
    (status/save-account-and-login multiaccount-data
-                                  (security/safe-unmask-data password)
+                                  hashed-password
                                   config
                                   accounts-data)))
