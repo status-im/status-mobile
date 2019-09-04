@@ -34,6 +34,9 @@
        :auto-capitalize     :none
        :auto-focus          false
        :accessibility-label :chat-name-input
+       ;; Set default-value as otherwise it will
+       ;; be erased in global `onWillBlur` handler
+       :default-value       topic
        :placeholder         nil
        :return-key-type     :go
        :auto-correct        false}]]]

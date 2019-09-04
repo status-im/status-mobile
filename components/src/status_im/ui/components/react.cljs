@@ -126,14 +126,18 @@
             [text-class (dissoc options-with-style :nested?)]
             nested-text-elements)))
 
-(def text-input-refs (atom #{}))
+;; We track all currently mounted text input refs
+;; in a ref-to-defaultValue map
+;; so that we can clear them (restore their default values)
+;; when global react-navigation's onWillBlur event is invoked
+(def text-input-refs (atom {}))
 
 (defn text-input
   [options text]
   (let [input-ref (atom nil)]
     (reagent/create-class
       {:component-will-unmount #(when @input-ref
-                                  (swap! text-input-refs disj @input-ref))
+                                  (swap! text-input-refs dissoc @input-ref))
        :reagent-render
        (fn [options text]
          [text-input-class
@@ -143,11 +147,10 @@
              :placeholder-text-color   colors/text-gray
              :placeholder              (i18n/label :t/type-a-message)
              :ref                      (fn [r] 
-                                         (if r
-                                           (when (nil? @input-ref)
-                                             (swap! text-input-refs conj r))
-                                           (when @input-ref
-                                             (swap! text-input-refs disj @input-ref)))
+                                         ;; Store input and its defaultValue
+                                         ;; one we receive a non-nil ref
+                                         (when (and r (nil? @input-ref))
+                                           (swap! text-input-refs assoc r (:default-value options)))
                                          (reset! input-ref r)
                                          (when (:ref options) 
                                            ((:ref options) r)))

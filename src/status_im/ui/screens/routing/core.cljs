@@ -40,8 +40,10 @@
     :on-will-blur
     (fn []
       (reset! screen-focused? false)
-      (doseq [text-input @react/text-input-refs]
-        (.clear text-input)))}])
+      ;; Reset currently mounted text inputs to their default values
+      ;; on navigating away; this is a privacy measure
+      (doseq [[text-input default-value] @react/text-input-refs]
+        (.setNativeProps text-input (clj->js {:text default-value}))))}])
 
 (defn wrap
   "Wraps screen with main view and adds navigation-events component"
