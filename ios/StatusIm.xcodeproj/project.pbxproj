@@ -35,7 +35,6 @@
 		B190FBFB6A9B43EAAF396CD7 /* Inter-BlackItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2006E199700F423E84885CD9 /* Inter-BlackItalic.otf */; };
 		B24FC7FD1DE7195700D694FF /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B24FC7FC1DE7195700D694FF /* Social.framework */; };
 		B24FC7FF1DE7195F00D694FF /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B24FC7FE1DE7195F00D694FF /* MessageUI.framework */; };
-		B2DEA0D01E49E33300FA28D6 /* libRCTHttpServer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2DEA0B11E49E32000FA28D6 /* libRCTHttpServer.a */; };
 		B2F2D1BC1D9D531B00B7B453 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */; };
 		BA68A2377A20496EA737000D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E586E1B0E544F64AA9F5BD1 /* libz.tbd */; };
 		CE4E31B31D8695250033ED64 /* Statusgo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4E31B21D8695250033ED64 /* Statusgo.framework */; };
@@ -48,6 +47,7 @@
 		E5A39B2530D54142B8C03B94 /* Inter-ExtraBoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1BF670316EE6470584BB715B /* Inter-ExtraBoldItalic.otf */; };
 		F0C362ACB0B24A2DB9AD29AC /* Inter-ExtraLight-BETA.otf in Resources */ = {isa = PBXBuildFile; fileRef = 17787D310A644038B9357960 /* Inter-ExtraLight-BETA.otf */; };
 		EFF2F2F206A94FDC93D6C279 /* libReact-Native-Webview-Bridge.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 43B65EC6709A4C5CBD4B0540 /* libReact-Native-Webview-Bridge.a */; };
+		764C3E8DFB4245A3A35929CA /* libRCTHttpServer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 26CFDB64FD814D3F960B582F /* libRCTHttpServer.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,13 +78,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = EB2648DF1C7BE17A00B8F155;
 			remoteInfo = ReactNativeConfig;
-		};
-		B2DEA0B01E49E32000FA28D6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B2DEA0A41E49E32000FA28D6 /* RCTHttpServer.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = B29EC9CC1E48BED600704A36;
-			remoteInfo = RCTHttpServer;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -167,7 +160,6 @@
 		B24FC7FC1DE7195700D694FF /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		B24FC7FE1DE7195F00D694FF /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		B2A38FC3D3954DE7B2B171F8 /* Inter-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Medium.otf"; path = "../resources/fonts/Inter-Medium.otf"; sourceTree = "<group>"; };
-		B2DEA0A41E49E32000FA28D6 /* RCTHttpServer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTHttpServer.xcodeproj; path = "../node_modules/react-native-http-bridge/ios/RCTHttpServer.xcodeproj"; sourceTree = "<group>"; };
 		B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = StatusIm/Images.xcassets; sourceTree = "<group>"; };
 		B321D25F4493470980039457 /* Inter-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-BoldItalic.otf"; path = "../resources/fonts/Inter-BoldItalic.otf"; sourceTree = "<group>"; };
 		C6B1215047604CD59A4C74D6 /* Inter-MediumItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-MediumItalic.otf"; path = "../resources/fonts/Inter-MediumItalic.otf"; sourceTree = "<group>"; };
@@ -180,6 +172,8 @@
 		FC1CBCFE6C906043D6CCEEE1 /* libPods-StatusImTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-StatusImTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AE97A85A3D04DA685251137 /* React-Native-Webview-Bridge.xcodeproj */ = {isa = PBXFileReference; name = "React-Native-Webview-Bridge.xcodeproj"; path = "../node_modules/react-native-webview-bridge/ios/React-Native-Webview-Bridge.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		43B65EC6709A4C5CBD4B0540 /* libReact-Native-Webview-Bridge.a */ = {isa = PBXFileReference; name = "libReact-Native-Webview-Bridge.a"; path = "libReact-Native-Webview-Bridge.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		BC4B4CEB05214A76B6150264 /* RCTHttpServer.xcodeproj */ = {isa = PBXFileReference; name = "RCTHttpServer.xcodeproj"; path = "../node_modules/react-native-http-bridge/ios/RCTHttpServer.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		26CFDB64FD814D3F960B582F /* libRCTHttpServer.a */ = {isa = PBXFileReference; name = "libRCTHttpServer.a"; path = "libRCTHttpServer.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -195,7 +189,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B2DEA0D01E49E33300FA28D6 /* libRCTHttpServer.a in Frameworks */,
 				B24FC7FF1DE7195F00D694FF /* MessageUI.framework in Frameworks */,
 				B24FC7FD1DE7195700D694FF /* Social.framework in Frameworks */,
 				20B6B6841D92C42600CC5C6A /* RSKImageCropper.framework in Frameworks */,
@@ -208,6 +201,7 @@
 				8E55E6877F950B81C8D711C5 /* libPods-StatusIm.a in Frameworks */,
 				9EF0836B1F3B53AB00876A8F /* libReactNativeConfig.a in Frameworks */,
 				EFF2F2F206A94FDC93D6C279 /* libReact-Native-Webview-Bridge.a in Frameworks */,
+				764C3E8DFB4245A3A35929CA /* libRCTHttpServer.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -313,10 +307,10 @@
 			isa = PBXGroup;
 			children = (
 				9EF083381F3B538A00876A8F /* ReactNativeConfig.xcodeproj */,
-				B2DEA0A41E49E32000FA28D6 /* RCTHttpServer.xcodeproj */,
 				9EC0135C1E06FB1900155B5C /* RCTWKWebView.xcodeproj */,
 				439B6B4B407A4E2AACAFE5BE /* RCTStatus.xcodeproj */,
 				9AE97A85A3D04DA685251137 /* React-Native-Webview-Bridge.xcodeproj */,
+				BC4B4CEB05214A76B6150264 /* RCTHttpServer.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -389,14 +383,6 @@
 				FC1CBCFE6C906043D6CCEEE1 /* libPods-StatusImTests.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		B2DEA0A51E49E32000FA28D6 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				B2DEA0B11E49E32000FA28D6 /* libRCTHttpServer.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		C90047C11FC47AF30002B8EA /* Recovered References */ = {
@@ -499,10 +485,6 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = B2DEA0A51E49E32000FA28D6 /* Products */;
-					ProjectRef = B2DEA0A41E49E32000FA28D6 /* RCTHttpServer.xcodeproj */;
-				},
-				{
 					ProductGroup = 201067BA1D4789F700FA83B6 /* Products */;
 					ProjectRef = 439B6B4B407A4E2AACAFE5BE /* RCTStatus.xcodeproj */;
 				},
@@ -550,13 +532,6 @@
 			fileType = archive.ar;
 			path = libReactNativeConfig.a;
 			remoteRef = 9EF083601F3B538B00876A8F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		B2DEA0B11E49E32000FA28D6 /* libRCTHttpServer.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRCTHttpServer.a;
-			remoteRef = B2DEA0B01E49E32000FA28D6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -802,6 +777,7 @@
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/messaging",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/notifications",
 					"$(SRCROOT)/../node_modules/react-native-webview-bridge/ios",
+					"$(SRCROOT)/../node_modules/react-native-http-bridge/**",
 				);
 				INFOPLIST_FILE = StatusIm/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -863,6 +839,7 @@
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/messaging",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/notifications",
 					"$(SRCROOT)/../node_modules/react-native-webview-bridge/ios",
+					"$(SRCROOT)/../node_modules/react-native-http-bridge/**",
 				);
 				INFOPLIST_FILE = StatusIm/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
