@@ -24,6 +24,12 @@
    [status-im.utils.slurp :refer [slurp]]
    [status-im.utils.views :as views]))
 
+(def timeout (atom {}))
+
+(defn debounce [event]
+  (when @timeout (js/clearTimeout @timeout))
+  (reset! timeout (js/setTimeout #(re-frame/dispatch event) 500)))
+
 (def browser-config-edn
   (slurp "./src/status_im/utils/browser_config.edn"))
 
@@ -59,6 +65,7 @@
    {:browser? true}
    [toolbar.view/nav-button
     (actions/close (fn []
+                     (when @timeout (js/clearTimeout @timeout))
                      (re-frame/dispatch [:navigate-back])
                      (when error?
                        (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
@@ -130,7 +137,7 @@
         :bounces                               false
         :local-storage-enabled                 true
         :render-error                          web-view-error
-        :on-navigation-state-change            #(re-frame/dispatch [:browser/navigation-state-changed % error?])
+        :on-navigation-state-change            #(debounce [:browser/navigation-state-changed % error?])
         :on-bridge-message                     #(re-frame/dispatch [:browser/bridge-message-received %])
         :on-load                               #(re-frame/dispatch [:browser/loading-started])
         :on-error                              #(re-frame/dispatch [:browser/error-occured])
