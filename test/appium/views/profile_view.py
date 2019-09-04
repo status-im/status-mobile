@@ -186,7 +186,7 @@ class RecoveryPhraseTable(BaseText):
     def __init__(self, driver):
         super(RecoveryPhraseTable, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            "//*[@text='Your recovery phrase']/following-sibling::android.view.ViewGroup[1]/android.widget.TextView")
+            "//*[@text='Your seed phrase']/following-sibling::android.view.ViewGroup[1]/android.widget.TextView")
 
 
 class RecoveryPhraseWordNumberText(BaseText):

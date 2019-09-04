@@ -174,7 +174,7 @@ class CollectiblesButton(BaseButton):
 class BackupRecoveryPhrase(BaseButton):
     def __init__(self, driver):
         super(BackupRecoveryPhrase, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Backup your recovery phrase')
+        self.locator = self.Locator.text_selector('Backup your seed phrase')
 
     def navigate(self):
         from views.profile_view import ProfileView
@@ -252,7 +252,7 @@ class AddAnAccountButton(BaseButton):
 class GenerateNewAccountButton(BaseButton):
     def __init__(self, driver):
         super(GenerateNewAccountButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Generate a new account')
+        self.locator = self.Locator.text_selector('Generate a new key')
 
 
 class EnterYourPasswordInput(BaseEditBox):
@@ -265,7 +265,7 @@ class EnterYourPasswordInput(BaseEditBox):
 class GenerateAccountButton(BaseButton):
     def __init__(self, driver):
         super(GenerateAccountButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Generate account')
+        self.locator = self.Locator.text_selector('Generate key')
 
 
 class AccountNameInput(BaseEditBox):

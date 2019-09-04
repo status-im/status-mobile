@@ -124,7 +124,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         # self.network_api.get_donate(address)
         # home.wallet_button.click()
         if not wallet.backup_recovery_phrase_warning_text.is_element_present():
-            pytest.fail("'Back up your recovery phrase' warning is not shown on Wallet")
+            pytest.fail("'Back up your seed phrase' warning is not shown on Wallet")
         wallet.multiaccount_more_options.click_until_presence_of_element(wallet.backup_recovery_phrase)
         wallet.backup_recovery_phrase.click()
         profile = wallet.get_profile_view()
