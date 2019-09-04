@@ -9,9 +9,15 @@
             [(string/blank? username)
              (string/includes? username chat.constants/command-char)])))
 
+(defn base64-png? [photo-path]
+  (string/starts-with? photo-path "data:image/png;base64,"))
+
+(defn base64-jpeg? [photo-path]
+  (string/starts-with? photo-path "data:image/jpeg;base64,"))
+
 (defn base64-encoded-image-path? [photo-path]
-  (or (string/starts-with? photo-path "data:image/jpeg;base64,")
-      (string/starts-with? photo-path "data:image/png;base64,")))
+  (or (base64-png? photo-path)
+      (base64-jpeg? photo-path)))
 
 (spec/def :profile/name correct-name?)
 (spec/def :profile/status (spec/nilable string?))
