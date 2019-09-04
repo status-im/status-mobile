@@ -11,11 +11,6 @@ module.exports = {
                 ios: null,
             },
         },
-        'react-native-image-crop-picker': {
-            platforms: {
-                ios: null,
-            },
-        },
         'react-native-status-keycard': {
             platforms: {
                 android: null,

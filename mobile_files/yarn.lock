@@ -5545,10 +5545,10 @@ react-native-http-bridge@0.6.1:
   resolved "https://registry.yarnpkg.com/react-native-http-bridge/-/react-native-http-bridge-0.6.1.tgz#1b85688174870e9b009692e1a6cdc5f5396c5ca4"
   integrity sha512-XnPVdaYkKIC8bRGmADVLhgDO0Evnya3rOExVEzxk6pBJjNUewWljkGHt//OTpb4t7Te6oDqQAwa+gfVtzhRU1A==
 
-react-native-image-crop-picker@0.18.1:
-  version "0.18.1"
-  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.18.1.tgz#ebdbe72def5afb6c69aa6e2ad72fd3a7de8ee408"
-  integrity sha512-63Yr+Mzl/CzDze1eqMg/GGFOODgGrixSMO+28TVGCX3982f76w/op0JKoL7zuSKz/P/mVsbi9RnHA0z6Ih/RHQ==
+react-native-image-crop-picker@0.25.0:
+  version "0.25.0"
+  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.25.0.tgz#858fa6fdc857255fe5250252a38d58db347f9067"
+  integrity sha512-SpT8/zRUW+d/girR78Rc9FzqCOwuARRTJX91hENKJ8LPzVos1fthNOJO0LGGvVFYggbtLsLugrPRDRP2MiuGlQ==
 
 "react-native-image-resizer@git+https://github.com/status-im/react-native-image-resizer.git#1.0.0-1-status":
   version "1.0.0"
