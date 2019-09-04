@@ -16,6 +16,11 @@ module.exports = {
                 ios: null,
             },
         },
+        'react-native-image-resizer': {
+            platforms: {
+                ios: null,
+            },
+        },
         'react-native-status-keycard': {
             platforms: {
                 android: null,
