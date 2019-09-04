@@ -11,7 +11,7 @@ RCTSTATUS_DIR="$STATUS_REACT_HOME/modules/react-native-status/ios/RCTStatus"
 targetBasename='Statusgo.framework'
 
 # Compare target folder with source to see if copying is required
-if [ -d "$RCTSTATUS_DIR/$targetBasename" ] && \
+if [ -d "$RCTSTATUS_DIR/$targetBasename" ] && [ -d $STATUS_REACT_HOME/ios/Pods/ ] && \
   diff -q --no-dereference --recursive $RCTSTATUS_DIR/$targetBasename/ $RCTSTATUS_FILEPATH/ > /dev/null; then
   echo "$RCTSTATUS_DIR/$targetBasename already in place"
 else
