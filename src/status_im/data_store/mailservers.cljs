@@ -1,6 +1,5 @@
 (ns status-im.data-store.mailservers
-  (:require [cljs.tools.reader.edn :as edn]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.data-store.realm.core :as core]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
@@ -43,45 +42,6 @@
                      :params [chat-id]
                      :on-success #(log/info "deleted gaps successfully")
                      :on-failure #(log/error "failed to delete gap" %)}]})
-
-(defn deserialize-mailserver-topic
-  [serialized-mailserver-topic]
-  (-> serialized-mailserver-topic
-      (update :chat-ids edn/read-string)))
-
-(re-frame/reg-cofx
- :data-store/mailserver-topics
- (fn [cofx _]
-   (assoc cofx
-          :data-store/mailserver-topics
-          (reduce (fn [acc {:keys [topic] :as mailserver-topic}]
-                    (assoc acc topic (deserialize-mailserver-topic mailserver-topic)))
-                  {}
-                  (-> @core/account-realm
-                      (core/get-all :mailserver-topic)
-                      (core/all-clj :mailserver-topic))))))
-
-(defn save-mailserver-topic-tx
-  "Returns tx function for saving mailserver topic"
-  [{:keys [topic mailserver-topic]}]
-  (fn [realm]
-    (log/debug "saving mailserver-topic:" topic mailserver-topic)
-    (core/create realm
-                 :mailserver-topic
-                 (-> mailserver-topic
-                     (assoc :topic topic)
-                     (update :chat-ids pr-str))
-                 true)))
-
-(defn delete-mailserver-topic-tx
-  "Returns tx function for deleting mailserver topic"
-  [topic]
-  (fn [realm]
-    (log/debug "deleting mailserver-topic:" topic)
-    (let [mailserver-topic (.objectForPrimaryKey realm
-                                                 "mailserver-topic"
-                                                 topic)]
-      (core/delete realm mailserver-topic))))
 
 (defn save-chat-requests-range
   [chat-requests-range]

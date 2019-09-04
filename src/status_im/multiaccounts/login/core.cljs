@@ -8,12 +8,12 @@
             [status-im.contact.core :as contact]
             [status-im.data-store.core :as data-store]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.protocol.core :as protocol]
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.notifications.core :as notifications]
+            [status-im.protocol.core :as protocol]
             [status-im.stickers.core :as stickers]
             [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
             [status-im.ui.screens.navigation :as navigation]
@@ -27,8 +27,7 @@
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.utils.utils :as utils]
             [status-im.wallet.core :as wallet]
-            [taoensso.timbre :as log]
-            [status-im.mailserver.core :as mailserver]))
+            [taoensso.timbre :as log]))
 
 (def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
 (def contract-address "0xfbf4c8e2B41fAfF8c616a0E49Fb4365a5355Ffaf")
@@ -162,7 +161,9 @@
               {:db (assoc db :chats/loading? true)
                ::data-store/change-multiaccount [address password]
                ::json-rpc/call
-               [{:method "browsers_getBrowsers"
+               [{:method "mailservers_getMailserverTopics"
+                 :on-success #(re-frame/dispatch [::protocol/initialize-protocol {:mailserver-topics (or % {})}])}
+                {:method "browsers_getBrowsers"
                  :on-success #(re-frame/dispatch [::initialize-browsers %])}
                 {:method "permissions_getDappPermissions"
                  :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}

@@ -78,7 +78,10 @@
    "accounts_saveAccounts" {}
    "mailservers_addMailserver" {}
    "mailservers_getMailservers" {}
-   "mailservers_deleteMailserver" {}})
+   "mailservers_deleteMailserver" {}
+   "mailservers_addMailserverTopic" {}
+   "mailservers_getMailserverTopics" {}
+   "mailservers_deleteMailserverTopic" {}})
 
 (defn call
   [{:keys [method params on-success on-error] :as p}]

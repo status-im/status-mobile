@@ -1,11 +1,9 @@
 (ns ^{:doc "Mailserver events and API"}
  status-im.mailserver.topics
-  (:require
-   [clojure.string :as string]
-   [taoensso.timbre :as log]
-   [status-im.data-store.mailservers :as data-store.mailservers]
-   [status-im.mailserver.constants :as constants]
-   [status-im.utils.fx :as fx]))
+  (:require [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.mailserver.constants :as constants]
+            [status-im.utils.fx :as fx]
+            [taoensso.timbre :as log]))
 
 (defn calculate-last-request [{:keys [discovery?]}
                               {:keys [previous-last-request
@@ -27,13 +25,16 @@
 
 (fx/defn persist [_ {:keys [chat-ids topic filter-ids]
                      :as mailserver-topic}]
-  (let [op (if (or (empty? chat-ids)
-                   (empty? filter-ids))
-             (data-store.mailservers/delete-mailserver-topic-tx topic)
-             (data-store.mailservers/save-mailserver-topic-tx
-              {:topic            topic
-               :mailserver-topic mailserver-topic}))]
-    {:data-store/tx [op]}))
+  (if (or (empty? chat-ids)
+          (empty? filter-ids))
+    {::json-rpc/call [{:method "mailservers_deleteMailserverTopic"
+                       :params [topic]
+                       :on-success #(log/debug "deleted mailserver topic successfully")
+                       :on-failure #(log/error "failed to delete mailserver topic" %)}]}
+    {::json-rpc/call [{:method "mailservers_addMailserverTopic"
+                       :params [mailserver-topic]
+                       :on-success #(log/debug "added mailserver-topic successfully")
+                       :on-failure #(log/error "failed to delete mailserver topic" %)}]}))
 
 (defn new-chat-ids? [previous-mailserver-topic new-mailserver-topic]
   (seq (clojure.set/difference (:chat-ids new-mailserver-topic)

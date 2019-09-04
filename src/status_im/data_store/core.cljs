@@ -1,21 +1,17 @@
 (ns status-im.data-store.core
   (:require [cljs.core.async :as async]
             [re-frame.core :as re-frame]
-            [taoensso.timbre :as log]
             [status-im.data-store.realm.core :as realm]
-            [status-im.utils.keychain.core :as keychain]
-            [status-im.utils.handlers :as handlers]
-            [status-im.utils.security :as security]
-            [status-im.native-module.core :as status]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.utils.types :as types]
             [status-im.i18n :as i18n]
-            status-im.data-store.chats
-            status-im.data-store.messages
-            status-im.data-store.contacts
-            status-im.data-store.mailservers
+            [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.native-module.core :as status]
+            [status-im.protocol.core :as protocol]
             [status-im.utils.fx :as fx]
-            [status-im.protocol.core :as protocol]))
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.keychain.core :as keychain]
+            [status-im.utils.security :as security]
+            [status-im.utils.types :as types]
+            [taoensso.timbre :as log]))
 
 (fx/defn multiaccount-db-removed
   {:events [::multiaccount-db-removed]}
@@ -201,11 +197,9 @@
 
 (fx/defn handle-change-multiaccount-success
   {:events [::multiaccount-change-success]
-   :interceptors [(re-frame/inject-cofx :data-store/mailserver-topics)
-                  (re-frame/inject-cofx :data-store/all-chat-requests-ranges)]}
-  [{:data-store/keys [mailserver-topics mailserver-ranges] :as cofx}]
-  (protocol/initialize-protocol cofx {:mailserver-topics mailserver-topics
-                                      :mailserver-ranges mailserver-ranges}))
+   :interceptors [(re-frame/inject-cofx :data-store/all-chat-requests-ranges)]}
+  [{:data-store/keys [mailserver-ranges] :as cofx}]
+  (protocol/initialize-protocol cofx {:mailserver-ranges mailserver-ranges}))
 
 (defn change-multiaccount!
   [address password create-database-if-not-exist?]

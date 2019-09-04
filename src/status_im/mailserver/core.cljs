@@ -734,11 +734,13 @@
                                                       gaps)))
                                           (update :mailserver/planned-gap-requests
                                                   dissoc gap))
-                       :data-store/tx (mapv (fn [[topic mailserver-topic]]
-                                              (data-store.mailservers/save-mailserver-topic-tx
-                                               {:topic            topic
-                                                :mailserver-topic mailserver-topic}))
-                                            mailserver-topics)}
+                       ::json-rpc/call
+                       (mapv (fn [[topic mailserver-topic]]
+                               {:method "mailservers_addMailserverTopic"
+                                :params [(assoc mailserver-topic :topic topic)]
+                                :on-success #(log/debug "added mailserver-topic successfully")
+                                :on-failure #(log/error "failed to delete mailserver topic" %)})
+                             mailserver-topics)}
                       (process-next-messages-request))))))))
 
 (fx/defn retry-next-messages-request

@@ -3,11 +3,9 @@
   flow has been changed. Such changes should be reflected in both these tests
   and documents which describe the whole \"sign in\" flow."
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.events :as events]
             [status-im.data-store.core :as data-store]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.multiaccounts.login.core :as login.core]
-            [status-im.signals.core :as signals]
             [status-im.test.sign-in.data :as data]))
 
 (deftest on-password-input-submitted
@@ -29,9 +27,7 @@
     (let [db           {:multiaccounts/login  {:address  "address"
                                                :password "password"}
                         :multiaccount data/multiaccount}
-          cofx         {:db                           db
-                        :data-store/mailservers       []
-                        :data-store/mailserver-topics data/topics}
+          cofx         {:db                           db}
           login-result "{\"error\":\"\"}"
           efx          (login.core/multiaccount-login-success cofx)
           new-db       (:db efx)
