@@ -135,17 +135,6 @@ void RCTStatus::initKeystore() {
     logStatusGoResult("::initKeystore InitKeystore", result);
 }
 
-void RCTStatus::createAccount(QString password, double callbackId) {
-    Q_D(RCTStatus);
-    qCInfo(RCTSTATUS) << "::createAccount call - callbackId:" << callbackId;
-    QtConcurrent::run([&](QString password, double callbackId) {
-            const char* result = CreateAccount(password.toUtf8().data());
-            logStatusGoResult("::createAccount CreateAccount", result);
-            d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
-        }, password, callbackId);
-}
-
-
 void RCTStatus::sendDataNotification(QString dataPayloadJSON, QString tokensJSON, double callbackId) {
     Q_D(RCTStatus);
     qCDebug(RCTSTATUS) << "::sendDataNotification call - callbackId:" << callbackId;

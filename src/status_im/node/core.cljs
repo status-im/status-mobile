@@ -187,11 +187,6 @@
    (status/prepare-dir-and-update-config config callback)))
 
 (re-frame/reg-fx
- :node/ready
- (fn [config]
-   (status/node-ready)))
-
-(re-frame/reg-fx
  :node/les-show-debug-info
  (fn [[multiaccount]]
    #_(.getBalance

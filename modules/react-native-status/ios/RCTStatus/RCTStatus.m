@@ -129,18 +129,6 @@ RCT_EXPORT_METHOD(initKeystore) {
 }
 
 ////////////////////////////////////////////////////////////////////
-#pragma mark - Accounts method
-//////////////////////////////////////////////////////////////////// createAccount
-RCT_EXPORT_METHOD(createAccount:(NSString *)password
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"CreateAccount() method called");
-#endif
-    NSString *result = StatusgoCreateAccount(password);
-    callback(@[result]);
-}
-
-////////////////////////////////////////////////////////////////////
 #pragma mark - SendDataNotification method
 //////////////////////////////////////////////////////////////////// sendDataNotification
 RCT_EXPORT_METHOD(sendDataNotification:(NSString *)dataPayloadJSON
