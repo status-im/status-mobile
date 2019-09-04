@@ -388,7 +388,6 @@
 		C90047C11FC47AF30002B8EA /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
-				2BEE3436791D42248F853999 /* libRCTImageResizer.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
