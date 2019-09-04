@@ -1,5 +1,10 @@
 module.exports = {
     dependencies: {
+        'react-native-config': {
+            platforms: {
+                ios: null,
+            },
+        },
         'react-native-dialogs': {
             platforms: {
                 android: null,
