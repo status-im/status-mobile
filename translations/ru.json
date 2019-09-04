@@ -13,7 +13,7 @@
     "active-online": "В сети",
     "active-unknown": "Неизвестно",
     "add": "Добавить",
-    "add-a-status": "Добавить статус...",
+    
     "add-a-watch-account": "Добавить аккаунт только для просмотра",
     "add-account": "Добавить аккаунт",
     "add-account-description": "Вы можете импортировать любой тип учетной записи Ethereum, чтобы добавить ее в свой кошелек Status.",
@@ -23,16 +23,16 @@
     "add-bootnode": "Добавить bootnode",
     "add-contact": "Добавить контакт",
     "add-custom-token": "Добавить кастомный токен",
-    "add-existing-multiaccount": "Добавить существующий аккаунт",
-    "add-json-file": "Добавить JSON файл",
+    
+    
     "add-mailserver": "Добавить Mailserver",
     "add-members": "Добавить членов",
     "add-network": "Добавить сеть",
-    "add-new-contact": "Добавить новый контакт",
-    "add-new-network": "Добавить новую сеть",
+    
+    
     "add-to-contacts": "Добавить в контакты",
     "address": "Адрес",
-    "address-explication": "Ваш публичный ключ используется для создания вашего адреса в Ethereum и представляет собой ряд цифр и букв. Вы можете легко найти его в своем профиле",
+    
     "advanced": "Дополнительные параметры",
     "advanced-settings": "Расширенные настройки",
     "agree-by-continuing": "Продолжая, вы соглашаетесь с нашими",
@@ -40,11 +40,10 @@
     "allow": "Разрешить",
     "allowing-authorizes-this-dapp": "Соглашаясь, вы разрешаете DApp получить адрес вашего кошелька и включить Web3",
     "already-have-asset": "У вас уже есть этот актив",
-    "already-have-multiaccount": "У меня уже есть мультиаккаунт",
+    
     "always-allow": "Всегда разрешать",
     "amount": "Сумма",
     "amount-placeholder": "Укажите сумму...",
-    "and-you": "и вы",
     "are-you-sure-description": "Вы не сможете увидеть всю фразу восстановления снова",
     "are-you-sure?": "Вы уверены?",
     "ask-in-status": "Задайте вопрос или сообщите об ошибке",
@@ -64,7 +63,7 @@
     "backup-recovery-phrase": "Резервное копирование фразы восстановления",
     "backup-your-recovery-phrase": "Резервное копирование фразы восстановления",
     "balance": "Баланс",
-    "begin-keycard-setup-confirmation-text": "Программа установки удалит все данные на карте, включая ключи уже сохраненные на ней. Хотите продолжить?",
+    
     "begin-set-up": "Начать установку",
     "biometric-auth-android-sensor-desc": "Коснитесь сканера отпечатков пальцев",
     "biometric-auth-android-sensor-error-desc": "Ошибка",
@@ -105,7 +104,7 @@
     "browsing-site-blocked-go-back": "Назад",
     "browsing-site-blocked-title": "Этот сайт заблокирован",
     "browsing-title": "Просматривать",
-    "buy-with-snt": "Купить с Помощью SNT",
+    
     "camera-access-error": "Чтобы предоставить необходимое разрешение для камеры, пожалуйста, перейдите в настройки системы и убедитесь, что выбрано Status > Камера.",
     "can-not-add-yourself": "Вы не можете добавить себя",
     "cancel": "Отмена",
@@ -135,12 +134,12 @@
     "chat": "Чат",
     "chat-key": "Ключ чата",
     "chat-name": "Имя чата",
-    "chat-send-eth": "{{amount}} ETH",
+    
     "chat-settings": "Настройки чата",
     "chats": "Чаты",
     "check-your-recovery-phrase": "Проверьте вашу фразу восстановления",
     "choose-authentication-method": "Выберите метод аутентификации для защиты вашего мультиаккаунта",
-    "choose-from-contacts": "Выбрать из контактов",
+    
     "clear": "Очистить",
     "clear-history": "Очистить историю",
     "clear-history-action": "Очистить",
@@ -167,11 +166,11 @@
     "connected": "Подключен",
     "connecting": "Подключение ...",
     "connecting-requires-login": "Подключение к другой сети требует входа в систему",
-    "connection-problem": "Проблема с подключением",
+    
     "connection-with-the-card-lost": "Подключение к карте\n было потеряно",
     "connection-with-the-card-lost-setup-text": "Для возобновления настройки удерживайте \nкарту на задней панели телефона и сохраните \nконтакт карты с телефоном",
     "connection-with-the-card-lost-text": "Для продолжения поднесите карту к задней панели телефона",
-    "contact-already-added": "Контакт уже добавлен",
+    
     "contact-code": "Код контакта",
     "contact-s": {
         "zero": "",
@@ -181,8 +180,7 @@
         "other": "контакты"
     },
     "contacts": "Контакты",
-    "contacts-group-new-chat": "Новый групповой чат",
-    "contacts-syncronized": "Ваши контакты синхронизированы",
+    
     "continue": "Продолжить",
     "contract-address": "Адрес контракта",
     "contract-interaction": "Взаимодействие с контрактом",
@@ -197,7 +195,7 @@
     "create-group-chat": "Создать групповой чат",
     "create-multiaccount": "Создать мультиаккаунт",
     "create-new-key": "Создать новый ключ",
-    "create-new-multiaccount": "Создать новый мультиаккаунт",
+    
     "create-pin": "Создать PIN код",
     "create-pin-description": "Для входа в систему и подтверждения транзакций вам понадобится ваша карта и этот PIN код",
     "created-group-chat-description": "Вы создали группу {{group-name}}",
@@ -212,12 +210,12 @@
     "currency-display-name-bdt": "Така",
     "currency-display-name-bgn": "Лев",
     "currency-display-name-bhd": "Бахрейнский динар",
-    "currency-display-name-bmd": "Бермудский доллар",
+    
     "currency-display-name-bnd": "Брунейский доллар",
     "currency-display-name-bob": "Боливиано",
     "currency-display-name-brl": "Бразильский реал",
     "currency-display-name-btn": "Нгултрум",
-    "currency-display-name-bzd": "Белизский доллар",
+    
     "currency-display-name-cad": "Канадский доллар",
     "currency-display-name-chf": "Швейцарский франк",
     "currency-display-name-clp": "Чилийское песо",
@@ -233,8 +231,8 @@
     "currency-display-name-gbp": "Британский Фунт",
     "currency-display-name-gel": "Лари",
     "currency-display-name-ghs": "Ганский седи",
-    "currency-display-name-gmd": "Даласи",
-    "currency-display-name-gyd": "Гайанский доллар",
+    
+    
     "currency-display-name-hkd": "Гонконгский доллар",
     "currency-display-name-hrk": "Хорватская Куна",
     "currency-display-name-huf": "Венгерский форинт",
@@ -247,16 +245,16 @@
     "currency-display-name-kes": "Кенийский шиллинг",
     "currency-display-name-krw": "Южнокорейская вона",
     "currency-display-name-kwd": "Кувейтский динар",
-    "currency-display-name-kyd": "Доллар Каймановых островов",
+    
     "currency-display-name-kzt": "Казахстанский тенге",
-    "currency-display-name-lak": "Лаосский кип",
+    
     "currency-display-name-lkr": "Шри–Ланкийская рупия",
-    "currency-display-name-lrd": "Либерийский доллар",
-    "currency-display-name-ltl": "Литовский лит",
+    
+    
     "currency-display-name-mad": "Марокканский дирхам",
     "currency-display-name-mdl": "Молдавский лей",
-    "currency-display-name-mkd": "Македонский денар",
-    "currency-display-name-mnt": "Тугрик",
+    
+    
     "currency-display-name-mur": "Маврикийская рупия",
     "currency-display-name-mwk": "Малавийская Квача",
     "currency-display-name-mxn": "Мексиканское песо",
@@ -264,7 +262,7 @@
     "currency-display-name-mzn": "Метикал",
     "currency-display-name-nad": "Доллар Намибии",
     "currency-display-name-ngn": "Найра",
-    "currency-display-name-nio": "Золотая кордоба",
+    
     "currency-display-name-nok": "Норвежская крона",
     "currency-display-name-npr": "Непальская рупия",
     "currency-display-name-nzd": "Новозеландский доллар",
@@ -282,8 +280,8 @@
     "currency-display-name-sar": "Саудовский риял",
     "currency-display-name-sek": "Шведская крона",
     "currency-display-name-sgd": "Сингапурский доллар",
-    "currency-display-name-sos": "Сомали шиллинг",
-    "currency-display-name-srd": "Суринамский доллар",
+    
+    
     "currency-display-name-thb": "Тайский бат",
     "currency-display-name-try": "Турецкая лира",
     "currency-display-name-ttd": "Доллар Тринидада и Тобаго",
@@ -295,7 +293,7 @@
     "currency-display-name-uyu": "Уругвайское песо",
     "currency-display-name-vef": "Боливар",
     "currency-display-name-vnd": "Донг",
-    "currency-display-name-yer": "Йеменский риал",
+    
     "currency-display-name-zar": "Южноафриканский рэнд",
     "current-network": "Текущая сеть",
     "current-pin": "Введите PIN код",
@@ -303,7 +301,7 @@
     "custom": "Пользовательские",
     "custom-networks": "Пользовательские сети",
     "dapp": "ÐApp",
-    "dapp-profile": "ÐApp профиль",
+    
     "dapp-would-like-to-connect-wallet": "хотел(а) бы подключиться \nк вашему кошельку",
     "dapps": "ÐApps",
     "dapps-can-access": "Приложения могут получить доступ к моему кошельку и коду контакта",
@@ -344,34 +342,34 @@
     },
     "datetime-today": "сегодня",
     "datetime-yesterday": "вчера",
-    "debug-enabled": "Запущен сервер отладки! Теперь вы можете выполнить * status-dev-cli scan *, чтобы найти сервер с вашего компьютера в той же сети.",
+    
     "decimals": "Количество знаков после запятой",
     "decryption-failed-confirm": "Применить",
     "decryption-failed-content": "Мы не смогли расшифровать ваши данные, возможно вам понадобится создать новый мультиаккаунт и удалить старые данные, нажав «Применить». Или нажмите «Отмена», чтобы повторить попытку",
     "decryption-failed-title": "Нам не удалось расшифровать ваши данные",
     "default": "По умолчанию",
-    "default-dapps-exchanges": "Обменники",
-    "default-dapps-fun-games": "Игры и развлечения",
-    "default-dapps-marketplaces": "Торговые площадки",
-    "default-dapps-media": "Медиа",
-    "default-dapps-social-networks": "Социальные сети",
-    "default-dapps-social-utilities": "Утилиты",
+    
+    
+    
+    
+    
+    
     "delete": "Удалить",
     "delete-and-leave-group": "Удалить и покинуть группу",
     "delete-bootnode": "Удалить bootnode",
     "delete-bootnode-are-you-sure": "Вы действительно хотите удалить этот bootnode?",
     "delete-bootnode-title": "Удалить bootnode",
     "delete-chat": "Удалить чат",
-    "delete-chat-action": "Удалить",
+    
     "delete-chat-confirmation": "Вы уверены, что хотите удалить этот чат?",
-    "delete-chat-title": "Удалить чат?",
+    
     "delete-confirmation": "Удалить?",
-    "delete-contact": "Удалить контакт",
-    "delete-contact-confirmation": "Этот контакт будет удален из ваших контактов",
-    "delete-group": "Удалить группу",
-    "delete-group-chat-confirmation": "Вы действительно хотите удалить этот групповой чат?",
-    "delete-group-confirmation": "Эта группа будет удалена из ваших групп. Это не повлияет на ваши контакты",
-    "delete-group-prompt": "Это не повлияет на ваши контакты",
+    
+    
+    
+    
+    
+    
     "delete-mailserver": "Удалить mailserver",
     "delete-mailserver-are-you-sure": "Вы действительно хотите удалить этот mailserver?",
     "delete-mailserver-title": "Удалить mailserver",
@@ -388,8 +386,8 @@
     "device-pairing": "Связывание устройств",
     "device-syncing": "Синхронизация устройств",
     "device-to-device": "Режим устройство-к-устройству включен",
-    "device-to-device-warning-content": "Если включено, только пользователи с 0.9.32 и выше, смогут читать ваши приватные и публичные сообщения.",
-    "device-to-device-warning-title": "Предупреждение, экспериментальная функция",
+    
+    
     "devices": "Устройства",
     "disable": "отключить",
     "disable-discovery-topic": "Режим Discovery topic отключен",
@@ -400,20 +398,20 @@
     "discover": "Поиск",
     "dismiss": "Отклонить",
     "done": "Готово",
-    "dont-allow": "Не разрешать",
+    
     "edit": "Изменить",
-    "edit-chats": "Редактировать чаты",
-    "edit-contacts": "Редактировать контакты",
-    "edit-group": "Изменить группу",
-    "edit-network-config": "Редактировать конфигурацию сети",
-    "edit-network-warning": "Будьте осторожны, изменение настроек сети может сделать её недоступной для вас",
+    
+    
+    
+    
+    
     "edit-profile": "Редактировать профиль",
     "empty-chat-description": "В этом чате пока \nнет сообщений",
-    "empty-chat-description-console": "Посмотрите внутреннюю структуру! Консоль представляет собой среду выполнения javascript, предоставляющий весь web3 API. Введите \"web3.\", чтобы начать работу.",
+    
     "empty-chat-description-one-to-one": "Отправленные здесь сообщения зашифрованы, и могут быть прочитаны только вами и ",
     "empty-chat-description-public": "Здесь было тихо в течение последних {{quiet-hours}}. Начать разговор или ",
     "empty-chat-description-public-share-this": "поделиться этим чатом.",
-    "empty-topic": "Пустая тема",
+    
     "enable": "включить",
     "encrypt-with-password": "Зашифровать с помощью пароля",
     "ens-10-SNT": "10 SNT",
@@ -428,7 +426,7 @@
     "ens-get-name": "Получить универсальное имя пользователя",
     "ens-got-it": "Ок, понятно",
     "ens-locked": "Имя пользователя зарезервировано. Вы не сможете освободить его до 25.05.2020",
-    "ens-names": "ENS имена",
+    
     "ens-network-restriction": "Доступно только на Mainnet или Ropsten",
     "ens-no-usernames": "Нет присоединенного имени пользователя",
     "ens-powered-by": "При поддержке Ethereum Name Services",
@@ -464,7 +462,7 @@
     "ens-username-hints": "Как минимум 4 символа. Только латинские буквы, цифры и строчные буквы",
     "ens-username-invalid": "Только буквы и цифры",
     "ens-username-owned": "✓ Имя пользователя принадлежит вам.",
-    "ens-username-owned-continue": "Если продолжить, то имя пользователя будет связано с вашим ключом.",
+    
     "ens-username-registrable": "✓ Имя пользователя доступно!",
     "ens-username-unregistrable": "Имя пользователя уже занято:(",
     "ens-usernames": "ENS имена пользователей",
@@ -485,39 +483,39 @@
     "ens-your-usernames": "Ваши имена пользователей",
     "ens-your-your-name": "Ваше ENS имя",
     "enter-12-words": "Введите 12 слов вашей фразы восстановления через пробелы",
-    "enter-address": "Введите адрес",
+    
     "enter-contact-code": "Введите код контакта или имя пользователя",
-    "enter-dapp-url": "Введите URL-адрес ÐApp",
+    
     "enter-ens-or-contact-code": "Введите имя пользователя ENS или код контакта",
     "enter-pair-code": "Введите код привязки",
     "enter-pair-code-description": "Код привязки был показан во время установки Keycard",
     "enter-password": "Введите пароль",
     "enter-pin": "Введите PIN",
-    "enter-pin-description": "Введите свой PIN для входа \n в мультиаккаунт",
+    
     "enter-puk-code": "Введите PUK код",
     "enter-puk-code-description": "PIN был заблокирован. \n Пожалуйста, введите PUK код, чтобы разблокировать PIN.",
     "enter-seed-phrase": "Ввести фразу восстановления",
     "enter-url": "Введите URL-адрес",
-    "enter-valid-public-key": "Введите валидный публичный ключ или сканируйте QR-код",
+    
     "enter-word": "Введите слово",
     "enter-your-code": "Введите свой 6-значный код",
     "enter-your-password": "Введите ваш пароль...",
     "error": "Ошибка",
-    "error-cant-send-transaction-offline": "Невозможно отправить транзакцию будучи в режиме оффлайн",
-    "error-cant-sign-message-offline": "Невозможно подписать сообщение будучи в режиме оффлайн",
-    "error-processing-json": "Ошибка обработки JSON",
+    
+    
+    
     "error-unable-to-get-balance": "Не удалось получить баланс",
     "error-unable-to-get-prices": "Ошибка при попытке конвертации валюты. Обновите экран, чтобы повторить попытку.",
     "error-unable-to-get-token-balance": "Не удалось получить баланс токенов",
-    "error-unable-to-get-transactions": "Не удалось получить историю транзакций",
+    
     "errors": "Ошибки",
     "estimated-time": "Примерное время",
     "eth": "ETH",
     "ethereum-node-started-incorrectly-description": "Узел Ethereum был запущен с неверной конфигурацией, приложение будет остановлено для восстановления после этого состояния. Сконфигурированный идентификатор сети = {{network-id}}, фактический = {{fetched-network-id}}",
     "ethereum-node-started-incorrectly-title": "Ethereum узел запущен неправильно",
     "etherscan-lookup": "Посмотреть на Etherscan",
-    "existing-mailservers": "Существующие mailservers",
-    "existing-networks": "Существующие сети",
+    
+    
     "export-account": "Экспорт аккаунта",
     "extension": "Расширение",
     "extension-address": "Адрес расширения",
@@ -533,11 +531,11 @@
     "extensions-network-not-found": "сеть не найдена для данного chain-id",
     "failed": "Ошибка",
     "faq": "Часто задаваемые вопросы",
-    "faucet-error": "Ошибка запроса Faucet",
-    "faucet-success": "Запрос Faucet был получен",
+    
+    
     "fetch-history": "Получить сообщения за последние 24 часа",
     "fetch-messages": "↓ Получить сообщения",
-    "fetching-messages": "Получение сообщений... (осталось сообщений: {{requests-left}})",
+    
     "find": "Найти",
     "finish": "Готово",
     "finishing-card-setup": "Завершение установки карты",
@@ -578,7 +576,6 @@
     "help": "помощь",
     "help-capitalized": "Помощь",
     "help-center": "Справочный центр",
-    "here-is-your-signing-phrase": "Вот ваша фраза подписи. Вы будете использовать ее для проверки достоверности своих транзакций. *Запишите ее и храните в безопасности!*",
     "hide-content-when-switching-apps": "Скрыть контент при переключении приложений",
     "history": "История",
     "hold-card": "Удерживайте карту на \n задней панели телефона",
@@ -604,7 +601,7 @@
     "intro-privacy-policy-note1": "Status не собирает, не передает и не продает личные данные. Продолжая, вы соглашаетесь с ",
     "intro-privacy-policy-note2": "политика конфиденциальности",
     "intro-text": "Status - ваши ворота в децентрализованный интернет",
-    "intro-text-description": "Движимая сообществом платформа для безопасного общения и транзакций на блокчейне Ethereum",
+    
     "intro-text1": "Платформа с открытым исходным кодом для безопасного чата и транзакций на блокчейне Ethereum",
     "intro-text2": "Ваш аккаунт настроен. Пожалуйста, не забудьте сделать резервную копию фразы восстановления в вашем профиле",
     "intro-text3": "Ваш аккаунт настроен. Пожалуйста, не забудьте сделать резервную копию фразы восстановления в вашем профиле",
@@ -633,18 +630,18 @@
     "invalid-key-title": "Мы обнаружили проблему с ключом шифрования",
     "invalid-number": "Невалидная сумма",
     "invalid-pairing-password": "Неверный пароль привязки",
-    "invalid-phone": "Неправильный номер телефона",
+    
     "invalid-range": "Неверный формат, должен быть между {{min}} и {{max}}",
     "invite-friends": "Пригласить друзей",
     "invited": "приглашен(а)",
-    "is-typing": "печатает",
+    
     "join-group-chat": "Вступить в группу",
     "join-group-chat-description": "{{username}} пригласил(а) вас присоединиться к группе {{group-name}}",
     "joined-group-chat-description": "Вы присоединились к {{group-name}} по приглашению {{username}}",
     "key": "Ключ",
     "keycard": "Keycard",
     "keycard-applet-install-instructions": "Чтобы установить апплет, пожалуйста, следуйте инструкциям на https:\/\/github.com\/status-im\/keycard-cli#keycard-applet-installation",
-    "keycard-applet-will-be-installed": "Апплет Keycard будет установлен автоматически",
+    
     "keycard-blocked": "Keycard была заблокирована. \nВам необходимо сбросить настройки карты, чтобы продолжить её использовать.",
     "keycard-cancel-setup-text": "Это отменит настройку Keycard. Настоятельно рекомендуется завершить настройку, чтобы использовать карту. Вы действительно хотите отменить?",
     "keycard-cancel-setup-title": "Опасная операция",
@@ -681,18 +678,18 @@
     "learn-more": "Узнать больше",
     "learn-more-about-keycard": "Узнайте больше о Keycard",
     "leave": "Покинуть",
-    "leave-chat": "Покинуть чат",
-    "leave-confirmation": "Покинуть?",
+    
+    
     "leave-group": "Покинуть группу",
-    "leave-group-action": "Покинуть",
-    "leave-group-chat": "Покинуть групповой чат",
-    "leave-group-chat-confirmation": "Вы действительно хотите покинуть эту группу?",
-    "leave-group-confirmation": "Вы действительно хотите покинуть эту группу?",
-    "leave-group-title": "Покинуть?",
-    "leave-public-chat": "Покинуть публичный чат",
+    
+    
+    
+    
+    
+    
     "left": "осталось",
+
     "les-ulc": "LES\/ULC",
-    "link-card": "Привяжите карту и используйте её для подтверждения своей личности на платформе.",
     "linked-on": "Связано с {{date}}",
     "load-messages-before": "до {{date}}",
     "load-more-messages": "↓ Получить больше сообщений",
@@ -727,8 +724,8 @@
     "mainnet-text": "Вы в Mainnet. Реальный ETH будет отправлен",
     "maintain-card-to-phone-contact": "Сохраняйте контакт карта-к-телефону во время процесса",
     "make-admin": "Сделать администратором",
-    "make-sure-you-trust-dapp": "Убедитесь, что вы доверяете этому DApp",
-    "manage-permissions": "Управление разрешениями",
+    
+    
     "maybe-later": "Может быть позже",
     "members": {
         "zero": "",
@@ -773,7 +770,6 @@
     "mobile-network-stop-syncing-details": "До подключения к Wi-Fi?",
     "mobile-network-use-mobile": "Использовать мобильную сеть",
     "mobile-network-use-mobile-data": "Status имеет тенденцию использовать много данных при синхронизации чатов. Вы можете отключить синхронизацию когда используется мобильная сеть",
-    "mobile-network-use-mobile-details": "Status имеет тенденцию использовать много данных при синхронизации чатов. Вы можете отключить синхронизацию когда используется мобильная сеть",
     "mobile-network-use-wifi": "Только Wi-Fi",
     "mobile-syncing-sheet-details": "Status имеет тенденцию использовать много данных при синхронизации чатов. Вы можете отключить синхронизацию когда используется мобильная сеть",
     "mobile-syncing-sheet-title": "Синхронизация с использованием мобильной сети",
@@ -783,7 +779,7 @@
     "multiaccount-not-listed-text": "Мультиаккаунта на этой карте нет в списке на вашем телефоне. Хотите войти используя этот новый мультиаккаунт?",
     "multiaccounts-recover-enter-phrase-text": "Введите 12, 15, 18, 21 или 24 слова. \n Ожидается, что слова будет разделять один пробел.",
     "multiaccounts-recover-enter-phrase-title": "Введите свою фразу восстановления",
-    "mute-notifications": "Отключить звук в уведомлениях",
+    
     "name": "Имя",
     "name-description": "Это всегда можно изменить в вашем профиле.",
     "name-of-token": "Имя вашего токена",
@@ -809,7 +805,7 @@
     "new-pin-description": "Введите новый PIN код",
     "new-public-group-chat": "Присоединиться к публичному чату",
     "new-request": "Новый запрос",
-    "new-transaction": "Новая Транзакция",
+    
     "next": "Дальше",
     "next-step-entering-mnemonic": "Следующий шаг - ввод мнемонической фразы для импорта вашего мультиаккаунта",
     "next-step-generating-mnemonic": "Следующий шаг - генерация мнемонической фразы для вашей карты",
@@ -817,34 +813,32 @@
     "no-collectibles": "Нет доступных предметов коллекционирования",
     "no-contacts": "Пока нет контактов",
     "no-extension": "Нет установленных расширений",
-    "no-hashtags-discovered-body": "Когда #хэштег станет\nпопулярным, вы увидите его здесь.",
-    "no-hashtags-discovered-title": "#хэштеги не обнаружены",
+    
     "no-keycard-applet-on-card": "На карте не установлен Keycard апплет",
     "no-messages": "Нет сообщений",
     "no-messages-yet": "Пока нет сообщений",
-    "no-more-participants-available": "Вы больше не можете добавлять участников",
-    "no-multiaccount-on-card": "На этой карте нет мультиаккаунта",
-    "no-multiaccount-on-card-text": "На этой карте нет мультиаккаунта. Пожалуйста, попробуйте еще раз с правильной картой",
-    "no-pairing-on-device": "Карта не привязана к этому устройству",
+    
+    
+    
     "no-pairing-slots-available": "Карта уже привязана к 5 устройствам и не может быть привязана к этому устройству. Пожалуйста, используйте одно из привязанных устройств, войдите с помощью этой карты и освободите слоты привязки на карте.",
     "no-recent-chats": "Недавних чатов ещё нет.\nИспользуйте кнопку (+), чтобы \nнайти собеседников в чатах",
     "no-result": "Нет результатов",
-    "no-statuses-discovered": "Статусы не обнаружены",
-    "no-statuses-discovered-body": "Когда кто-то создаст\nстатус, вы увидите его здесь.",
-    "no-statuses-found": "Статусы не обнаружены",
+    
+    
+    
     "no-tokens-found": "Токены не найдены",
     "node-info": "Информация об узле",
     "node-unavailable": "Нет запущенного ethereum узла",
     "nonce": "Nonce",
     "none": "Нет",
     "not-applicable": "Неприменимо для неподписанных транзакций",
-    "not-implemented": "!не реализовано",
+    
     "not-keycard-text": "Карта, которую вы использовали, не является Keycard. Чтобы использовать Keycard, её нужно приобрести",
     "not-keycard-title": "Это не Keycard",
-    "not-specified": "Не указано",
+    
     "notifications": "Уведомления",
     "notifications-new-message-body": "Вы получили новое сообщение",
-    "notifications-title": "Уведомления и звуки",
+    
     "notify": "Уведомление",
     "off": "Выкл",
     "offline": "Оффлайн",
@@ -862,7 +856,7 @@
     "open-on-etherscan": "Открыть ссылку на Etherscan.io",
     "optional": "необязательный",
     "or-choose-a-contact": "Или выберите контакт",
-    "other-multiaccounts": "Другие мультиаккаунты",
+    
     "outgoing": "Исходящие",
     "pair": "Связывание устройств",
     "pair-card": "Привязать к этому устройству",
@@ -882,7 +876,7 @@
     "pairing-new-installation-detected-title": "Обнаружено новое устройство",
     "pairing-no-info": "Нет информации",
     "pairing-please-set-a-name": "Пожалуйста, укажите имя устройства.",
-    "passcode-error": "Коды доступа не совпадают.",
+    
     "passphrase": "Фраза восстановления",
     "password": "Пароль",
     "password_error1": "Пароли не совпадают.",
@@ -891,39 +885,39 @@
     "password-placeholder2": "Подтвердите ваш пароль",
     "paste": "Вставить",
     "paste-json": "Вставить JSON",
-    "paste-json-as-text": "Вставить JSON как текст",
+    
     "pay-to-chat": "Оплатить для чата",
     "peers": "Peers",
     "pending": "Ожидающие",
     "pending-confirmation": "Ожидание подтверждения...",
     "permissions": "Права доступа",
     "phone-e164": "Международный 1",
-    "phone-international": "Международный 2",
-    "phone-national": "Государственный",
-    "phone-number": "Номер телефона",
-    "phone-number-required": "Нажмите сюда для ввода своего номера телефона и я найду ваших друзей.",
-    "phone-significant": "Простой",
+    
+    
+    
+    
+    
     "photos-access-error": "Чтобы предоставить необходимое разрешение для фото, пожалуйста, перейдите в настройки системы и убедитесь, что выбрано Status > Фотографии.",
     "pin-changed": "PIN был изменен",
     "pin-code": "PIN код",
     "pin-code-description": "Разблокирует карту",
     "pin-mismatch": "PIN не совпадает",
     "pin-retries-left": "Осталось {{number}} повторных попыток",
-    "pin-unblocked": "PIN был разблокирован",
-    "pin-unblocked-description": "Ваш новый PIN {{pin}}",
-    "popular-tags": "Популярные теги",
-    "postponed": "Отложенные",
+    
+    
+    
+    
     "preparing-card": "Подготовка карты",
     "preview-privacy": "Конфиденциальный режим предварительного просмотра",
     "privacy": "Конфиденциальность",
     "privacy-and-security": "Конфиденциальность и безопасность",
     "privacy-policy": "Политика Конфиденциальности",
-    "process-json": "Обработать JSON",
+    
     "processing": "Обработка",
     "product-information": "Информация о продукте",
     "profile": "Профиль",
     "public-chat": "Публичный чат",
-    "public-chat-user-count": "{{count}} людей",
+    
     "public-chats": "Публичные чаты",
     "public-group-status": "Публичный",
     "public-group-topic": "Тема",
@@ -940,14 +934,14 @@
     "ready-to-import-keycard-multiaccount": "Мы готовы импортировать keycard мультиаккаунт",
     "receive": "Получить",
     "receive-transaction": "Получить транзакцию",
-    "received-invitation": "получил(а) приглашение в чат",
+    
     "recent": "Последние",
     "recent-recipients": "Контакты",
     "recently-used-stickers": "Недавно использованные стикеры появятся здесь",
     "recipient": "Получатель",
     "recipient-code": "Введите адрес получателя",
     "recover": "Восстановить",
-    "recover-access": "Восстановление доступа",
+    
     "recover-key": "Восстановить ключ",
     "recover-keycard-multiaccount-not-supported": "Восстановление Keycard мультиаккаунта с паролем не поддерживается",
     "recover-multiaccount-warning": "Информация о вашем кошельке будет открыта при импорте этого мультиаккаунта.",
@@ -968,25 +962,25 @@
     "remind-me-later": "Напомнить мне позже",
     "remove": "Удалить",
     "remove-from-chat": "Удалить из чата",
-    "remove-from-contacts": "Удалить из контактов",
-    "remove-from-group": "Удалить из группы",
+    
+    
     "remove-network": "Удалить сеть",
     "remove-token": "Удалить токен",
     "removed": "удален(а)",
-    "removed-from-chat": "удалил(а) вас из группового чата",
-    "reorder-groups": "Упорядочить группы",
+    
+    
     "repeat-pin": "Повторить новый PIN",
     "report-bug-email-template": "1. Описание проблемы \n (Опишите функцию, которую вы хотели бы, или кратко опишите ошибку и то, что вы сделали, что вы ожидали, и что на самом деле происходит. Разделы ниже) \n\n\n 2. Шаги для воспроизведения \n (Опишите, как мы можем повторить ошибку шаг за шагом.) \n -Открыть Status \n -... \n Шаг 3 и т.д.\n\n\n 3. Ожидаемое поведение \n (Опишите, что вы ожидали.) \n\n\n 4. Фактическое поведение \n (Опишите, что на самом деле произошло.) \n\n\n 5. Приложите скриншоты, которые могут показать проблему, пожалуйста \n",
     "request-command-payment": "Запросить платеж",
-    "request-feature": "Запросить функцию",
-    "request-qr-legend": "Поделитесь этим кодом, чтобы получить активы",
+    
+    
     "request-transaction": "Запрос транзакции",
     "require-my-permission": "Требовать моего разрешения",
     "required-field": "Обязательное поле",
     "resend-message": "Отправить повторно",
     "reset-card": "Сбросить настройки карты",
     "reset-card-description": "Эта операция сбросит настройки карты в исходное состояние. Все данные, включая приватные ключи, будут уничтожены. Операция необратима.",
-    "reset-default": "Сбросить настройки",
+    
     "retry": "Повторить",
     "revoke-access": "Отменить доступ",
     "rinkeby-network": "Тестовая сеть Rinkeby",
@@ -999,22 +993,21 @@
     "scan-qr": "Сканировать QR",
     "scan-qr-code": "Сканировать QR код с адресом кошелька",
     "search": "Поиск",
-    "search-chat": "Поиск по чату",
-    "search-chats": "Поиск чатов",
-    "search-contacts": "Поиск контактов",
-    "search-for": "Искать...",
-    "search-tags": "Введите теги для поиска сюда",
-    "secret-keys-confirmation-cancel": "ПОСМОТРЕТЬ ЕЩЕ РАЗ",
-    "secret-keys-confirmation-confirm": "ПОНЯТНО",
+    
+    
+    
+    
+    
+    
+    
     "secret-keys-confirmation-text": "Они вам понадобится, чтобы продолжить использовать Keycard в случае потери вашего телефона.",
     "secret-keys-confirmation-title": "Вы записали эти коды?",
-    "secure-your-assets": "защитите свои активы",
     "security": "Безопасность",
     "see-details": "Смотрите подробности",
     "see-it-again": "ПОСМОТРЕТЬ ЕЩЕ РАЗ",
     "select-chat": "Выберите чат, чтобы начать обмен сообщениями",
     "selected": "Выбранные",
-    "selected-dapps": "Выбранные ÐApps",
+    
     "selected-for-you": "Выбранные для вас",
     "send-command-payment": "Отправить платеж",
     "send-logs": "Сообщить об ошибке",
@@ -1037,7 +1030,7 @@
     "set-currency": "Установить валюту",
     "set-dapp-access-permissions": "Установить права доступа DApp",
     "settings": "Настройки",
-    "shake-your-phone": "Найдена ошибка или есть предложение? Просто ~потрясите~ свой телефон!",
+    
     "share": "Поделиться",
     "share-address": "Поделиться адресом",
     "share-chat": "Поделиться чатом",
@@ -1058,8 +1051,8 @@
     "sign-in": "Войти",
     "sign-in-to-another": "Войти в другой мультиаккаунт",
     "sign-in-to-status": "Войти в Status",
-    "sign-later-text": "Откройте историю транзакций, чтобы подписать эту транзакцию",
-    "sign-later-title": "Подписать транзакцию позже?",
+    
+    
     "sign-message": "Подписать сообщение",
     "sign-out": "Выход",
     "sign-with": "Подписать с",
@@ -1067,15 +1060,15 @@
     "sign-you-in": "Вхожу в аккаунт...",
     "signing": "Подписание",
     "signing-a-message": "Подписать сообщение",
-    "signing-message-phrase-description": "Если вы узнаете 3 слова из фразы подписи, введите свой пароль, чтобы подписать сообщение",
+    
     "signing-phrase": "Фраза подписи",
     "signing-phrase-description": "Если вы узнаете 3 слова из фразы подписи, введите свой пароль, чтобы подписать транзакцию",
-    "signing-phrase-warning": "Подтвердите транзакцию, только если узнаете \n свои три слова фразы подписи",
+    
     "something-went-wrong": "Что-то пошло не так",
     "soon": "Скоро",
     "specify-address": "Укажите адрес",
-    "specify-bootnode-address": "Укажите bootnode адрес",
-    "specify-mailserver-address": "Укажите адрес почтового сервера",
+    
+    
     "specify-name": "Укажите имя",
     "specify-network-id": "Укажите идентификатор сети",
     "specify-recipient": "Выберите получателя",
@@ -1086,39 +1079,39 @@
     "start-new-chat": "Начать новый чат",
     "status": "Status",
     "status-confirmed": "Подтверждено",
-    "status-console": "Status консоль",
-    "status-delivered": "Доставлено",
-    "status-failed": "Ошибка",
+    
+    
+    
     "status-hardwallet": "Status hardwallet",
-    "status-hardwallet-capitalized": "Status Hardwallet",
+    
     "status-keycard": "Status Keycard",
-    "status-not-sent": "",
-    "status-not-sent-click": "Не отправлено",
-    "status-not-sent-tap": "Не отправлено. Нажмите для вариантов",
-    "status-not-sent-without-tap": "",
+    
+    
+    
+    
     "status-pending": "В ожидании",
-    "status-prompt": "Укажите свой статус. Использование #хэштегов поможет другим узнать о вас и рассказать о том, что у вас на уме",
-    "status-seen": "Просмотрено",
-    "status-seen-by-everyone": "Просмотрено всеми",
-    "status-sending": "Отправляется...",
-    "status-sent": "Отправлено",
+    
+    
+    
+    
+    
     "status-tx-not-found": "Транзакция не найдена",
     "step-i-of-n": "Шаг {{step}} из {{number}}",
     "sticker-market": "Рынок стикеров",
     "submit": "Отправить",
     "submit-bug": "Сообщить об ошибке",
     "success": "Успешно",
-    "suggestions-commands": "Команды",
-    "suggestions-requests": "Запросы",
-    "switch-users": "Переключить пользователей",
+    
+    
+    
     "symbol": "Символ",
     "sync-all-devices": "Синхронизировать все устройства",
     "sync-in-progress": "Синхронизация...",
     "sync-settings": "Настройки синхронизации",
     "sync-synced": "Синхронизируется",
     "syncing-devices": "Синхронизация...",
-    "syncing-disabled": "Синхронизация отключена",
-    "syncing-enabled": "Синхронизация включена",
+    
+    
     "tag-was-lost": "Тег был потерян",
     "taking-long-hold-phone-connected": "Это займет несколько секунд. \n Держите карту подключенной к телефону.",
     "test-networks": "Тестовые сети",
@@ -1138,32 +1131,32 @@
     "token-auto-validate-name-error": "Неправильное имя токена {{symbol}} по адресу {{address}} - указано как {{expected}}, но определено как {{actual}}",
     "token-auto-validate-symbol-error": "Неправильный символ токена {{symbol}} по адресу {{address}} - указан как {{expected}}, но определен как {{actual}}",
     "token-details": "Детали токена",
-    "topic-format": "Название темы может состоять только из строчных латинских букв (a-z), цифр и тире (-)",
+    
     "topic-name-error": "Используйте только строчные латинские буквы (от a до z), цифры и тире (-). Не используйте коды контактов.",
     "transaction": "Транзакция",
     "transaction-description": "Пожалуйста, подождите как минимум 12 подтверждений, чтобы убедиться, что транзакция обработана безопасно",
     "transaction-details": "Детали транзакции",
     "transaction-failed": "Не удалось выполнить транзакцию",
     "transaction-history": "История транзакций",
-    "transaction-moved-text": "Транзакция будет находиться в списке 'Неподписанные' в течение 5 минут",
-    "transaction-moved-title": "Транзакция перемещена",
+    
+    
     "transaction-request": "Запрос транзакции",
     "transaction-sent": "Транзакция отправлена",
     "transactions": "Транзакции",
-    "transactions-delete": "Удалить транзакцию",
-    "transactions-delete-content": "Транзакция будет удалена из списка 'Неподписанные'",
+    
+    
     "transactions-filter-select-all": "Выбрать все",
     "transactions-filter-title": "Фильтр истории",
-    "transactions-filter-tokens": "Токены",
+    
     "transactions-filter-type": "Тип",
     "transactions-history": "История транзакций",
     "transactions-history-empty": "В вашей истории еще нет транзакций",
     "transactions-sign": "Подписать",
-    "transactions-sign-all": "Подписать все",
-    "transactions-sign-later": "Подписать позже",
+    
+    
     "transactions-sign-transaction": "Подписать транзакцию",
-    "transactions-unsigned": "Неподписанные",
-    "transactions-unsigned-empty": "У вас нет никаких неподписанных транзакций",
+    
+    
     "tribute-required-by-multiaccount": "{{multiaccount-name}} требует SNT, чтобы начать чат.",
     "tribute-state-paid": "Награда оплачена",
     "tribute-state-pending": "Оплата награды в ожидании подтверждения",
@@ -1181,26 +1174,26 @@
     "tribute-to-talk-learn-more-1": "Ваше время и внимание - ваши самые ценные активы. Функция \"Награда за общение\" позволяет вам установить количество SNT, необходимое новым людям, чтобы начать с вами чат.",
     "tribute-to-talk-learn-more-2": "Любого, кого нет в вашем списке контактов, попросят заплатить, и вы сможете ответить, как только он это сделает.",
     "tribute-to-talk-learn-more-3": "Вы всегда можете отправить деньги обратно, но чтобы друзья могли с вами связаться, сначала добавьте их в качестве контакта.",
-    "tribute-to-talk-message-placeholder": "Привет, я прошу вас оплатить награду за общение, чтобы начать со мной чат. Если вы знаете меня в реальной жизни, вы знаете, как меня найти...",
+    
     "tribute-to-talk-paywall-learn-more-1": "Наше время и внимание - наши самые ценные активы. Функция \"Награда за общение\" позволяет вам связаться с новыми людьми в обмен на оплату в SNT.",
     "tribute-to-talk-paywall-learn-more-2": "Чтобы начать чат с кем-то, у кого включена функция \"Награда за общение\", просто оплатите необходимую сумму в SNT, и вы будете добавлены в качестве контакта.",
     "tribute-to-talk-paywall-learn-more-3": "Если вы их знаете, вы можете поделиться своим профилем за пределами Status, чтобы вас добавили в контакты бесплатно.",
     "tribute-to-talk-pending": "Оплата награды за общение ожидает подтверждения",
     "tribute-to-talk-pending-note": "Транзакция для оплаты награды за общение ожидает подтверждения в сети. Вы можете проверить её статус в истории транзакций",
     "tribute-to-talk-removing-note": "Отключение Награды за общение позволит новым людям начинать чат не посылая SNT. Для этого нужно осуществить транзакцию.",
-    "tribute-to-talk-sample-text": "Привет, я Кармен. Напишите мне, чтобы узнать свою судьбу 🔮",
+    
     "tribute-to-talk-set-snt-amount": "Установите количество SNT, необходимое новым людям для начала общения",
-    "tribute-to-talk-sign-and-set-tribute": "Подписать и установить награду за общение",
+    
     "tribute-to-talk-signing": "Ожидание подписания транзакции",
     "tribute-to-talk-transaction-failed-note": "Транзакция не удалась, и ваши настройки Награды за общение не были изменены",
     "tribute-to-talk-tribute-received1": "Награда за общение получена. Вы и ",
     "tribute-to-talk-tribute-received2": " теперь контакты и можете безопасно общаться друг с другом.",
-    "tribute-to-talk-you-can-leave-a-message": "Вы можете оставить сообщение людям, чтобы узнать время, когда они хотят начать с вами чат.",
+    
     "tribute-to-talk-you-require-snt": "Новые люди должны будут перевести SNT, чтобы начать чат.",
     "try-again": "Попробуйте снова",
     "turn-nfc-on": "Для продолжения включите NFC",
-    "twelve-words-in-correct-order": "12 слов в правильном порядке",
-    "type-a-command": "Начинайте вводить команду...",
+    
+    
     "type-a-message": "Напишите сообщение...",
     "ulc-enabled": "ULC включен",
     "unable-to-read-this-code": "Не удалось прочитать этот код",
@@ -1212,9 +1205,9 @@
     "unpair-card-confirmation": "Эта операция отменит привязку карты к текущему устройству. Требуется PIN для авторизации. Хотите продолжить?",
     "unpaired-keycard-text": "Keycard, которую вы только что использовали, не привязана к этому телефону",
     "unpaired-keycard-title": "Похоже, ваша карта была не привязана",
-    "unsigned-transaction-expired": "Неподписанная транзакция истекла",
+    
     "update": "Обновить",
-    "update-status": "Обновите свой статус...",
+    
     "url": "URL-адрес",
     "usd-currency": "USD",
     "use-valid-contact-code": "Введите или отсканируйте валидный код контакта или имя пользователя",
@@ -1230,28 +1223,28 @@
     "view-cryptostrikers": "Посмотреть в CryptoStrikers",
     "view-etheremon": "Посмотреть в Etheremon",
     "view-gitcoin": "Посмотреть в Gitcoin",
-    "view-my-wallet": "Мой кошелёк",
+    
     "view-profile": "Открыть профиль",
     "view-signing": "Посмотреть фразу подписи",
     "view-superrare": "Посмотреть в SuperRare",
-    "view-transaction-details": "Посмотреть детали транзакции",
+    
     "waiting-for-wifi": "Синхронизация истории в автономном режиме, ожидание Wi-Fi.",
     "waiting-for-wifi-change": "Изменить",
     "waiting-to-sign": "Ожидание подписания транзакции",
     "wallet": "Кошелёк",
-    "wallet-add-asset": "Добавить актив",
-    "wallet-address-from-clipboard": "Использовать Адрес Из Буфера Обмена",
+    
+    
     "wallet-asset": "Актив",
     "wallet-assets": "Активы",
-    "wallet-backup-recovery-description": "Это поможет сохранить ваши активы в безопасности",
+    
     "wallet-backup-recovery-title": "Резервное копирование вашей фразы восстановления",
-    "wallet-browse-photos": "Просмотреть Фотографии",
-    "wallet-choose-from-contacts": "Выбрать из Контактов",
+    
+    
     "wallet-choose-recipient": "Выбрать Получателя",
     "wallet-collectibles": "Коллекции",
-    "wallet-deposit": "Депозит",
-    "wallet-error": "Ошибка при загрузке данных",
-    "wallet-exchange": "Обмен",
+    
+    
+    
     "wallet-insufficient-funds": "Недостаточно средств",
     "wallet-insufficient-gas": "Недостаточно ETH для газа",
     "wallet-invalid-address": "Недействительный адрес: \n {{data}}",
@@ -1259,25 +1252,24 @@
     "wallet-invalid-chain-id": "Несоответствующая сеть: \n {{data}} в то время как текущая цепочка {{chain}}",
     "wallet-manage-assets": "Управление Активами",
     "wallet-offline": "Кошелёк оффлайн",
-    "wallet-onboarding-description": "Отправляйте, получайте и храните свою криптовалюту в кошельке Status",
-    "wallet-onboarding-set-up": "Приступим к установке",
-    "wallet-onboarding-title": "Простой и безопасный кошелёк для криптовалюты",
+    
+    
+    
     "wallet-request": "Запрос",
     "wallet-send": "Отправить",
     "wallet-send-min-wei": "Min 1 wei",
-    "wallet-send-token": "Отправить {{symbol}}",
-    "wallet-set-up-confirm-description": "Эту фразу подписи нужно запомнить и при посылке транзакций сличать с отображенной фразой, чтобы убедиться в безопасности транзакций. Эта комбинация слов не хранится в вашем мультиаккаунте.",
-    "wallet-set-up-confirm-title": "Запомните это!",
-    "wallet-set-up-safe-transactions-title": "Супер-безопасные транзакции",
-    "wallet-set-up-signing-explainer": "Вы должны увидеть эти три слова перед подписанием каждой транзакции",
-    "wallet-set-up-signing-explainer-warning": "Если вы видите другую комбинацию слов, отмените транзакцию и выйдите из системы.",
-    "wallet-set-up-title": "Настройте свой кошелёк",
+    
+    
+    
+    
+    
+    
+    
     "wallet-settings": "Настройки кошелька",
     "wallet-total-value": "Общая стоимость",
-    "wallet-transaction-fee": "Стоимость транзакции",
-    "wallet-transaction-fee-details": "Лимит газа ограничивает единицы газа, потраченные на транзакцию. Цена на газ устанавливает цену за единицу газа. Повышение цены на газ может ускорить проведение вашей транзакции.",
+    
     "wallet-transaction-total-fee": "Комиссия",
-    "wallets": "Кошельки",
+    
     "wants-to-access-profile": "хочет получить доступ к вашему профилю",
     "warning": "Предупреждение",
     "warning-message": "Извините, мы ограничиваем быструю посылку нескольких сообщений друг за другом для предотвращения спама. Пожалуйста, попробуйте снова через пару секунд.",
@@ -1312,11 +1304,10 @@
     "you-are-all-set-description": "Теперь если вы потеряете свой телефон, вы сможете восстановить ваш мультиаккаунт с помощью фразы восстановления.",
     "you-can-change-account": "Вы можете изменить имя аккаунта и цвет на то, что вы хотите",
     "you-dont-have-stickers": "У вас еще нет стикеров",
-    "you-will-need-this-code": "Вам понадобится этот код, чтобы открыть Status и подписывать транзакции",
+    
     "your-contact-code": "Предоставление доступа разрешает этому DApp прочитать ваш код контакта",
     "your-data-belongs-to-you": "Если вы потеряете фразу восстановления, вы потеряете свои данные и средства",
     "your-data-belongs-to-you-description": "Status не сможет помочь восстановить ваш мультиаккаунт, если вы потеряете фразу восстановления. Вы отвечаете за безопасность своих данных и резервная копия фразы восстановления - лучшая защита.",
     "your-recovery-phrase": "Ваша фраза восстановления",
-    "your-recovery-phrase-description": "Это ваша фраза восстановления. Используйте её, чтобы доказать, что это ваш кошелёк. Вы увидите её только один раз. Запишите все слова на бумаге и держите в надежном месте. Они вам понадобятся, если вы потеряете или переустановите свой кошелёк.",
-    "your-wallets": "Ваши кошельки"
+    "your-recovery-phrase-description": "Это ваша фраза восстановления. Используйте её, чтобы доказать, что это ваш кошелёк. Вы увидите её только один раз. Запишите все слова на бумаге и держите в надежном месте. Они вам понадобятся, если вы потеряете или переустановите свой кошелёк."
 }

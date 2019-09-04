@@ -14,35 +14,35 @@
     "chat-settings": "Налады чата",
     "offline": "Оффлайн",
     "invited": "запрошаны(на)",
-    "chat-send-eth": "{{amount}} ETH",
+    
     "address": "Адрас",
     "datetime-hour": {
         "one": "гадзіна",
         "other": "гадзін"
     },
-    "address-explication": "Можа быць, тут павінен быць нейкі тэкст, які тлумачыць адрас і тое, дзе яго шукаць",
+    
     "remove": "Выдаліць",
     "add-members": "Дадаць членаў",
-    "popular-tags": "Папулярныя тэгі",
-    "phone-number": "Нумар тэлефона",
-    "removed-from-chat": "выдаліў(ла) вас з групавога чата",
+    
+    
+    
     "done": "Гатова",
     "new-group-chat": "Новы групавы чат",
     "datetime-yesterday": "учора",
     "datetime-ago": "назад",
     "contacts": "Кантакты",
-    "search-chat": "Пошук па чату",
+    
     "active-online": "У сетцы",
     "password": "Пароль",
-    "status-seen-by-everyone": "Прагледжана усімі",
-    "not-specified": "Не пазначана",
-    "reorder-groups": "Упарадкаваць групы",
+    
+    
+    
     "discover": "Пошук",
     "intro-status": "Пагутарыце са мной у чаце, каб наладзіць свой рахунак і змяніць свае налады!",
     "name": "Імя",
-    "phone-number-required": "Націсніце сюды для ўводу свайго нумара тэлефона і пошуку сваіх сяброў",
-    "unknown-address": "Невядомы адрас",
-    "received-invitation": "атрымаў(ла) запрашэнне ў чат",
+    
+    
+    
     "show-qr": "Паказаць QR",
     "connect": "Падлучыцца",
     "edit": "Змяніць",
@@ -52,19 +52,19 @@
     "recipient": "Атрымальнік",
     "members-title": "Удзельнікі",
     "new-group": "Новая група",
-    "suggestions-requests": "Запыты",
+    
     "settings": "Налады",
-    "contacts-syncronized": "Вашы кантакты сінхранізаваныя",
-    "add-new-contact": "Дадаць новы кантакт",
+]
+    
     "chats": "Чаты",
     "image-source-make-photo": "Сфатаграфаваць",
     "save": "Захаваць",
-    "enter-valid-public-key": "Калі ласка, увядзіце сапраўдны публічны ключ ці скануйце QR-код",
+    
     "sharing-copy-to-clipboard": "Скапіяваць",
     "sync-in-progress": "Сінхранізацыя...",
-    "enter-address": "Ўвесці адрас",
-    "switch-users": "Пераключыць карыстальнікау",
-    "recover-access": "Аднавіць доступ",
+    
+    
+    
     "incorrect-code": [
         "str",
         "Выбачайце, код няправільны, увядзіце яшчэ раз"
@@ -76,23 +76,22 @@
         "one": "дзень",
         "other": "дні"
     },
-    "invalid-phone": "Няправільны нумар тэлефона",
+    
     "scan-qr": "Сканаваць QR",
-    "status-sending": "Адпраўляецца",
+    
     "next": "Працягнуць",
     "recent": "Апошнія",
     "status": "Статус",
     "wrong-password": "Няправільны пароль",
     "sharing-share": "Падзяліцца...",
-    "contacts-group-new-chat": "Пачаць новы чат",
-    "and-you": "і вы",
+    
     "clear-history": "Ачысціць гісторыю",
     "no-contacts": "Пакуль няма кантактаў",
-    "status-sent": "Адправіць",
+    
     "datetime-today": "сёння",
     "web-view-error": "ой, памылка",
-    "notifications-title": "Апавяшчэнні і гукі",
-    "edit-contacts": "Рэдагаванне кантактаў",
+    
+    
     "cancel": "Адмена",
     "can-not-add-yourself": "Вы не можаце дадаць сябе",
     "add-to-contacts": "Дадаць у кантакты",
@@ -105,28 +104,28 @@
         "zero": "няма членов"
     },
     "intro-message1": "Сардэчна запрашаем у Статус\nНацісніце на гэтае паведамленне, каб усталяваць пароль і пачаць!",
-    "not-implemented": "!не рэалізавана",
+    
     "new-contact": "Новы кантакт",
     "datetime-second": {
         "one": "секунда",
         "other": "секунды"
     },
-    "status-failed": "Памылка",
-    "is-typing": "друкуе",
+    
+    
     "recover": "Аднавіць",
-    "suggestions-commands": "Каманды",
-    "contact-already-added": "Кантакт ўжо дададзены",
+    
+    
     "datetime-minute": {
         "one": "хвіліна",
         "other": "хвіліны"
     },
     "active-unknown": "Невядома",
-    "search-tags": "Увядзіце тэгі для пошуку сюды",
+    
     "public-key": "Публічны ключ",
-    "status-seen": "Прагледжана",
-    "status-delivered": "Дастаўлена",
+    
+    
     "profile": "Профіль",
-    "no-statuses-discovered": "Статусы не выяўлены",
+    
     "none": "Няма",
     "removed": "выдалены(на)",
     "message": "Паведамленне",

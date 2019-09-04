@@ -1,6 +1,6 @@
 {
     "confirm": "確認",
-    "phone-national": "國內",
+    
     "amount": "金額",
     "members-active": {
         "one": "1位成員, 1位活躍",
@@ -10,12 +10,12 @@
     "chat-name": "用戶名稱",
     "phew-here-is-your-passphrase": "*啊* 那可真不簡單。 這是你的臨時登入碼。 *請記錄並保存於安全地方!* 你將會需要它，以恢復你的帳戶。",
     "public-group-topic": "主題",
-    "debug-enabled": "調試服務器已經推出！ 現在你可以執行* status-dev-cli scan *在同一網絡上的電腦上查找服務器。",
+    
     "chat-settings": "聊天設置",
     "offline": "離線",
-    "update-status": "更新你的狀態...",
+    
     "invited": "邀請",
-    "chat-send-eth": "{{amount}} ETH",
+    
     "address": "地址",
     "new-public-group-chat": "加入公開聊天",
     "datetime-hour": {
@@ -24,48 +24,48 @@
     },
     "datetime-ago-format": "{{number}} {{time-intervals}} {{ago}}",
     "camera-access-error": "要授予所需的攝像機許可，請轉到系統設置，並確定選擇了“狀態”>“攝像機”。",
-    "address-explication": "請注意： 此文本解釋地址是什麼，以及在何處可找到它。",
+    
     "remove": "刪除",
     "add-members": "增添成員",
-    "popular-tags": "熱門標籤",
-    "twelve-words-in-correct-order": "正確排序12個字",
-    "phone-number": "電話號碼",
+    
+    
+    
     "photos-access-error": "要授予所需的照片許可，請轉到系統設置，並確保選擇“狀態“>“照片“。",
-    "removed-from-chat": "已將你從群組聊天中刪除",
+    
     "done": "完成",
-    "remove-from-contacts": "從聯絡資訊中刪除",
+    
     "delete-chat": "刪除對話",
     "new-group-chat": "新增群聊",
-    "edit-chats": "編輯對話",
+    
     "sign-in": "登入",
     "datetime-yesterday": "昨天",
     "create-new-account": "建立新帳號",
     "sign-in-to-status": "登入Status",
     "datetime-ago": "之前",
     "contacts": "聯絡人",
-    "search-chat": "搜索聊天記錄",
+    
     "got-it": "得到了",
-    "delete-group-confirmation": "此群組將從你的群組中移除。 這不會影響聯絡人",
-    "move-to-internal-failure-message": "我們需要將一些重要的文件從外部存儲移動到內部存儲。 為此，我們需要你的許可。 我們在將來的版本不會使用外部存儲。",
+    
+    
     "active-online": "在線",
     "password": "密碼",
-    "status-seen-by-everyone": "所有人已讀",
-    "edit-group": "編輯群組",
-    "not-specified": "未標明",
-    "delete-group": "刪除群組",
+    
+    
+    
+    
     "browsing-title": "瀏覽",
-    "reorder-groups": "重新排序群組",
+    
     "discover": "新發現",
     "browsing-cancel": "取消",
-    "faucet-success": "水龍頭請求已經收到",
+    
     "intro-status": "如需設置新帳戶或更改現有設置，請與我聊天！",
     "name": "名稱",
-    "phone-number-required": "請點擊這裡輸入您的電話號碼，我們將為你尋覓你的好友",
-    "unknown-address": "未知地址",
-    "received-invitation": "收到聊天邀請",
+    
+    
+    
     "show-qr": "暫無聯絡人",
     "connect": "連接",
-    "choose-from-contacts": "從聯絡人中選擇",
+    
     "edit": "編輯",
     "account-generation-message": "請給我一秒鐘。我正在瘋狂地運算，以啟動你的帳戶！",
     "no-messages": "沒有新訊息",
@@ -74,32 +74,31 @@
     "members-title": "會員",
     "new-group": "新增群組",
     "phone-e164": "國際1",
-    "suggestions-requests": "徵求",
+    
     "settings": "設置",
-    "remove-from-group": "從群組中移除",
-    "contacts-syncronized": "你的聯繫人已同步",
-    "add-new-contact": "添加新聯繫人",
+    
+    
     "delete": "刪除",
-    "search-contacts": "搜尋聯絡人",
+    
     "chats": "聊天史",
     "transaction": "交易",
     "public-group-status": "公共",
-    "leave-chat": "離開對話",
+    
     "image-source-make-photo": "捕獲照片",
     "start-conversation": "開始對話",
-    "topic-format": "格式錯誤 [a-z0-9\\-]+",
+    
     "save": "儲存",
-    "enter-valid-public-key": "請輸入有效公鑰或掃描QR碼",
-    "faucet-error": "水龍頭請求錯誤",
-    "phone-significant": "顯著",
-    "search-for": "搜索...",
+    
+    
+    
+    
     "sharing-copy-to-clipboard": "複製到剪貼板",
-    "phone-international": "國際2",
+    
     "sync-in-progress": "正在同步...",
-    "enter-address": "輸入地址",
-    "switch-users": "切換用戶",
+    
+    
     "send-transaction": "發送交易",
-    "recover-access": "恢復訪問",
+    
     "incorrect-code": [
         "str",
         "對不起，代碼不正確，請重新輸入"
@@ -107,46 +106,45 @@
     "image-source-gallery": "從圖庫中選取",
     "sync-synced": "已同步",
     "status-pending": "待定",
-    "delete-contact": "刪除聯絡人",
+    
     "datetime-day": {
         "one": "天",
         "other": "天"
     },
-    "mute-notifications": "靜音通知",
-    "invalid-phone": "電話號碼無效",
+    
+    
     "scan-qr": "掃描 QR",
     "contact-s": {
         "one": "contact",
         "other": "contacts"
     },
-    "status-sending": "發送中",
+    
     "next": "下一個",
     "recent": "最近發現",
     "status": "狀態",
     "from": "從",
     "wrong-password": "密碼錯誤",
-    "search-chats": "搜索對話",
+    
     "in-contacts": "在聯絡資訊",
     "sharing-share": "分享...",
     "type-a-message": "輸入訊息...",
-    "type-a-command": "開始輸入指令...",
-    "shake-your-phone": "發現錯誤或有建議？ 只要〜搖一搖〜你的手機！",
-    "contacts-group-new-chat": "開啟新聊天",
-    "and-you": "與你",
+    
+    
+    
     "clear-history": "清除歷史記錄",
     "no-contacts": "No contacts yet",
-    "status-sent": "發送成功",
-    "status-prompt": "建立一個狀態以幫助人們了解您提供的內容。 你也可以使用#hashtags。",
-    "delete-contact-confirmation": "此聯絡人將從你的聯絡人中刪除",
+    
+    
+    
     "datetime-today": "今天",
-    "add-a-status": "添加狀態...",
+    
     "web-view-error": "抱歉，錯誤",
-    "notifications-title": "通知及聲音設定",
+    
     "error": "錯誤",
-    "edit-contacts": "編輯聯絡人",
+    
     "more": "更多",
     "cancel": "取消",
-    "no-statuses-found": "找不到狀態",
+    
     "can-not-add-yourself": "你不能添加自己",
     "add-to-contacts": "添加到通訊錄",
     "available": "有空",
@@ -158,35 +156,35 @@
         "zero": "暫無成員"
     },
     "intro-message1": "歡迎來到Status\n請點擊此短訊，以設置你的密碼及開始！",
-    "not-implemented": "!未能實現",
+    
     "new-contact": "新增聯絡",
     "datetime-second": {
         "one": "秒",
         "other": "秒"
     },
-    "status-failed": "失敗",
-    "is-typing": "正在輸入",
+    
+    
     "recover": "還原",
-    "suggestions-commands": "指令",
-    "contact-already-added": "此聯繫人已添加",
+    
+    
     "datetime-minute": {
         "one": "分鐘",
         "other": "分鐘"
     },
     "browsing-open-in-android-web-browser": "在網絡瀏覽器中打開",
     "browsing-open-in-ios-web-browser": "在網絡瀏覽器中打開",
-    "delete-group-prompt": "這不會影響聯絡人",
+    
     "edit-profile": "編輯個人資料",
     "active-unknown": "未知",
-    "search-tags": "請輸入你的搜索標籤",
+    
     "public-key": "公共鑰匙",
-    "status-seen": "已讀",
-    "status-delivered": "已發送",
+    
+    
     "profile": "用戶簡介",
-    "no-statuses-discovered": "沒有發現任何狀態",
+    
     "none": "不存在",
     "removed": "刪除",
-    "empty-topic": "主題空白",
+    
     "message": "短訊",
     "here-is-your-passphrase": "這是你的臨時登入碼。 *請記錄並保存於安全地方!* 你將會需要它，以恢復你的帳戶。",
     "image-source-title": "封面照片",

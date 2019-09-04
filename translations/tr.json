@@ -1,6 +1,6 @@
 {
     "confirm": "Onayla",
-    "phone-national": "Ulusal",
+    
     "amount": "Miktar",
     "members-active": {
         "one": "1 üye, 1 aktif",
@@ -10,11 +10,11 @@
     "chat-name": "Sohbet adı",
     "phew-here-is-your-passphrase": "*Oh* bu oldukça zor oldu işte parolanız, *bu parolayı bir yere not ederek saklayın!* Hesabınızı kurtarmak için bu parolaya ihtiyacınız olacaktır.",
     "public-group-topic": "Başlık",
-    "debug-enabled": "Hata ayıklama sunucusu başlatıldı! Artık şimdi bilgisayarınızdan *status-dev-cli scan* çalıştırarak DApp'inizi ekleyebilirsiniz",
+    
     "chat-settings": "Sohbet ayarları",
     "offline": "Çevrimdışı",
     "invited": "davet edildi",
-    "chat-send-eth": "{{amount}} ETH",
+    
     "address": "Adres",
     "new-public-group-chat": "Herkese açık sohbete katılın",
     "datetime-hour": {
@@ -22,46 +22,46 @@
         "other": "saat"
     },
     "datetime-ago-format": "{{number}} {{time-intervals}} {{ago}}",
-    "address-explication": "Burada belki de bir adresin ne olduğu ve bunu bulmak için nereye bakılmasıyla ilgili bazı metinler yer alabilir",
+    
     "remove": "Kaldır",
     "add-members": "Üye ekle",
-    "popular-tags": "Popüler etiketler",
-    "twelve-words-in-correct-order": "Doğru sırayla 12 kelime",
-    "phone-number": "Telefon Numarası'",
-    "removed-from-chat": "sizi grup sohbetinden sildi",
+    
+    
+    
+    
     "done": "Yapıldı",
-    "remove-from-contacts": "Kişi listesinden çıkarın",
+    
     "delete-chat": "Sohbeti silin",
     "new-group-chat": "Yeni grup sohbeti",
-    "edit-chats": "Sohbetleri düzenleyin",
+    
     "sign-in": "Oturum açın",
     "datetime-yesterday": "dün",
     "create-new-account": "Yeni hesap açın",
     "sign-in-to-status": "Durumlar için oturum açın",
     "datetime-ago": "önce",
     "contacts": "Kişiler",
-    "search-chat": "Sohbette ara",
+    
     "got-it": "Anladım",
-    "move-to-internal-failure-message": "Bazı önemli dosyaları harici depolamadan dahili depolamaya taşımamız gerekiyor. Bu nedenle, izniniz gerekli. Gelecek sürümlerde harici depolamayı kullanmayacağız.",
+    
     "active-online": "Çevrimiçi",
     "password": "Şifre",
-    "status-seen-by-everyone": "Herkes tarafından görüldü",
-    "edit-group": "Grubu düzenleyin",
-    "not-specified": "Belirtilmemiş",
-    "delete-group": "Grubu silin",
+    
+    
+    
+    
     "browsing-title": "Tarayın",
-    "reorder-groups": "Grupları yeniden sıralayın",
+    
     "discover": "Keşfet",
     "browsing-cancel": "İptal Et",
-    "faucet-success": "Vana talebi alındı",
+    
     "intro-status": "Hesabınızı kurmak ve ayarlarınızı değiştirmek için benimle sohbet edin!",
     "name": "İsim",
-    "phone-number-required": "Telefon numaranızı girmek için buraya dokunun, arkadaşlarınızı ben bulacağım",
-    "unknown-address": "Bilinmeyen adres",
-    "received-invitation": "sohbet daveti alındı",
+    
+    
+    
     "show-qr": "Kare Kodu göster",
     "connect": "Bağlan",
-    "choose-from-contacts": "Kişi listesinden seçin",
+    
     "edit": "Düzenle",
     "account-generation-message": "Bana birkaç saniye ayırın, hesabınızı oluşturmak için biraz matematik hesabı yapmam gerekecek!",
     "no-messages": "Mesaj yok",
@@ -70,31 +70,30 @@
     "members-title": "Üyeler",
     "new-group": "Yeni grup",
     "phone-e164": "Uluslararası 1",
-    "suggestions-requests": "İstekler",
+    
     "settings": "Ayarlar",
-    "remove-from-group": "Gruptan çıkarın",
-    "contacts-syncronized": "Kişi listeniz eşitlendi",
-    "add-new-contact": "Yeni kişi ekle",
-    "search-contacts": "Kişiler listesinde arayın",
+    
+    
+    
     "chats": "Sohbetler",
     "transaction": "İşlem",
     "public-group-status": "Herkese açık",
-    "leave-chat": "Sohbetten çıkın",
+    
     "image-source-make-photo": "Çek",
     "start-conversation": "Sohbete başlayın",
-    "topic-format": "Yanlış format [a-z0-9\\-]+",
+    
     "save": "Kaydet",
-    "enter-valid-public-key": "Lütfen geçerli bir ortak anahtar girin veya QR kodu tarayın",
-    "faucet-error": "Musluk talebi hatası",
-    "phone-significant": "Önemli",
-    "search-for": "Şunu ara...",
+    
+    
+    
+    
     "sharing-copy-to-clipboard": "Panoya kopyalayın",
-    "phone-international": "Uluslararası 2",
+    
     "sync-in-progress": "Eşitleniyor...",
-    "enter-address": "Adresi girin",
-    "switch-users": "Kullanıcıları değiştir",
+    
+    
     "send-transaction": "İşlem gönderin",
-    "recover-access": "Erişimi kurtar",
+    
     "incorrect-code": [
         "str",
         "Üzgünüm kod hatalıydı, lütfen yeniden girin"
@@ -102,45 +101,44 @@
     "image-source-gallery": "Galeriden seç",
     "sync-synced": "Eşitlendi",
     "status-pending": "Beklemede",
-    "delete-contact": "Kişiyi silin",
+    
     "datetime-day": {
         "one": "gün",
         "other": "gün"
     },
-    "mute-notifications": "Bildirimleri kapat",
-    "invalid-phone": "Geçersiz telefon numarası",
+    
+    
     "scan-qr": "Kare Kod tara",
     "contact-s": {
         "one": "kişi",
         "other": "kişiler"
     },
-    "status-sending": "Gönderiliyor...",
+    
     "next": "Sonraki",
     "recent": "Güncel",
     "status": "Durum",
     "from": "Şuradan:",
     "wrong-password": "Hatalı Şifre",
-    "search-chats": "Sohbetlerde arayın",
+    
     "in-contacts": "kişiler listesinde",
     "sharing-share": "Paylaşın...",
     "type-a-message": "Mesaj yazın...",
-    "type-a-command": "Komut girmeye başlayın...",
-    "shake-your-phone": "Hata mı buldunuz ya da öneriniz mi var? Sadece telefonunuzu ~sallamanız~ yeterli!",
-    "contacts-group-new-chat": "Yeni sohbet başlat",
-    "and-you": "ve siz",
+    
+    
+    
     "clear-history": "Geçmişi temizle",
     "no-contacts": "Henüz herhangi bir kişi yok",
-    "status-sent": "Gönderildi",
-    "status-prompt": "Sunduğunuz şeyler hakkında insanlara yardımcı olması için bir durum oluşturun. #hashtag de kullanabilirsiniz.",
+    
+    
     "datetime-today": "bugün",
-    "add-a-status": "Durum ekleyin...",
+    
     "web-view-error": "hoppala, hata",
-    "notifications-title": "Bildirimler ve sesler",
+    
     "error": "Hata",
-    "edit-contacts": "Kişileri düzenleyin",
+    
     "more": "dahası",
     "cancel": "İptal Et",
-    "no-statuses-found": "Durum bulunamadı",
+    
     "can-not-add-yourself": "Kendinizi ekleyemezsiniz",
     "add-to-contacts": "Kişi listesine ekle",
     "available": "Uygun",
@@ -152,35 +150,35 @@
         "zero": "üye yok"
     },
     "intro-message1": "Status'e hoş geldiniz\nŞifrenizi oluşturmak ve hemen başlamak için bu mesaja dokunun!",
-    "not-implemented": "Uygulanmadı!",
+    
     "new-contact": "Yeni Kişi",
     "datetime-second": {
         "one": "saniye",
         "other": "saniye"
     },
-    "status-failed": "Başarısız",
-    "is-typing": "yazıyor",
+    
+    
     "recover": "Kurtar",
-    "suggestions-commands": "Komutlar",
-    "contact-already-added": "Kişi zaten eklendi",
+    
+    
     "datetime-minute": {
         "one": "dakika",
         "other": "dakika"
     },
     "browsing-open-in-android-web-browser": "Web tarayıcısında açın",
     "browsing-open-in-ios-web-browser": "Web tarayıcısında açın",
-    "delete-group-prompt": "Bu, kişi listesini etkilemeyecektir",
+    
     "edit-profile": "Profili düzenleyin",
     "active-unknown": "Bilinmiyor",
-    "search-tags": "Aramak istediğiniz etiketleri buraya girin",
+    
     "public-key": "Ortak Anahtar",
-    "status-seen": "Görüldü",
-    "status-delivered": "Teslim edildi",
+    
+    
     "profile": "Profil",
-    "no-statuses-discovered": "Herhangi bir durum keşfedilmedi",
+    
     "none": "Hiçbiri",
     "removed": "silindi",
-    "empty-topic": "Boş başlık",
+    
     "message": "Mesaj",
     "here-is-your-passphrase": "İşte parolanız, *bu parolayı bir yere not ederek saklayın!* Hesabınızı kurtarmak için bu parolaya ihtiyacınız olacaktır.",
     "image-source-title": "Profil Fotoğrafı",

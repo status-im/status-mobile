@@ -1,6 +1,6 @@
 {
     "confirm": "Potrdi",
-    "phone-national": "Državno",
+    
     "amount": "Vsota",
     "members-active": {
         "one": "1 član, 1 aktiven",
@@ -10,11 +10,11 @@
     "chat-name": "Ime za klepet",
     "phew-here-is-your-passphrase": "*Pfuu* to pa je bilo težko, tukaj je tvoje šifrirno geslo, *zapiši si ga in shrani na varno mesto!* Potreboval/-a ga boš, da obnoviš svoj račun.",
     "public-group-topic": "Tema",
-    "debug-enabled": "Strežnik za odpravljanje napak je bil zagnan! Sedaj lahko aplikacijo DApp dodate tako, da zaženete *status-dev-cli scan* na vašem računalniku",
+    
     "chat-settings": "Nastavitve klepeta",
     "offline": "Nedosegljiv/-a",
     "invited": "povabil/-a",
-    "chat-send-eth": "{{amount}} ETH",
+    
     "address": "Naslov",
     "new-public-group-chat": "Pridruži se javnemu klepetu",
     "datetime-hour": {
@@ -22,46 +22,46 @@
         "other": "ur"
     },
     "datetime-ago-format": "{{number}} {{time-intervals}} {{ago}}",
-    "address-explication": "Sem morda sodi besedilo, ki razlaga, kaj je naslov ter kje ga najti",
+    
     "remove": "Odstrani",
     "add-members": "Dodaj člane",
-    "popular-tags": "Priljubljene oznake",
-    "twelve-words-in-correct-order": "12 besed v pravilnem vrstnem redu",
-    "phone-number": "Telefonska številka",
-    "removed-from-chat": "te je odstranil/-a iz skupinskega klepeta",
+    
+    
+    
+    
     "done": "Končano",
-    "remove-from-contacts": "Odstrani iz stikov",
+    
     "delete-chat": "Izbriši klepet",
     "new-group-chat": "Nov skupinski klepet",
-    "edit-chats": "Uredi klepete",
+    
     "sign-in": "Prijava",
     "datetime-yesterday": "včeraj",
     "create-new-account": "Ustvari nov račun",
     "sign-in-to-status": "Prijava v Status",
     "datetime-ago": "nazaj",
     "contacts": "Stiki",
-    "search-chat": "Iskanje po klepetu",
+    
     "got-it": "Razumem",
-    "move-to-internal-failure-message": "Nekatere pomembne datoteke moramo premakniti iz zunanjega na notranji pomnilnik. Za to potrebujemo vaše dovoljenje. V prihajajočih različicah ne bomo uporabljali zunanjega pomnilnika.",
+    
     "active-online": "Dosegljiv/-a",
     "password": "Geslo",
-    "status-seen-by-everyone": "Vsi so videli",
-    "edit-group": "Uredi skupino",
-    "not-specified": "Ni navedeno",
-    "delete-group": "Izbriši skupino",
+    
+    
+    
+    
     "browsing-title": "Brskaj",
-    "reorder-groups": "Preuredi skupine",
+    
     "discover": "Odkrivanje",
     "browsing-cancel": "Prekliči",
-    "faucet-success": "Zahteva za dovod je bila prejeta",
+    
     "intro-status": "Klepetaj z mano in nastavi svoj račun ter spremeni svoje nastavitve!",
     "name": "Ime",
-    "phone-number-required": "Pritisni tukaj in vnesi svojo telefonsko številko ter poiskal bom tvoje prijatelje",
-    "unknown-address": "Neznan naslov",
-    "received-invitation": "je prejel/-a povabilo za klepet",
+    
+    
+    
     "show-qr": "Prikaži QR",
     "connect": "Poveži",
-    "choose-from-contacts": "Izberi iz stikov",
+    
     "edit": "Uredi",
     "account-generation-message": "Počakaj sekundo, opraviti moram noro računico, da ustvarim tvoj račun!",
     "no-messages": "Ni sporočil",
@@ -70,31 +70,30 @@
     "members-title": "Člani",
     "new-group": "Nova skupina",
     "phone-e164": "Mednarodno 1",
-    "suggestions-requests": "Prošnje",
+    
     "settings": "Nastavitve",
-    "remove-from-group": "Odstrani iz skupine",
-    "contacts-syncronized": "Tvoji stiki so bili sinhronizirani",
-    "add-new-contact": "Dodaj nov stik",
-    "search-contacts": "Iskanje stikov",
+    
+    
+    
     "chats": "Klepeti",
     "transaction": "Transakcija",
     "public-group-status": "Javno",
-    "leave-chat": "Zapusti klepet",
+    
     "image-source-make-photo": "Zajemi",
     "start-conversation": "Začni pogovor",
-    "topic-format": "Napačna oblika [a-z0-9\\-]+",
+    
     "save": "Shrani",
-    "enter-valid-public-key": "Prosimo, vnesite veljavno javno kodo, ali skenirajte QR kodo",
-    "faucet-error": "Napaka v zahtevi za dovod",
-    "phone-significant": "Pomembno",
-    "search-for": "Išči...",
+    
+    
+    
+    
     "sharing-copy-to-clipboard": "Kopiraj v odložišče",
-    "phone-international": "Mednarodno 2",
+    
     "sync-in-progress": "Sinhronizacija...",
-    "enter-address": "Vnesi naslov",
-    "switch-users": "Preklopi med uporabniki",
+    
+    
     "send-transaction": "Pošlji transakcijo",
-    "recover-access": "Povrni dostop",
+    
     "incorrect-code": [
         "str",
         "Koda na žalost ni bila pravilna, prosimo, da jo ponovno vneseš"
@@ -102,45 +101,44 @@
     "image-source-gallery": "Izberi iz galerije",
     "sync-synced": "Sinhronizirano",
     "status-pending": "V teku",
-    "delete-contact": "Izbriši stik",
+    
     "datetime-day": {
         "one": "dan",
         "other": "dni"
     },
-    "mute-notifications": "Utišaj obvestila",
-    "invalid-phone": "Neveljavna telefonska številka",
+    
+    
     "scan-qr": "Skeniraj QR",
     "contact-s": {
         "one": "stik",
         "other": "stiki"
     },
-    "status-sending": "Pošiljanje",
+    
     "next": "Naprej",
     "recent": "Nedavno",
     "status": "Status",
     "from": "Od",
     "wrong-password": "Napačno geslo",
-    "search-chats": "Išči klepete",
+    
     "in-contacts": "Med stiki",
     "sharing-share": "Deli...",
     "type-a-message": "Napiši sporočilo...",
-    "type-a-command": "Začni pisati ukaz...",
-    "shake-your-phone": "Ste naleteli na napako ali imate predlog? Preprosto ~stresite~ vaš telefon!",
-    "contacts-group-new-chat": "Začni nov klepet",
-    "and-you": "in ti",
+    
+    
+    
     "clear-history": "Počisti zgodovino",
     "no-contacts": "Zaenkrat še ni stikov",
-    "status-sent": "Poslano",
-    "status-prompt": "Ustvarite status, ki bo drugim nudil več informacij o stvareh, ki jih nudite. Uporabljate lahko tudi #hashtage.",
+    
+    
     "datetime-today": "danes",
-    "add-a-status": "Dodaj status...",
+    
     "web-view-error": "ups, napaka",
-    "notifications-title": "Obvestila in zvoki",
+    
     "error": "Napaka",
-    "edit-contacts": "Urejanje stikov",
+    
     "more": "več",
     "cancel": "Prekliči",
-    "no-statuses-found": "Ni statusov",
+    
     "can-not-add-yourself": "Sebe ni mogoče dodati",
     "add-to-contacts": "Dodaj med stike",
     "available": "Na voljo",
@@ -152,35 +150,35 @@
         "zero": "ni članov"
     },
     "intro-message1": "Dobrodošel/-la v status\nPritisni to sporočilo in nastavi svoje geslo ter začni!",
-    "not-implemented": "!ni implementirano",
+    
     "new-contact": "Nov stik",
     "datetime-second": {
         "one": "sekunda",
         "other": "sekund"
     },
-    "status-failed": "Ni uspelo",
-    "is-typing": "piše",
+    
+    
     "recover": "Povrni",
-    "suggestions-commands": "Ukazi",
-    "contact-already-added": "Stik je bil že dodan",
+    
+    
     "datetime-minute": {
         "one": "minuta",
         "other": "minut"
     },
     "browsing-open-in-android-web-browser": "Odpri v spletnem brskalniku",
     "browsing-open-in-ios-web-browser": "Odpri v spletnem brskalniku",
-    "delete-group-prompt": "To ne bo vplivalo na stike",
+    
     "edit-profile": "Uredi profil",
     "active-unknown": "Neznano",
-    "search-tags": "Sem vnesi svoje priljubljene oznake",
+    
     "public-key": "Javni ključ",
-    "status-seen": "Videno",
-    "status-delivered": "Dostavljeno",
+    
+    
     "profile": "Profil",
-    "no-statuses-discovered": "Ni odkritih statusov",
+    
     "none": "Brez",
     "removed": "odstranil/-a",
-    "empty-topic": "Prazna tema",
+    
     "message": "Sporočilo",
     "here-is-your-passphrase": "Tukaj je tvoje geslo, *zapiši si ga in shrani na varno mesto!* Potreboval/-a ga boš, da obnoviš svoj račun.",
     "image-source-title": "Fotografija profila",

@@ -13,7 +13,7 @@
     "active-online": "オンライン",
     "active-unknown": "不明",
     "add": "追加",
-    "add-a-status": "ステータスを追加...",
+    
     "add-a-watch-account": "読み取り専用アカウントを追加",
     "add-account": "アカウントを追加",
     "add-account-description": "あらゆるタイプのEthereumアカウントをStatusウォレットにインポートすることができます",
@@ -23,16 +23,16 @@
     "add-bootnode": "Bootnodeを追加",
     "add-contact": "連絡先を追加",
     "add-custom-token": "カスタムトークンを追加",
-    "add-existing-multiaccount": "既存のマルチアカウントを追加",
-    "add-json-file": "JSONファイルを追加",
+    
+    
     "add-mailserver": "メールサーバーを追加",
     "add-members": "メンバーを追加",
     "add-network": "ネットワークを追加",
-    "add-new-contact": "新しい連絡先を追加",
-    "add-new-network": "新しいネットワークを追加",
+    
+    
     "add-to-contacts": "連絡先に追加",
     "address": "アドレス",
-    "address-explication": "公開鍵はEthereumでアドレスを生成するために使われる数字と文字の列です。プロフィールから見ることができます。",
+    
     "advanced": "詳細",
     "advanced-settings": "高度な設定",
     "agree-by-continuing": "同意して続行する。",
@@ -40,11 +40,10 @@
     "allow": "許可",
     "allowing-authorizes-this-dapp": "アクセスを許可すると、このDAppはあなたのウォレットアドレスを取得し、Web3を有効にします。",
     "already-have-asset": "このアセットはすでに持っています",
-    "already-have-multiaccount": "すでにマルチアカウントを持っています",
+    
     "always-allow": "常に許可",
     "amount": "金額",
     "amount-placeholder": "金額を指定...",
-    "and-you": "あなたも",
     "are-you-sure-description": "二度とリカバリーフレーズ全体を見ることはできません",
     "are-you-sure?": "本当に実行しますか？",
     "ask-in-status": "質問するまたはバグを報告する",
@@ -59,7 +58,7 @@
     "backup-recovery-phrase": "リカバリーフレーズのバックアップ",
     "backup-your-recovery-phrase": "リカバリーフレーズのバックアップ",
     "balance": "残高",
-    "begin-keycard-setup-confirmation-text": "セットアップのプロセスによってカードとカードに保存されている鍵が消去されます。本当に続けますか？",
+    
     "begin-set-up": "セットアップを開始",
     "biometric-auth-android-sensor-desc": "タッチセンサー",
     "biometric-auth-android-sensor-error-desc": "失敗しました",
@@ -100,7 +99,7 @@
     "browsing-site-blocked-go-back": "戻る",
     "browsing-site-blocked-title": "このサイトはブロックされています",
     "browsing-title": "ブラウズ",
-    "buy-with-snt": "SNTで購入する",
+    
     "camera-access-error": "カメラへのアクセス権限を管理するためには、システム設定から Status > カメラが選択されていることを確認してください。",
     "can-not-add-yourself": "自分自身を追加することはできません",
     "cancel": "キャンセル",
@@ -128,12 +127,12 @@
     "chat": "チャット",
     "chat-key": "チャットキー",
     "chat-name": "チャット名",
-    "chat-send-eth": "{{amount}}ETH",
+    
     "chat-settings": "チャット設定",
     "chats": "チャット",
     "check-your-recovery-phrase": "リカバリーフレーズを確認してください",
     "choose-authentication-method": "マルチアカウントを保護するための認証方法を選択してください",
-    "choose-from-contacts": "連絡先から選択",
+    
     "clear": "消去",
     "clear-history": "履歴を消去",
     "clear-history-action": "消去",
@@ -160,11 +159,11 @@
     "connected": "接続済み",
     "connecting": "接続しています...",
     "connecting-requires-login": "別のネットワークに接続するにはログインが必要です",
-    "connection-problem": "メッセージ接続に問題が発生しました",
+    
     "connection-with-the-card-lost": "カードとの接続が失われました",
     "connection-with-the-card-lost-setup-text": "セットアップを再開するにはカードをスマートフォンの背面に当てたままにしてください",
     "connection-with-the-card-lost-text": "セットアップを再開するにはカードをスマートフォンの背面に当てたままにしてください",
-    "contact-already-added": "連絡先は既に追加されています",
+    
     "contact-code": "連絡先コード",
     "contact-recovery-content": "{{name}}からメッセージが送信されましたが、この端末は含まれていませんでした。 \nこれは、3つ以上のデバイスがある場合、デバイスを正しくペアリングしていない場合、またはマルチアカウントを回復したばかりの場合に発生する可能性があります。 \nデバイスが正しくペアリングされていることを確認し、通知をクリックしてこのデバイスをユーザーに知らせてください。",
     "contact-recovery-title": "{{name}}からメッセージが送信されました",
@@ -172,8 +171,7 @@
         "other": "の連絡先"
     },
     "contacts": "連絡先",
-    "contacts-group-new-chat": "新しいチャットを開始",
-    "contacts-syncronized": "連絡先情報が同期されました",
+    
     "continue": "続行する",
     "contract-address": "コントラクトアドレス",
     "contract-interaction": "コントラクトの実行",
@@ -188,7 +186,7 @@
     "create-group-chat": "グループチャットを作成",
     "create-multiaccount": "マルチアカウントを作成",
     "create-new-key": "新しい鍵を生成",
-    "create-new-multiaccount": "新しいマルチアカウントを作成",
+    
     "create-pin": "PINを作成",
     "create-pin-description": "ログインとトランザクションの承認にはカードとPINが必要です",
     "created-group-chat-description": "グループ{{group-name}}を作成しました",
@@ -203,12 +201,12 @@
     "currency-display-name-bdt": "バングラデシュタカ",
     "currency-display-name-bgn": "ブルガリアレフ",
     "currency-display-name-bhd": "バーレーンディナール",
-    "currency-display-name-bmd": "バミューダドル",
+    
     "currency-display-name-bnd": "ブルネイダルサラームドル",
     "currency-display-name-bob": "ボリビアボリビアノ",
     "currency-display-name-brl": "ブラジルレアル",
     "currency-display-name-btn": "ブータンニュルガム",
-    "currency-display-name-bzd": "ベリーズドル",
+    
     "currency-display-name-cad": "カナダドル",
     "currency-display-name-chf": "スイスフラン",
     "currency-display-name-clp": "チリペソ",
@@ -224,8 +222,8 @@
     "currency-display-name-gbp": "英国ポンド",
     "currency-display-name-gel": "ジョージアラリ",
     "currency-display-name-ghs": "ガーナセディ",
-    "currency-display-name-gmd": "ガンビアダラシ",
-    "currency-display-name-gyd": "ガイアナドル",
+    
+    
     "currency-display-name-hkd": "香港ドル",
     "currency-display-name-hrk": "クロアチアクーナ",
     "currency-display-name-huf": "ハンガリーフォリント",
@@ -238,16 +236,16 @@
     "currency-display-name-kes": "ケニアシリング",
     "currency-display-name-krw": "韓国ウォン",
     "currency-display-name-kwd": "クウェートディナール",
-    "currency-display-name-kyd": "ケイマン諸島ドル",
+    
     "currency-display-name-kzt": "カザフスタンテンゲ",
-    "currency-display-name-lak": "ラオスキップ",
+    
     "currency-display-name-lkr": "スリランカルピー",
-    "currency-display-name-lrd": "リベリアドル",
-    "currency-display-name-ltl": "リトアニアリタス",
+    
+    
     "currency-display-name-mad": "モロッコディルハム",
     "currency-display-name-mdl": "モルドバレイ",
-    "currency-display-name-mkd": "マケドニアデナール",
-    "currency-display-name-mnt": "モンゴルトゥグリク",
+    
+    
     "currency-display-name-mur": "モーリシャスルピー",
     "currency-display-name-mwk": "マラウィアンクワチャ",
     "currency-display-name-mxn": "メキシコペソ",
@@ -255,7 +253,7 @@
     "currency-display-name-mzn": "モザンビークメチカル",
     "currency-display-name-nad": "ナミビアドル",
     "currency-display-name-ngn": "ナイジェリアナイラ",
-    "currency-display-name-nio": "ニカラグアコルドバ",
+    
     "currency-display-name-nok": "ノルウェークローネ",
     "currency-display-name-npr": "ネパールルピー",
     "currency-display-name-nzd": "ニュージーランドドル",
@@ -273,8 +271,8 @@
     "currency-display-name-sar": "サウジアラビアリヤル",
     "currency-display-name-sek": "スウェーデンクローナ",
     "currency-display-name-sgd": "シンガポールドル",
-    "currency-display-name-sos": "ソマリアシリング",
-    "currency-display-name-srd": "スリナムドル",
+    
+    
     "currency-display-name-thb": "タイバーツ",
     "currency-display-name-try": "トルコリラ",
     "currency-display-name-ttd": "トリニダードトバゴドル",
@@ -286,7 +284,7 @@
     "currency-display-name-uyu": "ウルグアイペソ",
     "currency-display-name-vef": "ベネズエラボリバル",
     "currency-display-name-vnd": "ベトナムドン",
-    "currency-display-name-yer": "イエメンリアル",
+    
     "currency-display-name-zar": "南アフリカランド",
     "current-network": "現在のネットワーク",
     "current-pin": "PINを入力",
@@ -294,7 +292,7 @@
     "custom": "カスタム",
     "custom-networks": "カスタムネットワーク",
     "dapp": "ÐApp",
-    "dapp-profile": "ÐAppプロファイル",
+    
     "dapp-would-like-to-connect-wallet": "があなたのウォレットにアクセスしようとしています",
     "dapps": "ÐApps",
     "dapps-can-access": "ÐAppsは私のウォレットと連絡先コードにアクセスできます",
@@ -319,34 +317,34 @@
     },
     "datetime-today": "今日",
     "datetime-yesterday": "昨日",
-    "debug-enabled": "デバッグサーバが起動しました！同じネットワーク上のコンピュータから *status-dev-cli scan* を実行してサーバーを見つけることができます。",
+    
     "decimals": "小数点桁数",
     "decryption-failed-confirm": "適用する",
     "decryption-failed-content": "データを復号化できませんでした。適用をタップして古いデータを削除し、新しいアカウントを作成し直すか、キャンセルを押してもう一度やり直してください。",
     "decryption-failed-title": "データを復号化できませんでした",
     "default": "デフォルト",
-    "default-dapps-exchanges": "取引所",
-    "default-dapps-fun-games": "ゲーム&ファン",
-    "default-dapps-marketplaces": "マーケットプレイス",
-    "default-dapps-media": "メディア",
-    "default-dapps-social-networks": "ソーシャルネットワーク",
-    "default-dapps-social-utilities": "ユーティリティ",
+    
+    
+    
+    
+    
+    
     "delete": "削除",
     "delete-and-leave-group": "グループを削除して退会する",
     "delete-bootnode": "Bootnodeを削除",
     "delete-bootnode-are-you-sure": "本当にこのbootnodeを削除しますか？",
     "delete-bootnode-title": "Bootnodeを削除",
     "delete-chat": "チャットを削除",
-    "delete-chat-action": "削除",
+    
     "delete-chat-confirmation": "本当にこのチャットを削除しますか？",
-    "delete-chat-title": "チャットを削除しますか？",
+    
     "delete-confirmation": "削除しますか？",
-    "delete-contact": "連絡先を削除",
-    "delete-contact-confirmation": "この連絡先を連絡先から削除します",
-    "delete-group": "グループを削除",
-    "delete-group-chat-confirmation": "このグループチャットを削除してもよろしいですか？",
-    "delete-group-confirmation": "このグループはあなたのグループから削除されます。あなたの連絡先には影響しません",
-    "delete-group-prompt": "連絡先には影響しません",
+    
+    
+    
+    
+    
+    
     "delete-mailserver": "メールサーバーの削除",
     "delete-mailserver-are-you-sure": "本当にこのメールサーバーを削除しますか？",
     "delete-mailserver-title": "メールサーバーの削除",
@@ -360,8 +358,8 @@
     "dev-mode": "デベロッパーモード",
     "device-pairing": "デバイスのペアリング",
     "device-to-device": "デバイス間で有効になりました",
-    "device-to-device-warning-content": "有効にすると、バージョン0.9.32以降を実行しているユーザーのみがあなたの直接メッセージと公開メッセージを読むことができます。",
-    "device-to-device-warning-title": "警告、これは実験的な機能です",
+    
+    
     "devices": "デバイス",
     "disable": "無効",
     "disable-discovery-topic": "トピックを探す が無効",
@@ -372,20 +370,20 @@
     "discover": "発見",
     "dismiss": "無視する",
     "done": "完了",
-    "dont-allow": "許可しない",
+    
     "edit": "編集",
-    "edit-chats": "チャットを編集",
-    "edit-contacts": "連絡先を編集",
-    "edit-group": "グループを編集",
-    "edit-network-config": "ネットワーク設定を編集",
-    "edit-network-warning": "注意！ネットワークデータを編集するとこのネットワークが無効になる可能性があります",
+    
+    
+    
+    
+    
     "edit-profile": "プロフィールを編集",
     "empty-chat-description": "このチャットにはまだメッセージがありません",
-    "empty-chat-description-console": "コンソールはweb3 API全体を公開するjavascriptランタイム環境です。開始するには「web3」と入力してください。",
+    
     "empty-chat-description-one-to-one": "ここで送信されるあらゆるメッセージは暗号化され、他の人が読むことはできません",
     "empty-chat-description-public": "ここでは{{quiet-hours}}時間会話がありません。会話を始めましょう",
     "empty-chat-description-public-share-this": "このチャットを共有",
-    "empty-topic": "トピックがありません",
+    
     "enable": "有効",
     "encrypt-with-password": "パスワードで暗号化",
     "ens-10-SNT": "10 SNT",
@@ -400,7 +398,7 @@
     "ens-get-name": "ユニバーサルユーザー名を取得",
     "ens-got-it": "わかりました",
     "ens-locked": "ユーザー名がロックされています。あなたは25.05.2020まで手放すことはできません",
-    "ens-names": "ENSユーザーネーム",
+    
     "ens-network-restriction": "Mainnetまたはropstenでのみ利用可能",
     "ens-no-usernames": "接続しているユーザー名がありません",
     "ens-powered-by": "Ethereum Name Servicesを利用しています",
@@ -436,7 +434,7 @@
     "ens-username-hints": "少なくとも4文字のラテン文字、数字、および小文字のみ",
     "ens-username-invalid": "文字と数字のみ",
     "ens-username-owned": "✓このユーザー名はあなたが所有しています。 ",
-    "ens-username-owned-continue": "続行すると、このユーザー名とあなたの鍵が関連付けられます。",
+    
     "ens-username-registrable": "✓このユーザー名は利用可能です！",
     "ens-username-unregistrable": "ユーザー名はすでに使用されています :(",
     "ens-usernames": "ENSユーザー名",
@@ -457,39 +455,39 @@
     "ens-your-usernames": "あなたのユーザー名",
     "ens-your-your-name": "あなたのENSユーザー名",
     "enter-12-words": "リカバリーフレーズの12の単語を半角スペースで区切って入力してください",
-    "enter-address": "アドレスを入力",
+    
     "enter-contact-code": "連絡先コードまたはユーザー名を入力",
-    "enter-dapp-url": "ÐAppのURLを入力",
+    
     "enter-ens-or-contact-code": "ENSユーザー名またはコンタクトコードを入力",
     "enter-pair-code": "ペアリングコードを入力",
     "enter-pair-code-description": "Keycardのセットアップ中にペアリングコードが表示されました",
     "enter-password": "パスワードを入力",
     "enter-pin": "PINを入力",
-    "enter-pin-description": "PINコードを入力してマルチアカウントにログイン",
+    
     "enter-puk-code": "PUKコードを入力",
     "enter-puk-code-description": "PINがブロックされました。 \nPINのブロックを解除するには、PUKコードを入力してください。",
     "enter-seed-phrase": "シードフレーズを入力",
     "enter-url": "URLを入力",
-    "enter-valid-public-key": "有効な公開鍵を入力するか、QRコードをスキャンしてください",
+    
     "enter-word": "単語を入力",
     "enter-your-code": "6桁のコードを入力",
     "enter-your-password": "パスワードを入力",
     "error": "エラー",
-    "error-cant-send-transaction-offline": "オフラインモードではトランザクションを送信できません",
-    "error-cant-sign-message-offline": "オフラインモードではメッセージに署名できません",
-    "error-processing-json": "JSON処理エラー",
+    
+    
+    
     "error-unable-to-get-balance": "残高を取得できません",
     "error-unable-to-get-prices": "通貨変換エラー。画面を更新してもう一度やり直してください。",
     "error-unable-to-get-token-balance": "トークン残高を取得できません",
-    "error-unable-to-get-transactions": "トランザクション履歴を取得できません",
+    
     "errors": "エラー",
     "estimated-time": "推定時間",
     "eth": "ETH",
     "ethereum-node-started-incorrectly-description": "Etheruemノードが誤った設定で起動されました。アプリケーションは停止します。ネットワークIDは{{network-id}}に設定されていますが、正しくは{{fetched-network-id}}です。",
     "ethereum-node-started-incorrectly-title": "Ethereumノードが正しく起動できませんでした",
     "etherscan-lookup": "Etherscanで調べる",
-    "existing-mailservers": "既存のメールサーバー",
-    "existing-networks": "既存のネットワーク",
+    
+    
     "export-account": "アカウントをエクスポート",
     "extension": "拡張機能",
     "extension-address": "拡張機能アドレス",
@@ -505,11 +503,11 @@
     "extensions-network-not-found": "指定されたチェーンIDのネットワークが見つかりません",
     "failed": "失敗しました",
     "faq": "よくある質問",
-    "faucet-error": "フォーセットのリクエストがエラーになりました",
-    "faucet-success": "フォーセットのリクエストを受信しました",
+    
+    
     "fetch-history": "過去24時間の取得",
     "fetch-messages": "↓メッセージを取得する",
-    "fetching-messages": "メッセージを取得しています... (残り {{requests-left}}リクエスト)",
+    
     "find": "見つける",
     "finish": "完了",
     "finishing-card-setup": "カードのセットアップを完了しています",
@@ -550,7 +548,7 @@
     "help": "ヘルプ",
     "help-capitalized": "ヘルプ",
     "help-center": "ヘルプセンター",
-    "here-is-your-signing-phrase": "これがあなたの署名フレーズです。トランザクションの検証に必要になります。安全な場所に保管してください！",
+    
     "history": "履歴",
     "hold-card": "カードをスマートフォンの背面に持ってください",
     "home": "ホーム",
@@ -575,7 +573,7 @@
     "intro-privacy-policy-note1": "Statusはいかなる個人情報も収集・共有・販売しません。以下に同意して続行する。",
     "intro-privacy-policy-note2": "プライバシーポリシー",
     "intro-text": "Statusは分散型Webへのゲートウェイです",
-    "intro-text-description": "Ethereumブロックチェーン上で安全にチャットおよび取引を行うためのコミュニティ主導のプラットフォーム",
+    
     "intro-text1": "Ethereumブロックチェーン上で安全にチャットおよび取引を行うためのオープンソースプラットフォーム",
     "intro-text2": "アカウントのセットアップが完了しました。リカバリーフレーズのバックアップを忘れないでください。",
     "intro-text3": "アカウントのセットアップが完了しました。リカバリーフレーズのバックアップを忘れないでください。",
@@ -604,18 +602,18 @@
     "invalid-key-title": "暗号化キーに問題を検出しました",
     "invalid-number": "無効な数字",
     "invalid-pairing-password": "無効なペアリングパスワード",
-    "invalid-phone": "電話番号が無効です",
+    
     "invalid-range": "フォーマットが無効です。 {{min}}と{{max}}の間にする必要があります",
     "invite-friends": "友達を招待",
     "invited": "招待済",
-    "is-typing": "入力中",
+    
     "join-group-chat": "グループに参加",
     "join-group-chat-description": "{{username}}があなたを{{group-name}}に招待しました",
     "joined-group-chat-description": "あなたは{{username}}の招待で{{group-name}}に参加しました",
     "key": "鍵",
     "keycard": "Keycard",
     "keycard-applet-install-instructions": "アプレットをインストールするにはhttps:\/\/github.com\/status-im\/keycard-cli#keycard-applet-installationの指示に従ってください。",
-    "keycard-applet-will-be-installed": "Keycardアプレットは自動的にインストールされます",
+    
     "keycard-blocked": "Keycardがブロックされました。\n引き続き使用するにはカードをリセットする必要があります。",
     "keycard-cancel-setup-text": "この操作はKeycardのセットアップをキャンセルします。Keycardを使用するにはセットアップを完了させることを強くお勧めします。本当にキャンセルしますか？",
     "keycard-cancel-setup-title": "危険な操作",
@@ -651,17 +649,17 @@
     "learn-more": "もっと詳しく知る",
     "learn-more-about-keycard": "Keycardについてもっと知る",
     "leave": "退出",
-    "leave-chat": "チャットを退出する",
-    "leave-confirmation": "退出しますか？",
+    
+    
     "leave-group": "グループを退出",
-    "leave-group-action": "退出",
-    "leave-group-chat": "グループチャットを退出",
-    "leave-group-chat-confirmation": "本当にこのグループから退出しますか？",
-    "leave-group-confirmation": "本当にこのグループから退出しますか？",
-    "leave-group-title": "退出しますか？",
-    "leave-public-chat": "パブリックチャットを退出",
+    
+    
+    
+    
+    
+    
     "left": "退出しました",
-    "link-card": "カードをリンクしてプラットフォーム上で本人確認を行なってください",
+    
     "linked-on": "{{date}}にリンクされました",
     "load-messages-before": "{{date}}より前",
     "load-more-messages": "↓もっとメッセージを取得する",
@@ -698,8 +696,8 @@
     "mainnet-text": "現在メインネットにいます。送信されるETHは本物です",
     "maintain-card-to-phone-contact": "処理中はカードとスマートフォンの接触を維持してください",
     "make-admin": "管理者にする",
-    "make-sure-you-trust-dapp": "このDAppが信頼できることを確認してください",
-    "manage-permissions": "アクセス許可を管理",
+    
+    
     "maybe-later": "後でやる",
     "members": {
         "other": "メンバー"
@@ -735,7 +733,7 @@
     "mobile-network-stop-syncing-details": "Wi-Fiに接続するまで？",
     "mobile-network-use-mobile": "モバイルデータを使用",
     "mobile-network-use-mobile-data": "Statusはチャットの同期に大量のデータを使用します。モバイルネットワークに接続しているときは同期しないこともできます",
-    "mobile-network-use-mobile-details": "Statusはチャットの同期に大量のデータを使用します。モバイルネットワークに接続しているときは同期しないこともできます",
+    
     "mobile-syncing-sheet-details": "Statusはチャットの同期の際に大量のデータを使用します。モバイルネットワークに接続しているときは同期しないこともできます",
     "mobile-syncing-sheet-title": "モバイルデータを使用して同期する",
     "more": "もっとみる",
@@ -744,7 +742,7 @@
     "multiaccount-not-listed-text": "このカードのマルチアカウントはあなたのスマートフォンにリストされていません。新しいマルチアカウントでログインしますか？",
     "multiaccounts-recover-enter-phrase-text": "12、15、18、21、または24単語を入力してください。各単語はシングルスペースで区切ってください。",
     "multiaccounts-recover-enter-phrase-title": "シードフレーズを入力",
-    "mute-notifications": "通知をミュート",
+    
     "name": "名前",
     "name-description": "プロフィールでいつでも変更可能です",
     "name-of-token": "トークンの名前",
@@ -770,7 +768,7 @@
     "new-pin-description": "新しいPINコードを入力",
     "new-public-group-chat": "パブリックチャットに参加",
     "new-request": "新しいリクエスト",
-    "new-transaction": "新しいトランザクション",
+    
     "next": "次へ",
     "next-step-entering-mnemonic": "次のステップでニーモニックフレーズを入力してマルチアカウントをインポートします",
     "next-step-generating-mnemonic": "次のステップでカードのニーモニックフレーズを生成します",
@@ -778,34 +776,32 @@
     "no-collectibles": "利用可能なコレクションはありません",
     "no-contacts": "連絡先はまだありません",
     "no-extension": "拡張機能がインストールされていません",
-    "no-hashtags-discovered-body": "人気の#hashtagをここで見ることができます。",
-    "no-hashtags-discovered-title": "#ハッシュタグが見つかりませんでした",
+    
     "no-keycard-applet-on-card": "カードにKeycardアプレットがありません。",
     "no-messages": "メッセージがありません",
     "no-messages-yet": "まだメッセージはありません",
-    "no-more-participants-available": "これ以上参加者を追加することはできません",
-    "no-multiaccount-on-card": "このカードにマルチアカウントはありません",
-    "no-multiaccount-on-card-text": "あなたが提示しているカードはマルチアカウントを持っていません。正しいカードでもう1度お試しください",
-    "no-pairing-on-device": "カードがこのデバイスにペアリングされていません",
+    
+    
+    
     "no-pairing-slots-available": "このカードはすでに5台のデバイスとペアリングをしているため、このデバイスとはペアリングできません。ペアリングされたデバイスのいずれかを使用してこのカードでログインし、カードのペアリングスロットを解放してください",
     "no-recent-chats": "最近のチャットはまだありません。 \n (+) ボタンを使ってチャットする相手を見つけてください",
     "no-result": "結果がありません",
-    "no-statuses-discovered": "ステータスが見つかりません",
-    "no-statuses-discovered-body": "誰かがステータスを投稿した時、ここで見ることができます。",
-    "no-statuses-found": "ステータスが見つかりません",
+    
+    
+    
     "no-tokens-found": "トークンが見つかりません",
     "node-info": "ノード情報",
     "node-unavailable": "Ethereumノードが実行されていません",
     "nonce": "ナンス",
     "none": "なし",
     "not-applicable": "未署名のトランザクションには適用されません",
-    "not-implemented": "実装されていません。",
+    
     "not-keycard-text": "使用されたカードはKeycardではありません。Keycardを購入してください。",
     "not-keycard-title": "キーカードではありません",
-    "not-specified": "指定されていません",
+    
     "notifications": "通知",
     "notifications-new-message-body": "新しいメッセージがあります",
-    "notifications-title": "通知とサウンド",
+    
     "notify": "通知する",
     "off": "Off",
     "offline": "オフライン",
@@ -823,7 +819,7 @@
     "open-on-etherscan": "Etherscan.ioで開く",
     "optional": "オプション",
     "or-choose-a-contact": "または連絡先を選択",
-    "other-multiaccounts": "その他のマルチアカウント",
+    
     "outgoing": "送信",
     "pair": "デバイスのペアリング",
     "pair-card": "このデバイスにペアリングする",
@@ -843,7 +839,7 @@
     "pairing-new-installation-detected-title": "新しいデバイスが検出されました",
     "pairing-no-info": "情報なし",
     "pairing-please-set-a-name": "デバイスの名前を設定してください。",
-    "passcode-error": "パスコードが一致しません。",
+    
     "passphrase": "パスフレーズ",
     "password": "パスワード",
     "password_error1": "パスワードが一致しません。",
@@ -852,37 +848,37 @@
     "password-placeholder2": "パスワードを確認",
     "paste": "貼り付け",
     "paste-json": "JSONを貼り付け",
-    "paste-json-as-text": "JSONをテキストとして貼り付け",
+    
     "pay-to-chat": "チャットに支払う",
     "peers": "ピア",
     "pending": "ペンディング",
     "pending-confirmation": "承認待ち...",
     "permissions": "アクセス許可",
     "phone-e164": "インターナショナル1",
-    "phone-international": "インターナショナル2",
-    "phone-national": "国内",
-    "phone-number": "電話番号",
-    "phone-number-required": "こちらをタップしてあなたの電話番号を確認してください。友達が見つかります。",
-    "phone-significant": "重要",
+    
+    
+    
+    
+    
     "photos-access-error": "写真へのアクセス権限を管理するためには、システム設定からStatus > 写真が選択されていることを確認してください。",
     "pin-changed": "PINが変更されました",
     "pin-code": "PINコード",
     "pin-code-description": "カードをアンロック",
     "pin-mismatch": "PINが一致しません",
     "pin-retries-left": "あと{{number}}回試行できます",
-    "pin-unblocked": "PINのブロックが解除されました",
-    "pin-unblocked-description": "新しいPIN {{pin}}",
-    "popular-tags": "人気の #ハッシュタグ",
-    "postponed": "延期",
+    
+    
+    
+    
     "preparing-card": "カードを準備中",
     "preview-privacy": "プライバシーモードのプレビュー",
     "privacy-policy": "プライバシーポリシー",
-    "process-json": "JSONを処理",
+    
     "processing": "処理中",
     "product-information": "プロダクト情報",
     "profile": "プロフィール",
     "public-chat": "パブリックチャット",
-    "public-chat-user-count": "{{count}}人",
+    
     "public-chats": "パブリックチャット",
     "public-group-status": "パブリック",
     "public-group-topic": "トピック",
@@ -899,14 +895,14 @@
     "ready-to-import-keycard-multiaccount": "Keycardのマルチアカウントをインポートする準備ができました",
     "receive": "受信",
     "receive-transaction": "トランザクションを受信",
-    "received-invitation": "受信したチャット招待状",
+    
     "recent": "最近",
     "recent-recipients": "連絡先",
     "recently-used-stickers": "最近使用したステッカーがここに表示されます",
     "recipient": "受信者",
     "recipient-code": "受信者アドレスを入力",
     "recover": "回復する",
-    "recover-access": "アクセスを回復",
+    
     "recover-key": "鍵をリカバリー",
     "recover-keycard-multiaccount-not-supported": "パスワードを使用したKeycardのマルチアカウントのリカバリーはサポートされていません。",
     "recover-multiaccount-warning": "このマルチアカウントをインポートすることでウォレット情報は公開されます。",
@@ -927,25 +923,25 @@
     "remind-me-later": "後で知らせる",
     "remove": "削除",
     "remove-from-chat": "チャットから削除",
-    "remove-from-contacts": "連絡先から削除",
-    "remove-from-group": "グループから削除",
+    
+    
     "remove-network": "ネットワークを削除",
     "remove-token": "トークンを削除",
     "removed": "削除されました",
-    "removed-from-chat": "グループチャットからあなたを削除しました",
-    "reorder-groups": "グループの並べ替え",
+    
+    
     "repeat-pin": "新しいPINをリピート",
     "report-bug-email-template": "1.問題の説明\n(あなたが望む機能について教えてください。また、バグが発生した場合は何をしてどんなバグが発生したのか、本来の挙動はどうあるべきかなどを簡単に説明してください。) \n\n\n2.再現する手順\n(バグを再現する方法を順を追って説明してください。)\n- アプリを開く\n- …… \n- ◯◯をタップする、など\n\n\n3. 本来の挙動\n(本来何が起こるべきかを説明してください。)\n\n\n4.実際の挙動\n(実際に起こったことを説明してください。)\n\n\n5.問題を実証できるスクリーンショットを添付してください。 \n",
     "request-command-payment": "支払いをリクエストする",
-    "request-feature": "機能をリクエスト",
-    "request-qr-legend": "このコードを共有してアセットを受け取る",
+    
+    
     "request-transaction": "トランザクションのリクエスト",
     "require-my-permission": "私の許可が必要です",
     "required-field": "必須のフィールド",
     "resend-message": "再送信",
     "reset-card": "カードをリセット",
     "reset-card-description": "この操作はカードを初期状態にリセットします。秘密鍵を含むすべてのカードデータが消去されます。操作は元に戻せません。",
-    "reset-default": "デフォルトにリセット",
+    
     "retry": "再試行",
     "revoke-access": "アクセス権を取り消す",
     "rinkeby-network": "Rinkebyテストネット",
@@ -958,21 +954,21 @@
     "scan-qr": "QRコードをスキャン",
     "scan-qr-code": "ウォレットアドレスのQRコードをスキャン",
     "search": "検索",
-    "search-chat": "チャットを検索",
-    "search-chats": "チャットを検索",
-    "search-contacts": "連絡先を検索",
-    "search-for": "検索する",
-    "search-tags": "ここに検索タグを入力",
-    "secret-keys-confirmation-cancel": "もう一度見る",
-    "secret-keys-confirmation-confirm": "OKです",
+    
+    
+    
+    
+    
+    
+    
     "secret-keys-confirmation-text": "スマートフォンを紛失した場合でもKeycardを使い続けるためにこれが必要になります。",
     "secret-keys-confirmation-title": "コードを書き留めましたか?",
-    "secure-your-assets": "アセットを保護する",
+    
     "see-details": "詳細を見る",
     "see-it-again": "もう一度見る",
     "select-chat": "チャットを選択してメッセージを開始する",
     "selected": "選択済み",
-    "selected-dapps": "選択済みのÐApps",
+    
     "selected-for-you": "あなたのために選択されました",
     "send-command-payment": "支払いを送る",
     "send-logs": "バグを報告",
@@ -994,7 +990,7 @@
     "set-a-topic": "トピックを作成",
     "set-currency": "通貨を設定",
     "settings": "設定",
-    "shake-your-phone": "バグを見つけましたか？スマートフォンを縦に振ってみてください！",
+    
     "share": "シェア",
     "share-address": "アドレスを共有",
     "share-chat": "チャットを共有",
@@ -1015,23 +1011,23 @@
     "sign-in": "サインイン",
     "sign-in-to-another": "別のマルチアカウントにサインインする",
     "sign-in-to-status": "Statusにサインイン",
-    "sign-later-text": "トランザクション履歴を確認して署名",
-    "sign-later-title": "後でトランザクションに署名しますか?",
+    
+    
     "sign-message": "メッセージに署名",
     "sign-with": " で署名",
     "sign-with-password": "パスワードで署名する",
     "sign-you-in": "サインインしています…",
     "signing": "署名中",
     "signing-a-message": "メッセージに署名しています",
-    "signing-message-phrase-description": "この単語を認識したら、ログインパスワードを入力してメッセージに署名してください",
+    
     "signing-phrase": "署名フレーズ",
     "signing-phrase-description": "この単語を認識したら、ログインパスワードを入力してトランザクションに署名してください",
-    "signing-phrase-warning": "3つの単語を確認できた場合のみトランザクションを承認してください",
+    
     "something-went-wrong": "うまくいきませんでした",
     "soon": "もうすぐ",
     "specify-address": "アドレスを指定",
-    "specify-bootnode-address": "bootnodeのアドレスを指定",
-    "specify-mailserver-address": "メールサーバーアドレスを指定",
+    
+    
     "specify-name": "名前を指定",
     "specify-network-id": "ネットワークIDを指定",
     "specify-recipient": "受信者を指定...",
@@ -1042,38 +1038,38 @@
     "start-new-chat": "新しいチャットを開始",
     "status": "Status",
     "status-confirmed": "承認済み",
-    "status-console": "Statusコンソール",
-    "status-delivered": "配信済み",
-    "status-failed": "失敗しました",
+    
+    
+    
     "status-hardwallet": "Statusハードウォレット",
-    "status-hardwallet-capitalized": "Statusハードウォレット",
+    
     "status-keycard": "Status Keycard",
-    "status-not-sent": "",
-    "status-not-sent-click": "承認されていません。タップしてオプションを見る",
-    "status-not-sent-tap": "承認されていません。タップしてオプションを見る",
-    "status-not-sent-without-tap": "",
+    
+    
+    
+    
     "status-pending": "ペンディング",
-    "status-prompt": "ステータスを設定してください。#hashtagをしようすると他の人があなたを発見しやすくなり、会話も弾みます。",
-    "status-seen": "既読",
-    "status-seen-by-everyone": "全員が既読",
-    "status-sending": "送信中...",
-    "status-sent": "送信済み",
+    
+    
+    
+    
+    
     "status-tx-not-found": "トランザクションが見つかりません",
     "step-i-of-n": "{{step}}{{number}}ステップ",
     "sticker-market": "ステッカーマーケット",
     "submit": "送信",
     "submit-bug": "バグを報告する",
     "success": "成功",
-    "suggestions-commands": "コマンド",
-    "suggestions-requests": "リクエスト",
-    "switch-users": "ユーザーを切り替える",
+    
+    
+    
     "symbol": "シンボル",
     "sync-all-devices": "すべてのデバイスを同期",
     "sync-in-progress": "同期しています...",
     "sync-synced": "同期中",
     "syncing-devices": "同期しています...",
-    "syncing-disabled": "同期が無効",
-    "syncing-enabled": "同期が有効",
+    
+    
     "tag-was-lost": "タグが失われました",
     "taking-long-hold-phone-connected": "このプロセスには数秒かかります。\nカードをスマートフォンに接続したままにしてください。",
     "test-networks": "テストネット",
@@ -1093,32 +1089,32 @@
     "token-auto-validate-name-error": "{{address}}のトークン{{symbol}}の名前が間違っています。{{expected}}と設定されていますが{{actual}}と検出されました",
     "token-auto-validate-symbol-error": "{{address}}のトークン{{symbol}}のシンボルが間違っています。{{expected}}と設定されていますが{{actual}}と検出されました",
     "token-details": "トークンの詳細",
-    "topic-format": "トピック名には、小文字、数字、ダッシュ (-) のみを使用できます",
+    
     "topic-name-error": "小文字 (aからz)、数字とダッシュ (-) のみを使用できます。連絡先コードは使用しないでください。",
     "transaction": "トランザクション",
     "transaction-description": "ネットワーク上で12の承認を得た後に完了したと見なしてください",
     "transaction-details": "トランザクションの詳細",
     "transaction-failed": "トランザクション処理が失敗しました",
     "transaction-history": "トランザクション履歴",
-    "transaction-moved-text": "トランザクションは5分間「未署名」リストに残ります",
-    "transaction-moved-title": "トランザクションが移動しました",
+    
+    
     "transaction-request": "トランザクションリクエスト",
     "transaction-sent": "送信されたトランザクション",
     "transactions": "トランザクション",
-    "transactions-delete": "トランザクションを削除",
-    "transactions-delete-content": "トランザクションは「未署名」リストから削除されます",
+    
+    
     "transactions-filter-select-all": "すべて選択",
     "transactions-filter-title": "履歴をフィルタする",
-    "transactions-filter-tokens": "トークン",
+    
     "transactions-filter-type": "タイプ",
     "transactions-history": "トランザクション履歴",
     "transactions-history-empty": "トランザクション履歴がまだありません",
     "transactions-sign": "署名",
-    "transactions-sign-all": "すべてに署名",
-    "transactions-sign-later": "後で署名",
+    
+    
     "transactions-sign-transaction": "トランザクションに署名",
-    "transactions-unsigned": "未署名",
-    "transactions-unsigned-empty": "未署名のトランザクションはありません",
+    
+    
     "tribute-required-by-multiaccount": "{{multiaccount-name}} はチャットを開始するのにSNTを要求しています。",
     "tribute-state-paid": "Tributeが支払われました",
     "tribute-state-pending": "Tributeが待機中です",
@@ -1136,26 +1132,26 @@
     "tribute-to-talk-learn-more-1": "あなたの時間とあなたに集まる注目は価値のある資産です。Tribute to Talkはあなたと新しくチャットを開始するときに指定した額のSNTを要求することができます。",
     "tribute-to-talk-learn-more-2": "連絡先リストに登録されていない人は支払いを要求され、支払いを行った人にのみ返信することができます。",
     "tribute-to-talk-learn-more-3": "いつでも返金することもできます。連絡先リストに登録されている友達はいつでも無料であなたに連絡できます。",
-    "tribute-to-talk-message-placeholder": "こんにちは。新しくチャットを開始するのに少額のTribute (チップ) をお願いしています。現実で私のことを知っている場合は、別の方法で連絡先として追加してください。",
+    
     "tribute-to-talk-paywall-learn-more-1": "時間と自分に集まる注目は価値ある資産です。Trubute to Talkはあなたとのチャットの対価としてSNTの支払いを受け付けることができます。",
     "tribute-to-talk-paywall-learn-more-2": "Tributeを設定した人とチャットを開始し、連絡先として追加してもらうにはには要求されたSNTを支払います。",
     "tribute-to-talk-paywall-learn-more-3": "知っている人にはStatusの外部でプロフィールを共有して無料で追加してもらうことができます。",
     "tribute-to-talk-pending": "Tributeの承認待ち",
     "tribute-to-talk-pending-note": "Tributeトランザクションはネットワークによる承認待ちです。トランザクションヒストリーで状態を確認することができます。",
     "tribute-to-talk-removing-note": "Tribute to Talkを削除するとSNTを送らずにあなたとチャットを開始できるようになります。これにはトランザクションが発生します。",
-    "tribute-to-talk-sample-text": "こんにちは、Carmenです。メッセージを送って運勢を占ってみましょう🔮",
+    
     "tribute-to-talk-set-snt-amount": "新しくチャットを始める人に要求するSNTの額を設定してください",
-    "tribute-to-talk-sign-and-set-tribute": "署名してTributeを設定",
+    
     "tribute-to-talk-signing": "トランザクションへの署名を待っています",
     "tribute-to-talk-transaction-failed-note": "トランザクションが失敗し、Tribute to Talkの設定の変更は保存されませんでした",
     "tribute-to-talk-tribute-received1": "Tributeを受け取りました。",
     "tribute-to-talk-tribute-received2": " は連絡先に追加され、セキュアにチャットできます。",
-    "tribute-to-talk-you-can-leave-a-message": "人があなたとチャットを始めるときにメッセージを表示させることができます",
+    
     "tribute-to-talk-you-require-snt": "新しくチャットを始める人にはSNTを要求します。",
     "try-again": "再試行する",
     "turn-nfc-on": "続行するにはNFCをオンにしてください",
-    "twelve-words-in-correct-order": "12の単語を正しい順序で入力",
-    "type-a-command": "コマンドを入力...",
+    
+    
     "type-a-message": "メッセージを入力...",
     "unable-to-read-this-code": "このコードを読み込めません",
     "unblock-contact": "連絡先のブロックを解除",
@@ -1166,9 +1162,9 @@
     "unpair-card-confirmation": "この操作は現在のデバイスからカードのペアリングを解除します。 PIN認証が必要です。続行しますか？",
     "unpaired-keycard-text": "タップしたKeycardはこのスマートフォンと紐づいていません",
     "unpaired-keycard-title": "カードのペアリングが解除されたようです",
-    "unsigned-transaction-expired": "未署名のトランザクションが期限切れになりました",
+    
     "update": "更新",
-    "update-status": "ステータスを更新...",
+    
     "url": "URL",
     "usd-currency": "米ドル",
     "use-valid-contact-code": "有効な連絡先コードまたはユーザー名を入力してください",
@@ -1184,28 +1180,28 @@
     "view-cryptostrikers": "CryptoStrikersで表示",
     "view-etheremon": "Etheremonで表示",
     "view-gitcoin": "Gitcoinで表示",
-    "view-my-wallet": "ウォレットを見る",
+    
     "view-profile": "プロフィールを見る",
     "view-signing": "署名フレーズを表示",
     "view-superrare": "SuperRareで表示",
-    "view-transaction-details": "トランザクションの詳細を見る",
+    
     "waiting-for-wifi": "履歴の同期がオフライン、Wi-Fiを待っています",
     "waiting-for-wifi-change": "変更",
     "waiting-to-sign": "トランザクションへの署名を待っています...",
     "wallet": "ウォレット",
-    "wallet-add-asset": "アセットの追加",
-    "wallet-address-from-clipboard": "アドレスを貼り付け",
+    
+    
     "wallet-asset": "アセット",
     "wallet-assets": "アセット",
-    "wallet-backup-recovery-description": "これはアセットの保護に役立ちます",
+    
     "wallet-backup-recovery-title": "リカバリーフレーズのバックアップ",
-    "wallet-browse-photos": "写真を見る",
-    "wallet-choose-from-contacts": "連絡先から選択",
+    
+    
     "wallet-choose-recipient": "受信者を選択",
     "wallet-collectibles": "コレクション",
-    "wallet-deposit": "デポジット",
-    "wallet-error": "データ読み込みエラー",
-    "wallet-exchange": "交換",
+    
+    
+    
     "wallet-insufficient-funds": "残高不足",
     "wallet-insufficient-gas": "Gasに必要なETHが足りません",
     "wallet-invalid-address": "無効なアドレス： \n {{data}}",
@@ -1213,25 +1209,24 @@
     "wallet-invalid-chain-id": "ネットワークが一致しません： \n 現在は{{chain}}、{{data}}に接続してください",
     "wallet-manage-assets": "アセットを管理",
     "wallet-offline": "ウォレットがオフライン",
-    "wallet-onboarding-description": "Statusウォレットで暗号通貨を送信・受信・保管しましょう",
-    "wallet-onboarding-set-up": "セットアップを始めましょう",
-    "wallet-onboarding-title": "シンプルかつセキュアな暗号通貨ウォレット",
+    
+    
+    
     "wallet-request": "リクエスト",
     "wallet-send": "送信",
     "wallet-send-min-wei": "最低1wei",
-    "wallet-send-token": "{{symbol}}を送信",
-    "wallet-set-up-confirm-description": "トランザクションの安全性を保証するためにこれを認識してください。このコンボはマルチアカウントには保存されません。",
-    "wallet-set-up-confirm-title": "これを記憶しておいてください！",
-    "wallet-set-up-safe-transactions-title": "スーパーセーフトランザクション",
-    "wallet-set-up-signing-explainer": "トランザクションに署名を行う前にこの3つの単語が表示されます。",
-    "wallet-set-up-signing-explainer-warning": "異なる組み合わせが表示されたら、トランザクションをキャンセルしてログアウトしてください。",
-    "wallet-set-up-title": "ウォレットを設定",
+    
+    
+    
+    
+    
+    
+    
     "wallet-settings": "ウォレット設定",
     "wallet-total-value": "総額",
-    "wallet-transaction-fee": "トランザクション手数料",
-    "wallet-transaction-fee-details": "Gas limitはトランザクションに消費されるGasの量単位の上限で、Gas priceは単位あたりのGasの価格を設定します。Gas priceを上げるとトランザクションは速く承認されます。",
+    
     "wallet-transaction-total-fee": "合計手数料",
-    "wallets": "ウォレット",
+    
     "wants-to-access-profile": "あなたのプロフィールにアクセスしようとしています",
     "warning": "警告",
     "warning-message": "すみません。スパム防止のため、一度に連続で複数のメッセージを送信することを制限しています。しばらくしてからもう一度やり直してください",
@@ -1262,11 +1257,11 @@
     "you-are-all-set-description": "これでスマートフォンを紛失してもリカバリーフレーズを使って複数アカウントを回復できます。",
     "you-can-change-account": "アカウント名と色を変更することができます",
     "you-dont-have-stickers": "まだステッカーを持っていません",
-    "you-will-need-this-code": "Statusを開き、トランザクションに署名するにはこのコードが必要です。",
+    
     "your-contact-code": "アクセスを許可すると、このDAppはあなたの連絡先コードを取得します。",
     "your-data-belongs-to-you": "リカバリーフレーズを紛失するとデータや資金が失われます",
     "your-data-belongs-to-you-description": "リカバリーフレーズを紛失した場合、マルチアカウントのリカバリーはできません。あなたのデータのセキュリティの責任はあなたにあります。保護するためにはリカバリーフレーズのバックアップしてください。",
     "your-recovery-phrase": "リカバリーフレーズ",
-    "your-recovery-phrase-description": "これがあなたのリカバリーフレーズです。ウォレットがあなたのものであることを証明するために使用します。一度だけしか見ることができません。紙に書くか安全な場所で保管してください。ウォレットを再インストールするときに必要になります。",
-    "your-wallets": "あなたのウォレット"
+    "your-recovery-phrase-description": "これがあなたのリカバリーフレーズです。ウォレットがあなたのものであることを証明するために使用します。一度だけしか見ることができません。紙に書くか安全な場所で保管してください。ウォレットを再インストールするときに必要になります。"
+
 }

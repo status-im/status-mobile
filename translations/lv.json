@@ -1,6 +1,6 @@
 {
     "confirm": "Apstiprināt",
-    "phone-national": "National",
+    
     "amount": "Summa",
     "members-active": {
         "one": "1 dalībnieks",
@@ -10,12 +10,12 @@
     "chat-name": "Čata nosaukums",
     "phew-here-is-your-passphrase": "*Fuh* tas bija grūti, re, te ir tavs jauns passphrase, *pieraksti un sargā to!* Tev viņš būs vajadzīgs lai atgūtu pieju.",
     "public-group-topic": "Temats",
-    "debug-enabled": "Debug serveris startēja! Tu vari izlietot *status-dev-cli scan* lai atrastu serveri.",
+    
     "chat-settings": "Čata iestatījumi",
     "offline": "Offline",
-    "update-status": "Rediģēt aprakstu...",
+    
     "invited": "uzaicināts",
-    "chat-send-eth": "{{amount}} ETH",
+    
     "address": "Adrese",
     "new-public-group-chat": "Pievienoties publiskajam čatam",
     "datetime-hour": {
@@ -24,48 +24,48 @@
     },
     "datetime-ago-format": "{{number}} {{time-intervals}} {{ago}}",
     "camera-access-error": "Kļūda, nav atļaujas piekļūt kamerai. Lūdzu, iestatījumos pārliecinies, ka  Status > Camera ir izvēlēts.",
-    "address-explication": "Maybe here should be some text explaining what an address is and where to look for it",
+    
     "remove": "Noņemt",
     "add-members": "Pievienot biedrus",
-    "popular-tags": "Popular tags",
-    "twelve-words-in-correct-order": "12 vārdi",
-    "phone-number": "Telefona numurs",
+    
+    
+    
     "photos-access-error": "Kļūda, nav atļaujas piekļūt fotogrāfijām. Lūdzu, iestatījumos pārliecinies, ka Status > Photos ir izvēlēts.",
-    "removed-from-chat": "noņema jūs no grupas čata",
+    
     "done": "Darīts",
-    "remove-from-contacts": "Izdzēst kontaktu",
+    
     "delete-chat": "Dzēst čatu",
     "new-group-chat": "Jauna grupa",
-    "edit-chats": "Rediģēt čatu",
+    
     "sign-in": "Ieiet",
     "datetime-yesterday": "vakar",
     "create-new-account": "Izveidot jaunu kontu",
     "sign-in-to-status": "Ieiet Status",
     "datetime-ago": "pirms",
     "contacts": "Kontakti",
-    "search-chat": "Meklēt čatu",
+    
     "got-it": "Got it",
-    "delete-group-confirmation": "Grupa tiks noņēmta. Tas neietikmēs tavus kontaktus",
-    "move-to-internal-failure-message": "Mums vajag pārvietot dažus failus no eksternās uz interno glabātuvi. Lai mēs to varētu izdarīt mums vajag jūsu atļauju.",
+    
+    
     "active-online": "Online",
     "password": "Parole",
-    "status-seen-by-everyone": "Apskatīts",
-    "edit-group": "Rediģēt grupu",
-    "not-specified": "Nav norādīts",
-    "delete-group": "Dzēst grupu",
+    
+    
+    
+    
     "browsing-title": "Browse",
-    "reorder-groups": "Reorder groups",
+    
     "discover": "Discover",
     "browsing-cancel": "Atcelt",
-    "faucet-success": "Faucet pieprasījums saņemts",
+    
     "intro-status": "Čato ar mani, ja gribi mainīt ustatījumus!",
     "name": "Vārds",
-    "phone-number-required": "Ievadi savu telefonu un es atradīšu tavus draugus.",
-    "unknown-address": "Nezināmā adrese",
-    "received-invitation": "čata uzaicinājums",
+    
+    
+    
     "show-qr": "Parādīt QR",
     "connect": "Savienoties",
-    "choose-from-contacts": "Izvēlēties no kontaktiem",
+    
     "edit": "Rediģēt",
     "account-generation-message": "Lūdzu uzgaidi...",
     "no-messages": "Nav īsziņu",
@@ -74,32 +74,31 @@
     "members-title": "Dalībnieki",
     "new-group": "Jauna grupa",
     "phone-e164": "International 1",
-    "suggestions-requests": "Pieprasījums",
+    
     "settings": "Iestatījumi",
-    "remove-from-group": "Dzēst no grupas",
-    "contacts-syncronized": "Jūsu kontakti ir sinhronizēti",
-    "add-new-contact": "Pievienot jaunu kontaktu",
+    
+    
     "delete": "Dzēst",
-    "search-contacts": "Meklēt kontaktus",
+    
     "chats": "Čati",
     "transaction": "Transakcija",
     "public-group-status": "Publisks",
-    "leave-chat": "Iziet no čata",
+    
     "image-source-make-photo": "Fotografēt",
     "start-conversation": "Sākt sarunu",
-    "topic-format": "Nepareiz formāts [a-z0-9\\-]+",
+    
     "save": "Saglabāt",
-    "enter-valid-public-key": "Lūdzu ievadi publisko atslēgu, jeb skanē QR kodu",
-    "faucet-error": "Faucet pieprasījuma kļūda",
-    "phone-significant": "Significant",
-    "search-for": "Meklēt...",
+    
+    
+    
+    
     "sharing-copy-to-clipboard": "Copy to clipboard",
-    "phone-international": "International 2",
+    
     "sync-in-progress": "Sinhronizē...",
-    "enter-address": "Ieraksti adresi",
-    "switch-users": "Mainīt lietotāju",
+    
+    
     "send-transaction": "Sūtīt transakciju",
-    "recover-access": "Atgūt pieeju",
+    
     "incorrect-code": [
         "str",
         "Nepareizs kods, mēģiniet vēlreiz"
@@ -107,46 +106,45 @@
     "image-source-gallery": "Izvēlēties no galerijas",
     "sync-synced": "Sinhronizēts",
     "status-pending": "Neizlemts",
-    "delete-contact": "Dzēst kontaktu",
+    
     "datetime-day": {
         "one": "diena",
         "other": "dienas"
     },
-    "mute-notifications": "Mute",
-    "invalid-phone": "Nepareizs telefona numurs",
+    
+    
     "scan-qr": "Skanēt QR",
     "contact-s": {
         "one": "kontakts",
         "other": "kontakti"
     },
-    "status-sending": "Sūta",
+    
     "next": "Tālāk",
     "recent": "Recent",
     "status": "Status",
     "from": "No",
     "wrong-password": "Parole ievadīta nepareizi",
-    "search-chats": "Meklēt čatu",
+    
     "in-contacts": "Kontaktos",
     "sharing-share": "Dalīties...",
     "type-a-message": "Raksti īsziņu...",
-    "type-a-command": "Ievadi komandu...",
-    "shake-your-phone": "Atradi kļūdu? Pastāsti mums par to! Krati telefonu!",
-    "contacts-group-new-chat": "Sākt jaunu čatu",
-    "and-you": "un tu",
+    
+    
+    
     "clear-history": "Dzēst vēsturi",
     "no-contacts": "Kontaktu nav",
-    "status-sent": "Aizsūtīts",
-    "status-prompt": "Pievieno aprakstu lai cilvēki zinātu ko tu piedāvā. Tu vari arī izlietot #hashtagus.",
-    "delete-contact-confirmation": "Kontakts tiks dzēsts",
+    
+    
+    
     "datetime-today": "šodien",
-    "add-a-status": "Pievienot aprakstu...",
+    
     "web-view-error": "ups, kļūda",
-    "notifications-title": "Paziņojumi un Skaņas",
+    
     "error": "Kļūda",
-    "edit-contacts": "Rediģēt kontakts",
+    
     "more": "vairāk",
     "cancel": "Atcelt",
-    "no-statuses-found": "No statuses found",
+    
     "can-not-add-yourself": "Tu nevari pievienot sevi",
     "add-to-contacts": "Pievieno kontaktu",
     "available": "Pieejams",
@@ -158,35 +156,35 @@
         "zero": "nav dalībnieku"
     },
     "intro-message1": "Sveicināti! Uzspied lai sāktu!",
-    "not-implemented": "!tādas funkcijas pagaidām nav",
+    
     "new-contact": "Jauns kontakts",
     "datetime-second": {
         "one": "sekunde",
         "other": "sekundes"
     },
-    "status-failed": "Neizdevās",
-    "is-typing": "raksta",
+    
+    
     "recover": "Atgūt",
-    "suggestions-commands": "Komandas",
-    "contact-already-added": "Kontakts jau bija pievienots",
+    
+    
     "datetime-minute": {
         "one": "minūte",
         "other": "minūtes"
     },
     "browsing-open-in-android-web-browser": "Atvert pārlūkprogrammā",
     "browsing-open-in-ios-web-browser": "Atvert pārlūkprogrammā",
-    "delete-group-prompt": "Tas neietikmēs kontaktus",
+    
     "edit-profile": "Rediģēt profilu",
     "active-unknown": "Nezināms",
-    "search-tags": "Type your search tags here",
+    
     "public-key": "Public key",
-    "status-seen": "Apskatīts",
-    "status-delivered": "Piegādāts",
+    
+    
     "profile": "Profils",
-    "no-statuses-discovered": "No statuses discovered",
+    
     "none": "None",
     "removed": "noņemts",
-    "empty-topic": "Nav temata",
+    
     "message": "Īsziņa",
     "here-is-your-passphrase": "Te ir tavs jauns passphrase, *pieraksti un sargā to!* Tev viņš būs vajadzīgs lai atgūtu pieju savam kontam.",
     "image-source-title": "Profila bilde",

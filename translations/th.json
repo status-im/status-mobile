@@ -1,6 +1,6 @@
 {
     "confirm": "ยืนยัน",
-    "phone-national": "ระดับชาติ",
+    
     "amount": "จำนวน",
     "members-active": {
         "one": "1 สมาชิก, 1 ใช้งานอยู่",
@@ -10,11 +10,11 @@
     "chat-name": "ชื่อแชท",
     "phew-here-is-your-passphrase": "*โล่งอกไปที* มันไม่ง่ายเลย นี่คือวลีรหัสผ่านของคุณ *จดมันไว้และรักษามันให้ปลอดภัย!* คุณจะจำเป็นต้องใช้มันเพื่อกู้คืนบัญชีของคุณ",
     "public-group-topic": "หัวข้อ",
-    "debug-enabled": "มีการเปิดการดำเนินงานของเซิร์ฟเวอร์ที่ได้แก้ไขข้อบกพร่องแล้ว! ตอนนี้คุณสามารถเพิ่ม DApp ของคุณโดยการเปิดดำเนินการ *status-dev-cli scan* จากคอมพิวเตอร์ของคุณ",
+    
     "chat-settings": "การตั้งค่าแชท",
     "offline": "ออฟไลน์",
     "invited": "เชิญแล้ว",
-    "chat-send-eth": "{{amount}} ETH",
+    
     "address": "ที่อยู่",
     "new-public-group-chat": "เข้าร่วมแชทสาธารณะ",
     "datetime-hour": {
@@ -22,46 +22,46 @@
         "other": "ชั่วโมง"
     },
     "datetime-ago-format": "{{number}} {{time-intervals}} {{ago}}",
-    "address-explication": "บางที ในที่นี้คุณควรกรอกข้อความสักเล็กน้อยเพื่อแสดงที่อยู่หรือสถานที่ที่จะมองหามันได้",
+    
     "remove": "ลบ",
     "add-members": "เพิ่มสมาชิก",
-    "popular-tags": "แท็กยอดนิยม",
-    "twelve-words-in-correct-order": "12 คำตามลำดับที่ถูกต้อง",
-    "phone-number": "หมายเลขโทรศัพท์",
-    "removed-from-chat": "ลบคุณออกจากแชทกลุ่ม",
+    
+    
+    
+    
     "done": "เสร็จสิ้น",
-    "remove-from-contacts": "ลบออกจากรายชื่อติดต่อ",
+    
     "delete-chat": "ลบแชท",
     "new-group-chat": "แชทกลุ่มใหม่",
-    "edit-chats": "แก้ไขแชท",
+    
     "sign-in": "ลงชื่อเข้าใช้",
     "datetime-yesterday": "เมื่อวาน",
     "create-new-account": "สร้างบัญชีใหม่",
     "sign-in-to-status": "ลงชื่อเข้าใช้ในสถานะ",
     "datetime-ago": "ที่ผ่านมา",
     "contacts": "ผู้ติดต่อ",
-    "search-chat": "ค้นหาแชท",
+    
     "got-it": "เข้าใจแล้ว",
-    "move-to-internal-failure-message": "เราจำเป็นต้องย้ายไฟล์สำคัญบางไฟล์จากที่เก็บข้อมูลภายนอกมาเก็บไว้ในที่เก็บข้อมูลภายใน ในการดำเนินการนี้ เราต้องการการอนุญาตจากคุณ เราจะไม่ใช้ที่เก็บข้อมูลภายนอกสำหรับในเวอร์ชันในอนาคต",
+    
     "active-online": "ออนไลน์",
     "password": "รหัสผ่าน",
-    "status-seen-by-everyone": "อ่านแล้วโดยทุกคน",
-    "edit-group": "แก้ไขกลุ่ม",
-    "not-specified": "ไม่ระบุ",
-    "delete-group": "ลบกลุ่ม",
+    
+    
+    
+    
     "browsing-title": "เบราว์",
-    "reorder-groups": "จัดกลุ่มใหม่",
+    
     "discover": "การค้นพบ",
     "browsing-cancel": "ยกเลิก",
-    "faucet-success": "ได้รับคำขอไขก๊อกแล้ว",
+    
     "intro-status": "แชทกับฉันเพื่อตั้งค่าบัญชีของคุณและเปลี่ยนการตั้งค่าของคุณ!",
     "name": "ชื่อ",
-    "phone-number-required": "แตะที่นี่เพื่อกรอกหมายเลขโทรศัพท์ของคุณ & ฉันจะค้นหาเพื่อนของคุณ",
-    "unknown-address": "ที่อยู่ที่ไม่ทราบ",
-    "received-invitation": "คำเชิญแชทที่ได้รับ",
+    
+    
+    
     "show-qr": "แสดง QR",
     "connect": "เชื่อมต่อ",
-    "choose-from-contacts": "เลือกจากรายชื่อติดต่อ",
+    
     "edit": "แก้ไข",
     "account-generation-message": "ให้เวลาฉันหนึ่งวินาที ฉันจะต้องคำนวณอย่างหนักเพื่อสร้างบัญชีของคุณ!",
     "no-messages": "ไม่มีข้อความ",
@@ -70,31 +70,30 @@
     "members-title": "สมาชิก",
     "new-group": "กลุ่มใหม่",
     "phone-e164": "ระหว่างประเทศ 1",
-    "suggestions-requests": "คำร้องขอ",
+    
     "settings": "การตั้งค่า",
-    "remove-from-group": "ลบออกจากกลุ่ม",
-    "contacts-syncronized": "ไซิงค์รายชื่อผู้ติดต่อของคุณแล้ว",
-    "add-new-contact": "เพิ่มผู้ติดต่อใหม่",
-    "search-contacts": "ค้นหารายชื่อติดต่อ",
+    
+    
+    
     "chats": "แชท",
     "transaction": "การทำธุรกรรม",
     "public-group-status": "สาธารณะ",
-    "leave-chat": "ออกจากแชท",
+    
     "image-source-make-photo": "ถ่ายภาพ",
     "start-conversation": "เริ่มการสนทนา",
-    "topic-format": "รูปแบบไม่ถูกต้อง [a-z0-9\\-]+",
+    
     "save": "บันทึก",
-    "enter-valid-public-key": "โปรดใส่คีย์สาธารณะที่ถูกต้องหรือสแกนรหัส QR",
-    "faucet-error": "คำขอไขก๊อกผิดพลาด",
-    "phone-significant": "มีความสำคัญ",
-    "search-for": "ค้นหา...",
+    
+    
+    
+    
     "sharing-copy-to-clipboard": "คัดลอกไปยังคลิปบอร์ด",
-    "phone-international": "ระหว่างประเทศ 2",
+    
     "sync-in-progress": "กำลังซิงค์...",
-    "enter-address": "ใส่ที่อยู่",
-    "switch-users": "สลับผู้ใช้",
+    
+    
     "send-transaction": "ส่งการทำธุรกรรม",
-    "recover-access": "กู้คืนการเข้าถึง",
+    
     "incorrect-code": [
         "str",
         "ขออภัย รหัสไม่ถูกต้อง โปรดกรอกอีกครั้ง"
@@ -102,45 +101,44 @@
     "image-source-gallery": "เลือกจากแกลเลอรี",
     "sync-synced": "ระหว่างการซิงค์",
     "status-pending": "อยู่ระหว่างดำเนินการ",
-    "delete-contact": "ลบรายชื่อติดต่อ",
+    
     "datetime-day": {
         "one": "วัน",
         "other": "วัน"
     },
-    "mute-notifications": "ปิดเสียงการแจ้งเตือน",
-    "invalid-phone": "หมายเลขโทรศัพท์ไม่ถูกต้อง",
+    
+    
     "scan-qr": "สแกน QR",
     "contact-s": {
         "one": "รายชื่อติดต่อ",
         "other": "รายชื่อติดต่อ"
     },
-    "status-sending": "กำลังส่ง",
+    
     "next": "ถัดไป",
     "recent": "เมื่อเร็ว ๆ นี้",
     "status": "สถานะ",
     "from": "จาก",
     "wrong-password": "รหัสผ่านไม่ถูกต้อง",
-    "search-chats": "ค้นหาแชท",
+    
     "in-contacts": "ในรายชื่อติดต่อ",
     "sharing-share": "แชร์...",
     "type-a-message": "พิมพ์ข้อความ...",
-    "type-a-command": "เริ่มพิมพ์คำสั่ง...",
-    "shake-your-phone": "พบข้อบกพร่อง หรือมีข้อเสนอแนะ? เพียง ~เขย่า~ โทรศัพท์ของคุณ!",
-    "contacts-group-new-chat": "เริ่มแชทใหม่",
-    "and-you": "และคุณ",
+    
+    
+    
     "clear-history": "ลบประวัติ",
     "no-contacts": "ยังไม่มีผู้ติดต่อ",
-    "status-sent": "ส่งแล้ว",
-    "status-prompt": "สร้างสถานะเพื่อช่วยให้ผู้คนได้รู้ถึงสิ่งที่คุณกำลังเสนอ คุณสามารถใช้ #hashtags ได้ด้วย",
+    
+    
     "datetime-today": "วันนี้",
-    "add-a-status": "เพิ่มสถานะ...",
+    
     "web-view-error": "อุ๊ย มีข้อผิดพลาด",
-    "notifications-title": "การแจ้งเตือนและเสียง",
+    
     "error": "ข้อผิดพลาด",
-    "edit-contacts": "แก้ไขรายชื่อติดต่อ",
+    
     "more": "เพิ่มเติม",
     "cancel": "ยกเลิก",
-    "no-statuses-found": "ไม่พบสถานะ",
+    
     "can-not-add-yourself": "คุณไม่สามารถเพิ่มตัวคุณเอง",
     "add-to-contacts": "เพิ่มไปยังผู้ติดต่อ",
     "available": "มีให้ใช้ได้",
@@ -152,35 +150,35 @@
         "zero": "ไม่มีสมาชิก"
     },
     "intro-message1": "ยินดีต้อนรับสู่สถานะ \n แตะข้อความนี้เพื่อตั้งรหัสผ่านของคุณ & เริ่มต้น!",
-    "not-implemented": "!ยังไม่ได้ดำเนินการ",
+    
     "new-contact": "ผู้ติดต่อใหม่",
     "datetime-second": {
         "one": "วินาที",
         "other": "วินาที"
     },
-    "status-failed": "ล้มเหลว",
-    "is-typing": "กำลังพิมพ์",
+    
+    
     "recover": "กู้คืน",
-    "suggestions-commands": "คำสั่ง",
-    "contact-already-added": "ได้มีการเพิ่มผู้ติดต่อนี้แล้ว",
+    
+    
     "datetime-minute": {
         "one": "นาที",
         "other": "นาที"
     },
     "browsing-open-in-android-web-browser": "เปิดในเว็บเบราว์เซอร์",
     "browsing-open-in-ios-web-browser": "เปิดในเว็บเบราว์เซอร์",
-    "delete-group-prompt": "การดำเนินการนี้จะไม่ส่งผลต่อรายชื่อติดต่อ",
+    
     "edit-profile": "แก้ไขโปรไฟล์",
     "active-unknown": "ไม่ทราบ",
-    "search-tags": "พิมพ์แท็กการค้นหาของคุณที่นี่",
+    
     "public-key": "คีย์สาธารณะ",
-    "status-seen": "อ่านแล้ว",
-    "status-delivered": "ส่งแล้ว",
+    
+    
     "profile": "โปรไฟล์",
-    "no-statuses-discovered": "ไม่พบสถานะใด ๆ",
+    
     "none": "ไม่มี",
     "removed": "ลบแล้ว",
-    "empty-topic": "หัวข้อว่างเปล่า",
+    
     "message": "ข้อความ",
     "here-is-your-passphrase": "นี่คือวลีรหัสผ่านของคุณ *จดมันไว้และรักษามันให้ปลอดภัย!* คุณจะจำเป็นต้องใช้มันเพื่อกู้คืนบัญชีของคุณ",
     "image-source-title": "รูปโปรไฟล์",

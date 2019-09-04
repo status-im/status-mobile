@@ -1,6 +1,6 @@
 {
     "confirm": "Bekræft",
-    "phone-national": "National",
+    
     "amount": "Beløb",
     "members-active": {
         "one": "1 medlem",
@@ -10,12 +10,12 @@
     "chat-name": "Chatnavn",
     "phew-here-is-your-passphrase": "*Puha* det var hårdt, her er din kodesætning (passphrase), *skriv den ned og gem den sikkert!* Du skal bruge den for at kunne gendanne din konto.",
     "public-group-topic": "Emne",
-    "debug-enabled": "Debug server has been launched! You can now execute *status-dev-cli scan* to find the server from your computer on the same network.",
+    
     "chat-settings": "Chatindstillinger",
     "offline": "Offline",
-    "update-status": "Opdater din status...",
+    
     "invited": "Inviteret",
-    "chat-send-eth": "{{amount}} ETH",
+    
     "address": "Adresse",
     "new-public-group-chat": "Deltag i offentlig samtale",
     "datetime-hour": {
@@ -24,48 +24,48 @@
     },
     "datetime-ago-format": "{{number}} {{time-intervals}} {{ago}}",
     "camera-access-error": "Gå venligst til dine systemindstillinger og sørg  for at du Status > Kamera er tilladt.",
-    "address-explication": "Maybe here should be some text explaining what an address is and where to look for it",
+    
     "remove": "Fjern",
     "add-members": "Tilføj medlemmere",
-    "popular-tags": "Populære tags",
-    "twelve-words-in-correct-order": "12 ord i den korrekte rækkefølge",
-    "phone-number": "Telefonnummer",
+    
+    
+    
     "photos-access-error": "Gå venligst til dine systemindstillinger og sørg  for at du Status > Billeder er tilladt.",
-    "removed-from-chat": "Fjernede dig fra gruppechatten",
+    
     "done": "Klar",
-    "remove-from-contacts": "Fjern fra kontakter",
+    
     "delete-chat": "Fjern samtale",
     "new-group-chat": "Ny gruppsamtale",
-    "edit-chats": "Rediger samtaler",
+    
     "sign-in": "Log på",
     "datetime-yesterday": "i går",
     "create-new-account": "Opret en ny konto",
     "sign-in-to-status": "Log på Status",
     "datetime-ago": "siden",
     "contacts": "Kontakter",
-    "search-chat": "Søg i chat",
+    
     "got-it": "Forstået",
-    "delete-group-confirmation": "Denne gruppe vil blivve fjernet fra dine grupper. Dette vil ikke påvirke dine kontakter.",
-    "move-to-internal-failure-message": "Vi skal flyyte nogle vigtige filer fra din eksterne til din interne hukommelse. For at gøre dette har vi brug for din tilladelse. Vi vil ikke bruge din eksterne hukkomelse i kommende versioner.",
+    
+    
     "active-online": "Online",
     "password": "Kodeord",
-    "status-seen-by-everyone": "Set af alle",
-    "edit-group": "Rediger gruppe",
-    "not-specified": "Ikke angivet",
-    "delete-group": "Slet gruppe",
+    
+    
+    
+    
     "browsing-title": "Browse",
-    "reorder-groups": "Arranger grupper",
+    
     "discover": "Opdag",
     "browsing-cancel": "Annullér",
-    "faucet-success": "Faucet request er modtaget",
+    
     "intro-status": "Chat med mig for at opsætte din konto og ændre dine indstillinger!!",
     "name": "Navn",
-    "phone-number-required": "Klik her for at indtaste dit telefonnummer, så vil jeg finde dine venner",
-    "unknown-address": "Ukendt adresse",
-    "received-invitation": "Accepterede chatinvitaion",
+    
+    
+    
     "show-qr": "Vis QR-kode",
     "connect": "Tilslut",
-    "choose-from-contacts": "Vælg fra kontakter",
+    
     "edit": "Rediger",
     "account-generation-message": "Vent et øjeblik, jeg er nødt til at gøre nogle skøre beregninger for at generere din konto!",
     "no-messages": "Ingen beskeder",
@@ -74,32 +74,31 @@
     "members-title": "Medlemmere",
     "new-group": "Ny gruppe",
     "phone-e164": "International 1",
-    "suggestions-requests": "Anmodninger",
+    
     "settings": "Indstillinger",
-    "remove-from-group": "Fjern fra gruppe",
-    "contacts-syncronized": "Dine kontakter er synkroniseret",
-    "add-new-contact": "Tilføj ny kontakt",
+    
+    
     "delete": "Slet",
-    "search-contacts": "Søg efter kontakter",
+    
     "chats": "Samtaler",
     "transaction": "Transaktion",
     "public-group-status": "Offentlig",
-    "leave-chat": "Forlad samtale",
+    
     "image-source-make-photo": "Tag billede",
     "start-conversation": "Begynd samtale",
-    "topic-format": "Forkert format [a-z0-9\\-]+",
+    
     "save": "Gem",
-    "enter-valid-public-key": "Indtast venligst en gyldig offentlig nøgle eller scan en QR-kode",
-    "faucet-error": "Faucet request fejl",
-    "phone-significant": "Significant",
-    "search-for": "Søg efter...",
+    
+    
+    
+    
     "sharing-copy-to-clipboard": "Kopier til udklipsholderen",
-    "phone-international": "International 2",
+    
     "sync-in-progress": "Synkroniserer...",
-    "enter-address": "Indtast adresse",
-    "switch-users": "Skift bruger",
+    
+    
     "send-transaction": "Send transaktion",
-    "recover-access": "Gendan adgang",
+    
     "incorrect-code": [
         "str",
         "Koden var desværre forkert. Prøv venligst igen"
@@ -107,46 +106,45 @@
     "image-source-gallery": "Vælg fra galleri",
     "sync-synced": "Synkroniseret",
     "status-pending": "Under behandling",
-    "delete-contact": "Fjern kontakt",
+    
     "datetime-day": {
         "one": "dag",
         "other": "dage"
     },
-    "mute-notifications": "Sluk for notifikationer",
-    "invalid-phone": "Ugyldigt telefonnummer",
+    
+    
     "scan-qr": "Skan QR-kode",
     "contact-s": {
         "one": "kontakt",
         "other": "kontakter"
     },
-    "status-sending": "Sender",
+    
     "next": "Næste",
     "recent": "Seneste",
     "status": "Status",
     "from": "Fra",
     "wrong-password": "Forkert kodeord",
-    "search-chats": "Søg samtaler",
+    
     "in-contacts": "I kontakter",
     "sharing-share": "Del...",
     "type-a-message": "Skriv en besked...",
-    "type-a-command": "Skriv en kommando...",
-    "shake-your-phone": "Fundet en bug eller har du et foreslag. Blot ryst din telefon!",
-    "contacts-group-new-chat": "Start en ny samtale",
-    "and-you": "og du",
+    
+    
+    
     "clear-history": "Fjern historik",
     "no-contacts": "Ingen kontakter endnu",
-    "status-sent": "Sendt",
-    "status-prompt": "Lav en status for at lade folk vide hvad du tilbyder. Du kan også bruge #hashtags.",
-    "delete-contact-confirmation": "Denne kontakt vil blive fjernet fra dine kontakter",
+    
+    
+    
     "datetime-today": "i dag",
-    "add-a-status": "Tilføj en status...",
+    
     "web-view-error": "hovsa, fejl",
-    "notifications-title": "Notifikationer",
+    
     "error": "Fejl",
-    "edit-contacts": "Rediger kontakter",
+    
     "more": "mere",
     "cancel": "Annullér",
-    "no-statuses-found": "Inger statusser fundet",
+    
     "can-not-add-yourself": "Du kan ikke tilføje dig selv fjolle",
     "add-to-contacts": "Tilføj til kontakter",
     "available": "Aktiv",
@@ -158,35 +156,35 @@
         "zero": "ingen medlemmer"
     },
     "intro-message1": "Velkommen til Status\n Tryk på denne meddelelse for at angive din adgangskode og komme i gang!",
-    "not-implemented": "Ikke implementeret!",
+    
     "new-contact": "Ny kontakt",
     "datetime-second": {
         "one": "sekund",
         "other": "sekunder"
     },
-    "status-failed": "Mislykket",
-    "is-typing": "skriver",
+    
+    
     "recover": "Gendan",
-    "suggestions-commands": "Kommandoer",
-    "contact-already-added": "Kontakten er allerede tilføjet",
+    
+    
     "datetime-minute": {
         "one": "minut",
         "other": "minutter"
     },
     "browsing-open-in-android-web-browser": "Åben i web browser",
     "browsing-open-in-ios-web-browser": "Åben i web browser",
-    "delete-group-prompt": "Dette vil ikke påvirke dine kontakter",
+    
     "edit-profile": "Rediger profil",
     "active-unknown": "Ukendt",
-    "search-tags": "Skrive de tags du vil søge efter her",
+    
     "public-key": "Offentlig nøgle",
-    "status-seen": "Set",
-    "status-delivered": "Leveret",
+    
+    
     "profile": "Profil",
-    "no-statuses-discovered": "Ingen statusser opdaget",
+    
     "none": "Ingen",
     "removed": "Fjernet",
-    "empty-topic": "Tomt emne",
+    
     "message": "Meddelelser",
     "here-is-your-passphrase": "Her er din kodesætning (passphrase), *skriv den ned og gem den sikkert!* Du behøver den for at gendanne din konto.",
     "image-source-title": "Profilbillede",

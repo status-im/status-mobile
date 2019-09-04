@@ -1,6 +1,6 @@
 {
     "confirm": "Bevestig",
-    "phone-national": "Nasionaal",
+    
     "amount": "Bedrag",
     "members-active": {
         "one": "1 lid, 1 aktief",
@@ -10,11 +10,11 @@
     "chat-name": "Bynaam",
     "phew-here-is-your-passphrase": "*Sjoe* dit was moeilik, hier is jou tydelike wagwoord, *skryf dit neer en hou dit veilig!* Jy sal dit nodig hê om jou rekening te herwin.",
     "public-group-topic": "Onderwerp",
-    "debug-enabled": "Ontfout-bediener is bekendgestel! U kan nou u DApp byvoeg deur *status-dev-cli scan* te hardloop vanaf u rekenaar",
+    
     "chat-settings": "Geselsie-stellings",
     "offline": "Aflyn",
     "invited": "uitgenooi",
-    "chat-send-eth": "{{amount}} ETH",
+    
     "address": "Adres",
     "new-public-group-chat": "Sluit aan by openbare klets",
     "datetime-hour": {
@@ -22,46 +22,46 @@
         "other": "ure"
     },
     "datetime-ago-format": "{{number}} {{time-intervals}} {{ago}}",
-    "address-explication": "Miskien moet hier 'n bietjie teks wees wat verduidelik wat 'n adres is en waar om daarvoor te soek.",
+    
     "remove": "Verwyder",
     "add-members": "Voeg lede by",
-    "popular-tags": "Gewilde oortjies",
-    "twelve-words-in-correct-order": "12 woorde in korrekte volgorde",
-    "phone-number": "Telefoonnommer",
-    "removed-from-chat": "het jou van groepsgeselsie verwyder",
+    
+    
+    
+    
     "done": "Gedoen",
-    "remove-from-contacts": "Verwyder van kontakte",
+    
     "delete-chat": "Skrap klets",
     "new-group-chat": "Nuwe groepgeselsie",
-    "edit-chats": "Redigeer kletse",
+    
     "sign-in": "Teken aan",
     "datetime-yesterday": "gister",
     "create-new-account": "Skep nuwe rekening",
     "sign-in-to-status": "Teken aan op Status",
     "datetime-ago": "gelede",
     "contacts": "Kontakte",
-    "search-chat": "Deursoek geselsies",
+    
     "got-it": "Het dit",
-    "move-to-internal-failure-message": "Ons moet ‘n paar belangrike lêers skuif van eksterne na interne berging. Om dit te doen, het ons u toestemming nodig. Ons sal nie eksterne berging gebruik in toekomstige weergawes nie.",
+    
     "active-online": "Aanlyn",
     "password": "Wagwoord",
-    "status-seen-by-everyone": "Deur almal gesien",
-    "edit-group": "Redigeer groep",
-    "not-specified": "Nie gespesifiseer nie",
-    "delete-group": "Skrap groep",
+    
+    
+    
+    
     "browsing-title": "Blaai",
-    "reorder-groups": "Herrangskik groepe",
+    
     "discover": "Ontdekking",
     "browsing-cancel": "Kanselleer",
-    "faucet-success": "Kraan versoek is ontvang",
+    
     "intro-status": "Gesels met my om jou rekening op te stel en jou stellings te verander!",
     "name": "Naam",
-    "phone-number-required": "Tik hier om jou telefoonnommer in te voer & ek sal jou vriende opspoor",
-    "unknown-address": "Onbekende adres",
-    "received-invitation": "geselsie-uitnodiging ontvang",
+    
+    
+    
     "show-qr": "Wys QR",
     "connect": "Konnekteer",
-    "choose-from-contacts": "Kies uit kontakte",
+    
     "edit": "Wysig",
     "account-generation-message": "Net 'n oomblik, ek moet mal somme doen om jou rekening te skep!",
     "no-messages": "Geen boodskappe",
@@ -70,31 +70,31 @@
     "members-title": "lede",
     "new-group": "Nuwe groep",
     "phone-e164": "Internasionaal 1",
-    "suggestions-requests": "Versoeke",
+    
     "settings": "Stellings",
-    "remove-from-group": "Verwyder van groep",
-    "contacts-syncronized": "U kontakte is gesinchroniseer",
-    "add-new-contact": "Voeg nuwe kontak by",
-    "search-contacts": "Soek kontakte",
+    
+]]
+    
+    
     "chats": "Geselsies",
     "transaction": "Transaksie",
     "public-group-status": "Openbaar",
-    "leave-chat": "Verlaat klets",
+    
     "image-source-make-photo": "Opname",
     "start-conversation": "Begin gesprek",
-    "topic-format": "Verkeerde formaat [a-z0-9\\-]+",
+    
     "save": "Stoor",
-    "enter-valid-public-key": "Voer asseblief ‘n geldige openbare sleutel in of skandeer ‘n QR-kode in",
-    "faucet-error": "Kraan versoek fout",
-    "phone-significant": "Aansienlik",
-    "search-for": "Soek vir...",
+    
+    
+    
+    
     "sharing-copy-to-clipboard": "Kopieer na knipbord",
-    "phone-international": "Internasionaal 2",
+    
     "sync-in-progress": "Besig om te sinchroniseer...",
-    "enter-address": "Voeg ‘n adres in",
-    "switch-users": "Verander gebruikers",
+    
+    
     "send-transaction": "Stuur transaksie",
-    "recover-access": "Herwin toegang",
+    
     "incorrect-code": [
         "str",
         "Jammer, die kode was nie korrek nie, voer asseblief weer in"
@@ -102,45 +102,44 @@
     "image-source-gallery": "Kies uit galery",
     "sync-synced": "gesinchroniseer",
     "status-pending": "Hangende",
-    "delete-contact": "Skrap kontak",
+    
     "datetime-day": {
         "one": "dag",
         "other": "dae"
     },
-    "mute-notifications": "Demp kennisgewings",
-    "invalid-phone": "Ongeldige telefoonnommer",
+    
+    
     "scan-qr": "Skandeer QR",
     "contact-s": {
         "one": "kontak",
         "other": "kontakte"
     },
-    "status-sending": "Besig om te stuur",
+    
     "next": "Volgende",
     "recent": "Onlangs",
     "status": "Status",
     "from": "Van",
     "wrong-password": "Verkeerde wagwoord",
-    "search-chats": "Soek kletse",
+    
     "in-contacts": "In kontakte",
     "sharing-share": "Deel...",
     "type-a-message": "Tik ‘n boodskap...",
-    "type-a-command": "Begin ‘n opdrag tik...",
-    "shake-your-phone": "Vind ‘n fout of het ‘n voorstel? Skud ~net~ u foon!",
-    "contacts-group-new-chat": "Begin nuwe geselsie",
-    "and-you": "en jy",
+    
+    
+    
     "clear-history": "Maak geskiedenis skoon",
     "no-contacts": "Nog geen kontakte nie",
-    "status-sent": "Gestuur",
-    "status-prompt": "Skep ‘n status om te help dat mense weet oor die goed wat u aanbied. U kan #hutsmerke ook gebruik.",
+    
+    
     "datetime-today": "vandag",
-    "add-a-status": "Voeg ‘n status by...",
+    
     "web-view-error": "oepsie, fout",
-    "notifications-title": "Kennisgewings en klanke",
+    
     "error": "Fout",
-    "edit-contacts": "Redigeer kontakte",
+    
     "more": "meer",
     "cancel": "Kanselleer",
-    "no-statuses-found": "Geen statusse gevind nie",
+    
     "can-not-add-yourself": "Jy kan nie jouself byvoeg nie",
     "add-to-contacts": "Voeg by kontakte",
     "available": "Beskikbaar",
@@ -152,35 +151,35 @@
         "zero": "geen lede"
     },
     "intro-message1": "Welkom by Status\nTik tik hierdie boodskap om jou wagwoord te stel & laat ons begin!",
-    "not-implemented": "!nie geimplimenteer nie",
+    
     "new-contact": "Nuwe kontak",
     "datetime-second": {
         "one": "sekonde",
         "other": "sekondes"
     },
-    "status-failed": "Gefaal",
-    "is-typing": "is besig om te tik",
+    
+    
     "recover": "Herstel",
-    "suggestions-commands": "Opdragte",
-    "contact-already-added": "Die kontak is alreeds bygevoeg",
+    
+    
     "datetime-minute": {
         "one": "minuut",
         "other": "minute"
     },
     "browsing-open-in-android-web-browser": "Maak oop in webblaaier",
     "browsing-open-in-ios-web-browser": "Maak oop in webblaaier",
-    "delete-group-prompt": "Dit sal nie kontakte affekteer nie",
+    
     "edit-profile": "Redigeer profiel",
     "active-unknown": "Onbekend",
-    "search-tags": "Tik jou soek-oortjies hier in",
+    
     "public-key": "Openbare sleutel",
-    "status-seen": "Gesien",
-    "status-delivered": "Afgelewer",
+    
+    
     "profile": "Profiel",
-    "no-statuses-discovered": "Geen statusse gevind nie",
+    
     "none": "Geen",
     "removed": "verwyder",
-    "empty-topic": "Leë onderwerp",
+    
     "message": "Boodskap",
     "here-is-your-passphrase": "Hier is jou tydelike wagwoord, *skryf dit neer en hou dit veilig!* Jy sal dit nodig hê om jou rekening te herwin.",
     "image-source-title": "Profielbeeld",

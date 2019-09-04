@@ -3,7 +3,7 @@
     "transaction-details": "交易明細",
     "confirm": "確認",
     "description": "簡介",
-    "phone-national": "國內",
+    
     "amount": "金額",
     "open": "開啟",
     "close-app-title": "警告！",
@@ -15,12 +15,12 @@
     "chat-name": "聊天名稱",
     "phew-here-is-your-passphrase": "嗨，真不容易。這是你的密碼，*寫下來並好好保管它!* 你需要用它來恢復你的帳戶。",
     "public-group-topic": "話題",
-    "debug-enabled": "除錯伺服器已經推出！現在你可以在自己的計算機上執行 *status-dev-cli scan* 來查詢在同一網路上的伺服器。",
+    
     "chat-settings": "對話設定",
     "offline": "離線",
-    "update-status": "更新你的狀態...",
+    
     "invited": "已邀請",
-    "chat-send-eth": "{{amount}} ETH",
+    
     "address": "地址",
     "new-public-group-chat": "加入公共聊天",
     "datetime-hour": {
@@ -33,77 +33,77 @@
     "block": "塊",
     "camera-access-error": "要授予所需的攝像機許可，請轉到系統設定，並確定選中了 “Status” > “攝像機”。",
     "wallet-invalid-address": "無效的地址: \n {{data}}",
-    "address-explication": "你的公鑰可以用來生成以太坊地址，由一系列數字和字母組成，可以在個人簡介中輕鬆地找到。",
+    
     "remove": "刪除",
-    "transactions-delete-content": "交易將從“未簽名”列表中移除",
-    "transactions-unsigned-empty": "你沒有任何未簽名的交易",
-    "transaction-moved-text": "本交易將在接下來的5分鐘保持在“未簽名”列表中",
+    
+    
+    
     "add-members": "新增成員",
-    "sign-later-title": "稍後對交易進行簽名？",
+    
     "yes": "是",
     "dapps": "ÐApps",
-    "popular-tags": "熱門標籤",
+    
     "network-settings": "網路設定",
-    "twelve-words-in-correct-order": "正確排序的12個單詞",
-    "transaction-moved-title": "移動的交易",
-    "phone-number": "電話號碼",
+    
+    
+    
     "photos-access-error": "要授予所需的照片許可，請轉到系統設定，並確保選中了 “Status” > “照片”。",
     "hash": "雜湊",
-    "removed-from-chat": "已將你從群聊中刪除",
+    
     "done": "完成",
-    "remove-from-contacts": "從聯絡人中刪除",
+    
     "delete-chat": "刪除聊天",
     "new-group-chat": "新的群聊",
-    "edit-chats": "編輯對話",
+    
     "wallet": "錢包",
-    "wallet-exchange": "交易",
+    
     "wallet-request": "請求",
     "sign-in": "登入",
     "datetime-yesterday": "昨天",
     "create-new-account": "建立新賬戶",
     "sign-in-to-status": "登入 Status",
-    "dapp-profile": "ÐApp 簡介",
-    "sign-later-text": "檢查交易歷史記錄，可以對本次交易進行簽名",
+    
+    
     "datetime-ago": "前",
-    "no-hashtags-discovered-body": "當一個 #hashtag 變為流行標籤，你可以在這裡看到它。",
+    
     "contacts": "聯絡人",
-    "search-chat": "搜尋聊天",
+    
     "got-it": "知道了",
-    "delete-group-confirmation": "此群組將從你的群組中移除，這不會影響你的聯絡人。",
+    
     "public-chats": "公共聊天",
     "not-applicable": "對未簽名交易不可用",
-    "move-to-internal-failure-message": "我們需要將一些重要的檔案從外部儲存移動到內部儲存。為此，我們需要你的許可。在之後的版本中，我們將不會使用外部儲存。",
+    
     "active-online": "線上",
     "password": "密碼",
-    "status-seen-by-everyone": "所有人可見",
-    "edit-group": "編輯群組",
-    "not-specified": "未指定",
-    "delete-group": "刪除群組",
+    
+    
+    
+    
     "send-request": "傳送請求",
     "paste-json": "貼上 JSON",
     "browsing-title": "瀏覽",
-    "wallet-add-asset": "新增資產",
-    "reorder-groups": "重新排序群組",
+    
+    
     "transactions-history-empty": "暫無交易歷史記錄",
     "discover": "發現",
-    "wallet-error": "載入資料錯誤",
+    
     "browsing-cancel": "取消",
-    "faucet-success": "水龍頭請求已經收到",
+    
     "intro-status": "跟我聊天，以設定你的帳戶並更改你的設定！",
     "name": "名稱",
     "gas-price": "Gas 價格",
-    "phone-number-required": "點選此處輸入你的電話號碼，我會找到你的朋友",
-    "view-transaction-details": "檢視交易明細",
+    
+    
     "validation-amount-is-too-precise": "金額過於精確，所能傳送的最小單位是1 Wei (1x10^-18 ETH)",
     "copy-transaction-hash": "複製交易雜湊",
-    "unknown-address": "未知地址",
-    "received-invitation": "收到的聊天邀請",
+    
+    
     "show-qr": "顯示二維碼",
-    "edit-network-config": "編輯網路配置",
+    
     "connect": "連線",
-    "choose-from-contacts": "從聯絡人中選擇",
+    
     "edit": "編輯",
-    "wallet-address-from-clipboard": "使用剪貼簿中的地址",
+    
     "account-generation-message": "給我一點時間，我得瘋狂地計算一下，才能生成你的帳戶！",
     "remove-network": "移除網路",
     "no-messages": "無訊息",
@@ -112,50 +112,49 @@
     "members-title": "成員",
     "new-group": "新增群組",
     "phone-e164": "國際1",
-    "suggestions-requests": "請求",
+    
     "connected": "已連線",
     "rpc-url": "RPC 連結",
     "settings": "設定",
-    "remove-from-group": "從群組中移除",
+    
     "specify-rpc-url": "指定一個 RPC 連結",
-    "contacts-syncronized": "已同步你的聯絡人",
-    "transactions-sign-all": "簽名所有",
+    
     "gas-limit": "Gas 限制",
-    "wallet-browse-photos": "瀏覽相簿",
-    "add-new-contact": "新增新的聯絡人",
-    "no-statuses-discovered-body": "當某個人釋出\n一條狀態時，你可以在這裡看到它。",
-    "add-json-file": "新增一個 JSON 檔案",
+    
+    
+    
+    
     "delete": "刪除",
-    "search-contacts": "搜尋聯絡人",
+    
     "chats": "聊天",
     "transaction-sent": "傳送的交易",
     "transaction": "交易",
     "public-group-status": "公共",
-    "leave-chat": "離開對話",
-    "transactions-delete": "刪除交易",
+    
+    
     "mainnet-text": "你正在使用主幹網路，可以傳送真正的 ETH。",
     "image-source-make-photo": "拍攝",
     "chat": "聊天",
     "start-conversation": "開始對話",
-    "topic-format": "格式錯誤 [a-z0-9\\-]+",
-    "add-new-network": "新增新網路",
+    
+    
     "save": "儲存",
-    "enter-valid-public-key": "請輸入一個有效的公鑰或掃描二維碼",
-    "faucet-error": "水龍頭請求錯誤",
-    "phone-significant": "重要",
+    
+    
+    
     "all": "全部",
     "confirmations-helper-text": "請等待達到至少12個確認，來確保交易已被安全地處理。",
-    "search-for": "搜尋...",
+    
     "sharing-copy-to-clipboard": "複製到剪貼簿",
-    "your-wallets": "你的錢包",
-    "phone-international": "國際2",
+    
+    
     "sync-in-progress": "正在同步...",
     "enter-password": "輸入密碼",
-    "enter-address": "輸入地址",
-    "switch-users": "切換使用者",
+    
+    
     "send-transaction": "傳送交易",
     "confirmations": "確認",
-    "recover-access": "恢復訪問",
+    
     "incorrect-code": [
         "str",
         "抱歉，程式碼不正確，請重新輸入"
@@ -164,24 +163,23 @@
     "sync-synced": "已同步",
     "currency": "貨幣",
     "status-pending": "等待中",
-    "delete-contact": "刪除聯絡人",
+    
     "connecting-requires-login": "連線其它網路需要登入",
-    "no-hashtags-discovered-title": "未發現 #hashtags",
     "datetime-day": {
         "one": "天",
         "other": "天"
     },
     "request-transaction": "請求交易",
     "wallet-send": "傳送",
-    "mute-notifications": "靜音通知",
-    "invalid-phone": "無效的電話號碼",
+    
+    
     "scan-qr": "掃描二維碼",
     "contact-s": {
         "one": "聯絡人",
         "other": "聯絡人"
     },
-    "unsigned-transaction-expired": "未簽名的交易過期",
-    "status-sending": "正在傳送...",
+    
+    
     "gas-used": "使用的 Gas",
     "transactions-filter-type": "型別",
     "next": "下一個",
@@ -191,100 +189,99 @@
     "status": "狀態",
     "from": "從",
     "wrong-password": "密碼錯誤",
-    "search-chats": "搜尋對話",
-    "transactions-sign-later": "稍後簽名",
+    
+    
     "in-contacts": "已新增聯絡人",
     "transactions-sign": "簽名",
     "sharing-share": "分享...",
     "type-a-message": "輸入訊息...",
-    "type-a-command": "開始輸入指令...",
+    
     "usd-currency": "USD",
-    "existing-networks": "已有的網路",
+    
     "node-unavailable": "沒有可用的以太坊節點",
     "url": "連結",
-    "shake-your-phone": "發現錯誤或有建議？僅需 ~搖一搖~ 你的手機！",
+    
     "add-network": "新增網路",
     "unknown-status-go-error": "未知的 status-go 錯誤",
-    "contacts-group-new-chat": "開始新的聊天",
-    "and-you": "你",
-    "wallets": "錢包",
+    
+    
     "clear-history": "清空歷史記錄",
-    "wallet-choose-from-contacts": "從聯絡人中選擇",
+    
     "signing-phrase-description": "通過輸入密碼對交易進行簽名，請確保輸入的詞語和你的簽名密碼相匹配",
     "no-contacts": "還沒有聯絡人",
-    "here-is-your-signing-phrase": "這是你的簽名密碼，你需要用它來驗證你的交易，*寫下來並好好保管它!*",
+    
     "soon": "不久",
     "close-app-content": "應用將會停止並關閉。當你重新開啟應用，選中的網路將會被使用",
-    "status-sent": "已傳送",
-    "status-prompt": "設定你的 Status。使用 #hastags 可以幫助其他人瞭解你，並且談論你正在想些什麼。",
-    "delete-contact-confirmation": "此聯絡人將從你的聯絡人中刪除",
+    
+    
+    
     "datetime-today": "今天",
-    "add-a-status": "新增狀態...",
+    
     "web-view-error": "糟糕，出錯了",
-    "notifications-title": "通知和聲音",
+    
     "error": "錯誤",
     "transactions-sign-transaction": "簽名交易",
-    "edit-contacts": "編輯聯絡人",
+    
     "more": "更多",
     "cancel": "取消",
-    "no-statuses-found": "未發現狀態",
+    
     "can-not-add-yourself": "不能新增自己",
     "transaction-description": "請等待達到至少12個確認，來確保交易已被安全地處理。",
     "add-to-contacts": "新增到聯絡人",
     "available": "可用",
-    "paste-json-as-text": "貼上 JSON 為文字",
+    
     "You": "你",
     "main-wallet": "主錢包",
-    "process-json": "處理 JSON",
+    
     "testnet-text": "你正在使用 {{testnet}} 測試網路，請不要向你的地址傳送真實的 ETH 或者 SNT。",
     "transactions": "交易",
-    "transactions-unsigned": "未簽名",
+    
     "members": {
         "one": "1 個成員",
         "other": "{{count}} 個成員",
         "zero": "無成員"
     },
     "intro-message1": "歡迎來到 Status\n點選該訊息來設定你的密碼並開始！",
-    "public-chat-user-count": "{{count}} 人",
+    
     "eth": "ETH",
     "transactions-history": "歷史記錄",
-    "not-implemented": "!未實現",
+    
     "new-contact": "新的聯絡人",
     "datetime-second": {
         "one": "秒",
         "other": "秒"
     },
-    "status-failed": "失敗",
-    "is-typing": "正在輸入",
+    
+    
     "recover": "恢復",
     "wallet-total-value": "總值",
-    "suggestions-commands": "命令",
+    
     "nonce": "隨機數",
     "new-network": "新建網路",
-    "contact-already-added": "已新增該聯絡人",
+    
     "datetime-minute": {
         "one": "分鐘",
         "other": "分鐘"
     },
     "browsing-open-in-android-web-browser": "在網路瀏覽器中開啟",
     "browsing-open-in-ios-web-browser": "在網路瀏覽器中開啟",
-    "delete-group-prompt": "這不會影響你的聯絡人",
+    
     "wallet-insufficient-funds": "資金不足",
     "edit-profile": "編輯個人資料",
     "active-unknown": "未知",
-    "search-tags": "在此處輸入搜尋標籤",
+    
     "transaction-failed": "交易失敗",
     "public-key": "公鑰",
-    "error-processing-json": "處理 JSON 錯誤",
-    "status-seen": "可見",
-    "transactions-filter-tokens": "代幣",
-    "status-delivered": "已傳送",
+    
+    
+    
+    
     "profile": "個人資料",
     "wallet-choose-recipient": "選擇接收方",
-    "no-statuses-discovered": "未發現狀態",
+    
     "none": "無",
     "removed": "已刪除",
-    "empty-topic": "清空話題",
+    
     "no": "否",
     "transactions-filter-select-all": "全部選中",
     "transactions-filter-title": "過濾歷史記錄",
@@ -294,7 +291,7 @@
     "image-source-title": "個人資料圖片",
     "current-network": "當前網路",
     "left": "剩餘",
-    "edit-network-warning": "請小心，編輯網路資料可能導致當前網路不可用",
+    
     "to": "到",
     "data": "資料",
     "cost-fee": "成本/費用"

@@ -13,7 +13,7 @@
     "active-online": "온라인",
     "active-unknown": "알 수 없음",
     "add": "추가",
-    "add-a-status": "상태 메시지 추가...",
+    
     "add-a-watch-account": "보기 전용 계정 추가",
     "add-account": "계정 추가",
     "add-account-description": "모든 유형의 이더리움 계정을 스테이터스 지갑에 불러올 수 있습니다",
@@ -23,16 +23,16 @@
     "add-bootnode": "Bootnode 추가",
     "add-contact": "연락처 추가",
     "add-custom-token": "커스텀 토큰 추가",
-    "add-existing-multiaccount": "기존 계정 추가",
-    "add-json-file": "JSON 파일 추가",
+    
+    
     "add-mailserver": "메일서버 추가",
     "add-members": "멤버 추가",
     "add-network": "네트워크 추가",
-    "add-new-contact": "새 연락처 추가",
-    "add-new-network": "새 네트워크 추가",
+    
+    
     "add-to-contacts": "연락처에 추가",
     "address": "주소",
-    "address-explication": "공개 키는 Ethereum 주소를 생성하기 위해 사용되며, 숫자와 알파벳으로 이루어져 있습니다. 프로필에서 쉽게 확인할 수 있습니다.",
+    
     "advanced": "고급 설정",
     "advanced-settings": "고급 설정",
     "agree-by-continuing": "계속함으로써 아래 약관에 동의합니다.\n 스테이터스 ",
@@ -40,11 +40,11 @@
     "allow": "허용",
     "allowing-authorizes-this-dapp": "지갑 주소를 검색하고 웹3를 사용하기 위해 디앱에 권한을 허용합니다.",
     "already-have-asset": "이미 해당 자산을 가지고 있습니다",
-    "already-have-multiaccount": "이미 계정을 가지고 있습니다",
+    
     "always-allow": "항상 허용",
     "amount": "수량",
     "amount-placeholder": "수량 입력...",
-    "and-you": "그리고 사용자",
+
     "are-you-sure-description": "지금부터 시드 시드 구문을 다시 확인할 수 없습니다",
     "are-you-sure?": "확실히 확인하셨습니까?",
     "ask-in-status": "질문 및 버그 신고",
@@ -60,7 +60,7 @@
     "backup-recovery-phrase": "시드 구문 백업",
     "backup-your-recovery-phrase": "시드 구문 백업",
     "balance": "잔액",
-    "begin-keycard-setup-confirmation-text": "설치 프로그램은 카드에 이미 저장된 키 정보를 삭제합니다. 계속 하시겠습니까?",
+    
     "begin-set-up": "설정 시작",
     "biometric-auth-android-sensor-desc": "터치 센서",
     "biometric-auth-android-sensor-error-desc": "실패",
@@ -101,7 +101,7 @@
     "browsing-site-blocked-go-back": "돌아가기",
     "browsing-site-blocked-title": "이 사이트는 차단되었습니다",
     "browsing-title": "브라우저",
-    "buy-with-snt": "SNT로 구입",
+    
     "camera-access-error": "카메라 권한을 승인하려면 시스템 설정에서 Status > 권한 > 카메라가 선택되어 있는지 확인해 주세요.",
     "can-not-add-yourself": "자기 자신을 추가할 수 없습니다",
     "cancel": "취소",
@@ -131,12 +131,12 @@
     "chat": "채팅",
     "chat-key": "채팅 키",
     "chat-name": "채팅 이름",
-    "chat-send-eth": "{{amount}} ETH",
+    
     "chat-settings": "채팅방 설정",
     "chats": "채팅",
     "check-your-recovery-phrase": "시드 구문 확인",
     "choose-authentication-method": "계정을 인증할 방법을 선택해주세요",
-    "choose-from-contacts": "연락처에서 선택하기",
+    
     "clear": "지우기",
     "clear-history": "대화 내역 삭제",
     "clear-history-action": "지우기",
@@ -163,18 +163,16 @@
     "connected": "연결됨",
     "connecting": "연결 중 ...",
     "connecting-requires-login": "재로그인이 필요합니다",
-    "connection-problem": "메시지 연결 문제",
+    
     "connection-with-the-card-lost": "카드와 연결이 끊어졌습니다",
     "connection-with-the-card-lost-setup-text": "설치를 다시 시작하시려면 \n스마트폰 뒷면에 카드를 위치하시고 \n접촉을 유지해주시길 바랍니다.",
     "connection-with-the-card-lost-text": "계속하려면, 카드를 스마트폰의 뒷면에 대주세요",
-    "contact-already-added": "이미 추가되어 있는 연락처입니다.",
     "contact-code": "채팅 키",
     "contact-s": {
         "other": "연락처"
     },
     "contacts": "연락처",
-    "contacts-group-new-chat": "새 채팅 시작",
-    "contacts-syncronized": "연락처가 동기화되었습니다",
+    
     "continue": "계속",
     "contract-address": "컨트랙트 주소 (Contract address)",
     "contract-interaction": "컨트랙트 상호 작용",
@@ -189,6 +187,7 @@
     "create-group-chat": "그룹 채팅 생성",
     "create-multiaccount": "계정 만들기",
     "create-new-key": "신규 키 생성",
+
     "create-new-multiaccount": "새 계정 생성",
     "create-pin": "패스코드 만들기",
     "create-pin-description": "로그인하고 거래를 확인하려면 카드와 패스코드가 필요합니다",
@@ -204,12 +203,12 @@
     "currency-display-name-bdt": "방글라데시 타카",
     "currency-display-name-bgn": "불가리아 레프",
     "currency-display-name-bhd": "바레인 디나르",
-    "currency-display-name-bmd": "버뮤다 달러",
+    
     "currency-display-name-bnd": "브루나이 달러",
     "currency-display-name-bob": "볼리비아 볼리비아노",
     "currency-display-name-brl": "브라질 레알",
     "currency-display-name-btn": "부탄 눌트럼",
-    "currency-display-name-bzd": "벨리즈 달러",
+    
     "currency-display-name-cad": "캐나다 달러",
     "currency-display-name-chf": "스위스 프랑",
     "currency-display-name-clp": "칠레 페소",
@@ -225,8 +224,8 @@
     "currency-display-name-gbp": "영국 파운드",
     "currency-display-name-gel": "조지아 라리",
     "currency-display-name-ghs": "가나 세디",
-    "currency-display-name-gmd": "감비아 달라시",
-    "currency-display-name-gyd": "가이아나 달러",
+    
+    
     "currency-display-name-hkd": "홍콩 달러",
     "currency-display-name-hrk": "크로아티아 쿠나",
     "currency-display-name-huf": "헝가리 포린트",
@@ -239,16 +238,16 @@
     "currency-display-name-kes": "케냐 실링",
     "currency-display-name-krw": "대한민국 원",
     "currency-display-name-kwd": "쿠웨이트 디나르",
-    "currency-display-name-kyd": "케이맨 제도 달러",
+    
     "currency-display-name-kzt": "카자흐스탄 텡게",
-    "currency-display-name-lak": "라오스 킵",
+    
     "currency-display-name-lkr": "스리랑카 루피",
-    "currency-display-name-lrd": "라이베리아 달러",
-    "currency-display-name-ltl": "리투아니아 리타스",
+    
+    
     "currency-display-name-mad": "모로코 디람",
     "currency-display-name-mdl": "몰도바 레우",
-    "currency-display-name-mkd": "마케도니아 디나르",
-    "currency-display-name-mnt": "몽골 투그릭",
+    
+    
     "currency-display-name-mur": "모리셔스 루피",
     "currency-display-name-mwk": "말라위 콰차",
     "currency-display-name-mxn": "멕시코 페소",
@@ -256,7 +255,7 @@
     "currency-display-name-mzn": "모잠비크 메티칼",
     "currency-display-name-nad": "나미비아 달러",
     "currency-display-name-ngn": "나이지리아 나이라",
-    "currency-display-name-nio": "니카라과 코르도바",
+    
     "currency-display-name-nok": "노르웨이 크로네",
     "currency-display-name-npr": "네팔 루피",
     "currency-display-name-nzd": "뉴질랜드 달러",
@@ -274,8 +273,8 @@
     "currency-display-name-sar": "사우디 아라비아 리얄",
     "currency-display-name-sek": "스웨덴 크로나",
     "currency-display-name-sgd": "싱가포르 달러",
-    "currency-display-name-sos": "소말리아 실링",
-    "currency-display-name-srd": "수리남 달러",
+    
+    
     "currency-display-name-thb": "태국 바트",
     "currency-display-name-try": "터키 리라",
     "currency-display-name-ttd": "트리니다드 토바고 달러",
@@ -287,7 +286,7 @@
     "currency-display-name-uyu": "우루과이 페소",
     "currency-display-name-vef": "베네수엘라 볼리바르",
     "currency-display-name-vnd": "베트남 동",
-    "currency-display-name-yer": "예멘 리알",
+    
     "currency-display-name-zar": "남아프리카 공화국 랜드",
     "current-network": "현재 네트워크",
     "current-pin": "6자리 패스코드",
@@ -295,7 +294,7 @@
     "custom": "사용자 정의",
     "custom-networks": "사용자 정의 네트워크",
     "dapp": "디앱",
-    "dapp-profile": "디앱 프로필",
+    
     "dapp-would-like-to-connect-wallet": "지갑에 연결합니다",
     "dapps": "디앱",
     "dapps-can-access": "디앱이 내 지갑 및 채팅키에 접근 할 수 있습니다.",
@@ -320,34 +319,34 @@
     },
     "datetime-today": "오늘",
     "datetime-yesterday": "어제",
-    "debug-enabled": "디버그 서버가 시작되었습니다! 같은 네트워크 상의 컴퓨터에서 *status-dev-cli scan*를 실행하여 디버그 서버를 확인하세요.",
+    
     "decimals": "소수점 (Decimals)",
     "decryption-failed-confirm": "적용",
     "decryption-failed-content": "데이터를 처리 할 수 없습니다. '적용'으로 새 계정을 만들고 이전 데이터를 삭제해야할 수 있습니다. '취소'를 클릭하면 다시 시도합니다.",
     "decryption-failed-title": "데이터를 해독할 수 없습니다.",
     "default": "기본 설정",
-    "default-dapps-exchanges": "거래소",
-    "default-dapps-fun-games": "게임",
-    "default-dapps-marketplaces": "마켓 플레이스",
-    "default-dapps-media": "미디어",
-    "default-dapps-social-networks": "소셜 네트워크",
-    "default-dapps-social-utilities": "유틸리티",
+    
+    
+    
+    
+    
+    
     "delete": "삭제",
     "delete-and-leave-group": "그룹 삭제 및 탈퇴",
     "delete-bootnode": "Bootnode 삭제",
     "delete-bootnode-are-you-sure": "이 bootnode를 삭제 하시겠습니까?",
     "delete-bootnode-title": "Bootnode 삭제",
     "delete-chat": "대화방 나가기",
-    "delete-chat-action": "삭제",
+    
     "delete-chat-confirmation": "이 채팅방에서 나가시겠습니까?",
-    "delete-chat-title": "대화방 나가기",
+    
     "delete-confirmation": "삭제",
-    "delete-contact": "연락처 삭제",
-    "delete-contact-confirmation": "연락처가 삭제됩니다",
-    "delete-group": "그룹 삭제",
-    "delete-group-chat-confirmation": "이 그룹채팅을 삭제하시겠습니까?",
-    "delete-group-confirmation": "이 그룹을 그룹 목록에서 삭제합니다. 연락처에는 영향을 미치지 않습니다.",
-    "delete-group-prompt": "연락처에는 영향을 미치지 않습니다",
+    
+    
+    
+    
+    
+    
     "delete-mailserver": "메일서버 삭제",
     "delete-mailserver-are-you-sure": "이 메일서버를 삭제 하시겠습니까?",
     "delete-mailserver-title": "메일서버 삭제",
@@ -364,8 +363,8 @@
     "device-pairing": "기기 페어링",
     "device-syncing": "기기 동기화",
     "device-to-device": "Device-to-device 활성화",
-    "device-to-device-warning-content": "이 기능이 활성화되면, 0.9.32 버전 이상의 앱을 사용하는 사용자만 여러분의 메시지를 읽을 수 있습니다.",
-    "device-to-device-warning-title": "경고, 테스트 중인 기능임",
+    
+    
     "devices": "디바이스",
     "disable": "비활성화",
     "disable-discovery-topic": "디스커버리 비활성화",
@@ -376,20 +375,20 @@
     "discover": "찾아보기",
     "dismiss": "무시",
     "done": "완료",
-    "dont-allow": "허용하지 않음",
+    
     "edit": "편집",
-    "edit-chats": "채팅방 편집",
-    "edit-contacts": "연락처 편집",
-    "edit-group": "그룹 편집",
-    "edit-network-config": "네트워크 설정 편집",
-    "edit-network-warning": "주의하십시오. 네트워크 설정을 편집하면 이 네트워크를 사용하지 못할 수 있습니다.",
+    
+    
+    
+    
+    
     "edit-profile": "프로필 편집",
     "empty-chat-description": "메세지가 없습니다",
-    "empty-chat-description-console": "한번 둘러보세요! 콘솔은 모든 웹3 API를 제공하는 자바 스크립트 런타임 환경입니다. \"web3\"을 입력하여 시작하십시오.",
+    
     "empty-chat-description-one-to-one": "채팅방의 모든 메시지는 암호화되며, 귀하와 상대방만 열람할 수 있습니다. 채팅 상대: ",
     "empty-chat-description-public": "지난 {{quiet-hours}}시간 동안 이 채팅방은 활동이 없었습니다. 대화를 시작하거나",
     "empty-chat-description-public-share-this": "채팅 공유",
-    "empty-topic": "토픽 없음",
+    
     "enable": "활성화",
     "encrypt-with-password": "비밀번호로 암호화",
     "ens-10-SNT": "10 SNT",
@@ -404,7 +403,7 @@
     "ens-get-name": "유니버셜 사용자 이름 등록",
     "ens-got-it": "알겠습니다",
     "ens-locked": "사용자 이름이 등록되었습니다. 2020.05.25까지 해지 할 수 없습니다.",
-    "ens-names": "ENS 이름 등록",
+    
     "ens-network-restriction": "Mainnet 또는 ropsten에서만 사용 가능",
     "ens-no-usernames": "연결된 사용자 이름이 없습니다.",
     "ens-powered-by": "Powered by Ethereum Name Services",
@@ -440,7 +439,7 @@
     "ens-username-hints": "최소 4자 이상이어야 하며, 알파벳 소문자 및 숫자만 가능합니다.",
     "ens-username-invalid": "문자와 숫자만 가능",
     "ens-username-owned": "✓ 이미 소유한 이름입니다.",
-    "ens-username-owned-continue": "계속하면 이 사용자 이름이 키와 연결됩니다.",
+    
     "ens-username-registrable": "✓ 사용자 이름을 사용할 수 있습니다!",
     "ens-username-unregistrable": "이미 사용 중인 이름입니다 :(",
     "ens-usernames": "ENS 사용자 이름",
@@ -460,40 +459,41 @@
     "ens-your-username": "사용자 이름",
     "ens-your-usernames": "사용자 이름",
     "ens-your-your-name": "ENS 이름",
+
     "enter-12-words": "12 단어의 시드 구문을 입력하시고, 스페이스로 띄어 써주세요",
-    "enter-address": "주소 입력",
+    
     "enter-contact-code": "채팅 키 또는 ENS 이름 입력",
-    "enter-dapp-url": "디앱 URL을 입력하십시오.",
+    
     "enter-ens-or-contact-code": "ENS 이름 또는 채팅 키를 입력하세요",
     "enter-pair-code": "페어 코드 입력",
     "enter-pair-code-description": "카드와 기기를 연결하는데 필요합니다",
     "enter-password": "비밀번호 입력",
     "enter-pin": "6자리 패스코드 입력",
-    "enter-pin-description": "로그인을 위해 \n 패스코드를 입력해주세요",
+    
     "enter-puk-code": "PUK 코드 입력",
     "enter-puk-code-description": "패스코드가 차단되었습니다. \n패스코드를 차단 해제하려면 PUK 코드를 입력하세요",
     "enter-seed-phrase": "시드 구문 입력",
     "enter-url": "URL 입력",
-    "enter-valid-public-key": "올바른 공개 키를 입력하거나 QR 코드를 스캔하세요",
+    
     "enter-word": "단어 입력",
     "enter-your-code": "6자리 패스코드 입력",
     "enter-your-password": "패스코드 입력",
     "error": "오류",
-    "error-cant-send-transaction-offline": "오프라인에서는 입출금 할 수 없습니다.",
-    "error-cant-sign-message-offline": "오프라인에서는 메세지에 서명할 수 없습니다",
-    "error-processing-json": "JSON 처리중 오류 발생",
+    
+    
+    
     "error-unable-to-get-balance": "잔액을 가져올 수 없습니다.",
     "error-unable-to-get-prices": "통화 변환 오류가 발생했습니다. 다시 시도 라려면 새로고침 하십시오.",
     "error-unable-to-get-token-balance": "토큰 잔액을 가져올 수 없습니다",
-    "error-unable-to-get-transactions": "거래 내역을 가져올 수 없습니다",
+    
     "errors": "오류",
     "estimated-time": "예상 시간",
     "eth": "ETH",
     "ethereum-node-started-incorrectly-description": "Ethereum 노드가 잘못된 구성으로 시작되어, 어플리케이션이 중지되고 해당 상태에서 복구됩니다. 구성된 네트워크 ID = {{network-id}} , 실제 ID = {{fetched-network-id}}",
     "ethereum-node-started-incorrectly-title": "이더리움 노드가 잘못 시작되었습니다",
     "etherscan-lookup": "Etherscan에서 보기",
-    "existing-mailservers": "기존 메일서버",
-    "existing-networks": "기존 네트워크",
+    
+    
     "export-account": "계정정보 내보내기",
     "extension": "확장 프로그램",
     "extension-address": "확장 프로그램 주소",
@@ -509,11 +509,11 @@
     "extensions-network-not-found": "지정된 chain-id에 대한 네트워크를 찾을 수 없습니다.",
     "failed": "실패",
     "faq": "자주 묻는 질문",
-    "faucet-error": "Faucet 요청 오류",
-    "faucet-success": "Faucet 요청이 도착했습니다",
+    
+    
     "fetch-history": "지난 24시간 내역 불러오기",
     "fetch-messages": "↓ 메시지 가져 오기",
-    "fetching-messages": "메시지를 가져 오는 중... ({{requests-left}}개 요청 남음)",
+    
     "find": "찾기",
     "finish": "완료",
     "finishing-card-setup": "카드 설정 마무리",
@@ -554,7 +554,6 @@
     "help": "도움말",
     "help-capitalized": "도움말",
     "help-center": "도움말 센터",
-    "here-is-your-signing-phrase": "서명 문구는 거래를 승인할 때 필요합니다. *문구를 적어서 안전한 곳에 보관하세요!*",
     "hide-content-when-switching-apps": "앱 전환시 컨텐츠 숨기기",
     "history": "히스토리",
     "hold-card": "카드를 휴대전화 뒷면에 위치해주세요",
@@ -580,7 +579,7 @@
     "intro-privacy-policy-note1": "스테이터스는 절대로 개인 정보를 수집, 공유 및 판매하지 않습니다. 계속 함으로써 다음에 동의합니다 ",
     "intro-privacy-policy-note2": "개인 정보 정책",
     "intro-text": "스테이터스는 분산웹으로 향하는 첫걸음입니다",
-    "intro-text-description": "이더리움 블록체인에서 안전하게 채팅하고 거래하는 커뮤니티 플랫폼",
+    
     "intro-text1": "이더리움 블록체인을 통해 안전하게 채팅하고 거래하는 오픈소스 플랫폼",
     "intro-text2": "사용자의 계정이 설정되었습니다. 프로필의 시드 구문을 백업하는 것을 잊지 마세요",
     "intro-text3": "사용자의 계정이 설정되었습니다. 프로필의 시드 구문을 백업하는 것을 잊지 마세요",
@@ -609,18 +608,18 @@
     "invalid-key-title": "암호화 키에 문제가 있습니다.",
     "invalid-number": "잘못된 번호",
     "invalid-pairing-password": "잘못된 페어링 비밀번호",
-    "invalid-phone": "잘못된 전화번호",
+    
     "invalid-range": "잘못된 형식, {{min}} ~ {{max}} 사이 여야합니다",
     "invite-friends": "친구 초대",
     "invited": "초대됨",
-    "is-typing": "이(가) 입력 중입니다",
+    
     "join-group-chat": "그룹 참여",
     "join-group-chat-description": "{{username}} 님이 {{group-name}} 그룹에 초대",
     "joined-group-chat-description": "{{username}} 님의 초대로 {{group-name}} 에 입장했습니다",
     "key": "키",
     "keycard": "키카드",
     "keycard-applet-install-instructions": "애플릿을 설치하려면 https:\/\/github.com\/status-im\/keycard-cli#keycard-applet-installation 를 확인해주세요",
-    "keycard-applet-will-be-installed": "키카드 애플릿이 자동적으로 설치됩니다",
+    
     "keycard-blocked": "키카드가 차단되었습니다. \n계속 사용하려면 카드를 재설정해야합니다",
     "keycard-cancel-setup-text": "키카드 설치가 취소됩니다. 키카드를 사용하려면 설치를 완료해야 합니다. 설치를 취소하시겠습니까?",
     "keycard-cancel-setup-title": "위험 작업",
@@ -657,18 +656,18 @@
     "learn-more": "더 알아보기",
     "learn-more-about-keycard": "키카드에 대해 더 자세히 알아보기",
     "leave": "나가기",
-    "leave-chat": "채팅방 나가기",
-    "leave-confirmation": "나가시겠습니까?",
+    
+    
     "leave-group": "그룹 나가기",
-    "leave-group-action": "나가기",
-    "leave-group-chat": "그룹 채팅 나가기",
-    "leave-group-chat-confirmation": "이 그룹에서 나가시겠습니까?",
-    "leave-group-confirmation": "이 그룹에서 나가시겠습니까?",
-    "leave-group-title": "나가시겠습니까?",
-    "leave-public-chat": "오픈 채팅 나가기",
+    
+    
+    
+    
+    
+    
     "left": "나감",
+
     "les-ulc": "LES\/ULC",
-    "link-card": "카드를 연결해서 신원을 확인해주세요",
     "linked-on": "{{date}} 에 연결",
     "load-messages-before": "{{date}} 전",
     "load-more-messages": "↓ 메시지 더 가져 오기",
@@ -703,8 +702,8 @@
     "mainnet-text": "메인넷에 있습니다. 실제 ETH가 전송됩니다.",
     "maintain-card-to-phone-contact": "처리되는 동안 카드와 스마트폰은 접촉된 채로 유지해주세요",
     "make-admin": "관리자로 지정",
-    "make-sure-you-trust-dapp": "이 디앱을 신뢰하는지 확인하십시오",
-    "manage-permissions": "권한 관리",
+    
+    
     "maybe-later": "나중에",
     "members": {
         "other": "{{count}} 명"
@@ -741,7 +740,6 @@
     "mobile-network-stop-syncing-details": "동기화를 중지할까요?",
     "mobile-network-use-mobile": "모바일 데이터 사용",
     "mobile-network-use-mobile-data": "모바일 데이터로 채팅을 동기화하면 데이터를 많이 소모하게 될 수 있습니다. 설정을 통해 모바일 데이터를 사용한 동기화를 비활성화 할 수 있습니다.",
-    "mobile-network-use-mobile-details": "모바일 데이터로 채팅을 동기화하면 데이터를 많이 소모하게 될 수 있습니다. 설정을 통해 모바일 데이터를 사용한 동기화를 비활성화 할 수 있습니다.",
     "mobile-network-use-wifi": "Wi-Fi 만 사용",
     "mobile-syncing-sheet-details": "모바일 데이터로 채팅을 동기화하면 데이터를 많이 소모하게 될 수 있습니다. 설정을 통해 모바일 데이터를 사용한 동기화를 비활성화 할 수 있습니다.",
     "mobile-syncing-sheet-title": "모바일 데이터로 동기화",
@@ -750,8 +748,8 @@
     "multiaccount-not-listed": "리스트에 없는 계정",
     "multiaccount-not-listed-text": "이 카드의 계정은 스마트폰에 존재하지 않습니다. 이 새로운 계정으로 로그인 하시겠습니까?",
     "multiaccounts-recover-enter-phrase-text": "12, 15, 18, 21 또는 24 단어를 입력해주세요.\n단어를 한 칸씩 띄어써서 구분해야 합니다.",
+
     "multiaccounts-recover-enter-phrase-title": "시드 구문 입력",
-    "mute-notifications": "알림 비활성화",
     "name": "이름",
     "name-description": "프로필에서 언제든지 변경할 수 있습니다.",
     "name-of-token": "토큰 이름",
@@ -777,7 +775,7 @@
     "new-pin-description": "새 6자리 패스코드 입력",
     "new-public-group-chat": "오픈 채팅 참여하기",
     "new-request": "새 요청",
-    "new-transaction": "새 트랜잭션",
+    
     "next": "다음",
     "next-step-entering-mnemonic": "다음 단계로 카드의 시드 구문을 입력하여 계정을 불러옵니다",
     "next-step-generating-mnemonic": "다음 단계는 카드의 시드 구문을 생성하는 단계입니다.",
@@ -785,34 +783,32 @@
     "no-collectibles": "수집품 없음",
     "no-contacts": "아직 연락처가 없습니다",
     "no-extension": "확장 프로그램이 설치되지 않았습니다",
-    "no-hashtags-discovered-body": "인기 있는 해시태그가\n여기 표시됩니다.",
-    "no-hashtags-discovered-title": "발견된 해시태그 없음",
+    
     "no-keycard-applet-on-card": "카드에 키카드 애플릿이 없습니다",
     "no-messages": "메시지 없음",
     "no-messages-yet": "메시지 없음",
-    "no-more-participants-available": "더 이상 참여자를 추가 할 수 없습니다",
-    "no-multiaccount-on-card": "이 카드에 계정이 존재하지 않습니다",
-    "no-multiaccount-on-card-text": "사용 중인 카드에는 계정이 존재하지 않습니다. 올바른 카드로 다시 시도해주세요.",
-    "no-pairing-on-device": "이 기기에 카드가 페어링 되지 않았습니다",
+    
+    
+    
     "no-pairing-slots-available": "이용 가능한 페어링 슬롯이 없습니다. 이미 카드로 페어된 기기의 페어링을 해제해주세요",
     "no-recent-chats": "홈 화면에 최근 대화 및 디앱 히스토리가 저장됩니다. 시작하려면 플러스 (+) 버튼을 터치하십시오.",
     "no-result": "결과 없음",
-    "no-statuses-discovered": "발견된 상태 메시지 없음",
-    "no-statuses-discovered-body": "누군가가 상태 메시지를 올리면\n여기 나타납니다.",
-    "no-statuses-found": "발견된 메시지 없음",
+    
+    
+    
     "no-tokens-found": "토큰 없음",
     "node-info": "노드 정보",
     "node-unavailable": "사용 가능한 이더리움 노드가 없습니다.",
     "nonce": "Nonce",
     "none": "없음",
     "not-applicable": "서명되지 않은 거래에 사용할 수 없음",
-    "not-implemented": "!구현되지 않음",
+    
     "not-keycard-text": "사용한 카드는 키카드가 아닙니다. 이 기능은 키카드를 구입해야 사용할 수 있습니다.",
     "not-keycard-title": "키카드가 아님",
-    "not-specified": "지정되지 않음",
+    
     "notifications": "알림",
     "notifications-new-message-body": "새로운 메세지가 있습니다",
-    "notifications-title": "알림 및 소리",
+    
     "notify": "알림",
     "off": "끄기",
     "offline": "오프라인",
@@ -830,7 +826,7 @@
     "open-on-etherscan": "Etherscan.io에서 보기",
     "optional": "선택",
     "or-choose-a-contact": "또는 연락처 선택",
-    "other-multiaccounts": "다른 계정",
+    
     "outgoing": "출금",
     "pair": "페어 디바이스",
     "pair-card": "페어 카드",
@@ -850,7 +846,7 @@
     "pairing-new-installation-detected-title": "연동된 기기 발견",
     "pairing-no-info": "정보 없음",
     "pairing-please-set-a-name": "기기의 이름을 설정해주세요",
-    "passcode-error": "패스코드가 일치하지 않습니다.",
+    
     "passphrase": "패스 구문",
     "password": "비밀번호",
     "password_error1": "비밀번호가 일치하지 않습니다.",
@@ -859,39 +855,35 @@
     "password-placeholder2": "비밀번호 확인",
     "paste": "붙여넣기",
     "paste-json": "JSON 붙여넣기",
-    "paste-json-as-text": "JSON 텍스트로 붙여넣기",
+    
     "pay-to-chat": "지불하고 채팅 시작",
     "peers": "주변 노드 (Peers)",
     "pending": "대기 중",
     "pending-confirmation": "확인 대기 중 ...",
     "permissions": "권한",
     "phone-e164": "국제전화 1",
-    "phone-international": "국제전화 2",
-    "phone-national": "국가",
-    "phone-number": "휴대전화 번호",
-    "phone-number-required": "여기를 눌러 전화번호를 인증하시면 친구들을 찾아드리겠습니다",
-    "phone-significant": "중요",
+    
+    
+    
+    
+    
     "photos-access-error": "사진 접근 권한을 승인하려면 시스템 앱 설정에서 Status > 권한 > 사진이 선택되어 있는지 확인해 주세요.",
     "pin-changed": "6자리 패스코드가 변경되었습니다.",
     "pin-code": "6자리 패스코드",
     "pin-code-description": "카드 잠금 해제",
     "pin-mismatch": "패스코드가 일치하지 않습니다.",
     "pin-retries-left": "{{number}}번 더 재시도 할 수 있습니다.",
-    "pin-unblocked": "패스코드의 차단이 해제되었습니다",
-    "pin-unblocked-description": "새로운 6자리 패스코드  {{pin}}",
-    "popular-tags": "인기 #해시태그",
-    "postponed": "연기 됨",
     "preparing-card": "카드 준비",
     "preview-privacy": "미리보기 방지 모드",
     "privacy": "개인 정보",
     "privacy-and-security": "개인 정보 및 보안",
     "privacy-policy": "개인 정보 보호 정책",
-    "process-json": "JSON 처리",
+    
     "processing": "처리 중",
     "product-information": "제품 정보",
     "profile": "프로필",
     "public-chat": "오픈 채팅",
-    "public-chat-user-count": "{{count}} 명",
+    
     "public-chats": "오픈 채팅",
     "public-group-status": "오픈 채팅",
     "public-group-topic": "주제",
@@ -908,14 +900,14 @@
     "ready-to-import-keycard-multiaccount": "키카드 계정을 가져올 준비가되었습니다",
     "receive": "입금하기",
     "receive-transaction": "입금",
-    "received-invitation": "채팅방 초대 내역",
+    
     "recent": "최근 접속",
     "recent-recipients": "연락처",
     "recently-used-stickers": "최근 사용한 이모티콘이 여기에 나타납니다",
     "recipient": "받는 분",
     "recipient-code": "수신인 주소 입력",
     "recover": "복구",
-    "recover-access": "계정 복구",
+    
     "recover-key": "키 복구",
     "recover-keycard-multiaccount-not-supported": "비밀번호를 통한 키카드 계정 복구는 지원되지 않습니다",
     "recover-multiaccount-warning": "이 계정을 가져오면 지갑 정보가 노출됩니다.",
@@ -936,25 +928,23 @@
     "remind-me-later": "나중에 알림",
     "remove": "제거",
     "remove-from-chat": "채팅에서 내보내기",
-    "remove-from-contacts": "연락처에서 제거",
-    "remove-from-group": "그룹에서 삭제",
+    
+    
     "remove-network": "네트워크 삭제",
     "remove-token": "토큰 제거",
     "removed": "퇴장 됨",
-    "removed-from-chat": "그룹 채팅방에서 퇴장당했습니다.",
-    "reorder-groups": "그룹 재정렬",
     "repeat-pin": "패스코드 다시 입력",
     "report-bug-email-template": "1. 이슈 설명 \n (원하는 기능을 설명하거나 버그와 버그가 발생하기 까지 수행한 내용, 버그 대신 예상한 내용 및 실제로 발생한 내용을 간략하게 요약해해주세요. 아래 섹션 참조) \n\n\n 2. 재현 단계 \n(버그를 단계별로 재현 할 수있는 방법을 설명해주세요)\n - 스테이터스 실행 \n - ... \n - ... \n\n\n 3. 예상되는 행동 \n (일어날 것으로 예상되는 것을 설명해주세요) \n\n\n 4. 실제 행동 \n (실제로 일어난 일을 설명해주세요) \n\n\n 5. 이슈를 확인 할 수있는 스크린 샷을 첨부해주세요. \n",
     "request-command-payment": "결제 요청",
-    "request-feature": "기능 요청",
-    "request-qr-legend": "아래 이더리움 주소로 입금을 요청할 수 있습니다",
+    
+    
     "request-transaction": "거래 요청",
     "require-my-permission": "내 허가 필요",
     "required-field": "필수 입력란",
     "resend-message": "재전송",
     "reset-card": "카드 재설정",
     "reset-card-description": "이 작업은 카드를 초기 상태로 재설정합니다. 개인 키를 포함한 모든 카드 데이터가 지워집니다. 이 작업은 되돌릴 수 없습니다.",
-    "reset-default": "기본값으로 재설정",
+    
     "retry": "다시 시도",
     "revoke-access": "액세스 권한 취소",
     "rinkeby-network": "Rinkeby 테스트 네트워크",
@@ -967,22 +957,21 @@
     "scan-qr": "QR코드 스캔",
     "scan-qr-code": "지갑주소 QR 코드 스캔",
     "search": "검색",
-    "search-chat": "채팅 검색",
-    "search-chats": "채팅 검색하기",
-    "search-contacts": "연락처 검색",
-    "search-for": "검색...",
-    "search-tags": "검색할 태그를 입력하세요",
-    "secret-keys-confirmation-cancel": "다시 보기",
-    "secret-keys-confirmation-confirm": "확인",
+    
+    
+    
+    
+    
+    
+    
     "secret-keys-confirmation-text": "이 화면은 다시 표시되지 않기 때문에 지금 백업하시기 바랍니다.",
     "secret-keys-confirmation-title": "백업하셨나요?",
-    "secure-your-assets": "여러분의 자산을 보호하세요",
     "security": "보안",
     "see-details": "세부 정보",
     "see-it-again": "다시 보기",
     "select-chat": "메시징을 시작할 채팅을 선택해주세요",
     "selected": "인기 채팅방",
-    "selected-dapps": "선택한 디앱",
+    
     "selected-for-you": "당신을 위한 선택",
     "send-command-payment": "송금하기",
     "send-logs": "로그 보내기",
@@ -1005,7 +994,7 @@
     "set-currency": "통화 설정",
     "set-dapp-access-permissions": "디앱 접근 권한 설정",
     "settings": "설정",
-    "shake-your-phone": "버그나 건의사항이 있나요? 폰을 ~흔들어~ 보세요!",
+    
     "share": "공유",
     "share-address": "주소 공유",
     "share-chat": "채팅방 주소 공유하기",
@@ -1026,8 +1015,8 @@
     "sign-in": "로그인",
     "sign-in-to-another": "다른 계정으로 로그인",
     "sign-in-to-status": "스테이터스 로그인",
-    "sign-later-text": "이 거래를 승인하려면 거래 내역을 확인하세요",
-    "sign-later-title": "거래를 나중에 승인할까요?",
+    
+    
     "sign-message": "메시지 서명",
     "sign-out": "로그아웃",
     "sign-with": "다음으로 서명",
@@ -1035,15 +1024,15 @@
     "sign-you-in": "로그인 하는 중...",
     "signing": "서명",
     "signing-a-message": "메시지 서명",
-    "signing-message-phrase-description": "이 단어를 인지할 경우, 메시지에 서명하기 위해 로그인 비밀번호를 입력하십시오",
+    
     "signing-phrase": "서명 구문",
     "signing-phrase-description": "서명 구문이 올바른지 확인하시고, 거래를 승인하려면 로그인 비밀번호를 입력하세요.",
-    "signing-phrase-warning": "세 단어를 확인한 경우에만\n 거래를 확정해주세요",
+    
     "something-went-wrong": "문제가 발생했습니다",
     "soon": "곧",
     "specify-address": "주소 지정",
-    "specify-bootnode-address": "Bootnode 주소 지정",
-    "specify-mailserver-address": "메일서버 주소 지정",
+    
+    
     "specify-name": "이름 지정",
     "specify-network-id": "네트워크 ID 지정",
     "specify-recipient": "수신인 입력...",
@@ -1054,39 +1043,39 @@
     "start-new-chat": "새 채팅 시작",
     "status": "상태",
     "status-confirmed": "확인 됨",
-    "status-console": "스테이터스 콘솔",
-    "status-delivered": "전송됨",
-    "status-failed": "실패",
+    
+    
+    
     "status-hardwallet": "스테이터스 하드월렛",
-    "status-hardwallet-capitalized": "스테이터스 하드월렛",
+    
     "status-keycard": "스테이터스 키카드",
-    "status-not-sent": "",
-    "status-not-sent-click": "전송되지 않음",
-    "status-not-sent-tap": "전송 실패. 옵션을 선택하세요",
-    "status-not-sent-without-tap": "",
+    
+    
+    
+    
     "status-pending": "대기 중",
-    "status-prompt": "상태 메시지를 설정하세요. #해시태그를 사용하여 다른 사람이 나를 쉽게 찾을 수 있습니다",
-    "status-seen": "읽음",
-    "status-seen-by-everyone": "모두 읽음",
-    "status-sending": "보내는 중...",
-    "status-sent": "전송됨",
+    
+    
+    
+    
+    
     "status-tx-not-found": "TX를 찾을 수 없습니다",
     "step-i-of-n": "{{number}}단계 중 {{step}}단계",
     "sticker-market": "이모티콘 마켓",
     "submit": "제출",
     "submit-bug": "버그 제출",
     "success": "성공",
-    "suggestions-commands": "명령",
-    "suggestions-requests": "요청",
-    "switch-users": "사용자 전환",
+    
+    
+    
     "symbol": "기호 (Symbol)",
     "sync-all-devices": "모든 기기 동기화",
     "sync-in-progress": "동기화 중...",
     "sync-settings": "동기화 설정",
     "sync-synced": "동기화 됨",
     "syncing-devices": "동기화 중...",
-    "syncing-disabled": "동기화 사용 안 함",
-    "syncing-enabled": "동기화 사용",
+    
+    
     "tag-was-lost": "태그가 손실되었습니다",
     "taking-long-hold-phone-connected": "이 작업은 몇 초가 걸립니다. \n 카드를 휴대 전화에 연결해주세요.",
     "test-networks": "테스트 네트워크",
@@ -1106,32 +1095,31 @@
     "token-auto-validate-name-error": "{{symbol}} 토큰 주소 {{address}} 의 이름이 잘못 되었습니다. {{expected}} (으)로 세팅 되었으나 {{actual}} 로 감지되었습니다.",
     "token-auto-validate-symbol-error": "{{symbol}} 토큰 주소 {{address}} 의 심볼이 잘못 되었습니다. {{expected}} (으)로 세팅 되었으나 {{actual}} 로 감지되었습니다.",
     "token-details": "토큰 세부 정보",
-    "topic-format": "토픽은 소문자 (a ~ z)와 하이픈 (-) 만 사용합니다.",
     "topic-name-error": "소문자(a 에서 z), 숫자 및 하이픈(-)만 사용할 수 있습니다. 채팅 키는 사용할 수 없습니다.",
     "transaction": "거래",
     "transaction-description": "12번 이상 확인 된 거래는 취소할 수 없습니다",
     "transaction-details": "거래 세부정보",
     "transaction-failed": "거래 실패",
     "transaction-history": "거래 내역",
-    "transaction-moved-text": "다음 5분간 거래가 '서명되지 않음' 목록에 남아있을 것입니다",
-    "transaction-moved-title": "거래 옮겨짐",
+    
+    
     "transaction-request": "거래 요청",
     "transaction-sent": "거래 전송됨",
     "transactions": "거래",
-    "transactions-delete": "거래 삭제",
-    "transactions-delete-content": "거래가 '승인되지 않음' 목록에서 삭제됩니다",
+    
+    
     "transactions-filter-select-all": "모두 선택",
     "transactions-filter-title": "거래내역 필터",
-    "transactions-filter-tokens": "토큰",
+    
     "transactions-filter-type": "종류",
     "transactions-history": "거래 내역",
     "transactions-history-empty": "거래 내역이 없습니다",
     "transactions-sign": "승인",
-    "transactions-sign-all": "모두 서명",
-    "transactions-sign-later": "나중에 승인",
+    
+    
     "transactions-sign-transaction": "거래 승인",
-    "transactions-unsigned": "서명되지 않음",
-    "transactions-unsigned-empty": "승인되지 않은 거래가 없습니다",
+    
+    
     "tribute-required-by-multiaccount": "{{multiaccount-name}}님과 채팅을 시작하려면 SNT가 필요합니다.",
     "tribute-state-paid": "트리뷰트 지불",
     "tribute-state-pending": "트리뷰트 대기중",
@@ -1149,26 +1137,26 @@
     "tribute-to-talk-learn-more-1": "여러분의 시간은 가장 소중한 자산입니다. 트리뷰트 투 토크는 새로운 사용자가 귀하와 채팅을 시작하기 위해 필요한 SNT 계약금을 설정하여, 불필요한 메시지를 방지합니다.",
     "tribute-to-talk-learn-more-2": "귀하의 연락처에 없는 사용자는 귀하와 채팅을 시작하기 위해 트리뷰트를 지불해야하며, 지불이 완료되면 이에 응답할 수 있습니다.",
     "tribute-to-talk-learn-more-3": "받은 트리뷰트를 언제든지 되돌려 줄 수 있으나, 해당 사용자가 귀하에게 자유롭게 연락할 수 있도록 하기 위해 사용자를 연락처에 추가해주세요.",
-    "tribute-to-talk-message-placeholder": "안녕하세요, 저와 채팅을 시작하시려면 트리뷰트 계약금을 지불하셔야합니다. 저를 알고 계신가요?",
+    
     "tribute-to-talk-paywall-learn-more-1": "여러분의 시간은 가장 소중한 자산입니다. 트리뷰트 투 토크는 새로운 사용자가 귀하와 채팅을 시작하기 위해 필요한 SNT 계약금을 설정하여, 불필요한 메시지를 방지합니다.",
     "tribute-to-talk-paywall-learn-more-2": "트리뷰트를 설정한 사용자와 채팅을 시작하려면, 필요 SNT를 지불하여 상대방의 연락처에 추가될 수 있습니다.",
     "tribute-to-talk-paywall-learn-more-3": "만약 귀하가 이 사용자를 알고 있을경우, 귀하의 프로필을 스테이터스 외부에 공유해서 무료로 추가되게 할 수 있습니다.",
     "tribute-to-talk-pending": "트리뷰트 확인 대기중",
     "tribute-to-talk-pending-note": "트리뷰트 트랜잭션이 네트워크에서 확인 대기중입니다. 거래 내역에서 트랜잭션 상태를 확인하실 수 있습니다",
     "tribute-to-talk-removing-note": "트리뷰트 투 토크를 비활성화함으로서 새로운 사용자가 귀하에게 SNT 계약금 없이 메시지를 보낼 수 있습니다. 거래 서명이 필요합니다.",
-    "tribute-to-talk-sample-text": "안녕하세요 저는 카르멘입니다. 제게 메시지를 보내보세요 🔮",
+    
     "tribute-to-talk-set-snt-amount": "새로운 사용자가 귀하와 채팅을 시작할 때 필요한 SNT 계약금을 설정합니다",
-    "tribute-to-talk-sign-and-set-tribute": "서명 및 트리뷰트 세팅",
+    
     "tribute-to-talk-signing": "거래 서명 대기중",
     "tribute-to-talk-transaction-failed-note": "트랜잭션이 실패했습니다. 귀하의 트리뷰트 설정이 변경되지 않았습니다.",
     "tribute-to-talk-tribute-received1": "입장료(트리뷰트)를 받았습니다. 당신과",
     "tribute-to-talk-tribute-received2": "이제 상대방과 안전하게 대화를 나누실 수 있습니다",
-    "tribute-to-talk-you-can-leave-a-message": "다른 사용자가 귀하와 채팅을 시작할 때 확인할 메시지를 설정할 수 있습니다.",
+    
     "tribute-to-talk-you-require-snt": "새로운 사용자가 귀하와 채팅을 시작하기 위해 필요한 SNT 계약금을 요구할 수 있습니다",
     "try-again": "다시 시도",
     "turn-nfc-on": "NFC 켜기",
-    "twelve-words-in-correct-order": "12개 단어를 올바른 순서로 입력하세요",
-    "type-a-command": "명령 입력...",
+    
+    
     "type-a-message": "메시지 입력...",
     "ulc-enabled": "ULC 사용",
     "unable-to-read-this-code": "코드를 읽을 수 없습니다.",
@@ -1180,9 +1168,9 @@
     "unpair-card-confirmation": "이 작업은 현재 기기와 페어링을 해제합니다. 인증을 위해서는 6자리 패스코드가 필요합니다. 계속 하시겠습니까?",
     "unpaired-keycard-text": "사용한 키카드가 이 기기와 연동되어있지 않습니다",
     "unpaired-keycard-title": "카드가 페어링 되어있지 않습니다",
-    "unsigned-transaction-expired": "서명되지 않은 거래 만료됨",
+    
     "update": "업데이트",
-    "update-status": "상태 메시지 업데이트...",
+    
     "url": "URL",
     "usd-currency": "USD",
     "use-valid-contact-code": "유효한 채팅 키 또는 사용자 이름을 입력하거나 스캔하십시오",
@@ -1198,28 +1186,27 @@
     "view-cryptostrikers": "CryptoStrikers에서보기",
     "view-etheremon": "Etheremon에서보기",
     "view-gitcoin": "Gitcoin에서 보기",
-    "view-my-wallet": "지갑 보기",
+    
     "view-profile": "프로필 보기",
     "view-signing": "서명 구문 보기",
     "view-superrare": "SuperRare에서 보기",
-    "view-transaction-details": "거래 세부정보 보기",
+    
     "waiting-for-wifi": "히스토리 동기화 오프라인, 와이파이 대기 중",
     "waiting-for-wifi-change": "변경",
     "waiting-to-sign": "거래 서명 대기중...",
     "wallet": "지갑",
-    "wallet-add-asset": "자산 추가",
-    "wallet-address-from-clipboard": "클립보드에서 가져오기",
+    
+    
     "wallet-asset": "자산",
     "wallet-assets": "자산",
-    "wallet-backup-recovery-description": "자산을 안전하게 보호하세요",
     "wallet-backup-recovery-title": "시드 구문 백업",
     "wallet-browse-photos": "사진 보기",
     "wallet-choose-from-contacts": "연락처에서 선택",
     "wallet-choose-recipient": "수신인 선택",
     "wallet-collectibles": "목록",
-    "wallet-deposit": "입금",
-    "wallet-error": "데이터 로딩 중 오류 발생",
-    "wallet-exchange": "거래소",
+    
+    
+    
     "wallet-insufficient-funds": "자산 부족",
     "wallet-insufficient-gas": "가스로 사용될 ETH가 충분하지 않습니다.",
     "wallet-invalid-address": "잘못된 주소: \n {{data}}",
@@ -1227,25 +1214,24 @@
     "wallet-invalid-chain-id": "네트워크가 일치하지 않습니다: \n {{data}}, 하지만 현재 체인은 {{chain}}입니다.",
     "wallet-manage-assets": "자산 관리",
     "wallet-offline": "지갑 오프라인",
-    "wallet-onboarding-description": "스테이터스 지갑으로 암호화폐를 거래하고 보관하세요",
-    "wallet-onboarding-set-up": "설정하기",
-    "wallet-onboarding-title": "간편하고 안전한 암호화폐 지갑",
+    
+    
+    
     "wallet-request": "요청",
     "wallet-send": "출금하기",
     "wallet-send-min-wei": "최소 1 wei",
-    "wallet-send-token": "{{symbol}} 보내기",
-    "wallet-set-up-confirm-description": "3 단어 거래 구문을 앞으로 다시 볼 수 없습니다.",
-    "wallet-set-up-confirm-title": "백업하셨나요?",
-    "wallet-set-up-safe-transactions-title": "안전한 자산 거래",
-    "wallet-set-up-signing-explainer": "지금부터 거래에 서명하기 전에, 이 세 단어를 확인해야 합니다",
-    "wallet-set-up-signing-explainer-warning": "다른 단어가 표시되면, 거래를 취소하고 로그아웃하세요",
-    "wallet-set-up-title": "지갑 설정",
+    
+    
+    
+    
+    
+    
+    
     "wallet-settings": "지갑 설정",
     "wallet-total-value": "총 자산",
-    "wallet-transaction-fee": "거래 수수료",
-    "wallet-transaction-fee-details": "가스 한도는 거래에 소비 될 가스 단위를 제한합니다. 가스 가격은 가스 단위 당 가격을 설정합니다. 가스 가격을 올리면 거래가 빨리 처리될 수 있습니다.",
+    
     "wallet-transaction-total-fee": "총 비용",
-    "wallets": "지갑",
+    
     "wants-to-access-profile": "프로필 접근을 요청합니다",
     "warning": "경고",
     "warning-message": "죄송합니다. 스팸을 방지하기 위해 여러 메시지를 빠르게 연속적으로 보내는 것을 제한하고 있습니다. 잠시 후 다시 시도하십시오.",
@@ -1276,11 +1262,10 @@
     "you-are-all-set-description": "이제 스마트폰을 분실 한 경우, 시드 구문을 사용하여 계정과 지갑을 복원 할 수 있습니다.",
     "you-can-change-account": "계정 이름과 색상을 원하는대로 변경할 수 있습니다",
     "you-dont-have-stickers": "아직 이모티콘이 없습니다",
-    "you-will-need-this-code": "스테이터스 및 거래 서명을 위해 이 코드가 필요합니다",
     "your-contact-code": "디앱에 접근 권한을 부여하여 채팅 키를 검색합니다",
     "your-data-belongs-to-you": "시드 구문을 잃어 버리면 데이터와 자산을 분실하게 됩니다",
     "your-data-belongs-to-you-description": "스테이터스는 사용자가 시드 시드 구문을 잃어버릴 경우, 계정을 복구하는 것을 도와드릴 수 없습니다. 데이터 보안을 위해 시드 구문을 따로 백업해 두시는 것을 권장합니다.",
     "your-recovery-phrase": "시드 구문",
     "your-recovery-phrase-description": "위 12단어가 사용자의 시드 구문입니다. 이 구문은 사용자의 지갑을 증명하기 위해 반드시 필요하며, 이번 한번만 확인할 수 있습니다. 지갑을 분실하거나 재설치하는 경우 반드시 필요하므로 안전한 장소에 보관하세요.",
-    "your-wallets": "내 지갑"
+
 }

@@ -1,6 +1,6 @@
 {
     "confirm": "Bekreft",
-    "phone-national": "Nasjonal",
+    
     "amount": "Beløp",
     "members-active": {
         "one": "1 medlem",
@@ -10,12 +10,12 @@
     "chat-name": "Kallenavn",
     "phew-here-is-your-passphrase": "*Phew* det var vrient, her er din nye passordfrase, *skriv den ned og hold den for deg selv!* Du vil trenge den for å kunne gjenopprette kontoen.",
     "public-group-topic": "Emne",
-    "debug-enabled": "Debug server har blitt satt i gang! Du kan nå kjøre *status-dev-cli scan* for å finne serveren på PC'n din fra samme nettverk.",
+    
     "chat-settings": "Chat instillinger",
     "offline": "Avlogget",
-    "update-status": "Oppdater din status...",
+    
     "invited": "invitert",
-    "chat-send-eth": "{{amount}} ETH",
+    
     "address": "Adresse",
     "new-public-group-chat": "Bli med i offentlig chat",
     "datetime-hour": {
@@ -25,22 +25,22 @@
     "wallet-settings": "Lommeboksinstillinger",
     "datetime-ago-format": "{{number}} {{time-intervals}} {{ago}}",
     "camera-access-error": "For å tillate bruk av kamera, gå til systeminstillinger og sørg for at Status > Kamera er aktivert.",
-    "address-explication": "Her bør det kanskje være tekst som forklarer hva en adresse er og hvor du finner den",
+    
     "remove": "Fjern",
-    "transactions-unsigned-empty": "Du har ingen usignerte transaksjoner",
+    
     "add-members": "Legg til medlemmer",
-    "popular-tags": "Populære etiketter",
-    "twelve-words-in-correct-order": "12 ord i riktig rekkefølge",
-    "phone-number": "Telefonnummer",
+    
+    
+    
     "photos-access-error": "For å tillate bruk av bilder, gå til systeminstillinger og sørg for at Status > Bilder er aktivert.",
-    "removed-from-chat": "fjernet deg fra gruppechatten",
+    
     "done": "Ferdig",
-    "remove-from-contacts": "Fjern fra kontakter",
+    
     "delete-chat": "Fjern melding",
     "new-group-chat": "Ny gruppemelding",
-    "edit-chats": "Rediger melding",
+    
     "wallet": "Lommebok",
-    "wallet-exchange": "Exchange",
+    
     "wallet-request": "Forespørsel",
     "sign-in": "Logg på",
     "datetime-yesterday": "i går",
@@ -48,32 +48,32 @@
     "sign-in-to-status": "Logg på Status",
     "datetime-ago": "siden",
     "contacts": "Kontaker",
-    "search-chat": "Søk i meldinger",
+    
     "got-it": "Mottatt",
-    "delete-group-confirmation": "Denne slettes fra gruppen, men vil fortsatt være tilgjengelig fra kontakter",
-    "move-to-internal-failure-message": "Vi må flytte noen viktige filer fra ekstern til intern lagring. For å kunne gjøre dette, trenger vi din godkjenning. Vi kommer ikke til å bruke ekstern lagring i fremtidige versjoner.",
+    
+    
     "active-online": "Pålogget",
     "password": "Passord",
-    "status-seen-by-everyone": "Sett av alle",
-    "edit-group": "Rediger gruppe",
-    "not-specified": "Ikke spesifisert",
-    "delete-group": "Slett gruppe",
+    
+    
+    
+    
     "browsing-title": "Utforsk",
-    "wallet-add-asset": "Add asset",
-    "reorder-groups": "Organiser grupper",
+    
+    
     "transactions-history-empty": "Du har ingen tidligere transaksjoner",
     "discover": "Oppdag",
-    "wallet-error": "Feil ved lasting av data",
+    
     "browsing-cancel": "Avbryt",
-    "faucet-success": "Du har mottatt en faucet forespørsel",
+    
     "intro-status": "Chat med meg for å sette opp kontoen din og endre instillinger!",
     "name": "Navn",
-    "phone-number-required": "Trykk her og skriv ditt telefonnummer, så skal jeg finne vennene dine",
-    "unknown-address": "Ukjent adresse",
-    "received-invitation": "Motatt chat-invitasjon",
+    
+    
+    
     "show-qr": "Vis QR-kode",
     "connect": "Koble til",
-    "choose-from-contacts": "Velg fra kontaker",
+    
     "edit": "Rediger",
     "account-generation-message": "Gi meg et øyeblikk! Jeg må granske universet for å generere en konto til deg!",
     "no-messages": "Ingen meldinger",
@@ -82,34 +82,33 @@
     "members-title": "Medlemmer",
     "new-group": "Ny gruppe",
     "phone-e164": "Internasjonal 1",
-    "suggestions-requests": "Forespørsler",
+    
     "settings": "Instillinger",
-    "remove-from-group": "Fjern fra gruppen",
-    "contacts-syncronized": "Dine kontaker har blitt synkronisert",
-    "transactions-sign-all": "Signer alle",
-    "add-new-contact": "Legg til ny kontakt",
+    
+    
+    
     "delete": "Slett",
-    "search-contacts": "Søk kontakter",
+    
     "chats": "Chats",
     "transaction": "Transaksjon",
     "public-group-status": "Offentlig",
-    "leave-chat": "Forlat chat",
+    
     "image-source-make-photo": "Opptak",
     "start-conversation": "Start en samtale",
-    "topic-format": "Feil format [a-z0-9\\-]+",
+    
     "save": "Lagre",
-    "enter-valid-public-key": "Skriv en offentlig nøkkel eller skan en QR-kode",
-    "faucet-error": "Faucet forespørselen feilet",
-    "phone-significant": "Betydningsfull",
-    "search-for": "Søk etter...",
+    
+    
+    
+    
     "sharing-copy-to-clipboard": "Kopier til utklippstavle",
-    "your-wallets": "Dine lommebøker",
-    "phone-international": "Internasjonal 2",
+    
+    
     "sync-in-progress": "Synkroniserer...",
-    "enter-address": "Adresse",
-    "switch-users": "Bytt brukere",
+    
+    
     "send-transaction": "Send overføring",
-    "recover-access": "Få tilbake tilgang",
+    
     "incorrect-code": [
         "str",
         "Beklager, prøv på ny"
@@ -117,60 +116,59 @@
     "image-source-gallery": "Velg fra bilder",
     "sync-synced": "Synkronisert",
     "status-pending": "Venter",
-    "delete-contact": "Slett kontakt",
+    
     "datetime-day": {
         "one": "dag",
         "other": "dager"
     },
     "wallet-send": "Send",
-    "mute-notifications": "Demp notifikasjoner",
-    "invalid-phone": "Feil telefonnummer",
+    
+    
     "scan-qr": "Skan QR-kode",
     "contact-s": {
         "one": "kontakt",
         "other": "kontaker"
     },
-    "status-sending": "Sender",
+    
     "transactions-filter-type": "Type",
     "next": "Neste",
     "recent": "Nylig",
     "status": "Status",
     "from": "Fra",
     "wrong-password": "Feil passord",
-    "search-chats": "Søk meldinger",
+    
     "in-contacts": "I kontaker",
     "transactions-sign": "Signer",
     "sharing-share": "Del...",
     "type-a-message": "Skriv en melding...",
-    "type-a-command": "Start å skrive en kommando...",
+    
     "node-unavailable": "Ingen Ethereum node kjørende",
-    "shake-your-phone": "Har du funnet en feil eller har du tilbakemelding til oss? Bare ~rist~ på telefonen!",
+    
     "unknown-status-go-error": "Ukjent status-go feil",
-    "contacts-group-new-chat": "Start ny chat",
-    "and-you": "og du",
-    "wallets": "Lommebøker",
+    
+    
     "clear-history": "Fjern historikk",
     "no-contacts": "Ingen kontaker enda",
-    "here-is-your-signing-phrase": "Her er din signeringsfrase. Du vil bruke den til å verifisere dine transaksjoner. *skriv den ned og hold den for deg selv!*",
-    "status-sent": "Sendt",
-    "status-prompt": "Legg til en status slik at andre forstår hva du tilbyr. Bruk gjerne #hashtag.",
-    "delete-contact-confirmation": "Kontakten vil bli fjernet fra kontaktlisten din",
+    
+    
+    
+    
     "datetime-today": "i dag",
-    "add-a-status": "Legg til en status...",
+    
     "web-view-error": "oops, feil",
-    "notifications-title": "Notifikasjoner og lyd",
+    
     "error": "Feil",
-    "edit-contacts": "Rediger kontakter",
+    
     "more": "mer",
     "cancel": "Avbryt",
-    "no-statuses-found": "Ingen status funnet",
+    
     "can-not-add-yourself": "Du kan ikke legge til deg selv",
     "add-to-contacts": "Legg til i kontakter",
     "available": "Tilgjengelig",
     "You": "Du",
     "main-wallet": "Hovedlommebok",
     "transactions": "Transaksjoner",
-    "transactions-unsigned": "Usignert",
+    
     "members": {
         "one": "1 medlem",
         "other": "{{count}} medlemmer",
@@ -178,37 +176,37 @@
     },
     "intro-message1": "Velkommen til Status\nTrykk på denne beskjeden for å sette et passord og komme i gang!",
     "transactions-history": "Historikk",
-    "not-implemented": "!ikke implementert",
+    
     "new-contact": "Ny kontakt",
     "datetime-second": {
         "one": "sekund",
         "other": "sekunder"
     },
-    "status-failed": "Feilet",
-    "is-typing": "skriver",
+    
+    
     "recover": "Gjenopprett",
     "wallet-total-value": "Total verdi",
-    "suggestions-commands": "Kommandoer",
-    "contact-already-added": "Kontakten er allerede i kontaktlisten",
+    
+    
     "datetime-minute": {
         "one": "minutt",
         "other": "minutter"
     },
     "browsing-open-in-android-web-browser": "Åpne i nettleser",
     "browsing-open-in-ios-web-browser": "Åpne i nettleser",
-    "delete-group-prompt": "Dette vil ikke affektere kontakter",
+    
     "edit-profile": "Rediger profil",
     "active-unknown": "Ukjent",
-    "search-tags": "Søk etter etikett her",
+    
     "public-key": "Offentlig nøkkel",
-    "status-seen": "Sett",
-    "transactions-filter-tokens": "Tokens",
-    "status-delivered": "Levert",
+    
+    
+    
     "profile": "Profil",
-    "no-statuses-discovered": "Ingen status oppdaget",
+    
     "none": "Ingen",
     "removed": "fjernet",
-    "empty-topic": "Tomt emne",
+    
     "transactions-filter-select-all": "Velg alle",
     "transactions-filter-title": "Filtrer historikk",
     "message": "Melding",

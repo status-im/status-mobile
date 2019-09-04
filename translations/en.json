@@ -1,6 +1,6 @@
 {
     "confirm": "Confirm",
-    "phone-national": "National",
+    
     "amount": "Amount",
     "members-active": {
         "one": "1 member",
@@ -9,11 +9,11 @@
     "chat-name": "Chat name",
     "chat-key": "Chat key",
     "public-group-topic": "Topic",
-    "debug-enabled": "Debug server has been launched! You can now execute *status-dev-cli scan* to find the server from your computer on the same network.",
+    
     "chat-settings": "Chat settings",
     "offline": "Offline",
     "invited": "invited",
-    "chat-send-eth": "{{amount}} ETH",
+    
     "address": "Address",
     "new-public-group-chat": "Join public chat",
     "datetime-hour": {
@@ -21,46 +21,46 @@
         "other": "hours"
     },
     "datetime-ago-format": "{{number}} {{time-intervals}} {{ago}}",
-    "address-explication": "Your public key is used to generate your address on Ethereum and is a series of numbers and letters. You can find it easily in your profile",
+    
     "remove": "Remove",
     "add-members": "Add members",
-    "popular-tags": "Popular #hashtags",
-    "twelve-words-in-correct-order": "12 words in correct order",
-    "phone-number": "Phone number",
-    "removed-from-chat": "removed you from group chat",
+    
+    
+    
+    
     "done": "Done",
-    "remove-from-contacts": "Remove from contacts",
+    
     "delete-chat": "Delete chat",
     "delete-and-leave-group": "Delete and leave group",
     "new-group-chat": "New group chat",
-    "edit-chats": "Edit chats",
+    
     "sign-in": "Unlock",
     "datetime-yesterday": "yesterday",
-    "create-new-multiaccount": "Create new multiaccount",
+    
     "sign-in-to-status": "Unlock Status",
     "datetime-ago": "ago",
     "contacts": "Contacts",
-    "search-chat": "Search chat",
+    
     "got-it": "Got it",
-    "move-to-internal-failure-message": "We need to move some important files from external to internal storage. To do this, we need your permission. We won't be using external storage in future versions.",
+    
     "active-online": "Online",
     "password": "Password",
-    "status-seen-by-everyone": "Seen by everyone",
-    "edit-group": "Edit group",
-    "not-specified": "Not specified",
-    "delete-group": "Delete group",
+    
+    
+    
+    
     "browsing-title": "Browse",
-    "reorder-groups": "Reorder groups",
+    
     "discover": "Discover",
     "browsing-cancel": "Cancel",
-    "faucet-success": "Faucet request has been received",
+    
     "name": "Name",
-    "phone-number-required": "Tap here to validate your phone number & I'll find your friends.",
-    "unknown-address": "Unknown address",
-    "received-invitation": "received chat invitation",
+    
+    
+    
     "show-qr": "Show QR code",
     "connect": "Connect",
-    "choose-from-contacts": "Choose from contacts",
+    
     "edit": "Edit",
     "no-messages": "No messages",
     "passphrase": "Passphrase",
@@ -68,31 +68,30 @@
     "members-title": "Members",
     "new-group": "New group",
     "phone-e164": "International 1",
-    "suggestions-requests": "Requests",
+    
     "settings": "Settings",
-    "remove-from-group": "Remove from group",
-    "contacts-syncronized": "Your contacts have been synchronized",
-    "add-new-contact": "Add new contact",
-    "search-contacts": "Search contacts",
+    
+    
+    
     "chats": "Chats",
     "transaction": "Transaction",
     "public-group-status": "Public",
-    "leave-chat": "Leave chat",
+    
     "image-source-make-photo": "Capture",
     "start-conversation": "Start conversation",
-    "topic-format": "Topic name can use only lowercase letters, numbers and dash (-)",
+    
     "save": "Save",
-    "enter-valid-public-key": "Please enter a valid public key or scan a QR code",
-    "faucet-error": "Faucet request error",
-    "phone-significant": "Significant",
-    "search-for": "Search for...",
+    
+    
+    
+    
     "sharing-copy-to-clipboard": "Copy",
-    "phone-international": "International 2",
+    
     "sync-in-progress": "Syncing...",
-    "enter-address": "Enter address",
-    "switch-users": "Switch users",
+    
+    
     "send-transaction": "Send transaction",
-    "recover-access": "Recover access",
+    
     "incorrect-code": [
         "str",
         "Sorry the code was incorrect, please enter it again"
@@ -100,45 +99,44 @@
     "image-source-gallery": "Select from gallery",
     "sync-synced": "In sync",
     "status-pending": "Pending",
-    "delete-contact": "Delete contact",
+    
     "datetime-day": {
         "one": "day",
         "other": "days"
     },
-    "mute-notifications": "Mute notifications",
-    "invalid-phone": "Invalid phone number",
+    
+    
     "scan-qr": "Scan QR code",
     "contact-s": {
         "one": "contact",
         "other": "contacts"
     },
-    "status-sending": "Sending...",
+    
     "next": "Next",
     "recent": "Recent",
     "status": "Status",
     "from": "From",
     "wrong-password": "Wrong password",
-    "search-chats": "Search chats",
+    
     "in-contacts": "In contacts",
     "sharing-share": "Share...",
     "type-a-message": "Type a message...",
-    "type-a-command": "Start typing a command...",
-    "shake-your-phone": "Found a bug or have a suggestion? Just ~shake~ your phone!",
-    "contacts-group-new-chat": "Start new chat",
-    "and-you": "and you",
+    
+    
+    
     "clear-history": "Clear history",
     "no-contacts": "No contacts yet",
-    "status-sent": "Sent",
-    "status-prompt": "Set your status. Using #hastags will help others discover you and talk about what's on your mind",
+    
+    
     "datetime-today": "today",
-    "add-a-status": "Add a status...",
+    
     "web-view-error": "Unable to load page",
-    "notifications-title": "Notifications and sounds",
+    
     "error": "Error",
-    "edit-contacts": "Edit contacts",
+    
     "more": "more",
     "cancel": "Cancel",
-    "no-statuses-found": "No statuses found",
+    
     "can-not-add-yourself": "You can't add yourself",
     "add-to-contacts": "Add to contacts",
     "available": "Available",
@@ -176,7 +174,7 @@
     "generate-a-new-key": "Generate a new key",
     "enter-your-password": "Enter your password",
     "generating-keys": "Generating keys...",
-    "you-will-need-this-code": "You'll need this code to open Status and sign transactions",
+    
     "this-device": "This device",
     "this-device-desc": "Your key will be encrypted and securely stored",
     "keycard-desc": "Android only. You will need to get a Keycard first",
@@ -187,33 +185,33 @@
     "encrypt-with-password": "Encrypt with password",
     "maybe-later": "Maybe later",
     "unlock": "Unlock",
-    "not-implemented": "!not implemented",
+    
     "new-contact": "New contact",
     "datetime-second": {
         "one": "second",
         "other": "seconds"
     },
-    "status-failed": "Failed",
-    "is-typing": "is typing",
+    
+    
     "recover": "Recover",
-    "suggestions-commands": "Commands",
-    "contact-already-added": "The contact has already been added",
+    
+    
     "datetime-minute": {
         "one": "minute",
         "other": "minutes"
     },
-    "delete-group-prompt": "This will not affect your contacts",
+    
     "edit-profile": "Edit profile",
     "active-unknown": "Unknown",
-    "search-tags": "Type your search tags here",
+    
     "public-key": "Public key",
-    "status-seen": "Seen",
-    "status-delivered": "Delivered",
+    
+    
     "profile": "Profile",
-    "no-statuses-discovered": "No statuses discovered",
+    
     "none": "None",
     "removed": "removed",
-    "empty-topic": "Empty topic",
+    
     "message": "Message",
     "message-syncing": "Message syncing",
     "image-source-title": "Edit picture",
@@ -233,8 +231,8 @@
     "pair-this-device": "Advertise device",
     "pair-this-device-description": "Pair your devices to sync contacts and chats between them",
     "you": "you",
-    "syncing-enabled": "Syncing enabled",
-    "syncing-disabled": "Syncing disabled",
+    
+    
     "sync-all-devices": "Sync all devices",
     "syncing-devices": "Syncing...",
     "notify": "Notify",
@@ -252,8 +250,8 @@
     "currency-display-name-brl": "Brazil Real",
     "mainnet-network": "Main network",
     "device-to-device": "Device-to-device Enabled",
-    "device-to-device-warning-title": "Warning, experimental feature",
-    "device-to-device-warning-content": "If enabled, only users who are running 0.9.32 and higher will be able to read your direct and public messages.",
+    
+    
     "datasync": "DataSync Enabled",
     "datasync-warning-title": "Warning, experimental feature",
     "datasync-warning-content": "If enabled, only users who are running builds with datasync will be able to read your direct messages. Please logout/login for the changes to take effect",
@@ -265,7 +263,7 @@
     "disable-discovery-topic-warning-title": "Warning, experimental feature",
     "disable-discovery-topic-warning-content": "If enabled, only users who have this on will be able to read your messages and send you messages. Please logout/login for the changes to take effect",
     "open-dapp": "Open ÐApp",
-    "new-transaction": "New Transaction",
+    
     "currency-display-name-bbd": "Barbados Dollar",
     "ask-in-status": "Ask a question or report a bug",
     "open": "Open",
@@ -276,7 +274,6 @@
         "one": "You can select one more participant",
         "other": "You can select {{count}} more participants"
     },
-    "no-more-participants-available": "You can't add anymore participants",
     "created-group-chat-description": "You created the group {{group-name}}",
     "join-group-chat-description": "{{username}} invited you to join the group {{group-name}}",
     "joined-group-chat-description": "You've joined {{group-name}} from invitation by {{username}}",
@@ -294,7 +291,7 @@
     "group-chat-no-contacts": "You don't have any contacts yet.\nInvite your friends to start chatting",
     "agree-by-continuing": "By continuing you agree\n to our ",
     "advanced": "Advanced",
-    "currency-display-name-sos": "Somalia Shilling",
+    
     "currency-display-name-zar": "South Africa Rand",
     "offline-messaging": "Mailserver",
     "currency-display-name-nad": "Namibia Dollar",
@@ -304,11 +301,11 @@
     "recover-key": "Recover key",
     "currency-display-name-kes": "Kenyan Shilling",
     "view-etheremon": "View in Etheremon",
-    "wallet-transaction-fee-details": "Gas limit caps the units of gas spent on the transaction. Gas price sets the price per unit of gas. Increasing gas price can make your transaction faster.",
+    
     "leave-group": "Leave group",
-    "wallet-set-up-confirm-description": "You'll need to recognize this to ensure your transactions are safe. This combo is not stored in your multiaccount.",
+    
     "recovery-phrase-unknown-words": "Some words might be misspelled",
-    "update-status": "Update your status...",
+    
     "errors": "Errors",
     "mailserver-connection-error": "Could not connect to mailserver",
     "mailserver-automatic": "Automatic selection",
@@ -322,11 +319,11 @@
     "currency-display-name-myr": "Malaysia Ringgit",
     "no-messages-yet": "No messages yet",
     "delete-mailserver-are-you-sure": "Are you sure you want to delete this mailserver?",
-    "currency-display-name-yer": "Yemen Rial",
+    
     "close-app-button": "Confirm",
     "currency-display-name-mzn": "Mozambique Metical",
     "block": "Block",
-    "wallet-set-up-title": "Set up your wallet",
+    
     "empty-chat-description": "There are no messages \nin this chat yet",
     "empty-chat-description-public": "It's been quiet here for the last {{quiet-hours}}. Start the conversation or ",
     "quiet-hours": "{{quiet-hours}} hours",
@@ -338,21 +335,21 @@
     "welcome-to-status": "Welcome to Status",
     "cryptokitty-name": "CryptoKitty #{{id}}",
     "network-id": "Network ID",
-    "connection-problem": "Messages connection problem",
+    
     "contact-code": "Chat key",
     "key": "Key",
     "enter-ens-or-contact-code": "Enter ENS username or chat key",
-    "transactions-delete-content": "Transaction will be removed from 'Unsigned' list",
+    
     "home": "Home",
-    "transactions-unsigned-empty": "You don't have any unsigned transactions",
+    
     "status-confirmed": "Confirmed",
     "unable-to-read-this-code": "Unable to read this code",
     "currency-display-name-pyg": "Paraguay Guarani",
     "image-remove-current": "Remove current photo",
-    "transaction-moved-text": "The transaction will remain in the 'Unsigned' list for the next 5 mins",
-    "leave-public-chat": "Leave public chat",
-    "sign-later-title": "Sign transaction later?",
-    "manage-permissions": "Manage permissions",
+    
+    
+    
+    
     "message-reply": "Reply",
     "message-options-cancel": "Cancel",
     "currency-display-name-pln": "Poland Zloty",
@@ -370,12 +367,12 @@
     "save-password-unavailable": "Set device passcode to save password",
     "save-password-unavailable-android": "Save password is unavailable: your device may be rooted or lacks necessary security features.",
     "currency-display-name-inr": "India Rupee",
-    "transaction-moved-title": "Transaction moved",
+    
     "counter-9-plus": "9+",
     "currency-display-name-uyu": "Uruguay Peso",
     "photos-access-error": "To grant the required photos permission, please go to your system settings and make sure that Status > Photos is selected.",
     "password-placeholder2": "Confirm your password",
-    "request-feature": "Request a feature",
+    
     "hash": "Hash",
     "new-chat": "New chat",
     "show-more": "Show more",
@@ -387,7 +384,7 @@
     "enter-url": "Enter URL",
     "delete-network-title": "Delete network?",
     "bootnodes": "Bootnodes",
-    "error-unable-to-get-transactions": "Unable to get transaction history",
+    
     "new-contract": "New Contract",
     "wrong-word": "Wrong word",
     "check-your-recovery-phrase": "Check your seed phrase",
@@ -396,7 +393,7 @@
     "add-bootnode": "Add bootnode",
     "currency-display-name-krw": "Korea (South) Won",
     "wallet": "Wallet",
-    "wallet-exchange": "Exchange",
+    
     "browser-secure": "Connection is secure. Make sure you really trust this site before signing transactions or entering personal data.",
     "command-button-sent": "Sent",
     "wallet-request": "Request",
@@ -406,17 +403,16 @@
     "disconnected": "Chat offline",
     "connecting": "Connecting...",
     "wallet-offline": "Wallet offline",
-    "leave-group-chat-confirmation": "Are you sure you want to leave this group?",
-    "dapp-profile": "ÐApp profile",
-    "sign-later-text": "Check the transaction history to sign this transaction",
-    "wallet-transaction-fee": "Transaction Fee",
-    "no-hashtags-discovered-body": "When a #hashtag becomes\npopular you will see it here.",
-    "currency-display-name-mnt": "Mongolia Tughrik",
+    
+    
+    
+    
+    
     "log-level": "Log level",
     "currency-display-name-ars": "Argentine Peso",
     "see-it-again": "SEE IT AGAIN",
-    "delete-group-confirmation": "This group will be removed from your groups. This will not affect your contacts",
-    "leave-group-chat": "Leave group chat",
+    
+    
     "make-admin": "Make admin",
     "public-chats": "Public chats",
     "specify-recipient": "Specify recipient...",
@@ -435,7 +431,7 @@
     "browsing-site-blocked-description1": "We detected potential malicious activity from this address. To protect you and your wallet, we're preventing further navigation.\n\nIf you think this is an error, let us know in the ",
     "browsing-site-blocked-description2": " public chat.",
     "browsing-site-blocked-go-back": "Go back",
-    "wallet-add-asset": "Add asset",
+    
     "desktop-alpha-release-warning": "Thanks for trying Status Desktop! This is an early alpha release focused on chat, and is missing several features found in the mobile client and may contain bugs and other issues. Please note that this is an alpha release and we advise you that using this app should be done for testing purposes only and you assume the full responsibility for all risks concerning your data and funds. Status makes no claims of security or integrity of funds in these builds.",
     "delete-message": "Delete message",
     "browser": "Browser",
@@ -443,15 +439,15 @@
     "sign-message": "Sign Message",
     "currency-display-name-rub": "Russia Ruble",
     "transactions-history-empty": "No transactions in your history yet",
-    "leave-group-title": "Leave?",
+    
     "currency-display-name-bnd": "Brunei Darussalam Dollar",
     "remove-from-chat": "Remove from chat",
-    "wallet-backup-recovery-description": "This will help you to keep your assets safe",
+    
     "recovery-phrase": "Seed phrase",
     "delete-bootnode": "Delete bootnode",
     "new": "New",
-    "make-sure-you-trust-dapp": "Make sure that you trust this DApp",
-    "wallet-error": "Error loading data",
+    
+    
     "currency-display-name-btn": "Bhutanese Ngultrum",
     "create": "Create",
     "currency-display-name-mxn": "Mexico Peso",
@@ -459,31 +455,31 @@
     "error-unable-to-get-balance": "Unable to get balance",
     "sign-you-in": "Signing you in…",
     "gas-price": "Gas price",
-    "view-transaction-details": "View transaction details",
+    
     "wallet-insufficient-gas": "Not enough ETH for gas",
     "validation-amount-is-too-precise": "Amount is too precise. Max number of decimals is {{decimals}}.",
     "pending": "Pending",
     "hooks": "Hooks",
     "copy-transaction-hash": "Copy transaction ID",
     "start-chat": "Start chat",
-    "wallet-onboarding-title": "Simple and secure cryptocurrency wallet",
+    
     "logout": "Log out",
     "sign-out": "Sign out",
     "delete-my-account": "Delete my account",
-    "status-not-sent-tap": "Not confirmed. Tap for options",
-    "status-not-sent-click": "Not confirmed. Click for options",
+    
+    
     "send-logs": "Report a bug",
     "send-logs-to": "Report a bug to {{email}}",
-    "edit-network-config": "Edit network config",
+    
     "clear-history-confirmation": "Clear history?",
-    "currency-display-name-gyd": "Guyana Dollar",
+    
     "required-field": "Required field",
-    "wallet-address-from-clipboard": "Paste Address",
+    
     "currency-display-name-cad": "Canada Dollar",
     "remove-network": "Remove network",
     "recovery-typo-dialog-description": "If you enter the wrong words, you will create a new multiaccount instead of recovering an old one.",
     "recovery-confirm-phrase": "Confirm seed phrase",
-    "delete-group-chat-confirmation": "Are you sure you want to delete this group chat?",
+    
     "currency-display-name-vef": "Venezuela Bolívar",
     "send-message": "Send message",
     "no-extension": "No extension installed",
@@ -495,26 +491,26 @@
     "rpc-url": "RPC URL",
     "currency-display-name-omr": "Oman Rial",
     "changed-asset-warning": "Asset was changed from {{old}} to {{new}}",
-    "wallet-onboarding-set-up": "Let’s get set up",
+    
     "specify-rpc-url": "Specify a RPC URL",
     "text-input-disabled": "Please wait a moment...",
     "currency-display-name-aed": "Emirati Dirham",
     "currency-display-name-egp": "Egypt Pound",
-    "transactions-sign-all": "Sign all",
+    
     "enter-contact-code": "Enter chat key or username",
-    "delete-chat-action": "Delete",
+    
     "currency-display-name-twd": "Taiwan New Dollar",
-    "empty-chat-description-console": "Look under the hood! Console is a javascript runtime environment that exposes the whole web3 API. Type \"web3.\" to get started.",
-    "postponed": "Postponed",
+    
+    
     "gas-limit": "Gas limit",
-    "wallet-browse-photos": "Browse Photos",
-    "currency-display-name-kyd": "Cayman Islands Dollar",
-    "no-statuses-discovered-body": "When somebody posts\na status you will see it here.",
-    "add-json-file": "Add a JSON file",
-    "other-multiaccounts": "Other multiaccounts",
+    
+    
+    
+    
+    
     "browsing-open-in-status": "Open in Status",
     "warning-message": "Sorry, we limit sending several messages in quick succession to prevent spam. Please try again in a moment",
-    "wallet-onboarding-description": "Send, receive, and store your cryptocurrency with the Status Wallet",
+    
     "custom": "Custom",
     "delete": "Delete",
     "extension-url": "Enter an extension URL",
@@ -523,50 +519,50 @@
     "status-tx-not-found": "TX not found",
     "extension-find": "Find extension",
     "currency-display-name-eur": "Euro",
-    "transactions-delete": "Delete transaction",
-    "selected-dapps": "Selected ÐApps",
+    
+    
     "dapp": "ÐApp",
     "mainnet-text": "You’re on the Mainnet. Real ETH will be sent",
     "receive": "Receive",
     "ok-got-it": "OK, got it",
     "ok": "OK",
     "main-currency": "Main currency",
-    "ens-names": "ENS names",
+    
     "clear-history-title": "Clear history?",
     "chat": "Chat",
     "you-are-all-set-description": "Now if you lose your phone you can restore your multiaccount using the seed phrase.",
     "specify-name": "Specify a name",
-    "add-new-network": "Add new network",
+    
     "currency-display-name-bdt": "Bangladeshi Taka",
     "logout-title": "Log out?",
     "or-choose-a-contact": "Or choose a contact",
-    "add-existing-multiaccount": "Add existing multiaccount",
+    
     "sharing-copied-to-clipboard": "Copied",
     "all": "All",
     "confirmations-helper-text": "When the transaction has 12 confirmations you can consider it settled.",
-    "reset-default": "Reset to default",
+    
     "test-networks": "Test networks",
     "copy-to-clipboard": "Copy",
-    "your-wallets": "Your wallets",
+    
     "token-auto-validate-name-error": "Wrong name for token {{symbol}} at address {{address}} - set to {{expected}} but detected as {{actual}}",
     "token-auto-validate-symbol-error": "Wrong symbol for token {{symbol}} at address {{address}} - set to {{expected}} but detected as {{actual}}",
     "token-auto-validate-decimals-error": "Wrong decimals for token {{symbol}} at address {{address}} - set to {{expected}} but detected as {{actual}}",
     "error-unable-to-get-token-balance": "Unable to get token balance",
-    "error-cant-send-transaction-offline": "Can't send transaction in offline mode",
-    "error-cant-sign-message-offline": "Can't sign message in offline mode",
+    
+    
     "enter-word": "Enter word",
     "enter-password": "Enter password",
     "logout-are-you-sure": "Are you sure you want\nto log out?",
     "allow": "Allow",
-    "leave-group-confirmation": "Are you sure you want to leave this group?",
-    "signing-message-phrase-description": "If you recognize these words, enter your login password to sign the message",
+    
+    
     "selected-for-you": "Selected for you",
     "currency-display-name-qar": "Qatar Riyal",
     "command-button-send": "Send",
     "currency-display-name-hkd": "Hong Kong Dollar",
     "your-recovery-phrase": "Your seed phrase",
     "transaction-history": "Transaction history",
-    "currency-display-name-ltl": "Lithuanian Litas",
+    
     "step-i-of-n": "Step {{step}} of {{number}}",
     "confirmations": "Confirmations",
     "currency-display-name-ron": "Romania Leu",
@@ -574,25 +570,24 @@
     "invalid-key-content": "{{message}}\n\nMultiaccount's database can't be encrypted because file is corrupted. There is no way to restore it. If you press \"Cancel\" button, nothing will happen. If you press \"{{erase-multiaccounts-data-button-text}}\" button, multiaccount's db will be removed and you will be able to unlock multiaccount. All multiaccount's data will be lost.",
     "advanced-settings": "Advanced settings",
     "group-info": "Group info",
-    "currency-display-name-nio": "Nicaragua Cordoba",
+    
     "currency-display-name-ugx": "Ugandan Shilling",
     "currency": "Currency",
-    "currency-display-name-bmd": "Bermuda Dollar",
+    
     "currency-display-name-try": "Turkish Lira",
     "connecting-requires-login": "Connecting to another network requires login",
     "send-transaction-request": "Send a Transaction Request",
     "share-contact-code": "Share my chat key",
     "use-valid-contact-code": "Please enter or scan a valid chat key or username",
     "use-valid-contact-code-desktop": "Please enter a valid chat key or username",
-    "no-hashtags-discovered-title": "No #hashtags discovered",
-    "enter-dapp-url": "Enter a ÐApp URL",
+    
     "wallet-transaction-total-fee": "Total Fee",
     "extension": "Extension",
     "invalid-extension": "Invalid extension URI",
     "extensions-disclaimer": "This extension is from a third party and not built by Status. Please be sure you trust the developer before installing",
     "request-transaction": "Request transaction",
     "wallet-send": "Send",
-    "wallet-deposit": "Deposit",
+    
     "invalid-key-title": "We detected a problem with the encryption key",
     "notifications": "Notifications",
     "currency-display-name-czk": "Czech Koruna",
@@ -603,28 +598,28 @@
     "sync-settings": "Sync settings",
     "security": "Security",
     "privacy": "Privacy",
-    "currency-display-name-lak": "Laos Kip",
+    
     "recipient-code": "Enter recipient address",
     "fleet": "Fleet",
-    "unsigned-transaction-expired": "Unsigned transaction expired",
+    
     "backup-your-recovery-phrase": "Backup your seed phrase",
     "gas-used": "Gas used",
-    "delete-chat-title": "Delete chat?",
+    
     "success": "Success",
-    "specify-bootnode-address": "Specify bootnode address",
-    "wallet-set-up-safe-transactions-title": "Super-safe transactions",
-    "wallet-set-up-signing-explainer": "You should see these three words before signing each transaction",
-    "wallet-set-up-signing-explainer-warning": "If you see a different combo, cancel the transaction and logout.",
+    
+    
+    
+    
     "currency-display-name-thb": "Thailand Baht",
     "transactions-filter-type": "Type",
     "back": "Back",
-    "wallet-send-token": "Send {{symbol}}",
+    
     "bootnodes-enabled": "Bootnodes enabled",
     "your-data-belongs-to-you": "If you lose your seed phrase you lose your data and funds",
     "empty-chat-description-one-to-one": "Any messages you send here are encrypted and can only be read by you and ",
     "open-on-etherscan": "Open on Etherscan.io",
     "currency-display-name-lkr": "Sri Lanka Rupee",
-    "currency-display-name-lrd": "Liberia Dollar",
+    
     "leave": "Leave",
     "offline-messaging-settings": "Mailserver settings",
     "qr-code-public-key-hint": "Share this code to start chatting",
@@ -634,26 +629,26 @@
     "delete-bootnode-are-you-sure": "Are you sure you want to delete this bootnode?",
     "start-new-chat": "Start new chat",
     "extensions": "Extensions",
-    "leave-group-action": "Leave",
+    
     "amount-placeholder": "Specify amount...",
     "network-details": "Network details",
     "currency-display-name-rsd": "Serbia Dinar",
-    "transactions-sign-later": "Sign later",
+    
     "resend-message": "Resend",
     "currency-display-name-bhd": "Bahraini Dinar",
-    "request-qr-legend": "Share this code to receive assets",
+    
     "currency-display-name-chf": "Switzerland Franc",
     "start-group-chat": "Start group chat",
     "transactions-sign": "Sign",
     "decryption-failed-confirm": "Apply",
     "show-less": "Show less",
-    "wallet-set-up-confirm-title": "Remember this!",
+    
     "at": "at",
     "off": "Off",
     "dev-mode": "Development mode",
     "dev-mode-settings": "Development mode settings",
     "chaos-mode": "Chaos mode",
-    "intro-text-description": "A community-powered platform to securely chat and transact on the Ethereum blockchain",
+    
     "currency-display-name-kwd": "Kuwaiti Dinar",
     "invalid-number": "Invalid number",
     "recover-password-too-short": "Password is too short",
@@ -665,11 +660,11 @@
     "message-not-sent": "Message not sent",
     "currency-display-name-dop": "Dominican Republic Peso",
     "usd-currency": "USD",
-    "existing-networks": "Existing networks",
+    
     "node-unavailable": "No ethereum node running",
     "url": "URL",
     "identifier": "Identifier",
-    "currency-display-name-mkd": "Macedonia Denar",
+    
     "currency-display-name-pen": "Peru Sol",
     "currency-display-name-clp": "Chile Peso",
     "currency-display-name-ghs": "Ghana Cedi",
@@ -680,16 +675,16 @@
     "view-superrare": "View in SuperRare",
     "add-network": "Add network",
     "unknown-status-go-error": "Unknown status-go error",
-    "wallets": "Wallets",
+    
     "fetch-history": "Fetch last 24 hours",
     "currency-display-name-sgd": "Singapore Dollar",
     "wallet-manage-assets": "Manage Assets",
-    "wallet-choose-from-contacts": "Choose from Contacts",
+    
     "send-sending-to": "to {{recipient-name}}",
     "signing-phrase-description": "If you recognize these words, enter your login password to sign the transaction",
-    "signing-phrase-warning": "Only confirm the transaction if you recognize\n your three words",
+    
     "currency-display-name-mad": "Moroccan Dirham",
-    "here-is-your-signing-phrase": "Here is your signing phrase. You will use it to verify your transactions. *Write it down and keep it safe!*",
+    
     "wants-to-access-profile": "wants to access to your profile",
     "currency-display-name-huf": "Hungary Forint",
     "currency-display-name-pgk": "Papua New Guinean Kina",
@@ -703,7 +698,7 @@
     "currency-display-name-afn": "Afghanistan Afghani",
     "word-n-description": "In order to check if you have backed up your seed phrase correctly, enter the word #{{number}} above.",
     "topic-name-error": "Use only lowercase letters (a to z), numbers & dashes (-). Do not use chat keys",
-    "delete-contact-confirmation": "This contact will be removed from your contacts",
+    
     "dapp-would-like-to-connect-wallet": "would like\n to connect to your wallet",
     "specify-network-id": "Specify network id",
     "currency-display-name-aud": "Australian Dollar",
@@ -720,18 +715,18 @@
     "disable": "disable",
     "on": "On",
     "currency-display-name-mur": "Mauritius Rupee",
-    "already-have-multiaccount": "I already have a multiaccount",
-    "existing-mailservers": "Existing mailservers",
+    
+    
     "delete-network-confirmation": "Are you sure you want to delete this network?",
     "extension-address": "Extension address",
     "transaction-description": "Consider it complete after 12 confirmations on the network.",
     "currency-display-name-jpy": "Japanese Yen",
     "intro-text": "Status is your gateway to the decentralized web",
-    "paste-json-as-text": "Paste JSON as text",
+    
     "you-are-all-set": "You’re all set!",
     "invalid-key-confirm": "Apply",
     "network": "Network",
-    "process-json": "Process JSON",
+    
     "testnet-text": "You’re on the {{testnet}} Testnet. Do not send real ETH or SNT to your address",
     "sidechain-text": "You’re on the {{sidechain}} Sidechain.",
     "ethereum-node-started-incorrectly-title": "Ethereum node started incorrectly",
@@ -748,19 +743,19 @@
     "mailserver-request-error-content": "The following error was returned by the mailserver: {{error}}",
     "mailserver-request-retry": "Retry request",
     "transactions": "Transactions",
-    "transactions-unsigned": "Unsigned",
+    
     "delete-mailserver-title": "Delete mailserver",
-    "public-chat-user-count": "{{count}} people",
+    
     "eth": "ETH",
     "transactions-history": "Transaction history",
-    "fetching-messages": "Fetching messages... ({{requests-left}} requests left)",
+    
     "password_error1": "Passwords don't match.",
-    "passcode-error": "Passcodes don't match.",
+    
     "your-contact-code": "Granting access authorizes this DApp to retrieve your chat key",
     "password-placeholder": "At least 6 characters",
     "clear-history-action": "Clear",
     "version": "Version",
-    "specify-mailserver-address": "Specify a mailserver address",
+    
     "scan-qr-code": "Scan a QR code with a wallet address",
     "wallet-total-value": "Total value",
     "currency-display-name-idr": "Indonesia Rupiah",
@@ -770,7 +765,7 @@
     "les-ulc": "LES/ULC",
     "ulc-enabled": "ULC enabled",
     "allowing-authorizes-this-dapp": "Allowing authorizes this DApp to retrieve your wallet address and enable Web3",
-    "currency-display-name-srd": "Suriname Dollar",
+    
     "transaction-request": "Transaction Request",
     "decryption-failed-title": "We were not able to decrypt your data",
     "word-n": "Word #{{number}}",
@@ -783,7 +778,7 @@
     "new-network": "New network",
     "enter-12-words": "Enter the 12 words of your seed phrase, separated by single spaces",
     "ok-continue": "Ok, continue",
-    "currency-display-name-gmd": "Gambian dalasi",
+    
     "custom-networks": "Custom networks",
     "wallet-insufficient-funds": "Insufficient funds",
     "currency-display-name-ils": "Israel Shekel",
@@ -797,8 +792,8 @@
     "transaction-failed": "Transaction failed",
     "delete-mailserver": "Delete mailserver",
     "name-description": "Change this anytime in your Profile.",
-    "error-processing-json": "Error processing JSON",
-    "transactions-filter-tokens": "Tokens",
+    
+    
     "incoming": "Incoming",
     "currency-display-name-sek": "Sweden Krona",
     "recovery-typo-dialog-title": "Is the seed phrase correct?",
@@ -807,8 +802,8 @@
     "add-mailserver": "Add mailserver",
     "currency-display-name-nzd": "New Zealand Dollar",
     "failed": "Failed",
-    "status-console": "Status Console",
-    "currency-display-name-bzd": "Belize Dollar",
+    
+    
     "network-mismatch": "Network mismatch",
     "delete-confirmation": "Delete?",
     "no": "No",
@@ -826,13 +821,13 @@
     "are-you-sure-description": "You will not be able to see the whole seed phrase again",
     "notifications-new-message-body": "You have a new message",
     "currency-display-name-php": "Philippines Peso",
-    "leave-confirmation": "Leave?",
+    
     "current-network": "Current network",
     "new-request": "New request",
     "outgoing": "Outgoing",
     "clear": "Clear",
-    "dont-allow": "Don't Allow",
-    "edit-network-warning": "Be careful! Editing the network data may disable this network for you",
+    
+    
     "change-fleet": "Change fleet to {{fleet}}",
     "delete-chat-confirmation": "Are you sure you want to delete this chat?",
     "gwei": "Gwei",
@@ -846,12 +841,12 @@
     "recover-keycard-multiaccount-not-supported": "Recovering keycard multiaccount with password is not supported",
     "members-active-none": "no members",
     "members-none": "no members",
-    "default-dapps-exchanges": "Exchanges",
-    "default-dapps-marketplaces": "Marketplaces",
-    "default-dapps-fun-games": "Fun & Games",
-    "default-dapps-social-networks": "Social Networks",
-    "default-dapps-social-utilities": "Utilities",
-    "default-dapps-media": "Media",
+    
+    
+    
+    
+    
+    
     "send-request-currency": "Currency",
     "send-request-amount": "Amount",
     "send-request-invalid-asset": "Invalid Asset",
@@ -864,11 +859,11 @@
     "choose-authentication-method": "Choose an authentication method to protect your multiaccount",
     "status-keycard": "Status Keycard",
     "keycard": "Keycard",
-    "status-hardwallet-capitalized": "Status Hardwallet",
+    
     "status-hardwallet": "Status hardwallet",
-    "secure-your-assets": "secure your assets",
+    
     "linked-on": "Linked on {{date}}",
-    "link-card": "Link the card and use it to confirm your identity on the platform.",
+    
     "hold-card": "Hold card to the back\n of your phone",
     "turn-nfc-on": "Turn NFC on to continue",
     "open-nfc-settings": "Open NFC settings",
@@ -879,7 +874,7 @@
     "card-is-paired": "Card is paired",
     "no-keycard-applet-on-card": "No Keycard applet on card",
     "keycard-applet-install-instructions": "To install the applet please follow the instructions on https://github.com/status-im/keycard-cli#keycard-applet-installation",
-    "keycard-applet-will-be-installed": "Keycard applet will automatically be installed",
+    
     "begin-set-up": "Begin setup",
     "maintain-card-to-phone-contact": "Maintain card-to-phone contact during process.",
     "preparing-card": "Preparing card",
@@ -892,8 +887,8 @@
     "puk-code-explanation": "If you forget your 6-digit passcode or enter it incorrectly 3 times, you'll need this code to unlock your card.",
     "pair-code": "Pair code",
     "pair-code-explanation": "Pairs card to a different device with the same Status multiaccount on it.",
-    "secret-keys-confirmation-confirm": "GOT IT",
-    "secret-keys-confirmation-cancel": "SEE IT AGAIN",
+    
+    
     "secret-keys-confirmation-title": "Written the codes down?",
     "secret-keys-confirmation-text": "You will need them to continue to use your Keycard in case you ever loose your phone.",
     "completing-card-setup": "Completing card setup",
@@ -909,7 +904,7 @@
     "remaining-steps": "Remaining steps",
     "initialization-of-the-card": "Initialization of the card",
     "puk-and-pairing-codes-displayed": "PUK and pairing codes displayed",
-    "begin-keycard-setup-confirmation-text": "Setup will erase your card including the keys already stored on your card. Would you like to continue?",
+    
     "device-pairing": "Device pairing",
     "device-syncing": "Device syncing",
     "something-went-wrong": "Something went wrong",
@@ -919,8 +914,8 @@
     "pin-code-description": "Unlocks the card",
     "enter-puk-code": "Enter PUK code",
     "enter-puk-code-description": "6-digit passcode has been blocked.\n Please enter PUK code to unblock passcode.",
-    "pin-unblocked": "6-digit passcode has been unblocked",
-    "pin-unblocked-description": "Your new 6-digit passcode {{pin}}",
+    
+    
     "current-pin": "Enter 6-digit passcode",
     "current-pin-description": "Enter your 6-digit passcode to proceed",
     "login-pin-description": "Enter your 6-digit passcode to unlock\n your multiaccount",
@@ -929,7 +924,7 @@
     "change-password": "Change Password",
     "change-passcode": "Change Passcode",
     "enter-pin": "Enter 6-digit passcode",
-    "enter-pin-description": "Enter your 6-digit passcode to unlock\n your multiaccount",
+    
     "create-pin": "Create 6-digit passcode",
     "create-a-pin": "Create a 6-digit passcode",
     "create-pin-description": "You'll need your card + this 6-digit passcode to unlock Status and to confirm transactions",
@@ -957,13 +952,13 @@
     "keycard-has-multiaccount-on-it": "This card has already an multiaccount on it. If you wish to change it, login first and reset your card. If you want to import keycard multiaccount, please use \"Add existing multiaccount\"",
     "card-already-linked": "Card is already linked to another multiaccount",
     "keycard-unauthorized-operation": "You're unauthorized to perform this operation.\n Please tap valid card and try again.",
-    "no-multiaccount-on-card": "No multiaccount on this card",
-    "no-multiaccount-on-card-text": "The card you are presenting does not hold any multiaccount. Please try again with the right card",
+    
+    
     "wrong-card": "Wrong card",
     "wrong-card-text": "You have tapped a card that does not correspond to the multiaccount you selected. Please try again.",
-    "multiaccount-not-listed": "Multiaccount not listed",
-    "multiaccount-not-listed-text": "The multiaccount on this card is not listed on your phone. Would you like to login with this new multiaccount?",
-    "no-pairing-on-device": "Card is not paired to this device",
+    
+    
+    
     "help": "help",
     "help-capitalized": "Help",
     "pairing-card": "Pairing card",
@@ -975,7 +970,7 @@
     "initialization": "Initialization",
     "puk-and-pair-codes": "PUK and pair codes",
     "pairing": "Pairing",
-    "view-my-wallet": "View my wallet",
+    
     "share-my-profile": "Share my profile",
     "get-started": "Get started",
     "access-key": "Access key",
@@ -985,9 +980,9 @@
     "optional": "optional",
     "pending-confirmation": "Pending confirmation...",
     "waiting-to-sign": "Waiting to sign transaction...",
-    "tribute-to-talk-message-placeholder": "Hi there, I ask you to pay tribute to start a chat with me. If you know me in real life, you know how to find me...",
-    "tribute-to-talk-you-can-leave-a-message": "You can leave a message for people to see when they want to start a chat with you.",
-    "tribute-to-talk-sign-and-set-tribute": "Sign and set tribute",
+    
+    
+    
     "tribute-to-talk-finish-desc": "From now on, you will only receive chats from contacts, and people who paid ",
     "tribute-to-talk-you-require-snt": "You require SNT for new people to start a chat.",
     "tribute-to-talk-signing": "Waiting to sign transaction",
@@ -1003,7 +998,7 @@
     "tribute-to-talk-learn-more-1": "Your time and attention are your most valuable assets. Tribute to Talk lets you set an amount of SNT required for new people to start a chat with you.",
     "tribute-to-talk-learn-more-2": "Anyone who is not in your contact list will be asked to pay, and you can respond once they have.",
     "tribute-to-talk-learn-more-3": "You can always send the money back, but to ensure that friends can reach you freely, add them as a contact first.",
-    "tribute-to-talk-sample-text": "Hi I’m Carmen. Message me to have your fortune told 🔮",
+    
     "tribute-to-talk-disabled": "Tribute to Talk disabled",
     "tribute-to-talk-disabled-note": "From now on, new people can start a chat with you without sending SNT.",
     "tribute-state-required": "Requires {{snt-amount}} SNT tribute",
@@ -1042,7 +1037,7 @@
     "migrations-failed-content": "{{message}}\nschema version: initial {{initial-version}}, current {{current-version}}, last {{last-version}}\n\nPlease let us know about this problem at #status public chat. If you press \"Cancel\" button, nothing will happen. If you press \"{{erase-multiaccounts-data-button-text}}\" button, multiaccount's db will be removed and you will be able to unlock multiaccount. All multiaccount's data will be lost.",
     "migrations-erase-multiaccounts-data-button": "Erase multiaccount's db",
     "recover-multiaccount-warning": "Your wallet information will be exposed by importing this multiaccount.",
-    "buy-with-snt": "Buy with SNT",
+    
     "sticker-market": "Sticker market",
     "you-dont-have-stickers": "You don’t have any stickers yet",
     "get-stickers": "Get Stickers",
@@ -1074,12 +1069,12 @@
     "mobile-network-settings": "Mobile data",
     "mobile-network-use-mobile": "Use mobile data",
     "mobile-network-use-wifi": "Wi-Fi only",
-    "mobile-network-use-mobile-details": "Status tends to use a lot of data when syncing chats. You can choose not to sync when on mobile network",
+    
     "mobile-network-ask-me": "Ask me when on mobile network",
     "mobile-network-go-to-settings": "Go to settings",
     "mobile-network-use-mobile-data": "Status tends to use a lot of data when syncing chats. You can choose not to sync when on mobile network",
-    "status-not-sent": "",
-    "status-not-sent-without-tap": "",
+    
+    
     "confirm-install": "Confirm Install",
     "extension-install-alert": "Development mode is required to install an extension. Do you want to enable and continue installing?",
     "see-details": "See details",
@@ -1173,7 +1168,7 @@
     "ens-username-registrable": "✓ Username available!",
     "ens-username-unregistrable": "Username already taken:(",
     "ens-username-owned": "✓ Username is owned by you. ",
-    "ens-username-owned-continue": "Continuing will connect this username with your key.",
+    
     "ens-username-connected": "This user name is owned by you and connected with your Chat key.",
     "ens-custom-username-unregistrable": "Username doesn’t belong to you :(",
     "ens-custom-username-hints": "Type the entire username including the custom domain like username.domain.eth",
