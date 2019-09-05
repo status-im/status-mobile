@@ -552,3 +552,10 @@ class ChatView(BaseView):
     def move_to_messages_by_time_marker(self, marker='Today'):
         self.driver.info("Moving to messages by time marker: '%s'" % marker)
         HistoryTimeMarker(self.driver, marker).scroll_to_element(depth=50, direction='up')
+
+    def install_sticker_pack_by_name(self, pack_name: str):
+        element = BaseButton(self.driver)
+        element.locator = element.Locator.xpath_selector(
+            "//*[@content-desc='sticker-pack-name'][@text='%s']/..//*[@text='Install']" % pack_name)
+        element.click()
+        element.wait_for_invisibility_of_element()

@@ -577,3 +577,50 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('Profile picture was not updated after changing when devices are paired')
 
         self.verify_no_errors()
+
+    @marks.testrail_id(6226)
+    @marks.critical
+    def test_ens_in_public_chat(self):
+        self.create_drivers(2)
+        device_1, device_2 = self.drivers[0], self.drivers[1]
+        sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
+        user_1 = ens_user
+        home_1 = sign_in_1.recover_access(user_1['passphrase'])
+        home_2 = sign_in_2.create_user()
+
+        profile_1 = sign_in_1.profile_button.click()
+        profile_1.switch_network('Mainnet with upstream RPC')
+        home_1.profile_button.click()
+        profile_1.element_by_text('ENS usernames').click()
+        dapp_view_1 = DappsView(device_1)
+        dapp_view_1.element_by_text('Get started').click()
+        dapp_view_1.ens_name.set_value(ens_user['ens'])
+        dapp_view_1.check_ens_name.click()
+        dapp_view_1.check_ens_name.click()
+        dapp_view_1.element_by_text('Ok, got it').click()
+        dapp_view_1.back_button.click()
+        profile_1.home_button.click()
+
+        chat_name = home_1.get_public_chat_name()
+        chat_2 = home_2.join_public_chat(chat_name)
+        chat_1 = home_1.join_public_chat(chat_name)
+        message_text_1 = 'test message 1'
+        chat_1.send_message(message_text_1)
+        if chat_2.chat_element_by_text(message_text_1).username.text != user_1['username']:
+            self.errors.append('Default username is not shown in public chat')
+        chat_2.send_message('message from device 2')
+
+        chat_1.get_back_to_home_view()
+        home_1.profile_button.click()
+        profile_1.element_by_text('Your ENS name').click()
+        profile_1.show_ens_name_in_chats.click()
+        profile_1.back_button.click()
+        profile_1.home_button.click()
+        home_1.get_chat_with_user('#' + chat_name).click()
+        message_text_2 = 'message test text 1'
+        chat_1.send_message(message_text_2)
+        if chat_2.chat_element_by_text(message_text_2).username.text != user_1['ens'] or chat_2.chat_element_by_text(
+                message_text_1).username.text != user_1['ens']:
+            self.errors.append('ENS username is not shown in public chat')
+
+        self.verify_no_errors()

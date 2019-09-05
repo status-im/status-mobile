@@ -481,6 +481,10 @@ class BaseView(object):
         size = self.driver.get_window_size()
         self.driver.swipe(size["width"]*0.8, size["height"]*0.8, size["width"]*0.2, size["height"]*0.8)
 
+    def swipe_right(self):
+        size = self.driver.get_window_size()
+        self.driver.swipe(size["width"]*0.2, size["height"]*0.8, size["width"]*0.8, size["height"]*0.8)
+
     def get_status_test_dapp_view(self):
         from views.web_views.status_test_dapp import StatusTestDAppView
         return StatusTestDAppView(self.driver)

@@ -299,6 +299,7 @@ class RequestFeatureButton(BaseButton):
         super(RequestFeatureButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id("request-a-feature-button")
 
+
 class FaqButton(BaseButton):
 
     def __init__(self, driver):
@@ -429,10 +430,12 @@ class ContinueButton(BaseButton):
         super(ContinueButton, self).__init__(driver)
         self.locator = self.Locator.text_selector('Continue')
 
+
 class SyncSettingsButton(BaseButton):
     def __init__(self, driver):
         super(SyncSettingsButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@content-desc="sync-settings-button"]')
+
 
 class GoToPairingSettingsButton(BaseButton):
     def __init__(self, driver):
@@ -481,10 +484,18 @@ class RevokeAccessButton(BaseButton):
         super(RevokeAccessButton, self).__init__(driver)
         self.locator = self.Locator.text_selector('Revoke access')
 
+
 class PrivacyAndSecurityButton(BaseButton):
     def __init__(self, driver):
         super(PrivacyAndSecurityButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@content-desc="privacy-and-security-settings-button"]')
+
+
+class ShowENSNameInChatsToggle(BaseButton):
+    def __init__(self, driver):
+        super(ShowENSNameInChatsToggle, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[@text='Show my ENS username in chats']/following-sibling::*[1][name()='android.widget.Switch'] ")
 
 
 class ProfileView(BaseView):
@@ -567,6 +578,8 @@ class ProfileView(BaseView):
         self.advertise_device_button = AdvertiseDeviceButton(self.driver)
         self.sync_all_button = SyncAllButton(self.driver)
 
+        self.show_ens_name_in_chats = ShowENSNameInChatsToggle(self.driver)
+
     def switch_network(self, network):
         self.advanced_button.click()
         self.debug_mode_toggle.click()
@@ -603,7 +616,6 @@ class ProfileView(BaseView):
     def get_recovery_phrase(self):
         text = [i.text for i in self.recovery_phrase_table.find_elements()]
         return dict(zip(map(int, text[::2]), text[1::2]))
-
 
     def backup_recovery_phrase(self):
         self.ok_continue_button.click()
