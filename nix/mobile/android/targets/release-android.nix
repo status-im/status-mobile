@@ -71,7 +71,6 @@ in stdenv.mkDerivation {
     for d in `find $sourceRoot/node_modules -type f -name build.gradle | xargs dirname`; do
       chmod -R u+w $d
     done
-    chmod u+w $sourceRoot/node_modules/realm/android
   '';
   patchPhase = ''
     prevSet=$-
@@ -83,8 +82,6 @@ in stdenv.mkDerivation {
         "exec gradle -Dmaven.repo.local='${localMavenRepo}' --offline ${gradle-opts}"
 
     # OPTIONAL: There's no need to forward debug ports for a release build, just disable it
-    substituteInPlace node_modules/realm/android/build.gradle \
-      --replace 'compileTask.dependsOn forwardDebugPort' 'compileTask'
 
     set $prevSet
   '';

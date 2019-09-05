@@ -11,13 +11,17 @@
     cofx))
 
 (def ^:private mergable-keys
-  #{:data-store/tx :chat-received-message/add-fx
+  #{:chat-received-message/add-fx
     :filters/load-filters
     :pairing/set-installation-metadata
     :status-im.data-store.messages/save-message
-    :shh/send-direct-message :shh/remove-filter
-    :shh/generate-sym-key-from-password  :transport/confirm-messages-processed
-    :group-chats/extract-membership-signature :utils/dispatch-later ::json-rpc/call})
+    :shh/send-direct-message
+    :shh/remove-filter
+    :shh/generate-sym-key-from-password
+    :transport/confirm-messages-processed
+    :group-chats/extract-membership-signature
+    :utils/dispatch-later
+    ::json-rpc/call})
 
 (defn- safe-merge [fx new-fx]
   (if (:merging-fx-with-common-keys fx)

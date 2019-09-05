@@ -1,5 +1,7 @@
 # Sign in flow
 
+TODO: this document is outdated
+
 ## tl;dr 
 In general, at first we try to encrypt realm database using password 
 and then proceed with the rest of operations. We do not wait for 

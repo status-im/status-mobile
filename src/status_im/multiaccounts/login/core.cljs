@@ -6,7 +6,6 @@
             [status-im.chat.models.loading :as chat.loading]
             [status-im.constants :as constants]
             [status-im.contact.core :as contact]
-            [status-im.data-store.core :as data-store]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.transactions.core :as transactions]
@@ -160,7 +159,6 @@
   (let [stored-pns (:push-notifications/stored db)]
     (fx/merge cofx
               {:db (assoc db :chats/loading? true)
-               ::data-store/change-multiaccount [address password]
                ::json-rpc/call
                [{:method "mailservers_getMailserverTopics"
                  :on-success #(re-frame/dispatch [::protocol/initialize-protocol {:mailserver-topics (or % {})}])}
@@ -199,7 +197,6 @@
                           :filters/initialized 1
                           :network constants/default-network
                           :networks/networks constants/default-networks)
-               ::data-store/create-multiaccount [address password]
                :filters/load-filters []
                ::json-rpc/call
                [{:method "settings_saveConfig"

@@ -35,11 +35,6 @@
        (reset! re-frame.db/app-db {:web3 web3
                                    :multiaccount {:public-key from}})
 
-       (rf/reg-fx :data-store/save-chat (constantly nil))
-       (rf/reg-fx :data-store/save-message (constantly nil))
-       (rf/reg-fx :data-store/save-contact (constantly nil))
-       (rf/reg-fx :data-store/update-message (constantly nil))
-
        (rf/dispatch [:contact.ui/send-message-pressed {:public-key contact-public-key}])
        (rf-test/wait-for [::transport.contact/send-new-sym-key]
                          (rf/dispatch [:set-chat-input-text "test message"])

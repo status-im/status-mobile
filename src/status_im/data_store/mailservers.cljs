@@ -1,6 +1,5 @@
 (ns status-im.data-store.mailservers
   (:require [re-frame.core :as re-frame]
-            [status-im.data-store.realm.core :as core]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))

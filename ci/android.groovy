@@ -40,7 +40,7 @@ def bundle() {
         'STATUS_RELEASE_KEY_PASSWORD'
       ],
       keep: [
-        'REALM_DISABLE_ANALYTICS', 'NDK_ABI_FILTERS',
+        'NDK_ABI_FILTERS',
         'STATUS_RELEASE_STORE_FILE'
       ],
       sbox: [

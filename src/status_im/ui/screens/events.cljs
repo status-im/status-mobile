@@ -8,7 +8,6 @@
             status-im.ui.screens.add-new.new-chat.navigation
             status-im.ui.screens.profile.events
             status-im.ui.screens.wallet.navigation
-            status-im.utils.keychain.events
             [re-frame.core :as re-frame]
             [status-im.chat.models :as chat]
             [status-im.hardwallet.core :as hardwallet]

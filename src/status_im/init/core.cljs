@@ -1,7 +1,6 @@
 (ns status-im.init.core
   (:require [re-frame.core :as re-frame]
             [status-im.biometric-auth.core :as biometric-auth]
-            [status-im.data-store.core :as data-store]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.native-module.core :as status]
             [status-im.network.net-info :as network]
@@ -81,7 +80,6 @@
              ::init-keystore nil
              ::restore-native-settings nil
              ::open-multiaccounts #(re-frame/dispatch [::initialize-multiaccounts %])
-             ::data-store/init-store nil
              :ui/listen-to-window-dimensions-change nil
              :notifications/init                    nil
              ::network/listen-to-network-info       nil

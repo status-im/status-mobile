@@ -3,7 +3,6 @@
   flow has been changed. Such changes should be reflected in both these tests
   and documents which describe the whole \"sign in\" flow."
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.data-store.core :as data-store]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.multiaccounts.login.core :as login.core]
@@ -36,7 +35,6 @@
       (testing ":accounts/login cleared."
         (is (not (contains? new-db :multiaccounts/login))))
       (testing "Check the rest of effects."
-        (is (contains? efx ::data-store/change-multiaccount))
         (is (json-rpc "web3_clientVersion"))))))
 
 ;;TODO re-enable when keycard is fixed

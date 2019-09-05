@@ -5,7 +5,6 @@
             status-im.ui.screens.db
             status-im.ui.screens.events
             status-im.subs
-            status-im.data-store.core
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.ui.screens.views :as views]
             [status-im.ui.components.react :as react]

@@ -46,7 +46,6 @@
 (deftest add-public-chat
   (let [topic "topic"
         fx (chat/add-public-chat {:db {}} topic)
-        store-fx   (:data-store/tx fx)
         chat (get-in fx [:db :chats topic])]
     (testing "it sets the name"
       (is (= topic (:name chat))))

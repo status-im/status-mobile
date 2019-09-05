@@ -6,7 +6,6 @@
 (def identicon-js     (js/require "identicon.js"))
 (def Web3             (js/require "web3"))
 (def web3-prototype   (.-prototype Web3))
-(def text-encoding    (js/require "text-encoding"))
 (def js-sha3          (js/require "js-sha3"))
 (def web3-utils       (js/require "web3-utils"))
 (def hi-base32        (js/require "hi-base32"))

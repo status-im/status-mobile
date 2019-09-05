@@ -5,7 +5,6 @@
             status-im.ui.screens.db
             status-im.ui.screens.events
             status-im.subs
-            status-im.data-store.core
             [status-im.ui.screens.views :as views]
             [status-im.ui.components.react :as react]
             [status-im.notifications.core :as notifications]
