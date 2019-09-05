@@ -127,12 +127,10 @@ release-android: ##@build build release for Android
 release-ios: export TARGET_OS ?= ios
 release-ios: export BUILD_ENV ?= prod
 release-ios: watchman-clean ##@build build release for iOS release
-	# Open XCode inside the Nix context
 	@git clean -dxf -f target/ios && \
 	$(MAKE) jsbundle-ios && \
-	echo "Build in XCode, see https://status.im/build_status/ for instructions" && \
 	scripts/copy-translations.sh && \
-	open ios/StatusIm.xcworkspace
+	xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration Release -destination 'generic/platform=iOS' -UseModernBuildSystem=N clean archive
 
 release-desktop: export TARGET_OS ?= $(HOST_OS)
 release-desktop: ##@build build release for desktop release based on TARGET_OS
