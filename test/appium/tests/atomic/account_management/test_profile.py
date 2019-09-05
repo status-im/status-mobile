@@ -619,8 +619,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         home_1.get_chat_with_user('#' + chat_name).click()
         message_text_2 = 'message test text 1'
         chat_1.send_message(message_text_2)
-        if chat_2.chat_element_by_text(message_text_2).username.text != user_1['ens'] or chat_2.chat_element_by_text(
-                message_text_1).username.text != user_1['ens']:
+        if chat_2.chat_element_by_text(message_text_2).username.text.lower() != '@' + user_1['ens']:
             self.errors.append('ENS username is not shown in public chat')
 
         self.verify_no_errors()
