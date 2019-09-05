@@ -164,6 +164,8 @@
                ::json-rpc/call
                [{:method "mailservers_getMailserverTopics"
                  :on-success #(re-frame/dispatch [::protocol/initialize-protocol {:mailserver-topics (or % {})}])}
+                {:method "mailservers_getChatRequestRanges"
+                 :on-success #(re-frame/dispatch [::protocol/initialize-protocol {:mailserver-ranges (or % {})}])}
                 {:method "browsers_getBrowsers"
                  :on-success #(re-frame/dispatch [::initialize-browsers %])}
                 {:method "permissions_getDappPermissions"

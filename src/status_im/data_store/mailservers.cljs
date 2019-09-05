@@ -42,27 +42,3 @@
                      :params [chat-id]
                      :on-success #(log/info "deleted gaps successfully")
                      :on-failure #(log/error "failed to delete gap" %)}]})
-
-(defn save-chat-requests-range
-  [chat-requests-range]
-  (fn [realm]
-    (log/debug "saving ranges" chat-requests-range)
-    (core/create realm :chat-requests-range chat-requests-range true)))
-
-(re-frame/reg-cofx
- :data-store/all-chat-requests-ranges
- (fn [cofx _]
-   (assoc cofx :data-store/mailserver-ranges
-          (reduce (fn [acc {:keys [chat-id] :as range}]
-                    (assoc acc chat-id range))
-                  {}
-                  (-> @core/account-realm
-                      (core/get-all :chat-requests-range)
-                      (core/all-clj :chat-requests-range))))))
-
-(defn delete-range
-  [chat-id]
-  (fn [realm]
-    (log/debug "deleting range" chat-id)
-    (core/delete realm
-                 (core/get-by-field realm :chat-requests-range :chat-id chat-id))))

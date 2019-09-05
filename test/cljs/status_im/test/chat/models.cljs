@@ -113,10 +113,10 @@
     (testing "it sets the chat as inactive"
       (let [actual (chat/remove-chat cofx chat-id)]
         (is (= false (get-in actual [:db :chats chat-id :is-active])))))
-    (testing "it adds the relevant transactions for realm"
+    (testing "it makes the relevant json-rpc calls"
       (let [actual (chat/remove-chat cofx chat-id)]
-        (is (:data-store/tx actual))
-        (is (= 1 (count (:data-store/tx actual))))))))
+        (is (::json-rpc/call actual))
+        (is (= 5 (count (::json-rpc/call actual))))))))
 
 (deftest multi-user-chat?
   (let [chat-id "1"]

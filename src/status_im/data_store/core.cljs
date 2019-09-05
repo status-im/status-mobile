@@ -197,10 +197,8 @@
                   #(re-frame/dispatch [::verify-success % realm-error]))))
 
 (fx/defn handle-change-multiaccount-success
-  {:events [::multiaccount-change-success]
-   :interceptors [(re-frame/inject-cofx :data-store/all-chat-requests-ranges)]}
-  [{:data-store/keys [mailserver-ranges] :as cofx}]
-  (protocol/initialize-protocol cofx {:mailserver-ranges mailserver-ranges}))
+  {:events [::multiaccount-change-success]}
+  [cofx])
 
 (defn change-multiaccount!
   [address password create-database-if-not-exist?]

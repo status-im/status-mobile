@@ -81,7 +81,10 @@
    "mailservers_deleteMailserver" {}
    "mailservers_addMailserverTopic" {}
    "mailservers_getMailserverTopics" {}
-   "mailservers_deleteMailserverTopic" {}})
+   "mailservers_deleteMailserverTopic" {}
+   "mailservers_addChatRequestRange" {}
+   "mailservers_getChatRequestRanges" {}
+   "mailservers_deleteChatRequestRange" {}})
 
 (defn call
   [{:keys [method params on-success on-error] :as p}]

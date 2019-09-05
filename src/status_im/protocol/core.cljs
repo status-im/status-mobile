@@ -59,6 +59,15 @@
                  {}
                  mailserver-topics)))
 
+(defn add-mailserver-ranges
+  [db mailserver-ranges]
+  (assoc db
+         :mailserver/ranges
+         (reduce (fn [acc {:keys [chat-id] :as range}]
+                   (assoc acc chat-id range))
+                 {}
+                 mailserver-ranges)))
+
 (fx/defn initialize-protocol
   {:events [::initialize-protocol]}
   [{:keys [db] :as cofx}
@@ -77,7 +86,7 @@
     (fx/merge cofx
               {:db (cond-> db
                      mailserver-ranges
-                     (assoc :mailserver/ranges mailserver-ranges)
+                     (add-mailserver-ranges mailserver-ranges)
                      mailserver-topics
                      (add-mailserver-topics mailserver-topics)
                      mailservers

@@ -491,7 +491,11 @@
 (fx/defn remove-range
   [{:keys [db]} chat-id]
   {:db (update db :mailserver/ranges dissoc chat-id)
-   :data-store/tx [(data-store.mailservers/delete-range chat-id)]})
+   ::json-rpc/call
+   [{:method "mailservers_deleteChatRequestRange"
+     :params [chat-id]
+     :on-success #(log/debug "deleted chat request range successfully")
+     :on-failure #(log/error "failed to delete chat request range" %)}]})
 
 (defn update-mailserver-topic
   [{:keys [last-request] :as config}
@@ -609,11 +613,16 @@
                                     (< from lowest-request-from))
                                 (assoc :lowest-request-from from))])))
                         chat-ids)]
-    (fx/merge
-     cofx
-     {:db            (update db :mailserver/ranges merge updated-ranges)
-      :data-store/tx (map data-store.mailservers/save-chat-requests-range
-                          (vals updated-ranges))})))
+    (fx/merge cofx
+              {:db (update db :mailserver/ranges merge updated-ranges)
+               ::json-rpc/call
+               (mapv (fn [chat-requests-range]
+                       {:method "mailservers_addChatRequestRange"
+                        :params [chat-requests-range]
+                        :on-success #()
+                        :on-failure
+                        #(log/error "failed to save chat request range" %)})
+                     (vals updated-ranges))})))
 
 (defn prepare-new-gaps [new-gaps ranges {:keys [from to] :as req} chat-ids]
   (into
