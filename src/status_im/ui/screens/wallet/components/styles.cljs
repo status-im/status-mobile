@@ -104,7 +104,6 @@
 (defstyle container-disabled
   {:border-width     1
    :border-color     colors/white-transparent-10
-   :background-color nil
    :border-radius    8})
 
 (def wallet-container

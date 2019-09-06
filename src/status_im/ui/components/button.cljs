@@ -20,13 +20,13 @@
     :align-items :center :justify-content :center
     :background-color (cond
                         (#{:secondary :next :previous} type)
-                        nil
+                        ""
                         disabled?
                         colors/gray-transparent-10
                         (= type :main)
                         colors/blue-transparent-10
                         :else
-                        nil)}))
+                        "")}))
 
 (defn button
 
@@ -61,7 +61,7 @@
                                      (#{:main :secondary :next :previous} type)
                                      colors/blue
                                      :else
-                                     nil)}}
+                                     "")}}
         label]
        (when (= type :next)
          [vector-icons/icon :main-icons/next {:container-style {:width 24 :height 24 :margin-left 4}

@@ -7,26 +7,6 @@
   {:flex           1
    :padding-bottom 60})
 
-(defn animated-sign-panel [bottom-value]
-  {:position           :absolute
-   :left               12
-   :right              12
-   :bottom             bottom-value})
-
-(defn sign-panel [opacity-value]
-  {:opacity            opacity-value
-   :border-radius      8
-   :background-color   colors/white
-   :padding-top        12
-   :padding-horizontal 12})
-
-(def signing-phrase-container
-  {:border-radius    8
-   :height           36
-   :align-items      :center
-   :justify-content  :center
-   :background-color colors/gray-lighter})
-
 (def signing-phrase-description
   {:padding-top 8})
 
@@ -68,19 +48,6 @@
   {:flex-direction   :row
    :margin           15})
 
-(def transaction-fee-info-icon
-  {:border-radius    25
-   :width            25
-   :height           25
-   :margin-right     15
-   :align-items      :center
-   :justify-content  :center
-   :background-color colors/black-transparent})
-
-(def transaction-fee-info-icon-text
-  {:color            colors/white
-   :font-size        14})
-
 (def transaction-fee-input
   {:keyboard-type          :numeric
    :auto-capitalize        "none"
@@ -88,14 +55,3 @@
    :placeholder-text-color colors/white-transparent
    :selection-color        colors/white
    :style                  wallet.components.styles/text-input})
-
-(def sign-buttons
-  {:background-color colors/blue
-   :padding-vertical 8})
-
-(def password-error-tooltip
-  {:bottom-value 15
-   :color        colors/red-light})
-
-(defstyle gas-input-error-tooltip
-  {:android {:bottom-value -38}})
