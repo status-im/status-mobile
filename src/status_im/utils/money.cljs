@@ -30,26 +30,16 @@
 (defn bignumber [n]
   (when n
     (try
-      (.toBigNumber dependencies/web3-prototype (normalize (str n)))
+      (new dependencies/BigNumber (normalize (str n)))
       (catch :default err nil))))
 
 (defn valid? [bn]
   (when bn
     (.greaterThanOrEqualTo bn 0)))
 
-(defn str->wei [s]
-  (when-let [ns (normalize s)]
-    (try
-      (.toWei dependencies/web3-prototype ns "ether")
-      (catch :default err nil))))
-
-(defn to-decimal [s]
-  (when s
-    (try
-      (.toDecimal dependencies/web3-prototype (normalize s))
-      (catch :default err nil))))
-
-(defn from-decimal [n] (when n (str "1" (string/join (repeat n "0")))))
+(defn from-decimal [n]
+  (when n
+    (str "1" (string/join (repeat n "0")))))
 
 (def eth-units
   {:wei    (bignumber "1")

@@ -9,7 +9,7 @@
   (and (string? url) (s/starts-with? url local-protocol)))
 
 (def webview-js (slurp "resources/js/webview.js"))
-(def web3-file (slurp "node_modules/web3/dist/web3.min.js"))
+(def web3-file (slurp "resources/js/web3.min.js"))
 (def web3
   (memoize
    (fn []

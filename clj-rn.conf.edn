@@ -4,7 +4,8 @@
 
  :figwheel-bridge "./figwheel-bridge.js"
  ;; JS modules
- :js-modules ["react-native-languages"
+ :js-modules ["bignumber.js"
+              "react-native-languages"
               "i18n-js"
               "dismissKeyboard"
               "react-native-splash-screen"
@@ -22,7 +23,6 @@
               "react-native-webview-bridge"
               "react-native-firebase"
               "react-native-touch-id"
-              "web3"
               "web3-utils"
               "chance"
               "react-native-http-bridge"
@@ -45,7 +45,8 @@
               "react-native-shake"
               "@react-native-community/netinfo"]
  ;; Desktop modules
- :desktop-modules ["react-native-languages"
+ :desktop-modules ["bignumber.js"
+                   "react-native-languages"
                    "i18n-js"
                    "dismissKeyboard"
                    "react-native-splash-screen"
@@ -57,7 +58,6 @@
                    "react-native-image-crop-picker"
                    "react-native-securerandom"
                    "react-native-webview-bridge"
-                   "web3"
                    "chance"
                    "react-native-http-bridge"
                    "emojilib"
