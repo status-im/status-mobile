@@ -12,9 +12,7 @@ mkShell {
   shellHook =
     androidEnvShellHook +
     status-go.shellHook + ''
-    rm -rf ./node_modules
-
-    cp -a ${projectNodePackage}/node_modules/. ./node_modules/
+    $STATUS_REACT_HOME/nix/mobile/reset-node_modules.sh "${projectNodePackage}"
     chmod -R u+w ./node_modules/
   '';
 }
