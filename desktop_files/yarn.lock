@@ -7878,16 +7878,6 @@ web3-utils@1.0.0-beta.36:
     underscore "1.8.3"
     utf8 "2.1.1"
 
-"web3@git+https://github.com/status-im/web3.js.git#0.20.3-status.alpha.3":
-  version "0.20.1"
-  resolved "git+https://github.com/status-im/web3.js.git#29677754c8b87c55c828df2694e35b0b760dca5f"
-  dependencies:
-    bignumber.js "git+https://github.com/status-im/bignumber.js.git#v4.0.2-status"
-    crypto-js "^3.1.4"
-    utf8 "^2.1.1"
-    xhr2 "*"
-    xmlhttprequest "*"
-
 whatwg-fetch@>=0.10.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.0.0.tgz#fc804e458cc460009b1a2b966bc8817d2578aefb"
