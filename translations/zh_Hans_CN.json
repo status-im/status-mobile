@@ -1273,5 +1273,6 @@
     "your-data-belongs-to-you-description": "如果您丢失了助记词，Status无法帮助您恢复多帐户。您需对数据的安全性负责，备份助记词是最佳保障。",
     "your-recovery-phrase": "您的助记词",
 
+
     "your-recovery-phrase-description": "这是你的助记词。已此来证明这是你的钱包。你只能查看一次！请将其写在纸上并保存在安全的地方。如果丢失或重新安装钱包，您将需要用到这些助记词。",
 }
