@@ -133,7 +133,7 @@ class TestChatManagement(SingleDeviceTestCase):
         contacts_view = home.start_new_chat_button.click()
         contacts_view.public_key_edit_box.set_value(basic_user['public_key'][:-1])
         contacts_view.confirm()
-        warning_text = contacts_view.element_by_text('Please enter or scan a valid contact code or username')
+        warning_text = contacts_view.element_by_text('Please enter or scan a valid chat key or username')
         if not warning_text.is_element_displayed():
             pytest.fail('Error is not shown for invalid public key')
 

@@ -239,7 +239,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         chat_view = home_view.get_chat_view()
         chat_view.chat_options.click_until_presence_of_element(chat_view.view_profile_button)
         chat_view.view_profile_button.click()
-        for text in basic_user['username'], 'In contacts', 'Send message', 'Contact code':
+        for text in basic_user['username'], 'In contacts', 'Send message', 'Chat key':
             if not chat_view.element_by_text(text).scroll_to_element():
                 self.errors.append('%s is not visible' % text)
         self.verify_no_errors()
@@ -319,13 +319,14 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.create_user()
         home_view.open_status_test_dapp()
-        home_view.back_button.click()
+        home_view.cross_icon.click()
         profile_view = home_view.profile_button.click()
+        profile_view.privacy_and_security_button.click()
         profile_view.dapp_permissions_button.click()
         profile_view.element_by_text('status-im.github.io').click()
         if not profile_view.element_by_text('Wallet').is_element_displayed():
             self.errors.append('Wallet permission was not granted')
-        if not profile_view.element_by_text('Contact code').is_element_displayed():
+        if not profile_view.element_by_text('Chat key').is_element_displayed():
             self.errors.append('Contact code permission was not granted')
         profile_view.revoke_access_button.click()
         profile_view.back_button.click()
@@ -343,12 +344,22 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     @marks.low
     def test_version_format(self):
         sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        profile_view = sign_in_view.profile_button.click()
+        home_view = sign_in_view.create_user()
+        profile_view = home_view.profile_button.click()
         profile_view.about_button.click()
-        version = profile_view.version_text.text
-        if not re.search("\d{1}[.]\d{1,2}[.]\d{1,2}\s[(]\d*[)]", version):
-            self.driver.fail("Version %s didn't match expected format" % version)
+        version_text = profile_view.version_text.text
+        if not re.search("\d{1}[.]\d{1,2}[.]\d{1,2}\s[(]\d*[)];\sStatusIM\/android-\d{3}\/go\d{1}[.]\d{1,2}[.]\d{1,2}",
+                         version_text):
+            self.errors.append("Version %s didn't match expected format" % version_text)
+        profile_view.version_text.click()
+        profile_view.back_button.click()
+        profile_view.home_button.click()
+        chat = home_view.join_public_chat(home_view.get_public_chat_name())
+        message_input = chat.chat_message_input
+        message_input.paste_text_from_clipboard()
+        if message_input.text != version_text:
+            self.errors.append('Version number was not copied to clipboard')
+        self.verify_no_errors()
 
 
 @marks.all

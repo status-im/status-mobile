@@ -1,10 +1,9 @@
-import pytest
 from selenium.common.exceptions import NoSuchElementException
 
 from tests import marks
 from tests.base_test_case import SingleDeviceTestCase
-from views.sign_in_view import SignInView
 from tests.users import basic_user
+from views.sign_in_view import SignInView
 
 
 class TestDeepLinks(SingleDeviceTestCase):
@@ -22,7 +21,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         try:
             assert chat_view.user_name_text.text == '#' + chat_name
         except (AssertionError, NoSuchElementException):
-            pytest.fail("Public chat '%s' is not opened" % chat_name)
+            self.driver.fail("Public chat '%s' is not opened" % chat_name)
 
     @marks.testrail_id(5441)
     @marks.medium
@@ -35,7 +34,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         chat_view = sign_in_view.get_chat_view()
         for text in basic_user['username'], 'Add to contacts':
             if not chat_view.element_by_text(text).scroll_to_element(10):
-                pytest.fail("User profile screen is not opened")
+                self.driver.fail("User profile screen is not opened")
 
     @marks.testrail_id(5442)
     @marks.medium
@@ -51,7 +50,7 @@ class TestDeepLinks(SingleDeviceTestCase):
             test_dapp_view = web_view.open_in_status_button.click()
             test_dapp_view.allow_button.is_element_present()
         except NoSuchElementException:
-            pytest.fail("DApp '%s' is not opened!" % dapp_name)
+            self.driver.fail("DApp '%s' is not opened!" % dapp_name)
 
     @marks.testrail_id(5780)
     @marks.medium
@@ -61,10 +60,11 @@ class TestDeepLinks(SingleDeviceTestCase):
         self.driver.close_app()
         deep_link = 'https://get.status.im/user/%s' % basic_user['public_key']
         sign_in_view.open_weblink_and_login(deep_link)
-        chat_view = sign_in_view.get_chat_view()
-        for text in basic_user['username'], 'Share my profile', 'Contacts':
-            if not chat_view.element_by_text(text).scroll_to_element(12):
-                pytest.fail("Own profile screen is not opened!")
+        profile_view = sign_in_view.get_profile_view()
+        if profile_view.default_username_text.text != basic_user['username'] \
+                or not profile_view.contacts_button.is_element_displayed() \
+                or profile_view.share_my_profile_button.is_element_displayed():
+            self.driver.fail("Own profile screen is not opened!")
 
     @marks.testrail_id(5781)
     @marks.medium
@@ -77,4 +77,4 @@ class TestDeepLinks(SingleDeviceTestCase):
         home_view = sign_in_view.get_home_view()
         home_view.plus_button.click_until_presence_of_element(home_view.start_new_chat_button)
         if not home_view.start_new_chat_button.is_element_present():
-            pytest.fail("Can't navigate to start new chat after app opened from deep link with invalid public key")
+            self.driver.fail("Can't navigate to start new chat after app opened from deep link with invalid public key")

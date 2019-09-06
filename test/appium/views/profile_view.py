@@ -314,7 +314,7 @@ class FaqButton(BaseButton):
 class VersionText(BaseText):
     def __init__(self, driver):
         super(VersionText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@content-desc='version'][1]")
+        self.locator = self.Locator.xpath_selector("//*[@content-desc='version']//android.widget.TextView[2]")
 
 
 class BootnodesButton(BaseButton):
@@ -488,7 +488,7 @@ class RevokeAccessButton(BaseButton):
 class PrivacyAndSecurityButton(BaseButton):
     def __init__(self, driver):
         super(PrivacyAndSecurityButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@content-desc="privacy-and-security-settings-button"]')
+        self.locator = self.Locator.accessibility_id('privacy-and-security-settings-button')
 
 
 class ShowENSNameInChatsToggle(BaseButton):
