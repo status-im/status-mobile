@@ -12,19 +12,44 @@
 
 (defn- data [app-version node-version]
   [{:type                :small
-    :title               (i18n/label :t/privacy-policy)
+    :title               :t/privacy-policy
     :accessibility-label :privacy-policy
     :on-press
     #(re-frame/dispatch
       [:privacy-policy/privacy-policy-button-pressed])
     :accessories         [:chevron]}
    [copyable-text/copyable-text-view
-    {:copied-text (str app-version "; " node-version)}
+    {:copied-text app-version}
     [list-item/list-item
      {:type                :small
-      :title               (i18n/label :t/version)
-      :accessibility-label :version
-      :accessories         [(str app-version ";\n" node-version)]}]]])
+      :accessibility-label :app-version
+      :title-prefix        :t/version
+      :title
+      [react/text
+       {:number-of-lines 1
+        :ellipsize-mode  :middle
+        :style
+        {:color        colors/gray
+         :padding-left 16
+         :text-align   :right
+         :line-height  22}}
+       app-version]}]]
+   [copyable-text/copyable-text-view
+    {:copied-text node-version}
+    [list-item/list-item
+     {:type                :small
+      :accessibility-label :node-version
+      :title-prefix        :t/node-version
+      :title
+      [react/text
+       {:number-of-lines 1
+        :ellipsize-mode  :middle
+        :style
+        {:color        colors/gray
+         :padding-left 16
+         :text-align   :right
+         :line-height  22}}
+       node-version]}]]])
 
 (views/defview about-app []
   (views/letsubs [app-version  [:get-app-short-version]

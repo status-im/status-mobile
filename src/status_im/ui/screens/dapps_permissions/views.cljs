@@ -5,7 +5,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.dapps-permissions.styles :as styles]
@@ -28,7 +27,7 @@
                   constants/dapp-permission-web3         :t/wallet
                   constants/dapp-permission-contact-code :t/contact-code)
    :type        :small
-   :accessories [:check]})
+   :accessories [:main-icons/check]})
 
 (views/defview dapps-permissions []
   (views/letsubs [permissions [:dapps/permissions]]
@@ -37,9 +36,9 @@
      [toolbar/simple-toolbar
       (i18n/label :t/dapps-permissions)]
      [list/flat-list
-      {:data      (map prepare-items (vals permissions))
+      {:data      (vec (map prepare-items (vals permissions)))
        :key-fn    (fn [_ i] (str i))
-       :render-fn list-item/list-item}]]))
+       :render-fn list/flat-list-generic-render-fn}]]))
 
 (views/defview manage []
   (views/letsubs [{:keys [dapp permissions]} [:get-screen-params]]
@@ -47,9 +46,9 @@
      [status-bar/status-bar]
      [toolbar/simple-toolbar dapp]
      [list/flat-list
-      {:data      (map prepare-items-manage permissions)
+      {:data      (vec (map prepare-items-manage permissions))
        :key-fn    (fn [_ i] (str i))
-       :render-fn list-item/list-item}]
+       :render-fn list/flat-list-generic-render-fn}]
      [react/view {:padding-vertical 16}
       [components.common/red-button {:label    (i18n/label :t/revoke-access)
                                      :on-press #(re-frame/dispatch [:dapps/revoke-access dapp])}]]]))

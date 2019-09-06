@@ -4,7 +4,6 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]))
@@ -23,13 +22,23 @@
       #(re-frame/dispatch [:navigate-to :mobile-network-settings])
       :accessories         [mobile-data-usage-state :chevron]}
      {:type                    :small
-      :title                   :t/offline-messaging
       :accessibility-label     :offline-messages-settings-button
+      :title-prefix            :t/offline-messaging
+      :title
+      [react/text
+       {:number-of-lines 1
+        :ellipsize-mode  :middle
+        :style
+        {:color        colors/gray
+         :padding-left 16
+         :text-align   :right
+         :line-height  22}}
+       mailserver-id]
       :on-press
       #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
-      :accessories             [mailserver-id :chevron]
+      :accessories             [:chevron]
       :container-margin-bottom 8}
-     list-item/divider
+     {:type :divider}
      {:container-margin-top 8
       :type                 :section-header
       :title                :t/device-syncing}

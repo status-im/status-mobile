@@ -231,7 +231,11 @@
           props
           {:data (wrap-data data)})])
 
-(defn flat-list-generic-render-fn [item _]
+(defn flat-list-generic-render-fn
+  "A generic status-react specific `render-fn` for `list-item`.
+  Handles `list-item` `data` consiting any combination of
+  `list-item/list-item` config map and `companent`."
+  [item _]
   (cond
     (map? item)    [list-item/list-item item]
     (vector? item) item

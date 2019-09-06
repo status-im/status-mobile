@@ -4,7 +4,6 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]))
@@ -56,7 +55,7 @@
        #(re-frame/dispatch
          [:multiaccounts.ui/dev-mode-switched (not dev-mode?)])
        :disabled    false}]]}
-   list-item/divider])
+   {:type :divider}])
 
 (defn- dev-mode-settings-data [settings chaos-mode? supported-biometric-auth]
   [{:container-margin-top 8

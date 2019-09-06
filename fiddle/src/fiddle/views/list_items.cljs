@@ -48,7 +48,7 @@
                       :height           40
                       :border-radius    20
                       :background-color colors/green}]
-       :accessories [:more]}]]
+       :accessories [:main-icons/more]}]]
     [item "With radio button (TODO!)"
      [list-item/list-item
       {:title    "George"

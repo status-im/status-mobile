@@ -1,13 +1,53 @@
 (ns status-im.ui.components.list-item.styles
   (:require [status-im.ui.components.colors :as colors]))
 
-(defn container [type]
-  {:flex-direction     :row
-   :justify-content    :flex-start
-   :padding-horizontal 16
-   :padding-top        (if (= type :section-header) 14 10)
-   :padding-bottom     (if (= type :section-header) 4 10)
-   :align-items        :center})
+(defn container [type selected?]
+  (merge
+   {:flex-direction     :row
+    :justify-content    :flex-start
+    :padding-horizontal 16
+    ;; We need `:min-height` to ensure design spec conformance
+    ;; and maintain `vertical-rythm` regardless of inner content height.
+    ;; Spec: https://www.figma.com/file/cb4p8AxLtTF3q1L6JYDnKN15/Index?node-id=790%3A35
+
+    ;; Without it `:small` type will be height 42 in some cases
+    ;; 44 in others. Something similar can happen to `:default`.
+    ;; Not really needed for `:section-header` but good to have
+    ;; it, if not for anything, for reference.
+
+    ;; - Why not have 15px or 14px top/bottom padding as spec indicates,
+    ;;   as a strategy for list-item not collapsing to 42/44 height instead?
+    ;; - Why `:small` type has same 10px top/bottom padding like `:default` does
+    ;; instead of 14px?
+
+    ;; Because native switch button height(at least in iOS)
+    ;; is > 22px(title line-height), and > 24px(accessory icon height in spec).
+    ;; Plus there might be a need for <= 32px accessory or something, in edge cases.
+
+    ;; Think of it like an alternate design strategy for components with
+    ;; variable content whose height might vary. Like, instead of controlling
+    ;; the overall component's height using line-height, top/bottom padding,
+    ;; or explicit height.
+
+    ;; And, better to have 32px content vertical space (for :small)
+    ;; to play with in this setup; So, we stretch vertically the inner
+    ;; containers; and vertically center content inside them. Allows for
+    ;; flexibility, with as little constraint and superfluous styling attributes
+    ;; as possible.
+
+    ;; Note: this is `min-height` so if we have > 32px accessory or some other
+    ;; content inside it `vertical-rythm` can break. We leave it up to the
+    ;; list-item consuming implementation to be aware of it.
+    :min-height         (case type
+                          :default        64
+                          :small          52
+                          :section-header 40
+                          0)
+    :padding-top        (if (= type :section-header) 14 10)
+    :padding-bottom     (if (= type :section-header) 4 10)
+    :align-items        :center}
+   (when selected?
+     {:background-color colors/gray-transparent-40})))
 
 (def icon-column-container
   {:margin-right     14
@@ -76,9 +116,8 @@
          (if disabled?
            {:color colors/gray}
            (case theme
-             :blue {:color colors/white}
              :action-destructive {:color colors/red}
-             :action {:color colors/blue}
+             :action             {:color colors/blue}
              {}))))
 
 (defn title [type theme icon? title-prefix subtitle
@@ -111,7 +150,6 @@
              {:color title-color-override}
              ;; else
              (case theme
-               :blue {:color colors/white}
                :action-destructive {:color colors/red}
                :action {:color colors/blue}
                {})))))
@@ -126,7 +164,7 @@
    :justify-content :flex-start
    :align-self      :stretch})
 
-(defn subtitle [icon? theme subtitle-row-accessory]
+(defn subtitle [icon? subtitle-row-accessory]
   (cond-> {:margin-left (if icon? 2 0)
            :flex        1
            :align-self  :stretch
@@ -135,8 +173,6 @@
            ;; as reasonably possible as it can be, and achieve the
            ;; intent of the design spec
            :line-height 22}
-    (= :blue theme)
-    (assoc :color (colors/alpha colors/blue-light 0.6))
     subtitle-row-accessory
     (assoc :margin-right 16)))
 
@@ -150,21 +186,13 @@
    :align-items     :center
    :justify-content :flex-start})
 
-(defn accessory-text [theme]
-  {:color       (if (= theme :blue)
-                  (colors/alpha colors/blue-light 0.6)
-                  colors/gray)
+(defn accessory-text [width last]
+  {:color       colors/gray
+   :max-width   (if last (* @width 0.62) (* @width 0.55))
    ;; we are doing the following to achieve pixel perfection
    ;; as reasonably possible as it can be, and achieve the
    ;; intent of the design spec
    :line-height 22})
-
-(defn radius [size] (/ size 2))
-
-(defn photo [size]
-  {:border-radius (radius size)
-   :width         size
-   :height        size})
 
 (def error
   {:bottom-value 0
