@@ -576,6 +576,7 @@
     "help": "помощь",
     "help-capitalized": "Помощь",
     "help-center": "Справочный центр",
+
     "hide-content-when-switching-apps": "Скрыть контент при переключении приложений",
     "history": "История",
     "hold-card": "Удерживайте карту на \n задней панели телефона",
@@ -689,6 +690,7 @@
     
     "left": "осталось",
 
+
     "les-ulc": "LES\/ULC",
     "linked-on": "Связано с {{date}}",
     "load-messages-before": "до {{date}}",
@@ -770,6 +772,7 @@
     "mobile-network-stop-syncing-details": "До подключения к Wi-Fi?",
     "mobile-network-use-mobile": "Использовать мобильную сеть",
     "mobile-network-use-mobile-data": "Status имеет тенденцию использовать много данных при синхронизации чатов. Вы можете отключить синхронизацию когда используется мобильная сеть",
+
     "mobile-network-use-wifi": "Только Wi-Fi",
     "mobile-syncing-sheet-details": "Status имеет тенденцию использовать много данных при синхронизации чатов. Вы можете отключить синхронизацию когда используется мобильная сеть",
     "mobile-syncing-sheet-title": "Синхронизация с использованием мобильной сети",
@@ -1002,6 +1005,7 @@
     
     "secret-keys-confirmation-text": "Они вам понадобится, чтобы продолжить использовать Keycard в случае потери вашего телефона.",
     "secret-keys-confirmation-title": "Вы записали эти коды?",
+
     "security": "Безопасность",
     "see-details": "Смотрите подробности",
     "see-it-again": "ПОСМОТРЕТЬ ЕЩЕ РАЗ",

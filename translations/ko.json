@@ -45,6 +45,7 @@
     "amount": "수량",
     "amount-placeholder": "수량 입력...",
 
+
     "are-you-sure-description": "지금부터 시드 시드 구문을 다시 확인할 수 없습니다",
     "are-you-sure?": "확실히 확인하셨습니까?",
     "ask-in-status": "질문 및 버그 신고",
@@ -167,6 +168,7 @@
     "connection-with-the-card-lost": "카드와 연결이 끊어졌습니다",
     "connection-with-the-card-lost-setup-text": "설치를 다시 시작하시려면 \n스마트폰 뒷면에 카드를 위치하시고 \n접촉을 유지해주시길 바랍니다.",
     "connection-with-the-card-lost-text": "계속하려면, 카드를 스마트폰의 뒷면에 대주세요",
+
     "contact-code": "채팅 키",
     "contact-s": {
         "other": "연락처"
@@ -187,10 +189,7 @@
     "create-group-chat": "그룹 채팅 생성",
     "create-multiaccount": "계정 만들기",
     "create-new-key": "신규 키 생성",
-
-    "create-new-multiaccount": "새 계정 생성",
     "create-pin": "패스코드 만들기",
-    "create-pin-description": "로그인하고 거래를 확인하려면 카드와 패스코드가 필요합니다",
     "created-group-chat-description": "{{group-name}} 그룹을 생성했습니다",
     "creating-your-multiaccount": "계정 생성 중...",
     "cryptokitty-name": "CryptoKitty # {{id}}",
@@ -459,8 +458,8 @@
     "ens-your-username": "사용자 이름",
     "ens-your-usernames": "사용자 이름",
     "ens-your-your-name": "ENS 이름",
-
     "enter-12-words": "12 단어의 시드 구문을 입력하시고, 스페이스로 띄어 써주세요",
+
     
     "enter-contact-code": "채팅 키 또는 ENS 이름 입력",
     
@@ -554,6 +553,7 @@
     "help": "도움말",
     "help-capitalized": "도움말",
     "help-center": "도움말 센터",
+
     "hide-content-when-switching-apps": "앱 전환시 컨텐츠 숨기기",
     "history": "히스토리",
     "hold-card": "카드를 휴대전화 뒷면에 위치해주세요",
@@ -667,6 +667,7 @@
     
     "left": "나감",
 
+
     "les-ulc": "LES\/ULC",
     "linked-on": "{{date}} 에 연결",
     "load-messages-before": "{{date}} 전",
@@ -748,6 +749,7 @@
     "multiaccount-not-listed": "리스트에 없는 계정",
     "multiaccount-not-listed-text": "이 카드의 계정은 스마트폰에 존재하지 않습니다. 이 새로운 계정으로 로그인 하시겠습니까?",
     "multiaccounts-recover-enter-phrase-text": "12, 15, 18, 21 또는 24 단어를 입력해주세요.\n단어를 한 칸씩 띄어써서 구분해야 합니다.",
+
 
     "multiaccounts-recover-enter-phrase-title": "시드 구문 입력",
     "name": "이름",
@@ -933,6 +935,7 @@
     "remove-network": "네트워크 삭제",
     "remove-token": "토큰 제거",
     "removed": "퇴장 됨",
+
     "repeat-pin": "패스코드 다시 입력",
     "report-bug-email-template": "1. 이슈 설명 \n (원하는 기능을 설명하거나 버그와 버그가 발생하기 까지 수행한 내용, 버그 대신 예상한 내용 및 실제로 발생한 내용을 간략하게 요약해해주세요. 아래 섹션 참조) \n\n\n 2. 재현 단계 \n(버그를 단계별로 재현 할 수있는 방법을 설명해주세요)\n - 스테이터스 실행 \n - ... \n - ... \n\n\n 3. 예상되는 행동 \n (일어날 것으로 예상되는 것을 설명해주세요) \n\n\n 4. 실제 행동 \n (실제로 일어난 일을 설명해주세요) \n\n\n 5. 이슈를 확인 할 수있는 스크린 샷을 첨부해주세요. \n",
     "request-command-payment": "결제 요청",
@@ -966,6 +969,7 @@
     
     "secret-keys-confirmation-text": "이 화면은 다시 표시되지 않기 때문에 지금 백업하시기 바랍니다.",
     "secret-keys-confirmation-title": "백업하셨나요?",
+
     "security": "보안",
     "see-details": "세부 정보",
     "see-it-again": "다시 보기",
@@ -1095,6 +1099,7 @@
     "token-auto-validate-name-error": "{{symbol}} 토큰 주소 {{address}} 의 이름이 잘못 되었습니다. {{expected}} (으)로 세팅 되었으나 {{actual}} 로 감지되었습니다.",
     "token-auto-validate-symbol-error": "{{symbol}} 토큰 주소 {{address}} 의 심볼이 잘못 되었습니다. {{expected}} (으)로 세팅 되었으나 {{actual}} 로 감지되었습니다.",
     "token-details": "토큰 세부 정보",
+
     "topic-name-error": "소문자(a 에서 z), 숫자 및 하이픈(-)만 사용할 수 있습니다. 채팅 키는 사용할 수 없습니다.",
     "transaction": "거래",
     "transaction-description": "12번 이상 확인 된 거래는 취소할 수 없습니다",
@@ -1199,9 +1204,8 @@
     
     "wallet-asset": "자산",
     "wallet-assets": "자산",
+
     "wallet-backup-recovery-title": "시드 구문 백업",
-    "wallet-browse-photos": "사진 보기",
-    "wallet-choose-from-contacts": "연락처에서 선택",
     "wallet-choose-recipient": "수신인 선택",
     "wallet-collectibles": "목록",
     
