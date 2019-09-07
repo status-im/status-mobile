@@ -1,6 +1,5 @@
 (ns status-im.wallet.core
-  (:require [clojure.set :as set]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.constants :as constants]
             [status-im.waku.core :as waku]
@@ -75,7 +74,7 @@
     :outputs ["string"]
     :on-success
     (fn [[contract-name]]
-      (when (and (not (empty? contract-name))
+      (when (and (seq contract-name)
                  (not= name contract-name))
         (let [message (i18n/label :t/token-auto-validate-name-error
                                   {:symbol   symbol
@@ -94,7 +93,7 @@
     :on-success
     (fn [[contract-symbol]]
       ;;NOTE(goranjovic): skipping check if field not set in contract
-      (when (and (not (empty? contract-symbol))
+      (when (and (seq contract-symbol)
                  (not= (clojure.core/name symbol) contract-symbol))
         (let [message (i18n/label :t/token-auto-validate-symbol-error
                                   {:symbol   symbol
@@ -291,13 +290,13 @@
               (prices/update-prices))))
 
 (fx/defn add-custom-token
-  [{:keys [db] :as cofx} {:keys [symbol]}]
+  [cofx {:keys [symbol]}]
   (fx/merge cofx
             (update-toggle-in-settings symbol true)
             (update-balances nil)))
 
 (fx/defn remove-custom-token
-  [{:keys [db] :as cofx} {:keys [symbol]}]
+  [cofx {:keys [symbol]}]
   (update-toggle-in-settings cofx symbol false))
 
 (fx/defn set-and-validate-amount
@@ -312,7 +311,7 @@
 
 (fx/defn sign-transaction-button-clicked-from-chat
   {:events  [:wallet.ui/sign-transaction-button-clicked-from-chat]}
-  [{:keys [db] :as cofx} {:keys [to amount from token request? from-chat? gas gasPrice]}]
+  [{:keys [db] :as cofx} {:keys [to amount from token]}]
   (let [{:keys [symbol address]} token
         amount-hex (str "0x" (abi-spec/number-to-hex amount))
         to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))
@@ -350,9 +349,8 @@
 
 (fx/defn request-transaction-button-clicked-from-chat
   {:events  [:wallet.ui/request-transaction-button-clicked]}
-  [{:keys [db] :as cofx} {:keys [to amount from token from-chat? gas gasPrice]}]
+  [{:keys [db] :as cofx} {:keys [to amount from token]}]
   (let [{:keys [symbol address]} token
-        to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))
         from-address (:address from)
         identity (:current-chat-id db)]
     (fx/merge cofx
@@ -489,7 +487,7 @@
       ens-verified
       (assoc ::resolve-address
              {:registry (get ens/ens-registries chain)
-              :ens-name (if (= (.indexOf name ".") -1)
+              :ens-name (if (= (.indexOf ^js name ".") -1)
                           (stateofus/subdomain name)
                           name)
               ;;TODO handle errors and timeout for ens name resolution

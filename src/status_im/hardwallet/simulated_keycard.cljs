@@ -77,8 +77,8 @@
 (defn get-application-info [{:keys [on-success]}]
   (later #(on-success (get @state :application-info))))
 
-(defn install-applet [args])
-(defn install-cash-applet [args])
+(defn install-applet [_])
+(defn install-cash-applet [_])
 
 (def kk1-password "6d9ZHjn94kFP4bPm")
 
@@ -96,7 +96,7 @@
                  :puk       "320612366918"
                  :pin       pin})))
 
-(defn install-applet-and-init-card [args])
+(defn install-applet-and-init-card [_])
 
 (def kk1-pair "ADEol+GCD67EO7zU6ko0DNK7XrNs9w2+h9GxcibNY4yf")
 
@@ -134,20 +134,20 @@
           :wallet-address         (:address wallet)
           :wallet-public-key      (:public-key wallet)})))))
 
-(defn unblock-pin [args])
+(defn unblock-pin [_])
 
 (defn verify-pin [{:keys [pin pairing on-success]}]
   (when (and (= pairing kk1-pair)
              (= pin (get @state :pin)))
     (later #(on-success 3))))
 
-(defn change-pin [args])
-(defn unpair [args])
-(defn delete [args])
-(defn remove-key [args])
-(defn remove-key-with-unpair [args])
-(defn export-key [args])
-(defn unpair-and-delete [args])
+(defn change-pin [_])
+(defn unpair [_])
+(defn delete [_])
+(defn remove-key [_])
+(defn remove-key-with-unpair [_])
+(defn export-key [_])
+(defn unpair-and-delete [_])
 (defn get-keys [{:keys [on-success pin]}]
   ;;TODO(rasom): verify password before callback
   (later
@@ -155,8 +155,8 @@
      {:key-uid               (get-in @state [:application-info :key-uid])
       :encryption-public-key (ethereum/sha3 pin)})))
 
-(defn sign [args])
-(defn sign-typed-data [args])
+(defn sign [_])
+(defn sign-typed-data [_])
 
 (defn save-multiaccount-and-login
   [{:keys [multiaccount-data password settings node-config accounts-data]}]

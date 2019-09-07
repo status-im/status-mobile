@@ -1,6 +1,5 @@
 (ns status-im.hardwallet.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.multiaccounts.create.core :as multiaccounts.create]
+  (:require [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.datetime :as utils.datetime]
@@ -490,4 +489,3 @@
   {:events [:hardwallet.callback/on-register-card-events]}
   [{:keys [db]} listeners]
   {:db (update-in db [:hardwallet :listeners] merge listeners)})
-

@@ -1,7 +1,5 @@
 (ns status-im.ui.components.dialog
-  (:require [status-im.react-native.js-dependencies :as rn-dependencies]))
-
-(def dialogs (.-default rn-dependencies/dialogs))
+  (:require ["react-native-dialogs" :default dialogs]))
 
 (defn show [{:keys [title options cancel-text on-cancel]}]
   (.. dialogs

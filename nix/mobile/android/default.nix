@@ -3,11 +3,11 @@
 
 let
   gradle = gradle_5; # Currently 5.6.4
-  leinProjectDeps = import ../../lein/lein-project-deps.nix { };
+  clojureDeps = import ../../deps/clojure/deps.nix { };
 
   # Import a jsbundle compiled out of clojure codebase
   jsbundle = callPackage ./jsbundle {
-    inherit leinProjectDeps localMavenRepoBuilder projectNodePackage;
+    inherit clojureDeps localMavenRepoBuilder projectNodePackage;
   };
 
   # Import a patched version of watchman (important for sandboxed builds on macOS)

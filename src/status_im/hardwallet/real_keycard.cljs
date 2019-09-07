@@ -1,11 +1,11 @@
 (ns status-im.hardwallet.real-keycard
-  (:require [status-im.react-native.js-dependencies :as js-dependencies]
-            [status-im.hardwallet.keycard :as keycard]
+  (:require ["react-native-status-keycard" :default status-keycard]
+            ["react-native" :as rn]
+            [status-im.utils.types :as types]
             [status-im.native-module.core :as status]
-            [status-im.utils.types :as types]))
+            [status-im.hardwallet.keycard :as keycard]))
 
-(defonce status-keycard (.-default js-dependencies/status-keycard))
-(defonce event-emitter (.-DeviceEventEmitter js-dependencies/react-native))
+(defonce event-emitter (.-DeviceEventEmitter rn))
 (defonce active-listeners (atom []))
 
 (defn check-nfc-support [{:keys [on-success]}]
@@ -23,24 +23,30 @@
 
 (defn remove-event-listeners []
   (doseq [event ["keyCardOnConnected" "keyCardOnDisconnected"]]
-    (.removeAllListeners event-emitter event)))
+    (.removeAllListeners ^js event-emitter event)))
 
-(defn remove-event-listener [event]
+(defn remove-event-listener
+  [^js event]
   (.remove event))
 
-(defn on-card-connected [callback]
-  (.addListener event-emitter "keyCardOnConnected" callback))
+(defn on-card-connected
+  [callback]
+  (.addListener ^js event-emitter "keyCardOnConnected" callback))
 
-(defn on-card-disconnected [callback]
-  (.addListener event-emitter "keyCardOnDisconnected" callback))
+(defn on-card-disconnected
+  [callback]
+  (.addListener ^js event-emitter "keyCardOnDisconnected" callback))
 
-(defn on-nfc-enabled [callback]
-  (.addListener event-emitter "keyCardOnNFCEnabled" callback))
+(defn on-nfc-enabled
+  [callback]
+  (.addListener ^js event-emitter "keyCardOnNFCEnabled" callback))
 
-(defn on-nfc-disabled [callback]
-  (.addListener event-emitter "keyCardOnNFCDisabled" callback))
+(defn on-nfc-disabled
+  [callback]
+  (.addListener ^js event-emitter "keyCardOnNFCDisabled" callback))
 
-(defn register-card-events [args]
+(defn register-card-events
+  [args]
   (doseq [listener @active-listeners]
     (remove-event-listener listener))
   (reset! active-listeners
@@ -49,7 +55,8 @@
            (on-nfc-enabled (:on-nfc-enabled args))
            (on-nfc-disabled (:on-nfc-disabled args))]))
 
-(defn get-application-info [{:keys [pairing on-success on-failure]}]
+(defn get-application-info
+  [{:keys [pairing on-success on-failure]}]
   (.. status-keycard
       (getApplicationInfo (str pairing))
       (then on-success)

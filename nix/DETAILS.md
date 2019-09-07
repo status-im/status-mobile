@@ -8,6 +8,7 @@ There are four main folders in the `nix` directory:
 
 * `nix/scripts` - Bash scripts for easier usage of Nix
 * `nix/pkgs` - Packages we add to or modify in `nixpkgs`
+* `nix/deps` - Project dependencies managed by Nix
 * `nix/tools` - Various tools used by our derivations and shells
 * `nix/status-go` - Derivations for building [`status-go`](https://github.com/status-im/status-go) repo
 

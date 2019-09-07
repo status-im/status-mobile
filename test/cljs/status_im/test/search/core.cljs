@@ -19,29 +19,35 @@
       (is (= (count chats)
              (count (search.subs/apply-filter ""
                                               chats
-                                              search.subs/extract-chat-attributes)))))
+                                              search.subs/extract-chat-attributes
+                                              false)))))
     (testing "searching for a specific tag"
       (is (= 1
              (count (search.subs/apply-filter "tag2"
                                               chats
-                                              search.subs/extract-chat-attributes)))))
+                                              search.subs/extract-chat-attributes
+                                              false)))))
     (testing "searching for a partial tag"
       (is (= 3
              (count (search.subs/apply-filter "tag"
                                               chats
-                                              search.subs/extract-chat-attributes)))))
+                                              search.subs/extract-chat-attributes
+                                              false)))))
     (testing "searching for a specific random-name"
       (is (= 1
              (count (search.subs/apply-filter "random-name1"
                                               chats
-                                              search.subs/extract-chat-attributes)))))
+                                              search.subs/extract-chat-attributes
+                                              false)))))
     (testing "searching for a partial random-name"
       (is (= 4
              (count (search.subs/apply-filter "random-name"
                                               chats
-                                              search.subs/extract-chat-attributes)))))
+                                              search.subs/extract-chat-attributes
+                                              false)))))
     (testing "searching for a specific chat name"
       (is (= 1
              (count (search.subs/apply-filter "name4"
                                               chats
-                                              search.subs/extract-chat-attributes)))))))
+                                              search.subs/extract-chat-attributes
+                                              false)))))))

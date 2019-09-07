@@ -6,20 +6,20 @@
             [re-frame.core :as re-frame]
             [status-im.ethereum.json-rpc :as json-rpc]))
 
-(def min-gas-price-wei (money/bignumber 1))
+(def min-gas-price-wei ^js (money/bignumber 1))
 
 (defmulti get-error-label-key (fn [type _] type))
 
 (defmethod get-error-label-key :gasPrice [_ value]
   (cond
     (not value) :t/invalid-number
-    (.lt (money/->wei :gwei value) min-gas-price-wei) :t/wallet-send-min-wei
+    (.lt ^js (money/->wei :gwei value) min-gas-price-wei) :t/wallet-send-min-wei
     (-> (money/->wei :gwei value) .decimalPlaces pos?) :t/invalid-number))
 
-(defmethod get-error-label-key :gas [_ value]
+(defmethod get-error-label-key :gas [_ ^js value]
   (cond
     (not value) :t/invalid-number
-    (.lt value (money/bignumber 1)) :t/invalid-number
+    (.lt value ^js (money/bignumber 1)) :t/invalid-number
     (-> value .decimalPlaces pos?) :t/invalid-number))
 
 (defmethod get-error-label-key :default [_ value]
@@ -28,7 +28,7 @@
     :t/invalid-number))
 
 (defn calculate-max-fee
-  [gas gasPrice]
+  [^js gas ^js gasPrice]
   (if (and gas gasPrice)
     (money/to-fixed (money/wei->ether (.times gas gasPrice)))
     "0"))
@@ -42,7 +42,7 @@
   "Takes the previous edit, either :gas or :gas-price and a value as string.
   Wei for gas, and gwei for gas price.
   Validates them and sets max fee"
-  (let [bn-value        (money/bignumber value)
+  (let [^js bn-value        (money/bignumber value)
         error-label-key (get-error-label-key key bn-value)
         data            (if error-label-key
                           {:value   value

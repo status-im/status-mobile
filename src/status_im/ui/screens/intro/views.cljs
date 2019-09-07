@@ -42,7 +42,7 @@
                            :flex 1
                            :margin-bottom bottom-margin
                            :justify-content :flex-end}
-                   :on-layout (fn [e]
+                   :on-layout (fn [^js e]
                                 (reset! width (-> e .-nativeEvent .-layout .-width)))}
        [react/scroll-view {:horizontal true
                            :paging-enabled true
@@ -50,7 +50,7 @@
                            :shows-vertical-scroll-indicator false
                            :shows-horizontal-scroll-indicator false
                            :pinch-gesture-enabled false
-                           :on-scroll #(let [x (.-nativeEvent.contentOffset.x %)]
+                           :on-scroll #(let [^js x (.-nativeEvent.contentOffset.x ^js %)]
                                          (reset! scroll-x x))
                            :style {;:width @width
                                    :margin-bottom bottom-margin}}
@@ -65,7 +65,7 @@
             (let [margin 32
                   size (min @width @height) #_(- (min @width @height) #_(* 2 margin))]
               [react/view {:style {:flex 1}
-                           :on-layout (fn [e]
+                           :on-layout (fn [^js e]
                                         (reset! height (-> e .-nativeEvent .-layout .-height)))}
                [react/image {:source (:image s)
                              :resize-mode :contain
@@ -108,7 +108,7 @@
 (defn generate-key []
   (let [dimensions (r/atom {})]
     (fn []
-      [react/view {:on-layout  (fn [e]
+      [react/view {:on-layout  (fn [^js e]
                                  (reset! dimensions (js->clj (-> e .-nativeEvent .-layout) :keywordize-keys true)))
                    :style {:align-items :center
                            :justify-content :center

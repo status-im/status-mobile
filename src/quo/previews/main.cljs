@@ -4,7 +4,6 @@
             [quo.previews.text :as text]
             [quo.react-native :as rn]
             [reagent.core :as reagent]
-            [status-im.react-native.js-dependencies :refer [react-native]]
             [status-im.ui.screens.routing.core :as navigation]))
 
 (def screens [{:name      :texts
@@ -44,10 +43,12 @@
               :component main-screen}]
             screens)]]))
 
+
+
 ;; TODO(Ferossgp): Add separate build when shadow-cljs will be integrated
 ;; NOTE(Ferossgp): Separate app can be used to preview all available
-;; and possible state for componetns, and for UI testing based on screenshots
+;; and possible state for components, and for UI testing based on screenshots
+
+
 (defn init []
-  (ocall react-native ["AppRegistry" "registerComponent"]
-         "StatusIm"
-         #(reagent/reactify-component preview-screens)))
+  (.registerComponent ^js rn/app-registry "StatusIm" #(reagent/reactify-component preview-screens)))

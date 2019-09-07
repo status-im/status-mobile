@@ -13,7 +13,7 @@
   (views/letsubs [{:keys [address]} [:popover/popover]
                   chain-id    [:chain-id]
                   width       (reagent/atom nil)]
-    [react/view {:on-layout #(reset! width (-> % .-nativeEvent .-layout .-width))}
+    [react/view {:on-layout #(reset! width (-> ^js % .-nativeEvent .-layout .-width))}
      [react/view {:style {:padding-top 16 :padding-horizontal 16}}
       (when @width
         [qr-code-viewer/qr-code-view

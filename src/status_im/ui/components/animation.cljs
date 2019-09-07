@@ -1,14 +1,15 @@
 (ns status-im.ui.components.animation
-  (:require [status-im.ui.components.react :as react]))
+  (:require [status-im.ui.components.react :as react]
+            ["react-native" :as rn]))
 
 (defn start
-  ([anim] (.start anim))
-  ([anim callback] (.start anim callback)))
+  ([^js anim] (.start anim))
+  ([^js anim callback] (.start anim callback)))
 
 (defn anim-loop [animation]
-  (.loop react/animated animation))
+  (.loop ^js react/animated animation))
 
-(defn interpolate [anim-value config]
+(defn interpolate [^js anim-value config]
   (.interpolate anim-value (clj->js config)))
 
 (defn add-native-driver [{:keys [useNativeDriver] :as config}]
@@ -19,68 +20,72 @@
            useNativeDriver)))
 
 (defn timing [anim-value config]
-  (.timing react/animated
+  (.timing ^js react/animated
            anim-value
            (clj->js (add-native-driver config))))
 
 (defn spring [anim-value config]
-  (.spring react/animated
+  (.spring ^js react/animated
            anim-value
            (clj->js (add-native-driver config))))
 
 (defn decay [anim-value config]
-  (.decay react/animated
+  (.decay ^js react/animated
           anim-value
           (clj->js (add-native-driver config))))
 
 (defn anim-sequence [animations]
-  (.sequence react/animated (clj->js animations)))
+  (.sequence ^js react/animated (clj->js animations)))
 
 (defn parallel [animations]
-  (.parallel react/animated (clj->js animations)))
+  (.parallel ^js react/animated (clj->js animations)))
 
 (defn anim-delay [duration]
-  (.delay react/animated duration))
+  (.delay ^js react/animated duration))
 
 (defn event [mapping config]
-  (.event react/animated (clj->js mapping) (clj->js config)))
+  (.event ^js react/animated (clj->js mapping) (clj->js config)))
 
-(defn add-listener [anim-value listener]
+(defn add-listener [^js anim-value listener]
   (.addListener anim-value listener))
 
-(defn remove-all-listeners [anim-value]
+(defn remove-all-listeners [^js anim-value]
   (.removeAllListeners anim-value))
 
-(defn stop-animation [anim-value]
+(defn stop-animation [^js anim-value]
   (.stopAnimation anim-value))
 
-(defn set-value [anim-value value]
+(defn set-value [^js anim-value value]
   (.setValue anim-value value))
 
+(def animated (.-Animated ^js rn))
+(def animated-value (-> ^js rn .-Animated .-Value))
+(def animated-value-xy (-> ^js rn .-Animated .-ValueXY))
+(def easing (-> ^js rn .-Easing))
+
 (defn create-value [value]
-  (js/ReactNative.Animated.Value. value))
+  (new animated-value value))
 
 (defn create-value-xy [value]
-  (js/ReactNative.Animated.ValueXY. value))
+  (new animated-value-xy value))
 
 (defn add [anim-x anim-y]
-  (js/ReactNative.Animated.add. anim-x anim-y))
+  ((-> ^js rn .-Animated .add) anim-x anim-y))
 
 (defn subtract [anim-x anim-y]
-  (js/ReactNative.Animated.subtract. anim-x anim-y))
+  ((-> ^js rn .-Animated .substract) anim-x anim-y))
 
-(defn x [value-xy]
+(defn x [^js value-xy]
   (.-x value-xy))
 
-(defn y [value-xy]
+(defn y [^js value-xy]
   (.-y value-xy))
 
-(defn get-layout [value-xy]
+(defn get-layout [^js value-xy]
   (js->clj (.getLayout value-xy)))
 
-(defn easing [] js/ReactNative.Easing)
-(defn easing-in [] (.-in (easing)))
-(defn easing-out [] (.-out (easing)))
+(defn easing-in [] (.-in ^js easing))
+(defn easing-out [] (.-out ^js easing))
 
-(defn cubic [] (.-cubic (easing)))
-(def bezier (.-bezier (easing)))
+(defn cubic [] (.-cubic ^js easing))
+(def bezier (.-bezier ^js easing))

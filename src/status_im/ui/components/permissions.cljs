@@ -1,8 +1,6 @@
 (ns status-im.ui.components.permissions
   (:require [status-im.utils.platform :as platform]
-            [status-im.react-native.js-dependencies :as js-dependencies]))
-
-(def permissions-class (.-PermissionsAndroid js-dependencies/react-native))
+            ["react-native" :refer (PermissionsAndroid)]))
 
 (def permissions-map
   {:read-external-storage  "android.permission.READ_EXTERNAL_STORAGE"
@@ -20,7 +18,7 @@
                             :as   options}]
   (if platform/android?
     (let [permissions (mapv #(get permissions-map %) permissions)]
-      (-> (.requestMultiple permissions-class (clj->js permissions))
+      (-> (.requestMultiple PermissionsAndroid (clj->js permissions))
           (.then #(if (all-granted? (js->clj %))
                     (on-allowed)
                     (on-denied)))

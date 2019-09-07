@@ -3,7 +3,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.common.common :as components.common]
             [clojure.string :as string]
@@ -22,14 +21,14 @@
             500))))
 
 (defview add-custom-token []
-  (letsubs [{:keys [contract name symbol balance decimals in-progress? error error-name error-symbol]}
+  (letsubs [{:keys [contract name symbol decimals in-progress? error error-name error-symbol]}
             [:wallet/custom-token-screen]]
     [react/keyboard-avoiding-view {:flex 1 :background-color colors/white}
      [topbar/topbar {:title :t/add-custom-token}]
      [react/scroll-view {:keyboard-should-persist-taps :handled :style {:flex 1 :margin-top 8 :padding-horizontal 16}}
       [react/view {:style {:flex-direction :row :justify-content :space-between :padding-vertical 10}}
        [react/text (i18n/label :t/contract-address)]
-       (if in-progress?
+       (when in-progress?
          [react/view {:flex-direction :row :justify-content :center}
           [react/view {:height 20}
            [react/activity-indicator {:width 24 :height 24 :animating true}]]

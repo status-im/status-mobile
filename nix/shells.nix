@@ -20,7 +20,7 @@ let
       # core utilities that should always be present in a shell
       bash curl wget file unzip flock git gnumake jq ncurses
       # build specific utilities
-      clojure leiningen maven watchman
+      clojure maven watchman
       # other nice to have stuff
       yarn nodejs python27
     ] # and some special cases
@@ -43,12 +43,12 @@ let
   };
 
   # An attrset for easier merging with default shell
-  shells = rec {
+  shells = {
     inherit default;
 
-    # for calling lein targets in CI or Makefile
-    lein = pkgs.mkShell {
-      buildInputs = with pkgs; [ clojure leiningen flock maven nodejs openjdk ];
+    # for calling clojure targets in CI or Makefile
+    clojure = pkgs.mkShell {
+      buildInputs = with pkgs; [ clojure flock maven nodejs openjdk ];
     };
 
     # for 'make watchman-clean'
@@ -73,12 +73,6 @@ let
     windows = targets.desktop.windows.shell;
     android = targets.mobile.android.shell;
     ios = targets.mobile.ios.shell;
-
-    # all shells together depending on host OS
-    all = lib.mergeSh (pkgs.mkShell {}) (lib.unique (
-      lib.optionals stdenv.isLinux  [ android linux windows ] ++
-      lib.optionals stdenv.isDarwin [ android macos ios ]
-    ));
   };
 
   # for merging the default shell with others

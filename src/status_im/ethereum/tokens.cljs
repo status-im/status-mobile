@@ -12,7 +12,7 @@
      {:name     "Native"
       :symbol   :ETH
       :decimals 18
-      :icon     {:source (js/require "./resources/images/tokens/default-native.png")}})))
+      :icon     {:source (js/require "../resources/images/tokens/default-native.png")}})))
 
 (def all-native-currencies
   (ethereum.macros/resolve-native-currency-icons

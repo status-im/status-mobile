@@ -1,7 +1,6 @@
 (ns status-im.wallet.collectibles.core
   (:require [re-frame.core :as re-frame]
             [status-im.browser.core :as browser]
-            [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.erc721 :as erc721]
             [status-im.ethereum.tokens :as tokens]
@@ -109,7 +108,7 @@
                        #(re-frame/dispatch [:token-uri-success
                                             tokenId
                                             (when %
-                                              (subs % (.indexOf % "http")))]))))) ;; extra chars in rinkeby
+                                              (subs % (.indexOf ^js % "http")))]))))) ;; extra chars in rinkeby
 
 ;;Superrare
 (def superrare :SUPR)

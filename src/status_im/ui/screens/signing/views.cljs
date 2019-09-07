@@ -65,7 +65,7 @@
 
 (defn header
   [{:keys [in-progress?] :as sign}
-   {:keys [contact amount token approve?] :as tx}
+   {:keys [contact amount approve?]}
    display-symbol fee fee-display-symbol]
   [react/view styles/header
    (when sign
@@ -133,10 +133,8 @@
      [react/view {:align-items :center :margin-top 16 :margin-bottom 40}
       [sign-with-keycard-button nil nil]])])
 
-(defn signature-request [{:keys [error formatted-data
-                                 fiat-amount fiat-currency
-                                 keycard-step
-                                 in-progress? enabled?] :as sign} small-screen?]
+(defn signature-request
+  [{:keys [formatted-data fiat-amount fiat-currency keycard-step]} small-screen?]
   (let [message (:message formatted-data)
         title (case keycard-step
                 :connect :t/looking-for-cards
@@ -326,7 +324,8 @@
       :type        :small
       :accessories [[react/text network-name]]}]))
 
-(views/defview sheet [{:keys [from contact amount token approve?] :as tx}]
+(views/defview sheet
+  [{:keys [from contact amount token] :as tx}]
   (views/letsubs [fee                   [:signing/fee]
                   sign                  [:signing/sign]
                   chain                 [:ethereum/chain-keyword]

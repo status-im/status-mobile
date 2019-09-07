@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.profile.models
   (:require [clojure.spec.alpha :as spec]
+            [clojure.string :as clojure.string]
             [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.navigation]
@@ -21,9 +22,9 @@
        (image-processing/img->base64 path on-success on-error 150 150)))
    "photo"))
 
-(defn send-transaction [chat-id {:keys [db] :as cofx}]
+(defn send-transaction [chat-id cofx]
   ;;TODO start send transaction command flow
-  (chat-models/start-chat chat-id {:navigation-reset? true}))
+  (chat-models/start-chat cofx chat-id {:navigation-reset? true}))
 
 (defn- valid-name? [name]
   (spec/valid? :profile/name name))

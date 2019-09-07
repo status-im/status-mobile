@@ -16,7 +16,7 @@
    anim-opacity
    {:toValue 1
     :duration 200
-    :easing (.-ease (animation/easing))
+    :easing (.-ease ^js animation/easing)
     :useNativeDriver true}))
 
 (defn minimized-toolbar-fade-out [anim-opacity]
@@ -24,7 +24,7 @@
    anim-opacity
    {:toValue 0
     :duration 200
-    :easing (.-ease (animation/easing))
+    :easing (.-ease ^js animation/easing)
     :useNativeDriver true}))
 
 (defn- ios-shadow-opacity-anim [scroll-y]

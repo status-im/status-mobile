@@ -1,12 +1,10 @@
 (ns status-im.ui.screens.stickers.views
   (:require [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.stickers.styles :as styles]
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.money :as money]

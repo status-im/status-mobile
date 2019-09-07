@@ -17,7 +17,7 @@
             [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
-(defn login-multiaccount [password-text-input]
+(defn login-multiaccount [^js password-text-input]
   (.blur password-text-input)
   (re-frame/dispatch [:multiaccounts.login.ui/password-input-submitted]))
 

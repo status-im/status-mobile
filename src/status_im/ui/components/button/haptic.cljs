@@ -1,8 +1,6 @@
 (ns status-im.ui.components.button.haptic
   (:require [oops.core :refer [oget ocall]]
-            [status-im.react-native.js-dependencies :as js-deps]))
-
-(def haptic-feedback (oget js-deps/react-native-haptic-feedback "default"))
+            [react-native-haptic-feedback :default react-native-haptic-feedback]))
 
 (def haptic-methods
   {:selection            "selection"
@@ -21,7 +19,7 @@
    :text-handle-move     "textHandleMove"               ; (Android only)
    :virtual-key          "virtualKey"                   ; (Android only)
    :virtual-key-release  "virtualKeyRelease"            ; (Android only)
-})
+   })
 
 (defn trigger [method]
-  (ocall haptic-feedback "trigger" (get haptic-methods method)))
+  (ocall react-native-haptic-feedback "trigger" (get haptic-methods method)))

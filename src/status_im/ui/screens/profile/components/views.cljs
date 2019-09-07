@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ethereum.stateofus :as stateofus]
             [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.colors :as colors]
@@ -10,25 +9,10 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
             [status-im.utils.gfycat.core :as gfy]
-            [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.screens.profile.user.sheet.views :as sheets]
             [status-im.ui.screens.profile.components.styles :as styles]))
 
-;; profile header elements
-
-(defn- profile-name-input [name on-change-text-event & [props]]
-  [react/view
-   [react/text-input
-    (merge {:style               styles/profile-name-input-text
-            :placeholder         ""
-            :default-value       name
-            :auto-focus          true
-            :on-change-text      #(when on-change-text-event
-                                    (re-frame/dispatch [on-change-text-event %]))
-            :accessibility-label :username-input}
-           props)]])
-
-(defn- names [{:keys [usernames name public-key] :as contact}]
+(defn- names [{:keys [usernames public-key] :as contact}]
   (let [generated-name (when public-key (gfy/generate-gfy public-key))]
     [react/view styles/profile-header-name-container-with-subtitle
      [react/text {:style styles/profile-name-text-with-subtitle
@@ -48,7 +32,7 @@
                        :ens-name ens-name}]))
 
 (defn- profile-header-display
-  [{:keys [name public-key preferred-name ens-name] :as contact}
+  [{:keys [public-key preferred-name ens-name] :as contact}
    allow-icon-change? include-remove-action?]
   [react/touchable-opacity
    {:on-press #(chat-key-popover public-key (or ens-name

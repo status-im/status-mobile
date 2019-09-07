@@ -1,28 +1,25 @@
 (ns quo.gesture-handler
   (:require [oops.core :refer [oget]]
-            [quo.animated :as animated]
+            ["react-native-reanimated" :default animated]
             [reagent.core :as reagent]
-            [status-im.react-native.js-dependencies :as js-deps]))
+            ["react-native-gesture-handler"
+             :refer (TapGestureHandler PanGestureHandler LongPressGestureHandler
+                                       PureNativeButton TouchableWithoutFeedback createNativeWrapper State)]))
 
 (def tap-gesture-handler
-  (reagent/adapt-react-class
-   (oget js-deps/react-native-gesture-handler "TapGestureHandler")))
+  (reagent/adapt-react-class TapGestureHandler))
 
 (def pan-gesture-handler
-  (reagent/adapt-react-class
-   (oget js-deps/react-native-gesture-handler "PanGestureHandler")))
+  (reagent/adapt-react-class PanGestureHandler))
 
 (def long-press-gesture-handler
-  (reagent/adapt-react-class
-   (oget js-deps/react-native-gesture-handler "LongPressGestureHandler")))
+  (reagent/adapt-react-class LongPressGestureHandler))
 
-(def pure-native-button (oget js-deps/react-native-gesture-handler "PureNativeButton"))
+(def pure-native-button PureNativeButton)
 
-(def touchable-without-feedback-class
-  (oget js-deps/react-native-gesture-handler "TouchableWithoutFeedback"))
+(def touchable-without-feedback-class TouchableWithoutFeedback)
 
-(def createNativeWrapper
-  (oget js-deps/react-native-gesture-handler "createNativeWrapper"))
+(def createNativeWrapper createNativeWrapper)
 
 (def touchable-without-feedback
   (reagent/adapt-react-class touchable-without-feedback-class))
@@ -30,9 +27,9 @@
 (def animated-raw-button
   (reagent/adapt-react-class
    (createNativeWrapper
-    (animated/createAnimatedComponent touchable-without-feedback-class))))
+    (.createAnimatedComponent animated touchable-without-feedback-class))))
 
-(def state (oget js-deps/react-native-gesture-handler "State"))
+(def state State)
 
 (def states {:began        (oget state "BEGAN")
              :active       (oget state "ACTIVE")

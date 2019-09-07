@@ -39,7 +39,7 @@
    :icon-03        "rgba(255,255,255,0.4)" ; Secondary icons on accent bg
    :icon-04        "rgba(255,255,255,1)"   ; Icons inverse on accent background
    :shadow-01      "rgba(0,9,26,0.12)"     ; Main shadow color
-})
+   })
 
 (def dark-theme
   {:positive-01    "rgba(68,208,88,1)"

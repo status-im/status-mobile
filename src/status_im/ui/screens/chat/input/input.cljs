@@ -24,7 +24,7 @@
     :editable               (not cooldown-enabled?)
     :blur-on-submit         false
     :on-focus               #(re-frame/dispatch-sync [:chat.ui/input-on-focus])
-    :on-change              #(re-frame/dispatch [:chat.ui/set-chat-input-text (.-text (.-nativeEvent %))])
+    :on-change              #(re-frame/dispatch [:chat.ui/set-chat-input-text (.-text ^js (.-nativeEvent ^js %))])
     :style                  style/input-view
     :placeholder            (if cooldown-enabled?
                               (i18n/label :cooldown/text-input-disabled)

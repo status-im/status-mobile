@@ -1,3 +1,4 @@
+
 #!/usr/bin/env bash
 
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)

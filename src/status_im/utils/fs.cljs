@@ -1,22 +1,22 @@
 (ns status-im.utils.fs
-  (:require [status-im.react-native.js-dependencies :as rn-dependencies]))
+  (:require ["react-native-fs" :as react-native-fs]))
 
 (defn move-file [src dst]
-  (.moveFile rn-dependencies/fs src dst))
+  (.moveFile react-native-fs src dst))
 
 (defn read-file [path encoding on-read on-error]
-  (-> (.readFile rn-dependencies/fs path encoding)
+  (-> (.readFile react-native-fs path encoding)
       (.then on-read)
       (.catch on-error)))
 
 (defn read-dir [path]
-  (.readDir rn-dependencies/fs path))
+  (.readDir react-native-fs path))
 
 (defn mkdir [path]
-  (.mkdir rn-dependencies/fs path))
+  (.mkdir react-native-fs path))
 
 (defn unlink [path]
-  (.unlink rn-dependencies/fs path))
+  (.unlink react-native-fs path))
 
 (defn file-exists? [path]
-  (.exists rn-dependencies/fs path))
+  (.exists react-native-fs path))

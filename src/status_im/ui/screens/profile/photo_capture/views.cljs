@@ -3,7 +3,6 @@
             [reagent.core :as reagent]
             [status-im.ui.components.camera :as camera]
             [status-im.ui.components.react :as react]
-            [status-im.i18n :as i18n]
             [status-im.ui.screens.profile.photo-capture.styles :as styles]
             [status-im.utils.image-processing :as image-processing]
             [taoensso.timbre :as log]
@@ -11,7 +10,7 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.colors :as colors]))
 
-(defn image-captured [data]
+(defn image-captured [^js data]
   (let [path       (.-uri data)
         _          (log/debug "Captured image: " path)
         on-success (fn [base64]
@@ -27,17 +26,18 @@
     [react/view styles/container
      [topbar/topbar {:title :t/image-source-title}]
      [camera/camera {:style         {:flex 1}
-                     ;:aspect        (:fill camera/aspects)
+                     ;;:aspect        (:fill camera/aspects)
                      :captureQuality "480p"
-                     ;:captureTarget (:disk camera/capture-targets)
+                     ;;:captureTarget (:disk camera/capture-targets)
                      :type          "front"
                      :ref           #(reset! camera-ref %)}]
      [react/view styles/button-container
       [react/view styles/button
-       [react/touchable-highlight {:on-press (fn []
-                                               (let [camera @camera-ref]
-                                                 (-> (.takePictureAsync camera)
-                                                     (.then image-captured)
-                                                     (.catch #(log/debug "Error capturing image: " %)))))}
+       [react/touchable-highlight
+        {:on-press (fn []
+                     (let [^js camera @camera-ref]
+                       (-> (.takePictureAsync camera)
+                           (.then image-captured)
+                           (.catch #(log/debug "Error capturing image: " %)))))}
         [react/view
          [icons/icon :main-icons/camera {:color colors/white}]]]]]]))

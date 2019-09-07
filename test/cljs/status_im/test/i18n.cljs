@@ -1017,7 +1017,7 @@
   (get checkpoints-def checkpoint))
 
 (defn checkpoint-val-to-compare [c]
-  (-> c name (string/replace #"^.*\|" "") int))
+  (-> c name (string/replace #"^.*\|" "") js/parseInt))
 
 (defn >checkpoints [& cs]
   (apply > (map checkpoint-val-to-compare cs)))

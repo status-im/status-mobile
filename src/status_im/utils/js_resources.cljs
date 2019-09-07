@@ -6,4 +6,4 @@
 
 (defn ethereum-provider [network-id]
   (str "var networkId = \"" network-id "\";"
-       (provider-file)))
+       provider-file))

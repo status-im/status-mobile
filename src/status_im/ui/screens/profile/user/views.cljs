@@ -26,7 +26,7 @@
   (views/letsubs [{:keys [address ens-name]}     [:popover/popover]
                   width                          (reagent/atom nil)]
     (let [link (universal-links/generate-link :user :external (or ens-name address))]
-      [react/view {:on-layout #(reset! width (-> % .-nativeEvent .-layout .-width))}
+      [react/view {:on-layout #(reset! width (-> ^js % .-nativeEvent .-layout .-width))}
        [react/view {:style {:padding-top 16 :padding-horizontal 16}}
         (when @width
           [qr-code-viewer/qr-code-view (- @width 32) address])
@@ -61,7 +61,7 @@
                                         ;:icon                :main-icons/link
           :accessibility-label :share-my-contact-code-button}]]])))
 
-(defn- header [{:keys [photo-path public-key ens-name] :as account} photo-added?]
+(defn- header [account photo-added?]
   [profile.components/profile-header
    {:contact                account
     ;;set to true if we want to re-enable custom icon

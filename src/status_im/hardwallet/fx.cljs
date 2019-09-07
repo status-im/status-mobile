@@ -3,8 +3,8 @@
             [status-im.utils.types :as types]
             [status-im.hardwallet.card :as card]
             [status-im.native-module.core :as status]
-            [status-im.react-native.js-dependencies :as js-dependencies]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            ["react-native" :refer (AsyncStorage BackHandler)]))
 
 (re-frame/reg-fx
  :hardwallet/get-application-info
@@ -106,14 +106,14 @@
 (re-frame/reg-fx
  :hardwallet/persist-pairings
  (fn [pairings]
-   (.. js-dependencies/async-storage
+   (.. AsyncStorage
        (setItem "status-keycard-pairings" (types/serialize pairings)))))
 
 (re-frame/reg-fx
  :hardwallet/retrieve-pairings
  (fn []
    (when platform/android?
-     (.. js-dependencies/async-storage
+     (.. AsyncStorage
          (getItem "status-keycard-pairings")
          (then #(re-frame/dispatch [:hardwallet.callback/on-retrieve-pairings-success
                                     (types/deserialize %)]))))))
@@ -121,18 +121,18 @@
 ;; TODO: Should act differently on different views
 (re-frame/reg-fx
  :hardwallet/listen-to-hardware-back-button
- ;;NOTE: not done in view because effect should happen under different conditions and is not dependent on 
+ ;;NOTE: not done in view because effect should happen under different conditions and is not dependent on
  ;;particular screen to be loaded. An fx is easier to re-use and test.
  (fn []
    (re-frame/dispatch [:hardwallet/add-listener-to-hardware-back-button
-                       (.addEventListener js-dependencies/back-handler "hardwareBackPress"
+                       (.addEventListener BackHandler "hardwareBackPress"
                                           (fn []
                                             (re-frame/dispatch [:hardwallet/back-button-pressed])
                                             true))])))
 
 (re-frame/reg-fx
  :hardwallet/remove-listener-to-hardware-back-button
- (fn [listener]
+ (fn [^js listener]
    (.remove listener)))
 
 (re-frame/reg-fx

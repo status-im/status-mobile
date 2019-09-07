@@ -77,7 +77,7 @@
   (let [link @(re-frame/subscribe [:wallet/etherscan-link address])]
     [react/touchable-highlight
      {:on-press #(when link
-                   (.openURL react/linking link))}
+                   (.openURL ^js react/linking link))}
      [react/view
       {:style {:flex             1
                :padding-horizontal 14
@@ -146,7 +146,7 @@
 
 ;; NOTE: Is this needed?
 (defview filter-history []
-  (letsubs [{:keys [filters all-filters? on-touch-select-all]}
+  (letsubs [{:keys [filters on-touch-select-all]}
             [:wallet.transactions.filters/screen]]
     [react/view styles/filter-container
      [topbar/topbar {:title       :t/transactions-filter-title
@@ -243,7 +243,7 @@
   [(actions/opts [{:label (i18n/label :t/copy-transaction-hash)
                    :action #(react/copy-to-clipboard hash)}
                   {:label  (i18n/label :t/open-on-etherscan)
-                   :action #(.openURL react/linking url)}])])
+                   :action #(.openURL ^js react/linking url)}])])
 
 (defview transaction-details-view [hash address]
   (letsubs [{:keys [url type confirmations confirmations-progress

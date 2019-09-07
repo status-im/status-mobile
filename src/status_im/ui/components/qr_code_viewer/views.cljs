@@ -1,15 +1,15 @@
 (ns status-im.ui.components.qr-code-viewer.views
   (:require [cljs-bean.core :as bean]
             [reagent.core :as reagent]
-            [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.ui.components.qr-code-viewer.styles :as styles]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.svg :as svg]))
+            [status-im.ui.components.svg :as svg]
+            ["qrcode" :as qr-code-js]))
 
 (defn qr-code [{:keys [size value]}]
   (let [uri (reagent/atom nil)]
     (.toString
-     rn-dependencies/qr-code
+     qr-code-js
      value
      (bean/->js {:margin 0 :width size})
      #(reset! uri %2))

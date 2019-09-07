@@ -33,8 +33,6 @@ pipeline {
     NIX_IGNORE_SYMLINK_STORE = 1
     FASTLANE_DISABLE_COLORS = 1
     BUNDLE_PATH = "${HOME}/.bundle"
-    /* We use EXECUTOR_NUMBER to avoid multiple instances clashing */
-    LEIN_HOME   = "/var/tmp/lein-${EXECUTOR_NUMBER}"
   }
 
   stages {
@@ -61,14 +59,16 @@ pipeline {
                   buildResult: 'FAILURE',
                   stageResult: 'FAILURE'
                 ) {
-                  nix.shell('lein cljfmt check', attr: 'shells.lein')
+                  sh 'make lint'
                 }
               }
             }
           }
           stage('Tests') {
             steps {
-              script { nix.shell('lein test-cljs', attr: 'shells.lein') }
+              script {
+                sh 'make test'
+              }
             }
           }
         } }

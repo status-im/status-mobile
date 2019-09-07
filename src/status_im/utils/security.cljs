@@ -11,7 +11,7 @@
   Object
   (toString [_] "******")
   Unmaskable
-  (unmask [this]
+  (unmask [^js this]
     (.-data this)))
 
 ;; Returns a MaskedData instance that stores the piece of data.

@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.routing.intro-login-stack
   (:require-macros [status-im.utils.views :as views])
-  (:require [re-frame.core :as re-frame]
-            [status-im.ui.screens.multiaccounts.login.views :as login]
+  (:require [status-im.ui.screens.multiaccounts.login.views :as login]
             [status-im.ui.screens.progress.views :as progress]
             [status-im.ui.screens.multiaccounts.views :as multiaccounts]
             [status-im.ui.screens.intro.views :as intro]

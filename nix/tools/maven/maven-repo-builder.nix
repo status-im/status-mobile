@@ -4,40 +4,51 @@
 name: source:
 
 let
+  inherit (lib)
+    removeSuffix optionalString splitString concatMapStrings
+    attrByPath attrValues last makeOverridable;
+
+  # some .jar files have an `-aot` suffix that doesn't work for .pom files
+  getPOM = jarUrl: "${removeSuffix "-aot" jarUrl}.pom";
+
   script = writeShellScriptBin "create-local-maven-repo" (''
     mkdir -p $out
     cd $out
   '' +
-  (lib.concatMapStrings (dep': 
+  (concatMapStrings (dep': 
     let
       dep = { postCopy = ""; } // dep';
       url = "${dep.host}/${dep.path}";
       pom = {
-        sha1 = lib.attrByPath [ "pom" "sha1" ] "" dep;
-        sha256 = lib.attrByPath [ "pom" "sha256" ] "" dep;
+        sha1 = attrByPath [ "pom" "sha1" ] "" dep;
+        sha256 = attrByPath [ "pom" "sha256" ] "" dep;
       };
-      pom-download = lib.optionalString (pom.sha256 != "") (fetchurl { url = "${url}.pom"; inherit (pom) sha256; });
+      pom-download = optionalString (pom.sha256 != "") (
+        fetchurl { url = getPOM url; inherit (pom) sha256; }
+      );
       jar = {
-        sha1 = lib.attrByPath [ "jar" "sha1" ] "" dep;
-        sha256 = lib.attrByPath [ "jar" "sha256" ] "" dep;
+        sha1 = attrByPath [ "jar" "sha1" ] "" dep;
+        sha256 = attrByPath [ "jar" "sha256" ] "" dep;
       };
-      jar-download = lib.optionalString (jar.sha256 != "") (fetchurl { url = "${url}.${dep.type}"; inherit (jar) sha256; });
-      fileName = lib.last (lib.splitString "/" dep.path);
-      directory = lib.removeSuffix fileName dep.path;
+      jar-download = optionalString (jar.sha256 != "") (
+        fetchurl { url = "${url}.${dep.type}"; inherit (jar) sha256; }
+      );
+      fileName = last (splitString "/" dep.path);
+      directory = removeSuffix fileName dep.path;
     in
       ''
         mkdir -p ${directory}
 
-        ${lib.optionalString (pom-download != "") ''
-        cp -f "${pom-download}" "${dep.path}.pom"
+        ${optionalString (pom-download != "") ''
+        cp -f "${pom-download}" "${getPOM dep.path}"
         ''}
-        ${lib.optionalString (pom.sha1 != "") ''
-        echo "${pom.sha1}" > "${dep.path}.pom.sha1"
+        ${optionalString (pom.sha1 != "") ''
+        echo "${pom.sha1}" > "${getPOM dep.path}.sha1"
         ''}
-        ${lib.optionalString (jar-download != "") ''
+        ${optionalString (jar-download != "") ''
         cp -f "${jar-download}" "${dep.path}.${dep.type}"
         ''}
-        ${lib.optionalString (jar.sha1 != "") ''
+        ${optionalString (jar.sha1 != "") ''
         echo "${jar.sha1}" > "${dep.path}.${dep.type}.sha1"
         ''}
         
@@ -48,9 +59,9 @@ let
         '' else ""
         }
       '')
-    (lib.attrValues source)));
+    (attrValues source)));
 
-in lib.makeOverridable stdenv.mkDerivation {
+in makeOverridable stdenv.mkDerivation {
   inherit name;
   phases = [ "buildPhase" ];
   buildPhase = "${script}/bin/create-local-maven-repo";

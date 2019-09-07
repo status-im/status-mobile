@@ -1,9 +1,7 @@
 (ns ^{:doc "Implementation of varint based on https://github.com/chrisdickinson/varint"}
  status-im.utils.varint
   (:require [status-im.ethereum.abi-spec :as abi-spec]
-            [status-im.js-dependencies :as dependencies]))
-
-(def utils dependencies/web3-utils)
+            ["web3-utils" :as utils]))
 
 (def most-significant-bit 0x80)
 (def biggest-int-per-byte 0x7F)

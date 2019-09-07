@@ -1,8 +1,7 @@
 (ns ^{:doc "Utils for transport layer"}
  status-im.transport.utils
   (:require [clojure.string :as string]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.js-dependencies :as dependencies]))
+            [status-im.ethereum.core :as ethereum]))
 
 (defn get-topic
   "Get the topic of a group chat or public chat from the chat-id"

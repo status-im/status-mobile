@@ -116,7 +116,7 @@
   {:events [:hardwallet/fetch-currency-decimals-on-success]}
   [{:keys [db] :as cofx} decimals]
   {:db (update-in db [:signing/sign :formatted-data :message]
-                  #(assoc % :formatted-amount (.dividedBy (money/bignumber (:amount %))
+                  #(assoc % :formatted-amount (.dividedBy ^js (money/bignumber (:amount %))
                                                           (money/bignumber (money/from-decimal decimals)))))})
 
 (fx/defn store-hash-and-sign-typed

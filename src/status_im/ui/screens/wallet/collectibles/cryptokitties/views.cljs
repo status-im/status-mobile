@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.collectibles.cryptokitties.views
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.wallet.collectibles.styles :as styles]
             [status-im.ui.screens.wallet.collectibles.views :as collectibles]

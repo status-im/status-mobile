@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.routing.wallet-stack
-  (:require [status-im.utils.config :as config]
-            [status-im.ui.screens.currency-settings.views :as currency-settings]
+  (:require [status-im.ui.screens.currency-settings.views :as currency-settings]
             [status-im.ui.screens.wallet.collectibles.views :as collectibles]
             [status-im.ui.screens.wallet.settings.views :as wallet-settings]
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]

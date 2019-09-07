@@ -24,7 +24,6 @@
             [status-im.utils.debounce :as debounce]
             [status-im.browser.webview-ref :as webview-ref])
   (:require-macros
-   [status-im.utils.slurp :refer [slurp]]
    [status-im.utils.views :as views]))
 
 (defn toolbar-content [url url-original {:keys [secure?]} url-editing?]
@@ -48,7 +47,7 @@
        [react/touchable-highlight {:style    styles/url-text-container
                                    :on-press #(re-frame/dispatch [:browser.ui/url-input-pressed])}
         [react/text (http/url-host url-original)]])
-     [react/touchable-highlight {:on-press #(.reload @webview-ref/webview-ref)
+     [react/touchable-highlight {:on-press #(.reload ^js @webview-ref/webview-ref)
                                  :accessibility-label :refresh-page-button}
       [icons/icon :main-icons/refresh]]]))
 
@@ -132,13 +131,13 @@
                                                        (debounce/debounce-and-dispatch
                                                         [:browser/navigation-state-changed % error?]
                                                         500))
-                                                    ;; Extract event data here due to 
-                                                    ;; https://reactjs.org/docs/events.html#event-pooling
-        :on-message                                 #(re-frame/dispatch [:browser/bridge-message-received (.. % -nativeEvent -data)])
+        ;; Extract event data here due to
+        ;; https://reactjs.org/docs/events.html#event-pooling
+        :on-message                                 #(re-frame/dispatch [:browser/bridge-message-received (.. ^js % -nativeEvent -data)])
         :on-load                                    #(re-frame/dispatch [:browser/loading-started])
         :on-error                                   #(re-frame/dispatch [:browser/error-occured])
         :injected-java-script-before-content-loaded (js-res/ethereum-provider (str network-id))
-        :injected-java-script                       (js-res/webview-js)}])]
+        :injected-java-script                       js-res/webview-js}])]
    [navigation url-original can-go-back? can-go-forward? dapps-account]
    [permissions.views/permissions-panel [(:dapp? browser) (:dapp browser) dapps-account] show-permission]
    (when show-tooltip

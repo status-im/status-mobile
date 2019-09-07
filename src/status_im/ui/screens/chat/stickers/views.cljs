@@ -68,7 +68,7 @@
                             :font-size  17}}
         (i18n/label :t/recently-used-stickers)]])))
 
-(defn update-scroll-position [ref installed-packs selected-pack window-width animated?]
+(defn update-scroll-position [^js ref installed-packs selected-pack window-width animated?]
   (when ref
     ;; bug on Android https://github.com/facebook/react-native/issues/24531
     (js/setTimeout
@@ -81,7 +81,7 @@
          (.scrollTo ref #js {:x x :animated animated?})))
      1)))
 
-(defn on-scroll [e installed-packs window-width]
+(defn on-scroll [^js e installed-packs window-width]
   (let [num     (/ (.-nativeEvent.contentOffset.x e) window-width)
         pack-id (if (zero? num)
                   :recent
@@ -103,7 +103,7 @@
                         :on-momentum-scroll-end            #(on-scroll % installed-packs width)
                         :scroll-event-throttle             8
                         :scroll-to-overflow-enabled        true
-                        :on-scroll                         #(reset! scroll-x (.-nativeEvent.contentOffset.x %))}
+                        :on-scroll                         #(reset! scroll-x (.-nativeEvent.contentOffset.x ^js %))}
      ^{:key "recent"}
      [recent-stickers-panel width]
      (for [{:keys [stickers id]} installed-packs]

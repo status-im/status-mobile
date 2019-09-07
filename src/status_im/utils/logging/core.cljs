@@ -1,5 +1,6 @@
 (ns status-im.utils.logging.core
-  (:require [re-frame.core :as re-frame]
+  (:require [clojure.string :as clojure.string]
+            [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
@@ -91,10 +92,9 @@
   {:db (dissoc db :logging/dialog-shown?)})
 
 (defn email-body
-  [{:keys [:web3-node-version :mailserver/current-id
-           :node-info :peers-summary]
-    :as db}]
   "logs attached"
+  [{:keys [:web3-node-version :mailserver/current-id
+           :node-info :peers-summary]}]
   (let [build-number  (if platform/desktop? build/version build/build-no)
         build-version (str build/version " (" build-number ")")
         separator (clojure.string/join (take 40 (repeat "-")))

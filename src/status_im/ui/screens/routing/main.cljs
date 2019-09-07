@@ -1,8 +1,6 @@
 (ns status-im.ui.screens.routing.main
   (:require-macros [status-im.utils.views :as views])
-  (:require [reagent.core :as reagent]
-            [re-frame.core :as re-frame]
-            [status-im.ui.screens.profile.tribute-to-talk.views :as tr-to-talk]
+  (:require [status-im.ui.screens.profile.tribute-to-talk.views :as tr-to-talk]
             [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
             [status-im.ui.screens.qr-scanner.views :as qr-scanner]

@@ -4,7 +4,6 @@
             [reagent.core :as reagent]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.view :as topbar]
             [status-im.ui.screens.wallet.components.styles :as styles]
             [status-im.ui.components.text-input.view :as text-input]

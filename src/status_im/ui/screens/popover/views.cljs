@@ -8,11 +8,11 @@
             [status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]
             [status-im.ui.screens.wallet.request.views :as request]
             [status-im.ui.screens.profile.user.views :as profile.user]
+            ["react-native" :refer (BackHandler)]
             [status-im.ui.screens.multiaccounts.recover.views :as multiaccounts.recover]
-            [status-im.react-native.js-dependencies :as js-dependencies]
-            [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.signing.views :as signing]
-            [status-im.ui.screens.biometric.views :as biometric]))
+            [status-im.ui.screens.biometric.views :as biometric]
+            [status-im.ui.components.colors :as colors]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -34,7 +34,7 @@
                                :duration        500
                                :useNativeDriver true})])))
 
-(defn popover-view [popover window-height]
+(defn popover-view [_ window-height]
   (let [bottom-anim-value (anim/create-value window-height)
         alpha-value       (anim/create-value 0)
         clear-timeout     (atom nil)
@@ -51,15 +51,15 @@
         on-show           (fn []
                             (show-panel-anim bottom-anim-value alpha-value)
                             (when platform/android?
-                              (.removeEventListener js-dependencies/back-handler
+                              (.removeEventListener BackHandler
                                                     "hardwareBackPress"
                                                     request-close)
-                              (.addEventListener js-dependencies/back-handler
+                              (.addEventListener BackHandler
                                                  "hardwareBackPress"
                                                  request-close)))
         on-hide           (fn []
                             (when platform/android?
-                              (.removeEventListener js-dependencies/back-handler
+                              (.removeEventListener BackHandler
                                                     "hardwareBackPress"
                                                     request-close)))]
     (reagent/create-class

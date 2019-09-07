@@ -1,6 +1,6 @@
 (ns status-im.utils.core
-  (:require [clojure.string :as str]
-            [taoensso.timbre :as log]))
+  (:require [clojure.string :as string]
+            #?(:cljs [taoensso.timbre :as log])))
 
 (defn truncate-str
   "Given string and max threshold, trims the string to threshold length with `...`
@@ -21,9 +21,9 @@
 
 (defn clean-text [s]
   (-> s
-      (str/replace #"\n" "")
-      (str/replace #"\r" "")
-      (str/trim)))
+      (string/replace #"\n" "")
+      (string/replace #"\r" "")
+      (string/trim)))
 
 (defn first-index
   "Returns first index in coll where predicate on coll element is truthy"
@@ -68,6 +68,6 @@
 #?(:cljs
    (defn safe-read-message-content [content]
      (try
-        (js->clj (.parse js/JSON content) :keywordize-keys true)
+       (js->clj (.parse js/JSON content) :keywordize-keys true)
        (catch :default e
          (log/warn "failed to transform message with " e)))))

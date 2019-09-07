@@ -451,8 +451,6 @@
  (fn [chain-keyword]
    (tokens/native-currency chain-keyword)))
 
-(reg-root-key-sub :ethereum/current-block :ethereum/current-block)
-
 ;;MULTIACCOUNT ==============================================================================================================
 
 (re-frame/reg-sub
@@ -1075,7 +1073,7 @@
    (every?
     (fn [balance]
       (every?
-       (fn [asset]
+       (fn [^js asset]
          (or (nil? asset) (.isZero asset)))
        (vals balance)))
     balances)))
@@ -1103,7 +1101,7 @@
   (reduce-kv (fn [acc symbol value]
                (if-let [price (get-in prices [symbol currency :price])]
                  (+ acc (or (some-> (money/internal->formatted value symbol (token->decimals symbol))
-                                    (money/crypto->fiat price)
+                                    ^js (money/crypto->fiat price)
                                     .toNumber)
                             0))
                  acc)) 0 balance))
@@ -1233,7 +1231,7 @@
                           (money/crypto->fiat price)
                           (money/with-precision 2)
                           str
-                          (i18n/format-currency (:code currency))))))))
+                          (i18n/format-currency (:code currency) false)))))))
 
 (re-frame/reg-sub
  :wallet/visible-assets-with-values
@@ -1248,10 +1246,10 @@
       :nfts   nfts})))
 
 (defn get-asset-amount [balances sym]
-  (reduce #(if-let [bl (get %2 sym)]
-             (.plus %1 bl)
+  (reduce #(if-let [^js bl (get %2 sym)]
+             (.plus ^js %1 bl)
              %1)
-          (money/bignumber 0)
+          ^js (money/bignumber 0)
           balances))
 
 (re-frame/reg-sub
@@ -2078,7 +2076,7 @@
   "Checks if number has any extra digit beyond the allowed number of decimals.
   It does so by checking the number against its rounded value."
   [amount decimals]
-  (let [bn (money/bignumber amount)]
+  (let [^js bn (money/bignumber amount)]
     (not (.eq bn (.round bn decimals)))))
 
 (defn get-amount-error [amount decimals]
@@ -2100,13 +2098,13 @@
     {:amount-error (i18n/label :t/wallet-insufficient-funds)}))
 
 (defn get-sufficient-gas-error
-  [balance symbol amount gas gasPrice]
+  [balance symbol amount ^js gas ^js gasPrice]
   (if (and gas gasPrice)
-    (let [fee               (.times gas gasPrice)
-          available-ether   (money/bignumber (get balance :ETH 0))
-          available-for-gas (if (= :ETH symbol)
-                              (.minus available-ether (money/bignumber amount))
-                              available-ether)]
+    (let [^js fee               (.times gas gasPrice)
+          ^js available-ether   (money/bignumber (get balance :ETH 0))
+          ^js available-for-gas (if (= :ETH symbol)
+                                  (.minus available-ether (money/bignumber amount))
+                                  available-ether)]
       (when-not (money/sufficient-funds? fee (money/bignumber available-for-gas))
         {:gas-error (i18n/label :t/wallet-insufficient-gas)}))
     {:gas-error (i18n/label :t/invalid-number)}))

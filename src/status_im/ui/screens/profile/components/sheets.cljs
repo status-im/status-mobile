@@ -2,7 +2,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.screens.profile.components.styles :as styles])
   (:require-macros [status-im.utils.views :as views]))

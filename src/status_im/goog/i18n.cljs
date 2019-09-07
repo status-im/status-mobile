@@ -240,118 +240,118 @@
             goog.i18n.TimeZone))
 
 (def locales
-  {"af"      goog/i18n.DateTimeSymbols_af
-   "am"      goog/i18n.DateTimeSymbols_am
-   "ar"      goog/i18n.DateTimeSymbols_ar
-   "ar_DZ"   goog/i18n.DateTimeSymbols_ar_DZ
-   "ar_EG"   goog/i18n.DateTimeSymbols_ar_EG
-   "az"      goog/i18n.DateTimeSymbols_az
-   "be"      goog/i18n.DateTimeSymbols_be
-   "bg"      goog/i18n.DateTimeSymbols_bg
-   "bn"      goog/i18n.DateTimeSymbols_bn
-   "br"      goog/i18n.DateTimeSymbols_br
-   "bs"      goog/i18n.DateTimeSymbols_bs
-   "ca"      goog/i18n.DateTimeSymbols_ca
-   "chr"     goog/i18n.DateTimeSymbols_chr
-   "cs"      goog/i18n.DateTimeSymbols_cs
-   "cy"      goog/i18n.DateTimeSymbols_cy
-   "da"      goog/i18n.DateTimeSymbols_da
-   "de"      goog/i18n.DateTimeSymbols_de
-   "de_AT"   goog/i18n.DateTimeSymbols_de_AT
-   "de_CH"   goog/i18n.DateTimeSymbols_de_CH
-   "el"      goog/i18n.DateTimeSymbols_el
-   "en"      goog/i18n.DateTimeSymbols_en
-   "en_AU"   goog/i18n.DateTimeSymbols_en_AU
-   "en_CA"   goog/i18n.DateTimeSymbols_en_CA
-   "en_GB"   goog/i18n.DateTimeSymbols_en_GB
-   "en_IE"   goog/i18n.DateTimeSymbols_en_IE
-   "en_IN"   goog/i18n.DateTimeSymbols_en_IN
-   "en_ISO"  goog/i18n.DateTimeSymbols_en_ISO
-   "en_SG"   goog/i18n.DateTimeSymbols_en_SG
-   "en_US"   goog/i18n.DateTimeSymbols_en_US
-   "en_ZA"   goog/i18n.DateTimeSymbols_en_ZA
-   "es"      goog/i18n.DateTimeSymbols_es
-   "es_419"  goog/i18n.DateTimeSymbols_es_419
-   "es_ES"   goog/i18n.DateTimeSymbols_es_ES
-   "es_MX"   goog/i18n.DateTimeSymbols_es_MX
-   "es_US"   goog/i18n.DateTimeSymbols_es_US
-   "et"      goog/i18n.DateTimeSymbols_et
-   "eu"      goog/i18n.DateTimeSymbols_eu
-   "fa"      goog/i18n.DateTimeSymbols_fa
-   "fi"      goog/i18n.DateTimeSymbols_fi
-   "fil"     goog/i18n.DateTimeSymbols_fil
-   "fr"      goog/i18n.DateTimeSymbols_fr
-   "fr_CA"   goog/i18n.DateTimeSymbols_fr_CA
-   "ga"      goog/i18n.DateTimeSymbols_ga
-   "gl"      goog/i18n.DateTimeSymbols_gl
-   "gsw"     goog/i18n.DateTimeSymbols_gsw
-   "gu"      goog/i18n.DateTimeSymbols_gu
-   "haw"     goog/i18n.DateTimeSymbols_haw
-   "he"      goog/i18n.DateTimeSymbols_he
-   "hi"      goog/i18n.DateTimeSymbols_hi
-   "hr"      goog/i18n.DateTimeSymbols_hr
-   "hu"      goog/i18n.DateTimeSymbols_hu
-   "hy"      goog/i18n.DateTimeSymbols_hy
-   "id"      goog/i18n.DateTimeSymbols_id
-   "in"      goog/i18n.DateTimeSymbols_in
-   "is"      goog/i18n.DateTimeSymbols_is
-   "it"      goog/i18n.DateTimeSymbols_it
-   "iw"      goog/i18n.DateTimeSymbols_iw
-   "ja"      goog/i18n.DateTimeSymbols_ja
-   "ka"      goog/i18n.DateTimeSymbols_ka
-   "kk"      goog/i18n.DateTimeSymbols_kk
-   "km"      goog/i18n.DateTimeSymbols_km
-   "kn"      goog/i18n.DateTimeSymbols_kn
-   "ko"      goog/i18n.DateTimeSymbols_ko
-   "ky"      goog/i18n.DateTimeSymbols_ky
-   "ln"      goog/i18n.DateTimeSymbols_ln
-   "lo"      goog/i18n.DateTimeSymbols_lo
-   "lt"      goog/i18n.DateTimeSymbols_lt
-   "lv"      goog/i18n.DateTimeSymbols_lv
-   "mk"      goog/i18n.DateTimeSymbols_mk
-   "ml"      goog/i18n.DateTimeSymbols_ml
-   "mn"      goog/i18n.DateTimeSymbols_mn
-   "mo"      goog/i18n.DateTimeSymbols_mo
-   "mr"      goog/i18n.DateTimeSymbols_mr
-   "ms"      goog/i18n.DateTimeSymbols_ms
-   "mt"      goog/i18n.DateTimeSymbols_mt
-   "my"      goog/i18n.DateTimeSymbols_my
-   "nb"      goog/i18n.DateTimeSymbols_nb
-   "ne"      goog/i18n.DateTimeSymbols_ne
-   "nl"      goog/i18n.DateTimeSymbols_nl
-   "no"      goog/i18n.DateTimeSymbols_no
-   "no_NO"   goog/i18n.DateTimeSymbols_no_NO
-   "or"      goog/i18n.DateTimeSymbols_or
-   "pa"      goog/i18n.DateTimeSymbols_pa
-   "pl"      goog/i18n.DateTimeSymbols_pl
-   "pt"      goog/i18n.DateTimeSymbols_pt
-   "pt_BR"   goog/i18n.DateTimeSymbols_pt_BR
-   "pt_PT"   goog/i18n.DateTimeSymbols_pt_PT
-   "ro"      goog/i18n.DateTimeSymbols_ro
-   "ru"      goog/i18n.DateTimeSymbols_ru
-   "sh"      goog/i18n.DateTimeSymbols_sh
-   "si"      goog/i18n.DateTimeSymbols_si
-   "sk"      goog/i18n.DateTimeSymbols_sk
-   "sl"      goog/i18n.DateTimeSymbols_sl
-   "sq"      goog/i18n.DateTimeSymbols_sq
-   "sr"      goog/i18n.DateTimeSymbols_sr
-   "sr_Latn" goog/i18n.DateTimeSymbols_sr_Latn
-   "sv"      goog/i18n.DateTimeSymbols_sv
-   "sw"      goog/i18n.DateTimeSymbols_sw
-   "ta"      goog/i18n.DateTimeSymbols_ta
-   "te"      goog/i18n.DateTimeSymbols_te
-   "th"      goog/i18n.DateTimeSymbols_th
-   "tl"      goog/i18n.DateTimeSymbols_tl
-   "tr"      goog/i18n.DateTimeSymbols_tr
-   "uk"      goog/i18n.DateTimeSymbols_uk
-   "ur"      goog/i18n.DateTimeSymbols_ur
-   "uz"      goog/i18n.DateTimeSymbols_uz
-   "vi"      goog/i18n.DateTimeSymbols_vi
-   "zh"      goog/i18n.DateTimeSymbols_zh
-   "zh_CN"   goog/i18n.DateTimeSymbols_zh_CN
-   "zh_HK"   goog/i18n.DateTimeSymbols_zh_HK
-   "zh_TW"   goog/i18n.DateTimeSymbols_zh_TW
-   "zu"      goog/i18n.DateTimeSymbols_zu})
+  {"af"      ^js goog.i18n.DateTimeSymbols_af
+   "am"      ^js goog.i18n.DateTimeSymbols_am
+   "ar"      ^js goog.i18n.DateTimeSymbols_ar
+   "ar_DZ"   ^js goog.i18n.DateTimeSymbols_ar_DZ
+   "ar_EG"   ^js goog.i18n.DateTimeSymbols_ar_EG
+   "az"      ^js goog.i18n.DateTimeSymbols_az
+   "be"      ^js goog.i18n.DateTimeSymbols_be
+   "bg"      ^js goog.i18n.DateTimeSymbols_bg
+   "bn"      ^js goog.i18n.DateTimeSymbols_bn
+   "br"      ^js goog.i18n.DateTimeSymbols_br
+   "bs"      ^js goog.i18n.DateTimeSymbols_bs
+   "ca"      ^js goog.i18n.DateTimeSymbols_ca
+   "chr"     ^js goog.i18n.DateTimeSymbols_chr
+   "cs"      ^js goog.i18n.DateTimeSymbols_cs
+   "cy"      ^js goog.i18n.DateTimeSymbols_cy
+   "da"      ^js goog.i18n.DateTimeSymbols_da
+   "de"      ^js goog.i18n.DateTimeSymbols_de
+   "de_AT"   ^js goog.i18n.DateTimeSymbols_de_AT
+   "de_CH"   ^js goog.i18n.DateTimeSymbols_de_CH
+   "el"      ^js goog.i18n.DateTimeSymbols_el
+   "en"      ^js goog.i18n.DateTimeSymbols_en
+   "en_AU"   ^js goog.i18n.DateTimeSymbols_en_AU
+   "en_CA"   ^js goog.i18n.DateTimeSymbols_en_CA
+   "en_GB"   ^js goog.i18n.DateTimeSymbols_en_GB
+   "en_IE"   ^js goog.i18n.DateTimeSymbols_en_IE
+   "en_IN"   ^js goog.i18n.DateTimeSymbols_en_IN
+   "en_ISO"  ^js goog.i18n.DateTimeSymbols_en_ISO
+   "en_SG"   ^js goog.i18n.DateTimeSymbols_en_SG
+   "en_US"   ^js goog.i18n.DateTimeSymbols_en_US
+   "en_ZA"   ^js goog.i18n.DateTimeSymbols_en_ZA
+   "es"      ^js goog.i18n.DateTimeSymbols_es
+   "es_419"  ^js goog.i18n.DateTimeSymbols_es_419
+   "es_ES"   ^js goog.i18n.DateTimeSymbols_es_ES
+   "es_MX"   ^js goog.i18n.DateTimeSymbols_es_MX
+   "es_US"   ^js goog.i18n.DateTimeSymbols_es_US
+   "et"      ^js goog.i18n.DateTimeSymbols_et
+   "eu"      ^js goog.i18n.DateTimeSymbols_eu
+   "fa"      ^js goog.i18n.DateTimeSymbols_fa
+   "fi"      ^js goog.i18n.DateTimeSymbols_fi
+   "fil"     ^js goog.i18n.DateTimeSymbols_fil
+   "fr"      ^js goog.i18n.DateTimeSymbols_fr
+   "fr_CA"   ^js goog.i18n.DateTimeSymbols_fr_CA
+   "ga"      ^js goog.i18n.DateTimeSymbols_ga
+   "gl"      ^js goog.i18n.DateTimeSymbols_gl
+   "gsw"     ^js goog.i18n.DateTimeSymbols_gsw
+   "gu"      ^js goog.i18n.DateTimeSymbols_gu
+   "haw"     ^js goog.i18n.DateTimeSymbols_haw
+   "he"      ^js goog.i18n.DateTimeSymbols_he
+   "hi"      ^js goog.i18n.DateTimeSymbols_hi
+   "hr"      ^js goog.i18n.DateTimeSymbols_hr
+   "hu"      ^js goog.i18n.DateTimeSymbols_hu
+   "hy"      ^js goog.i18n.DateTimeSymbols_hy
+   "id"      ^js goog.i18n.DateTimeSymbols_id
+   "in"      ^js goog.i18n.DateTimeSymbols_in
+   "is"      ^js goog.i18n.DateTimeSymbols_is
+   "it"      ^js goog.i18n.DateTimeSymbols_it
+   "iw"      ^js goog.i18n.DateTimeSymbols_iw
+   "ja"      ^js goog.i18n.DateTimeSymbols_ja
+   "ka"      ^js goog.i18n.DateTimeSymbols_ka
+   "kk"      ^js goog.i18n.DateTimeSymbols_kk
+   "km"      ^js goog.i18n.DateTimeSymbols_km
+   "kn"      ^js goog.i18n.DateTimeSymbols_kn
+   "ko"      ^js goog.i18n.DateTimeSymbols_ko
+   "ky"      ^js goog.i18n.DateTimeSymbols_ky
+   "ln"      ^js goog.i18n.DateTimeSymbols_ln
+   "lo"      ^js goog.i18n.DateTimeSymbols_lo
+   "lt"      ^js goog.i18n.DateTimeSymbols_lt
+   "lv"      ^js goog.i18n.DateTimeSymbols_lv
+   "mk"      ^js goog.i18n.DateTimeSymbols_mk
+   "ml"      ^js goog.i18n.DateTimeSymbols_ml
+   "mn"      ^js goog.i18n.DateTimeSymbols_mn
+   "mo"      ^js goog.i18n.DateTimeSymbols_mo
+   "mr"      ^js goog.i18n.DateTimeSymbols_mr
+   "ms"      ^js goog.i18n.DateTimeSymbols_ms
+   "mt"      ^js goog.i18n.DateTimeSymbols_mt
+   "my"      ^js goog.i18n.DateTimeSymbols_my
+   "nb"      ^js goog.i18n.DateTimeSymbols_nb
+   "ne"      ^js goog.i18n.DateTimeSymbols_ne
+   "nl"      ^js goog.i18n.DateTimeSymbols_nl
+   "no"      ^js goog.i18n.DateTimeSymbols_no
+   "no_NO"   ^js goog.i18n.DateTimeSymbols_no_NO
+   "or"      ^js goog.i18n.DateTimeSymbols_or
+   "pa"      ^js goog.i18n.DateTimeSymbols_pa
+   "pl"      ^js goog.i18n.DateTimeSymbols_pl
+   "pt"      ^js goog.i18n.DateTimeSymbols_pt
+   "pt_BR"   ^js goog.i18n.DateTimeSymbols_pt_BR
+   "pt_PT"   ^js goog.i18n.DateTimeSymbols_pt_PT
+   "ro"      ^js goog.i18n.DateTimeSymbols_ro
+   "ru"      ^js goog.i18n.DateTimeSymbols_ru
+   "sh"      ^js goog.i18n.DateTimeSymbols_sh
+   "si"      ^js goog.i18n.DateTimeSymbols_si
+   "sk"      ^js goog.i18n.DateTimeSymbols_sk
+   "sl"      ^js goog.i18n.DateTimeSymbols_sl
+   "sq"      ^js goog.i18n.DateTimeSymbols_sq
+   "sr"      ^js goog.i18n.DateTimeSymbols_sr
+   "sr_Latn" ^js goog.i18n.DateTimeSymbols_sr_Latn
+   "sv"      ^js goog.i18n.DateTimeSymbols_sv
+   "sw"      ^js goog.i18n.DateTimeSymbols_sw
+   "ta"      ^js goog.i18n.DateTimeSymbols_ta
+   "te"      ^js goog.i18n.DateTimeSymbols_te
+   "th"      ^js goog.i18n.DateTimeSymbols_th
+   "tl"      ^js goog.i18n.DateTimeSymbols_tl
+   "tr"      ^js goog.i18n.DateTimeSymbols_tr
+   "uk"      ^js goog.i18n.DateTimeSymbols_uk
+   "ur"      ^js goog.i18n.DateTimeSymbols_ur
+   "uz"      ^js goog.i18n.DateTimeSymbols_uz
+   "vi"      ^js goog.i18n.DateTimeSymbols_vi
+   "zh"      ^js goog.i18n.DateTimeSymbols_zh
+   "zh_CN"   ^js goog.i18n.DateTimeSymbols_zh_CN
+   "zh_HK"   ^js goog.i18n.DateTimeSymbols_zh_HK
+   "zh_TW"   ^js goog.i18n.DateTimeSymbols_zh_TW
+   "zu"      ^js goog.i18n.DateTimeSymbols_zu})
 
 ;; xx-YY locale, xx locale or en fallback
 (defn locale-symbols [locale-name]
@@ -359,90 +359,88 @@
     loc
     (let [name-first (string/replace (or locale-name "") #"-.*$" "")
           loc        (get locales name-first)]
-      (or loc goog/i18n.DateTimeSymbols_en))))
+      (or loc goog.i18n.DateTimeSymbols_en))))
 
 ;; get formatter for current locale symbols and format function
 (defn mk-fmt [locale format-fn]
   (let [locsym (locale-symbols locale)]
-    (goog/i18n.DateTimeFormat. (format-fn locsym) locsym)))
+    (goog.i18n.DateTimeFormat. (format-fn locsym) locsym)))
 
 (defn format-currency
+  "Formats an amount of a currency based on the currency pattern
+  If currency-symbol? is false, the currency symbol is excluded from the
+  formatting"
   ([value currency-code]
    (format-currency value currency-code true))
   ([value currency-code currency-symbol?]
-   (.addTier2Support goog/i18n.currency)
-   (let [currency-code-to-nfs-map {"ZAR" goog/i18n.NumberFormatSymbols_af
-                                   "ETB" goog/i18n.NumberFormatSymbols_am
-                                   "EGP" goog/i18n.NumberFormatSymbols_ar
-                                   "DZD" goog/i18n.NumberFormatSymbols_ar_DZ
-                                   "AZN" goog/i18n.NumberFormatSymbols_az
-                                   "BYN" goog/i18n.NumberFormatSymbols_be
-                                   "BGN" goog/i18n.NumberFormatSymbols_bg
-                                   "BDT" goog/i18n.NumberFormatSymbols_bn
-                                   "EUR" goog/i18n.NumberFormatSymbols_br
-                                   "BAM" goog/i18n.NumberFormatSymbols_bs
-                                   "USD" goog/i18n.NumberFormatSymbols_en
-                                   "CZK" goog/i18n.NumberFormatSymbols_cs
-                                   "GBP" goog/i18n.NumberFormatSymbols_cy
-                                   "DKK" goog/i18n.NumberFormatSymbols_da
-                                   "CHF" goog/i18n.NumberFormatSymbols_de_CH
-                                   "AUD" goog/i18n.NumberFormatSymbols_en_AU
-                                   "CAD" goog/i18n.NumberFormatSymbols_en_CA
-                                   "INR" goog/i18n.NumberFormatSymbols_en_IN
-                                   "SGD" goog/i18n.NumberFormatSymbols_en_SG
-                                   "MXN" goog/i18n.NumberFormatSymbols_es_419
-                                   "IRR" goog/i18n.NumberFormatSymbols_fa
-                                   "PHP" goog/i18n.NumberFormatSymbols_fil
-                                   "ILS" goog/i18n.NumberFormatSymbols_he
-                                   "HRK" goog/i18n.NumberFormatSymbols_hr
-                                   "HUF" goog/i18n.NumberFormatSymbols_hu
-                                   "AMD" goog/i18n.NumberFormatSymbols_hy
-                                   "IDR" goog/i18n.NumberFormatSymbols_id
-                                   "ISK" goog/i18n.NumberFormatSymbols_is
-                                   "JPY" goog/i18n.NumberFormatSymbols_ja
-                                   "GEL" goog/i18n.NumberFormatSymbols_ka
-                                   "KZT" goog/i18n.NumberFormatSymbols_kk
-                                   "KHR" goog/i18n.NumberFormatSymbols_km
-                                   "KRW" goog/i18n.NumberFormatSymbols_ko
-                                   "KGS" goog/i18n.NumberFormatSymbols_ky
-                                   "CDF" goog/i18n.NumberFormatSymbols_ln
-                                   "LAK" goog/i18n.NumberFormatSymbols_lo
-                                   "MKD" goog/i18n.NumberFormatSymbols_mk
-                                   "MNT" goog/i18n.NumberFormatSymbols_mn
-                                   "MDL" goog/i18n.NumberFormatSymbols_mo
-                                   "MYR" goog/i18n.NumberFormatSymbols_ms
-                                   "MMK" goog/i18n.NumberFormatSymbols_my
-                                   "NOK" goog/i18n.NumberFormatSymbols_nb
-                                   "NPR" goog/i18n.NumberFormatSymbols_ne
-                                   "PLN" goog/i18n.NumberFormatSymbols_pl
-                                   "BRL" goog/i18n.NumberFormatSymbols_pt
-                                   "RON" goog/i18n.NumberFormatSymbols_ro
-                                   "RUB" goog/i18n.NumberFormatSymbols_ru
-                                   "RSD" goog/i18n.NumberFormatSymbols_sh
-                                   "LKR" goog/i18n.NumberFormatSymbols_si
-                                   "ALL" goog/i18n.NumberFormatSymbols_sq
-                                   "SEK" goog/i18n.NumberFormatSymbols_sv
-                                   "TZS" goog/i18n.NumberFormatSymbols_sw
-                                   "THB" goog/i18n.NumberFormatSymbols_th
-                                   "TRY" goog/i18n.NumberFormatSymbols_tr
-                                   "UAH" goog/i18n.NumberFormatSymbols_uk
-                                   "PKR" goog/i18n.NumberFormatSymbols_ur
-                                   "UZS" goog/i18n.NumberFormatSymbols_uz
-                                   "VND" goog/i18n.NumberFormatSymbols_vi
-                                   "CNY" goog/i18n.NumberFormatSymbols_zh
-                                   "HKD" goog/i18n.NumberFormatSymbols_zh_HK
-                                   "TWD" goog/i18n.NumberFormatSymbols_zh_TW}
+   (.addTier2Support ^js goog.i18n.currency)
+   (let [currency-code-to-nfs-map {"ZAR" ^js goog.i18n.NumberFormatSymbols_af
+                                   "ETB" ^js goog.i18n.NumberFormatSymbols_am
+                                   "EGP" ^js goog.i18n.NumberFormatSymbols_ar
+                                   "DZD" ^js goog.i18n.NumberFormatSymbols_ar_DZ
+                                   "AZN" ^js goog.i18n.NumberFormatSymbols_az
+                                   "BYN" ^js goog.i18n.NumberFormatSymbols_be
+                                   "BGN" ^js goog.i18n.NumberFormatSymbols_bg
+                                   "BDT" ^js goog.i18n.NumberFormatSymbols_bn
+                                   "EUR" ^js goog.i18n.NumberFormatSymbols_br
+                                   "BAM" ^js goog.i18n.NumberFormatSymbols_bs
+                                   "USD" ^js goog.i18n.NumberFormatSymbols_en
+                                   "CZK" ^js goog.i18n.NumberFormatSymbols_cs
+                                   "GBP" ^js goog.i18n.NumberFormatSymbols_cy
+                                   "DKK" ^js goog.i18n.NumberFormatSymbols_da
+                                   "CHF" ^js goog.i18n.NumberFormatSymbols_de_CH
+                                   "AUD" ^js goog.i18n.NumberFormatSymbols_en_AU
+                                   "CAD" ^js goog.i18n.NumberFormatSymbols_en_CA
+                                   "INR" ^js goog.i18n.NumberFormatSymbols_en_IN
+                                   "SGD" ^js goog.i18n.NumberFormatSymbols_en_SG
+                                   "MXN" ^js goog.i18n.NumberFormatSymbols_es_419
+                                   "IRR" ^js goog.i18n.NumberFormatSymbols_fa
+                                   "PHP" ^js goog.i18n.NumberFormatSymbols_fil
+                                   "ILS" ^js goog.i18n.NumberFormatSymbols_he
+                                   "HRK" ^js goog.i18n.NumberFormatSymbols_hr
+                                   "HUF" ^js goog.i18n.NumberFormatSymbols_hu
+                                   "AMD" ^js goog.i18n.NumberFormatSymbols_hy
+                                   "IDR" ^js goog.i18n.NumberFormatSymbols_id
+                                   "ISK" ^js goog.i18n.NumberFormatSymbols_is
+                                   "JPY" ^js goog.i18n.NumberFormatSymbols_ja
+                                   "GEL" ^js goog.i18n.NumberFormatSymbols_ka
+                                   "KZT" ^js goog.i18n.NumberFormatSymbols_kk
+                                   "KHR" ^js goog.i18n.NumberFormatSymbols_km
+                                   "KRW" ^js goog.i18n.NumberFormatSymbols_ko
+                                   "KGS" ^js goog.i18n.NumberFormatSymbols_ky
+                                   "CDF" ^js goog.i18n.NumberFormatSymbols_ln
+                                   "LAK" ^js goog.i18n.NumberFormatSymbols_lo
+                                   "MKD" ^js goog.i18n.NumberFormatSymbols_mk
+                                   "MNT" ^js goog.i18n.NumberFormatSymbols_mn
+                                   "MDL" ^js goog.i18n.NumberFormatSymbols_mo
+                                   "MYR" ^js goog.i18n.NumberFormatSymbols_ms
+                                   "MMK" ^js goog.i18n.NumberFormatSymbols_my
+                                   "NOK" ^js goog.i18n.NumberFormatSymbols_nb
+                                   "NPR" ^js goog.i18n.NumberFormatSymbols_ne
+                                   "PLN" ^js goog.i18n.NumberFormatSymbols_pl
+                                   "BRL" ^js goog.i18n.NumberFormatSymbols_pt
+                                   "RON" ^js goog.i18n.NumberFormatSymbols_ro
+                                   "RUB" ^js goog.i18n.NumberFormatSymbols_ru
+                                   "RSD" ^js goog.i18n.NumberFormatSymbols_sh
+                                   "LKR" ^js goog.i18n.NumberFormatSymbols_si
+                                   "ALL" ^js goog.i18n.NumberFormatSymbols_sq
+                                   "SEK" ^js goog.i18n.NumberFormatSymbols_sv
+                                   "TZS" ^js goog.i18n.NumberFormatSymbols_sw
+                                   "THB" ^js goog.i18n.NumberFormatSymbols_th
+                                   "TRY" ^js goog.i18n.NumberFormatSymbols_tr
+                                   "UAH" ^js goog.i18n.NumberFormatSymbols_uk
+                                   "PKR" ^js goog.i18n.NumberFormatSymbols_ur
+                                   "UZS" ^js goog.i18n.NumberFormatSymbols_uz
+                                   "VND" ^js goog.i18n.NumberFormatSymbols_vi
+                                   "CNY" ^js goog.i18n.NumberFormatSymbols_zh
+                                   "HKD" ^js goog.i18n.NumberFormatSymbols_zh_HK
+                                   "TWD" ^js goog.i18n.NumberFormatSymbols_zh_TW}
          nfs                      (or (get currency-code-to-nfs-map currency-code)
-                                      goog/i18n.NumberFormatSymbols_en)]
-     (set! goog/i18n.NumberFormatSymbols
-           (if currency-symbol?
-             nfs
-             (-> nfs
-                 (js->clj :keywordize-keys true)
-                 ;; Remove any currency symbol placeholders in the pattern
-                 (update :CURRENCY_PATTERN (fn [pat]
-                                             (string/replace pat #"\s*¤\s*" "")))
-                 clj->js)))
+                                      ^js goog.i18n.NumberFormatSymbols_en)]
      (.format
-      (new goog/i18n.NumberFormat goog/i18n.NumberFormat.Format.CURRENCY currency-code)
+      ^js (new ^js goog.i18n.NumberFormat
+               (let [pattern (.-CURRENCY_PATTERN ^js nfs)]
+                 (if currency-symbol?
+                   pattern
+                   (string/replace pattern #"\s*¤\s*" ""))))
       value))))

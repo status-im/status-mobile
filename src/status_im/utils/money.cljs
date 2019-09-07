@@ -1,6 +1,6 @@
 (ns status-im.utils.money
   (:require [clojure.string :as string]
-            [status-im.js-dependencies :as dependencies]))
+            ["bignumber.js" :as BigNumber]))
 
 ;; The BigNumber version included in web3 sometimes hangs when dividing large
 ;; numbers Hence we want to use these functions instead of fromWei etc, which
@@ -30,10 +30,10 @@
 (defn bignumber [n]
   (when n
     (try
-      (new dependencies/BigNumber (normalize (str n)))
-      (catch :default err nil))))
+      (new BigNumber (normalize (str n)))
+      (catch :default _ nil))))
 
-(defn valid? [bn]
+(defn valid? [^js bn]
   (when bn
     (.greaterThanOrEqualTo bn 0)))
 
@@ -55,18 +55,18 @@
    :teth   (bignumber (from-decimal 30))})
 
 (defn wei-> [unit n]
-  (when-let [bn (bignumber n)]
+  (when-let [^js bn (bignumber n)]
     (.dividedBy bn (eth-units unit))))
 
 (defn ->wei [unit n]
-  (when-let [bn (bignumber n)]
+  (when-let [^js bn (bignumber n)]
     (.times bn (eth-units unit))))
 
-(defn to-fixed [bn]
+(defn to-fixed [^js bn]
   (when bn
     (.toFixed bn)))
 
-(defn to-number [bn]
+(defn to-number [^js bn]
   (when bn
     (.toNumber bn)))
 
@@ -78,19 +78,19 @@
 (defn wei->ether [n]
   (wei-> :eth n))
 
-(defn ether->wei [bn]
+(defn ether->wei [^js bn]
   (when bn
-    (.times bn (bignumber 1e18))))
+    (.times bn ^js (bignumber 1e18))))
 
 (defn token->unit [n decimals]
-  (when-let [bn (bignumber n)]
+  (when-let [^js bn (bignumber n)]
     (when-let [d (from-decimal decimals)]
-      (.dividedBy bn (bignumber d)))))
+      (.dividedBy bn ^js (bignumber d)))))
 
 (defn unit->token [n decimals]
-  (when-let [bn (bignumber n)]
+  (when-let [^js bn (bignumber n)]
     (when-let [d (from-decimal decimals)]
-      (.times bn (bignumber d)))))
+      (.times bn ^js (bignumber d)))))
 
 ;;NOTE(goranjovic) - We have two basic representations of values that refer to cryptocurrency amounts: formatted and
 ;; internal. Formatted representation is the one we show on screens and include in reports, whereas internal
@@ -115,25 +115,25 @@
     (token->unit n decimals)))
 
 (defn fee-value [gas gas-price]
-  (.times (bignumber gas) (bignumber gas-price)))
+  (.times ^js (bignumber gas) ^js (bignumber gas-price)))
 
 (defn crypto->fiat [crypto fiat-price]
-  (when-let [bn (bignumber crypto)]
-    (.times bn (bignumber fiat-price))))
+  (when-let [^js bn (bignumber crypto)]
+    (.times bn ^js (bignumber fiat-price))))
 
 (defn percent-change [from to]
-  (let [bnf (bignumber from)
-        bnt (bignumber to)]
+  (let [^js bnf (bignumber from)
+        ^js bnt (bignumber to)]
     (when (and bnf bnt)
-      (-> (.dividedBy bnf bnt)
-          (.minus 1)
-          (.times 100)))))
+      (-> ^js (.dividedBy bnf bnt)
+          ^js (.minus 1)
+          ^js (.times 100)))))
 
 (defn with-precision [n decimals]
-  (when-let [bn (bignumber n)]
+  (when-let [^js bn (bignumber n)]
     (.round bn decimals)))
 
-(defn sufficient-funds? [amount balance]
+(defn sufficient-funds? [^js amount ^js balance]
   (when (and amount balance)
     (.greaterThanOrEqualTo balance amount)))
 
@@ -141,6 +141,6 @@
   (-> amount-str
       (js/parseFloat)
       bignumber
-      (crypto->fiat (get-in prices [from to :price] (bignumber 0)))
+      (crypto->fiat (get-in prices [from to :price] ^js (bignumber 0)))
       (with-precision 2)
       str))

@@ -20,4 +20,5 @@
       (catch js/Error _ (when (string? json) json)))))
 
 (def serialize clj->json)
-(defn deserialize [o] (try (json->clj o) (catch :default e nil)))
+(defn deserialize [o] (try (json->clj o)
+                           (catch :default _ nil)))

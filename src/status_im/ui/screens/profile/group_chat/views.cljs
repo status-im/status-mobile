@@ -93,7 +93,6 @@
 
 (defview group-chat-profile []
   (letsubs [{:keys [admins chat-id joined?] :as current-chat} [:chats/current-chat]
-            editing?     [:group-chat-profile/editing?]
             members      [:contacts/current-chat-contacts]
             changed-chat [:group-chat-profile/profile]
             current-pk   [:multiaccount/public-key]]

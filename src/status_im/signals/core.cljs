@@ -48,8 +48,8 @@
   ;; We only convert to clojure when strictly necessary or we know it
   ;; won't impact performance, as it is a fairly costly operation on large-ish
   ;; data structures
-  (let [data (.parse js/JSON event-str)
-        event-js (.-event data)
+  (let [^js data (.parse js/JSON event-str)
+        ^js event-js (.-event data)
         type (.-type data)]
     (case type
       "node.login"         (status-node-started cofx (js->clj event-js :keywordize-keys true))

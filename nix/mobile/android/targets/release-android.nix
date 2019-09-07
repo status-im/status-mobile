@@ -99,8 +99,8 @@ in stdenv.mkDerivation rec {
     # Ensure we have the right .env file
     cp -f $sourceRoot/${envFileName} $sourceRoot/.env
 
-    # Copy index.*.js input file
-    cp -a --no-preserve=ownership ${jsbundle}/index*.js $sourceRoot/
+    # Copy index.js and app/ input files
+    cp -ra --no-preserve=ownership ${jsbundle}/* $sourceRoot/
 
     # Copy android/ directory
     cp -a --no-preserve=ownership ${sourceProjectDir}/android/ $sourceRoot/

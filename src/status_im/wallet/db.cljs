@@ -40,7 +40,7 @@
   "Checks if number has any extra digit beyond the allowed number of decimals.
   It does so by checking the number against its rounded value."
   [amount decimals]
-  (let [bn (money/bignumber amount)]
+  (let [^js bn (money/bignumber amount)]
     (not (.eq bn
               (.round bn decimals)))))
 
@@ -72,13 +72,13 @@
 
 (defn remove-transactions-since-block
   [accounts block]
-  (reduce-kv (fn [acc account-address {:keys [transactions] :as account}]
+  (reduce-kv (fn [acc account-address account]
                (assoc acc account-address
                       (update account
                               :transactions
                               (fn [transactions]
                                 (into empty-transaction-map
-                                      (drop-while (fn [[k v]]
+                                      (drop-while (fn [[_ v]]
                                                     (>= (int (:block v)) block))
                                                   transactions))))))
              {}

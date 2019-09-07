@@ -218,7 +218,7 @@
   (let [{:keys [error]} (types/json->clj result)]
     (if (not (string/blank? error))
       (new-account-error cofx :password-error error)
-      (let [{:keys [type step seed private-key]} (:add-account db)]
+      (let [{:keys [type seed private-key]} (:add-account db)]
         (case type
           :seed
           (import-new-account-seed cofx seed hashed-password)
@@ -251,7 +251,7 @@
 
 (fx/defn save-account
   {:events [:wallet.accounts/save-account]}
-  [{:keys [db] :as cofx} account {:keys [name color]}]
+  [{:keys [db]} account {:keys [name color]}]
   (let [accounts (:multiaccount/accounts db)
         new-account  (cond-> account
                        name (assoc :name name)

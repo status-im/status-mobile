@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.profile.events
   (:require [re-frame.core :as re-frame]
-            [status-im.browser.core :as browser]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.ui.screens.profile.models :as profile.models]
             [status-im.ui.screens.profile.navigation]

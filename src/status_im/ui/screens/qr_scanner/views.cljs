@@ -11,7 +11,7 @@
             [status-im.utils.config :as config]
             [status-im.ui.components.button :as button]))
 
-(defn- topbar [camera-flashlight {:keys [title] :as opts}]
+(defn- topbar [_ {:keys [title] :as opts}]
   [topbar/toolbar
    {:transparent? true}
    [topbar/nav-text

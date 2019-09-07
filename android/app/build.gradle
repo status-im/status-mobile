@@ -21,7 +21,7 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.Copy
  *   bundleAssetName: "index.android.bundle",
  *
  *   // the entry file for bundle generation
- *   entryFile: "index.android.js",
+ *   entryFile: "index.js",
  *
  *   // whether to bundle JS and assets in debug mode
  *   bundleInDebug: false,
@@ -70,7 +70,7 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.Copy
  *   inputExcludes: ["android/**", "ios/**"],
  *
  *   // override which node gets called and with what additional arguments
- *   nodeExecutableAndArgs: ["node"],
+ *   nodeExecutableAndArgs: ["node", "--max-old-space-size=8192"],
  *
  *   // supply additional arguments to the packager
  *   extraPackagerArgs: []
@@ -78,7 +78,7 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.Copy
  */
 project.ext.react = [
     nodeExecutableAndArgs: ["node", "--max-old-space-size=16384"],
-    entryFile: "index.android.js",
+    entryFile: "index.js",
     enableHermes: true,     // clean and rebuild if changing. NOTE: Hermes engine is required for Android 64-bit builds running on 64 devices, to guard against a hang in the UI thread after invoking status-go
     bundleInPr: true,
     inputExcludes: ["android/**", "ios/**", "react-native/**", "src/**", "test/**"]

@@ -183,21 +183,21 @@ PODS:
     - React-cxxreact (= 0.61.5)
     - React-jsi (= 0.61.5)
   - React-jsinspector (0.61.5)
-  - react-native-background-timer (2.1.1):
+  - react-native-background-timer (2.2.0):
     - React
-  - react-native-camera (3.6.0):
+  - react-native-camera (3.23.1):
     - React
-    - react-native-camera/RCT (= 3.6.0)
-    - react-native-camera/RN (= 3.6.0)
-  - react-native-camera/RCT (3.6.0):
+    - react-native-camera/RCT (= 3.23.1)
+    - react-native-camera/RN (= 3.23.1)
+  - react-native-camera/RCT (3.23.1):
     - React
-  - react-native-camera/RN (3.6.0):
+  - react-native-camera/RN (3.23.1):
     - React
   - react-native-image-resizer (1.0.0):
     - React
   - react-native-mail (4.0.0):
     - React
-  - react-native-netinfo (4.4.0):
+  - react-native-netinfo (4.7.0):
     - React
   - react-native-safe-area-context (0.7.3):
     - React
@@ -244,11 +244,11 @@ PODS:
     - ReactCommon/jscallinvoker (= 0.61.5)
   - ReactNativeDarkMode (0.2.2):
     - React
-  - RNCMaskedView (0.1.6):
+  - RNCMaskedView (0.1.9):
     - React
-  - RNFS (2.14.1):
+  - RNFS (2.16.6):
     - React
-  - RNGestureHandler (1.6.0):
+  - RNGestureHandler (1.6.1):
     - React
   - RNImageCropPicker (0.25.3):
     - QBImagePickerController
@@ -261,11 +261,11 @@ PODS:
     - React
   - RNReactNativeHapticFeedback (1.9.0):
     - React
-  - RNReanimated (1.7.0):
+  - RNReanimated (1.8.0):
     - React
-  - RNScreens (2.3.0):
+  - RNScreens (2.5.0):
     - React
-  - RNSVG (9.11.1):
+  - RNSVG (9.13.6):
     - React
   - RSKImageCropper (2.2.3)
   - SQLCipher (3.4.2):
@@ -439,7 +439,7 @@ SPEC CHECKSUMS:
   FBLazyVector: aaeaf388755e4f29cd74acbc9e3b8da6d807c37f
   FBReactNativeSpec: 118d0d177724c2d67f08a59136eb29ef5943ec75
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
-  glog: 353a32027a69db3807b94c7cbc2900fc4370098c
+  glog: 682164e7ac67e41afd8f7b6a37a96d04caf61cc0
   QBImagePickerController: d54cf93db6decf26baf6ed3472f336ef35cae022
   RCTRequired: b153add4da6e7dbc44aebf93f3cf4fcae392ddf1
   RCTTypeSafety: 9aa1b91d7f9310fc6eadc3cf95126ffe818af320
@@ -450,11 +450,11 @@ SPEC CHECKSUMS:
   React-jsi: cb2cd74d7ccf4cffb071a46833613edc79cdf8f7
   React-jsiexecutor: d5525f9ed5f782fdbacb64b9b01a43a9323d2386
   React-jsinspector: fa0ecc501688c3c4c34f28834a76302233e29dc0
-  react-native-background-timer: 1b6e6b4e10f1b74c367a1fdc3c72b67c619b222b
-  react-native-camera: b6a6a61bcdbd619c19df3df581fcb009131938bf
+  react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
+  react-native-camera: 1b52abea404d04e040edb3e74b7c5523c01a3089
   react-native-image-resizer: 4516052af6ae0248caf4ccf356caecefe60072d7
   react-native-mail: 7e37dfbe93ff0d4c7df346b738854dbed533e86f
-  react-native-netinfo: 6bb847e64f45a2d69c6173741111cfd95c669301
+  react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9
   react-native-safe-area-context: e200d4433aba6b7e60b52da5f37af11f7a0b0392
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
@@ -470,16 +470,16 @@ SPEC CHECKSUMS:
   React-RCTVibration: a49a1f42bf8f5acf1c3e297097517c6b3af377ad
   ReactCommon: 198c7c8d3591f975e5431bec1b0b3b581aa1c5dd
   ReactNativeDarkMode: 0178ffca3b10f6a7c9f49d6f9810232b328fa949
-  RNCMaskedView: a88953beefbd347a29072d9eba90e42945fe291e
-  RNFS: a8fbe7060fa49157d819466404794ad9c58e58cf
-  RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
+  RNCMaskedView: 71fc32d971f03b7f03d6ab6b86b730c4ee64f5b6
+  RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
+  RNGestureHandler: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
   RNImageCropPicker: bfb3ea9c8622f290532e2fe63f369e0d5a52f597
   RNKeychain: 216f37338fcb9e5c3a2530f1e3295f737a690cb1
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
-  RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
-  RNScreens: 03bf608b92ac0acf323f47d8f5b63a8f829340c8
-  RNSVG: be27aa7c58819f97399388ae53d7fa0572f32c7f
+  RNReanimated: 955cf4068714003d2f1a6e2bae3fb1118f359aff
+  RNScreens: ac02d0e4529f08ced69f5580d416f968a6ec3a1d
+  RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
   RSKImageCropper: a446db0e8444a036b34f3c43db01b2373baa4b2a
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
   SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
@@ -488,4 +488,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 37924c57abbfcd77aec07d65c45ecba137cdf289
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.1

@@ -29,11 +29,12 @@
             [status-im.ui.components.list.styles :as styles]
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
-            [status-im.ui.components.radio :as radio])
+            [status-im.ui.components.radio :as radio]
+            ["react-native" :as react-native])
   (:require-macros [status-im.utils.views :as views]))
 
-(def flat-list-class (react/get-class "FlatList"))
-(def section-list-class (react/get-class "SectionList"))
+(def flat-list-class (reagent/adapt-react-class (.-FlatList react-native)))
+(def section-list-class (reagent/adapt-react-class (.-SectionList react-native)))
 
 ;;TODO THIS NAMESPACE is DEPRECATED, use status-im.ui.components.list-item.views
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
@@ -171,7 +172,7 @@
       [vector-icons/icon :main-icons/next {:color colors/gray-transparent-40}])]])
 
 (defn- wrap-render-fn [f]
-  (fn [data]
+  (fn [^js data]
     (reagent/as-element (f (.-item data) (.-index data) (.-separators data)))))
 
 (defn- wrap-key-fn [f]
@@ -224,8 +225,8 @@
     :else          [item]))
 
 (defn- wrap-render-section-header-fn [f]
-  (fn [data]
-    (let [section (.-section data)]
+  (fn [^js data]
+    (let [^js section (.-section data)]
       (reagent/as-element (f {:title (.-title section)
                               :data  (.-data section)})))))
 

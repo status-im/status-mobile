@@ -2,18 +2,18 @@
   (:require [status-im.android.platform :as android]
             [status-im.ios.platform :as ios]
             [status-im.desktop.platform :as desktop]
-            [status-im.react-native.js-dependencies :as rn-dependencies]))
+            ["react-native" :as react-native]))
 
 (def platform
-  (.-Platform rn-dependencies/react-native))
+  (.-Platform react-native))
 
 (def os
   (when platform
-    (.-OS platform)))
+    (.-OS ^js platform)))
 
 (def version
   (when platform
-    (.-Version platform)))
+    (.-Version ^js platform)))
 
 (def android? (= os "android"))
 (def ios? (= os "ios"))
@@ -21,9 +21,9 @@
 (def mobile? (not= os "desktop"))
 (def iphone-x? (and ios? (ios/iphone-x-dimensions?)))
 
-(def isMacOs? (when platform (.-isMacOs platform)))
-(def isNix? (when platform (or (.-isLinux platform) (.-isUnix platform))))
-(def isWin? (when platform (.-isWin platform)))
+(def isMacOs? (when platform (.-isMacOs ^js platform)))
+(def isNix? (when platform (or (.-isLinux ^js platform) (.-isUnix ^js platform))))
+(def isWin? (when platform (.-isWin ^js platform)))
 
 (def platform-specific
   (cond

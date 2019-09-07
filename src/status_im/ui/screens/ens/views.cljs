@@ -189,7 +189,7 @@
        ;; [:> navigation/navigation-events
        ;;  {:on-did-focus
        ;;   (fn []
-       ;;     (.focus @input-ref))}]
+       ;;     (.focus ^js @input-ref))}]
        ;;NOTE setting the key as placeholder forces the component to remount
        ;;when the placeholder changes, this prevents the placeholder from
        ;;disappearing when switching between stateofus and custom domain
@@ -464,12 +464,12 @@
       [term-point
        (i18n/label :t/ens-terms-point-9 {:address contract})]
       [react/view {:style {:align-items :center :margin-top 16 :margin-bottom 8}}
-       [link {:on-press #(.openURL react/linking (etherscan-url contract))}
+       [link {:on-press #(.openURL ^js react/linking (etherscan-url contract))}
         (i18n/label :t/etherscan-lookup)]]
       [term-point
        (i18n/label :t/ens-terms-point-10)]
       [react/view {:style {:align-items :center :margin-top 16 :margin-bottom 8}}
-       [link {:on-press #(.openURL react/linking (etherscan-url (:mainnet ethereum.ens/ens-registries)))}
+       [link {:on-press #(.openURL ^js react/linking (etherscan-url (:mainnet ethereum.ens/ens-registries)))}
         (i18n/label :t/etherscan-lookup)]]]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -479,7 +479,7 @@
 (def ^:const release-instructions-link "https://our.status.im/managing-your-ens-name-in-v1/")
 
 (defn open-release-instructions-link! []
-  (.openURL react/linking release-instructions-link))
+  (.openURL ^js react/linking release-instructions-link))
 
 (views/defview name-details []
   (views/letsubs [{:keys [name address custom-domain? public-key

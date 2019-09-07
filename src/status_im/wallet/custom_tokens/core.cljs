@@ -10,7 +10,6 @@
             [status-im.utils.money :as money]
             [status-im.wallet.core :as wallet]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.wallet.prices :as prices]))
 
 (re-frame/reg-fx
@@ -167,7 +166,6 @@
   {:events [:wallet.custom-token.ui/add-pressed]}
   [{:keys [db] :as cofx}]
   (let [{:keys [contract name symbol decimals]} (get db :wallet/custom-token-screen)
-        chain-key (ethereum/chain-keyword db)
         symbol    (keyword symbol)
         new-token {:address  contract
                    :name     name
@@ -187,15 +185,14 @@
 (fx/defn remove-custom-token
   {:events [:wallet.custom-token.ui/remove-pressed]}
   [{:keys [db] :as cofx} {:keys [address] :as token} navigate-back?]
-  (let [chain-key (ethereum/chain-keyword db)]
-    (fx/merge cofx
-              {:db (update db :wallet/all-tokens dissoc address)
-               ::json-rpc/call [{:method "wallet_deleteCustomToken"
-                                 :params [address]
-                                 :on-success #()}]}
-              (wallet/remove-custom-token token)
-              (when navigate-back?
-                (navigation/navigate-back)))))
+  (fx/merge cofx
+            {:db (update db :wallet/all-tokens dissoc address)
+             ::json-rpc/call [{:method "wallet_deleteCustomToken"
+                               :params [address]
+                               :on-success #()}]}
+            (wallet/remove-custom-token token)
+            (when navigate-back?
+              (navigation/navigate-back))))
 
 (fx/defn field-is-edited
   [{:keys [db] :as cofx} field-key value]

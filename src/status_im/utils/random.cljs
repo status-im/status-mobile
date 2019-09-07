@@ -1,22 +1,22 @@
 (ns status-im.utils.random
   (:require [re-frame.core :as re-frame]
-            [status-im.js-dependencies :as dependencies]
-            [status-im.utils.datetime :as datetime]))
+            [status-im.utils.datetime :as datetime]
+            ["chance" :as Chance]))
 
-(def chance (dependencies/Chance.))
+(def chance (Chance.))
 
 (defn guid []
-  (.guid chance))
+  (.guid ^js chance))
 
 (defn id []
-  (str (datetime/timestamp) "-" (.guid chance)))
+  (str (datetime/timestamp) "-" (.guid ^js chance)))
 
 (defn rand-gen
   [seed]
-  (dependencies/Chance. seed))
+  (Chance. seed))
 
 (defn seeded-rand-int
-  [gen n] (.integer gen #js {:min 0 :max (dec n)}))
+  [^js gen n] (.integer ^js gen (clj->js {:min 0 :max (dec n)})))
 
 (defn seeded-rand-nth
   [gen coll]

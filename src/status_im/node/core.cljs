@@ -8,8 +8,7 @@
             [status-im.utils.platform :as utils.platform]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
-            [status-im.ethereum.ens :as ens])
-  (:require-macros [status-im.utils.slurp :refer [slurp]]))
+            [status-im.ethereum.ens :as ens]))
 
 (defn- add-custom-bootnodes [config network all-bootnodes]
   (let [bootnodes (as-> all-bootnodes $
@@ -71,10 +70,8 @@
   [limit nodes]
   (take limit (shuffle nodes)))
 
-(def default-fleets (slurp "resources/config/fleets.json"))
-
 (defn fleets [{:keys [custom-fleets]}]
-  (as-> [(default-fleets)] $
+  (as-> [(js/require "./fleets.js")] $
     (mapv #(:fleets (types/json->clj %)) $)
     (conj $ custom-fleets)
     (reduce merge $)))

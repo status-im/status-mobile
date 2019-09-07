@@ -3,22 +3,17 @@
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as actions]
-            [status-im.ui.components.colors :as colors]
-            [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.common.common :as components.common]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.common.styles :as components.common.styles]
             [clojure.string :as string]
-            [status-im.utils.config :as config]
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.profile.seed.styles :as styles]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.styles :as common.styles]
             [status-im.utils.platform :as platform]))
 
 (def steps-numbers

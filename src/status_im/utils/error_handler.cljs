@@ -27,10 +27,10 @@
 
 (defn format-error [e]
   (if (instance? js/Error e)
-    {:name (.-name e) :message (.-message e) :stack (.-stack e)}
+    {:name (.-name ^js e) :message (.-message ^js e) :stack (.-stack ^js e)}
     {:message (pr-str e)}))
 
-(defn handle-error [e is-fatal]
+(defn handle-error [e _]
   (let [f (format-error e)]
     (js/console.log (str "PRETTY PRINTED EXCEPTION"
                          "\n\n***\nNAME: "
@@ -50,9 +50,9 @@
   (downgrade-reagent-errors!)
   (when-not @!error-handler-set?
     (reset! !error-handler-set? true)
-    (let [orig-handler (some-> js/ErrorUtils .-getGlobalHandler (.call))]
+    (let [^js orig-handler (some-> js/ErrorUtils ^js .-getGlobalHandler (.call))]
       (js/ErrorUtils.setGlobalHandler
-       (fn [e isFatal]
+       (fn [^js e isFatal]
          (handle-error e isFatal)
          (if js/goog.DEBUG
            (some-> orig-handler (.call nil e isFatal))

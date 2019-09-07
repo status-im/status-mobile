@@ -15,7 +15,7 @@
   (into []
         (concat
          [react/view {:style     style
-                      :on-layout #(reset! title-padding (max (-> % .-nativeEvent .-layout .-width)
+                      :on-layout #(reset! title-padding (max (-> ^js % .-nativeEvent .-layout .-width)
                                                              @title-padding))}]
          children)))
 

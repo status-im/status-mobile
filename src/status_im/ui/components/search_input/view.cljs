@@ -31,15 +31,15 @@
                                                  (on-focus search-filter))
                                                (reset! search-active? true))
                            :on-change       (fn [e]
-                                              (let [native-event (.-nativeEvent e)
+                                              (let [^js native-event (.-nativeEvent ^js e)
                                                     text         (.-text native-event)]
                                                 (when on-change
                                                   (on-change text))))}]]
        (when @search-active?
          [react/touchable-highlight
           {:on-press (fn []
-                       (.clear @input-ref)
-                       (.blur @input-ref)
+                       (.clear ^js @input-ref)
+                       (.blur ^js @input-ref)
                        (when on-cancel (on-cancel))
                        (reset! search-active? false))
            :style    {:margin-left 16}}

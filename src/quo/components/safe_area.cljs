@@ -1,11 +1,11 @@
 (ns quo.components.safe-area
-  (:require [status-im.react-native.js-dependencies :refer [safe-area-context]]
-            [reagent.core :as reagent]
-            [oops.core :refer [oget]]))
+  (:require ["react-native-safe-area-context" :as safe-area-context
+             :refer (SafeAreaView SafeAreaProvider SafeAreaConsumer)]
+            [reagent.core :as reagent]))
 
-(def provider (reagent/adapt-react-class (oget safe-area-context "SafeAreaProvider")))
-(def ^:private consumer-raw (reagent/adapt-react-class (oget safe-area-context "SafeAreaConsumer")))
-(def view (reagent/adapt-react-class (oget safe-area-context "SafeAreaView")))
+(def provider (reagent/adapt-react-class SafeAreaProvider))
+(def ^:private consumer-raw (reagent/adapt-react-class SafeAreaConsumer))
+(def view (reagent/adapt-react-class SafeAreaView))
 
 (defn consumer [component]
   [consumer-raw

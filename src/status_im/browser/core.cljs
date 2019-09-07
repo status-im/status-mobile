@@ -8,7 +8,6 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.resolver :as resolver]
             [status-im.i18n :as i18n]
-            [status-im.js-dependencies :as js-dependencies]
             [status-im.native-module.core :as status]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.screens.navigation :as navigation]
@@ -24,7 +23,10 @@
             [status-im.signing.core :as signing]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
-            [status-im.browser.webview-ref :as webview-ref]))
+            [status-im.browser.webview-ref :as webview-ref]
+            [alphabase.base58 :as alphabase.base58]
+            ["eth-phishing-detect" :as eth-phishing-detect]
+            ["hi-base32" :as hi-base32]))
 
 (fx/defn update-browser-option
   [{:keys [db]} option-key option-value]
@@ -69,7 +71,7 @@
 
 (defn check-if-phishing-url [{:keys [history history-index] :as browser}]
   (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))]
-    (cond-> browser history-host (assoc :unsafe? (js-dependencies/phishing-detect history-host)))))
+    (cond-> browser history-host (assoc :unsafe? (eth-phishing-detect history-host)))))
 
 (defn- content->hash [hex]
   (when (and hex (not= hex "0x"))
@@ -105,13 +107,13 @@
 (fx/defn resolve-ens-contenthash
   [{:keys [db]}]
   (let [current-url (get-current-url (get-current-browser db))
-        host (http/url-host current-url)]
-    (let [chain   (ethereum/chain-keyword db)]
-      {:db                            (update db :browser/options assoc :resolving? true)
-       :browser/resolve-ens-contenthash {:registry (get ens/ens-registries
-                                                        chain)
-                                         :ens-name host
-                                         :cb       resolve-ens-contenthash-callback}})))
+        host (http/url-host current-url)
+        chain   (ethereum/chain-keyword db)]
+    {:db                            (update db :browser/options assoc :resolving? true)
+     :browser/resolve-ens-contenthash {:registry (get ens/ens-registries
+                                                      chain)
+                                       :ens-name host
+                                       :cb       resolve-ens-contenthash-callback}}))
 
 (fx/defn update-browser
   [{:keys [db now]}
@@ -163,7 +165,7 @@
 
 (defmethod storage-gateway :ipfs
   [{:keys [hash]}]
-  (let [base32hash (-> (.encode js-dependencies/hi-base32 (alphabase.base58/decode hash))
+  (let [base32hash (-> (.encode ^js hi-base32 (alphabase.base58/decode hash))
                        (string/replace #"=" "")
                        (string/lower-case))]
     (str base32hash ".infura.status.im")))
@@ -176,7 +178,7 @@
   [{:keys [db] :as cofx} m]
   (let [current-url (get-current-url (get-current-browser db))
         host        (http/url-host current-url)
-        path        (subs current-url (+ (.indexOf current-url host) (count host)))
+        path        (subs current-url (+ (.indexOf ^js current-url host) (count host)))
         gateway     (storage-gateway m)]
     (fx/merge cofx
               {:db (-> (update db :browser/options
@@ -214,7 +216,8 @@
         options (get-in cofx [:db :browser/options])
         current-url (:url options)]
     (when (and (not= "about:blank" url) (not= current-url url) (not= (str current-url "/") url))
-      (let [resolved-ens (first (filter #(not= (.indexOf url (second %)) -1) (:resolved-ens options)))
+
+      (let [resolved-ens (first (filter #(not= (.indexOf ^js url (second %)) -1) (:resolved-ens options)))
             resolved-url (if resolved-ens (string/replace url (second resolved-ens) (first resolved-ens)) url)]
         (fx/merge cofx
                   (update-browser-history browser resolved-url)
@@ -285,7 +288,7 @@
 
 (fx/defn web3-error-callback
   {:events [:browser.dapp/transaction-on-error]}
-  [cofx message-id message]
+  [_ message-id message]
   {:browser/send-to-bridge
    {:type      constants/web3-send-async-callback
     :messageId message-id
@@ -293,7 +296,7 @@
 
 (fx/defn dapp-complete-transaction
   {:events [:browser.dapp/transaction-on-result]}
-  [cofx message-id id result]
+  [_ message-id id result]
   ;;TODO check and test id
   {:browser/send-to-bridge
    {:type      constants/web3-send-async-callback
@@ -394,7 +397,8 @@
       (= type constants/api-request)
       (browser.permissions/process-permission cofx dapp-name permission messageId params))))
 
-(defn filter-letters-numbers-and-replace-dot-on-dash [value]
+(defn filter-letters-numbers-and-replace-dot-on-dash
+  [^js value]
   (let [cc (.charCodeAt value 0)]
     (cond (or (and (> cc 96) (< cc 123))
               (and (> cc 64) (< cc 91))
@@ -421,7 +425,7 @@
 (re-frame/reg-fx
  :browser/send-to-bridge
  (fn [message]
-   (let [webview @webview-ref/webview-ref
+   (let [^js webview @webview-ref/webview-ref
          msg (str "ReactNativeWebView.onMessage('"
                   (types/clj->json message)
                   "');")]

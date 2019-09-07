@@ -9,6 +9,6 @@
                                         :duration        500
                                         :useNativeDriver true})
        (animation/timing bottom-anim-value {:toValue         (- bottom-value delta)
-                                            :easing          (.bezier (animation/easing) 0.685, 0.000, 0.025, 1.185)
+                                            :easing          (.bezier ^js animation/easing 0.685, 0.000, 0.025, 1.185)
                                             :duration        500
                                             :useNativeDriver true})]))))

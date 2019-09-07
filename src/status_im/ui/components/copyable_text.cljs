@@ -14,14 +14,14 @@
       {:toValue         0
        :duration        140
        :delay           1000
-       :easing          (.-ease (animation/easing))
+       :easing          (.-ease ^js animation/easing)
        :useNativeDriver true})
      (animation/timing
       anim-y
       {:toValue         0
        :duration        140
        :delay           1000
-       :easing          (.-ease (animation/easing))
+       :easing          (.-ease ^js animation/easing)
        :useNativeDriver true})])
    #(reset! cue-atom false)))
 
@@ -33,13 +33,13 @@
         anim-opacity
         {:toValue         1
          :duration        140
-         :easing          (.-ease (animation/easing))
+         :easing          (.-ease ^js animation/easing)
          :useNativeDriver true})
        (animation/timing
         anim-y
         {:toValue         y
          :duration        140
-         :easing          (.-ease (animation/easing))
+         :easing          (.-ease ^js animation/easing)
          :useNativeDriver true})])
      #(hide-cue-atom anim-opacity anim-y cue-atom))))
 
@@ -93,8 +93,8 @@
          {:style (if container-style container-style {})
           :on-layout
           #(do
-             (reset! width (-> % .-nativeEvent .-layout .-width))
-             (reset! height (-> % .-nativeEvent .-layout .-height)))}
+             (reset! width (-> ^js % .-nativeEvent .-layout .-width))
+             (reset! height (-> ^js % .-nativeEvent .-layout .-height)))}
          (when label
            [react/text
             {:style

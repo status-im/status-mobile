@@ -1,7 +1,6 @@
 (ns status-im.log-level.core
   (:require [re-frame.core :as re-frame]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.node.core :as node]
             [status-im.i18n :as i18n]
             [status-im.utils.fx :as fx]))

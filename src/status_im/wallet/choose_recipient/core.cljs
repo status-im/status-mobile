@@ -39,7 +39,7 @@
    (-> (js/Promise.all
         (clj->js (mapv (fn [ens-name]
                          (js/Promise.
-                          (fn [resolve reject]
+                          (fn [resolve _]
                             (ens/get-addr registry ens-name resolve))))
                        ens-names)))
        (.then callback)
@@ -62,7 +62,7 @@
           {:ui/show-error (i18n/label :t/wallet-invalid-address-checksum {:data recipient})}))
       (not (string/blank? recipient))
       {::resolve-address {:registry (get ens/ens-registries chain)
-                          :ens-name (if (= (.indexOf recipient ".") -1)
+                          :ens-name (if (= (.indexOf ^js recipient ".") -1)
                                       (stateofus/subdomain recipient)
                                       recipient)
                           :cb       #(re-frame/dispatch [::recipient-address-resolved %])}}
@@ -148,7 +148,7 @@
 
 (fx/defn qr-scanner-result
   {:events [:wallet.send/qr-scanner-result]}
-  [{db :db :as cofx} data opts]
+  [cofx data _]
   (fx/merge cofx
             (navigation/navigate-back)
             (parse-eip681-uri-and-resolve-ens data)

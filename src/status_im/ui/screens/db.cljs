@@ -9,7 +9,6 @@
             status-im.ui.screens.group.db
             status-im.chat.specs
             status-im.ui.screens.profile.db
-            status-im.network.module
             status-im.mailserver.db
             status-im.ens.db
             status-im.browser.db

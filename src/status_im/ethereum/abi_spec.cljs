@@ -2,11 +2,9 @@
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
             [status-im.ethereum.core :as ethereum]
-            [status-im.js-dependencies :as dependencies]))
+            ["web3-utils" :as utils]))
 
 ;; Utility functions for encoding
-
-(def utils dependencies/web3-utils)
 
 (defn right-pad [x]
   (let [len (count x)

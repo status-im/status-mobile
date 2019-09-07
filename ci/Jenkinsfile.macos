@@ -33,7 +33,6 @@ pipeline {
     NIX_IGNORE_SYMLINK_STORE = 1
     VERBOSE_LEVEL = '3'
     /* We use EXECUTOR_NUMBER to avoid multiple instances clashing */
-    LEIN_HOME         = "/var/tmp/lein-${EXECUTOR_NUMBER}"
     YARN_CACHE_FOLDER = "/var/tmp/yarn-${EXECUTOR_NUMBER}"
     GRADLE_USER_HOME  = "/var/tmp/gradle-${EXECUTOR_NUMBER}"
   }
@@ -62,14 +61,16 @@ pipeline {
                   buildResult: 'FAILURE',
                   stageResult: 'FAILURE'
                 ) {
-                  nix.shell('lein cljfmt check', attr: 'shells.lein')
+                  sh 'make lint'
                 }
               }
             }
           }
           stage('Tests') {
             steps {
-              script { nix.shell('lein test-cljs', attr: 'shells.lein') }
+              script {
+                sh 'make test'
+              }
             }
           }
         } }

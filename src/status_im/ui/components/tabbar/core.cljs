@@ -102,7 +102,7 @@
         (when platform/android?
           (reset!
            listeners
-           [(.addListener react/keyboard  "keyboardDidShow"
+           [(.addListener ^js react/keyboard  "keyboardDidShow"
                           (fn []
                             (reset! keyboard-shown? true)
                             (reagent/flush)
@@ -110,7 +110,7 @@
                              (animation/timing keyboard-visible
                                                {:toValue  1
                                                 :duration 200}))))
-            (.addListener react/keyboard  "keyboardDidHide"
+            (.addListener ^js react/keyboard  "keyboardDidHide"
                           (fn []
                             (animation/start
                              (animation/timing keyboard-visible
@@ -121,7 +121,7 @@
       :component-will-unmount
       (fn []
         (when (not-empty @listeners)
-          (doseq [listener @listeners]
+          (doseq [^js listener @listeners]
             (when listener
               (.remove listener)))))
       :reagent-render

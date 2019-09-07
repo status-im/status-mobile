@@ -1,7 +1,6 @@
 (ns status-im.utils.gfycat.core
   (:require [status-im.native-module.core :as native-module]
-            [re-frame.core :as re-frame]
-            [status-im.utils.datetime :as datetime]))
+            [re-frame.core :as re-frame]))
 
 (def unknown-gfy "Unknown")
 

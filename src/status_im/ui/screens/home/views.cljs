@@ -22,7 +22,7 @@
 (defn welcome-image-wrapper []
   (let [dimensions (reagent/atom {})]
     (fn []
-      [react/view {:on-layout (fn [e]
+      [react/view {:on-layout (fn [^js e]
                                 (reset! dimensions (bean/->clj (-> e .-nativeEvent .-layout))))
                    :style     {:align-items     :center
                                :justify-content :center

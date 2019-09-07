@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.profile.components.styles
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.styles :as styles]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 ;; profile header elements
 
@@ -26,18 +25,6 @@
 
 (def profile-three-words
   {:color       colors/gray})
-
-(styles/def profile-name-input-text
-  {:text-align :center
-   :flex       1
-   :desktop    {:height 20
-                :width 200}
-   :ios        {:margin-top          1
-                :height              45
-                :border-bottom-width 1
-                :border-bottom-color colors/black-transparent}
-   :android    {:border-bottom-width 2
-                :border-bottom-color colors/blue}})
 
 (def profile-header-name-container
   {:flex            1

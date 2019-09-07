@@ -1,31 +1,36 @@
 (ns status-im.ui.screens.routing.core
-  (:require
-   [reagent.core :as reagent]
-   [status-im.ui.components.react :as react]
-   [re-frame.core :as re-frame]
-   [taoensso.timbre :as log]
-   [status-im.utils.platform :as platform]
-   [oops.core :refer [ocall oget]]
-   [status-im.react-native.js-dependencies :as js-dependencies]
-   [status-im.ui.components.colors :as colors]))
+  (:require [reagent.core :as reagent]
+            [status-im.ui.components.colors :as colors]
+            [re-frame.core :as re-frame]
+            [taoensso.timbre :as log]
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.react :as react]
+            ["react" :refer (useCallback useEffect)]
+            ["react-native" :refer (BackHandler)]
+            ["@react-navigation/native" :refer (NavigationContainer StackActions CommonActions useFocusEffect) :as react-navigation]
+            ["@react-navigation/stack" :refer (createStackNavigator TransitionPresets)]
+            ["@react-navigation/bottom-tabs" :refer (createBottomTabNavigator)]
+            [oops.core :refer [ocall oget]]))
 
-(defonce native js-dependencies/react-navigation-native)
-(defonce stack  js-dependencies/react-navigation-stack)
-(defonce bottom-tabs js-dependencies/react-navigation-bottom-tabs)
+(defonce native react-navigation)
 
-(def navigation-container (reagent/adapt-react-class
-                           (oget native "NavigationContainer")))
+(def navigation-container (reagent/adapt-react-class NavigationContainer))
 
-(def use-focus-effect (oget native "useFocusEffect"))
-(def use-callback (oget js-dependencies/react "useCallback"))
-(def use-effect (oget js-dependencies/react "useEffect"))
+(def use-focus-effect useFocusEffect)
+(def use-callback useCallback)
+(def use-effect useEffect)
 
-(def add-back-handler-listener (oget js-dependencies/back-handler "addEventListener"))
-(def remove-back-handler-listener (oget js-dependencies/back-handler "removeEventListener"))
+(defn add-back-handler-listener
+  [callback]
+  (.addEventListener BackHandler "hardwareBackPress" callback))
 
-(def transition-presets (oget stack "TransitionPresets"))
+(defn remove-back-handler-listener
+  [callback]
+  (.removeEventListener BackHandler "hardwareBackPress" callback))
 
-(def modal-presentation-ios (merge (js->clj (oget transition-presets "ModalPresentationIOS"))
+(def transition-presets TransitionPresets)
+
+(def modal-presentation-ios (merge (js->clj (.-ModalPresentationIOS ^js transition-presets))
                                    {:gestureEnabled     true
                                     :cardOverlayEnabled true}))
 
@@ -42,9 +47,9 @@
                               (re-frame/dispatch back-handler))
                             (boolean back-handler))]
         (when on-focus (re-frame/dispatch on-focus))
-        (add-back-handler-listener "hardwareBackPress" on-back-press)
+        (add-back-handler-listener on-back-press)
         (fn []
-          (remove-back-handler-listener "hardwareBackPress" on-back-press))))
+          (remove-back-handler-listener on-back-press))))
     #js [])))
 
 (defn handle-on-screen-blur [navigation]
@@ -54,7 +59,7 @@
             (fn []
               ;; Reset currently mounted text inputs to their default values
               ;; on navigating away; this is a privacy measure
-              (doseq [[text-input default-value] @react/text-input-refs]
+              (doseq [[^js text-input default-value] @react/text-input-refs]
                 (.setNativeProps text-input (clj->js {:text default-value}))))))
    #js [navigation]))
 
@@ -109,15 +114,15 @@
             (mapv screen children)))))
 
 (defn create-stack []
-  (let [nav-obj (ocall stack "createStackNavigator")]
+  (let [nav-obj (createStackNavigator)]
     (get-navigator nav-obj)))
 
 (defn create-bottom-tabs []
-  (let [nav-obj (ocall bottom-tabs "createBottomTabNavigator")]
+  (let [nav-obj (createBottomTabNavigator)]
     (get-navigator nav-obj)))
 
-(def common-actions (oget native "CommonActions"))
-(def stack-actions (oget native "StackActions"))
+(def common-actions CommonActions)
+(def stack-actions StackActions)
 
 (defonce navigator-ref (reagent/atom nil))
 

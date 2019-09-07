@@ -9,7 +9,7 @@
 
 ;; header-in-toolbar - component - small header in toolbar
 ;; nav-item          - component/nil - if nav-item like back button is needed, else nil
-;; action-items      - status-im.ui.components.toolbar.view/actions 
+;; action-items      - status-im.ui.components.toolbar.view/actions
 (defn minimized-toolbar [header-in-toolbar nav-item action-items anim-opacity]
   (let [has-nav? (boolean nav-item)]
     [toolbar/toolbar
@@ -49,7 +49,7 @@
         {:style                          styles/flat-list
          :data                           wrapped-data
          :initial-num-to-render          3
-         :ref                            #(when % (reset! list-ref (.getNode %)))
+         :ref                            #(when % (reset! list-ref (.getNode ^js %)))
          :render-fn                      list.views/flat-list-generic-render-fn
          :key-fn                         (fn [item idx] (str idx))
          :scrollEventThrottle            16
@@ -68,7 +68,7 @@
   (let [to-hide  (reagent/atom true)
         anim-opacity (animation/create-value 0)
         scroll-y (animation/create-value 0)]
-    (animation/add-listener scroll-y (fn [anim]
+    (animation/add-listener scroll-y (fn [^js anim]
                                        (cond
                                          (and (>= (.-value anim) 40) (not @to-hide))
                                          (animation/start
@@ -86,7 +86,7 @@
   (let [to-hide  (atom false)]
     (animation/add-listener
      scroll-y
-     (fn [anim]
+     (fn [^js anim]
        (cond
          (and (>= (.-value anim) 40) (not @to-hide))
          (animation/start

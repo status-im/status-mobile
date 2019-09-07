@@ -86,6 +86,9 @@ figwheel_server.log
 .lein-failures
 .lein-repl-history
 
+# Shadow
+.shadow-cljs
+
 ## Doo
 #
 out
@@ -100,6 +103,7 @@ Statusgo.framework
 #ios
 /ios/Pods/
 /ios/StatusIm.xcworkspace
+/ios/react-native-xcode.log
 .ruby-version
 status-e2e/
 
@@ -185,3 +189,5 @@ status-modules/resources
 /fiddle/resources/public/images/
 
 trace.edn
+
+app

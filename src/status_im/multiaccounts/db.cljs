@@ -1,6 +1,5 @@
 (ns status-im.multiaccounts.db
   (:require status-im.utils.db
-            status-im.network.module
             status-im.ui.screens.bootnodes-settings.db
             [cljs.spec.alpha :as spec]
             [status-im.constants :as const]))

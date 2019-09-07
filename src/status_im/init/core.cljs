@@ -5,20 +5,11 @@
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.native-module.core :as status]
             [status-im.network.net-info :as network]
-            [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.db :refer [app-db]]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as platform]
             [status-im.utils.theme :as theme]))
-
-(defn restore-native-settings! []
-  (when platform/desktop?
-    (.getValue rn-dependencies/desktop-config "logging_enabled"
-               #(re-frame/dispatch [:set-in [:desktop/desktop :logging-enabled]
-                                    (if (boolean? %)
-                                      %
-                                      (cljs.reader/read-string %))]))))
 
 (fx/defn initialize-app-db
   "Initialize db to initial state"
@@ -67,7 +58,6 @@
             {:get-supported-biometric-auth          nil
              ::init-theme                           nil
              ::init-keystore                        nil
-             ::restore-native-settings              nil
              ::open-multiaccounts                   #(re-frame/dispatch [::initialize-multiaccounts % {:logout? false}])
              :ui/listen-to-window-dimensions-change nil
              ::network/listen-to-network-info       nil
@@ -76,10 +66,6 @@
              :hardwallet/check-nfc-enabled          nil
              :hardwallet/retrieve-pairings          nil}
             (initialize-app-db)))
-
-(re-frame/reg-fx
- ::restore-native-settings
- restore-native-settings!)
 
 (re-frame/reg-fx
  ::open-multiaccounts

@@ -453,7 +453,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -o errexit\nexport NODE_BINARY=\"node\"\nexport NODE_ARGS=\" --max-old-space-size=16384 \"\n\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
+			shellScript = "set -o errexit\nexport NODE_BINARY=\"node\"\nexport NODE_ARGS=\" --max-old-space-size=16384 \"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh 2>&1 > ./react-native-xcode.log\n";
 		};
 		291E1A8BC076990A77B59232 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;

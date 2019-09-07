@@ -3,7 +3,11 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "react-native start"
+    "start": "react-native start",
+    "app:compile:android": "shadow-cljs compile android",
+    "app:watch": "shadow-cljs watch android",
+    "app:packager": "react-native start --host 0.0.0.0 --port 8081",
+    "app:android": "react-native run-android"
   },
   "dependencies": {
     "@react-native-community/masked-view": "^0.1.6",
@@ -58,9 +62,12 @@
     "@babel/plugin-transform-block-scoping": "7.0.0",
     "@babel/preset-env": "7.1.0",
     "@babel/register": "7.0.0",
+    "clj-kondo": "^2020.1.13",
     "coveralls": "^3.0.4",
+    "jest": "^25.1.0",
     "nyc": "^14.1.1",
     "process": "0.11.10",
-    "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status"
+    "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status",
+    "shadow-cljs": "2.8.99"
   }
 }

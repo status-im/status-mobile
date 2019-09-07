@@ -1,15 +1,15 @@
 (ns status-im.utils.http
   (:require [status-im.utils.utils :as utils]
-            [status-im.react-native.js-dependencies :as rn-dependencies]
             [taoensso.timbre :as log]
-            [clojure.string :as string])
+            [clojure.string :as string]
+            ["react-native-fetch-polyfill" :default fetch])
   (:refer-clojure :exclude [get]))
 
 ;; Default HTTP request timeout ms
 (def http-request-default-timeout-ms 3000)
 
-(defn- headers [response]
-  (let [entries (es6-iterator-seq (.entries (.-headers response)))]
+(defn- headers [^js response]
+  (let [entries (es6-iterator-seq (.entries ^js (.-headers response)))]
     (reduce #(assoc %1 (string/trim (string/lower-case (first %2))) (string/trim (second %2))) {} entries)))
 
 (defn raw-post
@@ -18,13 +18,13 @@
   ([url body on-success on-error]
    (raw-post url body on-success on-error nil))
   ([url body on-success on-error {:keys [timeout-ms]}]
-   (-> (rn-dependencies/fetch
+   (-> (fetch
         url
         (clj->js {:method  "POST"
                   :headers {"Cache-Control" "no-cache"}
                   :body    body
                   :timeout (or timeout-ms http-request-default-timeout-ms)}))
-       (.then (fn [response]
+       (.then (fn [^js response]
                 (->
                  (.text response)
                  (.then (fn [body]
@@ -42,14 +42,14 @@
   ([url data on-success on-error]
    (post url data on-success on-error nil))
   ([url data on-success on-error {:keys [valid-response? timeout-ms headers]}]
-   (-> (rn-dependencies/fetch
+   (-> (fetch
         url
         (clj->js (merge {:method  "POST"
                          :body    data
                          :timeout (or timeout-ms http-request-default-timeout-ms)}
                         (when headers
                           {:headers headers}))))
-       (.then (fn [response]
+       (.then (fn [^js response]
                 (->
                  (.text response)
                  (.then (fn [response-body]
@@ -82,12 +82,12 @@
   ([url on-success on-error]
    (raw-get url on-success on-error nil))
   ([url on-success on-error {:keys [timeout-ms]}]
-   (-> (rn-dependencies/fetch
+   (-> (fetch
         url
         (clj->js {:method  "GET"
                   :headers {"Cache-Control" "no-cache"}
                   :timeout (or timeout-ms http-request-default-timeout-ms)}))
-       (.then (fn [response]
+       (.then (fn [^js response]
                 (->
                  (.text response)
                  (.then (fn [body]
@@ -107,12 +107,12 @@
   ([url on-success on-error params]
    (get url on-success on-error params nil))
   ([url on-success on-error {:keys [valid-response? timeout-ms]} headers]
-   (-> (rn-dependencies/fetch
+   (-> (fetch
         url
         (clj->js {:method  "GET"
                   :headers (merge {"Cache-Control" "no-cache"} headers)
                   :timeout (or timeout-ms http-request-default-timeout-ms)}))
-       (.then (fn [response]
+       (.then (fn [^js response]
                 (->
                  (.text response)
                  (.then (fn [response-body]
@@ -141,7 +141,7 @@
 
 (defn url-host [url]
   (try
-    (when-let [host (.getDomain (goog.Uri. url))]
+    (when-let [host (.getDomain ^js (goog.Uri. url))]
       (when-not (string/blank? host)
         (string/replace host #"www." "")))
     (catch :default _ nil)))

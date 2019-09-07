@@ -2,7 +2,6 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
   (:require [status-im.utils.universal-links.core :as utils.universal-links]
             [re-frame.core :as re-frame]
-            [status-im.utils.platform :as platform]
             [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
@@ -94,7 +93,7 @@
 
 (defn main []
   (let [two-pane? (reagent/atom (dimensions/fit-two-pane?))]
-    (.addEventListener react/dimensions
+    (.addEventListener ^js react/dimensions
                        "change"
                        (fn [_]
                          (let [two-pane-enabled? (dimensions/fit-two-pane?)]

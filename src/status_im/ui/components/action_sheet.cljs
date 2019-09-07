@@ -1,7 +1,7 @@
 (ns status-im.ui.components.action-sheet
   (:require [status-im.i18n :as i18n]
             [status-im.utils.core :as utils]
-            [status-im.react-native.js-dependencies :as js-dependencies]))
+            ["react-native" :refer (ActionSheetIOS)]))
 
 (defn- callback [options on-cancel]
   (fn [index]
@@ -21,6 +21,6 @@
                     (when message {:message message})))))
 
 (defn show [{:keys [title message options on-cancel]}]
-  (.showActionSheetWithOptions (.-ActionSheetIOS js-dependencies/react-native)
+  (.showActionSheetWithOptions ActionSheetIOS
                                (prepare-options title message options)
                                (callback options on-cancel)))

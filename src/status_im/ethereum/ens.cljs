@@ -28,8 +28,8 @@
      (let [[label remainder] (-> s
                                  string/lower-case
                                  (string/split #"\." 2))]
-       (ethereum/sha3 (+ (namehash remainder)
-                         (subs (ethereum/sha3 label) 2)))))))
+       (ethereum/sha3 (str (namehash remainder)
+                           (subs (ethereum/sha3 label) 2)))))))
 
 ;; Registry contract
 

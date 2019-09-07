@@ -13,7 +13,7 @@
     db))
 
 (defn- pretty-print-event [ctx]
-  (let [[first second] (get-coeffect ctx :event)]
+  (let [[first _] (get-coeffect ctx :event)]
     first))
 
 (def debug-handlers-names
@@ -101,7 +101,7 @@
                (= (:error res) ""))
         {:result true}
         res))
-    (catch :default e
+    (catch :default ^js e
       {:error (.-message e)})))
 
 (defn response-handler [success-fn error-fn]

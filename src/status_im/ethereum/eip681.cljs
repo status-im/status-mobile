@@ -44,9 +44,9 @@
       arguments)))
 
 (defn parse-uri
-  "Parse a EIP 681 URI as a map (keyword / strings). Parsed map will contain at least the key `address` 
+  "Parse a EIP 681 URI as a map (keyword / strings). Parsed map will contain at least the key `address`
    which will be either a valid ENS or Ethereum address.
-   Note that values are not decoded and you might need to rely on specific methods for some fields 
+   Note that values are not decoded and you might need to rely on specific methods for some fields
    (parse-value, parse-number).
    Invalid URI will be parsed as `nil`."
   [s]
@@ -78,7 +78,7 @@
   "Takes a map as returned by `parse-uri` and returns value as BigNumber"
   (when (string? s)
     (let [eth? (string/ends-with? s "ETH")
-          n (money/bignumber (string/replace s "ETH" ""))]
+          ^js n (money/bignumber (string/replace s "ETH" ""))]
       (if eth? (.times n 1e18) n))))
 
 (defn extract-request-details [{:keys [value address function-name function-arguments] :as details} all-tokens]

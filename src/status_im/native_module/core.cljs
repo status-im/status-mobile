@@ -1,47 +1,47 @@
 (ns status-im.native-module.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status_im.utils.db :as utils.db]
-            [status-im.react-native.js-dependencies :as rn-dependencies]
+            [status-im.utils.db :as utils.db]
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            ["react-native" :as react-native]))
 
 (defn status []
-  (when (exists? (.-NativeModules rn-dependencies/react-native))
-    (.-Status (.-NativeModules rn-dependencies/react-native))))
+  (when (exists? (.-NativeModules react-native))
+    (.-Status ^js (.-NativeModules react-native))))
 
 (def adjust-resize 16)
 
 (defn clear-web-data []
   (log/debug "[native-module] clear-web-data")
   (when (status)
-    (.clearCookies (status))
-    (.clearStorageAPIs (status))))
+    (.clearCookies ^js (status))
+    (.clearStorageAPIs ^js (status))))
 
 (defn init-keystore []
   (log/debug "[native-module] init-keystore")
-  (.initKeystore (status)))
+  (.initKeystore ^js (status)))
 
 (defn open-accounts [callback]
   (log/debug "[native-module] open-accounts")
-  (.openAccounts (status) #(callback (types/json->clj %))))
+  (.openAccounts ^js (status) #(callback (types/json->clj %))))
 
 (defn prepare-dir-and-update-config
   [config callback]
   (log/debug "[native-module] prepare-dir-and-update-config")
-  (.prepareDirAndUpdateConfig (status)
+  (.prepareDirAndUpdateConfig ^js (status)
                               config
                               #(callback (types/json->clj %))))
 
 (defn enable-notifications []
   (log/debug "[native-module] enable-notifications")
-  (.enableNotifications (status)))
+  (.enableNotifications ^js (status)))
 
 (defn disable-notifications []
   (log/debug "[native-module] disable-notifications")
-  (.disableNotifications (status)))
+  (.disableNotifications ^js (status)))
 
 (defn save-account-and-login
   "NOTE: beware, the password has to be sha3 hashed"
@@ -50,30 +50,30 @@
              "multiaccount-data" multiaccount-data)
   (clear-web-data)
   (.saveAccountAndLogin
-   (status) multiaccount-data hashed-password settings config accounts-data))
+   ^js (status) multiaccount-data hashed-password settings config accounts-data))
 
 (defn save-multiaccount-and-login-with-keycard
   "NOTE: chat-key is a whisper private key sent from keycard"
   [multiaccount-data password settings config accounts-data chat-key]
   (log/debug "[native-module] save-account-and-login-with-keycard")
   (.saveAccountAndLoginWithKeycard
-   (status) multiaccount-data password settings config accounts-data chat-key))
+   ^js (status) multiaccount-data password settings config accounts-data chat-key))
 
 (defn login
   "NOTE: beware, the password has to be sha3 hashed"
   [account-data hashed-password]
   (log/debug "[native-module] login")
   (clear-web-data)
-  (.login (status) account-data hashed-password))
+  (.login ^js (status) account-data hashed-password))
 
 (defn logout []
   (log/debug "[native-module] logout")
   (clear-web-data)
-  (.logout (status)))
+  (.logout ^js (status)))
 
 (defonce listener
-  (.addListener react/device-event-emitter "gethEvent"
-                #(re-frame/dispatch [:signals/signal-received (.-jsonEvent %)])))
+  (.addListener ^js react/device-event-emitter "gethEvent"
+                #(re-frame/dispatch [:signals/signal-received (.-jsonEvent ^js %)])))
 
 (defn multiaccount-load-account
   "NOTE: beware, the password has to be sha3 hashed
@@ -83,7 +83,7 @@
    from memory"
   [address hashed-password callback]
   (log/debug "[native-module] multiaccount-load-account")
-  (.multiAccountLoadAccount (status)
+  (.multiAccountLoadAccount ^js (status)
                             (types/clj->json {:address address
                                               :password hashed-password})
                             callback))
@@ -93,7 +93,7 @@
    if usage isn't planned, remove"
   [callback]
   (log/debug "[native-module]  multiaccount-reset")
-  (.multiAccountReset (status)
+  (.multiAccountReset ^js (status)
                       callback))
 
 (defn multiaccount-derive-addresses
@@ -104,7 +104,7 @@
   [account-id paths callback]
   (log/debug "[native-module]  multiaccount-derive-addresses")
   (when (status)
-    (.multiAccountDeriveAddresses (status)
+    (.multiAccountDeriveAddresses ^js (status)
                                   (types/clj->json {:accountID account-id
                                                     :paths paths})
                                   callback)))
@@ -120,21 +120,21 @@
   [account-id hashed-password callback]
   (log/debug "[native-module] multiaccount-store-account")
   (when (status)
-    (.multiAccountStoreAccount (status)
-                               (types/clj->json {:accountID account-id
-                                                 :password hashed-password})
-                               callback)))
+    (.multiAccountStoreAccount  ^js (status)
+                                (types/clj->json {:accountID account-id
+                                                  :password hashed-password})
+                                callback)))
 
 (defn multiaccount-store-derived
   "NOTE: beware, the password has to be sha3 hashed"
   [account-id paths hashed-password callback]
   (log/debug "[native-module]  multiaccount-store-derived"
              "account-id" account-id)
-  (.multiAccountStoreDerived (status)
-                             (types/clj->json {:accountID account-id
-                                               :paths paths
-                                               :password hashed-password})
-                             callback))
+  (.multiAccountStoreDerived  ^js (status)
+                              (types/clj->json {:accountID account-id
+                                                :paths paths
+                                                :password hashed-password})
+                              callback))
 
 (defn multiaccount-generate-and-derive-addresses
   "used to generate multiple multiaccounts for onboarding
@@ -143,26 +143,26 @@
    to store the key"
   [n mnemonic-length paths callback]
   (log/debug "[native-module]  multiaccount-generate-and-derive-addresses")
-  (.multiAccountGenerateAndDeriveAddresses (status)
-                                           (types/clj->json {:n n
-                                                             :mnemonicPhraseLength mnemonic-length
-                                                             :bip39Passphrase ""
-                                                             :paths paths})
-                                           callback))
+  (.multiAccountGenerateAndDeriveAddresses  ^js (status)
+                                            (types/clj->json {:n n
+                                                              :mnemonicPhraseLength mnemonic-length
+                                                              :bip39Passphrase ""
+                                                              :paths paths})
+                                            callback))
 
 (defn multiaccount-import-mnemonic
   [mnemonic password callback]
   (log/debug "[native-module] multiaccount-import-mnemonic")
-  (.multiAccountImportMnemonic (status)
-                               (types/clj->json {:mnemonicPhrase  mnemonic
-                                                 ;;NOTE this is not the multiaccount password
-                                                 :Bip39Passphrase password})
-                               callback))
+  (.multiAccountImportMnemonic  ^js (status)
+                                (types/clj->json {:mnemonicPhrase  mnemonic
+                                                  ;;NOTE this is not the multiaccount password
+                                                  :Bip39Passphrase password})
+                                callback))
 
 (defn multiaccount-import-private-key
   [private-key callback]
   (log/debug "[native-module] multiaccount-import-private-key")
-  (.multiAccountImportPrivateKey (status)
+  (.multiAccountImportPrivateKey ^js (status)
                                  (types/clj->json {:privateKey  private-key})
                                  callback))
 
@@ -170,128 +170,128 @@
   "NOTE: beware, the password has to be sha3 hashed"
   [address hashed-password callback]
   (log/debug "[native-module] verify")
-  (.verify (status) address hashed-password callback))
+  (.verify ^js (status) address hashed-password callback))
 
 (defn login-with-keycard
   [{:keys [multiaccount-data password chat-key]}]
   (log/debug "[native-module] login-with-keycard")
   (clear-web-data)
-  (.loginWithKeycard (status) multiaccount-data password chat-key))
+  (.loginWithKeycard ^js (status) multiaccount-data password chat-key))
 
 (defn set-soft-input-mode [mode]
   (log/debug "[native-module]  set-soft-input-mode")
-  (.setSoftInputMode (status) mode))
+  (.setSoftInputMode ^js (status) mode))
 
 (defn call-rpc [payload callback]
   (log/debug "[native-module] call-rpc")
-  (.callRPC (status) payload callback))
+  (.callRPC ^js (status) payload callback))
 
 (defn call-private-rpc [payload callback]
-  (.callPrivateRPC (status) payload callback))
+  (.callPrivateRPC ^js (status) payload callback))
 
 (defn hash-transaction
   "used for keycard"
   [rpcParams callback]
   (log/debug "[native-module] hash-transaction")
-  (.hashTransaction (status) rpcParams callback))
+  (.hashTransaction ^js (status) rpcParams callback))
 
 (defn hash-message
   "used for keycard"
   [message callback]
   (log/debug "[native-module] hash-message")
-  (.hashMessage (status) message callback))
+  (.hashMessage ^js (status) message callback))
 
 (defn hash-typed-data
   "used for keycard"
   [data callback]
   (log/debug "[native-module] hash-typed-data")
-  (.hashTypedData (status) data callback))
+  (.hashTypedData ^js (status) data callback))
 
 (defn send-transaction-with-signature
   "used for keycard"
   [rpcParams sig callback]
   (log/debug "[native-module] send-transaction-with-signature")
-  (.sendTransactionWithSignature (status) rpcParams sig callback))
+  (.sendTransactionWithSignature ^js (status) rpcParams sig callback))
 
 (defn sign-message
   "NOTE: beware, the password in rpcParams has to be sha3 hashed"
   [rpcParams callback]
   (log/debug "[native-module] sign-message")
-  (.signMessage (status) rpcParams callback))
+  (.signMessage ^js (status) rpcParams callback))
 
 (defn send-transaction
   "NOTE: beware, the password has to be sha3 hashed"
   [rpcParams hashed-password callback]
   (log/debug "[native-module] send-transaction")
-  (.sendTransaction (status) rpcParams hashed-password callback))
+  (.sendTransaction ^js (status) rpcParams hashed-password callback))
 
 (defn sign-typed-data
   "NOTE: beware, the password has to be sha3 hashed"
   [data account hashed-password callback]
   (log/debug "[native-module] clear-web-data")
-  (.signTypedData (status) data account hashed-password callback))
+  (.signTypedData ^js (status) data account hashed-password callback))
 
 (defn send-logs [dbJson js-logs callback]
   (log/debug "[native-module] send-logs")
-  (.sendLogs (status) dbJson js-logs callback))
+  (.sendLogs ^js (status) dbJson js-logs callback))
 
 (defn add-peer [enode on-result]
   (log/debug "[native-module] add-peer")
-  (.addPeer (status) enode on-result))
+  (.addPeer ^js (status) enode on-result))
 
 (defn close-application []
   (log/debug "[native-module] close-application")
-  (.closeApplication (status)))
+  (.closeApplication ^js (status)))
 
 (defn connection-change [type expensive?]
   (log/debug "[native-module] connection-change")
-  (.connectionChange (status) type (boolean expensive?)))
+  (.connectionChange ^js (status) type (boolean expensive?)))
 
 (defn app-state-change [state]
   (log/debug "[native-module] app-state-change")
-  (.appStateChange (status) state))
+  (.appStateChange ^js (status) state))
 
 (defn set-blank-preview-flag [flag]
   (log/debug "[native-module] set-blank-preview-flag")
-  (.setBlankPreviewFlag (status) flag))
+  (.setBlankPreviewFlag ^js (status) flag))
 
 (defn is24Hour []
   (log/debug "[native-module] is24Hour")
   ;;NOTE: we have to check for status module because of tests
   (when (status)
-    (.-is24Hour (status))))
+    (.-is24Hour ^js (status))))
 
 (defn get-device-model-info []
   (log/debug "[native-module] get-device-model-info")
   ;;NOTE: we have to check for status module because of tests
-  (when (status)
-    {:model     (.-model (status))
-     :brand     (.-brand (status))
-     :build-id  (.-buildId (status))
-     :device-id (.-deviceId (status))}))
+  (when-let [^js status (status)]
+    {:model     (.-model status)
+     :brand     (.-brand status)
+     :build-id  (.-buildId status)
+     :device-id (.-deviceId status)}))
 
 (defn extract-group-membership-signatures
   [signature-pairs callback]
   (log/debug "[native-module] extract-group-membership-signatures")
-  (.extractGroupMembershipSignatures (status) signature-pairs callback))
+  (.extractGroupMembershipSignatures ^js (status) signature-pairs callback))
 
 (defn sign-group-membership [content callback]
   (log/debug "[native-module] sign-group-membership")
-  (.signGroupMembership (status) content callback))
+  (.signGroupMembership ^js (status) content callback))
 
 (defn update-mailservers
   [enodes on-result]
   (log/debug "[native-module] update-mailservers")
-  (.updateMailservers (status) enodes on-result))
+  (.updateMailservers ^js (status) enodes on-result))
 
 (defn chaos-mode-update [on on-result]
   (log/debug "[native-module] chaos-mode-update")
-  (.chaosModeUpdate (status) on on-result))
+  (.chaosModeUpdate ^js (status) on on-result))
 
 (defn get-nodes-from-contract
   [rpc-endpoint contract-address on-result]
   (log/debug "[native-module] get-nodes-from-contract")
-  (.getNodesFromContract (status) rpc-endpoint contract-address on-result))
+  (.getNodesFromContract ^js (status) rpc-endpoint contract-address on-result))
 
 (defn rooted-device? [callback]
   (log/debug "[native-module] rooted-device?")
@@ -308,7 +308,7 @@
     ;; we check root on android
     platform/android?
     (if (status)
-      (.isDeviceRooted (status) callback)
+      (.isDeviceRooted ^js (status) callback)
       ;; if module isn't initialized we return true to avoid degrading security
       (callback true))
 
@@ -320,33 +320,33 @@
   [public-key]
   {:pre [(utils.db/valid-public-key? public-key)]}
   (log/debug "[native-module] generate-gfycat")
-  (.generateAlias (status) public-key))
+  (.generateAlias ^js (status) public-key))
 
 (defn generate-gfycat-async
   "Generate a 3 words random name based on the user public-key, asynchronously"
   [public-key callback]
   {:pre [(utils.db/valid-public-key? public-key)]}
-  (.generateAliasAsync (status) public-key callback))
+  (.generateAliasAsync ^js (status) public-key callback))
 
 (defn identicon
   "Generate a icon based on a string, synchronously"
   [seed]
   (log/debug "[native-module] identicon")
-  (.identicon (status) seed))
+  (.identicon ^js (status) seed))
 
 (defn identicon-async
   "Generate a icon based on a string, asynchronously"
   [seed callback]
-  (.identiconAsync (status) seed callback))
+  (.identiconAsync ^js (status) seed callback))
 
 (defn gfycat-identicon-async
   "Generate an icon based on a string and 3 words random name asynchronously"
   [seed callback]
   (log/debug "[native-module] gfycat-identicon-async")
-  (.generateAliasAndIdenticonAsync (status) seed callback))
+  (.generateAliasAndIdenticonAsync ^js (status) seed callback))
 
 (defn validate-mnemonic
   "Validate that a mnemonic conforms to BIP39 dictionary/checksum standards"
   [mnemonic callback]
   (log/debug "[native-module] validate-mnemonic")
-  (.validateMnemonic (status) mnemonic callback))
+  (.validateMnemonic ^js (status) mnemonic callback))

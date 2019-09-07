@@ -77,7 +77,7 @@
             #(when (and (security/safe-link? destination)
                         (security/safe-link-text? message-text))
                (if platform/desktop?
-                 (.openURL react/linking (http/normalize-url destination))
+                 (.openURL ^js react/linking (http/normalize-url destination))
                  (re-frame/dispatch
                   [:browser.ui/message-link-pressed destination])))}
            destination])
@@ -90,7 +90,8 @@
                                  :else colors/mention-incoming)}
                 :on-press (when-not (= content-type constants/content-type-system-text)
                             #(re-frame/dispatch [:chat.ui/start-chat literal {:navigation-reset? true}]))}
-               [mention-element literal]]) "status-tag"
+               [mention-element literal]])
+    "status-tag"
     (conj acc [react/text-class
                {:style {:color (if outgoing colors/white-persist colors/blue)
                         :text-decoration-line :underline}
@@ -111,7 +112,7 @@
      (-> content :parsed-text peek :children))]])
 
 (defn render-block [{:keys [content outgoing content-type]} acc
-                    {:keys [type literal children]}]
+                    {:keys [type ^js literal children]}]
   (case type
 
     "paragraph"
@@ -185,15 +186,12 @@
   [chat-id message-id]
   [react/touchable-highlight
    {:on-press
-    (fn [] (if platform/desktop?
-             (desktop.pop-up/show-desktop-menu
-              (desktop.pop-up/get-message-menu-items chat-id message-id))
-             (do
-               (re-frame/dispatch
-                [:bottom-sheet/show-sheet
-                 {:content        (sheets/options chat-id message-id)
-                  :content-height 200}])
-               (react/dismiss-keyboard!))))}
+    (fn []
+      (re-frame/dispatch
+       [:bottom-sheet/show-sheet
+        {:content        (sheets/options chat-id message-id)
+         :content-height 200}])
+      (react/dismiss-keyboard!))}
    [react/view style/not-sent-view
     [react/text {:style style/not-sent-text}
      (i18n/label (if platform/desktop?

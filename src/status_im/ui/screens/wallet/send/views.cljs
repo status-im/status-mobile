@@ -145,7 +145,7 @@
                                     :wallet.ui/sign-transaction-button-clicked) tx])}}]])))
 
 (views/defview request-sheet [_]
-  (views/letsubs [{:keys [amount-error amount-text from token to sign-enabled? from-chat?] :as tx}
+  (views/letsubs [{:keys [amount-error amount-text from token sign-enabled?] :as tx}
                   [:wallet.request/prepare-transaction-with-balance]
                   window-height [:dimensions/window-height]
                   keyboard-height [:keyboard-height]]

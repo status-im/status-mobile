@@ -8,7 +8,6 @@
             [status-im.constants :as constants]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.core :as ethereum]
-            [status-im.pairing.core :as pairing]
             [status-im.utils.security :as security]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
@@ -186,16 +185,13 @@
   ;;NOTE: https://github.com/facebook/react-native/issues/15961
   ;; workaround for getInitialURL returning null when opening the
   ;; app from a universal link after closing it with the back button
-  (js/setTimeout #(.. react/linking
-                      (getInitialURL)
-                      (then dispatch-url))
+  (js/setTimeout #(-> (.getInitialURL ^js react/linking)
+                      (.then dispatch-url))
                  200)
-  (.. react/linking
-      (addEventListener "url" url-event-listener)))
+  (.addEventListener ^js react/linking "url" url-event-listener))
 
 (defn finalize
   "Remove event listener for url"
   []
   (log/debug "universal-links: finalizing")
-  (.. react/linking
-      (removeEventListener "url" url-event-listener)))
+  (.removeEventListener ^js react/linking "url" url-event-listener))

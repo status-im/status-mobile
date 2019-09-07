@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.profile.seed.styles
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as common.styles]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def intro-image
   {:margin-top  16

@@ -1,15 +1,12 @@
 (ns status-im.utils.image-processing
   (:require [goog.object :as object]
             [status-im.utils.fs :as fs]
-            [status-im.react-native.js-dependencies :as rn-dependencies]))
+            ["react-native-image-resizer" :as image-resizer]))
 
 (defn- resize [path max-width max-height on-resize on-error]
-  (let [resize-fn (-> rn-dependencies/image-resizer
-                      (object/get "default")
-                      (object/get "createResizedImage"))]
-    (-> (resize-fn path max-width max-height "JPEG" 75 0 nil)
-        (.then on-resize)
-        (.catch on-error))))
+  (-> (.createResizedImage image-resizer path max-width max-height "JPEG" 75 0 nil)
+      (.then on-resize)
+      (.catch on-error)))
 
 (defn- image-base64-encode [path on-success on-error]
   (fs/read-file path "base64" on-success #(on-error :base64 %)))

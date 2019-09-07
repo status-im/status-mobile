@@ -110,7 +110,7 @@
          [react/view
           [action-row {:icon     :main-icons/help
                        :label    :t/help-capitalized
-                       :on-press #(.openURL react/linking "https://hardwallet.status.im")}]
+                       :on-press #(.openURL ^js react/linking "https://hardwallet.status.im")}]
           (when pairing
             [react/view
              [action-row {:icon     :main-icons/add
@@ -121,7 +121,7 @@
              #_[action-row {:icon     :main-icons/close
                             :label    :t/unpair-card
                             :on-press #(re-frame/dispatch [:keycard-settings.ui/unpair-card-pressed])}]])])]
-      ; NOTE: Reset card is hidden until multiaccount removal will be implemented
+                                        ; NOTE: Reset card is hidden until multiaccount removal will be implemented
       #_(when pairing
           [react/view {:margin-bottom 35
                        :margin-left   16}

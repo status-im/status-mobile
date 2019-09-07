@@ -141,7 +141,7 @@
             {:style     styles/subtitle-row-accessory-container
              :on-layout #(reset!
                           subtitle-row-accessory-width
-                          (-> % .-nativeEvent .-layout .-width))}
+                          (-> ^js % .-nativeEvent .-layout .-width))}
             ;; We do this so that the bottom of the component is 12 device px
             ;; from bottom of the touchable container, instead of 10.
             [react/view {:transform [{:translateY -2}]}
@@ -382,7 +382,7 @@
             divider
             [react/view {:style     {:margin-top    container-margin-top
                                      :margin-bottom container-margin-bottom}
-                         :on-layout #(reset! width (-> % .-nativeEvent .-layout .-width))}
+                         :on-layout #(reset! width (-> ^js % .-nativeEvent .-layout .-width))}
              [react/touchable-highlight
               (cond-> {:on-press       (when (not theme-select?) on-press)
                        :on-press-in    (when theme-select? on-press)

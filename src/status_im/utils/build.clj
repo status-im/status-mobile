@@ -26,8 +26,9 @@
       :out
       (string/replace "\n" "")))
 
-(defmacro get-current-sha []
+(defmacro get-current-sha
   "fetches the latest commit sha from the current branch"
+  []
   (-> (shell/sh "git" "rev-parse" "--short" "HEAD")
       :out
       (string/replace "\n" "")))

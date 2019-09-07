@@ -88,7 +88,7 @@
        (assoc :on-press #(on-press token)))]))
 
 (views/defview assets []
-  (views/letsubs [{:keys [tokens nfts]} [:wallet/all-visible-assets-with-values]
+  (views/letsubs [{:keys [tokens]} [:wallet/all-visible-assets-with-values]
                   currency [:wallet/currency]
                   prices-loading? [:prices-loading?]]
     [list/flat-list {:data               tokens
@@ -98,8 +98,7 @@
 
 (views/defview total-value [{:keys [y]}]
   (views/letsubs [currency        [:wallet/currency]
-                  portfolio-value [:portfolio-value]
-                  prices-loading? [:prices-loading?]]
+                  portfolio-value [:portfolio-value]]
     [reanimated/view {:style (styles/value-container y)}
      [reanimated/text {:style (styles/value-text y)}
       portfolio-value

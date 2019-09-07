@@ -12,7 +12,8 @@
             [taoensso.timbre :as log]
             [status-im.chat.models.message-seen :as message-seen]))
 
-(defn cursor->clock-value [cursor]
+(defn cursor->clock-value
+  [^js cursor]
   (js/parseInt (.substring cursor 51 64)))
 
 (defn clock-value->cursor [clock-value]
@@ -37,9 +38,9 @@
 
 (fx/defn handle-chat-visibility-changed
   {:events [:chat.ui/message-visibility-changed]}
-  [{:keys [db] :as cofx} event]
-  (let [viewable-items (.-viewableItems event)
-        last-element (aget viewable-items (dec (.-length viewable-items)))]
+  [{:keys [db] :as cofx} ^js event]
+  (let [^js viewable-items (.-viewableItems event)
+        ^js last-element (aget viewable-items (dec (.-length viewable-items)))]
     (when last-element
       (let [last-element-clock-value (:clock-value (.-item last-element))
             chat-id (:chat-id (.-item last-element))]

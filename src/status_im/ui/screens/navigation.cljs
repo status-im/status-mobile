@@ -52,12 +52,6 @@
    (navigation/navigate-to (name view-id) params)))
 
 (re-frame/reg-fx
- ::navigate-replace
- (fn [[view-id params]]
-   (log/debug :navigate-replace view-id params)
-   (navigation/navigate-replace (name view-id) params)))
-
-(re-frame/reg-fx
  ::navigate-back
  (fn []
    (log/debug :navigate-back)

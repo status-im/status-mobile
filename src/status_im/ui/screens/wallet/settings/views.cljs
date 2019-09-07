@@ -44,10 +44,10 @@
                      [:wallet.custom-token.ui/remove-pressed token])}])]))
 
 (defn render-token
-  [{:keys [symbol name icon color custom? checked?] :as token}]
+  [_]
   (reagent/create-class
    {:should-component-update
-    (fn [this [_ old-token] [_ new-token]]
+    (fn [_ [_ old-token] [_ new-token]]
       (not= (:checked? old-token) (:checked? new-token)))
     :reagent-render
     (fn [{:keys [symbol name icon color custom? checked?] :as token}]
@@ -109,6 +109,6 @@
         :key-fn :address
         :stickySectionHeadersEnabled false
         :render-section-header-fn
-        (fn [{:keys [title data]}]
+        (fn [{:keys [title]}]
           [list-item/list-item {:type :section-header :title title}])
         :render-fn render-token-wrapper}]]]))
