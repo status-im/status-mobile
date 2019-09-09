@@ -13,7 +13,9 @@
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            ;;don't remove, used in fx macro
+            [status-im.utils.handlers :as handlers]))
 
 (re-frame/reg-fx
  :signing/send-transaction-fx
