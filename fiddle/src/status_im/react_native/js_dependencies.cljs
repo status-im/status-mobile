@@ -7,7 +7,6 @@
 (def dismiss-keyboard       (fn [] #js {}))
 (def emoji-picker           (fn [] #js {:default #js {}}))
 (def fs                     (fn [] #js {}))
-(def http-bridge            (fn [] #js {}))
 (def i18n                   #js {:locale "en"})
 (def react-native-languages #js {:language "en", :addEventListener (fn []), :removeEventListener (fn [])})
 (def image-crop-picker      (fn [] #js {}))
@@ -45,7 +44,6 @@
                                   :clearInterval js/clearInterval}))
 
 (def keychain (fn [] #js {:setGenericPassword (constantly (.resolve js/Promise true))}))
-(def secure-random (fn [] #(.resolve js/Promise (clj->js (range 0 %)))))
 (def react-navigation #js {:NavigationActions #js {}})
 (def desktop-menu #js {})
 (def desktop-config #js {})

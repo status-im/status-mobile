@@ -259,9 +259,6 @@ dependencies {
     implementation project(':react-native-background-timer')
     implementation project(':react-native-svg')
     implementation 'com.android.support:multidex:1.0.2'
-    compile (project(':react-native-http-bridge')) {
-        exclude group: "com.google.android.gms"
-    }
     implementation project(':react-native-splash-screen')
     implementation project(':react-native-image-resizer')
     implementation project(':react-native-dialogs')
@@ -275,7 +272,6 @@ dependencies {
     implementation project(':react-native-status')
     implementation project(':react-native-fs')
     implementation project(':react-native-image-crop-picker')
-    implementation project(':react-native-securerandom')
     implementation project(':react-native-webview-bridge')
     implementation project(':react-native-touch-id')
     implementation project(':react-native-config')

@@ -2,7 +2,6 @@
 
 (def config                 (js/require "react-native-config"))
 (def fs                     (js/require "react-native-fs"))
-(def http-bridge            (js/require "react-native-http-bridge"))
 (def keychain               (js/require "react-native-keychain"))
 (def qr-code                (js/require "qrcode"))
 (def react-native           (js/require "react-native"))
@@ -12,8 +11,6 @@
 (def touchid                (.-default touchid-class))
 ;(defn webview []            (js/require "react-native-webview"))
 (def EventEmmiter           (js/require "react-native/Libraries/vendor/emitter/EventEmitter"))
-(def securerandom           (js/require "react-native-securerandom"))
-(def secure-random          (.-generateSecureRandom securerandom))
 (def fetch-polyfill         (js/require "react-native-fetch-polyfill"))
 (def fetch                  (.-default fetch-polyfill))
 (def i18n                   (js/require "i18n-js"))

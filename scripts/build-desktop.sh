@@ -19,10 +19,8 @@ external_modules_dir=( \
   'node_modules/react-native-languages/desktop' \
   'node_modules/react-native-config/desktop' \
   'node_modules/react-native-fs/desktop' \
-  'node_modules/react-native-http-bridge/desktop' \
   'node_modules/react-native-webview-bridge/desktop' \
   'node_modules/react-native-keychain/desktop' \
-  'node_modules/react-native-securerandom/desktop' \
   'modules/react-native-status/desktop' \
   'node_modules/google-breakpad' \
   'modules/react-native-desktop-linking/desktop' \

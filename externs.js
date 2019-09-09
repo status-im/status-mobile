@@ -137,7 +137,6 @@ var TopLevel = {
     "fromWei" : function () {},
     "generateAndLoadKey" : function () {},
     "generateMnemonic" : function () {},
-    "generateSecureRandom" : function () {},
     "generateSymKeyFromPassword" : function () {},
     "get" : function () {},
     "getApplicationInfo" : function () {},
