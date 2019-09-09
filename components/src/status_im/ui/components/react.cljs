@@ -146,13 +146,13 @@
              :max-font-size-multiplier max-font-size-multiplier
              :placeholder-text-color   colors/text-gray
              :placeholder              (i18n/label :t/type-a-message)
-             :ref                      (fn [r] 
+             :ref                      (fn [r]
                                          ;; Store input and its defaultValue
                                          ;; one we receive a non-nil ref
                                          (when (and r (nil? @input-ref))
                                            (swap! text-input-refs assoc r (:default-value options)))
                                          (reset! input-ref r)
-                                         (when (:ref options) 
+                                         (when (:ref options)
                                            ((:ref options) r)))
              :value                    text}
             (-> options
@@ -235,10 +235,6 @@
 (defn get-from-clipboard [clbk]
   (let [clipboard-contents (.getString (.-Clipboard js-dependencies/react-native))]
     (.then clipboard-contents #(clbk %))))
-
-;; HTTP Bridge
-
-(def http-bridge js-dependencies/http-bridge)
 
 ;; KeyboardAvoidingView
 

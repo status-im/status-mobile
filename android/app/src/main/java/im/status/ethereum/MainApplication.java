@@ -19,8 +19,6 @@ import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.rnfs.RNFSPackage;
 import com.rnfingerprint.FingerprintAuthPackage;
 
-import net.rhogan.rnsecurerandom.RNSecureRandomPackage;
-
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import org.reactnative.camera.RNCameraPackage;
 
@@ -34,7 +32,6 @@ import im.status.ethereum.module.StatusPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
-import me.alwx.HttpServer.HttpServerReactPackage;
 import com.chirag.RNMail.*;
 import com.clipsub.RNShake.RNShakeEventPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
@@ -59,10 +56,8 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new RNFirebasePackage(),
                     new RNFirebaseMessagingPackage(),
                     new RNFirebaseNotificationsPackage(),
-                    new RNSecureRandomPackage(),
                     new BackgroundTimerPackage(),
                     new SvgPackage(),
-                    new HttpServerReactPackage(),
                     new SplashScreenReactPackage(),
                     statusPackage,
                     new RNStatusKeycardPackage(),
