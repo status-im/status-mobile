@@ -13,49 +13,67 @@
    :margin-bottom    margin-bottom
    :flex-direction   :column
    :border-top-width border-height
-   :border-top-color colors/black-transparent
-   :elevation        2})
+   :border-top-color colors/gray-lighter})
 
 (def reply-message
   {:flex-direction :row
    :align-items    :flex-start
-   :border-width   1
-   :border-radius  10
-   :border-color   colors/black-transparent
-   :padding-top    10
-   :padding-bottom 10
-   :padding-right  14
-   :padding-left   7
-   :margin-top     12
-   :margin-left    12
-   :margin-right   12})
+   :justify-content :space-between
+   :padding-top    8
+   :padding-bottom 8
+   :padding-right  8
+   :padding-left   8})
 
 (def reply-message-content
   {:flex-direction :column
-   :padding-left   7
+   :padding-left   8
+   :padding-right 8
    :max-height     140})
 
 (defn reply-message-author [chosen?]
   (assoc (message-author-name chosen?)
-         :padding-bottom 6))
+         :flex-shrink 1
+         ;; NOTE:  overriding the values from the definition of message-author-name
+         :padding-left 0
+         :padding-top 0
+         :padding-bottom 0
+         :margin 0
+         :height 18
+         :include-font-padding false))
 
 (def reply-message-container
   {:flex-direction :column-reverse})
 
+(def reply-message-to-container
+  {:flex-direction :row
+   :height 18
+   :padding-top 0
+   :padding-bottom 0
+   :padding-right 8
+   :justify-content :flex-start})
+
+(def reply-icon
+  {:width 20
+   :margin-top 1
+   :margin-bottom 1
+   :margin-right 0})
+
 (def cancel-reply-highlight
-  {:position :absolute
-   :z-index  5
-   :top      0
-   :right    0
-   :height   26})
+  {:align-self :flex-start
+   :width 19
+   :height   19})
 
 (def cancel-reply-container
   {:flex-direction  :row
    :justify-content :flex-end
-   :margin-right     12})
+   :height "100%"})
 
 (def cancel-reply-icon
   {:background-color colors/gray
+   :width 21
+   :height 21
+   :align-items :center
+   :justify-content :center
    :border-radius    12})
 
 (def input-container

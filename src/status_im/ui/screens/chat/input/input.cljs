@@ -157,8 +157,12 @@
   (letsubs [{:keys [username]} [:contacts/contact-name-by-identity from]
             current-public-key [:multiaccount/public-key]]
     [react/scroll-view {:style style/reply-message-content}
-     (chat-utils/format-reply-author from alias username current-public-key style/reply-message-author)
-     [react/text {:style (message-style/style-message-text false)} message-text]]))
+     [react/view {:style style/reply-message-to-container}
+      [vector-icons/tiny-icon :tiny-icons/tiny-reply {:container-style style/reply-icon
+                                                      :width 20
+                                                      :color colors/gray}]
+      (chat-utils/format-reply-author from alias username current-public-key style/reply-message-author)]
+     [react/text {:style (assoc (message-style/style-message-text false) :font-size 14) :number-of-lines 3} message-text]]))
 
 (defview reply-message-view []
   (letsubs [{:keys [content from alias] :as message} [:chats/reply-message]]
@@ -166,14 +170,16 @@
       [react/view {:style style/reply-message-container}
        [react/view {:style style/reply-message}
         [photos/member-photo from]
-        [reply-message from alias (:text content)]]
-       [react/touchable-highlight
-        {:style               style/cancel-reply-highlight
-         :on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])
-         :accessibility-label :cancel-message-reply}
-        [react/view {:style style/cancel-reply-container}
-         [vector-icons/icon :main-icons/close {:container-style style/cancel-reply-icon
-                                               :color           colors/white}]]]])))
+        [reply-message from alias (:text content)]
+        [react/touchable-highlight
+         {:style               style/cancel-reply-highlight
+          :on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])
+          :accessibility-label :cancel-message-reply}
+         [react/view {:style style/cancel-reply-container}
+          [vector-icons/icon :main-icons/close {:container-style style/cancel-reply-icon
+                                                :width 19
+                                                :height 19
+                                                :color           colors/white}]]]]])))
 
 (defview input-container []
   (letsubs [margin               [:chats/input-margin]

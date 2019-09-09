@@ -12,11 +12,12 @@
             [status-im.utils.http :as http]))
 
 (defn format-author [alias style name]
-  (if (ens/is-valid-eth-name? name)
-    [react/text {:style {:color colors/blue :font-size 13 :font-weight "500"}}
-     (str "@" (or (stateofus/username name) name))]
-    [react/text {:style {:color colors/gray :font-size 12 :font-weight "400"}}
-     alias]))
+  (let [additional-styles (style false)]
+    (if (ens/is-valid-eth-name? name)
+      [react/text {:style (merge {:color colors/blue :font-size 13 :font-weight "500"} additional-styles)}
+       (str "@" (or (stateofus/username name) name))]
+      [react/text {:style (merge {:color colors/gray :font-size 12 :font-weight "400"} additional-styles)}
+       alias])))
 
 (defn format-reply-author [from alias username current-public-key style]
   (or (and (= from current-public-key)
