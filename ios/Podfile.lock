@@ -133,19 +133,15 @@ PODS:
     - React
   - react-native-camera/RN (3.3.3):
     - React
-  - react-native-http-bridge (0.6.1):
-    - React
   - react-native-image-resizer (1.0.0):
     - React
   - react-native-mail (4.0.0):
     - React
-  - react-native-netinfo (4.1.5):
-    - React
-  - react-native-randombytes (3.5.0):
+  - react-native-netinfo (4.2.1):
     - React
   - react-native-shake (3.3.1):
     - React
-  - react-native-splash-screen (3.1.1):
+  - react-native-splash-screen (3.2.0):
     - React
   - react-native-webview (6.11.1):
     - React
@@ -198,8 +194,6 @@ PODS:
     - React
   - RNScreens (1.0.0-alpha.22):
     - React
-  - RNSecureRandom (1.0.0-rc.0):
-    - React
   - RNSVG (9.8.4):
     - React
   - RSKImageCropper (2.2.3)
@@ -228,11 +222,9 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-background-timer (from `../node_modules/react-native-background-timer`)
   - react-native-camera (from `../node_modules/react-native-camera`)
-  - react-native-http-bridge (from `../node_modules/react-native-http-bridge`)
   - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
   - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
-  - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-shake (from `../node_modules/react-native-shake`)
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-webview (from `../node_modules/react-native-webview`)
@@ -254,7 +246,6 @@ DEPENDENCIES:
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNLanguages (from `../node_modules/react-native-languages`)
   - RNScreens (from `../node_modules/react-native-screens`)
-  - RNSecureRandom (from `../node_modules/react-native-securerandom`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - SQLCipher (~> 3.0)
   - SSZipArchive
@@ -306,16 +297,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-background-timer"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
-  react-native-http-bridge:
-    :path: "../node_modules/react-native-http-bridge"
   react-native-image-resizer:
     :path: "../node_modules/react-native-image-resizer"
   react-native-mail:
     :path: "../node_modules/react-native-mail"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
-  react-native-randombytes:
-    :path: "../node_modules/react-native-randombytes"
   react-native-shake:
     :path: "../node_modules/react-native-shake"
   react-native-splash-screen:
@@ -358,8 +345,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-languages"
   RNScreens:
     :path: "../node_modules/react-native-screens"
-  RNSecureRandom:
-    :path: "../node_modules/react-native-securerandom"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   TouchID:
@@ -394,13 +379,11 @@ SPEC CHECKSUMS:
   React-jsinspector: 044105eea064aec81adc5e4d777a8f6589e7d094
   react-native-background-timer: bb7a98c8e97fc7c290de2d423dd09ddb73dcbcbb
   react-native-camera: 9c50d7def800895e7991ccda6203929553ceec9c
-  react-native-http-bridge: 3c8bf6356de20a942e5ad24936862f083349f8ac
   react-native-image-resizer: 04a3409e7d4ad646c4468671c69dec490def139c
   react-native-mail: ff4aba592530d80ac96eea6c1ca03114b84d630a
   react-native-netinfo: a91b5cf92ed3ada997cfe2bf067633386eb19fd8
-  react-native-randombytes: d3184d351604f78e019535178766590188bbc133
   react-native-shake: e9d1368d6f0ec7e48c8afc91e379b81006b9ba42
-  react-native-splash-screen: 8e3f866dc79bfe533baeffd0a38c33f7a7eae7f8
+  react-native-splash-screen: a49be22f0f6648b8416f3bd28258645eeaa5b42b
   react-native-webview: ad9581723f4d401c22cb3a371811d4dc9310df56
   react-native-webview-bridge: c712d20bbe7e2a2fabdd5d8ccdfec5e704455763
   React-RCTActionSheet: 08864c609d9f959abf3d51fdd93f8bc6e91f21eb
@@ -420,7 +403,6 @@ SPEC CHECKSUMS:
   RNKeychain: 627c6095cef215dd3d9804a9a9cf45ab96aa3997
   RNLanguages: e3ae05ef105937645218272429dac0c3f7633451
   RNScreens: 354046589421edc3d83d5c6212475bf1fb9a731d
-  RNSecureRandom: ab21b9b1b057579988e0fae9124db452205a8203
   RNSVG: 2e097b92aaa6d4e0f354fd7c49cbf3b17f8b3920
   RSKImageCropper: a446db0e8444a036b34f3c43db01b2373baa4b2a
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
