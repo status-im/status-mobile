@@ -180,6 +180,7 @@ android {
         exclude 'META-INF/rxjava.properties'
         exclude '/lib/mips64/**'
         exclude '/lib/arm64-v8a/**'
+        exclude '/lib/armeabi/**'
         /** Fix for: Execution failed for task ':app:transformNativeLibsWithStripDebugSymbolForDebug'.
         *   with recent version of ndk (17.0.4754217)
         */
