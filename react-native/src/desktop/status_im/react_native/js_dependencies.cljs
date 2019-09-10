@@ -36,4 +36,5 @@
 (def react-navigation       (js/require "react-navigation"))
 (def react-native-navigation-twopane  (js/require "react-native-navigation-twopane"))
 (def react-native-shake     #js {})
+(def net-info               #js {:default #js {}})
 (def react-native-mail      #js {:mail (fn [])})
