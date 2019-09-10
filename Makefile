@@ -111,14 +111,9 @@ release-android: export BUILD_ENV ?= prod
 release-android: export BUILD_TYPE ?= nightly
 release-android: export BUILD_NUMBER ?= 9999
 release-android: export NDK_ABI_FILTERS ?= armeabi-v7a;arm64-v8a;x86
-release-android: export STORE_FILE ?= ~/.gradle/status-im.keystore
+release-android: export STORE_FILE ?= $(HOME)/.gradle/status-im.keystore
 release-android: ##@build build release for Android
-	nix/build.sh targets.mobile.$(TARGET_OS).release \
-		--arg env '{NDK_ABI_FILTERS="$(NDK_ABI_FILTERS)";}' \
-		--argstr build-type $(BUILD_TYPE) \
-		--argstr build-number $(BUILD_NUMBER) \
-		--argstr keystore-file $(STORE_FILE) \
-		--option extra-sandbox-paths $(STORE_FILE)
+	scripts/release-android.sh
 
 release-ios: export TARGET_OS ?= ios
 release-ios: export BUILD_ENV ?= prod

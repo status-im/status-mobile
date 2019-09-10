@@ -8,11 +8,14 @@ let
   androidEnv = callPackage ./android-env.nix { inherit target-os openjdk; };
   gradle = callPackage ./gradle.nix { };
 
+  # Import a patched version of watchman (important for sandboxed builds on macOS)
+  watchmanFactory = callPackage ./watchman.nix { };
+
   # Import a local patched version of node_modules, together with a local version of the Maven repo
   mavenAndNpmDeps = callPackage ./maven-and-npm-deps { inherit stdenv stdenvNoCC gradle bash nodejs zlib localMavenRepoBuilder mkFilter projectNodePackage; };
 
   # TARGETS
-  release = callPackage ./targets/release-android.nix { inherit target-os gradle mavenAndNpmDeps mkFilter nodejs jsbundle status-go zlib; androidEnvShellHook = androidEnv.shellHook; };
+  release = callPackage ./targets/release-android.nix { inherit target-os gradle mavenAndNpmDeps mkFilter nodejs jsbundle status-go zlib watchmanFactory; androidEnvShellHook = androidEnv.shellHook; };
   generate-maven-and-npm-deps-shell = callPackage ./maven-and-npm-deps/maven/shell.nix { inherit mkShell gradle maven nodejs projectNodePackage status-go; androidEnvShellHook = androidEnv.shellHook; };
   adb-shell = mkShell {
     buildInputs = [ androidEnv.licensedAndroidEnv ];
