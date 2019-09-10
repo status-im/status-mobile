@@ -1,5 +1,5 @@
 { stdenv, stdenvNoCC, lib, target-os, callPackage,
-  mkFilter, bash, file, gnumake, watchman, gradle,
+  mkFilter, bash, file, gnumake, watchmanFactory, gradle,
   androidEnvShellHook, mavenAndNpmDeps,
   nodejs, openjdk, jsbundle, status-go, unzip, zlib }:
 
@@ -8,8 +8,11 @@
   gradle-opts ? "",
   keystore-file ? "", # Path to the .keystore file used to sign the package
   secrets-file ? "", # Path to the file containing secret environment variables
+  watchmanSockPath ? "", # Path to the socket file exposed by an external watchman instance (workaround needed for building Android on macOS)
   env ? {} # Attribute set contaning environment variables to expose to the build script
 }:
+
+assert (builtins.stringLength watchmanSockPath) > 0 -> stdenv.isDarwin;
 
 let
   baseName = "release-${target-os}";
@@ -23,6 +26,7 @@ let
   buildType' = if (build-type == "pr" || build-type == "e2e") then "pr" else "release"; /* PR builds shouldn't replace normal releases */
   generatedApkPath = "$sourceRoot/android/app/build/outputs/apk/${buildType'}/app-${buildType'}.apk";
   outApkName = "app.apk";
+  patchedWatchman = watchmanFactory watchmanSockPath;
 
 in stdenv.mkDerivation {
   inherit name;
@@ -40,11 +44,11 @@ in stdenv.mkDerivation {
             "resources"
           ];
           dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ".gradle" "build" "intermediates" "libs" "obj" ];
-          filesToInclude = [ envFileName "status-go-version.json" "VERSION" "react-native.config.js" ];
+          filesToInclude = [ envFileName "status-go-version.json" "VERSION" "react-native.config.js" ".watchmanconfig" ];
           root = path;
         };
     };
-  nativeBuildInputs = [ bash gradle unzip ] ++ lib.optionals stdenv.isDarwin [ file gnumake watchman ];
+  nativeBuildInputs = [ bash gradle unzip ] ++ lib.optionals stdenv.isDarwin [ file gnumake patchedWatchman ];
   buildInputs = [ nodejs openjdk ];
   phases = [ "unpackPhase" "patchPhase" "buildPhase" "checkPhase" "installPhase" ];
   unpackPhase = ''

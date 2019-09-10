@@ -112,13 +112,28 @@ release-android: export BUILD_TYPE ?= nightly
 release-android: export BUILD_NUMBER ?= 9999
 release-android: export NDK_ABI_FILTERS ?= armeabi-v7a;arm64-v8a;x86
 release-android: export STORE_FILE ?= ~/.gradle/status-im.keystore
+ifeq ("$(HOST_OS)", "darwin")
+# Start a watchman instance if not started already and store its socket path.
+# In order to get access to the right versions of watchman and jq, we start an ad-hoc nix-shell that imports the packages from nix/nixpkgs-bootstrap.
+release-android: export WATCHMAN_SOCKFILE := $(shell nix-shell --run "watchman get-sockname --no-pretty | jq -r .sockname" -E 'with (import nix/nixpkgs-bootstrap.nix {}).pkgs; mkShell { buildInputs = [ jq watchman ]; }')
+endif
 release-android: ##@build build release for Android
+ifeq ("$(HOST_OS)", "darwin")
+	nix/build.sh targets.mobile.$(TARGET_OS).release \
+		--arg env '{NDK_ABI_FILTERS="$(NDK_ABI_FILTERS)";}' \
+		--argstr build-type $(BUILD_TYPE) \
+		--argstr build-number $(BUILD_NUMBER) \
+		--argstr keystore-file $(STORE_FILE) \
+		--argstr watchmanSockPath '$(WATCHMAN_SOCKFILE)' \
+		--option extra-sandbox-paths '$(STORE_FILE);$(WATCHMAN_SOCKFILE)'
+else
 	nix/build.sh targets.mobile.$(TARGET_OS).release \
 		--arg env '{NDK_ABI_FILTERS="$(NDK_ABI_FILTERS)";}' \
 		--argstr build-type $(BUILD_TYPE) \
 		--argstr build-number $(BUILD_NUMBER) \
 		--argstr keystore-file $(STORE_FILE) \
 		--option extra-sandbox-paths $(STORE_FILE)
+endif
 
 release-ios: export TARGET_OS ?= ios
 release-ios: export BUILD_ENV ?= prod

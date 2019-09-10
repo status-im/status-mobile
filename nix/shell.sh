@@ -22,7 +22,7 @@ if ! command -v "nix" >/dev/null 2>&1; then
   if [ -f ~/.nix-profile/etc/profile.d/nix.sh ]; then
     . ~/.nix-profile/etc/profile.d/nix.sh
   elif [ "$IN_NIX_SHELL" != 'pure' ]; then
-    echo -e "${GREEN}Setting up environment...${NC}"
+    echo -e "${GREEN}Setting up environment...${NC}" > /dev/stderr
     ./scripts/setup
 
     . ~/.nix-profile/etc/profile.d/nix.sh
@@ -30,7 +30,7 @@ if ! command -v "nix" >/dev/null 2>&1; then
 fi
 
 if !command -v "nix" >/dev/null 2>&1; then
-  echo "Nix not available, sourcing profile failed!"
+  echo "Nix not available, sourcing profile failed!" > /dev/stderr
   exit 1
 fi
 
@@ -41,7 +41,7 @@ shellArgs=(
 if [[ -n "${TARGET_OS}" ]]; then
     shellArgs+=("--argstr target-os ${TARGET_OS}")
 else
-    echo -e "${YELLOW}Env is missing TARGET_OS, assuming no target platform.${NC} See nix/README.md for more details."
+    echo -e "${YELLOW}Env is missing TARGET_OS, assuming no target platform.${NC} See nix/README.md for more details." > /dev/stderr
 fi
 
 if [[ "$TARGET_OS" =~ (linux|windows|darwin|macos) ]]; then
@@ -61,7 +61,7 @@ fi
 # ENTER_NIX_SHELL is the fake command used when `make shell` is run.
 # It is just a special string, not a variable, and a marker to not use `--run`.
 if [[ $@ == "ENTER_NIX_SHELL" ]]; then
-  echo -e "${GREEN}Configuring ${_NIX_ATTR:-default} Nix shell for target '${TARGET_OS:-none}'...${NC}"
+  echo -e "${GREEN}Configuring ${_NIX_ATTR:-default} Nix shell for target '${TARGET_OS:-none}'...${NC}" > /dev/stderr
   exec nix-shell ${shellArgs[@]} ${entryPoint}
 else
   # Not all builds are ready to be run in a pure environment
@@ -74,6 +74,6 @@ else
   if [[ -n "${_NIX_KEEP}" ]]; then
     shellArgs+=("--keep ${_NIX_KEEP//;/ --keep }")
   fi
-  echo -e "${GREEN}Configuring ${pureDesc}${_NIX_ATTR:-default} Nix shell for target '${TARGET_OS}'...${NC}"
+  echo -e "${GREEN}Configuring ${pureDesc}${_NIX_ATTR:-default} Nix shell for target '${TARGET_OS}'...${NC}" > /dev/stderr
   exec nix-shell ${shellArgs[@]} --run "$@" ${entryPoint}
 fi
