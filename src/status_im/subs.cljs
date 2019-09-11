@@ -800,14 +800,14 @@
  :settings/bootnodes-enabled
  :<- [:multiaccount]
  :<- [:networks/current-network]
- (fn [{:keys [settings]} current-network]
+ (fn [[{:keys [settings]} current-network]]
    (get-in settings [:bootnodes current-network])))
 
 (re-frame/reg-sub
  :settings/network-bootnodes
  :<- [:multiaccount]
  :<- [:networks/current-network]
- (fn [multiaccount current-network]
+ (fn [[multiaccount current-network]]
    (get-in multiaccount [:bootnodes current-network])))
 
 (re-frame/reg-sub
