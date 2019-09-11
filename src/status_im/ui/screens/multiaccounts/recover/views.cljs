@@ -89,7 +89,7 @@
        [react/view {:align-items :center}
         (when words-count
           [react/view {:flex-direction :row
-                       :height         11
+                       :height         14
                        :align-items    :center}
            (when-not next-button-disabled?
              [vector-icons/tiny-icon :tiny-icons/tiny-check])
