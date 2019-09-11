@@ -15,40 +15,10 @@ if [ -z "$TARGET_OS" ]; then
 fi
 WINDOWS_CROSSTOOLCHAIN_PKG_NAME='mxetoolchain-x86_64-w64-mingw32'
 
-external_modules_dir=( \
-  'node_modules/react-native-languages/desktop' \
-  'node_modules/react-native-config/desktop' \
-  'node_modules/react-native-fs/desktop' \
-  'node_modules/react-native-http-bridge/desktop' \
-  'node_modules/react-native-webview-bridge/desktop' \
-  'node_modules/react-native-keychain/desktop' \
-  'node_modules/react-native-securerandom/desktop' \
-  'modules/react-native-status/desktop' \
-  'node_modules/google-breakpad' \
-  'modules/react-native-desktop-linking/desktop' \
-  'modules/react-native-desktop-menu/desktop' \
-  'modules/react-native-desktop-config/desktop' \
-  'modules/react-native-desktop-shortcuts/desktop' \
-  'modules/react-native-desktop-notification/desktop' \
-)
-
-external_fonts=( \
-  '../../../../../resources/fonts/Inter-Bold.otf' \
-  '../../../../../resources/fonts/Inter-Medium.otf' \
-  '../../../../../resources/fonts/Inter-Regular.otf' \
-)
-
 source "$SCRIPTPATH/lib/setup/path-support.sh"
 
 source_lib "packages.sh"
-
-function is_macos() {
-  [[ "$OS" =~ Darwin ]]
-}
-
-function is_linux() {
-  [[ "$OS" =~ Linux ]]
-}
+source_lib "platform.sh"
 
 function is_windows_target() {
   [[ "$TARGET_OS" =~ windows ]]
@@ -121,13 +91,6 @@ function init() {
   fi
 }
 
-function joinStrings() {
-  local arr=("$@")
-  printf -v var "%s;" "${arr[@]}"
-  var=${var%?}
-  echo ${var[@]}
-}
-
 function buildJSBundle() {
   # create directory for all work related to bundling
   rm -rf $WORKFOLDER
@@ -157,8 +120,8 @@ function compile() {
   echo -e "${YELLOW}Added 'desktopJSBundlePath' line to $jsPackagePath:${NC}"
   echo ""
 
-  local EXTERNAL_MODULES_DIR="$(joinStrings ${external_modules_dir[@]})"
-  local DESKTOP_FONTS="$(joinStrings ${external_fonts[@]})"
+  local EXTERNAL_MODULES_DIR="$(jq -r '.desktopExternalModules | @tsv | @text' "$jsPackagePath" | tr '\t' ';')"
+  local DESKTOP_FONTS="$(jq -r '.desktopFonts | @tsv | @text' "$jsPackagePath" | tr '\t' ';')"
   pushd desktop
     rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile modules reportApp/CMakeFiles desktop/node_modules/google-breakpad/CMakeFiles desktop/node_modules/react-native-keychain/desktop/qtkeychain-prefix/src/qtkeychain-build/CMakeFiles desktop/node_modules/react-native-keychain/desktop/qtkeychain
     if is_windows_target; then
