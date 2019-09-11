@@ -11,7 +11,8 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.security :as security]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types]
+            [status-im.utils.platform :as platform]))
 
 (defn check-password-errors [password]
   (cond (string/blank? password) :required-field
@@ -140,13 +141,6 @@
                      (assoc-in [:multiaccounts/recover :derived] derived-data))}
             (navigation/navigate-to-cofx :recover-multiaccount-success nil)))
 
-(fx/defn re-encrypt-pressed
-  {:events [::re-encrypt-pressed]}
-  [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (assoc-in db [:intro-wizard :selected-storage-type] :default)}
-            (navigation/navigate-to-cofx :recover-multiaccount-select-storage nil)))
-
 (fx/defn enter-phrase-pressed
   {:events [::enter-phrase-pressed]}
   [{:keys [db] :as cofx}]
@@ -179,6 +173,15 @@
     (if (= storage-type :advanced)
       {:dispatch [:recovery.ui/keycard-option-pressed]})
     (navigation/navigate-to-cofx cofx :recover-multiaccount-enter-password nil)))
+
+(fx/defn re-encrypt-pressed
+  {:events [::re-encrypt-pressed]}
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (assoc-in db [:intro-wizard :selected-storage-type] :default)}
+            (if platform/android?
+              (navigation/navigate-to-cofx :recover-multiaccount-select-storage nil)
+              (select-storage-next-pressed))))
 
 (fx/defn proceed-to-password-confirm
   [{:keys [db] :as cofx}]

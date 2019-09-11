@@ -20,7 +20,8 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.constants :as constants]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [status-im.utils.platform :as platform]))
 
 (defn dots-selector [{:keys [on-press n selected color]}]
   [react/view {:style (styles/dot-selector n)}
@@ -139,7 +140,8 @@
       [react/text {:style (assoc styles/wizard-text :text-align :left :margin-left 16)}
        (i18n/label type)]]
      [react/touchable-highlight
-      {:on-press #(re-frame/dispatch [:intro-wizard/on-key-storage-selected (if config/hardwallet-enabled? type :default)])}
+      {:on-press #(re-frame/dispatch [:intro-wizard/on-key-storage-selected (if (and config/hardwallet-enabled?
+                                                                                     platform/android?) type :default)])}
       [react/view (assoc (styles/list-item selected?)
                          :align-items :flex-start
                          :padding-top 20

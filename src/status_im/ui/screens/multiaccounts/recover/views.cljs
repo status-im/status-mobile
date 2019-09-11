@@ -18,7 +18,8 @@
             [status-im.ui.screens.intro.views :as intro.views]
             [status-im.utils.utils :as utils]
             [status-im.constants :as constants]
-            [status-im.ui.components.list-item.views :as list-item]))
+            [status-im.ui.components.list-item.views :as list-item]
+            [status-im.utils.platform :as platform]))
 
 (defn bottom-sheet-view []
   [react/view {:flex 1 :flex-direction :row}
@@ -29,17 +30,19 @@
       :accessibility-label :enter-seed-phrase-button
       :icon                :main-icons/text
       :on-press            #(re-frame/dispatch [::multiaccounts.recover/enter-phrase-pressed])}]
-    [list-item/list-item
-     {:theme               :action
-      :title               :t/recover-with-keycard
-      :disabled?           (not config/hardwallet-enabled?)
-      :accessibility-label :recover-with-keycard-button
-      :icon                :main-icons/keycard-logo
-      :on-press            #(re-frame/dispatch [::hardwallet/recover-with-keycard-pressed])}]]])
+    (when (and config/hardwallet-enabled?
+               platform/android?)
+      [list-item/list-item
+       {:theme               :action
+        :title               :t/recover-with-keycard
+        :disabled?           (not config/hardwallet-enabled?)
+        :accessibility-label :recover-with-keycard-button
+        :icon                :main-icons/keycard-logo
+        :on-press            #(re-frame/dispatch [::hardwallet/recover-with-keycard-pressed])}])]])
 
 (def bottom-sheet
   {:content        bottom-sheet-view
-   :content-height 130})
+   :content-height (if platform/android? 130 65)})
 
 (defview enter-phrase []
   (letsubs [{:keys [processing?

@@ -13,7 +13,8 @@
             [status-im.utils.security :as security]
             [status-im.utils.signing-phrase.core :as signing-phrase]
             [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.platform :as platform]))
 
 (defn get-signing-phrase [cofx]
   (assoc cofx :signing-phrase (signing-phrase/generate)))
@@ -29,11 +30,17 @@
 
 (defn dec-step [step]
   (let [inverted  (map-invert step-kw-to-num)]
-    (inverted (dec (step-kw-to-num step)))))
+    (if (and (= step :create-code)
+             (not platform/android?))
+      :choose-key
+      (inverted (dec (step-kw-to-num step))))))
 
 (defn inc-step [step]
   (let [inverted  (map-invert step-kw-to-num)]
-    (inverted (inc (step-kw-to-num step)))))
+    (if (and (= step :choose-key)
+             (not platform/android?))
+      :create-code
+      (inverted (inc (step-kw-to-num step))))))
 
 ;; multiaccounts create module
 (defn get-selected-multiaccount [{:keys [db]}]
