@@ -1,6 +1,5 @@
 (ns status-im.ui.components.qr-code-viewer.styles
-  (:require [status-im.ui.components.colors :as colors])
-  (:require-macros [status-im.utils.styles :refer [defstyle]]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def qr-code-hint
   {:color           colors/gray
@@ -12,19 +11,15 @@
 
 (defn qr-code-container [width]
   {:align-self       :center
-   :width            (+ width qr-code-padding qr-code-padding)
+   :width            width
+   :height           width
+   :padding-horizontal 16
    :background-color colors/white
    :border-color     colors/black-transparent
    :align-items      :center
    :justify-content  :center
    :border-width     1
    :border-radius    8})
-
-(defstyle name-container
-  {:flex           0.6
-   :flex-direction :column
-   :ios            {:align-items :center}
-   :android        {:margin-left 15}})
 
 (def name-text
   {:font-size 17})

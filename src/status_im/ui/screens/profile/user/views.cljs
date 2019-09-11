@@ -1,12 +1,10 @@
 (ns status-im.ui.screens.profile.user.views
-  (:require-macros [status-im.utils.views :as views])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.i18n :as i18n]
             [status-im.ethereum.stateofus :as stateofus]
+            [status-im.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.tabbar.styles :as tabs.styles]
             [status-im.ui.components.button :as button]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
@@ -17,25 +15,27 @@
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.tabbar.styles :as tabs.styles]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.profile.user.styles :as styles]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.platform :as platform]
-            [status-im.utils.universal-links.core :as universal-links]))
+            [status-im.utils.universal-links.core :as universal-links])
+  (:require-macros [status-im.utils.views :as views]))
 
 (views/defview share-chat-key []
   (views/letsubs [{:keys [address]}              [:popover/popover]
-                  window-width                   [:dimensions/window-width]
+                  width                          (reagent/atom nil)
                   {:keys [names preferred-name]} [:ens.main/screen]]
     (let [username (stateofus/username preferred-name)
-          qr-width (- window-width 128)
           name     (or username preferred-name)
           link     (universal-links/generate-link :user :external address)]
-      [react/view
-       [react/view {:style {:padding-top 16 :padding-left 16 :padding-right 16}}
-        [qr-code-viewer/qr-code-view qr-width address]
+      [react/view {:on-layout #(reset! width (-> % .-nativeEvent .-layout .-width))}
+       [react/view {:style {:padding-top 16 :padding-horizontal 16}}
+        (when @width
+          [qr-code-viewer/qr-code-view (- @width 32) address])
         (when (seq names)
           [react/view
            [copyable-text/copyable-text-view
@@ -59,14 +59,14 @@
                       :accessibility-label :chat-key
                       :style               {:line-height 22 :font-size 15
                                             :font-family "monospace"}}
-          address]]
-        [react/view styles/share-link-button
-         ;;TODO implement icon support
-         [button/button
-          {:on-press            #(list-selection/open-share {:message link})
-           :label               :t/share-link
-           ;:icon                :main-icons/link
-           :accessibility-label :share-my-contact-code-button}]]]])))
+          address]]]
+       [react/view styles/share-link-button
+        ;;TODO implement icon support
+        [button/button
+         {:on-press            #(list-selection/open-share {:message link})
+          :label               :t/share-link
+                                        ;:icon                :main-icons/link
+          :accessibility-label :share-my-contact-code-button}]]])))
 
 (defn- header [{:keys [public-key photo-path] :as account}]
   [profile.components/profile-header
