@@ -11,3 +11,5 @@
    (str "data:image/png;base64,"
         (let [identicon-js dependencies/identicon-js]
           (str (new identicon-js hash options))))))
+
+(def identicon-memoized (memoize identicon))

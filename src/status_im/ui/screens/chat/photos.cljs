@@ -21,7 +21,7 @@
 (defview member-photo [from & [size]]
   (letsubs [photo-path [:chats/photo-path from]]
     (photo (if (string/blank? photo-path)
-             (identicon/identicon from)
+             (identicon/identicon-memoized from)
              photo-path)
            {:accessibility-label :member-photo
             :size                (or size style/default-size)})))
