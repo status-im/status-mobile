@@ -2,8 +2,8 @@
   (:require [reagent.core :as reagent]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.react :as react]
             [status-im.ui.components.list-item.styles :as styles]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.profile.db :as profile.db]
@@ -41,7 +41,7 @@
 (defn- title-row [{:keys [title title-color-override title-prefix
                           title-prefix-width title-prefix-height
                           title-accessibility-label title-row-accessory]}
-                  type icon? disabled? theme subtitle content accessories]
+                  type icon? disabled? theme subtitle content]
   [react/view styles/title-row-container
    (when title-prefix
      (cond
@@ -108,11 +108,11 @@
      [react/view styles/title-row-accessory-container title-row-accessory])])
 
 (defn subtitle-row
-  [subtitle-row-elements icon? theme]
+  [_ _]
   (let [subtitle-row-accessory-width (reagent/atom 0)]
     (reagent/create-class
      {:reagent-render
-      (fn [{:keys [subtitle subtitle-max-lines subtitle-row-accessory]} icon? theme]
+      (fn [{:keys [subtitle subtitle-max-lines subtitle-row-accessory]} icon?]
         [react/view styles/subtitle-row-container
          (cond
            (or (string? subtitle) (keyword? subtitle) (number? subtitle))
@@ -152,10 +152,10 @@
    (when title
      [title-row
       title-row-elements type icon? disabled?
-      theme subtitle content accessories])
+      theme subtitle content])
 
    (when (and subtitle (= :default type))
-     [subtitle-row subtitle-row-elements icon? theme])
+     [subtitle-row subtitle-row-elements icon?])
 
    (when content
      [react/view {:margin-left (if icon? 2 0)}
@@ -163,11 +163,8 @@
         content
         [content])])])
 
-(defn- accessories-column [accessories theme width]
-  (let [last-accessory              (peek accessories)
-        last-accessory-is-component (and (not (utils.label/stringify last-accessory))
-                                         (not= :chevron last-accessory))
-        second-last-accessory       (peek (pop accessories))]
+(defn- accessories-column [accessories width]
+  (let [last-accessory              (peek accessories)]
     (into
      [react/view styles/accessories-container]
      (for [accessory accessories]
@@ -318,7 +315,7 @@
   `styles/subtitle-title-row-container` and/or `styles/subtitle`.
 
   `accessories`
-  Vector of `:chevron`, Any one of keyword representing `:main-icon/icon`, 
+  Vector of `:chevron`, Any one of keyword representing `:main-icon/icon`,
   `number`, `keyword` or `component`
   Long stringified accessory has max-width of 62% of device width.
   That means `title` is also constrained to not be longer than
@@ -347,53 +344,39 @@
   of list-item is colors/gray-selected. Useful for selectable
   list-items like list with radio buttons."
 
-  [{:keys
-    [react-key type theme container-margin-top container-margin-bottom
-     icon title-prefix title-prefix-width title-prefix-height
-     title title-color-override title-row-accessory
-     title-accessibility-label subtitle subtitle-max-lines
-     subtitle-row-accessory content accessories on-press
-     on-long-press error accessibility-label disabled? selected?]
-    :or {react-key               (name (gensym "list-item"))
-         type                    :default
-         theme                   :default
-         disabled?               false
-         container-margin-top    0
-         container-margin-bottom 0
-         subtitle-max-lines      1}}]
-  (let [title-row-elements
-        {:title                     title
-         :title-color-override      title-color-override
-         :title-accessibility-label title-accessibility-label
-         :title-prefix              title-prefix
-         :title-prefix-width        title-prefix-width
-         :title-prefix-height       title-prefix-height
-         :title-row-accessory       title-row-accessory}
-        subtitle-row-elements
-        {:subtitle               subtitle
-         :subtitle-max-lines     subtitle-max-lines
-         :subtitle-row-accessory subtitle-row-accessory}
-        width           (reagent/atom 0)
-        radio-selected? (and (= theme :selectable) selected?)]
+  [_]
+  (let [width (reagent/atom 0)
+        r-key (name (gensym "list-item"))]
     (reagent/create-class
      {:reagent-render
       (fn
         [{:keys
-          [icon title-prefix title title-row-accessory subtitle
-           subtitle-max-lines subtitle-row-accessory content
-           accessories on-press on-long-press error disabled? selected?]
-          :or {subtitle-max-lines 1}}]
+          [react-key type theme container-margin-top container-margin-bottom
+           icon title-prefix title-prefix-width title-prefix-height
+           title title-color-override title-row-accessory
+           title-accessibility-label subtitle subtitle-max-lines
+           subtitle-row-accessory content accessories on-press
+           on-long-press error accessibility-label disabled? selected?]
+          :or {react-key               r-key
+               type                    :default
+               theme                   :default
+               disabled?               false
+               container-margin-top    0
+               container-margin-bottom 0
+               subtitle-max-lines      1}}]
         (let [title-row-elements
-              (merge title-row-elements
-                     {:title               title
-                      :title-prefix        title-prefix
-                      :title-row-accessory title-row-accessory})
+              {:title                     title
+               :title-color-override      title-color-override
+               :title-accessibility-label title-accessibility-label
+               :title-prefix              title-prefix
+               :title-prefix-width        title-prefix-width
+               :title-prefix-height       title-prefix-height
+               :title-row-accessory       title-row-accessory}
               subtitle-row-elements
               {:subtitle               subtitle
                :subtitle-max-lines     subtitle-max-lines
                :subtitle-row-accessory subtitle-row-accessory}
-              radio-selected?
-              (and (= theme :selectable) selected?)]
+              radio-selected? (and (= theme :selectable) selected?)]
           ^{:key react-key}
           (if (= type :divider)
             divider
@@ -419,6 +402,6 @@
                   type icon disabled? theme content accessories])
 
                (when accessories
-                 [accessories-column accessories theme width])]]
+                 [accessories-column accessories width])]]
              (when error
                [tooltip/tooltip error styles/error])])))})))

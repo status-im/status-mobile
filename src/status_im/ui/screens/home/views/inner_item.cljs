@@ -6,16 +6,13 @@
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.core :as utils]
-            [status-im.utils.datetime :as time]
-            [status-im.ui.components.list-item.views :as list-item])
+            [status-im.utils.datetime :as time])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview command-short-preview [message]
@@ -47,12 +44,14 @@
      (:text content)
      [react/text {:style               styles/last-message-text
                   :number-of-lines     1
+                  :ellipsize-mode      :tail
                   :accessibility-label :chat-message-text}
-      (:text content)]
+      (string/trim-newline (:text content))]
 
      :else
      [react/text {:style               styles/last-message-text
                   :number-of-lines     1
+                  :ellipsize-mode      :tail
                   :accessibility-label :chat-message-text}
       content])])
 
@@ -69,11 +68,11 @@
                                   :accessibility-label :unread-messages-count-text}
        unviewed-messages-count])))
 
-(defn home-list-item [[home-item-id home-item]]
+(defn home-list-item [[_ home-item]]
   (let [{:keys
-         [chat-id chat-name name
+         [chat-id chat-name
           color online group-chat
-          public? public-key contact
+          public? contact
           last-message-timestamp
           timestamp
           last-message-content
