@@ -634,6 +634,8 @@
  (fn [chat]
    (:public? chat)))
 
+(def loaded (atom nil))
+
 (re-frame/reg-sub
  :chats/current-chat-messages-stream
  :<- [:chats/current-chat-messages]
@@ -643,10 +645,18 @@
  :<- [:chats/all-loaded?]
  :<- [:chats/public?]
  (fn [[messages message-groups messages-gaps range all-loaded? public?]]
-   (-> (chat.db/sort-message-groups message-groups messages)
-       (chat.db/messages-with-datemarks
-        messages messages-gaps range all-loaded? public?)
-       chat.db/messages-stream)))
+   (if @loaded
+     (do
+       (println "USING LOADED")
+       (js/setTimeout #(reset! loaded nil) 10000)
+       @loaded)
+     (let [sorted (-> (chat.db/sort-message-groups message-groups messages)
+                      (chat.db/messages-with-datemarks
+                       messages messages-gaps range all-loaded? public?)
+                      chat.db/messages-stream)]
+       (println "NOT USING LOADED")
+       (reset! loaded sorted)
+       sorted))))
 
 (re-frame/reg-sub
  :chats/current-chat-intro-status
