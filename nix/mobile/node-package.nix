@@ -1,4 +1,4 @@
-{ fetchFromGitHub, pkgs, nodejs, yarn }:
+{ importJSON, fetchFromGitHub, pkgs, nodejs, yarn }:
 
 let
   yarn2nix = import (fetchFromGitHub {
@@ -8,15 +8,17 @@ let
     rev = "3cc020e384ce2a439813adb7a0cc772a034d90bb";
     sha256 = "0h2kzdfiw43rbiiffpqq9lkhvdv8mgzz2w29pzrxgv8d39x67vr9";
   }) { inherit pkgs nodejs yarn; };
+  yarnLock = ../../mobile_files/yarn.lock;
+  packageJSON = ../../mobile_files/package.json;
+  packageJSONContent = importJSON packageJSON;
 
   # Create a yarn package for our project that contains all the dependecies, so that we have a
   # known good node_modules folder that we can use later on
   projectNodePackage = yarn2nix.mkYarnModules rec {
     name = "${pname}-${version}";
-    pname = "StatusIm";
-    version = "0.0.1";
-    packageJSON = ../../mobile_files/package.json.orig;
-    yarnLock = ../../mobile_files/yarn.lock;
+    pname = packageJSONContent.name;
+    version = packageJSONContent.version;
+    inherit packageJSON yarnLock;
     # Replace symlink to deps with copy of real dependencies
     postBuild = ''
       # Fixup symlinks in folder we'll be moving.

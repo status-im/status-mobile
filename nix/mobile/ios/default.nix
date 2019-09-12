@@ -7,7 +7,7 @@ let
 
   createMobileFilesSymlinks = root: ''
     # Set up symlinks to mobile enviroment in project root 
-    ln -sf ${root}/mobile_files/package.json.orig ${root}/package.json
+    ln -sf ${root}/mobile_files/package.json ${root}/package.json
     ln -sf ${root}/mobile_files/metro.config.js ${root}/metro.config.js
     ln -sf ${root}/mobile_files/yarn.lock ${root}/yarn.lock
   '';

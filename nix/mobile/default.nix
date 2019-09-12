@@ -20,7 +20,7 @@ let
     optional platform.targetAndroid androidPlatform ++
     optional platform.targetIOS iosPlatform;
 
-  projectNodePackage = callPackage ./node-package.nix { inherit pkgs nodejs yarn; };
+  projectNodePackage = callPackage ./node-package.nix { inherit pkgs nodejs yarn; inherit (stdenv.lib) importJSON; };
 
   # TARGETS
   jsbundle = pkgs.callPackage ../targets/jsbundle.nix { inherit stdenv pkgs target-os nodejs localMavenRepoBuilder mkFilter projectNodePackage; };

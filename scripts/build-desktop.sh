@@ -114,7 +114,7 @@ function buildJSBundle() {
 function compile() {
   # Temporarily add path to javascript bundle to package.json
   local jsBundleLine="\"desktopJSBundlePath\": \"$JS_BUNDLE_PATH\""
-  local jsPackagePath=$(joinExistingPath "$STATUS_REACT_HOME" 'desktop_files/package.json.orig')
+  local jsPackagePath=$(joinExistingPath "$STATUS_REACT_HOME" 'desktop_files/package.json')
   local tmp=$(mktemp)
   jq ".=(. + {$jsBundleLine})" "$jsPackagePath" > "$tmp" && mv "$tmp" "$jsPackagePath"
   echo -e "${YELLOW}Added 'desktopJSBundlePath' line to $jsPackagePath:${NC}"
