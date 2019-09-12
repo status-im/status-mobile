@@ -25,7 +25,6 @@
 /components @status-im/status-core-ui
 
 desktop/                        @vkjr
-/desktop_files                  @vkjr
 modules/react-native-desktop*/  @vkjr
 modules/react-native-desktop*/  @vkjr
 

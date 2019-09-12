@@ -7,9 +7,9 @@ let
 
   createMobileFilesSymlinks = root: ''
     # Set up symlinks to mobile enviroment in project root 
-    ln -sf ${root}/mobile_files/package.json ${root}/package.json
-    ln -sf ${root}/mobile_files/metro.config.js ${root}/metro.config.js
-    ln -sf ${root}/mobile_files/yarn.lock ${root}/yarn.lock
+    ln -sf ${root}/mobile/js_files/package.json ${root}/package.json
+    ln -sf ${root}/mobile/js_files/metro.config.js ${root}/metro.config.js
+    ln -sf ${root}/mobile/js_files/yarn.lock ${root}/yarn.lock
   '';
 
   src =
@@ -20,7 +20,7 @@ let
       filter =
         # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
         mkFilter {
-          dirRootsToInclude = [ "mobile_files" ];
+          dirRootsToInclude = [ "mobile/js_files" ];
           dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ];
           filesToInclude = [ ".babelrc" ];
           root = path;

@@ -14,9 +14,9 @@ let
   react-native-deps = callPackage ./maven/reactnative-android-native-deps.nix { inherit stdenvNoCC; };
 
   createMobileFilesSymlinks = root: ''
-    ln -sf ${root}/mobile_files/package.json ${root}/package.json
-    ln -sf ${root}/mobile_files/metro.config.js ${root}/metro.config.js
-    ln -sf ${root}/mobile_files/yarn.lock ${root}/yarn.lock
+    ln -sf ${root}/mobile/js_files/package.json ${root}/package.json
+    ln -sf ${root}/mobile/js_files/metro.config.js ${root}/metro.config.js
+    ln -sf ${root}/mobile/js_files/yarn.lock ${root}/yarn.lock
   '';
 
   # fake build to pre-download deps into fixed-output derivation
@@ -30,7 +30,7 @@ let
       stdenv.mkDerivation {
         name = "patched-android-gradle-and-npm-modules";
         src =
-          let path = ./../../../..; # Import the root /android and /mobile_files folders clean of any build artifacts
+          let path = ./../../../..; # Import the root /android and /mobile/js_files folders clean of any build artifacts
           in builtins.path { # We use builtins.path so that we can name the resulting derivation, otherwise the name would be taken from the checkout directory, which is outside of our control
             inherit path;
             name = "status-react-source-gradle-install";
@@ -38,7 +38,7 @@ let
               # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
               mkFilter {
                 dirRootsToInclude = [
-                  "android" "mobile_files" "resources"
+                  "android" "mobile/js_files" "resources"
                   "translations" "status-modules"
                 ];
                 dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ".gradle" "build" "intermediates" "libs" "obj" ];

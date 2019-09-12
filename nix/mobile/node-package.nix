@@ -8,8 +8,8 @@ let
     rev = "3cc020e384ce2a439813adb7a0cc772a034d90bb";
     sha256 = "0h2kzdfiw43rbiiffpqq9lkhvdv8mgzz2w29pzrxgv8d39x67vr9";
   }) { inherit pkgs nodejs yarn; };
-  yarnLock = ../../mobile_files/yarn.lock;
-  packageJSON = ../../mobile_files/package.json;
+  yarnLock = ../../mobile/js_files/yarn.lock;
+  packageJSON = ../../mobile/js_files/package.json;
   packageJSONContent = importJSON packageJSON;
 
   # Create a yarn package for our project that contains all the dependecies, so that we have a
