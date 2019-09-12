@@ -21,7 +21,7 @@
      name]
     :else
     [react/text {:style {:color colors/gray :font-size 12 :font-weight "400"}}
-     (gfycat/generate-gfy from)]))
+     from]))
 
 (defn format-reply-author [from username current-public-key style]
   (or (and (= from current-public-key)

@@ -53,7 +53,6 @@
             [status-im.test.utils.contenthash]
             [status-im.test.utils.datetime]
             [status-im.test.utils.fx]
-            [status-im.test.utils.gfycat.core]
             [status-im.test.utils.http]
             [status-im.test.utils.money]
             [status-im.test.utils.prices]
@@ -135,7 +134,6 @@
  'status-im.test.utils.contenthash
  'status-im.test.utils.datetime
  'status-im.test.utils.fx
- 'status-im.test.utils.gfycat.core
  'status-im.test.utils.http
  'status-im.test.utils.money
  'status-im.test.utils.prices

@@ -1,5 +1,7 @@
 (ns status-im.test.tribute-to-talk.whitelist
   (:require [cljs.test :refer-macros [deftest testing is]]
+            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.identicon :as identicon]
             [status-im.tribute-to-talk.whitelist :as whitelist]))
 
 (def user-contacts
@@ -43,26 +45,30 @@
                      [:db :contacts/whitelist]))))))
 
 (deftest mark-tribute-paid
-  (let [result (whitelist/mark-tribute-paid {:db {}} "bob")]
-    (testing "contact was added to whitelist"
-      (is (= (get-in result
-                     [:db :contacts/whitelist])
-             #{"bob"})))
-    (testing "contact was tagged as tribute paid"
-      (is (= (get-in result
-                     [:db :contacts/contacts "bob" :system-tags])
-             #{:tribute-to-talk/paid})))))
+  (with-redefs [gfycat/generate-gfy (constantly "generated")
+                identicon/identicon (constantly "generated")]
+    (let [result (whitelist/mark-tribute-paid {:db {}} "bob")]
+      (testing "contact was added to whitelist"
+        (is (= (get-in result
+                       [:db :contacts/whitelist])
+               #{"bob"})))
+      (testing "contact was tagged as tribute paid"
+        (is (= (get-in result
+                       [:db :contacts/contacts "bob" :system-tags])
+               #{:tribute-to-talk/paid}))))))
 
 (deftest mark-tribute-received
-  (let [result (whitelist/mark-tribute-received {:db {}} "bob")]
-    (testing "contact was added to whitelist"
-      (is (= (get-in result
-                     [:db :contacts/whitelist])
-             #{"bob"})))
-    (testing "contact was tagged as tribute paid"
-      (is (= (get-in result
-                     [:db :contacts/contacts "bob" :system-tags])
-             #{:tribute-to-talk/received})))))
+  (with-redefs [gfycat/generate-gfy (constantly "generated")
+                identicon/identicon (constantly "generated")]
+    (let [result (whitelist/mark-tribute-received {:db {}} "bob")]
+      (testing "contact was added to whitelist"
+        (is (= (get-in result
+                       [:db :contacts/whitelist])
+               #{"bob"})))
+      (testing "contact was tagged as tribute paid"
+        (is (= (get-in result
+                       [:db :contacts/contacts "bob" :system-tags])
+               #{:tribute-to-talk/received}))))))
 
 (def sender-pk "0x04263d74e55775280e75b4a4e9a45ba59fc372793a869c5d9c4fa2100556d9963e3f4fbfa1724ec94a46e6da057540ab248ed1f5eb956e36e3129ecd50fade2c97")
 (def sender-address "0xdff1a5e4e57d9723b3294e0f4413372e3ea9a8ff")
@@ -94,34 +100,36 @@
                      [:db :contacts/whitelist])))))
 
 (deftest filter-message
-  (testing "not a user message"
-    (whitelist/filter-message
-     ttt-enabled-multiaccount
-     :unfiltered-fx
-     :not-user-message
-     nil
-     "public-key"))
-  (testing "user is whitelisted"
-    (whitelist/filter-message
-     (whitelist/enable-whitelist ttt-enabled-multiaccount)
-     :unfiltered-fx
-     :user-message
-     nil
-     "whitelisted because added"))
-  (testing "tribute to talk is disabled"
-    (whitelist/filter-message
-     ttt-disabled-multiaccount
-     :unfiltered-fx
-     :user-message
-     nil
-     "public-key"))
-  (testing "user is not whitelisted but transaction is valid"
-    (let [result (whitelist/filter-message
-                  ttt-enabled-multiaccount
-                  #(assoc % :message-received true)
-                  :user-message
-                  "transaction-hash-1"
-                  sender-pk)]
-      (is (contains? (get-in result [:db :contacts/whitelist])
-                     sender-pk))
-      (is (:message-received result)))))
+  (with-redefs [gfycat/generate-gfy (constantly "generated")
+                identicon/identicon (constantly "generated")]
+    (testing "not a user message"
+      (whitelist/filter-message
+       ttt-enabled-multiaccount
+       :unfiltered-fx
+       :not-user-message
+       nil
+       "public-key"))
+    (testing "user is whitelisted"
+      (whitelist/filter-message
+       (whitelist/enable-whitelist ttt-enabled-multiaccount)
+       :unfiltered-fx
+       :user-message
+       nil
+       "whitelisted because added"))
+    (testing "tribute to talk is disabled"
+      (whitelist/filter-message
+       ttt-disabled-multiaccount
+       :unfiltered-fx
+       :user-message
+       nil
+       "public-key"))
+    (testing "user is not whitelisted but transaction is valid"
+      (let [result (whitelist/filter-message
+                    ttt-enabled-multiaccount
+                    #(assoc % :message-received true)
+                    :user-message
+                    "transaction-hash-1"
+                    sender-pk)]
+        (is (contains? (get-in result [:db :contacts/whitelist])
+                       sender-pk))
+        (is (:message-received result))))))

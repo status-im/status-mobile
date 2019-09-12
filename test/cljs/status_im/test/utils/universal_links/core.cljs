@@ -1,39 +1,43 @@
 (ns status-im.test.utils.universal-links.core
   (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.identicon :as identicon]
             [re-frame.core :as re-frame]
             [status-im.utils.universal-links.core :as links]))
 
 (deftest handle-url-test
-  (testing "the user is not logged in"
-    (testing "it stores the url for later processing"
-      (is (= {:db {:universal-links/url "some-url"}}
-             (links/handle-url {:db {}} "some-url")))))
-  (testing "the user is logged in"
-    (let [db {:multiaccount      {:public-key "pk"}
-              :universal-links/url "some-url"}]
-      (testing "it clears the url"
-        (is (nil? (get-in (links/handle-url {:db db} "some-url")
-                          [:db :universal-links/url]))))
-      (testing "a public chat link"
-        (testing "it joins the chat"
-          (is (get-in (links/handle-url {:db db} "status-im://chat/public/status")
-                      [:db :chats "status"]))))
+  (with-redefs [gfycat/generate-gfy (constantly "generated")
+                identicon/identicon (constantly "generated")]
+    (testing "the user is not logged in"
+      (testing "it stores the url for later processing"
+        (is (= {:db {:universal-links/url "some-url"}}
+               (links/handle-url {:db {}} "some-url")))))
+    (testing "the user is logged in"
+      (let [db {:multiaccount      {:public-key "pk"}
+                :universal-links/url "some-url"}]
+        (testing "it clears the url"
+          (is (nil? (get-in (links/handle-url {:db db} "some-url")
+                            [:db :universal-links/url]))))
+        (testing "a public chat link"
+          (testing "it joins the chat"
+            (is (get-in (links/handle-url {:db db} "status-im://chat/public/status")
+                        [:db :chats "status"]))))
 
-      (testing "a browse dapp link"
-        (testing "it open the dapps"
-          (is
-           (= "www.cryptokitties.co"
-              (:browser/show-browser-selection (links/handle-url {:db db} "status-im://browse/www.cryptokitties.co"))))))
-      (testing "a user profile link"
-        (testing "it loads the profile"
-          (let [actual (links/handle-url {:db db} "status-im://user/0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073")]
-            (is (= "0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073" (get-in actual [:db :contacts/identity]))))))
-      (testing "if does nothing because the link is invalid"
-        (is (= (links/handle-url {:db db} "status-im://user/CONTACTCODE")
-               nil)))
-      (testing "a not found url"
-        (testing "it does nothing"
-          (is (nil? (links/handle-url {:db db} "status-im://not-existing"))))))))
+        (testing "a browse dapp link"
+          (testing "it open the dapps"
+            (is
+             (= "www.cryptokitties.co"
+                (:browser/show-browser-selection (links/handle-url {:db db} "status-im://browse/www.cryptokitties.co"))))))
+        (testing "a user profile link"
+          (testing "it loads the profile"
+            (let [actual (links/handle-url {:db db} "status-im://user/0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073")]
+              (is (= "0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073" (get-in actual [:db :contacts/identity]))))))
+        (testing "if does nothing because the link is invalid"
+          (is (= (links/handle-url {:db db} "status-im://user/CONTACTCODE")
+                 nil)))
+        (testing "a not found url"
+          (testing "it does nothing"
+            (is (nil? (links/handle-url {:db db} "status-im://not-existing")))))))))
 
 (deftest url-event-listener
   (testing "the url is not nil"

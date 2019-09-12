@@ -313,7 +313,6 @@
   [{:keys [group-chat chat-id pending-invite-inviter-name contact] :as chat}
    modal?]
   (letsubs [messages           [:chats/current-chat-messages-stream]
-            photo-path         [:chats/photo-path chat-id]
             current-public-key [:multiaccount/public-key]]
     {:component-did-mount
      (fn [args]

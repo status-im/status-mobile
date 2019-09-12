@@ -1154,6 +1154,17 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     StatusThreadPoolExecutor.getInstance().execute(r);
   }
 
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public String generateAlias(final String seed) {
+    return Statusgo.generateAlias(seed);
+  }
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public String identicon(final String seed) {
+    return Statusgo.identicon(seed);
+  }
+
+
   @ReactMethod
   public void getNodesFromContract(final String rpcEndpoint, final String contractAddress, final Callback callback) {
     Log.d(TAG, "getNodesFromContract");

@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.hardwallet.login.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.ui.screens.hardwallet.pin.views :as pin.views]
+  (:require [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.ui.screens.hardwallet.pin.views :as pin.views]
             [status-im.ui.screens.hardwallet.connect.views :as connect.views]
             [status-im.ui.screens.hardwallet.components :as components]
             [status-im.ui.screens.hardwallet.login.styles :as styles]
@@ -17,7 +18,7 @@
             [re-frame.core :as re-frame]))
 
 (defview hardwallet-login []
-  (letsubs [{:keys [photo-path name processing]} [:multiaccounts/login]
+  (letsubs [{:keys [photo-path name processing] :as account} [:multiaccounts/login]
             nfc-enabled? [:hardwallet/nfc-enabled?]]
     [react/keyboard-avoiding-view styles/container
      [status-bar/status-bar]
@@ -30,7 +31,8 @@
      [react/view styles/login-view
       [react/view styles/login-badge-container
        [react/view styles/login-badge
-        [photos/photo photo-path {:size styles/login-badge-image-size}]
+        ;;TODO this should be done in a subscription
+        [photos/photo (multiaccounts/displayed-photo account) {:size styles/login-badge-image-size}]
         [react/view
          [react/text {:style         styles/login-badge-name
                       :numberOfLines 1}

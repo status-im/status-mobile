@@ -27,12 +27,13 @@
   in order to stop receiving that message"
   [cofx now-in-s filter-chat-id message]
   (let [blocked-contacts (get-in cofx [:db :contacts/blocked] #{})
-        {{:keys [payload sig timestamp ttl hash]} :message
+        {{:keys [payload timestamp]} :message
          metadata :metadata
          raw-payload :raw-payload} (add-raw-payload message)
         status-message (-> payload
                            ethereum/hex-to-utf8
-                           transit/deserialize)]
+                           transit/deserialize)
+        sig (-> metadata :author :publicKey)]
     (when (and sig
                status-message
                (not (blocked-contacts sig)))

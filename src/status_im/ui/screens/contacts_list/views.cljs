@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.contacts-list.views
   (:require [re-frame.core :as re-frame]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list.views]
             [status-im.ui.components.react :as react]
@@ -9,11 +10,12 @@
             [status-im.ui.components.toolbar.view :as toolbar.view])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
-(defn contacts-list-item [{:keys [public-key name photo-path] :as contact}]
+(defn contacts-list-item [{:keys [public-key] :as contact}]
   [list.views/big-list-item
-   {:text         name
-    :image-source photo-path
-    :action-fn      #(re-frame/dispatch [:chat.ui/show-profile public-key])}])
+   ;;TODO this should be done in a subscription
+   {:text         (multiaccounts/displayed-name contact)
+    :image-source (multiaccounts/displayed-photo contact)
+    :action-fn    #(re-frame/dispatch [:chat.ui/show-profile public-key])}])
 
 (defview contacts-list []
   (letsubs [blocked-contacts-count [:contacts/blocked-count]

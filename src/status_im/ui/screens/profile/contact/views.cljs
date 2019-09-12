@@ -70,11 +70,12 @@
                    :render-fn               render-detail}])
 
 (defn profile-details [contact]
-  [react/view
-   [list-item/list-item {:type                      :section-header
-                         :title                     :t/profile-details
-                         :title-accessibility-label :profile-details}]
-   [profile-details-list-view contact]])
+  (when contact
+    [react/view
+     [list-item/list-item {:type                      :section-header
+                           :title                     :t/profile-details
+                           :title-accessibility-label :profile-details}]
+     [profile-details-list-view contact]]))
 
 (defn block-contact-action [{:keys [blocked? public-key] :as contact}]
   [react/touchable-highlight {:on-press (if blocked?
@@ -91,13 +92,15 @@
       (i18n/label :t/unblock-contact)
       (i18n/label :t/block-contact))]])
 
-(defn- header-in-toolbar [{:keys [photo-path] :as account}]
+(defn- header-in-toolbar [account]
   (let [displayed-name (multiaccounts/displayed-name account)]
     [react/view {:flex           1
                  :flex-direction :row
                  :align-items    :center
                  :align-self     :stretch}
-     [photos/photo photo-path {:size 40}]
+     ;;TODO this should be done in a subscription
+     [photos/photo (multiaccounts/displayed-photo account)
+      {:size 40}]
      [react/text {:style {:typography   :title-bold
                           :line-height  21
                           :margin-right 40
@@ -115,31 +118,32 @@
 (views/defview profile []
   (views/letsubs [list-ref (reagent/atom nil)
                   contact  [:contacts/current-contact]]
-    (let [header-in-toolbar    (header-in-toolbar contact)
-          header               (header contact)
-          content
-          [[list/action-list (actions contact)
-            {:container-style        styles/action-container
-             :action-style           styles/action
-             :action-label-style     styles/action-label
-             :action-subtext-style   styles/action-subtext
-             :action-separator-style styles/action-separator
-             :icon-opts              styles/action-icon-opts}]
-           [react/view styles/contact-profile-details-container
-            [profile-details contact]]
-           [block-contact-action contact]]
-          generated-view (large-toolbar/generate-view
-                          header-in-toolbar
-                          toolbar/default-nav-back
-                          nil
-                          header
-                          content
-                          list-ref)]
-      [react/safe-area-view
-       {:style
-        (merge {:flex 1}
-               (when platform/ios?
-                 {:margin-bottom tabs.styles/tabs-diff}))}
-       [status-bar/status-bar {:type :main}]
-       (:minimized-toolbar generated-view)
-       (:content-with-header generated-view)])))
+    (when contact
+      (let [header-in-toolbar    (header-in-toolbar contact)
+            header               (header contact)
+            content
+            [[list/action-list (actions contact)
+              {:container-style        styles/action-container
+               :action-style           styles/action
+               :action-label-style     styles/action-label
+               :action-subtext-style   styles/action-subtext
+               :action-separator-style styles/action-separator
+               :icon-opts              styles/action-icon-opts}]
+             [react/view styles/contact-profile-details-container
+              [profile-details contact]]
+             [block-contact-action contact]]
+            generated-view (large-toolbar/generate-view
+                            header-in-toolbar
+                            toolbar/default-nav-back
+                            nil
+                            header
+                            content
+                            list-ref)]
+        [react/safe-area-view
+         {:style
+          (merge {:flex 1}
+                 (when platform/ios?
+                   {:margin-bottom tabs.styles/tabs-diff}))}
+         [status-bar/status-bar {:type :main}]
+         (:minimized-toolbar generated-view)
+         (:content-with-header generated-view)]))))

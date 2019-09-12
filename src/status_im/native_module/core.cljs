@@ -1,6 +1,7 @@
 (ns status-im.native-module.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status_im.utils.db :as utils.db]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
@@ -265,3 +266,15 @@
 
     ;; in unknown scenarios we also consider the device rooted to avoid degrading security
     :else (callback true)))
+
+(defn generate-gfycat
+  "Generate a 3 words random name based on the user public-key, synchronously"
+  [public-key]
+  {:pre [(utils.db/valid-public-key? public-key)]}
+  (.generateAlias (status) public-key))
+
+(defn identicon
+  "Generate a icon based on a string, synchronously"
+  [seed]
+  (.identicon (status) seed))
+

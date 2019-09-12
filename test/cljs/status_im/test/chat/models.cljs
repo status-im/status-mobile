@@ -1,5 +1,7 @@
 (ns status-im.test.chat.models
   (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.identicon :as identicon]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.chat.models :as chat]))
@@ -44,19 +46,21 @@
         (is (= "new-name" (:name actual-chat)))))))
 
 (deftest add-public-chat
-  (let [topic "topic"
-        fx (chat/add-public-chat {:db {}} topic)
-        chat (get-in fx [:db :chats topic])]
-    (testing "it sets the name"
-      (is (= topic (:name chat))))
-    (testing "it sets the participants"
-      (is (= #{} (:contacts chat))))
-    (testing "it sets the chat-id"
-      (is (= topic (:chat-id chat))))
-    (testing "it sets the group-chat flag"
-      (is (:group-chat chat)))
-    (testing "it does not sets the public flag"
-      (is (:public? chat)))))
+  (with-redefs [gfycat/generate-gfy (constantly "generated")
+                identicon/identicon (constantly "generated")]
+    (let [topic "topic"
+          fx (chat/add-public-chat {:db {}} topic)
+          chat (get-in fx [:db :chats topic])]
+      (testing "it sets the name"
+        (is (= topic (:name chat))))
+      (testing "it sets the participants"
+        (is (= #{} (:contacts chat))))
+      (testing "it sets the chat-id"
+        (is (= topic (:chat-id chat))))
+      (testing "it sets the group-chat flag"
+        (is (:group-chat chat)))
+      (testing "it does not sets the public flag"
+        (is (:public? chat))))))
 
 (deftest clear-history-test
   (let [chat-id "1"
@@ -115,7 +119,7 @@
     (testing "it makes the relevant json-rpc calls"
       (let [actual (chat/remove-chat cofx chat-id)]
         (is (::json-rpc/call actual))
-        (is (= 5 (count (::json-rpc/call actual))))))))
+        (is (= 4 (count (::json-rpc/call actual))))))))
 
 (deftest multi-user-chat?
   (let [chat-id "1"]

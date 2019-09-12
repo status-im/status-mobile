@@ -1,6 +1,7 @@
 (ns status-im.ui.components.chat-icon.screen
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame.core]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.styles :as styles]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
@@ -42,10 +43,10 @@
     [react/view pending-inner-circle]]])
 
 (defn chat-icon-view
-  [{:keys [photo-path added?] :as contact} _group-chat name _online styles & [hide-dapp?]]
+  [{:keys [photo-path added?] :as contact} group-chat name _online styles & [hide-dapp?]]
   [react/view (:container styles)
-   (if-not (string/blank? photo-path)
-     [photos/photo photo-path styles]
+   (if-not group-chat
+     [photos/photo (multiaccounts/displayed-photo contact) styles]
      [default-chat-icon name styles])
    (when (and contact (not added?))
      [pending-contact-badge styles])])
@@ -90,11 +91,11 @@
                             :default-chat-icon-text styles/default-chat-icon-text}]])
 
 (defn contact-icon-view
-  [{:keys [photo-path name dapp?]} {:keys [container] :as styles}]
+  [{:keys [name dapp?] :as contact} {:keys [container] :as styles}]
   [react/view container
-   (if-not (string/blank? photo-path)
-     [photos/photo photo-path styles]
-     [default-chat-icon name styles])
+   (if dapp?
+     [default-chat-icon name styles]
+     [photos/photo (multiaccounts/displayed-photo contact) styles])
    (when dapp?
      [dapp-badge styles])])
 
@@ -168,14 +169,24 @@
        [photos/photo photo-path styles]
        [default-chat-icon name styles])]))
 
-(defn my-profile-icon [{{:keys [photo-path name]} :multiaccount
-                        edit?                     :edit?}]
+(defn my-profile-icon [{multiaccount :multiaccount
+                        edit?        :edit?}]
   (let [color colors/default-chat-color
         size  64]
-    [profile-icon-view photo-path name color edit? size {}]))
+    [profile-icon-view
+     (multiaccounts/displayed-photo multiaccount)
+     (multiaccounts/displayed-name multiaccount)
+     color
+     edit?
+     size {}]))
 
-(defn my-profile-header-icon [{{:keys [photo-path name]} :multiaccount
-                               edit?                     :edit?}]
+(defn my-profile-header-icon [{multiaccount :multiaccount
+                               edit?        :edit?}]
   (let [color colors/default-chat-color
         size  40]
-    [profile-icon-view photo-path name color edit? size {}]))
+    [profile-icon-view
+     (multiaccounts/displayed-photo multiaccount)
+     (multiaccounts/displayed-name multiaccount)
+     color
+     edit?
+     size {}]))

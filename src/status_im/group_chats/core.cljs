@@ -4,6 +4,7 @@
             [clojure.spec.alpha :as spec]
             [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.utils.pairing :as pairing.utils]
             [status-im.chat.models :as models.chat]
@@ -392,31 +393,31 @@
       creator-contact (conj (format-message creator-contact
                                             (i18n/label :t/group-chat-created
                                                         {:name   chat-name
-                                                         :member (:name creator-contact)})
+                                                         :member (multiaccounts/displayed-name creator-contact)})
                                             (:created-at clock-values)))
       name-changed?  (conj (format-message name-changed-author
                                            (i18n/label :t/group-chat-name-changed
                                                        {:name   chat-name
-                                                        :member (:name name-changed-author)})
+                                                        :member (multiaccounts/displayed-name name-changed-author)})
                                            (:name-changed-at clock-values)))
       (seq members-added) (concat (map #(format-message
                                          %
-                                         (i18n/label :t/group-chat-member-added {:member (:name %)})
+                                         (i18n/label :t/group-chat-member-added {:member (multiaccounts/displayed-name %)})
                                          (get-in clock-values [(:public-key %) :added]))
                                        contacts-added))
       (seq members-joined) (concat (map #(format-message
                                           %
-                                          (i18n/label :t/group-chat-member-joined {:member (:name %)})
+                                          (i18n/label :t/group-chat-member-joined {:member (multiaccounts/displayed-name %)})
                                           (get-in clock-values [(:public-key %) :joined]))
                                         contacts-joined))
       (seq admins-added) (concat (map #(format-message
                                         %
-                                        (i18n/label :t/group-chat-admin-added {:member (:name %)})
+                                        (i18n/label :t/group-chat-admin-added {:member (multiaccounts/displayed-name %)})
                                         (get-in clock-values [(:public-key %) :admin-added]))
                                       admins-added))
       (seq members-removed) (concat (map #(format-message
                                            %
-                                           (i18n/label :t/group-chat-member-removed {:member (:name %)})
+                                           (i18n/label :t/group-chat-member-removed {:member (multiaccounts/displayed-name %)})
                                            (get-in clock-values [(:public-key %) :removed]))
                                          contacts-removed)))))
 

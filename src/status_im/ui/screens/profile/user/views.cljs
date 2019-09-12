@@ -70,19 +70,20 @@
                                         ;:icon                :main-icons/link
           :accessibility-label :share-my-contact-code-button}]]])))
 
-(defn- header [{:keys [public-key photo-path] :as account}]
+(defn- header [{:keys [photo-path] :as account}]
   [profile.components/profile-header
    {:contact                account
     :allow-icon-change?     true
-    :include-remove-action? (not= (identicon/identicon public-key) photo-path)}])
+    :include-remove-action? (seq photo-path)}])
 
-(defn- header-in-toolbar [{:keys [photo-path] :as account}]
+(defn- header-in-toolbar [account]
   (let [displayed-name (multiaccounts/displayed-name account)]
     [react/view {:flex           1
                  :flex-direction :row
                  :align-items    :center
                  :align-self     :stretch}
-     [photos/photo photo-path {:size 40}]
+     ;;TODO this should be done in a subscription
+     [photos/photo (multiaccounts/displayed-photo account) {:size 40}]
      [react/text {:style {:typography   :title-bold
                           :line-height  21
                           :margin-right 40

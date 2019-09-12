@@ -16,7 +16,6 @@
     "hermes-engine": "0.2.1",
     "hi-base32": "^0.5.0",
     "i18n-js": "^3.3.0",
-    "identicon.js": "git+https://github.com/status-im/identicon.js.git#v1.2.1-status",
     "qrcode": "^1.4.1",
     "react": "16.8.6",
     "react-dom": "16.4.2",

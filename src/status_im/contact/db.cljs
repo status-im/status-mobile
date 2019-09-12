@@ -14,7 +14,7 @@
 (spec/def :contact/fcm-token (spec/nilable string?))
 (spec/def :contact/last-online (spec/nilable int?))
 (spec/def :contact/last-updated (spec/nilable int?))
-(spec/def :contact/name :global/not-empty-string)
+(spec/def :contact/name (spec/nilable string?))
 (spec/def :contact/public-key :global/not-empty-string)
 (spec/def :contact/photo-path (spec/nilable string?))
 
@@ -27,11 +27,11 @@
 (spec/def :contact/tribute-transaction (spec/nilable string?))
 
 (spec/def :contact/contact (spec/keys  :req-un [:contact/address
-                                                :contact/name
-                                                :contact/photo-path
                                                 :contact/public-key
                                                 :contact/system-tags]
                                        :opt-un [:contact/fcm-token
+                                                :contact/name
+                                                :contact/photo-path
                                                 :contact/last-online
                                                 :contact/last-updated
                                                 :contact/tags
@@ -65,7 +65,7 @@
 (defn public-key->new-contact [public-key]
   {:name        (gfycat/generate-gfy public-key)
    :address     (ethereum/public-key->address public-key)
-   :photo-path  (identicon/identicon public-key)
+   :identicon   (identicon/identicon public-key)
    :public-key  public-key
    :system-tags #{}})
 

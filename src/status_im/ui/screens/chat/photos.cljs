@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.chat.photos
   (:require [clojure.string :as string]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.photos :as style]
             [status-im.ui.screens.profile.db :as profile.db]
@@ -20,8 +21,6 @@
 
 (defview member-photo [from & [size]]
   (letsubs [photo-path [:chats/photo-path from]]
-    (photo (if (string/blank? photo-path)
-             (identicon/identicon from)
-             photo-path)
+    (photo photo-path
            {:accessibility-label :member-photo
             :size                (or size style/default-size)})))

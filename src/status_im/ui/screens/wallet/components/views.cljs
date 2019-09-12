@@ -173,7 +173,10 @@
       [react/view styles/recipient-container
        [react/view styles/recipient-icon
         (when contact
-          [photos/photo (:photo-path contact) {:size list.styles/image-size}])]
+          [photos/photo
+           ;;TODO this should be done in a subscription
+           (multiaccounts/displayed-photo contact)
+           {:size list.styles/image-size}])]
        [react/view {:style styles/recipient-name}
         [react/text {:style               (styles/participant true)
                      :accessibility-label (if request? :contact-name-text :recipient-name-text)
@@ -186,7 +189,10 @@
 (defn render-contact [contact request?]
   [list/touchable-item #(re-frame/dispatch [:wallet/fill-request-from-contact contact request?])
    [list/item
-    [photos/photo (:photo-path contact) {:size list.styles/image-size}]
+    [photos/photo
+     ;;TODO this should be done in a subscription
+     (multiaccounts/displayed-photo contact)
+     {:size list.styles/image-size}]
     [list/item-content
      [list/item-primary {:accessibility-label :contact-name-text}
       (multiaccounts/displayed-name contact)]

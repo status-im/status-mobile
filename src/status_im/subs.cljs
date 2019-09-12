@@ -18,6 +18,7 @@
             [status-im.group-chats.db :as group-chats.db]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.db :as multiaccounts.db]
             [status-im.pairing.core :as pairing]
             [status-im.tribute-to-talk.core :as tribute-to-talk]
@@ -722,9 +723,10 @@
  :<- [:contacts/contacts]
  :<- [:multiaccount]
  (fn [[contacts multiaccount] [_ id]]
-   (or (:photo-path (contacts id))
-       (when (= id (:public-key multiaccount))
-         (:photo-path multiaccount)))))
+   (multiaccounts/displayed-photo (or (contacts id)
+                                      (when (= id (:public-key multiaccount))
+                                        multiaccount)
+                                      (contact.db/public-key->new-contact id)))))
 
 (re-frame/reg-sub
  :chats/unread-messages-number
@@ -1510,15 +1512,9 @@
     (re-frame/subscribe [:contacts/contacts-by-chat filter chat-id])])
  (fn [[chat contacts] [_ chat-id]]
    (when (and chat (not (:group-chat chat)))
-     (cond
-       (:photo-path chat)
-       (:photo-path chat)
-
-       (pos? (count contacts))
-       (:photo-path (first contacts))
-
-       :else
-       (identicon/identicon chat-id)))))
+     (if (pos? (count contacts))
+       (multiaccounts/displayed-photo (first contacts))
+       (multiaccounts/displayed-photo chat)))))
 
 (re-frame/reg-sub
  :contacts/contact-by-address

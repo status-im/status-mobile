@@ -10,15 +10,27 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers]
             [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.identicon :as identicon]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]))
 
-(defn displayed-name [account]
-  (let [name (or (:preferred-name account) (:name account))]
+(defn displayed-name
+  "Use preferred name, name or alias in that order"
+  [{:keys [name preferred-name alias public-key]}]
+  (let [name (or preferred-name
+                 name
+                 alias)]
     (if (ens/is-valid-eth-name? name)
       (let [username (stateofus/username name)]
         (str "@" (or username name)))
-      (or name (gfycat/generate-gfy (:public-key account))))))
+      (or name (gfycat/generate-gfy public-key)))))
+
+(defn displayed-photo
+  "If a photo-path is set use it, otherwise fallback on identicon or generate"
+  [{:keys [photo-path identicon public-key]}]
+  (or photo-path
+      identicon
+      (identicon/identicon public-key)))
 
 (re-frame/reg-fx
  ::chaos-mode-changed

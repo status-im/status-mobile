@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.keycard.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.ui.components.react :as react]
+  (:require [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.i18n :as i18n]
@@ -362,7 +363,7 @@
             enter-step [:hardwallet/pin-enter-step]
             status [:hardwallet/pin-status]
             error-label [:hardwallet/pin-error-label]
-            {:keys [address name photo-path]} [:multiaccounts/login]]
+            {:keys [address name] :as account} [:multiaccounts/login]]
     [react/view styles/container
      [toolbar/toolbar
       {:transparent? true
@@ -397,7 +398,8 @@
                       :height          69
                       :justify-content :center
                       :align-items     :center}
-          [photos/photo photo-path {:size 61}]
+          ;;TODO this should be done in a subscription
+          [photos/photo (multiaccounts/displayed-photo account) {:size 61}]
           [react/view {:justify-content  :center
                        :align-items      :center
                        :width            24
@@ -439,7 +441,7 @@
 
 (defview login-connect-card []
   (letsubs [status [:hardwallet/pin-status]
-            {:keys [address name photo-path]} [:multiaccounts/login]]
+            {:keys [address name] :as account} [:multiaccounts/login]]
     (let [in-progress? (= status :verifying)]
       [react/view styles/container
        [toolbar/toolbar
@@ -471,7 +473,8 @@
                         :height          69
                         :justify-content :center
                         :align-items     :center}
-            [photos/photo photo-path {:size 61}]
+            ;;TODO this should be done in a subscription
+            [photos/photo (multiaccounts/displayed-photo account) {:size 61}]
             [react/view {:justify-content  :center
                          :align-items      :center
                          :width            24

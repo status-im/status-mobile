@@ -196,13 +196,14 @@
                  (:command content))
         [command-status content]))))
 
-(defview message-author-name [from name]
-  (letsubs [username [:contacts/contact-name-by-identity from]]
-    (chat.utils/format-author from style/message-author-name name)))
+(defview message-author-name [alias name]
+  (letsubs [username [:contacts/contact-name-by-identity alias]]
+    (chat.utils/format-author alias style/message-author-name name)))
 
 (defn message-body
   [{:keys [last-in-group?
            display-photo?
+           alias
            display-username?
            from
            outgoing
@@ -219,7 +220,7 @@
     [react/view (style/group-message-view outgoing display-photo?)
      (when display-username?
        [react/touchable-opacity {:on-press #(re-frame/dispatch [:chat.ui/show-profile from])}
-        [message-author-name from (:name content)]])
+        [message-author-name alias (:name content)]])
      [react/view {:style (style/timestamp-content-wrapper outgoing)}
       child]]]
    [react/view (style/delivery-status outgoing)

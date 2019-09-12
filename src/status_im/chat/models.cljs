@@ -85,7 +85,7 @@
   [chat-id {:keys [db now]}]
   (let [name (get-in db [:contacts/contacts chat-id :name])]
     {:chat-id            chat-id
-     :name               (or name (gfycat/generate-gfy chat-id))
+     :name               (or name "")
      :color              (rand-nth colors/chat-colors)
      :group-chat         false
      :is-active          true
@@ -145,12 +145,11 @@
      #(chats-store/save-chat % (get-in % [:db :chats chat-id])))))
 
 (fx/defn deactivate-chat
+  "Deactivate chat in db, no side effects"
   [{:keys [db now] :as cofx} chat-id]
-  (fx/merge cofx
-            {:db (-> db
-                     (assoc-in [:chats chat-id :is-active] false)
-                     (assoc-in [:current-chat-id] nil))}
-            #(chats-store/save-chat % (get-in % [:db :chats chat-id]))))
+  {:db (-> db
+           (assoc-in [:chats chat-id :is-active] false)
+           (assoc-in [:current-chat-id] nil))})
 
 (fx/defn remove-chat
   "Removes chat completely from app, producing all necessary effects for that"

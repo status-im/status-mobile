@@ -1,5 +1,7 @@
 (ns status-im.test.chat.models.message
   (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.identicon :as identicon]
             [status-im.transport.message.protocol :as protocol]
             [status-im.chat.models.message :as message]
             [status-im.utils.datetime :as time]))
@@ -144,35 +146,38 @@
       (is (= cofx (message/receive-many cofx [bad-chat-id-message]))))))
 
 (deftest receive-one-to-one
-  (let [cofx                 {:db {:chats {"matching" {}}
-                                   :multiaccount {:public-key "me"}
-                                   :current-chat-id "chat-id"
-                                   :view-id :chat}}
-        valid-message        {:chat-id     "matching"
-                              :from        "matching"
-                              :message-type :user-message
-                              :message-id  "1"
-                              :clock-value 1
-                              :timestamp   0}
-        own-message          {:chat-id     "matching"
-                              :from        "me"
-                              :message-type :user-message
-                              :message-id  "1"
-                              :clock-value 1
-                              :timestamp   0}
+  (with-redefs [gfycat/generate-gfy (constantly "generated")
+                identicon/identicon (constantly "generated")]
 
-        bad-chat-id-message  {:chat-id     "bad-chat-id"
-                              :from        "not-matching"
-                              :message-type :user-message
-                              :message-id  "1"
-                              :clock-value 1
-                              :timestamp   0}]
-    (testing "a valid message"
-      (is (get-in (message/receive-many cofx [valid-message]) [:db :chats "matching" :messages "1"])))
-    (testing "our own message"
-      (is (get-in (message/receive-many cofx [own-message]) [:db :chats "matching" :messages "1"])))
-    (testing "a message with non matching chat-id"
-      (is (get-in (message/receive-many cofx [bad-chat-id-message]) [:db :chats "not-matching" :messages "1"])))))
+    (let [cofx                 {:db {:chats {"matching" {}}
+                                     :multiaccount {:public-key "me"}
+                                     :current-chat-id "chat-id"
+                                     :view-id :chat}}
+          valid-message        {:chat-id     "matching"
+                                :from        "matching"
+                                :message-type :user-message
+                                :message-id  "1"
+                                :clock-value 1
+                                :timestamp   0}
+          own-message          {:chat-id     "matching"
+                                :from        "me"
+                                :message-type :user-message
+                                :message-id  "1"
+                                :clock-value 1
+                                :timestamp   0}
+
+          bad-chat-id-message  {:chat-id     "bad-chat-id"
+                                :from        "not-matching"
+                                :message-type :user-message
+                                :message-id  "1"
+                                :clock-value 1
+                                :timestamp   0}]
+      (testing "a valid message"
+        (is (get-in (message/receive-many cofx [valid-message]) [:db :chats "matching" :messages "1"])))
+      (testing "our own message"
+        (is (get-in (message/receive-many cofx [own-message]) [:db :chats "matching" :messages "1"])))
+      (testing "a message with non matching chat-id"
+        (is (get-in (message/receive-many cofx [bad-chat-id-message]) [:db :chats "not-matching" :messages "1"]))))))
 
 (deftest delete-message
   (let [timestamp (time/now)

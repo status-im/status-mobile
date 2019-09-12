@@ -490,3 +490,17 @@ void RCTStatus::chaosModeUpdate(bool on, double callbackId) {
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, on, callbackId);
 }
+
+QString RCTStatus::generateAlias(QString publicKey) {
+    Q_D(RCTStatus);
+    qCDebug(RCTSTATUS) << "::generateAlias call";
+    //return GenerateGfycat(publicKey.toUtf8().data());
+    return "test";
+}
+
+QString RCTStatus::identicon(QString publicKey) {
+    Q_D(RCTStatus);
+    qCDebug(RCTSTATUS) << "::identicon call";
+    //return Identicon(publicKey.toUtf8().data());
+    return "test";
+}

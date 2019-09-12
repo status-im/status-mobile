@@ -126,6 +126,8 @@ var TopLevel = {
     "exists" : function () {},
     "extPost" : function () {},
     "extractGroupMembershipSignatures" : function () {},
+    "identicon": function() {},
+    "generateAlias": function() {},
     "fallbacks" : function () {},
     "fetch" : function () {},
     "firebase" : function () {},

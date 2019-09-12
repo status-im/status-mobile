@@ -71,6 +71,9 @@ public:
     Q_INVOKABLE static bool JSCEnabled();
     Q_INVOKABLE static void statusGoEventCallback(const char* event);
 
+    Q_INVOKABLE QString identicon(QString publicKey);
+    Q_INVOKABLE QString generateAlias(QString publicKey);
+
     void emitStatusGoEvent(QString event);
 
 Q_SIGNALS:

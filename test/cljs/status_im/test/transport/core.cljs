@@ -46,6 +46,7 @@
 (def sig "0x04325367620ae20dd878dbb39f69f02c567d789dd21af8a88623dc5b529827c2812571c380a2cd8236a2851b8843d6486481166c39debf60a5d30b9099c66213e4")
 
 (def messages [{:id "someid"
+                :metadata {:author {:publicKey sig}}
                 :message {:sig       sig
                           :ttl       10
                           :timestamp 1527692015

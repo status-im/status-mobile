@@ -1,7 +1,8 @@
 (ns status-im.test.pairing.core
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.transport.message.pairing :as transport.pairing]
+            [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
+            [status-im.transport.message.pairing :as transport.pairing]
             [status-im.utils.pairing :as pairing.utils]
             [status-im.utils.config :as config]
             [status-im.pairing.core :as pairing]))
@@ -129,7 +130,8 @@
       (is (= expected (pairing/merge-contact contact-1 contact-2))))))
 
 (deftest handle-sync-installation-test
-  (with-redefs [identicon/identicon (constantly "generated")]
+  (with-redefs [gfycat/generate-gfy (constantly "generated")
+                identicon/identicon (constantly "generated")]
     (testing "syncing contacts"
       (let [old-contact-1   {:name "old-contact-one"
                              :public-key "contact-1"
