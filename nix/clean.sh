@@ -80,3 +80,6 @@ toDelete=$(printf '%s\n' "${toDelete[@]}" | sort | uniq)
 
 log "Deleting..."
 nix-store --ignore-liveness --delete ${toDelete[@]}
+
+log "Deleting dead Android Gradle and NPM derivations..."
+nix-store --gc --print-dead | grep -E 'android-gradle-and-npm-modules(\.drv)?$' | xargs nix-store --delete
