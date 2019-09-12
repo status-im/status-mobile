@@ -54,7 +54,7 @@
     "hi-base32": "0.5.0",
     "i18n-js": "^3.1.0",
     "identicon.js": "git+https://github.com/status-im/identicon.js.git#v1.2.1-status",
-    "metro": "^0.48.1",
+    "metro": "^0.52.0",
     "metro-react-native-babel-preset": "0.45.6",
     "nfc-react-native": "git+https://github.com/status-im/nfc-react-native.git#v0.3.8-status",
     "qrcode": "^1.4.1",
