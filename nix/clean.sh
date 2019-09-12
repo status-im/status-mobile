@@ -9,6 +9,7 @@ function getSources()   { nix-store --query --binding src "${1}"; }
 function getOutputs()   { nix-store --query --outputs "${1}"; }
 function getDrvFiles()  { nix-store --query --deriver "${1}"; }
 function getReferrers() { nix-store --query --referrers "${1}"; }
+function getRoots()     { nix-store --query --roots ${1} }
 
 function findRelated() {
     path="${1}"
@@ -26,10 +27,12 @@ function findRelated() {
     elif [[ -f "${drv}" ]]; then
         src=$(getSources "${drv}")
     fi
-    log " - Derivation: ${drv}"
-    log " - Source:     ${src}"
-    
-    found+=("${drv}" "${src}")
+    if [ $(getRoots "${drv}" | wc -l) -eq 0 ]; then
+        log " - Derivation: ${drv}"
+        log " - Source:     ${src}"
+        found+=("${drv}" "${src}")
+    fi
+
     printf '%s\n' "${found[@]}"
 }
 
@@ -40,7 +43,7 @@ function findByRegex() {
     log "Searching by regex: '${regex}'"
     # search for matching entries in the store
     drvPaths=$(
-      find /nix/store -maxdepth 1 -type d -regextype egrep -regex "${regex}"
+      nix-store --gc --print-dead 2> /dev/null | grep -E "${regex}"
     )
 
     # list of store entries to delete
@@ -73,6 +76,8 @@ if [[ -n "${nixResultPath}" ]]; then
 else 
     # use regular expression that should match all status-react build artifacts
     toDelete=$(findByRegex '.*-status-react-(shell|source|build).*')
+    # add Android Gradle and NPM derivations
+    toDelete+=$(findByRegex 'android-gradle-and-npm-modules(\.drv)?$')
 fi
 
 # remove duplicates and return
@@ -80,6 +85,3 @@ toDelete=$(printf '%s\n' "${toDelete[@]}" | sort | uniq)
 
 log "Deleting..."
 nix-store --ignore-liveness --delete ${toDelete[@]}
-
-log "Deleting dead Android Gradle and NPM derivations..."
-nix-store --gc --print-dead | grep -E 'android-gradle-and-npm-modules(\.drv)?$' | xargs nix-store --delete

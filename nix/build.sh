@@ -12,7 +12,7 @@ function cleanup() {
   # do the actual cleanup, ignore failure 
   if ./nix/clean.sh "${nixResultPath}"; then
     echo "Successful cleanup!"
-  elif [[ -n "${JENKINS_URL}" ]]; then
+  elif [[ -n "${IN_CI_ENVIRONMENT}" ]]; then
     # in CI removing some paths can fail due to parallel builds
     echo "Ignoring cleanup failure in CI."
   else
