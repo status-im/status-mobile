@@ -31,8 +31,10 @@ def gitCommit() {
   return GIT_COMMIT.take(6)
 }
 
-def pkgFilename(type, ext) {
-  return "StatusIm-${timestamp()}-${gitCommit()}-${type}.${ext}"
+def pkgFilename(type, ext, arch="universal") {
+  return [
+    "StatusIm", timestamp(), gitCommit(), type, arch,
+  ].join('-') + ".${ext}"
 }
 
 def doGitRebase() {

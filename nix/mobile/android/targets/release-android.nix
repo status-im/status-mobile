@@ -23,9 +23,8 @@ let
   envFileName =
     if (build-type == "release" || build-type == "nightly" || build-type == "e2e") then ".env.${build-type}" else
     if build-type != "" then ".env.jenkins" else ".env";
-  buildType' = if (build-type == "pr" || build-type == "e2e") then "pr" else "release"; /* PR builds shouldn't replace normal releases */
-  generatedApkPath = "$sourceRoot/android/app/build/outputs/apk/${buildType'}/app-${buildType'}.apk";
-  outApkName = "app.apk";
+  buildType = if (build-type == "pr" || build-type == "e2e") then "pr" else "release"; /* PR builds shouldn't replace normal releases */
+  apksPath = "$sourceRoot/android/app/build/outputs/apk/${buildType}";
   patchedWatchman = watchmanFactory watchmanSockPath;
 
 in stdenv.mkDerivation {
@@ -104,7 +103,7 @@ in stdenv.mkDerivation {
       exportEnvVars = concatStringsSep ";" (mapAttrsToList (name: value: "export ${name}='${value}'") env);
       unsetEnvVars = concatStringsSep ";" (mapAttrsToList (name: value: "unset ${name}") env);
       adhocEnvVars = optionalString stdenv.isLinux "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${makeLibraryPath [ zlib ]}";
-      capitalizedBuildType = toUpper (substring 0 1 buildType') + substring 1 (-1) buildType';
+      capitalizedBuildType = toUpper (substring 0 1 buildType) + substring 1 (-1) buildType;
     in ''
     export STATUS_REACT_HOME=$PWD
     export HOME=$sourceRoot
@@ -123,10 +122,10 @@ in stdenv.mkDerivation {
   '';
   doCheck = true;
   checkPhase = ''
-    unzip -l ${generatedApkPath} | grep 'assets/index.android.bundle'
+    ls ${apksPath}/*.apk | xargs -n1 unzip -qql | grep 'assets/index.android.bundle'
   '';
   installPhase = ''
     mkdir -p $out
-    cp ${generatedApkPath} $out/${outApkName}
+    cp ${apksPath}/*.apk $out/
   '';
 }

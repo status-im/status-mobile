@@ -93,16 +93,6 @@ project.ext.react = [
 apply from: "../../node_modules/react-native/react.gradle"
 
 /**
- * Set this to true to create two separate APKs instead of one:
- *   - An APK that only works on ARM devices
- *   - An APK that only works on x86 devices
- * The advantage is the size of the APK is reduced by about 4MB.
- * Upload all the APKs to the Play Store and people will download
- * the correct one based on the CPU architecture of their device.
- */
-def enableSeparateBuildPerCPUArchitecture = false
-
-/**
  * Run Proguard to shrink the Java bytecode in release builds.
  */
 def enableProguardInReleaseBuilds = false
@@ -184,10 +174,13 @@ android {
         multiDexEnabled true
         versionCode getVersionCode()
         versionName getVersionName()
-        ndk {
-            abiFilters getEnvOrConfig('NDK_ABI_FILTERS').split(';')
-        }
         missingDimensionStrategy 'react-native-camera', 'general'
+        /* this needs to be empty if we want APKs split by ABIs */
+        if (!getEnvOrConfig('ANDROID_ABI_SPLIT').toBoolean()) {
+            ndk {
+                abiFilters getEnvOrConfig('ANDROID_ABI_INCLUDE').split(";")
+            }
+        }
     }
     /**
      * Arbitrary project metadata
@@ -242,9 +235,9 @@ android {
     splits {
         abi {
             reset()
-            enable enableSeparateBuildPerCPUArchitecture
-            universalApk false  // If true, also generate a universal APK
-            include "armeabi-v7a", "arm64-v8a", "x86"
+            enable getEnvOrConfig('ANDROID_ABI_SPLIT').toBoolean()
+            include getEnvOrConfig('ANDROID_ABI_INCLUDE').split(";")
+            universalApk true
         }
     }
     buildTypes {

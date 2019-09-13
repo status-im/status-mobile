@@ -54,8 +54,8 @@ def postBuild(success) {
   }
   /* We're not using --fail because it suppresses server response */
   if (!stdout.contains('HTTP_CODE:201')) {
-    error("Notifying GHCMGR failed with: ${httpCode}")
     println("STDOUT:\n${stdout}")
+    error("Notifying GHCMGR failed with: TODO")
   }
 }
 

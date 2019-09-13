@@ -90,21 +90,23 @@ pipeline {
           }
           stage('Bundle') {
             steps {
-              script { apk = android.bundle() }
+              script { apks = android.bundle() }
             }
           }
         } }
       }
     }
     stage('Archive') {
-      steps {
-        archiveArtifacts apk
-      }
+      steps { script {
+        apks.each { archiveArtifacts it }
+      } }
     }
     stage('Upload') {
       steps {
         script {
-          env.PKG_URL = cmn.utils.uploadArtifact(apk)
+          def urls = apks.collect { cmn.utils.uploadArtifact(it) }
+          /* return only the universal APK */
+          env.PKG_URL = urls.find { it.contains('universal') }
           /* build type specific */
           switch (btype) {
             case 'release':

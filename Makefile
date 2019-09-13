@@ -110,8 +110,9 @@ release-android: export TARGET_OS ?= android
 release-android: export BUILD_ENV ?= prod
 release-android: export BUILD_TYPE ?= nightly
 release-android: export BUILD_NUMBER ?= 9999
-release-android: export NDK_ABI_FILTERS ?= armeabi-v7a;arm64-v8a;x86
 release-android: export STORE_FILE ?= $(HOME)/.gradle/status-im.keystore
+release-android: export ANDROID_ABI_SPLIT ?= false
+release-android: export ANDROID_ABI_INCLUDE ?= armeabi-v7a;arm64-v8a;x86
 release-android: ##@build build release for Android
 	scripts/release-android.sh
 
