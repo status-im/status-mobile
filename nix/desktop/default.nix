@@ -1,5 +1,5 @@
 { stdenv, pkgs, callPackage, target-os,
-  cmake, extra-cmake-modules, file, status-go, go,
+  cmake, extra-cmake-modules, file, moreutils, status-go, go,
   darwin, nodejs }:
 
 let
@@ -21,6 +21,7 @@ in {
     cmake
     extra-cmake-modules
     file
+    moreutils
     snoreNotifySources
     qtkeychainSources
   ] ++ catAttrs "buildInputs" selectedSources);
