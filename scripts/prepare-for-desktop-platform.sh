@@ -31,6 +31,8 @@ if [ ! -f package.json ] || [ $(readlink package.json) != "${PLATFORM_FOLDER}/pa
   ln -sf ${PLATFORM_FOLDER}/metro.config.js metro.config.js
 fi
 
-yarn install --frozen-lockfile
+mkdir -p "$GIT_ROOT/node_modules/"
+# Leverage flock (file lock) utility to create an exclusive lock on node_modules/ while running 'yarn install'
+flock "$GIT_ROOT/node_modules/" yarn install --frozen-lockfile
 
 echo -e "${GREEN}Finished!${NC}"
