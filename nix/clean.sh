@@ -75,9 +75,7 @@ if [[ -n "${nixResultPath}" ]]; then
     toDelete=$(findByResult "${nixResultPath}")
 else 
     # use regular expression that should match all status-react build artifacts
-    toDelete=$(findByRegex '.*-status-react-(shell|source|build).*')
-    # add Android Gradle and NPM derivations
-    toDelete+=$(findByRegex 'android-gradle-and-npm-modules(\.drv)?$')
+    toDelete=$(findByRegex '.*-status-react-(shell|source|build|patched-npm-gradle-modules).*')
 fi
 
 # remove duplicates and return
