@@ -15,7 +15,7 @@
   {:background-color   (if not-enough-snt? colors/gray colors/blue)
    :border-radius      14
    :flex-direction     :row
-   :padding-horizontal 8
+   :padding-horizontal 6
    :height             28
    :align-items        :center})
 

@@ -21,29 +21,28 @@
   [react/view styles/installed-icon
    [icons/icon :main-icons/check {:color colors/white :height 20 :width 20}]])
 
-(defview price-badge [price id owned pending]
+(defview price-badge [price id owned? pending]
   (letsubs [chain   [:ethereum/chain-keyword]
             balance [:balance-default]]
     (let [snt             (money/to-number (if (= :mainnet chain) (:SNT balance) (:STT balance)))
           not-enough-snt? (> price snt)
           no-snt?         (or (nil? snt) (zero? snt))]
       [react/touchable-highlight {:on-press #(cond pending nil
-                                                   (or owned (zero? price))
+                                                   (or owned? (zero? price))
                                                    (re-frame/dispatch [:stickers/install-pack id])
                                                    (or no-snt? not-enough-snt?) nil
                                                    :else (re-frame/dispatch [:stickers/buy-pack id price]))}
-       [react/view (styles/price-badge (and (not (or owned (zero? price))) (or no-snt? not-enough-snt?)))
-        (when (and (not (zero? price))) ;(not no-snt?))
-          [icons/icon :icons/price {:color colors/white :container-style {:margin-right 8}}])
+       [react/view (styles/price-badge (and (not (or owned? (zero? price))) (or no-snt? not-enough-snt?)))
+        (when (and (not (zero? price)) (not owned?))
+          [icons/tiny-icon :tiny-icons/tiny-snt {:color colors/white :container-style {:margin-right 6}}])
         (if pending
           [react/activity-indicator {:animating true
                                      :color     colors/white}]
           [react/text {:style {:color colors/white}
                        :accessibility-label :sticker-pack-price}
-           (cond (or owned (zero? price))
-                 (i18n/label :t/install)
-                 :else
-                 (str (money/wei-> :eth price)))])]])))
+           (cond owned? (i18n/label :t/install)
+                 (zero? price) (i18n/label :t/free)
+                 :else (str (money/wei-> :eth price)))])]])))
 
 (defn pack-badge [{:keys [name author price thumbnail preview id installed owned pending] :as pack}]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :stickers-pack pack])}
