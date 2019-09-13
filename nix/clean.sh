@@ -9,7 +9,7 @@ function getSources()   { nix-store --query --binding src "${1}"; }
 function getOutputs()   { nix-store --query --outputs "${1}"; }
 function getDrvFiles()  { nix-store --query --deriver "${1}"; }
 function getReferrers() { nix-store --query --referrers "${1}"; }
-function getRoots()     { nix-store --query --roots ${1} }
+function getRoots()     { nix-store --query --roots "${1}"; }
 
 function findRelated() {
     path="${1}"
