@@ -225,19 +225,17 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         chat_name = device_1_home.get_public_chat_name()
         device_1_chat, device_2_chat = create_and_join_group_chat(device_1_home, device_2_home, chat_name)
         device_2_default_username = get_username(device_2_home)
+        user2_left_chat_system_message = return_left_chat_system_message(device_2_default_username)
 
         # device 1: get options for device 2 in group chat and remove him
         options = device_1_chat.get_user_options(device_2_default_username)
         options.remove_user_button.click()
 
-        # device 2: check that removed user can see that he is removed
-
-        # TODO: should be reworked after https://github.com/status-im/status-react/pull/8487: replaced with default username
-        # if not device_1_chat.chat_element_by_text(user2_left_chat_system_message_for_user_2).is_element_displayed():
-        #     self.errors.append("Message with text '%s' was not received" % user2_left_chat_system_message_for_user_2)
-
-        # if not device_2_chat.chat_element_by_text(user2_left_chat_system_message_for_user_2).is_element_displayed():
-        #     self.errors.append("Message with text '%s' was not received" % user2_left_chat_system_message_for_user_2)
+        # device 1, 2: check system messages after removing
+        for chat in device_1_chat, device_2_chat:
+            if not chat.chat_element_by_text(user2_left_chat_system_message).is_element_displayed():
+                self.errors.append(
+                    "Message with text '%s' was not received" % user2_left_chat_system_message)
 
         # device 2: check there is no message input so user can't send new message in group chat
         if device_2_chat.chat_message_input.is_element_displayed():

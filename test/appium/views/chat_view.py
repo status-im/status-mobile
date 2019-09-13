@@ -557,5 +557,6 @@ class ChatView(BaseView):
         element = BaseButton(self.driver)
         element.locator = element.Locator.xpath_selector(
             "//*[@content-desc='sticker-pack-name'][@text='%s']/..//*[@text='Install']" % pack_name)
+        element.scroll_to_element()
         element.click()
         element.wait_for_invisibility_of_element()
