@@ -5,7 +5,6 @@
             [re-frame.core :as re-frame]
             [status-im.utils.fx :as fx]
             [status-im.mailserver.core :as mailserver]
-            [status-im.utils.handlers :as handlers]
             [status-im.chaos-mode.core :as chaos-mode]
             [status-im.native-module.core :as status]
             [status-im.ui.screens.mobile-network-settings.events :as mobile-network]))

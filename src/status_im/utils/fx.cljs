@@ -2,7 +2,8 @@
   (:require-macros status-im.utils.fx)
   (:require [clojure.set :as set]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [taoensso.timbre :as log])
+            [taoensso.timbre :as log]
+            status-im.utils.handlers)
   (:refer-clojure :exclude [merge]))
 
 (defn- update-db [cofx fx]

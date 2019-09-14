@@ -6,7 +6,6 @@
             [status-im.native-module.core :as status]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
-            [status-im.utils.handlers :as utils.handlers]
             [status-im.utils.platform :as utils.platform]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]))
