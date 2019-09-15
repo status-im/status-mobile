@@ -124,7 +124,7 @@
       (dissoc :referenced-messages :message-groups :gaps-loaded? :pagination-info
               :public? :group-chat :messages
               :might-have-join-time-messages?
-              :group-chat-local-version :loaded-unviewed-messages-ids
+              :loaded-unviewed-messages-ids
               :messages-initialized? :contacts :admins :members-joined)))
 
 (defn <-rpc [chat]
@@ -143,7 +143,6 @@
       (update :membership-updates (partial unmarshal-membership-updates (:id chat)))
       (update :last-message-content utils/safe-read-message-content)
       (update :last-clock-value utils.clocks/safe-timestamp)
-      (assoc :group-chat-local-version 1) ;; TODO(cammellos): this can be removed
       (dissoc :chatType :members)))
 
 (fx/defn save-chat [cofx {:keys [chat-id] :as chat}]

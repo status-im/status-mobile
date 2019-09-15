@@ -30,7 +30,6 @@
               :pagination-info {}
               :last-message-content "content"
               :last-message-content-type "type"
-              :group-chat-local-version 1
               :chat-id "chat-id"
               :loaded-unviewed-messages-ids []
               :timestamp 2
@@ -132,7 +131,6 @@
                                                         :members #{"a" "b"}}]}}
                        :unviewed-messages-count 2
                        :is-active true
-                       :group-chat-local-version 1
                        :chat-id "chat-id"
                        :timestamp 2}]
     (testing "from-rpc"

@@ -483,7 +483,6 @@
         (fx/merge cofx
                   (models.chat/upsert-chat {:chat-id                  chat-id
                                             :name                     (:name new-group)
-                                            :group-chat-local-version (get previous-chat :group-chat-local-version 1)
                                             :is-active                (or member?
                                                                           (get previous-chat :is-active true))
                                             :group-chat               true
