@@ -32,8 +32,6 @@
 (def contract-nodes-enabled? (enabled? (get-config :CONTRACT_NODES "0")))
 (def mobile-ui-for-desktop? (enabled? (get-config :MOBILE_UI_FOR_DESKTOP "0")))
 
-(def use-status-go-protocol? (enabled? (get-config :STATUS_GO_PROTOCOL "0")))
-
 ;; CONFIG VALUES
 (def log-level
   (-> (get-config :LOG_LEVEL "error")
