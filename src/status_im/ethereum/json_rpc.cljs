@@ -52,6 +52,7 @@
    "shhext_saveChat" {}
    "shhext_contacts" {}
    "shhext_blockContact" {}
+   ;;TODO not used anywhere?
    "shhext_deleteChat" {}
    "shhext_saveContact" {}
    "status_joinPublicChat" {}

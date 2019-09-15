@@ -156,17 +156,3 @@
                      :params []
                      :on-success #(on-success (map <-rpc %))
                      :on-failure #(log/error "failed to fetch chats" 0 -1 %)}]})
-
-(defn delete-chat-rpc [chat-id chat-type]
-  (json-rpc/call {:method "shhext_deleteChat"
-                  :params [chat-id chat-type]
-                  :on-success #(log/debug "deleteed chat" chat-id chat-type)
-                  :on-failure #(log/error "failed to delete chat" chat-id chat-type %)}))
-
-(re-frame/reg-fx
- ::delete-chat
- (fn [[chat-id chat-type]]
-   (delete-chat-rpc chat-id chat-type)))
-
-(fx/defn delete-chat [cofx chat-id chat-type]
-  {::delete-chat [chat-id chat-type]})
