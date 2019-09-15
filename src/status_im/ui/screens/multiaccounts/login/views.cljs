@@ -15,7 +15,8 @@
             [status-im.ui.screens.multiaccounts.styles :as ast]
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
-            [status-im.utils.utils :as utils])
+            [status-im.utils.utils :as utils]
+            [status-im.ui.components.icons.vector-icons :as icons])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn login-toolbar [can-navigate-back?]
@@ -46,11 +47,13 @@
      (utils/get-shortened-address public-key)]]])
 
 (defview login []
-  (letsubs [{:keys [error processing save-password? can-save-password?] :as multiaccount} [:multiaccounts/login]
+  (letsubs [{:keys [error processing save-password?] :as multiaccount} [:multiaccounts/login]
             can-navigate-back? [:can-navigate-back?]
             password-text-input (atom nil)
             sign-in-enabled? [:sign-in-enabled?]
-            view-id [:view-id]]
+            auth-method [:auth-method]
+            view-id [:view-id]
+            supported-biometric-auth [:supported-biometric-auth]]
     [react/keyboard-avoiding-view {:style ast/multiaccounts-view}
      [status-bar/status-bar]
      [login-toolbar can-navigate-back?]
@@ -59,32 +62,38 @@
        [multiaccount-login-badge multiaccount]
        [react/view {:style                       styles/password-container
                     :important-for-accessibility :no-hide-descendants}
-        [text-input/text-input-with-label
-         {:placeholder         (i18n/label :t/enter-your-password)
-          :ref                 #(reset! password-text-input %)
-          :auto-focus          (= view-id :login)
-          :accessibility-label :password-input
-          :on-submit-editing   (when sign-in-enabled?
-                                 #(login-multiaccount @password-text-input))
-          :on-change-text      #(do
-                                  (re-frame/dispatch [:set-in [:multiaccounts/login :password]
-                                                      (security/mask-data %)])
-                                  (re-frame/dispatch [:set-in [:multiaccounts/login :error] ""]))
-          :secure-text-entry true
-          :error             (when (not-empty error) error)}]]
-
+        [react/view {:flex-direction :row :align-items :center}
+         [react/view {:flex 1}
+          [text-input/text-input-with-label
+           {:placeholder         (i18n/label :t/enter-your-password)
+            :ref                 #(reset! password-text-input %)
+            :auto-focus          (= view-id :login)
+            :accessibility-label :password-input
+            :on-submit-editing   (when sign-in-enabled?
+                                   #(login-multiaccount @password-text-input))
+            :on-change-text      #(do
+                                    (re-frame/dispatch [:set-in [:multiaccounts/login :password]
+                                                        (security/mask-data %)])
+                                    (re-frame/dispatch [:set-in [:multiaccounts/login :error] ""]))
+            :secure-text-entry true
+            :error               (when (not-empty error) error)}]]
+         (when (and supported-biometric-auth (= auth-method "biometric"))
+           [react/touchable-highlight {:on-press #(re-frame/dispatch [:biometric-authenticate])}
+            [react/view {:style styles/biometric-button}
+             [icons/icon (if (= supported-biometric-auth :FaceID) :faceid :print)]]])]]
        (when-not platform/desktop?
          ;; saving passwords is unavailable on Desktop
-         (if (and platform/android? (not can-save-password?))
+         (if (and platform/android? (not auth-method))
            ;; on Android, there is much more reasons for the password save to be unavailable,
            ;; so we don't show the checkbox whatsoever but put a label explaining why it happenned.
            [react/i18n-text {:style styles/save-password-unavailable-android
-                             :key :save-password-unavailable-android}]
+                             :key   :save-password-unavailable-android}]
            [react/view {:style {:flex-direction  :row
                                 :align-items     :center
-                                :justify-content :flex-start}}
-            [checkbox/checkbox {:checked? save-password?
-                                :style {:padding-left 0 :padding-right 10}
+                                :justify-content :flex-start
+                                :margin-top      19}}
+            [checkbox/checkbox {:checked?        save-password?
+                                :style           {:margin-left 3 :margin-right 10}
                                 :on-value-change #(re-frame/dispatch [:set-in [:multiaccounts/login :save-password?] %])}]
             [react/text (i18n/label :t/save-password)]]))]]
      (when processing

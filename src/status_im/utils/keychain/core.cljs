@@ -5,7 +5,9 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.native-module.core :as status]
-            [status-im.utils.handlers :as handlers]))
+            [status-im.utils.fx :as fx]
+            [goog.object :as object]
+            [clojure.string :as string]))
 
 (defn- check-conditions [callback & checks]
   (if (= (count checks) 0)
@@ -28,7 +30,9 @@
 ;; to an address (`server`) property.
 
 (defn enum-val [enum-name value-name]
-  (get-in (js->clj rn/keychain) [enum-name value-name]))
+  (-> rn/keychain
+      (object/get enum-name)
+      (object/get value-name)))
 
 ;; We need a more strict access mode for keychain entries that save user password.
 ;; iOS
@@ -48,9 +52,9 @@
   ;; > you might choose kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly.
   ;; That is exactly what we use there.
   ;; Note that the password won't be stored if the device isn't locked by a passcode.
-  {:accessible (enum-val "ACCESSIBLE" "WHEN_PASSCODE_SET_THIS_DEVICE_ONLY")})
+  #js {:accessible (enum-val "ACCESSIBLE" "WHEN_PASSCODE_SET_THIS_DEVICE_ONLY")})
 
-(def keychain-secure-hardware
+(def ^:const keychain-secure-hardware
   ;; (Android) Requires storing the encryption key for the entry in secure hardware
   ;; or StrongBox (see https://developer.android.com/training/articles/keystore#ExtractionPrevention)
   "SECURE_HARDWARE")
@@ -70,55 +74,54 @@
 (defn- device-encrypted? [callback]
   (-> (.canImplyAuthentication
        rn/keychain
-       (clj->js
-        {:authenticationType
-         (enum-val "ACCESS_CONTROL" "BIOMETRY_ANY_OR_DEVICE_PASSCODE")}))
+       #js {:authenticationType (enum-val "ACCESS_CONTROL" "BIOMETRY_ANY_OR_DEVICE_PASSCODE")})
       (.then callback)))
 
-;; Stores the password for the address to the Keychain
-(defn save-user-password [address password callback]
-  (-> (.setInternetCredentials rn/keychain address address password keychain-secure-hardware (clj->js keychain-restricted-availability))
-      (.then callback)))
-
-(defn handle-callback [callback result]
-  (if result
-    (callback (security/mask-data (.-password result)))
-    (callback nil)))
-
-;; Gets the password for a specified address from the Keychain
-(defn get-user-password [address callback]
-  (if (or platform/ios? platform/android?)
-    (-> (.getInternetCredentials rn/keychain address)
-        (.then (partial handle-callback callback)))
-    (callback))) ;; no-op for Desktop
-
-;; Clears the password for a specified address from the Keychain
-;; (example of usage is logout or signing in w/o "save-password")
-(defn clear-user-password [address callback]
-  (if (or platform/ios? platform/android?)
-    (-> (.resetInternetCredentials rn/keychain address)
-        (.then callback))
-    (callback true))) ;; no-op for Desktop
-
-;; Resolves to `false` if the device doesn't have neither a passcode nor a biometry auth.
 (defn can-save-user-password? [callback]
   (cond
-    platform/ios? (check-conditions callback
-                                    device-encrypted?)
+    platform/ios?
+    (check-conditions callback device-encrypted?)
 
-    platform/android?  (check-conditions
-                        callback
-                        secure-hardware-available?
-                        device-not-rooted?)
+    platform/android?
+    (check-conditions callback secure-hardware-available? device-not-rooted?)
 
-    :else (callback false)))
+    :else
+    (callback false)))
 
-;;;; Effects
+(defn save-credentials
+  "Stores the credentials for the address to the Keychain"
+  [server username password callback]
+  (-> (.setInternetCredentials rn/keychain (string/lower-case server) username password
+                               keychain-secure-hardware keychain-restricted-availability)
+      (.then callback)))
+
+(defn get-credentials
+  "Gets the credentials for a specified server from the Keychain"
+  [server callback]
+  (if platform/mobile?
+    (-> (.getInternetCredentials rn/keychain (string/lower-case server))
+        (.then callback))
+    (callback))) ;; no-op for Desktop
+
+(re-frame/reg-fx
+ :keychain/get-auth-method
+ (fn [[address callback]]
+   (can-save-user-password?
+    (fn [can-save?]
+      (if can-save?
+        (get-credentials (str address "-auth") #(callback (if % (.-password %) "none")))
+        (callback nil))))))
+
+(re-frame/reg-fx
+ :keychain/get-user-password
+ (fn [[address callback]]
+   (get-credentials address #(if % (callback (security/mask-data (.-password %))) (callback nil)))))
 
 (re-frame/reg-fx
  :keychain/save-user-password
  (fn [[address password]]
-   (save-user-password
+   (save-credentials
+    address
     address
     (security/safe-unmask-data password)
     #(when-not %
@@ -129,26 +132,41 @@
              "but you will have to login again next time you launch it."))))))
 
 (re-frame/reg-fx
- :keychain/get-user-password
- (fn [[address callback]]
-   (get-user-password address callback)))
+ :keychain/save-auth-method
+ (fn [[address method]]
+   (save-credentials
+    (str address "-auth")
+    address
+    method
+    #(when-not %
+       (log/error
+        (str "Error while saving auth method."
+             " "
+             "The app will continue to work normally, "
+             "but you will have to login again next time you launch it."))))))
 
 (re-frame/reg-fx
  :keychain/clear-user-password
  (fn [address]
-   (clear-user-password
-    address
-    #(when-not %
-       (log/error (str "Error while clearing saved password."))))))
+   (when platform/mobile?
+     (-> (.resetInternetCredentials rn/keychain (string/lower-case address))
+         (.then #(when-not % (log/error (str "Error while clearing saved password."))))))))
 
-(re-frame/reg-fx
- :keychain/can-save-user-password?
- (fn [_]
-   (can-save-user-password? #(re-frame/dispatch [:keychain.callback/can-save-user-password?-success %]))))
+(fx/defn get-auth-method
+  [_ address]
+  {:keychain/get-auth-method
+   [address #(re-frame/dispatch [:multiaccounts.login/get-auth-method-success % address])]})
 
-(handlers/register-handler-fx
- :keychain.callback/can-save-user-password?-success
- (fn [{:keys [db]} [_ can-save-user-password?]]
-   {:db (assoc-in db
-                  [:multiaccounts/login :can-save-password?]
-                  can-save-user-password?)}))
+(fx/defn get-user-password
+  [_ address]
+  {:keychain/get-user-password
+   [address #(re-frame/dispatch [:multiaccounts.login.callback/get-user-password-success % address])]})
+
+(fx/defn save-user-password
+  [cofx address password]
+  {:keychain/save-user-password [address password]})
+
+(fx/defn save-auth-method
+  [{:keys [db]} address method]
+  {:db                        (assoc db :auth-method method)
+   :keychain/save-auth-method [address method]})

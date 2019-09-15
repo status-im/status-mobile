@@ -66,15 +66,6 @@
               (multiaccounts.update/multiaccount-update {:chaos-mode? chaos-mode?}
                                                         {}))))
 
-(fx/defn switch-biometric-auth
-  {:events [:multiaccounts.ui/switch-biometric-auth]}
-  [{:keys [db] :as cofx} biometric-auth?]
-  (when (:multiaccount db)
-    (let [settings (get-in db [:multiaccount :settings])]
-      (multiaccounts.update/update-settings cofx
-                                            (assoc settings :biometric-auth? biometric-auth?)
-                                            {}))))
-
 (fx/defn enable-notifications [cofx desktop-notifications?]
   (multiaccounts.update/multiaccount-update cofx
                                             {:desktop-notifications? desktop-notifications?}

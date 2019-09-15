@@ -20,8 +20,8 @@
             [status-im.utils.http :as http]
             [status-im.utils.utils :as utils]
             [status-im.i18n :as i18n]
-            [status-im.biometric-auth.core :as biometric-auth]
-            [status-im.constants :as const]))
+            [status-im.constants :as const]
+            [status-im.multiaccounts.biometric.core :as biometric]))
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
@@ -131,13 +131,13 @@
                                 :content (or bioauth-message (i18n/label :t/biometric-auth-confirm-message))
                                 :confirm-button-text (i18n/label :t/biometric-auth-confirm-try-again)
                                 :cancel-button-text (i18n/label :t/biometric-auth-confirm-logout)
-                                :on-accept #(biometric-auth/authenticate on-biometric-auth-result authentication-options)
+                                :on-accept #(biometric/authenticate on-biometric-auth-result authentication-options)
                                 :on-cancel #(re-frame/dispatch [:multiaccounts.logout.ui/logout-confirmed])}))))
 
 (fx/defn on-return-from-background [{:keys [db now] :as cofx}]
   (let [app-in-background-since (get db :app-in-background-since)
         signed-up? (get-in db [:multiaccount :signed-up?])
-        biometric-auth? (get-in db [:multiaccount :settings :biometric-auth?])
+        biometric-auth? (= (:auth-method db) "biometric")
         requires-bio-auth (and
                            signed-up?
                            biometric-auth?
@@ -149,7 +149,7 @@
               (mailserver/process-next-messages-request)
               (hardwallet/return-back-from-nfc-settings)
               #(when requires-bio-auth
-                 (biometric-auth/authenticate-fx % on-biometric-auth-result authentication-options)))))
+                 (biometric/authenticate % on-biometric-auth-result authentication-options)))))
 
 (fx/defn on-going-in-background [{:keys [db now] :as cofx}]
   (fx/merge cofx

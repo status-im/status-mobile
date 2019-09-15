@@ -7,7 +7,8 @@
             [status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]
             [status-im.ui.screens.wallet.request.views :as request]
             [status-im.ui.screens.profile.user.views :as profile.user]
-            [status-im.ui.screens.multiaccounts.recover.views :as multiaccounts.recover]))
+            [status-im.ui.screens.multiaccounts.recover.views :as multiaccounts.recover]
+            [status-im.ui.screens.biometric.views :as biometric]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -101,6 +102,9 @@
 
                    (= :custom-seed-phrase view)
                    [multiaccounts.recover/custom-seed-phrase]
+
+                   (= :enable-biometric view)
+                   [biometric/enable-biometric-popover]
 
                    :else
                    [view])]]]]])))})))

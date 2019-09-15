@@ -8,10 +8,11 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.toolbar.view :as toolbar])
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.multiaccounts.biometric.core :as biometric])
   (:require-macros [status-im.utils.views :as views]))
 
-(defn- list-data [show-backup-seed? settings]
+(defn- list-data [show-backup-seed? settings supported-biometric-auth biometric-auth? keycard?]
   [{:type                 :section-header
     :title                :t/security
     :container-margin-top 6}
@@ -26,6 +27,18 @@
     :accessories
     [(when show-backup-seed? [components.common/counter {:size 22} 1])
      :chevron]}
+   {:type                    :small
+    :title                   (str (i18n/label :t/lock-app-with) " " (biometric/get-label supported-biometric-auth))
+    :container-margin-bottom 8
+    :accessibility-label     :biometric-auth-settings-switch
+    :disabled?               (or (not (some? supported-biometric-auth)) keycard?)
+    :accessories             [[react/switch
+                               {:track-color     #js {:true colors/blue :false nil}
+                                :value           (boolean biometric-auth?)
+                                :on-value-change #(re-frame/dispatch [:multiaccounts.ui/biometric-auth-switched %])
+                                :disabled        (or (not (some? supported-biometric-auth)) keycard?)}]]
+    :on-press                #(re-frame/dispatch [:multiaccounts.ui/biometric-auth-switched
+                                                  ((complement boolean) biometric-auth?)])}
    ;; TODO - uncomment when implemented
    ;; {:type        :small
    ;;  :title       :t/change-password
@@ -69,7 +82,10 @@
 
 (views/defview privacy-and-security []
   (views/letsubs [{:keys [seed-backed-up? mnemonic]} [:multiaccount]
-                  settings                           [:multiaccount-settings]]
+                  settings                 [:multiaccount-settings]
+                  supported-biometric-auth [:supported-biometric-auth]
+                  auth-method              [:auth-method]
+                  {:keys [keycard-key-uid]} [:multiaccount]]
     (let [show-backup-seed? (and (not seed-backed-up?)
                                  (not (string/blank? mnemonic)))]
       [react/view {:flex 1 :background-color colors/white}
@@ -77,6 +93,7 @@
        [toolbar/simple-toolbar
         (i18n/label :t/privacy-and-security)]
        [list/flat-list
-        {:data      (list-data show-backup-seed? settings)
+        {:data      (list-data show-backup-seed? settings supported-biometric-auth
+                               (= auth-method "biometric") (boolean keycard-key-uid))
          :key-fn    (fn [_ i] (str i))
          :render-fn list/flat-list-generic-render-fn}]])))

@@ -44,7 +44,9 @@
                                  :clearTimeout js/clearTimeout
                                  :clearInterval js/clearInterval})
 
-(def keychain #js {:setGenericPassword (constantly (.resolve js/Promise true))})
+(def keychain #js {:setGenericPassword (constantly (.resolve js/Promise true))
+                   "ACCESSIBLE" {}
+                   "ACCESS_CONTROL" {}})
 (def react-navigation #js {:NavigationActions #js {}})
 (def desktop-menu #js {})
 (def desktop-config #js {})

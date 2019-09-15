@@ -281,6 +281,7 @@
                                    ::app-state
                                    ::app-in-background-since
                                    ::hardwallet
+                                   ::auth-method
                                    :multiaccount/multiaccount
                                    :navigation/view-id
                                    :navigation/navigation-stack

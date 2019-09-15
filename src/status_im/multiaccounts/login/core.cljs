@@ -1,6 +1,5 @@
 (ns status-im.multiaccounts.login.core
   (:require [re-frame.core :as re-frame]
-            [status-im.biometric-auth.core :as biometric-auth]
             [status-im.chaos-mode.core :as chaos-mode]
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.loading :as chat.loading]
@@ -27,7 +26,9 @@
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.utils.utils :as utils]
             [status-im.wallet.core :as wallet]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.ui.screens.db :refer [app-db]]
+            [status-im.multiaccounts.biometric.core :as biometric]))
 
 (def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
 (def contract-address "0xfbf4c8e2B41fAfF8c616a0E49Fb4365a5355Ffaf")
@@ -49,7 +50,11 @@
                                       (resolve default-nodes)))))
       (resolve default-nodes))))
 
-;;;; Handlers
+(re-frame/reg-fx
+ ::login
+ (fn [[account-data hashed-password]]
+   (status/login account-data hashed-password)))
+
 (fx/defn initialize-wallet [cofx]
   (fx/merge cofx
             (wallet/initialize-tokens)
@@ -97,10 +102,6 @@
   {:events [::initialize-web3-client-version]}
   [{:keys [db]} node-version]
   {:db (assoc db :web3-node-version node-version)})
-
-(fx/defn save-user-password
-  [cofx address password]
-  {:keychain/save-user-password [address password]})
 
 (fx/defn handle-close-app-confirmed
   {:events [::close-app-confirmed]}
@@ -156,25 +157,32 @@
 
 (fx/defn login-only-events
   [{:keys [db] :as cofx} address password save-password?]
-  (let [stored-pns (:push-notifications/stored db)]
+  (let [stored-pns      (:push-notifications/stored db)
+        auth-method     (:auth-method db)
+        new-auth-method (if save-password?
+                          (when-not (or (= "biometric" auth-method) (= "password" auth-method))
+                            (if (= auth-method "biometric-prepare") "biometric" "password"))
+                          (when (and auth-method (not= auth-method "none")) "none"))]
     (fx/merge cofx
               {:db (assoc db :chats/loading? true)
                ::json-rpc/call
-               [{:method "mailservers_getMailserverTopics"
+               [{:method     "mailservers_getMailserverTopics"
                  :on-success #(re-frame/dispatch [::protocol/initialize-protocol {:mailserver-topics (or % {})}])}
-                {:method "mailservers_getChatRequestRanges"
+                {:method     "mailservers_getChatRequestRanges"
                  :on-success #(re-frame/dispatch [::protocol/initialize-protocol {:mailserver-ranges (or % {})}])}
-                {:method "browsers_getBrowsers"
+                {:method     "browsers_getBrowsers"
                  :on-success #(re-frame/dispatch [::initialize-browsers %])}
-                {:method "permissions_getDappPermissions"
+                {:method     "permissions_getDappPermissions"
                  :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}
-                {:method "mailservers_getMailservers"
+                {:method     "mailservers_getMailservers"
                  :on-success #(re-frame/dispatch [::protocol/initialize-protocol {:mailservers (or % [])}])}
-                {:method "settings_getConfigs"
-                 :params [["multiaccount" "current-network" "networks"]]
+                {:method     "settings_getConfigs"
+                 :params     [["multiaccount" "current-network" "networks"]]
                  :on-success #(re-frame/dispatch [::get-config-callback % stored-pns])}]}
               (when save-password?
-                (save-user-password address password))
+                (keychain/save-user-password address password))
+              (when new-auth-method
+                (keychain/save-auth-method address new-auth-method))
               (navigation/navigate-to-cofx :home nil)
               (when platform/desktop?
                 (chat-model/update-dock-badge-label)))))
@@ -263,12 +271,6 @@
                 (navigation/navigate-to-cofx :multiaccounts nil)
                 (navigation/navigate-to-cofx :keycard-login-pin nil)))))
 
-(fx/defn get-user-password
-  [_ address]
-  {:keychain/can-save-user-password? nil
-   :keychain/get-user-password       [address
-                                      #(re-frame/dispatch [:multiaccounts.login.callback/get-user-password-success % address])]})
-
 (fx/defn open-login
   [{:keys [db] :as cofx} address photo-path name public-key]
   (let [keycard-multiaccount? (get-in db [:multiaccounts/multiaccounts address :keycard-key-uid])]
@@ -284,31 +286,41 @@
                                :password))}
               (if keycard-multiaccount?
                 (open-keycard-login)
-                (get-user-password address)))))
+                (keychain/get-auth-method address)))))
 
 (fx/defn open-login-callback
-  {:events [::biometric-auth-done]}
-  [{:keys [db] :as cofx} password {:keys [bioauth-success bioauth-notrequired bioauth-message]}]
-  (if (and password
-           (or bioauth-success bioauth-notrequired))
+  {:events [:multiaccounts.login.callback/get-user-password-success]}
+  [{:keys [db] :as cofx} password]
+  (if password
     (fx/merge cofx
-              {:db (assoc-in db [:multiaccounts/login :password] password)}
+              {:db (update-in db [:multiaccounts/login] assoc :password password :save-password? true)}
               (navigation/navigate-to-cofx :progress nil)
               login)
+    (navigation/navigate-to-cofx cofx :login nil)))
+
+(fx/defn get-auth-method-success
+  "Auth method: nil - not supported, \"none\" - not selected, \"password\", \"biometric\", \"biometric-prepare\""
+  {:events [:multiaccounts.login/get-auth-method-success]}
+  [{:keys [db] :as cofx} auth-method]
+  (let [address (get-in db [:multiaccounts/login :address])]
     (fx/merge cofx
-              (when bioauth-message
-                {:utils/show-popup {:title (i18n/label :t/biometric-auth-login-error-title) :content bioauth-message}})
-              (navigation/navigate-to-cofx :login nil))))
+              {:db (assoc db :auth-method auth-method)}
+              #(case auth-method
+                 "biometric"
+                 (biometric/biometric-auth %)
+                 "password"
+                 (keychain/get-user-password % address)
 
-(fx/defn do-biometric-auth
-  [{:keys [db] :as cofx} password]
-  (biometric-auth/authenticate-fx cofx
-                                  #(re-frame/dispatch [::biometric-auth-done password %])
-                                  {:reason (i18n/label :t/biometric-auth-reason-login)
-                                   :ios-fallback-label (i18n/label :t/biometric-auth-login-ios-fallback-label)}))
+                 ;;nil or "none" or "biometric-prepare"
+                 (open-login-callback % nil)))))
 
-(re-frame/reg-fx
- ::login
- (fn [[account-data hashed-password]]
-   (status/login account-data
-                 hashed-password)))
+(fx/defn biometric-auth-done
+  {:events [:biometric-auth-done]}
+  [{:keys [db] :as cofx} {:keys [bioauth-success bioauth-message bioauth-code]}]
+  (let [address (get-in db [:multiaccounts/login :address])]
+    (if bioauth-success
+      (keychain/get-user-password cofx address)
+      (fx/merge cofx
+                {:db (assoc-in db [:multiaccounts/login :save-password?] true)}
+                (biometric/show-message bioauth-message bioauth-code)
+                (open-login-callback nil)))))

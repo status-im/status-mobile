@@ -45,9 +45,9 @@
 
   Spec: https://www.figma.com/file/cb4p8AxLtTF3q1L6JYDnKN15/Index?node-id=858%3A0"
 
-  [{:keys [label type disabled? on-press accessibility-label] :or {type :main}}]
+  [{:keys [label type disabled? on-press accessibility-label style] :or {type :main}}]
   (let [label (utils.label/stringify label)]
-    [react/touchable-opacity (merge {:on-press on-press :disabled disabled? :active-pacity 0.5}
+    [react/touchable-opacity (merge {:on-press on-press :disabled disabled? :active-pacity 0.5 :style style}
                                     (when accessibility-label
                                       {:accessibility-label accessibility-label}))
      [react/view {:style (style-container type disabled?)}

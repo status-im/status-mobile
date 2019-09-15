@@ -68,3 +68,11 @@
    :text-align :center
    :flex-direction :row
    :align-items :center})
+
+(def biometric-button
+  {:justify-content  :center
+   :align-items      :center
+   :height           40
+   :width            40
+   :border-radius    20
+   :margin-left      16})

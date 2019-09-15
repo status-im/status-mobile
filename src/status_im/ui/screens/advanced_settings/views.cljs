@@ -57,7 +57,7 @@
        :disabled    false}]]}
    {:type :divider}])
 
-(defn- dev-mode-settings-data [settings chaos-mode? supported-biometric-auth]
+(defn- dev-mode-settings-data [settings chaos-mode?]
   [{:container-margin-top 8
     :type                 :section-header
     :title                :t/dev-mode-settings}
@@ -117,47 +117,25 @@
        #(re-frame/dispatch
          [:multiaccounts.ui/chaos-mode-switched (not chaos-mode?)])
        :disabled    false}]]}
-   {:type                    :small
-    :title                   :t/biometric-auth-setting-label
-    :container-margin-bottom 8
-    :accessibility-label     :biometric-auth-settings-switch
-    :disabled?               (not (some? supported-biometric-auth))
-    :accessories
-    [[react/switch
-      {:track-color #js {:true colors/blue :false nil}
-       :value       (boolean (:biometric-auth? settings))
-       :on-value-change
-       #(re-frame/dispatch [:multiaccounts.ui/biometric-auth-switched %])
-       :disabled    (not (some? supported-biometric-auth))}]]
-    :on-press
-    #(re-frame/dispatch
-      [:multiaccounts.ui/biometric-auth-switched
-       ((complement boolean) (:biometric-auth? settings))])}
    [react/view {:height 24}]])
 
 (defn- flat-list-data [network-name current-log-level current-fleet
-                       dev-mode? settings chaos-mode? supported-biometric-auth]
+                       dev-mode? settings chaos-mode?]
   (if dev-mode?
     (into
      (normal-mode-settings-data
       network-name current-log-level current-fleet dev-mode?)
      (dev-mode-settings-data
-      settings chaos-mode? supported-biometric-auth))
+      settings chaos-mode?))
     ;; else
     (normal-mode-settings-data
      network-name current-log-level current-fleet dev-mode?)))
 
 (views/defview advanced-settings []
-  (views/letsubs [{:keys
-                   [chaos-mode?
-                    dev-mode?
-                    settings]
-                   :as current-multiaccount} [:multiaccount]
-                  settings                   [:multiaccount-settings]
-                  network-name               [:network-name]
-                  current-log-level          [:settings/current-log-level]
-                  current-fleet              [:settings/current-fleet]
-                  supported-biometric-auth   [:supported-biometric-auth]]
+  (views/letsubs [{:keys [chaos-mode? dev-mode? settings]} [:multiaccount]
+                  network-name             [:network-name]
+                  current-log-level        [:settings/current-log-level]
+                  current-fleet            [:settings/current-fleet]]
     [react/view {:flex 1 :background-color colors/white}
      [status-bar/status-bar]
      [toolbar/simple-toolbar
@@ -166,7 +144,7 @@
       {:data      (flat-list-data
                    network-name current-log-level
                    current-fleet dev-mode? settings
-                   chaos-mode? supported-biometric-auth)
+                   chaos-mode?)
 
        :key-fn    (fn [_ i] (str i))
        :render-fn list/flat-list-generic-render-fn}]]))

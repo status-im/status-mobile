@@ -183,6 +183,8 @@
 
 (reg-root-key-sub :keycard :hardwallet)
 
+(reg-root-key-sub :auth-method :auth-method)
+
 ;;GENERAL ==============================================================================================================
 
 (re-frame/reg-sub

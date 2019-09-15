@@ -7,7 +7,7 @@
             [status-im.multiaccounts.logout.core :as multiaccounts.logout]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.biometric-auth.core :as biomentric-auth]
+            status-im.multiaccounts.biometric.core
             [status-im.bootnodes.core :as bootnodes]
             [status-im.browser.core :as browser]
             [status-im.browser.permissions :as browser.permissions]
@@ -121,20 +121,6 @@
       (multiaccounts/switch-chaos-mode chaos-mode?)))))
 
 (handlers/register-handler-fx
- :multiaccounts.ui/biometric-auth-switched
- (fn [cofx [_ biometric-auth?]]
-   (if biometric-auth?
-     (biomentric-auth/authenticate-fx
-      cofx
-      (fn [{:keys [bioauth-success bioauth-message]}]
-        (when bioauth-success
-          (re-frame/dispatch [:multiaccounts.ui/switch-biometric-auth true]))
-        (when bioauth-message
-          (utils/show-popup (i18n/label :t/biometric-auth-reason-verify) bioauth-message)))
-      {:reason (i18n/label :t/biometric-auth-reason-verify)})
-     (multiaccounts/switch-biometric-auth cofx false))))
-
-(handlers/register-handler-fx
  :multiaccounts.ui/notifications-enabled
  (fn [cofx [_ desktop-notifications?]]
    (multiaccounts/enable-notifications cofx desktop-notifications?)))
@@ -174,14 +160,6 @@
  :multiaccounts.login.ui/multiaccount-selected
  (fn [cofx [_ address photo-path name public-key]]
    (multiaccounts.login/open-login cofx address photo-path name public-key)))
-
-(handlers/register-handler-fx
- :multiaccounts.login.callback/get-user-password-success
- (fn [{:keys [db] :as cofx} [_ password address]]
-   (let [biometric-auth? (get-in db [:multiaccounts/multiaccounts address :settings :biometric-auth?])]
-     (if (and password biometric-auth?)
-       (multiaccounts.login/do-biometric-auth cofx password)
-       (multiaccounts.login/open-login-callback cofx password {:bioauth-notrequired true})))))
 
 ;; multiaccounts logout module
 

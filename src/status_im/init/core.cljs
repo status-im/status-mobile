@@ -1,6 +1,5 @@
 (ns status-im.init.core
   (:require [re-frame.core :as re-frame]
-            [status-im.biometric-auth.core :as biometric-auth]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.native-module.core :as status]
             [status-im.network.net-info :as network]
@@ -32,11 +31,6 @@
               :supported-biometric-auth supported-biometric-auth
               :view-id view-id
               :push-notifications/stored stored)})
-
-(fx/defn set-supported-biometric-auth
-  {:events [:init.callback/get-supported-biometric-auth-success]}
-  [{:keys [db]} supported-biometric-auth]
-  {:db (assoc db :supported-biometric-auth supported-biometric-auth)})
 
 (fx/defn initialize-views
   [cofx]
@@ -75,7 +69,7 @@
 
 (fx/defn start-app [cofx]
   (fx/merge cofx
-            {::get-supported-biometric-auth         nil
+            {:get-supported-biometric-auth          nil
              ::init-keystore                        nil
              ::restore-native-settings              nil
              ::open-multiaccounts                   #(re-frame/dispatch [::initialize-multiaccounts %])
@@ -101,8 +95,3 @@
  ::init-keystore
  (fn []
    (status/init-keystore)))
-
-(re-frame/reg-fx
- ::get-supported-biometric-auth
- (fn []
-   (biometric-auth/get-supported #(re-frame/dispatch [:init.callback/get-supported-biometric-auth-success %]))))

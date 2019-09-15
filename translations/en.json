@@ -341,7 +341,7 @@
 	"empty-chat-description-one-to-one": "Any messages you send here are encrypted and can only be read by you and ",
 	"empty-chat-description-public": "It's been quiet here for the last {{quiet-hours}}. Start the conversation or ",
 	"empty-chat-description-public-share-this": "share this chat.",
-	"enable": "enable",
+	"enable": "Enable",
 	"encrypt-with-password": "Encrypt with password",
 	"ens-10-SNT": "10 SNT",
 	"ens-add-username": "Add username",
@@ -1100,5 +1100,9 @@
 	"custom-seed-phrase-text-1": "This looks like a custom seed phrase and doesn't match the Status dictionary. This could also mean ",
 	"custom-seed-phrase-text-2": "some words are misspelled.",
 	"custom-seed-phrase-text-3": " If so, you'll end up creating a",
-	"custom-seed-phrase-text-4": " new account"
+	"custom-seed-phrase-text-4": " new account",
+	"to-enable-biometric": "To enable {{bio-type-label}}, your must save your password on the unlock screen",
+	"ok-save-pass": "OK, save password",
+	"lock-app-with": "Lock app with",
+	"grant-face-id-permissions": "To grant the required Face ID permission, please go to your system settings and make sure that Status > Face ID is selected"
 }
