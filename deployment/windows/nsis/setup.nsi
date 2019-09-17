@@ -635,9 +635,6 @@ Section "Status Desktop" SecMain
   SetOutPath "$INSTDIR\assets\resources\fonts"
   File /r "${top_srcdir}\resources\fonts\"
 
-  SetOutPath "$INSTDIR\assets\resources\icons"
-  File /r "${top_srcdir}\resources\icons\"
-
   SetOutPath "$INSTDIR\assets\resources\images"
   File /r "${top_srcdir}\resources\images\"
 
