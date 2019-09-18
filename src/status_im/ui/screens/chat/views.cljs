@@ -15,6 +15,7 @@
             [status-im.ui.screens.chat.stickers.views :as stickers]
             [status-im.ui.screens.chat.styles.main :as style]
             [status-im.ui.screens.chat.toolbar-content :as toolbar-content]
+            [status-im.ui.screens.chat.image.views :as image]
             [status-im.ui.screens.chat.state :as state]
             [status-im.utils.debounce :as debounce]
             [status-im.ui.screens.chat.extensions.views :as extensions]
@@ -147,6 +148,8 @@
       [stickers/stickers-view]
       :extensions
       [extensions/extensions-view]
+      :images
+      [image/image-view]
       [empty-bottom-sheet])))
 
 (defview chat []

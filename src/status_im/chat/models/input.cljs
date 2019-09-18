@@ -121,6 +121,14 @@
                                                :pack pack}
                                      :text    "Update to latest version to see a nice sticker here!"})))
 
+(fx/defn send-image
+  [{:keys [db] :as cofx} hash]
+  (when-not (string/blank? hash)
+    (chat.message/send-message cofx {:chat-id      (:current-chat-id db)
+                                     :content-type constants/content-type-image
+                                     :content      {:chat-id (:current-chat-id db)
+                                                    :hash    hash}})))
+
 (fx/defn send-current-message
   "Sends message from current chat input"
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
@@ -132,6 +140,13 @@
   [cofx chat-id params result])
   ;;TODO: should be implemented on status-go side
   ;;see https://github.com/status-im/team-core/blob/6c3d67d8e8bd8500abe52dab06a59e976ec942d2/rfc-001.md#status-gostatus-react-interface
+
+(fx/defn chat-image-added-to-ipfs
+  {:events [:chat-image-added-to-ipfs]}
+  [{:keys [db] :as cofx} {:keys [hash]}]
+  (fx/merge cofx
+            {:db (chat/set-chat-ui-props db {:send-image-loading? false :show-image? nil :send-image nil})}
+            (send-image hash)))
 
 ;; effects
 

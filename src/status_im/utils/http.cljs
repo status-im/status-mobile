@@ -21,7 +21,7 @@
    (-> (fetch
         url
         (clj->js {:method  "POST"
-                  :headers {"Cache-Control" "no-cache"}
+                  :headers (merge {"Cache-Control" "no-cache"} headers)
                   :body    body
                   :timeout (or timeout-ms http-request-default-timeout-ms)}))
        (.then (fn [^js response]
@@ -29,7 +29,7 @@
                  (.text response)
                  (.then (fn [body]
                           (on-success {:status  (.-status response)
-                                       :headers (headers response)
+                                       :headers (response-headers response)
                                        :body    body}))))))
        (.catch (or on-error
                    (fn [error]
@@ -92,7 +92,7 @@
                  (.text response)
                  (.then (fn [body]
                           (on-success {:status  (.-status response)
-                                       :headers (headers response)
+                                       :headers (response-headers response)
                                        :body    body}))))))
        (.catch (or on-error
                    (fn [error]
