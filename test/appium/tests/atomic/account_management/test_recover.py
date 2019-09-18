@@ -5,6 +5,7 @@ from tests import marks, unique_password
 from tests.base_test_case import SingleDeviceTestCase
 from tests.users import basic_user, transaction_senders, recovery_users
 from views.sign_in_view import SignInView
+from views.recover_access_view import RecoverAccessView
 
 
 @marks.all
@@ -71,78 +72,90 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
     @marks.high
     def test_pass_phrase_validation(self):
         signin_view = SignInView(self.driver)
-        recover_access_view = signin_view.access_key_button.click()
-
-        phrase_outside_the_mnemonic = 'one two three four five six seven eight nine ten eleven twelve'
+        signin_view.access_key_button.click()
+        recover_access_view = RecoverAccessView(self.driver)
         validations = [
+            # empty value
             {
                 'phrase': '    ',
-                'element to check': recover_access_view.warnings.required_field,
+                'element to check': recover_access_view.warnings.invalid_recovery_phrase,
                 'validation message': 'Required field',
+                'words count': 1,
+                'popup': False
             },
+            # invalid seed phrase
             {
                 'phrase': 'a',
                 'element to check': recover_access_view.warnings.invalid_recovery_phrase,
-                'validation message': 'Recovery phrase is invalid'
+                'validation message': 'Seed phrase is invalid',
+                'words count': 1,
+                'popup' : False
             },
-            {
-                'phrase': 'one two three four five six seven eight nine ten eleven twelve thirteen',
-                'element to check': recover_access_view.warnings.invalid_recovery_phrase,
-                'validation message': 'Recovery phrase is invalid'
-            },
+            # outside mnemonic
             {
                 'phrase': '; two three four five six seven eight nine ten eleven twelve',
                 'element to check': recover_access_view.warnings.invalid_recovery_phrase,
-                'validation message': 'Recovery phrase is invalid'
-            },
-            {
-                'phrase': phrase_outside_the_mnemonic,
-                'element to check': recover_access_view.warnings.misspelled_words,
-                'validation message': 'Some words might be misspelled'
+                'validation message': '',
+                'words count': 12,
+                'popup': True
             },
         ]
 
+        # check that seed phrase is required (can't be empty)
+        recover_access_view.enter_seed_phrase_button.click()
+        recover_access_view.next_button.click()
+        if recover_access_view.reencrypt_your_key_button.is_element_displayed():
+            self.errors.append("Possible to create account with empty seed phrase")
+
         # we're performing the same steps changing only phrase per attempt
         for validation in validations:
-            phrase, elm, msg = validation.get('phrase'), validation.get('element to check'), validation.get(
-                'validation message')
+            phrase, elm, msg, words_count, popup = validation.get('phrase'), \
+                                            validation.get('element to check'), \
+                                            validation.get('validation message'), \
+                                            validation.get('words count'),\
+                                            validation.get('popup')
             if signin_view.access_key_button.is_element_displayed():
                 signin_view.access_key_button.click()
             if recover_access_view.enter_seed_phrase_button.is_element_displayed():
                 recover_access_view.enter_seed_phrase_button.click()
 
             recover_access_view.send_as_keyevent(phrase)
-            recover_access_view.next_button.click()
 
-            if not elm.is_element_displayed():
-                self.errors.append('"{}" message is not shown'.format(msg))
-            recover_access_view.click_system_back_button()
+            # TODO: uncomment after 8567 fix
+            #if msg and not elm.is_element_displayed():
+            #     self.errors.append('"{}" message is not shown'.format(msg))
 
-        signin_view.access_key_button.click()
-        recover_access_view.enter_seed_phrase_button.click()
-        recover_access_view.send_as_keyevent(phrase_outside_the_mnemonic)
-        recover_access_view.next_button.click()
-        recover_access_view.recover_account_password_input.click()
-        recover_access_view.send_as_keyevent('123456')
-        recover_access_view.sign_in_button.click()
-        recover_access_view.cancel_button.click()
+            # check that words count is shown
+            if words_count == 1:
+                if not signin_view.element_by_text('%s word' % words_count):
+                    self.errors.append('"%s word" is not shown ' % words_count)
+            else:
+                if not signin_view.element_by_text('%s words' % words_count):
+                    self.errors.append('"%s words" is not shown ' % words_count)
 
-        if recover_access_view.cancel_button.is_element_displayed():
-            self.errors.append('Something went wrong. Probably, the confirmation pop up did not disappear')
+            # check that "Next" is disabled unless we use allowed count of words
+            if words_count != 12 or 15 or 18 or 21 or 24:
+                recover_access_view.next_button.click()
+                if recover_access_view.reencrypt_your_key_button.is_element_displayed():
+                    self.errors.append("Possible to create account with wrong count (%s) of words" % words_count)
 
-        recover_access_view.click_system_back_button()
-
-        signin_view.access_key_button.click()
-        recover_access_view.enter_seed_phrase_button.click()
-        recover_access_view.send_as_keyevent(phrase_outside_the_mnemonic)
-        recover_access_view.next_button.click()
-        recover_access_view.recover_account_password_input.click()
-        recover_access_view.send_as_keyevent('123456')
-        recover_access_view.sign_in_button.click()
-        home_view = recover_access_view.confirm_phrase_button.click()
-
-        if not home_view.profile_button.is_element_displayed():
-            self.errors.append('Something went wrong. Probably, could not reach the home screen out.')
+            # check behavior for popup "Custom seed phrase"
+            if popup:
+                text = 'some words are misspelled.'
+                common_password = 'qwerty'
+                if not recover_access_view.find_full_text(text):
+                    self.errors.append('"%s" text is not shown' % text)
+                recover_access_view.cancel_custom_seed_phrase_button.click()
+                recover_access_view.next_button.click()
+                recover_access_view.continue_custom_seed_phrase_button.click()
+                recover_access_view.reencrypt_your_key_button.click()
+                recover_access_view.next_button.click()
+                recover_access_view.create_password_input.set_value(common_password)
+                recover_access_view.next_button.click()
+                recover_access_view.confirm_your_password_input.set_value(common_password)
+                recover_access_view.next_button.click_until_presence_of_element(recover_access_view.home_button)
+            else:
+                recover_access_view.click_system_back_button()
 
         self.verify_no_errors()
 

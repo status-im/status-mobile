@@ -8,6 +8,7 @@
             [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.multiaccounts.db :as db]
             [status-im.native-module.core :as status]
+            [status-im.popover.core :as popover]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.security :as security]
@@ -150,12 +151,23 @@
             (navigation/navigate-to-cofx :recover-multiaccount-enter-phrase nil)))
 
 (fx/defn proceed-to-import-mnemonic
-  {:events [::enter-phrase-input-submitted ::enter-phrase-next-pressed]}
+  {:events [::enter-phrase-next-pressed]}
   [{:keys [db] :as cofx}]
   (let [{:keys [password passphrase]} (:multiaccounts/recover db)]
-    (when (mnemonic/valid-length? passphrase)
-      {::import-multiaccount {:passphrase passphrase
-                              :password password}})))
+    (if (check-phrase-warnings passphrase)
+      (popover/show-popover cofx {:view :custom-seed-phrase})
+      (when (mnemonic/valid-length? passphrase)
+        {::import-multiaccount {:passphrase passphrase
+                                :password   password}}))))
+
+(fx/defn continue-to-import-mnemonic
+  {:events [::continue-pressed]}
+  [{:keys [db] :as cofx}]
+  (let [{:keys [password passphrase]} (:multiaccounts/recover db)]
+    (fx/merge cofx
+              {::import-multiaccount {:passphrase passphrase
+                                      :password   password}}
+              (popover/hide-popover))))
 
 (fx/defn cancel-pressed
   {:events [::cancel-pressed]}

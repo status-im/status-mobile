@@ -29,6 +29,18 @@ class ConfirmRecoverAccess(BaseButton):
         super(ConfirmRecoverAccess, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='RECOVER ACCESS']")
 
+class ContinueCustomSeedPhraseButton(BaseButton):
+
+    def __init__(self, driver):
+        super(ContinueCustomSeedPhraseButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("continue-custom-seed-phrase")
+
+class CancelCustomSeedPhraseButton(BaseButton):
+
+    def __init__(self, driver):
+        super(CancelCustomSeedPhraseButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("cancel-custom-seed-phrase")
+
 
 class RequiredField(BaseElement):
     def __init__(self, driver):
@@ -92,3 +104,5 @@ class RecoverAccessView(SignInView):
         self.warnings = Warnings(self.driver)
         self.confirm_phrase_button = ConfirmPhraseButton(self.driver)
         self.cancel_button = CancelPhraseButton(self.driver)
+        self.continue_custom_seed_phrase_button = ContinueCustomSeedPhraseButton(self.driver)
+        self.cancel_custom_seed_phrase_button = CancelCustomSeedPhraseButton(self.driver)

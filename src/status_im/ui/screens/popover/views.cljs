@@ -6,7 +6,8 @@
             [re-frame.core :as re-frame]
             [status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]
             [status-im.ui.screens.wallet.request.views :as request]
-            [status-im.ui.screens.profile.user.views :as profile.user]))
+            [status-im.ui.screens.profile.user.views :as profile.user]
+            [status-im.ui.screens.multiaccounts.recover.views :as multiaccounts.recover]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -97,6 +98,9 @@
 
                    (= :share-chat-key view)
                    [profile.user/share-chat-key]
+
+                   (= :custom-seed-phrase view)
+                   [multiaccounts.recover/custom-seed-phrase]
 
                    :else
                    [view])]]]]])))})))

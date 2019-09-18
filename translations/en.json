@@ -1095,5 +1095,10 @@
 	"your-data-belongs-to-you": "If you lose your seed phrase you lose your data and funds",
 	"your-data-belongs-to-you-description": "Status can’t help you recover your multiaccount if you lose your seed phrase. You are in charge of the security of your data, and backing up your seed phrase is the best safeguard.",
 	"your-recovery-phrase": "Your seed phrase",
-	"your-recovery-phrase-description": "This is your seed phrase. You use it to prove that this is your wallet. You only get to see it once! Write it on paper and keep it in a secure place. You will need it if you lose or reinstall your wallet."
+	"your-recovery-phrase-description": "This is your seed phrase. You use it to prove that this is your wallet. You only get to see it once! Write it on paper and keep it in a secure place. You will need it if you lose or reinstall your wallet.",
+	"custom-seed-phrase": "Custom seed phrase",
+	"custom-seed-phrase-text-1": "This looks like a custom seed phrase and doesn't match the Status dictionary. This could also mean ",
+	"custom-seed-phrase-text-2": "some words are misspelled.",
+	"custom-seed-phrase-text-3": " If so, you'll end up creating a",
+	"custom-seed-phrase-text-4": " new account"
 }
