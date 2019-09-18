@@ -18,7 +18,9 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
             [status-im.chat.models.message-seen :as message-seen]
-            [status-im.chat.models.loading :as loading]))
+            [status-im.chat.models.loading :as loading]
+            [status-im.utils.image-processing :as image-processing]
+            [status-im.ipfs.core :as ipfs]))
 
 (defn- get-chat [cofx chat-id]
   (get-in cofx [:db :chats chat-id]))
@@ -309,3 +311,31 @@
   {:events [:chat.ui/input-on-focus]}
   [{db :db}]
   {:db (set-chat-ui-props db {:input-bottom-sheet nil})})
+
+(re-frame/reg-fx
+ :chat-open-image-picker
+ (fn []
+   (react/show-image-picker
+    (fn [image]
+      (image-processing/resize
+       (aget image "path")
+       400 400
+       (fn [resized-image]
+         (re-frame/dispatch [:chat.ui/set-chat-ui-props {:send-image (aget resized-image "path")}]))
+       #()))
+    "any")))
+
+(fx/defn chat-open-image-picker
+  {:events [:chat.ui/open-image-picker]}
+  [cofx]
+  {:chat-open-image-picker nil})
+
+(fx/defn send-image
+  {:events [:chat.ui/send-image]}
+  [{:keys [db] :as cofx} send-image]
+  (fx/merge cofx
+            {:db (set-chat-ui-props db {:send-image-loading? true})}
+            (ipfs/add {:value #js {:uri send-image :name "image"}
+                       :opts {:headers {"Content-Type" "multipart/form-data"}}
+                       :on-failure #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:send-image-loading? false}])
+                       :on-success #(re-frame/dispatch [:chat-image-added-to-ipfs %])})))

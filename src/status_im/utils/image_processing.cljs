@@ -1,9 +1,9 @@
 (ns status-im.utils.image-processing
   (:require [goog.object :as object]
             [status-im.utils.fs :as fs]
-            ["react-native-image-resizer" :as image-resizer]))
+            ["react-native-image-resizer" :default image-resizer]))
 
-(defn- resize [path max-width max-height on-resize on-error]
+(defn resize [path max-width max-height on-resize on-error]
   (-> (.createResizedImage image-resizer path max-width max-height "JPEG" 75 0 nil)
       (.then on-resize)
       (.catch on-error)))

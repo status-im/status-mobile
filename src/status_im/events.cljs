@@ -1204,10 +1204,8 @@
  :http-post
  http-post)
 
-(defn- http-raw-post [{:keys [url body response-validator success-event-creator failure-event-creator timeout-ms opts]}]
-  (let [on-success #(re-frame/dispatch (success-event-creator %))
-        on-error   (when failure-event-creator #(re-frame/dispatch (failure-event-creator %)))
-        all-opts   (assoc opts
+(defn- http-raw-post [{:keys [url body response-validator on-success on-error timeout-ms opts]}]
+  (let [all-opts   (assoc opts
                           :valid-response? response-validator
                           :timeout-ms timeout-ms)]
     (http/raw-post url body on-success on-error all-opts)))

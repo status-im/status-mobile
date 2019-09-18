@@ -12,6 +12,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.utils.config :as config]
+            [status-im.ui.screens.chat.image.views :as image]
             [status-im.ui.screens.chat.stickers.views :as stickers]
             [status-im.ui.screens.chat.extensions.views :as extensions]))
 
@@ -67,6 +68,8 @@
        [reply-message-view]
        [react/view {:style style/input-container}
         [basic-text-input input-text cooldown-enabled?]
+        (when input-text-empty?
+          [image/button (= :images input-bottom-sheet)])
         (when (and input-text-empty? mainnet?)
           [stickers/button (= :stickers input-bottom-sheet)])
         (when (and one-to-one-chat? input-text-empty? (or config/commands-enabled? mainnet?))
