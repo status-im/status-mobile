@@ -14,6 +14,7 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.utils.platform :as platform]
             [status-im.utils.config :as config]
+            [status-im.ui.screens.chat.image.views :as image]
             [status-im.ui.screens.chat.stickers.views :as stickers]
             [status-im.ui.screens.chat.extensions.views :as extensions]))
 
@@ -156,6 +157,8 @@
        [reply-message-view]
        [react/view {:style style/input-container}
         [input-view {:single-line-input? single-line-input? :set-text set-text :state-text state-text}]
+        (when input-text-empty?
+          [image/button show-image?])
         (when (and input-text-empty? mainnet?)
           [stickers/button (= :stickers input-bottom-sheet)])
         (when (and one-to-one-chat? input-text-empty? (or config/commands-enabled? mainnet?))

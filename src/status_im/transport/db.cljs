@@ -59,7 +59,8 @@
 
 (spec/def ::content-type #{constants/content-type-text
                            constants/content-type-emoji
-                           constants/content-type-sticker})
+                           constants/content-type-sticker
+                           constants/content-type-image})
 (spec/def ::message-type #{constants/message-type-private-group constants/message-type-public-group constants/message-type-one-to-one})
 (spec/def ::clock-value (spec/and pos-int?
                                   utils.clocks/safe-timestamp?))
@@ -92,12 +93,17 @@
                                            :req-opt [:message.content/response-to]))
 
 (spec/def :message.sticker/content (spec/keys :req-un [:message.content/hash]))
+(spec/def :message.image/content (spec/keys :req-un [:message.content/hash]))
 
 (defmulti content-type :content-type)
 
 (defmethod content-type constants/content-type-sticker [_]
   (spec/merge :message/message-common
               (spec/keys :req-un [:message.sticker/content])))
+
+(defmethod content-type constants/content-type-image [_]
+  (spec/merge :message/message-common
+              (spec/keys :req-un [:message.image/content])))
 
 (defmethod content-type :default [_]
   (spec/merge :message/message-common

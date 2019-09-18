@@ -31,18 +31,18 @@
 
 (fx/defn add
   "Add `value` on ipfs, and returns its b58 encoded CID"
-  [cofx {:keys [value on-success on-failure]}]
+  [cofx {:keys [value on-success on-failure opts timeout-ms]}]
   (let [formdata (doto (js/FormData.)
                    ;; the key is ignored so there is no need to provide one
                    (.append "file" value))]
-    {:http-raw-post (cond-> {:url  ipfs-add-url
-                             :body formdata
-                             :timeout-ms 5000
-                             :success-event-creator
-                             (fn [{:keys [status body]}]
-                               (if (= 200 status)
-                                 (on-success (parse-ipfs-add-response body))
-                                 (when on-failure
-                                   (on-failure status))))}
-                      on-failure
-                      (assoc :failure-event-creator on-failure))}))
+    {:http-raw-post {:url  ipfs-add-url
+                     :body formdata
+                     :opts opts
+                     :timeout-ms (or 25000 timeout-ms)
+                     :on-failure on-failure
+                     :on-success
+                     (fn [{:keys [status body]}]
+                       (if (= 200 status)
+                         (on-success (parse-ipfs-add-response body))
+                         (when on-failure
+                           (on-failure status))))}}))

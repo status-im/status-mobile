@@ -13,6 +13,7 @@
 (def ^:const content-type-emoji 4)
 (def ^:const content-type-command 5)
 (def ^:const content-type-system-text 6)
+(def ^:const content-type-image 7)
 
 (def ^:const message-type-one-to-one 1)
 (def ^:const message-type-public-group 2)

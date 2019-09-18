@@ -20,7 +20,9 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.image-processing :as image-processing]
+            [status-im.ipfs.core :as ipfs]))
 
 (defn- get-chat [cofx chat-id]
   (get-in cofx [:db :chats chat-id]))
@@ -305,3 +307,31 @@
   (fx/merge (assoc-in cofx [:db :contacts/identity] identity)
             (contact.core/create-contact identity)
             (navigation/navigate-to-cofx :profile nil)))
+
+(re-frame/reg-fx
+ :chat-open-image-picker
+ (fn []
+   (react/show-image-picker
+    (fn [image]
+      (image-processing/resize
+       (aget image "path")
+       400 400
+       (fn [resized-image]
+         (re-frame/dispatch [:chat.ui/set-chat-ui-props {:send-image (aget resized-image "path")}]))
+       #()))
+    "photo")))
+
+(fx/defn chat-open-image-picker
+  {:events [:chat.ui/open-image-picker]}
+  [cofx]
+  {:chat-open-image-picker nil})
+
+(fx/defn send-image
+  {:events [:chat.ui/send-image]}
+  [{:keys [db] :as cofx} send-image]
+  (fx/merge cofx
+            {:db (set-chat-ui-props db {:send-image-loading? true})}
+            (ipfs/add {:value #js {:uri send-image :name "image"}
+                       :opts {:headers {"Content-Type" "multipart/form-data"}}
+                       :on-failure #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:send-image-loading? false}])
+                       :on-success #(re-frame/dispatch [:chat-image-added-to-ipfs %])})))
