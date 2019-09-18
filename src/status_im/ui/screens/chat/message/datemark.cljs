@@ -15,7 +15,8 @@
    {:on-press (fn [_]
                 (re-frame/dispatch
                  [:chat.ui/set-chat-ui-props {:messages-focused? true
-                                              :show-stickers?    false}])
+                                              :show-stickers?    false
+                                              :show-image?    false}])
                 (react/dismiss-keyboard!))}
    [react/view style/datemark-mobile
     [react/text {:style style/datemark-text}

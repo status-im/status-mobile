@@ -25,6 +25,7 @@
             [status-im.ui.screens.chat.stickers.views :as stickers]
             [status-im.ui.screens.chat.styles.main :as style]
             [status-im.ui.screens.chat.toolbar-content :as toolbar-content]
+            [status-im.ui.screens.chat.image.views :as image]
             [status-im.ui.screens.profile.tribute-to-talk.views
              :as
              tribute-to-talk.views]
@@ -289,7 +290,8 @@
         :on-press (fn [_]
                     (re-frame/dispatch
                      [:chat.ui/set-chat-ui-props {:messages-focused? true
-                                                  :show-stickers?    false}])
+                                                  :show-stickers?    false
+                                                  :show-image?    false}])
                     (react/dismiss-keyboard!))}
        [react/view (style/intro-header-container height intro-status no-messages)
         ;; Icon section
@@ -401,6 +403,7 @@
             current-chat-id       [:chats/current-chat-id]
             show-message-options? [:chats/current-chat-ui-prop :show-message-options?]
             show-stickers?        [:chats/current-chat-ui-prop :show-stickers?]
+            show-image?       [:chats/current-chat-ui-prop :show-image?]
             two-pane-ui-enabled?  [:two-pane-ui-enabled?]
             anim-translate-y      (animation/create-value
                                    (if two-pane-ui-enabled? 0 connectivity/neg-connectivity-bar-height))]
@@ -438,6 +441,8 @@
          [messages-view current-chat modal?])]]
      (when show-input?
        [input/container])
+     (when show-image?
+       [image/image-view])
      (when show-stickers?
        [stickers/stickers-view])
      (when show-message-options?

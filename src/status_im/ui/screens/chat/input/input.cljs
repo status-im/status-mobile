@@ -21,6 +21,7 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.config :as config]
             [taoensso.timbre :as log]
+            [status-im.ui.screens.chat.image.views :as image]
             [status-im.ui.screens.chat.stickers.views :as stickers]))
 
 (defview basic-text-input [{:keys [set-container-width-fn height single-line-input?]}]
@@ -36,6 +37,7 @@
        :blur-on-submit         false
        :on-focus               #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused?    true
                                                                                 :show-stickers?    false
+                                                                                :show-image?    false
                                                                                 :messages-focused? false}])
        :on-blur                #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused? false}])
        :on-submit-editing      #(when single-line-input?
@@ -67,6 +69,7 @@
        :blur-on-submit         false
        :on-focus               #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused?    true
                                                                                 :show-stickers?    false
+                                                                                :show-image?    false
                                                                                 :messages-focused? false}])
        :on-blur                #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused? false}])
        :submit-shortcut        {:key "Enter"}
@@ -182,6 +185,7 @@
             {:keys [input-text]} [:chats/current-chat]
             result-box           [:chats/current-chat-ui-prop :result-box]
             show-stickers?       [:chats/current-chat-ui-prop :show-stickers?]
+            show-image?       [:chats/current-chat-ui-prop :show-image?]
             state-text (reagent/atom "")]
     {:component-will-unmount #(when platform/desktop?
                                 (re-frame/dispatch [:chat.ui/set-chat-input-text @state-text]))
@@ -202,6 +206,8 @@
        [reply-message-view]
        [react/view {:style style/input-container}
         [input-view {:single-line-input? single-line-input? :set-text set-text :state-text state-text}]
+        (when input-text-empty?
+          [image/button show-image?])
         (when (and input-text-empty? mainnet?)
           [stickers/button show-stickers?])
         (if input-text-empty?

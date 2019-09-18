@@ -21,7 +21,8 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.priority-map :refer [empty-message-map]]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.image-processing :as image-processing]))
 
 (defn- get-chat [cofx chat-id]
   (get-in cofx [:db :chats chat-id]))
@@ -325,3 +326,22 @@
             (contact.core/create-contact identity)
             (tribute-to-talk/check-tribute identity)
             (navigation/navigate-to-cofx :profile nil)))
+
+(re-frame/reg-fx
+ :chat-open-image-picker
+ (fn []
+   (react/show-image-picker
+    (fn [image]
+      (let [path (get (js->clj image) "path")
+            _ (log/debug path)
+            on-success (fn [base64]
+                         (re-frame/dispatch [:chat.ui/set-chat-ui-props {:send-image (str "data:image/jpeg;base64," base64)}]))
+            on-error (fn [type error]
+                       (.log js/console type error))]
+        (image-processing/img->base64 path on-success on-error 150 150)))
+    "photo")))
+
+(fx/defn chat-open-image-picker
+  {:events [:chat.ui/open-image-picker]}
+  [cofx]
+  {:chat-open-image-picker nil})
