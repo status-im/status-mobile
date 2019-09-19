@@ -81,6 +81,17 @@
                 (send-contact-request contact)
                 (mailserver/process-next-messages-request)))))
 
+(fx/defn remove-contact
+  "Remove a contact from current account's contact list"
+  {:events [:contact.ui/remove-contact-pressed]}
+  [{:keys [db] :as cofx} {:keys [public-key] :as contact}]
+  (let [new-contact (update contact
+                            :system-tags
+                            (fnil #(disj % :contact/added) #{}))]
+    (fx/merge cofx
+              {:db (assoc-in db [:contacts/contacts public-key] new-contact)}
+              (contacts-store/save-contact new-contact))))
+
 (fx/defn create-contact
   "Create entry in contacts"
   [{:keys [db] :as cofx} public-key]

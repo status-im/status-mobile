@@ -223,13 +223,15 @@
 (defn flat-list
   "A wrapper for FlatList.
    See https://facebook.github.io/react-native/docs/flatlist.html"
-  [{:keys [data] :as props}]
-  {:pre [(or (nil? data)
-             (sequential? data))]}
-  [flat-list-class
-   (merge (base-list-props props)
-          props
-          {:data (wrap-data data)})])
+  ([props] (flat-list props nil))
+  ([{:keys [data] :as props} {:keys [animated?]}]
+   (let [class (if animated? react/animated-flat-list-class flat-list-class)]
+     {:pre [(or (nil? data)
+                (sequential? data))]}
+     [class
+      (merge (base-list-props props)
+             props
+             {:data (wrap-data data)})])))
 
 (defn flat-list-generic-render-fn
   "A generic status-react specific `render-fn` for `list-item`.
@@ -283,13 +285,14 @@
   [react/touchable-highlight {:on-press action}
    [react/view {:accessibility-label accessibility-label}
     [item
-     [item-icon {:icon      icon
-                 :style     (merge styles/action
-                                   action-style
-                                   (when disabled? styles/action-disabled))
-                 :icon-opts (merge {:color :white}
-                                   icon-opts
-                                   (when disabled? {:color colors/gray}))}]
+     (when icon
+       [item-icon {:icon      icon
+                   :style     (merge styles/action
+                                     action-style
+                                     (when disabled? styles/action-disabled))
+                   :icon-opts (merge {:color :white}
+                                     icon-opts
+                                     (when disabled? {:color colors/gray}))}])
      (if-not subtext
        [item-primary-only {:style (merge styles/action-label
                                          (action-label-style false)

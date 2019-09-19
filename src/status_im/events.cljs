@@ -1328,11 +1328,6 @@
    (contact/add-contact cofx public-key)))
 
 (handlers/register-handler-fx
- :contact.ui/block-contact-pressed
- (fn [cofx [_ public-key]]
-   (contact.block/block-contact-confirmation cofx public-key)))
-
-(handlers/register-handler-fx
  :contact.ui/block-contact-confirmed
  (fn [cofx [_ public-key]]
    (contact.block/block-contact cofx public-key)))

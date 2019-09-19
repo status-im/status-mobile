@@ -522,6 +522,7 @@ var TopLevel = {
     "version" : function () {},
     "vibrate" : function () {},
     "View" : function () {},
+    "FlatList" : function () {},
     "warn" : function () {},
     "WebView" : function () {},
     "WebViewBridgeModule" : function () {},

@@ -80,6 +80,9 @@
 (def animated-view-class
   (reagent/adapt-react-class (.-View animated)))
 
+(def animated-flat-list-class
+  (reagent/adapt-react-class (.-FlatList animated)))
+
 (defn animated-view [props & content]
   (vec (conj content props animated-view-class)))
 

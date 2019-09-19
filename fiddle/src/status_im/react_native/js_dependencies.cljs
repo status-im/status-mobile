@@ -14,8 +14,9 @@
 (def qr-code                (fn [] #js {}))
 (def react-native
   #js {:NativeModules      #js {}
-       :Animated           #js {:View #js {}
-                                :Text #js {}}
+       :Animated           #js {:View     #js {}
+                                :FlatList #js {}
+                                :Text     #js {}}
        :DeviceEventEmitter #js {:addListener (fn [])}
        :Dimensions         #js {:get  (fn [])}})
 (def vector-icons           (fn [] #js {:default #js {}}))

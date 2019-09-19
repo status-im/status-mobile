@@ -9,7 +9,8 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.copyable-text :as copyable-text]
-            [status-im.ui.components.large-toolbar :as large-toolbar]
+            [status-im.ui.components.large-toolbar.view :as large-toolbar]
+            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.list.views :as list.views]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
@@ -203,18 +204,30 @@
                   registrar                    [:ens.stateofus/registrar]]
     (let [show-backup-seed? (and (not seed-backed-up?)
                                  (not (string/blank? mnemonic)))
+
+          ;; toolbar-contents
+          header-in-toolbar    (header-in-toolbar multiaccount)
+          toolbar-action-items (toolbar-action-items public-key)
+
+          ;; flatlist contents
+          header               (header multiaccount)
           content           (flat-list-content
                              preferred-name registrar tribute-to-talk
-                             active-contacts-count show-backup-seed?)]
+                             active-contacts-count show-backup-seed?)
+
+          ;; generated toolbar and content with header
+          generated-view (large-toolbar/generate-view
+                          header-in-toolbar
+                          nil
+                          toolbar-action-items
+                          header
+                          content
+                          list-ref)]
       [react/safe-area-view
        {:style
         (merge {:flex 1}
                (when platform/ios?
                  {:margin-bottom tabs.styles/tabs-diff}))}
        [status-bar/status-bar {:type :main}]
-       [large-toolbar/minimized-toolbar
-        (header-in-toolbar multiaccount)
-        nil
-        (toolbar-action-items public-key)]
-       [large-toolbar/flat-list-with-large-header
-        (header multiaccount) content list-ref]])))
+       (:minimized-toolbar generated-view)
+       (:content-with-header generated-view)])))

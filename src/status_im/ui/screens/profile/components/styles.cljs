@@ -113,3 +113,11 @@
 
 (def profile-form
   {:padding-vertical 16})
+
+;; sheets
+
+(def sheet-text
+  {:color       colors/gray
+   :padding     24
+   :line-height 22
+   :font-size   15})

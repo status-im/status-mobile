@@ -42,8 +42,8 @@
 (defn anim-delay [duration]
   (.delay react/animated duration))
 
-(defn event [config]
-  (.event react/animated (clj->js [nil, config])))
+(defn event [mapping config]
+  (.event react/animated (clj->js mapping) (clj->js config)))
 
 (defn add-listener [anim-value listener]
   (.addListener anim-value listener))
@@ -59,6 +59,12 @@
 
 (defn create-value [value]
   (js/ReactNative.Animated.Value. value))
+
+(defn add [anim-x anim-y]
+  (js/ReactNative.Animated.add. anim-x anim-y))
+
+(defn subtract [anim-x anim-y]
+  (js/ReactNative.Animated.subtract. anim-x anim-y))
 
 (defn x [value-xy]
   (.-x value-xy))

@@ -87,11 +87,3 @@
                        (update :contacts/blocked disj public-key)
                        (assoc-in [:contacts/contacts public-key] contact))}
               (contacts-store/save-contact contact))))
-
-(fx/defn block-contact-confirmation
-  [cofx public-key]
-  {:utils/show-confirmation
-   {:title (i18n/label :t/block-contact)
-    :content (i18n/label :t/block-contact-details)
-    :confirm-button-text (i18n/label :t/to-block)
-    :on-accept #(re-frame/dispatch [:contact.ui/block-contact-confirmed public-key])}})

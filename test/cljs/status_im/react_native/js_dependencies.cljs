@@ -16,8 +16,9 @@
 
 (def react-native
   #js {:NativeModules      #js {}
-       :Animated           #js {:View #js {}
-                                :Text #js {}}
+       :Animated           #js {:View     #js {}
+                                :FlatList #js {}
+                                :Text     #js {}}
        :DeviceEventEmitter #js {:addListener (fn [])}
        :Dimensions         #js {:get  (fn [])}})
 
