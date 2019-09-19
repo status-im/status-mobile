@@ -58,15 +58,7 @@
     (.p rn-dependencies/i18n count (name path) (clj->js options))
     (name path)))
 
-(defn message-status-label [status]
-  (->> status
-       (name)
-       (str "t/status-")
-       (keyword)
-       (label)))
-
 (def locale
   (.-locale rn-dependencies/i18n))
 
 (def format-currency goog.i18n/format-currency)
-

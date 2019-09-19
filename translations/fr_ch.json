@@ -123,5 +123,8 @@
     "image-source-title": "Image du profil",
     "left": "restant",
     "to": "À",
+    "status-not-sent-click": "Non confirmé. Cliquez pour les options",
+    "status-not-sent-tap": "Pas confirmé. Appuyez sur options pour",
+    "status-sent": "Envoyé",
     "data": "Données"
 }

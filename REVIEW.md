@@ -22,3 +22,21 @@ QA process was focused on account creation and login with keycard, and this bug 
 - PRs that change native code should be checked for plateform parity:
   - same methods are created/modified for each platform
   - test cases in the PR should take these methods in consideration
+
+# Missing labels for en translation
+
+https://github.com/status-im/status-react/issues/9003
+
+## Cause
+
+Unused labels in the application have been listed by QA and an issue created for their removal. The PR was made by an external contributor and it had to be rebased many time because it touched many files and other PRs got merged before this one could be tested. After a last rebase the PR was merged with 100% e2e test but no manual testing.
+
+The reason some translations got deleted despite the fact that they were used is because the `message status` related labels were not explicitly mentioned in the code unlike every other labels. They were built from the actual `message status` and the prefix `status-`.
+
+## Resolution process
+
+The mistake was quickly noticed in develop and an issue created. The fix was to recover the 3 labels that were accidentally deleted. 
+
+## Prevention measures
+
+The code has been changed so that the labels are no longer generated and appear in the code like other labels.

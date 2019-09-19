@@ -127,5 +127,6 @@
     "current-network": "Nykyinen verkko",
     "left": "poistui",
     "to": "Vastaanottajalle",
+    "status-sent": "Lähetetty",
     "data": "Tieto"
 }
