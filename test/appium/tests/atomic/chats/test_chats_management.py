@@ -223,8 +223,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             if not element.scroll_to_element():
                 self.errors.append('%s is not visible' % element.name)
         chat_1.add_to_contacts.click()
-        if not chat_1.element_by_text('In contacts').is_element_displayed():
-            self.errors.append("'Add to contacts' is not changed to 'In contacts'")
+        if not chat_1.remove_from_contacts.is_element_displayed():
+            self.errors.append("'Add to contacts' is not changed to 'Remove from contacts'")
 
         chat_1.get_back_to_home_view()
         home_1.plus_button.click()

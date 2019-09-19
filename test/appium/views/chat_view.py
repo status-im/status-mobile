@@ -19,6 +19,11 @@ class AddToContacts(BaseButton):
         super(AddToContacts, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('add-to-contacts-button')
 
+class RemoveFromContactsButton(BaseButton):
+    def __init__(self, driver):
+        super(RemoveFromContactsButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('in-contacts-button')
+
 
 class AddGroupChatMembersButton(BaseButton):
     def __init__(self, driver):
@@ -120,7 +125,7 @@ class ClearButton(BaseButton):
 class BlockButton(BaseButton):
     def __init__(self, driver):
         super(BlockButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="BLOCK"]')
+        self.locator = self.Locator.accessibility_id('block-contact')
 
 
 class LeaveButton(BaseButton):
@@ -365,6 +370,7 @@ class ChatView(BaseView):
 
         self.chat_message_input = ChatMessageInput(self.driver)
         self.add_to_contacts = AddToContacts(self.driver)
+        self.remove_from_contacts = RemoveFromContactsButton(self.driver)
         self.user_name_text = UserNameText(self.driver)
         self.no_messages_in_chat = NoMessagesInChatText(self.driver)
         self.empty_public_chat_message = EmptyPublicChatMessage(self.driver)
