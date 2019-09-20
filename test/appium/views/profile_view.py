@@ -311,10 +311,16 @@ class FaqButton(BaseButton):
         return BaseWebView(self.driver)
 
 
-class VersionText(BaseText):
+class AppVersionText(BaseText):
     def __init__(self, driver):
-        super(VersionText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@content-desc='version']//android.widget.TextView[2]")
+        super(AppVersionText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@content-desc='app-version']//android.widget.TextView[2]")
+
+
+class NodeVersionText(BaseText):
+    def __init__(self, driver):
+        super(NodeVersionText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@content-desc='node-version']//android.widget.TextView[2]")
 
 
 class BootnodesButton(BaseButton):
@@ -511,7 +517,8 @@ class ProfileView(BaseView):
         self.public_key_text = PublicKeyText(self.driver)
         self.profile_address_text = ProfileAddressText(self.driver)
         self.about_button = AboutButton(self.driver)
-        self.version_text = VersionText(self.driver)
+        self.app_version_text = AppVersionText(self.driver)
+        self.node_version_text = NodeVersionText(self.driver)
 
         self.network_settings_button = NetworkSettingsButton(self.driver)
         self.active_network_name = ActiveNetworkName(self.driver)

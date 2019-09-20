@@ -63,7 +63,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         profile_view = sign_in_view.get_profile_view()
         if profile_view.default_username_text.text != basic_user['username'] \
                 or not profile_view.contacts_button.is_element_displayed() \
-                or profile_view.share_my_profile_button.is_element_displayed():
+                or not profile_view.share_my_profile_button.is_element_displayed():
             self.driver.fail("Own profile screen is not opened!")
 
     @marks.testrail_id(5781)

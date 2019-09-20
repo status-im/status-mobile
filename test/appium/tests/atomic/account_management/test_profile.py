@@ -347,17 +347,19 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         home_view = sign_in_view.create_user()
         profile_view = home_view.profile_button.click()
         profile_view.about_button.click()
-        version_text = profile_view.version_text.text
-        if not re.search("\d{1}[.]\d{1,2}[.]\d{1,2}\s[(]\d*[)];\sStatusIM\/android-\d{3}\/go\d{1}[.]\d{1,2}[.]\d{1,2}",
-                         version_text):
-            self.errors.append("Version %s didn't match expected format" % version_text)
-        profile_view.version_text.click()
+        app_version = profile_view.app_version_text.text
+        node_version = profile_view.node_version_text.text
+        if not re.search("\d{1}[.]\d{1,2}[.]\d{1,2}\s[(]\d*[)]", app_version):
+            self.errors.append("App version %s didn't match expected format" % app_version)
+        if not re.search("StatusIM\/android-\d{3}\/go\d{1}[.]\d{1,2}[.]\d{1,2}", node_version):
+            self.errors.append("Node version %s didn't match expected format" % node_version)
+        profile_view.app_version_text.click()
         profile_view.back_button.click()
         profile_view.home_button.click()
         chat = home_view.join_public_chat(home_view.get_public_chat_name())
         message_input = chat.chat_message_input
         message_input.paste_text_from_clipboard()
-        if message_input.text != version_text:
+        if message_input.text != app_version:
             self.errors.append('Version number was not copied to clipboard')
         self.verify_no_errors()
 
