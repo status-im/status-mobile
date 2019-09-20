@@ -125,7 +125,7 @@ class ClearButton(BaseButton):
 class BlockButton(BaseButton):
     def __init__(self, driver):
         super(BlockButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('block-contact')
+        self.locator = self.Locator.xpath_selector('(//*[@text="Block this user"])[2]')
 
 
 class LeaveButton(BaseButton):
