@@ -137,7 +137,7 @@ PODS:
     - React
   - react-native-mail (4.0.0):
     - React
-  - react-native-netinfo (4.2.1):
+  - react-native-netinfo (4.2.2):
     - React
   - react-native-shake (3.3.1):
     - React
